@@ -43,6 +43,8 @@ export type FireuxAppConfig = {
   role: RuntimeAppRole
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
+  /** Optional public/admin root domains this app consumes. */
+  domains?: string[]
   /** Optional profile identities this app lets users create/manage. */
   profiles?: string[]
   /** Optional public/dashboard nav item keys hidden by this app shell. */
@@ -287,6 +289,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       ecosystem: app.ecosystem,
       modules: moduleNames,
       consoles: app.consoles || [],
+      domains: app.domains || [],
       profiles: app.profiles || [],
       navHiddenKeys: app.navHiddenKeys || [],
     },

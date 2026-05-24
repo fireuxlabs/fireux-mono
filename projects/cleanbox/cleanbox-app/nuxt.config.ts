@@ -9,5 +9,6 @@ export default defineFireuxConfig({
   meta: metaContent,
   role: 'global',
   consoles: [],
+  domains: ['jobs'],
   modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
 })

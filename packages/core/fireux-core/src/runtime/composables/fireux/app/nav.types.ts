@@ -3,6 +3,8 @@ export interface NavVisibility {
   ecosystems?: string[]
   modules?: string[]
   modulesAny?: string[]
+  domains?: string[]
+  domainsAny?: string[]
   profiles?: string[]
   profilesAny?: string[]
 }

@@ -4,7 +4,7 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div class="space-y-1">
           <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
-          <p class="text-sm text-muted">{{ description }}</p>
+          <p v-if="description" class="text-sm text-muted">{{ description }}</p>
         </div>
 
         <UBadge color="neutral" variant="soft">
@@ -19,10 +19,6 @@
         :rows="5"
         :placeholder="placeholder"
       />
-
-      <div v-if="unknownSlugs.length" class="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
-        Unknown: {{ unknownSlugs.join(', ') }}
-      </div>
 
       <div v-if="slugs.length" class="flex flex-wrap gap-2">
         <UBadge
@@ -43,7 +39,7 @@
           :disabled="!isDirty"
           @click="save"
         >
-          Save featured slugs
+          Save
         </UButton>
         <UButton
           color="neutral"
@@ -60,18 +56,17 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAppPublicSettings } from 'fireux-core/runtime/composables/fireux/app/useAppPublicSettings'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useAppPublicSettings } from '../../composables/fireux/app/useAppPublicSettings'
+import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
 
 const props = withDefaults(defineProps<{
-  field: 'featured_app_slugs' | 'featured_ecosystem_slugs'
+  field: `featured_${string}_slugs`
   title: string
-  description: string
-  knownSlugs?: string[]
+  description?: string
   placeholder?: string
 }>(), {
-  knownSlugs: () => [],
-  placeholder: 'one-slug-per-line',
+  description: '',
+  placeholder: 'slug-one, slug-two',
 })
 
 const { collectionPath, settings } = useAppPublicSettings()
@@ -80,7 +75,7 @@ const draft = ref('')
 const saving = ref(false)
 
 const savedSlugs = computed(() => {
-  const raw = (settings.value as any)?.[props.field]
+  const raw = settings.value?.[props.field]
   return Array.isArray(raw)
     ? raw.map((entry) => String(entry ?? '').trim()).filter(Boolean)
     : []
@@ -88,16 +83,12 @@ const savedSlugs = computed(() => {
 
 const slugs = computed(() => parseSlugs(draft.value))
 const isDirty = computed(() => slugs.value.join('\n') !== savedSlugs.value.join('\n'))
-const knownSlugSet = computed(() => new Set(props.knownSlugs.map((slug) => slug.trim()).filter(Boolean)))
-const unknownSlugs = computed(() =>
-  slugs.value.filter((slug) => knownSlugSet.value.size > 0 && !knownSlugSet.value.has(slug))
-)
 
 watch(
   savedSlugs,
   (next) => {
     if (isDirty.value) return
-    draft.value = next.join('\n')
+    draft.value = next.join(', ')
   },
   { immediate: true }
 )
@@ -114,7 +105,7 @@ function parseSlugs(value: string) {
 }
 
 function reset() {
-  draft.value = savedSlugs.value.join('\n')
+  draft.value = savedSlugs.value.join(', ')
 }
 
 async function save() {
@@ -123,7 +114,7 @@ async function save() {
     await setDocument(collectionPath, 'public', {
       ...(settings.value ?? {}),
       [props.field]: slugs.value,
-    } as any)
+    })
   } finally {
     saving.value = false
   }

@@ -57,8 +57,12 @@ That keeps the dashboard scalable:
 
 - Products declares the Products admin surface.
 - Blogs declares the Blog posts admin surface.
-- App-local admin pages can declare app-specific surfaces such as Apps or Ecosystems.
+- App-local and provider domain pages can declare app-specific surfaces such as Apps or Ecosystems.
 - `/dashboard/admin` discovers registered admin surfaces instead of hard-coding every entity.
+- Domain admin surfaces set `adminSurface.domain` and are shown only when the app
+  opts into that domain with `domains: ['kitchens']`.
+- Domain admin surfaces are curation-only for now: one featured/pinned slug field
+  stored on `apps/{appId}/settings/public`.
 
 Public index display choices belong to app-local public settings, not the
 entities being displayed. For example, featured Apps and Ecosystems are stored

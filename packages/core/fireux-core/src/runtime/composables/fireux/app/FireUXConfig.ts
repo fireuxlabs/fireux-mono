@@ -13,6 +13,7 @@ export interface FireUXConfig {
   siteUrl?: string
   modules: string[]
   consoles: string[]
+  domains: string[]
   profiles: string[]
   navHiddenKeys: string[]
 
@@ -112,6 +113,7 @@ function buildConfig(): Readonly<FireUXConfig> {
 
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
+    domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
 

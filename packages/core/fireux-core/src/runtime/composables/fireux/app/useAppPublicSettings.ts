@@ -6,6 +6,7 @@ export type AppPublicSettings = {
   id?: string
   featured_app_slugs?: string[]
   featured_ecosystem_slugs?: string[]
+  [key: `featured_${string}_slugs`]: string[] | string | undefined
 }
 
 export function useAppPublicSettings() {
@@ -25,11 +26,16 @@ export function useAppPublicSettings() {
   const featuredEcosystemSlugs = computed(() =>
     cleanList(settings.value?.featured_ecosystem_slugs)
   )
+  const featuredSlugsFor = (domain: string) =>
+    computed(() =>
+      cleanList(settings.value?.[`featured_${domain}_slugs`])
+    )
 
   return {
     collectionPath,
     settings,
     featuredAppSlugs,
     featuredEcosystemSlugs,
+    featuredSlugsFor,
   }
 }

@@ -83,11 +83,13 @@
 <script setup lang="ts">
 import { definePageMeta, useRouter } from '#imports'
 import { computed } from 'vue'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const { app, pending } = useApp()
 const { model: appProfileModel } = useAppProfileView(app)
+const fireux = useFireUXConfig()
 const router = useRouter()
 
 type AdminSurfaceMeta = {
@@ -99,6 +101,7 @@ type AdminSurfaceMeta = {
   order?: number
   to?: string
   createTo?: string
+  domain?: string
 }
 
 type AdminTool = {
@@ -113,6 +116,9 @@ type AdminTool = {
 
 const adminTools = computed(() => {
   const seen = new Set<string>()
+  const domainSet = new Set(
+    fireux.domains.map((domain) => domain.trim().toLowerCase()).filter(Boolean)
+  )
 
   return router
     .getRoutes()
@@ -122,6 +128,8 @@ const adminTools = computed(() => {
         .adminSurface
 
       if (surface?.surface !== true) return null
+      const domain = surface.domain?.trim().toLowerCase()
+      if (domain && !domainSet.has(domain)) return null
 
       const key = surface.key || String(route.name || route.path)
       if (seen.has(key)) return null

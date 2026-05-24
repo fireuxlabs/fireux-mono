@@ -9,6 +9,7 @@ export default defineFireuxConfig({
   meta: metaContent,
   role: 'global',
   consoles: ['project'],
+  domains: ['apps', 'ecosystems', 'projects', 'modules'],
   modules: [
     [
       'fireux-products',

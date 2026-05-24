@@ -11,6 +11,7 @@ const fireuxConfig = defineFireuxConfig({
   meta: metaContent,
   role: 'global',
   consoles: ['kitchen', 'supplier'],
+  domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent'],
   seo: {
     siteUrl: 'https://misebox.app',

@@ -199,7 +199,9 @@ Current learned examples:
   - other pages the product needs to expose but should not sell as primary navigation
 - In route meta, `nav.position: 'bottom'` marks a public landing/default link as footer navigation and must not appear in the top header.
 - Admin index routes that should appear in `/dashboard/admin` declare `adminSurface` route meta. The dashboard discovers those surfaces from registered routes instead of hard-coding entity names.
-- Featured public App and Ecosystem sections are selected by explicit slug arrays in app-local public settings: `apps/{appId}/settings/public.featured_app_slugs` and `apps/{appId}/settings/public.featured_ecosystem_slugs`.
+- Domain provider packages may ship `/dashboard/admin/{domain}` pages, but those pages appear only when the app opts into the domain with `domains`.
+- Domain admin pages are curation-only for now. They manage one comma-separated featured/pinned slug field in app-local public settings, not full CRUD.
+- Featured public domain sections are selected by explicit slug arrays in app-local public settings, such as `apps/{appId}/settings/public.featured_app_slugs`, `featured_ecosystem_slugs`, and `featured_kitchen_slugs`.
 - Canonical product app public pages are `/`, `/about`, `/get-started`, `/pricing`, `/help`, `/terms`, and `/privacy` by default. Product-capable apps should also expose `/products`. Missing pages should be an explicit product decision, not accidental drift.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
 - Product apps that do expose a console family must expose a real family route and a discoverable CTA. Do not point product CTAs at another product's console just because that route exists.

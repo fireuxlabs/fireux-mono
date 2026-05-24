@@ -8,6 +8,7 @@ type RuntimeScope = Pick<
   | 'appId'
   | 'ecosystem'
   | 'modules'
+  | 'domains'
   | 'profiles'
 >
 
@@ -32,6 +33,8 @@ export function normaliseNavVisibility(
   const ecosystems = normaliseStringList(visibility.ecosystems)
   const modules = normaliseStringList(visibility.modules)
   const modulesAny = normaliseStringList(visibility.modulesAny)
+  const domains = normaliseStringList(visibility.domains)
+  const domainsAny = normaliseStringList(visibility.domainsAny)
   const profiles = normaliseStringList(visibility.profiles)
   const profilesAny = normaliseStringList(visibility.profilesAny)
 
@@ -40,6 +43,8 @@ export function normaliseNavVisibility(
     !ecosystems.length &&
     !modules.length &&
     !modulesAny.length &&
+    !domains.length &&
+    !domainsAny.length &&
     !profiles.length &&
     !profilesAny.length
   ) {
@@ -51,6 +56,8 @@ export function normaliseNavVisibility(
     ...(ecosystems.length ? { ecosystems } : {}),
     ...(modules.length ? { modules } : {}),
     ...(modulesAny.length ? { modulesAny } : {}),
+    ...(domains.length ? { domains } : {}),
+    ...(domainsAny.length ? { domainsAny } : {}),
     ...(profiles.length ? { profiles } : {}),
     ...(profilesAny.length ? { profilesAny } : {}),
   }
@@ -66,6 +73,7 @@ export function isNavVisibleForScope(
   const appId = (scope.appId || '').trim().toLowerCase()
   const ecosystem = (scope.ecosystem || '').trim().toLowerCase()
   const modules = new Set(normaliseStringList(scope.modules))
+  const domains = new Set(normaliseStringList(scope.domains))
   const profiles = new Set(normaliseStringList(scope.profiles))
 
   if (rule.apps?.length && !rule.apps.includes(appId)) return false
@@ -74,6 +82,12 @@ export function isNavVisibleForScope(
     return false
   }
   if (rule.modulesAny?.length && !rule.modulesAny.some((name) => modules.has(name))) {
+    return false
+  }
+  if (rule.domains?.length && !rule.domains.every((name) => domains.has(name))) {
+    return false
+  }
+  if (rule.domainsAny?.length && !rule.domainsAny.some((name) => domains.has(name))) {
     return false
   }
   if (rule.profiles?.length && !rule.profiles.every((name) => profiles.has(name))) {
