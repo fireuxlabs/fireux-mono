@@ -14,6 +14,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-documents',
     'fireux-tasks',
     'fireux-products',
+    'fireux-blogs',
   ],
 })
 

@@ -27,7 +27,7 @@ const fireuxConfig = defineFireuxConfig({
       '/docs/**',
     ],
   },
-  modules: ['fireux-products'],
+  modules: ['fireux-products', 'fireux-blogs'],
 })
 
 export default defineNuxtConfig({

@@ -8,5 +8,5 @@ export default defineFireuxConfig({
   role: 'global',
   consoles: ['supplier'],
   domains: ['suppliers'],
-  modules: ['fireux-suppliers', 'fireux-products'],
+  modules: ['fireux-suppliers', 'fireux-products', 'fireux-blogs'],
 })

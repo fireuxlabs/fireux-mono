@@ -35,9 +35,9 @@ definePageMeta({
     label: 'Blog',
     icon: 'i-lucide-book',
     order: 30,
-    desktop: false,
-    mobile: false,
-    layouts: ['default'],
+    desktop: true,
+    mobile: true,
+    layouts: ['default', 'landing'],
   },
   name: 'BlogIndexPage',
 })

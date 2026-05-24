@@ -12,7 +12,7 @@ const fireuxConfig = defineFireuxConfig({
   seo: {
     siteUrl: 'https://sproochli.web.app',
   },
-  modules: ['fireux-sproochli', 'fireux-products'],
+  modules: ['fireux-sproochli', 'fireux-products', 'fireux-blogs'],
 })
 
 export default defineNuxtConfig({

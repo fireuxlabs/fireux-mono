@@ -12,7 +12,7 @@ const fireuxConfig = defineFireuxConfig({
   seo: {
     siteUrl: 'https://buenohost.web.app',
   },
-  modules: ['fireux-properties', 'fireux-products'],
+  modules: ['fireux-properties', 'fireux-products', 'fireux-blogs'],
 })
 
 const fireuxRuntimeConfig = (fireuxConfig.runtimeConfig || {}) as Record<string, any>
