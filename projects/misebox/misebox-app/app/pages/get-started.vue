@@ -136,6 +136,8 @@ definePageMeta({
     key: 'get-started',
     label: 'Get Started',
     icon: 'i-lucide-rocket',
+    order: 10,
+    position: 'bottom',
     desktop: true,
     mobile: true,
     layouts: ['landing'],
