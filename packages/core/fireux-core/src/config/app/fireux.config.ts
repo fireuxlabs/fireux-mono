@@ -140,12 +140,10 @@ function validateFireuxAppConfig(app: FireuxAppConfig): void {
 function loadFireuxAppMetaContent(explicitMeta?: FireuxMetaContent): FireuxMetaContent | undefined {
   if (explicitMeta) return explicitMeta
 
-  const candidates = [
-    resolve(process.cwd(), 'app/content/meta.ts'),
-    resolve(process.cwd(), 'app/meta.ts'),
-  ]
-  const appMeta = candidates.find((candidate) => existsSync(candidate))
-  if (!appMeta) return undefined
+  const appMeta = resolve(process.cwd(), 'app/meta.ts')
+  if (!existsSync(appMeta)) {
+    throw new Error(`[fireux] Missing required app meta file: ${appMeta}`)
+  }
 
   try {
     const loadTypeScriptModule = createJiti(import.meta.url)

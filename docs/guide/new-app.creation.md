@@ -31,7 +31,7 @@ Read at least these before adding files:
 
 - `projects/<ecosystem>/<existing-app>/nuxt.config.ts`
 - `projects/<ecosystem>/<existing-app>/package.json`
-- `projects/<ecosystem>/<existing-app>/app/meta.ts` for current apps, or legacy `app/content/meta.ts` if the app has not been aligned yet
+- `projects/<ecosystem>/<existing-app>/app/meta.ts`
 - `projects/<ecosystem>/<existing-app>/app/pages/**`
 - `packages/ecosystem/fireux-<ecosystem>/src/module.ts`
 - `scripts/_lib/app-registry.mjs`

@@ -208,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { appMeta } from '../content/meta'
+import { appMeta } from '../meta'
 
 type AppSpec = {
   name: string
