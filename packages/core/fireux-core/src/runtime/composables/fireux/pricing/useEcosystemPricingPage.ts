@@ -7,11 +7,6 @@ const detailButton = {
   trailingIcon: 'i-lucide-arrow-right',
 }
 
-function toPriceAmount(price: string): string {
-  if (price.toLowerCase() === 'free') return '0'
-  return price.replace(/[^0-9.]/g, '') || '0'
-}
-
 export function useEcosystemPricingPage() {
   const fireux = useFireUXConfig()
 
@@ -110,31 +105,11 @@ export function useEcosystemPricingPage() {
   const seoDescription = computed(() =>
     `${ecosystemName.value} pricing for user access, premium operator tools, tenant app setup, and partner-led customer systems.`
   )
-  const pricingJsonLd = computed(() => ({
-    '@context': 'https://schema.org',
-    '@type': 'OfferCatalog',
-    name: `${ecosystemName.value} Pricing`,
-    description: seoDescription.value,
-    itemListElement: planGroups.value.map((group) => ({
-      '@type': 'OfferCatalog',
-      name: group.title,
-      itemListElement: group.plans.map((plan) => ({
-        '@type': 'Offer',
-        name: plan.title,
-        description: plan.description,
-        price: toPriceAmount(plan.price),
-        priceCurrency: 'USD',
-        category: group.title,
-      })),
-    })),
-  }))
-
   return {
     ecosystemName,
     description,
     plans,
     planGroups,
-    pricingJsonLd,
     seoTitle,
     seoDescription,
   }

@@ -183,7 +183,7 @@ Current learned examples:
 - Pricing pages should use the shared core pricing page shell before inventing app-local pricing layouts.
 - App-local pricing pages own plan copy, product framing, routes, and SEO; core owns the pricing frame, header, spacing, plan sections, and CTA area.
 - Ecosystem pricing pages should use the shared ecosystem pricing helper unless they have a real ecosystem-specific offer that differs from the default Free, Premium, Tenant App, and Ecosystem Partner framing.
-- Pricing pages should keep visible UI concise for humans; SEO context belongs in page metadata, canonical links, and structured data rather than extra filler copy in pricing cards.
+- Pricing pages should keep visible UI concise for humans; SEO context belongs in page metadata, canonical links, and pricing structured data generated from the visible plan groups rather than extra filler copy in pricing cards.
 - Public header navigation is for real product pages and user actions:
   - product landing/home
   - product or conversion pages

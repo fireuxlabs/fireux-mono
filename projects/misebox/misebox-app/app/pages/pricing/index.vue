@@ -2,7 +2,6 @@
   <PublicPricingPage
     :description="description"
     :plan-groups="planGroups"
-    :json-ld="pricingJsonLd"
   />
 </template>
 
@@ -12,7 +11,6 @@ import { useEcosystemPricingPage } from 'fireux-core/runtime/composables/fireux/
 const {
   description,
   planGroups,
-  pricingJsonLd,
   seoTitle,
   seoDescription,
 } = useEcosystemPricingPage()

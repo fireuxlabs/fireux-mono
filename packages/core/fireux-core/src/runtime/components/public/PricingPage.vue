@@ -3,37 +3,25 @@
     <div class="space-y-12 pb-16 sm:space-y-16 sm:pb-20">
       <section class="border-b border-default py-12 sm:py-16">
         <UContainer class="space-y-5">
-          <NuxtLink
-            v-if="showBackLink"
-            :to="resolvedBackTo"
-            class="text-sm font-semibold text-primary hover:underline"
-          >
-            {{ resolvedBackLabel }}
-          </NuxtLink>
-
-          <UBadge
-            v-if="resolvedEyebrow"
-            color="primary"
-            variant="soft"
-          >
-            {{ resolvedEyebrow }}
+          <UBadge color="primary" variant="soft">
+            {{ fireux.appName }} Pricing
           </UBadge>
 
           <div class="max-w-3xl space-y-4">
             <h1 class="text-4xl font-semibold tracking-normal text-highlighted">
-              {{ title }}
+              {{ props.title }}
             </h1>
 
             <p
-              v-if="description"
+              v-if="props.description"
               class="text-lg text-muted"
             >
-              {{ description }}
+              {{ props.description }}
             </p>
           </div>
 
           <div
-            v-if="hasIntro"
+            v-if="$slots.intro"
             class="max-w-3xl"
           >
             <slot name="intro" />
@@ -41,10 +29,10 @@
         </UContainer>
       </section>
 
-      <section v-if="resolvedPlanGroups.length">
+      <section v-if="planGroups.length">
         <UContainer class="space-y-10">
           <div
-            v-for="group in resolvedPlanGroups"
+            v-for="group in planGroups"
             :key="group.id || group.title || 'plans'"
             class="space-y-5"
           >
@@ -72,7 +60,7 @@
         </UContainer>
       </section>
 
-      <section v-if="hasDefaultSlot">
+      <section v-if="$slots.default">
         <UContainer>
           <div class="mx-auto max-w-3xl space-y-4">
             <slot />
@@ -80,7 +68,7 @@
         </UContainer>
       </section>
 
-      <section v-if="hasActions">
+      <section v-if="$slots.actions">
         <UContainer>
           <div class="mx-auto flex max-w-3xl flex-wrap gap-3">
             <slot name="actions" />
@@ -93,69 +81,53 @@
 
 <script setup lang="ts">
 import { useHead, useRequestURL } from '#imports'
-import { computed, useSlots } from 'vue'
+import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import {
+  buildPricingOfferCatalog,
+  normalizePricingPlanGroups,
+  type PricingPlan,
+  type PricingPlanGroup,
+} from '../../utils/pricingPage'
 
 const props = withDefaults(
   defineProps<{
     title?: string
     description?: string
-    eyebrow?: string
-    plans?: ReadonlyArray<any>
-    planGroups?: ReadonlyArray<any>
-    jsonLd?: Record<string, unknown> | null
-    backTo?: string
-    backLabel?: string
-    showBack?: boolean
+    plans?: ReadonlyArray<PricingPlan>
+    planGroups?: ReadonlyArray<PricingPlanGroup>
   }>(),
   {
     title: 'Pricing',
     description: '',
-    eyebrow: '',
     plans: () => [],
     planGroups: () => [],
-    jsonLd: null,
-    backTo: '/',
-    backLabel: '',
-    showBack: false,
   }
 )
 
-const slots = useSlots()
 const fireux = useFireUXConfig()
 const requestUrl = useRequestURL()
 
-const resolvedEyebrow = computed(() =>
-  props.eyebrow || `${fireux.appName || 'App'} Pricing`
+const planGroups = computed(() =>
+  normalizePricingPlanGroups(props.planGroups, props.plans)
 )
 const canonicalUrl = computed(() => {
   const origin = (fireux.siteUrl || requestUrl.origin).replace(/\/$/, '')
   return `${origin}${requestUrl.pathname}`
 })
-const resolvedBackTo = computed(() => props.backTo || '/')
-const resolvedBackLabel = computed(() => props.backLabel || fireux.appName || 'Home')
-const showBackLink = computed(() => props.showBack || Boolean(props.backLabel))
-const hasIntro = computed(() => Boolean(slots.intro))
-const hasDefaultSlot = computed(() => Boolean(slots.default))
-const hasActions = computed(() => Boolean(slots.actions))
-const resolvedPlanGroups = computed(() => {
-  if (props.planGroups.length) return props.planGroups
-  if (!props.plans.length) return []
-
-  return [
-    {
-      id: 'plans',
-      plans: props.plans,
-    },
-  ]
-})
 const jsonLdScript = computed(() =>
-  props.jsonLd ? JSON.stringify(props.jsonLd) : ''
+  JSON.stringify(
+    buildPricingOfferCatalog({
+      name: `${fireux.appName} Pricing`,
+      description: props.description,
+      groups: planGroups.value,
+    })
+  )
 )
 
 useHead(() => ({
   link: [{ rel: 'canonical', href: canonicalUrl.value }],
-  script: jsonLdScript.value
+  script: planGroups.value.length
     ? [
         {
           key: 'pricing-json-ld',

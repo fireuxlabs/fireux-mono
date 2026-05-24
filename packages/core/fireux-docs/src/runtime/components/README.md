@@ -53,7 +53,7 @@ Read them like this:
 - `public/SimplePage.vue`
   FireUX shell for simple public pages such as help, terms, privacy, and support
 - `public/PricingPage.vue`
-  FireUX shell for app-owned pricing pages; app pages provide plan copy, optional plan groups, optional JSON-LD, and actions while core owns the frame
+  FireUX shell for app-owned pricing pages; app pages provide plan copy, optional plan groups, and actions while core owns the frame and pricing JSON-LD
 - `public/PartnerPricingPage.vue`
   FireUX shell for ecosystem partner pricing details; app pages provide only the route and page meta
 
@@ -65,7 +65,7 @@ FireUX adds stronger behavior rules on top of ordinary component placement:
 - collection browse behavior should stay consistent across domains through the collection manager seam
 - profile cards should move toward prop-in, render-out rather than local read logic
 - simple public pages should keep app-local copy in pages while sharing the core page frame, spacing, and return-link behavior
-- pricing pages should keep app-local plans and route meta in pages while sharing the core pricing frame, plan sections, canonical link handling, optional structured data, and CTA area
+- pricing pages should keep app-local plans and route meta in pages while sharing the core pricing frame, plan sections, canonical link handling, generated structured data, and CTA area
 - partner pricing pages should keep partner/revenue-share explanation consistent across ecosystem apps unless the ecosystem has a real custom partner model
 
 ## What This README Should Answer
