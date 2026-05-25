@@ -5,6 +5,8 @@ import { getStorage } from 'firebase-admin/storage'
 import { createError, getHeader, type H3Event } from 'h3'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 
 export type GoQrRecord = {
   id: string
@@ -23,16 +25,34 @@ export type GoQrRecord = {
 
 const collectionName = 'go_qr_documents'
 const appId = 'go-qr'
+const reservedDocumentIds = [
+  'about',
+  'blog',
+  'docs',
+  'food-menu',
+  'get-started',
+  'help',
+  'pricing',
+  'privacy',
+  'products',
+  'terms',
+]
 
 export function normalizeDocumentId(value: unknown) {
-  return String(value || '').trim()
+  return normalizeSlug(value)
 }
 
 export function assertDocumentId(id: string) {
-  if (!id || id.includes('/') || id === '.' || id === '..') {
+  const result = validatePublicSlug(id, {
+    label: 'Document path',
+    reservedScope: 'root',
+    reserved: reservedDocumentIds,
+  })
+
+  if (!result.isValid) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Document id is not valid',
+      statusMessage: result.message || 'Document path is not valid',
     })
   }
 }

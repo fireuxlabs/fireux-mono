@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
   return {
     ok: true,
     slug,
-    path: `/docs/${encodeURIComponent(slug)}`,
-    qr_path: `/docs/${encodeURIComponent(slug)}/qr`,
+    path: `/${encodeURIComponent(slug)}`,
+    qr_path: `/${encodeURIComponent(slug)}/qr`,
   }
 })

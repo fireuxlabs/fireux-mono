@@ -1,26 +1,47 @@
-import { createError, defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery } from 'h3'
+import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import {
+  normalizeDocumentId,
+} from '../../utils/goQrRecords'
+
+const reservedDocumentIds = [
+  'about',
+  'blog',
+  'docs',
+  'food-menu',
+  'get-started',
+  'help',
+  'pricing',
+  'privacy',
+  'products',
+  'terms',
+]
 
 function readId(value: unknown) {
   const raw = Array.isArray(value) ? value[0] : value
-  return String(raw || '').trim()
+  return normalizeDocumentId(raw)
 }
 
 export default defineEventHandler(async (event) => {
   const id = readId(getQuery(event).id)
-
-  if (!id || id.includes('/') || id === '.' || id === '..') {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Document id is not valid',
-    })
-  }
-
   const db = getRuntimeFirestore('go-qr')
-  const snap = await db.collection('go_qr_documents').doc(id).get()
+  const availability = await checkPublicSlugAvailability(id, {
+    label: 'Document path',
+    reservedScope: 'root',
+    reserved: reservedDocumentIds,
+    takenMessage: 'This doc path is already taken.',
+    exists: async (slug) => {
+      const snap = await db.collection('go_qr_documents').doc(slug).get()
+      return snap.exists
+    },
+  })
 
   return {
-    id,
-    taken: snap.exists,
+    id: availability.slug,
+    taken: availability.taken,
+    available: availability.available,
+    is_valid: availability.isValid,
+    message: availability.message,
   }
 })

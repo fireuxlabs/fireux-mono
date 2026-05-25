@@ -28,7 +28,7 @@
           <UIcon name="i-lucide-download" class="size-4" />
         </a>
         <UButton
-          :to="`/docs/${encodeURIComponent(documentRecord.slug)}/qr`"
+          :to="`/${encodeURIComponent(documentRecord.slug)}/qr`"
           icon="i-lucide-qr-code"
           variant="ghost"
           color="neutral"

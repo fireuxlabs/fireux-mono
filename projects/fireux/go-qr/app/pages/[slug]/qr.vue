@@ -83,7 +83,7 @@ if (!documentData.value) {
 
 const documentRecord = computed(() => documentData.value as PublicGoQrRecord)
 const documentLabel = computed(() => documentRecord.value.slug)
-const publicUrl = computed(() => `${requestUrl.origin}/docs/${documentRecord.value.slug}`)
+const publicUrl = computed(() => `${requestUrl.origin}/${documentRecord.value.slug}`)
 
 onMounted(async () => {
   qrDataUrl.value = await toDataURL(publicUrl.value, {

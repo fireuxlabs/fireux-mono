@@ -23,8 +23,6 @@ export default defineFireuxConfig({
       '/console/**',
       '/admin',
       '/admin/**',
-      '/docs',
-      '/docs/**',
     ],
   },
   modules: ['fireux-products', 'fireux-blogs'],

@@ -189,7 +189,19 @@ function buildAppSeed(entry) {
   }
 }
 
-function buildPatch(seed, existing = {}) {
+async function readAdminMembershipIds(appRef) {
+  const snap = await appRef.collection('users').where('role', '==', 'admin').get()
+  return snap.docs.map((doc) => doc.id)
+}
+
+function resolveAdminIds(existing = {}, memberships = []) {
+  return uniqueStrings([
+    ...(Array.isArray(existing.admin_ids) ? existing.admin_ids : []),
+    ...(Array.isArray(memberships) ? memberships : []),
+  ])
+}
+
+function buildPatch(seed, existing = {}, options = {}) {
   const now = Timestamp.now()
   const existingCreated = asTimestamp(existing?.created?.at)
   const existingCreatedBy = normalizeString(existing?.created?.by)
@@ -270,7 +282,7 @@ function buildPatch(seed, existing = {}) {
     patch.join_requests = Array.isArray(existing.join_requests)
       ? existing.join_requests
       : []
-    patch.admin_ids = Array.isArray(existing.admin_ids) ? existing.admin_ids : []
+    patch.admin_ids = resolveAdminIds(existing, options.adminIds)
     patch.moderation_state = normalizeString(existing.moderation_state)
     patch.ban_reasons = Array.isArray(existing.ban_reasons)
       ? existing.ban_reasons
@@ -413,11 +425,23 @@ async function main() {
     const ref = db.collection('apps').doc(seed.appId)
     const snap = await ref.get()
     const existing = snap.exists ? snap.data() || {} : {}
-    const patch = buildPatch(seed, existing)
     const shouldWriteAppDatabase =
       seed.role === 'standalone' &&
       seed.databaseId &&
       seed.databaseId !== databaseId
+    const appDb = shouldWriteAppDatabase
+      ? getFirestore(adminApp, seed.databaseId)
+      : null
+    const appDbRef = appDb?.collection('apps').doc(seed.appId) ?? null
+    const appDbSnap = appDbRef ? await appDbRef.get() : null
+    const appDbExisting = appDbSnap?.exists ? appDbSnap.data() || {} : {}
+    const adminIds = uniqueStrings([
+      ...resolveAdminIds(existing),
+      ...(appDbRef ? resolveAdminIds(appDbExisting) : []),
+      ...(snap.exists ? await readAdminMembershipIds(ref) : []),
+      ...(appDbRef && appDbSnap?.exists ? await readAdminMembershipIds(appDbRef) : []),
+    ])
+    const patch = buildPatch(seed, existing, { adminIds })
 
     stats.scanned += 1
     if (snap.exists) stats.updated += 1
@@ -455,9 +479,6 @@ async function main() {
     }
 
     if (shouldWriteAppDatabase) {
-      const appDb = getFirestore(adminApp, seed.databaseId)
-      const appDbRef = appDb.collection('apps').doc(seed.appId)
-      const appDbSnap = await appDbRef.get()
       const canonicalSnap = await ref.get()
       const canonicalPatch = canonicalSnap.exists ? canonicalSnap.data() || patch : patch
       await appDbRef.set(canonicalPatch, { merge: true })
