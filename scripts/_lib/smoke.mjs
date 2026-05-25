@@ -1,11 +1,13 @@
 // FILE: scripts/_lib/smoke.mjs
 
 import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { setTimeout as delay } from 'node:timers/promises'
 
 const ROUTE_TIMEOUT_MS = 20_000
 const READY_TIMEOUT_MS = 90_000
 const READY_INTERVAL_MS = 1_000
+const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
 
 const FAILURE_MARKERS = [
   "doesn't provide an export named",
@@ -23,6 +25,8 @@ function preview(text) {
 }
 
 export function runPrepareForApp(app) {
+  ensureFireuxCoreConfigHelpers()
+
   console.log(`[smoke:prepare] ${app.name} -> nuxi prepare`)
 
   const result = spawnSync('pnpm', ['--filter', app.filter, 'exec', 'nuxi', 'prepare'], {
@@ -31,6 +35,18 @@ export function runPrepareForApp(app) {
 
   if (result.status !== 0) {
     throw new Error(`[smoke:prepare] ${app.name} failed`)
+  }
+}
+
+export function ensureFireuxCoreConfigHelpers() {
+  const result = spawnSync('node', ['scripts/build-fireux-core-config.mjs'], {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    shell: false,
+  })
+
+  if (result.status !== 0) {
+    throw new Error('[smoke:prepare] failed to build fireux-core config helpers')
   }
 }
 

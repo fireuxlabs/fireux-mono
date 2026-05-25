@@ -7,7 +7,11 @@ import { setTimeout as delay } from 'node:timers/promises'
 
 import { parseArgs } from './_lib/args.mjs'
 import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
-import { runPrepareForApp, waitForAppReady } from './_lib/smoke.mjs'
+import {
+  ensureFireuxCoreConfigHelpers,
+  runPrepareForApp,
+  waitForAppReady,
+} from './_lib/smoke.mjs'
 
 const ROUTE_TIMEOUT_MS = 20_000
 const SHUTDOWN_TIMEOUT_MS = 5_000
@@ -94,6 +98,8 @@ const routes = app.componentSmokeRoutes?.length ? app.componentSmokeRoutes : app
 
 if (shouldPrepare) {
   runPrepareForApp(app)
+} else {
+  ensureFireuxCoreConfigHelpers()
 }
 
 const freePort = spawnSync('node', ['scripts/free-port.mjs', String(app.port)], {

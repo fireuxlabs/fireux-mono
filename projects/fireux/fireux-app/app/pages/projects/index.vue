@@ -2,43 +2,58 @@
   <UPage>
     <UPageHeader
       class="pageheader"
-      :title="pageTitle"
-      :description="pageDescription"
+      title="FireUX projects"
+      description="Browse published project records in the FireUX ecosystem."
     />
 
     <UPageBody class="pagebody">
+      <EntityIndexCta
+        title="Published project directory"
+        description="Projects connect ecosystems, apps, Firebase setup, operators, and runtime ownership."
+        family="console"
+        source="projects/{projectId}"
+        :count-label="`${publishedCount} project${publishedCount === 1 ? '' : 's'}`"
+        :actions="actions"
+      />
+
       <UCard v-if="pending">
         <p>Loading projects…</p>
       </UCard>
 
       <ProjectCollectionManager
-        v-else
-        :collection="projects"
-        :filter-mode="filterMode"
-        :source-mode="sourceMode"
+        v-else-if="featuredProjects.length"
+        :collection="featuredProjects"
+        title="Featured projects"
+        description="Selected project records for FireUX."
         :link="true"
-        :show-filter-toggle="sourceMode === 'live'"
-        :show-source-toggle="true"
+        :show-search="false"
+        :show-variant-toggle="false"
         :show-badges="false"
-        @update:filter-mode="filterMode = $event"
-        @update:source-mode="sourceMode = $event"
+        initial-variant="cell"
+      />
+
+      <ProjectCollectionManager
+        v-if="!pending"
+        :collection="publishedProjects"
+        title="All projects"
+        description="Browse the full published project collection."
+        :link="true"
+        :show-source-toggle="false"
+        :show-filter-toggle="false"
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
+import { useAppPublicSettings } from 'fireux-core/runtime/composables/fireux/app/useAppPublicSettings'
 import {
   useProjectCollection,
-  type ProjectCollectionSource,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 definePageMeta({
-  title: 'Projects',
   tag: 'projects',
   nav: {
     key: 'projects',
@@ -51,28 +66,57 @@ definePageMeta({
   },
   layout: 'default',
   name: 'ProjectsIndexPage',
+  title: 'Projects',
+  description: 'Browse published FireUX projects.',
 })
-
-const { appName } = useFireUXConfig()
-const { user } = useUser()
-const pageTitle = 'Projects'
-const pageDescription = 'Choose a project surface for the current runtime.'
-const sourceMode = ref<ProjectCollectionSource>('live')
-const filterMode = ref<'all' | 'mine'>('all')
-const projectFilter = computed(() =>
-  sourceMode.value === 'live' && filterMode.value === 'mine'
-    ? { ids: Array.isArray(user.value?.projects) ? user.value.projects : [] }
-    : undefined
-)
-const { projects, pending } = useProjectCollection({
-  source: sourceMode,
-  filter: projectFilter,
-})
-
-useHead({ title: `${appName} | ${pageTitle}` })
 
 useSeoMeta({
-  title: 'Projects · FireUX',
-  description: pageDescription,
+  title: 'FireUX Projects',
+  description:
+    'Browse published project records in FireUX, including ecosystem apps, runtime setup, and operator surfaces.',
 })
+
+const { projects, pending } = useProjectCollection()
+const { featuredSlugsFor } = useAppPublicSettings()
+const featuredProjectSlugs = featuredSlugsFor('project')
+
+const clean = (value: unknown) => String(value ?? '').trim()
+
+const publishedProjects = computed(() =>
+  (projects.value ?? [])
+    .filter((entry) => clean(entry.status) === 'active')
+    .filter((entry) => clean(entry.id) && clean(entry.slug))
+    .sort((a, b) => clean(a.name).localeCompare(clean(b.name)))
+)
+const publishedCount = computed(() => publishedProjects.value.length)
+const featuredProjects = computed(() => {
+  const bySlug = new Map(
+    publishedProjects.value.map((entry) => [clean(entry.slug), entry])
+  )
+
+  return featuredProjectSlugs.value
+    .map((slug) => bySlug.get(slug))
+    .filter((entry): entry is ProjectSurface => Boolean(entry))
+})
+
+const actions = [
+  {
+    label: 'Pricing',
+    cta: 'Launch a project',
+    to: '/pricing/apps',
+    icon: 'i-lucide-badge-dollar-sign',
+  },
+  {
+    label: 'Guide',
+    cta: 'Learn more',
+    to: '/projects/learn-more',
+    icon: 'i-lucide-book-open',
+  },
+  {
+    label: 'Project',
+    cta: 'Project Console',
+    to: '/console/project',
+    icon: 'i-lucide-layout-dashboard',
+  },
+] as const
 </script>
