@@ -34,6 +34,7 @@
     "smoke:prepare": "node scripts/smoke-prepare.mjs --all",
     "create:ecosystem": "node scripts/create-ecosystem.mjs",
     "check": "node scripts/check.mjs",
+    "release:check": "node scripts/release-check.mjs",
     "build:all": "pnpm -r --parallel --filter './projects/*/*' build",
     "build:packages": "pnpm -r --filter './packages/*/*' build",
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",

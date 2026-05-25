@@ -133,6 +133,16 @@ function buildTasks() {
         group: 'test',
       },
       {
+        label: 'pnpm: release:check',
+        type: 'shell',
+        command: 'pnpm',
+        args: ['release:check'],
+        options: { cwd: '${workspaceFolder}' },
+        isBackground: false,
+        problemMatcher: [],
+        group: 'test',
+      },
+      {
         label: 'pnpm: format',
         type: 'shell',
         command: 'pnpm',

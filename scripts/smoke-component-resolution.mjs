@@ -61,6 +61,12 @@ function findHtmlMarker(body) {
   return HTML_FAILURE_MARKERS.find((marker) => normalized.includes(marker)) ?? ''
 }
 
+function formatChildExit(exit) {
+  if (exit?.error) return exit.error.message
+  if (exit?.signal) return `signal ${exit.signal}`
+  return `code ${exit?.code ?? 'unknown'}`
+}
+
 async function stopChild(child) {
   if (child.exitCode !== null || child.signalCode !== null || child.killed) return
 
@@ -98,7 +104,7 @@ if (freePort.status !== 0) process.exit(freePort.status ?? 1)
 console.log(`[smoke:components] Starting ${app.name} on ${app.baseUrl}`)
 
 let output = ''
-const child = spawn('pnpm', ['--filter', app.filter, 'dev'], {
+const child = spawn('pnpm', ['--filter', app.filter, 'dev', '--host'], {
   env: process.env,
   stdio: ['ignore', 'pipe', 'pipe'],
 })
@@ -112,12 +118,40 @@ function appendOutput(chunk) {
 child.stdout.on('data', appendOutput)
 child.stderr.on('data', appendOutput)
 
+let childExit = null
+const childExitPromise = new Promise((resolve) => {
+  child.once('exit', (code, signal) => {
+    childExit = { code, signal }
+    resolve(childExit)
+  })
+
+  child.once('error', (error) => {
+    childExit = { error }
+    resolve(childExit)
+  })
+})
+
 let failed = false
 
 try {
-  await waitForAppReady(app)
+  const readyResult = await Promise.race([
+    waitForAppReady(app).then(() => ({ type: 'ready' })),
+    childExitPromise.then((exit) => ({ type: 'exit', exit })),
+  ])
+
+  if (readyResult.type === 'exit') {
+    throw new Error(
+      `[smoke:components] ${app.name} dev server exited before ready (${formatChildExit(readyResult.exit)})`
+    )
+  }
 
   for (const route of routes) {
+    if (childExit) {
+      throw new Error(
+        `[smoke:components] ${app.name} dev server exited during smoke (${formatChildExit(childExit)})`
+      )
+    }
+
     const url = new URL(route, app.baseUrl).toString()
     const { response, body, durationMs } = await fetchRoute(url)
     const htmlMarker = findHtmlMarker(body)

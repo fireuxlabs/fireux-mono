@@ -21,6 +21,7 @@ Learn how `config/module/` is used across FireUX module packages.
 - `config/module/` is the strongest shared config pattern in the repo
 - it already exists in `fireux-core`, every extension package, and every ecosystem package
 - it already reads as support for `module.ts` rather than as a second system
+- `fireux-core/config/module/*` remains source-first for Nuxt app dev/build, while package-build validation can load compiled `dist/config/module/*.mjs` helpers
 
 ## Not Aligned Yet
 

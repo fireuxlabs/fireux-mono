@@ -14,23 +14,12 @@
       "types": "./src/config/app/runtime.ts",
       "default": "./src/config/app/runtime.ts"
     },
-    "./config/module/module-helpers": {
-      "types": "./src/config/module/module-helpers.ts",
-      "default": "./src/config/module/module-helpers.ts"
+    "./config/module/*": {
+      "types": "./src/config/module/*.ts",
+      "development": "./src/config/module/*.ts",
+      "production": "./src/config/module/*.ts",
+      "default": "./dist/config/module/*.mjs"
     },
-    "./config/module/runtime-config": {
-      "types": "./src/config/module/runtime-config.ts",
-      "default": "./src/config/module/runtime-config.ts"
-    },
-    "./config/module/runtime-layer": {
-      "types": "./src/config/module/runtime-layer.ts",
-      "default": "./src/config/module/runtime-layer.ts"
-    },
-    "./config/module/pages-config": {
-      "types": "./src/config/module/pages-config.ts",
-      "default": "./src/config/module/pages-config.ts"
-    },
-    "./config/module/*": "./src/config/module/*.ts",
     "./runtime/*": "./src/runtime/*",
 
     "./package.json": "./package.json"
@@ -46,10 +35,13 @@
   },
   "files": ["src/**/*"],
   "scripts": {
-    "build": "nuxt-module-build build",
+    "build": "nuxt-module-build build && node ../../../scripts/build-fireux-core-config.mjs",
     "dev": "nuxt-module-build --stub",
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
+  },
+  "unbuild": {
+    "failOnWarn": false
   },
   "engines": {
     "node": ">=20.11 <23",

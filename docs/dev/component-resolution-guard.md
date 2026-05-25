@@ -64,6 +64,13 @@ It also fails if rendered HTML exposes unresolved component tags such as `consol
 
 This is not part of the normal `dev:*` startup loop.
 
+For a fuller release pass that includes shape guard, package typecheck, package
+build, and component smoke, run:
+
+```txt
+pnpm release:check
+```
+
 ## Component Provision Families
 
 We should guard component resolution differently depending on who provides the component.
@@ -140,11 +147,12 @@ Current useful guards:
 1. `pnpm guard` fails if package/project component files import a missing relative target.
 2. `pnpm guard` fails if package UI reintroduces `runtime/components/organisms`, `Organisms*`, or old organisms import paths.
 3. `pnpm smoke:components` starts the app with smoke.
-4. `pnpm smoke:components` visits critical route groups, including nested console child routes.
-5. `pnpm smoke:components` fails if server/client output contains:
+4. `pnpm smoke:components` fails fast if the dev server exits before the app becomes ready.
+5. `pnpm smoke:components` visits critical route groups, including nested console child routes.
+6. `pnpm smoke:components` fails if server/client output contains:
    - `Failed to resolve component`
    - `Component <Anonymous> is missing template or render function`
-6. `pnpm smoke:components` fails if the rendered HTML contains the unresolved component tag name.
+7. `pnpm smoke:components` fails if the rendered HTML contains the unresolved component tag name.
 
 Misebox release smoke should include at least:
 
