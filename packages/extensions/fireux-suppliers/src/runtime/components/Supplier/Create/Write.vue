@@ -49,8 +49,8 @@ import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useSupplierSelection } from '../../../../composables/fireux/console/supplier/useSupplierSelection'
-import { useSupplierCreate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
+import { useSupplierSelection } from '../../../composables/fireux/console/supplier/useSupplierSelection'
+import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
   mode?: ConsoleCreateMode

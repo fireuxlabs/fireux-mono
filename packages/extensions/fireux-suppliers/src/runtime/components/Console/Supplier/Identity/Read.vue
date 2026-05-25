@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierConsoleIdentity } from '../../../../../composables/fireux/console/supplier/operations/useSupplierConsoleIdentity'
+import { useSupplierConsoleIdentity } from '../../../../composables/fireux/console/supplier/operations/useSupplierConsoleIdentity'
 
 const {
   selectedSupplier,

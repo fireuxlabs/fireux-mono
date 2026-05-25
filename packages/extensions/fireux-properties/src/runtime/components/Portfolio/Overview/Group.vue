@@ -44,8 +44,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioInterface } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import type { Portfolio } from '../../../../models/portfolio.model'
+import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import type { Portfolio } from '../../../models/portfolio.model'
 
 type PortfolioPillCard = NonNullable<
   ReturnType<ReturnType<typeof usePortfolioInterface>['pill']>

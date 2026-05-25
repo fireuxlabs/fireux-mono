@@ -105,7 +105,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { resolveConsoleModeLabel } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { usePropertyConsoleOverview } from '../../../../composables/fireux/console/property/usePropertyConsoleOverview'
+import { usePropertyConsoleOverview } from '../../../composables/fireux/console/property/usePropertyConsoleOverview'
 
 const {
   selectedProperty,

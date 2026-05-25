@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobCreateForm } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
+import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
 
 // v-model:form connects to useJobCreate().form
 const form = defineModel<JobCreateForm>('form', { required: true })

@@ -51,20 +51,20 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { usePlaceSearch } from '../../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
-import { usePlaceCreate } from '../../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
+import { usePlaceSearch } from '../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
+import { usePlaceCreate } from '../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import {
     loadLogoForPlace,
     sanitizeLogoAvatar,
     usePlaceLogoState,
-} from '../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos'
-import { usePlaceInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+} from '../../../composables/fireux/firestore/place/utils/view/usePlaceLogos'
+import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type {
     BasePlace,
     PlaceImageShade,
     PlaceSource,
     PlaceUpsertInput,
-} from '../../../../models/place.model'
+} from '../../../models/place.model'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(

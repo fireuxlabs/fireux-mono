@@ -38,7 +38,7 @@
 import { computed, ref } from 'vue'
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
 
 const { kitchenId, canWrite, createMenu } = useKitchenConsoleMenus()
 const toast = useToastify()

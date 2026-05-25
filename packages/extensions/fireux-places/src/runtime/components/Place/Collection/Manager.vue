@@ -72,8 +72,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { usePlaceInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { BasePlace } from '../../../../models/place.model'
+import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import type { BasePlace } from '../../../models/place.model'
 
 const props = withDefaults(
   defineProps<{

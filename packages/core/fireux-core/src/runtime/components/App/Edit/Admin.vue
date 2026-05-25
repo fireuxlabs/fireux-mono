@@ -54,15 +54,15 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
-import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
-import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
-import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { AppModel } from '../../../../models/core/app.model'
-import type { User } from '../../../../models/core/user.model'
+import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
+import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
+import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
+import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
+import { useUserFetch } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserInterface, type UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { AppModel } from '../../../models/core/app.model'
+import type { User } from '../../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{ app?: AppModel | null }>(),

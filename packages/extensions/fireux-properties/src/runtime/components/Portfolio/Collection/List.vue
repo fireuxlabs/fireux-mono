@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PortfolioCard } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import type { PortfolioCard } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 withDefaults(
   defineProps<{

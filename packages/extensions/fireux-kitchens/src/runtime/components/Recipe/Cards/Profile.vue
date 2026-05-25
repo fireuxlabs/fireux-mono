@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Recipe } from '../../../../models/recipe.model'
+import type { Recipe } from '../../../models/recipe.model'
 
 defineProps<{
   recipe: Recipe | null

@@ -44,8 +44,8 @@
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
-import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import { useProfessionalProfileView } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
 
 const { coreProfile, profile: professionalCardFromProfile } = useProfessional()
 const { ensure } = useProfileEnsure(professionalConfig)

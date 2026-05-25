@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { SupplierCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import type { SupplierCard } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 type Props = Pick<
   SupplierCard.Card,

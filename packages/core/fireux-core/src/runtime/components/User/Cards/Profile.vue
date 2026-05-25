@@ -101,9 +101,9 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 
-import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { formatFirestoreTimestamp } from '../../../utils/formatTimestamp'
 
 type Props = {
   avatarUrl: string

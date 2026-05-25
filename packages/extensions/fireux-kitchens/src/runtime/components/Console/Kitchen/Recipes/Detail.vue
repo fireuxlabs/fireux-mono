@@ -110,13 +110,13 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, reactive, ref, watch } from 'vue'
-import { useKitchenConsoleRecipe } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipe'
-import { useRecipeDelete } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeDelete'
-import { useRecipeUpdate } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeUpdate'
+import { useKitchenConsoleRecipe } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipe'
+import { useRecipeDelete } from '../../../../composables/fireux/firestore/recipe/mutations/useRecipeDelete'
+import { useRecipeUpdate } from '../../../../composables/fireux/firestore/recipe/mutations/useRecipeUpdate'
 import {
   normalizeTranslatedText,
   type Recipe,
-} from '../../../../../models/recipe.model'
+} from '../../../../models/recipe.model'
 
 const {
   recipe,

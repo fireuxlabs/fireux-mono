@@ -26,7 +26,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
 const router = useRouter()
 const { pill: professionalInterface } = useProfessional()

@@ -100,10 +100,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
-import type { UserRefs } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
-import type { User } from '../../../../models/core/user.model'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
+import type { UserRefs } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import type { User } from '../../../models/core/user.model'
 
 const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 

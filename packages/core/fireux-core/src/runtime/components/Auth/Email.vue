@@ -39,8 +39,8 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()

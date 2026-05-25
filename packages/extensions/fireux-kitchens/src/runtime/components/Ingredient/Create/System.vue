@@ -51,7 +51,7 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, ref } from 'vue'
-import { useIngredientCreate } from '../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate'
+import { useIngredientCreate } from '../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate'
 import { createDefaultIngredientForm, type IngredientCreateForm } from './types'
 
 const emit = defineEmits<{

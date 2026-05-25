@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { BlogCard } from '../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 type Props = Pick<
   BlogCard.Card,

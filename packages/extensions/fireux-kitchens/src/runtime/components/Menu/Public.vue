@@ -83,17 +83,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
-import type { Menu } from '../../../models/menu.model'
+import type { Menu } from '../../models/menu.model'
 import {
   resolvePublicMenuDesign,
   resolvePublicMenuDesignSource,
   resolvePublicMenuDesignStyle,
-} from '../../../composables/fireux/app/public-menu-design'
+} from '../../composables/fireux/app/public-menu-design'
 import type {
   PublicKitchenLanguageCode,
   PublicKitchenLanguageOption,
-} from '../../../composables/fireux/app/public-kitchen-language'
-import { isPublicKitchenRtlLanguage } from '../../../composables/fireux/app/public-kitchen-language'
+} from '../../composables/fireux/app/public-kitchen-language'
+import { isPublicKitchenRtlLanguage } from '../../composables/fireux/app/public-kitchen-language'
 import MenuSproochliLanguageTrigger from './SproochliLanguageTrigger.vue'
 
 type PublicMenuSectionRow = {

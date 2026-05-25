@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenTeamMember } from '../../../../models/kitchen-team.model'
+import type { KitchenTeamMember } from '../../../models/kitchen-team.model'
 
 const props = withDefaults(
   defineProps<{

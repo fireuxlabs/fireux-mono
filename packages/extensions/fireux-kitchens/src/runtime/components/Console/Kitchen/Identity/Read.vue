@@ -191,12 +191,12 @@ import {
   FIREUX_LANGUAGE_OPTIONS,
 } from 'fireux-translation/runtime/languages'
 import { computed } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import type {
   KitchenLanguageSettings,
   KitchenOpeningHours,
   Weekday,
-} from '../../../../../models/kitchen.model'
+} from '../../../../models/kitchen.model'
 
 const {
   selectedKitchen,

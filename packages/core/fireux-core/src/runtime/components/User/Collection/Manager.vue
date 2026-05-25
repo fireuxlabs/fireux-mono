@@ -72,9 +72,9 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import type { User } from '../../../../models/core/user.model'
+import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import type { User } from '../../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{

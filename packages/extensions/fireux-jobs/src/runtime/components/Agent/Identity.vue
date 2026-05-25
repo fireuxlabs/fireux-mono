@@ -45,7 +45,7 @@
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { coreProfile, profile: agentCardFromProfile } = useAgent()
 const { ensure } = useProfileEnsure(agentConfig)

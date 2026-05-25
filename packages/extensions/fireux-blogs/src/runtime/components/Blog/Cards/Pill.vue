@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { BlogCard } from '../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 type PillProps = Pick<BlogCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

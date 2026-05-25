@@ -72,8 +72,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AppOnboardingState } from '../../../../composables/fireux/app/utils/useAppOnboarding'
-import { useAppOnboarding } from '../../../../composables/fireux/app/utils/useAppOnboarding'
+import type { AppOnboardingState } from '../../../composables/fireux/app/utils/useAppOnboarding'
+import { useAppOnboarding } from '../../../composables/fireux/app/utils/useAppOnboarding'
 
 const props = defineProps<{
   state?: AppOnboardingState | null

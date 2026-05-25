@@ -64,10 +64,10 @@
 
 <script setup lang="ts">
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const router = useRouter()
 const route = useRoute()

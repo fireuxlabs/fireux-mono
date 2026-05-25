@@ -61,12 +61,12 @@
 </template>
 
 <script setup lang="ts">
-import type { OrderServiceMode } from '../../../../models/order.model'
+import type { OrderServiceMode } from '../../../models/order.model'
 import CheckoutBasketCard from './BasketCard.vue'
 import CheckoutCard from './CheckoutCard.vue'
 import CheckoutConfirmedPanel from './ConfirmedPanel.vue'
 import CheckoutKitchenPill from './KitchenPill.vue'
-import { useOrderCheckoutState } from '../../../../composables/useOrderCheckoutState'
+import { useOrderCheckoutState } from '../../../composables/useOrderCheckoutState'
 
 const {
   items,

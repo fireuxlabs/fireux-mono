@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 
 const { selectedKitchen, canWrite } = useKitchenConsoleIdentity()
 </script>

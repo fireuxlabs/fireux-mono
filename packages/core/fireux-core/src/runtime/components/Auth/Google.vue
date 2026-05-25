@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { computed, useRouter } from '#imports'
-import { useColorMode } from '../../../composables/fireux/app/useColorMode'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useColorMode } from '../../composables/fireux/app/useColorMode'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()

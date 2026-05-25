@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
 import { computed, ref, watch } from 'vue'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
 
 const { selectedKitchen, menus } = useKitchenConsoleMenus()
 const selectedMenuId = ref('')

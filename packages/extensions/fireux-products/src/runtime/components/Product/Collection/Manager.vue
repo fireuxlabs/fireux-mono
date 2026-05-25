@@ -73,8 +73,8 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useProductInterface } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
-import type { FirebaseProduct } from '../../../../models/product.model'
+import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { FirebaseProduct } from '../../../models/product.model'
 
 const props = withDefaults(
   defineProps<{

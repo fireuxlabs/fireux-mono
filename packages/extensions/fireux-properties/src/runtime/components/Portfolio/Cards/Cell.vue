@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { PortfolioCard } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import type { PortfolioCard } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 type PortfolioCellProps = Pick<
   PortfolioCard.Card,

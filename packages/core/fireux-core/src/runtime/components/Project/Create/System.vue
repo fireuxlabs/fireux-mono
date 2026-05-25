@@ -56,8 +56,8 @@ import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
-} from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useDevUi } from '../../../../composables/fireux/app/ui/useDevUi'
+} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useDevUi } from '../../../composables/fireux/app/ui/useDevUi'
 import ProjectCreateWrite from './Write.vue'
 
 const props = withDefaults(defineProps<{

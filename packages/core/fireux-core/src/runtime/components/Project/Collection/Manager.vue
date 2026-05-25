@@ -112,11 +112,11 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import {
   useProjectInterface,
   type ProjectSurface,
-} from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+} from '../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 const props = withDefaults(
   defineProps<{

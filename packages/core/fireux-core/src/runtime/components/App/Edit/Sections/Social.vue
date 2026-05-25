@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppModel } from '../../../../../models/core/app.model';
+import type { AppModel } from '../../../../models/core/app.model';
 
 defineProps<{
   app: AppModel

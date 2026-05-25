@@ -72,11 +72,11 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
-} from '../../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+} from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 
 const props = withDefaults(
   defineProps<{

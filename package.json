@@ -29,6 +29,7 @@
     "dev:full": "node scripts/dev-app-group.mjs --group full",
     "smoke:app": "node scripts/smoke-app.mjs",
     "smoke:http": "node scripts/smoke-app.mjs --all",
+    "smoke:components": "node scripts/smoke-component-resolution.mjs --app misebox",
     "smoke:prepare:app": "node scripts/smoke-prepare.mjs",
     "smoke:prepare": "node scripts/smoke-prepare.mjs --all",
     "create:ecosystem": "node scripts/create-ecosystem.mjs",

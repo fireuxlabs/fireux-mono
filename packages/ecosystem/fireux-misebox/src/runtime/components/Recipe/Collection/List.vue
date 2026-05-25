@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RecipeCard } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
+import type { RecipeCard } from '../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
 
 withDefaults(
   defineProps<{

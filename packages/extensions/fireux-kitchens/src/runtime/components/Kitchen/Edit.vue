@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Kitchen } from '../../../models/kitchen.model'
+import type { Kitchen } from '../../models/kitchen.model'
 
 const props = defineProps<{ kitchen: Kitchen | null }>()
 const kitchen = computed(() => props.kitchen)

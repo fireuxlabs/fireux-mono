@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { IngredientCard } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import type { IngredientCard } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 type PillProps = Pick<IngredientCard.Card, 'slug' | 'to' | 'title' | 'subtitle' | 'imageUrl'> & {
   badges?: string[]

@@ -124,7 +124,7 @@ import { computed } from 'vue'
 import type {
   JobCard,
   JobView,
-} from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+} from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const props = defineProps<{
   card?: JobCard.Card

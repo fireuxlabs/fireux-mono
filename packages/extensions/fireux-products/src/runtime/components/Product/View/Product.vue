@@ -114,7 +114,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { FirebaseProduct } from '../../../../models/product.model';
+import type { FirebaseProduct } from '../../../models/product.model';
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined

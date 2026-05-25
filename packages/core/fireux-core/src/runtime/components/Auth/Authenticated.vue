@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 const router = useRouter()
 const { signOutUser } = useAuth()

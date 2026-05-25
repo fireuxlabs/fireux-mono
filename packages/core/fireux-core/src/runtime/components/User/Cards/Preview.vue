@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 
 type Props = {
   avatarUrl: string

@@ -111,9 +111,9 @@ import { computed } from 'vue'
 import {
   useAppInterface,
   type AppCard,
-} from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import type { AppModel } from '../../../../models/core/app.model'
+} from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import type { AppModel } from '../../../models/core/app.model'
 
 type AppCollectionCard = AppCard.Card & {
   selectionValue: string

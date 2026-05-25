@@ -37,8 +37,8 @@ import ConsoleEntityIndex from 'fireux-core/runtime/components/Console/EntityInd
 import {
   useSupplierInterface,
   type SupplierSurface,
-} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
+} from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { useSupplierConsoleIndex } from '../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
 
 const {
   state,

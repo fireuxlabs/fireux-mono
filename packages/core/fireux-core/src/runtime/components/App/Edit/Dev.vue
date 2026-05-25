@@ -187,10 +187,10 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, ref, watch } from 'vue'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import type { AppModel } from '../../../../models/core/app.model'
-import type { User } from '../../../../models/core/user.model'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
+import type { AppModel } from '../../../models/core/app.model'
+import type { User } from '../../../models/core/user.model'
 
 const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
 const app = computed(() => props.app)

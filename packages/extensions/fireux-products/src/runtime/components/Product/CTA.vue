@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useProductPermissions } from '../../../composables/useProductPermissions';
+import { useProductPermissions } from '../../composables/useProductPermissions';
 
 const props = withDefaults(defineProps<{ count?: number }>(), {
   count: 0,

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 withDefaults(
   defineProps<{

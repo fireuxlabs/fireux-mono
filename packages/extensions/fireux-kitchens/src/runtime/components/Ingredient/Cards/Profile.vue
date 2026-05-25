@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IngredientProfile } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import type { IngredientProfile } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 defineProps<{ model: IngredientProfile }>()
 </script>

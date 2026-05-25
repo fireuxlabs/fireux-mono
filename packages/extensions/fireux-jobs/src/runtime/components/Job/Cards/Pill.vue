@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import type { JobCard } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 type Props = Pick<JobCard.Card, 'to' | 'title'> & {
   imageUrl?: string

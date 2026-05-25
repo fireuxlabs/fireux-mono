@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import type { SupplierCard } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = defineProps<{
   title?: string

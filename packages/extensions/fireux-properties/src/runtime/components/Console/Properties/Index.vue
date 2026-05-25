@@ -34,8 +34,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import ConsoleEntityIndex from 'fireux-core/runtime/components/Console/EntityIndex.vue'
-import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/usePropertyConsoleIndex'
-import { usePropertyInterface } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
+import { usePropertyConsoleIndex } from '../../../composables/fireux/console/property/usePropertyConsoleIndex'
+import { usePropertyInterface } from '../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
 type PropertyPillCard = NonNullable<
   ReturnType<ReturnType<typeof usePropertyInterface>['pill']>

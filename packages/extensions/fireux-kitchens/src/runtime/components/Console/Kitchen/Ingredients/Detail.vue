@@ -35,8 +35,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleIngredient } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIngredient'
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import { useKitchenConsoleIngredient } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIngredient'
+import { useIngredientInterface } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 import IngredientProfile from '../../../Ingredient/Cards/Profile.vue'
 
 const { profile: makeProfile } = useIngredientInterface()

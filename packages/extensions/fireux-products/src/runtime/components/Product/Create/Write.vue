@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
-import { useCreateProductState } from '../../../../composables/fireux/product/create/useCreateProductState'
+import { useCreateProductState } from '../../../composables/fireux/product/create/useCreateProductState'
 
 const { product } = await useCreateProductState()
 

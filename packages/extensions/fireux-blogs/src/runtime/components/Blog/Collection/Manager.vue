@@ -72,8 +72,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../models/blogPost.model'
-import { useBlogInterface } from '../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+import type { BlogPost } from '../../../models/blogPost.model'
+import { useBlogInterface } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 const props = withDefaults(
   defineProps<{

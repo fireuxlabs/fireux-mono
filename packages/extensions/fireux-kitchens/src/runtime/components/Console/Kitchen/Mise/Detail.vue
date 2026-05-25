@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMiseTask'
+import { useKitchenConsoleMiseTask } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMiseTask'
 import MiseProfile from '../../../Mise/Cards/Profile.vue'
 
 const { task, miseId, pending, canEditMise, debug } = useKitchenConsoleMiseTask()

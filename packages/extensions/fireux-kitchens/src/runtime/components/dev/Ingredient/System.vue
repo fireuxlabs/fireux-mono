@@ -45,7 +45,7 @@ import {
     IngredientModel as IngredientModelRuntime,
     type Ingredient as IngredientType,
 } from '../../../models/ingredient.model'
-import IngredientCollectionManager from '../../Organisms/Ingredient/Collection/Manager.vue'
+import IngredientCollectionManager from '../../Ingredient/Collection/Manager.vue'
 import DevIngredientDemo from './Demo.vue'
 
 defineOptions({ name: 'DevIngredientSystem' })

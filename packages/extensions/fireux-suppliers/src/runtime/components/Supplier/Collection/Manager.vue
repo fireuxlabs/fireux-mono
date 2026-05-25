@@ -126,8 +126,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { Supplier } from '../../../../models/supplier/Supplier.model'
-import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import type { Supplier } from '../../../models/supplier/Supplier.model'
+import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = withDefaults(
   defineProps<{

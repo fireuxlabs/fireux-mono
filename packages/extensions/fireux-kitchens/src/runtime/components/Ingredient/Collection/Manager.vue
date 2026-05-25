@@ -78,7 +78,7 @@ import { computed } from 'vue'
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,
-} from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+} from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 const props = withDefaults(
   defineProps<{

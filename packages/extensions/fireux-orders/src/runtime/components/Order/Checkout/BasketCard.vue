@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { OrderLine } from '../../../../models/order.model'
+import type { OrderLine } from '../../../models/order.model'
 
 defineProps<{
   items: OrderLine[]

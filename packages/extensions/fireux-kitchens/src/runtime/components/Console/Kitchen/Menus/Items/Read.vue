@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenuSection } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
+import { useKitchenConsoleMenuSection } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
 
 const {
   kitchenId,

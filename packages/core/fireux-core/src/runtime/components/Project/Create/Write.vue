@@ -41,7 +41,7 @@ import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
-} from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode

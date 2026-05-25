@@ -23,7 +23,7 @@
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
 import type { Place } from 'fireux-places/runtime/models/place.model';
 import { computed } from 'vue';
-import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types';
+import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types';
 
 const props = defineProps<{ company: CompanyHydrated | null }>()
 const company = computed(() => props.company)

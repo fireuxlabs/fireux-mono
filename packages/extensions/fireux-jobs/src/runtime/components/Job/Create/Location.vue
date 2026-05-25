@@ -36,7 +36,7 @@ import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/fir
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { JobCreateForm } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
+import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
 const db = useFirestore()

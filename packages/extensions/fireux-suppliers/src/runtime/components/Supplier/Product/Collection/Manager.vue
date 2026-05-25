@@ -79,7 +79,7 @@ import { computed } from 'vue'
 import {
   useSupplierProductInterface,
   type SupplierProductInterfaceItem,
-} from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
 
 const props = withDefaults(
   defineProps<{

@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
 const { coreProfile, pending, preview: professionalInterface } = useProfessional()
 

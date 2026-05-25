@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaceUpsertInput } from '../../../../models/place.model'
+import type { PlaceUpsertInput } from '../../../models/place.model'
 
 withDefaults(
   defineProps<{

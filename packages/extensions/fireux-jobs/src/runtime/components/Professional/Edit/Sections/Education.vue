@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EducationItem } from '../../../../../models/profiles/Professional/Professional.model';
+import type { EducationItem } from '../../../../models/profiles/Professional/Professional.model';
 
 const props = defineProps<{
   items: EducationItem[]

@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding';
 
 const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 </script>

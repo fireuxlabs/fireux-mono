@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplier } from '../../../../composables/fireux/firestore/supplier/useSupplier'
+import { useSupplier } from '../../../composables/fireux/firestore/supplier/useSupplier'
 
 const { coreSupplier, pending, preview: supplierInterface } = useSupplier()
 

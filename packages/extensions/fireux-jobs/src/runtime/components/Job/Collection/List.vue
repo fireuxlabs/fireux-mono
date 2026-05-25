@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+import type { JobCard } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 
 withDefaults(
   defineProps<{

@@ -38,9 +38,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FirebaseProduct } from '../../../../models/product.model'
-import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
-import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { FirebaseProduct } from '../../models/product.model'
+import { useProductCollection } from '../../composables/fireux/firestore/product/fetch/useProductCollection'
+import { useProductInterface } from '../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
 const SOLUTION_ROUTES: Record<string, string> = {
   'fireux-app': '/solutions/fireux-app',

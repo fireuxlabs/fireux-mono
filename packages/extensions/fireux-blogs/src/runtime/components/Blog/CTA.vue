@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useBlogPermissions } from '../../../composables/useBlogPermissions'
+import { useBlogPermissions } from '../../composables/useBlogPermissions'
 
 const { canPublishBlog } = useBlogPermissions()
 const { appName } = useFireUXConfig()

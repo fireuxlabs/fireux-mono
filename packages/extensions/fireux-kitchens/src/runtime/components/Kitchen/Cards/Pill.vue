@@ -62,7 +62,7 @@
 import { navigateTo } from '#imports'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import type { KitchenCard } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 type PillProps = Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'> & {
   badges?: KitchenCard.Card['badges']

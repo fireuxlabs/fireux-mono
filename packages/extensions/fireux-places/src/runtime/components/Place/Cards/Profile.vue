@@ -284,7 +284,7 @@
 <script setup lang="ts">
 import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { computed, toRefs } from 'vue'
-import type { PlaceProfile } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import type { PlaceProfile } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 
 const props = defineProps<{
   model: PlaceProfile

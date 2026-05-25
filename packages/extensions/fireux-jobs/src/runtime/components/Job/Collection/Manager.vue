@@ -72,8 +72,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { Job } from '../../../../../models/job.model'
-import { useJobInterface } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import type { Job } from '../../../models/job.model'
+import { useJobInterface } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const props = withDefaults(
   defineProps<{

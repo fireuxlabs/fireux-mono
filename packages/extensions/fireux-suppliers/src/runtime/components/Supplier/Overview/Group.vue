@@ -47,7 +47,7 @@ import { computed } from 'vue'
 import {
   useSupplierInterface,
   type SupplierSurface,
-} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+} from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 type SupplierPillCard = NonNullable<
   ReturnType<ReturnType<typeof useSupplierInterface>['pill']>

@@ -179,9 +179,9 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
-import { usePlaceClaim } from '../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
-import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place, PlaceImageShade } from '../../../models/place.model'
+import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
+import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import type { Place, PlaceImageShade } from '../../models/place.model'
 
 const props = defineProps<{ place: Place | null }>()
 const place = computed(() => props.place)

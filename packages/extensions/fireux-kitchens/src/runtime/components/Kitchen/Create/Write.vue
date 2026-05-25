@@ -76,9 +76,9 @@ import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firesto
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useKitchenCreate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
-import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/useKitchenConsole'
+import { useKitchenCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
+import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useKitchenConsole } from '../../../composables/fireux/console/kitchen/useKitchenConsole'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode

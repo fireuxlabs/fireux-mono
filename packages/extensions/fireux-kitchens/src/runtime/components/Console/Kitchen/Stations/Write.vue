@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleStations'
-import { useKitchenStationCreate } from '../../../../../composables/fireux/console/kitchen/operations/station/mutations/useKitchenStationCreate'
+import { useKitchenConsoleStations } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleStations'
+import { useKitchenStationCreate } from '../../../../composables/fireux/console/kitchen/operations/station/mutations/useKitchenStationCreate'
 
 const {
   selectedMode,

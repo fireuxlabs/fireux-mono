@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../models/blogPost.model'
 
 const props = defineProps<{ post: BlogPost }>()
 

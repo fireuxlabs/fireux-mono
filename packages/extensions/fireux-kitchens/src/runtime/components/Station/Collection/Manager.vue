@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenStation } from '../../../../models/kitchen-station.model'
+import type { KitchenStation } from '../../../models/kitchen-station.model'
 
 const props = withDefaults(
   defineProps<{

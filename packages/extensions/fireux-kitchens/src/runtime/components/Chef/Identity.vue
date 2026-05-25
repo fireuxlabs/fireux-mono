@@ -45,7 +45,7 @@
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
-import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
 
 const { coreProfile, profile: chefCardFromProfile } = useChef()
 const { ensure } = useProfileEnsure(chefConfig)

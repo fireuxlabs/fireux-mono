@@ -26,7 +26,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const router = useRouter()
 const { appName } = useFireUXConfig()

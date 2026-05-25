@@ -47,7 +47,7 @@ import { computed } from 'vue'
 import {
   useKitchenInterface,
   type KitchenSurface,
-} from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+} from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>

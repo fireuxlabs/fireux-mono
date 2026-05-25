@@ -111,9 +111,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useJobsConfig } from '../../../../composables/fireux/app/useJobsConfig'
-import { useProfessionalUpdate } from '../../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate'
-import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useJobsConfig } from '../../../composables/fireux/app/useJobsConfig'
+import { useProfessionalUpdate } from '../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate'
+import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type {
   CertificationItem,
   EducationItem,
@@ -122,7 +122,7 @@ import type {
   ProjectItem,
   RelevantExperienceItem,
   VolunteeringItem,
-} from '../../../../models/profiles/Professional/Professional.model'
+} from '../../../models/profiles/Professional/Professional.model'
 
 const toast = useToastify()
 const { coreProfile } = useProfessional()

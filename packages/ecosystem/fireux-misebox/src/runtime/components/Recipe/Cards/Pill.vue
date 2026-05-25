@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 
-import type { RecipeCard } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
+import type { RecipeCard } from '../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 type PillProps = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

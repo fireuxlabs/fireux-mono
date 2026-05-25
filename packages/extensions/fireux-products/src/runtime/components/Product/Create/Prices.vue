@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCreatePricesState } from '../../../../composables/fireux/product/create/useCreatePricesState'
+import { useCreatePricesState } from '../../../composables/fireux/product/create/useCreatePricesState'
 
 const { prices, addPrice, removePrice } = useCreatePricesState()
 

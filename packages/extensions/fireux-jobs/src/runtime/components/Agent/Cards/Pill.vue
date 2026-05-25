@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { AgentCard } from '../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
+import type { AgentCard } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 
 const emit = defineEmits<{
   (event: 'action'): void

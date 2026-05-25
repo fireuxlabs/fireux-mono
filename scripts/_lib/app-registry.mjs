@@ -42,6 +42,17 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/misebox-app',
     port: 3001,
     consoles: ['kitchen', 'supplier'],
+    componentSmokeRoutes: [
+      '/console/kitchen',
+      '/console/kitchen/identity',
+      '/console/kitchen/mise',
+      '/console/kitchen/ingredients',
+      '/console/kitchen/suppliers',
+      '/console/kitchen/menus',
+      '/console/kitchen/dishes',
+      '/console/kitchen/recipes',
+      '/console/supplier',
+    ],
     launchOrder: 2,
   },
   cleanbox: {
@@ -221,6 +232,7 @@ export function getAppRegistryEntry(key) {
     filter: app.workspace,
     baseUrl: `http://localhost:${app.port}`,
     smokeRoutes,
+    componentSmokeRoutes: unique(app.componentSmokeRoutes ?? smokeRoutes),
   }
 }
 

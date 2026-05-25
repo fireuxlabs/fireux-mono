@@ -63,8 +63,8 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { PlaceImageShade } from '../../../../models/place.model'
+import type { PlaceCard } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import type { PlaceImageShade } from '../../../models/place.model'
 
 defineOptions({ inheritAttrs: false })
 

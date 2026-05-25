@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobCreateForm } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
+import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
 
 const statusOptions = [
   { label: 'Open', value: 'open' },

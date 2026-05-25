@@ -179,7 +179,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CompanyProfile } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
+import type { CompanyProfile } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
 
 const props = defineProps<{ model: CompanyProfile }>()
 

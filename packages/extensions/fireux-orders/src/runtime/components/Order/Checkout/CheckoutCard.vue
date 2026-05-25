@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import type { RadioGroupItem } from '@nuxt/ui'
 import { computed } from 'vue'
-import type { OrderServiceMode } from '../../../../models/order.model'
+import type { OrderServiceMode } from '../../../models/order.model'
 
 const props = defineProps<{
   serviceMode: OrderServiceMode

@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenProfileViewModel } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
+import type { KitchenProfileViewModel } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 
 const props = defineProps<{ model: KitchenProfileViewModel }>()
 

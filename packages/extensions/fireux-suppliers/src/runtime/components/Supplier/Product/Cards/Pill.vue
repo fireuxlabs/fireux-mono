@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { SupplierProductItemCard } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+import type { SupplierProductItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
 
 const emit = defineEmits<{
   (event: 'action'): void

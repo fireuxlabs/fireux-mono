@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemInterfaceInput } from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import type { EcosystemInterfaceInput } from '../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 
 const props = withDefaults(defineProps<{
   collection?: EcosystemInterfaceInput[]

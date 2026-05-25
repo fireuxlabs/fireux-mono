@@ -70,10 +70,10 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { demoIngredientList } from '../../../../../../../../demo/ingredient.demo'
 import { useIngredientInterface } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 import type { Ingredient } from '../../../models/ingredient.model'
-import IngredientCardsCell from '../../Organisms/Ingredient/Cards/Cell.vue'
-import IngredientCardsPill from '../../Organisms/Ingredient/Cards/Pill.vue'
-import IngredientCardsPreview from '../../Organisms/Ingredient/Cards/Preview.vue'
-import IngredientCardsProfile from '../../Organisms/Ingredient/Cards/Profile.vue'
+import IngredientCardsCell from '../../Ingredient/Cards/Cell.vue'
+import IngredientCardsPill from '../../Ingredient/Cards/Pill.vue'
+import IngredientCardsPreview from '../../Ingredient/Cards/Preview.vue'
+import IngredientCardsProfile from '../../Ingredient/Cards/Profile.vue'
 
 defineOptions({ name: 'DevIngredientDemo' })
 

@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { ProfessionalCard } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
+import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 
 type Props = Pick<
   ProfessionalCard.Card,

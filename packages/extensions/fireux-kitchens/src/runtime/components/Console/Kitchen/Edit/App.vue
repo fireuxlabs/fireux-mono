@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Kitchen } from '../../../../../models/kitchen.model'
+import type { Kitchen } from '../../../../models/kitchen.model'
 
 defineProps<{
   kitchen: Partial<Kitchen> | null | undefined

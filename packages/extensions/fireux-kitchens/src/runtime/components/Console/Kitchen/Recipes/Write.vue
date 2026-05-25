@@ -52,8 +52,8 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipes'
-import { useRecipeCreate } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeCreate'
+import { useKitchenConsoleRecipes } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipes'
+import { useRecipeCreate } from '../../../../composables/fireux/firestore/recipe/mutations/useRecipeCreate'
 
 const {
   kitchenId,

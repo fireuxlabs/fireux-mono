@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleOrders'
+import { useKitchenConsoleOrders } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleOrders'
 
 const { orders, debug } = useKitchenConsoleOrders()
 const isDev = import.meta.dev

@@ -211,7 +211,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { EnvCheckResponse } from '../../../../composables/fireux/app/utils/env-check.types'
+import type { EnvCheckResponse } from '../../../composables/fireux/app/utils/env-check.types'
 
 const props = withDefaults(
   defineProps<{

@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppModel } from '../../../../../models/core/app.model'
+import type { AppModel } from '../../../../models/core/app.model'
 
 const props = defineProps<{
   app: AppModel

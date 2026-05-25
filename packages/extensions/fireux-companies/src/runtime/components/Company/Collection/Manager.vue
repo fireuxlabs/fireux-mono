@@ -72,8 +72,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { CompanyHydrated } from '../../../../composables/fireux/firestore/company/fetch/types'
-import { useCompanyInterface } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
+import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 
 const props = withDefaults(
   defineProps<{

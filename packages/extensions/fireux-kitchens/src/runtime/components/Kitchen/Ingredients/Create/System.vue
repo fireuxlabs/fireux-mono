@@ -59,8 +59,8 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire';
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug';
 import { computed, ref } from 'vue';
-import { useIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
-import { useKitchenIngredientSelection } from '../../../../../composables/fireux/console/kitchen/operations/ingredients/mutations/useKitchenIngredientSelection';
+import { useIngredientCreate } from '../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
+import { useKitchenIngredientSelection } from '../../../../composables/fireux/console/kitchen/operations/ingredients/mutations/useKitchenIngredientSelection';
 import {
     createDefaultKitchenIngredientForm,
     type KitchenIngredientCreateForm,

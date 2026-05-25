@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrder } from '../../../../models/order.model'
+import type { KitchenOrder } from '../../../models/order.model'
 
 const props = withDefaults(
   defineProps<{

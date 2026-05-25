@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface';
+import type { PlaceCard } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface';
 
 withDefaults(
   defineProps<{

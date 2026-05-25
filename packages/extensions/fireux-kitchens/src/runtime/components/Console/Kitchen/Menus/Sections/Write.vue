@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
+import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
 
 const {
   menu,

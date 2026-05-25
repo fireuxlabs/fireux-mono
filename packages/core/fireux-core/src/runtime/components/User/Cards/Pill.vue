@@ -65,8 +65,8 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy';
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy';
+import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
 type PillProps = Pick<
   UserCard.Card,

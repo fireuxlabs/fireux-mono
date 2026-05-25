@@ -1,5 +1,5 @@
 # Component Resolution Guard
-Status: Open operational risk
+Status: Guarded by static check and release smoke
 Authority: Tier2 (Development note)
 Updated: 2026-05-25
 
@@ -44,6 +44,25 @@ Component <Anonymous> is missing template or render function
 ```
 
 So a route can pass smoke while a critical module-owned child component is absent.
+
+## Release Smoke
+
+Run the component-resolution smoke when checking release-critical console routes:
+
+```txt
+pnpm smoke:components
+```
+
+This script starts the target app, probes the critical console routes, and fails if output contains:
+
+```txt
+Failed to resolve component
+Component <Anonymous> is missing template or render function
+```
+
+It also fails if rendered HTML exposes unresolved component tags such as `console-kitchen`, `console-supplier`, or `organisms`.
+
+This is not part of the normal `dev:*` startup loop.
 
 ## Component Provision Families
 
@@ -112,19 +131,20 @@ Guard direction:
 - app-local components are checked inside that app only
 - missing app-local components should fail that app's smoke/build
 
-## Guard We Need
+## Guard In Place
 
-This should become a release/pre-push guard, not something run on every small edit.
+This is a release/pre-push style smoke check, not something run on every small edit.
 
-Minimum useful guard:
+Current useful guards:
 
-1. Start the app with smoke.
-2. Visit critical route groups, including nested console child routes.
-3. Fail if server/client output contains:
+1. `pnpm guard` fails if package/project component files import a missing relative target.
+2. `pnpm guard` fails if package UI reintroduces `runtime/components/organisms`, `Organisms*`, or old organisms import paths.
+3. `pnpm smoke:components` starts the app with smoke.
+4. `pnpm smoke:components` visits critical route groups, including nested console child routes.
+5. `pnpm smoke:components` fails if server/client output contains:
    - `Failed to resolve component`
    - `Component <Anonymous> is missing template or render function`
-4. Fail if the rendered HTML contains the unresolved component tag name.
-5. For installed modules, verify generated component names exist in `.nuxt/components.d.ts` after prepare/build.
+6. `pnpm smoke:components` fails if the rendered HTML contains the unresolved component tag name.
 
 Misebox release smoke should include at least:
 
@@ -138,6 +158,12 @@ Misebox release smoke should include at least:
 /console/kitchen/dishes
 /console/kitchen/recipes
 /console/supplier
+```
+
+Implemented entry:
+
+```txt
+pnpm smoke:components
 ```
 
 ## Open Decision

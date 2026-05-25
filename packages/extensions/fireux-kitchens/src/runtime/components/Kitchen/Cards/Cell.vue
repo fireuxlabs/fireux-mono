@@ -115,7 +115,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { KitchenCard } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade' | 'badges'> & {
   source?: 'google' | 'fireux' | 'manual'

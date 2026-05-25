@@ -82,9 +82,9 @@ import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { computed, defineComponent } from 'vue'
-import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-import type { JobCreateForm } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
+import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 // Local components for Kitchen and Company pills
 const KitchenPill = defineComponent({
