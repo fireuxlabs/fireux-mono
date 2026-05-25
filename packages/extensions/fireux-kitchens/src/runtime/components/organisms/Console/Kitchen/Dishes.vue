@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface space-y-6">
-    <ConsoleKitchenDishesRead />
+    <OrganismsConsoleKitchenDishesRead />
 
-    <ConsoleKitchenDishesWrite v-if="canWrite" />
+    <OrganismsConsoleKitchenDishesWrite v-if="canWrite" />
   </section>
 </template>
 

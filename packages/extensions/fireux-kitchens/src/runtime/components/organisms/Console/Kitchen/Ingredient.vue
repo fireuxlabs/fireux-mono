@@ -1,5 +1,5 @@
 <template>
   <section class="console-surface space-y-6">
-    <ConsoleKitchenIngredientsDetail />
+    <OrganismsConsoleKitchenIngredientsDetail />
   </section>
 </template>

@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenIngredient />
+        <OrganismsConsoleKitchenIngredient />
       </section>
     </template>
   </UDashboardPanel>

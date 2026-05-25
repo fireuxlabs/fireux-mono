@@ -17,6 +17,8 @@ This page is only for FireUX ownership and canon seams.
 The important FireUX rule is not “how components work in Vue.”
 It is “which behavior belongs in components, and which does not.”
 
+Open guard note: `docs/dev/component-resolution-guard.md` tracks the unresolved-component risk where a route returns `200 OK` while package/module child components fail to resolve.
+
 ## FireUX Ownership
 
 In FireUX:

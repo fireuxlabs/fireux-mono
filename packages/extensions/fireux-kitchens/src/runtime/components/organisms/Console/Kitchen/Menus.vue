@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface space-y-6">
     <template v-if="selectedKitchen">
-      <ConsoleKitchenMenusWrite />
-      <ConsoleKitchenMenusRead />
+      <OrganismsConsoleKitchenMenusWrite />
+      <OrganismsConsoleKitchenMenusRead />
     </template>
 
     <UAlert

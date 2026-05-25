@@ -13,7 +13,7 @@
     <template v-if="task">
       <MiseProfile :task="task" />
 
-      <ConsoleKitchenMiseEdit
+      <OrganismsConsoleKitchenMiseEdit
         v-if="canEditMise"
         :task="task"
       />

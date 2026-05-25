@@ -15,7 +15,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenOrders />
+        <OrganismsConsoleKitchenOrders />
       </section>
     </template>
   </UDashboardPanel>

@@ -1,5 +1,5 @@
 <template>
   <section class="console-surface">
-    <ConsoleKitchenOrdersRead />
+    <OrganismsConsoleKitchenOrdersRead />
   </section>
 </template>
