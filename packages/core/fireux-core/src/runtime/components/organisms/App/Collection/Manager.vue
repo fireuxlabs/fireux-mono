@@ -47,10 +47,46 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <AppCardsPill v-bind="card" :link="linkEnabled" />
+        <div
+          v-if="selectable"
+          :class="selectionCardClass(card)"
+          role="button"
+          tabindex="0"
+          @click="toggleSelection(card)"
+          @keydown.enter.prevent="toggleSelection(card)"
+          @keydown.space.prevent="toggleSelection(card)"
+        >
+          <AppCardsPill v-bind="card" :link="false" />
+          <UBadge
+            class="absolute right-2 top-2"
+            :color="isSelected(card) ? 'primary' : 'neutral'"
+            :variant="isSelected(card) ? 'solid' : 'soft'"
+          >
+            {{ isSelected(card) ? selectedLabel : unselectedLabel }}
+          </UBadge>
+        </div>
+        <AppCardsPill v-else v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <AppCardsCell v-bind="card" :link="linkEnabled" />
+        <div
+          v-if="selectable"
+          :class="selectionCardClass(card)"
+          role="button"
+          tabindex="0"
+          @click="toggleSelection(card)"
+          @keydown.enter.prevent="toggleSelection(card)"
+          @keydown.space.prevent="toggleSelection(card)"
+        >
+          <AppCardsCell v-bind="card" :link="false" />
+          <UBadge
+            class="absolute right-3 top-3"
+            :color="isSelected(card) ? 'primary' : 'neutral'"
+            :variant="isSelected(card) ? 'solid' : 'soft'"
+          >
+            {{ isSelected(card) ? selectedLabel : unselectedLabel }}
+          </UBadge>
+        </div>
+        <AppCardsCell v-else v-bind="card" :link="linkEnabled" />
       </template>
     </AppCollectionList>
 
@@ -72,9 +108,16 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import {
+  useAppInterface,
+  type AppCard,
+} from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
 import type { AppModel } from '../../../../models/core/app.model'
+
+type AppCollectionCard = AppCard.Card & {
+  selectionValue: string
+}
 
 const props = withDefaults(
   defineProps<{
@@ -87,6 +130,11 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
+    selectable?: boolean
+    selectedValues?: string[]
+    selectionField?: 'id' | 'slug'
+    selectedLabel?: string
+    unselectedLabel?: string
   }>(),
   {
     title: 'Apps',
@@ -97,8 +145,17 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
+    selectable: false,
+    selectedValues: () => [],
+    selectionField: 'id',
+    selectedLabel: 'Selected',
+    unselectedLabel: 'Select',
   }
 )
+
+const emit = defineEmits<{
+  (event: 'toggle-selection', value: string): void
+}>()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -120,6 +177,17 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
+const selectable = computed(() => props.selectable === true)
+const selectedLabel = computed(() => String(props.selectedLabel || 'Selected'))
+const unselectedLabel = computed(() => String(props.unselectedLabel || 'Select'))
+const selectedSet = computed(
+  () =>
+    new Set(
+      props.selectedValues
+        .map((value) => String(value ?? '').trim())
+        .filter(Boolean)
+    )
+)
 const {
   interface: makeCard,
   pill: makePill,
@@ -132,19 +200,32 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+const selectionValue = (app: AppModel) => {
+  const value = props.selectionField === 'slug' ? app.slug : app.id
+  return String(value ?? '').trim()
+}
+
+const withSelectionValue = (
+  app: AppModel,
+  card: AppCard.Card | null
+): AppCollectionCard | null => {
+  if (!card) return null
+  return { ...card, selectionValue: selectionValue(app) }
+}
+
+const cardsFiltered = computed<AppCollectionCard[]>(() =>
   visibleItems.value
     .map((app) => {
       if (variant.value === 'cell') {
         const base = makeCard(app)
         const cell = makeCell(app)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return withSelectionValue(app, { ...base, ...cell })
       }
 
-      return makePill(app)
+      return withSelectionValue(app, makePill(app))
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+    .filter((card): card is AppCollectionCard =>
       Boolean(card)
     )
 )
@@ -156,4 +237,19 @@ const countLabel = computed(() =>
 )
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · apps · root: apps'
+
+const isSelected = (card: AppCollectionCard) =>
+  selectedSet.value.has(card.selectionValue)
+
+const selectionCardClass = (card: AppCollectionCard) => [
+  'relative rounded-lg transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+  isSelected(card)
+    ? 'ring-2 ring-primary bg-primary/5'
+    : 'ring-1 ring-default hover:ring-primary/40',
+]
+
+const toggleSelection = (card: AppCollectionCard) => {
+  if (!selectable.value || !card.selectionValue) return
+  emit('toggle-selection', card.selectionValue)
+}
 </script>

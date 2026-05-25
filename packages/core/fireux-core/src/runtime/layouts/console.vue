@@ -95,15 +95,17 @@
     <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
       <UDashboardPanel v-if="selectionBlocked" id="console-selection-required">
         <template #header>
-          <LayoutsConsoleNavbar title="Selection Required" />
+          <LayoutsConsoleNavbar :title="selectionRequiredTitle" />
         </template>
 
         <template #body>
-          <section class="space-y-4">
+          <section class="flex min-h-[55vh] items-center">
             <UAlert
+              class="w-full max-w-2xl"
               color="neutral"
-              variant="soft"
-              title="No console item selected"
+              variant="subtle"
+              icon="i-lucide-list-checks"
+              :title="selectionRequiredTitle"
               :description="selectionRequiredDescription"
               :actions="[
                 {
@@ -174,10 +176,11 @@ const requiresSelection = computed(() => {
 const selectionBlocked = computed(() =>
   requiresSelection.value && !normalizeString(activeSelectionId.value)
 )
+const selectionRequiredTitle = computed(() => `Select ${familyLabel.value} first`)
 const selectionRequiredDescription = computed(() =>
-  `Choose an item from ${familyLabel.value} before opening this console page.`
+  `This console page needs an active ${familyLabel.value.toLowerCase()} before it can load.`
 )
-const selectionRequiredActionLabel = computed(() => `Go to ${familyLabel.value}`)
+const selectionRequiredActionLabel = computed(() => `Choose ${familyLabel.value}`)
 
 const consoleHeaders = useConsoleHeaders()
 
