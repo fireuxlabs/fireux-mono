@@ -2,6 +2,7 @@ import { defineEventHandler, getQuery } from 'h3'
 import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
+  goQrCollectionName,
   normalizeDocumentId,
 } from '../../utils/goQrRecords'
 
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event) => {
     reserved: reservedDocumentIds,
     takenMessage: 'This doc path is already taken.',
     exists: async (slug) => {
-      const snap = await db.collection('go_qr_documents').doc(slug).get()
+      const snap = await db.collection(goQrCollectionName).doc(slug).get()
       return snap.exists
     },
   })

@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-23
+Updated: 2026-05-25
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -16,6 +16,24 @@ Updated: 2026-05-23
 - Entity fetch/write patterns stay the same; only the resolved Firestore database changes.
 - Do not store day-to-day standalone app product data in `(default)`.
 - Do not store standalone app product data in `fireux` once the app has its own named database.
+
+## Firestore Collection Naming Contract
+- Collection ids are storage vocabulary, not branding vocabulary.
+- Canonical collection ids should be one simple lowercase plural word:
+  - `apps`
+  - `users`
+  - `products`
+  - `kitchens`
+  - `documents`
+- Do not prefix collection ids with app, ecosystem, or package names when the database or parent path already provides scope.
+- Non-canon examples:
+  - `go_qr_documents`
+  - `qrdoc_documents`
+  - `misebox_kitchens`
+- Use parent paths for ownership/scope instead of naming scope into the collection:
+  - `apps/{appId}/users`
+  - `kitchens/{kitchenId}/menus`
+- Multi-word collection ids are allowed only for support records that are already scoped beneath a parent or when a short single plural word would be misleading; prefer documenting the exception close to the owning package.
 
 ## Firebase Runtime Config Contract
 - Ecosystem Firebase config owns shared Firebase project values:

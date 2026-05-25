@@ -23,7 +23,7 @@ export type GoQrRecord = {
   updated_at?: unknown
 }
 
-const collectionName = 'go_qr_documents'
+export const goQrCollectionName = 'documents'
 const appId = 'go-qr'
 const reservedDocumentIds = [
   'about',
@@ -75,7 +75,7 @@ export function goQrDb() {
 }
 
 export function goQrRecordRef(id: string) {
-  return goQrDb().collection(collectionName).doc(id)
+  return goQrDb().collection(goQrCollectionName).doc(id)
 }
 
 export async function readGoQrRecord(id: string) {
@@ -153,7 +153,7 @@ export function serializeGoQrRecord(record: GoQrRecord) {
 
 export async function listGoQrRecords(limit = 50) {
   const snap = await goQrDb()
-    .collection(collectionName)
+    .collection(goQrCollectionName)
     .where('is_public', '==', true)
     .limit(limit)
     .get()

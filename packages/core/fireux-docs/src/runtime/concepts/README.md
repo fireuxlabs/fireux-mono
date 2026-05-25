@@ -1,7 +1,7 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-05-21
+Updated: 2026-05-25
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
 Learn how FireUX runtime concepts are documented when they span more than one runtime branch.
@@ -35,6 +35,8 @@ The current concept map is:
   app, ecosystem, tenant, and extension visual token ownership
 - `firestore-rules-canon.md`
   manual Firestore rules workflow for app databases during preflight, demo, and shipping phases
+- `firestore-collection-names.md`
+  Firestore collection id naming canon for simple plural storage names and scoped parent paths
 - `spine/`
   how FireUX extends the plain Nuxt runtime spine
 - `stacks/`
@@ -91,6 +93,10 @@ The core rule is that demo data bends toward live and test shape. Live collectio
 Firestore rules are currently managed manually in Firebase/Firestore for each app database.
 
 Dev and preflight databases may temporarily use open rules while product shape is moving. Those rules are not production rules, and every real client/staging/production ship must replace them with scoped public, signed-in, admin, and membership rules.
+
+### `firestore-collection-names.md`
+
+Firestore collection names are shared storage vocabulary. They should stay short, plural, lowercase, and unbranded, with app or domain scope expressed by the selected database or parent document path.
 
 ### `spine/`
 

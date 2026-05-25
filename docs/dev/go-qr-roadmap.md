@@ -79,7 +79,7 @@ Go QR currently stores product data in the named Firestore database:
 
 ```txt
 databaseId: go-qr
-collection: go_qr_documents
+collection: documents
 ```
 
 The app creates documents through the server endpoint:
@@ -167,7 +167,7 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
-    match /go_qr_documents/{documentId} {
+    match /documents/{documentId} {
       allow get, list: if resource.data.is_public == true;
       allow create, update, delete: if false;
     }
@@ -184,8 +184,8 @@ Important details:
 - `apps/go-qr` must be readable or the app shell will think Go QR is not initialized.
 - Signed-in users need self-read/write access for the core FireUX user profile sync.
 - App membership writes should not be client-owned for Go QR release; if app membership creation becomes needed, add a server sync endpoint rather than letting users grant their own app role.
-- `go_qr_documents` public metadata can be read when `is_public == true`.
-- `go_qr_documents` create, update, and delete are denied for clients.
+- `documents` public metadata can be read when `is_public == true`.
+- `documents` create, update, and delete are denied for clients.
 - Go QR document creation still goes through `/api/docs/create`.
 - Admin/dashboard document mutations should also go through server endpoints, not direct Firestore writes.
 
