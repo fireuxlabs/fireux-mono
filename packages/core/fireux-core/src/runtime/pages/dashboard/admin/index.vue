@@ -83,9 +83,9 @@
 <script setup lang="ts">
 import { definePageMeta, useRouter } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useAppProfileView } from '../../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 
 const { app, pending } = useApp()
 const { model: appProfileModel } = useAppProfileView(app)

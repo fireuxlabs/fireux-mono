@@ -16,6 +16,10 @@ Learn how `config/app/` is used across FireUX module packages.
 - runtime config setters used by consuming apps
 - support files that belong to app setup rather than module wiring
 
+## App Config Guides
+
+- `nuxt.config.md` explains the project app `nuxt.config.ts` spine used by consuming FireUX apps.
+
 ## Aligned In Repo
 
 - `config/app/` is already used in `fireux-core`

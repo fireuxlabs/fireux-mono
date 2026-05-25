@@ -1,3 +1,4 @@
+// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
 
@@ -8,6 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Granite',
   role: 'global',
   consoles: ['portfolio'],
+  domains: ['properties', 'portfolios'],
   modules: [
     'fireux-properties',
     'fireux-compliance',
