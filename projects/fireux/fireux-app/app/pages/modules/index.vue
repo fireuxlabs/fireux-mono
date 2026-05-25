@@ -29,8 +29,10 @@ definePageMeta({
     key: 'modules',
     label: 'Modules',
     icon: 'i-lucide-puzzle',
+    order: 70,
     desktop: true,
     mobile: true,
+    layouts: ['default', 'landing'],
   },
 })
 
