@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import AppCreateSystem from '../../components/organisms/App/Create/System.vue'
+import AppCreateSystem from '../../components/App/Create/System.vue'
 
 definePageMeta({
   layout: 'default',

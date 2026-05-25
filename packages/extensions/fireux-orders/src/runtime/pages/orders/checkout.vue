@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import OrderCheckoutSystem from '../../components/organisms/Order/Checkout/System.vue'
+import OrderCheckoutSystem from '../../components/Order/Checkout/System.vue'
 
 definePageMeta({
   layout: 'default',

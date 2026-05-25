@@ -15,7 +15,7 @@
       <h1 class="text-3xl font-semibold text-highlighted">
         {{ kitchen?.name || 'Kitchen menus' }}
       </h1>
-      <OrganismsMenuSproochliLanguageTrigger
+      <MenuSproochliLanguageTrigger
         class="pt-2"
         :language-options="languageOptions"
         :selected-language="selectedLanguage"
@@ -65,7 +65,7 @@ import {
 } from '../../../../composables/fireux/app/public-kitchen-language'
 import { useKitchenMenuCollection } from '../../../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import OrganismsMenuSproochliLanguageTrigger from '../../../../components/organisms/Menu/SproochliLanguageTrigger.vue'
+import MenuSproochliLanguageTrigger from '../../../../components/Menu/SproochliLanguageTrigger.vue'
 import type { Menu } from '../../../../models/menu.model'
 
 const route = useRoute()

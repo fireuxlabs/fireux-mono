@@ -16,7 +16,7 @@
         </div>
 
         <div class="console-profile__pills">
-          <ProfilesProfessionalCardsPill
+          <ProfessionalCardsPill
             v-if="professionalCard"
             v-bind="professionalCard"
             :link="Boolean(professionalCard.to)"
@@ -42,16 +42,16 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
-            <ProfilesProfessionalCardsProfile
+            <ProfessionalCardsProfile
               v-if="professionalProfileView"
               :model="professionalProfileView"
             />
           </div>
 
           <div v-else class="console-profile__section">
-            <ProfilesProfessionalEditCore :professional="resolvedCoreProfile" />
+            <ProfessionalEditCore :professional="resolvedCoreProfile" />
 
-            <ProfilesProfessionalEditApp
+            <ProfessionalEditApp
               v-if="resolvedAppProfile"
               :professional="resolvedAppProfile"
             />

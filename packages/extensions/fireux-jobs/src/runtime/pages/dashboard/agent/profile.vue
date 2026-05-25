@@ -29,11 +29,11 @@
 
     <template #body>
       <div class="console-profile">
-        <ProfilesAgentIdentity v-if="view === 'profile'" />
+        <AgentIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
           <div class="console-profile__section">
-            <ProfilesAgentEditCore />
+            <AgentEditCore />
           </div>
         </ClientOnly>
       </div>

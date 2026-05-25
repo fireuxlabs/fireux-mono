@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface">
     <div class="console-surface__grid console-surface__grid--2">
-      <OrganismsConsoleProjectOverviewFocus :focus="focus" :group="group" />
-      <OrganismsConsoleProjectOverviewGroup :group="group" :mode="focus.mode" />
+      <ConsoleProjectOverviewFocus :focus="focus" :group="group" />
+      <ConsoleProjectOverviewGroup :group="group" :mode="focus.mode" />
     </div>
 
     <div class="mt-4">

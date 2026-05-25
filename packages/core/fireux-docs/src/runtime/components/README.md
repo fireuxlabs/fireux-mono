@@ -1,7 +1,7 @@
 # Components Directory
 
 Authority: Operational
-Updated: 2026-05-24
+Updated: 2026-05-25
 Scope: `packages/*/fireux-*/src/runtime/components` and child directories under `components/*`.
 
 This page documents FireUX rules for `runtime/components/`.
@@ -13,6 +13,8 @@ This page is only for FireUX ownership and canon seams.
 ## FireUX Rule
 
 `runtime/components/` is where FireUX package-owned UI and runtime behavior surfaces live.
+
+Package modules should expose components from `runtime/components/**` and let Nuxt derive component names from the path. Do not add extra taxonomy folders or one-off aliases just to change the generated name.
 
 The important FireUX rule is not “how components work in Vue.”
 It is “which behavior belongs in components, and which does not.”

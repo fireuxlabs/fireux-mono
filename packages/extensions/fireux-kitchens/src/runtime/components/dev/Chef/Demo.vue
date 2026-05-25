@@ -14,7 +14,7 @@
     </template>
 
     <div v-if="pillItems.length" class="flex flex-wrap gap-2">
-      <OrganismsChefCardsPill
+      <ChefCardsPill
         v-for="item in pillItems"
         :key="item.chef.id"
         v-bind="item.card"
@@ -26,22 +26,22 @@
     <div v-if="pillItems.length" class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
-        <OrganismsChefCardsPill v-if="selectedCard" v-bind="selectedCard" />
+        <ChefCardsPill v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Cell</div>
-        <OrganismsChefCardsCell v-if="selectedCard" v-bind="selectedCard" />
+        <ChefCardsCell v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Preview</div>
-        <OrganismsChefCardsPreview v-if="selectedCard" v-bind="selectedCard" />
+        <ChefCardsPreview v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <OrganismsChefCardsProfile v-if="selectedCard" :card="selectedCard" :profile="selectedChef?.chef ?? null" />
+        <ChefCardsProfile v-if="selectedCard" :card="selectedCard" :profile="selectedChef?.chef ?? null" />
       </div>
     </div>
 

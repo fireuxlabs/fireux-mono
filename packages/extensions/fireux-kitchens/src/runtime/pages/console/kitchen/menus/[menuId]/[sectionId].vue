@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <OrganismsConsoleKitchenMenuSection />
+      <ConsoleKitchenMenuSection />
     </template>
   </UDashboardPanel>
 </template>

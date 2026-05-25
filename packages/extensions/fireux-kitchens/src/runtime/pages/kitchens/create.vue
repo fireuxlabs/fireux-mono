@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody">
-      <OrganismsKitchenCreateSystem mode="public" />
+      <KitchenCreateSystem mode="public" />
     </UPageBody>
   </UPage>
 </template>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import KitchenCreateSystem from '../../components/Organisms/Kitchen/Create/System.vue'
+import KitchenCreateSystem from '../../components/Kitchen/Create/System.vue'
 
 definePageMeta({
   layout: 'default',

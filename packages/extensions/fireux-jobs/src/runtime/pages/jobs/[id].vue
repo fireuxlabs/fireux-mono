@@ -128,7 +128,7 @@ import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/fire
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import JobCardsProfile from '../../components/organisms/Job/Cards/Profile.vue'
+import JobCardsProfile from '../../components/Job/Cards/Profile.vue'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
 import { useJobSeo } from '../../composables/fireux/firestore/jobs/seo/useJobSeo'

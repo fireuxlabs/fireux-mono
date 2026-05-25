@@ -14,7 +14,7 @@
         {{ menuDescription }}
       </p>
 
-      <OrganismsMenuSproochliLanguageTrigger
+      <MenuSproochliLanguageTrigger
         :language-options="languageOptions"
         :selected-language="selectedLanguage"
       />
@@ -94,7 +94,7 @@ import {
   resolvePublicMenuDesignSource,
   resolvePublicMenuDesignStyle,
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-menu-design'
-import OrganismsMenuSproochliLanguageTrigger from 'fireux-kitchens/runtime/components/organisms/Menu/SproochliLanguageTrigger.vue'
+import MenuSproochliLanguageTrigger from 'fireux-kitchens/runtime/components/Menu/SproochliLanguageTrigger.vue'
 import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Dish } from 'fireux-kitchens/runtime/models/dish.model'

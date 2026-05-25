@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import KitchenCreateSystem from '../../../components/Organisms/Kitchen/Create/System.vue'
+import KitchenCreateSystem from '../../../components/Kitchen/Create/System.vue'
 
 definePageMeta({
   layout: 'console',

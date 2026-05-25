@@ -46,7 +46,7 @@
       </div>
 
       <div v-else class="space-y-4">
-        <ProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" :profile="agentProfile" />
+        <AgentCardsProfile v-if="agentCard" :card="agentCard" :profile="agentProfile" />
 
         <DevJson
           v-if="isDev && agentProfile"

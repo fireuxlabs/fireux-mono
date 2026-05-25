@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface space-y-4">
-    <OrganismsConsoleProjectEcosystemRead />
+    <ConsoleProjectEcosystemRead />
 
-    <OrganismsConsoleProjectEcosystemWrite v-if="canWrite" />
+    <ConsoleProjectEcosystemWrite v-if="canWrite" />
   </section>
 </template>
 

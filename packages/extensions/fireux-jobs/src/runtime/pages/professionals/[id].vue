@@ -56,7 +56,7 @@
       </div>
 
       <div v-else>
-        <ProfilesProfessionalCardsProfile
+        <ProfessionalCardsProfile
           v-if="professionalProfileView"
           :model="professionalProfileView"
         />
@@ -74,7 +74,7 @@
     <UModal v-model="showBusinessCard">
       <div class="p-4 space-y-3">
         <div class="text-sm font-semibold">Professional card</div>
-        <ProfilesProfessionalCardsCell
+        <ProfessionalCardsCell
           v-if="professionalCard"
           v-bind="professionalCard"
           :link="Boolean(professionalCard.to)"

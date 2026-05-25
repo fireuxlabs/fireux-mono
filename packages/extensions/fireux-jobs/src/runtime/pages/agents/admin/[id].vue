@@ -16,7 +16,7 @@
         </div>
 
         <div class="console-profile__pills">
-          <ProfilesAgentCardsPill
+          <AgentCardsPill
             v-if="agentCard"
             v-bind="agentCard"
             :link="Boolean(agentCard.to)"
@@ -40,7 +40,7 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
-            <ProfilesAgentCardsProfile
+            <AgentCardsProfile
               v-if="agentCard"
               :card="agentCard"
               :profile="resolvedCoreProfile"
@@ -48,9 +48,9 @@
           </div>
 
           <div v-else class="console-profile__section">
-            <ProfilesAgentEditCore :agent="resolvedCoreProfile" />
+            <AgentEditCore :agent="resolvedCoreProfile" />
 
-            <ProfilesAgentEditApp
+            <AgentEditApp
               v-if="resolvedAppProfile"
               :agent="resolvedAppProfile"
             />

@@ -11,7 +11,7 @@
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
-      <ProfilesAgentCTA v-else-if="!canPostJob" />
+      <AgentCTA v-else-if="!canPostJob" />
 
       <!-- Main create shell: write + preview -->
       <div v-else class="space-y-3">

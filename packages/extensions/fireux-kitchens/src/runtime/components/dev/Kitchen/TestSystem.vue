@@ -96,7 +96,7 @@
         </div>
       </template>
 
-      <OrganismsKitchenCollectionManager :collection="filteredKitchensResolved" />
+      <KitchenCollectionManager :collection="filteredKitchensResolved" />
     </UCard>
   </section>
 </template>

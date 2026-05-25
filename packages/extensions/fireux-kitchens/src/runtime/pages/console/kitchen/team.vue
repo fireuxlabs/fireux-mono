@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <OrganismsConsoleKitchenTeam />
+        <ConsoleKitchenTeam />
       </section>
     </template>
   </UDashboardPanel>

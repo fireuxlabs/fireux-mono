@@ -19,25 +19,7 @@ The useful diagnostic was adding literal text directly to the page file. The pag
 
 ## Regression Shape
 
-The call sites and component provision drifted apart.
-
-On `2026-05-16`, commit `f4fafad27` changed Kitchen console component usage from generated names such as:
-
-```txt
-OrganismsConsoleKitchenMise
-OrganismsConsoleKitchenIngredients
-OrganismsConsoleKitchenSuppliers
-```
-
-to shorter names such as:
-
-```txt
-ConsoleKitchenMise
-ConsoleKitchenIngredients
-ConsoleKitchenSuppliers
-```
-
-At the same time, the matching `OrganismsConsoleKitchen` provision was removed. The root `/console/kitchen` stayed alive because it had a one-off alias, which masked the child route break.
+The call sites and component provision drifted apart. A route page used one component naming family while the module provider registered another. The root `/console/kitchen` stayed alive because it had a one-off alias, which masked the child route break.
 
 Current direction:
 
@@ -46,10 +28,10 @@ Use the generated Nuxt path-based component names.
 Do not rely on one-off aliases to hide prefix drift.
 ```
 
-For the Kitchen console stack that means:
+For the Kitchen console stack that means natural path names such as:
 
 ```txt
-OrganismsConsoleKitchen*
+ConsoleKitchen*
 ```
 
 ## Why Current Smoke Missed It
@@ -108,7 +90,8 @@ Guard direction:
 - only apps that install/enable a module should be checked for that module's components
 - each module should have one declared component naming pattern
 - module pages and module components must use that declared pattern
-- one-off aliases should not be used to paper over drift unless explicitly documented as public API
+- one-off aliases should not be used to paper over drift
+- module-owned UI should live under `runtime/components/**` and use Nuxt path-based names
 
 ### App-Local Provided
 

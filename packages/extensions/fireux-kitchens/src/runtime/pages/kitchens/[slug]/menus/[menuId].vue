@@ -13,7 +13,7 @@
       description="This menu is missing, unpublished, or no longer available."
     />
 
-    <OrganismsMenuPublic
+    <MenuPublic
       v-if="showMenu"
       :kitchen-name="kitchenName"
       :menu="menu"
@@ -29,7 +29,7 @@
 import { computed, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { usePublicKitchenMenu } from '../../../../composables/fireux/app/usePublicKitchenMenu'
-import OrganismsMenuPublic from '../../../../components/organisms/Menu/Public.vue'
+import MenuPublic from '../../../../components/Menu/Public.vue'
 
 definePageMeta({
   layout: 'public-menu',

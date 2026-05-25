@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import ProfessionalCollectionManager from 'fireux-jobs/runtime/components/organisms/Professional/Collection/Manager.vue'
+import ProfessionalCollectionManager from 'fireux-jobs/runtime/components/Professional/Collection/Manager.vue'
 import { appMeta } from '../../meta'
 import { demoSeoProfessionalCollection } from '../../../../../../demo/find-my-seo.demo'
 

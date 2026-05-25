@@ -14,7 +14,7 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <OrganismsIngredientCreateSystem @created="handleCreated" />
+      <IngredientCreateSystem @created="handleCreated" />
     </UPageBody>
   </UPage>
 </template>

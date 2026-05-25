@@ -32,11 +32,11 @@
 
     <template #body>
       <div class="console-profile">
-        <ProfilesProfessionalIdentity v-if="view === 'profile'" />
+        <ProfessionalIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
           <div class="console-profile__section">
-            <ProfilesProfessionalEditCore />
+            <ProfessionalEditCore />
           </div>
         </ClientOnly>
       </div>

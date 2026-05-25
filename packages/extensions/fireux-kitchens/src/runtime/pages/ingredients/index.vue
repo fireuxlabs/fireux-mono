@@ -14,8 +14,8 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <OrganismsIngredientCTA :can-create="isAdmin" />
-      <OrganismsIngredientCollectionManager
+      <IngredientCTA :can-create="isAdmin" />
+      <IngredientCollectionManager
         :collection="ingredients"
         title="Ingredients"
         description="Browse canonical ingredient records shared across kitchens in this runtime."

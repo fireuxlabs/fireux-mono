@@ -14,7 +14,7 @@
     </template>
 
     <div v-if="pillItems.length" class="flex flex-wrap gap-2">
-      <OrganismsIngredientCardsPill
+      <IngredientCardsPill
         v-for="item in pillItems"
         :key="item.ingredient.id"
         v-bind="item.card"
@@ -26,7 +26,7 @@
     <div v-if="pillItems.length" class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
-        <OrganismsIngredientCardsPill
+        <IngredientCardsPill
           v-if="demoPill"
           v-bind="demoPill"
         />
@@ -34,7 +34,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Cell</div>
-        <OrganismsIngredientCardsCell
+        <IngredientCardsCell
           v-if="demoCell"
           v-bind="demoCell"
         />
@@ -42,7 +42,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Preview</div>
-        <OrganismsIngredientCardsPreview
+        <IngredientCardsPreview
           v-if="demoPreview"
           v-bind="demoPreview"
         />
@@ -50,7 +50,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <OrganismsIngredientCardsProfile
+        <IngredientCardsProfile
           v-if="demoProfile"
           :model="demoProfile"
         />

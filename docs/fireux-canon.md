@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-24
+Updated: 2026-05-25
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -70,6 +70,10 @@ Current learned examples:
   - live collection reads must not silently become demo reads.
 - Entity stacks:
   - start from the standard model, fetch, collection, interface, component, and page seams before adding new entity-specific structure.
+- Runtime components:
+  - package-provided UI lives under `runtime/components/**`.
+  - component names follow Nuxt path-based names from that directory.
+  - do not add taxonomy folders or one-off aliases just to alter generated component names.
 
 ## Structural Canon
 - Extensions own domain logic and contracts.

@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import PropertyInfoEditor from '../../../components/organisms/Console/Properties/InfoEditor.vue'
+import PropertyInfoEditor from '../../../components/Console/Properties/InfoEditor.vue'
 
 definePageMeta({
   layout: 'console',

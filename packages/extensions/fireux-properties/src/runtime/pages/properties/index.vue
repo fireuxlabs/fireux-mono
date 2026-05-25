@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import PropertyCollectionManager from '../../components/organisms/Property/Collection/Manager.vue'
+import PropertyCollectionManager from '../../components/Property/Collection/Manager.vue'
 import { useProperties } from '../../composables/fireux/app/properties/useProperties'
 
 definePageMeta({

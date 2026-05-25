@@ -34,7 +34,7 @@
       </template>
 
       <div class="space-y-6">
-        <ProfilesProfessionalCollectionManager
+        <ProfessionalCollectionManager
           :collection="filteredProfessionals"
         />
 
@@ -45,7 +45,7 @@
             Preview cards
           </p>
           <div class="space-y-3">
-            <ProfilesProfessionalCardsPreview
+            <ProfessionalCardsPreview
               v-for="card in professionalPreviewCards"
               :key="`professional-preview-${card.id}`"
               v-bind="card"
@@ -60,7 +60,7 @@
             Profile cards
           </p>
           <div class="space-y-4">
-            <ProfilesProfessionalCardsProfile
+            <ProfessionalCardsProfile
               v-for="entry in professionalProfileEntries"
               :key="`professional-profile-${entry.card.id}`"
               :card="entry.card"

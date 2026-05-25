@@ -14,7 +14,7 @@
     </template>
 
     <div class="flex flex-wrap gap-2">
-      <OrganismsKitchenCardsPill
+      <KitchenCardsPill
         v-for="item in pillItems"
         :key="item.kitchen.id"
         v-bind="item.card"
@@ -26,7 +26,7 @@
     <div class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
-        <OrganismsKitchenCardsPill
+        <KitchenCardsPill
           v-if="demoPill"
           v-bind="demoPill"
         />
@@ -34,7 +34,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Cell</div>
-        <OrganismsKitchenCardsCell
+        <KitchenCardsCell
           v-if="demoCell"
           v-bind="demoCell"
         />
@@ -42,7 +42,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Preview</div>
-        <OrganismsKitchenCardsPreview
+        <KitchenCardsPreview
           v-if="demoPreview"
           v-bind="demoPreview"
         />
@@ -50,7 +50,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <OrganismsKitchenCardsProfile
+        <KitchenCardsProfile
           v-if="demoProfile"
           :model="demoProfile"
         />

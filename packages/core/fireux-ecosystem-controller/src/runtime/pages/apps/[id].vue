@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <div class="space-y-6">
-        <OrganismsAppCardsProfile
+        <AppCardsProfile
           v-if="appProfileModel"
           :model="appProfileModel"
         />

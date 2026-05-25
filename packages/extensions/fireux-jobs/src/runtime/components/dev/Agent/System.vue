@@ -33,14 +33,14 @@
       </template>
 
       <div class="space-y-6">
-        <ProfilesAgentCollectionManager :collection="filteredAgents" />
+        <AgentCollectionManager :collection="filteredAgents" />
 
         <div v-if="agentPreviewCards.length" class="space-y-3">
           <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
             Preview cards
           </p>
           <div class="space-y-3">
-            <ProfilesAgentCardsPreview
+            <AgentCardsPreview
               v-for="card in agentPreviewCards"
               :key="`agent-preview-${card.id}`"
               v-bind="card"
@@ -53,7 +53,7 @@
             Profile cards
           </p>
           <div class="space-y-4">
-            <ProfilesAgentCardsProfile
+            <AgentCardsProfile
               v-for="entry in agentProfileCards"
               :key="`agent-profile-${entry.card.id}`"
               :card="entry.card"

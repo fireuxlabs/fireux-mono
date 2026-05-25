@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import ConsoleEntityIndex from 'fireux-core/runtime/components/organisms/Console/EntityIndex.vue'
+import ConsoleEntityIndex from 'fireux-core/runtime/components/Console/EntityIndex.vue'
 import {
   useProjectInterface,
   type ProjectSurface,

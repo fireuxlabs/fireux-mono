@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <OrganismsKitchenCollectionManager
+      <KitchenCollectionManager
         :collection="filteredKitchensResolved"
         :description="'Hydrated public kitchens for this runtime. Use the storage inspector below for root, place, overlay, and child-scope truth.'"
         :dev-json-title="'Hydrated Kitchens (JSON)'"

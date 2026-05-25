@@ -51,7 +51,7 @@
             >
           </div>
 
-          <OrganismsMenuSproochliLanguageTrigger
+          <MenuSproochliLanguageTrigger
             class="shrink-0"
             :language-options="publicLanguageOptions"
             :selected-language="selectedLanguage"
@@ -218,7 +218,7 @@ import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/use
 import { useKitchenMenuCollection } from '../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/seo/useKitchenSeo'
-import OrganismsMenuSproochliLanguageTrigger from '../../components/organisms/Menu/SproochliLanguageTrigger.vue'
+import MenuSproochliLanguageTrigger from '../../components/Menu/SproochliLanguageTrigger.vue'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 

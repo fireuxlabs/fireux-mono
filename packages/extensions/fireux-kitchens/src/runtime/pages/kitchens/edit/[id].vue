@@ -37,7 +37,7 @@
         />
 
         <div v-else class="space-y-4">
-          <OrganismsPlaceCardsPreview
+          <PlaceCardsPreview
             v-if="placePreview"
             v-bind="placePreview"
             :show-badges="false"
@@ -64,7 +64,7 @@
             </template>
           </UAlert>
 
-          <OrganismsPlaceEdit v-if="canEdit" :place="placeObject" />
+          <PlaceEdit v-if="canEdit" :place="placeObject" />
           <UAlert
             v-else
             color="warning"

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import ProjectCreateSystem from 'fireux-core/runtime/components/organisms/Project/Create/System.vue'
+import ProjectCreateSystem from 'fireux-core/runtime/components/Project/Create/System.vue'
 
 definePageMeta({
   layout: 'console',

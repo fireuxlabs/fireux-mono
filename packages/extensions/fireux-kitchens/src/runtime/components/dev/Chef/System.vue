@@ -37,7 +37,7 @@
       </UCard>
 
       <div v-else class="space-y-6">
-        <OrganismsChefCollectionManager
+        <ChefCollectionManager
           :collection="filteredCollection"
         />
 
@@ -46,7 +46,7 @@
             Preview cards
           </p>
           <div class="space-y-3">
-            <OrganismsChefCardsPreview
+            <ChefCardsPreview
               v-for="entry in chefPreviewCards"
               :key="`chef-preview-${entry.card.id}`"
               :avatar-url="entry.card.avatarUrl"
@@ -64,7 +64,7 @@
             Profile cards
           </p>
           <div class="space-y-4">
-            <OrganismsChefCardsProfile
+            <ChefCardsProfile
               v-for="entry in filteredCollection"
               :key="`chef-profile-${String((entry as any)?.user?.id ?? (entry as any)?.id ?? '')}`"
               :card="makeChefCard(entry as any, (entry as any)?.user ?? null)!"
