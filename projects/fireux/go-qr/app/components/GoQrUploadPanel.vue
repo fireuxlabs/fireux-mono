@@ -4,6 +4,13 @@
       {{ safetyCopy }}
     </p>
 
+    <p
+      v-if="isFoodMenu"
+      class="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-highlighted"
+    >
+      Your menu QR will be labelled Food Menu. Sign in later to add your restaurant logo.
+    </p>
+
     <UFileUpload
       :model-value="documentFile"
       accept="application/pdf,image/*,.doc,.docx"
@@ -99,6 +106,8 @@ let availabilityRequest = 0
 const uploadDescription = computed(() => {
   return uploadError.value || `Max ${maxFileSizeMb} MB.`
 })
+
+const isFoodMenu = computed(() => props.type === 'food-menu')
 
 const normalizedDocumentSlug = computed(() => normalizeSlug(documentSlug.value))
 

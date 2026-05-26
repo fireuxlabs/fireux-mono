@@ -21,10 +21,10 @@
           class="size-full"
         >
         <div
-          class="absolute left-1/2 top-1/2 grid size-[15%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] text-[clamp(1rem,6vw,2.75rem)] font-black leading-none text-white shadow-sm"
+          class="absolute left-1/2 top-1/2 grid size-[18%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] px-1 text-center text-[clamp(0.45rem,3.25vw,1.45rem)] font-black uppercase leading-none text-white shadow-sm"
           aria-hidden="true"
         >
-          Q
+          {{ qrCentreLabel }}
         </div>
       </div>
       <div
@@ -55,6 +55,7 @@ import { toDataURL } from 'qrcode'
 
 type PublicGoQrRecord = {
   slug: string
+  type: string
   file_name: string
 }
 
@@ -82,7 +83,11 @@ if (!documentData.value) {
 }
 
 const documentRecord = computed(() => documentData.value as PublicGoQrRecord)
-const documentLabel = computed(() => documentRecord.value.slug)
+const isFoodMenu = computed(() => documentRecord.value.type === 'food-menu')
+const documentLabel = computed(() =>
+  isFoodMenu.value ? 'Food Menu' : documentRecord.value.slug
+)
+const qrCentreLabel = computed(() => (isFoodMenu.value ? 'Menu' : 'Q'))
 const publicUrl = computed(() => `${requestUrl.origin}/${documentRecord.value.slug}`)
 
 onMounted(async () => {

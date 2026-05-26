@@ -33,6 +33,11 @@ export type FireuxMetaRelatedApp = {
   external?: boolean
 }
 
+export type FireuxMetaChecklistItem = {
+  label: string
+  done?: boolean
+}
+
 export type FireuxMetaSolution = {
   /** URL-safe child key used at /solutions/:slug. */
   slug: string
@@ -53,7 +58,7 @@ export type FireuxMetaSolution = {
   /** Optional admin-only provisioning checklist for the tool/workflow behind the solution. */
   provisioning?: string[]
   /** Optional admin-only fulfillment checklist for shipping the solution. */
-  checklist?: string[]
+  checklist?: FireuxMetaChecklistItem[]
   /** Optional sibling app or product that owns the deeper workflow. */
   relatedApp?: FireuxMetaRelatedApp
   /** Optional solution-specific action. Defaults to /solutions/:slug. */

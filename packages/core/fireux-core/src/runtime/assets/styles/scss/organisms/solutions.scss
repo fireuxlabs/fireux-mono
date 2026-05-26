@@ -256,6 +256,7 @@ Solutions surfaces:
 }
 
 .fx-solution-admin__checkbox {
+	position: relative;
 	flex: 0 0 auto;
 	width: 1rem;
 	height: 1rem;
@@ -263,4 +264,21 @@ Solutions surfaces:
 	border: 1px solid var(--ui-border, currentColor);
 	border-radius: 0.25rem;
 	background: var(--ui-bg, transparent);
+}
+
+.fx-solution-admin__checkbox--done {
+	border-color: var(--ui-primary, currentColor);
+	background: var(--ui-primary, currentColor);
+}
+
+.fx-solution-admin__checkbox--done::after {
+	position: absolute;
+	top: 0.08rem;
+	left: 0.3rem;
+	width: 0.32rem;
+	height: 0.58rem;
+	border: solid var(--ui-bg, #fff);
+	border-width: 0 2px 2px 0;
+	content: '';
+	transform: rotate(45deg);
 }

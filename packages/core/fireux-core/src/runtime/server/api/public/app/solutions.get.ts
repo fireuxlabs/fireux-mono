@@ -2,6 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import type {
   FireuxMetaCta,
+  FireuxMetaChecklistItem,
   FireuxMetaContent,
   FireuxMetaRelatedApp,
   FireuxMetaSolution,
@@ -21,6 +22,28 @@ function asStringArray(value: unknown): string[] {
   return value
     .map((entry) => asString(entry))
     .filter((entry): entry is string => Boolean(entry))
+}
+
+function normalizeChecklist(value: unknown): FireuxMetaChecklistItem[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((entry) => {
+      if (typeof entry === 'string') {
+        const label = entry.trim()
+        return label ? { label } : null
+      }
+
+      if (!isRecord(entry)) return null
+      const label = asString(entry.label)
+      if (!label) return null
+
+      return {
+        label,
+        ...(typeof entry.done === 'boolean' ? { done: entry.done } : {}),
+      }
+    })
+    .filter((entry): entry is FireuxMetaChecklistItem => Boolean(entry))
 }
 
 function normalizeSlug(value: unknown): string | undefined {
@@ -98,7 +121,7 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   const steps = asStringArray(value.steps)
   const businessCase = asString(value.businessCase)
   const provisioning = asStringArray(value.provisioning)
-  const checklist = asStringArray(value.checklist)
+  const checklist = normalizeChecklist(value.checklist)
   const relatedApp = normalizeRelatedApp(value.relatedApp)
   const cta = normalizeCta(value.cta)
   const keywords = asStringArray(value.keywords)

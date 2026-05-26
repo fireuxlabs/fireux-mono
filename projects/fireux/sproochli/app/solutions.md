@@ -18,6 +18,24 @@ Use this solution when the visitor starts from a physical place: a sign, counter
 4. Show the visitor a language selector on the public page.
 5. Add a QR download or Go QR handoff when the page is ready to print.
 
+### Business case
+
+This is Sproochli's clearest wedge: physical-world information that needs one QR page and multiple languages.
+
+### Provisioning
+
+- Public information page.
+- Source language and published language settings.
+- Language selector.
+- QR download or Go QR handoff.
+
+### Checklist
+
+- [x] Confirm public information page pattern.
+- [ ] Confirm language selector on public pages.
+- [ ] Add create flow for multilingual QR pages.
+- [ ] Add Go QR handoff after publish.
+
 ## guest-instructions-translator
 
 Translate guest instructions for stays, rooms, rentals, and visitor spaces.
@@ -35,6 +53,24 @@ This is a Sproochli solution when the main job is translation. It should bridge 
 3. Add language versions for the languages guests most often need.
 4. Publish the guide as a public page or connect it to a BuenoHost property guide.
 5. Place the QR code where guests naturally need help.
+
+### Business case
+
+Guest instructions create high support load when guests do not understand them; translation is the practical first fix.
+
+### Provisioning
+
+- Guest instruction sections.
+- Language versions.
+- Public guide page.
+- BuenoHost bridge when property management is needed.
+
+### Checklist
+
+- [x] Confirm BNB guide example.
+- [ ] Add reusable guest-instructions template.
+- [ ] Add section-level translation state.
+- [ ] Add BuenoHost bridge copy.
 
 ## house-rules-translator
 
@@ -54,6 +90,24 @@ This page should stay practical and calm: the goal is not legal language, it is 
 4. Publish the public page and link it from the guest guide.
 5. Review the translations whenever rules change.
 
+### Business case
+
+House rules only work when guests can understand them before something goes wrong.
+
+### Provisioning
+
+- House rules template.
+- Approved translations.
+- Public page route.
+- Link from guest guide where relevant.
+
+### Checklist
+
+- [ ] Add house rules template.
+- [ ] Add approval state for translated rules.
+- [ ] Add guest guide link path.
+- [ ] Add review reminder when source changes.
+
 ## rental-instructions-translator
 
 Translate rental instructions for bikes, rooms, equipment, vehicles, tools, lockers, or shared facilities.
@@ -71,6 +125,24 @@ This is useful anywhere the customer receives something physical and needs instr
 3. Translate the page into the languages renters commonly need.
 4. Publish the public page and connect it to a QR code at the rental point.
 5. Keep the page updated when the rental process changes.
+
+### Business case
+
+Rental instructions reduce repeated staff explanations and make physical rental flows easier to complete.
+
+### Provisioning
+
+- Rental instruction template.
+- Safety, use, support, and return sections.
+- Public multilingual page.
+- QR handoff.
+
+### Checklist
+
+- [x] Confirm bike rental example.
+- [ ] Generalise rental instruction template.
+- [ ] Add support/contact section.
+- [ ] Add QR handoff for rental point.
 
 ## menu-translator
 
@@ -90,6 +162,24 @@ This solution should avoid pretending to be a full menu management system. It is
 4. Publish the translated menu page and QR entry point.
 5. Move the workflow to Misebox when the menu needs structured hospitality data.
 
+### Business case
+
+Menus are one of the strongest hospitality translation searches, but Sproochli should own simple translation while Misebox owns structured menu operations.
+
+### Provisioning
+
+- Read-only menu translation page.
+- Dish/menu language content.
+- QR entry point.
+- Misebox bridge.
+
+### Checklist
+
+- [ ] Add simple translated menu page type.
+- [ ] Add dish/menu text translation fields.
+- [ ] Add public menu QR handoff.
+- [ ] Add Misebox bridge for structured menus.
+
 ## safety-notice-translator
 
 Translate safety notices, warnings, emergency steps, access instructions, and equipment rules.
@@ -107,6 +197,24 @@ This should be used for public clarity, not as a replacement for legally require
 3. Add approved translations for the languages needed on site.
 4. Publish the notice as a QR page and print it near the relevant place or equipment.
 5. Review the page whenever safety procedures change.
+
+### Business case
+
+Safety notices need clear language in the exact physical place where people need to act.
+
+### Provisioning
+
+- Safety notice template.
+- Emergency contacts and action steps.
+- Approved translations.
+- Public QR page.
+
+### Checklist
+
+- [ ] Add safety notice template.
+- [ ] Add urgent warning/action fields.
+- [ ] Add approval state for safety translations.
+- [ ] Add source-change review warning.
 
 ## sign-and-notice-translator
 
@@ -126,6 +234,24 @@ This is the simplest Sproochli use case: one small public message, many possible
 4. Publish the multilingual page and create a QR code for the sign.
 5. Replace or update the printed QR when the notice changes.
 
+### Business case
+
+Signs and notices are small, common, and easy to search for; they are perfect translation-first entry points.
+
+### Provisioning
+
+- Sign/notice text template.
+- Context field.
+- Target languages.
+- QR output or Go QR handoff.
+
+### Checklist
+
+- [ ] Add sign/notice create flow.
+- [ ] Add context field for ambiguous notices.
+- [ ] Add language approval state.
+- [ ] Add QR output/handoff.
+
 ## visitor-guide-translator
 
 Translate local guides, recommendations, directions, parking notes, transit help, and visitor support information.
@@ -143,6 +269,24 @@ This belongs in Sproochli when translation is the main need. It should bridge to
 3. Add language versions for the visitor groups that matter.
 4. Publish the guide and link it from signs, guest messages, or QR cards.
 5. Move deeper hosting workflows into BuenoHost when the guide needs property tools.
+
+### Business case
+
+Visitor guides make local information useful across languages without requiring a full host/property system.
+
+### Provisioning
+
+- Guide sections.
+- Language versions.
+- Public guide page.
+- BuenoHost bridge for property-aware guides.
+
+### Checklist
+
+- [x] Confirm guide-style public pages.
+- [ ] Add visitor guide section template.
+- [ ] Add language status per section.
+- [ ] Add BuenoHost bridge.
 
 ## public-information-page-translator
 
@@ -162,6 +306,25 @@ Use this when the information does not fit a narrower solution such as guest ins
 4. Publish the page with language selection.
 5. Connect the page to QR, signage, app navigation, or a sibling FireUX app.
 
+### Business case
+
+This is the broad Sproochli fallback for public content that needs translation but does not fit a narrower template.
+
+### Provisioning
+
+- Public page editor.
+- Source language.
+- Translation state.
+- Published language selector.
+- Sibling app handoff where relevant.
+
+### Checklist
+
+- [x] Confirm public info page example.
+- [ ] Add repeatable page creation flow.
+- [ ] Add translation state per language.
+- [ ] Add sibling app handoff rules.
+
 ## certified-page-translation
 
 Publish owner-approved or human-approved translations for public visitor pages.
@@ -179,3 +342,21 @@ This page should be honest: certified means reviewed and approved for the page, 
 3. Review and approve the translation before it becomes public.
 4. Label the public page so visitors can tell which version is certified.
 5. Re-review translations when the source page changes.
+
+### Business case
+
+Certified page translation gives owners a trust layer when generated or draft translations are not enough.
+
+### Provisioning
+
+- Translation approval status.
+- Reviewer notes.
+- Approval history.
+- Public labels for certified/generated/source versions.
+
+### Checklist
+
+- [ ] Add translation approval status.
+- [ ] Add reviewer notes/history.
+- [ ] Add public certified/generated labels.
+- [ ] Add re-review state when source changes.

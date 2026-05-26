@@ -54,7 +54,8 @@ Internal planning prose for why the solution matters.
 
 ### Checklist
 
-- Admin-only fulfillment tasks for shipping the solution.
+- [x] Admin-only fulfillment tasks that are already complete.
+- [ ] Admin-only fulfillment tasks that still need work.
 ```
 
 These sections are passed through runtime meta but should only render for app admins.

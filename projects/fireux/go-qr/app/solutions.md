@@ -18,6 +18,24 @@ Use this when the customer already has a finished document or piece of public in
 4. Generate and display the QR code for that page.
 5. Add download, print, and manage actions around the QR record.
 
+### Business case
+
+This is Go QR's core wedge: people have a public thing and need one reliable scannable access point.
+
+### Provisioning
+
+- Public document upload.
+- Stable public slug.
+- QR generation and preview.
+- Download, print, replace, and delete actions.
+
+### Checklist
+
+- [x] Confirm document upload flow.
+- [x] Confirm public slug route.
+- [ ] Confirm QR download and print output.
+- [ ] Add replace/delete management actions.
+
 ## url-qr-code
 
 Turn an existing URL into a scannable QR code.
@@ -35,6 +53,24 @@ Use this when the customer wants a QR code for a website, booking page, form, pr
 3. Generate a QR code that points directly to the destination.
 4. Let the user download or print the QR code.
 5. Optionally save the QR record with a label for later management.
+
+### Business case
+
+URL QR codes are the broadest search entry point and should route simple link needs into Go QR quickly.
+
+### Provisioning
+
+- URL input mode.
+- Destination validation.
+- QR generation.
+- Optional saved QR record label.
+
+### Checklist
+
+- [ ] Add URL input mode.
+- [ ] Add destination validation.
+- [ ] Add QR output for direct links.
+- [ ] Add saved label/record management.
 
 ## pdf-qr-code
 
@@ -54,6 +90,24 @@ Use this for menus, notices, terms, policies, forms, guides, instructions, event
 4. Publish the PDF page and generated QR code.
 5. Add a clear path to replace the PDF when the document changes.
 
+### Business case
+
+PDF QR codes match how many businesses already store menus, notices, guides, and forms.
+
+### Provisioning
+
+- PDF upload validation.
+- PDF preview or public display.
+- Public slug.
+- Replace-file flow.
+
+### Checklist
+
+- [ ] Confirm PDF-specific validation.
+- [ ] Confirm PDF preview/display.
+- [ ] Add replace-file action.
+- [ ] Add print-ready QR output.
+
 ## wifi-qr-code
 
 Create a QR code that lets guests join a Wi-Fi network.
@@ -71,6 +125,24 @@ Use this when the problem is repeated Wi-Fi questions and typing errors.
 3. Generate the Wi-Fi QR payload.
 4. Preview instructions for where to place it.
 5. Download or print the QR code for the physical space.
+
+### Business case
+
+Wi-Fi QR codes solve a repeated physical-space problem and are easy to explain in search language.
+
+### Provisioning
+
+- Network name, password, and security fields.
+- Wi-Fi QR payload generator.
+- Print-ready output.
+- Placement guidance.
+
+### Checklist
+
+- [ ] Add Wi-Fi QR form.
+- [ ] Generate standard Wi-Fi payload.
+- [ ] Add hidden network/security options.
+- [ ] Add print-ready output.
 
 ## phone-call-qr-code
 
@@ -90,6 +162,24 @@ Use this when the best action after scanning is calling a business, host, venue,
 4. Show a preview of the call action.
 5. Download or print the QR code where people need it.
 
+### Business case
+
+Phone QR codes turn signs and printed material into immediate contact actions.
+
+### Provisioning
+
+- Phone number input.
+- Country-aware validation.
+- tel link payload.
+- QR download output.
+
+### Checklist
+
+- [ ] Add phone QR form.
+- [ ] Normalize and validate phone numbers.
+- [ ] Generate tel link QR.
+- [ ] Add action preview.
+
 ## whatsapp-qr-code
 
 Create a QR code that opens a WhatsApp chat.
@@ -107,6 +197,24 @@ Use this for support, bookings, quick questions, local business contact, group j
 3. Validate the final WhatsApp URL.
 4. Generate the QR code.
 5. Place it on a sign, table card, flyer, receipt, or help page.
+
+### Business case
+
+WhatsApp QR codes are a practical contact route for local businesses, bookings, and support.
+
+### Provisioning
+
+- WhatsApp number or invite URL field.
+- Optional starter message.
+- WhatsApp URL validation.
+- QR output.
+
+### Checklist
+
+- [ ] Add WhatsApp QR form.
+- [ ] Add optional starter message.
+- [ ] Validate generated WhatsApp URL.
+- [ ] Add QR download output.
 
 ## map-pin-qr-code
 
@@ -126,6 +234,24 @@ Use this for hidden venues, temporary event entrances, pickup points, rural stay
 4. Generate the QR code.
 5. Put the QR code on directions, confirmations, posters, or pickup instructions.
 
+### Business case
+
+Map QR codes help people reach hard-to-explain physical locations without typing.
+
+### Provisioning
+
+- Address, coordinates, or map URL input.
+- Place label and arrival note.
+- Destination map link.
+- QR output.
+
+### Checklist
+
+- [ ] Add map input mode.
+- [ ] Support address, coordinates, or map URL.
+- [ ] Add arrival note field.
+- [ ] Generate map destination QR.
+
 ## vcard-qr-code
 
 Create a QR code that saves contact details.
@@ -143,6 +269,24 @@ Use this for business cards, reception desks, service contacts, events, sales te
 3. Preview the saved-contact information.
 4. Create the QR code.
 5. Download it for cards, signs, desks, or printed material.
+
+### Business case
+
+vCard QR codes make printed contact material more useful without needing a full profile product.
+
+### Provisioning
+
+- Structured contact form.
+- vCard payload generation.
+- Contact preview.
+- QR output.
+
+### Checklist
+
+- [ ] Add contact detail form.
+- [ ] Generate vCard payload.
+- [ ] Add saved-contact preview.
+- [ ] Test common phone contact apps.
 
 ## event-info-qr-code
 
@@ -162,6 +306,24 @@ Use this for small events, pop-ups, meetings, tours, classes, workshops, perform
 4. Share it on posters, tickets, tables, signs, or screens.
 5. Update the page if event details change.
 
+### Business case
+
+Event QR codes connect posters and tickets to updateable public event information.
+
+### Provisioning
+
+- Event page fields.
+- Public event route.
+- QR generation.
+- Optional calendar bridge later.
+
+### Checklist
+
+- [ ] Add event page fields.
+- [ ] Add public event page route.
+- [ ] Generate QR for event page.
+- [ ] Decide calendar file support.
+
 ## review-link-qr-code
 
 Create a QR code that sends customers to a review page.
@@ -179,6 +341,24 @@ Use this when the customer already has a Google, Tripadvisor, booking, marketpla
 3. Generate the QR code.
 4. Add simple print copy that asks for feedback clearly.
 5. Place the QR where happy customers naturally finish the experience.
+
+### Business case
+
+Review QR codes help businesses turn real-world customer moments into platform reviews.
+
+### Provisioning
+
+- Review URL input.
+- Platform label.
+- QR output.
+- Print copy helper.
+
+### Checklist
+
+- [ ] Add review URL input.
+- [ ] Add platform label.
+- [ ] Add review placement copy.
+- [ ] Generate print-ready QR.
 
 ## feedback-form-qr-code
 
@@ -198,6 +378,24 @@ Use this for guest feedback, customer surveys, event feedback, staff checklists,
 4. Place it where the response moment happens.
 5. Review whether the flow should stay a link QR or become a Go QR feedback page.
 
+### Business case
+
+Feedback QR codes are a simple bridge between physical service moments and structured feedback collection.
+
+### Provisioning
+
+- Form URL input.
+- Optional Go QR feedback page later.
+- QR output.
+- Response/export path if owned.
+
+### Checklist
+
+- [ ] Support existing feedback form URLs.
+- [ ] Add label/context fields.
+- [ ] Decide whether Go QR owns lightweight forms.
+- [ ] Add response storage only if owned.
+
 ## booking-link-qr-code
 
 Create a QR code that opens a booking or appointment link.
@@ -215,6 +413,24 @@ Use this when Go QR should connect the physical world to an existing booking sys
 3. Add a short label for the service or location.
 4. Generate the QR code.
 5. Place it where people decide to book.
+
+### Business case
+
+Booking QR codes connect physical interest to an existing booking system without Go QR owning booking.
+
+### Provisioning
+
+- Booking URL input.
+- Business/service label.
+- Destination validation.
+- QR output.
+
+### Checklist
+
+- [ ] Add booking URL input.
+- [ ] Add destination preview.
+- [ ] Add business/service label.
+- [ ] Generate print-ready QR.
 
 ## food-menu-qr-code
 
@@ -234,6 +450,24 @@ Use this for cafes, restaurants, bars, pop-ups, food trucks, events, and tempora
 4. Replace the file when the static menu changes.
 5. Move to Misebox when the menu needs structured hospitality data.
 
+### Business case
+
+Food menu QR codes are high-intent and should route simple static menus to Go QR and structured menus to Misebox.
+
+### Provisioning
+
+- Menu file upload or URL.
+- Public menu page/slug.
+- QR output.
+- Misebox handoff.
+
+### Checklist
+
+- [ ] Confirm static menu upload works.
+- [ ] Add menu-specific labels.
+- [ ] Add replace-file flow.
+- [ ] Add Misebox handoff copy.
+
 ## guest-guide-qr-code
 
 Create a QR code for guest instructions, house rules, Wi-Fi, and local notes.
@@ -252,6 +486,24 @@ Use this for apartments, BNBs, hotels, cabins, serviced rooms, event spaces, and
 4. Print it where guests naturally need help.
 5. Move to BuenoHost when the guide needs structured property tools.
 
+### Business case
+
+Guest guide QR codes are a good lightweight entry point before a host needs BuenoHost.
+
+### Provisioning
+
+- Guest guide document upload.
+- Public guide slug.
+- QR output.
+- BuenoHost handoff.
+
+### Checklist
+
+- [ ] Confirm guest guide upload path.
+- [ ] Add guest-guide labels.
+- [ ] Add public guide unavailable state.
+- [ ] Add BuenoHost handoff copy.
+
 ## multilingual-qr-pages
 
 Create QR pages for public information in more than one language.
@@ -269,3 +521,21 @@ Use this when the QR destination is useful, but visitors need language choice to
 3. Move the public page content into Sproochli when translation is needed.
 4. Publish the multilingual page with language selection.
 5. Use the QR code to send visitors to the language-aware public page.
+
+### Business case
+
+Multilingual QR pages should use Go QR for the scannable access point and Sproochli for language workflow.
+
+### Provisioning
+
+- Public QR destination.
+- Language need detection/copy.
+- Sproochli handoff.
+- QR target update path.
+
+### Checklist
+
+- [ ] Add language-aware handoff from Go QR.
+- [ ] Confirm Sproochli destination URL shape.
+- [ ] Add QR target update path.
+- [ ] Keep translation workflow out of Go QR.

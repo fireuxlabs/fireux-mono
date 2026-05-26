@@ -32,11 +32,11 @@ Restaurants need an online menu that is easier to maintain than a static webpage
 
 ### Checklist
 
-- Confirm public kitchen slug route works.
-- Confirm menu publish status controls visibility.
-- Confirm menu sections and items render from records.
-- Confirm dish-backed item names and descriptions appear.
-- Add clear QR or share action after public menu is ready.
+- [x] Confirm public kitchen slug route works.
+- [ ] Confirm menu publish status controls visibility.
+- [ ] Confirm menu sections and items render from records.
+- [ ] Confirm dish-backed item names and descriptions appear.
+- [ ] Add clear QR or share action after public menu is ready.
 
 ## qr-code-restaurant-menu
 
@@ -68,6 +68,13 @@ QR menus are a recognizable search problem and a simple customer entry point. Mi
 - Console visibility for the QR target.
 - Stable menu URL policy.
 
+### Checklist
+
+- [ ] Confirm the published menu URL is stable.
+- [ ] Add menu QR action in the kitchen console.
+- [ ] Add download and print output.
+- [ ] Decide native QR generation versus Go QR handoff.
+
 ## restaurant-menu-management
 
 Manage restaurant menu sections, dishes, prices, status, and public presentation in one workflow.
@@ -97,6 +104,13 @@ Menu drift is a core restaurant operations problem. The customer searches for me
 - Price, visibility, status, and sort controls.
 - Public preview route.
 - Links to recipes, allergens, prep, and suppliers.
+
+### Checklist
+
+- [x] Confirm menu, section, item, and dish records exist.
+- [ ] Confirm menu edit flow covers price, status, and order.
+- [ ] Confirm public preview matches console state.
+- [ ] Add links from menu items to recipe and allergen work.
 
 ## restaurant-menu-builder
 
@@ -128,6 +142,13 @@ Restaurants often start with a menu file but need a builder when the menu become
 - Price and public presentation fields.
 - Publish and preview controls.
 
+### Checklist
+
+- [ ] Add guided create path for a new menu.
+- [ ] Add section creation during menu setup.
+- [ ] Add dish picker or inline dish creation.
+- [ ] Add publish and preview step before completion.
+
 ## allergen-menu-software
 
 Connect allergen and dietary information to dishes and public menu display.
@@ -157,6 +178,13 @@ Allergen information is high-trust menu data. Misebox can win by connecting alle
 - Allergen rollup or review workflow.
 - Public menu allergen display.
 - Change review when ingredients or recipes update.
+
+### Checklist
+
+- [ ] Confirm allergen fields on dishes.
+- [ ] Confirm ingredient allergen shape.
+- [ ] Decide rollup versus manual review.
+- [ ] Add public menu allergen display.
 
 ## multilingual-restaurant-menu
 
@@ -188,6 +216,13 @@ Multilingual menus are a real customer search intent, especially in tourism and 
 - Copy pack resolution.
 - Sproochli bridge for translation workflow.
 
+### Checklist
+
+- [x] Confirm kitchen language settings exist.
+- [ ] Confirm public menu language selector.
+- [ ] Confirm dish translation cache/fields.
+- [ ] Add Sproochli handoff for translation review.
+
 ## recipe-management-software
 
 Store kitchen recipes with yields, ingredient lines, steps, and dish links.
@@ -217,6 +252,13 @@ Recipes are where kitchen knowledge becomes reusable. This solution engages team
 - Yield, ingredient line, and step fields.
 - Dish-to-recipe links.
 - Prep and ingredient integration points.
+
+### Checklist
+
+- [x] Confirm kitchen-scoped recipe records.
+- [ ] Confirm recipe create/edit route.
+- [ ] Confirm dish-to-recipe linking.
+- [ ] Add prep and ingredient integration points.
 
 ## kitchen-prep-planner
 
@@ -248,6 +290,13 @@ Prep planning is a kitchen manager problem stated in practical language. Misebox
 - Links to recipes, dishes, menus, or service periods.
 - Readiness view.
 
+### Checklist
+
+- [x] Confirm mise task records exist.
+- [ ] Add station and owner filters.
+- [ ] Add due timing and service readiness view.
+- [ ] Link prep tasks to recipes, dishes, or menus.
+
 ## restaurant-prep-list
 
 Give the team a daily prep list tied to tasks, status, stations, and service.
@@ -277,6 +326,13 @@ The prep list is the execution-facing version of prep planning. It should be sim
 - Completion controls.
 - Mobile/kitchen-friendly display.
 - Recurring task support.
+
+### Checklist
+
+- [ ] Add daily prep list query.
+- [ ] Add station, owner, and status filters.
+- [ ] Add completion controls.
+- [ ] Check mobile/kitchen display.
 
 ## kitchen-team-management
 
@@ -308,6 +364,13 @@ Kitchen operations depend on clear responsibility. This solution should engage o
 - Operator permission rules.
 - Assignment links to prep and service workflows.
 
+### Checklist
+
+- [ ] Confirm kitchen team record shape.
+- [ ] Add role and station fields.
+- [ ] Confirm operator permission rules.
+- [ ] Connect people to prep/service assignments.
+
 ## restaurant-supplier-management
 
 Connect suppliers, ingredients, products, sourcing, and kitchen needs.
@@ -337,6 +400,13 @@ Supplier management becomes valuable when it connects to the kitchen's actual in
 - Ingredient records and preferred supplier links.
 - Product/catalog bridge.
 - Future ordering or availability signals.
+
+### Checklist
+
+- [x] Confirm supplier records exist.
+- [ ] Confirm kitchen supplier link flow.
+- [ ] Link ingredients to preferred suppliers.
+- [ ] Decide product/catalog bridge point.
 
 ## restaurant-hiring-software
 
@@ -368,6 +438,13 @@ Hiring is stronger when it is connected to kitchen identity, role context, and p
 - Public job pages.
 - Contact or application path.
 
+### Checklist
+
+- [x] Confirm job records and routes.
+- [ ] Confirm job-to-kitchen linking.
+- [ ] Confirm public job page copy.
+- [ ] Add contact or application path.
+
 ## chef-profile-page
 
 Create a public chef profile that shows experience, roles, and kitchen fit.
@@ -397,6 +474,13 @@ Chefs and hospitality professionals need a profile that shows real capability, n
 - Professional profile record where relevant.
 - Public profile route.
 - Links to jobs, kitchens, and experience.
+
+### Checklist
+
+- [x] Confirm profile records exist.
+- [ ] Confirm public chef profile route.
+- [ ] Add proof, role, and experience fields.
+- [ ] Link profiles to jobs and kitchens.
 
 ## restaurant-profile-page
 
@@ -428,6 +512,13 @@ A restaurant profile is valuable when it is connected to operational truth: menu
 - Menu links.
 - Jobs and operator bridge where appropriate.
 
+### Checklist
+
+- [x] Confirm public kitchen slug route.
+- [ ] Confirm place and location display.
+- [ ] Add menu links to profile.
+- [ ] Add jobs and operator bridge where useful.
+
 ## restaurant-operations-software
 
 Run menus, dishes, recipes, prep, team, suppliers, orders, and hiring from one kitchen console.
@@ -457,3 +548,10 @@ This is the full Misebox thesis: one operating model for restaurant menus, prep,
 - Public routes connected to console data.
 - Multi-kitchen operating model.
 - App and subscription paths for rollout.
+
+### Checklist
+
+- [x] Confirm kitchen console entry.
+- [ ] Confirm major modules appear as one operating system.
+- [ ] Add cross-links between public routes and console workflows.
+- [ ] Define multi-kitchen rollout path.

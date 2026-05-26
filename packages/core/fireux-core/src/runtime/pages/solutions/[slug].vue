@@ -138,10 +138,14 @@
             <ul class="fx-solution-admin__checklist">
               <li
                 v-for="item in solution.checklist"
-                :key="item"
+                :key="item.label"
               >
-                <span class="fx-solution-admin__checkbox" aria-hidden="true" />
-                <span>{{ item }}</span>
+                <span
+                  class="fx-solution-admin__checkbox"
+                  :class="{ 'fx-solution-admin__checkbox--done': item.done }"
+                  aria-hidden="true"
+                />
+                <span>{{ item.label }}</span>
               </li>
             </ul>
           </div>

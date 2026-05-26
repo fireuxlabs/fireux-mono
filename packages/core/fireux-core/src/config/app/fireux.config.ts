@@ -12,6 +12,7 @@ import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 import type {
+  FireuxMetaChecklistItem,
   FireuxMetaContent,
   FireuxMetaSolution,
 } from '../../runtime/models/system/meta-content.model'
@@ -234,7 +235,7 @@ function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSo
   let steps: string[] = []
   let businessCaseLines: string[] = []
   let provisioning: string[] = []
-  let checklist: string[] = []
+  let checklist: FireuxMetaChecklistItem[] = []
 
   const flush = () => {
     if (!slug) return
@@ -298,10 +299,12 @@ function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSo
     }
 
     if (mode === 'provisioning' || mode === 'checklist') {
-      const item = line.match(/^\s*(?:[-*]|\d+\.)\s+(.+?)\s*$/)
-      if (item?.[1]) {
-        if (mode === 'provisioning') provisioning.push(item[1].trim())
-        else checklist.push(item[1].trim())
+      const item = line.match(/^\s*(?:[-*]|\d+\.)\s+(?:\[( |x|X)\]\s*)?(.+?)\s*$/)
+      if (item?.[2]) {
+        const label = (item[2] || '').trim()
+        if (!label) continue
+        if (mode === 'provisioning') provisioning.push(label)
+        else checklist.push({ label, done: item[1].toLowerCase() === 'x' })
       }
       continue
     }
