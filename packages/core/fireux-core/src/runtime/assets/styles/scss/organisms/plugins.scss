@@ -1,0 +1,64 @@
+/*
+Plugin surfaces:
+- API-provisioned tools should feel present without owning the host palette.
+- Use local Nuxt UI tokens so FireUX apps can theme them as chameleons.
+*/
+
+.fx-plugin-surface {
+	display: block;
+	min-width: 0;
+	border: 1px solid var(--ui-border, currentColor);
+	border-radius: var(--radius-lg);
+	background: var(--ui-bg, transparent);
+	box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
+	padding: 1rem;
+}
+
+@media (min-width: 640px) {
+	.fx-plugin-surface {
+		padding: 1.25rem;
+	}
+}
+
+.fx-plugin-surface__inner {
+	display: grid;
+	gap: 1.25rem;
+	min-width: 0;
+}
+
+.fx-plugin-surface__header {
+	display: grid;
+	gap: 0.5rem;
+	min-width: 0;
+}
+
+.fx-plugin-surface__title {
+	margin: 0;
+	font-size: 1.5rem;
+	line-height: 1.18;
+	font-weight: 600;
+	letter-spacing: 0;
+	color: var(--ui-text-highlighted, var(--ui-text));
+}
+
+@media (min-width: 640px) {
+	.fx-plugin-surface__title {
+		font-size: 1.875rem;
+	}
+}
+
+.fx-plugin-surface__description {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+.fx-plugin-surface__skeleton {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.fx-plugin-surface__debug {
+	margin-top: 0.25rem;
+}

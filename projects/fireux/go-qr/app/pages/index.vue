@@ -3,20 +3,24 @@
     <UContainer class="py-8 sm:py-10">
       <header class="mx-auto mb-6 max-w-xl space-y-3">
         <h1 class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
-          Upload a doc.<br />
-          Get a QR code.
+          Go QR
         </h1>
         <p class="text-base text-muted sm:text-lg">
-          Turn a public doc into a shareable QR page.
-        </p>
-        <p class="text-sm text-muted">
-          Made for information people need to scan and read.
+          Create scannable public links for docs, menus, guides, forms, and more.
         </p>
       </header>
+
+      <p class="mx-auto max-w-xl text-xs font-semibold uppercase text-muted">
+        below here
+      </p>
 
       <ClientOnly>
         <GoQrProviderPublicDocTool class="mx-auto max-w-xl" />
       </ClientOnly>
+
+      <p class="mx-auto max-w-xl text-xs font-semibold uppercase text-muted">
+        above here
+      </p>
 
       <LandingSolutions variant="preview" />
     </UContainer>
@@ -40,11 +44,11 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Go QR - Upload a doc. Get a QR code.',
-  ogTitle: 'Go QR - Upload a doc. Get a QR code.',
-  twitterTitle: 'Go QR - Upload a doc. Get a QR code.',
-  description: 'Turn a public doc into a shareable QR page. Create your first QR doc free.',
-  ogDescription: 'Turn a public doc into a shareable QR page. Create your first QR doc free.',
-  twitterDescription: 'Turn a public doc into a shareable QR page. Create your first QR doc free.',
+  title: 'Go QR - Scannable public links',
+  ogTitle: 'Go QR - Scannable public links',
+  twitterTitle: 'Go QR - Scannable public links',
+  description: 'Create scannable public links for docs, menus, guides, forms, and more.',
+  ogDescription: 'Create scannable public links for docs, menus, guides, forms, and more.',
+  twitterDescription: 'Create scannable public links for docs, menus, guides, forms, and more.',
 })
 </script>

@@ -31,10 +31,11 @@ export type GoQrToolContract = {
     taken_message: string
   }
   ui: {
+    title: string
+    description: string
     upload_label: string
     cta_label: string
     loading_label: string
-    safety_copy: string
     success_title: string
     open_target_label: string
     open_qr_label: string
