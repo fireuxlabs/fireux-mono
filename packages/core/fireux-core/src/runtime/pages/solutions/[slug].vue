@@ -7,7 +7,7 @@
     back-to="/solutions"
     back-label="Solutions"
   >
-    <div class="space-y-5">
+    <div class="fx-solution-detail">
       <UBadge
         v-if="solution.status"
         color="primary"
@@ -16,8 +16,8 @@
         {{ statusLabel(solution.status) }}
       </UBadge>
 
-      <p class="text-sm leading-7 text-muted">
-        {{ solution.body || `Hello from ${solution.title}. ${solution.description}` }}
+      <p class="fx-solution-detail__body">
+        {{ solution.body || solution.description }}
       </p>
 
       <UCard
@@ -25,18 +25,18 @@
         variant="subtle"
       >
         <template #header>
-          <h2 class="text-base font-semibold text-highlighted">
+          <h2 class="fx-solution-panel__title">
             How this comes to life
           </h2>
         </template>
 
-        <ol class="space-y-3">
+        <ol class="fx-solution-steps">
           <li
             v-for="(step, index) in solution.steps"
             :key="`${index}-${step}`"
-            class="flex gap-3 text-sm leading-6 text-muted"
+            class="fx-solution-step"
           >
-            <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+            <span class="fx-solution-step__number">
               {{ index + 1 }}
             </span>
             <span>{{ step }}</span>
@@ -49,13 +49,13 @@
         variant="subtle"
       >
         <template #header>
-          <h2 class="text-base font-semibold text-highlighted">
+          <h2 class="fx-solution-panel__title">
             Related FireUX app
           </h2>
         </template>
 
-        <div class="space-y-3">
-          <p class="text-sm text-muted">
+        <div class="fx-solution-related">
+          <p class="fx-solution-related__description">
             {{ solution.relatedApp.description || `${solution.relatedApp.name} owns the deeper workflow for this solution.` }}
           </p>
           <UButton

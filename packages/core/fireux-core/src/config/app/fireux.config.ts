@@ -2,7 +2,7 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import { defineNuxtModule } from '@nuxt/kit'
 import { createJiti } from 'jiti'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { configNitroFirebase } from './nitro'
@@ -11,7 +11,10 @@ import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
-import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
+import type {
+  FireuxMetaContent,
+  FireuxMetaSolution,
+} from '../../runtime/models/system/meta-content.model'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -199,6 +202,104 @@ function loadFireuxAppMetaContent(explicitMeta?: FireuxMetaContent): FireuxMetaC
   }
 }
 
+type FireuxSolutionMarkdownContent = Pick<FireuxMetaSolution, 'body' | 'steps'>
+
+function normalizeSolutionSlug(input: string): string {
+  return input
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function normalizeMarkdownBody(lines: string[]): string | undefined {
+  const text = lines
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+
+  return text || undefined
+}
+
+function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSolutionMarkdownContent> {
+  const out: Record<string, FireuxSolutionMarkdownContent> = {}
+  const lines = markdown.replace(/\r\n/g, '\n').split('\n')
+  let slug = ''
+  let mode: 'body' | 'steps' = 'body'
+  let bodyLines: string[] = []
+  let steps: string[] = []
+
+  const flush = () => {
+    if (!slug) return
+
+    const body = normalizeMarkdownBody(bodyLines)
+    out[slug] = {
+      ...(body ? { body } : {}),
+      ...(steps.length ? { steps } : {}),
+    }
+  }
+
+  for (const line of lines) {
+    const solutionHeading = line.match(/^##\s+(.+?)\s*$/)
+    if (solutionHeading) {
+      flush()
+      slug = normalizeSolutionSlug(solutionHeading[1] || '')
+      mode = 'body'
+      bodyLines = []
+      steps = []
+      continue
+    }
+
+    if (!slug) continue
+
+    if (/^###\s+how this comes to life\s*$/i.test(line.trim())) {
+      mode = 'steps'
+      continue
+    }
+
+    if (mode === 'steps') {
+      const step = line.match(/^\s*(?:[-*]|\d+\.)\s+(.+?)\s*$/)
+      if (step?.[1]) steps.push(step[1].trim())
+      continue
+    }
+
+    bodyLines.push(line)
+  }
+
+  flush()
+
+  return out
+}
+
+function loadFireuxSolutionsMarkdown(): Record<string, FireuxSolutionMarkdownContent> {
+  const solutionContentPath = resolve(process.cwd(), 'app/solutions.md')
+  if (!existsSync(solutionContentPath)) return {}
+
+  return parseFireuxSolutionsMarkdown(readFileSync(solutionContentPath, 'utf8'))
+}
+
+function mergeFireuxSolutionMarkdownContent(
+  meta: FireuxMetaContent | undefined,
+  content: Record<string, FireuxSolutionMarkdownContent>
+): FireuxMetaContent | undefined {
+  if (!meta?.solutions?.length || !Object.keys(content).length) return meta
+
+  return {
+    ...meta,
+    solutions: meta.solutions.map((solution) => {
+      const markdown = content[solution.slug]
+      if (!markdown) return solution
+
+      return {
+        ...solution,
+        ...(markdown.body ? { body: markdown.body } : {}),
+        ...(markdown.steps?.length ? { steps: markdown.steps } : {}),
+      }
+    }),
+  }
+}
+
 function createAppDatabaseRuntimeModule(databaseId?: string) {
   const resolvedDatabaseId = typeof databaseId === 'string' ? databaseId.trim() : ''
   if (!resolvedDatabaseId) return null
@@ -326,7 +427,11 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const moduleNames = (nuxt.modules || [])
     .map(moduleName)
     .filter(Boolean) as string[]
-  const metaContent = loadFireuxAppMetaContent(app.meta)
+  const loadedMetaContent = loadFireuxAppMetaContent(app.meta)
+  const metaContent = mergeFireuxSolutionMarkdownContent(
+    loadedMetaContent,
+    loadFireuxSolutionsMarkdown()
+  )
   const resolvedSeo = resolveSeoConfig(app.seo, metaContent)
 
   if (envPlacesApiKey) {

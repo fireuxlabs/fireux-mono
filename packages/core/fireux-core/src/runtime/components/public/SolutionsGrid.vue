@@ -1,16 +1,16 @@
 <template>
-  <div class="grid gap-4 md:grid-cols-2">
+  <div class="fx-solutions__grid">
     <UCard
       v-for="solution in solutions"
       :key="solution.slug"
       variant="subtle"
-      :ui="{ body: 'flex h-full flex-col gap-4' }"
+      :ui="{ body: 'fx-solution-card' }"
     >
-      <div class="flex items-start gap-3">
-        <div class="grid size-10 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+      <div class="fx-solution-card__lead">
+        <div class="fx-solution-card__icon">
           <UIcon :name="solution.icon || 'i-lucide-lightbulb'" class="size-5" />
         </div>
-        <div class="space-y-1">
+        <div class="fx-solution-card__content">
           <UBadge
             v-if="solution.status"
             color="primary"
@@ -18,10 +18,10 @@
           >
             {{ statusLabel(solution.status) }}
           </UBadge>
-          <h2 class="text-lg font-semibold text-highlighted">
+          <h2 class="fx-solution-card__title">
             {{ solution.title }}
           </h2>
-          <p class="text-sm leading-6 text-muted">
+          <p class="fx-solution-card__description">
             {{ solution.description }}
           </p>
         </div>
@@ -32,7 +32,7 @@
         color="neutral"
         variant="soft"
         trailing-icon="i-lucide-arrow-right"
-        class="mt-auto w-fit"
+        class="fx-solution-card__action"
       >
         Open
       </UButton>

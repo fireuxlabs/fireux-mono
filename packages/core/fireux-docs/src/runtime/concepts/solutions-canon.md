@@ -33,6 +33,14 @@ metaContent.solutions = [
 ]
 ```
 
+Apps may back solution route content with a single markdown file:
+
+```txt
+app/solutions.md
+```
+
+Use one `## solution-slug` heading per route. Body copy under the heading becomes the route body. A `### How this comes to life` list becomes the route steps.
+
 Core owns the shared route mechanism:
 
 ```txt
@@ -53,6 +61,14 @@ landing preview mode
 
 Do not build a second app-local solutions card system for landing pages.
 
+Core owns the shared visual rhythm for solution hubs, cards, and boilerplate detail pages in:
+
+```txt
+packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/solutions.scss
+```
+
+Apps may change solution data and app branding tokens. They should not restyle the shared solutions hub locally.
+
 The shared footer nav item is visible for ecosystem/global apps and standalone apps. Tenant apps do not show Solutions by default.
 
 Apps may add an app-local page at `/solutions/:slug` when that solution needs a real tool, data flow, or richer product bridge. The app-local page overrides the core boilerplate route.
@@ -61,7 +77,8 @@ Apps may add an app-local page at `/solutions/:slug` when that solution needs a 
 
 - Declare solutions in `metaContent.solutions`.
 - Keep solution slugs URL-safe and stable.
-- Use `status`, `steps`, and `relatedApp` to keep solution pages honest while the feature is still coming alive.
+- Use `status` and `relatedApp` in meta to keep solution cards honest while the feature is still coming alive.
+- Use `app/solutions.md` for authored route body copy and "How this comes to life" steps when a solution page needs more than a card description.
 - Keep visible copy concise; SEO detail belongs in metadata and page content.
 - Do not create `/dashboard/admin/solutions`.
 - Do not add featured solution slugs.

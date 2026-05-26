@@ -1,21 +1,22 @@
 <template>
   <section
     v-if="shouldRender"
-    class="landing-index-section space-y-6 lg:space-y-8"
+    class="landing-index-section fx-solutions"
+    :class="variant === 'hub' ? 'fx-solutions--hub' : 'fx-solutions--preview'"
   >
-    <div
-      class="space-y-3"
-      :class="variant === 'hub' ? 'max-w-3xl' : 'mx-auto max-w-2xl text-center'"
-    >
+    <div class="fx-solutions__header">
       <UBadge color="primary" variant="soft">Solutions</UBadge>
       <component
         :is="variant === 'hub' ? 'h1' : 'h2'"
-        class="font-semibold tracking-normal text-highlighted"
-        :class="variant === 'hub' ? 'text-3xl sm:text-4xl' : 'text-3xl'"
+        class="fx-solutions__title"
+        :class="variant === 'hub' ? 'fx-solutions__title--hub' : 'fx-solutions__title--preview'"
       >
         {{ resolvedTitle }}
       </component>
-      <p class="text-base leading-7 text-muted">
+      <p
+        v-if="resolvedSubtitle"
+        class="fx-solutions__subtitle"
+      >
         {{ resolvedSubtitle }}
       </p>
     </div>
@@ -35,7 +36,7 @@
 
     <div
       v-if="variant === 'preview' && hasMoreSolutions"
-      class="flex justify-center"
+      class="fx-solutions__more"
     >
       <UButton
         to="/solutions"
@@ -104,8 +105,7 @@ const resolvedTitle = computed(() => {
 })
 const resolvedSubtitle = computed(() => {
   if (props.subtitle) return props.subtitle
-  return props.variant === 'hub'
-    ? 'Practical entry points for the jobs this app helps with.'
-    : 'Practical starting points for this app.'
+  if (props.variant === 'hub') return ''
+  return 'Start with the thing you need to make public.'
 })
 </script>
