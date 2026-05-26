@@ -3,7 +3,9 @@ import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import type {
   FireuxMetaCta,
   FireuxMetaContent,
+  FireuxMetaRelatedApp,
   FireuxMetaSolution,
+  FireuxMetaSolutionStatus,
 } from '../../../../models/system/meta-content.model'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -49,6 +51,39 @@ function normalizeCta(value: unknown): FireuxMetaCta | undefined {
   }
 }
 
+function normalizeStatus(value: unknown): FireuxMetaSolutionStatus | undefined {
+  const status = asString(value)
+  if (
+    status === 'live' ||
+    status === 'very-easy' ||
+    status === 'coming-soon' ||
+    status === 'bridge' ||
+    status === 'planned' ||
+    status === 'later'
+  ) {
+    return status
+  }
+
+  return undefined
+}
+
+function normalizeRelatedApp(value: unknown): FireuxMetaRelatedApp | undefined {
+  if (!isRecord(value)) return undefined
+
+  const name = asString(value.name)
+  const to = asString(value.to)
+  if (!name || !to) return undefined
+
+  const description = asString(value.description)
+
+  return {
+    name,
+    to,
+    ...(description ? { description } : {}),
+    ...(typeof value.external === 'boolean' ? { external: value.external } : {}),
+  }
+}
+
 function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   if (!isRecord(value)) return undefined
 
@@ -58,7 +93,10 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   if (!slug || !title || !description) return undefined
 
   const icon = asString(value.icon)
+  const status = normalizeStatus(value.status)
   const body = asString(value.body)
+  const steps = asStringArray(value.steps)
+  const relatedApp = normalizeRelatedApp(value.relatedApp)
   const cta = normalizeCta(value.cta)
   const keywords = asStringArray(value.keywords)
 
@@ -67,7 +105,10 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
     title,
     description,
     ...(icon ? { icon } : {}),
+    ...(status ? { status } : {}),
     ...(body ? { body } : {}),
+    ...(steps.length ? { steps } : {}),
+    ...(relatedApp ? { relatedApp } : {}),
     ...(cta ? { cta } : {}),
     ...(keywords.length ? { keywords } : {}),
   }

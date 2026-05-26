@@ -18,6 +18,21 @@ export type FireuxMetaCta = {
   external?: boolean
 }
 
+export type FireuxMetaSolutionStatus =
+  | 'live'
+  | 'very-easy'
+  | 'coming-soon'
+  | 'bridge'
+  | 'planned'
+  | 'later'
+
+export type FireuxMetaRelatedApp = {
+  name: string
+  to: string
+  description?: string
+  external?: boolean
+}
+
 export type FireuxMetaSolution = {
   /** URL-safe child key used at /solutions/:slug. */
   slug: string
@@ -27,8 +42,14 @@ export type FireuxMetaSolution = {
   description: string
   /** Optional Nuxt Icon name. */
   icon?: string
+  /** Product status for the current app's solution page. */
+  status?: FireuxMetaSolutionStatus
   /** Optional page body copy for the shared boilerplate page. */
   body?: string
+  /** Short implementation/use-flow notes shown on the shared boilerplate page. */
+  steps?: string[]
+  /** Optional sibling app or product that owns the deeper workflow. */
+  relatedApp?: FireuxMetaRelatedApp
   /** Optional solution-specific action. Defaults to /solutions/:slug. */
   cta?: FireuxMetaCta
   /** Optional search intent phrases for export/search tooling. */

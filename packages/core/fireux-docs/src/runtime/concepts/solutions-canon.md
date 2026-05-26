@@ -23,6 +23,12 @@ metaContent.solutions = [
     title: 'URL QR code',
     description: 'Turn a URL into a scannable QR code.',
     icon: 'i-lucide-link',
+    status: 'live',
+    steps: [
+      'Enter the URL.',
+      'Generate a QR code.',
+      'Download or share the QR code.',
+    ],
   },
 ]
 ```
@@ -55,6 +61,7 @@ Apps may add an app-local page at `/solutions/:slug` when that solution needs a 
 
 - Declare solutions in `metaContent.solutions`.
 - Keep solution slugs URL-safe and stable.
+- Use `status`, `steps`, and `relatedApp` to keep solution pages honest while the feature is still coming alive.
 - Keep visible copy concise; SEO detail belongs in metadata and page content.
 - Do not create `/dashboard/admin/solutions`.
 - Do not add featured solution slugs.

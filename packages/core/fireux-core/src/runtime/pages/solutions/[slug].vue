@@ -7,9 +7,69 @@
     back-to="/solutions"
     back-label="Solutions"
   >
-    <p class="text-sm leading-7 text-muted">
-      {{ solution.body || `Hello from ${solution.title}. ${solution.description}` }}
-    </p>
+    <div class="space-y-5">
+      <UBadge
+        v-if="solution.status"
+        color="primary"
+        variant="soft"
+      >
+        {{ statusLabel(solution.status) }}
+      </UBadge>
+
+      <p class="text-sm leading-7 text-muted">
+        {{ solution.body || `Hello from ${solution.title}. ${solution.description}` }}
+      </p>
+
+      <UCard
+        v-if="solution.steps?.length"
+        variant="subtle"
+      >
+        <template #header>
+          <h2 class="text-base font-semibold text-highlighted">
+            How this comes to life
+          </h2>
+        </template>
+
+        <ol class="space-y-3">
+          <li
+            v-for="(step, index) in solution.steps"
+            :key="`${index}-${step}`"
+            class="flex gap-3 text-sm leading-6 text-muted"
+          >
+            <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+              {{ index + 1 }}
+            </span>
+            <span>{{ step }}</span>
+          </li>
+        </ol>
+      </UCard>
+
+      <UCard
+        v-if="solution.relatedApp"
+        variant="subtle"
+      >
+        <template #header>
+          <h2 class="text-base font-semibold text-highlighted">
+            Related FireUX app
+          </h2>
+        </template>
+
+        <div class="space-y-3">
+          <p class="text-sm text-muted">
+            {{ solution.relatedApp.description || `${solution.relatedApp.name} owns the deeper workflow for this solution.` }}
+          </p>
+          <UButton
+            :to="solution.relatedApp.to"
+            :target="solution.relatedApp.external ? '_blank' : undefined"
+            color="neutral"
+            variant="soft"
+            trailing-icon="i-lucide-arrow-right"
+          >
+            Open {{ solution.relatedApp.name }}
+          </UButton>
+        </div>
+      </UCard>
+    </div>
 
     <template #actions>
       <UButton
@@ -63,4 +123,23 @@ useSeoMeta({
   ogDescription: () => solution.value?.description || '',
   twitterDescription: () => solution.value?.description || '',
 })
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'live':
+      return 'Live'
+    case 'very-easy':
+      return 'Very easy'
+    case 'coming-soon':
+      return 'Coming soon'
+    case 'bridge':
+      return 'Bridge'
+    case 'planned':
+      return 'Planned'
+    case 'later':
+      return 'Later'
+    default:
+      return status
+  }
+}
 </script>

@@ -1,6 +1,6 @@
 <template>
   <PublicSimplePage
-    title="Phone QR Code"
+    title="Phone Call QR Code"
     description="Create a QR code that starts a phone call."
     back-to="/solutions"
     back-label="Solutions"
@@ -24,9 +24,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Phone QR Code - Go QR',
-  ogTitle: 'Phone QR Code - Go QR',
-  twitterTitle: 'Phone QR Code - Go QR',
+  title: 'Phone Call QR Code - Go QR',
+  ogTitle: 'Phone Call QR Code - Go QR',
+  twitterTitle: 'Phone Call QR Code - Go QR',
   description: 'Create a QR code that starts a phone call with Go QR.',
   ogDescription: 'Create a QR code that starts a phone call with Go QR.',
   twitterDescription: 'Create a QR code that starts a phone call with Go QR.',

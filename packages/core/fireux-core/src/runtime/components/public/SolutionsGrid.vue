@@ -11,6 +11,13 @@
           <UIcon :name="solution.icon || 'i-lucide-lightbulb'" class="size-5" />
         </div>
         <div class="space-y-1">
+          <UBadge
+            v-if="solution.status"
+            color="primary"
+            variant="soft"
+          >
+            {{ statusLabel(solution.status) }}
+          </UBadge>
           <h2 class="text-lg font-semibold text-highlighted">
             {{ solution.title }}
           </h2>
@@ -21,14 +28,13 @@
       </div>
 
       <UButton
-        :to="solution.cta?.to || `/solutions/${solution.slug}`"
-        :target="solution.cta?.external ? '_blank' : undefined"
+        :to="`/solutions/${solution.slug}`"
         color="neutral"
         variant="soft"
         trailing-icon="i-lucide-arrow-right"
         class="mt-auto w-fit"
       >
-        {{ solution.cta?.label || 'Open' }}
+        Open
       </UButton>
     </UCard>
   </div>
@@ -40,4 +46,23 @@ import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
 defineProps<{
   solutions: FireuxMetaSolution[]
 }>()
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'live':
+      return 'Live'
+    case 'very-easy':
+      return 'Very easy'
+    case 'coming-soon':
+      return 'Coming soon'
+    case 'bridge':
+      return 'Bridge'
+    case 'planned':
+      return 'Planned'
+    case 'later':
+      return 'Later'
+    default:
+      return status
+  }
+}
 </script>
