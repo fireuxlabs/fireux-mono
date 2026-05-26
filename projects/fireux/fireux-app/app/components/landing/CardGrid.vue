@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-export interface LandingSolutionItem {
+export interface LandingCardGridItem {
   title: string
   description: string
   to: string
@@ -62,11 +62,11 @@ export interface LandingSolutionItem {
   badge?: string
 }
 
-export interface LandingSolutionsProps {
+export interface LandingCardGridProps {
   title: string
   subtitle?: string
-  items: LandingSolutionItem[]
+  items: LandingCardGridItem[]
 }
 
-defineProps<LandingSolutionsProps>()
+defineProps<LandingCardGridProps>()
 </script>
