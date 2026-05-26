@@ -85,6 +85,38 @@ export const metaContent = defineFireuxMeta({
       'Cached generated translations for specific pages',
     ],
   },
+  solutions: [
+    {
+      slug: 'translate-public-doc',
+      title: 'Translate a public doc',
+      description: 'Turn one approved public information page into language-specific versions.',
+      icon: 'i-lucide-languages',
+    },
+    {
+      slug: 'translate-menu',
+      title: 'Translate a menu',
+      description: 'Provide multilingual menu information before a full structured Misebox menu is needed.',
+      icon: 'i-lucide-utensils',
+    },
+    {
+      slug: 'translate-guest-instructions',
+      title: 'Translate guest instructions',
+      description: 'Make guest, rental, or visitor instructions easier to read in multiple languages.',
+      icon: 'i-lucide-house',
+    },
+    {
+      slug: 'multilingual-qr-pages',
+      title: 'Create multilingual QR pages',
+      description: 'Publish QR-friendly pages where visitors can choose the language they need.',
+      icon: 'i-lucide-qr-code',
+    },
+    {
+      slug: 'language-support-for-docs',
+      title: 'Add language support for docs',
+      description: 'Use Sproochli as the translation layer for public docs, menus, guides, and notices.',
+      icon: 'i-lucide-file-text',
+    },
+  ],
   entities: [
     {
       id: 'Place',

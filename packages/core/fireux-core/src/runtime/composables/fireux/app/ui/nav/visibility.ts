@@ -6,6 +6,7 @@ import type { NavVisibility } from '../../nav.types'
 type RuntimeScope = Pick<
   FireUXConfig,
   | 'appId'
+  | 'role'
   | 'ecosystem'
   | 'modules'
   | 'domains'
@@ -30,6 +31,7 @@ export function normaliseNavVisibility(
   if (!visibility || typeof visibility !== 'object') return undefined
 
   const apps = normaliseStringList(visibility.apps)
+  const appRoles = normaliseStringList(visibility.appRoles)
   const ecosystems = normaliseStringList(visibility.ecosystems)
   const modules = normaliseStringList(visibility.modules)
   const modulesAny = normaliseStringList(visibility.modulesAny)
@@ -40,6 +42,7 @@ export function normaliseNavVisibility(
 
   if (
     !apps.length &&
+    !appRoles.length &&
     !ecosystems.length &&
     !modules.length &&
     !modulesAny.length &&
@@ -53,6 +56,7 @@ export function normaliseNavVisibility(
 
   return {
     ...(apps.length ? { apps } : {}),
+    ...(appRoles.length ? { appRoles } : {}),
     ...(ecosystems.length ? { ecosystems } : {}),
     ...(modules.length ? { modules } : {}),
     ...(modulesAny.length ? { modulesAny } : {}),
@@ -71,12 +75,14 @@ export function isNavVisibleForScope(
   if (!rule) return true
 
   const appId = (scope.appId || '').trim().toLowerCase()
+  const role = (scope.role || '').trim().toLowerCase()
   const ecosystem = (scope.ecosystem || '').trim().toLowerCase()
   const modules = new Set(normaliseStringList(scope.modules))
   const domains = new Set(normaliseStringList(scope.domains))
   const profiles = new Set(normaliseStringList(scope.profiles))
 
   if (rule.apps?.length && !rule.apps.includes(appId)) return false
+  if (rule.appRoles?.length && !rule.appRoles.includes(role)) return false
   if (rule.ecosystems?.length && !rule.ecosystems.includes(ecosystem)) return false
   if (rule.modules?.length && !rule.modules.every((name) => modules.has(name))) {
     return false

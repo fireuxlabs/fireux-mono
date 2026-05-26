@@ -12,7 +12,6 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://go-qr.web.app',
     staticPaths: [
-      '/food-menu',
       '/pricing',
       '/terms',
       '/privacy',

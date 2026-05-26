@@ -420,6 +420,38 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  solutions: [
+    {
+      slug: 'cleaning-jobs',
+      title: 'Manage cleaning jobs',
+      description: 'Create a clear job surface for service work, recurring tasks, and operational follow-up.',
+      icon: 'i-lucide-clipboard-check',
+    },
+    {
+      slug: 'field-agent-management',
+      title: 'Support field agents',
+      description: 'Give cleaners and service agents a focused place for work details and proof.',
+      icon: 'i-lucide-user-check',
+    },
+    {
+      slug: 'service-offers',
+      title: 'Package cleaning services',
+      description: 'Turn services into productised offers that are easier to explain, buy, and manage.',
+      icon: 'i-lucide-package-check',
+    },
+    {
+      slug: 'job-requests',
+      title: 'Collect job requests',
+      description: 'Capture lightweight service enquiries and turn them into structured cleaning work.',
+      icon: 'i-lucide-inbox',
+    },
+    {
+      slug: 'cleaning-business-app',
+      title: 'Launch a cleaning business app',
+      description: 'Run a branded cleaning app for customers, staff, service pages, and operations.',
+      icon: 'i-lucide-sparkles',
+    },
+  ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
     purpose: entity.purpose,

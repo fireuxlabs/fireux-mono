@@ -2,8 +2,8 @@
   <main class="min-h-screen bg-default text-default" data-entity-cta-family="utility-managed">
     <UContainer class="py-8 sm:py-10">
       <header class="mx-auto mb-6 max-w-xl space-y-3">
-        <NuxtLink to="/" class="text-sm text-primary hover:underline">
-          Go QR
+        <NuxtLink to="/solutions" class="text-sm text-primary hover:underline">
+          Solutions
         </NuxtLink>
         <h1 class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
           Need a QR code<br />
@@ -11,9 +11,6 @@
         </h1>
         <p class="text-base text-muted sm:text-lg">
           Upload a food menu doc and get a QR page.
-        </p>
-        <p class="text-sm text-muted">
-          Same Go QR flow. This page just flags the doc as a food menu.
         </p>
       </header>
 
@@ -61,21 +58,12 @@ import { useSeoMeta } from '#imports'
 
 definePageMeta({
   layout: 'landing',
-  nav: {
-    key: 'food-menu',
-    label: 'Food menu',
-    icon: 'i-lucide-utensils',
-    order: 10,
-    desktop: true,
-    mobile: true,
-    layouts: ['landing'],
-  },
 })
 
 useSeoMeta({
-  title: 'Food menu QR code - Go QR',
-  ogTitle: 'Food menu QR code - Go QR',
-  twitterTitle: 'Food menu QR code - Go QR',
+  title: 'Food Menu QR Code - Go QR',
+  ogTitle: 'Food Menu QR Code - Go QR',
+  twitterTitle: 'Food Menu QR Code - Go QR',
   description: 'Upload a food menu doc and get a QR page, or use Misebox to turn a menu into dishes, sections, prices, allergens, translations, and ordering.',
   ogDescription: 'Upload a food menu doc and get a QR page, or use Misebox to turn a menu into dishes, sections, prices, allergens, translations, and ordering.',
   twitterDescription: 'Upload a food menu doc and get a QR page, or use Misebox to turn a menu into dishes, sections, prices, allergens, translations, and ordering.',

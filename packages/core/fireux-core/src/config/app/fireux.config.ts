@@ -101,6 +101,47 @@ function defaultNitroFirebaseRegion(ecosystem: string): string {
   }
 }
 
+function normalizePublicPath(input: unknown): string | undefined {
+  if (typeof input !== 'string') return undefined
+  const trimmed = input.trim()
+  if (!trimmed) return undefined
+  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+}
+
+function mergeStaticPaths(paths: readonly unknown[]): string[] {
+  const seen = new Set<string>()
+  const merged: string[] = []
+
+  for (const path of paths) {
+    const normalized = normalizePublicPath(path)
+    if (!normalized || seen.has(normalized)) continue
+    seen.add(normalized)
+    merged.push(normalized)
+  }
+
+  return merged
+}
+
+function resolveSeoConfig(
+  seo: FireuxSeoConfig | undefined,
+  meta: FireuxMetaContent | undefined
+): FireuxSeoConfig | undefined {
+  const solutionPaths = (meta?.solutions || [])
+    .map((solution) => normalizePublicPath(`/solutions/${solution.slug}`))
+    .filter((path): path is string => Boolean(path))
+
+  if (!solutionPaths.length) return seo
+
+  return {
+    ...(seo || {}),
+    staticPaths: mergeStaticPaths([
+      ...(seo?.staticPaths || []),
+      '/solutions',
+      ...solutionPaths,
+    ]),
+  }
+}
+
 function reqEnv(name: string): string {
   const value = process.env[name]
   if (typeof value !== 'string' || !value.trim()) {
@@ -286,6 +327,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     .map(moduleName)
     .filter(Boolean) as string[]
   const metaContent = loadFireuxAppMetaContent(app.meta)
+  const resolvedSeo = resolveSeoConfig(app.seo, metaContent)
 
   if (envPlacesApiKey) {
     const rc = ((nuxt as any).runtimeConfig ||= {}) as Record<string, any>
@@ -325,7 +367,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
     private: {
       developerPin: envPin,
-      ...(app.seo ? { seo: app.seo } : {}),
+      ...(resolvedSeo ? { seo: resolvedSeo } : {}),
       ...(metaContent ? { meta: metaContent } : {}),
     },
   })

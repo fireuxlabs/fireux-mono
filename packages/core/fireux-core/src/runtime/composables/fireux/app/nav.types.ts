@@ -1,5 +1,6 @@
 export interface NavVisibility {
   apps?: string[]
+  appRoles?: string[]
   ecosystems?: string[]
   modules?: string[]
   modulesAny?: string[]

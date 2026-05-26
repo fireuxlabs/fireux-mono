@@ -66,6 +66,38 @@ export const buenoHostLanguage = {
       'Designed for rooms, apartments, holidays and serviced stays',
     ],
   },
+  solutions: [
+    {
+      slug: 'guest-guide-qr-code',
+      title: 'Guest guide QR code',
+      description: 'Give guests one QR-friendly guide for the information they need during a stay.',
+      icon: 'i-lucide-book-open',
+    },
+    {
+      slug: 'wifi-instructions-page',
+      title: 'Wi-Fi instructions page',
+      description: 'Publish Wi-Fi details and connection notes in a clean guest-facing page.',
+      icon: 'i-lucide-wifi',
+    },
+    {
+      slug: 'house-manual-qr-code',
+      title: 'House manual QR code',
+      description: 'Turn house rules, appliances, parking, and checkout notes into a shareable guide.',
+      icon: 'i-lucide-home',
+    },
+    {
+      slug: 'check-in-instructions-page',
+      title: 'Check-in instructions page',
+      description: 'Create a simple page for arrival details, key pickup, entry codes, and timing.',
+      icon: 'i-lucide-key-round',
+    },
+    {
+      slug: 'local-recommendations-guide',
+      title: 'Local recommendations guide',
+      description: 'Share nearby places, tips, and host recommendations without repeatedly sending messages.',
+      icon: 'i-lucide-map',
+    },
+  ],
   entities: [
     {
       id: 'Property',

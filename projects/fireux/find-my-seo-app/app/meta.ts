@@ -87,6 +87,38 @@ export const metaContent = defineFireuxMeta({
       'Manage profile basics from dashboard',
     ],
   },
+  solutions: [
+    {
+      slug: 'professional-profile',
+      title: 'Create a professional profile',
+      description: 'Publish a focused SEO provider profile buyers can compare and understand.',
+      icon: 'i-lucide-id-card',
+    },
+    {
+      slug: 'local-search-discovery',
+      title: 'Improve local search discovery',
+      description: 'Use structured public profile information to help buyers find relevant SEO support.',
+      icon: 'i-lucide-search',
+    },
+    {
+      slug: 'service-landing-page',
+      title: 'Build a service landing page',
+      description: 'Explain a specific SEO service with proof, fit, and a clear route to contact.',
+      icon: 'i-lucide-file-search',
+    },
+    {
+      slug: 'lead-ready-business-info',
+      title: 'Make business info lead-ready',
+      description: 'Turn provider details into a page that can support enquiries and comparison.',
+      icon: 'i-lucide-inbox',
+    },
+    {
+      slug: 'ai-search-visibility',
+      title: 'Prepare for AI search visibility',
+      description: 'Shape public provider information so search and AI systems can understand it cleanly.',
+      icon: 'i-lucide-sparkles',
+    },
+  ],
   entities: [
     {
       id: 'Professional',

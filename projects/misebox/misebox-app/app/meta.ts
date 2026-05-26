@@ -574,6 +574,38 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  solutions: [
+    {
+      slug: 'create-digital-food-menu',
+      title: 'Create a digital food menu',
+      description: 'Publish a menu surface for kitchens, bars, and hospitality teams.',
+      icon: 'i-lucide-utensils',
+    },
+    {
+      slug: 'menu-to-dishes',
+      title: 'Turn a menu into dishes',
+      description: 'Move menu content into structured dishes, sections, prices, and kitchen-owned records.',
+      icon: 'i-lucide-list-tree',
+    },
+    {
+      slug: 'kitchen-prep',
+      title: 'Organise kitchen prep',
+      description: 'Give kitchens a console for prep, recipes, dishes, and day-to-day operating knowledge.',
+      icon: 'i-lucide-clipboard-list',
+    },
+    {
+      slug: 'allergen-aware-menus',
+      title: 'Publish allergen-aware menus',
+      description: 'Make allergen and dietary information part of the menu workflow instead of an afterthought.',
+      icon: 'i-lucide-shield-check',
+    },
+    {
+      slug: 'supplier-ingredient-workflows',
+      title: 'Connect suppliers and ingredients',
+      description: 'Use supplier and ingredient records to support kitchen sourcing and menu operations.',
+      icon: 'i-lucide-truck',
+    },
+  ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
     purpose: entity.purpose,

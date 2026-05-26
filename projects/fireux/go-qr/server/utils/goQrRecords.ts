@@ -27,7 +27,12 @@ export const goQrCollectionName = 'documents'
 const appId = 'go-qr'
 const reservedDocumentIds = [
   'about',
+  'admin',
+  'api',
+  'assets',
   'blog',
+  'console',
+  'dashboard',
   'docs',
   'food-menu',
   'get-started',
@@ -35,6 +40,7 @@ const reservedDocumentIds = [
   'pricing',
   'privacy',
   'products',
+  'solutions',
   'terms',
 ]
 

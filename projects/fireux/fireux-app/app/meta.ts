@@ -472,6 +472,38 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  solutions: [
+    {
+      slug: 'fireux-app',
+      title: 'FireUX App',
+      description: 'A hosted and maintained website plus app surface we run for you.',
+      icon: 'i-lucide-panel-top',
+    },
+    {
+      slug: 'fireux-template',
+      title: 'FireUX Template',
+      description: 'A neutral FireUX starter app you can buy once and run yourself.',
+      icon: 'i-lucide-layout-template',
+    },
+    {
+      slug: 'launch-ecosystem',
+      title: 'Launch an ecosystem',
+      description: 'Shape a parent app with shared identity, products, blogs, admin tools, and tenant-ready surfaces.',
+      icon: 'i-lucide-network',
+    },
+    {
+      slug: 'launch-tenant-app',
+      title: 'Launch a tenant app',
+      description: 'Create a focused child app inside an ecosystem with its own brand, pages, and product path.',
+      icon: 'i-lucide-panel-top',
+    },
+    {
+      slug: 'app-products-and-blog',
+      title: 'Add products and blog',
+      description: 'Use the baseline commercial and content surfaces every FireUX app can rely on.',
+      icon: 'i-lucide-shopping-bag',
+    },
+  ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
     purpose: entity.purpose,

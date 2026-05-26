@@ -64,6 +64,42 @@ export const goQrLanguage = {
       'Sproochli can be added later as an upgrade',
     ],
   },
+  solutions: [
+    {
+      slug: 'public-doc-qr-code',
+      title: 'Public doc QR code',
+      description: 'Upload a public doc, choose a short path, and get a QR page.',
+      icon: 'i-lucide-file-text',
+      cta: {
+        label: 'Create doc QR',
+        to: '/',
+      },
+    },
+    {
+      slug: 'url-qr-code',
+      title: 'URL QR code',
+      description: 'Turn a URL into a scannable QR code.',
+      icon: 'i-lucide-link',
+    },
+    {
+      slug: 'phone-qr-code',
+      title: 'Phone QR code',
+      description: 'Create a QR code that starts a phone call.',
+      icon: 'i-lucide-phone',
+    },
+    {
+      slug: 'food-menu-qr-code',
+      title: 'Food menu QR code',
+      description: 'Upload a menu doc with Go QR, or move to Misebox for editable dishes.',
+      icon: 'i-lucide-utensils',
+    },
+    {
+      slug: 'rental-terms-qr-code',
+      title: 'Rental terms QR code',
+      description: 'Share rental terms, participant agreements, or public conditions through one QR page.',
+      icon: 'i-lucide-scroll-text',
+    },
+  ],
   entities: [
     {
       id: 'GoQrRecord',

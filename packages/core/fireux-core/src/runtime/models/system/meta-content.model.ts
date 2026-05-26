@@ -18,6 +18,23 @@ export type FireuxMetaCta = {
   external?: boolean
 }
 
+export type FireuxMetaSolution = {
+  /** URL-safe child key used at /solutions/:slug. */
+  slug: string
+  /** Human-facing solution title. */
+  title: string
+  /** Short card and SEO description. */
+  description: string
+  /** Optional Nuxt Icon name. */
+  icon?: string
+  /** Optional page body copy for the shared boilerplate page. */
+  body?: string
+  /** Optional solution-specific action. Defaults to /solutions/:slug. */
+  cta?: FireuxMetaCta
+  /** Optional search intent phrases for export/search tooling. */
+  keywords?: string[]
+}
+
 export type FireuxMetaAppIdentity = {
   /** App key (for example: "misebox", "granite", "fireux", "cleanbox", "bringli"). */
   id: string
@@ -116,6 +133,12 @@ export type FireuxMetaContent = {
   }
 
   lists?: FireuxMetaLists
+
+  /**
+   * Authored SEO/segue pages.
+   * Solutions are not domains, products, or stored entities.
+   */
+  solutions?: FireuxMetaSolution[]
 
   /**
    * Conceptual entities for human understanding.

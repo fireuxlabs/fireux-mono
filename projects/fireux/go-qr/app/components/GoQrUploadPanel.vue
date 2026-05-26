@@ -173,7 +173,12 @@ function setDocumentFile(value: File | File[] | null | undefined) {
 
 const reservedDocumentSlugs = [
   'about',
+  'admin',
+  'api',
+  'assets',
   'blog',
+  'console',
+  'dashboard',
   'docs',
   'food-menu',
   'get-started',
@@ -181,6 +186,7 @@ const reservedDocumentSlugs = [
   'pricing',
   'privacy',
   'products',
+  'solutions',
   'terms',
 ]
 

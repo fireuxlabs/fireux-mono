@@ -516,6 +516,38 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  solutions: [
+    {
+      slug: 'property-showcase',
+      title: 'Showcase a property',
+      description: 'Create a public property page when a property needs a clean, shareable presentation.',
+      icon: 'i-lucide-building-2',
+    },
+    {
+      slug: 'property-portfolio-pages',
+      title: 'Explain a property portfolio',
+      description: 'Use portfolio-style pages when properties need a public narrative and investor-ready context.',
+      icon: 'i-lucide-layout-dashboard',
+    },
+    {
+      slug: 'private-property-records',
+      title: 'Manage private property records',
+      description: 'Keep operational property information private while still using shared FireUX app structure.',
+      icon: 'i-lucide-lock-keyhole',
+    },
+    {
+      slug: 'investor-property-summaries',
+      title: 'Prepare investor summaries',
+      description: 'Shape property information into concise summaries for portfolio and stakeholder conversations.',
+      icon: 'i-lucide-chart-no-axes-combined',
+    },
+    {
+      slug: 'property-operator-app',
+      title: 'Launch a property operator app',
+      description: 'Run a branded property operations app for portfolios, compliance, and team workflows.',
+      icon: 'i-lucide-landmark',
+    },
+  ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
     purpose: entity.purpose,

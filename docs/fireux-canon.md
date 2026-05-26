@@ -196,11 +196,18 @@ Current learned examples:
   - about
   - get started
   - pricing
+  - solutions
   - help
   - terms
   - privacy
   - contact/support
   - other pages the product needs to expose but should not sell as primary navigation
+- Solution pages are authored marketing/SEO/segue pages, not stored entity domains.
+- Apps declare solution cards in `metaContent.solutions`; core owns the shared `/solutions` hub and a simple `/solutions/:slug` boilerplate page.
+- App-local solution pages may override a core boilerplate child route when the solution needs a real tool, data flow, or richer product bridge.
+- A solution index such as `/solutions` may group product applications and sibling-product bridges.
+- Solution child pages such as `/solutions/food-menu-qr-code` are allowed when the search/user intent is meaningfully distinct.
+- Do not create a solution collection, collection manager, featured-slugs admin surface, or `/dashboard/admin/solutions` until solutions become stored entities.
 - In route meta, `nav.position: 'bottom'` marks a public landing/default link as footer navigation and must not appear in the top header.
 - Admin index routes that should appear in `/dashboard/admin` declare `adminSurface` route meta. The dashboard discovers those surfaces from registered routes instead of hard-coding entity names.
 - App-local admin pages are declared by the app's page files and do not need a `domains` opt-in.

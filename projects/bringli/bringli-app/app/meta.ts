@@ -421,6 +421,38 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  solutions: [
+    {
+      slug: 'supplier-profiles',
+      title: 'Publish supplier profiles',
+      description: 'Give local suppliers a clean public surface for who they are and what they provide.',
+      icon: 'i-lucide-store',
+    },
+    {
+      slug: 'product-catalogue-info',
+      title: 'Share catalogue information',
+      description: 'Expose simple product and supply information without turning the app into a full marketplace too soon.',
+      icon: 'i-lucide-boxes',
+    },
+    {
+      slug: 'delivery-supplier-leads',
+      title: 'Collect supplier leads',
+      description: 'Create an entry point for buyers, suppliers, and delivery operations to connect.',
+      icon: 'i-lucide-handshake',
+    },
+    {
+      slug: 'trade-supplier-pages',
+      title: 'Create trade supplier pages',
+      description: 'Build focused pages for producers and trade suppliers that need clear public information.',
+      icon: 'i-lucide-file-text',
+    },
+    {
+      slug: 'supplier-network',
+      title: 'Grow a supplier network',
+      description: 'Use Bringli as the public and operational surface for a connected local supply network.',
+      icon: 'i-lucide-network',
+    },
+  ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
     purpose: entity.purpose,

@@ -37,6 +37,8 @@ The current concept map is:
   manual Firestore rules workflow for app databases during preflight, demo, and shipping phases
 - `firestore-collection-names.md`
   Firestore collection id naming canon for simple plural storage names and scoped parent paths
+- `solutions-canon.md`
+  shared solution page meaning, app meta declarations, and the boundary between solutions and domains
 - `spine/`
   how FireUX extends the plain Nuxt runtime spine
 - `stacks/`
@@ -97,6 +99,10 @@ Dev and preflight databases may temporarily use open rules while product shape i
 ### `firestore-collection-names.md`
 
 Firestore collection names are shared storage vocabulary. They should stay short, plural, lowercase, and unbranded, with app or domain scope expressed by the selected database or parent document path.
+
+### `solutions-canon.md`
+
+Solutions are authored SEO and segue pages declared in `metaContent.solutions`. Core owns `/solutions` and `/solutions/:slug` as a shared page pair, while app-local pages can override individual solution slugs when a real tool or richer bridge is needed.
 
 ### `spine/`
 
