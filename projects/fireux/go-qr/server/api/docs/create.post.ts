@@ -9,6 +9,7 @@ import {
   goQrStorageBucket,
   safeStorageFileName,
 } from '../../utils/goQrRecords'
+import { goQrBrand } from '../../utils/goQrBrand'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
@@ -78,5 +79,6 @@ export default defineEventHandler(async (event) => {
     slug,
     path: `/${encodeURIComponent(slug)}`,
     qr_path: `/${encodeURIComponent(slug)}/qr`,
+    powered_by: goQrBrand,
   }
 })

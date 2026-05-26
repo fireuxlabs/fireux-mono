@@ -1,6 +1,6 @@
 <template>
   <main class="min-h-screen bg-white text-slate-950">
-    <div class="mx-auto flex min-h-screen flex-col items-center justify-center gap-1.5 p-2 text-center">
+    <div class="mx-auto flex min-h-screen flex-col items-center justify-center gap-2 p-2 text-center">
       <div class="space-y-0.5">
         <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
           Go QR
@@ -38,6 +38,19 @@
       <p class="max-w-[92vw] break-all text-[10px] text-slate-600">
         {{ publicUrl }}
       </p>
+
+      <a
+        href="https://go-qr.web.app"
+        class="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-900"
+      >
+        <span>Powered by</span>
+        <img
+          src="/img/app/logo.svg"
+          alt="Go QR"
+          class="size-4"
+        >
+        <span>Go QR</span>
+      </a>
     </div>
   </main>
 </template>
