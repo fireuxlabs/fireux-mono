@@ -15,7 +15,7 @@
       </header>
 
       <ClientOnly>
-        <GoQrUploadPanel class="mx-auto max-w-xl" />
+        <GoQrProviderPublicDocTool class="mx-auto max-w-xl" />
       </ClientOnly>
 
       <LandingSolutions variant="preview" />

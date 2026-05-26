@@ -16,7 +16,7 @@
         </p>
 
         <ClientOnly>
-          <GoQrUploadPanel class="max-w-xl" />
+          <GoQrProviderPublicDocTool class="max-w-xl" />
         </ClientOnly>
       </section>
 
@@ -123,18 +123,18 @@ const endpoints = [
   },
   {
     method: 'GET',
-    path: '/api/docs/availability?id=my-doc',
+    path: '/api/tools/public-doc',
+    description: 'Read the public-doc tool contract: labels, slug rules, limits, endpoints, and preview URL shape.',
+  },
+  {
+    method: 'GET',
+    path: '/api/tools/public-doc/availability?id=my-doc',
     description: 'Check whether a public document path is valid and available before creating it.',
   },
   {
     method: 'POST',
-    path: '/api/docs/create',
-    description: 'Upload a public file with a slug and optional type, then receive the public page and QR route.',
-  },
-  {
-    method: 'GET',
-    path: '/:slug/qr',
-    description: 'Open the generated QR page for printing, sharing, or scanning.',
+    path: '/api/tools/public-doc/create',
+    description: 'Upload a public file with a slug. The public-doc tool owns the internal doc type.',
   },
 ]
 
@@ -150,6 +150,7 @@ const clientExample = `const goQr = createGoQrClient({
 })
 
 const appInfo = await goQr.appInfo()
+const tool = await goQr.publicDoc.config()
 const availability = await goQr.publicDoc.availability('my-public-doc')
 
 if (availability.available) {
@@ -163,7 +164,7 @@ const requestExample = `const form = new FormData()
 form.append('slug', 'my-public-doc')
 form.append('file', file)
 
-const result = await fetch('https://go-qr.web.app/api/docs/create', {
+const result = await fetch('https://go-qr.web.app/api/tools/public-doc/create', {
   method: 'POST',
   body: form
 }).then((response) => response.json())`

@@ -7,6 +7,7 @@ import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
+import { goQrBrand } from './goQrBrand'
 
 export type GoQrRecord = {
   id: string
@@ -24,8 +25,10 @@ export type GoQrRecord = {
 }
 
 export const goQrCollectionName = 'documents'
+export const maxGoQrFileSizeMb = 10
+export const maxGoQrFileSizeBytes = maxGoQrFileSizeMb * 1024 * 1024
 const appId = 'go-qr'
-const reservedDocumentIds = [
+export const reservedGoQrDocumentIds = [
   'about',
   'admin',
   'api',
@@ -52,7 +55,7 @@ export function assertDocumentId(id: string) {
   const result = validatePublicSlug(id, {
     label: 'Document path',
     reservedScope: 'root',
-    reserved: reservedDocumentIds,
+    reserved: reservedGoQrDocumentIds,
   })
 
   if (!result.isValid) {
@@ -217,5 +220,85 @@ export function createGoQrRecord(input: {
     is_public: true,
     created_at: FieldValue.serverTimestamp(),
     updated_at: FieldValue.serverTimestamp(),
+  }
+}
+
+type MultipartPart = {
+  name?: string
+  filename?: string
+  type?: string
+  data?: Buffer
+}
+
+function multipartFieldValue(parts: MultipartPart[] | undefined, name: string) {
+  const part = parts?.find((entry) => entry.name === name)
+  return part?.data ? part.data.toString('utf8').trim() : ''
+}
+
+export async function createGoQrDocumentFromMultipart(
+  parts: MultipartPart[] | undefined,
+  options: {
+    type?: 'doc' | 'food-menu'
+  } = {}
+) {
+  const filePart = parts?.find((part) => part.name === 'file' && part.filename)
+  const slug = normalizeDocumentId(multipartFieldValue(parts, 'slug'))
+  const type = options.type || normalizeDocumentType(multipartFieldValue(parts, 'type'))
+
+  assertDocumentId(slug)
+  assertDocumentType(type)
+
+  if (!filePart?.data?.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Document file is required',
+    })
+  }
+
+  if (filePart.data.byteLength > maxGoQrFileSizeBytes) {
+    throw createError({
+      statusCode: 413,
+      statusMessage: `Max file size is ${maxGoQrFileSizeMb} MB`,
+    })
+  }
+
+  const docRef = goQrRecordRef(slug)
+  const existing = await docRef.get()
+  if (existing.exists) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Document path is already taken',
+    })
+  }
+
+  const fileName = safeStorageFileName(filePart.filename)
+  const fileType = String(filePart.type || 'application/octet-stream').trim()
+  const storagePath = `go-qr/documents/${slug}/raw/${fileName}`
+  const bucket = goQrStorageBucket()
+
+  await bucket.file(storagePath).save(filePart.data, {
+    contentType: fileType,
+    resumable: false,
+    metadata: {
+      cacheControl: 'public, max-age=300',
+    },
+  })
+
+  const record = createGoQrRecord({
+    slug,
+    type,
+    fileName,
+    fileType,
+    storagePath,
+  })
+
+  await docRef.create(record)
+
+  return {
+    ok: true,
+    slug,
+    path: `/${encodeURIComponent(slug)}`,
+    qr_path: `/${encodeURIComponent(slug)}/qr`,
+    powered_by: goQrBrand,
   }
 }

@@ -4,26 +4,8 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   goQrCollectionName,
   normalizeDocumentId,
+  reservedGoQrDocumentIds,
 } from '../../utils/goQrRecords'
-
-const reservedDocumentIds = [
-  'about',
-  'admin',
-  'api',
-  'assets',
-  'blog',
-  'console',
-  'dashboard',
-  'docs',
-  'food-menu',
-  'get-started',
-  'help',
-  'pricing',
-  'privacy',
-  'products',
-  'solutions',
-  'terms',
-]
 
 function readId(value: unknown) {
   const raw = Array.isArray(value) ? value[0] : value
@@ -36,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const availability = await checkPublicSlugAvailability(id, {
     label: 'Document path',
     reservedScope: 'root',
-    reserved: reservedDocumentIds,
+    reserved: reservedGoQrDocumentIds,
     takenMessage: 'This doc path is already taken.',
     exists: async (slug) => {
       const snap = await db.collection(goQrCollectionName).doc(slug).get()
