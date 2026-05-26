@@ -171,6 +171,7 @@ const props = withDefaults(defineProps<{
   previewPathSuffix?: string
   resultBaseUrl?: string
   poweredByEndpoint?: string
+  showPoweredBy?: boolean
   navigateOnSuccess?: boolean
   availabilityEndpoint?: string
   takenMessage?: string
@@ -196,6 +197,7 @@ const props = withDefaults(defineProps<{
   previewPathSuffix: '/qr',
   resultBaseUrl: '',
   poweredByEndpoint: '',
+  showPoweredBy: true,
   navigateOnSuccess: false,
   availabilityEndpoint: '',
   takenMessage: 'This path is already taken.',
@@ -257,7 +259,7 @@ onMounted(async () => {
       if (response.preview_base_url) configuredPreviewBaseUrl.value = response.preview_base_url
       if (response.preview_path_suffix) configuredPreviewPathSuffix.value = response.preview_path_suffix
       if (response.result_base_url) configuredResultBaseUrl.value = response.result_base_url
-      if (response.powered_by?.name && response.powered_by.url) poweredBy.value = response.powered_by
+      if (props.showPoweredBy && response.powered_by?.name && response.powered_by.url) poweredBy.value = response.powered_by
     } catch {
       configuredPreviewBaseUrl.value = ''
       configuredPreviewPathSuffix.value = ''
@@ -265,7 +267,7 @@ onMounted(async () => {
     }
   }
 
-  if (!props.poweredByEndpoint) return
+  if (!props.poweredByEndpoint || !props.showPoweredBy) return
 
   try {
     const response = await $fetch<PoweredByBrand>(props.poweredByEndpoint)
@@ -355,7 +357,7 @@ async function createQr() {
       method: 'POST',
       body: formData,
     })
-    if (response.powered_by?.name && response.powered_by.url) {
+    if (props.showPoweredBy && response.powered_by?.name && response.powered_by.url) {
       poweredBy.value = response.powered_by
     }
 

@@ -1,7 +1,7 @@
 <template>
   <PublicSimplePage
     title="QR code restaurant menu"
-    description="Upload a menu file and get a scannable Food Menu QR page powered by Go QR."
+    description="A simple public menu page for restaurants that want a QR menu before they need the full Misebox workflow."
     back-to="/solutions"
     back-label="Solutions"
   >
@@ -12,58 +12,21 @@
         </UBadge>
         <p class="text-base leading-7 text-muted">
           This is the simplest hospitality version: no ordering, no translation, no dish setup.
-          Upload a public menu file, choose a short path, and get a QR page labelled Food Menu.
+          Start with a public menu page, then move into richer Misebox workflows when the venue needs
+          editable sections, dishes, prices, allergens, translations, prep, suppliers, or ordering later.
         </p>
       </section>
 
       <UCard variant="subtle">
         <template #header>
-          <div>
-            <h2 class="text-lg font-semibold text-highlighted">
-              Create a food menu QR
-            </h2>
-            <p class="text-sm text-muted">
-              Anonymous upload for one public menu file.
-            </p>
-          </div>
-        </template>
-
-        <ClientOnly>
-          <PublicQrFileUploadTool
-            endpoint="/api/go-qr/food-menu/create"
-            upload-type="food-menu"
-            upload-label="Drop your menu here"
-            cta-label="Create food menu QR"
-            loading-label="Creating menu QR..."
-            safety-copy="Menu QR files are public. Anyone with the link or QR code can view the menu."
-            upsell-copy="Your QR page will say Food Menu. Sign in later to add your restaurant logo."
-            slug-label="Menu path"
-            slug-validation-label="Menu path"
-            slug-placeholder="my-restaurant-menu"
-            min-height-class="min-h-64"
-            success-title="Your menu QR is ready"
-            open-target-label="Open menu"
-            open-qr-label="Open QR page"
-            :reserved-slugs="reservedDocumentSlugs"
-          />
-
-          <template #fallback>
-            <div class="rounded-md border border-default bg-muted/20 p-6 text-sm text-muted">
-              Loading menu QR tool...
-            </div>
-          </template>
-        </ClientOnly>
-      </UCard>
-
-      <UCard variant="subtle">
-        <template #header>
           <h2 class="text-lg font-semibold text-highlighted">
-            When to use Misebox next
+            Roadmap
           </h2>
         </template>
         <p class="text-sm leading-6 text-muted">
-          Use this quick tool when the menu is just a finished file. Move into Misebox when the restaurant
-          wants editable sections, dishes, prices, allergens, translations, prep, suppliers, or ordering later.
+          This page is reserved for the hospitality-specific QR menu path. The first useful version should
+          create or connect to a public menu, then make it easy to add restaurant identity and richer Misebox
+          menu features over time.
         </p>
       </UCard>
     </div>
@@ -96,8 +59,8 @@ useSeoMeta({
   title: 'QR code restaurant menu',
   ogTitle: 'QR code restaurant menu',
   twitterTitle: 'QR code restaurant menu',
-  description: 'Upload a menu file and get a scannable Food Menu QR page powered by Go QR.',
-  ogDescription: 'Upload a menu file and get a scannable Food Menu QR page powered by Go QR.',
-  twitterDescription: 'Upload a menu file and get a scannable Food Menu QR page powered by Go QR.',
+  description: 'A simple public menu page for restaurants that want a QR menu before they need the full Misebox workflow.',
+  ogDescription: 'A simple public menu page for restaurants that want a QR menu before they need the full Misebox workflow.',
+  twitterDescription: 'A simple public menu page for restaurants that want a QR menu before they need the full Misebox workflow.',
 })
 </script>
