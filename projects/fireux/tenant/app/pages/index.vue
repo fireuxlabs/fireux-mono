@@ -18,7 +18,7 @@
       <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
     </template>
   </LandingShell>
-  <LandingSolutions
+  <LandingCardGrid
     :title="solutions.title"
     :subtitle="solutions.subtitle"
     :items="solutions.items"

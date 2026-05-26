@@ -38,6 +38,15 @@ The shared index reads the current app's `metaContent.solutions`.
 
 The shared child route renders a simple boilerplate page for any declared solution slug.
 
+Core also owns `LandingSolutions`. It fetches the current app's solutions and renders the same panels in:
+
+```txt
+landing preview mode
+/solutions hub mode
+```
+
+Do not build a second app-local solutions card system for landing pages.
+
 The shared footer nav item is visible for ecosystem/global apps and standalone apps. Tenant apps do not show Solutions by default.
 
 Apps may add an app-local page at `/solutions/:slug` when that solution needs a real tool, data flow, or richer product bridge. The app-local page overrides the core boilerplate route.

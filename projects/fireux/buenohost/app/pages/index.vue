@@ -172,6 +172,8 @@
         <UPricingPlans :plans="pricingPlans" />
       </section>
 
+      <LandingSolutions variant="preview" />
+
       <section
         class="space-y-6"
         aria-labelledby="companion-console-demo"

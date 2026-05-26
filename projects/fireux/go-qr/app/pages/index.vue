@@ -17,6 +17,8 @@
       <ClientOnly>
         <GoQrUploadPanel class="mx-auto max-w-xl" />
       </ClientOnly>
+
+      <LandingSolutions variant="preview" />
     </UContainer>
   </main>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <LandingSolutions
+  <LandingCardGrid
     :title="title"
     :subtitle="subtitle"
     :items="items"

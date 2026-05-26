@@ -156,6 +156,7 @@
     </slot>
 
     <slot name="before-get-started" />
+    <CoreLandingSolutions variant="preview" />
     <slot name="get-started" />
     <slot name="apps" />
     <slot name="products" />
@@ -170,6 +171,7 @@ import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
 import { toConsoleFamilyLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
+import CoreLandingSolutions from './Solutions.vue'
 
 type RightPanelItem = {
   title: string

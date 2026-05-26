@@ -23,6 +23,10 @@
         </UButton>
       </template>
     </UPageHeader>
+
+    <UPageBody>
+      <LandingSolutions variant="preview" />
+    </UPageBody>
   </UPage>
 </template>
 
