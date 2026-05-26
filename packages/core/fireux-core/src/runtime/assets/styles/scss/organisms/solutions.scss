@@ -17,6 +17,18 @@ Solutions surfaces:
 	min-width: 0;
 }
 
+.fx-solutions__back {
+	width: fit-content;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--ui-primary, currentColor);
+	text-decoration: none;
+}
+
+.fx-solutions__back:hover {
+	text-decoration: underline;
+}
+
 .fx-solutions--preview .fx-solutions__header {
 	margin-inline: auto;
 	max-width: 42rem;

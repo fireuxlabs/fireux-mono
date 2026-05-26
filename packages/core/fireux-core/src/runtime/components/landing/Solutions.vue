@@ -5,7 +5,20 @@
     :class="variant === 'hub' ? 'fx-solutions--hub' : 'fx-solutions--preview'"
   >
     <div class="fx-solutions__header">
-      <UBadge color="primary" variant="soft">Solutions</UBadge>
+      <NuxtLink
+        v-if="variant === 'hub'"
+        to="/"
+        class="fx-solutions__back"
+      >
+        {{ appName }}
+      </NuxtLink>
+      <UBadge
+        v-else
+        color="primary"
+        variant="soft"
+      >
+        Solutions
+      </UBadge>
       <component
         :is="variant === 'hub' ? 'h1' : 'h2'"
         class="fx-solutions__title"

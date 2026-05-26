@@ -1,8 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Publish simple visitor information in every language."
-      description="Create QR-ready pages for instructions, menus and local notes."
+      title="Translation pages for real visitor information."
+      description="Create QR-ready pages for guest instructions, menus, signs, notices, and local guides."
     >
       <template #headline>
         <UBadge color="primary" variant="soft">
@@ -45,6 +45,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Sproochli',
-  description: 'Simple public pages for BNB guides, information pages, and read-only menus.',
+  description: 'QR-ready translation pages for guest instructions, menus, signs, notices, and local guides.',
 })
 </script>

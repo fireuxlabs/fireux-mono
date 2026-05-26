@@ -3,7 +3,6 @@
     v-if="solution"
     :title="solution.title"
     :description="solution.description"
-    eyebrow="Solution"
     back-to="/solutions"
     back-label="Solutions"
   >
