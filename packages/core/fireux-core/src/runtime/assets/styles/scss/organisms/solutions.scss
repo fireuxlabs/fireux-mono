@@ -194,3 +194,73 @@ Solutions surfaces:
 	line-height: 1.5rem;
 	color: var(--ui-text-muted, var(--ui-text));
 }
+
+.fx-solution-admin {
+	display: grid;
+	gap: 1rem;
+	min-width: 0;
+}
+
+.fx-solution-admin__text {
+	margin: 0;
+	white-space: pre-line;
+	font-size: 0.875rem;
+	line-height: 1.6;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+.fx-solution-admin__block {
+	display: grid;
+	gap: 0.5rem;
+	min-width: 0;
+}
+
+.fx-solution-admin__title {
+	margin: 0;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--ui-text-highlighted, var(--ui-text));
+}
+
+.fx-solution-admin__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+}
+
+.fx-solution-admin__list {
+	display: grid;
+	gap: 0.375rem;
+	margin: 0;
+	padding-left: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.5rem;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+.fx-solution-admin__checklist {
+	display: grid;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.875rem;
+	line-height: 1.5rem;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+.fx-solution-admin__checklist li {
+	display: flex;
+	gap: 0.625rem;
+	min-width: 0;
+}
+
+.fx-solution-admin__checkbox {
+	flex: 0 0 auto;
+	width: 1rem;
+	height: 1rem;
+	margin-top: 0.25rem;
+	border: 1px solid var(--ui-border, currentColor);
+	border-radius: 0.25rem;
+	background: var(--ui-bg, transparent);
+}

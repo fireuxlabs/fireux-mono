@@ -48,6 +48,12 @@ export type FireuxMetaSolution = {
   body?: string
   /** Short implementation/use-flow notes shown on the shared boilerplate page. */
   steps?: string[]
+  /** Optional admin-only business case notes for planning and fulfillment. */
+  businessCase?: string
+  /** Optional admin-only provisioning checklist for the tool/workflow behind the solution. */
+  provisioning?: string[]
+  /** Optional admin-only fulfillment checklist for shipping the solution. */
+  checklist?: string[]
   /** Optional sibling app or product that owns the deeper workflow. */
   relatedApp?: FireuxMetaRelatedApp
   /** Optional solution-specific action. Defaults to /solutions/:slug. */

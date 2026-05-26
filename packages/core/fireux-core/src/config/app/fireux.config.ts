@@ -202,7 +202,10 @@ function loadFireuxAppMetaContent(explicitMeta?: FireuxMetaContent): FireuxMetaC
   }
 }
 
-type FireuxSolutionMarkdownContent = Pick<FireuxMetaSolution, 'body' | 'steps'>
+type FireuxSolutionMarkdownContent = Pick<
+  FireuxMetaSolution,
+  'body' | 'steps' | 'businessCase' | 'provisioning' | 'checklist'
+>
 
 function normalizeSolutionSlug(input: string): string {
   return input
@@ -226,17 +229,24 @@ function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSo
   const out: Record<string, FireuxSolutionMarkdownContent> = {}
   const lines = markdown.replace(/\r\n/g, '\n').split('\n')
   let slug = ''
-  let mode: 'body' | 'steps' = 'body'
+  let mode: 'body' | 'steps' | 'businessCase' | 'provisioning' | 'checklist' = 'body'
   let bodyLines: string[] = []
   let steps: string[] = []
+  let businessCaseLines: string[] = []
+  let provisioning: string[] = []
+  let checklist: string[] = []
 
   const flush = () => {
     if (!slug) return
 
     const body = normalizeMarkdownBody(bodyLines)
+    const businessCase = normalizeMarkdownBody(businessCaseLines)
     out[slug] = {
       ...(body ? { body } : {}),
       ...(steps.length ? { steps } : {}),
+      ...(businessCase ? { businessCase } : {}),
+      ...(provisioning.length ? { provisioning } : {}),
+      ...(checklist.length ? { checklist } : {}),
     }
   }
 
@@ -248,6 +258,9 @@ function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSo
       mode = 'body'
       bodyLines = []
       steps = []
+      businessCaseLines = []
+      provisioning = []
+      checklist = []
       continue
     }
 
@@ -258,9 +271,38 @@ function parseFireuxSolutionsMarkdown(markdown: string): Record<string, FireuxSo
       continue
     }
 
+    if (/^###\s+business case\s*$/i.test(line.trim())) {
+      mode = 'businessCase'
+      continue
+    }
+
+    if (/^###\s+provisioning\s*$/i.test(line.trim())) {
+      mode = 'provisioning'
+      continue
+    }
+
+    if (/^###\s+checklist\s*$/i.test(line.trim())) {
+      mode = 'checklist'
+      continue
+    }
+
     if (mode === 'steps') {
       const step = line.match(/^\s*(?:[-*]|\d+\.)\s+(.+?)\s*$/)
       if (step?.[1]) steps.push(step[1].trim())
+      continue
+    }
+
+    if (mode === 'businessCase') {
+      businessCaseLines.push(line)
+      continue
+    }
+
+    if (mode === 'provisioning' || mode === 'checklist') {
+      const item = line.match(/^\s*(?:[-*]|\d+\.)\s+(.+?)\s*$/)
+      if (item?.[1]) {
+        if (mode === 'provisioning') provisioning.push(item[1].trim())
+        else checklist.push(item[1].trim())
+      }
       continue
     }
 
@@ -295,6 +337,9 @@ function mergeFireuxSolutionMarkdownContent(
         ...solution,
         ...(markdown.body ? { body: markdown.body } : {}),
         ...(markdown.steps?.length ? { steps: markdown.steps } : {}),
+        ...(markdown.businessCase ? { businessCase: markdown.businessCase } : {}),
+        ...(markdown.provisioning?.length ? { provisioning: markdown.provisioning } : {}),
+        ...(markdown.checklist?.length ? { checklist: markdown.checklist } : {}),
       }
     }),
   }

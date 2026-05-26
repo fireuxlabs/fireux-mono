@@ -1,7 +1,7 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 export const buenoHostProductSentence =
-  'Digital stay companions for rooms, apartments, holidays, and serviced stays.'
+  'Digital stay guides for hosts, properties, and guests.'
 
 export const buenoHostLanguage = {
   copy: {
@@ -14,7 +14,7 @@ export const buenoHostLanguage = {
       'check-in details',
     ],
     positioning_html:
-      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> for your guests.',
+      'BuenoHost turns property and guest information into <strong>digital stay guides</strong> for hosts and guests.',
     promise_html:
       'Hosts keep Wi-Fi, check-in details, parking, house rules, checkout notes, emergency contacts, and local recommendations in one clean guest-facing experience.',
     console_bridge_html:

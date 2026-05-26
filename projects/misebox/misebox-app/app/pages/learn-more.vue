@@ -17,6 +17,71 @@
     </section>
 
     <section>
+      <UContainer class="space-y-6">
+        <div class="max-w-3xl space-y-3">
+          <UBadge color="primary" variant="soft">Business case</UBadge>
+          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+            Turn the menu into a working kitchen system.
+          </h2>
+          <p class="text-base leading-7 text-gray-600 dark:text-gray-300">
+            Hospitality teams already run complex operations across paper, WhatsApp, spreadsheets,
+            PDFs, supplier messages, staff memory, and half-used back-office tools. Misebox turns
+            that operational mess into structured, reusable kitchen knowledge.
+          </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <UCard>
+            <template #header>
+              <h3 class="text-base font-semibold">Customer pain</h3>
+            </template>
+            <ul class="list-disc space-y-2 pl-5 text-sm text-muted">
+              <li>Menus change faster than PDFs, staff notes, and translations can keep up.</li>
+              <li>Recipes, prep lists, allergens, and supplier information live separately.</li>
+              <li>Staff turnover turns kitchen knowledge into memory loss.</li>
+            </ul>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h3 class="text-base font-semibold">Misebox opportunity</h3>
+            </template>
+            <ul class="list-disc space-y-2 pl-5 text-sm text-muted">
+              <li>Public menus connect to dishes, recipes, ingredients, allergens, and prep.</li>
+              <li>Kitchen profiles and jobs connect operations with hospitality hiring.</li>
+              <li>Supplier and ingredient records support sourcing and menu operations.</li>
+            </ul>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h3 class="text-base font-semibold">Best first wedge</h3>
+            </template>
+            <p class="text-sm leading-6 text-muted">
+              Start with QR and public menus, then grow inward into structured dishes,
+              allergens, recipes, prep, suppliers, teams, and hiring.
+            </p>
+          </UCard>
+        </div>
+
+        <UCard variant="subtle">
+          <div class="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <div class="space-y-2">
+              <h3 class="text-base font-semibold text-highlighted">Scope guardrail</h3>
+              <p class="text-sm leading-6 text-muted">
+                Every Misebox feature should attach to a real operational object: menu, dish,
+                recipe, ingredient, prep task, supplier, team member, job, or public menu URL.
+              </p>
+            </div>
+            <UButton to="/solutions" color="primary" variant="soft" icon="i-lucide-lightbulb">
+              View solutions
+            </UButton>
+          </div>
+        </UCard>
+      </UContainer>
+    </section>
+
+    <section>
       <UContainer class="grid gap-6 md:grid-cols-2">
         <UCard>
           <template #header>

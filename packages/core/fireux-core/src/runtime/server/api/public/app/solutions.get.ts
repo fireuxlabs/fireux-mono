@@ -96,6 +96,9 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   const status = normalizeStatus(value.status)
   const body = asString(value.body)
   const steps = asStringArray(value.steps)
+  const businessCase = asString(value.businessCase)
+  const provisioning = asStringArray(value.provisioning)
+  const checklist = asStringArray(value.checklist)
   const relatedApp = normalizeRelatedApp(value.relatedApp)
   const cta = normalizeCta(value.cta)
   const keywords = asStringArray(value.keywords)
@@ -108,6 +111,9 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
     ...(status ? { status } : {}),
     ...(body ? { body } : {}),
     ...(steps.length ? { steps } : {}),
+    ...(businessCase ? { businessCase } : {}),
+    ...(provisioning.length ? { provisioning } : {}),
+    ...(checklist.length ? { checklist } : {}),
     ...(relatedApp ? { relatedApp } : {}),
     ...(cta ? { cta } : {}),
     ...(keywords.length ? { keywords } : {}),

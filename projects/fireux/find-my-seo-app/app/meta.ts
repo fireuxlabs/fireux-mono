@@ -1,5 +1,8 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
+export const findMySeoProductSentence =
+  'Find, compare, and contact SEO professionals for specific SEO problems.'
+
 export const appMeta = {
   name: 'Find My SEO',
   landingPrimaryCtaLabel: 'Find an SEO specialist',
@@ -52,7 +55,7 @@ export const metaContent = defineFireuxMeta({
       'provider profiles',
     ],
     positioning_html:
-      '<strong>Connect your project with SEO professionals.</strong> Compare specialists by service, sector, and proof.',
+      '<strong>Find, compare, and contact SEO professionals</strong> for specific SEO problems.',
     promise_html:
       'Search-led profiles help buyers compare SEO specialists by service, sector, availability, reviews, and proof.',
   },

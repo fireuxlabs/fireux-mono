@@ -68,6 +68,85 @@
           </UButton>
         </div>
       </UCard>
+
+      <UCard
+        v-if="isAdmin && hasAdminPlanning"
+        variant="subtle"
+      >
+        <template #header>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="fx-solution-panel__title">
+              Admin planning
+            </h2>
+            <UBadge color="neutral" variant="soft">
+              Internal
+            </UBadge>
+          </div>
+        </template>
+
+        <div class="fx-solution-admin">
+          <p
+            v-if="solution.businessCase"
+            class="fx-solution-admin__text"
+          >
+            {{ solution.businessCase }}
+          </p>
+
+          <div
+            v-if="solution.keywords?.length"
+            class="fx-solution-admin__block"
+          >
+            <h3 class="fx-solution-admin__title">
+              Search intent
+            </h3>
+            <div class="fx-solution-admin__chips">
+              <UBadge
+                v-for="keyword in solution.keywords"
+                :key="keyword"
+                color="neutral"
+                variant="soft"
+              >
+                {{ keyword }}
+              </UBadge>
+            </div>
+          </div>
+
+          <div
+            v-if="solution.provisioning?.length"
+            class="fx-solution-admin__block"
+          >
+            <h3 class="fx-solution-admin__title">
+              Provisioning
+            </h3>
+            <ul class="fx-solution-admin__list">
+              <li
+                v-for="item in solution.provisioning"
+                :key="item"
+              >
+                {{ item }}
+              </li>
+            </ul>
+          </div>
+
+          <div
+            v-if="solution.checklist?.length"
+            class="fx-solution-admin__block"
+          >
+            <h3 class="fx-solution-admin__title">
+              Checklist
+            </h3>
+            <ul class="fx-solution-admin__checklist">
+              <li
+                v-for="item in solution.checklist"
+                :key="item"
+              >
+                <span class="fx-solution-admin__checkbox" aria-hidden="true" />
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </UCard>
     </div>
 
     <template #actions>
@@ -87,6 +166,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createError, useAsyncData, useRoute, useSeoMeta } from '#imports'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
 
 type SolutionsResponse = {
@@ -95,6 +175,7 @@ type SolutionsResponse = {
 }
 
 const route = useRoute()
+const { isAdmin } = useUser()
 const requestedSlug = computed(() =>
   Array.isArray(route.params.slug) ? route.params.slug[0] : String(route.params.slug || '')
 )
@@ -105,6 +186,14 @@ const { data } = await useAsyncData('public-app-solutions', () =>
 
 const solution = computed(() =>
   (data.value?.solutions || []).find((entry) => entry.slug === requestedSlug.value)
+)
+const hasAdminPlanning = computed(() =>
+  Boolean(
+      solution.value?.businessCase ||
+      solution.value?.keywords?.length ||
+      solution.value?.provisioning?.length ||
+      solution.value?.checklist?.length
+  )
 )
 
 if (!solution.value) {

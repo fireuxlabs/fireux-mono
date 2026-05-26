@@ -1,6 +1,7 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
-export const sproochliProductSentence = 'Multilingual QR pages for real-world places.'
+export const sproochliProductSentence =
+  'Translation-ready public pages for instructions, menus, signs, notices, and local information.'
 
 type SproochliRouteKind = 'public' | 'console'
 
@@ -34,7 +35,7 @@ export const metaContent = defineFireuxMeta({
       'cached languages',
     ],
     positioning_html:
-      'Sproochli creates <strong>multilingual QR pages</strong> for real-world places that need clear visitor information without a heavy app.',
+      'Sproochli creates <strong>translation-ready public pages</strong> for instructions, menus, signs, notices, and local information.',
     promise_html:
       'Owners write the original page, approve certified translations, and can later use cached generated translations for specific pages.',
     console_bridge_html:

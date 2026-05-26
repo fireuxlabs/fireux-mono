@@ -1,11 +1,12 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
-export const goQrProductSentence = 'Upload a doc. Get a QR code.'
+export const goQrProductSentence =
+  'Turn one public thing into a scannable QR page or QR code.'
 
 export const goQrLanguage = {
   copy: {
     big_personality: 'Scan The Doc',
-    headline: 'Upload a doc. Get a QR code.',
+    headline: 'Turn one public thing into a QR code.',
     highlight_terms: [
       'doc hosting',
       'QR code',
@@ -13,7 +14,7 @@ export const goQrLanguage = {
       'small business docs',
     ],
     positioning_html:
-      'Go QR turns a public doc into a <strong>shareable QR page</strong>.',
+      'Go QR turns a public document, link, menu, guide, or contact action into a <strong>scannable QR page or QR code</strong>.',
     promise_html:
       'Upload the doc, share the link, print the QR code, and let people open the right information on their phone.',
     console_bridge_html:

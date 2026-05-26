@@ -41,6 +41,24 @@ app/solutions.md
 
 Use one `## solution-slug` heading per route. Body copy under the heading becomes the route body. A `### How this comes to life` list becomes the route steps.
 
+Apps may also include admin-only planning sections:
+
+```md
+### Business case
+
+Internal planning prose for why the solution matters.
+
+### Provisioning
+
+- Records, routes, consoles, bridges, and seed data required to fulfill it.
+
+### Checklist
+
+- Admin-only fulfillment tasks for shipping the solution.
+```
+
+These sections are passed through runtime meta but should only render for app admins.
+
 Core owns the shared route mechanism:
 
 ```txt
