@@ -11,7 +11,7 @@ import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useUserHandleClaim } from '../../mutations/useUserHandleClaim'
-import { createUserNotification } from '../ensureHelpers'
+import { createUserNotification } from '../createHelpers'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
 function avatarFileExtension(source: File | Blob): string {

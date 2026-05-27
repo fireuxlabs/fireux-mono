@@ -13,17 +13,17 @@ import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { requireUid } from '../../../utils/useEnsureCommon'
 
-type EnsureResult = {
+type ProfileCreateResult = {
   createdCore: boolean
   createdApp: boolean
 }
 
 /**
- * Minimal profile ensure.
- * - Upserts the core profile document `<collection>/<uid>`
- * - When an app id exists, also upserts `apps/<appId>/<collection>/<uid>`
+ * Minimal profile create.
+ * - Creates the core profile document `<collection>/<uid>` when missing.
+ * - When an app id exists, also creates `apps/<appId>/<collection>/<uid>` when missing.
  */
-export function useProfileEnsure(config: ProfileConfig) {
+export function useProfileCreate(config: ProfileConfig) {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const appDb = useFirestore()
   const identityDb = useFirestore(identityDatabaseId)
@@ -33,7 +33,9 @@ export function useProfileEnsure(config: ProfileConfig) {
   const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
   const { appId } = useFireUXConfig()
 
-  const ensure = async (overrideUid?: string | null): Promise<EnsureResult> => {
+  const createProfile = async (
+    overrideUid?: string | null
+  ): Promise<ProfileCreateResult> => {
     const { uid: authedUid } = await requireUid()
     const uid = (overrideUid ?? authedUid).trim()
 
@@ -105,7 +107,7 @@ export function useProfileEnsure(config: ProfileConfig) {
         })
       } catch (error) {
         if (import.meta.dev) {
-          console.warn('[useProfileEnsure] failed to tag user profile', {
+          console.warn('[useProfileCreate] failed to tag user profile', {
             uid,
             profileId: config.id,
             error,
@@ -117,5 +119,5 @@ export function useProfileEnsure(config: ProfileConfig) {
     return { createdCore, createdApp }
   }
 
-  return { ensure }
+  return { createProfile }
 }

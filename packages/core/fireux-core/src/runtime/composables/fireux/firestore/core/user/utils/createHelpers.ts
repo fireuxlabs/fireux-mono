@@ -26,14 +26,14 @@ import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 
-export type EnsureCoreOptions = {
+export type CreateCoreOptions = {
   displayName?: string
   email?: string
   avatar?: string | null
   ecosystemName?: string
 }
 
-export type EnsureCoreResult = {
+export type CreateCoreResult = {
   created: boolean
   snapshot?: DocumentSnapshot<User>
   displayName: string
@@ -54,10 +54,10 @@ function resolveCoreUserAvatar(avatar?: string | null): string {
   return ''
 }
 
-export async function ensureCoreUserDocument(
+export async function createCoreUserDocument(
   uid: string,
-  options: EnsureCoreOptions = {}
-): Promise<EnsureCoreResult> {
+  options: CreateCoreOptions = {}
+): Promise<CreateCoreResult> {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const db = useFirestore(identityDatabaseId)
   const ref = doc(db, 'users', uid)
@@ -67,7 +67,7 @@ export async function ensureCoreUserDocument(
     const data = snapshot.data() as User | undefined
     const existingName = data?.display_name
     if (!existingName) {
-      throw new Error('[ensureCoreUserDocument] Existing user missing display_name')
+      throw new Error('[createCoreUserDocument] Existing user missing display_name')
     }
 
     // Normalize canon-required fields without inventing identity data.
@@ -111,14 +111,14 @@ export async function ensureCoreUserDocument(
 
   const displayName = normalizePublicDisplayNameSeed(options.displayName ?? '')
   if (!displayName) {
-    throw new Error('[ensureCoreUserDocument] Missing displayName')
+    throw new Error('[createCoreUserDocument] Missing displayName')
   }
   const email = options.email
   if (!email) {
-    throw new Error('[ensureCoreUserDocument] Missing email')
+    throw new Error('[createCoreUserDocument] Missing email')
   }
   const resolvedAvatar = resolveCoreUserAvatar(options.avatar)
-  // EnsureCore is responsible for creating the core document, but should not
+  // Core user create is responsible for the core document, but should not
   // create membership side effects (like notifications) by default.
   const handle = makeHandle(displayName, uid)
   const payload = {
@@ -142,13 +142,13 @@ export async function ensureCoreUserDocument(
   return { created: true, displayName, handle }
 }
 
-export type EnsureMembershipResult = { created: boolean }
+export type CreateMembershipResult = { created: boolean }
 
-export async function ensureUserAppMembership(
+export async function createUserAppMembership(
   appId: string,
   uid: string,
   membershipRole: 'admin' | 'user'
-): Promise<EnsureMembershipResult> {
+): Promise<CreateMembershipResult> {
   const actor = await useRequireUser()
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
@@ -166,13 +166,13 @@ export async function ensureUserAppMembership(
 
   if (!appSnap.exists()) {
     throw new Error(
-      `[ensureUserAppMembership] Missing app doc for appId=${appId}; call createApp first`
+      `[createUserAppMembership] Missing app doc for appId=${appId}; call createApp first`
     )
   }
 
   if (!userSnap.exists()) {
     throw new Error(
-      `[ensureUserAppMembership] Missing core user doc for uid=${uid}; call ensureCoreUserDocument first`
+      `[createUserAppMembership] Missing core user doc for uid=${uid}; call createCoreUserDocument first`
     )
   }
 
@@ -192,7 +192,7 @@ export async function ensureUserAppMembership(
     } catch (error) {
       repairedUserCount = created ? 0 : 1
       if (import.meta.dev) {
-        console.warn('[ensureUserAppMembership] failed to repair user count exactly', {
+        console.warn('[createUserAppMembership] failed to repair user count exactly', {
           appId,
           uid,
           error,

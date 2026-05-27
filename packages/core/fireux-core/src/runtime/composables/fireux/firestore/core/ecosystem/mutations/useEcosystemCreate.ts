@@ -22,13 +22,13 @@ async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) 
   return doc(ecosystemCollection, ecosystemId)
 }
 
-export function useEcosystemEnsure() {
+export function useEcosystemCreate() {
   const fireux = useFireUXConfig()
   const runtime = useRuntimeConfig()
   const app = useFirebaseApp()
   const db = getFirestore(app)
 
-  async function ensureEcosystemDoc() {
+  async function createEcosystem() {
     if (fireux.role !== 'global') return
 
     const runtimeProjectId = normalizeString(
@@ -138,5 +138,5 @@ export function useEcosystemEnsure() {
     await setDoc(ref, patch, { merge: true })
   }
 
-  return { ensureEcosystemDoc }
+  return { createEcosystem }
 }

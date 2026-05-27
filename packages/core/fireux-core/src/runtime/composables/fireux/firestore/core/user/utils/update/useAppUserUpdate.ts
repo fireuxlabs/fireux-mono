@@ -16,7 +16,7 @@ import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useFirestoreDelete } from '../../../../operations/useFirestoreDelete'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
-import { createUserNotification } from '../ensureHelpers'
+import { createUserNotification } from '../createHelpers'
 
 type AppMembershipActions = {
   /** Single, canonical role toggle (admin <-> user). */

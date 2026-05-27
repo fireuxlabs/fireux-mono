@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
@@ -137,7 +137,7 @@ const isAdminUser = computed(() =>
   appUser.value?.role === 'admin'
 )
 
-const { ensure } = useProfileEnsure(chefConfig)
+const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
@@ -147,7 +147,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    await ensure(docId.value)
+    await createProfileRecord(docId.value)
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
@@ -121,7 +121,7 @@ const isAdminUser = computed(() =>
 
 useAgentSeo(agentProfile, { id: agentId, displayName })
 
-const { ensure } = useProfileEnsure(agentConfig)
+const { createProfile: createProfileRecord } = useProfileCreate(agentConfig)
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
@@ -131,7 +131,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    await ensure(agentId.value)
+    await createProfileRecord(agentId.value)
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

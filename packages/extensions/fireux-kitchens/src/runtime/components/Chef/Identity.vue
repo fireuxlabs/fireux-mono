@@ -42,13 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
 
 const { coreProfile, profile: chefCardFromProfile } = useChef()
-const { ensure } = useProfileEnsure(chefConfig)
+const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
@@ -64,7 +64,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    await ensure()
+    await createProfileRecord()
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

@@ -3,9 +3,9 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
-  ensureCoreUserDocument,
-  ensureUserAppMembership,
-} from '../utils/ensureHelpers'
+  createCoreUserDocument,
+  createUserAppMembership,
+} from '../utils/createHelpers'
 
 function looksLikeEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+$/.test(value)
@@ -33,7 +33,7 @@ export function useUserCreate() {
   }> {
     const { uid, auth } = await requireUid()
     const { appId } = useFireUXConfig()
-    const core = await ensureCoreUserDocument(uid, {
+    const core = await createCoreUserDocument(uid, {
       displayName: toPublicDisplayNameSeed(auth.displayName, auth.email),
       email: auth.email ?? '',
       avatar: auth.photoURL ?? '',
@@ -93,7 +93,7 @@ export function useUserCreate() {
     }
 
     const membership = shouldCreateMembership
-      ? await ensureUserAppMembership(appId, uid, membershipRole)
+      ? await createUserAppMembership(appId, uid, membershipRole)
       : { created: false }
 
     return { createdCore: core.created, createdApp: membership.created, id: uid }

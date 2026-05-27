@@ -6,7 +6,7 @@ import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFor
 import { useFirestore } from '../../../vuefire'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
-import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
+import { useEcosystemCreate } from '../../ecosystem/mutations/useEcosystemCreate'
 import { useProjectEnsure } from '../../project/mutations/useProjectEnsure'
 import {
   buildAppEnsureCreateInput,
@@ -28,7 +28,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { ensureProjectDoc } = useProjectEnsure()
-  const { ensureFirestoreEcosystemDoc } = useFirestoreEcosystemEnsure()
+  const { createEcosystem } = useEcosystemCreate()
   const collectionPath = normalizeString(options.collectionPath || 'apps') || 'apps'
 
   async function createApp(input?: AppCreateInput): Promise<AppCreateResult> {
@@ -53,7 +53,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
 
     if (!input) {
       await ensureProjectDoc()
-      await ensureFirestoreEcosystemDoc()
+      await createEcosystem()
     }
 
     const ref = doc(db, collectionPath, resolvedId)

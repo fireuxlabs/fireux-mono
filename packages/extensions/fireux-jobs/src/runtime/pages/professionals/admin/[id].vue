@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
@@ -152,7 +152,7 @@ const devPayload = computed(() => ({
   appProfile: resolvedAppProfile.value,
 }))
 
-const { ensure } = useProfileEnsure(professionalConfig)
+const { createProfile: createProfileRecord } = useProfileCreate(professionalConfig)
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
@@ -162,7 +162,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    await ensure(userId.value)
+    await createProfileRecord(userId.value)
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

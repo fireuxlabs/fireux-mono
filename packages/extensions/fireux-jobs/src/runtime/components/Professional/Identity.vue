@@ -41,14 +41,14 @@
 </template>
 
 <script setup lang="ts">
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
 
 const { coreProfile, profile: professionalCardFromProfile } = useProfessional()
-const { ensure } = useProfileEnsure(professionalConfig)
+const { createProfile: createProfileRecord } = useProfileCreate(professionalConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
@@ -70,7 +70,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    await ensure()
+    await createProfileRecord()
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

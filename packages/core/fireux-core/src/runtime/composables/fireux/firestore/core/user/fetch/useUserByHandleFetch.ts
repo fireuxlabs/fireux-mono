@@ -36,7 +36,7 @@ export function useUserByHandleFetch(
   })
   const userMatchCache = new Map<string, Ref<HandleUserMatch[] | undefined>>()
 
-  const ensureUserMatch = (value: string) => {
+  const matchUser = (value: string) => {
     if (!userMatchCache.has(value)) {
       const q = fsq(
         collection(db, 'users'),
@@ -55,7 +55,7 @@ export function useUserByHandleFetch(
     normalizedHandle,
     (value) => {
       if (!value) return
-      ensureUserMatch(value)
+      matchUser(value)
     },
     { immediate: true }
   )
@@ -63,7 +63,7 @@ export function useUserByHandleFetch(
   const userMatchRows = computed<HandleUserMatch[] | undefined>(() => {
     const value = normalizedHandle.value
     if (!value) return undefined
-    return ensureUserMatch(value)?.value
+    return matchUser(value)?.value
   })
 
   const matchedUser = computed(() => {

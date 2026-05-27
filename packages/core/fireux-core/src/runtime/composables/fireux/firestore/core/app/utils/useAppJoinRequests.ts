@@ -42,7 +42,7 @@ export function useAppJoinRequests({
   const hidden = new Set<string>()
   const itemsRef = ref<JoinRequestItem[]>([])
 
-  const ensureUserRef = (uid: string): UserRef => {
+  const resolveUserRef = (uid: string): UserRef => {
     let ref = cache.get(uid)
     if (!ref) {
       ref = fetchedUser(uid).user
@@ -60,7 +60,7 @@ export function useAppJoinRequests({
   }
 
   const buildItem = (uid: string): JoinRequestItem => {
-    const ref = ensureUserRef(uid)
+    const ref = resolveUserRef(uid)
     const profile = ref.value
     if (!profile) {
       return { id: uid, title: uid, subtitle: '', avatar: '', to: '' }
