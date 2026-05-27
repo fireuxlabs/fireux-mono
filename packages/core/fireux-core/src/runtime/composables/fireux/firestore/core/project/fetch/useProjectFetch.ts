@@ -1,6 +1,8 @@
 import { computed, isRef, type Ref } from 'vue'
 import { getDemoProject } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
+import { useProjectInterface } from '../utils/view/useProjectInterface'
+import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type ProjectFetchDoc = ProjectSurface
@@ -16,7 +18,7 @@ type UseProjectFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = 'projects'
+const DEFAULT_COLLECTION_PATH = ProjectStorage.rootCollection
 const TEST_COLLECTION_PATH = 'test-projects'
 
 function resolveMaybeRef<T>(value: T | Ref<T>): T {
@@ -49,6 +51,7 @@ export function useProjectFetch(
   options: UseProjectFetchOptions = {}
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
+  const { surface } = useProjectInterface()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const sourceRef = computed<ProjectFetchSource>(() => {
     if (isRef(options.source)) return options.source.value
@@ -80,16 +83,17 @@ export function useProjectFetch(
 
     if (sourceRef.value === 'demo') {
       const configuredDemo = resolveMaybeRef(options.demoProject ?? null)
-      return normalizeProject(configuredDemo ?? resolveDefaultDemoProject(docId))
+      const entry = normalizeProject(configuredDemo ?? resolveDefaultDemoProject(docId))
+      return surface({ project: entry }) as ProjectFetchDoc | null
     }
 
     if (sourceRef.value === 'api') {
       const apiEntry = resolveMaybeRef(options.apiProject ?? null)
-      return normalizeProject(apiEntry ?? null)
+      return surface({ project: normalizeProject(apiEntry ?? null) }) as ProjectFetchDoc | null
     }
 
     const entry = firestoreSource.value?.value
-    return normalizeProject(entry)
+    return surface({ project: normalizeProject(entry) }) as ProjectFetchDoc | null
   })
 
   const pending = computed(() => {

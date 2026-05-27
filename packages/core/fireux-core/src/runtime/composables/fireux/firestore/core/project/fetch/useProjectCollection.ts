@@ -7,10 +7,12 @@ import {
 import { computed, isRef, type Ref } from 'vue'
 import { getDemoProjectScenarios } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
+import { useProjectInterface } from '../utils/view/useProjectInterface'
+import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
-const PROJECT_COLLECTION_PATH = 'projects'
+const PROJECT_COLLECTION_PATH = ProjectStorage.rootCollection
 const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
@@ -35,6 +37,7 @@ export function useProjectCollection(
 ) {
   const db = useFirestore()
   const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
+  const { surface } = useProjectInterface()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -107,10 +110,13 @@ export function useProjectCollection(
         if (!operatorIds.includes(filterOperatorId.value)) return acc
       }
 
-      acc.push({
-        ...project,
-        id,
+      const item = surface({
+        project: {
+          ...project,
+          id,
+        },
       })
+      if (item) acc.push(item)
 
       return acc
     }, [])

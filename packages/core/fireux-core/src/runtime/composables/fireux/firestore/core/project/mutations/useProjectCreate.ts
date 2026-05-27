@@ -7,6 +7,7 @@ import type {
   ProjectStatus,
   ProjectType,
 } from '../../../../../../models/system/project.model'
+import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
@@ -59,7 +60,8 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const collectionPath =
     options.test === true
       ? 'test-projects'
-      : normalizeString(options.collectionPath || 'projects') || 'projects'
+      : normalizeString(options.collectionPath || ProjectStorage.rootCollection) ||
+        ProjectStorage.rootCollection
   const isTestProjectCollection =
     options.test === true || collectionPath === 'test-projects'
 

@@ -8,7 +8,11 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Portfolio } from '../../../../../models/portfolio.model'
+import {
+  PortfolioStorage,
+  type Portfolio,
+} from '../../../../../models/portfolio.model'
+import { usePortfolioInterface } from '../utils/view/usePortfolioInterface'
 
 type PortfolioCollectionDoc = Partial<Portfolio> & {
   id?: string
@@ -20,7 +24,7 @@ type AppPortfolioOverlay = PortfolioCollectionDoc & {
   team_ids?: string[]
 }
 
-const DEFAULT_COLLECTION_PATH = 'portfolios'
+const DEFAULT_COLLECTION_PATH = PortfolioStorage.rootCollection
 const TEST_COLLECTION_PATH = 'test-portfolios'
 
 export type PortfolioCollectionFilterValue = string | number | null | undefined
@@ -54,6 +58,7 @@ export function usePortfolioCollection(
   const db = useFirestore()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
+  const { surface } = usePortfolioInterface()
   const sourceMode = computed<PortfolioCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -142,11 +147,14 @@ export function usePortfolioCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
+      const item = surface({
+        portfolio: {
+          ...(rootById.get(id) ?? {}),
+          id,
+        },
+        overlay: overlayById.get(id) ?? {},
       })
+      if (item) merged.push(item)
     }
 
     for (const overlay of overlaySource.value?.value ?? []) {
@@ -154,11 +162,14 @@ export function usePortfolioCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
+      const item = surface({
+        portfolio: {
+          ...(rootById.get(id) ?? {}),
+          id,
+        },
+        overlay: overlayById.get(id) ?? {},
       })
+      if (item) merged.push(item)
     }
 
     return merged

@@ -2,12 +2,14 @@ import type {
   Project,
   ProjectStatus,
   ProjectType,
+  AppProject,
 } from '../../../../../../../models/system/project.model'
+import { ProjectStorage } from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const resolveProjectPath = (target: { slug?: string }) => {
   const slug = safeString(target.slug)
-  return slug ? `/projects/${slug}` : ''
+  return slug ? `/${ProjectStorage.rootCollection}/${slug}` : ''
 }
 const labelize = (value: string) =>
   safeString(value)
@@ -39,6 +41,10 @@ export type ProjectSurface = {
   created?: Project['created']
   updated?: Project['updated']
 }
+export type ProjectSurfaceParts<TProject extends object = Partial<Project>> = {
+  project?: TProject | null | undefined
+  overlay?: Partial<AppProject> | Record<string, unknown> | null | undefined
+}
 
 export type ProjectInterfaceCard = {
   id: string
@@ -55,6 +61,25 @@ export function useProjectInterface() {
   type ProjectCell = ProjectInterfaceCard
   type ProjectPreview = ProjectInterfaceCard
   type ProjectProfile = ProjectInterfaceCard
+
+  function surface<TProject extends object = Partial<Project>>(
+    parts: ProjectSurfaceParts<TProject>
+  ): (TProject & ProjectSurface) | null {
+    const source = parts.project ?? null
+    if (!source) return null
+
+    const merged = {
+      ...source,
+      ...(parts.overlay ?? {}),
+    } as TProject & ProjectSurface
+    const id = safeString(merged.id)
+    if (!id) return null
+
+    return {
+      ...merged,
+      id,
+    }
+  }
 
   function buildInterface(
     target?: ProjectSurface | null | undefined
@@ -108,6 +133,7 @@ export function useProjectInterface() {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

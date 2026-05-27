@@ -1,6 +1,8 @@
-export const ROOT_PORTFOLIO_COLLECTION_PATH = 'portfolios'
+import { AppPortfolioStorage, PortfolioStorage } from '../../../../../models/portfolio.model'
+
+export const ROOT_PORTFOLIO_COLLECTION_PATH = PortfolioStorage.rootCollection
 export const TEST_PORTFOLIO_COLLECTION_PATH = 'test-portfolios'
-export const APP_PORTFOLIO_COLLECTION_NAME = 'portfolios'
+export const APP_PORTFOLIO_COLLECTION_NAME = AppPortfolioStorage.collection
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizePath = (value: unknown) =>

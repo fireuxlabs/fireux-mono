@@ -15,6 +15,7 @@ import type {
   Portfolio,
   PortfolioCreateInput,
 } from '../../../../../models/portfolio.model'
+import { PortfolioStorage } from '../../../../../models/portfolio.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
@@ -55,7 +56,10 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const { createConsole } = useConsoleCreate()
   const { uid, currentUser } = useAuth()
   const collectionPath =
-    options.test === true ? 'test-portfolios' : normalizeString(options.collectionPath || 'portfolios') || 'portfolios'
+    options.test === true
+      ? 'test-portfolios'
+      : normalizeString(options.collectionPath || PortfolioStorage.rootCollection) ||
+        PortfolioStorage.rootCollection
   const isTestPortfolioCollection =
     options.test === true || collectionPath === 'test-portfolios'
 

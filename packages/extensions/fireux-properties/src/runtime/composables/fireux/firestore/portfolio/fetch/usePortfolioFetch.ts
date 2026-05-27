@@ -1,6 +1,10 @@
 import { computed, isRef, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Portfolio } from '../../../../../models/portfolio.model'
+import {
+  PortfolioStorage,
+  type Portfolio,
+} from '../../../../../models/portfolio.model'
+import { usePortfolioInterface } from '../utils/view/usePortfolioInterface'
 
 type PortfolioFetchDoc = Partial<Portfolio> & { id?: string }
 
@@ -9,13 +13,14 @@ type UsePortfolioFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = 'portfolios'
+const DEFAULT_COLLECTION_PATH = PortfolioStorage.rootCollection
 
 export function usePortfolioFetch(
   id: string | Ref<string>,
   options: UsePortfolioFetchOptions = {}
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
+  const { surface } = usePortfolioInterface()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const pathRef = isRef(options.collectionPath)
     ? options.collectionPath
@@ -32,10 +37,12 @@ export function usePortfolioFetch(
     const docId = String(idRef.value || '').trim()
     const entry = source.value?.value
     if (!docId || !entry) return null
-    return {
-      ...entry,
-      id: String(entry?.id || docId).trim(),
-    }
+    return surface({
+      portfolio: {
+        ...entry,
+        id: String(entry?.id || docId).trim(),
+      },
+    }) as PortfolioFetchDoc | null
   })
 
   const pending = computed(() => {

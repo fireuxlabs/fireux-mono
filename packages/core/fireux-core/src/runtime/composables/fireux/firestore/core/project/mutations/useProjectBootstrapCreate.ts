@@ -3,6 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { ProjectStorage } from '../../../../../../models/system/project.model'
 
 export function useProjectBootstrapCreate() {
   const fireux = useFireUXConfig()
@@ -20,7 +21,7 @@ export function useProjectBootstrapCreate() {
 
     if (!firebaseProjectId || !projectId) return
 
-    const ref = doc(db, 'projects', projectId)
+    const ref = doc(db, ProjectStorage.rootCollection, projectId)
     const snap = await getDoc(ref)
 
     const mainAppId = String(fireux.appId || '').trim()

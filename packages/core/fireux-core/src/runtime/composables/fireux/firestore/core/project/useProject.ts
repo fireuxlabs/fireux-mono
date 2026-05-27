@@ -3,6 +3,8 @@ import { computed, isRef, type Ref } from 'vue'
 import { useProjectFetch } from './fetch/useProjectFetch'
 import { useProjectBootstrapCreate } from './mutations/useProjectBootstrapCreate'
 import { useProjectCreate } from './mutations/useProjectCreate'
+import { useProjectDelete } from './mutations/useProjectDelete'
+import { useProjectUpdate } from './mutations/useProjectUpdate'
 import { useProjectInterface } from './utils/view/useProjectInterface'
 
 export type { Project } from '../../../../../models/system/project.model'
@@ -26,5 +28,7 @@ export function useProject(id?: string | Ref<string>) {
     ...useProjectInterface(),
     ...useProjectBootstrapCreate(),
     ...useProjectCreate(),
+    ...useProjectUpdate(),
+    ...useProjectDelete(),
   }
 }

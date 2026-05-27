@@ -3,8 +3,9 @@ import type {
   Portfolio,
   PortfolioUpdateInput,
 } from '../../../../../models/portfolio.model'
+import { PortfolioStorage } from '../../../../../models/portfolio.model'
 
-const COLLECTION_PATH = 'portfolios'
+const COLLECTION_PATH = PortfolioStorage.rootCollection
 
 export function usePortfolioUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -14,7 +15,10 @@ export function usePortfolioUpdate() {
     patch: PortfolioUpdateInput,
     collectionPath = COLLECTION_PATH
   ) => {
-    await updateDocument<Portfolio>(collectionPath, portfolioId, patch)
+    const id = String(portfolioId ?? '').trim()
+    if (!id) throw new Error('Portfolio id is required')
+
+    await updateDocument<Portfolio>(collectionPath, id, patch)
   }
 
   return { updatePortfolio }

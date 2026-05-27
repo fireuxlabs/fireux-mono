@@ -1,7 +1,14 @@
-import type { Portfolio } from '../../../../../../models/portfolio.model'
+import {
+  PortfolioStorage,
+  type Portfolio,
+} from '../../../../../../models/portfolio.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 export type PortfolioSurface = Partial<Portfolio>
+export type PortfolioSurfaceParts<TPortfolio extends object = Partial<Portfolio>> = {
+  portfolio?: TPortfolio | null | undefined
+  overlay?: Record<string, unknown> | null | undefined
+}
 
 export namespace PortfolioCard {
   export type Card = {
@@ -27,6 +34,25 @@ export function usePortfolioInterface() {
   type PortfolioPreview = PortfolioCard.Card
   type PortfolioProfile = PortfolioCard.Card
 
+  function surface<TPortfolio extends object = Partial<Portfolio>>(
+    parts: PortfolioSurfaceParts<TPortfolio>
+  ): (TPortfolio & PortfolioSurface) | null {
+    const source = parts.portfolio ?? null
+    if (!source) return null
+
+    const merged = {
+      ...source,
+      ...(parts.overlay ?? {}),
+    } as TPortfolio & PortfolioSurface
+    const id = safeString(merged.id)
+    if (!id) return null
+
+    return {
+      ...merged,
+      id,
+    }
+  }
+
   function map(portfolio: PortfolioSurface): PortfolioCard.Card {
     const id = safeString(portfolio.id)
     const name = safeString(portfolio.name)
@@ -36,7 +62,7 @@ export function usePortfolioInterface() {
 
     return {
       id,
-      to: id ? `/portfolios/${encodeURIComponent(id)}` : '',
+      to: id ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id)}` : '',
       imageUrl: '',
       avatarUrl: '',
       title: name,
@@ -82,6 +108,7 @@ export function usePortfolioInterface() {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,
