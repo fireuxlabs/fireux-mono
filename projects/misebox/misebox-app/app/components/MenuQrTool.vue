@@ -15,8 +15,8 @@
 
       <PublicQrFileUploadTool
         v-if="tool"
-        endpoint="/api/go-qr/public-doc/create"
-        config-endpoint="/api/go-qr/public-doc/config"
+        :endpoint="tool.endpoints.create"
+        config-endpoint="/api/menu-qr/config"
         :accept="tool.tool.accepts.join(',')"
         :upload-label="tool.ui.upload_label"
         :upload-description="tool.consumer_config?.uploadDescription"
@@ -34,7 +34,7 @@
         :success-title="tool.ui.success_title"
         :open-target-label="tool.ui.open_target_label"
         :open-qr-label="tool.ui.open_qr_label"
-        powered-by-endpoint="/api/go-qr/brand"
+        powered-by-endpoint="/api/menu-qr/brand"
       />
 
       <UCard
@@ -53,15 +53,15 @@
         color="error"
         variant="soft"
         icon="i-lucide-circle-alert"
-        title="Menu QR plugin unavailable"
+        title="Menu QR tool unavailable"
         :description="toolErrorMessage"
       />
 
       <DevJson
         class="fx-plugin-surface__debug"
         :data="debugPayload"
-        title="Misebox Go QR food-menu plugin"
-        context="Consumer mapping for the Go QR public-doc provider tool."
+        title="Misebox menu QR tool"
+        context="Misebox-owned menu QR surface using the Go QR public-doc provider contract."
         :hide-when-empty="false"
       />
     </div>
@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-type GoQrFoodMenuTool = {
+type MenuQrToolContract = {
   ok: boolean
   provider: {
     id: string
@@ -129,13 +129,13 @@ type GoQrFoodMenuTool = {
   }
 }
 
-const { data: tool, error, pending } = useAsyncData<GoQrFoodMenuTool>(
-  'misebox-go-qr-food-menu-plugin',
-  () => $fetch('/api/go-qr/public-doc/tool')
+const { data: tool, error, pending } = useAsyncData<MenuQrToolContract>(
+  'misebox-menu-qr-tool',
+  () => $fetch('/api/menu-qr/tool')
 )
 
 const toolErrorMessage = computed(() =>
-  error.value?.message || 'The Go QR food-menu plugin could not be loaded.'
+  error.value?.message || 'The menu QR tool could not be loaded.'
 )
 
 const debugPayload = computed(() => ({
@@ -157,11 +157,11 @@ const debugPayload = computed(() => ({
     providerOwnsUploadType: true,
   },
   endpoints: {
-    tool: '/api/go-qr/public-doc/tool',
-    config: '/api/go-qr/public-doc/config',
-    create: tool.value?.endpoints.create || '/api/go-qr/public-doc/create',
-    availability: tool.value?.endpoints.availability || '/api/go-qr/public-doc/availability',
-    brand: tool.value?.endpoints.app_info || '/api/go-qr/brand',
+    tool: '/api/menu-qr/tool',
+    config: '/api/menu-qr/config',
+    create: tool.value?.endpoints.create || '/api/menus',
+    availability: tool.value?.endpoints.availability || '/api/menu-qr/availability',
+    brand: tool.value?.endpoints.app_info || '/api/menu-qr/brand',
   },
   state: {
     pending: pending.value,

@@ -6,7 +6,7 @@ import type { Chef } from '../../../../../models/profiles/Chef/Chef.model'
 import { useChefComputed } from './utils/view/useChefComputed'
 import { useChefCreate } from './mutations/useChefCreate'
 import { useChefUpdate } from './mutations/useChefUpdate'
-import { useChefSeo } from './seo/useChefSeo'
+import { useChefSeo } from './utils/useChefSeo'
 import type { ChefCard } from './utils/view/useChefInterface'
 import { useChefInterface } from './utils/view/useChefInterface'
 

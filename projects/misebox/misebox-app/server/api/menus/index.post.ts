@@ -6,11 +6,9 @@ import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import {
   createMenuQrDocument,
   menuQrDocumentRef,
-  menuQrPublicUrl,
-  menuQrQrUrl,
   normalizeMenuQrSlug,
   validateMenuQrSlug,
-} from '../../../utils/menuQrDocuments'
+} from '../../utils/menuQrDocuments'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
@@ -72,7 +70,7 @@ async function uploadMenuFileToMisebox(input: {
 
   const token = randomUUID()
   const safeFileName = safeStorageFileName(input.fileName)
-  const objectPath = `misebox/go-qr/public-doc/menus/${input.slug}/${safeFileName}`
+  const objectPath = `misebox/menu-qr/${input.slug}/${safeFileName}`
 
   await getStorage(getAdminApp()).bucket(bucketName).file(objectPath).save(input.data, {
     resumable: false,
@@ -153,11 +151,12 @@ export default defineEventHandler(async (event) => {
 
   return {
     ok: true,
+    id: record.id,
     slug: record.slug,
     path: `/menus/${encodeURIComponent(record.slug)}`,
     qr_path: `/menus/${encodeURIComponent(record.slug)}/qr`,
-    url: menuQrPublicUrl(record.slug),
-    qr_url: menuQrQrUrl(record.slug),
+    url: `/menus/${encodeURIComponent(record.slug)}`,
+    qr_url: `/menus/${encodeURIComponent(record.slug)}/qr`,
     storage_owner: 'misebox',
     powered_by: {
       name: 'Go QR',

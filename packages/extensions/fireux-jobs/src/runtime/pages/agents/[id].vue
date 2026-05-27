@@ -68,7 +68,7 @@ import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/c
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
-import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/seo/useAgentSeo'
+import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../models/profiles/Agent/Agent.model'
 

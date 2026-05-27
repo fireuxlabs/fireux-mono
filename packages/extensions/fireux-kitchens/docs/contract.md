@@ -68,6 +68,22 @@ Recipe composable stack canon:
 - `firestore/recipe/utils/view/useRecipeComputed.ts` owns derived Recipe facts.
 - `firestore/recipe/utils/view/useRecipeInterface.ts` owns Recipe UI projections.
 
+Menu composable stack canon:
+- `Menu` is a kitchen-scoped publishable child and public presentation record.
+- Canonical truth is Kitchen-scoped:
+  - `kitchens/{kitchenId}/menus/{menuId}` for root public children
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped console children
+- Public `/menus` and `/menus/[slug]` are projection/search surfaces only when implemented.
+- There is no root `menus/{menuId}` canon yet.
+- `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
+- `firestore/menu/fetch/useMenuFetch.ts` owns read-one kitchen Menu reads.
+- `firestore/menu/fetch/useMenuCollection.ts` owns read-many kitchen Menu reads.
+- `firestore/menu/mutations/useMenuCreate.ts` owns kitchen Menu creates.
+- `firestore/menu/mutations/useMenuUpdate.ts` owns kitchen Menu updates.
+- `firestore/menu/mutations/useMenuDelete.ts` owns kitchen Menu deletes/removals.
+- `firestore/menu/utils/view/useMenuComputed.ts` owns derived Menu facts.
+- `firestore/menu/utils/view/useMenuInterface.ts` owns Menu UI projections.
+
 Ingredient composable stack canon:
 - `firestore/ingredient/useIngredient.ts` is the singular Ingredient family entry seam.
 - `firestore/ingredient/fetch/useIngredientFetch.ts` owns read-one root Ingredient reads.

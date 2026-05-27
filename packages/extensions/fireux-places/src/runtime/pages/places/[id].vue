@@ -149,7 +149,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
-import { usePlaceSeo } from '../../composables/fireux/firestore/place/seo/usePlaceSeo'
+import { usePlaceSeo } from '../../composables/fireux/firestore/place/utils/usePlaceSeo'
 import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../models/place.model'
 

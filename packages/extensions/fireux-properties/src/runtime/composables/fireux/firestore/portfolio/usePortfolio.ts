@@ -4,7 +4,7 @@ import { usePortfolioCollection } from './fetch/usePortfolioCollection'
 import { usePortfolioFetch } from './fetch/usePortfolioFetch'
 import { usePortfolioCreate } from './mutations/usePortfolioCreate'
 import { usePortfolioUpdate } from './mutations/usePortfolioUpdate'
-import { usePortfolioSeo } from './seo/usePortfolioSeo'
+import { usePortfolioSeo } from './utils/usePortfolioSeo'
 import { usePortfolioInterface } from './utils/view/usePortfolioInterface'
 
 export type { Portfolio }

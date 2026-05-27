@@ -4,7 +4,7 @@ import { useIngredientFetch } from './fetch/useIngredientFetch'
 import { useIngredientCreate } from './mutations/useIngredientCreate'
 import { useIngredientDelete } from './mutations/useIngredientDelete'
 import { useIngredientUpdate } from './mutations/useIngredientUpdate'
-import { useIngredientSeo } from './seo/useIngredientSeo'
+import { useIngredientSeo } from './utils/useIngredientSeo'
 import { useIngredientComputed } from './utils/view/useIngredientComputed'
 import { useIngredientInterface } from './utils/view/useIngredientInterface'
 

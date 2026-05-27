@@ -7,7 +7,7 @@ import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
 import { useSupplierRecord } from './fetch/useSupplierRecord'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
-import { useSupplierSeo } from './seo/useSupplierSeo'
+import { useSupplierSeo } from './utils/useSupplierSeo'
 import { useSupplierComputed } from './utils/useSupplierComputed'
 
 export type {

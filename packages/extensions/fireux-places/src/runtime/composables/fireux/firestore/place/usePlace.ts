@@ -7,7 +7,7 @@ import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
 import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
-import { usePlaceSeo } from './seo/usePlaceSeo'
+import { usePlaceSeo } from './utils/usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
 import { usePlaceInterface } from './utils/view/usePlaceInterface'
 

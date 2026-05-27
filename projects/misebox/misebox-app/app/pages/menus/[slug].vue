@@ -38,8 +38,22 @@
     </header>
 
     <section class="min-h-0 overflow-auto bg-white" aria-label="Menu">
+      <ClientOnly v-if="isPdf">
+        <MenuPdfViewer
+          :url="viewerUrl"
+          :title="documentLabel"
+        />
+
+        <template #fallback>
+          <div class="grid h-[calc(100vh-3.5rem)] place-items-center text-sm text-muted">
+            Loading menu...
+          </div>
+        </template>
+      </ClientOnly>
+
       <iframe
-        :src="documentRecord.file_url"
+        v-else
+        :src="viewerUrl"
         :title="documentLabel"
         class="h-[calc(100vh-3.5rem)] w-full border-0"
       />
@@ -87,6 +101,8 @@ if (!documentData.value) {
 
 const documentRecord = computed(() => documentData.value as PublicMenuQrRecord)
 const documentLabel = computed(() => documentRecord.value.display_label || documentRecord.value.slug)
+const isPdf = computed(() => documentRecord.value.file_type === 'application/pdf')
+const viewerUrl = computed(() => `/api/menus/${encodeURIComponent(documentRecord.value.slug)}/file`)
 
 useSeoMeta({
   title: computed(() => `${documentLabel.value} · Misebox`),

@@ -79,7 +79,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { useSupplierEnsure } from '../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
-import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/seo/useSupplierSeo'
+import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
 import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const supplierCollection = 'suppliers'

@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { computed, useRoute } from '#imports'
 import { useEcosystemCollection } from '../../composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
-import { useEcosystemSeo } from '../../composables/fireux/firestore/core/ecosystem/seo/useEcosystemSeo'
+import { useEcosystemSeo } from '../../composables/fireux/firestore/core/ecosystem/utils/useEcosystemSeo'
 import { useEcosystemInterface } from '../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 
 definePageMeta({

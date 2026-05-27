@@ -18,7 +18,7 @@
       </section>
 
       <ClientOnly>
-        <GoQrFoodMenuPlugin />
+        <MenuQrTool />
 
         <template #fallback>
           <UCard variant="subtle">
@@ -36,7 +36,7 @@
           When to use Misebox next
         </h2>
         <p class="text-sm leading-6 text-muted">
-          Use this quick plugin when the menu is just a finished file. Move into Misebox when the restaurant
+          Use this quick tool when the menu is just a finished file. Move into Misebox when the restaurant
           wants editable sections, dishes, prices, allergens, translations, prep, suppliers, or ordering later.
         </p>
       </section>

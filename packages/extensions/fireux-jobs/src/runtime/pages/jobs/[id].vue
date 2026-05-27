@@ -131,7 +131,7 @@ import { useRoute } from 'vue-router'
 import JobCardsProfile from '../../components/Job/Cards/Profile.vue'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
-import { useJobSeo } from '../../composables/fireux/firestore/jobs/seo/useJobSeo'
+import { useJobSeo } from '../../composables/fireux/firestore/jobs/utils/useJobSeo'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import type { JobStatus } from '../../models/job.model'
 

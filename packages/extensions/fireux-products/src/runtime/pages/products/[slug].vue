@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { useAsyncData, useRoute } from '#imports'
-import { useProductSeo } from '../../composables/fireux/firestore/product/seo/useProductSeo'
+import { useProductSeo } from '../../composables/fireux/firestore/product/utils/useProductSeo'
 import type { FirebaseProduct } from '../../models/product.model'
 
 const route = useRoute()

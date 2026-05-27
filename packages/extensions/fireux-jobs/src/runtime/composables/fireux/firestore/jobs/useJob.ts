@@ -7,7 +7,7 @@ import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 import { useJobPublish } from './mutations/useJobPublish'
-import { useJobSeo } from './seo/useJobSeo'
+import { useJobSeo } from './utils/useJobSeo'
 
 export type { Job } from '../../../../models/job.model'
 

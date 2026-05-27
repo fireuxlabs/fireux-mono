@@ -1,7 +1,7 @@
 import { $fetch } from 'ofetch'
 import { defineEventHandler } from 'h3'
-import { goQrProviderBaseUrl } from '../../../utils/goQrProvider'
-import { menuQrPublicBaseUrl, reservedMenuQrSlugs } from '../../../utils/menuQrDocuments'
+import { goQrProviderBaseUrl } from '../../utils/goQrProvider'
+import { menuQrPublicBaseUrl, reservedMenuQrSlugs } from '../../utils/menuQrDocuments'
 
 type GoQrToolContract = {
   ok: boolean
@@ -78,9 +78,9 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
       base_url: providerBaseUrl,
     },
     endpoints: {
-      availability: '/api/go-qr/public-doc/availability',
-      create: '/api/go-qr/public-doc/create',
-      app_info: '/api/go-qr/brand',
+      availability: '/api/menu-qr/availability',
+      create: '/api/menus',
+      app_info: '/api/menu-qr/brand',
     },
     tool: {
       ...contract.tool,

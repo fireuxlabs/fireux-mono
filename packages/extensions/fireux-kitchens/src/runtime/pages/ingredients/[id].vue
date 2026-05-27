@@ -153,7 +153,7 @@ import {
   FIREUX_CORE_LANGUAGE_OPTIONS,
 } from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watchEffect } from 'vue'
-import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/seo/useIngredientSeo'
+import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/utils/useIngredientSeo'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
 import type {
   Ingredient,

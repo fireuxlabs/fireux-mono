@@ -120,7 +120,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanySeo } from '../../composables/fireux/firestore/company/seo/useCompanySeo'
+import { useCompanySeo } from '../../composables/fireux/firestore/company/utils/useCompanySeo'
 import { useCompanyInterface } from '../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
 

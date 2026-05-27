@@ -10,7 +10,7 @@ import type { Professional } from '../../../../../models/profiles/Professional/P
 import { useProfessionalComputed } from './utils/view/useProfessionalComputed'
 import { useProfessionalCreate } from './mutations/useProfessionalCreate'
 import { useProfessionalUpdate } from './mutations/useProfessionalUpdate'
-import { useProfessionalSeo } from './seo/useProfessionalSeo'
+import { useProfessionalSeo } from './utils/useProfessionalSeo'
 import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
 
 export type { ProfessionalCard, Professional }

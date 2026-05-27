@@ -313,9 +313,8 @@ composables/fireux/firestore/<entity>/
     useXDelete.ts
     useXEnsure.ts      optional, only for setup-if-missing behaviour
     validation/        optional, only for write-specific validation
-  seo/
-    useXSeo.ts         optional, only for public entity metadata/JSON-LD
   utils/
+    useXSeo.ts         optional, only for public entity metadata/JSON-LD
     view/
       useXComputed.ts
       useXInterface.ts

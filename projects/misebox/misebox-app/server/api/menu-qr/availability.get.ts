@@ -4,7 +4,7 @@ import {
   menuQrDocumentRef,
   normalizeMenuQrSlug,
   reservedMenuQrSlugs,
-} from '../../../utils/menuQrDocuments'
+} from '../../utils/menuQrDocuments'
 
 function readId(value: unknown) {
   const raw = Array.isArray(value) ? value[0] : value

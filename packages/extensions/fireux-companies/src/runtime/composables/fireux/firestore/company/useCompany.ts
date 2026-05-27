@@ -3,7 +3,7 @@ import { useCompanyFetch } from './fetch/useCompanyFetch'
 import { useCompanyCreate } from './mutations/useCompanyCreate'
 import { useCompanyDelete } from './mutations/useCompanyDelete'
 import { useCompanyUpdate } from './mutations/useCompanyUpdate'
-import { useCompanySeo } from './seo/useCompanySeo'
+import { useCompanySeo } from './utils/useCompanySeo'
 import { useCompanyComputed } from './utils/view/useCompanyComputed'
 import { useCompanyInterface } from './utils/view/useCompanyInterface'
 

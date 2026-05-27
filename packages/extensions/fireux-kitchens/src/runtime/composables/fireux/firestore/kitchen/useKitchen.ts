@@ -5,7 +5,7 @@ import { useKitchenFetch } from './fetch/useKitchenFetch'
 import { useKitchenCreate } from './mutations/useKitchenCreate'
 import { useKitchenPublish } from './mutations/useKitchenPublish'
 import { useKitchenUpdate } from './mutations/useKitchenUpdate'
-import { useKitchenSeo } from './seo/useKitchenSeo'
+import { useKitchenSeo } from './utils/useKitchenSeo'
 import { useKitchenInterface } from './utils/view/useKitchenInterface'
 import { useKitchenProfileView } from './utils/view/useKitchenProfileView'
 

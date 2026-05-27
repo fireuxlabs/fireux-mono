@@ -59,6 +59,7 @@
 import {
   createError,
   useAsyncData,
+  useRequestURL,
   useRoute,
   useSeoMeta,
 } from '#imports'
@@ -73,6 +74,7 @@ type PublicMenuQrRecord = {
 }
 
 const route = useRoute()
+const requestUrl = useRequestURL()
 const slug = String(route.params.slug || '').trim()
 const qrDataUrl = ref('')
 
@@ -99,7 +101,13 @@ const documentLabel = computed(() =>
   documentRecord.value.display_label || documentRecord.value.slug
 )
 const qrCentreLabel = computed(() => documentRecord.value.qr_centre_label || 'Menu')
-const publicUrl = computed(() => documentRecord.value.public_url)
+const publicUrl = computed(() => {
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(requestUrl.origin)) {
+    return `${requestUrl.origin}/menus/${encodeURIComponent(documentRecord.value.slug)}`
+  }
+
+  return documentRecord.value.public_url
+})
 
 onMounted(async () => {
   qrDataUrl.value = await toDataURL(publicUrl.value, {

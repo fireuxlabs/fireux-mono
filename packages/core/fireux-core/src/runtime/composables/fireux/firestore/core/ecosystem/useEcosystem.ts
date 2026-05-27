@@ -3,7 +3,7 @@ import { useFireUXConfig } from '../../../app/FireUXConfig'
 import { useEcosystemFetch } from './fetch/useEcosystemFetch'
 import { useEcosystemEnsure } from './mutations/useEcosystemEnsure'
 import { useEcosystemPublish } from './mutations/useEcosystemPublish'
-import { useEcosystemSeo } from './seo/useEcosystemSeo'
+import { useEcosystemSeo } from './utils/useEcosystemSeo'
 import { useEcosystemInterface } from './utils/view/useEcosystemInterface'
 
 export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
