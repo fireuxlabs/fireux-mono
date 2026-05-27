@@ -18,6 +18,10 @@ export type GoQrRecord = {
   file_type: string
   file_name: string
   storage_path: string
+  storage_owner?: string
+  source_app?: string
+  display_label?: string
+  qr_centre_label?: string
   owner_id: string
   is_public: boolean
   created_at?: unknown
@@ -155,6 +159,10 @@ export function serializeGoQrRecord(record: GoQrRecord) {
     file_url: record.file_url,
     file_type: record.file_type,
     file_name: record.file_name,
+    storage_owner: record.storage_owner || 'go-qr',
+    source_app: record.source_app || '',
+    display_label: record.display_label || '',
+    qr_centre_label: record.qr_centre_label || '',
     owner_id: record.owner_id,
     is_public: record.is_public,
   }
@@ -203,6 +211,11 @@ export function createGoQrRecord(input: {
   fileName: string
   fileType: string
   storagePath: string
+  fileUrl?: string
+  storageOwner?: string
+  sourceApp?: string
+  displayLabel?: string
+  qrCentreLabel?: string
 }): Omit<GoQrRecord, 'created_at' | 'updated_at'> & {
   created_at: FieldValue
   updated_at: FieldValue
@@ -212,10 +225,14 @@ export function createGoQrRecord(input: {
     title: input.slug,
     slug: input.slug,
     type: input.type,
-    file_url: publicFileUrl(input.slug),
+    file_url: input.fileUrl || publicFileUrl(input.slug),
     file_type: input.fileType,
     file_name: input.fileName,
     storage_path: input.storagePath,
+    storage_owner: input.storageOwner || 'go-qr',
+    source_app: input.sourceApp || '',
+    display_label: input.displayLabel || '',
+    qr_centre_label: input.qrCentreLabel || '',
     owner_id: 'anonymous',
     is_public: true,
     created_at: FieldValue.serverTimestamp(),
@@ -235,6 +252,25 @@ function multipartFieldValue(parts: MultipartPart[] | undefined, name: string) {
   return part?.data ? part.data.toString('utf8').trim() : ''
 }
 
+function normalizeDisplayText(value: unknown, maxLength: number) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength)
+}
+
+function normalizeExternalFileUrl(value: unknown) {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+
+  try {
+    const url = new URL(raw)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : ''
+  } catch {
+    return ''
+  }
+}
+
 export async function createGoQrDocumentFromMultipart(
   parts: MultipartPart[] | undefined,
   options: {
@@ -244,18 +280,25 @@ export async function createGoQrDocumentFromMultipart(
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)
   const slug = normalizeDocumentId(multipartFieldValue(parts, 'slug'))
   const type = options.type || normalizeDocumentType(multipartFieldValue(parts, 'type'))
+  const externalFileUrl = normalizeExternalFileUrl(multipartFieldValue(parts, 'external_file_url'))
+  const externalFileType = normalizeDisplayText(multipartFieldValue(parts, 'external_file_type'), 120)
+  const externalFileName = normalizeDisplayText(multipartFieldValue(parts, 'external_file_name'), 160)
+  const storageOwner = normalizeDisplayText(multipartFieldValue(parts, 'storage_owner'), 40)
+  const sourceApp = normalizeDisplayText(multipartFieldValue(parts, 'source_app'), 80)
+  const displayLabel = normalizeDisplayText(multipartFieldValue(parts, 'display_label'), 48)
+  const qrCentreLabel = normalizeDisplayText(multipartFieldValue(parts, 'qr_centre_label'), 16)
 
   assertDocumentId(slug)
   assertDocumentType(type)
 
-  if (!filePart?.data?.length) {
+  if (!filePart?.data?.length && !externalFileUrl) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Document file is required',
     })
   }
 
-  if (filePart.data.byteLength > maxGoQrFileSizeBytes) {
+  if (filePart?.data?.byteLength && filePart.data.byteLength > maxGoQrFileSizeBytes) {
     throw createError({
       statusCode: 413,
       statusMessage: `Max file size is ${maxGoQrFileSizeMb} MB`,
@@ -271,18 +314,25 @@ export async function createGoQrDocumentFromMultipart(
     })
   }
 
-  const fileName = safeStorageFileName(filePart.filename)
-  const fileType = String(filePart.type || 'application/octet-stream').trim()
-  const storagePath = `go-qr/documents/${slug}/raw/${fileName}`
-  const bucket = goQrStorageBucket()
+  let fileName = safeStorageFileName(externalFileName || filePart?.filename || slug)
+  let fileType = String(externalFileType || filePart?.type || 'application/octet-stream').trim()
+  let storagePath = ''
+  let fileUrl = externalFileUrl
 
-  await bucket.file(storagePath).save(filePart.data, {
-    contentType: fileType,
-    resumable: false,
-    metadata: {
-      cacheControl: 'public, max-age=300',
-    },
-  })
+  if (filePart?.data?.length) {
+    fileName = safeStorageFileName(filePart.filename)
+    fileType = String(filePart.type || 'application/octet-stream').trim()
+    storagePath = `go-qr/documents/${slug}/raw/${fileName}`
+    fileUrl = ''
+
+    await goQrStorageBucket().file(storagePath).save(filePart.data, {
+      contentType: fileType,
+      resumable: false,
+      metadata: {
+        cacheControl: 'public, max-age=300',
+      },
+    })
+  }
 
   const record = createGoQrRecord({
     slug,
@@ -290,6 +340,11 @@ export async function createGoQrDocumentFromMultipart(
     fileName,
     fileType,
     storagePath,
+    fileUrl,
+    storageOwner: storageOwner || (externalFileUrl ? 'consumer' : 'go-qr'),
+    sourceApp,
+    displayLabel,
+    qrCentreLabel,
   })
 
   await docRef.create(record)

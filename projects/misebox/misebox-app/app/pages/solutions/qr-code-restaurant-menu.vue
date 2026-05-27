@@ -17,43 +17,35 @@
         </p>
       </section>
 
-      <UCard variant="subtle">
-        <template #header>
-          <h2 class="text-lg font-semibold text-highlighted">
-            Roadmap
-          </h2>
+      <ClientOnly>
+        <GoQrFoodMenuPlugin />
+
+        <template #fallback>
+          <UCard variant="subtle">
+            <div class="fx-plugin-surface__skeleton">
+              <USkeleton class="h-5 w-2/3" />
+              <USkeleton class="h-32 w-full" />
+              <USkeleton class="h-10 w-full" />
+            </div>
+          </UCard>
         </template>
+      </ClientOnly>
+
+      <section class="space-y-2">
+        <h2 class="text-lg font-semibold text-highlighted">
+          When to use Misebox next
+        </h2>
         <p class="text-sm leading-6 text-muted">
-          This page is reserved for the hospitality-specific QR menu path. The first useful version should
-          create or connect to a public menu, then make it easy to add restaurant identity and richer Misebox
-          menu features over time.
+          Use this quick plugin when the menu is just a finished file. Move into Misebox when the restaurant
+          wants editable sections, dishes, prices, allergens, translations, prep, suppliers, or ordering later.
         </p>
-      </UCard>
+      </section>
     </div>
   </PublicSimplePage>
 </template>
 
 <script setup lang="ts">
 import { useSeoMeta } from '#imports'
-
-const reservedDocumentSlugs = [
-  'about',
-  'admin',
-  'api',
-  'assets',
-  'blog',
-  'console',
-  'dashboard',
-  'docs',
-  'food-menu',
-  'get-started',
-  'help',
-  'pricing',
-  'privacy',
-  'products',
-  'solutions',
-  'terms',
-]
 
 useSeoMeta({
   title: 'QR code restaurant menu',

@@ -68,6 +68,7 @@ type PublicGoQrRecord = {
   file_url: string
   file_type: string
   file_name: string
+  display_label?: string
 }
 
 const route = useRoute()
@@ -93,7 +94,7 @@ if (!documentData.value) {
 
 const documentRecord = computed(() => documentData.value as PublicGoQrRecord)
 const isImage = computed(() => documentRecord.value.file_type.startsWith('image/'))
-const documentLabel = computed(() => documentRecord.value.slug)
+const documentLabel = computed(() => documentRecord.value.display_label || documentRecord.value.slug)
 
 useSeoMeta({
   title: computed(() => `${documentLabel.value} · Go QR`),

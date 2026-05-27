@@ -160,6 +160,7 @@ const props = withDefaults(defineProps<{
   uploadType?: string
   accept?: string
   uploadLabel?: string
+  uploadDescription?: string
   ctaLabel?: string
   loadingLabel?: string
   safetyCopy?: string
@@ -186,6 +187,7 @@ const props = withDefaults(defineProps<{
   uploadType: '',
   accept: 'application/pdf,image/*,.doc,.docx',
   uploadLabel: 'Drop your file here',
+  uploadDescription: '',
   ctaLabel: 'Create QR',
   loadingLabel: 'Creating...',
   safetyCopy: '',
@@ -234,7 +236,7 @@ const inferredConfigEndpoint = computed(() =>
   props.configEndpoint || props.endpoint.replace(/\/create$/, '/config')
 )
 const uploadDescription = computed(() =>
-  uploadError.value || `PDF, image, DOC, or DOCX. Max ${props.maxFileSizeMb} MB.`
+  uploadError.value || props.uploadDescription || `PDF, image, DOC, or DOCX. Max ${props.maxFileSizeMb} MB.`
 )
 const previewUrl = computed(() => {
   const slug = normalizedSlug.value || props.slugPlaceholder

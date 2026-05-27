@@ -70,6 +70,8 @@ type PublicGoQrRecord = {
   slug: string
   type: string
   file_name: string
+  display_label?: string
+  qr_centre_label?: string
 }
 
 const route = useRoute()
@@ -96,11 +98,10 @@ if (!documentData.value) {
 }
 
 const documentRecord = computed(() => documentData.value as PublicGoQrRecord)
-const isFoodMenu = computed(() => documentRecord.value.type === 'food-menu')
 const documentLabel = computed(() =>
-  isFoodMenu.value ? 'Food Menu' : documentRecord.value.slug
+  documentRecord.value.display_label || documentRecord.value.slug
 )
-const qrCentreLabel = computed(() => (isFoodMenu.value ? 'Menu' : 'Q'))
+const qrCentreLabel = computed(() => documentRecord.value.qr_centre_label || 'Q')
 const publicUrl = computed(() => `${requestUrl.origin}/${documentRecord.value.slug}`)
 
 onMounted(async () => {

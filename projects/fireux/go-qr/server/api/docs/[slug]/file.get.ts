@@ -2,6 +2,7 @@ import {
   createError,
   defineEventHandler,
   getRouterParam,
+  sendRedirect,
   sendStream,
   setHeader,
 } from 'h3'
@@ -20,6 +21,10 @@ export default defineEventHandler(async (event) => {
       statusCode: 404,
       statusMessage: 'Go QR document not found',
     })
+  }
+
+  if (!record.storage_path && /^https?:\/\//i.test(record.file_url || '')) {
+    return sendRedirect(event, record.file_url, 302)
   }
 
   const storageFile = goQrStorageBucket().file(record.storage_path)

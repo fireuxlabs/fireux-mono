@@ -133,38 +133,41 @@ const effectiveOpenTargetLabel = computed(() =>
   hasResourceOverride.value ? `Open ${sentenceResourceLabel.value}` : tool.value?.ui.open_target_label || `Open ${sentenceResourceLabel.value}`
 )
 const debugPayload = computed(() => ({
-  providerBaseUrl: props.providerBaseUrl || 'self',
-  localOverrides: {
+  configurable: {
+    providerBaseUrl: props.providerBaseUrl || null,
     resourceLabel: props.resourceLabel || null,
     title: props.title || null,
     description: props.description || null,
     slugPlaceholder: props.slugPlaceholder || null,
   },
-  resolved: tool.value
+  providerResolution: tool.value
     ? {
+        providerId: tool.value.provider.id,
+        providerBaseUrl: tool.value.provider.base_url,
+        providerTool: tool.value.tool.id,
+        providerUploadType: tool.value.tool.upload_type,
+        providerOwnsUploadType: true,
         createEndpoint: client.resolveUrl(tool.value.endpoints.create),
         availabilityEndpoint: client.resolveUrl(tool.value.endpoints.availability),
         configEndpoint: client.resolveUrl('/api/tools/public-doc/config'),
         appInfoEndpoint: client.resolveUrl(tool.value.endpoints.app_info),
+      }
+    : null,
+  derivedLabels: tool.value
+    ? {
         previewBaseUrl: tool.value.preview.base_url,
         previewPathSuffix: tool.value.preview.path_suffix,
         title: effectiveTitle.value,
         description: effectiveDescription.value,
         uploadLabel: effectiveUploadLabel.value,
         ctaLabel: effectiveCtaLabel.value,
-        loadingLabel: effectiveLoadingLabel.value,
         slugLabel: effectiveSlugLabel.value,
-        slugValidationLabel: effectiveSlugValidationLabel.value,
         slugPlaceholder: effectiveSlugPlaceholder.value,
-        successTitle: effectiveSuccessTitle.value,
-        openTargetLabel: effectiveOpenTargetLabel.value,
-        openQrLabel: tool.value.ui.open_qr_label,
       }
     : null,
   state: {
     pending: pending.value,
     error: error.value?.message || null,
   },
-  contract: tool.value || null,
 }))
 </script>
