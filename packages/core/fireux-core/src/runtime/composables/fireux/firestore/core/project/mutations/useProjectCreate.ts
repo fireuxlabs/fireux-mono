@@ -18,7 +18,7 @@ import type {
 import { useConsoleEnsure } from '../../../system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
-const normalizeString = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   const resolvedDisplayName = normalizeString(displayName)
   if (resolvedDisplayName) return resolvedDisplayName
@@ -54,7 +54,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const collectionPath =
     options.test === true
       ? 'test-projects'
-      : String(options.collectionPath || 'projects').trim() || 'projects'
+      : normalizeString(options.collectionPath || 'projects') || 'projects'
   const isTestProjectCollection =
     options.test === true || collectionPath === 'test-projects'
 

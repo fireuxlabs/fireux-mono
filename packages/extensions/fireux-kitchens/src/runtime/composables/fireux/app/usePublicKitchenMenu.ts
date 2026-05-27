@@ -6,9 +6,9 @@ import type { Dish } from '../../../models/dish.model'
 import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
 import { useDishCollection } from '../firestore/dish/fetch/useDishCollection'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
-import { useKitchenMenuCollection } from '../console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
-import { useKitchenMenuSectionCollection } from '../console/kitchen/operations/menu/fetch/useKitchenMenuSectionCollection'
-import { kitchenMenuItemsPath } from '../console/kitchen/operations/menu/paths'
+import { useMenuCollection } from '../firestore/menu/fetch/useMenuCollection'
+import { useMenuSectionCollection } from '../firestore/menu/fetch/useMenuSectionCollection'
+import { menuItemsPath } from '../firestore/menu/utils/paths'
 import {
   isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
@@ -105,7 +105,8 @@ export function usePublicKitchenMenu(
       cleanIdentity(canonicalSlug.value) !== cleanIdentity(kitchenSlug.value)
   )
   const kitchenId = computed(() => clean(kitchen.value?.id))
-  const menuRead = useKitchenMenuCollection(kitchenId, {
+  const menuRead = useMenuCollection(kitchenId, {
+    scope: 'kitchen',
     kitchenCollectionPath: ROOT_KITCHENS,
   })
   const menus = computed(() => menuRead.menus.value.filter(isPublicMenu))
@@ -122,7 +123,7 @@ export function usePublicKitchenMenu(
   const translationCacheRows = ref<Record<string, unknown>[]>([])
   const translationCachePending = ref(false)
   let translationCacheRequestId = 0
-  const sectionRead = useKitchenMenuSectionCollection(
+  const sectionRead = useMenuSectionCollection(
     kitchenId,
     computed(() => clean(menu.value?.id)),
     { kitchenCollectionPath: ROOT_KITCHENS }
@@ -189,7 +190,7 @@ export function usePublicKitchenMenu(
         const nextRows: Array<{ sectionId: string; item: MenuItem }> = []
         for (const section of sections) {
           const sectionId = clean(section.id)
-          const path = kitchenMenuItemsPath({
+          const path = menuItemsPath({
             kitchenCollectionPath: ROOT_KITCHENS,
             kitchenId: currentKitchenId,
             menuId: currentMenuId,

@@ -30,7 +30,7 @@ export type RecipeCreateResult = {
   failedLanguages: string[]
 }
 
-const trim = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 async function buildRecipePayload(
   recipeId: string,
@@ -39,8 +39,8 @@ async function buildRecipePayload(
   seedTranslations: ReturnType<typeof useTranslationSeed>['seedTranslations'],
   options: RecipeCreateOptions
 ): Promise<{ payload: RecipeCreateInput; failedLanguages: string[] }> {
-  const name = trim(draft.name)
-  const description = trim(draft.description)
+  const name = normalizeString(draft.name)
+  const description = normalizeString(draft.description)
   const nameSeed = await seedTranslations({
     text: name,
     sourceLanguage: options.sourceLanguage,
@@ -91,7 +91,7 @@ export function useRecipeCreate(
   const { seedTranslations } = useTranslationSeed()
 
   const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) ||
+    normalizeString(unref(options.kitchenCollectionPath)) ||
     resolveKitchenConsoleCollectionPath(appId)
   )
 
@@ -100,10 +100,10 @@ export function useRecipeCreate(
     overrides: { kitchenId?: string } = {},
     createOptions: RecipeCreateOptions = {}
   ): Promise<RecipeCreateResult> => {
-    const kitchenId = trim(overrides.kitchenId || selectedId.value)
+    const kitchenId = normalizeString(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    const name = trim(draft.name)
+    const name = normalizeString(draft.name)
     if (!name) throw new Error('Recipe name is required')
 
     const recipeId = normalizeSlug(name)

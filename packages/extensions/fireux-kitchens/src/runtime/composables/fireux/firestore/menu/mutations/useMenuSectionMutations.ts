@@ -4,8 +4,8 @@ import { unref, type Ref } from 'vue'
 import {
   MenuSectionModel,
   type MenuSection,
-} from '../../../../../../../models/menu.model'
-import { kitchenMenuSectionsPath } from '../paths'
+} from '../../../../../models/menu.model'
+import { menuSectionsPath } from '../utils/paths'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -15,12 +15,12 @@ type Options = {
 const clean = (value: unknown) => String(value ?? '').trim()
 const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
 
-export function useKitchenMenuSectionMutations(options: Options = {}) {
+export function useMenuSectionMutations(options: Options = {}) {
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
 
   const path = (kitchenId: string, menuId: string) =>
-    kitchenMenuSectionsPath({
+    menuSectionsPath({
       kitchenCollectionPath: optionPath(options.kitchenCollectionPath),
       kitchenId,
       menuId,

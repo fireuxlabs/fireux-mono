@@ -5,14 +5,14 @@ import {
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { Document, DocumentCreateInput } from '../../../../../../../models/document.model'
 
-const normalize = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
   const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
 
   async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
-    const portfolioId = normalize(runtimePortfolio.id.value)
+    const portfolioId = normalizeString(runtimePortfolio.id.value)
     if (!portfolioId) {
       throw new Error('[fireux-documents] portfolio id is required.')
     }
@@ -23,13 +23,13 @@ export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
 
     const payload: Omit<Document, 'id'> = {
       portfolio_id: portfolioId,
-      file_name: normalize(input.file_name),
-      file_type: normalize(input.file_type),
+      file_name: normalizeString(input.file_name),
+      file_type: normalizeString(input.file_type),
       size_bytes: Number(input.size_bytes || 0),
-      storage_path: normalize(input.storage_path),
-      download_url: normalize(input.download_url),
-      uploaded_at: normalize(input.uploaded_at),
-      notes: normalize(input.notes),
+      storage_path: normalizeString(input.storage_path),
+      download_url: normalizeString(input.download_url),
+      uploaded_at: normalizeString(input.uploaded_at),
+      notes: normalizeString(input.notes),
       created: { at: {} as any, by: undefined, app_id: undefined },
       updated: { at: {} as any, by: undefined },
     }

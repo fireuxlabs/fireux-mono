@@ -1,7 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import {
-  menuQrDocumentRef,
+  menuDocumentRef,
   normalizeMenuQrSlug,
   reservedMenuQrSlugs,
 } from '../../utils/menuQrDocuments'
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     reserved: reservedMenuQrSlugs,
     takenMessage: 'This menu URL is already taken.',
     exists: async (slug) => {
-      const snap = await menuQrDocumentRef(slug).get()
+      const snap = await menuDocumentRef(slug).get()
       return snap.exists
     },
   })

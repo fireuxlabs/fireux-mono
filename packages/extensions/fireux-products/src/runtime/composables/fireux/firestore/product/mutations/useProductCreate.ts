@@ -66,6 +66,8 @@ export const ProductCreatePlan = defineFireuxCreatePlan({
   routes: ['server_api', 'firestore_set'],
 })
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 export function useProductCreate() {
   const db = useFirestore()
   const { setDocument, getCollectionPath } = useFirestoreManager()
@@ -93,7 +95,7 @@ export function useProductCreate() {
     return inputs.map((price, index) => ({
       id: priceIds[index] || '',
       product_id: productId,
-      label: String(price.metadata?.label || '').trim(),
+      label: normalizeString(price.metadata?.label),
       currency: String(price.currency || 'usd').toLowerCase(),
       unit_amount: Number(price.unit_amount ?? 0),
       ...(price.type ? { type: price.type } : {}),
@@ -163,9 +165,9 @@ export function useProductCreate() {
       stripe_prices?: string[]
     }
 
-    const productId = String(stripeResult?.id || '').trim()
+    const productId = normalizeString(stripeResult?.id)
     const priceIds = Array.isArray(stripeResult?.stripe_prices)
-      ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
+      ? stripeResult.stripe_prices.map((id) => normalizeString(id))
       : []
 
     if (!productId) {
@@ -223,14 +225,12 @@ export function useProductCreate() {
         throw new Error('At least one price is required')
       }
 
-      const sourceAppId = String(payload.source_app_id || fireux.appId || '').trim()
-      const sourceEcosystemId = String(
-        payload.source_ecosystem_id || fireux.ecosystem || ''
-      ).trim()
-      const ownerType = String(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem')).trim()
-      const ownerId = String(
+      const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
+      const sourceEcosystemId = normalizeString(payload.source_ecosystem_id || fireux.ecosystem)
+      const ownerType = normalizeString(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem'))
+      const ownerId = normalizeString(
         payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
-      ).trim()
+      )
 
       const stripeProvision = await provisionStripeProduct({
         payload,

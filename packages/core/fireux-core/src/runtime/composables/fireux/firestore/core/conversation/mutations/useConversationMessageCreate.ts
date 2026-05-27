@@ -16,13 +16,13 @@ type CreateConversationMessageInput = {
   read_by?: string[]
 }
 
-const clean = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const toStringList = (values: unknown): string[] =>
   Array.from(
     new Set(
       (Array.isArray(values) ? values : [])
-        .map((value) => clean(value))
+        .map((value) => normalizeString(value))
         .filter(Boolean)
     )
   )
@@ -35,11 +35,11 @@ export function useConversationMessageCreate() {
     conversationId: string,
     input: CreateConversationMessageInput
   ): Promise<string> {
-    const id = clean(conversationId)
-    const body = clean(input.body)
+    const id = normalizeString(conversationId)
+    const body = normalizeString(input.body)
     const senderType = input.sender_type ?? 'guest'
-    const senderName = clean(input.sender_name) || (senderType === 'user' ? 'Admin' : 'Guest')
-    const senderId = clean(input.sender_id)
+    const senderName = normalizeString(input.sender_name) || (senderType === 'user' ? 'Admin' : 'Guest')
+    const senderId = normalizeString(input.sender_id)
     const readBy = toStringList(input.read_by)
 
     if (!id) {

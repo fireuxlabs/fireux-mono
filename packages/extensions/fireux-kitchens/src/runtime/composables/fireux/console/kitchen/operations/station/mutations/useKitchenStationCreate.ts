@@ -14,8 +14,7 @@ type CreateKitchenStationInput = {
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const slugifyStationName = (value: string) =>
-  value
-    .trim()
+  normalizeString(value)
     .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')

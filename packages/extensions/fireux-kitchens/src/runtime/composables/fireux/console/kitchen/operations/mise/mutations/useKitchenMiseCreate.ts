@@ -11,6 +11,8 @@ import {
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/mise`
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 type KitchenMiseCreateDraft = {
   title: string
   description?: string
@@ -30,13 +32,13 @@ type KitchenMiseCreateDraft = {
 
 const resolveStatus = (value: unknown): KitchenMiseStatus => {
   const allowed = new Set<KitchenMiseStatus>(['todo', 'in_progress', 'done', 'blocked'])
-  const normalized = String(value || '').trim() as KitchenMiseStatus
+  const normalized = normalizeString(value) as KitchenMiseStatus
   return allowed.has(normalized) ? normalized : 'todo'
 }
 
 const resolvePriority = (value: unknown): KitchenMisePriority => {
   const allowed = new Set<KitchenMisePriority>(['low', 'normal', 'high', 'urgent'])
-  const normalized = String(value || '').trim() as KitchenMisePriority
+  const normalized = normalizeString(value) as KitchenMisePriority
   return allowed.has(normalized) ? normalized : 'normal'
 }
 
@@ -49,7 +51,7 @@ const toStringArray = (value: unknown) =>
   Array.from(
     new Set(
       (Array.isArray(value) ? value : [])
-        .map((item) => String(item || '').trim())
+        .map((item) => normalizeString(item))
         .filter(Boolean)
     )
   )
@@ -57,20 +59,20 @@ const toStringArray = (value: unknown) =>
 const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): KitchenMiseTaskDoc => ({
   ...KitchenMiseTaskModel,
   kitchen_id: kitchenId,
-  title: String(draft.title || '').trim(),
-  description: String(draft.description || '').trim(),
-  station: String(draft.station || '').trim(),
-  service_date: String(draft.service_date || '').trim(),
+  title: normalizeString(draft.title),
+  description: normalizeString(draft.description),
+  station: normalizeString(draft.station),
+  service_date: normalizeString(draft.service_date),
   status: resolveStatus(draft.status),
   priority: resolvePriority(draft.priority),
   estimated_minutes: toSafeNumber(draft.estimated_minutes),
   ingredient_ids: toStringArray(draft.ingredient_ids),
   mise_ids: toStringArray(draft.mise_ids),
-  menu_id: String(draft.menu_id || '').trim(),
+  menu_id: normalizeString(draft.menu_id),
   assignee_ids: toStringArray(draft.assignee_ids),
   checklist: Array.isArray(draft.checklist) ? draft.checklist : [],
-  recipe_id: String(draft.recipe_id || '').trim(),
-  notes: String(draft.notes || '').trim(),
+  recipe_id: normalizeString(draft.recipe_id),
+  notes: normalizeString(draft.notes),
 })
 
 export function useKitchenMiseCreate() {
@@ -82,16 +84,15 @@ export function useKitchenMiseCreate() {
     draft: KitchenMiseCreateDraft,
     options: { kitchenCollectionPath?: string } = {}
   ) => {
-    const resolvedKitchenId = String(kitchenId || '').trim()
+    const resolvedKitchenId = normalizeString(kitchenId)
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
 
-    const title = String(draft.title || '').trim()
+    const title = normalizeString(draft.title)
     if (!title) throw new Error('Task title is required')
 
     const payload = buildMisePayload(resolvedKitchenId, draft)
-    const kitchenCollectionPath = String(
-      options.kitchenCollectionPath || ''
-    ).trim() || resolveKitchenConsoleCollectionPath(appId)
+    const kitchenCollectionPath =
+      normalizeString(options.kitchenCollectionPath) || resolveKitchenConsoleCollectionPath(appId)
     const collectionPath = resolveKitchenCollectionPath(
       kitchenCollectionPath,
       resolvedKitchenId

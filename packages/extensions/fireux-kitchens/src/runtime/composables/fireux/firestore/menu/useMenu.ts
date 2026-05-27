@@ -9,15 +9,21 @@ import { useMenuDelete } from './mutations/useMenuDelete'
 export type { Menu } from '../../../../models/menu.model'
 export { useMenuCollection } from './fetch/useMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
+export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'
+export { useMenuItemCollection } from './fetch/useMenuItemCollection'
 export { useMenuCreate } from './mutations/useMenuCreate'
 export { useMenuUpdate } from './mutations/useMenuUpdate'
 export { useMenuDelete } from './mutations/useMenuDelete'
+export { useMenuSectionMutations } from './mutations/useMenuSectionMutations'
+export { useMenuItemMutations } from './mutations/useMenuItemMutations'
 export { useMenuComputed } from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
 
 type UseMenuOptions = {
+  scope?: 'root' | 'kitchen'
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   kitchenId?: string | Ref<string | null | undefined>
+  useSelectedKitchen?: boolean
   databaseId?: string | Ref<string | null | undefined>
 }
 
@@ -28,8 +34,8 @@ type UseMenuOptions = {
  * - docs/fireux-canon.md
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * The base Menu seam reads root Menu records. Kitchen-scoped menu operation
- * helpers should use explicit kitchen-named seams.
+ * The base Menu seam reads root Menu records by default. Kitchen-scoped menu
+ * operations use explicit `scope: 'kitchen'` options on Menu-owned seams.
  */
 export function useMenu(
   menuId: string,

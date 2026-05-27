@@ -19,6 +19,8 @@ export const PlaceCreatePlan = defineFireuxCreatePlan({
   routes: ['external_provider', 'storage_upload', 'firestore_set'],
 })
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
   const { setDocument } = useFirestoreManager()
   const { uploadFromUrl } = useImageStorage()
@@ -89,7 +91,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       typeof (place as any)?.name === 'string' ? String((place as any).name) : ''
     const shortName =
       typeof (place as any)?.short_name === 'string'
-        ? String((place as any).short_name).trim()
+        ? normalizeString((place as any).short_name)
         : ''
     const formatted =
       typeof (place as any)?.formatted_address === 'string'
@@ -103,7 +105,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     const placeImageRaw =
       (place as any)?.image_url ?? (place as any)?.place_image
     const remoteImageUrl =
-      typeof placeImageRaw === 'string' ? placeImageRaw.trim() : ''
+      typeof placeImageRaw === 'string' ? normalizeString(placeImageRaw) : ''
     if (import.meta.dev) {
       console.log('[fireux-places] ensure:image-raw', {
         id,
@@ -159,18 +161,19 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
 
     const searchTermRaw = (place as any)?.search_term
     const searchTerm =
-      typeof searchTermRaw === 'string' && searchTermRaw.trim().length
-        ? searchTermRaw.trim()
-        : `${name} ${formatted}`.toLowerCase().trim()
-    const normalizedSearchTerm = searchTerm
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim()
+      typeof searchTermRaw === 'string' && normalizeString(searchTermRaw).length
+        ? normalizeString(searchTermRaw)
+        : normalizeString(`${name} ${formatted}`.toLowerCase())
+    const normalizedSearchTerm = normalizeString(
+      searchTerm
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+    )
 
     const shadeRaw =
       typeof (place as any)?.image_shade === 'string'
-        ? String((place as any).image_shade).toLowerCase().trim()
+        ? normalizeString((place as any).image_shade).toLowerCase()
         : ''
     const image_shade =
       shadeRaw === 'light' || shadeRaw === 'dark' || shadeRaw === 'none'

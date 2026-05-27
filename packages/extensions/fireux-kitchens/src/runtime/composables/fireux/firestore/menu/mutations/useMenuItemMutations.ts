@@ -1,8 +1,8 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { unref, type Ref } from 'vue'
-import { MenuItemModel, type MenuItem } from '../../../../../../../models/menu.model'
-import { kitchenMenuItemsPath } from '../paths'
+import { MenuItemModel, type MenuItem } from '../../../../../models/menu.model'
+import { menuItemsPath } from '../utils/paths'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -12,12 +12,12 @@ type Options = {
 const clean = (value: unknown) => String(value ?? '').trim()
 const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
 
-export function useKitchenMenuItemMutations(options: Options = {}) {
+export function useMenuItemMutations(options: Options = {}) {
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
 
   const path = (kitchenId: string, menuId: string, sectionId: string) =>
-    kitchenMenuItemsPath({
+    menuItemsPath({
       kitchenCollectionPath: optionPath(options.kitchenCollectionPath),
       kitchenId,
       menuId,

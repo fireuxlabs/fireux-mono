@@ -21,19 +21,19 @@ export type MenuCreateInput = {
   sort_order?: number
 }
 
-const clean = (value: unknown) => String(value ?? '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 function buildMenuPayload(
   input: MenuCreateInput,
   name: string
 ): Partial<Menu> {
-  const kitchenId = clean(input.kitchenId)
+  const kitchenId = normalizeString(input.kitchenId)
 
   return {
     ...MenuModel,
     kitchen_id: kitchenId,
     name,
-    description: clean(input.description),
+    description: normalizeString(input.description),
     service_modes: input.service_modes?.length ? input.service_modes : ['dine_in'],
     sort_order: Number(input.sort_order || 0),
   }
@@ -53,17 +53,17 @@ export function useMenuCreate(
   const { selectedId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
-    clean(unref(options.kitchenCollectionPath)) ||
+    normalizeString(unref(options.kitchenCollectionPath)) ||
     resolveKitchenConsoleCollectionPath(appId)
   )
   const defaultKitchenId = computed(() =>
-    clean(unref(options.kitchenId)) ||
-    (options.useSelectedKitchen ? clean(selectedId.value) : '')
+    normalizeString(unref(options.kitchenId)) ||
+    (options.useSelectedKitchen ? normalizeString(selectedId.value) : '')
   )
 
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
-    const kitchenId = clean(input.kitchenId || defaultKitchenId.value)
-    const name = clean(input.name)
+    const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
+    const name = normalizeString(input.name)
     const scope: MenuCreateScope = options.scope || (kitchenId ? 'kitchen' : 'root')
 
     if (!name) throw new Error('Menu name is required')

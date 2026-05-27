@@ -4,8 +4,8 @@ import { createError, defineEventHandler, readMultipartFormData } from 'h3'
 import { getStorage } from 'firebase-admin/storage'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import {
-  createMenuQrDocument,
-  menuQrDocumentRef,
+  createMenuDocument,
+  menuDocumentRef,
   normalizeMenuQrSlug,
   validateMenuQrSlug,
 } from '../../utils/menuQrDocuments'
@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const existing = await menuQrDocumentRef(slug).get()
+  const existing = await menuDocumentRef(slug).get()
   if (existing.exists) {
     throw createError({
       statusCode: 409,
@@ -141,7 +141,7 @@ export default defineEventHandler(async (event) => {
     fileType,
     data: filePart.data,
   })
-  const record = await createMenuQrDocument({
+  const record = await createMenuDocument({
     slug,
     fileUrl: uploaded.fileUrl,
     fileType,

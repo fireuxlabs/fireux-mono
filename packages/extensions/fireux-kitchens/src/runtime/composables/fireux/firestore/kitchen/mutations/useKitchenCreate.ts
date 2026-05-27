@@ -284,7 +284,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   async function ensureKitchenRoot(
     input: KitchenCreateInput & { place?: PlaceUpsertInput }
   ): Promise<ConsoleRootEnsureResult> {
-    const resolvedId = String(input?.id || '').trim()
+    const resolvedId = normalizeString(input?.id)
     if (!resolvedId) {
       throw new Error('Kitchen id is required')
     }
@@ -441,9 +441,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     ensureOptions: EnsureKitchenOptions = {},
     defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
-    const resolvedId = String(
-      ensureOptions.existingRootId || input?.id || ''
-    ).trim()
+    const resolvedId = normalizeString(ensureOptions.existingRootId || input?.id)
 
     return ensureConsole<AppKitchen>({
       type: 'kitchen',
@@ -457,8 +455,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         ({
           ...(uid.value
             ? {
-                operator_ids: [String(uid.value).trim()],
-                team_ids: [String(uid.value).trim()],
+                operator_ids: [normalizeString(uid.value)],
+                team_ids: [normalizeString(uid.value)],
               }
             : {}),
         }) as AppKitchen,

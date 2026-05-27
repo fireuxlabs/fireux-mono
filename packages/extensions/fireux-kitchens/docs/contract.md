@@ -69,18 +69,19 @@ Recipe composable stack canon:
 - `firestore/recipe/utils/view/useRecipeInterface.ts` owns Recipe UI projections.
 
 Menu composable stack canon:
-- `Menu` is a kitchen-scoped publishable child and public presentation record.
-- Canonical truth is Kitchen-scoped:
+- `Menu` is the public presentation record for menu surfaces.
+- Root `menus/{menuId}` is allowed for public-first or anonymous menu records, such as a quick QR menu upload.
+- Kitchen-scoped menus remain valid when the menu is operated inside a kitchen:
   - `kitchens/{kitchenId}/menus/{menuId}` for root public children
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped console children
-- Public `/menus` and `/menus/[slug]` are projection/search surfaces only when implemented.
-- There is no root `menus/{menuId}` canon yet.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
-- `firestore/menu/fetch/useMenuFetch.ts` owns read-one kitchen Menu reads.
-- `firestore/menu/fetch/useMenuCollection.ts` owns read-many kitchen Menu reads.
-- `firestore/menu/mutations/useMenuCreate.ts` owns kitchen Menu creates.
-- `firestore/menu/mutations/useMenuUpdate.ts` owns kitchen Menu updates.
-- `firestore/menu/mutations/useMenuDelete.ts` owns kitchen Menu deletes/removals.
+- `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads.
+- `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `scope: 'kitchen'`.
+- `firestore/menu/fetch/useMenuSectionCollection.ts` and `useMenuItemCollection.ts` own Menu child reads.
+- `firestore/menu/mutations/useMenuCreate.ts` owns root Menu creates by default and kitchen-scoped creates through explicit `scope: 'kitchen'`.
+- `firestore/menu/mutations/useMenuUpdate.ts` owns root Menu updates by default and kitchen-scoped updates through explicit `scope: 'kitchen'`.
+- `firestore/menu/mutations/useMenuDelete.ts` owns root Menu deletes by default and kitchen-scoped deletes through explicit `scope: 'kitchen'`.
+- `firestore/menu/mutations/useMenuSectionMutations.ts` and `useMenuItemMutations.ts` own Menu child writes.
 - `firestore/menu/utils/view/useMenuComputed.ts` owns derived Menu facts.
 - `firestore/menu/utils/view/useMenuInterface.ts` owns Menu UI projections.
 

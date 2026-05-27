@@ -12,7 +12,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
 
-const normalizeString = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   const resolvedDisplayName = normalizeString(displayName)
   if (resolvedDisplayName) return resolvedDisplayName
@@ -49,7 +49,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const supplierCollection =
     options.test === true
       ? 'test-suppliers'
-      : String(options.collectionPath || 'suppliers').trim() || 'suppliers'
+      : normalizeString(options.collectionPath || 'suppliers') || 'suppliers'
   const isTestSupplierCollection =
     options.test === true || supplierCollection === 'test-suppliers'
 
@@ -103,7 +103,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     await ensureUser()
     const { uid } = await requireUid()
 
-    const requestedRootId = String(options.existingRootId || '').trim()
+    const requestedRootId = normalizeString(options.existingRootId)
 
     const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
       const rootId = requestedRootId || doc(collection(db, supplierCollection)).id

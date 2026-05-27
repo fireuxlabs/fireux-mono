@@ -24,8 +24,7 @@ const normalizeStringArray = (value: unknown) =>
     )
   )
 const slugifyTeamMemberName = (value: string) =>
-  value
-    .trim()
+  normalizeString(value)
     .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')

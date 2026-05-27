@@ -15,7 +15,7 @@ import type {
   PortfolioCreateInput,
 } from '../../../../../models/portfolio.model'
 
-const normalizeString = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   const resolvedDisplayName = normalizeString(displayName)
   if (resolvedDisplayName) return resolvedDisplayName
@@ -50,7 +50,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const { ensureConsole } = useConsoleEnsure()
   const { uid, currentUser } = useAuth()
   const collectionPath =
-    options.test === true ? 'test-portfolios' : String(options.collectionPath || 'portfolios').trim() || 'portfolios'
+    options.test === true ? 'test-portfolios' : normalizeString(options.collectionPath || 'portfolios') || 'portfolios'
   const isTestPortfolioCollection =
     options.test === true || collectionPath === 'test-portfolios'
 
@@ -112,7 +112,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
         ? defaultTestName
         : requestedName
-    const slug = normalizeSlug(String(input?.slug || '').trim() || name)
+    const slug = normalizeSlug(normalizeString(input?.slug) || name)
 
     if (!name) {
       throw new Error('Portfolio name is required')
@@ -143,9 +143,9 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
           ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
           : ''),
       status: input?.status || 'active',
-      strategy_label: String(input?.strategy_label || '').trim(),
-      region_label: String(input?.region_label || '').trim(),
-      notes: String(input?.notes || '').trim(),
+      strategy_label: normalizeString(input?.strategy_label),
+      region_label: normalizeString(input?.region_label),
+      notes: normalizeString(input?.notes),
       created: {
         at: {} as any,
         by: undefined,
@@ -170,7 +170,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     ensureOptions: EnsurePortfolioOptions = {},
     defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
-    const requestedRootId = String(ensureOptions.existingRootId || '').trim()
+    const requestedRootId = normalizeString(ensureOptions.existingRootId)
 
     const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
       const defaultTestName = isTestPortfolioCollection
@@ -181,7 +181,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
           ? defaultTestName
           : requestedName
-      const slug = requestedRootId || normalizeSlug(String(input?.slug || '').trim() || name)
+      const slug = requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
 
       if (!name) {
         throw new Error('Portfolio name is required')
@@ -214,9 +214,9 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
             ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
             : ''),
         status: input?.status || 'active',
-        strategy_label: String(input?.strategy_label || '').trim(),
-        region_label: String(input?.region_label || '').trim(),
-        notes: String(input?.notes || '').trim(),
+        strategy_label: normalizeString(input?.strategy_label),
+        region_label: normalizeString(input?.region_label),
+        notes: normalizeString(input?.notes),
         created: {
           at: {} as any,
           by: undefined,

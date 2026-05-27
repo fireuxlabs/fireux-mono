@@ -10,6 +10,8 @@ import {
 
 const ORDERS_COLLECTION = 'orders'
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 const makeOrderId = () => {
   const now = Date.now()
   const random = Math.random().toString(16).slice(2, 10)
@@ -40,10 +42,10 @@ const normalizeLine = (line: OrderLine): OrderLine => {
   const priceMinor = Math.max(0, Math.round(Number(line.price_minor || 0)))
 
   return {
-    dish_id: String(line.dish_id || '').trim(),
-    label: String(line.label || '').trim(),
+    dish_id: normalizeString(line.dish_id),
+    label: normalizeString(line.label),
     price_minor: priceMinor,
-    currency_code: String(line.currency_code || 'CHF').trim().toUpperCase() || 'CHF',
+    currency_code: normalizeString(line.currency_code || 'CHF').toUpperCase() || 'CHF',
     qty,
   }
 }
@@ -52,8 +54,8 @@ export function useOrderCreate() {
   const { setDocument } = useFirestoreCreate()
 
   const createOrder = async (input: CreateOrderInput) => {
-    const scopeType = String(input.scope.type || '').trim()
-    const scopeId = String(input.scope.id || '').trim()
+    const scopeType = normalizeString(input.scope.type)
+    const scopeId = normalizeString(input.scope.id)
 
     if (!scopeType || !scopeId) {
       throw new Error('Missing order scope')
@@ -72,7 +74,7 @@ export function useOrderCreate() {
       0
     )
 
-    const currencyCode = String(lines[0]?.currency_code || 'CHF').trim().toUpperCase() || 'CHF'
+    const currencyCode = normalizeString(lines[0]?.currency_code || 'CHF').toUpperCase() || 'CHF'
 
     const orderId = makeOrderId()
     const payload = {
@@ -84,12 +86,12 @@ export function useOrderCreate() {
       channel: input.channel || 'menu',
       service: {
         mode: input.service?.mode || 'dine_in',
-        table_label: String(input.service?.table_label || '').trim(),
-        notes: String(input.service?.notes || '').trim(),
+        table_label: normalizeString(input.service?.table_label),
+        notes: normalizeString(input.service?.notes),
       },
       customer: {
-        name: String(input.customer?.name || '').trim(),
-        phone: String(input.customer?.phone || '').trim(),
+        name: normalizeString(input.customer?.name),
+        phone: normalizeString(input.customer?.phone),
       },
       lines,
       totals: {

@@ -11,11 +11,11 @@ export type CreateAppInput = AppCreatePayload & {
   id: string
 }
 
-const normalizeString = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useAppCreate(options: AppCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
-  const collectionPath = String(options.collectionPath || 'apps').trim() || 'apps'
+  const collectionPath = normalizeString(options.collectionPath || 'apps') || 'apps'
 
   async function createApp(input: CreateAppInput): Promise<{ id: string }> {
     const id = normalizeString(input?.id)

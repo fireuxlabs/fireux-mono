@@ -63,7 +63,7 @@ import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
 } from '../../../../composables/fireux/app/public-kitchen-language'
-import { useKitchenMenuCollection } from '../../../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
+import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import MenuSproochliLanguageTrigger from '../../../../components/Menu/SproochliLanguageTrigger.vue'
 import type { Menu } from '../../../../models/menu.model'
@@ -118,7 +118,8 @@ const languageOptions = computed(() =>
 const publicLanguageQuery = computed(() =>
   selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
 )
-const menuRead = useKitchenMenuCollection(kitchenId, {
+const menuRead = useMenuCollection(kitchenId, {
+  scope: 'kitchen',
   kitchenCollectionPath: 'kitchens',
 })
 const menuIsPublicVisible = (menu: Menu) => {

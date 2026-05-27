@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import type { MenuItem } from '../../../../../../../models/menu.model'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import type { MenuItem } from '../../../../../models/menu.model'
+import { useKitchenChildCollection } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -14,7 +14,7 @@ const sortItems = (items: MenuItem[]) =>
       String(a.dish_id).localeCompare(String(b.dish_id))
   )
 
-export function useKitchenMenuItemCollection(
+export function useMenuItemCollection(
   kitchenId: Ref<string> | string,
   menuId: Ref<string> | string,
   sectionId: Ref<string> | string,

@@ -2,8 +2,8 @@ import { useRoute } from '#imports'
 import { computed } from 'vue'
 import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
-import { useKitchenMenuSectionCollection } from './menu/fetch/useKitchenMenuSectionCollection'
-import { useKitchenMenuSectionMutations } from './menu/mutations/useKitchenMenuSectionMutations'
+import { useMenuSectionCollection } from '../../../firestore/menu/fetch/useMenuSectionCollection'
+import { useMenuSectionMutations } from '../../../firestore/menu/mutations/useMenuSectionMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -17,7 +17,7 @@ export function useKitchenConsoleMenu() {
   const menu = computed<Menu | null>(
     () => state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
   )
-  const sectionState = useKitchenMenuSectionCollection(
+  const sectionState = useMenuSectionCollection(
     state.kitchenId,
     menuId,
     {
@@ -25,7 +25,7 @@ export function useKitchenConsoleMenu() {
       databaseId: state.databaseId,
     }
   )
-  const sectionMutations = useKitchenMenuSectionMutations({
+  const sectionMutations = useMenuSectionMutations({
     kitchenCollectionPath: state.rootCollection,
     databaseId: state.databaseId,
   })

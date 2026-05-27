@@ -30,19 +30,19 @@ type CreateConversationInput = {
   }
 }
 
-const clean = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const toStringList = (values: unknown): string[] =>
   Array.from(
     new Set(
       (Array.isArray(values) ? values : [])
-        .map((value) => clean(value))
+        .map((value) => normalizeString(value))
         .filter(Boolean)
     )
   )
 
 const normalizeChannel = (value: unknown): ConversationPreferredChannel => {
-  const channel = clean(value)
+  const channel = normalizeString(value)
   if (channel === 'email' || channel === 'phone' || channel === 'whatsapp') {
     return channel
   }
@@ -54,13 +54,13 @@ export function useConversationCreate() {
   const { createDocument } = useFirestoreCreate()
 
   async function createConversation(input: CreateConversationInput): Promise<string> {
-    const body = clean(input.initial_message?.body)
+    const body = normalizeString(input.initial_message?.body)
     const senderType = input.initial_message?.sender_type ?? 'guest'
     const senderName =
-      clean(input.initial_message?.sender_name) ||
-      clean(input.guest_contact?.name) ||
+      normalizeString(input.initial_message?.sender_name) ||
+      normalizeString(input.guest_contact?.name) ||
       'Guest'
-    const appId = clean(input.app_id) || fireux.appId
+    const appId = normalizeString(input.app_id) || fireux.appId
     const participantIds = toStringList(input.participant_ids)
 
     if (!appId) {
@@ -71,7 +71,7 @@ export function useConversationCreate() {
       throw new Error('Conversation kind is required')
     }
 
-    if (!clean(input.related_entity?.id)) {
+    if (!normalizeString(input.related_entity?.id)) {
       throw new Error('Conversation related entity id is required')
     }
 
@@ -80,21 +80,21 @@ export function useConversationCreate() {
     }
 
     const guestContact: ConversationGuestContact = {
-      name: clean(input.guest_contact?.name),
-      email: clean(input.guest_contact?.email),
-      phone: clean(input.guest_contact?.phone),
-      company: clean(input.guest_contact?.company),
+      name: normalizeString(input.guest_contact?.name),
+      email: normalizeString(input.guest_contact?.email),
+      phone: normalizeString(input.guest_contact?.phone),
+      company: normalizeString(input.guest_contact?.company),
       preferred_channel: normalizeChannel(input.guest_contact?.preferred_channel),
     }
     const relatedEntity: ConversationRelatedEntity = {
-      family: clean(input.related_entity?.family),
-      id: clean(input.related_entity?.id),
-      path: clean(input.related_entity?.path),
-      label: clean(input.related_entity?.label),
+      family: normalizeString(input.related_entity?.family),
+      id: normalizeString(input.related_entity?.id),
+      path: normalizeString(input.related_entity?.path),
+      label: normalizeString(input.related_entity?.label),
     }
     const lastMessage = {
       body,
-      sender_id: clean(input.initial_message?.sender_id),
+      sender_id: normalizeString(input.initial_message?.sender_id),
       sender_type: senderType,
       sender_name: senderName,
       created_at: serverTimestamp() as any,
@@ -107,7 +107,7 @@ export function useConversationCreate() {
       related_entity: relatedEntity,
       participant_ids: participantIds,
       guest_contact: guestContact,
-      source_route: clean(input.source_route),
+      source_route: normalizeString(input.source_route),
       last_message: lastMessage,
     }
 

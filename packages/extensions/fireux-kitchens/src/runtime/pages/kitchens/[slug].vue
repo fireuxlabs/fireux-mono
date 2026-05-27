@@ -215,7 +215,7 @@ import {
   resolvePublicKitchenChromeLanguage,
 } from '../../composables/fireux/app/public-kitchen-language'
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
-import { useKitchenMenuCollection } from '../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
+import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
 import MenuSproochliLanguageTrigger from '../../components/Menu/SproochliLanguageTrigger.vue'
@@ -270,9 +270,9 @@ const kitchen = computed<Kitchen | null>(() => {
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
 const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.value)
 
-const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
+const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId,
-  { kitchenCollectionPath: 'kitchens' }
+  { scope: 'kitchen', kitchenCollectionPath: 'kitchens' }
 )
 const menus = computed(() => publishedMenus.value)
 const menusLoading = computed(() =>

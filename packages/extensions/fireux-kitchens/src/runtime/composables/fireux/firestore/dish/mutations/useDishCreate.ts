@@ -30,7 +30,7 @@ export type DishCreateResult = {
   failedLanguages: string[]
 }
 
-const trim = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 async function buildDishPayload(
   dishId: string,
@@ -39,8 +39,8 @@ async function buildDishPayload(
   seedTranslations: ReturnType<typeof useTranslationSeed>['seedTranslations'],
   options: DishCreateOptions
 ): Promise<{ payload: DishCreateInput; failedLanguages: string[] }> {
-  const name = trim(draft.name)
-  const description = trim(draft.description)
+  const name = normalizeString(draft.name)
+  const description = normalizeString(draft.description)
   const nameSeed = await seedTranslations({
     text: name,
     sourceLanguage: options.sourceLanguage,
@@ -90,7 +90,7 @@ export function useDishCreate(
   const { seedTranslations } = useTranslationSeed()
 
   const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) ||
+    normalizeString(unref(options.kitchenCollectionPath)) ||
     resolveKitchenConsoleCollectionPath(appId)
   )
 
@@ -99,10 +99,10 @@ export function useDishCreate(
     overrides: { kitchenId?: string } = {},
     createOptions: DishCreateOptions = {}
   ): Promise<DishCreateResult> => {
-    const kitchenId = trim(overrides.kitchenId || selectedId.value)
+    const kitchenId = normalizeString(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    const name = trim(draft.name)
+    const name = normalizeString(draft.name)
     if (!name) throw new Error('Dish name is required')
 
     const dishId = normalizeSlug(name)

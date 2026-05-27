@@ -4,10 +4,19 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 
-export type MenuQrDocument = {
+export type MenuDocument = {
   id: string
   slug: string
+  name: string
+  description: string
+  status: string
+  service_modes: string[]
+  sort_order: number
+  design: {
+    color_mode: string
+  }
   title: string
+  source_type: string
   file_url: string
   file_type: string
   file_name: string
@@ -17,11 +26,13 @@ export type MenuQrDocument = {
   display_label: string
   qr_centre_label: string
   is_public: boolean
+  created?: unknown
+  updated?: unknown
   created_at?: unknown
   updated_at?: unknown
 }
 
-export const menuQrCollectionName = 'menu_qr_documents'
+export const menuCollectionName = 'menus'
 export const reservedMenuQrSlugs = [
   'about',
   'admin',
@@ -73,22 +84,22 @@ export function menuQrDb() {
   return getRuntimeFirestore()
 }
 
-export function menuQrDocumentRef(slug: string) {
-  return menuQrDb().collection(menuQrCollectionName).doc(slug)
+export function menuDocumentRef(slug: string) {
+  return menuQrDb().collection(menuCollectionName).doc(slug)
 }
 
-export async function readMenuQrDocument(slug: string) {
+export async function readMenuDocument(slug: string) {
   const id = normalizeMenuQrSlug(slug)
   const validation = validateMenuQrSlug(id)
   if (!validation.isValid) return null
 
-  const snap = await menuQrDocumentRef(id).get()
+  const snap = await menuDocumentRef(id).get()
   if (!snap.exists) return null
 
   return {
     id: snap.id,
     ...snap.data(),
-  } as MenuQrDocument
+  } as MenuDocument
 }
 
 export function menuQrPublicUrl(slug: string) {
@@ -99,10 +110,14 @@ export function menuQrQrUrl(slug: string) {
   return `${menuQrPublicUrl(slug)}/qr`
 }
 
-export function serializeMenuQrDocument(record: MenuQrDocument) {
+export function serializeMenuDocument(record: MenuDocument) {
   return {
     id: record.id,
     slug: record.slug,
+    name: record.name,
+    description: record.description,
+    status: record.status,
+    source_type: record.source_type,
     title: record.title,
     file_url: record.file_url,
     file_type: record.file_type,
@@ -117,7 +132,7 @@ export function serializeMenuQrDocument(record: MenuQrDocument) {
   }
 }
 
-export async function createMenuQrDocument(input: {
+export async function createMenuDocument(input: {
   slug: string
   fileUrl: string
   fileType: string
@@ -125,9 +140,27 @@ export async function createMenuQrDocument(input: {
   storagePath: string
 }) {
   const record = {
+    created: {
+      at: FieldValue.serverTimestamp(),
+      by: 'anonymous',
+      app_id: 'misebox',
+    },
+    updated: {
+      at: FieldValue.serverTimestamp(),
+      by: 'anonymous',
+    },
     id: input.slug,
     slug: input.slug,
+    name: input.slug,
+    description: '',
+    status: 'published',
+    service_modes: ['dine_in'],
+    sort_order: 0,
+    design: {
+      color_mode: 'light',
+    },
     title: input.slug,
+    source_type: 'storage_file',
     file_url: input.fileUrl,
     file_type: input.fileType,
     file_name: input.fileName,
@@ -141,10 +174,10 @@ export async function createMenuQrDocument(input: {
     updated_at: FieldValue.serverTimestamp(),
   }
 
-  await menuQrDocumentRef(input.slug).create(record)
+  await menuDocumentRef(input.slug).create(record)
 
   return {
     id: input.slug,
     ...record,
-  } as MenuQrDocument
+  } as MenuDocument
 }

@@ -33,6 +33,8 @@ const DEFAULT_FORM: JobCreateForm = {
   ...JobPayload,
 }
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 export function useJobCreate() {
   const { createDocument } = useFirestoreCreate()
   const jobsConfig = useFireuxJobsConfig()
@@ -56,10 +58,10 @@ export function useJobCreate() {
   }
 
   const submit = async (): Promise<string> => {
-    const title = String(form.value.title ?? '').trim()
-    const description = String(form.value.description ?? '').trim()
-    const workplaceId = String(form.value.workplace_id ?? '').trim()
-    const workplaceType = String(form.value.workplace_type ?? '').trim()
+    const title = normalizeString(form.value.title)
+    const description = normalizeString(form.value.description)
+    const workplaceId = normalizeString(form.value.workplace_id)
+    const workplaceType = normalizeString(form.value.workplace_type)
 
     if (!workplaceId) throw new Error('Workplace is required')
     if (!workplaceType) throw new Error('Workplace type is required')
@@ -78,8 +80,8 @@ export function useJobCreate() {
       description,
       workplace_id: workplaceId,
       workplace_type: workplaceType,
-      workplace_label: String(form.value.workplace_label ?? '').trim(),
-      company_id: String(form.value.company_id ?? '').trim(),
+      workplace_label: normalizeString(form.value.workplace_label),
+      company_id: normalizeString(form.value.company_id),
       status: form.value.status ?? 'open',
     }
 

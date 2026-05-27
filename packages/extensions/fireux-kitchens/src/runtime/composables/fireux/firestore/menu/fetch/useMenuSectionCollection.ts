@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import type { MenuSection } from '../../../../../../../models/menu.model'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import type { MenuSection } from '../../../../../models/menu.model'
+import { useKitchenChildCollection } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -14,7 +14,7 @@ const sortSections = (sections: MenuSection[]) =>
       String(a.label).localeCompare(String(b.label))
   )
 
-export function useKitchenMenuSectionCollection(
+export function useMenuSectionCollection(
   kitchenId: Ref<string> | string,
   menuId: Ref<string> | string,
   options: Options = {}

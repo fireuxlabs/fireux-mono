@@ -4,12 +4,12 @@ import type { Dish } from '../../../../../models/dish.model'
 import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
-import { useKitchenMenuItemCollection } from './menu/fetch/useKitchenMenuItemCollection'
-import { useKitchenMenuItemMutations } from './menu/mutations/useKitchenMenuItemMutations'
+import { useMenuItemCollection } from '../../../firestore/menu/fetch/useMenuItemCollection'
+import { useMenuItemMutations } from '../../../firestore/menu/mutations/useMenuItemMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
-export type KitchenMenuSectionItemRow = {
+export type MenuSectionItemRow = {
   id: string
   item: MenuItem
   dish: Dish | null
@@ -31,7 +31,7 @@ export function useKitchenConsoleMenuSection() {
       menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??
       null
   )
-  const itemState = useKitchenMenuItemCollection(
+  const itemState = useMenuItemCollection(
     menuState.kitchenId,
     menuState.menuId,
     sectionId,
@@ -40,7 +40,7 @@ export function useKitchenConsoleMenuSection() {
       databaseId: menuState.databaseId,
     }
   )
-  const itemMutations = useKitchenMenuItemMutations({
+  const itemMutations = useMenuItemMutations({
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
@@ -52,7 +52,7 @@ export function useKitchenConsoleMenuSection() {
     })
     return map
   })
-  const itemRows = computed<KitchenMenuSectionItemRow[]>(() =>
+  const itemRows = computed<MenuSectionItemRow[]>(() =>
     itemState.items.value.map((item) => {
       const dish = dishesById.value.get(clean(item.dish_id)) ?? null
       return {

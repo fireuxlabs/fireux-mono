@@ -2,9 +2,9 @@ import { computed } from 'vue'
 import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
-import { useKitchenMenuCollection } from './menu/fetch/useKitchenMenuCollection'
-import { useKitchenMenuCreate } from './menu/mutations/useKitchenMenuCreate'
-import { useKitchenMenuUpdate } from './menu/mutations/useKitchenMenuUpdate'
+import { useMenuCollection } from '../../../firestore/menu/fetch/useMenuCollection'
+import { useMenuCreate } from '../../../firestore/menu/mutations/useMenuCreate'
+import { useMenuUpdate } from '../../../firestore/menu/mutations/useMenuUpdate'
 
 export function useKitchenConsoleMenus() {
   const consoleState = useKitchenConsole()
@@ -14,7 +14,8 @@ export function useKitchenConsoleMenus() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { menus: liveMenus, pending: livePending, collectionPath } =
-    useKitchenMenuCollection(fetchKitchenId, {
+    useMenuCollection(fetchKitchenId, {
+      scope: 'kitchen',
       kitchenCollectionPath: rootCollection,
       databaseId,
     })
@@ -29,11 +30,14 @@ export function useKitchenConsoleMenus() {
   })
   const menus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
-  const create = useKitchenMenuCreate({
+  const create = useMenuCreate({
+    scope: 'kitchen',
     kitchenCollectionPath: rootCollection,
+    kitchenId,
     databaseId,
   })
-  const update = useKitchenMenuUpdate({
+  const update = useMenuUpdate({
+    scope: 'kitchen',
     kitchenCollectionPath: rootCollection,
     databaseId,
   })

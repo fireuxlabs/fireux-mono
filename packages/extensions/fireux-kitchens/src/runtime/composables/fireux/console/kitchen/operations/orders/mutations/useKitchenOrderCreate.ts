@@ -31,24 +31,25 @@ const makeOrderNumber = () => {
 	return `${y}${m}${d}-${hh}${mm}`
 }
 
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 export function useKitchenOrderCreate() {
 	const db = useFirestore()
   const { appId } = useFireUXConfig()
 
 	const createOrder = async (input: CreateKitchenOrderInput) => {
-		const kitchenId = String(input.kitchenId || '').trim()
+		const kitchenId = normalizeString(input.kitchenId)
 		if (!kitchenId) throw new Error('Missing kitchenId')
 
-		const kitchenCollectionPath = String(
-			input.kitchenCollectionPath || ''
-		).trim() || resolveKitchenConsoleCollectionPath(appId)
+		const kitchenCollectionPath =
+			normalizeString(input.kitchenCollectionPath) || resolveKitchenConsoleCollectionPath(appId)
 
 		const orderId = makeOrderId()
 
 		const item: KitchenOrderItem = {
 			id: `item-1`,
-			dish_id: String(input.dish_id || '').trim(),
-			label: String(input.label || '').trim(),
+			dish_id: normalizeString(input.dish_id),
+			label: normalizeString(input.label),
 			quantity: Number(input.quantity || 1),
 			checked: false,
 		}
@@ -59,7 +60,7 @@ export function useKitchenOrderCreate() {
 
 			order_number: makeOrderNumber(),
 			status: 'open',
-			channel: String(input.channel || 'menu').trim(),
+			channel: normalizeString(input.channel || 'menu'),
 
 			items: [item],
 

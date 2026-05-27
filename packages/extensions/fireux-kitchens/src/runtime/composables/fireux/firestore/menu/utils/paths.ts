@@ -1,7 +1,7 @@
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../collections/useKitchenChildCollection'
+} from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 type MenuPathOptions = {
   kitchenCollectionPath?: string | null | undefined
@@ -10,21 +10,21 @@ type MenuPathOptions = {
   sectionId?: string | null | undefined
 }
 
-export const kitchenMenusPath = (options: MenuPathOptions) =>
+export const menuPath = (options: MenuPathOptions) =>
   resolveKitchenChildCollectionPath({
     kitchenCollectionPath: options.kitchenCollectionPath,
     kitchenId: options.kitchenId,
     collectionName: 'menus',
   })
 
-export const kitchenMenuSectionsPath = (options: MenuPathOptions) => {
-  const menusPath = kitchenMenusPath(options)
+export const menuSectionsPath = (options: MenuPathOptions) => {
+  const menusPath = menuPath(options)
   const menuId = normalizeString(options.menuId)
   return menusPath && menuId ? `${menusPath}/${menuId}/sections` : ''
 }
 
-export const kitchenMenuItemsPath = (options: MenuPathOptions) => {
-  const sectionsPath = kitchenMenuSectionsPath(options)
+export const menuItemsPath = (options: MenuPathOptions) => {
+  const sectionsPath = menuSectionsPath(options)
   const sectionId = normalizeString(options.sectionId)
   return sectionsPath && sectionId ? `${sectionsPath}/${sectionId}/items` : ''
 }
