@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import { usePublicKitchenMenu } from '../../../../composables/fireux/app/usePublicKitchenMenu'
+import { useMenu } from '../../../../composables/fireux/firestore/menu/useMenu'
 import MenuPublic from '../../../../components/Menu/Public.vue'
 
 definePageMeta({
@@ -50,7 +50,10 @@ const {
   unavailable,
   canonicalSlug,
   routeMatchesKitchenId,
-} = usePublicKitchenMenu(slug, menuId)
+} = useMenu(menuId, {
+  surface: 'public-kitchen',
+  kitchenSlug: slug,
+})
 
 const kitchenName = computed(
   () => kitchen.value?.name || (kitchen.value as any)?.display_name || kitchen.value?.id || 'Kitchen'

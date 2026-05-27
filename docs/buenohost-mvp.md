@@ -58,8 +58,8 @@ added only when their canon is explicit; the current child route is QR.
 Kitchen-shaped rule:
 
 ```text
-Kitchen -> public child menus/dishes
-Property -> public child info/topics
+Kitchen -> published route child menus/dishes
+Property -> published route child info/topics
 ```
 
 Do not add a separate `guest guide` product bucket. The property owns its public info directly.

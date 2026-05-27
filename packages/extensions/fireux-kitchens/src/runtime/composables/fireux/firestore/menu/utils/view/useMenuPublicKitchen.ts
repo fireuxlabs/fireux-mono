@@ -2,20 +2,21 @@ import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch, type Ref } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Dish } from '../../../models/dish.model'
-import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
-import { useDishCollection } from '../firestore/dish/fetch/useDishCollection'
-import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
-import { useMenuCollection } from '../firestore/menu/fetch/useMenuCollection'
-import { useMenuSectionCollection } from '../firestore/menu/fetch/useMenuSectionCollection'
-import { menuItemsPath } from '../firestore/menu/utils/paths'
+import type { Dish } from '../../../../../../models/dish.model'
+import type { Menu, MenuItem, MenuSection } from '../../../../../../models/menu.model'
+import { useKitchenChildCollection } from '../../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { useDishCollection } from '../../../dish/fetch/useDishCollection'
+import { useKitchenCollection } from '../../../kitchen/fetch/useKitchenCollection'
+import { useMenuCollection } from '../../fetch/useMenuCollection'
+import { useMenuSectionCollection } from '../../fetch/useMenuSectionCollection'
+import { menuItemsPath } from '../paths'
 import {
   isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenLanguageState,
   resolvePublicTranslatedText,
-} from './public-kitchen-language'
+} from '../../../../app/public-kitchen-language'
 import {
   ROOT_KITCHENS,
   asRecord,
@@ -35,9 +36,9 @@ import {
   type MenuWithEmbeddedSections,
   type PublicMenuItemRow,
   type PublicMenuSectionRow,
-} from './public-menu-runtime'
+} from '../../../../app/public-menu-runtime'
 
-export function usePublicKitchenMenu(
+export function useMenuPublicKitchen(
   kitchenSlug: Ref<string>,
   menuId?: Ref<string>
 ) {
@@ -115,14 +116,6 @@ export function usePublicKitchenMenu(
     const id = requestedMenuId.value
     return id ? menus.value.find((item) => clean(item.id) === id) ?? null : null
   })
-  const translationCachePath = computed(() =>
-    kitchenId.value && clean(menu.value?.id) && selectedLanguageUsesCache.value
-      ? `${ROOT_KITCHENS}/${kitchenId.value}/menus/${clean(menu.value?.id)}/translation_cache`
-      : ''
-  )
-  const translationCacheRows = ref<Record<string, unknown>[]>([])
-  const translationCachePending = ref(false)
-  let translationCacheRequestId = 0
   const sectionRead = useMenuSectionCollection(
     kitchenId,
     computed(() => clean(menu.value?.id)),
@@ -211,48 +204,21 @@ export function usePublicKitchenMenu(
     { immediate: true }
   )
 
-  watch(
-    [translationCachePath, selectedLanguageUsesCache],
-    async ([path, usesCache]) => {
-      const requestId = ++translationCacheRequestId
-      translationCacheRows.value = []
-
-      if (!usesCache || !path) {
-        translationCachePending.value = false
-        return
-      }
-
-      translationCachePending.value = true
-      try {
-        const snap = await getDocs(collection(resolveDb(), path))
-        if (requestId !== translationCacheRequestId) return
-
-        translationCacheRows.value = snap.docs.map((docSnap) => ({
-          ...docSnap.data(),
-          id: docSnap.id,
-        }))
-      } finally {
-        if (requestId === translationCacheRequestId) {
-          translationCachePending.value = false
-        }
-      }
-    },
-    { immediate: true }
+  const translationCacheCollectionName = computed(() =>
+    clean(menu.value?.id) && selectedLanguageUsesCache.value
+      ? `menus/${clean(menu.value?.id)}/translation_cache`
+      : ''
   )
-
-  const dishesById = computed(() => {
-    const map = new Map<string, Dish>()
-    dishRead.dishes.value.forEach((dish) => {
-      const id = clean(dish.id)
-      if (id) map.set(id, dish)
-    })
-    return map
-  })
+  const translationCacheRead = useKitchenChildCollection<Record<string, unknown>>(
+    translationCacheCollectionName,
+    kitchenId,
+    { kitchenCollectionPath: ROOT_KITCHENS }
+  )
   const translationCacheByField = computed(() => {
     const map = new Map<string, string>()
     if (!selectedLanguageUsesCache.value) return map
 
-    for (const row of translationCacheRows.value) {
+    for (const row of translationCacheRead.items.value) {
       const fieldId = clean(row.field_id)
       const targetLanguage = clean(row.target_language)
       const translatedText = clean(row.translated_text)
@@ -267,6 +233,15 @@ export function usePublicKitchenMenu(
     selectedLanguageUsesCache.value
       ? translationCacheByField.value.get(fieldId) || ''
       : ''
+
+  const dishesById = computed(() => {
+    const map = new Map<string, Dish>()
+    dishRead.dishes.value.forEach((dish) => {
+      const id = clean(dish.id)
+      if (id) map.set(id, dish)
+    })
+    return map
+  })
   const textForLanguage = (
     defaultText: unknown,
     translations: unknown,
@@ -374,7 +349,7 @@ export function usePublicKitchenMenu(
         ((!usesEmbeddedSections.value && sectionRead.pending.value) ||
           dishRead.pending.value ||
           itemsPending.value ||
-          translationCachePending.value))
+          translationCacheRead.pending.value))
   )
   const unavailable = computed(
     () =>

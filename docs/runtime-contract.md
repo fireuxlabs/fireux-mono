@@ -430,7 +430,7 @@ Updated: 2026-05-25
   - `live` -> `kitchens/{kitchenId}`
   - `demo` -> no Firestore collection path (scenario-backed)
   - `test` -> `misebox-simulation/kitchens/{kitchenId}`
-- Kitchen public menu publishing uses root public children:
+- Published kitchen menu routes use root kitchen menu records and their child records:
   - `kitchens/{kitchenId}/menus/{menuId}`
   - `kitchens/{kitchenId}/dishes/{dishId}`
 - Kitchen console operations use app-scoped children:
@@ -441,8 +441,8 @@ Updated: 2026-05-25
   - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
   - `apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`
   - `apps/{appId}/kitchens/{kitchenId}/suppliers/{supplierId}`
-- Public menu and dish copy is translated directly from menu/dish text.
-- Public menu code must not depend on private working `mise` or console operation lines.
+- Published menu and dish copy is translated directly from menu/dish text.
+- Published menu route code must not depend on private working `mise` or console operation lines.
 - Future nutrition/production support may link dishes to ingredients, mise, or recipes, but those links are enrichment/operations data rather than public menu translation canon.
 
 ## Route Policy (ID, Slug, Handle)

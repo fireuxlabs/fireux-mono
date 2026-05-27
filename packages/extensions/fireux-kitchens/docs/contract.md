@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-20
+Updated: 2026-05-27
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -71,9 +71,10 @@ Recipe composable stack canon:
 Menu composable stack canon:
 - `Menu` is the public presentation record for menu surfaces.
 - Root `menus/{menuId}` is allowed for public-first or anonymous menu records, such as a quick QR menu upload.
-- Kitchen-scoped menus remain valid when the menu is operated inside a kitchen:
-  - `kitchens/{kitchenId}/menus/{menuId}` for root public children
-  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped console children
+- Kitchen-scoped menus remain valid when the menu belongs to or is operated inside a kitchen:
+  - `kitchens/{kitchenId}/menus/{menuId}` for root kitchen menu records
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped kitchen menu records
+- Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
 - `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads.
 - `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `scope: 'kitchen'`.
@@ -98,7 +99,7 @@ Ingredient composable stack canon:
 - Selected kitchen ingredient operations live under `console/kitchen/operations/ingredients`.
 
 ## 4b) Public menu publishing
-- Public menu publishing uses root public children only:
+- Published menu routes use eligible root kitchen menu records and their child records:
   - `kitchens/{kitchenId}/menus/{menuId}`
   - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
   - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
@@ -107,7 +108,7 @@ Ingredient composable stack canon:
 - `Dish` describes guest-facing food.
 - `Menu` presents selected dishes.
 - QR points guests to the exact published menu URL.
-- Menu items require a valid `dish_id`; public menus read dish name and description from `Dish`.
+- Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
 - Menu owns presentation-only fields: name, description, status, service modes, sort order, simple design, section order, item order, and item price.
 - Public menu routes render published menus only.
 - Missing, unpublished, or invalid menus must show an explicit unavailable state.

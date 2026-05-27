@@ -43,15 +43,15 @@ Kitchen identity rule:
 
 `Kitchen` should stay clearly separated from:
 
-- root public child records such as menus and dishes
+- root kitchen child records such as menus and dishes
 - app-scoped operational children such as ingredients, recipes, mise, orders, team, stations, or supplier records
 - profile extensions such as `Chef`
 
-Public menu publishing rule:
+Published menu route rule:
 
-- menus and dishes live as root public children under `kitchens/<kitchenId>`
-- public menu and dish copy is translated directly from menu/dish text
-- public menu delivery must not depend on private working `mise`
+- menus and dishes live as root kitchen child records under `kitchens/<kitchenId>`
+- published menu and dish copy is translated directly from menu/dish text
+- published menu delivery must not depend on private working `mise`
 
 ## Short Version
 
