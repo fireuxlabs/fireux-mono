@@ -1,5 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
@@ -12,6 +13,11 @@ export interface UsePlaceCreateOptions {
   type?: string | null | undefined
   types?: string[]
 }
+
+export const PlaceCreatePlan = defineFireuxCreatePlan({
+  intent: 'provision',
+  routes: ['external_provider', 'storage_upload', 'firestore_set'],
+})
 
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
   const { setDocument } = useFirestoreManager()
@@ -206,6 +212,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
   }
 
   return {
+    createPlan: PlaceCreatePlan,
     ensurePlaceExists,
     createPlace: ensurePlaceExists,
   }

@@ -490,6 +490,7 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 ## Create vs Ensure Canon
 - `createX` means intentional creation of a real target.
 - `ensureX` means bootstrap/setup-if-missing.
+- `provisionX` means creation is coordinated through storage, a server route, or an external provider before entity truth is written.
 - `createX` belongs to explicit user actions:
   - create forms
   - create systems
@@ -501,6 +502,20 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Do not hide creation behind auth/bootstrap.
 - Sign-in establishes identity; it does not create domain records by itself.
 - When a family canon says test mode is one target per signed-in user, the family entry page may call `ensureX` on entry to `test` mode.
+- `useXCreate()` remains the entity-owned public seam for all three intents. Pages and tools call the entity seam; the entity seam chooses the route.
+- FireUX create intent vocabulary is intentionally small:
+  - `create`: make a new record from supplied input.
+  - `ensure`: make sure a record exists once, safely repeatable.
+  - `provision`: coordinate provider/server/storage work, then write entity truth.
+- FireUX create route vocabulary describes mechanics, not new families:
+  - `firestore_add`: Firestore allocates the id.
+  - `firestore_set`: the entity owns the id/slug.
+  - `server_api`: a server endpoint performs privileged or cross-service work.
+  - `external_provider`: a provider supplies or hydrates source data.
+  - `storage_upload`: uploaded or remote media/file storage is part of creation.
+  - `composed`: creation combines root/overlay/child records.
+- Do not split new top-level create families for upload, server-provisioned, provider-hydrated, or overlay flows. These are `provision` or `ensure` routes unless the entity contract proves otherwise.
+- Shared create vocabulary lives in `fireux-core/runtime/composables/fireux/firestore/operations/createStrategy`.
 
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.

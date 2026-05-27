@@ -165,7 +165,9 @@ FireUX adds structure on top of ordinary composable usage:
   - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
 - usual Firestore entity stacks stay boring: root `useX.ts`, `fetch/`, `mutations/`, and `utils/`
 - singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
-- create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` chooses `useFirestoreCreate` for client-rule-protected writes or `useFirestoreApiCreate` for server-gated writes
+- create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` owns the create intent and route
+- create intents are `create`, `ensure`, and `provision`; routes are mechanics such as `firestore_add`, `firestore_set`, `server_api`, `external_provider`, `storage_upload`, and `composed`
+- `fireux/firestore/operations/createStrategy` owns the shared create vocabulary; entity families keep the business rules and may delegate mechanics to `useFirestoreCreate` or `useFirestoreApiCreate`
 - publish surfaces should keep the same shape: pages call `useXPublish`, while `useXPublish` owns entity readiness rules and can delegate shared write mechanics to core `fireux/publishing/usePublish`
 - sitemap registration must use explicit publication truth such as `show === true` or `visibility === 'public'`; missing publication fields must not fall back to slug presence
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour

@@ -2,7 +2,10 @@ import { computed, type Ref } from 'vue'
 import type { Menu } from '../../../../../../models/menu.model'
 import { useMenuInterface } from './useMenuInterface'
 
-export function useMenuComputed(menu: Ref<Menu | null>, pending: Ref<boolean>) {
+export function useMenuComputed(
+  menu: Ref<Menu | null | undefined>,
+  pending: Ref<boolean>
+) {
   const { pill: menuInterface } = useMenuInterface()
 
   const isPending = computed(() => Boolean(pending.value))

@@ -1,4 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { kitchenMenusPath } from '../../../console/kitchen/operations/menu/paths'
@@ -8,9 +8,10 @@ const clean = (value: unknown) => String(value ?? '').trim()
 export function useMenuDelete(
   options: {
     kitchenCollectionPath?: string | Ref<string | null | undefined>
+    databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { deleteDocument } = useFirestoreManager()
+  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
 
   async function deleteMenu(kitchenId: string, menuId: string) {
     const collectionPath = kitchenMenusPath({

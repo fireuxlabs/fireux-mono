@@ -1,6 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
@@ -59,6 +60,11 @@ export const ProductPayload = {
 export const ProductStampOptions = {
   creator: true,
 } as const
+
+export const ProductCreatePlan = defineFireuxCreatePlan({
+  intent: 'provision',
+  routes: ['server_api', 'firestore_set'],
+})
 
 export function useProductCreate() {
   const db = useFirestore()
@@ -291,5 +297,5 @@ export function useProductCreate() {
     return createProductFromInput(input)
   }
 
-  return { createProduct, createProductFromInput }
+  return { createPlan: ProductCreatePlan, createProduct, createProductFromInput }
 }

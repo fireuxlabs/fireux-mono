@@ -1,4 +1,5 @@
 import { useFirestoreApiCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreApiCreate'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 
 export type GoQrCreateInput = {
   file: File
@@ -12,6 +13,11 @@ export type GoQrCreateResult = {
   path: string
   qr_path: string
 }
+
+export const GoQrCreatePlan = defineFireuxCreatePlan({
+  intent: 'provision',
+  routes: ['server_api', 'storage_upload', 'firestore_set'],
+})
 
 export function useGoQrCreate() {
   const { createDocument: createApiDocument } = useFirestoreApiCreate()
@@ -29,6 +35,7 @@ export function useGoQrCreate() {
   }
 
   return {
+    createPlan: GoQrCreatePlan,
     createDocument,
   }
 }

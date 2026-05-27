@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useMenuFetch } from './fetch/useMenuFetch'
 import { useMenuComputed } from './utils/view/useMenuComputed'
 import { useMenuInterface } from './utils/view/useMenuInterface'
@@ -22,29 +22,25 @@ type UseMenuOptions = {
 }
 
 /**
- * FireUX stack family: Kitchen-scoped publishable child entity.
+ * FireUX stack family: Menu entity.
  * Entity: Menu.
  * Canon:
  * - docs/fireux-canon.md
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * Menu is scoped to Kitchen-owned public menu publishing. Public root routes
- * such as /menus/:slug should resolve to this family instead of becoming a
- * separate root Menu entity.
+ * The base Menu seam reads root Menu records. Kitchen-scoped menu operation
+ * helpers should use explicit kitchen-named seams.
  */
 export function useMenu(
-  menuId: string | Ref<string | null | undefined> | null | undefined,
+  menuId: string,
   options: UseMenuOptions = {}
 ) {
-  const { menu, pending, error, kitchenId, collectionPath } = useMenuFetch(menuId, options)
+  const { menu, exists } = useMenuFetch(menuId)
 
   return {
     menu,
-    pending,
-    error,
-    kitchenId,
-    collectionPath,
-    ...useMenuComputed(menu, pending),
+    exists,
+    ...useMenuComputed(menu, computed(() => false)),
     ...useMenuInterface(),
     ...useMenuCreate(options),
     ...useMenuUpdate(options),
