@@ -1,4 +1,4 @@
-// Action: ENSURE · Phases: 1–4
+// Action: CREATE · Phases: 1–4
 // Sketch: Professional create (core + app, conditional)
 // One doc, one action, one name. No wiring yet.
 
@@ -17,7 +17,7 @@ import type { AppProfessional, Professional } from '../../../../../../models/pro
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 export const ProfessionalCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function useProfessionalCreate() {
@@ -29,7 +29,7 @@ export function useProfessionalCreate() {
   const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
   const { createUser } = useUserCreate()
 
-  async function ensureProfessionalProfile(): Promise<{
+  async function createProfessionalProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -110,5 +110,5 @@ export function useProfessionalCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { createPlan: ProfessionalCreatePlan, ensureProfessionalProfile }
+  return { createPlan: ProfessionalCreatePlan, createProfessionalProfile }
 }

@@ -24,11 +24,11 @@
           <li v-if="isConsoleMode">Requires an authenticated user on the console route.</li>
           <li v-else>If entered from the kitchen CTA, a Chef profile may be offered later for public credit.</li>
           <li>
-            The kitchen mutation creates or ensures
+            The kitchen mutation creates
             <code>kitchens/&lt;id&gt;</code>.
           </li>
           <li>
-            When an app context exists, the shared console ensure seam also ensures
+            When an app context exists, the shared console create seam also creates
             <code>apps/&lt;appId&gt;/kitchens/&lt;id&gt;</code>.
           </li>
           <li>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import { computed } from 'vue'
 import KitchenCreateWrite from './Write.vue'
@@ -89,7 +89,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll connect this location to your console overlay. Nothing is duplicated.'
-    : 'We’ll create or ensure the public kitchen entity for a real venue. App context may also ensure the overlay.'
+    : 'We’ll create the public kitchen entity for a real venue. App context may also create the overlay.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

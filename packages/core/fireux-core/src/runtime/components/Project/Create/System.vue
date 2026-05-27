@@ -20,11 +20,11 @@
       </p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
         <li>
-          The project mutation creates or ensures
+          The project mutation creates
           <code>projects/&lt;id&gt;</code>.
         </li>
         <li>
-          When an app context exists, the shared console ensure seam also ensures
+          When an app context exists, the shared console create seam also creates
           <code>apps/&lt;appId&gt;/projects/&lt;id&gt;</code>.
         </li>
         <li>
@@ -55,8 +55,8 @@
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useDevUi } from '../../../composables/fireux/app/ui/useDevUi'
 import ProjectCreateWrite from './Write.vue'
 
@@ -69,7 +69,7 @@ const props = withDefaults(defineProps<{
 })
 
 defineEmits<{
-  (event: 'created', result: ConsoleEnsureResult): void
+  (event: 'created', result: ConsoleCreateResult): void
 }>()
 
 const { notesVisible } = useDevUi()
@@ -82,7 +82,7 @@ const headerTitle = computed(() =>
 )
 const headerDescription = computed(() =>
   isConsoleMode.value
-    ? 'We’ll ensure the project console for this app and create the public project only if it is missing.'
+    ? 'We’ll create the project console for this app and create the public project only if it is missing.'
     : 'We’ll create the public project record from endpoint metadata when project ingest is rebuilt.'
 )
 const successTo = computed(() => {

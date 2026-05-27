@@ -153,7 +153,7 @@ Current learned examples:
   - `developer`: Developer builds and checks the app
   - `control`: App Control changes where the app belongs
   - `system`: System maintains calculated/internal fields
-- `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam.
+- `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/create seam.
 - `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.
 - Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
@@ -282,7 +282,6 @@ Current learned examples:
   - `useXPublish()` makes public/indexable publication explicit where the entity supports publishing.
   - `useXSeo()` owns public metadata and JSON-LD where the entity has public pages.
   - `useXDelete()` removes.
-  - `useXEnsure()` bootstraps.
   - `useXConsole()` selects and operates a workspace.
   - dashboard/profile routes manage identity.
 - Entities should start from the standard FireUX stack before adding domain-specific seams:
@@ -294,7 +293,6 @@ Current learned examples:
   - `useXFetch()`, `useXCollection()`, `useXInterface()`
   - `useXCreate()`, `useXUpdate()`, `useXPublish()`, and `useXDelete()` where writes/publication exist
   - `useXSeo()` where public entity metadata/JSON-LD exists
-  - `useXEnsure()` only where bootstrap/setup-if-missing is intended
   - `X/Collection/Manager.vue` where browse/manage UI exists
   - `X/Cards/*` or equivalent shared surfaces for `Pill`, `Cell`, `Preview`, and `Profile`
 - Normal root entity folders should be boring and predictable:
@@ -311,7 +309,6 @@ composables/fireux/firestore/<entity>/
     useXUpdate.ts
     useXPublish.ts    optional, only for public/indexable publication
     useXDelete.ts
-    useXEnsure.ts      optional, only for setup-if-missing behaviour
     validation/        optional, only for write-specific validation
   utils/
     useXSeo.ts         optional, only for public entity metadata/JSON-LD
@@ -350,8 +347,8 @@ composables/fireux/firestore/<entity>/
 - Server/API-mediated Firestore operations use a client composable to call a Nuxt API route; the server route owns privileged authority, storage, provider work, cross-app behavior, or public-safe response shaping.
 - Server/API-mediated operations are still Firestore operations. They are transport variants, not separate entity families.
 - `useFirestoreCreate` is a boring direct-client create primitive. It handles collection path, generated vs known document id, stamp options, database id, and stripping persisted `id`.
-- `useFirestoreCreate` must not own ensure behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition.
-- `useXCreate` is the entity-owned Create seam. It decides whether the Create behavior is out of the box, with ensure, or with provision, then delegates plain Firestore writes to lower-level helpers.
+- `useFirestoreCreate` must not own idempotent setup behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition.
+- `useXCreate` is the entity-owned Create seam. It decides whether the Create behavior is out of the box, idempotent, or with provision, then delegates plain Firestore writes to lower-level helpers.
 - Record location language must describe where truth lives:
   - root record: `menus/{menuId}`, `ingredients/{ingredientId}`, `kitchens/{kitchenId}`.
   - parent-scoped record: `kitchens/{kitchenId}/menus/{menuId}`.
@@ -385,12 +382,12 @@ composables/fireux/firestore/<entity>/
 | --- | --- | --- | --- |
 | Root entity | Canonical stored thing | `XModel`, `useXFetch`, `useXCollection`, `useXInterface`, writes where allowed, collection/card surfaces where browsable | `App`, `Blog`, `Chef`, `Company`, `Ecosystem`, `Job`, `Kitchen`, `Portfolio`, `Product`, `Professional`, `Supplier`, `User` |
 | Console workspace entity | Root entity that can be selected and operated | root stack plus `useXConsole`/selection and `/console/<family>` surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
-| Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/ensure/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
+| Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/create/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
 | System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
 | Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder`, `Dish`, `Menu`, `MenuSection`, `MenuItem`, `Recipe` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
-| System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
+| System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/create/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
 ### Entity CTA Family Matrix
 
@@ -412,7 +409,7 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 | Mode | Canon meaning | Current examples |
 | --- | --- | --- |
 | `quick-create` | User completes a small form and immediately creates the record | `Company`, `Place`, `Ingredient`, simple profile/entity creates |
-| `ensure-create` | Setup-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
+| `idempotent-create` | Create-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
 | `draft-preview-create` | Local entity-family draft state, preview, then publish/create | `Product`, `BlogPost`, `Job` |
 | `onboarding-create` | Multi-step setup that may produce an entity plus supporting config/assets | `App`, product flows only when they coordinate whole-app setup or multiple entity families |
 | `simple-edit` | One document or root record is patched directly through `useXUpdate` or entity update helpers | `Company`, `Place`, `Kitchen`, `Supplier`, `Portfolio`, `Job`, `Blog`, `Dish`, `Recipe` |
@@ -511,27 +508,24 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Production deploy configuration must be checked app by app across every ecosystem; local `.env` files are not the deployed source of truth.
 
 ## Create Canon
+- Detailed entity creation rules live in `docs/entity-creation.md`.
 - Every `useXCreate` belongs to the Create family.
 - Create is the default: a user action or system action creates entity truth from supplied input.
-- Some Create seams include ensure behavior:
-  - ensure means setup-if-missing, safe to rerun, and continuing when the record already exists.
+- Some Create seams are idempotent:
+  - idempotent means create-if-missing, safe to rerun, and continuing when the record already exists.
 - Some Create seams include provision behavior:
   - provision means a required resource or provider result is prepared before entity truth is complete.
 - `createX` belongs to explicit user actions:
   - create forms
   - create systems
   - intentional creation buttons
-- `ensureX` belongs to:
-  - test target entry
-  - repair/recovery
-  - setup flows that must be safe to run repeatedly
 - Do not hide creation behind auth/bootstrap.
 - Sign-in establishes identity; it does not create domain records by itself.
-- When a family canon says test mode is one target per signed-in user, the family entry page may call `ensureX` on entry to `test` mode.
+- When a family canon says test mode is one target per signed-in user, the family entry page may call idempotent `createX` on entry to `test` mode.
 - `useXCreate()` remains the entity-owned seam for Create behavior. Pages and tools call the entity seam.
 - Create behavior should be described as:
   - out of the box: plain entity creation; this is the default and does not need an explicit plan.
-  - with ensure: creation includes setup-if-missing behavior.
+  - idempotent: creation includes create-if-missing behavior and is safe to rerun.
   - with provision: creation depends on storage, a provider, or another prepared resource.
 - Create descriptors are not families:
   - transport: client or server.

@@ -1,4 +1,4 @@
-// Action: ENSURE · Phases: 1–4
+// Action: CREATE · Phases: 1–4
 // Sketch: Chef create (core + app, conditional)
 // One doc, one action, one name. No wiring yet.
 
@@ -13,7 +13,7 @@ import type { AppChef, Chef } from '../../../../../../models/profiles/Chef/Chef.
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 export const ChefCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function useChefCreate() {
@@ -21,7 +21,7 @@ export function useChefCreate() {
   const { setDocument } = useFirestoreCreate()
   const { createUser } = useUserCreate()
 
-  async function ensureChefProfile(): Promise<{
+  async function createChefProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -77,5 +77,5 @@ export function useChefCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { createPlan: ChefCreatePlan, ensureChefProfile }
+  return { createPlan: ChefCreatePlan, createChefProfile }
 }

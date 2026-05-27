@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { computed, isRef, type Ref } from 'vue'
 import { useProjectFetch } from './fetch/useProjectFetch'
-import { useProjectEnsure } from './mutations/useProjectEnsure'
+import { useProjectBootstrapCreate } from './mutations/useProjectBootstrapCreate'
 import { useProjectCreate } from './mutations/useProjectCreate'
 import { useProjectInterface } from './utils/view/useProjectInterface'
 
@@ -24,7 +24,7 @@ export function useProject(id?: string | Ref<string>) {
     project,
     pending,
     ...useProjectInterface(),
-    ...useProjectEnsure(),
+    ...useProjectBootstrapCreate(),
     ...useProjectCreate(),
   }
 }

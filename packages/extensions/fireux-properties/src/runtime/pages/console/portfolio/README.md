@@ -26,7 +26,7 @@ This folder owns the operational portfolio console workspace.
 
 ## Portfolio Console Delta
 
-- Create flow ensures `apps/<appId>/portfolios/<portfolioId>`.
+- Create flow creates `apps/<appId>/portfolios/<portfolioId>` when missing.
 - Create flow creates the root portfolio first when missing.
 - Create flow seeds console authority for the current user.
 - Operational child records stay under `apps/<appId>/portfolios/<portfolioId>/...`.

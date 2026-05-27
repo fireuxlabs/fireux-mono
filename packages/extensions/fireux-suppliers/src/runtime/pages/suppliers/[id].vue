@@ -78,7 +78,7 @@ import { navigateTo, useRoute } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
-import { useSupplierEnsure } from '../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
+import { useSupplierCreate } from '../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
 import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
@@ -120,7 +120,7 @@ const isAdminUser = computed(
   () => appUser.value?.role === 'admin'
 )
 
-const { ensure } = useSupplierEnsure()
+const { createSupplierConsole } = useSupplierCreate()
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
@@ -130,7 +130,10 @@ const createSupplier = async () => {
   createError.value = null
 
   try {
-    await ensure(docId)
+    await createSupplierConsole({
+      existingRootId: docId,
+      mode: 'console',
+    })
   } catch (error) {
     createError.value =
       (error as Error)?.message || 'Failed to create supplier record.'

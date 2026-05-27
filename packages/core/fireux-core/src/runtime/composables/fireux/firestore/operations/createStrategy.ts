@@ -1,5 +1,5 @@
 export type FireuxCreateFamily =
-  | 'with_ensure'
+  | 'idempotent'
   | 'with_provision'
 
 export type FireuxCreateTransport = 'client' | 'server'

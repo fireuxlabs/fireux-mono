@@ -23,7 +23,7 @@ This README only explains the portfolio delta.
 
 Portfolio-specific delta:
 - the public index can browse portfolios and also enter the same chooser used by `/console/portfolio`
-- public create creates or ensures `portfolios/<id>`
+- public create creates `portfolios/<id>` when missing
 - public create does not ensure `apps/<appId>/portfolios/<id>`
 - Granite remains the console shell, but `Portfolio` stays the domain runtime anchor
 

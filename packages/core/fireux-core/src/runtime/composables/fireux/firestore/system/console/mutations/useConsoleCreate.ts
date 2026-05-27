@@ -16,24 +16,24 @@ import { useAuth } from '../../../../firebase/useAuth'
 export type ConsoleEntityType = 'kitchen' | 'portfolio' | 'supplier' | 'project'
 export type ConsoleCreateMode = 'public' | 'console'
 
-export type ConsoleEnsureResult = {
+export type ConsoleCreateResult = {
   id: string
   createdRoot: boolean
   createdOverlay: boolean
 }
 
-export type ConsoleRootEnsureResult = {
+export type ConsoleRootCreateResult = {
   id: string
   created: boolean
 }
 
 type MaybePromise<T> = T | Promise<T>
 
-type ConsoleEnsureOptions<TOverlay> = {
+type ConsoleCreateOptions<TOverlay> = {
   type: ConsoleEntityType
   mode?: ConsoleCreateMode
   existingRootId?: string | null
-  ensureRoot?: () => MaybePromise<ConsoleRootEnsureResult>
+  createRoot?: () => MaybePromise<ConsoleRootCreateResult>
   createOverlay?: (rootId: string) => MaybePromise<TOverlay>
   overlayId?: string | null
 }
@@ -56,7 +56,7 @@ function resolveAppScopeState(rootData: Record<string, unknown>, rootId: string,
   return 'parent_app'
 }
 
-export function useConsoleEnsure() {
+export function useConsoleCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
@@ -96,9 +96,9 @@ export function useConsoleEnsure() {
     )
   }
 
-  async function ensureConsole<TOverlay>(
-    options: ConsoleEnsureOptions<TOverlay>
-  ): Promise<ConsoleEnsureResult> {
+  async function createConsole<TOverlay>(
+    options: ConsoleCreateOptions<TOverlay>
+  ): Promise<ConsoleCreateResult> {
     const collectionName = consoleCollectionByType[options.type]
 
     let id = ''
@@ -119,19 +119,19 @@ export function useConsoleEnsure() {
 
       id = existingRootId
     } else {
-      if (!options.ensureRoot) {
+      if (!options.createRoot) {
         throw new Error(
-          `[console:${options.type}] ensureRoot is required when no existing root id is provided`
+          `[console:${options.type}] createRoot is required when no existing root id is provided`
         )
       }
 
-      const rootResult = await options.ensureRoot()
+      const rootResult = await options.createRoot()
       id = normalizeId(rootResult?.id)
       createdRoot = Boolean(rootResult?.created)
 
       if (!id) {
         throw new Error(
-          `[console:${options.type}] ensureRoot must return a valid root id`
+          `[console:${options.type}] createRoot must return a valid root id`
         )
       }
     }
@@ -207,5 +207,5 @@ export function useConsoleEnsure() {
     }
   }
 
-  return { ensureConsole }
+  return { createConsole }
 }

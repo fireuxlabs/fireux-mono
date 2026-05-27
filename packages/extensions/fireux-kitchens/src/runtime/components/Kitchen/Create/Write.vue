@@ -69,8 +69,8 @@
 import { useRoute, useRouter } from '#imports'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { doc, getDoc } from 'firebase/firestore'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
@@ -90,7 +90,7 @@ const props = withDefaults(defineProps<{
   cancelTo: '',
 })
 
-const { createKitchen } = useKitchenCreate()
+const { createKitchen, createKitchenConsole } = useKitchenCreate()
 const { ensurePlaceExists } = usePlaceCreate()
 const { coreProfile, updateCoreProfile } = useChef()
 const { selectKitchen } = useKitchenConsole()
@@ -99,7 +99,7 @@ const route = useRoute()
 const router = useRouter()
 
 const error = ref<string | null>(null)
-const successResult = ref<ConsoleEnsureResult | null>(null)
+const successResult = ref<ConsoleCreateResult | null>(null)
 const existingId = ref<string | null>(null)
 
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
@@ -145,7 +145,7 @@ function createAnotherKitchen() {
   existingId.value = null
 }
 
-async function ensureKitchenLinkedToChef(kitchenId: string) {
+async function linkKitchenToChef(kitchenId: string) {
   const currentKitchenIds = Array.isArray(coreProfile.value?.kitchen_ids)
     ? coreProfile.value.kitchen_ids
     : []
@@ -184,18 +184,14 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       }
     }
 
-    const result = await createKitchen(
-      {
-        id,
-        place: placeForRecord,
-      },
-      {
-        mode: props.mode,
-      }
-    )
+    const create = isConsoleMode.value ? createKitchenConsole : createKitchen
+    const result = await create({
+      id,
+      place: placeForRecord,
+    })
 
     if (isConsoleMode.value) {
-      await ensureKitchenLinkedToChef(result.id)
+      await linkKitchenToChef(result.id)
       selectKitchen(result.id, 'live')
       successResult.value = result
       if (route.path !== resolvedReturnTo.value) {

@@ -1,4 +1,4 @@
-// Action: ENSURE · Phases: 1–4
+// Action: CREATE · Phases: 1–4
 // Sketch: Agent create (core + app, conditional)
 // One doc, one action, one name. No wiring yet.
 
@@ -17,7 +17,7 @@ import type { AppAgent, Agent } from '../../../../../../models/profiles/Agent/Ag
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 export const AgentCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function useAgentCreate() {
@@ -29,7 +29,7 @@ export function useAgentCreate() {
   const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
   const { createUser } = useUserCreate()
 
-  async function ensureAgentProfile(): Promise<{
+  async function createAgentProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -110,5 +110,5 @@ export function useAgentCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { createPlan: AgentCreatePlan, ensureAgentProfile }
+  return { createPlan: AgentCreatePlan, createAgentProfile }
 }

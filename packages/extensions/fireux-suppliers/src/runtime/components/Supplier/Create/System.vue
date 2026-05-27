@@ -28,11 +28,11 @@
         </p>
         <ul data-dev-note-body class="list-disc space-y-1 pl-4">
           <li>
-            The supplier mutation creates or ensures
+            The supplier mutation creates
             <code>suppliers/&lt;id&gt;</code>.
           </li>
           <li>
-            When an app context exists, the shared console ensure seam also ensures
+            When an app context exists, the shared console create seam also creates
             <code>apps/&lt;appId&gt;/suppliers/&lt;id&gt;</code>.
           </li>
           <li>
@@ -66,20 +66,20 @@
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import SupplierCreateWrite from './Write.vue'
 
 const props = defineProps<{
   mode?: ConsoleCreateMode
-  create?: () => Promise<ConsoleEnsureResult>
+  create?: () => Promise<ConsoleCreateResult>
   returnTo?: string
   cancelTo?: string
 }>()
 
 defineEmits<{
-  (e: 'created', payload: ConsoleEnsureResult): void
+  (e: 'created', payload: ConsoleCreateResult): void
   (e: 'error', error: unknown): void
 }>()
 
@@ -97,8 +97,8 @@ const headerTitle = computed(() =>
 )
 const headerDescription = computed(() =>
   isConsoleMode.value
-    ? 'We’ll ensure the supplier console for this app and create the public supplier only if it is missing.'
-    : 'We’ll create or ensure the public supplier record. App context may also ensure the overlay.'
+    ? 'We’ll create the supplier console for this app and create the public supplier only if it is missing.'
+    : 'We’ll create the public supplier record. App context may also create the overlay.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

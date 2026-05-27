@@ -72,7 +72,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useSupplierUpdate`
 - `useSupplierDelete`
 - `createSupplier` = intentional supplier creation
-- `ensureSupplier` = test/bootstrap/setup-if-missing
+- `createSupplierConsole` = idempotent console supplier creation
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback to alternate supplier ids or old owner modules for canonical selection.

@@ -12,10 +12,10 @@ import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFor
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-  ConsoleRootEnsureResult,
-} from '../../../system/console/mutations/useConsoleEnsure'
-import { useConsoleEnsure } from '../../../system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+  ConsoleRootCreateResult,
+} from '../../../system/console/mutations/useConsoleCreate'
+import { useConsoleCreate } from '../../../system/console/mutations/useConsoleCreate'
 import { defineFireuxCreatePlan } from '../../../operations/createStrategy'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
@@ -43,19 +43,19 @@ export type ProjectCreateOptions = {
   test?: boolean
 }
 
-export type EnsureProjectOptions = {
+export type ProjectCreateModeOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
 
 export const ProjectCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { ensureConsole } = useConsoleEnsure()
+  const { createConsole } = useConsoleCreate()
   const collectionPath =
     options.test === true
       ? 'test-projects'
@@ -65,7 +65,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
   async function createTestProject(
     input: ProjectTestCreateInput = {}
-  ): Promise<ConsoleRootEnsureResult> {
+  ): Promise<ConsoleRootCreateResult> {
     const user = await useRequireUser()
     const id = normalizeString(input.id) || normalizeString(user.uid)
     const userLabel =
@@ -108,124 +108,131 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     return { id, created: true }
   }
 
-  async function runProjectCreate(
+  async function createProjectRoot(
     input: ProjectCreateInput,
-    ensureOptions: EnsureProjectOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleEnsureResult> {
+    createOptions: ProjectCreateModeOptions = {}
+  ): Promise<ConsoleRootCreateResult> {
     const user = await useRequireUser()
-    const requestedRootId = normalizeString(ensureOptions.existingRootId || input?.id)
+    const requestedRootId = normalizeString(createOptions.existingRootId || input?.id)
+    const id = requestedRootId
+    const requestedName = normalizeString(input?.name)
+    const defaultTestName = isTestProjectCollection
+      ? `${resolveTestUserLabel(user.displayName, user.uid)} Test Project`
+      : ''
+    const name =
+      isTestProjectCollection && (!requestedName || requestedName === user.uid)
+        ? defaultTestName
+        : requestedName
+    const slug = normalizeSlug(input?.slug)
+    const description = normalizeString(input?.description)
+    const imageUrl = normalizeString(input?.image_url)
+    const primaryProject = Boolean(input?.primary_project)
+    const status = (normalizeString(input?.status) || 'active') as ProjectStatus
+    const projectType = normalizeString(input?.project_type) as ProjectType | ''
+    const sourceUrl = normalizeString(input?.source_url)
+    const consoleEndpointUrl = normalizeString(input?.console_endpoint_url)
+    const appId = normalizeString(input?.app_id)
+    const ecosystemId = normalizeString(input?.ecosystem_id)
+    const firebaseProjectId = normalizeString(input?.firebase_project_id)
+    const slugFormat = validateSlugFormat(slug, {
+      required: true,
+      minLength: 3,
+      maxLength: 80,
+      label: 'Project slug',
+    })
 
-    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      const id = requestedRootId
-      const requestedName = normalizeString(input?.name)
-      const defaultTestName = isTestProjectCollection
-        ? `${resolveTestUserLabel(user.displayName, user.uid)} Test Project`
-        : ''
-      const name =
-        isTestProjectCollection && (!requestedName || requestedName === user.uid)
-          ? defaultTestName
-          : requestedName
-      const slug = normalizeSlug(input?.slug)
-      const description = normalizeString(input?.description)
-      const imageUrl = normalizeString(input?.image_url)
-      const primaryProject = Boolean(input?.primary_project)
-      const status = (normalizeString(input?.status) || 'active') as ProjectStatus
-      const projectType = normalizeString(input?.project_type) as ProjectType | ''
-      const sourceUrl = normalizeString(input?.source_url)
-      const consoleEndpointUrl = normalizeString(input?.console_endpoint_url)
-      const appId = normalizeString(input?.app_id)
-      const ecosystemId = normalizeString(input?.ecosystem_id)
-      const firebaseProjectId = normalizeString(input?.firebase_project_id)
-      const slugFormat = validateSlugFormat(slug, {
-        required: true,
-        minLength: 3,
-        maxLength: 80,
-        label: 'Project slug',
-      })
-
-      if (!id) {
-        throw new Error('Project id is required')
-      }
-
-      if (!name) {
-        throw new Error('Project name is required')
-      }
-
-      if (!slugFormat.isValid) {
-        throw new Error(slugFormat.message || 'Invalid project slug')
-      }
-
-      if (!projectType) {
-        throw new Error('Project type is required')
-      }
-
-      if (!sourceUrl) {
-        throw new Error('Project source URL is required')
-      }
-
-      if (!consoleEndpointUrl) {
-        throw new Error('Project console endpoint URL is required')
-      }
-
-      if (!appId) {
-        throw new Error('Project app id is required')
-      }
-
-      if (!ecosystemId) {
-        throw new Error('Project ecosystem id is required')
-      }
-
-      if (!firebaseProjectId) {
-        throw new Error('Project Firebase project id is required')
-      }
-
-      const ref = doc(db, collectionPath, id)
-      const snap = await getDoc(ref)
-      if (snap.exists()) {
-        return { id, created: false }
-      }
-
-      const payload: Partial<Omit<Project, 'id' | 'created' | 'updated'>> = {
-        app_scope_state: 'root_only',
-        app_scope_app_id: '',
-        name,
-        slug,
-        status,
-        project_type: projectType,
-        source_url: sourceUrl,
-        console_endpoint_url: consoleEndpointUrl,
-        app_id: appId,
-        ecosystem_id: ecosystemId,
-        firebase_project_id: firebaseProjectId,
-        owner_user_id: user.uid,
-        operator_ids: [user.uid],
-        team_ids: [user.uid],
-      }
-
-      if (description) {
-        payload.description = description
-      }
-
-      if (imageUrl) {
-        payload.image_url = imageUrl
-      }
-
-      if (primaryProject) {
-        payload.primary_project = true
-      }
-
-      await setDocument(collectionPath, id, payload, {
-        creator: true,
-      })
-
-      return { id, created: true }
+    if (!id) {
+      throw new Error('Project id is required')
     }
 
-    return ensureConsole<AppProject>({
+    if (!name) {
+      throw new Error('Project name is required')
+    }
+
+    if (!slugFormat.isValid) {
+      throw new Error(slugFormat.message || 'Invalid project slug')
+    }
+
+    if (!projectType) {
+      throw new Error('Project type is required')
+    }
+
+    if (!sourceUrl) {
+      throw new Error('Project source URL is required')
+    }
+
+    if (!consoleEndpointUrl) {
+      throw new Error('Project console endpoint URL is required')
+    }
+
+    if (!appId) {
+      throw new Error('Project app id is required')
+    }
+
+    if (!ecosystemId) {
+      throw new Error('Project ecosystem id is required')
+    }
+
+    if (!firebaseProjectId) {
+      throw new Error('Project Firebase project id is required')
+    }
+
+    const ref = doc(db, collectionPath, id)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id, created: false }
+    }
+
+    const payload: Partial<Omit<Project, 'id' | 'created' | 'updated'>> = {
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
+      name,
+      slug,
+      status,
+      project_type: projectType,
+      source_url: sourceUrl,
+      console_endpoint_url: consoleEndpointUrl,
+      app_id: appId,
+      ecosystem_id: ecosystemId,
+      firebase_project_id: firebaseProjectId,
+      owner_user_id: user.uid,
+      operator_ids: [user.uid],
+      team_ids: [user.uid],
+    }
+
+    if (description) {
+      payload.description = description
+    }
+
+    if (imageUrl) {
+      payload.image_url = imageUrl
+    }
+
+    if (primaryProject) {
+      payload.primary_project = true
+    }
+
+    await setDocument(collectionPath, id, payload, {
+      creator: true,
+    })
+
+    return { id, created: true }
+  }
+
+  async function runProjectConsoleCreate(
+    input: ProjectCreateInput,
+    createOptions: ProjectCreateModeOptions = {},
+    defaultMode: ConsoleCreateMode
+  ): Promise<ConsoleCreateResult> {
+    const user = await useRequireUser()
+    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
+      return createProjectRoot(input, createOptions)
+    }
+
+    return createConsole<AppProject>({
       type: 'project',
-      mode: ensureOptions.mode ?? defaultMode,
-      ensureRoot,
+      mode: createOptions.mode ?? defaultMode,
+      createRoot,
       createOverlay: async () =>
         ({
           operator_ids: [user.uid],
@@ -236,17 +243,22 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
   async function createProject(
     input: ProjectCreateInput,
-    ensureOptions: EnsureProjectOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runProjectCreate(input, ensureOptions, 'public')
+    createOptions: ProjectCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    const root = await createProjectRoot(input, createOptions)
+    return {
+      id: root.id,
+      createdRoot: root.created,
+      createdOverlay: false,
+    }
   }
 
-  async function ensureProject(
+  async function createProjectConsole(
     input: ProjectCreateInput,
-    ensureOptions: EnsureProjectOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runProjectCreate(input, ensureOptions, 'console')
+    createOptions: ProjectCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    return runProjectConsoleCreate(input, createOptions, 'console')
   }
 
-  return { createPlan: ProjectCreatePlan, createProject, ensureProject, createTestProject }
+  return { createPlan: ProjectCreatePlan, createProject, createProjectConsole, createTestProject }
 }

@@ -36,7 +36,7 @@ This README only explains the Kitchen family delta.
 Kitchen-specific delta:
 - live kitchen entry is Chef-aware
 - `index.vue` and `/kitchens` intentionally share the same chooser component
-- console create ensures `apps/<appId>/kitchens/<kitchenId>`
+- console create creates `apps/<appId>/kitchens/<kitchenId>` when missing
 - console create creates the public kitchen first when missing
 - console create seeds user-based console authority; Chef profile links are optional relationship/display data
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`

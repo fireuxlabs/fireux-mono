@@ -22,7 +22,7 @@ This folder owns the operational supplier console workspace.
 
 ## Supplier Console Delta
 
-- Create flow ensures `apps/<appId>/suppliers/<supplierId>`.
+- Create flow creates `apps/<appId>/suppliers/<supplierId>` when missing.
 - Create flow creates the root supplier first when missing.
 - Create flow seeds console authority for the current operator.
 

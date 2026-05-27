@@ -4,13 +4,13 @@ import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
-export function useProjectEnsure() {
+export function useProjectBootstrapCreate() {
   const fireux = useFireUXConfig()
   const runtime = useRuntimeConfig()
   const app = useFirebaseApp()
   const db = getFirestore(app)
 
-  async function ensureProjectDoc() {
+  async function createProjectDoc() {
     if (fireux.role !== 'global') return
 
     const firebaseProjectId = String(
@@ -103,5 +103,5 @@ export function useProjectEnsure() {
     await setDoc(ref, patch, { merge: true })
   }
 
-  return { ensureProjectDoc }
+  return { createProjectDoc }
 }

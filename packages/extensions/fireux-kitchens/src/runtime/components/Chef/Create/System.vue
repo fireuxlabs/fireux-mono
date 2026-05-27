@@ -61,7 +61,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { ensureChefProfile } = useChefCreate()
+const { createChefProfile } = useChefCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -69,7 +69,7 @@ const errorMessage = ref<string | null>(null)
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? ensureChefProfile
+  const create = props.create ?? createChefProfile
   isCreating.value = true
   errorMessage.value = null
 

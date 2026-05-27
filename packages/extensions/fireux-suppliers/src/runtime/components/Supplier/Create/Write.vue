@@ -47,25 +47,25 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useSupplierSelection } from '../../../composables/fireux/console/supplier/useSupplierSelection'
 import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
   mode?: ConsoleCreateMode
-  create?: (() => Promise<ConsoleEnsureResult>) | undefined
+  create?: (() => Promise<ConsoleCreateResult>) | undefined
   returnTo?: string
   cancelTo?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'created', payload: ConsoleEnsureResult): void
+  (e: 'created', payload: ConsoleCreateResult): void
   (e: 'error', error: unknown): void
 }>()
 
 const router = useRouter()
-const { createSupplier } = useSupplierCreate()
+const { createSupplier, createSupplierConsole } = useSupplierCreate()
 const { setRuntimeSupplier } = useSupplierSelection()
 
 const isCreating = ref(false)
@@ -77,7 +77,9 @@ const isConsoleMode = computed(() => resolvedMode.value === 'console')
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? (() => createSupplier({ mode: resolvedMode.value }))
+  const create = props.create ?? (
+    isConsoleMode.value ? createSupplierConsole : createSupplier
+  )
   isCreating.value = true
   errorMessage.value = null
 

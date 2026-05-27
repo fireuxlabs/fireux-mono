@@ -151,7 +151,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `usePortfolioCreate`
 - other portfolio-owned mutation seams as the family evolves
 - `createPortfolio` = intentional portfolio creation
-- `ensurePortfolio` = test/bootstrap/setup-if-missing
+- `createPortfolioConsole` = idempotent console portfolio creation
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback selection of active portfolio inside console flows.

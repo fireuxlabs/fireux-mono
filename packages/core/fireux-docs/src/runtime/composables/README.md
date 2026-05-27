@@ -86,7 +86,6 @@ composables/fireux/firestore/<entity>/
     useXUpdate.ts
     useXPublish.ts    optional, only for public/indexable publication
     useXDelete.ts
-    useXEnsure.ts      optional, only for setup-if-missing behaviour
     validation/        optional, only for write-specific validation
   utils/
     useXSeo.ts         optional, only for public entity metadata/JSON-LD
@@ -180,9 +179,9 @@ FireUX adds structure on top of ordinary composable usage:
 - singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
 - create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` owns Create behavior
 - Create behavior is out of the box by default; normal creates do not need a plan just to say they are normal
-- some Create seams include ensure behavior, and some include provision behavior
+- some Create seams are idempotent, and some include provision behavior
 - `useFirestoreCreate` is a direct-client primitive only: it handles collection path, generated vs known id writes, stamp options, database id, and stripping persisted `id`
-- `useFirestoreCreate` must not own ensure behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition
+- `useFirestoreCreate` must not own idempotent setup behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition
 - `createDocument(collectionPath, data, opts)` means generated id; `setDocument(collectionPath, id, data, opts)` means known id
 - `fireux/firestore/operations/createStrategy` remains the create-specific vocabulary helper; use it to mark non-default Create family behavior with `family`
 - optional descriptors such as `transport`, `location`, `id`, and `steps` should be used only when they clarify something non-obvious

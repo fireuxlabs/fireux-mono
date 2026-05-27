@@ -20,13 +20,13 @@
       </p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
         <li v-if="isConsoleMode">
-          Ensures
+          Creates
           <code>portfolios/&lt;id&gt;</code>
           and
           <code>apps/&lt;appId&gt;/portfolios/&lt;id&gt;</code>.
         </li>
         <li v-else>
-          Creates or ensures
+          Creates
           <code>portfolios/&lt;id&gt;</code>.
         </li>
         <li v-if="isConsoleMode">
@@ -54,8 +54,8 @@
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import PortfolioCreateWrite from './Write.vue'
 
@@ -66,7 +66,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (event: 'created', result: ConsoleEnsureResult): void
+  (event: 'created', result: ConsoleCreateResult): void
 }>()
 
 const { notesVisible } = useDevUi()
@@ -79,7 +79,7 @@ const headerTitle = computed(() =>
 )
 const headerDescription = computed(() =>
   isConsoleMode.value
-    ? 'We’ll ensure the portfolio console for this app and create the public portfolio only if it is missing.'
+    ? 'We’ll create the portfolio console for this app and create the public portfolio only if it is missing.'
     : 'We’ll create the public portfolio record. Console setup happens later.'
 )
 const successTo = computed(() => {

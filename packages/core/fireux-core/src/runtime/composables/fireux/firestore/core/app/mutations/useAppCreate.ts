@@ -7,7 +7,7 @@ import { useFirestore } from '../../../vuefire'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useEcosystemCreate } from '../../ecosystem/mutations/useEcosystemCreate'
-import { useProjectEnsure } from '../../project/mutations/useProjectEnsure'
+import { useProjectBootstrapCreate } from '../../project/mutations/useProjectBootstrapCreate'
 import {
   buildAppEnsureCreateInput,
   buildAppEnsureRepairPatch,
@@ -27,7 +27,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
-  const { ensureProjectDoc } = useProjectEnsure()
+  const { createProjectDoc } = useProjectBootstrapCreate()
   const { createEcosystem } = useEcosystemCreate()
   const collectionPath = normalizeString(options.collectionPath || 'apps') || 'apps'
 
@@ -52,7 +52,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
     }
 
     if (!input) {
-      await ensureProjectDoc()
+      await createProjectDoc()
       await createEcosystem()
     }
 

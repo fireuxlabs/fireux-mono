@@ -64,10 +64,10 @@ function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput })
   const id = payload.placeId
   const place = payload.place
 
-  void ensureKitchen(id, place)
+  void createKitchenIfMissing(id, place)
 }
 
-async function ensureKitchen(id: string, place: PlaceUpsertInput) {
+async function createKitchenIfMissing(id: string, place: PlaceUpsertInput) {
   const existingSnap = await getDoc(doc(db, 'kitchens', id))
   if (!existingSnap.exists()) {
     await createKitchen({ id, place, website: '' })

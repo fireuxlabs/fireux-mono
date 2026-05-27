@@ -192,7 +192,7 @@ Public menu copy packs:
 - `useKitchenOrderCreate`
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
 - `createKitchen` = intentional kitchen creation
-- `ensureKitchen` = test/bootstrap/setup-if-missing
+- `createKitchenConsole` = idempotent console kitchen creation
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback switching between live/demo.

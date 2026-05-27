@@ -61,7 +61,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { ensureAgentProfile } = useAgentCreate()
+const { createAgentProfile } = useAgentCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -69,7 +69,7 @@ const errorMessage = ref<string | null>(null)
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? ensureAgentProfile
+  const create = props.create ?? createAgentProfile
   isCreating.value = true
   errorMessage.value = null
 

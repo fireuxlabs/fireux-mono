@@ -1,11 +1,11 @@
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-  ConsoleRootEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+  ConsoleRootCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
@@ -32,7 +32,7 @@ export type PortfolioCreateOptions = {
   test?: boolean
 }
 
-export type EnsurePortfolioOptions = {
+export type PortfolioCreateModeOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
@@ -46,13 +46,13 @@ type PortfolioTestCreateInput = {
 }
 
 export const PortfolioCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { ensureConsole } = useConsoleEnsure()
+  const { createConsole } = useConsoleCreate()
   const { uid, currentUser } = useAuth()
   const collectionPath =
     options.test === true ? 'test-portfolios' : normalizeString(options.collectionPath || 'portfolios') || 'portfolios'
@@ -61,7 +61,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
   async function createTestPortfolio(
     input: PortfolioTestCreateInput = {}
-  ): Promise<ConsoleRootEnsureResult> {
+  ): Promise<ConsoleRootCreateResult> {
     const id = normalizeString(input.id) || normalizeString(uid.value)
     const userLabel =
       normalizeString(input.subtitle) ||
@@ -170,81 +170,87 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return slug
   }
 
-  async function runPortfolioCreate(
+  async function createPortfolioRootResult(
     input: PortfolioCreateInput,
-    ensureOptions: EnsurePortfolioOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleEnsureResult> {
-    const requestedRootId = normalizeString(ensureOptions.existingRootId)
+    createOptions: PortfolioCreateModeOptions = {}
+  ): Promise<ConsoleRootCreateResult> {
+    const requestedRootId = normalizeString(createOptions.existingRootId)
+    const defaultTestName = isTestPortfolioCollection
+      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
+      : ''
+    const requestedName = normalizeString(input?.name)
+    const name =
+      isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
+        ? defaultTestName
+        : requestedName
+    const slug = requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
 
-    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      const defaultTestName = isTestPortfolioCollection
-        ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
-        : ''
-      const requestedName = normalizeString(input?.name)
-      const name =
-        isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
-          ? defaultTestName
-          : requestedName
-      const slug = requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
-
-      if (!name) {
-        throw new Error('Portfolio name is required')
-      }
-
-      if (!slug) {
-        throw new Error('Portfolio slug is required')
-      }
-
-      const ref = doc(db, collectionPath, slug)
-      const snap = await getDoc(ref)
-      if (snap.exists()) {
-        return { id: slug, created: false }
-      }
-
-      const payload: Portfolio = {
-        id: slug,
-        app_scope_state: 'root_only',
-        app_scope_app_id: '',
-        operator_ids: Array.isArray(input?.operator_ids)
-          ? input.operator_ids
-          : [],
-        name,
-        tagline: normalizeString(input?.tagline),
-        image_url: normalizeString(input?.image_url),
-        slug,
-        owner_label:
-          normalizeString(input?.owner_label) ||
-          (isTestPortfolioCollection
-            ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
-            : ''),
-        status: input?.status || 'active',
-        strategy_label: normalizeString(input?.strategy_label),
-        region_label: normalizeString(input?.region_label),
-        notes: normalizeString(input?.notes),
-        created: {
-          at: {} as any,
-          by: undefined,
-          app_id: undefined,
-        },
-        updated: {
-          at: {} as any,
-          by: undefined,
-        },
-      }
-
-      await setDocument<Portfolio>(collectionPath, slug, payload, {
-        creator: true,
-        app: true,
-      })
-
-      return { id: slug, created: true }
+    if (!name) {
+      throw new Error('Portfolio name is required')
     }
 
-    return ensureConsole<AppPortfolio>({
+    if (!slug) {
+      throw new Error('Portfolio slug is required')
+    }
+
+    const ref = doc(db, collectionPath, slug)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id: slug, created: false }
+    }
+
+    const payload: Portfolio = {
+      id: slug,
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
+      operator_ids: Array.isArray(input?.operator_ids)
+        ? input.operator_ids
+        : [],
+      name,
+      tagline: normalizeString(input?.tagline),
+      image_url: normalizeString(input?.image_url),
+      slug,
+      owner_label:
+        normalizeString(input?.owner_label) ||
+        (isTestPortfolioCollection
+          ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
+          : ''),
+      status: input?.status || 'active',
+      strategy_label: normalizeString(input?.strategy_label),
+      region_label: normalizeString(input?.region_label),
+      notes: normalizeString(input?.notes),
+      created: {
+        at: {} as any,
+        by: undefined,
+        app_id: undefined,
+      },
+      updated: {
+        at: {} as any,
+        by: undefined,
+      },
+    }
+
+    await setDocument<Portfolio>(collectionPath, slug, payload, {
+      creator: true,
+      app: true,
+    })
+
+    return { id: slug, created: true }
+  }
+
+  async function runPortfolioConsoleCreate(
+    input: PortfolioCreateInput,
+    createOptions: PortfolioCreateModeOptions = {},
+    defaultMode: ConsoleCreateMode
+  ): Promise<ConsoleCreateResult> {
+    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
+      return createPortfolioRootResult(input, createOptions)
+    }
+
+    return createConsole<AppPortfolio>({
       type: 'portfolio',
-      mode: ensureOptions.mode ?? defaultMode,
-      ensureRoot,
+      mode: createOptions.mode ?? defaultMode,
+      createRoot,
       createOverlay: async () =>
         ({
           operator_ids: uid.value ? [uid.value] : ([] as string[]),
@@ -256,22 +262,27 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
   async function createPortfolio(
     input: PortfolioCreateInput,
-    ensureOptions: EnsurePortfolioOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runPortfolioCreate(input, ensureOptions, 'public')
+    createOptions: PortfolioCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    const root = await createPortfolioRootResult(input, createOptions)
+    return {
+      id: root.id,
+      createdRoot: root.created,
+      createdOverlay: false,
+    }
   }
 
-  async function ensurePortfolio(
+  async function createPortfolioConsole(
     input: PortfolioCreateInput,
-    ensureOptions: EnsurePortfolioOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runPortfolioCreate(input, ensureOptions, 'console')
+    createOptions: PortfolioCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    return runPortfolioConsoleCreate(input, createOptions, 'console')
   }
 
   return {
     createPlan: PortfolioCreatePlan,
     createPortfolio,
-    ensurePortfolio,
+    createPortfolioConsole,
     createPortfolioRoot,
     createTestPortfolio,
   }

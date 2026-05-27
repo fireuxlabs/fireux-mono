@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore'
-import type { ConsoleRootEnsureResult } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import type { ConsoleRootCreateResult } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
@@ -48,7 +48,7 @@ export function useKitchenTestCreate() {
 
   async function createTestKitchen(
     input: KitchenTestCreateInput = {}
-  ): Promise<ConsoleRootEnsureResult> {
+  ): Promise<ConsoleRootCreateResult> {
     const testId = normalizeString(input.id) || normalizeString(uid.value)
     const name =
       normalizeString(input.name) ||

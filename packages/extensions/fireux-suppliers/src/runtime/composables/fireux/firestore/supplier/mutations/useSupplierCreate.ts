@@ -1,11 +1,11 @@
 import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-  ConsoleRootEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+  ConsoleRootCreateResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
-import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -29,7 +29,7 @@ export type SupplierCreateOptions = {
   test?: boolean
 }
 
-export type EnsureSupplierOptions = {
+export type SupplierCreateModeOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
@@ -42,14 +42,14 @@ type SupplierTestCreateInput = {
 }
 
 export const SupplierCreatePlan = defineFireuxCreatePlan({
-  family: 'with_ensure',
+  family: 'idempotent',
 })
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { createUser } = useUserCreate()
-  const { ensureConsole } = useConsoleEnsure()
+  const { createConsole } = useConsoleCreate()
   const { currentUser } = useAuth()
   const supplierCollection =
     options.test === true
@@ -60,7 +60,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
 
   async function createTestSupplier(
     input: SupplierTestCreateInput = {}
-  ): Promise<ConsoleRootEnsureResult> {
+  ): Promise<ConsoleRootCreateResult> {
     const { uid } = await requireUid()
     const id = normalizeString(input.id) || normalizeString(uid)
     const userLabel =
@@ -101,67 +101,74 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     return { id, created: true }
   }
 
-  async function runSupplierCreate(
-    options: EnsureSupplierOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleEnsureResult> {
+  async function createSupplierRoot(
+    options: SupplierCreateModeOptions = {}
+  ): Promise<ConsoleRootCreateResult> {
     await createUser()
     const { uid } = await requireUid()
-
     const requestedRootId = normalizeString(options.existingRootId)
+    const rootId = requestedRootId || doc(collection(db, supplierCollection)).id
+    const coreRef = doc(db, supplierCollection, rootId)
+    const coreSnap = await getDoc(coreRef)
 
-    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      const rootId = requestedRootId || doc(collection(db, supplierCollection)).id
-      const coreRef = doc(db, supplierCollection, rootId)
-      const coreSnap = await getDoc(coreRef)
-
-      if (coreSnap.exists()) {
-        return {
-          id: rootId,
-          created: false,
-        }
-      }
-
-      const defaultName = isTestSupplierCollection
-        ? `${resolveTestUserLabel(currentUser.value?.displayName, uid)} Test Supplier`
-        : ''
-
-      const payload: SupplierCreateInput = {
-        app_scope_state: 'root_only',
-        app_scope_app_id: '',
-        company_id: '',
-        supplier_organization_name: defaultName,
-        supplier_headline: '',
-        summary: '',
-        supplier_bio: '',
-        supplier_image: '',
-        supplier_product_categories: [] as string[],
-        supplier_delivery_areas: [] as string[],
-        state: 'public',
-        catalogue_state: 'public_only',
-        linked_ingredient_ids: [] as string[],
-        hello: '',
-      }
-
-      await setDocument<Supplier>(
-        supplierCollection,
-        rootId,
-        payload as unknown as Supplier,
-        {
-          creator: true,
-        }
-      )
-
+    if (coreSnap.exists()) {
       return {
         id: rootId,
-        created: true,
+        created: false,
       }
     }
 
-    const result = await ensureConsole<AppSupplier>({
+    const defaultName = isTestSupplierCollection
+      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid)} Test Supplier`
+      : ''
+
+    const payload: SupplierCreateInput = {
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
+      company_id: '',
+      supplier_organization_name: defaultName,
+      supplier_headline: '',
+      summary: '',
+      supplier_bio: '',
+      supplier_image: '',
+      supplier_product_categories: [] as string[],
+      supplier_delivery_areas: [] as string[],
+      state: 'public',
+      catalogue_state: 'public_only',
+      linked_ingredient_ids: [] as string[],
+      hello: '',
+    }
+
+    await setDocument<Supplier>(
+      supplierCollection,
+      rootId,
+      payload as unknown as Supplier,
+      {
+        creator: true,
+      }
+    )
+
+    return {
+      id: rootId,
+      created: true,
+    }
+  }
+
+  async function runSupplierConsoleCreate(
+    options: SupplierCreateModeOptions = {},
+    defaultMode: ConsoleCreateMode
+  ): Promise<ConsoleCreateResult> {
+    await createUser()
+    const { uid } = await requireUid()
+
+    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
+      return createSupplierRoot(options)
+    }
+
+    const result = await createConsole<AppSupplier>({
       type: 'supplier',
       mode: options.mode ?? defaultMode,
-      ensureRoot,
+      createRoot,
       createOverlay: async () => {
         const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
           operator_ids: uid ? [uid] : ([] as string[]),
@@ -176,21 +183,26 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   }
 
   async function createSupplier(
-    options: EnsureSupplierOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runSupplierCreate(options, 'public')
+    options: SupplierCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    const root = await createSupplierRoot(options)
+    return {
+      id: root.id,
+      createdRoot: root.created,
+      createdOverlay: false,
+    }
   }
 
-  async function ensureSupplier(
-    options: EnsureSupplierOptions = {}
-  ): Promise<ConsoleEnsureResult> {
-    return runSupplierCreate(options, 'console')
+  async function createSupplierConsole(
+    options: SupplierCreateModeOptions = {}
+  ): Promise<ConsoleCreateResult> {
+    return runSupplierConsoleCreate(options, 'console')
   }
 
   return {
     createPlan: SupplierCreatePlan,
     createSupplier,
-    ensureSupplier,
+    createSupplierConsole,
     createTestSupplier,
   }
 }

@@ -63,7 +63,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { ensureProfessionalProfile } = useProfessionalCreate()
+const { createProfessionalProfile } = useProfessionalCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -71,7 +71,7 @@ const errorMessage = ref<string | null>(null)
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? ensureProfessionalProfile
+  const create = props.create ?? createProfessionalProfile
   isCreating.value = true
   errorMessage.value = null
 

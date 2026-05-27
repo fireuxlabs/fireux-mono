@@ -40,8 +40,8 @@
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
-  ConsoleEnsureResult,
-} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+  ConsoleCreateResult,
+} from '../../../composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode
@@ -54,7 +54,7 @@ const props = withDefaults(defineProps<{
 })
 
 defineEmits<{
-  (event: 'created', result: ConsoleEnsureResult): void
+  (event: 'created', result: ConsoleCreateResult): void
 }>()
 
 const isDev = import.meta.dev

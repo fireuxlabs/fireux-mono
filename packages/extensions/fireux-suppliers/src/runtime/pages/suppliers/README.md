@@ -25,7 +25,7 @@ This README only explains the supplier delta.
 - `console/supplier/create.vue` is the operational console create page
 
 Supplier-specific delta:
-- public create creates or ensures `suppliers/<id>`
+- public create creates `suppliers/<id>` when missing
 - public create does not ensure `apps/<appId>/suppliers/<id>`
 - live supplier entry still follows the current operator/company assumption
 - supplier remains intentionally thinner than Kitchen and Portfolio
