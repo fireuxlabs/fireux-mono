@@ -17,6 +17,20 @@ import type { FireuxStamped } from './meta.model'
  * - This file defines the shared base shapes so individual profile files stay aligned.
  * - If the identity rule changes later, update the models README first, then this file.
  */
+export const ProfileStorage = {
+  shape: 'both',
+  root: '{profileCollection}/{userId}',
+  overlay: 'apps/{appId}/{profileCollection}/{userId}',
+  idParam: 'userId',
+} as const
+
+export const AppProfileStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/{profileCollection}/{userId}',
+  parent: 'app',
+  idParam: 'userId',
+} as const
+
 export const ProfileFields = {
   title: '' as string,
   subtitle: '' as string,

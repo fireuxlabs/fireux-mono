@@ -13,6 +13,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Client is currently treated as a portfolio-owned operational entity, not a global root record.
  * - If a cross-portfolio client canon appears later, update the models README first, then this file.
  */
+export const ClientStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
+  collection: 'clients',
+  parent: 'portfolio',
+  idParam: 'clientId',
+} as const
 
 /**
  * Runtime ops status used by Granite client watchlists.

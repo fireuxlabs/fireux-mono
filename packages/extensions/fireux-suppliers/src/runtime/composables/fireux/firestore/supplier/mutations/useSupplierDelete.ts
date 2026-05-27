@@ -1,12 +1,15 @@
-import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import {
+  AppSupplierStorage,
+  SupplierStorage,
+} from '../../../../../models/supplier/Supplier.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
 export function useSupplierDelete() {
-  const db = useFirestore()
+  const { deleteDocument } = useFirestoreDelete()
   const { appId } = useFireUXConfig()
   const hasAppScope = Boolean(appId)
 
@@ -15,10 +18,6 @@ export function useSupplierDelete() {
     const u = await useRequireUser()
     if (!u?.uid) throw new Error('Not authenticated')
     return u.uid
-  }
-
-  const deleteAtPath = async (collection: string, id: string) => {
-    await deleteDoc(doc(db, collection, id))
   }
 
   const deleteSupplier = async (options?: {
@@ -31,14 +30,14 @@ export function useSupplierDelete() {
     const shouldDeleteCore =
       scope === 'core' || scope === 'both' || (!hasAppScope && scope === 'auto')
     if (shouldDeleteCore) {
-      await deleteAtPath('suppliers', id)
+      await deleteDocument(SupplierStorage.rootCollection, id)
     }
 
     const deleteAppScope =
       scope === 'app' || scope === 'both' || (hasAppScope && scope === 'auto')
     if (deleteAppScope) {
       if (!appId) throw new Error('Missing appId for app-scoped delete')
-      await deleteAtPath(`apps/${appId}/suppliers`, id)
+      await deleteDocument(`apps/${appId}/${AppSupplierStorage.collection}`, id)
     }
 
     let effectiveScope: DeleteScope = scope

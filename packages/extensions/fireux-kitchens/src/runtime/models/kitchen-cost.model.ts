@@ -16,6 +16,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - They should stay scoped to the kitchen even if later reporting rolls them up elsewhere.
  * - If that changes later, update the models README first, then this file.
  */
+export const KitchenCostSnapshotStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/costs/{costId}',
+  collection: 'costs',
+  parent: 'kitchen',
+  idParam: 'costId',
+} as const
+
 export type KitchenCostPeriod = 'service' | 'day' | 'week' | 'month'
 
 export const KitchenCostSnapshotModel = {

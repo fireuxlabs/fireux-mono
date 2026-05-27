@@ -40,6 +40,26 @@ type WidenLiteral<T> =
  * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
  * - If that changes later, update the models README first, then this file.
  */
+export const SupplierStorage = {
+  shape: 'both',
+  root: 'suppliers/{supplierId}',
+  overlay: 'apps/{appId}/suppliers/{supplierId}',
+  rootCollection: 'suppliers',
+  overlayCollection: 'suppliers',
+  idParam: 'supplierId',
+  children: {
+    catalogues: 'suppliers/{supplierId}/catalogues/{catalogueId}',
+    products: 'suppliers/{supplierId}/products/{supplierProductId}',
+  },
+} as const
+
+export const AppSupplierStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/suppliers/{supplierId}',
+  collection: 'suppliers',
+  parent: 'app',
+  idParam: 'supplierId',
+} as const
 
 export const SupplierModel = {
   id: '',
@@ -105,6 +125,14 @@ export type SupplierProductAvailabilityState =
  * - Keep `ingredient_id` optional because only some supplier products map to kitchen stock/use items.
  * - Supplier-specific packaging, SKU, availability, and procurement cost live here.
  */
+export const SupplierProductStorage = {
+  shape: 'scoped',
+  path: 'suppliers/{supplierId}/products/{supplierProductId}',
+  collection: 'products',
+  parent: 'supplier',
+  idParam: 'supplierProductId',
+} as const
+
 export const SupplierProductModel = {
   id: '',
   supplier_id: '',
@@ -181,6 +209,14 @@ export type SupplierCatalogueSection = {
  * - It does not own SKU, pack, price, or availability terms.
  * - Catalogue items point back to supplier products and may carry light labels/sort state.
  */
+export const SupplierCatalogueStorage = {
+  shape: 'scoped',
+  path: 'suppliers/{supplierId}/catalogues/{catalogueId}',
+  collection: 'catalogues',
+  parent: 'supplier',
+  idParam: 'catalogueId',
+} as const
+
 export const SupplierCatalogueModel = {
   id: '',
   supplier_id: '',

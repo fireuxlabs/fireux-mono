@@ -17,6 +17,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Portfolio/Granite compatibility can reference Property later, but Portfolio is
  *   not the required owner for Property console canon.
  */
+export const PropertyStorage = {
+  shape: 'both',
+  root: 'properties/{propertyId}',
+  overlay: 'apps/{appId}/properties/{propertyId}',
+  rootCollection: 'properties',
+  overlayCollection: 'properties',
+  idParam: 'propertyId',
+} as const
 
 export const PropertyIdentityModel = {
   name: '' as string,

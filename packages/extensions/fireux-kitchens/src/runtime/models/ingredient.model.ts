@@ -16,6 +16,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Kitchen usage should be represented through scoped companion records rather than by mutating root identity.
  * - If that rule changes later, update the models README first, then this file.
  */
+export const IngredientStorage = {
+  shape: 'public/root',
+  path: 'ingredients/{ingredientId}',
+  collection: 'ingredients',
+  idParam: 'ingredientId',
+} as const
+
 export const IngredientModel = {
   id: '' as string,
 
@@ -55,6 +62,13 @@ export type IngredientUpdateInput = Partial<Omit<Ingredient, 'id' | 'created' | 
  * - KitchenIngredient is the kitchen-owned usage record for a root Ingredient.
  * - Keep `ingredient_id` as the link back to root truth rather than mirroring root identity directly.
  */
+export const KitchenIngredientStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
+  collection: 'ingredients',
+  parent: 'kitchen',
+  idParam: 'kitchenIngredientId',
+} as const
 
 export const KitchenIngredientModel = {
   id: '' as string,
@@ -94,6 +108,14 @@ export type KitchenIngredientUpdateInput = Partial<
  * - This is a kitchen-owned supplier linkage record, not a root entity.
  * - Keep both supplier and ingredient links explicit through ids.
  */
+export const KitchenSupplierIngredientStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/supplier-ingredients/{supplierIngredientId}',
+  collection: 'supplier-ingredients',
+  parent: 'kitchen',
+  idParam: 'supplierIngredientId',
+} as const
+
 export const KitchenSupplierIngredientModel = {
   id: '' as string,
   kitchen_id: '' as string,

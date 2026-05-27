@@ -23,6 +23,20 @@ Create
 
 ## Storage Shapes
 
+Models should declare their storage shape beside their field model. This makes
+CRUD seams obey the model instead of rediscovering storage rules each time.
+
+Example:
+
+```ts
+export const AppStorage = {
+  shape: 'public/root',
+  path: 'apps/{appId}',
+  collection: 'apps',
+  idParam: 'appId',
+} as const
+```
+
 ### Root
 
 The entity exists as its own canonical record.
@@ -159,19 +173,21 @@ creation time.
 
 After Create, the next CRUD family is Read.
 
-Read has two operation shapes:
+Read has two stored-read operation shapes and one composition seam:
 
 ```text
 Read
-├─ single
-└─ collection
+├─ fetch
+├─ collection
+└─ interface
 ```
 
 Use the standard entity names:
 
 ```text
-useXFetch      -> read one
-useXCollection -> read many
+useXFetch      -> read one stored record
+useXCollection -> read many stored records
+useXInterface  -> compose and project read shapes for surfaces
 ```
 
 Read also uses the same storage-location descriptors:
@@ -187,12 +203,17 @@ Examples:
 ```text
 useKitchenFetch(id)          -> root kitchen read
 useKitchenCollection()       -> root kitchen collection read
+useKitchenInterface().surface -> root/place/overlay surface composition
 
 useKitchenMiseCollection()   -> scoped kitchen child collection read
 useConversationMessageFetch  -> scoped child single read
 
 useKitchenConsole()          -> both/root plus app overlay operating read
 ```
+
+`useXInterface` may meld already-read records into a stable surface shape. It
+must not fetch hidden data by itself. Fetch and collection own transport;
+interface owns composition and projection.
 
 Read can also have composed shapes:
 
@@ -212,3 +233,37 @@ read shape.
 
 Server/API-mediated reads use a Nuxt API route when authority, privacy, storage,
 provider access, or public-safe response shaping requires the server.
+
+## Mutation Families
+
+After Read, mutation seams stay entity-owned and boring.
+
+```text
+Mutations
+├─ useXUpdate
+├─ useXPublish
+└─ useXDelete
+```
+
+`useXUpdate` patches an existing stored record. It may validate fields owned by
+the entity, such as a public slug, but it should not create records, hydrate
+read shapes, or build UI projections.
+
+`useXPublish` is only for entities with explicit public/indexable publication.
+It owns readiness checks and route meaning, then delegates the write mechanics.
+Private-by-default entities, such as kitchen recipes, should add publication as
+an explicit state/seam when public recipe routes are real.
+
+`useXDelete` owns the entity removal posture. The entity decides whether delete
+means hard delete, archive, unpublish, or scoped relationship removal. That
+choice belongs in the entity seam, not in the low-level Firestore primitive.
+
+Mutation helpers should use model storage metadata for collection paths:
+
+```ts
+await updateDocument(KitchenStorage.rootCollection, id, patch)
+await deleteDocument(KitchenStorage.rootCollection, id)
+```
+
+Scoped placement records should stay lightweight. For example, Dish owns food
+truth, while MenuItem only places a Dish on a Menu section.

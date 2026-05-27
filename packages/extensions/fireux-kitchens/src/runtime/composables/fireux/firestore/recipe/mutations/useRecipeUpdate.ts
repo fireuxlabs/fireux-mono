@@ -3,6 +3,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, unref, type Ref } from 'vue'
 import {
   normalizeTranslatedText,
+  RecipeStorage,
   type Recipe,
   type RecipeUpdateInput,
 } from '../../../../../models/recipe.model'
@@ -52,7 +53,7 @@ export function useRecipeUpdate(
       next.descriptions = normalizeTranslatedText(next.descriptions)
     }
 
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/recipes`
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${RecipeStorage.collection}`
     await updateDocument<Recipe>(collectionPath, resolvedRecipeId, next)
   }
 

@@ -31,6 +31,12 @@ type WidenLiteral<T> =
  * - If a console later needs real scoped stored job state, add it intentionally rather than by symmetry.
  * - If that changes, update the models README first, then this file.
  */
+export const JobStorage = {
+  shape: 'public/root',
+  path: 'jobs/{jobId}',
+  collection: 'jobs',
+  idParam: 'jobId',
+} as const
 
 export type JobStatus = 'open' | 'closed'
 

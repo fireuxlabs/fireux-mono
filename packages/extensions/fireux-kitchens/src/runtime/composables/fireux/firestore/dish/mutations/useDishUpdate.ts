@@ -5,6 +5,7 @@ import {
   normalizeDishMenuPlacements,
   normalizeDishStringArray,
   normalizeDishTranslatedText,
+  DishStorage,
   type Dish,
   type DishUpdateInput,
 } from '../../../../../models/dish.model'
@@ -62,7 +63,7 @@ export function useDishUpdate(
       next.ingredient_ids = normalizeDishStringArray(next.ingredient_ids)
     }
 
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/dishes`
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`
     await updateDocument<Dish>(collectionPath, resolvedDishId, next)
   }
 

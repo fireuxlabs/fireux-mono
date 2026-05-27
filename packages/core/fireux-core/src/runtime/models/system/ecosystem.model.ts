@@ -32,6 +32,13 @@ type WidenLiteral<T> =
  *   specifics can later live in the app-scoped record or downstream scoped children.
  * - If this decision changes, update the models README first, then this file.
  */
+export const EcosystemStorage = {
+  shape: 'public/root',
+  path: 'ecosystems/{ecosystemId}',
+  collection: 'ecosystems',
+  idParam: 'ecosystemId',
+} as const
+
 export const EcosystemModel = {
   id: '',
 

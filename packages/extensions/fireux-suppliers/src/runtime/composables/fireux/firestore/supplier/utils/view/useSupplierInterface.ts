@@ -3,10 +3,13 @@ import {
   safeString,
   safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Supplier } from '../../../../../../models/supplier/Supplier.model'
+import {
+  SupplierStorage,
+  type Supplier,
+} from '../../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../../fetch/useSupplierRecord'
 
-const supplierCollection = 'suppliers'
+const supplierCollection = SupplierStorage.rootCollection
 
 export namespace SupplierCard {
   export type Card = {
@@ -29,12 +32,35 @@ export namespace SupplierCard {
 }
 
 export type SupplierSurface = Partial<Supplier>
+export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> = {
+  supplier?: TSupplier | null | undefined
+  overlay?: Record<string, unknown> | null | undefined
+}
 
 export function useSupplierInterface(supplier?: SupplierRefs | null) {
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
   type SupplierPreview = SupplierCard.Card
   type SupplierProfile = SupplierCard.Card
+
+  function surface<TSupplier extends object = Partial<Supplier>>(
+    parts: SupplierSurfaceParts<TSupplier>
+  ): (TSupplier & SupplierSurface) | null {
+    const source = parts.supplier ?? null
+    if (!source) return null
+
+    const merged = {
+      ...source,
+      ...(parts.overlay ?? {}),
+    } as TSupplier & SupplierSurface
+    const id = safeString(merged.id).trim()
+    if (!id) return null
+
+    return {
+      ...merged,
+      id,
+    }
+  }
 
   function map(target: SupplierSurface): SupplierCard.Card {
     const id = safeString(target.id).trim()
@@ -103,6 +129,7 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

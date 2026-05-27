@@ -30,6 +30,13 @@ import type {
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 
+export const AppStorage = {
+  shape: 'public/root',
+  path: 'apps/{appId}',
+  collection: 'apps',
+  idParam: 'appId',
+} as const
+
 type WidenLiteral<T> =
   T extends string ? string
   : T extends number ? number

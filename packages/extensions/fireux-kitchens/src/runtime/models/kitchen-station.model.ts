@@ -11,6 +11,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Path: /kitchens/<kitchenId>/stations/<stationId>
  * Owner app scope: Kitchen
  */
+export const KitchenStationStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/stations/{stationId}',
+  collection: 'stations',
+  parent: 'kitchen',
+  idParam: 'stationId',
+} as const
+
 export const KitchenStationModel = {
   id: '' as string,
   kitchen_id: '' as string,

@@ -5,7 +5,8 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDemoKitchen } from '../../../app/utils/kitchen-demo-scenarios'
-import type { Kitchen } from '../../../../../models/kitchen.model'
+import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
+import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
 export type KitchenFetchDoc = Partial<Kitchen> & {
   id?: string
@@ -19,7 +20,7 @@ type UseKitchenFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = 'kitchens'
+const DEFAULT_COLLECTION_PATH = KitchenStorage.rootCollection
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {
@@ -30,44 +31,11 @@ const requireSimulationDatabaseId = () => {
   return databaseId
 }
 
-const pickPlaceForKitchen = (
-  place: Place | null
-): Partial<
-  Pick<
-    Place,
-    | 'name'
-    | 'short_name'
-    | 'short_address'
-    | 'formatted_address'
-    | 'lat'
-    | 'lng'
-    | 'image_url'
-    | 'image_shade'
-    | 'claimed_by'
-    | 'source'
-    | 'slug'
-  >
-> => {
-  if (!place) return {}
-  return {
-    name: place.name,
-    short_name: place.short_name,
-    short_address: place.short_address,
-    formatted_address: place.formatted_address,
-    lat: place.lat,
-    lng: place.lng,
-    image_url: place.image_url,
-    image_shade: place.image_shade,
-    claimed_by: place.claimed_by,
-    source: place.source,
-    slug: place.slug,
-  }
-}
-
 export function useKitchenFetch(
   id: string | Ref<string>,
   options: UseKitchenFetchOptions = {}
 ) {
+  const { surface } = useKitchenInterface()
   const simulationDatabaseId = computed(
     () => requireSimulationDatabaseId()
   )
@@ -151,15 +119,17 @@ export function useKitchenFetch(
 
     const place = shouldHydrate ? placeSource.value?.value ?? null : null
 
-    return {
-      ...pickPlaceForKitchen(place),
-      ...entry,
-      id: String(entry?.id || docId).trim(),
-      route_scope:
+    return surface({
+      place,
+      kitchen: {
+        ...entry,
+        id: String(entry?.id || docId).trim(),
+      },
+      routeScope:
         sourceRef.value === 'demo' || sourceRef.value === 'test'
           ? sourceRef.value
           : (entry as any)?.route_scope,
-    }
+    }) as KitchenFetchDoc | null
   })
 
   const pending = computed(() => {

@@ -1,9 +1,10 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
+  Place,
   PlaceImageShade,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { KitchenOpeningHours } from '../../../../../../models/kitchen.model'
+import type { Kitchen, KitchenOpeningHours } from '../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {
@@ -70,6 +71,26 @@ export type KitchenSurface = {
   verified?: boolean
 }
 
+export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
+  kitchen?: TKitchen | null | undefined
+  place?: Partial<Pick<
+    Place,
+    | 'name'
+    | 'short_name'
+    | 'short_address'
+    | 'formatted_address'
+    | 'lat'
+    | 'lng'
+    | 'image_url'
+    | 'image_shade'
+    | 'claimed_by'
+    | 'source'
+    | 'slug'
+  >> | null | undefined
+  overlay?: Record<string, unknown> | null | undefined
+  routeScope?: KitchenSurface['route_scope']
+}
+
 const resolveKitchenPath = (target: {
   id?: string
   slug?: string
@@ -103,6 +124,27 @@ export function useKitchenInterface() {
     formattedAddress: string
     source?: PlaceSource
     prop?: string
+  }
+
+  function surface<TKitchen extends object = Partial<Kitchen>>(
+    parts: KitchenSurfaceParts<TKitchen>
+  ): (TKitchen & KitchenSurface) | null {
+    const kitchen = parts.kitchen ?? null
+    if (!kitchen) return null
+
+    const merged = {
+      ...(parts.place ?? {}),
+      ...kitchen,
+      ...(parts.overlay ?? {}),
+    } as TKitchen & KitchenSurface
+    const id = safeString(merged.id).trim()
+    if (!id) return null
+
+    return {
+      ...merged,
+      id,
+      route_scope: parts.routeScope ?? merged.route_scope,
+    }
   }
 
   function map(kitchen: KitchenSurface): KitchenCard.Card {
@@ -201,6 +243,7 @@ export function useKitchenInterface() {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

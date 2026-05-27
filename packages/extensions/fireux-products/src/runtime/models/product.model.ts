@@ -30,6 +30,15 @@ type WidenLiteral<T> =
  * - Do not create app-local product storage unless real app-local workflow state appears later.
  * - If that changes, update the models README first, then this file.
  */
+export const ProductStorage = {
+  shape: 'public/root',
+  path: 'products/{productId}',
+  collection: 'products',
+  idParam: 'productId',
+  children: {
+    prices: 'products/{productId}/prices/{priceId}',
+  },
+} as const
 
 export interface ProductFeature {
   title: string
@@ -59,6 +68,14 @@ export type ProductPriceProvider = 'stripe' | 'manual' | string
  *   when those are price/package terms for the same commercial product.
  * - Provider-specific ids stay on the price record rather than defining Product identity.
  */
+export const ProductPriceStorage = {
+  shape: 'scoped',
+  path: 'products/{productId}/prices/{priceId}',
+  collection: 'prices',
+  parent: 'product',
+  idParam: 'priceId',
+} as const
+
 export const ProductPriceModel = {
   id: '',
   product_id: '',

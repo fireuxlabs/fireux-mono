@@ -16,6 +16,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - They are operational records, not reusable global entities.
  * - If that changes later, update the models README first, then this file.
  */
+export const KitchenMiseTaskStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/mise/{taskId}',
+  collection: 'mise',
+  parent: 'kitchen',
+  idParam: 'taskId',
+} as const
+
 export type KitchenMiseStatus = 'todo' | 'in_progress' | 'done' | 'blocked'
 export type KitchenMisePriority = 'low' | 'normal' | 'high' | 'urgent'
 

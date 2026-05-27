@@ -85,6 +85,8 @@ Menu composable stack canon:
 - `firestore/menu/mutations/useMenuSectionMutations.ts` and `useMenuItemMutations.ts` own Menu child writes.
 - `firestore/menu/utils/view/useMenuComputed.ts` owns derived Menu facts.
 - `firestore/menu/utils/view/useMenuInterface.ts` owns Menu UI projections.
+- Dish is the food entity. MenuItem is only a Menu placement/link to a Dish with light placement state such as section, order, status, and price override.
+- Recipe is Kitchen-scoped by default. Future public recipes should use an explicit publish seam/state, not a separate Recipe entity.
 
 Ingredient composable stack canon:
 - `firestore/ingredient/useIngredient.ts` is the singular Ingredient family entry seam.
@@ -171,8 +173,9 @@ Public menu copy packs:
 ## 7b) Interface seam
 - `useKitchenInterface` is canonically a thin interface seam.
 - Its job is:
-  - kitchen entity in
-  - small stable UI-ready projection out
+  - already-read kitchen/place/overlay shapes in
+  - composed kitchen surface out
+  - small stable UI-ready projections out
 - It must not become:
   - a fetch seam
   - a hidden hydration seam
@@ -186,13 +189,16 @@ Public menu copy packs:
   - `buildKitchenJsonLd` (`LocalBusiness` where applicable)
 
 ## 9) Mutation entrypoints (write composables)
-- `useKitchenCreate`, `useKitchenUpdate`
+- `useKitchenCreate`, `useKitchenUpdate`, `useKitchenDelete`
 - `useIngredientCreate`, `useIngredientDelete`
 - `useKitchenMiseCreate`
 - `useKitchenOrderCreate`
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
 - `createKitchen` = intentional kitchen creation
 - `createKitchenConsole` = idempotent console kitchen creation
+- `updateKitchen` = root kitchen patch
+- `publishKitchen` = root kitchen publication
+- `deleteKitchen` = root kitchen hard delete
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback switching between live/demo.

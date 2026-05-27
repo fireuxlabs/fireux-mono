@@ -1,6 +1,7 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { RecipeStorage } from '../../../../../models/recipe.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
@@ -31,7 +32,10 @@ export function useRecipeDelete(
     const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    await deleteDocument(`${kitchenCollectionPath.value}/${kitchenId}/recipes`, resolvedRecipeId)
+    await deleteDocument(
+      `${kitchenCollectionPath.value}/${kitchenId}/${RecipeStorage.collection}`,
+      resolvedRecipeId
+    )
   }
 
   return { deleteRecipe }

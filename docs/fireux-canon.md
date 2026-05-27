@@ -322,6 +322,7 @@ composables/fireux/firestore/<entity>/
 
 - One entity family has one top-level family entry seam. Use singular `useX.ts`; plural/read-many behaviour belongs to `useXCollection`, not a competing `useXs` barrel.
 - `useXComputed` owns derived entity truth such as status/display booleans; `useXInterface` owns UI projections such as `pill`, `cell`, `preview`, and `profile`.
+- `useXInterface` may compose already-read root, scoped/overlay, provider, or hydrated records into a stable surface shape. It must not perform hidden fetches; fetch and collection own transport.
 - Validation belongs in `utils/validation` when shared by UI/read/write surfaces, and in `mutations/validation` only when it protects create/update/delete/ensure behaviour.
 - Missing stack seams should be treated as alignment opportunities, not proof that the entity needs a new architecture.
 - Hydrated/read-time composites belong in fetch, entity helper, or interface seams, not in stored model files.
@@ -332,6 +333,7 @@ composables/fireux/firestore/<entity>/
 - Create/edit/post/publish state belongs to the entity family first.
 - Publishable entities such as `Product`, `BlogPost`, and `Job` may have lifecycle state and authoring flows, but those remain part of the Product, Blog, or Job stack unless the flow coordinates whole-app setup or multiple entity families.
 - Entity pages and components call entity-owned publication seams such as `useKitchenPublish()` or `useProductPublish()`. Those seams may delegate shared write mechanics to core `usePublish()`, but readiness rules, public flags, and canonical route meaning stay entity-owned.
+- Entity mutation seams should use model storage metadata for collection paths where available. `useXUpdate` patches, `useXPublish` publishes, and `useXDelete` owns the removal posture.
 - Public entity pages call entity-owned SEO seams such as `useKitchenSeo()` or `useProductSeo()`. Those seams may delegate shared metadata mechanics to core `useSeo()`, but title/description fields, JSON-LD type, route path, and public/indexable truth stay entity-owned.
 - `app/` is only for app-level orchestration, not normal entity authoring state.
 - Entity authoring helpers that are not raw Firestore belong in the entity-owned composable family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.

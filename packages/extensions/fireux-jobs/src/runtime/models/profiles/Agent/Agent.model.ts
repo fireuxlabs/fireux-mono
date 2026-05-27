@@ -18,6 +18,23 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - The overlay is deliberately small until an app truly needs more scoped state.
  * - If this changes later, update the models README first, then this file.
  */
+export const AgentStorage = {
+  shape: 'both',
+  root: 'agents/{userId}',
+  overlay: 'apps/{appId}/agents/{userId}',
+  rootCollection: 'agents',
+  overlayCollection: 'agents',
+  idParam: 'userId',
+} as const
+
+export const AppAgentStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/agents/{userId}',
+  collection: 'agents',
+  parent: 'app',
+  idParam: 'userId',
+} as const
+
 export const AgentModel = {
   id: '' as string,
   title: '' as string,

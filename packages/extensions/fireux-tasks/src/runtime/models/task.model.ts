@@ -14,6 +14,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep it scoped until there is a concrete need for a broader root task canon.
  * - If that changes later, update the models README first, then this file.
  */
+export const TaskStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}',
+  collection: 'tasks',
+  parent: 'portfolio',
+  idParam: 'taskId',
+} as const
 
 export const TaskModel = {
   id: '' as string,

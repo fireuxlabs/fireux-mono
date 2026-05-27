@@ -14,6 +14,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Steps, costing, allergens, method, ingredient lines, yield, and service
  * workflow are not active on the current model yet.
  */
+export const RecipeStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}',
+  collection: 'recipes',
+  parent: 'kitchen',
+  idParam: 'recipeId',
+} as const
+
 export type RecipeTranslatedText = Partial<Record<string, string>>
 
 export const RecipeModel = {

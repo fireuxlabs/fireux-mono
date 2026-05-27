@@ -16,6 +16,24 @@ import type { FireuxStamped } from './meta.model'
  *   reads and follow-up writes to participants or trusted server paths.
  */
 
+export const ConversationStorage = {
+  shape: 'public/root',
+  path: 'conversations/{conversationId}',
+  collection: 'conversations',
+  idParam: 'conversationId',
+  children: {
+    messages: 'conversations/{conversationId}/messages/{messageId}',
+  },
+} as const
+
+export const ConversationMessageStorage = {
+  shape: 'scoped',
+  path: 'conversations/{conversationId}/messages/{messageId}',
+  collection: 'messages',
+  parent: 'conversation',
+  idParam: 'messageId',
+} as const
+
 export type ConversationKind =
   | 'property_enquiry'
   | 'guest_support'

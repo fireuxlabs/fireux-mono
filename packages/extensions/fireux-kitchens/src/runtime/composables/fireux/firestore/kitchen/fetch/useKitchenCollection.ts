@@ -14,7 +14,9 @@ import {
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
+import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
 type KitchenCollectionDoc = KitchenSurface
 type AppKitchenCollectionDoc = {
@@ -23,7 +25,7 @@ type AppKitchenCollectionDoc = {
   team_ids?: string[]
 }
 
-const DEFAULT_COLLECTION_PATH = 'kitchens'
+const DEFAULT_COLLECTION_PATH = KitchenStorage.rootCollection
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {
@@ -46,43 +48,10 @@ type UseKitchenCollectionOptions = {
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
 }
 
-const pickPlaceForKitchen = (
-  place: Place | null
-): Partial<
-  Pick<
-    Place,
-    | 'name'
-    | 'short_name'
-    | 'short_address'
-    | 'formatted_address'
-    | 'lat'
-    | 'lng'
-    | 'image_url'
-    | 'image_shade'
-    | 'claimed_by'
-    | 'source'
-    | 'slug'
-  >
-> => {
-  if (!place) return {}
-  return {
-    name: place.name,
-    short_name: place.short_name,
-    short_address: place.short_address,
-    formatted_address: place.formatted_address,
-    lat: place.lat,
-    lng: place.lng,
-    image_url: place.image_url,
-    image_shade: place.image_shade,
-    claimed_by: place.claimed_by,
-    source: place.source,
-    slug: place.slug,
-  }
-}
-
 export function useKitchenCollection(
   options: UseKitchenCollectionOptions = {}
 ) {
+  const { surface } = useKitchenInterface()
   const db = useFirestore()
   const simulationDatabaseId = computed(
     () => readRuntimeSimulationFirestoreDatabaseId() || ''
@@ -202,15 +171,17 @@ export function useKitchenCollection(
         const place =
           shouldHydrate.value ? placesById.get(resolvedPlaceId) ?? null : null
 
-        return {
-          ...pickPlaceForKitchen(place),
-          ...kitchen,
-          id: kitchenId,
-          route_scope:
+        return surface({
+          place,
+          kitchen: {
+            ...kitchen,
+            id: kitchenId,
+          },
+          routeScope:
             sourceMode.value === 'demo' || sourceMode.value === 'test'
               ? sourceMode.value
               : kitchen.route_scope,
-        }
+        })
       })
       .filter(Boolean) as KitchenCollectionDoc[]
   })

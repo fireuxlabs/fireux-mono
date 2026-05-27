@@ -34,6 +34,30 @@ type WidenLiteral<T> =
  * - Portfolio-owned operational children should live beneath the app-hosted record.
  * - If that changes later, update the models README first, then this file.
  */
+export const PortfolioStorage = {
+  shape: 'both',
+  root: 'portfolios/{portfolioId}',
+  overlay: 'apps/{appId}/portfolios/{portfolioId}',
+  rootCollection: 'portfolios',
+  overlayCollection: 'portfolios',
+  idParam: 'portfolioId',
+  children: {
+    clients: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
+    compliance: 'apps/{appId}/portfolios/{portfolioId}/compliance/{complianceRecordId}',
+    documents: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
+    properties: 'apps/{appId}/portfolios/{portfolioId}/properties/{propertyId}',
+    tasks: 'apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}',
+    units: 'apps/{appId}/portfolios/{portfolioId}/units/{unitId}',
+  },
+} as const
+
+export const AppPortfolioStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}',
+  collection: 'portfolios',
+  parent: 'app',
+  idParam: 'portfolioId',
+} as const
 
 export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {

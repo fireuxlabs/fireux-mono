@@ -14,6 +14,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep it scoped even if document files are later referenced by other portfolio records.
  * - If that changes later, update the models README first, then this file.
  */
+export const DocumentStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
+  collection: 'documents',
+  parent: 'portfolio',
+  idParam: 'documentId',
+} as const
+
 export const DocumentModel = {
   id: '' as string,
   portfolio_id: '' as string,

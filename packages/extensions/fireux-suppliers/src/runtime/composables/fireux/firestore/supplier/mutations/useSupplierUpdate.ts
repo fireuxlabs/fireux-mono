@@ -5,10 +5,14 @@ import {
   type ConsoleEntityRuntimeMode,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
+import {
+  SupplierStorage,
+  type AppSupplier,
+  type Supplier,
+} from '../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../fetch/useSupplierRecord'
 
-const supplierCollection = 'suppliers'
+const supplierCollection = SupplierStorage.rootCollection
 
 type SupplierUpdateCollectionOptions = {
   collectionPath?: string | null

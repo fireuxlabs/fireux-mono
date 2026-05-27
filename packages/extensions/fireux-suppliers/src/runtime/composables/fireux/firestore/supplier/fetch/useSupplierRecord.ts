@@ -3,9 +3,14 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
+import {
+  AppSupplierStorage,
+  SupplierStorage,
+  type AppSupplier,
+  type Supplier,
+} from '../../../../../models/supplier/Supplier.model'
 
-const supplierCollection = 'suppliers'
+const supplierCollection = SupplierStorage.rootCollection
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return value.filter((item): item is string => typeof item === 'string' && item.length > 0)
@@ -62,7 +67,7 @@ export function useSupplierRecord(
 
   const appDoc = computed(() =>
     supplierId.value && appId
-      ? (doc(db, 'apps', appId, supplierCollection, supplierId.value) as any)
+      ? (doc(db, 'apps', appId, AppSupplierStorage.collection, supplierId.value) as any)
       : null
   )
 

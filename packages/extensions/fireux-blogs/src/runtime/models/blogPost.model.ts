@@ -39,6 +39,13 @@ export type BlogAuthor = {
  * - Do not create app-local blog post storage unless real app-local state appears later.
  * - If that changes, update the models README first, then this file.
  */
+export const BlogPostStorage = {
+  shape: 'public/root',
+  path: 'blogs/{slug}',
+  collection: 'blogs',
+  idParam: 'slug',
+} as const
+
 export const BlogPostModel = {
   id: '',
   ...FireuxRootScope,

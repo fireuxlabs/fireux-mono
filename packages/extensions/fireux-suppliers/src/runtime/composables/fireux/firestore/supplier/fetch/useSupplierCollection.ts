@@ -8,8 +8,12 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Supplier } from '../../../../../models/supplier/Supplier.model'
+import {
+  SupplierStorage,
+  type Supplier,
+} from '../../../../../models/supplier/Supplier.model'
 import { getDemoSuppliers } from '../../../app/utils/supplier-demo-scenarios'
+import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 
 type SupplierCollectionDoc = Partial<Supplier> & {
   id?: string
@@ -22,7 +26,7 @@ type AppSupplierOverlay = SupplierCollectionDoc & {
   team_ids?: string[]
 }
 
-const DEFAULT_COLLECTION_PATH = 'suppliers'
+const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
 const TEST_COLLECTION_PATH = 'test-suppliers'
 
 export type SupplierCollectionFilterValue = string | number | null | undefined
@@ -70,6 +74,7 @@ export function useSupplierCollection(
   const db = useFirestore()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
+  const { surface } = useSupplierInterface()
   const sourceMode = computed<SupplierCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -161,11 +166,14 @@ export function useSupplierCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
+      const item = surface({
+        supplier: {
+          ...(rootById.get(id) ?? {}),
+          id,
+        },
+        overlay: overlayById.get(id) ?? {},
       })
+      if (item) merged.push(item)
     }
 
     for (const overlay of overlaySource.value?.value ?? []) {
@@ -173,11 +181,14 @@ export function useSupplierCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
+      const item = surface({
+        supplier: {
+          ...(rootById.get(id) ?? {}),
+          id,
+        },
+        overlay: overlayById.get(id) ?? {},
       })
+      if (item) merged.push(item)
     }
 
     return merged

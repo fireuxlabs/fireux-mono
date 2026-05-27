@@ -1,7 +1,11 @@
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Supplier } from '../../../../../models/supplier/Supplier.model'
+import {
+  SupplierStorage,
+  type Supplier,
+} from '../../../../../models/supplier/Supplier.model'
 import { getDemoSupplier } from '../../../app/utils/supplier-demo-scenarios'
+import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 
 type SupplierFetchDoc = Partial<Supplier> & {
   id?: string
@@ -16,7 +20,7 @@ type UseSupplierFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = 'suppliers'
+const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
 const TEST_COLLECTION_PATH = 'test-suppliers'
 
 export function useSupplierFetch(
@@ -24,6 +28,7 @@ export function useSupplierFetch(
   options: UseSupplierFetchOptions = {}
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
+  const { surface } = useSupplierInterface()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const sourceRef = isRef(options.source)
     ? options.source
@@ -61,18 +66,22 @@ export function useSupplierFetch(
       const demoSupplier = getDemoSupplier(docId)
       if (!demoSupplier) return null
 
-      return {
-        ...demoSupplier,
-        id: String(demoSupplier.id || docId).trim(),
-      }
+      return surface({
+        supplier: {
+          ...demoSupplier,
+          id: String(demoSupplier.id || docId).trim(),
+        },
+      }) as SupplierFetchDoc | null
     }
 
     const entry = source.value?.value
     if (!docId || !entry) return null
-    return {
-      ...entry,
-      id: String(entry?.id || docId).trim(),
-    }
+    return surface({
+      supplier: {
+        ...entry,
+        id: String(entry?.id || docId).trim(),
+      },
+    }) as SupplierFetchDoc | null
   })
 
   const pending = computed(() => {

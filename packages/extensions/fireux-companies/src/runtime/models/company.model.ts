@@ -15,6 +15,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - The root Place id stays the stable link instead of inventing a second company identity.
  * - If that relationship changes later, update the models README first, then this file.
  */
+export const CompanyStorage = {
+  shape: 'public/root',
+  path: 'companies/{placeId}',
+  collection: 'companies',
+  idParam: 'placeId',
+} as const
+
 export const CompanyModel = {
   id: '' as string,
   created: {

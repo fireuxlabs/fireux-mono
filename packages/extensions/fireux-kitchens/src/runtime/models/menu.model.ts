@@ -5,13 +5,41 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Family: Kitchen-scoped presentation records.
  *
  * Kitchen runs the operation. Dish describes food. Menu presents selected
- * dishes. QR points guests to one published menu URL.
+ * dishes. MenuItem is a placement/link to a Dish, not a second food entity.
+ * QR points guests to one published menu URL.
  *
  * Canon paths:
  * - kitchens/{kitchenId}/menus/{menuId}
  * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
  * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
+export const MenuStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/menus/{menuId}',
+  collection: 'menus',
+  parent: 'kitchen',
+  idParam: 'menuId',
+  children: {
+    sections: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+    items: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  },
+} as const
+
+export const MenuSectionStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+  collection: 'sections',
+  parent: 'menu',
+  idParam: 'sectionId',
+} as const
+
+export const MenuItemStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  collection: 'items',
+  parent: 'menu-section',
+  idParam: 'itemId',
+} as const
 
 export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'
 export type MenuStatus = 'draft' | 'published' | 'archived'
@@ -60,7 +88,9 @@ export const MenuItemModel = {
   kitchen_id: '' as string,
   menu_id: '' as string,
   section_id: '' as string,
+  // Placement link: Dish owns food truth; MenuItem only positions it on a menu.
   dish_id: '' as string,
+  // Current override field. Keep lightweight; do not duplicate Dish copy here.
   price: 0 as number,
   status: 'active' as MenuChildStatus,
   sort_order: 0 as number,

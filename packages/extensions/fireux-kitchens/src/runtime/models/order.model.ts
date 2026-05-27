@@ -14,6 +14,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep it distinct from the generic order engine model until the broader order canon is deliberately reconciled.
  * - If that changes later, update the models README first, then this file.
  */
+export const KitchenOrderStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/orders/{orderId}',
+  collection: 'orders',
+  parent: 'kitchen',
+  idParam: 'orderId',
+} as const
 
 export type KitchenOrderItem = {
   id: string

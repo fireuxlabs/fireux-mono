@@ -43,6 +43,23 @@ type WidenLiteral<T> =
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the models README first, then this file.
  */
+export const ProjectStorage = {
+  shape: 'both',
+  root: 'projects/{projectId}',
+  overlay: 'apps/{appId}/projects/{projectId}',
+  rootCollection: 'projects',
+  overlayCollection: 'projects',
+  idParam: 'projectId',
+} as const
+
+export const AppProjectStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/projects/{projectId}',
+  collection: 'projects',
+  parent: 'app',
+  idParam: 'projectId',
+} as const
+
 export const ProjectModel = {
   id: '',
   ...FireuxAppScope,

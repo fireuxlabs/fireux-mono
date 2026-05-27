@@ -19,6 +19,23 @@ import type { UserNotification } from './supporting/user'
  * - If the identity overlay rule changes later, update the models README first, then this file.
  */
 
+export const UserStorage = {
+  shape: 'both',
+  root: 'users/{userId}',
+  overlay: 'apps/{appId}/users/{userId}',
+  rootCollection: 'users',
+  overlayCollection: 'users',
+  idParam: 'userId',
+} as const
+
+export const AppUserStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/users/{userId}',
+  collection: 'users',
+  parent: 'app',
+  idParam: 'userId',
+} as const
+
 export const UserModel = {
   id: '',
 

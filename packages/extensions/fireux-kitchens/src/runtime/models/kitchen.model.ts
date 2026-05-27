@@ -68,6 +68,34 @@ export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
  * - Kitchen-owned operational children should live beneath the app-hosted record.
  * - If that rule changes later, update the models README first, then this file.
  */
+export const KitchenStorage = {
+  shape: 'both',
+  root: 'kitchens/{kitchenId}',
+  overlay: 'apps/{appId}/kitchens/{kitchenId}',
+  rootCollection: 'kitchens',
+  overlayCollection: 'kitchens',
+  idParam: 'kitchenId',
+  children: {
+    costs: 'apps/{appId}/kitchens/{kitchenId}/costs/{costId}',
+    dishes: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
+    ingredients: 'apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
+    menus: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
+    mise: 'apps/{appId}/kitchens/{kitchenId}/mise/{taskId}',
+    orders: 'apps/{appId}/kitchens/{kitchenId}/orders/{orderId}',
+    recipes: 'apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}',
+    stations: 'apps/{appId}/kitchens/{kitchenId}/stations/{stationId}',
+    team: 'apps/{appId}/kitchens/{kitchenId}/team/{memberId}',
+  },
+} as const
+
+export const AppKitchenStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/kitchens/{kitchenId}',
+  collection: 'kitchens',
+  parent: 'app',
+  idParam: 'kitchenId',
+} as const
+
 export const KitchenModel = {
   id: '',
   ...FireuxAppScope,

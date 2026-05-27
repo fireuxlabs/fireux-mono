@@ -27,6 +27,23 @@ import type {
  * - Keep the overlay minimal until a real app-specific need appears.
  * - If that changes later, update the models README first, then this file.
  */
+export const ProfessionalStorage = {
+  shape: 'both',
+  root: 'professionals/{userId}',
+  overlay: 'apps/{appId}/professionals/{userId}',
+  rootCollection: 'professionals',
+  overlayCollection: 'professionals',
+  idParam: 'userId',
+} as const
+
+export const AppProfessionalStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/professionals/{userId}',
+  collection: 'professionals',
+  parent: 'app',
+  idParam: 'userId',
+} as const
+
 export const ProfessionalModel = {
   id: '' as string,
   title: '' as string,

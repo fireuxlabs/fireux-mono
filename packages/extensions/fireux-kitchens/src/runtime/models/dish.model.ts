@@ -13,6 +13,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Ingredients, prep, recipes, pricing, stock, images, and service workflow are
  * not active on the public Dish model yet.
  */
+export const DishStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/dishes/{dishId}',
+  collection: 'dishes',
+  parent: 'kitchen',
+  idParam: 'dishId',
+} as const
+
 export type DishTranslatedText = Partial<Record<string, string>>
 
 export type DishMenuPlacement = {

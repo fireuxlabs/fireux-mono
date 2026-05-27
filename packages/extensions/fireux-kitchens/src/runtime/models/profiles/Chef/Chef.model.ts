@@ -18,6 +18,22 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - The overlay should stay small until a concrete app need justifies more.
  * - If that changes later, update the models README first, then this file.
  */
+export const ChefStorage = {
+  shape: 'both',
+  root: 'chefs/{userId}',
+  overlay: 'apps/{appId}/chefs/{userId}',
+  rootCollection: 'chefs',
+  overlayCollection: 'chefs',
+  idParam: 'userId',
+} as const
+
+export const AppChefStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/chefs/{userId}',
+  collection: 'chefs',
+  parent: 'app',
+  idParam: 'userId',
+} as const
 
 export const ChefModel = {
   id: '' as string,

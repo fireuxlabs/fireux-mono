@@ -22,6 +22,14 @@ export type DocumentLinkTargetType =
  * - It is scoped by the portfolio even when it points to several target types.
  * - If that ownership changes later, update the models README first, then this file.
  */
+export const DocumentLinkStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/document-links/{documentLinkId}',
+  collection: 'document-links',
+  parent: 'portfolio',
+  idParam: 'documentLinkId',
+} as const
+
 export const DocumentLinkModel = {
   id: '' as string,
   portfolio_id: '' as string,

@@ -1,8 +1,12 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, isRef, type Ref } from 'vue'
-import type { SupplierProduct } from '../../../../../models/supplier/Supplier.model'
+import {
+  SupplierProductStorage,
+  SupplierStorage,
+  type SupplierProduct,
+} from '../../../../../models/supplier/Supplier.model'
 
-const DEFAULT_SUPPLIER_COLLECTION_PATH = 'suppliers'
+const DEFAULT_SUPPLIER_COLLECTION_PATH: string = SupplierStorage.rootCollection
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -16,7 +20,7 @@ export const resolveSupplierProductCollectionPath = (
 
   if (!resolvedSupplierId) return ''
 
-  return `${resolvedCollectionPath}/${resolvedSupplierId}/products`
+  return `${resolvedCollectionPath}/${resolvedSupplierId}/${SupplierProductStorage.collection}`
 }
 
 export function useSupplierProductCollection(

@@ -14,6 +14,13 @@ import type { FireuxStamped } from '../core/meta.model'
  * - A runtime surface can compose or inspect modules through a facade without inventing a second stored model.
  * - If that decision changes later, update the models README first, then this file.
  */
+export const ModuleStorage = {
+  shape: 'public/root',
+  path: 'modules/{moduleId}',
+  collection: 'modules',
+  idParam: 'moduleId',
+} as const
+
 export const ModuleModel = {
   id: '',
   name: '',

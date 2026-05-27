@@ -14,6 +14,12 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep it separate until the broader order canon is deliberately unified.
  * - If that changes later, update the models README first, then this file.
  */
+export const OrderStorage = {
+  shape: 'public/root',
+  path: 'orders/{orderId}',
+  collection: 'orders',
+  idParam: 'orderId',
+} as const
 
 export type OrderServiceMode = 'dine_in' | 'collection' | 'delivery'
 

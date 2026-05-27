@@ -1,5 +1,6 @@
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 
 export type KitchenPublishInput = {
   id: string
@@ -45,7 +46,7 @@ export function useKitchenPublish() {
     const routePath = `/kitchens/${encodeURIComponent(ready.slug)}`
 
     return publish({
-      collectionPath: 'kitchens',
+      collectionPath: KitchenStorage.rootCollection,
       id: ready.id,
       routePath,
       patch: {

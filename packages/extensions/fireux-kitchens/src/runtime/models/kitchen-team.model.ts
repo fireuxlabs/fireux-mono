@@ -16,6 +16,22 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep the ownership explicit: the kitchen owns the team record.
  * - If that changes later, update the models README first, then this file.
  */
+export const KitchenTeamMemberStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/team/{memberId}',
+  collection: 'team',
+  parent: 'kitchen',
+  idParam: 'memberId',
+} as const
+
+export const KitchenTeamJoinRequestStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/team-join-requests/{requestId}',
+  collection: 'team-join-requests',
+  parent: 'kitchen',
+  idParam: 'requestId',
+} as const
+
 export type KitchenTeamStatus = 'active' | 'inactive'
 export type KitchenTeamJoinRequestStatus = 'pending' | 'approved' | 'rejected'
 

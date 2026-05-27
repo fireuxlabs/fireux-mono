@@ -17,6 +17,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 
+export const PlaceStorage = {
+  shape: 'public/root',
+  path: 'places/{placeId}',
+  collection: 'places',
+  idParam: 'placeId',
+} as const
+
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 

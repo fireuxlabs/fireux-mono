@@ -14,6 +14,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - It should stay scoped even when it links to supporting root records like type or document.
  * - If its ownership changes later, update the models README first, then this file.
  */
+export const ComplianceRecordStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/compliance/{complianceRecordId}',
+  collection: 'compliance',
+  parent: 'portfolio',
+  idParam: 'complianceRecordId',
+} as const
+
 export const ComplianceRecordModel = {
   id: '' as string,
   portfolio_id: '' as string,

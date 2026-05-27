@@ -14,6 +14,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - It should stay scoped until there is a real reason to promote it to shared root truth.
  * - If that changes later, update the models README first, then this file.
  */
+export const UnitStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/portfolios/{portfolioId}/units/{unitId}',
+  collection: 'units',
+  parent: 'portfolio',
+  idParam: 'unitId',
+} as const
 
 export const UnitModel = {
   id: '' as string,
