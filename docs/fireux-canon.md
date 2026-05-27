@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-25
+Updated: 2026-05-27
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -339,6 +339,29 @@ composables/fireux/firestore/<entity>/
 - `app/` is only for app-level orchestration, not normal entity authoring state.
 - Entity authoring helpers that are not raw Firestore belong in the entity-owned composable family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.
 
+## Firestore Operation Families
+- Firestore operation is the primary family. Transport and record location are variants inside the operation, not new top-level families.
+- The Firestore operation map is:
+  - Create: `useXCreate`, with `useFirestoreCreate` and `useFirestoreApiCreate` as lower-level helpers.
+  - Read: `useXFetch`, `useXCollection`, `useFirestoreRead`.
+  - Update: `useXUpdate`, `useFirestoreUpdate`.
+  - Delete: `useXDelete`, `useFirestoreDelete`.
+- Direct/client Firestore operations use VueFire or the client SDK from runtime composables.
+- Server/API-mediated Firestore operations use a client composable to call a Nuxt API route; the server route owns privileged authority, storage, provider work, cross-app behavior, or public-safe response shaping.
+- Server/API-mediated operations are still Firestore operations. They are transport variants, not separate entity families.
+- `useFirestoreCreate` is a boring direct-client create primitive. It handles collection path, generated vs known document id, stamp options, database id, and stripping persisted `id`.
+- `useFirestoreCreate` must not own ensure behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition.
+- `useXCreate` is the entity-owned Create seam. It decides whether the Create behavior is out of the box, with ensure, or with provision, then delegates plain Firestore writes to lower-level helpers.
+- Record location language must describe where truth lives:
+  - root record: `menus/{menuId}`, `ingredients/{ingredientId}`, `kitchens/{kitchenId}`.
+  - parent-scoped record: `kitchens/{kitchenId}/menus/{menuId}`.
+  - app-scoped record: `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`.
+  - root plus app overlay: root truth plus app relationship or overlay record.
+  - child record: sections, items, messages, and similar records under a parent record.
+  - hydrated read shape: read-time data composed from records; it is not a stored family.
+- `public` is route, rendering, or publication terminology. Do not use `public` as a Firestore storage-location family label.
+- Published routes render eligible records. The stored record should still be described as root, parent-scoped, app-scoped, overlay, child, or hydrated.
+
 ### Public Entity Route Add-Ons
 
 - Shared public entity roots use plural collection/detail routes first, such as `/properties` and `/properties/:publicKey`.
@@ -487,10 +510,13 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - New app setup must capture the Firebase console web app snippet and record app-specific values in app env/deploy configuration.
 - Production deploy configuration must be checked app by app across every ecosystem; local `.env` files are not the deployed source of truth.
 
-## Create vs Ensure Canon
-- `createX` means intentional creation of a real target.
-- `ensureX` means bootstrap/setup-if-missing.
-- `provisionX` means creation is coordinated through storage, a server route, or an external provider before entity truth is written.
+## Create Canon
+- Every `useXCreate` belongs to the Create family.
+- Create is the default: a user action or system action creates entity truth from supplied input.
+- Some Create seams include ensure behavior:
+  - ensure means setup-if-missing, safe to rerun, and continuing when the record already exists.
+- Some Create seams include provision behavior:
+  - provision means a required resource or provider result is prepared before entity truth is complete.
 - `createX` belongs to explicit user actions:
   - create forms
   - create systems
@@ -502,20 +528,23 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Do not hide creation behind auth/bootstrap.
 - Sign-in establishes identity; it does not create domain records by itself.
 - When a family canon says test mode is one target per signed-in user, the family entry page may call `ensureX` on entry to `test` mode.
-- `useXCreate()` remains the entity-owned public seam for all three intents. Pages and tools call the entity seam; the entity seam chooses the route.
-- FireUX create intent vocabulary is intentionally small:
-  - `create`: make a new record from supplied input.
-  - `ensure`: make sure a record exists once, safely repeatable.
-  - `provision`: coordinate provider/server/storage work, then write entity truth.
-- FireUX create route vocabulary describes mechanics, not new families:
-  - `firestore_add`: Firestore allocates the id.
-  - `firestore_set`: the entity owns the id/slug.
-  - `server_api`: a server endpoint performs privileged or cross-service work.
-  - `external_provider`: a provider supplies or hydrates source data.
-  - `storage_upload`: uploaded or remote media/file storage is part of creation.
-  - `composed`: creation combines root/overlay/child records.
-- Do not split new top-level create families for upload, server-provisioned, provider-hydrated, or overlay flows. These are `provision` or `ensure` routes unless the entity contract proves otherwise.
-- Shared create vocabulary lives in `fireux-core/runtime/composables/fireux/firestore/operations/createStrategy`.
+- `useXCreate()` remains the entity-owned seam for Create behavior. Pages and tools call the entity seam.
+- Create behavior should be described as:
+  - out of the box: plain entity creation; this is the default and does not need an explicit plan.
+  - with ensure: creation includes setup-if-missing behavior.
+  - with provision: creation depends on storage, a provider, or another prepared resource.
+- Create descriptors are not families:
+  - transport: client or server.
+  - location: root, scoped, or overlay.
+  - id: generated or known.
+  - steps: single or multi.
+- `createDocument(collectionPath, data, opts)` in `useFirestoreCreate` means generated id.
+- `setDocument(collectionPath, id, data, opts)` in `useFirestoreCreate` means known id.
+- Do not split new top-level create families for upload, server-provisioned, provider-hydrated, generated-id, known-id, or overlay flows.
+- `fireux-core/runtime/composables/fireux/firestore/operations/createStrategy` is the current create-specific vocabulary helper.
+- `createStrategy` describes non-default Create family alignment with `family`; optional descriptors such as `transport`, `location`, `id`, and `steps` should be added only when they clarify a non-obvious seam.
+- Do not add a `CreatePlan` just to say a normal create is out of the box.
+- Do not broaden or rename `createStrategy` until another operation needs a real shared strategy.
 
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.

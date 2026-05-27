@@ -82,4 +82,3 @@ export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
 export type BlogPostUpdateInput = Partial<
   Omit<BlogPost, 'id' | 'slug' | 'created' | 'updated'>
 >
-export type BlogPostEntry = BlogPostCreateInput

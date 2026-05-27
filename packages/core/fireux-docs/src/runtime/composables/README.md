@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-05-24
+Updated: 2026-05-27
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 This page documents FireUX rules for `runtime/composables/`.
@@ -160,14 +160,34 @@ FireUX adds structure on top of ordinary composable usage:
 - `src/runtime` is a delivery area, not an ownership bucket; composable ownership is decided by surface and family
 - console state gets explicit seams rather than ad hoc page logic
 - Firestore reads and writes stay explicit under `fireux/firestore/`
+- Firestore operation is the primary family:
+  - Create: `useXCreate`, with `useFirestoreCreate` and `useFirestoreApiCreate` as lower-level helpers
+  - Read: `useXFetch`, `useXCollection`, `useFirestoreRead`
+  - Update: `useXUpdate`, `useFirestoreUpdate`
+  - Delete: `useXDelete`, `useFirestoreDelete`
+- transport is a variant inside the operation family:
+  - direct/client Firestore uses VueFire or the client SDK
+  - server/API-mediated Firestore uses a client composable plus a Nuxt server route for privileged, storage, provider, cross-app, or public-safe work
+- record location is a separate axis from operation and transport:
+  - root records live at paths such as `menus/{menuId}` or `kitchens/{kitchenId}`
+  - parent-scoped records live under a parent such as `kitchens/{kitchenId}/menus/{menuId}`
+  - app-scoped records live under an app path such as `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+  - hydrated read shapes are composed at read time and are not stored families
 - Firestore read helper names must describe their runtime semantics:
   - `firestoreFetchCollection`, `firestoreFetchDoc`, and `firestoreQuery` are reactive VueFire read bindings
   - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
 - usual Firestore entity stacks stay boring: root `useX.ts`, `fetch/`, `mutations/`, and `utils/`
 - singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
-- create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` owns the create intent and route
-- create intents are `create`, `ensure`, and `provision`; routes are mechanics such as `firestore_add`, `firestore_set`, `server_api`, `external_provider`, `storage_upload`, and `composed`
-- `fireux/firestore/operations/createStrategy` owns the shared create vocabulary; entity families keep the business rules and may delegate mechanics to `useFirestoreCreate` or `useFirestoreApiCreate`
+- create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` owns Create behavior
+- Create behavior is out of the box by default; normal creates do not need a plan just to say they are normal
+- some Create seams include ensure behavior, and some include provision behavior
+- `useFirestoreCreate` is a direct-client primitive only: it handles collection path, generated vs known id writes, stamp options, database id, and stripping persisted `id`
+- `useFirestoreCreate` must not own ensure behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition
+- `createDocument(collectionPath, data, opts)` means generated id; `setDocument(collectionPath, id, data, opts)` means known id
+- `fireux/firestore/operations/createStrategy` remains the create-specific vocabulary helper; use it to mark non-default Create family behavior with `family`
+- optional descriptors such as `transport`, `location`, `id`, and `steps` should be used only when they clarify something non-obvious
+- entity families keep business rules and may delegate plain writes to `useFirestoreCreate` or API-mediated writes to `useFirestoreApiCreate`
+- `public` describes route visibility, rendering, or publication status; it must not be used as a storage-location family label
 - publish surfaces should keep the same shape: pages call `useXPublish`, while `useXPublish` owns entity readiness rules and can delegate shared write mechanics to core `fireux/publishing/usePublish`
 - sitemap registration must use explicit publication truth such as `show === true` or `visibility === 'public'`; missing publication fields must not fall back to slug presence
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour

@@ -1,17 +1,18 @@
-export type FireuxCreateIntent = 'create' | 'ensure' | 'provision'
+export type FireuxCreateFamily =
+  | 'with_ensure'
+  | 'with_provision'
 
-export type FireuxCreateRoute =
-  | 'firestore_add'
-  | 'firestore_set'
-  | 'server_api'
-  | 'external_provider'
-  | 'storage_upload'
-  | 'composed'
+export type FireuxCreateTransport = 'client' | 'server'
+export type FireuxCreateLocation = 'root' | 'scoped' | 'overlay'
+export type FireuxCreateIdStrategy = 'generated' | 'known'
+export type FireuxCreateSteps = 'single' | 'multi'
 
 export type FireuxCreatePlan = {
-  intent: FireuxCreateIntent
-  routes: FireuxCreateRoute[]
+  family: FireuxCreateFamily
+  transport?: FireuxCreateTransport | FireuxCreateTransport[]
+  location?: FireuxCreateLocation | FireuxCreateLocation[]
+  id?: FireuxCreateIdStrategy | FireuxCreateIdStrategy[]
+  steps?: FireuxCreateSteps
 }
 
 export const defineFireuxCreatePlan = <T extends FireuxCreatePlan>(plan: T): T => plan
-
