@@ -11,7 +11,9 @@ export function useAppCollection(collectionPath: string | { value?: string } = '
       ? collectionPath
       : String(collectionPath?.value || 'apps').trim() || 'apps'
   const source = firestoreFetchCollection<AppCollectionDoc>(path)
-  const apps = computed(() => source.value ?? [])
+  const apps = computed(() =>
+    (source.value ?? []).filter((app) => String((app as any)?.status || '') !== 'retired')
+  )
   const count = computed(() => apps.value?.length ?? 0)
 
   return { apps, count }

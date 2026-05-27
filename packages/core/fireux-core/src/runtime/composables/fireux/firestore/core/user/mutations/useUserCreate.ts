@@ -1,4 +1,3 @@
-// Action: ENSURE · Phases: 1–4
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -26,8 +25,8 @@ function toPublicDisplayNameSeed(
   return looksLikeEmail(fallback) ? fallback.split('@')[0]?.trim() || '' : fallback
 }
 
-export function useUserEnsure() {
-  async function ensureUser(): Promise<{
+export function useUserCreate() {
+  async function createUser(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -41,9 +40,9 @@ export function useUserEnsure() {
     })
 
     // Sign-in should not mutate existing membership/admin roles.
-    // Only ensure app membership when the app-scoped overlay is missing.
+    // Only create app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
-    let shouldEnsureMembership = true
+    let shouldCreateMembership = true
     let appExists = false
     try {
       const db = useFirestore()
@@ -54,13 +53,13 @@ export function useUserEnsure() {
       appExists = appSnap.exists()
 
       if (appUserSnap.exists()) {
-        shouldEnsureMembership = false
+        shouldCreateMembership = false
       }
 
       if (!appExists) {
-        shouldEnsureMembership = false
+        shouldCreateMembership = false
         if (import.meta.dev) {
-          console.warn('[useUserEnsure] app doc missing; skipping membership ensure', {
+          console.warn('[useUserCreate] app doc missing; skipping membership create', {
             uid,
             appId,
           })
@@ -85,7 +84,7 @@ export function useUserEnsure() {
       }
     } catch (error) {
       if (import.meta.dev) {
-        console.warn('[useUserEnsure] failed to inspect existing membership role', {
+        console.warn('[useUserCreate] failed to inspect existing membership role', {
           uid,
           appId,
           error,
@@ -93,12 +92,12 @@ export function useUserEnsure() {
       }
     }
 
-    const membership = shouldEnsureMembership
+    const membership = shouldCreateMembership
       ? await ensureUserAppMembership(appId, uid, membershipRole)
       : { created: false }
 
     return { createdCore: core.created, createdApp: membership.created, id: uid }
   }
 
-  return { ensureUser }
+  return { createUser }
 }

@@ -37,6 +37,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const snap = await db.collection('apps').where('ecosystem', '==', ecosystem).get()
 
   const apps = snap.docs
+    .filter((doc) => asString(doc.data()?.status) !== 'retired')
     .map((doc) => {
       const data = (doc.data() || {}) as Record<string, unknown>
       const media = asRecord(data.media)

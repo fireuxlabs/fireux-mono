@@ -17,7 +17,7 @@ import {
 import { computed, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
+import { useUserCreate } from '../firestore/core/user/mutations/useUserCreate'
 
 let googleSignInInFlight: Promise<User | null> | null = null
 let googleRedirectResultInFlight: Promise<User | null> | null = null
@@ -157,35 +157,35 @@ export function useAuth() {
   )
 
   // ─────────────────────────────────────────────
-  // Ensure FireUX user document exists (client-only)
+  // Create FireUX user document when auth exists but Firestore does not.
   // ─────────────────────────────────────────────
   // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
   // while a component instance exists (i.e. during setup). We create the
-  // user-ensure composable once here, then call its methods later.
-  const userEnsure = import.meta.client ? useUserEnsure() : null
+  // user-create composable once here, then call its methods later.
+  const userCreate = import.meta.client ? useUserCreate() : null
 
-  const ensuring = ref(false)
-  const lastEnsuredUid = ref<string | null>(null)
+  const creating = ref(false)
+  const lastCreatedUid = ref<string | null>(null)
 
-  const ensureOnce = async (nextUid: string | null) => {
+  const createOnce = async (nextUid: string | null) => {
     if (!import.meta.client) return
     if (!nextUid) return
     if (!isReady.value) return
-    if (ensuring.value) return
-    if (lastEnsuredUid.value === nextUid) return
-    if (!userEnsure) return
+    if (creating.value) return
+    if (lastCreatedUid.value === nextUid) return
+    if (!userCreate) return
 
-    ensuring.value = true
+    creating.value = true
     try {
-      await userEnsure.ensureUser()
-      lastEnsuredUid.value = nextUid
+      await userCreate.createUser()
+      lastCreatedUid.value = nextUid
     } finally {
-      ensuring.value = false
+      creating.value = false
     }
   }
 
   if (import.meta.client) {
-    watch(uid, (nextUid: string | null) => void ensureOnce(nextUid), {
+    watch(uid, (nextUid: string | null) => void createOnce(nextUid), {
       immediate: true,
     })
   }
@@ -297,8 +297,8 @@ export function useAuth() {
       auth.value || (getApps().length ? getAuth() : null)
 
     // Always clear local state so the UI reacts immediately.
-    lastEnsuredUid.value = null
-    ensuring.value = false
+    lastCreatedUid.value = null
+    creating.value = false
     currentUser.value = null
 
     if (!authInstance) {
@@ -330,7 +330,7 @@ export function useAuth() {
     uid,
     isAuthenticated,
     authState,
-    ensuring,
+    creating,
 
     // readiness
     isReady,

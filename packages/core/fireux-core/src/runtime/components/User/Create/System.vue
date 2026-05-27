@@ -68,7 +68,7 @@ type PrimaryAction =
     }
 
 const { appId, appName, ecosystem } = useFireUXConfig()
-const { cta, ensureUser, core, isLoading, user } = useUser()
+const { cta, createUser, core, isLoading, user } = useUser()
 const { membership: appMembership } = useApp()
 
 const error = ref<string | null>(null)
@@ -118,7 +118,7 @@ const handleEnsure = async () => {
 
   try {
     if (requiresCore.value || requiresApp.value) {
-      await ensureUser()
+      await createUser()
     }
 
     if (appId && uid.value && core?.membership && appMembership?.setAdmin) {

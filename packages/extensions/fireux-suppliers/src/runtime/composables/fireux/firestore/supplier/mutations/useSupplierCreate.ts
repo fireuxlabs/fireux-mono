@@ -4,7 +4,7 @@ import type {
   ConsoleEnsureResult,
   ConsoleRootEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
@@ -48,7 +48,7 @@ export const SupplierCreatePlan = defineFireuxCreatePlan({
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { ensureUser } = useUserEnsure()
+  const { createUser } = useUserCreate()
   const { ensureConsole } = useConsoleEnsure()
   const { currentUser } = useAuth()
   const supplierCollection =
@@ -105,7 +105,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     options: EnsureSupplierOptions = {},
     defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
-    await ensureUser()
+    await createUser()
     const { uid } = await requireUid()
 
     const requestedRootId = normalizeString(options.existingRootId)

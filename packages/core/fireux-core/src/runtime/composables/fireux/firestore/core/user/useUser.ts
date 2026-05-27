@@ -1,7 +1,7 @@
 import { useAuth } from '../../../firebase/useAuth'
 import { useUserFetch } from './fetch/useUserFetch'
+import { useUserCreate } from './mutations/useUserCreate'
 import { useUserDelete } from './mutations/useUserDelete'
-import { useUserEnsure } from './mutations/useUserEnsure'
 import { useUserUpdate } from './mutations/useUserUpdate'
 import { useUserComputed } from './utils/view/useUserComputed'
 import { useUserInterface } from './utils/view/useUserInterface'
@@ -31,7 +31,7 @@ export function useUser() {
     pending,
     ...useUserComputed(refs, pending),
     ...useUserInterface(user),
-    ...useUserEnsure(),
+    ...useUserCreate(),
     ...useUserUpdate(refs, 'useUser'),
     ...useUserDelete(refs),
   }

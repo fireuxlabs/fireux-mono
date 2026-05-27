@@ -4,7 +4,7 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -19,14 +19,14 @@ export const ChefCreatePlan = defineFireuxCreatePlan({
 export function useChefCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { ensureUser } = useUserEnsure()
+  const { createUser } = useUserCreate()
 
   async function ensureChefProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
   }> {
-    await ensureUser()
+    await createUser()
     const { uid } = await requireUid()
     const { appId } = useFireUXConfig()
 

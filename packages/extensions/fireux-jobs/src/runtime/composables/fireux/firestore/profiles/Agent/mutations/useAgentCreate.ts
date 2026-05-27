@@ -4,7 +4,7 @@
 
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
@@ -27,14 +27,14 @@ export function useAgentCreate() {
   const appCreate = useFirestoreCreate()
   const identityCreate = useFirestoreCreate({ databaseId: identityDatabaseId })
   const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
-  const { ensureUser } = useUserEnsure()
+  const { createUser } = useUserCreate()
 
   async function ensureAgentProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
   }> {
-    await ensureUser()
+    await createUser()
     const { uid } = await requireUid()
     const { appId } = useFireUXConfig()
 
