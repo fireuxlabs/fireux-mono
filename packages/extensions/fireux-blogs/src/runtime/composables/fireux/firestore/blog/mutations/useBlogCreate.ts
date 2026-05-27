@@ -2,8 +2,9 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { BlogPost, BlogPostEntry } from '../../../../../models/blogPost.model'
+import type { BlogPost, BlogPostCreateInput } from '../../../../../models/blogPost.model'
 
 export const BlogPayload = {
   id: '',
@@ -33,20 +34,18 @@ export const BlogPayload = {
   cta_text: '',
   type: '',
   product_id: '',
-}
+} satisfies BlogPostCreateInput
 
 export const BlogStampOptions = {
   creator: true,
 } as const
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useBlogCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
 
   async function createBlogPost(
-    payload: BlogPostEntry,
+    payload: BlogPostCreateInput,
     slug: string
   ): Promise<boolean> {
     const validatedSlug = await assertPublicSlug(slug, {

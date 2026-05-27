@@ -15,8 +15,7 @@ export interface UsePlaceCreateOptions {
 }
 
 export const PlaceCreatePlan = defineFireuxCreatePlan({
-  intent: 'provision',
-  routes: ['external_provider', 'storage_upload', 'firestore_set'],
+  family: 'with_provision',
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

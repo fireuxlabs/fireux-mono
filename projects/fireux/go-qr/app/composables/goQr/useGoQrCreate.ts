@@ -15,8 +15,7 @@ export type GoQrCreateResult = {
 }
 
 export const GoQrCreatePlan = defineFireuxCreatePlan({
-  intent: 'provision',
-  routes: ['server_api', 'storage_upload', 'firestore_set'],
+  family: 'with_provision',
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

@@ -4,6 +4,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
   FirebaseProduct,
@@ -62,11 +63,8 @@ export const ProductStampOptions = {
 } as const
 
 export const ProductCreatePlan = defineFireuxCreatePlan({
-  intent: 'provision',
-  routes: ['server_api', 'firestore_set'],
+  family: 'with_provision',
 })
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProductCreate() {
   const db = useFirestore()

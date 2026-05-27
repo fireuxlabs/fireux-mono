@@ -5,6 +5,7 @@
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -14,6 +15,10 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppAgent, Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
+
+export const AgentCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function useAgentCreate() {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
@@ -105,5 +110,5 @@ export function useAgentCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureAgentProfile }
+  return { createPlan: AgentCreatePlan, ensureAgentProfile }
 }

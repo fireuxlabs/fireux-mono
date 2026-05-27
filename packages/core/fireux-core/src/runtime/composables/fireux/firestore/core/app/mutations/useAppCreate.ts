@@ -1,5 +1,5 @@
-import type { AppCreateInput as AppCreatePayload } from 'fireux-core/runtime/models/core/app.model'
-import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
+import type { AppCreateInput } from 'fireux-core/runtime/models/core/app.model'
+import { normalizeSlug, normalizeString } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
@@ -7,18 +7,12 @@ export type AppCreateOptions = {
   collectionPath?: string
 }
 
-export type CreateAppInput = AppCreatePayload & {
-  id: string
-}
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useAppCreate(options: AppCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
   const collectionPath = normalizeString(options.collectionPath || 'apps') || 'apps'
 
-  async function createApp(input: CreateAppInput): Promise<{ id: string }> {
-    const id = normalizeString(input?.id)
+  async function createApp(input: AppCreateInput): Promise<{ id: string }> {
+    const resolvedId = normalizeString(input?.id)
     const slug = normalizeSlug(input?.slug)
     const slugFormat = validateSlugFormat(slug, {
       required: true,
@@ -27,7 +21,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
       label: 'App slug',
     })
 
-    if (!id) {
+    if (!resolvedId) {
       throw new Error('App id is required')
     }
 
@@ -35,17 +29,16 @@ export function useAppCreate(options: AppCreateOptions = {}) {
       throw new Error(slugFormat.message || 'Invalid app slug')
     }
 
-    const { id: _id, ...rest } = input
     const payload = {
-      ...rest,
+      ...input,
       slug,
     }
 
-    await setDocument(collectionPath, id, payload, {
+    await setDocument(collectionPath, resolvedId, payload, {
       creator: true,
     })
 
-    return { id }
+    return { id: resolvedId }
   }
 
   return { createApp }

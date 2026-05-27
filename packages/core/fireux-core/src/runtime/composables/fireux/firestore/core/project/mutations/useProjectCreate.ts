@@ -16,6 +16,7 @@ import type {
   ConsoleRootEnsureResult,
 } from '../../../system/console/mutations/useConsoleEnsure'
 import { useConsoleEnsure } from '../../../system/console/mutations/useConsoleEnsure'
+import { defineFireuxCreatePlan } from '../../../operations/createStrategy'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -46,6 +47,10 @@ export type EnsureProjectOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
+
+export const ProjectCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const db = useFirestore()
@@ -243,5 +248,5 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     return runProjectCreate(input, ensureOptions, 'console')
   }
 
-  return { createProject, ensureProject, createTestProject }
+  return { createPlan: ProjectCreatePlan, createProject, ensureProject, createTestProject }
 }

@@ -7,6 +7,7 @@ import type {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
@@ -43,6 +44,10 @@ type PortfolioTestCreateInput = {
   subtitle?: string
   image_url?: string
 }
+
+export const PortfolioCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
@@ -263,5 +268,11 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return runPortfolioCreate(input, ensureOptions, 'console')
   }
 
-  return { createPortfolio, ensurePortfolio, createPortfolioRoot, createTestPortfolio }
+  return {
+    createPlan: PortfolioCreatePlan,
+    createPortfolio,
+    ensurePortfolio,
+    createPortfolioRoot,
+    createTestPortfolio,
+  }
 }

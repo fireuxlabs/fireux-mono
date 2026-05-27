@@ -5,6 +5,7 @@
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -14,6 +15,10 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppProfessional, Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
+
+export const ProfessionalCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function useProfessionalCreate() {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
@@ -105,5 +110,5 @@ export function useProfessionalCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureProfessionalProfile }
+  return { createPlan: ProfessionalCreatePlan, ensureProfessionalProfile }
 }

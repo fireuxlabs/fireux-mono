@@ -14,6 +14,7 @@ import type {
   ConsoleEnsureResult,
   ConsoleRootEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
@@ -92,6 +93,10 @@ export type EnsureKitchenOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
+
+export const KitchenCreatePlan = defineFireuxCreatePlan({
+  family: 'with_provision',
+})
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const db = useFirestore()
@@ -477,5 +482,5 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     return runKitchenCreate(input, ensureOptions, 'console')
   }
 
-  return { createKitchen, ensureKitchen, createTestKitchen }
+  return { createPlan: KitchenCreatePlan, createKitchen, ensureKitchen, createTestKitchen }
 }

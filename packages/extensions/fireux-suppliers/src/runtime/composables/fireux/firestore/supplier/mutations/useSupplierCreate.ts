@@ -6,6 +6,7 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -39,6 +40,10 @@ type SupplierTestCreateInput = {
   subtitle?: string
   image_url?: string
 }
+
+export const SupplierCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
@@ -183,6 +188,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   }
 
   return {
+    createPlan: SupplierCreatePlan,
     createSupplier,
     ensureSupplier,
     createTestSupplier,

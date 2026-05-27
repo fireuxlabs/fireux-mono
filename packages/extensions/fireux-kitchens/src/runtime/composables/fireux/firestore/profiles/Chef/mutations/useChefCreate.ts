@@ -5,11 +5,16 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppChef, Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+
+export const ChefCreatePlan = defineFireuxCreatePlan({
+  family: 'with_ensure',
+})
 
 export function useChefCreate() {
   const db = useFirestore()
@@ -72,5 +77,5 @@ export function useChefCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureChefProfile }
+  return { createPlan: ChefCreatePlan, ensureChefProfile }
 }
