@@ -28,9 +28,15 @@ export function configViteWorkspace(nuxt: NuxtConfig) {
   const n = nuxt as NuxtConfig & { vite?: any }
 
   n.vite = n.vite || {}
+  n.vite.optimizeDeps = n.vite.optimizeDeps || {}
+  n.vite.optimizeDeps.include = n.vite.optimizeDeps.include || []
   n.vite.server = n.vite.server || {}
   n.vite.server.fs = n.vite.server.fs || {}
   n.vite.server.fs.allow = n.vite.server.fs.allow || []
+
+  if (!n.vite.optimizeDeps.include.includes('vuefire')) {
+    n.vite.optimizeDeps.include.push('vuefire')
+  }
 
   if (!n.vite.server.fs.allow.includes(workspaceRoot)) {
     n.vite.server.fs.allow.push(workspaceRoot)
