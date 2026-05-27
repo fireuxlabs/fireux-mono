@@ -4,7 +4,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 import { useToastify } from '../ui/useToastify'
 import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
-import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
+import { useAppCreate } from '../../firestore/core/app/mutations/useAppCreate'
 import { ensureUserAppMembership } from '../../firestore/core/user/utils/ensureHelpers'
 import type { EnvCheckResponse } from './env-check.types'
 import { useAppEnvCheck } from './useAppEnvCheck'
@@ -96,7 +96,7 @@ export function useAppOnboarding(): AppOnboardingState {
   )
   const bypassWarning = computed(() => !env.value?.isValid && Boolean(devMode))
 
-  const { ensureApp, syncAppMedia } = useAppEnsure()
+  const { createApp, syncAppMedia } = useAppCreate()
 
   const onRefreshEnv = () => {
     void refreshEnv()
@@ -107,8 +107,8 @@ export function useAppOnboarding(): AppOnboardingState {
     actionPending.value = true
     proceedError.value = null
     try {
-      const ensured = await ensureApp()
-      console.log('[proceed] ensureApp result', ensured)
+      const created = await createApp()
+      console.log('[proceed] createApp result', created)
 
       // Self-heal existing apps stuck in "not initialized" when admin mirrors are empty.
       // After PIN, the current signed-in user becomes an admin for onboarding.
@@ -118,7 +118,7 @@ export function useAppOnboarding(): AppOnboardingState {
       }
       await ensureUserAppMembership(appId, currentUid, 'admin')
 
-      const syncResult = await syncAppMedia(ensured.id)
+      const syncResult = await syncAppMedia(created.id)
       await refreshEnv()
 
       if (syncResult.failed.length) {
@@ -128,7 +128,7 @@ export function useAppOnboarding(): AppOnboardingState {
         proceedError.value = `App initialized, but some brand assets failed to sync to Storage. ${detail}`
         toast.warn(proceedError.value)
       } else {
-        toast.success(ensured.created ? 'App initialized.' : 'App repaired.')
+        toast.success(created.created ? 'App initialized.' : 'App repaired.')
       }
     } catch (e) {
       const message =
@@ -137,7 +137,7 @@ export function useAppOnboarding(): AppOnboardingState {
           : 'Failed to continue onboarding.'
       proceedError.value = message
       toast.error(message)
-      console.error('[proceed] ensureApp failed', e)
+      console.error('[proceed] createApp failed', e)
     } finally {
       actionPending.value = false
     }

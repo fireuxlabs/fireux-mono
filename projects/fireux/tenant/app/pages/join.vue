@@ -13,7 +13,7 @@
 
     <div class="space-y-4">
       <p>
-        If you just initialized the app, run <code>ensureApp()</code> from the
+        If you just initialized the app, run <code>createApp()</code> from the
         runtime controls or use the onboarding modal to create admin membership.
       </p>
       <p>

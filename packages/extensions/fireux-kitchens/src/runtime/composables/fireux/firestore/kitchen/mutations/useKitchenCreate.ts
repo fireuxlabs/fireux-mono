@@ -1,14 +1,4 @@
-import {
-  collection,
-  deleteField,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  serverTimestamp,
-  setDoc,
-  where,
-} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
@@ -16,22 +6,9 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import {
-  readRuntimeSimulationFirestoreDatabaseId,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { computed } from 'vue'
-import {
-  resolveTestKitchenName,
-  resolveTestKitchenShortAddress,
-  resolveTestKitchenSlug,
-} from '../../../app/kitchens/testKitchenIdentity'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
   AppKitchen,
   Kitchen,
@@ -39,54 +16,10 @@ import type {
 } from '../../../../../models/kitchen.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const KITCHEN_SLUG_MAX_LENGTH = 80
-
-const validateKitchenSlug = (value: unknown) =>
-  validateSlug(value, {
-    label: 'Kitchen slug',
-    namespace: 'kitchens',
-    reservedScope: 'root',
-    maxLength: KITCHEN_SLUG_MAX_LENGTH,
-  })
-
-const withSlugSuffix = (baseSlug: string, index: number) => {
-  const suffix = `-${index}`
-  const maxBaseLength = KITCHEN_SLUG_MAX_LENGTH - suffix.length
-  const base =
-    baseSlug
-      .slice(0, maxBaseLength)
-      .replace(/-+$/g, '')
-
-  return `${base}${suffix}`
-}
-
-const requireSimulationDatabaseId = () => {
-  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
-  if (!databaseId) {
-    throw new Error(
-      'Missing firebase.simulationDatabaseId for kitchen test-mode writes.'
-    )
-  }
-  return databaseId
-}
-type KitchenTestCreateInput = {
-  id?: string
-  name?: string
-  image_url?: string
-}
-
-export const KitchenPayload = {
-  id: '',
-}
-
-export const KitchenStampOptions = {
-  creator: false,
-} as const
+type KitchenCreateDraft = Partial<KitchenCreateInput> & Record<string, unknown>
 
 export type KitchenCreateOptions = {
   collectionPath?: string
-  test?: boolean
-  ensurePlace?: boolean
 }
 
 export type EnsureKitchenOptions = {
@@ -95,392 +28,79 @@ export type EnsureKitchenOptions = {
 }
 
 export const KitchenCreatePlan = defineFireuxCreatePlan({
-  family: 'with_provision',
+  family: 'with_ensure',
 })
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const db = useFirestore()
-  const simulationDatabaseId = computed(
-    () => requireSimulationDatabaseId()
-  )
-  const simulationDb = useFirestore(simulationDatabaseId)
   const { setDocument } = useFirestoreCreate()
-  const { setDocument: setSimulationDocument } = useFirestoreCreate({
-    databaseId: simulationDatabaseId,
-  })
-  const { updateDocument: updateSimulationDocument } = useFirestoreUpdate({
-    databaseId: simulationDatabaseId,
-  })
-  const { ensurePlaceExists } = usePlaceCreate()
   const { ensureConsole } = useConsoleEnsure()
-  const { uid, currentUser } = useAuth()
-  const collectionPath =
-    options.test ? 'kitchens' : options.collectionPath ?? 'kitchens'
-  const isTestKitchenCollection = options.test === true
-  const activeDb = isTestKitchenCollection ? simulationDb : db
-  const activeSetDocument = isTestKitchenCollection
-    ? setSimulationDocument
-    : setDocument
-  const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
-
-  async function kitchenSlugIsAvailable(slug: string, excludeKitchenId: string) {
-    const slugQuery = query(
-      collection(activeDb, collectionPath),
-      where('slug', '==', slug)
-    )
-    const snapshot = await getDocs(slugQuery)
-
-    return !snapshot.docs.some((docSnap) => docSnap.id !== excludeKitchenId)
-  }
-
-  async function resolveUniqueKitchenSlug(input: {
-    kitchenId: string
-    explicitSlug?: unknown
-    placeSlug?: unknown
-    name?: unknown
-    shortName?: unknown
-  }) {
-    const explicitSlug = normalizeString(input.explicitSlug)
-
-    if (explicitSlug) {
-      const validation = validateKitchenSlug(explicitSlug)
-      if (!validation.isValid) {
-        throw new Error(validation.message || 'Kitchen slug is invalid.')
-      }
-      return reserveKitchenSlug(validation.slug, input.kitchenId)
-    }
-
-    const candidates = [
-      input.placeSlug,
-      input.name,
-      input.shortName,
-    ]
-
-    for (const candidate of candidates) {
-      const raw = normalizeString(candidate)
-      if (!raw) continue
-
-      const validation = validateKitchenSlug(raw)
-      if (!validation.isValid || !validation.slug) continue
-
-      return reserveKitchenSlug(validation.slug, input.kitchenId)
-    }
-
-    throw new Error('Kitchen slug is required.')
-  }
-
-  async function reserveKitchenSlug(baseSlug: string, kitchenId: string) {
-    if (await kitchenSlugIsAvailable(baseSlug, kitchenId)) return baseSlug
-
-    for (let index = 2; index < 1000; index += 1) {
-      const candidate = withSlugSuffix(baseSlug, index)
-      if (await kitchenSlugIsAvailable(candidate, kitchenId)) return candidate
-    }
-
-    throw new Error(`Unable to generate an available kitchen slug for "${baseSlug}".`)
-  }
-
-  async function repairExistingKitchenSlug(input: {
-    kitchenId: string
-    ref: ReturnType<typeof doc>
-    existing: Record<string, unknown>
-    explicitSlug?: unknown
-    placeSlug?: unknown
-    name?: unknown
-    shortName?: unknown
-  }) {
-    const currentSlug = normalizeString(input.existing.slug)
-    const validation = currentSlug ? validateKitchenSlug(currentSlug) : null
-    const hasValidSlug =
-      validation?.isValid === true && validation.slug === currentSlug
-
-    if (hasValidSlug) return currentSlug
-
-    const slug = await resolveUniqueKitchenSlug({
-      kitchenId: input.kitchenId,
-      explicitSlug: input.explicitSlug,
-      placeSlug: input.placeSlug ?? currentSlug,
-      name: input.name ?? input.existing.name,
-      shortName: input.shortName ?? input.existing.short_name,
-    })
-
-    await setDoc(
-      input.ref,
-      {
-        slug,
-        slug_aliases: deleteField(),
-        updated: {
-          at: serverTimestamp(),
-        },
-      },
-      { merge: true }
-    )
-
-    return slug
-  }
-
-  async function createTestKitchen(
-    input: KitchenTestCreateInput = {}
-  ): Promise<ConsoleRootEnsureResult> {
-    const testId = normalizeString(input.id) || normalizeString(uid.value)
-    const name =
-      normalizeString(input.name) ||
-      resolveTestKitchenName(currentUser.value?.displayName, uid.value)
-    const imageUrl =
-      normalizeString(input.image_url) ||
-      normalizeString(currentUser.value?.photoURL)
-
-    if (!testId) {
-      throw new Error('Test kitchen id is required')
-    }
-
-    const ref = doc(simulationDb, 'kitchens', testId)
-    const snap = await getDoc(ref)
-    if (snap.exists()) {
-      const existingImageUrl = normalizeString(snap.data()?.image_url)
-      await updateSimulationDocument<Kitchen>('kitchens', testId, {
-        name,
-        slug: resolveTestKitchenSlug(currentUser.value?.displayName, uid.value),
-        short_address: resolveTestKitchenShortAddress(),
-        ...(existingImageUrl ? {} : { image_url: imageUrl }),
-      })
-      return { id: testId, created: false }
-    }
-
-    const slug = resolveTestKitchenSlug(currentUser.value?.displayName, uid.value)
-
-    if (!slug) {
-      throw new Error('Test kitchen slug is required')
-    }
-
-    await setSimulationDocument<Partial<Kitchen> & {
-      slug?: string
-      name?: string
-      short_address?: string
-      image_url?: string
-      operator_ids?: string[]
-      team_ids?: string[]
-      simulation_kind?: string
-      can_write?: boolean
-      is_test_kitchen?: boolean
-    }>(
-      'kitchens',
-      testId,
-      {
-        place_id: testId,
-        slug,
-        name,
-        short_address: resolveTestKitchenShortAddress(),
-        image_url: imageUrl,
-        operator_ids: [testId],
-        team_ids: [testId],
-        simulation_kind: 'test',
-        can_write: true,
-        is_test_kitchen: true,
-      },
-      {
-        creator: false,
-      }
-    )
-
-    return { id: testId, created: true }
-  }
+  const { uid } = useAuth()
+  const collectionPath = normalizeString(options.collectionPath || 'kitchens') || 'kitchens'
 
   async function ensureKitchenRoot(
-    input: KitchenCreateInput & { place?: PlaceUpsertInput }
+    input: KitchenCreateDraft
   ): Promise<ConsoleRootEnsureResult> {
-    const resolvedId = normalizeString(input?.id)
-    if (!resolvedId) {
+    const id = normalizeString(input?.id) || normalizeString(uid.value)
+    if (!id) {
       throw new Error('Kitchen id is required')
     }
 
-    const place = input?.place
-
-    if (shouldEnsurePlace) {
-      if (place) {
-        const ok = await ensurePlaceExists({
-          ...place,
-          id: resolvedId,
-        })
-        if (!ok) {
-          throw new Error(`Unable to resolve place for kitchen "${resolvedId}"`)
-        }
-      } else {
-        const placeSnap = await getDoc(doc(activeDb, 'places', resolvedId))
-        if (!placeSnap.exists()) {
-          throw new Error(
-            `Kitchen "${resolvedId}" requires an existing place or a place payload`
-          )
-        }
-      }
-    }
-
-    const explicitName = normalizeString((input as any)?.name)
-    const explicitShortName = normalizeString((input as any)?.short_name)
-    const explicitShortAddress = normalizeString((input as any)?.short_address)
-    const explicitFormattedAddress = normalizeString((input as any)?.formatted_address)
-    const explicitImageUrl =
-      normalizeString((input as any)?.image_url) ||
-      (isTestKitchenCollection
-        ? normalizeString(currentUser.value?.photoURL)
-        : '')
-    const explicitImageShade = normalizeString((input as any)?.image_shade)
-    const explicitSlug = normalizeString((input as any)?.slug)
-    const explicitSource = normalizeString((input as any)?.source)
-    const defaultTestName = isTestKitchenCollection
-      ? resolveTestKitchenName(currentUser.value?.displayName, uid.value)
-      : ''
-    const placeName = normalizeString((place as any)?.name)
-    const placeShortName = normalizeString((place as any)?.short_name)
-    const placeShortAddress = normalizeString((place as any)?.short_address)
-    const placeFormattedAddress = normalizeString((place as any)?.formatted_address)
-    const placeImageUrl = normalizeString((place as any)?.image_url)
-    const placeImageShade = normalizeString((place as any)?.image_shade)
-    const placeSlug = normalizeString((place as any)?.slug)
-    const placeSource = normalizeString((place as any)?.source)
-    const placeLat = Number((place as any)?.lat)
-    const placeLng = Number((place as any)?.lng)
-
-    const resolvedPayload: Record<string, unknown> = {
-      app_scope_state: 'root_only',
-      app_scope_app_id: '',
-      place_id: resolvedId,
-      is_test_kitchen: false,
-    }
-
-    if (isTestKitchenCollection) {
-      resolvedPayload.is_test_kitchen = true
-      resolvedPayload.simulation_kind = 'test'
-      resolvedPayload.can_write = true
-    }
-
-    const resolvedName =
-      isTestKitchenCollection && (!explicitName || explicitName === normalizeString(uid.value))
-        ? defaultTestName
-        : explicitName || placeName
-    if (resolvedName) {
-      resolvedPayload.name = resolvedName
-    }
-
-    const resolvedShortName = explicitShortName || placeShortName
-    if (resolvedShortName) {
-      resolvedPayload.short_name = resolvedShortName
-    }
-
-    const resolvedShortAddress =
-      explicitShortAddress ||
-      placeShortAddress ||
-      (isTestKitchenCollection ? resolveTestKitchenShortAddress() : '')
-
-    if (resolvedShortAddress) {
-      resolvedPayload.short_address = resolvedShortAddress
-    }
-
-    const resolvedFormattedAddress = explicitFormattedAddress || placeFormattedAddress
-    if (resolvedFormattedAddress) {
-      resolvedPayload.formatted_address = resolvedFormattedAddress
-    }
-
-    if (Number.isFinite(placeLat)) {
-      resolvedPayload.lat = placeLat
-    }
-
-    if (Number.isFinite(placeLng)) {
-      resolvedPayload.lng = placeLng
-    }
-
-    const resolvedImageUrl = explicitImageUrl || placeImageUrl
-    if (resolvedImageUrl) {
-      resolvedPayload.image_url = resolvedImageUrl
-    }
-
-    const resolvedImageShade = explicitImageShade || placeImageShade
-    if (resolvedImageShade) {
-      resolvedPayload.image_shade = resolvedImageShade
-    }
-
-    const resolvedSlug = await resolveUniqueKitchenSlug({
-      kitchenId: resolvedId,
-      explicitSlug,
-      placeSlug,
-      name: resolvedName,
-      shortName: resolvedShortName,
-    })
-    resolvedPayload.slug = resolvedSlug
-
-    const resolvedSource = explicitSource || placeSource
-    if (resolvedSource) {
-      resolvedPayload.source = resolvedSource
-    }
-
-    const ref = doc(activeDb, collectionPath, resolvedId)
+    const ref = doc(db, collectionPath, id)
     const snap = await getDoc(ref)
     if (snap.exists()) {
-      await repairExistingKitchenSlug({
-        kitchenId: resolvedId,
-        ref,
-        existing: snap.data() as Record<string, unknown>,
-        explicitSlug,
-        placeSlug,
-        name: resolvedName,
-        shortName: resolvedShortName,
-      })
-
-      return { id: resolvedId, created: false }
+      return { id, created: false }
     }
 
-    await activeSetDocument<Kitchen>(
-      collectionPath,
-      resolvedId,
-      resolvedPayload as Kitchen,
-      {
-        creator: false,
-      }
-    )
+    const payload: Partial<Kitchen> = {
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
+      operator_ids: uid.value ? [normalizeString(uid.value)] : [],
+      team_ids: uid.value ? [normalizeString(uid.value)] : [],
+    }
 
-    return { id: resolvedId, created: true }
+    await setDocument<Partial<Kitchen>>(collectionPath, id, payload, {
+      creator: true,
+      app: true,
+    })
+
+    return { id, created: true }
   }
 
   async function runKitchenCreate(
-    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    input: KitchenCreateDraft = {},
     ensureOptions: EnsureKitchenOptions = {},
     defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
-    const resolvedId = normalizeString(ensureOptions.existingRootId || input?.id)
+    const existingRootId = normalizeString(ensureOptions.existingRootId)
 
     return ensureConsole<AppKitchen>({
       type: 'kitchen',
       mode: ensureOptions.mode ?? defaultMode,
-      ensureRoot: async () =>
-        ensureKitchenRoot({
-          ...input,
-          id: resolvedId,
-        }),
+      existingRootId: existingRootId || null,
+      ensureRoot: async () => ensureKitchenRoot(input),
       createOverlay: async () =>
         ({
-          ...(uid.value
-            ? {
-                operator_ids: [normalizeString(uid.value)],
-                team_ids: [normalizeString(uid.value)],
-              }
-            : {}),
+          operator_ids: uid.value ? [normalizeString(uid.value)] : [],
+          team_ids: uid.value ? [normalizeString(uid.value)] : [],
+          join_requests: [],
         }) as AppKitchen,
     })
   }
 
   async function createKitchen(
-    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    input: KitchenCreateDraft = {},
     ensureOptions: EnsureKitchenOptions = {}
   ): Promise<ConsoleEnsureResult> {
     return runKitchenCreate(input, ensureOptions, 'public')
   }
 
   async function ensureKitchen(
-    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    input: KitchenCreateDraft = {},
     ensureOptions: EnsureKitchenOptions = {}
   ): Promise<ConsoleEnsureResult> {
     return runKitchenCreate(input, ensureOptions, 'console')
   }
 
-  return { createPlan: KitchenCreatePlan, createKitchen, ensureKitchen, createTestKitchen }
+  return { createPlan: KitchenCreatePlan, createKitchen, ensureKitchen }
 }

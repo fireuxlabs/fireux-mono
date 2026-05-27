@@ -8,7 +8,7 @@ export async function syncAppMediaToStorage(
   const fireux = useFireUXConfig()
   const targetAppId = normalizeString(appId || fireux.appId)
   if (!targetAppId) {
-    throw new Error('[useAppEnsure] Missing appId for media sync')
+    throw new Error('[useAppCreate] Missing appId for media sync')
   }
 
   const response = await fetch('/api/internal/app/sync-media', {
@@ -18,7 +18,7 @@ export async function syncAppMediaToStorage(
   })
 
   if (!response.ok) {
-    throw new Error(`[useAppEnsure] Media sync failed (${response.status})`)
+    throw new Error(`[useAppCreate] Media sync failed (${response.status})`)
   }
 
   return await response.json() as AppMediaSyncResponse

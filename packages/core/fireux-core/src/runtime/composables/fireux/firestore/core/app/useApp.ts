@@ -1,6 +1,6 @@
 import { useFireUXConfig } from '../../../app/FireUXConfig'
 import { useAppFetch } from './fetch/useAppFetch'
-import { useAppEnsure } from './mutations/useAppEnsure'
+import { useAppCreate } from './mutations/useAppCreate'
 import { useAppUpdate } from './mutations/useAppUpdate'
 import { useAppComputed } from './utils/view/useAppComputed'
 import { useAppInterface } from './utils/view/useAppInterface'
@@ -28,7 +28,7 @@ export function useApp() {
     pending,
     ...useAppComputed(app, pending),
     ...useAppInterface(app),
-    ...useAppEnsure(),
+    ...useAppCreate(),
     ...useAppUpdate(app),
   }
 }

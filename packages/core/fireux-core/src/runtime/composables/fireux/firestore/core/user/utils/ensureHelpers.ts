@@ -166,7 +166,7 @@ export async function ensureUserAppMembership(
 
   if (!appSnap.exists()) {
     throw new Error(
-      `[ensureUserAppMembership] Missing app doc for appId=${appId}; call ensureApp first`
+      `[ensureUserAppMembership] Missing app doc for appId=${appId}; call createApp first`
     )
   }
 
