@@ -1,197 +1,19 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppEnsure.ts
-
-import { deleteField, doc, getDoc } from 'firebase/firestore'
-import { useRuntimeConfig } from '#imports'
+import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
 import { useProjectEnsure } from '../../project/mutations/useProjectEnsure'
-import type { AppMediaSyncResponse } from '../utils/appMedia'
-import { useAppCreate, type CreateAppInput } from './useAppCreate'
+import {
+  buildAppEnsureCreateInput,
+  buildAppEnsureRepairPatch,
+} from '../utils/appEnsurePayload'
+import { syncAppMediaToStorage } from '../utils/appMediaSync'
+import { useAppCreate } from './useAppCreate'
 
 type EnsureAppResult = {
   created: boolean
   id: string
-}
-
-function asTrimmedString(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
-}
-
-function resolveRuntimeProjectId(): string {
-  const runtime = useRuntimeConfig()
-  return String(runtime.public?.firebaseEcosystem?.firebase?.projectId || '').trim()
-}
-
-function resolveRuntimeDatabaseId(): string {
-  const runtime = useRuntimeConfig()
-  return String(runtime.public?.firebaseEcosystem?.firebase?.databaseId || '').trim()
-}
-
-function pruneEmptyBootstrapValue(value: unknown): unknown {
-  if (value == null) return undefined
-
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    return trimmed ? trimmed : undefined
-  }
-
-  if (Array.isArray(value)) {
-    const next = value
-      .map((entry) => pruneEmptyBootstrapValue(entry))
-      .filter((entry) => entry !== undefined)
-    return next.length ? next : undefined
-  }
-
-  if (isPlainRecord(value)) {
-    const nextEntries = Object.entries(value).flatMap(([key, entry]) => {
-      const pruned = pruneEmptyBootstrapValue(entry)
-      return pruned === undefined ? [] : [[key, pruned] as const]
-    })
-
-    return nextEntries.length ? Object.fromEntries(nextEntries) : undefined
-  }
-
-  return value
-}
-
-function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateAppInput {
-  const projectId = asTrimmedString(fireux.ecosystem)
-  const databaseId = resolveRuntimeDatabaseId()
-  const payload = pruneEmptyBootstrapValue({
-    id: fireux.appId,
-    project_id: projectId,
-    ecosystem_id: fireux.ecosystem,
-    database_id: databaseId,
-    slug: fireux.appId,
-    status: 'active',
-    app_name: fireux.appName,
-    app_short_name: fireux.appShortName,
-    role: fireux.role,
-    ecosystem: fireux.ecosystem,
-    social_links: {
-      website: fireux.siteUrl,
-    },
-    media: {
-      thumbnail_url: fireux.appThumbnail,
-      logo_url: fireux.appLogo,
-    },
-    derived: {
-      user_count: 0,
-    },
-  })
-
-  return (payload ?? {}) as CreateAppInput
-}
-
-function buildRepairPatch(
-  existing: Record<string, unknown>,
-  fireux: ReturnType<typeof useFireUXConfig>
-) {
-  const patch: Record<string, unknown> = {}
-  const runtimeProjectId = resolveRuntimeProjectId()
-  const projectId = asTrimmedString(fireux.ecosystem)
-  const databaseId = resolveRuntimeDatabaseId()
-
-  const ensureStringFields: Record<string, string> = {
-    id: fireux.appId,
-    ecosystem_id: fireux.ecosystem,
-    slug: fireux.appId,
-    status: 'active',
-    app_name: fireux.appName,
-    app_short_name: fireux.appShortName,
-    role: fireux.role,
-    ecosystem: fireux.ecosystem,
-  }
-
-  for (const [key, value] of Object.entries(ensureStringFields)) {
-    if (!asTrimmedString(existing[key])) {
-      patch[key] = value
-    }
-  }
-
-  const existingProjectId = asTrimmedString(existing.project_id)
-  if (
-    projectId &&
-    (!existingProjectId || existingProjectId === runtimeProjectId)
-  ) {
-    patch.project_id = projectId
-  }
-
-  const existingDatabaseId = asTrimmedString(existing.database_id)
-  if (databaseId && !existingDatabaseId) {
-    patch.database_id = databaseId
-  }
-
-  const websiteUrl = asTrimmedString(fireux.siteUrl)
-  const socialLinks = isPlainRecord(existing.social_links) ? existing.social_links : {}
-  if (websiteUrl && !asTrimmedString(socialLinks.website)) {
-    patch['social_links.website'] = websiteUrl
-  }
-
-  const media = isPlainRecord(existing.media) ? existing.media : {}
-  const mediaDefaults: Record<string, string> = {
-    thumbnail_url: asTrimmedString(fireux.appThumbnail),
-    logo_url: asTrimmedString(fireux.appLogo),
-  }
-
-  for (const [key, value] of Object.entries(mediaDefaults)) {
-    if (!value) continue
-    if (!asTrimmedString(media[key])) {
-      patch[`media.${key}`] = value
-    }
-  }
-
-  for (const key of [
-    'thumbnail_url',
-    'logo_url',
-    'wordmark_light_url',
-    'wordmark_dark_url',
-    'cover_url',
-  ]) {
-    const current = asTrimmedString(media[key])
-    if (current.startsWith('/img/')) {
-      patch[`media.${key}`] = deleteField()
-    }
-  }
-
-  const deleteIfEmpty = [
-    'team',
-    'tagline',
-    'description',
-    'short_bio',
-    'long_bio',
-    'moderation_state',
-  ]
-
-  for (const key of deleteIfEmpty) {
-    if (key in existing && !asTrimmedString(existing[key])) {
-      patch[key] = deleteField()
-    }
-  }
-
-  const deleteEmptyArrays = ['join_requests', 'ban_reasons']
-  for (const key of deleteEmptyArrays) {
-    if (Array.isArray(existing[key]) && existing[key].length === 0) {
-      patch[key] = deleteField()
-    }
-  }
-
-  if (isPlainRecord(existing.social_links)) {
-    const hasAnySocialValue = Object.values(existing.social_links).some((value) =>
-      Boolean(asTrimmedString(value))
-    )
-    if (!hasAnySocialValue && !('social_links.website' in patch)) {
-      patch.social_links = deleteField()
-    }
-  }
-
-  return patch
 }
 
 export function useAppEnsure() {
@@ -201,38 +23,18 @@ export function useAppEnsure() {
   const { ensureProjectDoc } = useProjectEnsure()
   const { ensureFirestoreEcosystemDoc } = useFirestoreEcosystemEnsure()
 
-  async function syncAppMedia(appId?: string): Promise<AppMediaSyncResponse> {
-    const fireux = useFireUXConfig()
-    const targetAppId = String(appId || fireux.appId || '').trim()
-    if (!targetAppId) {
-      throw new Error('[useAppEnsure] Missing appId for media sync')
-    }
-
-    const response = await fetch('/api/internal/app/sync-media', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ appId: targetAppId }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`[useAppEnsure] Media sync failed (${response.status})`)
-    }
-
-    return await response.json() as AppMediaSyncResponse
-  }
-
   async function ensureApp(): Promise<EnsureAppResult> {
     const fireux = useFireUXConfig()
     await ensureProjectDoc()
     await ensureFirestoreEcosystemDoc()
 
-    const createPayload = buildCreatePayload(fireux)
+    const createPayload = buildAppEnsureCreateInput(fireux)
 
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)
 
     if (snap.exists()) {
-      const repairPatch = buildRepairPatch(
+      const repairPatch = buildAppEnsureRepairPatch(
         (snap.data() as Record<string, unknown>) ?? {},
         fireux
       )
@@ -251,5 +53,5 @@ export function useAppEnsure() {
     return { created: true, id: fireux.appId }
   }
 
-  return { ensureApp, syncAppMedia }
+  return { ensureApp, syncAppMedia: syncAppMediaToStorage }
 }

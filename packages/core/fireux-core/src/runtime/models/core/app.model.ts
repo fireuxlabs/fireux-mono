@@ -180,5 +180,5 @@ export type AppControlField =
 export type AppSystemField =
   typeof AppFieldGroups.system[number]
 
-export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
+export type AppCreateInput = Omit<App, 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

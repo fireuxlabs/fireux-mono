@@ -56,6 +56,7 @@ export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | St
 export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
   const resolveDb = useFirestoreResolver(options.databaseId)
 
+  // Generated-id create. Entity create seams decide whether this is plain create, ensure, or provision.
   async function createDocument<T>(collectionPath: string, data: T, opts: StampOpts = {}): Promise<string> {
     const ref = collection(resolveDb(), collectionPath)
     const next = { ...(data as any) } as Record<string, unknown>
@@ -65,6 +66,7 @@ export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
     return docRef.id
   }
 
+  // Known-id create. Entity create seams own slug/id validation before calling this primitive.
   async function setDocument<T>(collectionPath: string, id: string, data: T, opts: StampOpts = {}): Promise<void> {
     const ref = doc(resolveDb(), collectionPath, id)
     // Canon: never persist id field; Firestore doc id is source of truth.

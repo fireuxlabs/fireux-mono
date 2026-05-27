@@ -3,12 +3,13 @@ export type NormalizeSlugOptions = {
   stripLeadingAt?: boolean
 }
 
+export const normalizeString = (value: unknown) => String(value ?? '').trim()
+
 export function normalizeSlug(
   value: unknown,
   options: NormalizeSlugOptions = {}
 ): string {
-  let candidate = String(value ?? '')
-    .trim()
+  let candidate = normalizeString(value)
     .toLowerCase()
 
   if (options.stripLeadingAt !== false) {

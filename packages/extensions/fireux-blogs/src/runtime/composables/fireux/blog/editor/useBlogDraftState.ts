@@ -2,12 +2,10 @@ import { useStorage } from '@vueuse/core'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { onMounted } from 'vue'
-import type { BlogPostEntry } from '../../../../models/blogPost.model'
+import type { BlogPostCreateInput } from '../../../../models/blogPost.model'
 import { useBlogUtils } from '../../firestore/blog/utils/useBlogUtils'
 
-type BlogPostPayload = BlogPostEntry
-
-const defaultBlogPost: BlogPostEntry = {
+const defaultBlogPost: BlogPostCreateInput = {
   id: '',
   source_app_id: '',
   source_ecosystem_id: '',
@@ -43,7 +41,7 @@ export function useBlogDraftState() {
   const { currentUser } = useUser()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
-  const blogPost = useStorage<BlogPostEntry>('createBlogPost', defaultBlogPost)
+  const blogPost = useStorage<BlogPostCreateInput>('createBlogPost', defaultBlogPost)
   const featuredImageData = useStorage<string>(
     'createBlogFeaturedImageData',
     ''
