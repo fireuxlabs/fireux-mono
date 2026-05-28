@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { createError, useRequestURL } from 'nuxt/app'
+import { createError, useRuntimeConfig } from 'nuxt/app'
 import { computed, onMounted, ref } from 'vue'
 import { toDataURL } from 'qrcode'
 
@@ -68,7 +68,7 @@ type PublicGoQrTextRecord = {
 }
 
 const route = useRoute()
-const requestUrl = useRequestURL()
+const runtime = useRuntimeConfig()
 const slug = String(route.params.slug || '').trim()
 const qrDataUrl = ref('')
 
@@ -94,7 +94,11 @@ if (!qrData.value) {
 const qrRecord = computed(() => qrData.value as PublicGoQrTextRecord)
 const qrLabel = computed(() => qrRecord.value.display_label || qrRecord.value.slug)
 const qrCentreLabel = computed(() => qrRecord.value.qr_centre_label || 'Q')
-const publicUrl = computed(() => `${requestUrl.origin}/text/${qrRecord.value.slug}`)
+const fireuxConfig = computed(() => runtime.public?.fireux as { siteUrl?: string } | undefined)
+const publicBaseUrl = computed(() =>
+  String(fireuxConfig.value?.siteUrl || 'https://go-qr.web.app').replace(/\/$/, '')
+)
+const publicUrl = computed(() => `${publicBaseUrl.value}/text/${qrRecord.value.slug}`)
 
 onMounted(async () => {
   qrDataUrl.value = await toDataURL(publicUrl.value, {

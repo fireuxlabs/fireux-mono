@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { createError, useRequestURL } from 'nuxt/app'
+import { createError, useRuntimeConfig } from 'nuxt/app'
 import { computed, onMounted, ref } from 'vue'
 import { toDataURL } from 'qrcode'
 
@@ -69,7 +69,7 @@ type PublicGoQrRecord = {
 }
 
 const route = useRoute()
-const requestUrl = useRequestURL()
+const runtime = useRuntimeConfig()
 const slug = String(route.params.slug || '').trim()
 const qrDataUrl = ref('')
 
@@ -96,7 +96,11 @@ const documentLabel = computed(() =>
   documentRecord.value.display_label || documentRecord.value.slug
 )
 const qrCentreLabel = computed(() => documentRecord.value.qr_centre_label || 'Q')
-const publicUrl = computed(() => `${requestUrl.origin}/doc/${documentRecord.value.slug}`)
+const fireuxConfig = computed(() => runtime.public?.fireux as { siteUrl?: string } | undefined)
+const publicBaseUrl = computed(() =>
+  String(fireuxConfig.value?.siteUrl || 'https://go-qr.web.app').replace(/\/$/, '')
+)
+const publicUrl = computed(() => `${publicBaseUrl.value}/doc/${documentRecord.value.slug}`)
 
 onMounted(async () => {
   qrDataUrl.value = await toDataURL(publicUrl.value, {

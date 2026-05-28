@@ -5,6 +5,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { goQrBrand } from './goQrBrand'
+import { goQrProviderBaseUrl } from './goQrToolContracts'
 
 export type GoQrTextRecord = {
   id: string
@@ -158,11 +159,17 @@ export async function createGoQrTextRecord(input: {
 
   await goQrTextRecordRef(slug).create(record)
 
+  const baseUrl = goQrProviderBaseUrl()
+  const path = `/text/${encodeURIComponent(slug)}`
+  const qrPath = `${path}/qr`
+
   return {
     ok: true,
     slug,
-    path: `/text/${encodeURIComponent(slug)}`,
-    qr_path: `/text/${encodeURIComponent(slug)}/qr`,
+    path,
+    qr_path: qrPath,
+    url: `${baseUrl}${path}`,
+    qr_url: `${baseUrl}${qrPath}`,
     powered_by: goQrBrand,
   }
 }

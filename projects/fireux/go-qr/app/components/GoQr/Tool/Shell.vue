@@ -1,8 +1,34 @@
 <template>
-  <slot
+  <UCard
     v-if="tool"
-    :tool="tool"
-  />
+    variant="subtle"
+  >
+    <template #header>
+      <div class="flex items-start gap-3">
+        <img
+          src="/img/app/logo.svg"
+          alt="Go QR"
+          class="size-10 rounded-md"
+        >
+        <div class="min-w-0 space-y-1">
+          <p class="text-xs font-medium uppercase text-muted">
+            Go QR
+          </p>
+          <h2 class="text-lg font-semibold text-highlighted">
+            {{ tool.ui.title }}
+          </h2>
+          <p
+            v-if="tool.ui.description"
+            class="text-sm leading-6 text-muted"
+          >
+            {{ tool.ui.description }}
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <slot :tool="tool" />
+  </UCard>
 
   <UCard
     v-else-if="pending"

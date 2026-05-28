@@ -6,12 +6,10 @@
       color="primary"
       variant="soft"
     />
-    <p class="max-w-xl text-base leading-7 text-muted">
-      {{ solution.intro }}
-    </p>
-
     <ClientOnly>
-      <slot />
+      <div class="flex justify-center">
+        <slot />
+      </div>
     </ClientOnly>
   </section>
 </template>

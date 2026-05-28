@@ -588,9 +588,9 @@ export const metaContent = defineFireuxMeta({
       },
     },
     {
-      slug: 'qr-code-restaurant-menu',
-      title: 'QR code restaurant menu',
-      description: 'Give guests a QR code that opens the current public menu.',
+      slug: 'qr-menu',
+      title: 'QR menu',
+      description: 'Upload a menu, choose a short path, and get a QR menu.',
       icon: 'i-lucide-qr-code',
       status: 'very-easy',
       keywords: ['QR code restaurant menu', 'restaurant menu QR code'],

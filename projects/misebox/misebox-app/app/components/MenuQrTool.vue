@@ -1,71 +1,83 @@
 <template>
-  <div class="fx-plugin-surface">
-    <div class="fx-plugin-surface__inner">
-      <header
-        v-if="tool"
-        class="fx-plugin-surface__header"
-      >
-        <h2 class="fx-plugin-surface__title">
-          {{ tool.ui.title }}
-        </h2>
-        <p class="fx-plugin-surface__description">
-          {{ tool.ui.description }}
-        </p>
-      </header>
-
-      <PublicQrFileUploadTool
-        v-if="tool"
-        :endpoint="tool.endpoints.create"
-        config-endpoint="/api/menu-qr/config"
-        :accept="tool.tool.accepts.join(',')"
-        :upload-label="tool.ui.upload_label"
-        :upload-description="tool.consumer_config?.uploadDescription"
-        :cta-label="tool.ui.cta_label"
-        :loading-label="tool.ui.loading_label"
-        :slug-label="tool.slug.label"
-        :slug-validation-label="tool.slug.validation_label"
-        :slug-placeholder="tool.slug.placeholder"
-        :preview-base-url="tool.preview.base_url"
-        :preview-path-suffix="tool.preview.path_suffix"
-        :availability-endpoint="tool.endpoints.availability"
-        :taken-message="tool.slug.taken_message"
-        :reserved-slugs="tool.slug.reserved"
-        :max-file-size-mb="tool.tool.max_file_size_mb"
-        :success-title="tool.ui.success_title"
-        :open-target-label="tool.ui.open_target_label"
-        :open-qr-label="tool.ui.open_qr_label"
-        powered-by-endpoint="/api/menu-qr/brand"
-      />
-
-      <UCard
-        v-else-if="pending"
-        variant="subtle"
-      >
-        <div class="fx-plugin-surface__skeleton">
-          <USkeleton class="h-5 w-2/3" />
-          <USkeleton class="h-32 w-full" />
-          <USkeleton class="h-10 w-full" />
+  <UCard
+    v-if="tool"
+    class="w-full max-w-xl"
+    variant="subtle"
+  >
+    <template #header>
+      <div class="flex items-start gap-3">
+        <img
+          src="/img/app/logo.png"
+          alt="Misebox"
+          class="size-10 rounded-md"
+        >
+        <div class="min-w-0 space-y-1">
+          <p class="text-xs font-medium uppercase text-muted">
+            Misebox
+          </p>
+          <h2 class="text-lg font-semibold text-highlighted">
+            {{ tool.ui.title }}
+          </h2>
+          <p class="text-sm leading-6 text-muted">
+            {{ tool.ui.description }}
+          </p>
         </div>
-      </UCard>
+      </div>
+    </template>
 
-      <UAlert
-        v-else
-        color="error"
-        variant="soft"
-        icon="i-lucide-circle-alert"
-        title="Menu QR tool unavailable"
-        :description="toolErrorMessage"
-      />
+    <PublicQrFileUploadTool
+      :endpoint="tool.endpoints.create"
+      config-endpoint="/api/menu-qr/config"
+      :accept="tool.tool.accepts.join(',')"
+      :upload-label="tool.ui.upload_label"
+      :upload-description="tool.consumer_config?.uploadDescription"
+      :cta-label="tool.ui.cta_label"
+      :loading-label="tool.ui.loading_label"
+      :slug-label="tool.slug.label"
+      :slug-validation-label="tool.slug.validation_label"
+      :slug-placeholder="tool.slug.placeholder"
+      :preview-base-url="tool.preview.base_url"
+      :preview-path-suffix="tool.preview.path_suffix"
+      :availability-endpoint="tool.endpoints.availability"
+      :taken-message="tool.slug.taken_message"
+      :reserved-slugs="tool.slug.reserved"
+      :max-file-size-mb="tool.tool.max_file_size_mb"
+      :success-title="tool.ui.success_title"
+      :open-target-label="tool.ui.open_target_label"
+      :open-qr-label="tool.ui.open_qr_label"
+      powered-by-endpoint="/api/menu-qr/brand"
+    />
 
-      <DevJson
-        class="fx-plugin-surface__debug"
-        :data="debugPayload"
-        title="Misebox menu QR tool"
-        context="Misebox-owned menu QR surface using the Go QR public-doc provider contract."
-        :hide-when-empty="false"
-      />
+    <DevJson
+      class="mt-4"
+      :data="debugPayload"
+      title="Misebox menu QR tool"
+      context="Misebox-owned menu QR surface using the Go QR doc provider contract."
+      :hide-when-empty="false"
+    />
+  </UCard>
+
+  <UCard
+    v-else-if="pending"
+    class="w-full max-w-xl"
+    variant="subtle"
+  >
+    <div class="space-y-3">
+      <USkeleton class="h-5 w-2/3" />
+      <USkeleton class="h-32 w-full" />
+      <USkeleton class="h-10 w-full" />
     </div>
-  </div>
+  </UCard>
+
+  <UAlert
+    v-else
+    class="w-full max-w-xl"
+    color="error"
+    variant="soft"
+    icon="i-lucide-circle-alert"
+    title="Menu QR tool unavailable"
+    :description="toolErrorMessage"
+  />
 </template>
 
 <script setup lang="ts">
@@ -141,10 +153,10 @@ const toolErrorMessage = computed(() =>
 const debugPayload = computed(() => ({
   consumerConfig: tool.value?.consumer_config || {
     resourceName: 'menu',
-    displayLabel: 'Food Menu',
+    displayLabel: 'QR Menu',
     qrCentreLabel: 'Menu',
     slugPlaceholder: 'my-restaurant-menu',
-    description: 'Create a scannable Food Menu QR page from a finished menu file.',
+    description: 'Upload a menu, choose a short path, and get a QR menu.',
     acceptedFileTypes: ['application/pdf', '.doc', '.docx'],
     uploadDescription: 'PDF, DOC, or DOCX. Max 10 MB.',
     storageOwner: 'misebox',
@@ -152,7 +164,7 @@ const debugPayload = computed(() => ({
   providerResolution: {
     providerId: tool.value?.provider.id || 'go-qr',
     providerBaseUrl: tool.value?.provider.base_url || null,
-    providerTool: tool.value?.tool.id || 'public-doc',
+    providerTool: tool.value?.tool.id || 'doc',
     providerUploadType: tool.value?.tool.upload_type || 'doc',
     providerOwnsUploadType: true,
   },

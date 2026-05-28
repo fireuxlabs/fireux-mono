@@ -144,7 +144,6 @@ export const goQrSolutions = {
   text: {
     title: 'Text',
     description: 'Send any message as a QR code.',
-    badge: 'Free text QR',
     intro: 'Write a short message and publish it as a QR page.',
     instructions: [
       ['Text', 'i-lucide-type', 'Enter the message.'],
@@ -181,9 +180,9 @@ export const goQrSolutions = {
     },
   },
   doc: {
-    title: 'Public doc',
-    description: 'Upload one public document, publish it at a stable link, and get a QR page people can scan.',
-    intro: 'Upload a public file and publish it as a QR page.',
+    title: 'Doc',
+    description: 'Upload a doc, choose a short path, and get a QR page.',
+    intro: 'Upload a doc and publish it as a QR page.',
     instructions: [
       ['File', 'i-lucide-file-up', 'Upload a PDF, image, DOC, or DOCX.'],
       ['Path', 'i-lucide-link', 'Choose `/doc/my-doc`.'],
@@ -192,7 +191,7 @@ export const goQrSolutions = {
     integrations: {
       body: 'Use Doc when the file is already finished.',
       consumers: [
-        ['Misebox', 'i-lucide-utensils', 'https://misebox.app/solutions/qr-code-restaurant-menu', 'Food menu flow', 'Finished menu file.', 'Structured menu app.'],
+        ['Misebox', 'i-lucide-utensils', 'https://misebox.app/solutions/qr-menu', 'Food menu flow', 'Finished menu file.', 'Structured menu app.'],
         ['BuenoHost', 'i-lucide-house', 'https://buenohost.web.app', 'Guest guide flow', 'Finished guide file.', 'Property-aware guest guide.'],
         ['Sproochli', 'i-lucide-languages', 'https://sproochli.web.app', 'Translation flow', 'Finished translated file.', 'Translation workflow.'],
       ].map(([name, icon, to, cta, useGoQr, useApp]) => ({ name, icon, to, cta, useGoQr, useApp, external: true })),
@@ -216,12 +215,12 @@ export const goQrSolutions = {
       ],
     },
     seo: {
-      title: 'Public Doc - Go QR',
-      ogTitle: 'Public Doc - Go QR',
-      twitterTitle: 'Public Doc - Go QR',
-      description: 'Upload a public document and get a QR page.',
-      ogDescription: 'Upload a public document and get a QR page.',
-      twitterDescription: 'Upload a public document and get a QR page.',
+      title: 'Doc - Go QR',
+      ogTitle: 'Doc - Go QR',
+      twitterTitle: 'Doc - Go QR',
+      description: 'Upload a doc and get a QR page.',
+      ogDescription: 'Upload a doc and get a QR page.',
+      twitterDescription: 'Upload a doc and get a QR page.',
     },
   },
   url: withSeo('url', {

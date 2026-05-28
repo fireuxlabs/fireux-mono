@@ -91,6 +91,7 @@ import { computed } from '#imports'
 import { useRoute } from 'vue-router'
 import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
+import type { NavItem } from '../../../composables/fireux/app/nav.types'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
@@ -110,6 +111,17 @@ const normalizePath = (value: unknown) => {
   const path = String(value ?? '').trim() || '/'
   return path.length > 1 ? path.replace(/\/+$/, '') : path
 }
+const isHomeNavItem = (item: { key?: string; to?: string }) =>
+  item.key === 'home' || normalizePath(item.to) === '/'
+type HeaderNavItem = NavItem & { 'aria-label'?: string }
+const hideHomeLabel = (item: NavItem): HeaderNavItem =>
+  isHomeNavItem(item)
+    ? {
+        ...item,
+        label: '',
+        'aria-label': 'Home',
+      }
+    : item
 
 const desktopItems = computed(() =>
   Array.isArray(desktop.value)
@@ -117,11 +129,15 @@ const desktopItems = computed(() =>
         .filter(Boolean)
         .filter((item) => item.position !== 'bottom')
         .filter((item) => normalizePath(item.to) !== normalizePath(route.path))
+        .map(hideHomeLabel)
     : []
 )
 const mobileItems = computed(() =>
   Array.isArray(mobile.value)
-    ? mobile.value.filter(Boolean).filter((item) => item.position !== 'bottom')
+    ? mobile.value
+        .filter(Boolean)
+        .filter((item) => item.position !== 'bottom')
+        .map(hideHomeLabel)
     : []
 )
 

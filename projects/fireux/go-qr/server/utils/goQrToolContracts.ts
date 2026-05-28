@@ -38,7 +38,7 @@ export function docToolContract() {
     },
     tool: {
       id: 'doc',
-      name: 'Public doc',
+      name: 'Doc',
       upload_type: 'doc',
       accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
       max_file_size_mb: maxGoQrFileSizeMb,
@@ -46,7 +46,7 @@ export function docToolContract() {
       result: {
         target_path_pattern: '/doc/:slug',
         qr_path_pattern: '/doc/:slug/qr',
-        label: 'Public Doc',
+        label: 'Doc',
       },
     },
     endpoints: {
@@ -63,7 +63,7 @@ export function docToolContract() {
     },
     ui: {
       title: 'Upload a doc. Get a QR code.',
-      description: 'Turn a public doc into a shareable QR page.',
+      description: 'Turn a doc into a shareable QR page.',
       upload_label: 'Upload your doc',
       cta_label: 'Create QR code',
       loading_label: 'Creating QR doc...',

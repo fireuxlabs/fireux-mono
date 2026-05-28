@@ -204,6 +204,24 @@ export function publicFileUrl(slug: string) {
   return `/api/docs/${encodeURIComponent(slug)}/file`
 }
 
+function normalizeSiteUrl(input: unknown) {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`
+
+  try {
+    return new URL(withProtocol).origin
+  } catch {
+    return ''
+  }
+}
+
+function publicGoQrBaseUrl() {
+  const runtime = useRuntimeConfig()
+
+  return normalizeSiteUrl(runtime.public?.fireux?.siteUrl) || 'https://go-qr.web.app'
+}
+
 export function createGoQrRecord(input: {
   slug: string
   type: string
@@ -348,11 +366,17 @@ export async function createGoQrDocumentFromMultipart(
 
   await docRef.create(record)
 
+  const baseUrl = publicGoQrBaseUrl()
+  const path = `/doc/${encodeURIComponent(slug)}`
+  const qrPath = `${path}/qr`
+
   return {
     ok: true,
     slug,
-    path: `/doc/${encodeURIComponent(slug)}`,
-    qr_path: `/doc/${encodeURIComponent(slug)}/qr`,
+    path,
+    qr_path: qrPath,
+    url: `${baseUrl}${path}`,
+    qr_url: `${baseUrl}${qrPath}`,
     powered_by: goQrBrand,
   }
 }

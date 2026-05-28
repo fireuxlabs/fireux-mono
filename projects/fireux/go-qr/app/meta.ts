@@ -58,7 +58,7 @@ export const goQrLanguage = {
   },
   lists: {
     hero_bullets: [
-      'Public doc URLs',
+      'Doc URLs',
       'QR codes generated from each public doc link',
       'Simple doc pages for phones',
     ],
@@ -81,8 +81,8 @@ export const goQrLanguage = {
     },
     {
       slug: 'doc',
-      title: 'Public doc',
-      description: 'Upload a public doc, choose a short path, and get a QR page.',
+      title: 'Doc',
+      description: 'Upload a doc, choose a short path, and get a QR page.',
       icon: 'i-lucide-file-text',
       cta: {
         label: 'Create doc QR',

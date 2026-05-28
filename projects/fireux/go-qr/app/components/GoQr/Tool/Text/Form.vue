@@ -1,16 +1,5 @@
 <template>
-  <UCard variant="subtle">
-    <template #header>
-      <div class="space-y-1">
-        <h2 class="text-lg font-semibold text-highlighted">
-          {{ tool.ui.title }}
-        </h2>
-        <p class="text-sm leading-6 text-muted">
-          {{ tool.ui.description }}
-        </p>
-      </div>
-    </template>
-
+  <div class="space-y-4">
     <form class="space-y-4" @submit.prevent="createQr">
       <UFormField :label="tool.ui.text_label">
         <UTextarea
@@ -55,17 +44,18 @@
       </p>
     </form>
 
-    <template v-if="createdQrPath" #footer>
-      <div class="flex flex-wrap gap-2">
-        <UButton :to="createdPath" target="_blank" icon="i-lucide-external-link">
-          {{ tool.ui.open_target_label }}
-        </UButton>
-        <UButton :to="createdQrPath" target="_blank" icon="i-lucide-qr-code" variant="soft">
-          {{ tool.ui.open_qr_label }}
-        </UButton>
-      </div>
-    </template>
-  </UCard>
+    <div
+      v-if="createdQrPath"
+      class="flex flex-wrap gap-2 border-t border-default pt-4"
+    >
+      <UButton :to="createdPath" target="_blank" icon="i-lucide-external-link">
+        {{ tool.ui.open_target_label }}
+      </UButton>
+      <UButton :to="createdQrPath" target="_blank" icon="i-lucide-qr-code" variant="soft">
+        {{ tool.ui.open_qr_label }}
+      </UButton>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -150,7 +140,7 @@ async function createQr() {
   resetCreatedState()
 
   try {
-    const response = await $fetch<{ path?: string, qr_path?: string }>(props.tool.endpoints.create, {
+    const response = await $fetch<{ path?: string, qr_path?: string, url?: string, qr_url?: string }>(props.tool.endpoints.create, {
       method: 'POST',
       body: {
         slug: normalizedSlug.value,
@@ -160,8 +150,8 @@ async function createQr() {
       },
     })
 
-    createdPath.value = response.path || ''
-    createdQrPath.value = response.qr_path || ''
+    createdPath.value = response.url || response.path || ''
+    createdQrPath.value = response.qr_url || response.qr_path || ''
   } catch (error) {
     createError.value = error instanceof Error ? error.message : 'QR code could not be created.'
   } finally {

@@ -17,6 +17,7 @@
     :success-title="tool.ui.success_title"
     :open-target-label="tool.ui.open_target_label"
     :open-qr-label="tool.ui.open_qr_label"
+    :show-powered-by="false"
     navigate-on-success
   />
 </template>

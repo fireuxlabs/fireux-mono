@@ -1,5 +1,5 @@
 <template>
-  <div class="grid min-w-0 grid-cols-2 gap-4">
+  <div class="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
     <UCard
       v-for="solution in solutions"
       :key="solution.slug"

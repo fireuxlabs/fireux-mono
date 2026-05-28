@@ -43,7 +43,7 @@ export function textToolContract() {
     },
     ui: {
       title: 'Write text. Get a QR code.',
-      description: 'Turn a short message into a shareable QR page.',
+      description: 'Turn a short message into a shareable QR.',
       text_label: 'Message',
       text_placeholder: 'See you at table 4',
       cta_label: 'Generate QR code',

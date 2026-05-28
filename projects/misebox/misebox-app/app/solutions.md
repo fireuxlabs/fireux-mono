@@ -38,9 +38,9 @@ Restaurants need an online menu that is easier to maintain than a static webpage
 - [ ] Confirm dish-backed item names and descriptions appear.
 - [ ] Add clear QR or share action after public menu is ready.
 
-## qr-code-restaurant-menu
+## qr-menu
 
-Give guests a QR code that opens the current public restaurant menu.
+Upload a menu, choose a short path, and get a QR menu.
 
 Current state: Misebox owns the structured public menu route. Go QR can own lightweight QR generation when a menu only needs a scannable entry point.
 

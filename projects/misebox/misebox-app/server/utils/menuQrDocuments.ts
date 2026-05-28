@@ -178,7 +178,7 @@ export async function createMenuDocument(input: {
     doc_storage_path: input.docStoragePath,
     storage_owner: 'misebox',
     source_app: 'misebox',
-    display_label: 'Food Menu',
+    display_label: 'QR Menu',
     qr_centre_label: 'Menu',
     is_public: true,
     created_at: FieldValue.serverTimestamp(),

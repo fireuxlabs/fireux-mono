@@ -52,16 +52,16 @@ type GoQrToolContract = {
 
 const menuQrConsumerConfig = {
   resourceName: 'menu',
-  displayLabel: 'Food Menu',
+  displayLabel: 'QR Menu',
   qrCentreLabel: 'Menu',
   slugPlaceholder: 'my-restaurant-menu',
-  description: 'Create a scannable Food Menu QR page from a finished menu file.',
+  description: 'Upload a menu, choose a short path, and get a QR menu.',
   acceptedFileTypes: ['application/pdf', '.doc', '.docx'],
   uploadDescription: 'PDF, DOC, or DOCX. Max 10 MB.',
   storageOwner: 'misebox',
 }
 
-function fallbackPublicDocToolContract(providerBaseUrl: string): GoQrToolContract {
+function fallbackDocToolContract(providerBaseUrl: string): GoQrToolContract {
   return {
     ok: true,
     provider: {
@@ -70,8 +70,8 @@ function fallbackPublicDocToolContract(providerBaseUrl: string): GoQrToolContrac
       base_url: providerBaseUrl,
     },
     tool: {
-      id: 'public-doc',
-      name: 'Public doc',
+      id: 'doc',
+      name: 'Doc',
       upload_type: 'doc',
       accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
       max_file_size_mb: 10,
@@ -79,12 +79,12 @@ function fallbackPublicDocToolContract(providerBaseUrl: string): GoQrToolContrac
       result: {
         target_path_pattern: '/:slug',
         qr_path_pattern: '/:slug/qr',
-        label: 'Public Doc',
+        label: 'Doc',
       },
     },
     endpoints: {
-      availability: '/api/tools/public-doc/availability',
-      create: '/api/tools/public-doc/create',
+      availability: '/api/tools/doc/availability',
+      create: '/api/tools/doc/create',
       app_info: '/api/brand',
     },
     slug: {
@@ -96,7 +96,7 @@ function fallbackPublicDocToolContract(providerBaseUrl: string): GoQrToolContrac
     },
     ui: {
       title: 'Upload a doc. Get a QR code.',
-      description: 'Turn a public doc into a shareable QR page.',
+      description: 'Turn a doc into a shareable QR page.',
       upload_label: 'Upload your doc',
       cta_label: 'Create QR code',
       loading_label: 'Creating QR doc...',
@@ -118,7 +118,7 @@ function sentenceCase(value: string) {
 function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
   const resource = menuQrConsumerConfig.resourceName
   const resourceTitle = sentenceCase(resource)
-  const pathLabel = `${resourceTitle} URL`
+  const pathLabel = `${resourceTitle} path`
 
   return {
     ...contract,
@@ -149,12 +149,12 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
     },
     ui: {
       ...contract.ui,
-      title: `Upload a ${resource}. Get a QR code.`,
+      title: `Upload a ${resource}. Get a QR menu.`,
       description: menuQrConsumerConfig.description,
       upload_label: `Upload your ${resource}`,
-      cta_label: `Create ${resource} QR`,
-      loading_label: `Creating ${resource} QR...`,
-      success_title: `Your ${resource} QR is ready`,
+      cta_label: 'Create QR menu',
+      loading_label: 'Creating QR menu...',
+      success_title: 'Your QR menu is ready',
       open_target_label: `Open ${resource}`,
       open_qr_label: 'Open QR page',
     },
@@ -168,8 +168,8 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
 
 export default defineEventHandler(async () => {
   const goQrBaseUrl = goQrProviderBaseUrl()
-  const contract = await $fetch<GoQrToolContract>(`${goQrBaseUrl}/api/tools/public-doc`)
-    .catch(() => fallbackPublicDocToolContract(goQrBaseUrl))
+  const contract = await $fetch<GoQrToolContract>(`${goQrBaseUrl}/api/tools/doc`)
+    .catch(() => fallbackDocToolContract(goQrBaseUrl))
 
   return menuToolConfig(contract, goQrBaseUrl)
 })
