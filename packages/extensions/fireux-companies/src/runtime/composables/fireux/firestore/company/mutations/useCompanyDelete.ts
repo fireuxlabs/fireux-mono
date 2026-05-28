@@ -1,6 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-
-const COLLECTION_PATH = 'companies'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 
 export function useCompanyDelete() {
   const { deleteDocument } = useFirestoreManager()
@@ -11,7 +10,7 @@ export function useCompanyDelete() {
       throw new Error('[useCompanyDelete] companyId is required')
     }
 
-    await deleteDocument(COLLECTION_PATH, id)
+    await deleteDocument(CompanyStorage.collection, id)
   }
 
   return { deleteCompany }

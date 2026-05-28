@@ -1,4 +1,4 @@
-import type { Property } from '../../../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../../../models/property.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'
@@ -75,7 +75,7 @@ export function usePropertyInterface() {
 
     return {
       id,
-      to: slug ? `/properties/${encodeURIComponent(slug)}` : '',
+      to: slug ? `/${PropertyStorage.rootCollection}/${encodeURIComponent(slug)}` : '',
       title,
       subtitle,
       meta,

@@ -6,11 +6,12 @@ import {
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Property } from '../../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
   createTestPropertySimulation,
   getDemoPropertySimulations,
@@ -27,7 +28,7 @@ type AppPropertyOverlay = PropertyCollectionDoc & {
   team_ids?: string[]
 }
 
-const DEFAULT_COLLECTION_PATH = 'properties'
+const DEFAULT_COLLECTION_PATH = PropertyStorage.rootCollection
 
 export type PropertyCollectionFilterValue = string | number | null | undefined
 export type PropertyCollectionFilter = {
@@ -98,14 +99,14 @@ export function usePropertyCollection(
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     const q = fsq(
-      collection(db, 'apps', resolvedAppId.value, DEFAULT_COLLECTION_PATH),
+      collection(db, AppStorage.collection, resolvedAppId.value, PropertyStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppPropertyOverlay>
 
     return firestoreQuery<AppPropertyOverlay>(
       q,
-      `apps-${resolvedAppId.value}-${DEFAULT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
-      `apps/${resolvedAppId.value}/${DEFAULT_COLLECTION_PATH}`
+      `${AppStorage.collection}-${resolvedAppId.value}-${PropertyStorage.overlayCollection}-operator-${filterOperatorId.value}`,
+      `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.overlayCollection}`
     )
   })
   const allowedPropertyIds = computed(() =>

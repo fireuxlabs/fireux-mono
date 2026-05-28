@@ -1,6 +1,9 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
-import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
+import {
+  AgentStorage,
+  type Agent,
+} from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
  * useAgentUpdate
@@ -11,7 +14,7 @@ import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
  * Shared update surface for v1 scoped fields.
  */
 export function useAgentUpdate(profile?: ProfileRefs<Agent> | null) {
-  const base = useProfileUpdateBase<Agent>('agents', profile)
+  const base = useProfileUpdateBase<Agent>(AgentStorage.rootCollection, profile)
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   /**

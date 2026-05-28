@@ -3,6 +3,7 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 
 type Scope = 'core' | 'app'
@@ -83,7 +84,7 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
 
     const uid = await resolveUid(options.id)
     await appUpdate.updateDocument<TCore>(
-      `apps/${appId}/${collectionName}`,
+      `${AppStorage.collection}/${appId}/${collectionName}`,
       uid,
       pruneUndefined(patch)
     )

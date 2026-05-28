@@ -2,11 +2,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import { normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
+import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
 import { resolveKitchenChildCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
-  `${kitchenCollectionPath}/${kitchenId}/recipes`
+  `${kitchenCollectionPath}/${kitchenId}/${RecipeStorage.collection}`
 
 type UseRecipeCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -28,7 +28,7 @@ export function useRecipeCollection(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: 'recipes',
+      collectionName: RecipeStorage.collection,
       appId,
     })
   )

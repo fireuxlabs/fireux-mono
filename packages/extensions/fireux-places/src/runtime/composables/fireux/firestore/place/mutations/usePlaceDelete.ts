@@ -1,6 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-
-const COLLECTION_PATH = 'places'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 
 export function usePlaceDelete() {
   const { deleteDocument } = useFirestoreManager()
@@ -11,7 +10,7 @@ export function usePlaceDelete() {
       throw new Error('[usePlaceDelete] placeId is required')
     }
 
-    await deleteDocument(COLLECTION_PATH, id)
+    await deleteDocument(PlaceStorage.collection, id)
   }
 
   return { deletePlace }

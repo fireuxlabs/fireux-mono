@@ -1,10 +1,10 @@
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { ProductStorage } from '../../../../../models/product.model'
 
 export function useProductDelete() {
-  const { deleteDocument, getCollectionPath } = useFirestoreManager()
+  const { deleteDocument } = useFirestoreManager()
   const currentUser = useCurrentUser()
-  const collectionPath = getCollectionPath('products', false)
 
   async function deleteProduct(slug: string): Promise<boolean> {
     if (!slug) {
@@ -16,7 +16,7 @@ export function useProductDelete() {
     }
 
     console.log('🧩 [Stub] deleteProduct', { slug })
-    await deleteDocument(collectionPath, slug)
+    await deleteDocument(ProductStorage.collection, slug)
     return true
   }
 

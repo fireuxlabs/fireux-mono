@@ -4,6 +4,8 @@ import { createHash, createSign } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, join, resolve } from 'node:path'
+import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
+import { MenuStorage } from 'fireux-kitchens/runtime/models/menu.model'
 
 export type MenuTranslationCacheKeyInput = {
   fieldId: string
@@ -321,9 +323,9 @@ export function menuTranslationCacheDocRef(
   }
 ) {
   return db
-    .collection('kitchens')
+    .collection(KitchenStorage.rootCollection)
     .doc(input.kitchenId)
-    .collection('menus')
+    .collection(MenuStorage.collection)
     .doc(input.menuId)
     .collection(CACHE_COLLECTION)
     .doc(input.id)

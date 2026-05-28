@@ -102,7 +102,7 @@ export function useBlogDraftState() {
     socialImageData.value = ''
   }
 
-  function getBlogPostPayload(): BlogPostPayload {
+  function getBlogPostPayload(): BlogPostCreateInput {
     const ecosystemId = useFireUXConfig().ecosystem
     return {
       ...blogPost.value,

@@ -1,10 +1,11 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, watch } from 'vue'
 
 export function useCompanyCollection<
   T extends Record<string, any> = Record<string, any>,
->(collectionPath = 'companies') {
+>(collectionPath: string = CompanyStorage.collection) {
   const { firestoreFetchCollection } = useFirestoreManager()
 
   const path = computed(() => collectionPath)

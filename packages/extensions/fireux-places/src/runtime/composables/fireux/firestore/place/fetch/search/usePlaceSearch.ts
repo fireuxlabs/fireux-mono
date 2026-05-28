@@ -1,7 +1,7 @@
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
 import { ref, watch } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { BasePlace, PlaceImageShade, PlaceSource } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type BasePlace, type PlaceImageShade, type PlaceSource } from 'fireux-places/runtime/models/place.model'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
@@ -16,7 +16,7 @@ type UsePlaceSearchOptions = {
 export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
   const { prefixSearch } = useFirestoreSearch()
   const db = useFirestore()
-  const collectionName = 'places'
+  const collectionName = PlaceStorage.collection
 
   const query = ref('')
   const results = ref<PlaceSearchCell[]>([])

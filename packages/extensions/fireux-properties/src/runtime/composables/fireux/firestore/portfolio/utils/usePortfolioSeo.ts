@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Portfolio } from '../../../../../models/portfolio.model'
+import { PortfolioStorage, type Portfolio } from '../../../../../models/portfolio.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
@@ -28,7 +28,9 @@ export function usePortfolioSeo(portfolio: MaybeRefOrGetter<Partial<Portfolio> |
     title: computed(() => clean(entry.value?.name) || 'Portfolio'),
     description: computed(() => excerpt(entry.value?.tagline || entry.value?.strategy_label || entry.value?.notes || 'Portfolio details.')),
     image: computed(() => clean(entry.value?.image_url)),
-    path: computed(() => (id.value ? `/portfolios/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildPortfolioJsonLd(entry.value)),
   })

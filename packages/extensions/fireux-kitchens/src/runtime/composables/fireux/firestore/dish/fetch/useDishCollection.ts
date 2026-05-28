@@ -2,11 +2,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { normalizeDish, type Dish } from '../../../../../models/dish.model'
+import { DishStorage, normalizeDish, type Dish } from '../../../../../models/dish.model'
 import { resolveKitchenChildCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
-  `${kitchenCollectionPath}/${kitchenId}/dishes`
+  `${kitchenCollectionPath}/${kitchenId}/${DishStorage.collection}`
 
 type UseDishCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -28,7 +28,7 @@ export function useDishCollection(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: 'dishes',
+      collectionName: DishStorage.collection,
       appId,
     })
   )

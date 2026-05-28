@@ -11,7 +11,13 @@ import {
     readRuntimeIdentityFirestoreDatabaseId,
     useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { AppStorage } from '../../../../../../../models/core/app.model'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
+import {
+    AppUserStorage,
+    UserNotificationStorage,
+    UserStorage,
+} from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useFirestoreDelete } from '../../../../operations/useFirestoreDelete'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
@@ -58,15 +64,19 @@ export function useAppUserUpdate(user: UserRefs) {
       const { uid, appId } = requireContext()
       const role = makeAdmin ? 'admin' : 'user'
 
-      await appUpdate.updateDocument(`apps/${appId}/users`, uid, { role })
+      await appUpdate.updateDocument(
+        `${AppStorage.collection}/${appId}/${AppUserStorage.collection}`,
+        uid,
+        { role }
+      )
 
-      await appUpdate.updateDocument('apps', appId, {
+      await appUpdate.updateDocument(AppStorage.collection, appId, {
         admin_ids: makeAdmin
           ? (arrayUnion(uid) as unknown as string[])
           : (arrayRemove(uid) as unknown as string[]),
       })
 
-      await identityUpdate.updateDocument('users', uid, {
+      await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
         userOf: arrayUnion(appId) as unknown as string[],
         adminOf: makeAdmin
           ? (arrayUnion(appId) as unknown as string[])
@@ -75,25 +85,27 @@ export function useAppUserUpdate(user: UserRefs) {
     },
     setPremium: async (isPremium) => {
       const { uid, appId } = requireContext()
-      await appUpdate.updateDocument(`apps/${appId}/users`, uid, {
-        is_premium: Boolean(isPremium),
-      })
+      await appUpdate.updateDocument(
+        `${AppStorage.collection}/${appId}/${AppUserStorage.collection}`,
+        uid,
+        { is_premium: Boolean(isPremium) }
+      )
     },
     leave: async () => {
       const { uid, appId } = requireContext()
 
-      const appUserRef = doc(appDb, 'apps', appId, 'users', uid)
+      const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
       const appUserSnap = await getDoc(appUserRef)
       const existed = appUserSnap.exists()
 
-      await deleteDocument(`apps/${appId}/users`, uid)
+      await deleteDocument(`${AppStorage.collection}/${appId}/${AppUserStorage.collection}`, uid)
 
-      await appUpdate.updateDocument('apps', appId, {
+      await appUpdate.updateDocument(AppStorage.collection, appId, {
         admin_ids: arrayRemove(uid) as unknown as string[],
         ...(existed ? { 'derived.user_count': increment(-1) } : {}),
       })
 
-      await identityUpdate.updateDocument('users', uid, {
+      await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
         userOf: arrayRemove(appId) as unknown as string[],
         adminOf: arrayRemove(appId) as unknown as string[],
       })
@@ -110,7 +122,10 @@ export function useAppUserUpdate(user: UserRefs) {
         appId,
       })
 
-      await addDoc(collection(identityDb, 'users', uid, 'notifications'), notification)
+      await addDoc(
+        collection(identityDb, UserStorage.rootCollection, uid, UserNotificationStorage.collection),
+        notification
+      )
 
       return notification
     },

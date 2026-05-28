@@ -59,6 +59,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire';
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug';
 import { computed, ref } from 'vue';
+import { IngredientStorage } from '../../../../models/ingredient.model';
 import { useIngredientCreate } from '../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
 import { useKitchenIngredientSelection } from '../../../../composables/fireux/console/kitchen/operations/ingredients/mutations/useKitchenIngredientSelection';
 import {
@@ -114,7 +115,7 @@ const handleCreate = async () => {
 
   try {
     let selectedId = ingredientId
-    const rootSnap = await getDoc(doc(db, 'ingredients', ingredientId))
+    const rootSnap = await getDoc(doc(db, IngredientStorage.collection, ingredientId))
     if (!rootSnap.exists()) {
       const created = await createIngredient({ name })
       selectedId = created.id

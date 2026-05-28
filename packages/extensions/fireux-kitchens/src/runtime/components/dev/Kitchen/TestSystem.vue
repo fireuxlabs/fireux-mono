@@ -120,8 +120,15 @@ import {
   resolveTestKitchenSlug,
 } from '../../../composables/fireux/app/kitchens/testKitchenIdentity'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { DishStorage } from '../../../models/dish.model'
+import { IngredientStorage } from '../../../models/ingredient.model'
+import { MenuStorage } from '../../../models/menu.model'
+import { RecipeStorage } from '../../../models/recipe.model'
 import type { Kitchen } from '../../../models/kitchen.model'
-import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
+import {
+  KitchenModel as KitchenModelRuntime,
+  KitchenStorage,
+} from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevTestKitchenSystem' })
 
@@ -147,7 +154,7 @@ const { avatarSrc } = useUser()
 const { firestoreFetchCollection } = useFirestoreRead({
   databaseId: simulationDatabaseId,
 })
-const kitchensCollection = firestoreFetchCollection<Kitchen>('kitchens')
+const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.rootCollection)
 const { kitchens: hydratedKitchens } = useKitchenCollection({ source: 'test' })
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
@@ -198,11 +205,11 @@ const kitchensDriftCopyPayload = buildKitchensCopyPayload({
 })
 
 type KitchenCollectionName =
-  | 'ingredients'
+  | typeof IngredientStorage.collection
   | 'mise'
-  | 'recipes'
-  | 'dishes'
-  | 'menus'
+  | typeof RecipeStorage.collection
+  | typeof DishStorage.collection
+  | typeof MenuStorage.collection
   | 'stations'
   | 'team'
   | 'suppliers'
@@ -241,7 +248,7 @@ const syncCounts = computed(() => ({
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
-  `kitchens/${kitchenId}/${name}`
+  `${KitchenStorage.rootCollection}/${kitchenId}/${name}`
 
 const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: string) =>
   docs.map((doc) => ({
@@ -345,17 +352,17 @@ const syncDemoToTestKitchen = async () => {
   try {
     const kitchenDoc = buildTestKitchenDoc(kitchenId)
 
-    await setDocument<Kitchen>('kitchens', kitchenId, kitchenDoc, {
+    await setDocument<Kitchen>(KitchenStorage.rootCollection, kitchenId, kitchenDoc, {
       app: true,
       creator: true,
     })
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
-      ingredients: buildKitchenIngredientsForSync(),
+      [IngredientStorage.collection]: buildKitchenIngredientsForSync(),
       mise: withKitchenId(asDocs(demoKitchenScenario.menuStack.miseTasks), kitchenId),
-      recipes: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), kitchenId),
-      dishes: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), kitchenId),
-      menus: withKitchenId(asDocs(demoKitchenScenario.menuStack.menus), kitchenId),
+      [RecipeStorage.collection]: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), kitchenId),
+      [DishStorage.collection]: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), kitchenId),
+      [MenuStorage.collection]: withKitchenId(asDocs(demoKitchenScenario.menuStack.menus), kitchenId),
       stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), kitchenId),
       team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), kitchenId),
       suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), kitchenId),
@@ -371,11 +378,11 @@ const syncDemoToTestKitchen = async () => {
     let totalPruned = 0
 
     for (const name of [
-      'ingredients',
+      IngredientStorage.collection,
       'mise',
-      'recipes',
-      'dishes',
-      'menus',
+      RecipeStorage.collection,
+      DishStorage.collection,
+      MenuStorage.collection,
       'stations',
       'team',
       'suppliers',

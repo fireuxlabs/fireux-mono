@@ -13,7 +13,7 @@ import {
   resolveTestKitchenShortAddress,
   resolveTestKitchenSlug,
 } from '../../../app/kitchens/testKitchenIdentity'
-import type { Kitchen } from '../../../../../models/kitchen.model'
+import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
 
 type KitchenTestCreateInput = {
   id?: string
@@ -61,11 +61,11 @@ export function useKitchenTestCreate() {
       throw new Error('Test kitchen id is required')
     }
 
-    const ref = doc(simulationDb, 'kitchens', testId)
+    const ref = doc(simulationDb, KitchenStorage.rootCollection, testId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
       const existingImageUrl = normalizeString(snap.data()?.image_url)
-      await updateDocument<Kitchen>('kitchens', testId, {
+      await updateDocument<Kitchen>(KitchenStorage.rootCollection, testId, {
         name,
         slug: resolveTestKitchenSlug(currentUser.value?.displayName, uid.value),
         short_address: resolveTestKitchenShortAddress(),
@@ -91,7 +91,7 @@ export function useKitchenTestCreate() {
       can_write?: boolean
       is_test_kitchen?: boolean
     }>(
-      'kitchens',
+      KitchenStorage.rootCollection,
       testId,
       {
         place_id: testId,

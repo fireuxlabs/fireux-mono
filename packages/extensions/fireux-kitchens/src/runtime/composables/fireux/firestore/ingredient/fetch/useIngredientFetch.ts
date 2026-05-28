@@ -1,7 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Ingredient } from '../../../../../models/ingredient.model'
-
-const GLOBAL_COLLECTION_PATH = 'ingredients'
+import { IngredientStorage, type Ingredient } from '../../../../../models/ingredient.model'
 
 export function useIngredientFetch() {
   const { firestoreFetchDoc } = useFirestoreRead()
@@ -11,7 +9,7 @@ export function useIngredientFetch() {
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
     return firestoreFetchDoc<Ingredient>(
-      GLOBAL_COLLECTION_PATH,
+      IngredientStorage.collection,
       resolvedIngredientId
     )
   }

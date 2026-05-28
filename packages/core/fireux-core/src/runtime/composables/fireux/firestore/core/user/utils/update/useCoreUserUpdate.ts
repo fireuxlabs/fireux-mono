@@ -6,6 +6,10 @@ import {
 import type {
     User,
 } from '../../../../../../../models/core/user.model'
+import {
+  UserNotificationStorage,
+  UserStorage,
+} from '../../../../../../../models/core/user.model'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
@@ -47,7 +51,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   }
 
   const updateCore = (data: Record<string, unknown>) =>
-    updateDocument<User>('users', requireCoreId(), data as Partial<User>)
+    updateDocument<User>(UserStorage.rootCollection, requireCoreId(), data as Partial<User>)
 
   const formatAndValidate = <T>(
     formatter: {
@@ -85,7 +89,7 @@ export function useCoreUserUpdate(user: UserRefs) {
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
       const extension = avatarFileExtension(source)
-      const path = `users/${id}/avatar/${Date.now()}.${extension}`
+      const path = `${UserStorage.rootCollection}/${id}/avatar/${Date.now()}.${extension}`
       const url = await uploadImage(path, source)
       await updateCore({ avatar: url })
       return url
@@ -132,7 +136,10 @@ export function useCoreUserUpdate(user: UserRefs) {
         scope: 'ecosystem',
       })
 
-      await addDoc(collection(db, 'users', id, 'notifications'), notification)
+      await addDoc(
+        collection(db, UserStorage.rootCollection, id, UserNotificationStorage.collection),
+        notification
+      )
       return notification
     },
   }

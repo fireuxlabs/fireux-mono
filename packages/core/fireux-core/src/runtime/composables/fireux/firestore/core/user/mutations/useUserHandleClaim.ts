@@ -12,6 +12,7 @@ import {
     readRuntimeIdentityFirestoreDatabaseId,
     useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { UserStorage } from '../../../../../../models/core/user.model'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 
 type ClaimHandleResult = {
@@ -35,7 +36,7 @@ export function useUserHandleClaim() {
     const nextHandle = validation.handle
 
     const duplicateQuery = fsq(
-      collection(db, 'users'),
+      collection(db, UserStorage.rootCollection),
       where('handle', '==', nextHandle),
       fslimit(2)
     )
@@ -48,7 +49,7 @@ export function useUserHandleClaim() {
     }
 
     const result = await runTransaction(db, async (transaction) => {
-      const userRef = doc(db, 'users', normalizedUid)
+      const userRef = doc(db, UserStorage.rootCollection, normalizedUid)
       const userSnap = await transaction.get(userRef)
 
       if (!userSnap.exists()) {

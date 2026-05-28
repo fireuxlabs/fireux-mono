@@ -20,7 +20,7 @@ export function useKitchenUpdate() {
   const resolveSlugUpdate = async (kitchenId: string, value: unknown) => {
     const validation = validateSlug(value, {
       label: 'Kitchen slug',
-      namespace: 'kitchens',
+      namespace: KitchenStorage.rootCollection,
       reservedScope: 'root',
       maxLength: 80,
     })

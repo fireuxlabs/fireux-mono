@@ -6,6 +6,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
+  RecipeStorage,
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
@@ -109,7 +110,7 @@ export function useRecipeCreate(
     const recipeId = normalizeSlug(name)
     if (!recipeId) throw new Error('Unable to resolve recipe id')
 
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/recipes`
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${RecipeStorage.collection}`
     const recipeRef = doc(db, collectionPath, recipeId)
     const recipeSnap = await getDoc(recipeRef)
     if (recipeSnap.exists()) {

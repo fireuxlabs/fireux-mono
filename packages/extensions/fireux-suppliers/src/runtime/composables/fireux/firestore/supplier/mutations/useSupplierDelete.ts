@@ -1,6 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   AppSupplierStorage,
   SupplierStorage,
@@ -37,7 +38,7 @@ export function useSupplierDelete() {
       scope === 'app' || scope === 'both' || (hasAppScope && scope === 'auto')
     if (deleteAppScope) {
       if (!appId) throw new Error('Missing appId for app-scoped delete')
-      await deleteDocument(`apps/${appId}/${AppSupplierStorage.collection}`, id)
+      await deleteDocument(`${AppStorage.collection}/${appId}/${AppSupplierStorage.collection}`, id)
     }
 
     let effectiveScope: DeleteScope = scope

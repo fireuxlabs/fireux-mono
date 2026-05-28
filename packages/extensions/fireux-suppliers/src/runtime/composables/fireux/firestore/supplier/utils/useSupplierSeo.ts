@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Supplier } from '../../../../../models/supplier/Supplier.model'
+import { SupplierStorage, type Supplier } from '../../../../../models/supplier/Supplier.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
@@ -30,7 +30,9 @@ export function useSupplierSeo(supplier: MaybeRefOrGetter<Partial<Supplier> | nu
     title: computed(() => clean(entry.value?.supplier_organization_name) || 'Supplier'),
     description: computed(() => excerpt(entry.value?.supplier_headline || entry.value?.summary || entry.value?.supplier_bio || 'Supplier details.')),
     image: computed(() => clean(entry.value?.supplier_image)),
-    path: computed(() => (id.value ? `/suppliers/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${SupplierStorage.rootCollection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildSupplierJsonLd(entry.value)),
   })

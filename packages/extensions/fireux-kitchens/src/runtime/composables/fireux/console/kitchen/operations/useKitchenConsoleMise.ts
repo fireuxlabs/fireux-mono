@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { useKitchenMiseCollection } from './mise/fetch/useKitchenMiseCollection'
 import { useKitchenMiseToggleDone } from './mise/mutations/useKitchenMiseToggleDone'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
@@ -38,7 +39,7 @@ export function useKitchenConsoleMise() {
     () =>
       canWrite.value &&
       selectedMode.value === 'test' &&
-      rootCollection.value === 'kitchens'
+      rootCollection.value === KitchenStorage.rootCollection
   )
   const isDone = (task: KitchenMiseTask) => {
     const source = task as Record<string, unknown>

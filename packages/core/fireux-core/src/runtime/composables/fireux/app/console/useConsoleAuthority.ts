@@ -1,4 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore'
+import { AppStorage } from '../../../../models/core/app.model'
 import { useFirestore } from '../../firestore/vuefire'
 import { normalizeConsoleString as normalizeString, type ConsoleMode } from './useConsole'
 
@@ -86,7 +87,7 @@ export function useConsoleAuthority() {
               `Console ${operation} denied: missing app id for ${family}.`
             )
           }
-          return doc(db, 'apps', normalizedAppId, family, normalizedTargetId)
+          return doc(db, AppStorage.collection, normalizedAppId, family, normalizedTargetId)
         })()
 
     const snapshot = await getDoc(targetRef)

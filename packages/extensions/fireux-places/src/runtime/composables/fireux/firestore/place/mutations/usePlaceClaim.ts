@@ -1,6 +1,6 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 
 export function usePlaceClaim() {
   const { updateDocument } = useFirestoreManager()
@@ -11,7 +11,7 @@ export function usePlaceClaim() {
     }
 
     const { uid } = await requireUid()
-    await updateDocument<Place>('places', placeId, {
+    await updateDocument<Place>(PlaceStorage.collection, placeId, {
       claimed_by: uid,
     } as Partial<Place>)
 

@@ -105,7 +105,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import { useKitchenChildCollection } from '../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import {
@@ -113,8 +113,15 @@ import {
   resolveKitchenConsoleCollectionPath,
 } from '../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { DishStorage } from '../../../models/dish.model'
+import { IngredientStorage } from '../../../models/ingredient.model'
+import { MenuStorage } from '../../../models/menu.model'
+import { RecipeStorage } from '../../../models/recipe.model'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
-import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
+import {
+  KitchenModel as KitchenModelRuntime,
+  KitchenStorage,
+} from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevKitchenSystem' })
 
@@ -122,8 +129,8 @@ const kitchenModelRuntime = KitchenModelRuntime
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const { appId } = useFireUXConfig()
-const kitchensCollection = firestoreFetchCollection<Kitchen>('kitchens')
-const placesCollection = firestoreFetchCollection<Place>('places')
+const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.rootCollection)
+const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
 const { kitchens: hydratedKitchens } = useKitchenCollection()
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
@@ -209,7 +216,7 @@ const filteredKitchensDriftPayload = buildKitchensDriftPayload({
 
 const kitchensDriftCopyPayload = buildKitchensCopyPayload({
   modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
-  itemsKey: 'kitchens',
+  itemsKey: KitchenStorage.rootCollection,
   items: filteredKitchensDriftPayload,
   total: computed(() => kitchensCollectionValue.value.length),
 })
@@ -250,24 +257,24 @@ const selectedHydratedKitchen = computed(() => hydratedById.value.get(selectedKi
 const selectedPlace = computed(() => placeById.value.get(selectedKitchenId.value) ?? null)
 const selectedKitchenApp = computed(() => kitchenAppById.value.get(selectedKitchenId.value) ?? null)
 
-const rootMenus = useKitchenChildCollection<Record<string, unknown>>('menus', selectedKitchenId, {
+const rootMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMenus = useKitchenChildCollection<Record<string, unknown>>('menus', selectedKitchenId, {
+const overlayMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootDishes = useKitchenChildCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
+const rootDishes = useKitchenChildCollection<Record<string, unknown>>(DishStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayDishes = useKitchenChildCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
+const overlayDishes = useKitchenChildCollection<Record<string, unknown>>(DishStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootRecipes = useKitchenChildCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
+const rootRecipes = useKitchenChildCollection<Record<string, unknown>>(RecipeStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayRecipes = useKitchenChildCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
+const overlayRecipes = useKitchenChildCollection<Record<string, unknown>>(RecipeStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
@@ -278,10 +285,10 @@ const overlayMise = useKitchenChildCollection<Record<string, unknown>>('mise', s
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootIngredients = useKitchenChildCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
+const rootIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayIngredients = useKitchenChildCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
+const overlayIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 

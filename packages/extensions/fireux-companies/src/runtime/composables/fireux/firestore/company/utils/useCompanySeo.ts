@@ -1,5 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import type { CompanyHydrated } from '../fetch/types'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -30,7 +31,9 @@ export function useCompanySeo(company: MaybeRefOrGetter<Partial<CompanyHydrated>
     title: computed(() => clean(entry.value?.name) || 'Company'),
     description: computed(() => excerpt((entry.value as any)?.about || (entry.value as any)?.brand_tagline || entry.value?.formatted_address || (entry.value as any)?.website || 'Company details.')),
     image: computed(() => clean((entry.value as any)?.image_url || (entry.value as any)?.cover_image)),
-    path: computed(() => (id.value ? `/companies/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${CompanyStorage.collection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildCompanyJsonLd(entry.value)),
   })

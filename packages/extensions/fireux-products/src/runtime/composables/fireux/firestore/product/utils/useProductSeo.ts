@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Product } from '../../../../../models/product.model'
+import { ProductStorage, type Product } from '../../../../../models/product.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
@@ -41,7 +41,9 @@ export function useProductSeo(product: MaybeRefOrGetter<Partial<Product> | null 
     title: computed(() => clean(entry.value?.name) || 'Product'),
     description: computed(() => excerpt(entry.value?.tagline || entry.value?.description || entry.value?.content || 'Product details.')),
     image: computed(() => clean(entry.value?.main_image || entry.value?.images?.[0]?.url)),
-    path: computed(() => (slug.value ? `/products/${encodeURIComponent(slug.value)}` : '')),
+    path: computed(() =>
+      slug.value ? `/${ProductStorage.collection}/${encodeURIComponent(slug.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildProductJsonLd(entry.value)),
   })

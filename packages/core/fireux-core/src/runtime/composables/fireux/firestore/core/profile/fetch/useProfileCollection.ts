@@ -11,7 +11,8 @@ import type {
     ProfileBase,
     ProfileConfig,
 } from '../../../../../../models/core/profile.model'
-import type { User } from '../../../../../../models/core/user.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
+import { UserStorage, type User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useAppUserCollection } from '../../user/fetch/useAppUserCollection'
@@ -46,7 +47,7 @@ export function useProfileCollection<
   const localProfiles =
     appId
       ? useCollection<Partial<TProfile>>(
-          collection(appDb, 'apps', appId, config.collectionName) as any,
+          collection(appDb, AppStorage.collection, appId, config.collectionName) as any,
           idFieldOptions as any
         )
       : null
@@ -58,7 +59,7 @@ export function useProfileCollection<
     if (!id) return undefined
     if (!coreUserRefs.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<User>('users', id)
+        firestoreFetchDoc<User>(UserStorage.rootCollection, id)
       ) as Ref<User | undefined>
       coreUserRefs.set(id, ref)
     }

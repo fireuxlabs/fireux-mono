@@ -6,6 +6,7 @@ import { useCompanyUpdate } from './mutations/useCompanyUpdate'
 import { useCompanySeo } from './utils/useCompanySeo'
 import { useCompanyComputed } from './utils/view/useCompanyComputed'
 import { useCompanyInterface } from './utils/view/useCompanyInterface'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 
 export {
   useCompanyCollection,
@@ -37,7 +38,7 @@ export function useCompany<
   T extends Record<string, any> = Record<string, any>,
 >(options: UseCompanyOptions = {}) {
   return {
-    ...useCompanyCollection<T>(options.collectionPath ?? 'companies'),
+    ...useCompanyCollection<T>(options.collectionPath ?? CompanyStorage.collection),
     ...useCompanyFetch(),
     ...useCompanyCreate(),
     ...useCompanyUpdate(),

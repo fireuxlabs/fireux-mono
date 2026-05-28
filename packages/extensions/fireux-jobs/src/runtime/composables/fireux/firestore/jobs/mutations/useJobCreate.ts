@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { ref } from 'vue'
-import type { JobCreateInput } from '../../../../../models/job.model'
+import { JobStorage, type JobCreateInput } from '../../../../../models/job.model'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'
 
 export const JobPayload = {
@@ -63,7 +63,7 @@ export function useJobCreate() {
       visibility: payload.visibility || 'ecosystem',
     } satisfies JobCreateInput
 
-    const id = await createDocument<JobCreateInput>('jobs', data, {
+    const id = await createDocument<JobCreateInput>(JobStorage.collection, data, {
       app: true,
       creator: true,
     })

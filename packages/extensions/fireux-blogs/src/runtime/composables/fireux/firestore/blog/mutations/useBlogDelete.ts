@@ -1,4 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { BlogPostStorage } from '../../../../../models/blogPost.model'
 
 export function useBlogDelete() {
   const { deleteDocument } = useFirestoreManager()
@@ -9,7 +10,7 @@ export function useBlogDelete() {
     }
 
     try {
-      await deleteDocument('blogs', slug)
+      await deleteDocument(BlogPostStorage.collection, slug)
       if (import.meta.dev) {
         console.log('✅ Blog post deleted successfully')
       }

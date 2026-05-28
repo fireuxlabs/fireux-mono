@@ -1,15 +1,17 @@
-import type { FirebaseProduct } from '../../../../../models/product.model'
+import {
+  ProductStorage,
+  type FirebaseProduct,
+} from '../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useProductFetch() {
-  const { firestoreFetchDoc, getCollectionPath } = useFirestoreManager()
-  const collectionPath = getCollectionPath('products', false)
+  const { firestoreFetchDoc } = useFirestoreManager()
 
   const fetchProduct = (id: string) =>
-    firestoreFetchDoc<FirebaseProduct>(collectionPath, id)
+    firestoreFetchDoc<FirebaseProduct>(ProductStorage.collection, id)
 
   const fetchProductBySlug = (slug: string) =>
-    firestoreFetchDoc<FirebaseProduct>(collectionPath, slug)
+    firestoreFetchDoc<FirebaseProduct>(ProductStorage.collection, slug)
 
   return { fetchProduct, fetchProductBySlug }
 }

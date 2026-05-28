@@ -1,5 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { Company, CompanyCreateInput } from 'fireux-companies/runtime/models/company.model'
+import { CompanyStorage, type Company, type CompanyCreateInput } from 'fireux-companies/runtime/models/company.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 
 export const CompanyPayload = {
@@ -23,7 +23,7 @@ export function useCompanyCreate() {
     const { place, ...payload } = input
     void place
 
-    await setDocument<Company>('companies', payload.id, payload as Company, {
+    await setDocument<Company>(CompanyStorage.collection, payload.id, payload as Company, {
       creator: false,
     })
 

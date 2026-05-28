@@ -1,9 +1,12 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { FirebaseProduct } from '../../../../../models/product.model'
+import {
+  ProductStorage,
+  type FirebaseProduct,
+} from '../../../../../models/product.model'
 
 export function useProductUpdate() {
-  const base = useDocumentUpdateBase<FirebaseProduct>('products', {
+  const base = useDocumentUpdateBase<FirebaseProduct>(ProductStorage.collection, {
     resolvePath: true,
     appScoped: false,
   })
@@ -21,7 +24,7 @@ export function useProductUpdate() {
       updates.slug === undefined ? productId : String(updates.slug || '').trim()
     const slugValidation = validatePublicSlug(requestedSlug, {
       label: 'Product slug',
-      namespace: 'products',
+      namespace: ProductStorage.collection,
       reservedScope: 'entity',
     })
 

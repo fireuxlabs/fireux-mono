@@ -1,12 +1,10 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-
-const COLLECTION_PATH = 'places'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 
 export function usePlaceFetch() {
   const { firestoreFetchDoc } = useFirestoreRead()
 
-  const place = (id: string) => firestoreFetchDoc<Place>(COLLECTION_PATH, id)
+  const place = (id: string) => firestoreFetchDoc<Place>(PlaceStorage.collection, id)
 
   return { place }
 }

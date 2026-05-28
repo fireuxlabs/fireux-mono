@@ -10,6 +10,11 @@ import type {
     AppUser,
     User,
 } from '../../../../../../models/core/user.model'
+import {
+  AppUserStorage,
+  UserStorage,
+} from '../../../../../../models/core/user.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
 function asStringArray(value: unknown): string[] {
@@ -99,7 +104,7 @@ export function useUserFetch(
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   const coreDoc = computed(() =>
-    uid.value ? (doc(identityDb, 'users', uid.value) as any) : null
+    uid.value ? (doc(identityDb, UserStorage.rootCollection, uid.value) as any) : null
   )
 
   /**
@@ -112,7 +117,7 @@ export function useUserFetch(
    */
   const appDoc = computed(() =>
     uid.value && appId
-      ? (doc(appDb, 'apps', appId, 'users', uid.value) as any)
+      ? (doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid.value) as any)
       : null
   )
 
@@ -122,10 +127,10 @@ export function useUserFetch(
   const corePending = coreState.pending
   const appUserRef = appState.data
   const appPending = appState.pending
-  guardDocumentPromise(coreState as any, `users/${uid.value ?? ''}`)
+  guardDocumentPromise(coreState as any, `${UserStorage.rootCollection}/${uid.value ?? ''}`)
   guardDocumentPromise(
     appState as any,
-    `apps/${appId}/users/${uid.value ?? ''}`
+    `${AppStorage.collection}/${appId}/${AppUserStorage.collection}/${uid.value ?? ''}`
   )
 
   const coreUser = computed<User | null | undefined>(() => {

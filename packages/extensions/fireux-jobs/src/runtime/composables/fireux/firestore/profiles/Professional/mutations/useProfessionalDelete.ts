@@ -3,7 +3,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import {
+  ProfessionalStorage,
+  type Professional,
+} from '../../../../../../models/profiles/Professional/Professional.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
@@ -37,7 +41,7 @@ export function useProfessionalDelete(
       scope === 'both' ||
       (!hasAppScope && scope === 'auto')
     ) {
-      await deleteAtPath('professionals', id)
+      await deleteAtPath(ProfessionalStorage.rootCollection, id)
     }
 
     const deleteAppScope =
@@ -45,7 +49,10 @@ export function useProfessionalDelete(
 
     if (deleteAppScope) {
       if (!appId) throw new Error('Missing appId for app-scoped delete')
-      await deleteAtPath(`apps/${appId}/professionals`, id)
+      await deleteAtPath(
+        `${AppStorage.collection}/${appId}/${ProfessionalStorage.overlayCollection}`,
+        id
+      )
     }
 
     let effectiveScope: DeleteScope = scope

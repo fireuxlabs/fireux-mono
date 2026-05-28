@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { AppStorage } from '../../../../models/core/app.model'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { normalizeSlug } from '../../../../utils/slug/normalizeSlug'
 import { normalizePublicImgAsset } from '../../../../../utils/brandAssets'
@@ -81,7 +82,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
   const runtime = useRuntimeConfig()
   const appDoc = await getRuntimeFirestore()
-    .collection('apps')
+    .collection(AppStorage.collection)
     .doc(cfg.appId)
     .get()
     .catch(() => null)

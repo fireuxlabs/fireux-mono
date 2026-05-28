@@ -1,4 +1,3 @@
-import { $fetch } from 'ofetch'
 import { defineEventHandler } from 'h3'
 import { goQrProviderBaseUrl } from '../../utils/goQrProvider'
 import { menuQrPublicBaseUrl, reservedMenuQrSlugs } from '../../utils/menuQrDocuments'

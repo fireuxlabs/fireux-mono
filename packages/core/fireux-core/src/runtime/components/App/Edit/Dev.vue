@@ -190,7 +190,7 @@ import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { AppModel } from '../../../models/core/app.model'
-import type { User } from '../../../models/core/user.model'
+import { UserStorage, type User } from '../../../models/core/user.model'
 
 const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
 const app = computed(() => props.app)
@@ -222,7 +222,7 @@ watch(
     await Promise.all(
       ids.map(async (id) => {
         try {
-          const snap = await getDoc(doc(identityDb, 'users', id) as any)
+          const snap = await getDoc(doc(identityDb, UserStorage.rootCollection, id) as any)
           next.set(id, snap.exists() ? (snap.data() as User) : null)
         } catch {
           next.set(id, null)

@@ -9,6 +9,7 @@ import type {
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 
 export namespace PlaceCard {
   export type Card = {
@@ -82,7 +83,7 @@ export function usePlaceInterface() {
 
     return {
       id,
-      to: id ? `/places/${encodeURIComponent(id)}` : '',
+      to: id ? `/${PlaceStorage.collection}/${encodeURIComponent(id)}` : '',
       title: name,
       subtitle: shortAddress || address,
       badges: [],

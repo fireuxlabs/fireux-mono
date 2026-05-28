@@ -2,6 +2,7 @@ import type {
   FirebaseProduct,
   Price,
 } from '../../../../../models/product.model'
+import { ProductStorage } from '../../../../../models/product.model'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -45,7 +46,7 @@ export function useProductFormatting() {
   > {
     const validation = validatePublicSlug(title, {
       label: 'Product slug',
-      namespace: 'products',
+      namespace: ProductStorage.collection,
       reservedScope: 'entity',
     })
 
@@ -138,7 +139,7 @@ export function useProductFormatting() {
   ): Promise<string | null> {
     try {
       const timestamp = Date.now()
-      const path = `products/${productSlug}/${timestamp}-${file.name}`
+      const path = `${ProductStorage.collection}/${productSlug}/${timestamp}-${file.name}`
       return await uploadImage(path, file)
     } catch (error) {
       console.error('[fireux] failed to upload product image', error)

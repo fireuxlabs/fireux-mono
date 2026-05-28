@@ -1,11 +1,11 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type { Company } from 'fireux-companies/runtime/models/company.model'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import type { CompanyHydrated } from './types'
 import { computed } from 'vue'
-
-const COLLECTION_PATH = 'companies'
 
 /**
  * Canon fetch helpers for Company (collection + single doc).
@@ -15,8 +15,8 @@ export function useCompanyFetch() {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
   // ✅ raw Firestore sources
-  const companiesCollection = firestoreFetchCollection<Company>(COLLECTION_PATH)
-  const placesCollection = firestoreFetchCollection<Place>('places')
+  const companiesCollection = firestoreFetchCollection<Company>(CompanyStorage.collection)
+  const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
 
   // ✅ canonical hydration helpers (rename at call-site)
   const hydrate = hydratePlaceCollection
@@ -35,8 +35,8 @@ export function useCompanyFetch() {
 
   // ✅ hydrated single doc (UI-ready)
   const company = (id: string) => {
-    const companyDoc = firestoreFetchDoc<Company>(COLLECTION_PATH, id)
-    const placeDoc = firestoreFetchDoc<Place>('places', id)
+    const companyDoc = firestoreFetchDoc<Company>(CompanyStorage.collection, id)
+    const placeDoc = firestoreFetchDoc<Place>(PlaceStorage.collection, id)
 
     return hydrateDoc(
       computed(() => companyDoc.value),

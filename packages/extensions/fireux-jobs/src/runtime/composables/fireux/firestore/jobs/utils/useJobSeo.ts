@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Job } from '../../../../../models/job.model'
+import { JobStorage, type Job } from '../../../../../models/job.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
@@ -29,7 +29,9 @@ export function useJobSeo(job: MaybeRefOrGetter<Partial<Job> | null | undefined>
   return useSeo({
     title: computed(() => clean(entry.value?.title) || 'Job'),
     description: computed(() => excerpt(entry.value?.description || 'Job details.')),
-    path: computed(() => (id.value ? `/jobs/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${JobStorage.collection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildJobJsonLd(entry.value)),
   })

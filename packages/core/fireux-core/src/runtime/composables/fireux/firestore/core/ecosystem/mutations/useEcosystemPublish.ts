@@ -1,4 +1,5 @@
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import { assertPublicSlug } from '../../../../../../utils/slug/validatePublicSlug'
 
 export type EcosystemPublishInput = {
@@ -16,7 +17,7 @@ export function useEcosystemPublish() {
     const id = clean(input.id)
     const slug = await assertPublicSlug(input.slug, {
       label: 'Ecosystem slug',
-      namespace: 'ecosystems',
+      namespace: EcosystemStorage.collection,
       reservedScope: 'entity',
     })
     const name = input.name === undefined ? undefined : clean(input.name)
@@ -28,9 +29,9 @@ export function useEcosystemPublish() {
     }
 
     return publish({
-      collectionPath: 'ecosystems',
+      collectionPath: EcosystemStorage.collection,
       id,
-      routePath: `/ecosystems/${encodeURIComponent(slug)}`,
+      routePath: `/${EcosystemStorage.collection}/${encodeURIComponent(slug)}`,
       patch: {
         slug,
         status: 'active',

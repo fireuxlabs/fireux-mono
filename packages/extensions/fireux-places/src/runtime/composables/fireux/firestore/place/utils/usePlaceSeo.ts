@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Place } from '../../../../../models/place.model'
+import { PlaceStorage, type Place } from '../../../../../models/place.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
@@ -31,7 +31,9 @@ export function usePlaceSeo(place: MaybeRefOrGetter<Partial<Place> | null | unde
     title: computed(() => clean(entry.value?.name) || 'Place'),
     description: computed(() => excerpt(entry.value?.about || entry.value?.brand_tagline || entry.value?.formatted_address || 'Place details.')),
     image: computed(() => clean(entry.value?.image_url || entry.value?.cover_image)),
-    path: computed(() => (id.value ? `/places/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${PlaceStorage.collection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildPlaceJsonLd(entry.value)),
   })

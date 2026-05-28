@@ -21,6 +21,11 @@ import type {
   AppUser,
   User,
 } from '../../../../../../models/core/user.model'
+import {
+  AppUserStorage,
+  UserStorage,
+} from '../../../../../../models/core/user.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
@@ -60,7 +65,7 @@ export async function createCoreUserDocument(
 ): Promise<CreateCoreResult> {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const db = useFirestore(identityDatabaseId)
-  const ref = doc(db, 'users', uid)
+  const ref = doc(db, UserStorage.rootCollection, uid)
   const snapshot = await getDoc(ref)
 
   if (snapshot.exists()) {
@@ -98,7 +103,7 @@ export async function createCoreUserDocument(
       const { updateDocument } = useFirestoreUpdate({
         databaseId: identityDatabaseId,
       })
-      await updateDocument<User>('users', uid, patch as any)
+      await updateDocument<User>(UserStorage.rootCollection, uid, patch as any)
     }
 
     return {
@@ -137,7 +142,7 @@ export async function createCoreUserDocument(
   const { setDocument } = useFirestoreCreate({
     databaseId: identityDatabaseId,
   })
-  await setDocument<User>('users', uid, payload as unknown as User)
+  await setDocument<User>(UserStorage.rootCollection, uid, payload as unknown as User)
 
   return { created: true, displayName, handle }
 }
@@ -153,10 +158,10 @@ export async function createUserAppMembership(
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUsersRef = collection(appDb, 'apps', appId, 'users')
-  const appUserRef = doc(appDb, 'apps', appId, 'users', uid)
-  const appRef = doc(appDb, 'apps', appId)
-  const userRef = doc(identityDb, 'users', uid)
+  const appUsersRef = collection(appDb, AppStorage.collection, appId, AppUserStorage.collection)
+  const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
+  const appRef = doc(appDb, AppStorage.collection, appId)
+  const userRef = doc(identityDb, UserStorage.rootCollection, uid)
 
   const [appUserSnap, appSnap, userSnap] = await Promise.all([
     getDoc(appUserRef),
@@ -302,9 +307,9 @@ export async function removeUserAppMembership(
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUserRef = doc(appDb, 'apps', appId, 'users', uid)
-  const appRef = doc(appDb, 'apps', appId)
-  const userRef = doc(identityDb, 'users', uid)
+  const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
+  const appRef = doc(appDb, AppStorage.collection, appId)
+  const userRef = doc(identityDb, UserStorage.rootCollection, uid)
 
   const [appUserSnap, userSnap] = await Promise.all([
     getDoc(appUserRef),

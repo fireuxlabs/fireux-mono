@@ -40,6 +40,7 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useCompanyCreate } from '../../../composables/fireux/firestore/company/mutations/useCompanyCreate'
+import { CompanyStorage } from '../../../models/company.model'
 
 const { createCompany } = useCompanyCreate()
 const db = useFirestore()
@@ -57,7 +58,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const id = payload.placeId
     const place = payload.place
 
-    const existingSnap = await getDoc(doc(db, 'companies', id))
+    const existingSnap = await getDoc(doc(db, CompanyStorage.collection, id))
     if (existingSnap.exists()) {
       existingId.value = id
       return

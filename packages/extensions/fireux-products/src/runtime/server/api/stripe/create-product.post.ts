@@ -8,6 +8,7 @@ import {
 } from 'h3'
 import { createRequire } from 'node:module'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
+import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
@@ -61,7 +62,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const appId = String(product.source_app_id || product.appId || 'app').trim()
     const slugValidation = validatePublicSlug(product.slug, {
       label: 'Product slug',
-      namespace: 'products',
+      namespace: ProductStorage.collection,
       reservedScope: 'entity',
     })
     if (!slugValidation.isValid) {
@@ -163,7 +164,7 @@ export default defineEventHandler(async (event: H3Event) => {
         }
 
         const priceKey = [
-          'prices',
+          ProductPriceStorage.collection,
           baseIdempotency,
           index,
           String(price.unit_amount ?? ''),

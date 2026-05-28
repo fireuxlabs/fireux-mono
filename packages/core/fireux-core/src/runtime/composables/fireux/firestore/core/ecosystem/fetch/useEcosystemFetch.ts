@@ -1,5 +1,6 @@
 import { doc } from 'firebase/firestore'
 import { computed, ref } from 'vue'
+import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import {
   useDocument,
@@ -21,7 +22,9 @@ export function useEcosystemFetch(id: string | { value: string }) {
   )
 
   const docRef = computed(() =>
-    ecosystemId.value ? (doc(db, 'ecosystems', ecosystemId.value) as any) : null
+    ecosystemId.value
+      ? (doc(db, EcosystemStorage.collection, ecosystemId.value) as any)
+      : null
   )
 
   const docState =

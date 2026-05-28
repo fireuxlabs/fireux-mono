@@ -1,5 +1,8 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { FirebaseProduct } from '../../../../../../models/product.model'
+import {
+  ProductStorage,
+  type FirebaseProduct,
+} from '../../../../../../models/product.model'
 
 export namespace ProductCard {
   export type Card = {
@@ -88,7 +91,7 @@ export function useProductInterface() {
             productType === 'saas_app' ||
             productType === 'template'
           ? `/solutions/${id}`
-          : `/products/${id}`
+          : `/${ProductStorage.collection}/${id}`
 
     return {
       id,

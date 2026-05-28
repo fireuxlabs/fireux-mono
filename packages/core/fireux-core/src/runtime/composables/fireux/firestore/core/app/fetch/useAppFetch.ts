@@ -1,7 +1,7 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
-import type { App } from '../../../../../../models/core/app.model'
+import { AppStorage, type App } from '../../../../../../models/core/app.model'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -54,7 +54,7 @@ export function useAppFetch(
       ? options.collectionPath.value
       : options.collectionPath
     const normalized = String(raw || '').trim()
-    return normalized || 'apps'
+    return normalized || AppStorage.collection
   })
 
   const docRef = computed(() =>

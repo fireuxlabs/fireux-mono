@@ -1,4 +1,14 @@
+import {
+  createError,
+  defineEventHandler,
+  getQuery,
+  setResponseHeaders,
+} from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import {
+  TranslationDocumentStorage,
+  TranslationStorage,
+} from 'fireux-sproochli/runtime/models/translation.model'
 
 type PublishedTranslation = {
   code: string
@@ -55,13 +65,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const db = getRuntimeFirestore('sproochli')
-  const docRef = db.collection('translation_documents').doc(
+  const docRef = db.collection(TranslationDocumentStorage.collection).doc(
     documentKey(sourceApp, documentType, documentSlug)
   )
   const docSnap = await docRef.get()
   const docData = (docSnap.exists ? docSnap.data() : {}) as TranslationDocData
   const translationsSnap = docSnap.exists
-    ? await docRef.collection('translations').get()
+    ? await docRef.collection(TranslationStorage.collection).get()
     : null
 
   const availableLanguages = translationsSnap

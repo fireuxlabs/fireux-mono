@@ -3,7 +3,7 @@ import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/fires
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
 import type { Professional } from '../../../../../../../models/profiles/Professional/Professional.model'
@@ -97,7 +97,7 @@ export function useProfessionalProfileView(
         const next = new Map<string, Ref<Place | undefined>>()
         for (const id of ids) {
           const existing = placeDocRefs.value.get(id)
-          next.set(id, existing ?? firestoreFetchDoc<Place>('places', id))
+          next.set(id, existing ?? firestoreFetchDoc<Place>(PlaceStorage.collection, id))
         }
         placeDocRefs.value = next
       },

@@ -9,6 +9,8 @@ import {
   where,
 } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
@@ -72,14 +74,20 @@ export function useConsoleCreate() {
     const currentAppId = normalizeId(appId)
     if (!currentUid || !currentAppId) return
 
-    const appUserRef = doc(db, 'apps', currentAppId, 'users', currentUid)
+    const appUserRef = doc(
+      db,
+      AppStorage.collection,
+      currentAppId,
+      AppUserStorage.collection,
+      currentUid
+    )
     const appUserSnap = await getDoc(appUserRef)
     const isPremium = appUserSnap.exists() && appUserSnap.get('is_premium') === true
     if (isPremium) return
 
     const collectionName = consoleCollectionByType[type]
     const overlaysQuery = query(
-      collection(db, 'apps', currentAppId, collectionName),
+      collection(db, AppStorage.collection, currentAppId, collectionName),
       where('operator_ids', 'array-contains', currentUid)
     )
     const overlaysSnap = await getDocs(overlaysQuery)
@@ -155,14 +163,20 @@ export function useConsoleCreate() {
     }
 
     const resolvedOverlayId = normalizeId(options.overlayId) || id
-    const overlayRef = doc(db, 'apps', currentAppId, collectionName, resolvedOverlayId)
+    const overlayRef = doc(
+      db,
+      AppStorage.collection,
+      currentAppId,
+      collectionName,
+      resolvedOverlayId
+    )
     const overlaySnap = await getDoc(overlayRef)
 
     if (!overlaySnap.exists()) {
       await assertCanCreateAdditionalConsole(options.type, resolvedOverlayId)
       const overlayPayload = await options.createOverlay(id)
       await setDocument<TOverlay>(
-        `apps/${currentAppId}/${collectionName}`,
+        `${AppStorage.collection}/${currentAppId}/${collectionName}`,
         resolvedOverlayId,
         overlayPayload,
         {

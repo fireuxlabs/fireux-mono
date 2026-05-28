@@ -1,6 +1,9 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
-import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
+import {
+  ChefStorage,
+  type Chef,
+} from '../../../../../../models/profiles/Chef/Chef.model'
 
 /**
  * useChefUpdate
@@ -11,7 +14,7 @@ import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
  * Shared update surface for v1 scoped fields.
  */
 export function useChefUpdate(profile?: ProfileRefs<Chef> | null) {
-  const base = useProfileUpdateBase<Chef>('chefs', profile)
+  const base = useProfileUpdateBase<Chef>(ChefStorage.rootCollection, profile)
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   /**

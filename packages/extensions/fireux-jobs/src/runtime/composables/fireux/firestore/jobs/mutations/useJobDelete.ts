@@ -1,4 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { JobStorage } from '../../../../../models/job.model'
 
 export function useJobDelete() {
   const { deleteDocument } = useFirestoreManager()
@@ -8,7 +9,7 @@ export function useJobDelete() {
     if (!id) {
       throw new Error('[useJobDelete] jobId is required')
     }
-    await deleteDocument('jobs', id)
+    await deleteDocument(JobStorage.collection, id)
   }
 
   return { deleteJob }

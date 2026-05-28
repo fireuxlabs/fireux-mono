@@ -168,7 +168,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
         collectionPath: normalizedCollectionPath.value,
         ids: normalizedIds.value,
       }),
-      async ({ collectionPath, ids }) => {
+      async ({ collectionPath, ids }: { collectionPath: string; ids: string[] }) => {
         const currentRequestId = ++requestId
 
         if (!collectionPath || !ids.length || import.meta.server) {
@@ -181,7 +181,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
 
         try {
           const snapshots = await Promise.all(
-            ids.map((id) => getDoc(doc(resolveDb(), collectionPath, id)))
+            ids.map((id: string) => getDoc(doc(resolveDb(), collectionPath, id)))
           )
 
           if (currentRequestId !== requestId) return

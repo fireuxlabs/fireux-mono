@@ -2,7 +2,7 @@
 // flag
 
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type { Place, PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place, type PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 
 type UpdateCtx = { id: string | null | undefined }
 
@@ -44,19 +44,19 @@ export function usePlaceUpdate() {
   async function updateName(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const name = sanitize(value) || 'Untitled place'
-    await updateDocument<Place>('places', id, { name } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { name } as Partial<Place>)
   }
 
   async function updateShortName(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const short_name = sanitizeNullable(value)
-    await updateDocument<Place>('places', id, { short_name } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { short_name } as Partial<Place>)
   }
 
   async function updateFormattedAddress(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const formatted_address = sanitizeNullable(value)
-    await updateDocument<Place>('places', id, {
+    await updateDocument<Place>(PlaceStorage.collection, id, {
       formatted_address,
     } as Partial<Place>)
   }
@@ -64,25 +64,25 @@ export function usePlaceUpdate() {
   async function updateShortAddress(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const short_address = sanitizeNullable(value)
-    await updateDocument<Place>('places', id, { short_address } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { short_address } as Partial<Place>)
   }
 
   async function updateSearchTerm(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const search_term = sanitizeNullable(value).toLowerCase()
-    await updateDocument<Place>('places', id, { search_term } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { search_term } as Partial<Place>)
   }
 
   async function updateLat(value: string | number, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const lat = toNumber(value)
-    await updateDocument<Place>('places', id, { lat } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { lat } as Partial<Place>)
   }
 
   async function updateLng(value: string | number, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const lng = toNumber(value)
-    await updateDocument<Place>('places', id, { lng } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { lng } as Partial<Place>)
   }
 
   /**
@@ -92,13 +92,13 @@ export function usePlaceUpdate() {
   async function updatePlaceImage(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const image_url = sanitizeNullable(value)
-    await updateDocument<Place>('places', id, { image_url } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { image_url } as Partial<Place>)
   }
 
   async function updateImageShade(value: PlaceImageShade | string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const image_shade = toShade(value)
-    await updateDocument<Place>('places', id, { image_shade } as Partial<Place>)
+    await updateDocument<Place>(PlaceStorage.collection, id, { image_shade } as Partial<Place>)
   }
 
   return {

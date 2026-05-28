@@ -6,6 +6,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
+  DishStorage,
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/dish.model'
@@ -108,7 +109,7 @@ export function useDishCreate(
     const dishId = normalizeSlug(name)
     if (!dishId) throw new Error('Unable to resolve dish id')
 
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/dishes`
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`
     const dishRef = doc(db, collectionPath, dishId)
     const dishSnap = await getDoc(dishRef)
     if (dishSnap.exists()) {

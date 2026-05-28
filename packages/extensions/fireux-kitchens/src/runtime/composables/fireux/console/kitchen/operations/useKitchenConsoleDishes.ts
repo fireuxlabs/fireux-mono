@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useDishCollection } from '../../../firestore/dish/fetch/useDishCollection'
-import type { Dish } from '../../../../../models/dish.model'
+import { DishStorage, type Dish } from '../../../../../models/dish.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -36,9 +36,9 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     useDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<Dish>({
-    collectionName: 'dishes',
+    collectionName: DishStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

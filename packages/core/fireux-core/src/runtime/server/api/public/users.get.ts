@@ -16,6 +16,7 @@ import type {
   PublicUserDto,
 } from '../../utils/public-projection/public-dto.types'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
+import { UserStorage } from '../../../models/core/user.model'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -87,7 +88,7 @@ function mapUserDocToDto(
 
 async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
   const snap = await getRuntimeIdentityFirestore()
-    .collection('users')
+    .collection(UserStorage.rootCollection)
     .orderBy('handle')
     .limit(limit)
     .get()

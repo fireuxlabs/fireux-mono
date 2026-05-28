@@ -1,9 +1,10 @@
 import { computed } from 'vue'
+import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type EcosystemCollectionDoc = EcosystemSurface
-const DEFAULT_COLLECTION_PATH = 'ecosystems'
+const DEFAULT_COLLECTION_PATH = EcosystemStorage.collection
 
 export function useEcosystemCollection(
   collectionPath: string | { value?: string } = DEFAULT_COLLECTION_PATH

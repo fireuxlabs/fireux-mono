@@ -1,6 +1,8 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { AppStorage } from '../../../../../../models/core/app.model'
+import { AppUserStorage } from '../../../../../../models/core/user.model'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   createCoreUserDocument,
@@ -47,8 +49,8 @@ export function useUserCreate() {
     try {
       const db = useFirestore()
       const [appUserSnap, appSnap] = await Promise.all([
-        getDoc(doc(db, 'apps', appId, 'users', uid)),
-        getDoc(doc(db, 'apps', appId)),
+        getDoc(doc(db, AppStorage.collection, appId, AppUserStorage.collection, uid)),
+        getDoc(doc(db, AppStorage.collection, appId)),
       ])
       appExists = appSnap.exists()
 

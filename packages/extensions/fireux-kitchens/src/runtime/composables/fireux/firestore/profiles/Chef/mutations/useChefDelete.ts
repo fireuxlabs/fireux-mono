@@ -3,7 +3,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import {
+  ChefStorage,
+  type Chef,
+} from '../../../../../../models/profiles/Chef/Chef.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
@@ -30,14 +34,14 @@ export function useChefDelete(_profile: ProfileRefs<Chef>) {
     const shouldDeleteCore =
       scope === 'core' || scope === 'both' || (!hasAppScope && scope === 'auto')
     if (shouldDeleteCore) {
-      await deleteAtPath('chefs', id)
+      await deleteAtPath(ChefStorage.rootCollection, id)
     }
 
     const deleteAppScope =
       scope === 'app' || scope === 'both' || (hasAppScope && scope === 'auto')
     if (deleteAppScope) {
       if (!appId) throw new Error('Missing appId for app-scoped delete')
-      await deleteAtPath(`apps/${appId}/chefs`, id)
+      await deleteAtPath(`${AppStorage.collection}/${appId}/${ChefStorage.overlayCollection}`, id)
     }
 
     let effectiveScope: DeleteScope = scope

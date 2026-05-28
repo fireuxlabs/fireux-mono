@@ -8,6 +8,8 @@ import {
   createProfileSeed,
   type ProfileConfig,
 } from '../../../../../../models/core/profile.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
+import { UserStorage } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
@@ -72,8 +74,8 @@ export function useProfileCreate(config: ProfileConfig) {
     }
 
     if (appId) {
-      const appCollection = `apps/${appId}/${config.collectionName}`
-      const appRef = doc(appDb, 'apps', appId, config.collectionName, uid)
+      const appCollection = `${AppStorage.collection}/${appId}/${config.collectionName}`
+      const appRef = doc(appDb, AppStorage.collection, appId, config.collectionName, uid)
       const appSnapshot = await getDoc(appRef)
       if (!appSnapshot.exists()) {
         const seed = createAppProfileSeed()
@@ -102,7 +104,7 @@ export function useProfileCreate(config: ProfileConfig) {
 
     if (config.id) {
       try {
-        await identityUpdate.updateDocument('users', uid, {
+        await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
           profiles: arrayUnion(config.id) as unknown as string[],
         })
       } catch (error) {

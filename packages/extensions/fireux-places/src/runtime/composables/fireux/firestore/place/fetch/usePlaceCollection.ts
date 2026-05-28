@@ -1,12 +1,10 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-
-const COLLECTION_PATH = 'places'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 
 export function usePlaceCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<Place>(COLLECTION_PATH)
+  const source = firestoreFetchCollection<Place>(PlaceStorage.collection)
 
   const collection = computed<Place[]>(() => source.value ?? [])
   const count = computed(() => collection.value.length)

@@ -1,5 +1,8 @@
 import { doc, getDoc } from 'firebase/firestore'
-import type { AppCreateInput } from 'fireux-core/runtime/models/core/app.model'
+import {
+  AppStorage,
+  type AppCreateInput,
+} from 'fireux-core/runtime/models/core/app.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeSlug, normalizeString } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
@@ -29,7 +32,9 @@ export function useAppCreate(options: AppCreateOptions = {}) {
   const { updateDocument } = useFirestoreUpdate()
   const { createProjectDoc } = useProjectBootstrapCreate()
   const { createEcosystem } = useEcosystemCreate()
-  const collectionPath = normalizeString(options.collectionPath || 'apps') || 'apps'
+  const collectionPath =
+    normalizeString(options.collectionPath || AppStorage.collection) ||
+    AppStorage.collection
 
   async function createApp(input?: AppCreateInput): Promise<AppCreateResult> {
     const fireux = useFireUXConfig()

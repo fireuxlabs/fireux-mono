@@ -6,6 +6,7 @@ import {
   readBody,
   type H3Event,
 } from 'h3'
+import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 import { getProductsFirestore } from '../../utils/getAdmin'
 
@@ -86,14 +87,15 @@ async function findCheckoutPriceMatch(
   product: Record<string, any>,
   priceId: string
 ): Promise<CheckoutPriceMatch | null> {
-  const priceRef = db.doc(`products/${productId}/prices/${priceId}`)
+  const pricesPath = `${ProductStorage.collection}/${productId}/${ProductPriceStorage.collection}`
+  const priceRef = db.doc(`${pricesPath}/${priceId}`)
   const priceSnap = await priceRef.get()
   if (priceSnap.exists) {
     return priceSnap.data() as CheckoutPriceMatch
   }
 
   const providerPriceSnap = await db
-    .collection(`products/${productId}/prices`)
+    .collection(pricesPath)
     .where('provider_price_id', '==', priceId)
     .limit(2)
     .get()
@@ -158,7 +160,7 @@ async function assertCheckoutProductAndPrice(input: {
   }
 
   const db = getProductsFirestore()
-  const productSnap = await db.doc(`products/${input.productId}`).get()
+  const productSnap = await db.doc(`${ProductStorage.collection}/${input.productId}`).get()
   if (!productSnap.exists) {
     throw createError({
       statusCode: 404,

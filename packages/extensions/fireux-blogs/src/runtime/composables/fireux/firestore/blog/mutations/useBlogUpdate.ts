@@ -1,6 +1,9 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { BlogPost } from '../../../../../models/blogPost.model'
+import {
+  BlogPostStorage,
+  type BlogPost,
+} from '../../../../../models/blogPost.model'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -38,7 +41,7 @@ export function useBlogUpdate() {
       updates.slug === undefined ? updates : { ...updates, slug: blogPostId }
     ) as Partial<BlogPost>
 
-    await updateDocument('blogs', blogPostId, nextUpdates)
+    await updateDocument(BlogPostStorage.collection, blogPostId, nextUpdates)
     if (import.meta.dev) {
       console.log(`✅ Blog post updated successfully: ${blogPostId}`)
     }

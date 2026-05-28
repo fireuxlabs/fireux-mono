@@ -3,7 +3,11 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import {
+  AgentStorage,
+  type Agent,
+} from '../../../../../../models/profiles/Agent/Agent.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
@@ -35,7 +39,7 @@ export function useAgentDelete(_profile: ProfileRefs<Agent>) {
       scope === 'both' ||
       (!hasAppScope && scope === 'auto')
     ) {
-      await deleteAtPath('agents', id)
+      await deleteAtPath(AgentStorage.rootCollection, id)
     }
 
     const deleteAppScope =
@@ -43,7 +47,7 @@ export function useAgentDelete(_profile: ProfileRefs<Agent>) {
 
     if (deleteAppScope) {
       if (!appId) throw new Error('Missing appId for app-scoped delete')
-      await deleteAtPath(`apps/${appId}/agents`, id)
+      await deleteAtPath(`${AppStorage.collection}/${appId}/${AgentStorage.overlayCollection}`, id)
     }
 
     let effectiveScope: DeleteScope = scope

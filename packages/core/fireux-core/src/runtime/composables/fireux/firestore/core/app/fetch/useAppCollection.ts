@@ -1,15 +1,18 @@
 import { computed } from 'vue'
-import type { App } from '../../../../../../models/core/app.model'
+import { AppStorage, type App } from '../../../../../../models/core/app.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type AppCollectionDoc = Partial<App> & { id?: string }
 
-export function useAppCollection(collectionPath: string | { value?: string } = 'apps') {
+export function useAppCollection(
+  collectionPath: string | { value?: string } = AppStorage.collection
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const path =
     typeof collectionPath === 'string'
       ? collectionPath
-      : String(collectionPath?.value || 'apps').trim() || 'apps'
+      : String(collectionPath?.value || AppStorage.collection).trim() ||
+        AppStorage.collection
   const source = firestoreFetchCollection<AppCollectionDoc>(path)
   const apps = computed(() =>
     (source.value ?? []).filter((app) => String((app as any)?.status || '') !== 'retired')

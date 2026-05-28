@@ -177,7 +177,9 @@ import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/fire
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
-import type { Place, PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
+import { PlaceStorage, type Place, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 
@@ -240,7 +242,7 @@ if (import.meta.client) {
       const next = new Map<string, Ref<Place | undefined>>()
       for (const id of ids) {
         const existing = placeDocRefs.value.get(id)
-        next.set(id, existing ?? firestoreFetchDoc<Place>('places', id))
+        next.set(id, existing ?? firestoreFetchDoc<Place>(PlaceStorage.collection, id))
       }
       placeDocRefs.value = next
     },
@@ -298,8 +300,8 @@ async function ensureCollectionRecord(
   placeId: string,
   place: PlaceUpsertInput
 ) {
-  if (collection === 'kitchens') {
-    const ref = doc(db, 'kitchens', placeId)
+  if (collection === KitchenStorage.rootCollection) {
+    const ref = doc(db, KitchenStorage.rootCollection, placeId)
     const snap = await getDoc(ref)
     if (!snap.exists()) {
       await createKitchen({
@@ -313,8 +315,8 @@ async function ensureCollectionRecord(
     return
   }
 
-  if (collection === 'companies') {
-    const ref = doc(db, 'companies', placeId)
+  if (collection === CompanyStorage.collection) {
+    const ref = doc(db, CompanyStorage.collection, placeId)
     const snap = await getDoc(ref)
     if (!snap.exists()) {
       await createCompany({ id: placeId, place })

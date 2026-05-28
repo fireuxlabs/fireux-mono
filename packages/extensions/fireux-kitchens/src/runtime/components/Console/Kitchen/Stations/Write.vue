@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenConsoleStations } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleStations'
 import { useKitchenStationCreate } from '../../../../composables/fireux/console/kitchen/operations/station/mutations/useKitchenStationCreate'
 
@@ -56,7 +57,7 @@ const canCreateStation = computed(
   () =>
     canWrite.value &&
     selectedMode.value === 'test' &&
-    rootCollection.value === 'kitchens'
+    rootCollection.value === KitchenStorage.rootCollection
 )
 const nextSortOrder = computed(() => {
   const orders = stations.value

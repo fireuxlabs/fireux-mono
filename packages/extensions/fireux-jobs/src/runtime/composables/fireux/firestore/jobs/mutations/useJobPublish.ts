@@ -1,4 +1,5 @@
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { JobStorage } from '../../../../../models/job.model'
 
 export type JobPublishInput = {
   id: string
@@ -20,9 +21,9 @@ export function useJobPublish() {
     }
 
     return publish({
-      collectionPath: 'jobs',
+      collectionPath: JobStorage.collection,
       id,
-      routePath: `/jobs/${encodeURIComponent(id)}`,
+      routePath: `/${JobStorage.collection}/${encodeURIComponent(id)}`,
       patch: {
         visibility: 'public',
       },

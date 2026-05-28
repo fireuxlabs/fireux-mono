@@ -10,6 +10,7 @@ import {
 import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Firestore } from 'firebase/firestore'
+import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useRuntimeConfig } from '#imports'
 
@@ -18,7 +19,7 @@ function normalizeString(value: unknown) {
 }
 
 async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) {
-  const ecosystemCollection = collection(db, 'ecosystems')
+  const ecosystemCollection = collection(db, EcosystemStorage.collection)
   return doc(ecosystemCollection, ecosystemId)
 }
 

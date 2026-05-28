@@ -2,6 +2,8 @@ import { useRuntimeConfig } from '#imports'
 import { timingSafeEqual } from 'node:crypto'
 import { createError, getHeader, type H3Event } from 'h3'
 import { getFirestore } from 'firebase-admin/firestore'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { getProductsAdmin } from './getAdmin'
 
 function firstString(...values: unknown[]): string {
@@ -74,7 +76,9 @@ async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
       ? getFirestore(admin.app(), databaseId)
       : admin.firestore()
 
-    const appUserSnap = await db.doc(`apps/${appId}/users/${uid}`).get()
+    const appUserSnap = await db
+      .doc(`${AppStorage.collection}/${appId}/${AppUserStorage.collection}/${uid}`)
+      .get()
     const appUserData = appUserSnap.data() || {}
 
     return (

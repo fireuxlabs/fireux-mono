@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useRecipeCollection } from '../../../firestore/recipe/fetch/useRecipeCollection'
-import type { Recipe } from '../../../../../models/recipe.model'
+import { RecipeStorage, type Recipe } from '../../../../../models/recipe.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -28,9 +28,9 @@ export function useKitchenConsoleRecipes() {
     useRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<Recipe>({
-    collectionName: 'recipes',
+    collectionName: RecipeStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

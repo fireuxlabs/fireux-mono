@@ -1,6 +1,7 @@
 import { useFireUXConfig } from '../../../app/FireUXConfig'
 import { useAppFetch } from './fetch/useAppFetch'
 import { useAppCreate } from './mutations/useAppCreate'
+import { useAppDelete } from './mutations/useAppDelete'
 import { useAppUpdate } from './mutations/useAppUpdate'
 import { useAppComputed } from './utils/view/useAppComputed'
 import { useAppInterface } from './utils/view/useAppInterface'
@@ -30,5 +31,6 @@ export function useApp() {
     ...useAppInterface(app),
     ...useAppCreate(),
     ...useAppUpdate(app),
+    ...useAppDelete(),
   }
 }

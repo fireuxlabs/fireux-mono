@@ -1,6 +1,7 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import type { BasePlace } from 'fireux-places/runtime/models/place.model'
 import type { PlaceCard } from './usePlaceInterface'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'
@@ -214,7 +215,7 @@ function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
 
   return {
     id,
-    to: `/places/${encodeURIComponent(id)}`,
+    to: `/${PlaceStorage.collection}/${encodeURIComponent(id)}`,
 
     title: (place as any).title ?? name,
     subtitle: (place as any).subtitle ?? formattedAddress,

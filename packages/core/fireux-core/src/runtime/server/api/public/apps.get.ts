@@ -1,5 +1,6 @@
 import { createError, defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { AppStorage } from '../../../models/core/app.model'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const db = getRuntimeFirestore()
-  const snap = await db.collection('apps').where('ecosystem', '==', ecosystem).get()
+  const snap = await db.collection(AppStorage.collection).where('ecosystem', '==', ecosystem).get()
 
   const apps = snap.docs
     .filter((doc) => asString(doc.data()?.status) !== 'retired')

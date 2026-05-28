@@ -1,5 +1,5 @@
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -107,7 +107,7 @@ export function useKitchenFetch(
       placeSource.value =
         !shouldHydrate || nextSource !== 'live' || !resolvedPlaceId
           ? null
-          : liveRead.firestoreFetchDoc<Place>('places', resolvedPlaceId)
+          : liveRead.firestoreFetchDoc<Place>(PlaceStorage.collection, resolvedPlaceId)
     },
     { immediate: true }
   )

@@ -4,7 +4,10 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+import {
+  ProfessionalStorage,
+  type Professional,
+} from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
   EducationItem,
@@ -33,7 +36,10 @@ const normalizePlaceId = (value?: unknown) => {
 }
 
 export function useProfessionalUpdate(profile?: ProfileRefs<Professional> | null) {
-  const base = useProfileUpdateBase<Professional>('professionals', profile)
+  const base = useProfileUpdateBase<Professional>(
+    ProfessionalStorage.rootCollection,
+    profile
+  )
   const { uploadImage } = useImageStorage()
 
   const updateCoreProfile = async (

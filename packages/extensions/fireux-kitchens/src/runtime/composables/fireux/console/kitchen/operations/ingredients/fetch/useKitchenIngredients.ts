@@ -10,14 +10,14 @@ import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
-import type {
-  Ingredient,
-  KitchenIngredient,
+import {
+  IngredientStorage,
+  type Ingredient,
+  type KitchenIngredient,
 } from '../../../../../../../models/ingredient.model'
 
-const GLOBAL_COLLECTION_PATH = 'ingredients'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/ingredients`
+  `${basePath}/${kitchenId}/${IngredientStorage.collection}`
 
 type UseKitchenIngredientsOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -47,7 +47,7 @@ export function useKitchenIngredients(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: 'ingredients',
+      collectionName: IngredientStorage.collection,
       appId,
     })
   )
@@ -82,7 +82,7 @@ export function useKitchenIngredients(
     ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
     : (kitchenBinding as any).data as Ref<KitchenIngredient[] | undefined>
 
-  const globalIngredients = firestoreFetchCollection<Ingredient>(GLOBAL_COLLECTION_PATH)
+  const globalIngredients = firestoreFetchCollection<Ingredient>(IngredientStorage.collection)
 
   const ingredientById = computed(() => {
     const map = new Map<string, Ingredient>()

@@ -6,6 +6,7 @@ import {
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -90,14 +91,14 @@ export function useSupplierCollection(
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     const q = fsq(
-      collection(db, 'apps', resolvedAppId.value, DEFAULT_COLLECTION_PATH),
+      collection(db, AppStorage.collection, resolvedAppId.value, SupplierStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppSupplierOverlay>
 
     return firestoreQuery<AppSupplierOverlay>(
       q,
-      `apps-${resolvedAppId.value}-${DEFAULT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
-      `apps/${resolvedAppId.value}/${DEFAULT_COLLECTION_PATH}`
+      `${AppStorage.collection}-${resolvedAppId.value}-${SupplierStorage.overlayCollection}-operator-${filterOperatorId.value}`,
+      `${AppStorage.collection}/${resolvedAppId.value}/${SupplierStorage.overlayCollection}`
     )
   })
   const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {

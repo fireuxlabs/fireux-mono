@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
 import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -64,7 +65,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
   const id = payload.placeId
   const place = payload.place
 
-  const existingSnap = await getDoc(doc(db, 'companies', id))
+  const existingSnap = await getDoc(doc(db, CompanyStorage.collection, id))
   if (!existingSnap.exists()) {
     await createCompany({ id, place, website: '' })
   }

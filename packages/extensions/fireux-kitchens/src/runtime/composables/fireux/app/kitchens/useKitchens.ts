@@ -7,6 +7,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import type { KitchenCollectionSource } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenPublicAccess } from './useKitchenPublicAccess'
 
@@ -65,7 +66,7 @@ export function useKitchens() {
 
       try {
         const q = fsq(
-          collection(resolveSimulationDb(), 'kitchens'),
+          collection(resolveSimulationDb(), KitchenStorage.rootCollection),
           where('simulation_kind', '==', 'test')
         )
         const snap = await getDocs(q)

@@ -1,5 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import type { EcosystemSurface } from './view/useEcosystemInterface'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -33,7 +34,11 @@ export function useEcosystemSeo(
     title: computed(() => clean(entry.value?.name) || 'Ecosystem'),
     description: computed(() => excerpt(entry.value?.description || 'FireUX ecosystem.')),
     image: computed(() => clean(entry.value?.image_url)),
-    path: computed(() => (slug.value ? `/ecosystems/${encodeURIComponent(slug.value)}` : '')),
+    path: computed(() =>
+      slug.value
+        ? `/${EcosystemStorage.collection}/${encodeURIComponent(slug.value)}`
+        : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildEcosystemJsonLd(entry.value)),
   })

@@ -88,8 +88,13 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import type { AppModel } from '../../models/core/app.model'
-import type { AppUser, User } from '../../models/core/user.model'
+import { AppStorage, type AppModel } from '../../models/core/app.model'
+import {
+  AppUserStorage,
+  UserStorage,
+  type AppUser,
+  type User,
+} from '../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{ app?: AppModel | null; apps?: AppModel[] | null }>(),
@@ -171,7 +176,9 @@ const loadBinding = async () => {
     const adminIds = Array.isArray(app.admin_ids) ? app.admin_ids : []
     bindingAdminIdsCount.value += adminIds.length
 
-    const snap = await getDocs(collection(appDb, 'apps', appId, 'users'))
+    const snap = await getDocs(
+      collection(appDb, AppStorage.collection, appId, AppUserStorage.collection)
+    )
     const users = snap.docs.map((docSnap) => ({
       id: docSnap.id,
       ...(docSnap.data() as AppUser),
@@ -186,7 +193,7 @@ const loadBinding = async () => {
   await Promise.all(
     Array.from(userIds).map(async (id) => {
       try {
-        const snap = await getDoc(doc(identityDb, 'users', id) as any)
+        const snap = await getDoc(doc(identityDb, UserStorage.rootCollection, id) as any)
         coreUsers.set(id, snap.exists() ? (snap.data() as User) : null)
       } catch {
         coreUsers.set(id, null)

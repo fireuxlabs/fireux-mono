@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
+import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -68,7 +69,7 @@ function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput })
 }
 
 async function createKitchenIfMissing(id: string, place: PlaceUpsertInput) {
-  const existingSnap = await getDoc(doc(db, 'kitchens', id))
+  const existingSnap = await getDoc(doc(db, KitchenStorage.rootCollection, id))
   if (!existingSnap.exists()) {
     await createKitchen({ id, place, website: '' })
   }

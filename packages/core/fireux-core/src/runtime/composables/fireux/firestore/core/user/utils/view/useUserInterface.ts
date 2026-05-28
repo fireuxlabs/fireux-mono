@@ -3,7 +3,11 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import type { User } from '../../../../../../../models/core/user.model'
+import {
+  UserStorage,
+  type AppUser,
+  type User,
+} from '../../../../../../../models/core/user.model'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
@@ -39,6 +43,11 @@ export namespace UserCard {
   }
 }
 
+export type UserSurfaceParts<TUser extends object = Partial<User>> = {
+  user?: TUser | null | undefined
+  overlay?: Partial<AppUser> | Record<string, unknown> | null | undefined
+}
+
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPill = UserCard.Card
   type UserCell = UserCard.Card
@@ -47,6 +56,25 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
   const { uid, currentUser: authUser } = useAuth()
   const { getProxiedAvatarUrl } = useAvatarProxy()
+
+  function surface<TUser extends object = Partial<User>>(
+    parts: UserSurfaceParts<TUser>
+  ): (TUser & User) | null {
+    const source = parts.user ?? null
+    if (!source) return null
+
+    const merged = {
+      ...source,
+      ...(parts.overlay ?? {}),
+    } as TUser & User
+    const id = safeString(merged.id).trim()
+    if (!id) return null
+
+    return {
+      ...merged,
+      id,
+    }
+  }
 
   function resolveAvatarUrl(user: User): string {
     const storedAvatar = safeString(user.avatar).trim()
@@ -67,7 +95,9 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
     return {
       id,
-      to: handle ? `/users/${encodeURIComponent(handle)}` : '',
+      to: handle
+        ? `/${UserStorage.rootCollection}/${encodeURIComponent(handle)}`
+        : '',
 
       imageUrl: resolveAvatarUrl(user),
       avatarUrl: resolveAvatarUrl(user),
@@ -118,6 +148,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

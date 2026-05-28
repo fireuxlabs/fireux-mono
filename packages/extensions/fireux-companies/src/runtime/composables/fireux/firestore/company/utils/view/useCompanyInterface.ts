@@ -9,6 +9,7 @@ import type {
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { CompanyHydrated } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/types'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 
 export namespace CompanyCard {
   export type Card = {
@@ -96,7 +97,7 @@ export function useCompanyInterface() {
 
     return {
       id,
-      to: id ? `/companies/${encodeURIComponent(id)}` : '',
+      to: id ? `/${CompanyStorage.collection}/${encodeURIComponent(id)}` : '',
 
       title: displayTitle || name,
       subtitle: shortAddress || formattedAddress,

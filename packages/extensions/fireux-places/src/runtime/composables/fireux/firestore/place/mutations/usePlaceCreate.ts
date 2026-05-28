@@ -3,7 +3,7 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { toPlaceSlug } from '../utils/view/toPlaceSlug'
@@ -31,7 +31,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     const id = canonicalPlaceId((place as any)?.id ?? (place as any)?.place_id)
     if (!id) return false
 
-    const collectionPath = 'places'
+    const collectionPath = PlaceStorage.collection
     const ref = doc(db, collectionPath, id)
     const snapshot = await getDoc(ref)
 
@@ -143,7 +143,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
 
     if (image_url && !image_url.includes('firebasestorage.googleapis.com')) {
       try {
-        const uploaded = await uploadFromUrl(`places/${id}/image`, image_url)
+        const uploaded = await uploadFromUrl(`${PlaceStorage.collection}/${id}/image`, image_url)
         if (import.meta.dev) {
           console.log('[fireux-places] image:uploaded', {
             id,

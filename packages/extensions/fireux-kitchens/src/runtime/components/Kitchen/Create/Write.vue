@@ -73,7 +73,7 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { doc, getDoc } from 'firebase/firestore'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
@@ -174,7 +174,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
     await ensurePlaceExists(placeForRecord)
 
-    const placeSnap = await getDoc(doc(db, 'places', id))
+    const placeSnap = await getDoc(doc(db, PlaceStorage.collection, id))
     if (placeSnap.exists()) {
       const stored = placeSnap.data() as Record<string, any>
       placeForRecord = {

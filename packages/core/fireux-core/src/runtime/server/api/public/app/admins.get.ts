@@ -1,6 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { AppStorage } from '../../../../models/core/app.model'
+import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
@@ -71,9 +73,9 @@ export default defineEventHandler(async (event: H3Event) => {
   })
 
   const memberships = await appDb
-    .collection('apps')
+    .collection(AppStorage.collection)
     .doc(cfg.appId)
-    .collection('users')
+    .collection(AppUserStorage.collection)
     .where('role', '==', 'admin')
     .limit(limit)
     .get()
@@ -84,7 +86,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const uid = membership.id.trim()
     if (!uid) continue
 
-    const userSnap = await identityDb.collection('users').doc(uid).get()
+    const userSnap = await identityDb.collection(UserStorage.rootCollection).doc(uid).get()
     admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))
   }
 

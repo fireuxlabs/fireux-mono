@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { IngredientStorage } from '../../../../../models/ingredient.model'
 import type { IngredientInterfaceItem } from '../../../firestore/ingredient/utils/view/useIngredientInterface'
 import { useKitchenIngredients } from './ingredients/fetch/useKitchenIngredients'
 import { useKitchenConsole } from '../useKitchenConsole'
@@ -20,9 +21,9 @@ export function useKitchenConsoleIngredients() {
     useKitchenIngredients(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<IngredientInterfaceItem>({
-    collectionName: 'ingredients',
+    collectionName: IngredientStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

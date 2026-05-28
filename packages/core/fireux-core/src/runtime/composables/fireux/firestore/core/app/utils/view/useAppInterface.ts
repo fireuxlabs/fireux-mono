@@ -1,6 +1,6 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import type { App } from '../../../../../../../models/core/app.model'
+import { AppStorage, type App } from '../../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 import { resolveAppMediaForView } from '../appMedia'
@@ -47,6 +47,10 @@ export namespace AppCard {
   }
 }
 
+export type AppSurfaceParts<TApp extends object = Partial<App>> = {
+  app?: TApp | null | undefined
+}
+
 function safeMedia(app: App) {
   return (
     app.media ?? {
@@ -82,6 +86,21 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   type AppPreview = AppCard.Card
   type AppProfile = AppCard.Card
 
+  function surface<TApp extends object = Partial<App>>(
+    parts: AppSurfaceParts<TApp>
+  ): (TApp & App) | null {
+    const source = parts.app ?? null
+    if (!source) return null
+
+    const id = safeString((source as Partial<App>).id).trim()
+    if (!id) return null
+
+    return {
+      ...source,
+      id,
+    } as TApp & App
+  }
+
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
@@ -100,7 +119,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
     return {
       id,
-      to: id ? `/apps/${encodeURIComponent(id)}` : '',
+      to: id ? `/${AppStorage.collection}/${encodeURIComponent(id)}` : '',
 
       imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
@@ -165,6 +184,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

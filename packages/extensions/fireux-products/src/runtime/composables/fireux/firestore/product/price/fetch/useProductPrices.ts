@@ -1,17 +1,20 @@
-import type { ProductPrice } from '../../../../../../models/product.model'
+import {
+  ProductPriceStorage,
+  ProductStorage,
+  type ProductPrice,
+} from '../../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetch subcollection prices for a given product. */
 export function useProductPrices() {
-  const { firestoreFetchSubcollection, getCollectionPath } = useFirestoreManager()
+  const { firestoreFetchSubcollection } = useFirestoreManager()
 
   const fetchProductPrices = async (productId: string): Promise<ProductPrice[]> => {
     if (!productId) return []
-    const collectionName = getCollectionPath('products', false)
     return firestoreFetchSubcollection<ProductPrice>(
-      collectionName,
+      ProductStorage.collection,
       productId,
-      'prices'
+      ProductPriceStorage.collection
     )
   }
 

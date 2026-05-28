@@ -177,7 +177,7 @@ export async function createMenuDocument(input: {
   await menuDocumentRef(input.slug).create(record)
 
   return {
-    id: input.slug,
     ...record,
+    id: input.slug,
   } as MenuDocument
 }

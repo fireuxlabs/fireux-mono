@@ -1,6 +1,9 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../models/blogPost.model'
+import {
+  BlogPostStorage,
+  type BlogPost,
+} from '../../../../../models/blogPost.model'
 
 const timestampToMillis = (value: unknown): number => {
   if (!value) return 0
@@ -16,7 +19,7 @@ const timestampToMillis = (value: unknown): number => {
 
 export function useBlogCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<BlogPost>('blogs')
+  const source = firestoreFetchCollection<BlogPost>(BlogPostStorage.collection)
 
   const collection = computed(() => {
     const posts = source.value ?? []

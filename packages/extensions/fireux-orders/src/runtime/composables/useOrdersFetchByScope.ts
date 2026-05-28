@@ -55,7 +55,7 @@ export function useOrdersFetchByScope(scope: Ref<OrderScopeRef | null> | OrderSc
 
   watch(
     [resolvedScopeType, resolvedScopeId],
-    ([nextScopeType, nextScopeId]) => {
+    ([nextScopeType, nextScopeId]: [string, string]) => {
       if (!nextScopeType || !nextScopeId) {
         sourceRef.value = null
         return

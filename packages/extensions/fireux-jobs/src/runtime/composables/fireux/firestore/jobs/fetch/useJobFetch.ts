@@ -5,7 +5,7 @@ import {
 } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Job } from '../../../../../models/job.model'
+import { JobStorage, type Job } from '../../../../../models/job.model'
 
 type MiseboxJobResolved = Job & {
   kitchen?: KitchenFetchDoc | null
@@ -20,7 +20,7 @@ export function useJobFetch(
   const jobId = computed(() => (isRef(id) ? id.value : id) ?? null)
 
   const docRef = computed(() =>
-    jobId.value ? (doc(db, 'jobs', jobId.value) as any) : null
+    jobId.value ? (doc(db, JobStorage.collection, jobId.value) as any) : null
   )
 
   const { data, pending, error } = useDocument<Job | undefined>(docRef as any)

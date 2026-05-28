@@ -404,6 +404,7 @@ import type {
   Weekday,
 } from '../../../../models/kitchen.model'
 import {
+  KitchenStorage,
   KITCHEN_STARTER_LANGUAGE_SETTINGS,
 } from '../../../../models/kitchen.model'
 
@@ -654,7 +655,7 @@ const updateIdentityField = async (
     throw new Error('No kitchen selected.')
   }
 
-  if (rootCollection.value !== 'kitchens') {
+  if (rootCollection.value !== KitchenStorage.rootCollection) {
     throw new Error('Kitchen identity edits are only available for root kitchens.')
   }
 
@@ -733,7 +734,7 @@ const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 
 const validateSlugField = (value: string) => {
   const validation = validateSlug(formatSlugField(value), {
     label: 'Kitchen slug',
-    namespace: 'kitchens',
+    namespace: KitchenStorage.rootCollection,
     reservedScope: 'root',
     maxLength: 80,
   })

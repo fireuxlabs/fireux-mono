@@ -219,7 +219,7 @@ import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
 import MenuSproochliLanguageTrigger from '../../components/Menu/SproochliLanguageTrigger.vue'
-import type { Kitchen } from '../../models/kitchen.model'
+import { KitchenStorage, type Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
 definePageMeta({
@@ -272,7 +272,7 @@ const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.val
 
 const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId,
-  { scope: 'kitchen', kitchenCollectionPath: 'kitchens' }
+  { scope: 'kitchen', kitchenCollectionPath: KitchenStorage.rootCollection }
 )
 const menus = computed(() => publishedMenus.value)
 const menusLoading = computed(() =>

@@ -6,7 +6,8 @@ import {
   type App as FirebaseApp,
 } from 'firebase-admin/app'
 import { createError } from 'h3'
-import type { App } from '../../models/core/app.model'
+import { AppStorage, type App } from '../../models/core/app.model'
+import { EcosystemStorage } from '../../models/system/ecosystem.model'
 import type { ProjectStatus } from '../../models/system/project.model'
 import type {
   FireuxConsoleAppRef,
@@ -237,7 +238,7 @@ function normalizeApp(docId: string, data: Record<string, unknown>): DefaultAppR
 
 async function listOperationalApps() {
   const db = getRuntimeFirestore()
-  const snapshot = await db.collection('apps').get()
+  const snapshot = await db.collection(AppStorage.collection).get()
 
   return snapshot.docs
     .map((doc) => normalizeApp(doc.id, (doc.data() as Record<string, unknown>) || {}))
@@ -282,7 +283,7 @@ async function readCurrentEcosystem(
   control: FireuxConsoleProjectControl
 ): Promise<FireuxConsoleEcosystem | null> {
   const db = getFirestore(getAdminApp())
-  const snapshot = await db.collection('ecosystems').get()
+  const snapshot = await db.collection(EcosystemStorage.collection).get()
   const target = normalizeString(control.main_ecosystem_id)
 
   const docs = snapshot.docs.map((doc) =>

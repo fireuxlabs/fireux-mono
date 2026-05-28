@@ -1,5 +1,6 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
 import { useKitchenConsoleMise } from './useKitchenConsoleMise'
 
@@ -33,7 +34,7 @@ export function useKitchenConsoleMiseTask() {
     () =>
       canWrite.value &&
       selectedMode.value === 'test' &&
-      rootCollection.value === 'kitchens'
+      rootCollection.value === KitchenStorage.rootCollection
   )
 
   const debug = computed(() => ({

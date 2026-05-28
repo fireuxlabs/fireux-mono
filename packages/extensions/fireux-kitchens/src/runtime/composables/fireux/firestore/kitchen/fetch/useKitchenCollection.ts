@@ -5,8 +5,9 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, isRef, ref, type Ref } from 'vue'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -93,7 +94,7 @@ export function useKitchenCollection(
       route_scope: 'demo',
     }))
   )
-  const livePlacesSource = firestoreFetchCollection<Place>('places')
+  const livePlacesSource = firestoreFetchCollection<Place>(PlaceStorage.collection)
   const liveRootSource = firestoreFetchCollection<KitchenCollectionDoc>(
     DEFAULT_COLLECTION_PATH
   )
@@ -127,14 +128,14 @@ export function useKitchenCollection(
     }
 
     const q = fsq(
-      collection(db, 'apps', currentAppId.value, DEFAULT_COLLECTION_PATH),
+      collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
 
     return firestoreQuery<AppKitchenCollectionDoc>(
       q,
-      `apps-${currentAppId.value}-${DEFAULT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
-      `apps/${currentAppId.value}/${DEFAULT_COLLECTION_PATH}`
+      `${AppStorage.collection}-${currentAppId.value}-${KitchenStorage.overlayCollection}-operator-${filterOperatorId.value}`,
+      `${AppStorage.collection}/${currentAppId.value}/${KitchenStorage.overlayCollection}`
     )
   })
   const allowedKitchenIds = computed(() =>

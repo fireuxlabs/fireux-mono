@@ -1,6 +1,12 @@
 import { useNuxtApp } from '#imports'
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import type { AppUser, User } from '../../../../../../models/core/user.model'
+import {
+  AppUserStorage,
+  UserStorage,
+  type AppUser,
+  type User,
+} from '../../../../../../models/core/user.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
@@ -46,7 +52,9 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     resolvedAppId,
     (nextAppId) => {
       membershipsRef.value = nextAppId
-        ? appRead.firestoreFetchCollection<AppUser>(`apps/${nextAppId}/users`)
+        ? appRead.firestoreFetchCollection<AppUser>(
+            `${AppStorage.collection}/${nextAppId}/${AppUserStorage.collection}`
+          )
         : null
     },
     { immediate: true }
@@ -63,7 +71,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     if (!id) return undefined
     if (!userCache.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        identityRead.firestoreFetchDoc<User>('users', id)
+        identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
       ) as Ref<User | undefined>
       userCache.set(id, ref)
     }

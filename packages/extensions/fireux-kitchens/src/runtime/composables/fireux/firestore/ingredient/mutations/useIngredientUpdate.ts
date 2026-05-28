@@ -3,8 +3,7 @@ import type {
   Ingredient,
   IngredientUpdateInput,
 } from '../../../../../models/ingredient.model'
-
-const GLOBAL_INGREDIENT_COLLECTION_PATH = 'ingredients'
+import { IngredientStorage } from '../../../../../models/ingredient.model'
 
 export function useIngredientUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -17,7 +16,7 @@ export function useIngredientUpdate() {
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
     await updateDocument<Ingredient>(
-      GLOBAL_INGREDIENT_COLLECTION_PATH,
+      IngredientStorage.collection,
       resolvedIngredientId,
       patch as Partial<Ingredient>
     )

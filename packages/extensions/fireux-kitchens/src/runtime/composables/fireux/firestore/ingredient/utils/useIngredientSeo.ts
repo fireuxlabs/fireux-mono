@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Ingredient } from '../../../../../models/ingredient.model'
+import { IngredientStorage, type Ingredient } from '../../../../../models/ingredient.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -26,7 +26,9 @@ export function useIngredientSeo(ingredient: MaybeRefOrGetter<Partial<Ingredient
     title: computed(() => clean(entry.value?.name) || 'Ingredient'),
     description: computed(() => 'Ingredient details.'),
     image: computed(() => clean(entry.value?.image_url)),
-    path: computed(() => (id.value ? `/ingredients/${encodeURIComponent(id.value)}` : '')),
+    path: computed(() =>
+      id.value ? `/${IngredientStorage.collection}/${encodeURIComponent(id.value)}` : ''
+    ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildIngredientJsonLd(entry.value)),
   })

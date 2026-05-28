@@ -66,6 +66,7 @@ import {
 import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import MenuSproochliLanguageTrigger from '../../../../components/Menu/SproochliLanguageTrigger.vue'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import type { Menu } from '../../../../models/menu.model'
 
 const route = useRoute()
@@ -120,7 +121,7 @@ const publicLanguageQuery = computed(() =>
 )
 const menuRead = useMenuCollection(kitchenId, {
   scope: 'kitchen',
-  kitchenCollectionPath: 'kitchens',
+  kitchenCollectionPath: KitchenStorage.rootCollection,
 })
 const menuIsPublicVisible = (menu: Menu) => {
   if ((menu as any).active === false) return false

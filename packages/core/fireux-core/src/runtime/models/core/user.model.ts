@@ -36,6 +36,14 @@ export const AppUserStorage = {
   idParam: 'userId',
 } as const
 
+export const UserNotificationStorage = {
+  shape: 'scoped',
+  path: 'users/{userId}/notifications/{notificationId}',
+  collection: 'notifications',
+  parent: 'user',
+  idParam: 'notificationId',
+} as const
+
 export const UserModel = {
   id: '',
 

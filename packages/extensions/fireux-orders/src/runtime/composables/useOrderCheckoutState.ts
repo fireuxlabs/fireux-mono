@@ -70,7 +70,7 @@ export function useOrderCheckoutState() {
 
   watch(
     modeFromQuery,
-    (nextMode) => {
+    (nextMode: OrderServiceMode | '') => {
       if (!nextMode) return
       serviceMode.value = nextMode
     },
@@ -79,7 +79,7 @@ export function useOrderCheckoutState() {
 
   watch(
     tableFromQuery,
-    (nextTable) => {
+    (nextTable: string) => {
       if (!nextTable) return
       tableLabel.value = nextTable
     },

@@ -4,7 +4,11 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { BlogPost, BlogPostCreateInput } from '../../../../../models/blogPost.model'
+import {
+  BlogPostStorage,
+  type BlogPost,
+  type BlogPostCreateInput,
+} from '../../../../../models/blogPost.model'
 
 export const BlogPayload = {
   id: '',
@@ -53,7 +57,7 @@ export function useBlogCreate() {
       namespace: 'blog',
       reservedScope: 'entity',
       isAvailable: async (candidate) => {
-        const ref = doc(db, 'blogs', candidate)
+        const ref = doc(db, BlogPostStorage.collection, candidate)
         const snap = await getDoc(ref)
         return !snap.exists()
       },
@@ -77,9 +81,12 @@ export function useBlogCreate() {
       visibility: payload.visibility || 'app',
     } as Omit<BlogPost, 'created' | 'updated'>
 
-    await setDocument<BlogPost>('blogs', validatedSlug, data as BlogPost, {
-      creator: true,
-    })
+    await setDocument<BlogPost>(
+      BlogPostStorage.collection,
+      validatedSlug,
+      data as BlogPost,
+      { creator: true }
+    )
 
     return true
   }

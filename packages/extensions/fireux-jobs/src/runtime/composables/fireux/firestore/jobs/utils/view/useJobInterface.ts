@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Job } from '../../../../../../models/job.model'
+import { JobStorage, type Job } from '../../../../../../models/job.model'
 
 export type JobView = Job & {
   workplace?: {
@@ -52,7 +52,7 @@ export function useJobInterface() {
 
     return {
       id,
-      to: id ? `/jobs/${id}` : '',
+      to: id ? `/${JobStorage.collection}/${id}` : '',
 
       imageUrl: safeString(workplace?.image_url),
       title: safeString(job.title),

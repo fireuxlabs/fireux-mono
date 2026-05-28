@@ -2,12 +2,12 @@ import { doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { normalizeDish, type Dish } from '../../../../../models/dish.model'
+import { DishStorage, normalizeDish, type Dish } from '../../../../../models/dish.model'
 import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
-  `${kitchenCollectionPath}/${kitchenId}/dishes`
+  `${kitchenCollectionPath}/${kitchenId}/${DishStorage.collection}`
 
 type UseDishFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

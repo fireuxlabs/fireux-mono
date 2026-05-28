@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
 import { computed } from 'vue'
-import type { Job } from '../../../../../models/job.model'
+import { JobStorage, type Job } from '../../../../../models/job.model'
 
 type MiseboxJobResolved = Job & {
   kitchen?: Kitchen | null
@@ -13,7 +13,7 @@ export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
 
-  const jobs = firestoreFetchCollection<Job>('jobs')
+  const jobs = firestoreFetchCollection<Job>(JobStorage.collection)
   const pending = computed(() => jobs.value === undefined)
   const { kitchens } = useKitchenCollection()
 

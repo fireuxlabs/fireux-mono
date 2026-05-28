@@ -4,6 +4,7 @@ import {
   getRouterParam,
   type H3Event,
 } from 'h3'
+import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
 import { getProductsFirestore } from '../../utils/getAdmin'
 
 function assertSafeDocumentSegment(value: string) {
@@ -52,7 +53,7 @@ export default defineEventHandler(async (event: H3Event) => {
   assertSafeDocumentSegment(id)
 
   const db = getProductsFirestore()
-  const productRef = db.collection('products').doc(id)
+  const productRef = db.collection(ProductStorage.collection).doc(id)
   const productSnap = await productRef.get()
 
   if (!productSnap.exists) {
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const pricesSnap = await productRef.collection('prices').get()
+  const pricesSnap = await productRef.collection(ProductPriceStorage.collection).get()
   const prices = pricesSnap.docs.map((doc) =>
     serializeFirestoreValue({
       id: doc.id,

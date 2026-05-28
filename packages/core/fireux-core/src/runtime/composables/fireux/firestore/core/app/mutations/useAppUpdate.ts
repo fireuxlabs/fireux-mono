@@ -1,6 +1,7 @@
 import { arrayRemove, arrayUnion, deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
-import type { App } from '../../../../../../models/core/app.model'
+import { AppStorage, type App } from '../../../../../../models/core/app.model'
+import { AppUserStorage, UserStorage } from '../../../../../../models/core/user.model'
 import type { AppSocialLinks } from '../../../../../../models/core/supporting/app'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -30,7 +31,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   const updateApp = (data: Partial<App> | Record<string, any>) =>
-    updateDocument<any>('apps', ensureAppId(), data as any)
+    updateDocument<any>(AppStorage.collection, ensureAppId(), data as any)
 
   const updateUserMembership = async (
     uid: string,
@@ -40,7 +41,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const userId = String(uid ?? '').trim()
     if (!userId) throw new Error('[useAppUpdate] Missing uid')
 
-    await identityUpdate.updateDocument('users', userId, {
+    await identityUpdate.updateDocument(UserStorage.rootCollection, userId, {
       userOf: arrayUnion(appId) as unknown as string[],
       adminOf:
         membershipRole === 'admin'
@@ -72,7 +73,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const userId = String(uid ?? '').trim()
     if (!userId) throw new Error('[useAppUpdate] Missing uid')
 
-    await updateDocument(`apps/${appId}/users`, userId, {
+    await updateDocument(`${AppStorage.collection}/${appId}/${AppUserStorage.collection}`, userId, {
       role: membershipRole,
     })
   }
@@ -85,7 +86,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const userId = String(uid ?? '').trim()
     if (!userId) throw new Error('[useAppUpdate] Missing uid')
 
-    await updateDocument(`apps/${appId}/users`, userId, {
+    await updateDocument(`${AppStorage.collection}/${appId}/${AppUserStorage.collection}`, userId, {
       is_premium: Boolean(isPremium),
     })
   }

@@ -1,5 +1,6 @@
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { BlogPostStorage } from '../../../../../models/blogPost.model'
 
 export type BlogPublishInput = {
   slug: string
@@ -27,7 +28,7 @@ export function useBlogPublish() {
     }
 
     return publish({
-      collectionPath: 'blogs',
+      collectionPath: BlogPostStorage.collection,
       id: slug,
       routePath: `/blog/${encodeURIComponent(slug)}`,
       patch: {

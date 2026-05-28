@@ -6,6 +6,7 @@ import { extname, join, resolve as pathResolve } from 'node:path'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import imageSize from 'image-size'
+import { AppStorage } from '../../../../models/core/app.model'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { getAdminApp } from '../../../utils/getAdmin'
 import {
@@ -226,7 +227,7 @@ export default defineEventHandler(async (event) => {
 
   if (Object.keys(patch).length > 2) {
     const db = getRuntimeFirestore()
-    await db.collection('apps').doc(appId).update(patch)
+    await db.collection(AppStorage.collection).doc(appId).update(patch)
   }
 
   return {

@@ -15,6 +15,7 @@ import type {
   Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 type KitchenPlaceDraft = Record<string, unknown> & {
@@ -52,7 +53,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
   const { createConsole } = useConsoleCreate()
   const { uid } = useAuth()
-  const collectionPath = normalizeString(options.collectionPath || 'kitchens') || 'kitchens'
+  const collectionPath =
+    normalizeString(options.collectionPath || KitchenStorage.rootCollection) ||
+    KitchenStorage.rootCollection
 
   function createKitchenPayload(
     id: string,

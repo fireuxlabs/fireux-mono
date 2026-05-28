@@ -4,12 +4,11 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import {
+  IngredientStorage,
   IngredientModel,
   type IngredientCreateInput,
   type Ingredient as IngredientDoc,
 } from '../../../../../models/ingredient.model'
-
-const GLOBAL_COLLECTION_PATH = 'ingredients'
 
 type IngredientCreateDraft = Partial<IngredientCreateInput>
 
@@ -74,7 +73,7 @@ export function useIngredientCreate() {
     const ingredientId = resolveIngredientId(name)
     if (!ingredientId) throw new Error('Unable to resolve ingredient id')
 
-    const ingredientRef = doc(db, GLOBAL_COLLECTION_PATH, ingredientId)
+    const ingredientRef = doc(db, IngredientStorage.collection, ingredientId)
     const ingredientSnap = await getDoc(ingredientRef)
     if (ingredientSnap.exists()) {
       throw new Error('Ingredient already exists')
@@ -87,7 +86,7 @@ export function useIngredientCreate() {
       seedTranslations
     )
 
-    await setDocument<IngredientDoc>(GLOBAL_COLLECTION_PATH, ingredientId, payload, {
+    await setDocument<IngredientDoc>(IngredientStorage.collection, ingredientId, payload, {
       app: true,
       creator: true,
     })

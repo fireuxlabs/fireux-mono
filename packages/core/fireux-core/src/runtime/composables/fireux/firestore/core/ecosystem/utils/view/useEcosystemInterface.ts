@@ -2,6 +2,7 @@ import type {
   Ecosystem,
   EcosystemStatus,
 } from '../../../../../../../models/system/ecosystem.model'
+import { EcosystemStorage } from '../../../../../../../models/system/ecosystem.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const labelize = (value: string) =>
@@ -32,6 +33,10 @@ export type EcosystemInterfaceInput = EcosystemSurface & {
   text?: string
   href?: string
   appCount?: number
+}
+
+export type EcosystemSurfaceParts<T extends object = Partial<EcosystemSurface>> = {
+  ecosystem?: T | null | undefined
 }
 
 export type EcosystemInterfaceCard = {
@@ -83,6 +88,21 @@ export function useEcosystemInterface() {
     return target!.apps.map((entry) => safeString(entry)).filter(Boolean)
   }
 
+  function surface<T extends object = Partial<EcosystemSurface>>(
+    parts: EcosystemSurfaceParts<T>
+  ): (T & EcosystemSurface) | null {
+    const source = parts.ecosystem ?? null
+    if (!source) return null
+
+    const id = safeString((source as EcosystemSurface).id)
+    if (!id) return null
+
+    return {
+      ...source,
+      id,
+    } as T & EcosystemSurface
+  }
+
   function buildInterface(
     target?: EcosystemInterfaceInput | null | undefined
   ): EcosystemInterfaceCard | null {
@@ -105,7 +125,8 @@ export function useEcosystemInterface() {
 
     return {
       id: resolvedId,
-      to: safeString(target.href) || (slug ? `/ecosystems/${encodeURIComponent(slug)}` : ''),
+      to: safeString(target.href) ||
+        (slug ? `/${EcosystemStorage.collection}/${encodeURIComponent(slug)}` : ''),
       imageUrl: safeString(target.src) || safeString(target.image_url),
       avatarText: safeString(target.text) || name || key,
       title: name || key || 'Untitled ecosystem',
@@ -168,6 +189,7 @@ export function useEcosystemInterface() {
   }
 
   return {
+    surface,
     interface: toInterface,
     pill,
     cell,

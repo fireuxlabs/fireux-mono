@@ -1,6 +1,6 @@
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
-import type { User } from '../../../../../../models/core/user.model'
+import { UserStorage, type User } from '../../../../../../models/core/user.model'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
   useCollection,
@@ -45,15 +45,15 @@ export function useUserCollection() {
 
   const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const binding = useCollection<User>(
-    fsq(collection(db, 'users')) as Query<User>,
+    fsq(collection(db, UserStorage.rootCollection)) as Query<User>,
     {
-      ssrKey: 'users',
+      ssrKey: UserStorage.rootCollection,
       transform: (docSnap: QueryDocumentSnapshot<User>) => {
         return { ...(docSnap.data() as User), id: docSnap.id } as User
       },
     } as any
   )
-  guardCollectionPromise(binding as any, 'users')
+  guardCollectionPromise(binding as any, UserStorage.rootCollection)
 
   const users = computed(() => binding.data.value ?? [])
   const count = computed(() => users.value.length)

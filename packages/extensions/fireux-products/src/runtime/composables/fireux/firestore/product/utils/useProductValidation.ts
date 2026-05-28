@@ -1,6 +1,9 @@
 import { useRuntimeConfig } from '#imports'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { FirebaseProduct } from '../../../../../models/product.model'
+import {
+  ProductStorage,
+  type FirebaseProduct,
+} from '../../../../../models/product.model'
 
 export function useProductValidation() {
   function validateProduct(product: Partial<FirebaseProduct>) {
@@ -29,7 +32,7 @@ export function useProductValidation() {
     if (product.slug) {
       const slugValidation = validatePublicSlug(product.slug, {
         label: 'Product slug',
-        namespace: 'products',
+        namespace: ProductStorage.collection,
         reservedScope: 'entity',
       })
       if (!slugValidation.isValid) {

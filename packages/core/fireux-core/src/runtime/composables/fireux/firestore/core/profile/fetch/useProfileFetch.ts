@@ -8,6 +8,7 @@ import {
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import type {
   AppProfileBase,
   ProfileBase,
@@ -53,7 +54,7 @@ export function useProfileFetch<
    */
   const appDoc = computed(() =>
     uid.value && appId
-      ? (doc(appDb, 'apps', appId, config.collectionName, uid.value) as any)
+      ? (doc(appDb, AppStorage.collection, appId, config.collectionName, uid.value) as any)
       : null
   )
 

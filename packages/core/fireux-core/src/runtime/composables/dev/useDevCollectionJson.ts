@@ -103,7 +103,7 @@ export function useDevCollectionJson<T extends Record<string, unknown>>(
 
   watch(
     fetchKey,
-    async (nextKey) => {
+    async (nextKey: string) => {
       if (!import.meta.dev || import.meta.server) return
 
       if (!nextKey) {

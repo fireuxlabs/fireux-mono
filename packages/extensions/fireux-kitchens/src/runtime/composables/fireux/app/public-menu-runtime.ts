@@ -1,4 +1,5 @@
 import type { Dish } from '../../../models/dish.model'
+import { KitchenStorage } from '../../../models/kitchen.model'
 import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
 
 export type PublicMenuItemRow = {
@@ -36,7 +37,7 @@ export type MenuWithEmbeddedSections = {
   descriptions?: unknown
 }
 
-export const ROOT_KITCHENS = 'kitchens'
+export const ROOT_KITCHENS = KitchenStorage.rootCollection
 export const clean = (value: unknown) => String(value ?? '').trim()
 export const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
 export const asRecord = (value: unknown): Record<string, unknown> =>

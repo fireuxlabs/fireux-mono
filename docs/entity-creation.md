@@ -1,5 +1,5 @@
 Authority: Tier1 canon companion to `docs/fireux-canon.md`
-Updated: 2026-05-27
+Updated: 2026-05-28
 
 # Entity Creation Canon
 
@@ -267,3 +267,80 @@ await deleteDocument(KitchenStorage.rootCollection, id)
 
 Scoped placement records should stay lightweight. For example, Dish owns food
 truth, while MenuItem only places a Dish on a Menu section.
+
+## Entity CRUD Alignment Checklist
+
+This checklist tracks whether an entity family has been reconciled across model
+shape, read seams, create, update, delete, interface/SEO, and server/API
+surfaces.
+
+Use only these storage shapes:
+
+```text
+root   -> canonical top-level record
+scoped -> child or parent-scoped record
+both   -> root truth plus app/parent overlay or operating context
+```
+
+Status language:
+
+```text
+aligned -> primary runtime CRUD seams have been aligned to model storage metadata
+partial -> some seams are aligned, but one or more CRUD/server/surface checks remain
+backlog -> model or CRUD shape exists, but the family has not had a full alignment pass
+n/a     -> the seam is not expected for this entity shape yet
+```
+
+| Entity | Shape | Model storage | Fetch | Collection | Create | Update | Delete | Interface / SEO | Server / API | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| App | root | `AppStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
+| User | both | `UserStorage`, `AppUserStorage`, `UserNotificationStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
+| Ecosystem | root | `EcosystemStorage` | aligned | aligned | aligned | publish aligned | n/a | aligned | aligned | aligned |
+| Project | both | `ProjectStorage`, `AppProjectStorage` | partial | partial | partial | partial | partial | partial | n/a | partial: console project create/test paths need a focused pass |
+| Profile base | both | `ProfileStorage`, `AppProfileStorage` | aligned | aligned | aligned | aligned | delegated | n/a | n/a | aligned as shared profile seam |
+| Chef profile | both | `ChefStorage`, `AppChefStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Professional profile | both | `ProfessionalStorage`, `AppProfessionalStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Agent profile | both | `AgentStorage`, `AppAgentStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Blog post | root | `BlogPostStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Job | root | `JobStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Place | root | `PlaceStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Company | root | `CompanyStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Product | root | `ProductStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
+| Product price | scoped | `ProductPriceStorage` | partial | aligned | partial | partial | partial | n/a | aligned | partial: runtime server endpoints aligned; direct price CRUD checklist still pending |
+| Kitchen | both | `KitchenStorage`, `AppKitchenStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned in runtime and app-local menu translation cache |
+| Ingredient | root | `IngredientStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Kitchen ingredient | scoped | `KitchenIngredientStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial: console scoped ingredient operations need full CRUD checklist |
+| Kitchen supplier ingredient | scoped | `KitchenSupplierIngredientStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Dish | scoped | `DishStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Recipe | scoped | `RecipeStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Menu | scoped | `MenuStorage` | aligned | aligned | aligned | aligned | aligned | partial | partial | partial: public menu/API surfaces still need full pass |
+| Menu section | scoped | `MenuSectionStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
+| Menu item | scoped | `MenuItemStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
+| Kitchen mise task | scoped | `KitchenMiseTaskStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: test/console operations exist, needs CRUD checklist |
+| Kitchen station | scoped | `KitchenStationStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: console operations exist, needs CRUD checklist |
+| Kitchen team member | scoped | `KitchenTeamMemberStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: console operations exist, needs CRUD checklist |
+| Kitchen team join request | scoped | `KitchenTeamJoinRequestStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Kitchen order | scoped | `KitchenOrderStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Kitchen cost snapshot | scoped | `KitchenCostSnapshotStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Supplier | both | `SupplierStorage`, `AppSupplierStorage` | aligned | aligned | aligned | partial | aligned | aligned | n/a | partial: update seam needs same storage-constant pass as fetch/delete |
+| Supplier product | scoped | `SupplierProductStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial |
+| Supplier catalogue | scoped | `SupplierCatalogueStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Portfolio | both | `PortfolioStorage`, `AppPortfolioStorage` | aligned | aligned | aligned | partial | aligned | aligned | n/a | partial: create/test path and update/delete need full pass |
+| Property | scoped | `PropertyStorage` | partial | aligned | partial | partial | partial | partial | n/a | partial |
+| Unit | scoped | `UnitStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Client | scoped | `ClientStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Order | scoped | `OrderStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Task | scoped | `TaskStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Document | root | `DocumentStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Document link | scoped | `DocumentLinkStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Compliance record | scoped | `ComplianceRecordStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Conversation | root | `ConversationStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial |
+| Conversation message | scoped | `ConversationMessageStorage` | partial | aligned | aligned | n/a | n/a | n/a | n/a | partial |
+| Module | root | `ModuleStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Sproochli translation document | root | `TranslationDocumentStorage` | partial | partial | partial | backlog | backlog | n/a | aligned | partial: storage constants exist; full runtime CRUD stack is still future work |
+| Sproochli translation child | scoped | `TranslationStorage` | partial | partial | partial | backlog | backlog | n/a | aligned | partial: storage constants exist; full runtime CRUD stack is still future work |
+| Misebox uploaded menu document | root | app-local | partial | partial | aligned | partial | partial | n/a | partial | partial: app-local API surface mostly aligned, but model/storage decision remains app-local |
+
+Alignment rule: do not mark an entity `aligned` until the code has been checked
+for all relevant runtime seams in this matrix. Documentation-only intent is not
+implementation.

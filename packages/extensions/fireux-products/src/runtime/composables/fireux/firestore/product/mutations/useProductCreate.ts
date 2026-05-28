@@ -11,6 +11,10 @@ import type {
   ProductPrice,
   StripePriceInput,
 } from '../../../../../models/product.model'
+import {
+  ProductPriceStorage,
+  ProductStorage,
+} from '../../../../../models/product.model'
 
 type StripeProvisionResult = {
   productId: string
@@ -68,11 +72,11 @@ export const ProductCreatePlan = defineFireuxCreatePlan({
 
 export function useProductCreate() {
   const db = useFirestore()
-  const { setDocument, getCollectionPath } = useFirestoreManager()
+  const { setDocument } = useFirestoreManager()
   const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
 
-  const collectionPath = getCollectionPath('products', false)
+  const collectionPath = ProductStorage.collection
 
   const isProductSlugAvailable = async (slug: string) => {
     const checkRef = doc(db, collectionPath, slug)
@@ -182,7 +186,8 @@ export function useProductCreate() {
     productId: string,
     prices: ProductPrice[]
   ) => {
-    const pricesCollectionPath = `${collectionPath}/${productId}/prices`
+    const pricesCollectionPath =
+      `${collectionPath}/${productId}/${ProductPriceStorage.collection}`
     await Promise.all(
       prices
         .filter((price) => Boolean(price.id))
@@ -211,7 +216,7 @@ export function useProductCreate() {
 
       const slug = await assertPublicSlug(requestedSlug, {
         label: 'Product slug',
-        namespace: 'products',
+        namespace: ProductStorage.collection,
         reservedScope: 'entity',
         isAvailable: isProductSlugAvailable,
       })

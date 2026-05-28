@@ -1,5 +1,6 @@
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { ProductStorage } from '../../../../../models/product.model'
 
 export type ProductPublishInput = {
   slug: string
@@ -16,7 +17,7 @@ export function useProductPublish() {
   async function publishProduct(input: ProductPublishInput) {
     const slug = await assertPublicSlug(input.slug, {
       label: 'Product slug',
-      namespace: 'products',
+      namespace: ProductStorage.collection,
       reservedScope: 'entity',
     })
     const name = input.name === undefined ? undefined : clean(input.name)
@@ -27,9 +28,9 @@ export function useProductPublish() {
     }
 
     return publish({
-      collectionPath: 'products',
+      collectionPath: ProductStorage.collection,
       id: slug,
-      routePath: `/products/${encodeURIComponent(slug)}`,
+      routePath: `/${ProductStorage.collection}/${encodeURIComponent(slug)}`,
       patch: {
         slug,
         visibility: 'public',

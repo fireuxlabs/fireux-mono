@@ -92,6 +92,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleTeam'
 import { useKitchenTeamMemberCreate } from '../../../../composables/fireux/console/kitchen/operations/team/mutations/useKitchenTeamMemberCreate'
 import type { KitchenTeamJoinRequest } from '../../../../models/kitchen-team.model'
@@ -115,7 +116,7 @@ const canCreateTeamMember = computed(
   () =>
     canWrite.value &&
     selectedMode.value === 'test' &&
-    rootCollection.value === 'kitchens'
+    rootCollection.value === KitchenStorage.rootCollection
 )
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationIds = computed(() =>

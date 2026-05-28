@@ -1,81 +1,25 @@
-// Action: CREATE · Phases: 1–4
-// Sketch: Chef create (core + app, conditional)
-// One doc, one action, one name. No wiring yet.
-
-import { doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
-import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { AppChef, Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
-export const ChefCreatePlan = defineFireuxCreatePlan({
-  family: 'idempotent',
-})
-
 export function useChefCreate() {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
   const { createUser } = useUserCreate()
+  const { createProfile } = useProfileCreate(chefConfig)
 
   async function createChefProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
   }> {
-    await createUser()
-    const { uid } = await requireUid()
-    const { appId } = useFireUXConfig()
+    const user = await createUser()
+    const profile = await createProfile(user.id)
 
-    let createdCore = false
-    let createdApp = false
-
-    const coreRef = doc(db, chefConfig.collectionName, uid)
-    const coreSnap = await getDoc(coreRef)
-    if (!coreSnap.exists()) {
-      const payload = {
-        chef_bio: '',
-        chef_image: '',
-        chef_signature_dishes: [] as string[],
-        chef_organization_name: '',
-        title: '',
-        subtitle: '',
-        tagline: '',
-        tags: [] as string[],
-        summary: '',
-        bio_long: '',
-        specialties: [] as string[],
-        locations: [] as string[],
-        organization_name: '',
-        kitchen_ids: [] as string[],
-      } satisfies Omit<Chef, 'created' | 'updated' | 'id'>
-
-      await setDocument<Chef>(chefConfig.collectionName, uid, payload as Chef, {
-        creator: true,
-      })
-      createdCore = true
+    return {
+      createdCore: profile.createdCore,
+      createdApp: profile.createdApp,
+      id: user.id,
     }
-
-    if (appId) {
-      const appCollection = `apps/${appId}/${chefConfig.collectionName}`
-      const appRef = doc(db, 'apps', appId, chefConfig.collectionName, uid)
-      const appSnap = await getDoc(appRef)
-      if (!appSnap.exists()) {
-        const payload = {} satisfies Omit<AppChef, 'created' | 'updated' | 'id'>
-
-        await setDocument<AppChef>(appCollection, uid, payload as AppChef, {
-          app: true,
-          creator: true,
-        })
-        createdApp = true
-      }
-    }
-
-    return { createdCore, createdApp, id: uid }
   }
 
-  return { createPlan: ChefCreatePlan, createChefProfile }
+  return { createChefProfile }
 }
