@@ -6,23 +6,21 @@
           Go QR
         </h1>
         <p class="text-base text-muted sm:text-lg">
-          Create scannable public links for docs, menus, guides, forms, and more.
+          Create scannable public links for text, docs, forms, contact actions, and more.
         </p>
       </header>
-
-      <p class="mx-auto max-w-xl text-xs font-semibold uppercase text-muted">
-        below here
-      </p>
 
       <ClientOnly>
         <GoQrProviderPublicDocTool class="mx-auto max-w-xl" />
       </ClientOnly>
 
-      <p class="mx-auto max-w-xl text-xs font-semibold uppercase text-muted">
-        above here
-      </p>
-
-      <LandingSolutions variant="preview" />
+      <LandingSolutions
+        variant="preview"
+        :limit="99"
+        title="What do you need a QR code for?"
+        subtitle="Pick the thing people should open, save, join, or contact after they scan."
+        always-show-more-button
+      />
     </UContainer>
   </main>
 </template>
@@ -47,8 +45,8 @@ useSeoMeta({
   title: 'Go QR - Scannable public links',
   ogTitle: 'Go QR - Scannable public links',
   twitterTitle: 'Go QR - Scannable public links',
-  description: 'Create scannable public links for docs, menus, guides, forms, and more.',
-  ogDescription: 'Create scannable public links for docs, menus, guides, forms, and more.',
-  twitterDescription: 'Create scannable public links for docs, menus, guides, forms, and more.',
+  description: 'Create scannable public links for text, docs, forms, contact actions, and more.',
+  ogDescription: 'Create scannable public links for text, docs, forms, contact actions, and more.',
+  twitterDescription: 'Create scannable public links for text, docs, forms, contact actions, and more.',
 })
 </script>

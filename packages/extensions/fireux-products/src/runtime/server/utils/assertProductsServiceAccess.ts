@@ -2,8 +2,8 @@ import { useRuntimeConfig } from '#imports'
 import { timingSafeEqual } from 'node:crypto'
 import { createError, getHeader, type H3Event } from 'h3'
 import { getFirestore } from 'firebase-admin/firestore'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { getProductsAdmin } from './getAdmin'
 
 function firstString(...values: unknown[]): string {

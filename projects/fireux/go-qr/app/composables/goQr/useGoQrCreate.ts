@@ -4,7 +4,7 @@ import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/f
 export type GoQrCreateInput = {
   file: File
   slug: string
-  type: 'doc' | 'food-menu'
+  type?: 'doc'
 }
 
 export type GoQrCreateResult = {
@@ -27,7 +27,7 @@ export function useGoQrCreate() {
     const formData = new FormData()
     formData.append('file', input.file)
     formData.append('slug', normalizeString(input.slug))
-    formData.append('type', input.type)
+    formData.append('type', input.type || 'doc')
 
     return await createApiDocument<GoQrCreateResult, FormData>(
       '/api/docs/create',

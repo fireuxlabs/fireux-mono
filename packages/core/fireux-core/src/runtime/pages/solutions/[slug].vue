@@ -6,7 +6,7 @@
     back-to="/solutions"
     back-label="Solutions"
   >
-    <div class="fx-solution-detail">
+    <div class="grid min-w-0 gap-5">
       <UBadge
         v-if="solution.status"
         color="primary"
@@ -15,7 +15,7 @@
         {{ statusLabel(solution.status) }}
       </UBadge>
 
-      <p class="fx-solution-detail__body">
+      <p class="m-0 whitespace-pre-line text-sm leading-7 text-muted">
         {{ solution.body || solution.description }}
       </p>
 
@@ -24,18 +24,18 @@
         variant="subtle"
       >
         <template #header>
-          <h2 class="fx-solution-panel__title">
+          <h2 class="m-0 text-base font-semibold text-highlighted">
             How this comes to life
           </h2>
         </template>
 
-        <ol class="fx-solution-steps">
+        <ol class="grid gap-3 p-0">
           <li
             v-for="(step, index) in solution.steps"
             :key="`${index}-${step}`"
-            class="fx-solution-step"
+            class="flex min-w-0 gap-3 text-sm leading-6 text-muted"
           >
-            <span class="fx-solution-step__number">
+            <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold leading-none text-primary">
               {{ index + 1 }}
             </span>
             <span>{{ step }}</span>
@@ -48,13 +48,13 @@
         variant="subtle"
       >
         <template #header>
-          <h2 class="fx-solution-panel__title">
+          <h2 class="m-0 text-base font-semibold text-highlighted">
             Related FireUX app
           </h2>
         </template>
 
-        <div class="fx-solution-related">
-          <p class="fx-solution-related__description">
+        <div class="grid min-w-0 gap-3">
+          <p class="m-0 text-sm leading-6 text-muted">
             {{ solution.relatedApp.description || `${solution.relatedApp.name} owns the deeper workflow for this solution.` }}
           </p>
           <UButton
@@ -75,7 +75,7 @@
       >
         <template #header>
           <div class="flex flex-wrap items-center gap-2">
-            <h2 class="fx-solution-panel__title">
+            <h2 class="m-0 text-base font-semibold text-highlighted">
               Admin planning
             </h2>
             <UBadge color="neutral" variant="soft">
@@ -84,22 +84,22 @@
           </div>
         </template>
 
-        <div class="fx-solution-admin">
+        <div class="grid min-w-0 gap-4">
           <p
             v-if="solution.businessCase"
-            class="fx-solution-admin__text"
+            class="m-0 whitespace-pre-line text-sm leading-6 text-muted"
           >
             {{ solution.businessCase }}
           </p>
 
           <div
             v-if="solution.keywords?.length"
-            class="fx-solution-admin__block"
+            class="grid min-w-0 gap-2"
           >
-            <h3 class="fx-solution-admin__title">
+            <h3 class="m-0 text-sm font-semibold text-highlighted">
               Search intent
             </h3>
-            <div class="fx-solution-admin__chips">
+            <div class="flex flex-wrap gap-1.5">
               <UBadge
                 v-for="keyword in solution.keywords"
                 :key="keyword"
@@ -113,12 +113,12 @@
 
           <div
             v-if="solution.provisioning?.length"
-            class="fx-solution-admin__block"
+            class="grid min-w-0 gap-2"
           >
-            <h3 class="fx-solution-admin__title">
+            <h3 class="m-0 text-sm font-semibold text-highlighted">
               Provisioning
             </h3>
-            <ul class="fx-solution-admin__list">
+            <ul class="m-0 grid gap-1.5 pl-4 text-sm leading-6 text-muted">
               <li
                 v-for="item in solution.provisioning"
                 :key="item"
@@ -130,20 +130,21 @@
 
           <div
             v-if="solution.checklist?.length"
-            class="fx-solution-admin__block"
+            class="grid min-w-0 gap-2"
           >
-            <h3 class="fx-solution-admin__title">
+            <h3 class="m-0 text-sm font-semibold text-highlighted">
               Checklist
             </h3>
-            <ul class="fx-solution-admin__checklist">
+            <ul class="m-0 grid list-none gap-2 p-0 text-sm leading-6 text-muted">
               <li
                 v-for="item in solution.checklist"
                 :key="item.label"
+                class="flex min-w-0 gap-2.5"
               >
-                <span
-                  class="fx-solution-admin__checkbox"
-                  :class="{ 'fx-solution-admin__checkbox--done': item.done }"
-                  aria-hidden="true"
+                <UIcon
+                  :name="item.done ? 'i-lucide-square-check' : 'i-lucide-square'"
+                  class="mt-1 size-4 shrink-0"
+                  :class="item.done ? 'text-primary' : 'text-muted'"
                 />
                 <span>{{ item.label }}</span>
               </li>

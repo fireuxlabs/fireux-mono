@@ -3,7 +3,7 @@
 import {
   FireuxRootScope,
   type FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =

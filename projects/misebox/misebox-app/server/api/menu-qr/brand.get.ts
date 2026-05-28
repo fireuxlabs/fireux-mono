@@ -9,5 +9,8 @@ type GoQrBrand = {
 
 export default defineEventHandler(async () => {
   const goQrBaseUrl = goQrProviderBaseUrl()
-  return await $fetch<GoQrBrand>(`${goQrBaseUrl}/api/brand`)
+  return await $fetch<GoQrBrand>(`${goQrBaseUrl}/api/brand`).catch(() => ({
+    name: 'Go QR',
+    url: goQrBaseUrl,
+  }))
 })

@@ -1,77 +1,105 @@
 <template>
-  <div class="space-y-4 rounded-lg border border-default bg-muted/20 p-4 sm:p-5">
-    <UFormField :label="inputLabel">
-      <UInput
-        v-model="rawValue"
-        :placeholder="placeholder"
-        class="w-full"
-      />
-      <p
-        v-if="statusMessage"
-        class="mt-1 text-xs"
-        :class="isValid ? 'text-muted' : 'text-error'"
-      >
-        {{ statusMessage }}
-      </p>
-    </UFormField>
+  <UCard variant="subtle">
+    <template #header>
+      <div class="space-y-1">
+        <h2 class="text-lg font-semibold text-highlighted">
+          {{ title }}
+        </h2>
+        <p class="text-sm leading-6 text-muted">
+          {{ description }}
+        </p>
+      </div>
+    </template>
 
-    <div
-      class="grid aspect-square w-full max-w-sm place-items-center rounded-md border border-default bg-white p-4"
-    >
-      <img
-        v-if="qrDataUrl"
-        :src="qrDataUrl"
-        :alt="`${title} QR code`"
-        class="size-full object-contain"
-      >
-      <p
-        v-else
-        class="text-center text-sm text-muted"
-      >
-        Enter a valid value
-      </p>
-    </div>
+    <form class="space-y-4" @submit.prevent>
+      <UFormField :label="inputLabel">
+        <UTextarea
+          v-if="type === 'qr'"
+          v-model="rawValue"
+          :placeholder="placeholder"
+          :rows="4"
+          class="w-full"
+        />
+        <UInput
+          v-else
+          v-model="rawValue"
+          :placeholder="placeholder"
+          class="w-full"
+        />
+        <p
+          v-if="statusMessage"
+          class="mt-1 text-xs"
+          :class="isValid ? 'text-muted' : 'text-error'"
+        >
+          {{ statusMessage }}
+        </p>
+      </UFormField>
 
-    <code
-      v-if="payload"
-      class="block break-all rounded-md bg-default px-3 py-2 text-xs text-muted"
-    >
-      {{ payload }}
-    </code>
+      <div class="grid gap-4 sm:grid-cols-[minmax(0,14rem)_1fr]">
+        <div class="grid aspect-square w-full place-items-center rounded-md border border-default bg-white p-4">
+          <img
+            v-if="qrDataUrl"
+            :src="qrDataUrl"
+            :alt="`${title} QR code`"
+            class="size-full object-contain"
+          >
+          <p
+            v-else
+            class="text-center text-sm text-muted"
+          >
+            Enter a valid value
+          </p>
+        </div>
 
-    <div class="flex flex-wrap gap-2">
-      <UButton
-        icon="i-lucide-copy"
-        color="neutral"
-        variant="soft"
-        :disabled="!payload"
-        @click="copyPayload"
-      >
-        Copy value
-      </UButton>
+        <div class="flex min-w-0 flex-col gap-3">
+          <UBadge
+            v-if="payload"
+            :label="payload"
+            color="neutral"
+            variant="soft"
+            size="sm"
+            class="max-w-full font-mono"
+          />
 
-      <a
-        v-if="qrDataUrl"
-        :href="qrDataUrl"
-        :download="downloadName"
-        class="inline-flex items-center justify-center gap-2 rounded-md border border-default px-3 py-2 text-sm font-medium text-highlighted hover:bg-muted"
-      >
-        <UIcon name="i-lucide-download" class="size-4" />
-        Download QR
-      </a>
-    </div>
-  </div>
+          <div class="grid gap-2">
+            <UButton
+              type="button"
+              icon="i-lucide-copy"
+              color="neutral"
+              variant="soft"
+              block
+              :disabled="!payload"
+              @click="copyPayload"
+            >
+              Copy value
+            </UButton>
+
+            <UButton
+              v-if="qrDataUrl"
+              :href="qrDataUrl"
+              :download="downloadName"
+              icon="i-lucide-download"
+              block
+            >
+              Download QR
+            </UButton>
+          </div>
+        </div>
+      </div>
+    </form>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { toDataURL } from 'qrcode'
 
-type InstantQrType = 'url' | 'phone'
+type InstantQrType = 'qr' | 'url' | 'phone'
 
 const props = defineProps<{
   type: InstantQrType
   title: string
+  description?: string
   inputLabel: string
   placeholder: string
 }>()
@@ -81,6 +109,7 @@ const qrDataUrl = ref('')
 const copyState = ref('')
 
 const payload = computed(() => {
+  if (props.type === 'qr') return rawValue.value.trim()
   if (props.type === 'phone') return phonePayload(rawValue.value)
   return urlPayload(rawValue.value)
 })

@@ -37,7 +37,7 @@ export function publicDocToolContract() {
     },
     tool: {
       id: 'public-doc',
-      name: 'Public doc QR code',
+      name: 'Public doc',
       upload_type: 'doc',
       accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
       max_file_size_mb: maxGoQrFileSizeMb,

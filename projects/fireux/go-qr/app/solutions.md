@@ -1,6 +1,66 @@
 # Go QR Solutions
 
-## public-doc-qr-code
+Authority: Go QR primitive planning and provider boundaries  
+Updated: 2026-05-28
+
+Go QR owns QR primitives, not industry-specific workflows. A Go QR solution name should match the primitive/tool name wherever possible: `qr`, `url`, `public-doc`, `phone`, and so on.
+
+Namespace levels:
+
+| Level | Primitive | Meaning | Storage |
+| --- | --- | --- | --- |
+| 1 | `qr` | Any short text or message becomes a QR image. | none |
+| 2 | `url`, `phone`, `wifi`, `whatsapp`, `location`, `vcard`, `event`, `review-link`, `feedback-link`, `booking-link` | A typed helper creates and validates the text encoded in the QR. | none by default |
+| 3 | `public-doc`, `pdf` | Go QR hosts a file, creates a public URL, then makes a QR. | Go QR |
+| 4 | `scan-to-doc` | AI/OCR rebuilds a document from photos/scans before publishing. | Go QR or consumer app, depending on ownership |
+
+Industry-specific QR flows belong in the app that owns the domain meaning:
+
+| Domain intent | Owning app | Go QR primitive |
+| --- | --- | --- |
+| Food menu QR | Misebox | `public-doc`, `url`, or later structured provider handoff |
+| Guest guide QR | BuenoHost | `public-doc` or `url` |
+| Multilingual QR page | Sproochli | `url` or public page QR target |
+
+Each domain app should backlink to the Go QR primitive it consumes when useful, and each Go QR primitive may explain where it is commonly used and when to switch to the owning domain app.
+
+## qr
+
+Send any message as a QR image.
+
+Current state: this is the level-one primitive. It can run without Firestore, Storage, sign-in, or payment because it only encodes the provided text into a downloadable QR image.
+
+Roadmap: keep this free and generous. Add SVG export, print sizing, sticker handoff, and simple share actions without turning it into a stored document product.
+
+Use this when the user wants to send a short message, note, URL, or prepared QR text exactly as written.
+
+### How this comes to life
+
+1. Enter the text.
+2. Generate the QR image locally/client-side.
+3. Preview the encoded value.
+4. Download or copy the QR image.
+5. Optionally move into a typed helper if the text needs validation.
+
+### Business case
+
+The raw QR primitive is a free utility and a low-cost doorway into Go QR. It can support playful notes, quick sharing, and future sticker/print upsells without storage costs.
+
+### Provisioning
+
+- Text input.
+- QR image generation.
+- PNG/SVG download.
+- Print/sticker handoff later.
+
+### Checklist
+
+- [x] Add text QR page.
+- [ ] Add SVG export.
+- [ ] Add print/sticker sizing.
+- [ ] Add optional share action.
+
+## public-doc
 
 Turn one public document into one scannable public page.
 
@@ -9,6 +69,14 @@ Current state: Go QR already supports the core upload flow for a public document
 Roadmap: keep this as the main Go QR product promise. Strengthen the page with clearer file validation, preview, QR download, expiry controls, deletion, and simple sharing instructions.
 
 Use this when the customer already has a finished document or piece of public information and only needs a clean QR entry point.
+
+Common consumers:
+
+| Use case | Use Go QR when | Use the owning app when |
+| --- | --- | --- |
+| Food menu | The menu is a finished PDF/DOC/DOCX. | The menu needs dishes, sections, prices, allergens, translations, availability, or ordering in Misebox. |
+| Guest guide | The guide is a finished public file. | The guide needs property-aware content, reusable sections, guest operations, or host management in BuenoHost. |
+| Translated information | The translated doc already exists as a finished public file. | Translation workflow, review, glossary, or multilingual routing belongs in Sproochli. |
 
 ### How this comes to life
 
@@ -36,7 +104,7 @@ This is Go QR's core wedge: people have a public thing and need one reliable sca
 - [ ] Confirm QR download and print output.
 - [ ] Add replace/delete management actions.
 
-## url-qr-code
+## url
 
 Turn an existing URL into a scannable QR code.
 
@@ -72,7 +140,7 @@ URL QR codes are the broadest search entry point and should route simple link ne
 - [ ] Add QR output for direct links.
 - [ ] Add saved label/record management.
 
-## pdf-qr-code
+## pdf
 
 Upload a PDF and give people a QR code that opens it.
 
@@ -108,7 +176,7 @@ PDF QR codes match how many businesses already store menus, notices, guides, and
 - [ ] Add replace-file action.
 - [ ] Add print-ready QR output.
 
-## wifi-qr-code
+## wifi
 
 Create a QR code that lets guests join a Wi-Fi network.
 
@@ -144,7 +212,7 @@ Wi-Fi QR codes solve a repeated physical-space problem and are easy to explain i
 - [ ] Add hidden network/security options.
 - [ ] Add print-ready output.
 
-## phone-call-qr-code
+## phone
 
 Create a QR code that starts a phone call.
 
@@ -180,7 +248,7 @@ Phone QR codes turn signs and printed material into immediate contact actions.
 - [ ] Generate tel link QR.
 - [ ] Add action preview.
 
-## whatsapp-qr-code
+## whatsapp
 
 Create a QR code that opens a WhatsApp chat.
 
@@ -216,7 +284,7 @@ WhatsApp QR codes are a practical contact route for local businesses, bookings, 
 - [ ] Validate generated WhatsApp URL.
 - [ ] Add QR download output.
 
-## map-pin-qr-code
+## location
 
 Create a QR code that opens a location or map pin.
 
@@ -252,7 +320,7 @@ Map QR codes help people reach hard-to-explain physical locations without typing
 - [ ] Add arrival note field.
 - [ ] Generate map destination QR.
 
-## vcard-qr-code
+## vcard
 
 Create a QR code that saves contact details.
 
@@ -288,7 +356,7 @@ vCard QR codes make printed contact material more useful without needing a full 
 - [ ] Add saved-contact preview.
 - [ ] Test common phone contact apps.
 
-## event-info-qr-code
+## event
 
 Create a QR code for event details, timing, location, or instructions.
 
@@ -324,7 +392,7 @@ Event QR codes connect posters and tickets to updateable public event informatio
 - [ ] Generate QR for event page.
 - [ ] Decide calendar file support.
 
-## review-link-qr-code
+## review-link
 
 Create a QR code that sends customers to a review page.
 
@@ -360,7 +428,7 @@ Review QR codes help businesses turn real-world customer moments into platform r
 - [ ] Add review placement copy.
 - [ ] Generate print-ready QR.
 
-## feedback-form-qr-code
+## feedback-link
 
 Create a QR code that opens a feedback or survey form.
 
@@ -396,7 +464,7 @@ Feedback QR codes are a simple bridge between physical service moments and struc
 - [ ] Decide whether Go QR owns lightweight forms.
 - [ ] Add response storage only if owned.
 
-## booking-link-qr-code
+## booking-link
 
 Create a QR code that opens a booking or appointment link.
 
@@ -431,111 +499,3 @@ Booking QR codes connect physical interest to an existing booking system without
 - [ ] Add destination preview.
 - [ ] Add business/service label.
 - [ ] Generate print-ready QR.
-
-## food-menu-qr-code
-
-Create a QR code for a food menu.
-
-Current state: Go QR can host a finished menu file today. This is enough when the menu is a static PDF or document.
-
-Roadmap: make the simple menu upload path explicit, then bridge to Misebox when the menu needs structured dishes, sections, prices, allergens, translations, availability, or ordering.
-
-Use this for cafes, restaurants, bars, pop-ups, food trucks, events, and temporary menus that only need a scannable public file.
-
-### How this comes to life
-
-1. Upload the finished menu file.
-2. Choose a public path for the menu.
-3. Generate the QR code for tables, windows, flyers, or signs.
-4. Replace the file when the static menu changes.
-5. Move to Misebox when the menu needs structured hospitality data.
-
-### Business case
-
-Food menu QR codes are high-intent and should route simple static menus to Go QR and structured menus to Misebox.
-
-### Provisioning
-
-- Menu file upload or URL.
-- Public menu page/slug.
-- QR output.
-- Misebox handoff.
-
-### Checklist
-
-- [ ] Confirm static menu upload works.
-- [ ] Add menu-specific labels.
-- [ ] Add replace-file flow.
-- [ ] Add Misebox handoff copy.
-
-## guest-guide-qr-code
-
-Create a QR code for guest instructions, house rules, Wi-Fi, and local notes.
-
-Current state: Go QR can host a simple guest guide document. That is enough for a single finished file.
-
-Roadmap: keep Go QR as the lightweight document route and bridge to BuenoHost when the guide should become editable, reusable, property-aware, or operational.
-
-Use this for apartments, BNBs, hotels, cabins, serviced rooms, event spaces, and rentals where guests need a single scannable guide.
-
-### How this comes to life
-
-1. Upload the finished guest guide document.
-2. Publish it at a short public path.
-3. Generate the QR code.
-4. Print it where guests naturally need help.
-5. Move to BuenoHost when the guide needs structured property tools.
-
-### Business case
-
-Guest guide QR codes are a good lightweight entry point before a host needs BuenoHost.
-
-### Provisioning
-
-- Guest guide document upload.
-- Public guide slug.
-- QR output.
-- BuenoHost handoff.
-
-### Checklist
-
-- [ ] Confirm guest guide upload path.
-- [ ] Add guest-guide labels.
-- [ ] Add public guide unavailable state.
-- [ ] Add BuenoHost handoff copy.
-
-## multilingual-qr-pages
-
-Create QR pages for public information in more than one language.
-
-Current state: Go QR owns the scannable public link. Sproochli owns the deeper translation and localisation workflow.
-
-Roadmap: let Go QR bridge multilingual needs to Sproochli instead of building translation into the base QR product. Add a handoff from a Go QR page to a Sproochli multilingual page when language support becomes necessary.
-
-Use this when the QR destination is useful, but visitors need language choice to understand the information.
-
-### How this comes to life
-
-1. Start with one Go QR public page or document.
-2. Decide which visitor languages matter.
-3. Move the public page content into Sproochli when translation is needed.
-4. Publish the multilingual page with language selection.
-5. Use the QR code to send visitors to the language-aware public page.
-
-### Business case
-
-Multilingual QR pages should use Go QR for the scannable access point and Sproochli for language workflow.
-
-### Provisioning
-
-- Public QR destination.
-- Language need detection/copy.
-- Sproochli handoff.
-- QR target update path.
-
-### Checklist
-
-- [ ] Add language-aware handoff from Go QR.
-- [ ] Confirm Sproochli destination URL shape.
-- [ ] Add QR target update path.
-- [ ] Keep translation workflow out of Go QR.

@@ -4,8 +4,8 @@ import { createHash, createSign } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, join, resolve } from 'node:path'
-import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
-import { MenuStorage } from 'fireux-kitchens/runtime/models/menu.model'
+import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model.ts'
+import { MenuStorage } from 'fireux-kitchens/runtime/models/menu.model.ts'
 
 export type MenuTranslationCacheKeyInput = {
   fieldId: string

@@ -1,14 +1,16 @@
 <template>
   <section
     v-if="shouldRender"
-    class="landing-index-section fx-solutions"
-    :class="variant === 'hub' ? 'fx-solutions--hub' : 'fx-solutions--preview'"
+    class="landing-index-section grid min-w-0 gap-6 sm:gap-8"
   >
-    <div class="fx-solutions__header">
+    <div
+      class="grid min-w-0 gap-3"
+      :class="variant === 'hub' ? 'max-w-3xl' : 'mx-auto max-w-2xl text-center'"
+    >
       <NuxtLink
         v-if="variant === 'hub'"
         to="/"
-        class="fx-solutions__back"
+        class="w-fit text-sm font-semibold text-primary hover:underline"
       >
         {{ appName }}
       </NuxtLink>
@@ -21,14 +23,14 @@
       </UBadge>
       <component
         :is="variant === 'hub' ? 'h1' : 'h2'"
-        class="fx-solutions__title"
-        :class="variant === 'hub' ? 'fx-solutions__title--hub' : 'fx-solutions__title--preview'"
+        class="m-0 font-semibold tracking-normal text-highlighted"
+        :class="variant === 'hub' ? 'text-3xl leading-tight sm:text-4xl' : 'text-3xl leading-tight'"
       >
         {{ resolvedTitle }}
       </component>
       <p
         v-if="resolvedSubtitle"
-        class="fx-solutions__subtitle"
+        class="m-0 text-base leading-7 text-muted"
       >
         {{ resolvedSubtitle }}
       </p>
@@ -48,8 +50,8 @@
     />
 
     <div
-      v-if="variant === 'preview' && hasMoreSolutions"
-      class="fx-solutions__more"
+      v-if="variant === 'preview' && shouldShowMoreButton"
+      class="flex justify-center"
     >
       <UButton
         to="/solutions"
@@ -80,12 +82,14 @@ const props = withDefaults(
     limit?: number
     title?: string
     subtitle?: string
+    alwaysShowMoreButton?: boolean
   }>(),
   {
     variant: 'preview',
     limit: 4,
     title: '',
     subtitle: '',
+    alwaysShowMoreButton: false,
   }
 )
 
@@ -104,6 +108,9 @@ const displayedSolutions = computed(() =>
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const hasMoreSolutions = computed(
   () => allSolutions.value.length > displayedSolutions.value.length
+)
+const shouldShowMoreButton = computed(() =>
+  hasMoreSolutions.value || props.alwaysShowMoreButton
 )
 const shouldRender = computed(() => {
   if (fireux.isTenant) return false

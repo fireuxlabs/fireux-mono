@@ -1,12 +1,12 @@
 import type {
   FireuxAppOverlay,
   FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import {
   FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =

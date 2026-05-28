@@ -61,6 +61,56 @@ const menuQrConsumerConfig = {
   storageOwner: 'misebox',
 }
 
+function fallbackPublicDocToolContract(providerBaseUrl: string): GoQrToolContract {
+  return {
+    ok: true,
+    provider: {
+      id: 'go-qr',
+      app_info_url: '/api/brand',
+      base_url: providerBaseUrl,
+    },
+    tool: {
+      id: 'public-doc',
+      name: 'Public doc',
+      upload_type: 'doc',
+      accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
+      max_file_size_mb: 10,
+      anonymous_max_creates: 1,
+      result: {
+        target_path_pattern: '/:slug',
+        qr_path_pattern: '/:slug/qr',
+        label: 'Public Doc',
+      },
+    },
+    endpoints: {
+      availability: '/api/tools/public-doc/availability',
+      create: '/api/tools/public-doc/create',
+      app_info: '/api/brand',
+    },
+    slug: {
+      label: 'Document path',
+      validation_label: 'Document path',
+      placeholder: 'my-doc',
+      reserved: [],
+      taken_message: 'This doc path is already taken.',
+    },
+    ui: {
+      title: 'Upload a doc. Get a QR code.',
+      description: 'Turn a public doc into a shareable QR page.',
+      upload_label: 'Upload your doc',
+      cta_label: 'Create QR code',
+      loading_label: 'Creating QR doc...',
+      success_title: 'Your QR doc is ready',
+      open_target_label: 'Open doc',
+      open_qr_label: 'Open QR page',
+    },
+    preview: {
+      base_url: providerBaseUrl,
+      path_suffix: '/qr',
+    },
+  }
+}
+
 function sentenceCase(value: string) {
   return value ? `${value.slice(0, 1).toUpperCase()}${value.slice(1)}` : value
 }
@@ -119,6 +169,7 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
 export default defineEventHandler(async () => {
   const goQrBaseUrl = goQrProviderBaseUrl()
   const contract = await $fetch<GoQrToolContract>(`${goQrBaseUrl}/api/tools/public-doc`)
+    .catch(() => fallbackPublicDocToolContract(goQrBaseUrl))
 
   return menuToolConfig(contract, goQrBaseUrl)
 })

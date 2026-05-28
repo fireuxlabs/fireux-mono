@@ -10,7 +10,7 @@
       </p>
 
       <p class="text-muted">
-        Go QR is part of the FireUX ecosystem and is designed for simple public information: notices, menus, guides, forms, and other docs people need to scan and read.
+        Go QR is part of the FireUX ecosystem and is designed for simple public information: text, links, notices, forms, and finished docs people need to scan and read.
       </p>
     </section>
 

@@ -1,7 +1,7 @@
 <template>
   <PublicQrFileUploadTool
     endpoint="/api/docs/create"
-    :upload-type="type"
+    upload-type="doc"
     :upload-label="uploadLabel"
     :cta-label="ctaLabel"
     :safety-copy="safetyCopy"
@@ -18,29 +18,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-type GoQrUploadType = 'doc' | 'food-menu'
-
 const props = withDefaults(defineProps<{
-  type?: GoQrUploadType
   uploadLabel?: string
   ctaLabel?: string
   safetyCopy?: string
 }>(), {
-  type: 'doc',
   uploadLabel: 'Drop your doc here',
   ctaLabel: 'Create your first QR doc free',
   safetyCopy: 'QR docs are for public information. Anyone with the link or QR code can view your doc.',
 })
 
 const previewBaseUrl = 'https://go-qr.web.app'
-const slugPlaceholder = computed(() => (props.type === 'food-menu' ? 'my-restaurant-menu' : 'my-doc'))
-const upsellCopy = computed(() =>
-  props.type === 'food-menu'
-    ? 'Your menu QR will be labelled Food Menu. Sign in later to add your restaurant logo.'
-    : ''
-)
+const slugPlaceholder = 'my-doc'
+const upsellCopy = ''
 const reservedDocumentSlugs = [
   'about',
   'admin',
@@ -50,7 +40,6 @@ const reservedDocumentSlugs = [
   'console',
   'dashboard',
   'docs',
-  'food-menu',
   'get-started',
   'help',
   'pricing',

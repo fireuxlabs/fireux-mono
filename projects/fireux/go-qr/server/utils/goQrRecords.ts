@@ -41,7 +41,6 @@ export const reservedGoQrDocumentIds = [
   'console',
   'dashboard',
   'docs',
-  'food-menu',
   'get-started',
   'help',
   'pricing',
@@ -75,7 +74,7 @@ export function normalizeDocumentType(value: unknown) {
 }
 
 export function assertDocumentType(type: string) {
-  if (type !== 'doc' && type !== 'food-menu') {
+  if (type !== 'doc') {
     throw createError({
       statusCode: 400,
       statusMessage: 'Document type is not valid',
@@ -274,7 +273,7 @@ function normalizeExternalFileUrl(value: unknown) {
 export async function createGoQrDocumentFromMultipart(
   parts: MultipartPart[] | undefined,
   options: {
-    type?: 'doc' | 'food-menu'
+    type?: 'doc'
   } = {}
 ) {
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)
