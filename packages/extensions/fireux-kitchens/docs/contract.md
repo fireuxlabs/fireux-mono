@@ -75,6 +75,7 @@ Menu composable stack canon:
   - `kitchens/{kitchenId}/menus/{menuId}` for root kitchen menu records
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped kitchen menu records
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
+- Public menu pages and app/API upload flows are route consumers of `Menu`; they must not create a second Menu family or a special public Menu composable.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
 - `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.
 - `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.

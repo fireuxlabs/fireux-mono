@@ -56,6 +56,13 @@ export type MenuDesign = {
   color_mode: 'light' | 'dark'
 }
 
+export type MenuDocument = {
+  url: string
+  name: string
+  type: string
+  storage_path: string
+}
+
 export const MenuModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -67,6 +74,10 @@ export const MenuModel = {
   design: {
     color_mode: 'light',
   } as MenuDesign,
+  doc_url: '' as string,
+  doc_name: '' as string,
+  doc_type: '' as string,
+  doc_storage_path: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],

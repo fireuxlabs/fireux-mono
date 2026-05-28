@@ -12,7 +12,7 @@
 
       <div class="flex shrink-0 items-center gap-1.5">
         <UButton
-          :to="documentRecord.file_url"
+          :to="documentRecord.doc_url"
           target="_blank"
           icon="i-lucide-external-link"
           variant="ghost"
@@ -20,8 +20,8 @@
           aria-label="Open original"
         />
         <a
-          :href="documentRecord.file_url"
-          :download="documentRecord.file_name"
+          :href="documentRecord.doc_url"
+          :download="documentRecord.doc_name"
           class="inline-grid size-8 place-items-center rounded-md text-muted hover:bg-elevated hover:text-highlighted"
           aria-label="Download menu"
         >
@@ -72,9 +72,9 @@ import { computed } from 'vue'
 
 type PublicMenuQrRecord = {
   slug: string
-  file_url: string
-  file_type: string
-  file_name: string
+  doc_url: string
+  doc_type: string
+  doc_name: string
   display_label?: string
 }
 
@@ -101,7 +101,7 @@ if (!documentData.value) {
 
 const documentRecord = computed(() => documentData.value as PublicMenuQrRecord)
 const documentLabel = computed(() => documentRecord.value.display_label || documentRecord.value.slug)
-const isPdf = computed(() => documentRecord.value.file_type === 'application/pdf')
+const isPdf = computed(() => documentRecord.value.doc_type === 'application/pdf')
 const viewerUrl = computed(() => `/api/menus/${encodeURIComponent(documentRecord.value.slug)}/file`)
 
 useSeoMeta({

@@ -385,7 +385,7 @@ n/a     -> the seam is not expected for this entity shape yet
 | Kitchen supplier ingredient | scoped | `KitchenSupplierIngredientStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Dish | scoped | `DishStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Recipe | scoped | `RecipeStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
-| Menu | both | `MenuStorage` | aligned | aligned | aligned | aligned | aligned | partial | partial | partial: root/scoped CRUD aligned; public menu/API surface naming still needs full pass |
+| Menu | both | `MenuStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
 | Menu section | scoped | `MenuSectionStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
 | Menu item | scoped | `MenuItemStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
 | Kitchen mise task | scoped | `KitchenMiseTaskStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
@@ -411,8 +411,6 @@ n/a     -> the seam is not expected for this entity shape yet
 | Module | root | `ModuleStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Sproochli translation document | root | `TranslationDocumentStorage` | aligned | aligned | aligned | aligned | aligned | n/a | aligned | aligned; server API is transport/read shaping |
 | Sproochli translation child | scoped | `TranslationStorage` | aligned | aligned | aligned | aligned | aligned | n/a | aligned | aligned |
-| Misebox uploaded menu document | root | app-local | partial | partial | aligned | partial | partial | n/a | partial | partial: app-local API surface mostly aligned, but model/storage decision remains app-local |
-
 Alignment rule: do not mark an entity `aligned` until the code has been checked
 for all relevant runtime seams in this matrix. Documentation-only intent is not
 implementation.

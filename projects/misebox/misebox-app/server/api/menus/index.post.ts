@@ -143,10 +143,10 @@ export default defineEventHandler(async (event) => {
   })
   const record = await createMenuDocument({
     slug,
-    fileUrl: uploaded.fileUrl,
-    fileType,
-    fileName: uploaded.fileName,
-    storagePath: uploaded.storagePath,
+    docUrl: uploaded.fileUrl,
+    docType: fileType,
+    docName: uploaded.fileName,
+    docStoragePath: uploaded.storagePath,
   })
 
   return {

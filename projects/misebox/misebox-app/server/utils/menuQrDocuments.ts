@@ -17,10 +17,14 @@ export type MenuDocument = {
   }
   title: string
   source_type: string
-  file_url: string
-  file_type: string
-  file_name: string
-  storage_path: string
+  doc_url?: string
+  doc_type?: string
+  doc_name?: string
+  doc_storage_path?: string
+  file_url?: string
+  file_type?: string
+  file_name?: string
+  storage_path?: string
   storage_owner: string
   source_app: string
   display_label: string
@@ -111,6 +115,10 @@ export function menuQrQrUrl(slug: string) {
 }
 
 export function serializeMenuDocument(record: MenuDocument) {
+  const docUrl = record.doc_url || record.file_url || ''
+  const docType = record.doc_type || record.file_type || ''
+  const docName = record.doc_name || record.file_name || ''
+
   return {
     id: record.id,
     slug: record.slug,
@@ -119,9 +127,12 @@ export function serializeMenuDocument(record: MenuDocument) {
     status: record.status,
     source_type: record.source_type,
     title: record.title,
-    file_url: record.file_url,
-    file_type: record.file_type,
-    file_name: record.file_name,
+    doc_url: docUrl,
+    doc_type: docType,
+    doc_name: docName,
+    file_url: docUrl,
+    file_type: docType,
+    file_name: docName,
     storage_owner: record.storage_owner,
     source_app: record.source_app,
     display_label: record.display_label,
@@ -134,10 +145,10 @@ export function serializeMenuDocument(record: MenuDocument) {
 
 export async function createMenuDocument(input: {
   slug: string
-  fileUrl: string
-  fileType: string
-  fileName: string
-  storagePath: string
+  docUrl: string
+  docType: string
+  docName: string
+  docStoragePath: string
 }) {
   const record = {
     created: {
@@ -161,10 +172,10 @@ export async function createMenuDocument(input: {
     },
     title: input.slug,
     source_type: 'storage_file',
-    file_url: input.fileUrl,
-    file_type: input.fileType,
-    file_name: input.fileName,
-    storage_path: input.storagePath,
+    doc_url: input.docUrl,
+    doc_type: input.docType,
+    doc_name: input.docName,
+    doc_storage_path: input.docStoragePath,
     storage_owner: 'misebox',
     source_app: 'misebox',
     display_label: 'Food Menu',

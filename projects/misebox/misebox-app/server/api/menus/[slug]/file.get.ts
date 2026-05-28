@@ -41,7 +41,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const storageFile = getStorage(getAdminApp()).bucket(bucketName).file(record.storage_path)
+  const storagePath = record.doc_storage_path || record.storage_path
+  if (!storagePath) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Menu file not found',
+    })
+  }
+
+  const storageFile = getStorage(getAdminApp()).bucket(bucketName).file(storagePath)
   const [exists] = await storageFile.exists()
 
   if (!exists) {
@@ -51,12 +59,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  setHeader(event, 'content-type', record.file_type || 'application/octet-stream')
+  setHeader(event, 'content-type', record.doc_type || record.file_type || 'application/octet-stream')
   setHeader(event, 'cache-control', 'public, max-age=300')
   setHeader(
     event,
     'content-disposition',
-    `inline; filename="${record.file_name.replace(/"/g, '')}"`
+    `inline; filename="${(record.doc_name || record.file_name || 'menu').replace(/"/g, '')}"`
   )
 
   return sendStream(event, storageFile.createReadStream())
