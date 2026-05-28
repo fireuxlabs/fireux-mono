@@ -78,7 +78,7 @@ export function normalizeMenuQrSlug(value: unknown) {
 
 export function validateMenuQrSlug(slug: string) {
   return validatePublicSlug(slug, {
-    label: 'Menu URL',
+    label: 'Menu path',
     reservedScope: 'root',
     reserved: reservedMenuQrSlugs,
   })

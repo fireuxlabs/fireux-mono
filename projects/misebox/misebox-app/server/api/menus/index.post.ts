@@ -99,7 +99,7 @@ export default defineEventHandler(async (event) => {
   if (!validation.isValid) {
     throw createError({
       statusCode: 400,
-      statusMessage: validation.message || 'Menu URL is not valid',
+      statusMessage: validation.message || 'Menu path is not valid',
     })
   }
 
@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
   if (existing.exists) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'This menu URL is already taken.',
+      statusMessage: 'This menu path is already taken.',
     })
   }
 

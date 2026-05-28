@@ -1,6 +1,10 @@
 import { defineEventHandler } from 'h3'
 import { goQrProviderBaseUrl } from '../../utils/goQrProvider'
-import { menuQrPublicBaseUrl, reservedMenuQrSlugs } from '../../utils/menuQrDocuments'
+import {
+  menuQrPublicBaseUrl,
+  miseboxPublicBaseUrl,
+  reservedMenuQrSlugs,
+} from '../../utils/menuQrDocuments'
 
 type GoQrToolContract = {
   ok: boolean
@@ -48,6 +52,7 @@ type GoQrToolContract = {
     base_url: string
     path_suffix: string
   }
+  result_base_url?: string
 }
 
 const menuQrConsumerConfig = {
@@ -145,7 +150,7 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
       validation_label: pathLabel,
       placeholder: menuQrConsumerConfig.slugPlaceholder,
       reserved: reservedMenuQrSlugs,
-      taken_message: `This ${resource} URL is already taken.`,
+      taken_message: `This ${resource} path is already taken.`,
     },
     ui: {
       ...contract.ui,
@@ -162,6 +167,7 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
       base_url: menuQrPublicBaseUrl(),
       path_suffix: '/qr',
     },
+    result_base_url: miseboxPublicBaseUrl(),
     consumer_config: menuQrConsumerConfig,
   }
 }

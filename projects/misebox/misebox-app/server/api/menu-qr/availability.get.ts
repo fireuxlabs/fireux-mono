@@ -14,10 +14,10 @@ function readId(value: unknown) {
 export default defineEventHandler(async (event) => {
   const id = readId(getQuery(event).id)
   const availability = await checkPublicSlugAvailability(id, {
-    label: 'Menu URL',
+    label: 'Menu path',
     reservedScope: 'root',
     reserved: reservedMenuQrSlugs,
-    takenMessage: 'This menu URL is already taken.',
+    takenMessage: 'This menu path is already taken.',
     exists: async (slug) => {
       const snap = await menuDocumentRef(slug).get()
       return snap.exists

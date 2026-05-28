@@ -8,7 +8,7 @@
 
     <div class="grid gap-3 sm:grid-cols-2">
       <div
-        v-for="endpoint in endpoints"
+        v-for="endpoint in dev.endpoints"
         :key="endpoint.path"
         class="rounded-md border border-default bg-default p-3"
       >
@@ -31,11 +31,9 @@
 </template>
 
 <script setup lang="ts">
+import type { MiseboxSolution } from '../../../utils/miseboxSolutions'
+
 defineProps<{
-  endpoints: Array<{
-    method: string
-    path: string
-    description: string
-  }>
+  dev: MiseboxSolution['dev']
 }>()
 </script>

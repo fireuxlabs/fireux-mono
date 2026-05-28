@@ -8,12 +8,12 @@
 
     <div class="space-y-4">
       <p class="text-sm leading-6 text-muted">
-        {{ body }}
+        {{ integrations.body }}
       </p>
 
       <div class="grid gap-3 md:grid-cols-3">
         <div
-          v-for="item in items"
+          v-for="item in integrations.items"
           :key="item.name"
           class="rounded-md border border-default bg-default p-3"
         >
@@ -46,15 +46,9 @@
 </template>
 
 <script setup lang="ts">
+import type { MiseboxSolution } from '../../../utils/miseboxSolutions'
+
 defineProps<{
-  body: string
-  items: Array<{
-    name: string
-    icon: string
-    body: string
-    cta?: string
-    to?: string
-    external?: boolean
-  }>
+  integrations: MiseboxSolution['integrations']
 }>()
 </script>

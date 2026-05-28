@@ -1,7 +1,7 @@
 <template>
   <PublicSimplePage
-    :title="title"
-    :description="description"
+    :title="solution.title"
+    :description="solution.description"
     back-to="/solutions"
     back-label="Solutions"
   >
@@ -12,8 +12,9 @@
 </template>
 
 <script setup lang="ts">
+import type { MiseboxSolution } from '../../../utils/miseboxSolutions'
+
 defineProps<{
-  title: string
-  description: string
+  solution: MiseboxSolution
 }>()
 </script>

@@ -122,6 +122,14 @@
         </UButton>
       </div>
     </UCard>
+
+    <DevJson
+      class="mt-4"
+      :data="debugPayload"
+      title="QR file upload tool"
+      context="Shared QR upload tool config, resolved preview paths, endpoints, and local state."
+      :hide-when-empty="false"
+    />
   </div>
 </template>
 
@@ -243,6 +251,50 @@ const previewUrl = computed(() => {
   const base = effectivePreviewBaseUrl.value.replace(/\/+$/, '')
   return `${base ? `${base}/` : ''}${slug}${effectivePreviewPathSuffix.value}`
 })
+const debugPayload = computed(() => ({
+  endpoints: {
+    create: props.endpoint,
+    config: inferredConfigEndpoint.value,
+    availability: props.availabilityEndpoint || null,
+    poweredBy: props.poweredByEndpoint || null,
+  },
+  upload: {
+    type: props.uploadType || null,
+    accept: props.accept,
+    maxFileSizeMb: props.maxFileSizeMb,
+    label: props.uploadLabel,
+    description: uploadDescription.value,
+  },
+  slug: {
+    label: props.slugLabel,
+    validationLabel: props.slugValidationLabel,
+    placeholder: props.slugPlaceholder,
+    reserved: props.reservedSlugs,
+    takenMessage: props.takenMessage,
+    normalized: normalizedSlug.value || null,
+    error: slugError.value || null,
+    taken: slugTaken.value,
+  },
+  preview: {
+    baseUrl: effectivePreviewBaseUrl.value || null,
+    pathSuffix: effectivePreviewPathSuffix.value,
+    url: previewUrl.value,
+  },
+  result: {
+    baseUrl: effectiveResultBaseUrl.value || null,
+    targetUrl: createdTargetUrl.value || null,
+    qrUrl: createdQrUrl.value || null,
+    navigateOnSuccess: props.navigateOnSuccess,
+  },
+  poweredBy: poweredBy.value,
+  state: {
+    hasFile: Boolean(file.value),
+    uploadError: uploadError.value || null,
+    canCreate: canCreate.value,
+    isCreating: isCreating.value,
+    createError: createError.value || null,
+  },
+}))
 const canCreate = computed(() =>
   Boolean(
     file.value &&
