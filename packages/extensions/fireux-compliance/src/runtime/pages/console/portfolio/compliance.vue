@@ -104,6 +104,7 @@ import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/conso
 import { computed } from 'vue'
 import { usePortfolioComplianceRecordCollection } from '../../../composables/fireux/console/portfolio/operations/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { useComplianceInterface } from '../../../composables/fireux/console/portfolio/operations/compliance/utils/view/useComplianceInterface'
+import { ComplianceRecordStorage } from '../../../models/compliance-record.model'
 
 definePageMeta({
   layout: 'console',
@@ -129,7 +130,7 @@ const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
 const compliancePath = usePortfolioConsoleChildPath(
   runtimePortfolio,
-  'compliance-records'
+  ComplianceRecordStorage.collection
 )
 
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

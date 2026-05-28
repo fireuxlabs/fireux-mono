@@ -3,7 +3,11 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
+import {
+  KitchenMiseTaskStorage,
+  type KitchenMiseTask,
+} from '../../../../../../../models/kitchen-mise.model'
+import { KitchenStorage } from '../../../../../../../models/kitchen.model'
 
 type UpdateKitchenMiseInput = {
   kitchenId: string
@@ -39,7 +43,7 @@ export function useKitchenMiseUpdate() {
 
     if (!kitchenId) throw new Error('Kitchen id is required')
     if (!taskId) throw new Error('Mise task id is required')
-    if (rootCollection !== 'kitchens') {
+    if (rootCollection !== KitchenStorage.rootCollection) {
       throw new Error('Mise task edits are only enabled for test kitchens.')
     }
 
@@ -51,7 +55,7 @@ export function useKitchenMiseUpdate() {
     }
 
     await updateDocument<KitchenMiseTask>(
-      `${rootCollection}/${kitchenId}/mise`,
+      `${rootCollection}/${kitchenId}/${KitchenMiseTaskStorage.collection}`,
       taskId,
       patch
     )

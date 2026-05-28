@@ -16,10 +16,12 @@ descriptors, not separate operation families.
 Create
 ├─ root
 ├─ scoped
-├─ both
-├─ provider-backed
-└─ provisioned/server-backed
+└─ both
 ```
+
+Some creates use a provider, sibling app API, storage upload, or server route.
+That is transport/input-source language. It does not create another entity
+family.
 
 ## Storage Shapes
 
@@ -198,6 +200,18 @@ scoped
 both
 ```
 
+Creation and reading should mirror each other:
+
+```text
+root   create -> root fetch / root collection
+scoped create -> scoped fetch / scoped collection
+both   create -> root fetch plus overlay fetch, or root collection plus overlay collection
+```
+
+The read seam should make the storage shape obvious. A caller should be able to
+tell whether it is reading public/root truth, scoped operational records, or a
+root-plus-overlay operating context without reading the implementation.
+
 Examples:
 
 ```text
@@ -209,6 +223,22 @@ useKitchenMiseCollection()   -> scoped kitchen child collection read
 useConversationMessageFetch  -> scoped child single read
 
 useKitchenConsole()          -> both/root plus app overlay operating read
+```
+
+For `both` entities, keep the raw reads separable:
+
+```text
+root record       -> kitchens/{kitchenId}
+overlay record    -> apps/{appId}/kitchens/{kitchenId}
+surface/interface -> root + overlay projected for the current surface
+```
+
+The same applies to collection reads:
+
+```text
+root collection       -> kitchens
+overlay collection    -> apps/{appId}/kitchens
+hydrated collection   -> overlay ids, then exact root docs, then merge/project
 ```
 
 `useXInterface` may meld already-read records into a stable surface shape. It
@@ -233,6 +263,48 @@ read shape.
 
 Server/API-mediated reads use a Nuxt API route when authority, privacy, storage,
 provider access, or public-safe response shaping requires the server.
+
+### Hydrated Read Rule
+
+Hydrated reads are allowed when the surface genuinely needs multiple records,
+but they should stay named as a surface or route read, not become the boring
+entity fetch/collection default.
+
+Simple entity seams stay boring:
+
+```text
+useXFetch      -> one stored entity record
+useXCollection -> many stored entity records from one family
+useXInterface  -> project already-read records
+```
+
+Complex hydrated seams should describe the surface:
+
+```text
+useKitchenConsole        -> selected kitchen root/overlay operating context
+usePropertyCollection    -> root properties plus app overlay access filter
+useMenu route surface    -> public menu route composition
+```
+
+When a read needs root + scoped + child collections + translation/cache/provider
+data, treat it as a route/surface composition. Keep the component parts readable
+and testable as separate entity reads.
+
+Current complex example:
+
+```text
+Menu route surface
+├─ root Kitchen collection, resolved by public slug
+├─ scoped Menu collection under the Kitchen
+├─ scoped MenuSection collection under the Menu
+├─ scoped MenuItem rows under each section, or embedded menu sections
+├─ scoped Dish collection for dish labels/details
+└─ optional scoped translation cache for Sproochli language rendering
+```
+
+That is correct as a public menu route runtime. It would be too much work for
+`useMenuFetch` or `useMenuCollection`; those seams should stay focused on stored
+Menu records.
 
 ## Mutation Families
 
@@ -296,7 +368,7 @@ n/a     -> the seam is not expected for this entity shape yet
 | App | root | `AppStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
 | User | both | `UserStorage`, `AppUserStorage`, `UserNotificationStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
 | Ecosystem | root | `EcosystemStorage` | aligned | aligned | aligned | publish aligned | n/a | aligned | aligned | aligned |
-| Project | both | `ProjectStorage`, `AppProjectStorage` | partial | partial | partial | partial | partial | partial | n/a | partial: console project create/test paths need a focused pass |
+| Project | both | `ProjectStorage`, `AppProjectStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Profile base | both | `ProfileStorage`, `AppProfileStorage` | aligned | aligned | aligned | aligned | delegated | n/a | n/a | aligned as shared profile seam |
 | Chef profile | both | `ChefStorage`, `AppChefStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Professional profile | both | `ProfessionalStorage`, `AppProfessionalStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
@@ -306,39 +378,39 @@ n/a     -> the seam is not expected for this entity shape yet
 | Place | root | `PlaceStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Company | root | `CompanyStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Product | root | `ProductStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
-| Product price | scoped | `ProductPriceStorage` | partial | aligned | partial | partial | partial | n/a | aligned | partial: runtime server endpoints aligned; direct price CRUD checklist still pending |
+| Product price | scoped | `ProductPriceStorage` | aligned | aligned | aligned | n/a | n/a | n/a | aligned | aligned as Product child reader plus Product create/API price provisioning |
 | Kitchen | both | `KitchenStorage`, `AppKitchenStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned in runtime and app-local menu translation cache |
 | Ingredient | root | `IngredientStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
-| Kitchen ingredient | scoped | `KitchenIngredientStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial: console scoped ingredient operations need full CRUD checklist |
-| Kitchen supplier ingredient | scoped | `KitchenSupplierIngredientStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
+| Kitchen ingredient | scoped | `KitchenIngredientStorage` | aligned | aligned | aligned | n/a | aligned | n/a | n/a | aligned as kitchen relationship record selection |
+| Kitchen supplier ingredient | scoped | `KitchenSupplierIngredientStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Dish | scoped | `DishStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Recipe | scoped | `RecipeStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
-| Menu | scoped | `MenuStorage` | aligned | aligned | aligned | aligned | aligned | partial | partial | partial: public menu/API surfaces still need full pass |
+| Menu | both | `MenuStorage` | aligned | aligned | aligned | aligned | aligned | partial | partial | partial: root/scoped CRUD aligned; public menu/API surface naming still needs full pass |
 | Menu section | scoped | `MenuSectionStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
 | Menu item | scoped | `MenuItemStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned as menu child |
-| Kitchen mise task | scoped | `KitchenMiseTaskStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: test/console operations exist, needs CRUD checklist |
-| Kitchen station | scoped | `KitchenStationStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: console operations exist, needs CRUD checklist |
-| Kitchen team member | scoped | `KitchenTeamMemberStorage` | partial | partial | partial | partial | partial | n/a | n/a | partial: console operations exist, needs CRUD checklist |
-| Kitchen team join request | scoped | `KitchenTeamJoinRequestStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Kitchen order | scoped | `KitchenOrderStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Kitchen cost snapshot | scoped | `KitchenCostSnapshotStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Supplier | both | `SupplierStorage`, `AppSupplierStorage` | aligned | aligned | aligned | partial | aligned | aligned | n/a | partial: update seam needs same storage-constant pass as fetch/delete |
-| Supplier product | scoped | `SupplierProductStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial |
-| Supplier catalogue | scoped | `SupplierCatalogueStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Portfolio | both | `PortfolioStorage`, `AppPortfolioStorage` | aligned | aligned | aligned | partial | aligned | aligned | n/a | partial: create/test path and update/delete need full pass |
-| Property | scoped | `PropertyStorage` | partial | aligned | partial | partial | partial | partial | n/a | partial |
-| Unit | scoped | `UnitStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Client | scoped | `ClientStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Order | scoped | `OrderStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Task | scoped | `TaskStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Document | root | `DocumentStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Document link | scoped | `DocumentLinkStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Compliance record | scoped | `ComplianceRecordStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Conversation | root | `ConversationStorage` | partial | aligned | partial | partial | partial | n/a | n/a | partial |
-| Conversation message | scoped | `ConversationMessageStorage` | partial | aligned | aligned | n/a | n/a | n/a | n/a | partial |
-| Module | root | `ModuleStorage` | backlog | backlog | backlog | backlog | backlog | n/a | n/a | backlog |
-| Sproochli translation document | root | `TranslationDocumentStorage` | partial | partial | partial | backlog | backlog | n/a | aligned | partial: storage constants exist; full runtime CRUD stack is still future work |
-| Sproochli translation child | scoped | `TranslationStorage` | partial | partial | partial | backlog | backlog | n/a | aligned | partial: storage constants exist; full runtime CRUD stack is still future work |
+| Kitchen mise task | scoped | `KitchenMiseTaskStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Kitchen station | scoped | `KitchenStationStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Kitchen team member | scoped | `KitchenTeamMemberStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Kitchen team join request | scoped | `KitchenTeamJoinRequestStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Kitchen order | scoped | `KitchenOrderStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Kitchen cost snapshot | scoped | `KitchenCostSnapshotStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Supplier | both | `SupplierStorage`, `AppSupplierStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Supplier product | scoped | `SupplierProductStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Supplier catalogue | scoped | `SupplierCatalogueStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Portfolio | both | `PortfolioStorage`, `AppPortfolioStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Property | both | `PropertyStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Unit | scoped | `UnitStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Client | scoped | `ClientStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Order | root | `OrderStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Task | scoped | `TaskStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Document | scoped | `DocumentStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Document link | scoped | `DocumentLinkStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Compliance record | scoped | `ComplianceRecordStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Conversation | root | `ConversationStorage` | aligned | aligned | aligned | aligned | n/a | aligned | n/a | aligned except delete is intentionally absent |
+| Conversation message | scoped | `ConversationMessageStorage` | aligned | aligned | aligned | n/a | n/a | n/a | n/a | aligned as conversation child |
+| Module | root | `ModuleStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
+| Sproochli translation document | root | `TranslationDocumentStorage` | aligned | aligned | aligned | aligned | aligned | n/a | aligned | aligned; server API is transport/read shaping |
+| Sproochli translation child | scoped | `TranslationStorage` | aligned | aligned | aligned | aligned | aligned | n/a | aligned | aligned |
 | Misebox uploaded menu document | root | app-local | partial | partial | aligned | partial | partial | n/a | partial | partial: app-local API surface mostly aligned, but model/storage decision remains app-local |
 
 Alignment rule: do not mark an entity `aligned` until the code has been checked

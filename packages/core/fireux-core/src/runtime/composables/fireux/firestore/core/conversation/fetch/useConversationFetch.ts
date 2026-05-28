@@ -1,5 +1,5 @@
 import { computed, isRef, type Ref } from 'vue'
-import type { Conversation } from '../../../../../../models/core/conversation.model'
+import { ConversationStorage, type Conversation } from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type ConversationFetchSource = 'live' | 'test'
@@ -8,7 +8,7 @@ type UseConversationFetchOptions = {
   source?: ConversationFetchSource | Ref<ConversationFetchSource>
 }
 
-const DEFAULT_COLLECTION_PATH = 'conversations'
+const DEFAULT_COLLECTION_PATH = ConversationStorage.collection
 const TEST_COLLECTION_PATH = 'test-conversations'
 
 export function useConversationFetch(

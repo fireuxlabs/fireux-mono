@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { Menu } from '../../../../../models/menu.model'
+import { MenuStorage, type Menu } from '../../../../../models/menu.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 import { useMenuCollection } from '../../../firestore/menu/fetch/useMenuCollection'
@@ -15,12 +15,12 @@ export function useKitchenConsoleMenus() {
   )
   const { menus: liveMenus, pending: livePending, collectionPath } =
     useMenuCollection(fetchKitchenId, {
-      scope: 'kitchen',
+      shape: 'scoped',
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<Menu>({
-    collectionName: 'menus',
+    collectionName: MenuStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,
@@ -31,13 +31,13 @@ export function useKitchenConsoleMenus() {
   const menus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const create = useMenuCreate({
-    scope: 'kitchen',
+    shape: 'scoped',
     kitchenCollectionPath: rootCollection,
     kitchenId,
     databaseId,
   })
   const update = useMenuUpdate({
-    scope: 'kitchen',
+    shape: 'scoped',
     kitchenCollectionPath: rootCollection,
     databaseId,
   })

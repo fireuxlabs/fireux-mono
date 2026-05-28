@@ -1,6 +1,9 @@
 import { computed } from 'vue'
 import { useKitchenOrdersFetch } from './orders/fetch/useKitchenOrdersFetch'
-import type { KitchenOrder } from '../../../../../models/order.model'
+import {
+  KitchenOrderStorage,
+  type KitchenOrder,
+} from '../../../../../models/order.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -20,9 +23,9 @@ export function useKitchenConsoleOrders() {
     useKitchenOrdersFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<KitchenOrder>({
-    collectionName: 'orders',
+    collectionName: KitchenOrderStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

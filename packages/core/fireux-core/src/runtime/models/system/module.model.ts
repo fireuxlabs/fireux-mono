@@ -37,9 +37,15 @@ export const ModuleModel = {
   },
 } as const
 
-export type Module = {
-  [K in keyof typeof ModuleModel]: (typeof ModuleModel)[K]
-}
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
+export type Module = WidenLiteral<typeof ModuleModel>
 
 export type ModuleCreateInput = Omit<Module, 'created' | 'updated'>
 export type ModuleUpdateInput = Partial<Omit<Module, 'id' | 'created' | 'updated'>>

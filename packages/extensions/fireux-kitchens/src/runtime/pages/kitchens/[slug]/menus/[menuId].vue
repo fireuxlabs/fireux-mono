@@ -26,10 +26,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { collection, getDocs } from 'firebase/firestore'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import { useMenu } from '../../../../composables/fireux/firestore/menu/useMenu'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import MenuPublic from '../../../../components/Menu/Public.vue'
+import { useDishCollection } from '../../../../composables/fireux/firestore/dish/fetch/useDishCollection'
+import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useMenuSectionCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuSectionCollection'
+import { menuItemsPath } from '../../../../composables/fireux/firestore/menu/utils/paths'
+import {
+  ROOT_KITCHENS,
+  clean,
+  cleanIdentity,
+  isPublicMenu,
+  resolveItemPrice,
+  type PublicMenuSectionRow,
+} from '../../../../composables/fireux/app/public-menu-runtime'
+import type { MenuItem } from '../../../../models/menu.model'
 
 definePageMeta({
   layout: 'public-menu',
@@ -38,22 +53,126 @@ definePageMeta({
 })
 
 const route = useRoute()
+const resolveDb = useFirestoreResolver()
 const slug = computed(() => String(route.params.slug || '').trim())
 const menuId = computed(() => String(route.params.menuId || '').trim())
-const {
-  kitchen,
-  menu,
-  sectionRows,
-  languageOptions,
-  selectedLanguage,
-  pending,
-  unavailable,
-  canonicalSlug,
-  routeMatchesKitchenId,
-} = useMenu(menuId, {
-  surface: 'public-kitchen',
-  kitchenSlug: slug,
+
+const { kitchens, pending: kitchensPending } = useKitchenCollection()
+const kitchen = computed(
+  () =>
+    kitchens.value.find(
+      (item) => cleanIdentity((item as any).slug) === cleanIdentity(slug.value)
+    ) ?? null
+)
+const kitchenByRouteId = computed(
+  () =>
+    kitchens.value.find(
+      (item) => cleanIdentity((item as any).id) === cleanIdentity(slug.value)
+    ) ?? null
+)
+const canonicalSlug = computed(() => clean((kitchenByRouteId.value as any)?.slug))
+const routeMatchesKitchenId = computed(
+  () =>
+    Boolean(kitchenByRouteId.value) &&
+    cleanIdentity((kitchenByRouteId.value as any)?.id) === cleanIdentity(slug.value) &&
+    Boolean(canonicalSlug.value) &&
+    cleanIdentity(canonicalSlug.value) !== cleanIdentity(slug.value)
+)
+const kitchenId = computed(() => clean(kitchen.value?.id))
+const menuRead = useMenuCollection(kitchenId, {
+  shape: 'scoped',
+  kitchenCollectionPath: ROOT_KITCHENS,
 })
+const menus = computed(() => menuRead.menus.value.filter(isPublicMenu))
+const menu = computed(() =>
+  menus.value.find((item) => clean(item.id) === menuId.value) ?? null
+)
+const sectionRead = useMenuSectionCollection(
+  kitchenId,
+  computed(() => clean(menu.value?.id)),
+  { kitchenCollectionPath: ROOT_KITCHENS }
+)
+const dishRead = useDishCollection(kitchenId, {
+  kitchenCollectionPath: ROOT_KITCHENS,
+})
+const itemRows = ref<Array<{ sectionId: string; item: MenuItem }>>([])
+const itemsPending = ref(false)
+
+watch(
+  [kitchenId, menu, sectionRead.sections],
+  async () => {
+    const currentKitchenId = kitchenId.value
+    const currentMenuId = clean(menu.value?.id)
+    const sections = sectionRead.sections.value
+    itemRows.value = []
+
+    if (!currentKitchenId || !currentMenuId || !sections.length) return
+
+    itemsPending.value = true
+    try {
+      const nextRows: Array<{ sectionId: string; item: MenuItem }> = []
+      for (const section of sections) {
+        const sectionId = clean(section.id)
+        const path = menuItemsPath({
+          kitchenCollectionPath: ROOT_KITCHENS,
+          kitchenId: currentKitchenId,
+          menuId: currentMenuId,
+          sectionId,
+        })
+        if (!path) continue
+        const snap = await getDocs(collection(resolveDb(), path))
+        snap.docs.forEach((docSnap) => {
+          const item = { ...(docSnap.data() as MenuItem), id: docSnap.id }
+          if (item.status !== 'archived') nextRows.push({ sectionId, item })
+        })
+      }
+      itemRows.value = nextRows
+    } finally {
+      itemsPending.value = false
+    }
+  },
+  { immediate: true }
+)
+
+const dishesById = computed(() => {
+  const map = new Map<string, (typeof dishRead.dishes.value)[number]>()
+  dishRead.dishes.value.forEach((dish) => {
+    const id = clean(dish.id)
+    if (id) map.set(id, dish)
+  })
+  return map
+})
+const sectionRows = computed<PublicMenuSectionRow[]>(() =>
+  sectionRead.sections.value.map((section) => ({
+    section,
+    items: itemRows.value
+      .filter((row) => row.sectionId === clean(section.id))
+      .map((row) => {
+        const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
+        return {
+          item: row.item,
+          dish,
+          label: dish?.name || clean((row.item as any).label),
+          description: dish?.description || clean((row.item as any).description),
+          price: resolveItemPrice(row.item),
+        }
+      })
+      .filter((row) => row.label),
+  }))
+)
+const languageOptions = computed(() => [])
+const selectedLanguage = computed(() => '')
+const pending = computed(
+  () =>
+    kitchensPending.value ||
+    menuRead.pending.value ||
+    sectionRead.pending.value ||
+    dishRead.pending.value ||
+    itemsPending.value
+)
+const unavailable = computed(
+  () => !pending.value && (!kitchen.value || !menu.value)
+)
 
 const kitchenName = computed(
   () => kitchen.value?.name || (kitchen.value as any)?.display_name || kitchen.value?.id || 'Kitchen'

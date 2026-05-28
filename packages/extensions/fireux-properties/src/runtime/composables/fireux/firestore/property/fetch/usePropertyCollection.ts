@@ -37,8 +37,13 @@ export type PropertyCollectionFilter = {
   teamId?: PropertyCollectionFilterValue
 }
 export type PropertyCollectionSource = 'live' | 'demo' | 'test'
+export type PropertyCollectionShape = 'root' | 'overlay' | 'both'
 
 type UsePropertyCollectionOptions = {
+  shape?:
+    | PropertyCollectionShape
+    | Ref<PropertyCollectionShape | null | undefined>
+    | null
   source?:
     | PropertyCollectionSource
     | Ref<PropertyCollectionSource | null | undefined>
@@ -73,6 +78,13 @@ export function usePropertyCollection(
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
+  const resolvedShape = computed<PropertyCollectionShape>(() => {
+    const explicitShape = isRef(options.shape)
+      ? options.shape.value
+      : options.shape
+    if (explicitShape) return explicitShape
+    return hasOperatorFilter.value ? 'both' : 'root'
+  })
   const resolvedAppId = computed(() => normalizeString(appId))
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
   const filterOperatorId = computed(() =>
@@ -96,16 +108,25 @@ export function usePropertyCollection(
   )
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+    if (resolvedShape.value === 'root') return null
+    if (hasOperatorFilter.value && !filterOperatorId.value) return null
 
-    const q = fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, PropertyStorage.overlayCollection),
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppPropertyOverlay>
+    const baseCollection = collection(
+      db,
+      AppStorage.collection,
+      resolvedAppId.value,
+      PropertyStorage.overlayCollection
+    )
+    const q = hasOperatorFilter.value
+      ? fsq(
+          baseCollection,
+          where('operator_ids', 'array-contains', filterOperatorId.value)
+        ) as Query<AppPropertyOverlay>
+      : fsq(baseCollection) as Query<AppPropertyOverlay>
 
     return firestoreQuery<AppPropertyOverlay>(
       q,
-      `${AppStorage.collection}-${resolvedAppId.value}-${PropertyStorage.overlayCollection}-operator-${filterOperatorId.value}`,
+      `${AppStorage.collection}-${resolvedAppId.value}-${PropertyStorage.overlayCollection}-${hasOperatorFilter.value ? `operator-${filterOperatorId.value}` : 'all'}`,
       `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.overlayCollection}`
     )
   })
@@ -130,6 +151,8 @@ export function usePropertyCollection(
   )
 
   const liveItems = computed<PropertyCollectionDoc[]>(() => {
+    if (resolvedShape.value === 'root') return liveRootSource.value ?? []
+    if (resolvedShape.value === 'overlay') return overlaySource.value?.value ?? []
     if (!hasOperatorFilter.value) return liveRootSource.value ?? []
 
     const rootById = new Map<string, PropertyCollectionDoc>()
@@ -214,6 +237,10 @@ export function usePropertyCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return false
+    if (resolvedShape.value === 'root') return liveRootSource.value === undefined
+    if (resolvedShape.value === 'overlay') {
+      return overlaySource.value ? overlaySource.value.value === undefined : false
+    }
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
@@ -223,6 +250,7 @@ export function usePropertyCollection(
   })
 
   return {
+    shape: resolvedShape,
     properties,
     count,
     pending,

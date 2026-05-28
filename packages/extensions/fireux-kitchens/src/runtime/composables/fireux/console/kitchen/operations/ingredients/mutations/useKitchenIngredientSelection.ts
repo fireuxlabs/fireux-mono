@@ -1,12 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import {
+  KitchenIngredientStorage,
   KitchenIngredientModel,
   type KitchenIngredient as KitchenIngredientDoc,
 } from '../../../../../../../models/ingredient.model'
 
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/ingredients`
+  `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`
 
 const buildKitchenIngredientPayload = (
   ingredientId: string

@@ -1,10 +1,14 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { ComplianceRecord } from '../../../../../../../models/compliance-record.model'
+import {
+  ComplianceRecordStorage,
+  type ComplianceRecord,
+} from '../../../../../../../models/compliance-record.model'
 import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
@@ -28,7 +32,10 @@ const toComplianceRecord = (entry: DemoComplianceRecord): ComplianceRecord => ({
 export function usePortfolioComplianceRecordCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<ComplianceRecord[] | undefined> | null>
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'compliance-records')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    ComplianceRecordStorage.collection
+  )
 
   watch(
     collectionPath,
@@ -58,10 +65,12 @@ export function usePortfolioComplianceRecordCollection(runtimePortfolio = useAct
         return expiry.getTime() < new Date().setHours(0, 0, 0, 0)
       }).length
   )
+  const { byId: complianceRecord } = useCollectionById(collection)
 
   return {
     collectionPath,
     collection,
+    complianceRecord,
     overdueCount,
   }
 }

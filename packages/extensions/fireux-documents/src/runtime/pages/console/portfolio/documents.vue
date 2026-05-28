@@ -181,6 +181,7 @@ import { useDocumentCreate } from '../../../composables/fireux/console/portfolio
 import { useDocumentStorage } from '../../../composables/fireux/console/portfolio/operations/documents/mutations/useDocumentStorage'
 import { documentLinkTargetTypes } from '../../../composables/fireux/console/portfolio/operations/documents/utils/validation/validateDocumentLinkTarget'
 import { useDocumentInterface } from '../../../composables/fireux/console/portfolio/operations/documents/utils/view/useDocumentInterface'
+import { DocumentStorage } from '../../../models/document.model'
 
 definePageMeta({
   layout: 'console',
@@ -203,7 +204,10 @@ const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
-const documentsPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
+const documentsPath = usePortfolioConsoleChildPath(
+  runtimePortfolio,
+  DocumentStorage.collection
+)
 
 const { collection: documentCollection } =
   usePortfolioDocuments(runtimePortfolio)

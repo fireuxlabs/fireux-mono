@@ -1,5 +1,9 @@
 import { computed, isRef, type Ref } from 'vue'
-import type { ConversationMessage } from '../../../../../../models/core/conversation.model'
+import {
+  ConversationMessageStorage,
+  ConversationStorage,
+  type ConversationMessage,
+} from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 export function useConversationMessages(
@@ -12,7 +16,9 @@ export function useConversationMessages(
       : String(conversationId || '').trim()
   )
   const collectionPath = computed(() =>
-    id.value ? `conversations/${id.value}/messages` : ''
+    id.value
+      ? `${ConversationStorage.collection}/${id.value}/${ConversationMessageStorage.collection}`
+      : ''
   )
   const firestoreSource = computed(() => {
     if (!collectionPath.value) return null

@@ -1,11 +1,12 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { DemoTask } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
-import type { Task } from '../../../../../../../models/task.model'
+import { TaskStorage, type Task } from '../../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
@@ -26,7 +27,10 @@ const toTask = (entry: DemoTask): Task => ({
 export function usePortfolioTaskCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Task[] | undefined> | null>
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'tasks')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    TaskStorage.collection
+  )
 
   watch(
     collectionPath,
@@ -46,9 +50,11 @@ export function usePortfolioTaskCollection(runtimePortfolio = useActivePortfolio
     }
     return sourceRef.value?.value ?? []
   })
+  const { byId: task } = useCollectionById(collection)
 
   return {
     collectionPath,
     collection,
+    task,
   }
 }

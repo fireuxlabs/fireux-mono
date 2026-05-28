@@ -5,7 +5,6 @@ import { useMenuInterface } from './utils/view/useMenuInterface'
 import { useMenuCreate } from './mutations/useMenuCreate'
 import { useMenuUpdate } from './mutations/useMenuUpdate'
 import { useMenuDelete } from './mutations/useMenuDelete'
-import { useMenuPublicKitchen } from './utils/view/useMenuPublicKitchen'
 
 export type { Menu } from '../../../../models/menu.model'
 export { useMenuCollection } from './fetch/useMenuCollection'
@@ -21,8 +20,7 @@ export { useMenuComputed } from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
 
 type UseMenuOptions = {
-  surface?: 'entity' | 'public-kitchen'
-  scope?: 'root' | 'kitchen'
+  shape?: 'root' | 'scoped'
   kitchenSlug?: Ref<string>
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   kitchenId?: string | Ref<string | null | undefined>
@@ -38,22 +36,15 @@ type UseMenuOptions = {
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
  * The base Menu seam reads root Menu records by default. Kitchen-scoped menu
- * operations use explicit `scope: 'kitchen'` options on Menu-owned seams.
+ * operations use explicit `shape: 'scoped'` options on Menu-owned seams.
  */
 export function useMenu(
   menuId: string | Ref<string>,
   options: UseMenuOptions = {}
 ) {
-  if (options.surface === 'public-kitchen') {
-    if (!options.kitchenSlug) {
-      throw new Error('kitchenSlug is required for public kitchen menu reads')
-    }
-
-    return useMenuPublicKitchen(options.kitchenSlug, menuId as Ref<string>) as any
-  }
-
   const { menu, exists } = useMenuFetch(
-    typeof menuId === 'string' ? menuId : menuId.value
+    typeof menuId === 'string' ? menuId : menuId.value,
+    options
   )
 
   return {

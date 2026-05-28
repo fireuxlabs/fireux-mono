@@ -145,7 +145,7 @@ import { usePortfolioTaskCollection } from '../../../composables/fireux/console/
 import { useTaskCreate } from '../../../composables/fireux/console/portfolio/operations/tasks/mutations/useTaskCreate'
 import { useTaskUpdate } from '../../../composables/fireux/console/portfolio/operations/tasks/mutations/useTaskUpdate'
 import { useTaskInterface } from '../../../composables/fireux/console/portfolio/operations/tasks/utils/view/useTaskInterface'
-import type { Task } from '../../../models/task.model'
+import { TaskStorage, type Task } from '../../../models/task.model'
 
 definePageMeta({
   layout: 'console',
@@ -167,7 +167,10 @@ definePageMeta({
 const runtimePortfolio = useActivePortfolio()
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
-const tasksPath = usePortfolioConsoleChildPath(runtimePortfolio, 'tasks')
+const tasksPath = usePortfolioConsoleChildPath(
+  runtimePortfolio,
+  TaskStorage.collection
+)
 
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)

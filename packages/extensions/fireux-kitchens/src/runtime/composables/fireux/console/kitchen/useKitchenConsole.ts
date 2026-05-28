@@ -21,6 +21,7 @@ import {
 } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import type { Ref } from 'vue'
 
 type KitchenConsoleMode = ConsoleMode
@@ -84,8 +85,8 @@ export function useKitchenConsole(
     selectedMode.value === 'demo'
       ? ''
       : selectedMode.value === 'test'
-        ? 'kitchens'
-        : resolveConsoleRootCollection('kitchens', selectedMode.value)
+        ? KitchenStorage.rootCollection
+        : resolveConsoleRootCollection(KitchenStorage.rootCollection, selectedMode.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

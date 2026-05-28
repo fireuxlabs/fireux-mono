@@ -4,12 +4,15 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
-import type { Property } from '../../../../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../../../../models/property.model'
 
 export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Property[] | undefined> | null>
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'properties')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    PropertyStorage.overlayCollection
+  )
 
   watch(
     collectionPath,

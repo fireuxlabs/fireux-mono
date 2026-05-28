@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import type { AppModel } from '../../models/core/app.model'
+import { AppStorage, type AppModel } from '../../models/core/app.model'
 
 type ImageEntry = {
   urlPath: string
@@ -131,7 +131,7 @@ type FirestoreAppImage = { key: string; label: string; url: string }
 type FirestoreAppGroup = { id: string; name: string; images: FirestoreAppImage[] }
 
 const appsRef = import.meta.client
-  ? useFirestoreRead().firestoreFetchCollection<AppModel>('apps')
+  ? useFirestoreRead().firestoreFetchCollection<AppModel>(AppStorage.collection)
   : (null as any)
 
 const firestorePending = computed(() => import.meta.client && appsRef?.value === undefined)

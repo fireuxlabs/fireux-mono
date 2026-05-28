@@ -1,5 +1,7 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
+import { ClientStorage } from '../../../../../../../models/client.model'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
@@ -349,7 +351,10 @@ export function usePortfolioClientCollection(
   const sourceRef = shallowRef(null) as ShallowRef<Ref<
     Client[] | undefined
   > | null>
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'clients')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    ClientStorage.collection
+  )
 
   watch(
     collectionPath,
@@ -380,9 +385,11 @@ export function usePortfolioClientCollection(
 
     return (sourceRef.value?.value ?? []).map((entry) => normalizeClient(entry))
   })
+  const { byId: client } = useCollectionById(collection)
 
   return {
     collectionPath,
     collection,
+    client,
   }
 }

@@ -2,6 +2,7 @@ import type {
   Conversation,
   ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
+import { ConversationStorage } from '../../../../../../models/core/conversation.model'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 
 export type ConversationUpdatePatch = Partial<
@@ -20,7 +21,7 @@ export function useConversationUpdate() {
     const id = clean(conversationId)
     if (!id) throw new Error('Conversation id is required')
 
-    await updateDocument<Conversation>('conversations', id, patch)
+    await updateDocument<Conversation>(ConversationStorage.collection, id, patch)
   }
 
   async function setConversationStatus(

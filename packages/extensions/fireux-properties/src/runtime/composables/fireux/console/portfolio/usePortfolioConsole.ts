@@ -22,6 +22,8 @@ import {
   type PortfolioSurface,
 } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
 import { getDemoPortfolios } from './operations/demo-scenarios'
+import { TEST_PORTFOLIO_COLLECTION_PATH } from './operations/shared'
+import { PortfolioStorage } from '../../../../models/portfolio.model'
 import type { Ref } from 'vue'
 
 type PortfolioConsoleMode = ConsoleMode
@@ -71,7 +73,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     getDemoPortfolios()
   )
   const { portfolio: testPortfolio } = usePortfolioFetch(normalizedUid, {
-    collectionPath: 'test-portfolios',
+    collectionPath: TEST_PORTFOLIO_COLLECTION_PATH,
   })
 
   const {
@@ -97,7 +99,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   )
   const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection('portfolios', selectedMode.value)
+    resolveConsoleRootCollection(PortfolioStorage.rootCollection, selectedMode.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

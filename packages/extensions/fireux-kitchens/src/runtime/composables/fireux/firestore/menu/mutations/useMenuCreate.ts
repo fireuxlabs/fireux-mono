@@ -2,6 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { computed, unref, type Ref } from 'vue'
 import {
+  MenuStorage,
   MenuModel,
   type Menu,
   type MenuServiceMode,
@@ -9,9 +10,7 @@ import {
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
-const GLOBAL_COLLECTION_PATH = 'menus'
-
-export type MenuCreateScope = 'root' | 'kitchen'
+export type MenuCreateShape = 'root' | 'scoped'
 
 export type MenuCreateInput = {
   kitchenId?: string
@@ -41,7 +40,7 @@ function buildMenuPayload(
 
 export function useMenuCreate(
   options: {
-    scope?: MenuCreateScope
+    shape?: MenuCreateShape
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     kitchenId?: string | Ref<string | null | undefined>
     useSelectedKitchen?: boolean
@@ -64,15 +63,16 @@ export function useMenuCreate(
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
-    const scope: MenuCreateScope = options.scope || (kitchenId ? 'kitchen' : 'root')
+    const shape: MenuCreateShape =
+      options.shape || (kitchenId ? 'scoped' : 'root')
 
     if (!name) throw new Error('Menu name is required')
-    if (scope === 'kitchen' && !kitchenId) throw new Error('Kitchen id is required')
+    if (shape === 'scoped' && !kitchenId) throw new Error('Kitchen id is required')
 
     const id = await createDocument<Partial<Menu>>(
-      scope === 'kitchen'
-        ? `${kitchenCollectionPath.value}/${kitchenId}/menus`
-        : GLOBAL_COLLECTION_PATH,
+      shape === 'scoped'
+        ? `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`
+        : MenuStorage.rootCollection,
       buildMenuPayload({ ...input, kitchenId }, name),
       { app: true, creator: true }
     )

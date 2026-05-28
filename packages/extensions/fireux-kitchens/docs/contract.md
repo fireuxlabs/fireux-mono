@@ -76,12 +76,12 @@ Menu composable stack canon:
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped kitchen menu records
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
-- `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads.
-- `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `scope: 'kitchen'`.
+- `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.
+- `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.
 - `firestore/menu/fetch/useMenuSectionCollection.ts` and `useMenuItemCollection.ts` own Menu child reads.
-- `firestore/menu/mutations/useMenuCreate.ts` owns root Menu creates by default and kitchen-scoped creates through explicit `scope: 'kitchen'`.
-- `firestore/menu/mutations/useMenuUpdate.ts` owns root Menu updates by default and kitchen-scoped updates through explicit `scope: 'kitchen'`.
-- `firestore/menu/mutations/useMenuDelete.ts` owns root Menu deletes by default and kitchen-scoped deletes through explicit `scope: 'kitchen'`.
+- `firestore/menu/mutations/useMenuCreate.ts` owns root Menu creates by default and kitchen-scoped creates through explicit `shape: 'scoped'`.
+- `firestore/menu/mutations/useMenuUpdate.ts` owns root Menu updates by default and kitchen-scoped updates through explicit `shape: 'scoped'`.
+- `firestore/menu/mutations/useMenuDelete.ts` owns root Menu deletes by default and kitchen-scoped deletes through explicit `shape: 'scoped'`.
 - `firestore/menu/mutations/useMenuSectionMutations.ts` and `useMenuItemMutations.ts` own Menu child writes.
 - `firestore/menu/utils/view/useMenuComputed.ts` owns derived Menu facts.
 - `firestore/menu/utils/view/useMenuInterface.ts` owns Menu UI projections.

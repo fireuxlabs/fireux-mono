@@ -272,7 +272,7 @@ const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.val
 
 const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId,
-  { scope: 'kitchen', kitchenCollectionPath: KitchenStorage.rootCollection }
+  { shape: 'scoped', kitchenCollectionPath: KitchenStorage.rootCollection }
 )
 const menus = computed(() => publishedMenus.value)
 const menusLoading = computed(() =>

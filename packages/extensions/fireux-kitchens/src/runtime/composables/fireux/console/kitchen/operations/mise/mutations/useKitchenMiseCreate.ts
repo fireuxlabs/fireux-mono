@@ -2,14 +2,15 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
 import {
-    KitchenMiseTaskModel,
-    type KitchenMiseChecklistItem,
-    type KitchenMisePriority,
-    type KitchenMiseStatus,
-    type KitchenMiseTask as KitchenMiseTaskDoc,
+  KitchenMiseTaskStorage,
+  KitchenMiseTaskModel,
+  type KitchenMiseChecklistItem,
+  type KitchenMisePriority,
+  type KitchenMiseStatus,
+  type KitchenMiseTask as KitchenMiseTaskDoc,
 } from '../../../../../../../models/kitchen-mise.model'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/mise`
+  `${basePath}/${kitchenId}/${KitchenMiseTaskStorage.collection}`
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

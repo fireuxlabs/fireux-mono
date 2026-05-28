@@ -3,13 +3,16 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { Task } from '../../../../../../../models/task.model'
+import { TaskStorage, type Task } from '../../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
 export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
   const { updateDocument } = useFirestoreUpdate()
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'tasks')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    TaskStorage.collection
+  )
 
   async function updateTask(taskId: string, patch: Partial<Omit<Task, 'id'>>): Promise<void> {
     const portfolioId = normalize(runtimePortfolio.id.value)

@@ -1,7 +1,11 @@
-import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
+import {
+  KitchenOrderStorage,
+  type KitchenOrder,
+} from '../../../../../../../models/order.model'
 
 type CloseKitchenOrderInput = {
   kitchenId: string
@@ -10,7 +14,7 @@ type CloseKitchenOrderInput = {
 }
 
 export function useKitchenOrderToggleItem() {
-  const db = useFirestore()
+  const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
 
   const closeOrder = async (input: CloseKitchenOrderInput) => {
@@ -23,12 +27,14 @@ export function useKitchenOrderToggleItem() {
       input.kitchenCollectionPath || ''
     ).trim() || resolveKitchenConsoleCollectionPath(appId)
 
-    const ref = doc(db, `${kitchenCollectionPath}/${kitchenId}/orders/${orderId}`)
-
-    await updateDoc(ref, {
-      status: 'closed',
-      updated_at: serverTimestamp(),
-    })
+    await updateDocument<KitchenOrder>(
+      `${kitchenCollectionPath}/${kitchenId}/${KitchenOrderStorage.collection}`,
+      orderId,
+      {
+        status: 'closed',
+        updated_at: serverTimestamp() as any,
+      }
+    )
   }
 
   return { closeOrder }

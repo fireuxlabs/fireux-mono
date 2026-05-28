@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { PropertyStorage } from '../../../models/property.model'
 import { usePortfolioConsole } from '../../../composables/fireux/console/portfolio/usePortfolioConsole'
 
 const {
@@ -53,7 +54,7 @@ const {
 const portfolioName = computed(() => String(selectedPortfolio.value?.name ?? '').trim())
 const collectionPath = computed(() =>
   rootCollection.value && portfolioId.value
-    ? `${rootCollection.value}/${portfolioId.value}/properties`
+    ? `${rootCollection.value}/${portfolioId.value}/${PropertyStorage.overlayCollection}`
     : ''
 )
 const debug = computed(() => ({

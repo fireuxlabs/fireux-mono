@@ -7,6 +7,8 @@ import {
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { KitchenStorage } from '../../../../../../models/kitchen.model'
 
 export const normalizeString = (value: unknown): string =>
   String(value ?? '').trim()
@@ -24,13 +26,15 @@ type ResolveKitchenChildCollectionPathOptions = {
   appId?: string | null | undefined
 }
 
-export const ROOT_KITCHEN_COLLECTION_PATH = 'kitchens'
+export const ROOT_KITCHEN_COLLECTION_PATH = KitchenStorage.rootCollection
 
 export const resolveKitchenConsoleCollectionPath = (
   appId?: string | null | undefined
 ): string => {
   const resolvedAppId = normalizeString(appId)
-  return resolvedAppId ? `apps/${resolvedAppId}/kitchens` : 'kitchens'
+  return resolvedAppId
+    ? `${AppStorage.collection}/${resolvedAppId}/${KitchenStorage.overlayCollection}`
+    : KitchenStorage.rootCollection
 }
 
 export const resolveKitchenCollectionBasePath = (

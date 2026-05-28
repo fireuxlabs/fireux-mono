@@ -1,5 +1,9 @@
 import type { Ref } from 'vue'
-import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
+import {
+  KitchenMiseTaskStorage,
+  type KitchenMiseTask,
+} from '../../../../../../../models/kitchen-mise.model'
 import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
 
 type UseKitchenMiseCollectionOptions = {
@@ -11,13 +15,19 @@ export function useKitchenMiseCollection(
   kitchenId: Ref<string> | string,
   options: UseKitchenMiseCollectionOptions = {}
 ) {
-  const state = useKitchenChildCollection<KitchenMiseTask>('mise', kitchenId, options)
+  const state = useKitchenChildCollection<KitchenMiseTask>(
+    KitchenMiseTaskStorage.collection,
+    kitchenId,
+    options
+  )
+  const { byId: miseTask } = useCollectionById(state.items)
 
   return {
     kitchenId: state.kitchenId,
     kitchenCollectionPath: state.kitchenCollectionPath,
     collectionPath: state.collectionPath,
     miseTasks: state.items,
+    miseTask,
     pending: state.pending,
   }
 }

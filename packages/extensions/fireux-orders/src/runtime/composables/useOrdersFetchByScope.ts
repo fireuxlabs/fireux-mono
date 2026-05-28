@@ -2,9 +2,7 @@ import { collection, query, where, type Query } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, isRef, shallowRef, unref, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Order } from '../models/order.model'
-
-const ORDERS_COLLECTION = 'orders'
+import { OrderStorage, type Order } from '../models/order.model'
 
 const toMillis = (value: unknown): number => {
   if (!value) return 0
@@ -62,14 +60,14 @@ export function useOrdersFetchByScope(scope: Ref<OrderScopeRef | null> | OrderSc
       }
 
       const q = query(
-        collection(db, ORDERS_COLLECTION),
+        collection(db, OrderStorage.collection),
         where('scope_type', '==', nextScopeType),
         where('scope_id', '==', nextScopeId)
       ) as Query<Order>
 
       sourceRef.value = firestoreQuery<Order>(
         q,
-        `${ORDERS_COLLECTION}-${nextScopeType}-${nextScopeId}`
+        `${OrderStorage.collection}-${nextScopeType}-${nextScopeId}`
       )
     },
     { immediate: true }

@@ -5,7 +5,10 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed } from 'vue'
 import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
-import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
+import {
+  KitchenMiseTaskStorage,
+  type KitchenMiseTask,
+} from '../../../../../../../models/kitchen-mise.model'
 
 type ToggleKitchenMiseDoneInput = {
   kitchenId: string
@@ -15,7 +18,7 @@ type ToggleKitchenMiseDoneInput = {
 }
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/mise`
+  `${basePath}/${kitchenId}/${KitchenMiseTaskStorage.collection}`
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {

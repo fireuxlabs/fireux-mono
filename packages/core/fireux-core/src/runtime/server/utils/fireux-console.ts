@@ -8,7 +8,7 @@ import {
 import { createError } from 'h3'
 import { AppStorage, type App } from '../../models/core/app.model'
 import { EcosystemStorage } from '../../models/system/ecosystem.model'
-import type { ProjectStatus } from '../../models/system/project.model'
+import { ProjectStorage, type ProjectStatus } from '../../models/system/project.model'
 import type {
   FireuxConsoleAppRef,
   FireuxConsoleEcosystem,
@@ -149,7 +149,7 @@ function getAdminApp(): FirebaseApp {
 
 async function readProjectControl(projectId: string): Promise<FireuxConsoleProjectControl> {
   const db = getFirestore(getAdminApp())
-  const snapshot = await db.collection('project').doc(projectId).get()
+  const snapshot = await db.collection(ProjectStorage.rootCollection).doc(projectId).get()
 
   if (!snapshot.exists) {
     throw createError({

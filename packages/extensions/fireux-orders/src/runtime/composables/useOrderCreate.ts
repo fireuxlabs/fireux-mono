@@ -1,14 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   Order,
+  OrderStorage,
   type OrderChannel,
   type OrderLine,
   type OrderScopeType,
   type OrderServiceMode,
   type OrderStatus,
 } from '../models/order.model'
-
-const ORDERS_COLLECTION = 'orders'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -100,7 +99,7 @@ export function useOrderCreate() {
       },
     }
 
-    await setDocument(ORDERS_COLLECTION, orderId, payload, {
+    await setDocument(OrderStorage.collection, orderId, payload, {
       app: true,
     })
 

@@ -1,16 +1,18 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import type {
-  Conversation,
-  ConversationCreateInput,
-  ConversationGuestContact,
-  ConversationKind,
-  ConversationMessage,
-  ConversationMessageCreateInput,
-  ConversationParticipantType,
-  ConversationPreferredChannel,
-  ConversationRelatedEntity,
-  ConversationStatus,
+import {
+  ConversationMessageStorage,
+  ConversationStorage,
+  type Conversation,
+  type ConversationCreateInput,
+  type ConversationGuestContact,
+  type ConversationKind,
+  type ConversationMessage,
+  type ConversationMessageCreateInput,
+  type ConversationParticipantType,
+  type ConversationPreferredChannel,
+  type ConversationRelatedEntity,
+  type ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
@@ -112,7 +114,7 @@ export function useConversationCreate() {
     }
 
     const conversationId = await createDocument<Partial<Conversation>>(
-      'conversations',
+      ConversationStorage.collection,
       conversation,
       { app: true }
     )
@@ -127,7 +129,7 @@ export function useConversationCreate() {
     }
 
     await createDocument<Partial<ConversationMessage>>(
-      `conversations/${conversationId}/messages`,
+      `${ConversationStorage.collection}/${conversationId}/${ConversationMessageStorage.collection}`,
       message,
       { app: true }
     )

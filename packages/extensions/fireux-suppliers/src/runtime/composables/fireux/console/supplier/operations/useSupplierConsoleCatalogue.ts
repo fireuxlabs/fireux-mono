@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useSupplierCatalogueCollection } from '../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
 import { useSupplierConsole } from '../useSupplierConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -20,13 +21,23 @@ export function useSupplierConsoleCatalogue() {
   const catalogueState = computed(() =>
     normalizeString(selectedSupplier.value?.catalogue_state)
   )
-  const supplierCataloguesCollectionPath = computed(() =>
-    rootCollection.value && supplierId.value
-      ? `${rootCollection.value}/${supplierId.value}/catalogues`
-      : ''
+  const supplierCataloguesEnabled = computed(() =>
+    Boolean(rootCollection.value && supplierId.value)
   )
-  const catalogues = computed(() => [])
-  const pending = computed(() => false)
+  const {
+    collectionPath: supplierCataloguesCollectionPath,
+    supplierCatalogues,
+    pending: supplierCataloguesPending,
+  } = useSupplierCatalogueCollection(supplierId, {
+    enabled: supplierCataloguesEnabled,
+    supplierCollectionPath: rootCollection,
+  })
+  const catalogues = computed(() =>
+    selectedMode.value === 'demo' ? [] : supplierCatalogues.value
+  )
+  const pending = computed(() =>
+    selectedMode.value === 'demo' ? false : supplierCataloguesPending.value
+  )
 
   const isIntegratedCatalogue = computed(
     () => catalogueState.value === 'integrated'

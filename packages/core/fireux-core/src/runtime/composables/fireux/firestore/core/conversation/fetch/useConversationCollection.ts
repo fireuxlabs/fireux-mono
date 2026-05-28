@@ -4,6 +4,7 @@ import type {
   ConversationKind,
   ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
+import { ConversationStorage } from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type ConversationCollectionSource = 'live' | 'test'
@@ -21,7 +22,7 @@ type UseConversationCollectionOptions = {
   filter?: ConversationCollectionFilter | Ref<ConversationCollectionFilter | null | undefined>
 }
 
-const DEFAULT_COLLECTION_PATH = 'conversations'
+const DEFAULT_COLLECTION_PATH = ConversationStorage.collection
 const TEST_COLLECTION_PATH = 'test-conversations'
 
 const clean = (value: unknown) => String(value || '').trim()

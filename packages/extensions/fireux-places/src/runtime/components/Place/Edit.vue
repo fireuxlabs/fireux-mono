@@ -181,7 +181,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place, PlaceImageShade } from '../../models/place.model'
+import { PlaceStorage, type Place, type PlaceImageShade } from '../../models/place.model'
 
 const props = defineProps<{ place: Place | null }>()
 const place = computed(() => props.place)
@@ -243,7 +243,7 @@ async function handleAvatarUpload(file: File) {
 	avatarUploading.value = true
 	try {
 		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			image_url: url,
 		})
 		toast.success('Image updated')
@@ -260,7 +260,7 @@ async function updateImageShade(shade: PlaceImageShade) {
 	if (!placeId.value || !canEditImage.value || isUpdatingShade.value) return
 	isUpdatingShade.value = true
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			image_shade: shade,
 		})
 		toast.success('Image shade updated')
@@ -293,7 +293,7 @@ async function onDropClaim() {
 	if (!placeId.value || !canDropClaim.value || isDropping.value) return
 	isDropping.value = true
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			claimed_by: '',
 		})
 		toast.success('Claim removed')
@@ -309,7 +309,7 @@ async function onDropClaim() {
 async function handleManualName(value: string) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			name: sanitize(value) || 'Untitled place',
 		})
 		toast.success('Name updated')
@@ -323,7 +323,7 @@ async function handleManualName(value: string) {
 async function handleShortName(value: string) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			short_name: sanitize(value),
 		})
 		toast.success('Short name updated')
@@ -337,7 +337,7 @@ async function handleShortName(value: string) {
 async function handleManualAddress(value: string) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			formatted_address: sanitize(value),
 		})
 		toast.success('Address updated')
@@ -351,7 +351,7 @@ async function handleManualAddress(value: string) {
 async function handleManualSearchTerm(value: string) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>('places', placeId.value, {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
 			search_term: sanitize(value),
 		})
 		toast.success('Search term updated')
@@ -370,7 +370,7 @@ async function handleManualLat(value: string | number) {
 		throw new Error('Latitude must be a number')
 	}
 	try {
-		await updateDocument<Place>('places', placeId.value, { lat: parsed })
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, { lat: parsed })
 		toast.success('Latitude updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -387,7 +387,7 @@ async function handleManualLng(value: string | number) {
 		throw new Error('Longitude must be a number')
 	}
 	try {
-		await updateDocument<Place>('places', placeId.value, { lng: parsed })
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, { lng: parsed })
 		toast.success('Longitude updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'

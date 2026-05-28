@@ -6,6 +6,10 @@ import type {
   ConversationMessageCreateInput,
   ConversationParticipantType,
 } from '../../../../../../models/core/conversation.model'
+import {
+  ConversationMessageStorage,
+  ConversationStorage,
+} from '../../../../../../models/core/conversation.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
 type CreateConversationMessageInput = {
@@ -60,13 +64,13 @@ export function useConversationMessageCreate() {
     }
 
     const messageId = await createDocument<Partial<ConversationMessage>>(
-      `conversations/${id}/messages`,
+      `${ConversationStorage.collection}/${id}/${ConversationMessageStorage.collection}`,
       message,
       { app: true }
     )
 
     await setDoc(
-      doc(resolveDb(), 'conversations', id),
+      doc(resolveDb(), ConversationStorage.collection, id),
       {
         last_message: {
           body,

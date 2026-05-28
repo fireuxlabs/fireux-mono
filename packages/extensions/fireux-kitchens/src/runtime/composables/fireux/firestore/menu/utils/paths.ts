@@ -9,18 +9,26 @@ import {
 } from '../../../../../models/menu.model'
 
 type MenuPathOptions = {
+  shape?: 'root' | 'scoped'
   kitchenCollectionPath?: string | null | undefined
   kitchenId?: string | null | undefined
   menuId?: string | null | undefined
   sectionId?: string | null | undefined
 }
 
-export const menuPath = (options: MenuPathOptions) =>
+export type MenuStorageShape = NonNullable<MenuPathOptions['shape']>
+
+export const rootMenuPath = () => MenuStorage.rootCollection
+
+export const scopedMenuPath = (options: MenuPathOptions) =>
   resolveKitchenChildCollectionPath({
     kitchenCollectionPath: options.kitchenCollectionPath,
     kitchenId: options.kitchenId,
     collectionName: MenuStorage.collection,
   })
+
+export const menuPath = (options: MenuPathOptions = {}) =>
+  options.shape === 'root' ? rootMenuPath() : scopedMenuPath(options)
 
 export const menuSectionsPath = (options: MenuPathOptions) => {
   const menusPath = menuPath(options)

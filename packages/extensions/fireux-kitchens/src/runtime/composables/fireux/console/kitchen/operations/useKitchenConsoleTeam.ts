@@ -1,8 +1,10 @@
 import { computed } from 'vue'
 import { useKitchenChildCollection } from './collections/useKitchenChildCollection'
-import type {
-  KitchenTeamJoinRequest,
-  KitchenTeamMember,
+import {
+  KitchenTeamJoinRequestStorage,
+  KitchenTeamMemberStorage,
+  type KitchenTeamJoinRequest,
+  type KitchenTeamMember,
 } from '../../../../../models/kitchen-team.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
@@ -23,16 +25,20 @@ export function useKitchenConsoleTeam() {
     items: liveTeamMembers,
     pending: livePending,
     collectionPath,
-  } = useKitchenChildCollection<KitchenTeamMember>('team', fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  } = useKitchenChildCollection<KitchenTeamMember>(
+    KitchenTeamMemberStorage.collection,
+    fetchKitchenId,
+    {
+      kitchenCollectionPath: rootCollection,
+      databaseId,
+    }
+  )
   const {
     items: liveJoinRequests,
     pending: liveJoinRequestsPending,
     collectionPath: joinRequestsPath,
   } = useKitchenChildCollection<KitchenTeamJoinRequest>(
-    'joinRequests',
+    KitchenTeamJoinRequestStorage.collection,
     fetchKitchenId,
     {
       kitchenCollectionPath: rootCollection,
@@ -40,7 +46,7 @@ export function useKitchenConsoleTeam() {
     }
   )
   const page = useKitchenConsoleReadPage<KitchenTeamMember>({
-    collectionName: 'team',
+    collectionName: KitchenTeamMemberStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

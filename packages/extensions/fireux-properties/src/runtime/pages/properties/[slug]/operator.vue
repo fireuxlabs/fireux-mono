@@ -33,6 +33,7 @@ const operatorFilter = computed<PropertyCollectionFilter>(() =>
 )
 const { properties: publicProperties, pending } = usePropertyCollection()
 const { properties: operatorProperties } = usePropertyCollection({
+  shape: 'both',
   filter: operatorFilter,
 })
 

@@ -120,7 +120,7 @@ const publicLanguageQuery = computed(() =>
   selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
 )
 const menuRead = useMenuCollection(kitchenId, {
-  scope: 'kitchen',
+  shape: 'scoped',
   kitchenCollectionPath: KitchenStorage.rootCollection,
 })
 const menuIsPublicVisible = (menu: Menu) => {

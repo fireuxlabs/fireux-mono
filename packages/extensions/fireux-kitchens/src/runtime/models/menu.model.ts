@@ -2,20 +2,27 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Family: Kitchen-scoped presentation records.
+ * Family: Menu presentation records.
  *
- * Kitchen runs the operation. Dish describes food. Menu presents selected
- * dishes. MenuItem is a placement/link to a Dish, not a second food entity.
- * QR points guests to one published menu URL.
+ * Menu is both:
+ * - root/public when published and opened from QR or public routes
+ * - kitchen-scoped when managed operationally inside a kitchen
+ *
+ * Dish describes food. Menu presents selected dishes. MenuItem is a
+ * placement/link to a Dish, not a second food entity.
  *
  * Canon paths:
+ * - menus/{menuId}
  * - kitchens/{kitchenId}/menus/{menuId}
  * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
  * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
 export const MenuStorage = {
-  shape: 'scoped',
-  path: 'kitchens/{kitchenId}/menus/{menuId}',
+  shape: 'both',
+  root: 'menus/{menuId}',
+  scoped: 'kitchens/{kitchenId}/menus/{menuId}',
+  path: 'menus/{menuId}',
+  rootCollection: 'menus',
   collection: 'menus',
   parent: 'kitchen',
   idParam: 'menuId',

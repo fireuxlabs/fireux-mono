@@ -17,6 +17,7 @@ import {
 } from '../../firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
 import { type SupplierSurface } from '../../firestore/supplier/utils/view/useSupplierInterface'
+import { SupplierStorage } from '../../../../models/supplier/Supplier.model'
 import type { Ref } from 'vue'
 
 type SupplierConsoleMode = ConsoleMode
@@ -80,7 +81,7 @@ export function useSupplierConsole(
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection('suppliers', selectedMode.value)
+    resolveConsoleRootCollection(SupplierStorage.rootCollection, selectedMode.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

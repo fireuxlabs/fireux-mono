@@ -98,7 +98,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place } from '../../../models/place.model'
+import { PlaceStorage, type Place } from '../../../models/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -117,7 +117,9 @@ const raw = route.params.id
 const placeId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
 const { firestoreFetchDoc } = useFirestoreRead()
-const docRef = placeId ? firestoreFetchDoc<Place>('places', placeId) : null
+const docRef = placeId
+  ? firestoreFetchDoc<Place>(PlaceStorage.collection, placeId)
+  : null
 
 const place = computed<Place | null>(() => docRef?.value ?? null)
 const loading = computed(() => Boolean(placeId) && docRef?.value === undefined)

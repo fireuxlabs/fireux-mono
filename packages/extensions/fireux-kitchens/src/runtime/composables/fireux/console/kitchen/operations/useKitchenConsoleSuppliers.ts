@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { SupplierStorage } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { SupplierSurface } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 import { useKitchenSupplierFetch } from './suppliers/fetch/useKitchenSupplierFetch'
 import { useKitchenConsole } from '../useKitchenConsole'
@@ -23,7 +24,7 @@ export function useKitchenConsoleSuppliers() {
     })
   const typedLiveSuppliers = computed<SupplierSurface[]>(() => liveSuppliers.value as SupplierSurface[])
   const page = useKitchenConsoleReadPage<SupplierSurface>({
-    collectionName: 'suppliers',
+    collectionName: SupplierStorage.rootCollection,
     selectedKitchen,
     selectedMode,
     kitchenId,

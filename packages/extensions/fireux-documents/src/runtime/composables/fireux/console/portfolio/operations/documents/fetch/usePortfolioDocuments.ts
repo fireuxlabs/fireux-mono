@@ -1,11 +1,12 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
-import type { Document } from '../../../../../../../models/document.model'
+import { DocumentStorage, type Document } from '../../../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -26,7 +27,10 @@ const toDocument = (entry: DemoDocument): Document => ({
 export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Document[] | undefined> | null>
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    DocumentStorage.collection
+  )
 
   watch(
     collectionPath,
@@ -46,9 +50,11 @@ export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
     }
     return sourceRef.value?.value ?? []
   })
+  const { byId: document } = useCollectionById(collection)
 
   return {
     collectionPath,
     collection,
+    document,
   }
 }

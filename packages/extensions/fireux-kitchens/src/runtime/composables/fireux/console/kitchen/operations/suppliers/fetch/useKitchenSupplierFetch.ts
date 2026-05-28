@@ -1,11 +1,16 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import {
+  AppSupplierStorage,
+  SupplierStorage,
+} from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/suppliers`
+  `${basePath}/${kitchenId}/${SupplierStorage.rootCollection}`
 
 type SupplierRecord = Record<string, unknown>
 
@@ -55,7 +60,7 @@ export function useKitchenSupplierFetch(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: 'suppliers',
+      collectionName: SupplierStorage.rootCollection,
       appId,
     })
   )
@@ -67,10 +72,14 @@ export function useKitchenSupplierFetch(
   )
   const databaseIdKey = computed(() => normalizeString(unref(options.databaseId)))
 
-  const canonicalCorePath = computed(() => (isEnabled.value ? 'suppliers' : ''))
+  const canonicalCorePath = computed(() => (
+    isEnabled.value ? SupplierStorage.rootCollection : ''
+  ))
 
   const canonicalAppPath = computed(() =>
-    isEnabled.value && appId ? `apps/${appId}/suppliers` : ''
+    isEnabled.value && appId
+      ? `${AppStorage.collection}/${appId}/${AppSupplierStorage.collection}`
+      : ''
   )
 
   const supplierLinksRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>

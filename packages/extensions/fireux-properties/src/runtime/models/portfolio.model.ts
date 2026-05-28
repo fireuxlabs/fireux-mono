@@ -43,7 +43,7 @@ export const PortfolioStorage = {
   idParam: 'portfolioId',
   children: {
     clients: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
-    compliance: 'apps/{appId}/portfolios/{portfolioId}/compliance/{complianceRecordId}',
+    compliance: 'apps/{appId}/portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
     documents: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
     properties: 'apps/{appId}/portfolios/{portfolioId}/properties/{propertyId}',
     tasks: 'apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}',

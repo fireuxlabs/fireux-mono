@@ -5,7 +5,7 @@ import {
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/console/portfolio/operations/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/console/portfolio/operations/tasks/utils/projection/useTaskProjection'
-import type { DocumentLink, DocumentLinkTargetType } from '../../../../../../../models/document-link.model'
+import { DocumentLinkStorage, type DocumentLink, type DocumentLinkTargetType } from '../../../../../../../models/document-link.model'
 import { validateDocumentLinkTarget } from '../utils/validation/validateDocumentLinkTarget'
 
 export type LinkDocumentToEntityInput = {
@@ -22,7 +22,10 @@ export function linkDocumentToEntity(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
   const { createTask } = useTaskCreate(runtimePortfolio)
   const { fromDocumentLink } = useTaskProjection(runtimePortfolio)
-  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'document-links')
+  const collectionPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    DocumentLinkStorage.collection
+  )
 
   async function mutate(input: LinkDocumentToEntityInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)

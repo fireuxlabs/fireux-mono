@@ -1,14 +1,14 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
+import { MenuStorage } from '../../../../../models/menu.model'
 import { menuPath } from '../utils/paths'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const GLOBAL_COLLECTION_PATH = 'menus'
 
 export function useMenuDelete(
   options: {
-    scope?: 'root' | 'kitchen'
+    shape?: 'root' | 'scoped'
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     databaseId?: string | Ref<string | null | undefined>
   } = {}
@@ -17,12 +17,13 @@ export function useMenuDelete(
 
   async function deleteMenu(kitchenId: string, menuId: string) {
     const collectionPath =
-      options.scope === 'kitchen' || clean(kitchenId)
+      options.shape === 'scoped' || clean(kitchenId)
         ? menuPath({
+            shape: 'scoped',
             kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
             kitchenId,
           })
-        : GLOBAL_COLLECTION_PATH
+        : MenuStorage.rootCollection
     const id = clean(menuId)
 
     if (!collectionPath || !id) {

@@ -3,7 +3,12 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenTeamMemberModel, type KitchenTeamMember } from '../../../../../../../models/kitchen-team.model'
+import {
+  KitchenTeamMemberStorage,
+  KitchenTeamMemberModel,
+  type KitchenTeamMember,
+} from '../../../../../../../models/kitchen-team.model'
+import { KitchenStorage } from '../../../../../../../models/kitchen.model'
 
 type CreateKitchenTeamMemberInput = {
   kitchenId: string
@@ -50,7 +55,7 @@ export function useKitchenTeamMemberCreate() {
     const memberId = slugifyTeamMemberName(name)
 
     if (!kitchenId) throw new Error('Kitchen id is required')
-    if (rootCollection !== 'kitchens') {
+    if (rootCollection !== KitchenStorage.rootCollection) {
       throw new Error('Team member creates are only enabled for test kitchens.')
     }
     if (!name) throw new Error('Team member name is required')
@@ -70,7 +75,7 @@ export function useKitchenTeamMemberCreate() {
     }
 
     await setDocument<KitchenTeamMember>(
-      `${rootCollection}/${kitchenId}/team`,
+      `${rootCollection}/${kitchenId}/${KitchenTeamMemberStorage.collection}`,
       memberId,
       payload,
       { app: true, creator: true }

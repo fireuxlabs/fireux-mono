@@ -3,7 +3,12 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStationModel, type KitchenStation } from '../../../../../../../models/kitchen-station.model'
+import {
+  KitchenStationStorage,
+  KitchenStationModel,
+  type KitchenStation,
+} from '../../../../../../../models/kitchen-station.model'
+import { KitchenStorage } from '../../../../../../../models/kitchen.model'
 
 type CreateKitchenStationInput = {
   kitchenId: string
@@ -41,7 +46,7 @@ export function useKitchenStationCreate() {
     const stationId = slugifyStationName(name)
 
     if (!kitchenId) throw new Error('Kitchen id is required')
-    if (rootCollection !== 'kitchens') {
+    if (rootCollection !== KitchenStorage.rootCollection) {
       throw new Error('Station creates are only enabled for test kitchens.')
     }
     if (!name) throw new Error('Station name is required')
@@ -57,7 +62,7 @@ export function useKitchenStationCreate() {
     }
 
     await setDocument<KitchenStation>(
-      `${rootCollection}/${kitchenId}/stations`,
+      `${rootCollection}/${kitchenId}/${KitchenStationStorage.collection}`,
       stationId,
       payload,
       { app: true, creator: true }

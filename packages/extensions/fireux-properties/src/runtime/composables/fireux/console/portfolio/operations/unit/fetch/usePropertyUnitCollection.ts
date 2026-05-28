@@ -1,10 +1,11 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
-import type { Unit } from '../../../../../../../models/unit.model'
+import { UnitStorage, type Unit } from '../../../../../../../models/unit.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -14,20 +15,23 @@ export function usePropertyUnitCollection(
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Unit[] | undefined> | null>
-  const propertiesPath = usePortfolioConsoleChildPath(runtimePortfolio, 'properties')
+  const unitsPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    UnitStorage.collection
+  )
 
   const normalizedPropertyId = computed(() =>
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)
   )
 
   watch(
-    [propertiesPath, normalizedPropertyId],
-    ([nextPropertiesPath, nextPropertyId]) => {
-      if (!nextPropertiesPath || !nextPropertyId || runtimePortfolio.isDemo.value) {
+    [unitsPath, normalizedPropertyId],
+    ([nextUnitsPath, nextPropertyId]) => {
+      if (!nextUnitsPath || !nextPropertyId || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
-      sourceRef.value = firestoreFetchCollection<Unit>(`${nextPropertiesPath}/${nextPropertyId}/units`)
+      sourceRef.value = firestoreFetchCollection<Unit>(nextUnitsPath)
     },
     { immediate: true }
   )
@@ -41,16 +45,18 @@ export function usePropertyUnitCollection(
       )
     }
 
-    return sourceRef.value?.value ?? []
+    return (sourceRef.value?.value ?? []).filter(
+      (entry) => normalizeId(entry.property_id) === normalizedPropertyId.value
+    )
   })
+  const { byId: unit } = useCollectionById(collection)
 
   return {
     propertyId: normalizedPropertyId,
     collectionPath: computed(() =>
-      propertiesPath.value && normalizedPropertyId.value
-        ? `${propertiesPath.value}/${normalizedPropertyId.value}/units`
-        : ''
+      normalizedPropertyId.value ? unitsPath.value : ''
     ),
     collection,
+    unit,
   }
 }

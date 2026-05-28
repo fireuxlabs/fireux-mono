@@ -11,7 +11,7 @@ import {
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { Property } from '../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../models/property.model'
 import {
   usePropertyCollection,
   type PropertyCollectionFilter,
@@ -49,6 +49,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     }
   })
   const { properties: liveProperties } = usePropertyCollection({
+    shape: 'both',
     source: 'live',
     filter: liveFilter,
   })
@@ -72,7 +73,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const selectedProperty = computed<Property | null>(() => selectedEntity.value)
   const propertyId = computed(() => normalizeString(selectedId.value))
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection('properties', selectedMode.value)
+    resolveConsoleRootCollection(PropertyStorage.rootCollection, selectedMode.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

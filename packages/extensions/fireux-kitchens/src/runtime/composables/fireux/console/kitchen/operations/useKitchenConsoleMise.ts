@@ -2,7 +2,10 @@ import { computed } from 'vue'
 import { useKitchenMiseCollection } from './mise/fetch/useKitchenMiseCollection'
 import { useKitchenMiseToggleDone } from './mise/mutations/useKitchenMiseToggleDone'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
-import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
+import {
+  KitchenMiseTaskStorage,
+  type KitchenMiseTask,
+} from '../../../../../models/kitchen-mise.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -22,9 +25,9 @@ export function useKitchenConsoleMise() {
     useKitchenMiseCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
-    })
+  })
   const page = useKitchenConsoleReadPage<KitchenMiseTask>({
-    collectionName: 'mise',
+    collectionName: KitchenMiseTaskStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

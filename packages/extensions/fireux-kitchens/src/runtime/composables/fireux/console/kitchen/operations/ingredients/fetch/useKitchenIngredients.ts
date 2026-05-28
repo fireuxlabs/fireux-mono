@@ -12,12 +12,13 @@ import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
 import {
   IngredientStorage,
+  KitchenIngredientStorage,
   type Ingredient,
   type KitchenIngredient,
 } from '../../../../../../../models/ingredient.model'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/${IngredientStorage.collection}`
+  `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`
 
 type UseKitchenIngredientsOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -47,7 +48,7 @@ export function useKitchenIngredients(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: IngredientStorage.collection,
+      collectionName: KitchenIngredientStorage.collection,
       appId,
     })
   )

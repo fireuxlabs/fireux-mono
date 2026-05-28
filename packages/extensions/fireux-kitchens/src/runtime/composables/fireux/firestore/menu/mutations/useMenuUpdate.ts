@@ -3,7 +3,8 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import type { Menu, MenuItem, MenuSection, MenuStatus, MenuUpdateInput } from '../../../../../models/menu.model'
+import { DishStorage } from '../../../../../models/dish.model'
+import { MenuStorage, type Menu, type MenuItem, type MenuSection, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu.model'
 import {
   menuItemsPath,
   menuPath,
@@ -12,11 +13,10 @@ import {
 import { resolveKitchenCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const GLOBAL_COLLECTION_PATH = 'menus'
 
 export function useMenuUpdate(
   options: {
-    scope?: 'root' | 'kitchen'
+    shape?: 'root' | 'scoped'
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     databaseId?: string | Ref<string | null | undefined>
   } = {}
@@ -25,19 +25,20 @@ export function useMenuUpdate(
   const resolveDb = useFirestoreResolver(options.databaseId)
 
   const collectionPath = (kitchenId: string) =>
-    options.scope === 'kitchen' || clean(kitchenId)
+    options.shape === 'scoped' || clean(kitchenId)
       ? menuPath({
+          shape: 'scoped',
           kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
           kitchenId,
         })
-      : GLOBAL_COLLECTION_PATH
+      : MenuStorage.rootCollection
 
   const dishesPath = (kitchenId: string) => {
     const basePath = resolveKitchenCollectionBasePath(
       clean(unref(options.kitchenCollectionPath))
     )
     const id = clean(kitchenId)
-    return basePath && id ? `${basePath}/${id}/dishes` : ''
+    return basePath && id ? `${basePath}/${id}/${DishStorage.collection}` : ''
   }
 
   async function updateMenu(kitchenId: string, menuId: string, patch: MenuUpdateInput) {
@@ -48,7 +49,7 @@ export function useMenuUpdate(
   }
 
   async function setMenuStatus(kitchenId: string, menuId: string, status: MenuStatus) {
-    if (status === 'published' && (options.scope === 'kitchen' || clean(kitchenId))) {
+    if (status === 'published' && (options.shape === 'scoped' || clean(kitchenId))) {
       await assertMenuCanPublish(kitchenId, menuId)
     }
     await updateMenu(kitchenId, menuId, { status })

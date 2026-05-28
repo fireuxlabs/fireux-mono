@@ -4,7 +4,7 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
-import type { Property } from '../../../../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../../../../models/property.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -13,7 +13,10 @@ export function usePropertyDocument(
   runtimePortfolio = useActivePortfolio()
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
-  const propertiesPath = usePortfolioConsoleChildPath(runtimePortfolio, 'properties')
+  const propertiesPath = usePortfolioConsoleChildPath(
+    runtimePortfolio,
+    PropertyStorage.overlayCollection
+  )
 
   const normalizedPropertyId = computed(() =>
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)

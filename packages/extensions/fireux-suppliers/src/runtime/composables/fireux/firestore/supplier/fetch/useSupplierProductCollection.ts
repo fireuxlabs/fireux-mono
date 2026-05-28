@@ -1,4 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed, isRef, type Ref } from 'vue'
 import {
   SupplierProductStorage,
@@ -62,10 +63,12 @@ export function useSupplierProductCollection(
   const pending = computed(
     () => Boolean(collectionPath.value) && sourceRef.value === undefined
   )
+  const { byId: supplierProduct } = useCollectionById(supplierProducts)
 
   return {
     collectionPath,
     supplierProducts,
+    supplierProduct,
     pending,
   }
 }

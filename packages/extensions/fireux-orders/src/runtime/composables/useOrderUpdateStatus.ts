@@ -1,7 +1,5 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type { OrderStatus } from '../models/order.model'
-
-const ORDERS_COLLECTION = 'orders'
+import { OrderStorage, type OrderStatus } from '../models/order.model'
 
 const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   draft: ['submitted', 'cancelled'],
@@ -41,7 +39,7 @@ export function useOrderUpdateStatus() {
     const id = String(orderId || '').trim()
     if (!id) throw new Error('Missing order id')
 
-    await updateDocument(ORDERS_COLLECTION, id, { status })
+    await updateDocument(OrderStorage.collection, id, { status })
   }
 
   return {

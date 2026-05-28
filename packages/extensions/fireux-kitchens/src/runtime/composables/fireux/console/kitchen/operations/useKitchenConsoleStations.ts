@@ -1,6 +1,9 @@
 import { computed } from 'vue'
 import { useKitchenChildCollection } from './collections/useKitchenChildCollection'
-import type { KitchenStation } from '../../../../../models/kitchen-station.model'
+import {
+  KitchenStationStorage,
+  type KitchenStation,
+} from '../../../../../models/kitchen-station.model'
 import { useKitchenConsole } from '../useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -20,12 +23,16 @@ export function useKitchenConsoleStations() {
     items: liveStations,
     pending: livePending,
     collectionPath,
-  } = useKitchenChildCollection<KitchenStation>('stations', fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  } = useKitchenChildCollection<KitchenStation>(
+    KitchenStationStorage.collection,
+    fetchKitchenId,
+    {
+      kitchenCollectionPath: rootCollection,
+      databaseId,
+    }
+  )
   const page = useKitchenConsoleReadPage<KitchenStation>({
-    collectionName: 'stations',
+    collectionName: KitchenStationStorage.collection,
     selectedKitchen,
     selectedMode,
     kitchenId,

@@ -151,7 +151,7 @@ import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { usePlaceSeo } from '../../composables/fireux/firestore/place/utils/usePlaceSeo'
 import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place } from '../../models/place.model'
+import { PlaceStorage, type Place } from '../../models/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -165,7 +165,7 @@ const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
 const { firestoreFetchDoc } = useFirestoreRead()
-const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null
+const rawDoc = docId ? await firestoreFetchDoc<Place>(PlaceStorage.collection, docId) : null
 
 const place = computed<Place | null>(
   () => (rawDoc as any)?.value ?? rawDoc ?? null
