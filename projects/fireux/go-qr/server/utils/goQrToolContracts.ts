@@ -25,8 +25,9 @@ export function goQrProviderBaseUrl() {
   )
 }
 
-export function publicDocToolContract() {
+export function docToolContract() {
   const baseUrl = goQrProviderBaseUrl()
+  const docBaseUrl = `${baseUrl}/doc`
 
   return {
     ok: true,
@@ -36,21 +37,21 @@ export function publicDocToolContract() {
       base_url: baseUrl,
     },
     tool: {
-      id: 'public-doc',
+      id: 'doc',
       name: 'Public doc',
       upload_type: 'doc',
       accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
       max_file_size_mb: maxGoQrFileSizeMb,
       anonymous_max_creates: 1,
       result: {
-        target_path_pattern: '/:slug',
-        qr_path_pattern: '/:slug/qr',
+        target_path_pattern: '/doc/:slug',
+        qr_path_pattern: '/doc/:slug/qr',
         label: 'Public Doc',
       },
     },
     endpoints: {
-      availability: '/api/tools/public-doc/availability',
-      create: '/api/tools/public-doc/create',
+      availability: '/api/tools/doc/availability',
+      create: '/api/tools/doc/create',
       app_info: '/api/public/app/info',
     },
     slug: {
@@ -71,7 +72,7 @@ export function publicDocToolContract() {
       open_qr_label: 'Open QR page',
     },
     preview: {
-      base_url: baseUrl,
+      base_url: docBaseUrl,
       path_suffix: '/qr',
     },
   }

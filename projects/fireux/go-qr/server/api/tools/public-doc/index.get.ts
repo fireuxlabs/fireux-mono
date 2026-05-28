@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import { publicDocToolContract } from '../../../utils/goQrToolContracts'
+import { docToolContract } from '../../../utils/goQrToolContracts'
 
 export default defineEventHandler((event) => {
   setResponseHeaders(event, {
@@ -8,5 +8,5 @@ export default defineEventHandler((event) => {
     'Access-Control-Allow-Origin': '*',
   })
 
-  return publicDocToolContract()
+  return docToolContract()
 })

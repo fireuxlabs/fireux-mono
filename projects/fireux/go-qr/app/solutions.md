@@ -3,64 +3,66 @@
 Authority: Go QR primitive planning and provider boundaries  
 Updated: 2026-05-28
 
-Go QR owns QR primitives, not industry-specific workflows. A Go QR solution name should match the primitive/tool name wherever possible: `qr`, `url`, `public-doc`, `phone`, and so on.
+Go QR owns QR primitives, not industry-specific workflows. A Go QR solution name should match the primitive/tool name wherever possible: `text`, `url`, `doc`, `phone`, and so on.
 
 Namespace levels:
 
 | Level | Primitive | Meaning | Storage |
 | --- | --- | --- | --- |
-| 1 | `qr` | Any short text or message becomes a QR image. | none |
+| 1 | `text` | Any short text or message becomes a QR page. | Go QR |
 | 2 | `url`, `phone`, `wifi`, `whatsapp`, `location`, `vcard`, `event`, `review-link`, `feedback-link`, `booking-link` | A typed helper creates and validates the text encoded in the QR. | none by default |
-| 3 | `public-doc`, `pdf` | Go QR hosts a file, creates a public URL, then makes a QR. | Go QR |
+| 3 | `doc`, `pdf` | Go QR hosts a file, creates a public URL, then makes a QR. | Go QR |
 | 4 | `scan-to-doc` | AI/OCR rebuilds a document from photos/scans before publishing. | Go QR or consumer app, depending on ownership |
 
 Industry-specific QR flows belong in the app that owns the domain meaning:
 
 | Domain intent | Owning app | Go QR primitive |
 | --- | --- | --- |
-| Food menu QR | Misebox | `public-doc`, `url`, or later structured provider handoff |
-| Guest guide QR | BuenoHost | `public-doc` or `url` |
+| Food menu QR | Misebox | `doc`, `url`, or later structured provider handoff |
+| Guest guide QR | BuenoHost | `doc` or `url` |
 | Multilingual QR page | Sproochli | `url` or public page QR target |
 
 Each domain app should backlink to the Go QR primitive it consumes when useful, and each Go QR primitive may explain where it is commonly used and when to switch to the owning domain app.
 
-## qr
+## text
 
-Send any message as a QR image.
+Send any message as a QR page.
 
-Current state: this is the level-one primitive. It can run without Firestore, Storage, sign-in, or payment because it only encodes the provided text into a downloadable QR image.
+Current state: this is the level-one stored primitive. It saves a short text record under `/text/{slug}` and creates a printable QR page at `/text/{slug}/qr`.
 
-Roadmap: keep this free and generous. Add SVG export, print sizing, sticker handoff, and simple share actions without turning it into a stored document product.
+Roadmap: keep this free and generous. Add SVG export, print sizing, sticker handoff, and simple share actions without turning it into a document product.
 
 Use this when the user wants to send a short message, note, URL, or prepared QR text exactly as written.
 
 ### How this comes to life
 
 1. Enter the text.
-2. Generate the QR image locally/client-side.
-3. Preview the encoded value.
-4. Download or copy the QR image.
+2. Choose the text path.
+3. Create the hosted text page.
+4. Open or print the QR page.
 5. Optionally move into a typed helper if the text needs validation.
 
 ### Business case
 
-The raw QR primitive is a free utility and a low-cost doorway into Go QR. It can support playful notes, quick sharing, and future sticker/print upsells without storage costs.
+The QR primitive is a free utility and a low-cost doorway into Go QR. It can support playful notes, quick sharing, and future sticker/print upsells.
 
 ### Provisioning
 
 - Text input.
-- QR image generation.
-- PNG/SVG download.
+- Text path.
+- Hosted text page.
+- Printable QR page.
 - Print/sticker handoff later.
 
 ### Checklist
 
 - [x] Add text QR page.
+- [x] Add stored `/text/{slug}` namespace.
 - [ ] Add SVG export.
 - [ ] Add print/sticker sizing.
 - [ ] Add optional share action.
 
-## public-doc
+## doc
 
 Turn one public document into one scannable public page.
 

@@ -351,8 +351,8 @@ export async function createGoQrDocumentFromMultipart(
   return {
     ok: true,
     slug,
-    path: `/${encodeURIComponent(slug)}`,
-    qr_path: `/${encodeURIComponent(slug)}/qr`,
+    path: `/doc/${encodeURIComponent(slug)}`,
+    qr_path: `/doc/${encodeURIComponent(slug)}/qr`,
     powered_by: goQrBrand,
   }
 }

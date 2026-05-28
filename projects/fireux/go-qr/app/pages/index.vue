@@ -11,7 +11,7 @@
       </header>
 
       <ClientOnly>
-        <GoQrProviderPublicDocTool class="mx-auto max-w-xl" />
+        <GoQrToolsDoc class="mx-auto max-w-xl" />
       </ClientOnly>
 
       <LandingSolutions

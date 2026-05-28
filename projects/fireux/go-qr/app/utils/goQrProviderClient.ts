@@ -1,4 +1,4 @@
-export type GoQrToolContract = {
+export type GoQrToolBaseContract = {
   ok: boolean
   provider: {
     id: string
@@ -9,8 +9,6 @@ export type GoQrToolContract = {
     id: string
     name: string
     upload_type: string
-    accepts: string[]
-    max_file_size_mb: number
     anonymous_max_creates: number
     result: {
       target_path_pattern: string
@@ -45,6 +43,38 @@ export type GoQrToolContract = {
     path_suffix: string
   }
 }
+
+export type GoQrDocToolContract = GoQrToolBaseContract & {
+  tool: GoQrToolBaseContract['tool'] & {
+    accepts: string[]
+    max_file_size_mb: number
+  }
+  ui: GoQrToolBaseContract['ui'] & {
+    upload_label: string
+    cta_label: string
+    loading_label: string
+    success_title: string
+    open_target_label: string
+    open_qr_label: string
+  }
+}
+
+export type GoQrTextToolContract = GoQrToolBaseContract & {
+  tool: GoQrToolBaseContract['tool'] & {
+    max_text_length: number
+  }
+  ui: GoQrToolBaseContract['ui'] & {
+    text_label: string
+    text_placeholder: string
+    cta_label: string
+    loading_label: string
+    open_target_label: string
+    open_qr_label: string
+  }
+}
+
+export type GoQrToolContract = GoQrDocToolContract
+export type GoQrAnyToolContract = GoQrDocToolContract | GoQrTextToolContract
 
 export type GoQrAppInfo = {
   ok: boolean
@@ -82,10 +112,10 @@ export function createGoQrClient(options: { baseUrl?: string } = {}) {
     },
     publicDoc: {
       async config() {
-        return await fetchProvider<GoQrToolContract>('/api/tools/public-doc')
+        return await fetchProvider<GoQrDocToolContract>('/api/tools/doc')
       },
       availability(slug: string) {
-        return fetchProvider('/api/tools/public-doc/availability', {
+        return fetchProvider('/api/tools/doc/availability', {
           query: { id: slug },
         })
       },
@@ -94,7 +124,7 @@ export function createGoQrClient(options: { baseUrl?: string } = {}) {
         formData.append('slug', input.slug)
         formData.append('file', input.file)
 
-        return fetchProvider('/api/tools/public-doc/create', {
+        return fetchProvider('/api/tools/doc/create', {
           method: 'POST',
           body: formData,
         })

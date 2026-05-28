@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<{
   safetyCopy: 'QR docs are for public information. Anyone with the link or QR code can view your doc.',
 })
 
-const previewBaseUrl = 'https://go-qr.web.app'
+const previewBaseUrl = 'https://go-qr.web.app/doc'
 const slugPlaceholder = 'my-doc'
 const upsellCopy = ''
 const reservedDocumentSlugs = [

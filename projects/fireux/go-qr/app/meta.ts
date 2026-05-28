@@ -70,23 +70,23 @@ export const goQrLanguage = {
   },
   solutions: [
     {
-      slug: 'qr',
+      slug: 'text',
       title: 'Text',
       description: 'Send any message as a downloadable QR code.',
       icon: 'i-lucide-qr-code',
       cta: {
         label: 'Create text QR',
-        to: '/solutions/qr',
+        to: '/solutions/text',
       },
     },
     {
-      slug: 'public-doc',
+      slug: 'doc',
       title: 'Public doc',
       description: 'Upload a public doc, choose a short path, and get a QR page.',
       icon: 'i-lucide-file-text',
       cta: {
         label: 'Create doc QR',
-        to: '/',
+        to: '/solutions/doc',
       },
     },
     {
@@ -94,6 +94,10 @@ export const goQrLanguage = {
       title: 'URL',
       description: 'Turn a URL into a scannable QR code.',
       icon: 'i-lucide-link',
+      cta: {
+        label: 'Create URL QR',
+        to: '/solutions/url',
+      },
     },
     {
       slug: 'pdf',
@@ -102,7 +106,7 @@ export const goQrLanguage = {
       icon: 'i-lucide-file',
       cta: {
         label: 'Upload PDF',
-        to: '/',
+        to: '/solutions/pdf',
       },
     },
     {
@@ -110,60 +114,96 @@ export const goQrLanguage = {
       title: 'Wi-Fi',
       description: 'Create a QR code that lets guests join a Wi-Fi network.',
       icon: 'i-lucide-wifi',
+      cta: {
+        label: 'Create Wi-Fi QR',
+        to: '/solutions/wifi',
+      },
     },
     {
       slug: 'phone',
       title: 'Phone',
       description: 'Create a QR code that starts a phone call.',
       icon: 'i-lucide-phone',
+      cta: {
+        label: 'Create phone QR',
+        to: '/solutions/phone',
+      },
     },
     {
       slug: 'whatsapp',
       title: 'WhatsApp',
       description: 'Create a QR code that opens a WhatsApp chat.',
       icon: 'i-lucide-message-circle',
+      cta: {
+        label: 'Create WhatsApp QR',
+        to: '/solutions/whatsapp',
+      },
     },
     {
       slug: 'location',
       title: 'Location',
       description: 'Create a QR code that opens a location or map pin.',
       icon: 'i-lucide-map-pin',
+      cta: {
+        label: 'Create location QR',
+        to: '/solutions/location',
+      },
     },
     {
       slug: 'vcard',
       title: 'vCard',
       description: 'Create a QR code that saves contact details.',
       icon: 'i-lucide-contact',
+      cta: {
+        label: 'Create vCard QR',
+        to: '/solutions/vcard',
+      },
     },
     {
       slug: 'event',
       title: 'Event',
       description: 'Create a QR code for event details, timing, location, or instructions.',
       icon: 'i-lucide-calendar-days',
+      cta: {
+        label: 'Create event QR',
+        to: '/solutions/event',
+      },
     },
     {
       slug: 'review-link',
       title: 'Review link',
       description: 'Create a QR code that sends customers to a review page.',
       icon: 'i-lucide-star',
+      cta: {
+        label: 'Create review QR',
+        to: '/solutions/review-link',
+      },
     },
     {
       slug: 'feedback-link',
       title: 'Feedback link',
       description: 'Create a QR code that opens a feedback or survey form.',
       icon: 'i-lucide-clipboard-list',
+      cta: {
+        label: 'Create feedback QR',
+        to: '/solutions/feedback-link',
+      },
     },
     {
       slug: 'booking-link',
       title: 'Booking link',
       description: 'Create a QR code that opens a booking or appointment link.',
       icon: 'i-lucide-calendar-check',
+      cta: {
+        label: 'Create booking QR',
+        to: '/solutions/booking-link',
+      },
     },
   ] satisfies FireuxMetaSolution[],
   entities: [
     {
       id: 'GoQrRecord',
-      purpose: 'A hosted public doc with a stable slug, file URL, and QR code.',
+      purpose: 'A hosted public doc with a stable doc slug, file URL, and QR code.',
     },
     {
       id: 'DocumentFile',
