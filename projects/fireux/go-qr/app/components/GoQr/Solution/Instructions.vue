@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GoQrSolutionInstruction } from '../utils/goQrSolutions'
+import type { GoQrSolutionInstruction } from '../../../utils/goQrSolutions'
 
 defineProps<{
   items?: GoQrSolutionInstruction[]

@@ -25,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
-
 definePageMeta({
   layout: 'landing',
   nav: {

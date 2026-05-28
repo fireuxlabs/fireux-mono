@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GoQrDocToolContract } from '../utils/goQrProviderClient'
+import type { GoQrDocToolContract } from '../../../../utils/goQrProviderClient'
 
 defineProps<{
   tool: GoQrDocToolContract

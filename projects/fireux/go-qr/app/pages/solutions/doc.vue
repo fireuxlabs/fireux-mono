@@ -1,7 +1,7 @@
 <template>
   <GoQrSolutionPage :solution="solution">
     <GoQrSolutionTool :solution="solution">
-      <GoQrToolsDoc class="max-w-xl" />
+    <GoQrSolutionToolSurface slug="doc" :name="solution.title" />
     </GoQrSolutionTool>
     <GoQrSolutionInstructions :items="solution.instructions" />
     <GoQrSolutionIntegrations :integrations="solution.integrations" />
@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
 import { goQrSolutions } from '../../utils/goQrSolutions'
 
 definePageMeta({

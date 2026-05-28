@@ -56,13 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  createError,
-  useAsyncData,
-  useRequestURL,
-  useRoute,
-  useSeoMeta,
-} from '#imports'
+import { createError, useRequestURL } from 'nuxt/app'
 import { computed, onMounted, ref } from 'vue'
 import { toDataURL } from 'qrcode'
 

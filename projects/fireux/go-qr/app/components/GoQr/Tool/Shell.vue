@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { type GoQrAnyToolContract } from '../utils/goQrProviderClient'
+import { type GoQrAnyToolContract } from '../../../utils/goQrProviderClient'
 
 const props = defineProps<{
   toolId: string

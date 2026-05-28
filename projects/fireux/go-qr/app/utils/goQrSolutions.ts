@@ -145,14 +145,14 @@ export const goQrSolutions = {
     title: 'Text',
     description: 'Send any message as a QR code.',
     badge: 'Free text QR',
-    intro: 'Write a short message, note, or bit of text and turn it into a downloadable QR code. Go QR saves it at a short path so the QR page keeps working.',
+    intro: 'Write a short message and publish it as a QR page.',
     instructions: [
-      ['Text in', 'i-lucide-type', 'Encode a note, message, or short piece of text exactly as entered.'],
-      ['Path out', 'i-lucide-qr-code', 'Choose a short path like /text/my-text and get a printable QR page.'],
-      ['Shareable', 'i-lucide-share-2', 'Go QR stores the message so the QR can open a stable page later.'],
+      ['Text', 'i-lucide-type', 'Enter the message.'],
+      ['Path', 'i-lucide-qr-code', 'Choose `/text/my-text`.'],
+      ['QR', 'i-lucide-share-2', 'Print or share the QR page.'],
     ].map(toInstruction),
     integrations: {
-      body: 'Text is the smallest Go QR tool. Other apps can use it when they need a quick note, instruction, or message without owning a larger domain workflow.',
+      body: 'Use Text for quick notes.',
       links: [
         { label: 'URL', to: '/solutions/url' },
         { label: 'Phone', to: '/solutions/phone' },
@@ -183,18 +183,18 @@ export const goQrSolutions = {
   doc: {
     title: 'Public doc',
     description: 'Upload one public document, publish it at a stable link, and get a QR page people can scan.',
-    intro: 'Use this when a menu, notice, guide, form, poster, or printed handout needs a phone-friendly QR code. Go QR hosts the public file, gives it a short path, and creates the QR page for that path.',
+    intro: 'Upload a public file and publish it as a QR page.',
     instructions: [
-      ['File in', 'i-lucide-file-up', 'Upload a finished public file such as a PDF, image, DOC, or DOCX.'],
-      ['Path out', 'i-lucide-link', 'Choose a short path like /doc/my-doc and get a printable QR page.'],
-      ['Hosted', 'i-lucide-cloud', 'Go QR stores the file and serves the public document page.'],
+      ['File', 'i-lucide-file-up', 'Upload a PDF, image, DOC, or DOCX.'],
+      ['Path', 'i-lucide-link', 'Choose `/doc/my-doc`.'],
+      ['QR', 'i-lucide-cloud', 'Open the hosted doc or QR page.'],
     ].map(toInstruction),
     integrations: {
-      body: 'Other FireUX apps can treat Go QR like a primitive provider. The consuming app keeps its own domain page and wording, while Go QR owns document upload, slug checks, public links, QR routes, and limit rules.',
+      body: 'Use Doc when the file is already finished.',
       consumers: [
-        ['Misebox', 'i-lucide-utensils', 'https://misebox.app/solutions/qr-code-restaurant-menu', 'Food menu flow', 'Use doc when the menu is a finished PDF, DOC, or DOCX.', 'Use Misebox when the menu needs dishes, sections, prices, allergens, translations, or ordering.'],
-        ['BuenoHost', 'i-lucide-house', 'https://buenohost.web.app', 'Guest guide flow', 'Use doc when the guest guide is a finished public file.', 'Use BuenoHost when the guide needs property-aware content, guest operations, or host tools.'],
-        ['Sproochli', 'i-lucide-languages', 'https://sproochli.web.app', 'Translation flow', 'Use doc when the translated document is already finished.', 'Use Sproochli when translation, review, glossary, or multilingual routing is the work.'],
+        ['Misebox', 'i-lucide-utensils', 'https://misebox.app/solutions/qr-code-restaurant-menu', 'Food menu flow', 'Finished menu file.', 'Structured menu app.'],
+        ['BuenoHost', 'i-lucide-house', 'https://buenohost.web.app', 'Guest guide flow', 'Finished guide file.', 'Property-aware guest guide.'],
+        ['Sproochli', 'i-lucide-languages', 'https://sproochli.web.app', 'Translation flow', 'Finished translated file.', 'Translation workflow.'],
       ].map(([name, icon, to, cta, useGoQr, useApp]) => ({ name, icon, to, cta, useGoQr, useApp, external: true })),
     },
     upgrades: [
@@ -219,9 +219,9 @@ export const goQrSolutions = {
       title: 'Public Doc - Go QR',
       ogTitle: 'Public Doc - Go QR',
       twitterTitle: 'Public Doc - Go QR',
-      description: 'Upload one public document, publish it at a stable link, and get a QR page people can scan. Includes notes for apps that want to use Go QR as a provider.',
-      ogDescription: 'Upload one public document, publish it at a stable link, and get a QR page people can scan. Includes notes for apps that want to use Go QR as a provider.',
-      twitterDescription: 'Upload one public document, publish it at a stable link, and get a QR page people can scan. Includes notes for apps that want to use Go QR as a provider.',
+      description: 'Upload a public document and get a QR page.',
+      ogDescription: 'Upload a public document and get a QR page.',
+      twitterDescription: 'Upload a public document and get a QR page.',
     },
   },
   url: withSeo('url', {

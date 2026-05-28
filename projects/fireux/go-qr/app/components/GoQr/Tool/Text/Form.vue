@@ -72,7 +72,7 @@
 import { computed, ref, watch } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { GoQrTextToolContract } from '../utils/goQrProviderClient'
+import type { GoQrTextToolContract } from '../../../../utils/goQrProviderClient'
 
 const props = defineProps<{
   tool: GoQrTextToolContract

@@ -1,12 +1,7 @@
 <template>
   <GoQrSolutionPage :solution="solution">
     <GoQrSolutionTool :solution="solution">
-      <GoQrInstantPanel
-        type="phone"
-        title="Phone"
-        input-label="Phone number"
-        placeholder="+41790000000"
-      />
+      <GoQrSolutionToolSurface slug="phone" :name="solution.title" />
     </GoQrSolutionTool>
     <GoQrSolutionInstructions :items="solution.instructions" />
     <GoQrSolutionIntegrations :integrations="solution.integrations" />
@@ -16,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
 import { goQrSolutions } from '../../utils/goQrSolutions'
 
 definePageMeta({

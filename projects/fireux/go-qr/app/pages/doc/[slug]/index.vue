@@ -55,12 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  createError,
-  useAsyncData,
-  useRoute,
-  useSeoMeta,
-} from '#imports'
+import { createError } from 'nuxt/app'
 import { computed } from 'vue'
 
 type PublicGoQrRecord = {

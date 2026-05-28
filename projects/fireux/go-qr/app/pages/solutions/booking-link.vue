@@ -1,7 +1,7 @@
 <template>
   <GoQrSolutionPage :solution="solution">
     <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
+      <GoQrSolutionToolSurface slug="booking-link" :name="solution.title" />
     </GoQrSolutionTool>
     <GoQrSolutionInstructions :items="solution.instructions" />
     <GoQrSolutionIntegrations :integrations="solution.integrations" />
@@ -11,16 +11,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useRoute, useSeoMeta } from '#imports'
-import { goQrSolutions, type GoQrSolutionSlug } from '../../utils/goQrSolutions'
+import { goQrSolutions } from '../../utils/goQrSolutions'
 
 definePageMeta({
   layout: 'landing',
 })
 
-const route = useRoute()
-const slug = computed(() => String(route.params.slug || ''))
-const solution = computed(() => goQrSolutions[slug.value as GoQrSolutionSlug] || goQrSolutions.text)
+const solution = goQrSolutions['booking-link']
 
-useSeoMeta(() => solution.value.seo)
+useSeoMeta(solution.seo)
 </script>
