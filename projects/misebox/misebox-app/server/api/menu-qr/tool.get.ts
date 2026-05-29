@@ -1,10 +1,10 @@
 import { defineEventHandler } from 'h3'
 import { goQrProviderBaseUrl } from '../../utils/goQrProvider'
 import {
-  menuQrPublicBaseUrl,
   miseboxPublicBaseUrl,
-  reservedMenuQrSlugs,
-} from '../../utils/menuQrDocuments'
+  publicMenuBaseUrl,
+  reservedPublicMenuSlugs,
+} from '../../utils/menuPublicRecords'
 
 type GoQrToolContract = {
   ok: boolean
@@ -149,7 +149,7 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
       label: pathLabel,
       validation_label: pathLabel,
       placeholder: menuQrConsumerConfig.slugPlaceholder,
-      reserved: reservedMenuQrSlugs,
+      reserved: reservedPublicMenuSlugs,
       taken_message: `This ${resource} path is already taken.`,
     },
     ui: {
@@ -164,7 +164,7 @@ function menuToolConfig(contract: GoQrToolContract, providerBaseUrl: string) {
       open_qr_label: 'Open QR page',
     },
     preview: {
-      base_url: menuQrPublicBaseUrl(),
+      base_url: publicMenuBaseUrl(),
       path_suffix: '/qr',
     },
     result_base_url: miseboxPublicBaseUrl(),

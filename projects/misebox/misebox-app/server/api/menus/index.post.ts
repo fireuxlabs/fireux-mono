@@ -4,11 +4,11 @@ import { createError, defineEventHandler, readMultipartFormData } from 'h3'
 import { getStorage } from 'firebase-admin/storage'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import {
-  createMenuDocument,
-  menuDocumentRef,
-  normalizeMenuQrSlug,
-  validateMenuQrSlug,
-} from '../../utils/menuQrDocuments'
+  createRootMenuFromUploadedDoc,
+  normalizePublicMenuSlug,
+  rootMenuDocumentRef,
+  validatePublicMenuSlug,
+} from '../../utils/menuPublicRecords'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
@@ -93,8 +93,8 @@ async function uploadMenuFileToMisebox(input: {
 export default defineEventHandler(async (event) => {
   const parts = await readMultipartFormData(event)
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)
-  const slug = normalizeMenuQrSlug(fieldValue(parts, 'slug'))
-  const validation = validateMenuQrSlug(slug)
+  const slug = normalizePublicMenuSlug(fieldValue(parts, 'slug'))
+  const validation = validatePublicMenuSlug(slug)
 
   if (!validation.isValid) {
     throw createError({
@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const existing = await menuDocumentRef(slug).get()
+  const existing = await rootMenuDocumentRef(slug).get()
   if (existing.exists) {
     throw createError({
       statusCode: 409,
@@ -141,7 +141,7 @@ export default defineEventHandler(async (event) => {
     fileType,
     data: filePart.data,
   })
-  const record = await createMenuDocument({
+  const record = await createRootMenuFromUploadedDoc({
     slug,
     docUrl: uploaded.fileUrl,
     docType: fileType,

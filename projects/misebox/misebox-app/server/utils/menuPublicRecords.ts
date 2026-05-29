@@ -3,8 +3,9 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
+import { MenuStorage } from 'fireux-kitchens/runtime/models/menu.model.ts'
 
-export type MenuDocument = {
+export type PublicMenuRecord = {
   id: string
   slug: string
   name: string
@@ -36,8 +37,7 @@ export type MenuDocument = {
   updated_at?: unknown
 }
 
-export const menuCollectionName = 'menus'
-export const reservedMenuQrSlugs = [
+export const reservedPublicMenuSlugs = [
   'about',
   'admin',
   'api',
@@ -68,56 +68,59 @@ export function miseboxPublicBaseUrl() {
   ).replace(/\/+$/, '')
 }
 
-export function menuQrPublicBaseUrl() {
-  return `${miseboxPublicBaseUrl()}/menus`
+export function publicMenuBaseUrl() {
+  return `${miseboxPublicBaseUrl()}/${MenuStorage.rootCollection}`
 }
 
-export function normalizeMenuQrSlug(value: unknown) {
+export function normalizePublicMenuSlug(value: unknown) {
   return normalizeSlug(value)
 }
 
-export function validateMenuQrSlug(slug: string) {
+export function validatePublicMenuSlug(slug: string) {
   return validatePublicSlug(slug, {
     label: 'Menu path',
     reservedScope: 'root',
-    reserved: reservedMenuQrSlugs,
+    reserved: reservedPublicMenuSlugs,
   })
 }
 
-export function menuQrDb() {
+export function menuDb() {
   return getRuntimeFirestore()
 }
 
-export function menuDocumentRef(slug: string) {
-  return menuQrDb().collection(menuCollectionName).doc(slug)
+export function rootMenuDocumentRef(slug: string) {
+  return menuDb().collection(MenuStorage.rootCollection).doc(slug)
 }
 
-export async function readMenuDocument(slug: string) {
-  const id = normalizeMenuQrSlug(slug)
-  const validation = validateMenuQrSlug(id)
+export async function readPublicMenuRecord(slug: string) {
+  const id = normalizePublicMenuSlug(slug)
+  const validation = validatePublicMenuSlug(id)
   if (!validation.isValid) return null
 
-  const snap = await menuDocumentRef(id).get()
+  const snap = await rootMenuDocumentRef(id).get()
   if (!snap.exists) return null
 
   return {
     id: snap.id,
     ...snap.data(),
-  } as MenuDocument
+  } as PublicMenuRecord
 }
 
-export function menuQrPublicUrl(slug: string) {
-  return `${menuQrPublicBaseUrl()}/${encodeURIComponent(slug)}`
+export function publicMenuUrl(slug: string) {
+  return `${publicMenuBaseUrl()}/${encodeURIComponent(slug)}`
 }
 
-export function menuQrQrUrl(slug: string) {
-  return `${menuQrPublicUrl(slug)}/qr`
+export function publicMenuQrUrl(slug: string) {
+  return `${publicMenuUrl(slug)}/qr`
 }
 
-export function serializeMenuDocument(record: MenuDocument) {
+export function serializePublicMenuRecord(record: PublicMenuRecord) {
   const docUrl = record.doc_url || record.file_url || ''
   const docType = record.doc_type || record.file_type || ''
   const docName = record.doc_name || record.file_name || ''
+  const displayLabel = record.display_label && record.display_label !== 'QR Menu'
+    ? record.display_label
+    : record.name || record.slug
 
   return {
     id: record.id,
@@ -135,15 +138,15 @@ export function serializeMenuDocument(record: MenuDocument) {
     file_name: docName,
     storage_owner: record.storage_owner,
     source_app: record.source_app,
-    display_label: record.display_label,
+    display_label: displayLabel,
     qr_centre_label: record.qr_centre_label,
     is_public: record.is_public,
-    public_url: menuQrPublicUrl(record.slug),
-    qr_url: menuQrQrUrl(record.slug),
+    public_url: publicMenuUrl(record.slug),
+    qr_url: publicMenuQrUrl(record.slug),
   }
 }
 
-export async function createMenuDocument(input: {
+export async function createRootMenuFromUploadedDoc(input: {
   slug: string
   docUrl: string
   docType: string
@@ -162,6 +165,7 @@ export async function createMenuDocument(input: {
     },
     id: input.slug,
     slug: input.slug,
+    kitchen_id: '',
     name: input.slug,
     description: '',
     status: 'published',
@@ -178,17 +182,17 @@ export async function createMenuDocument(input: {
     doc_storage_path: input.docStoragePath,
     storage_owner: 'misebox',
     source_app: 'misebox',
-    display_label: 'QR Menu',
+    display_label: input.slug,
     qr_centre_label: 'Menu',
     is_public: true,
     created_at: FieldValue.serverTimestamp(),
     updated_at: FieldValue.serverTimestamp(),
   }
 
-  await menuDocumentRef(input.slug).create(record)
+  await rootMenuDocumentRef(input.slug).create(record)
 
   return {
     ...record,
     id: input.slug,
-  } as MenuDocument
+  } as PublicMenuRecord
 }

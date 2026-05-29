@@ -1,13 +1,13 @@
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import {
-  normalizeMenuQrSlug,
-  readMenuDocument,
-  serializeMenuDocument,
-} from '../../utils/menuQrDocuments'
+  normalizePublicMenuSlug,
+  readPublicMenuRecord,
+  serializePublicMenuRecord,
+} from '../../utils/menuPublicRecords'
 
 export default defineEventHandler(async (event) => {
-  const slug = normalizeMenuQrSlug(getRouterParam(event, 'slug'))
-  const record = await readMenuDocument(slug)
+  const slug = normalizePublicMenuSlug(getRouterParam(event, 'slug'))
+  const record = await readPublicMenuRecord(slug)
 
   if (!record || !record.is_public) {
     throw createError({
@@ -16,5 +16,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return serializeMenuDocument(record)
+  return serializePublicMenuRecord(record)
 })

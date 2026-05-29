@@ -9,9 +9,9 @@ import {
 import { getStorage } from 'firebase-admin/storage'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import {
-  normalizeMenuQrSlug,
-  readMenuDocument,
-} from '../../../utils/menuQrDocuments'
+  normalizePublicMenuSlug,
+  readPublicMenuRecord,
+} from '../../../utils/menuPublicRecords'
 
 function normalizeBucketName(bucket?: string | null) {
   const trimmed = String(bucket || '').trim()
@@ -19,8 +19,8 @@ function normalizeBucketName(bucket?: string | null) {
 }
 
 export default defineEventHandler(async (event) => {
-  const slug = normalizeMenuQrSlug(getRouterParam(event, 'slug'))
-  const record = await readMenuDocument(slug)
+  const slug = normalizePublicMenuSlug(getRouterParam(event, 'slug'))
+  const record = await readPublicMenuRecord(slug)
 
   if (!record || !record.is_public) {
     throw createError({

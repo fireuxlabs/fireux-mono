@@ -1,5 +1,5 @@
 <template>
-  <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white text-default">
+  <main class="grid min-h-screen grid-rows-[auto_auto_1fr] bg-white text-default">
     <header class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4">
       <div class="min-w-0">
         <NuxtLink to="/" class="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -37,6 +37,15 @@
       </div>
     </header>
 
+    <section class="border-b border-amber-200 bg-amber-50 px-3 py-3 text-amber-950 sm:px-4">
+      <div class="mx-auto flex max-w-4xl gap-3">
+        <UIcon name="i-lucide-triangle-alert" class="mt-0.5 size-5 shrink-0 text-amber-700" />
+        <p class="text-sm leading-6">
+          If you have a food allergy or intolerance, please speak to a member of the team before ordering.
+        </p>
+      </div>
+    </section>
+
     <section class="min-h-0 overflow-auto bg-white" aria-label="Menu">
       <ClientOnly v-if="isPdf">
         <MenuPdfViewer
@@ -55,7 +64,7 @@
         v-else
         :src="viewerUrl"
         :title="documentLabel"
-        class="h-[calc(100vh-3.5rem)] w-full border-0"
+        class="h-full min-h-[calc(100vh-8.5rem)] w-full border-0"
       />
     </section>
   </main>
@@ -70,7 +79,7 @@ import {
 } from '#imports'
 import { computed } from 'vue'
 
-type PublicMenuQrRecord = {
+type PublicMenuRecord = {
   slug: string
   doc_url: string
   doc_type: string
@@ -89,7 +98,7 @@ definePageMeta({
 
 const { data: documentData } = await useAsyncData(
   `misebox-menu-qr-${slug}`,
-  () => $fetch<PublicMenuQrRecord>(`/api/menus/${encodeURIComponent(slug)}`)
+  () => $fetch<PublicMenuRecord>(`/api/menus/${encodeURIComponent(slug)}`)
 )
 
 if (!documentData.value) {
@@ -99,7 +108,7 @@ if (!documentData.value) {
   })
 }
 
-const documentRecord = computed(() => documentData.value as PublicMenuQrRecord)
+const documentRecord = computed(() => documentData.value as PublicMenuRecord)
 const documentLabel = computed(() => documentRecord.value.display_label || documentRecord.value.slug)
 const isPdf = computed(() => documentRecord.value.doc_type === 'application/pdf')
 const viewerUrl = computed(() => `/api/menus/${encodeURIComponent(documentRecord.value.slug)}/file`)

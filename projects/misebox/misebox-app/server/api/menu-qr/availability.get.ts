@@ -1,14 +1,14 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import {
-  menuDocumentRef,
-  normalizeMenuQrSlug,
-  reservedMenuQrSlugs,
-} from '../../utils/menuQrDocuments'
+  normalizePublicMenuSlug,
+  reservedPublicMenuSlugs,
+  rootMenuDocumentRef,
+} from '../../utils/menuPublicRecords'
 
 function readId(value: unknown) {
   const raw = Array.isArray(value) ? value[0] : value
-  return normalizeMenuQrSlug(raw)
+  return normalizePublicMenuSlug(raw)
 }
 
 export default defineEventHandler(async (event) => {
@@ -16,10 +16,10 @@ export default defineEventHandler(async (event) => {
   const availability = await checkPublicSlugAvailability(id, {
     label: 'Menu path',
     reservedScope: 'root',
-    reserved: reservedMenuQrSlugs,
+    reserved: reservedPublicMenuSlugs,
     takenMessage: 'This menu path is already taken.',
     exists: async (slug) => {
-      const snap = await menuDocumentRef(slug).get()
+      const snap = await rootMenuDocumentRef(slug).get()
       return snap.exists
     },
   })
