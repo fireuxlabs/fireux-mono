@@ -1,42 +1,5 @@
 <template>
-  <main class="grid min-h-screen grid-rows-[auto_auto_1fr] bg-white text-default">
-    <header class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4">
-      <div class="min-w-0">
-        <NuxtLink to="/" class="text-xs font-semibold uppercase tracking-wide text-primary">
-          Misebox
-        </NuxtLink>
-        <h1 class="truncate text-sm font-semibold text-highlighted sm:text-base">
-          {{ documentLabel }}
-        </h1>
-      </div>
-
-      <div class="flex shrink-0 items-center gap-1.5">
-        <UButton
-          :to="documentRecord.doc_url"
-          target="_blank"
-          icon="i-lucide-external-link"
-          variant="ghost"
-          color="neutral"
-          aria-label="Open original"
-        />
-        <a
-          :href="documentRecord.doc_url"
-          :download="documentRecord.doc_name"
-          class="inline-grid size-8 place-items-center rounded-md text-muted hover:bg-elevated hover:text-highlighted"
-          aria-label="Download menu"
-        >
-          <UIcon name="i-lucide-download" class="size-4" />
-        </a>
-        <UButton
-          :to="`/menus/${encodeURIComponent(documentRecord.slug)}/qr`"
-          icon="i-lucide-qr-code"
-          variant="ghost"
-          color="neutral"
-          aria-label="Printable QR"
-        />
-      </div>
-    </header>
-
+  <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white text-default">
     <section class="border-b border-amber-200 bg-amber-50 px-3 py-3 text-amber-950 sm:px-4">
       <div class="mx-auto flex max-w-4xl gap-3">
         <UIcon name="i-lucide-triangle-alert" class="mt-0.5 size-5 shrink-0 text-amber-700" />
@@ -64,7 +27,7 @@
         v-else
         :src="viewerUrl"
         :title="documentLabel"
-        class="h-full min-h-[calc(100vh-8.5rem)] w-full border-0"
+        class="h-full min-h-[calc(100vh-4.5rem)] w-full border-0"
       />
     </section>
   </main>
@@ -91,6 +54,7 @@ const route = useRoute()
 const slug = String(route.params.slug || '').trim()
 
 definePageMeta({
+  layout: 'menu',
   index: false,
   sitemap: false,
   robots: 'noindex, nofollow',

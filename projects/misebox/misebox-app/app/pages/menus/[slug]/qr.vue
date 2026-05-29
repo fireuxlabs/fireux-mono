@@ -24,6 +24,7 @@ const requestUrl = useRequestURL()
 const slug = String(route.params.slug || '').trim()
 
 definePageMeta({
+  layout: 'menu',
   index: false,
   sitemap: false,
   robots: 'noindex, nofollow',

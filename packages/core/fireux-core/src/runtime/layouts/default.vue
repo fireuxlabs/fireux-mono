@@ -10,7 +10,6 @@
     </main>
 
     <LayoutsDefaultFooter />
-    <LayoutsSharedFloatingChatButton />
   </div>
 </template>
 
