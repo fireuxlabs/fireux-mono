@@ -11,13 +11,6 @@
           <UIcon :name="solution.icon || 'i-lucide-lightbulb'" class="size-5" />
         </div>
         <div class="grid min-w-0 gap-1">
-          <UBadge
-            v-if="solution.status"
-            color="primary"
-            variant="soft"
-          >
-            {{ statusLabel(solution.status) }}
-          </UBadge>
           <h2 class="m-0 text-lg font-semibold leading-snug text-highlighted">
             {{ solution.title }}
           </h2>
@@ -26,6 +19,7 @@
             color="neutral"
             variant="soft"
             size="sm"
+            class="w-fit"
           />
           <p class="m-0 text-sm leading-6 text-muted">
             {{ solution.description }}
@@ -51,23 +45,4 @@ import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
 defineProps<{
   solutions: FireuxMetaSolution[]
 }>()
-
-function statusLabel(status: string): string {
-  switch (status) {
-    case 'live':
-      return 'Live'
-    case 'very-easy':
-      return 'Very easy'
-    case 'coming-soon':
-      return 'Coming soon'
-    case 'bridge':
-      return 'Bridge'
-    case 'planned':
-      return 'Planned'
-    case 'later':
-      return 'Later'
-    default:
-      return status
-  }
-}
 </script>

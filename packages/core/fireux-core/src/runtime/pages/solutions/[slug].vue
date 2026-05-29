@@ -7,14 +7,6 @@
     back-label="Solutions"
   >
     <div class="grid min-w-0 gap-5">
-      <UBadge
-        v-if="solution.status"
-        color="primary"
-        variant="soft"
-      >
-        {{ statusLabel(solution.status) }}
-      </UBadge>
-
       <p class="m-0 whitespace-pre-line text-sm leading-7 text-muted">
         {{ solution.body || solution.description }}
       </p>
@@ -216,23 +208,4 @@ useSeoMeta({
   ogDescription: () => solution.value?.description || '',
   twitterDescription: () => solution.value?.description || '',
 })
-
-function statusLabel(status: string): string {
-  switch (status) {
-    case 'live':
-      return 'Live'
-    case 'very-easy':
-      return 'Very easy'
-    case 'coming-soon':
-      return 'Coming soon'
-    case 'bridge':
-      return 'Bridge'
-    case 'planned':
-      return 'Planned'
-    case 'later':
-      return 'Later'
-    default:
-      return status
-  }
-}
 </script>
