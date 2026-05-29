@@ -18,7 +18,7 @@ export function docToolContract() {
       id: 'doc',
       name: 'Doc',
       kind: 'doc',
-      message: 'hello from Go QR solution doc',
+      message: 'hello world',
     },
     endpoints: {
       contract: '/api/tools/doc',
@@ -26,7 +26,7 @@ export function docToolContract() {
     },
     ui: {
       title: 'Doc',
-      description: 'hello from Go QR solution doc',
+      description: 'hello world',
     },
   }
 }
