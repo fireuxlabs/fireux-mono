@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolsDoc class="w-full max-w-xl" />
-    </GoQrSolutionTool>
+    <GoQrToolDoc class="w-full max-w-xl" />
     <GoQrSolutionInstructions :items="solution.instructions" />
     <GoQrSolutionIntegrations :integrations="solution.integrations" />
     <GoQrSolutionUpgrades :items="solution.upgrades" />
