@@ -193,8 +193,8 @@ const sourceMeta = {
         },
         {
           name: 'Menu',
-          purpose: 'Service-ready menu with sections and sellable items.',
-          keyFields: ['id', 'kitchen_id', 'name', 'sections', 'active'],
+          purpose: 'Kitchen-owned menu identity. Sections and items live in child collections.',
+          keyFields: ['id', 'kitchen_id', 'name', 'description', 'source_language', 'status'],
           linksTo: ['Dish'],
         },
         {
@@ -288,8 +288,9 @@ const sourceMeta = {
             id: 'menu_lunch_core',
             kitchen_id: 'k_demo_grill_yard',
             name: 'Lunch Core',
-            active: true,
-            sections: [{ id: 'sec_main', label: 'Main', items: [{ dish_id: 'dish_smash_burger' }] }],
+            description: 'Core lunch menu.',
+            source_language: 'en',
+            status: 'published',
           },
         },
         {

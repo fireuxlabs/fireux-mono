@@ -5,7 +5,6 @@ import {
   MenuStorage,
   MenuModel,
   type Menu,
-  type MenuServiceMode,
 } from '../../../../../models/menu.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
@@ -16,8 +15,12 @@ export type MenuCreateInput = {
   kitchenId?: string
   name: string
   description?: string
-  service_modes?: MenuServiceMode[]
-  sort_order?: number
+  source_language?: string
+  status?: Menu['status']
+  doc_url?: string
+  doc_name?: string
+  doc_type?: string
+  doc_storage_path?: string
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -33,8 +36,12 @@ function buildMenuPayload(
     kitchen_id: kitchenId,
     name,
     description: normalizeString(input.description),
-    service_modes: input.service_modes?.length ? input.service_modes : ['dine_in'],
-    sort_order: Number(input.sort_order || 0),
+    source_language: normalizeString(input.source_language) || 'en',
+    status: input.status || 'draft',
+    doc_url: normalizeString(input.doc_url),
+    doc_name: normalizeString(input.doc_name),
+    doc_type: normalizeString(input.doc_type),
+    doc_storage_path: normalizeString(input.doc_storage_path),
   }
 }
 

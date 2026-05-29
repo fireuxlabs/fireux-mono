@@ -15,28 +15,6 @@ export type PublicMenuSectionRow = {
   items: PublicMenuItemRow[]
 }
 
-export type EmbeddedMenuItem = MenuItem & {
-  active?: boolean
-  label?: string
-  labels?: unknown
-  description?: string
-  descriptions?: unknown
-  price_options?: Array<{ price?: number }>
-}
-
-export type EmbeddedMenuSection = MenuSection & {
-  active?: boolean
-  labels?: unknown
-  descriptions?: unknown
-  items?: EmbeddedMenuItem[]
-}
-
-export type MenuWithEmbeddedSections = {
-  sections?: EmbeddedMenuSection[]
-  names?: unknown
-  descriptions?: unknown
-}
-
 export const ROOT_KITCHENS = KitchenStorage.rootCollection
 export const clean = (value: unknown) => String(value ?? '').trim()
 export const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
@@ -48,24 +26,16 @@ export const queryString = (value: unknown) =>
   Array.isArray(value) ? clean(value[0]) : clean(value)
 export const sortBySortOrder = <T extends { sort_order?: unknown }>(items: T[]) =>
   [...items].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
-export const isActiveChild = <T extends { status?: unknown; active?: unknown }>(value: T) =>
-  value.status !== 'archived' && value.active !== false
+export const isActiveChild = <T extends { status?: unknown }>(value: T) =>
+  value.status !== 'archived'
 
-export const isPublicMenu = (menu: Menu & { active?: unknown }) =>
-  clean(menu.status) === 'published' || (!clean(menu.status) && menu.active === true)
+export const isPublicMenu = (menu: Menu) => clean(menu.status) === 'published'
 
-export const resolveItemPrice = (item: EmbeddedMenuItem | MenuItem): number => {
+export const resolveItemPrice = (item: MenuItem): number => {
   const price = Number(item.price || 0)
   if (Number.isFinite(price) && price > 0) return price
 
-  const options = Array.isArray((item as EmbeddedMenuItem).price_options)
-    ? (item as EmbeddedMenuItem).price_options ?? []
-    : []
-  const optionPrice = Number(
-    options.find((option) => Number(option.price || 0) > 0)?.price || 0
-  )
-
-  return Number.isFinite(optionPrice) ? optionPrice : 0
+  return 0
 }
 
 export const menuFieldId = (menu: Pick<Menu, 'id'>, field: string) =>

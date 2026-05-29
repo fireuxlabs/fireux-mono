@@ -1293,41 +1293,61 @@ function buildSections(sections) {
 }
 
 function buildMenuPayload(menu, kitchenId, snap) {
-  const existing = snap?.exists ? snap.data() || {} : {}
-  const existingNames =
-    !menu.resetNames && existing.names && typeof existing.names === 'object'
-      ? certifiedLanguageMap(existing.names)
-      : {}
-  const names = certifiedLanguageMap({
-    ...existingNames,
-    ...(menu.names && typeof menu.names === 'object' ? menu.names : {}),
-    de: menu.name,
-  })
-
   return {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
     description: menu.description,
-    names,
-    descriptions: menu.description ? { de: menu.description } : {},
-    active: true,
-    defaults: {
-      active: true,
-      description: '',
-      photo_url: '',
-    },
-    service_modes: ['dine_in'],
-    sections: buildSections(menu.sections),
-    dish_ids: menu.sections.flatMap((section) =>
-      section.items
-        .filter((item) => !item.inline)
-        .map((item) => item.id)
-    ),
-    sort_order: menu.sortOrder,
+    source_language: 'de',
+    status: 'published',
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
+}
+
+function writeMenuStructure(batch, menuRef, menu, kitchenId) {
+  buildSections(menu.sections).forEach((section) => {
+    const sectionRef = menuRef.collection('sections').doc(section.id)
+    const { items, labels, descriptions, active, ...sectionPayload } = section
+
+    batch.set(
+      sectionRef,
+      {
+        ...sectionPayload,
+        kitchen_id: kitchenId,
+        menu_id: menu.id,
+        status: active === false ? 'archived' : 'active',
+        created: createdStamp(),
+        updated: updatedStamp(),
+      },
+      { merge: false }
+    )
+
+    items.forEach((item) => {
+      const {
+        active: itemActive,
+        label,
+        labels,
+        description,
+        descriptions,
+        ...itemPayload
+      } = item
+      batch.set(
+        sectionRef.collection('items').doc(item.id),
+        {
+          ...itemPayload,
+          dish_id: itemPayload.dish_id || item.id,
+          kitchen_id: kitchenId,
+          menu_id: menu.id,
+          section_id: section.id,
+          status: itemActive === false ? 'archived' : 'active',
+          created: createdStamp(),
+          updated: updatedStamp(),
+        },
+        { merge: false }
+      )
+    })
+  })
 }
 
 function buildDishPayload(item, kitchenId, snap) {
@@ -1492,6 +1512,7 @@ async function main() {
     MENUS.forEach((menu, index) => {
       const snap = menuSnaps[index]
       batch.set(snap.ref, buildMenuPayload(menu, LUNA_KITCHEN_ID, snap), { merge: false })
+      writeMenuStructure(batch, snap.ref, menu, LUNA_KITCHEN_ID)
       if (snap.exists) updated.menus.push(menu.id)
       else created.menus.push(menu.id)
     })

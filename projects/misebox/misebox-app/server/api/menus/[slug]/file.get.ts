@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const slug = normalizePublicMenuSlug(getRouterParam(event, 'slug'))
   const record = await readPublicMenuRecord(slug)
 
-  if (!record || !record.is_public) {
+  if (!record || record.is_public === false) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found',

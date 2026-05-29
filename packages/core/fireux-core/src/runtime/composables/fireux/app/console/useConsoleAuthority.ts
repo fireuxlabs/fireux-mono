@@ -35,9 +35,15 @@ export function targetHasOperator(target: unknown, uid: string): boolean {
   const operatorIds = normalizeConsoleOperatorIds(
     (target as Record<string, unknown> | null | undefined)?.operator_ids
   )
+  const teamIds = normalizeConsoleOperatorIds(
+    (target as Record<string, unknown> | null | undefined)?.team_ids
+  )
   const normalizedUid = normalizeString(uid)
 
-  return Boolean(normalizedUid && operatorIds.includes(normalizedUid))
+  return Boolean(
+    normalizedUid &&
+    (operatorIds.includes(normalizedUid) || teamIds.includes(normalizedUid))
+  )
 }
 
 export function useConsoleAuthority() {

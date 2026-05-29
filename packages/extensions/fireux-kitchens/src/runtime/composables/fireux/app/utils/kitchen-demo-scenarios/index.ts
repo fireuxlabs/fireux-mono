@@ -1953,6 +1953,20 @@ const cloneRecords = <T = Record<string, unknown>>(
   records: Record<string, unknown>[]
 ): T[] => records.map((record) => ({ ...record }) as T)
 
+const canonicalMenuRecords = <T = Record<string, unknown>>(
+  records: Record<string, unknown>[]
+): T[] =>
+  records.map((record) => ({
+    id: normalize(record.id),
+    kitchen_id: normalize(record.kitchen_id),
+    name: normalize(record.name),
+    description: normalize(record.description),
+    source_language: normalize(record.source_language) || 'en',
+    status: normalize(record.status) || (record.active === false ? 'draft' : 'published'),
+    created: record.created,
+    updated: record.updated,
+  }) as T)
+
 export const getDemoKitchen = (kitchenId?: string): DemoKitchenScenario | null => {
   const id = normalize(kitchenId)
   if (!id) return null
@@ -1973,6 +1987,7 @@ export const getDemoKitchenCollection = <T = Record<string, unknown>>(
 ): T[] => {
   const scenario = getDemoKitchen(kitchenId)
   if (!scenario) return []
+  if (collectionName === 'menus') return canonicalMenuRecords<T>(scenario.menus)
   return cloneRecords<T>(scenario[collectionName])
 }
 
@@ -1993,7 +2008,7 @@ export const getDefaultDemoKitchen = () => {
     globalIngredients: cloneRecords(scenario.ingredients),
     kitchenIngredients: cloneRecords(scenario.ingredients),
     menuStack: {
-      menus: cloneRecords(scenario.menus),
+      menus: canonicalMenuRecords(scenario.menus),
       dishes: cloneRecords(scenario.dishes),
       recipes: cloneRecords(scenario.recipes),
       miseTasks: cloneRecords(scenario.mise),

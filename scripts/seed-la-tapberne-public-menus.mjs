@@ -530,46 +530,50 @@ function buildMenuPayload(menu, kitchenId, snap) {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
-    names: {
-      de: normalizeString(menu.names?.de ?? menu.name),
-      en: normalizeString(menu.names?.en ?? menu.name),
-      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.name ?? menu.name),
-      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.name ?? menu.name),
-    },
     description: menu.description,
     status: 'published',
-    design_packs: {
-      public_menu: LA_TAP_PUBLIC_MENU_DESIGN_PACK,
-    },
-    public_menu_design: {
-      ...LA_TAP_PUBLIC_MENU_DESIGN_PACK,
-    },
-    descriptions: {
-      de: normalizeString(menu.descriptions?.de ?? ''),
-      en: normalizeString(menu.descriptions?.en ?? ''),
-      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.description ?? ''),
-      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.description ?? ''),
-    },
-    note: menu.note,
-    notes: {
-      de: normalizeString(menu.notes?.de ?? menu.note),
-      en: normalizeString(menu.notes?.en ?? menu.note),
-      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.note ?? menu.note),
-      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.note ?? menu.note),
-    },
-    active: true,
-    defaults: {
-      active: true,
-      description: '',
-      photo_url: '',
-    },
-    service_modes: ['dine_in'],
-    sections: buildSections(menu.sections),
-    dish_ids: menu.sections.flatMap((section) => section.items.map((item) => item.id)),
-    sort_order: 10,
+    source_language: 'de',
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
+}
+
+function writeMenuStructure(batch, menuRef, menu, kitchenId) {
+  buildSections(menu.sections).forEach((section) => {
+    const sectionRef = menuRef.collection('sections').doc(section.id)
+    const sectionCreated = createdStamp()
+    const { items, labels, descriptions, active, ...sectionPayload } = section
+
+    batch.set(
+      sectionRef,
+      {
+        ...sectionPayload,
+        kitchen_id: kitchenId,
+        menu_id: menu.id,
+        status: active === false ? 'archived' : 'active',
+        created: sectionCreated,
+        updated: updatedStamp(),
+      },
+      { merge: false }
+    )
+
+    items.forEach((item) => {
+      const { active: itemActive, label, description, ...itemPayload } = item
+      batch.set(
+        sectionRef.collection('items').doc(item.id),
+        {
+          ...itemPayload,
+          kitchen_id: kitchenId,
+          menu_id: menu.id,
+          section_id: section.id,
+          status: itemActive === false ? 'archived' : 'active',
+          created: createdStamp(),
+          updated: updatedStamp(),
+        },
+        { merge: false }
+      )
+    })
+  })
 }
 
 function buildDishPayload(item, kitchenId, snap) {
@@ -750,6 +754,7 @@ async function main() {
       buildMenuPayload(MENU, kitchenId, effectiveMenuSnap),
       { merge: false }
     )
+    writeMenuStructure(batch, menuSnap.ref, MENU, kitchenId)
 
     await batch.commit()
   }

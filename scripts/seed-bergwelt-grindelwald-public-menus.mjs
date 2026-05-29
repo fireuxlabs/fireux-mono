@@ -447,28 +447,49 @@ function buildMenuPayload(menu, kitchenId, snap) {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
-    names: {
-      de: normalizeString(menu.names?.de ?? menu.name),
-      en: normalizeString(menu.names?.en ?? menu.name),
-    },
     description: menu.description,
-    descriptions: {
-      de: normalizeString(menu.descriptions?.de ?? menu.description),
-      en: normalizeString(menu.descriptions?.en ?? menu.description),
-    },
-    active: true,
-    defaults: {
-      active: true,
-      description: '',
-      photo_url: '',
-    },
-    service_modes: ['dine_in'],
-    sections: buildSections(menu.sections),
-    dish_ids: menu.sections.flatMap((section) => section.items.map((item) => item.id)),
-    sort_order: 10,
+    source_language: 'de',
+    status: 'published',
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
+}
+
+function writeMenuStructure(batch, menuRef, menu, kitchenId) {
+  buildSections(menu.sections).forEach((section) => {
+    const sectionRef = menuRef.collection('sections').doc(section.id)
+    const { items, labels, descriptions, active, ...sectionPayload } = section
+
+    batch.set(
+      sectionRef,
+      {
+        ...sectionPayload,
+        kitchen_id: kitchenId,
+        menu_id: menu.id,
+        status: active === false ? 'archived' : 'active',
+        created: createdStamp(),
+        updated: updatedStamp(),
+      },
+      { merge: false }
+    )
+
+    items.forEach((item) => {
+      const { active: itemActive, label, description, ...itemPayload } = item
+      batch.set(
+        sectionRef.collection('items').doc(item.id),
+        {
+          ...itemPayload,
+          kitchen_id: kitchenId,
+          menu_id: menu.id,
+          section_id: section.id,
+          status: itemActive === false ? 'archived' : 'active',
+          created: createdStamp(),
+          updated: updatedStamp(),
+        },
+        { merge: false }
+      )
+    })
+  })
 }
 
 function buildDishPayload(item, kitchenId, snap) {
@@ -663,6 +684,7 @@ async function main() {
       buildMenuPayload(MENU, kitchenId, effectiveMenuSnap),
       { merge: false }
     )
+    writeMenuStructure(batch, menuSnap.ref, MENU, kitchenId)
 
     await batch.commit()
   }

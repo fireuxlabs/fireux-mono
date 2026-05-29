@@ -8,16 +8,16 @@ import { MenuStorage } from 'fireux-kitchens/runtime/models/menu.model.ts'
 export type PublicMenuRecord = {
   id: string
   slug: string
-  name: string
-  description: string
-  status: string
-  service_modes: string[]
-  sort_order: number
-  design: {
+  name?: string
+  description?: string
+  status?: string
+  service_modes?: string[]
+  sort_order?: number
+  design?: {
     color_mode: string
   }
-  title: string
-  source_type: string
+  title?: string
+  source_type?: string
   doc_url?: string
   doc_type?: string
   doc_name?: string
@@ -26,11 +26,11 @@ export type PublicMenuRecord = {
   file_type?: string
   file_name?: string
   storage_path?: string
-  storage_owner: string
-  source_app: string
-  display_label: string
-  qr_centre_label: string
-  is_public: boolean
+  storage_owner?: string
+  source_app?: string
+  display_label?: string
+  qr_centre_label?: string
+  is_public?: boolean
   created?: unknown
   updated?: unknown
   created_at?: unknown
@@ -118,29 +118,30 @@ export function serializePublicMenuRecord(record: PublicMenuRecord) {
   const docUrl = record.doc_url || record.file_url || ''
   const docType = record.doc_type || record.file_type || ''
   const docName = record.doc_name || record.file_name || ''
+  const title = record.title || record.name || record.slug
   const displayLabel = record.display_label && record.display_label !== 'QR Menu'
     ? record.display_label
-    : record.name || record.slug
+    : title
 
   return {
     id: record.id,
     slug: record.slug,
-    name: record.name,
-    description: record.description,
-    status: record.status,
-    source_type: record.source_type,
-    title: record.title,
+    name: record.name || title,
+    description: record.description || '',
+    status: record.status || 'published',
+    source_type: record.source_type || 'storage_file',
+    title,
     doc_url: docUrl,
     doc_type: docType,
     doc_name: docName,
     file_url: docUrl,
     file_type: docType,
     file_name: docName,
-    storage_owner: record.storage_owner,
-    source_app: record.source_app,
+    storage_owner: record.storage_owner || 'misebox',
+    source_app: record.source_app || '',
     display_label: displayLabel,
-    qr_centre_label: record.qr_centre_label,
-    is_public: record.is_public,
+    qr_centre_label: record.qr_centre_label || 'Menu',
+    is_public: record.is_public !== false,
     public_url: publicMenuUrl(record.slug),
     qr_url: publicMenuQrUrl(record.slug),
   }
@@ -154,26 +155,11 @@ export async function createRootMenuFromUploadedDoc(input: {
   docStoragePath: string
 }) {
   const record = {
-    created: {
-      at: FieldValue.serverTimestamp(),
-      by: 'anonymous',
-      app_id: 'misebox',
-    },
-    updated: {
-      at: FieldValue.serverTimestamp(),
-      by: 'anonymous',
-    },
     id: input.slug,
     slug: input.slug,
-    kitchen_id: '',
     name: input.slug,
     description: '',
     status: 'published',
-    service_modes: ['dine_in'],
-    sort_order: 0,
-    design: {
-      color_mode: 'light',
-    },
     title: input.slug,
     source_type: 'storage_file',
     doc_url: input.docUrl,
@@ -181,10 +167,6 @@ export async function createRootMenuFromUploadedDoc(input: {
     doc_name: input.docName,
     doc_storage_path: input.docStoragePath,
     storage_owner: 'misebox',
-    source_app: 'misebox',
-    display_label: input.slug,
-    qr_centre_label: 'Menu',
-    is_public: true,
     created_at: FieldValue.serverTimestamp(),
     updated_at: FieldValue.serverTimestamp(),
   }

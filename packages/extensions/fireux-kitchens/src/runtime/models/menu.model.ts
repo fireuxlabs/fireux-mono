@@ -48,13 +48,8 @@ export const MenuItemStorage = {
   idParam: 'itemId',
 } as const
 
-export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuChildStatus = 'active' | 'archived'
-
-export type MenuDesign = {
-  color_mode: 'light' | 'dark'
-}
 
 export type MenuDocument = {
   url: string
@@ -68,12 +63,8 @@ export const MenuModel = {
   kitchen_id: '' as string,
   name: '' as string,
   description: '' as string,
+  source_language: '' as string,
   status: 'draft' as MenuStatus,
-  service_modes: ['dine_in'] as MenuServiceMode[],
-  sort_order: 0 as number,
-  design: {
-    color_mode: 'light',
-  } as MenuDesign,
   doc_url: '' as string,
   doc_name: '' as string,
   doc_type: '' as string,

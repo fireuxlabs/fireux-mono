@@ -60,7 +60,6 @@ export function useMenuInterface() {
   function map(menu: Menu): MenuCard.Card {
     const id = safeString(menu.id).trim()
     const name = safeString(menu.name).trim()
-    const sortOrder = Number(menu.sort_order || 0)
     const isPublished = menu.status === 'published'
     const description = safeString(menu.description).trim()
     const status = safeString(menu.status).trim() || 'draft'
@@ -81,7 +80,7 @@ export function useMenuInterface() {
       itemCount: 0,
       isActiveNow: isPublished,
       windowLabel: '',
-      sortOrder,
+      sortOrder: 0,
     }
   }
 
