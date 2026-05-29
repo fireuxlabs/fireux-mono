@@ -109,37 +109,6 @@ const comingSoonSolution = (
   dev: instantDev(slug),
 })
 
-const docClientExample = `const goQr = createGoQrClient({
-  baseUrl: 'https://go-qr.web.app'
-})
-
-const appInfo = await goQr.appInfo()
-const tool = await goQr.publicDoc.config()
-const availability = await goQr.publicDoc.availability('my-doc')
-
-if (availability.available) {
-  const result = await goQr.publicDoc.create({
-    slug: 'my-doc',
-    file
-  })
-}`
-
-const docRequestExample = `const form = new FormData()
-form.append('slug', 'my-doc')
-form.append('file', file)
-
-const result = await fetch('https://go-qr.web.app/api/tools/doc/create', {
-  method: 'POST',
-  body: form
-}).then((response) => response.json())`
-
-const docResponseExample = `{
-  "ok": true,
-  "slug": "my-doc",
-  "path": "/doc/my-doc",
-  "qr_path": "/doc/my-doc/qr"
-}`
-
 export const goQrSolutions = {
   text: {
     title: 'Text',
@@ -179,50 +148,7 @@ export const goQrSolutions = {
       twitterDescription: 'Send any message as a QR code with Go QR.',
     },
   },
-  doc: {
-    title: 'Doc',
-    description: 'Upload a doc, choose a short path, and get a QR page.',
-    intro: 'Upload a doc and publish it as a QR page.',
-    instructions: [
-      ['File', 'i-lucide-file-up', 'Upload a PDF, image, DOC, or DOCX.'],
-      ['Path', 'i-lucide-link', 'Choose `/doc/my-doc`.'],
-      ['QR', 'i-lucide-cloud', 'Open the hosted doc or QR page.'],
-    ].map(toInstruction),
-    integrations: {
-      body: 'Use Doc when the file is already finished.',
-      consumers: [
-        ['Misebox', 'i-lucide-utensils', 'https://misebox.app/solutions/qr-menu', 'Food menu flow', 'Finished menu file.', 'Structured menu app.'],
-        ['BuenoHost', 'i-lucide-house', 'https://buenohost.web.app', 'Guest guide flow', 'Finished guide file.', 'Property-aware guest guide.'],
-        ['Sproochli', 'i-lucide-languages', 'https://sproochli.web.app', 'Translation flow', 'Finished translated file.', 'Translation workflow.'],
-      ].map(([name, icon, to, cta, useGoQr, useApp]) => ({ name, icon, to, cta, useGoQr, useApp, external: true })),
-    },
-    upgrades: [
-      'Sign in to manage, replace, or delete uploaded docs.',
-      'Add a logo or centre mark before printing stickers.',
-      'Set expiry, replacement, and simple access controls for public files.',
-    ],
-    dev: {
-      endpoints: [
-        ['GET', '/api/public/app/info', 'Read Go QR app identity, public branding, and media from the shared FireUX app-info endpoint.'],
-        ['GET', '/api/tools/doc', 'Read the doc tool contract: labels, slug rules, limits, endpoints, and preview URL shape.'],
-        ['GET', '/api/tools/doc/availability?id=my-doc', 'Check whether a public document path is valid and available before creating it.'],
-        ['POST', '/api/tools/doc/create', 'Upload a public file with a slug. The doc tool owns the internal doc type.'],
-      ].map(toEndpoint),
-      examples: [
-        { title: 'Client wrapper shape', code: docClientExample },
-        { title: 'Multipart request', code: docRequestExample },
-        { title: 'Create response', code: docResponseExample },
-      ],
-    },
-    seo: {
-      title: 'Doc - Go QR',
-      ogTitle: 'Doc - Go QR',
-      twitterTitle: 'Doc - Go QR',
-      description: 'Upload a doc and get a QR page.',
-      ogDescription: 'Upload a doc and get a QR page.',
-      twitterDescription: 'Upload a doc and get a QR page.',
-    },
-  },
+  doc: comingSoonSolution('doc', 'Doc', 'Upload a doc, choose a short path, and get a QR page.', 'i-lucide-file-up', 'my-doc'),
   url: withSeo('url', {
     title: 'URL',
     description: 'Turn a URL into a scannable QR code.',

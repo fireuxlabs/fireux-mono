@@ -10,10 +10,6 @@
         </p>
       </header>
 
-      <ClientOnly>
-        <GoQrToolsDoc class="mx-auto max-w-xl" />
-      </ClientOnly>
-
       <LandingSolutions
         variant="preview"
         :limit="99"

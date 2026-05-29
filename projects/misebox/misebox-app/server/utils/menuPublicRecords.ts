@@ -1,5 +1,4 @@
 import { useRuntimeConfig } from '#imports'
-import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
@@ -145,36 +144,4 @@ export function serializePublicMenuRecord(record: PublicMenuRecord) {
     public_url: publicMenuUrl(record.slug),
     qr_url: publicMenuQrUrl(record.slug),
   }
-}
-
-export async function createRootMenuFromUploadedDoc(input: {
-  slug: string
-  docUrl: string
-  docType: string
-  docName: string
-  docStoragePath: string
-}) {
-  const record = {
-    id: input.slug,
-    slug: input.slug,
-    name: input.slug,
-    description: '',
-    status: 'published',
-    title: input.slug,
-    source_type: 'storage_file',
-    doc_url: input.docUrl,
-    doc_type: input.docType,
-    doc_name: input.docName,
-    doc_storage_path: input.docStoragePath,
-    storage_owner: 'misebox',
-    created_at: FieldValue.serverTimestamp(),
-    updated_at: FieldValue.serverTimestamp(),
-  }
-
-  await rootMenuDocumentRef(input.slug).create(record)
-
-  return {
-    ...record,
-    id: input.slug,
-  } as PublicMenuRecord
 }

@@ -1,9 +1,4 @@
 import { useRuntimeConfig } from '#imports'
-import {
-  maxGoQrFileSizeMb,
-  reservedGoQrDocumentIds,
-} from './goQrRecords'
-import { goQrBrand } from './goQrBrand'
 
 function normalizeSiteUrl(input: unknown) {
   const raw = String(input || '').trim()
@@ -24,60 +19,4 @@ export function goQrProviderBaseUrl() {
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     'https://go-qr.web.app'
   )
-}
-
-export function docToolContract() {
-  const baseUrl = goQrProviderBaseUrl()
-  const docBaseUrl = `${baseUrl}/doc`
-
-  return {
-    ok: true,
-    provider: {
-      id: 'go-qr',
-      name: goQrBrand.name,
-      url: goQrBrand.url,
-      logo_url: goQrBrand.logo_url,
-      app_info_url: '/api/public/app/info',
-      base_url: baseUrl,
-    },
-    tool: {
-      id: 'doc',
-      name: 'Doc',
-      upload_type: 'doc',
-      accepts: ['application/pdf', 'image/*', '.doc', '.docx'],
-      max_file_size_mb: maxGoQrFileSizeMb,
-      anonymous_max_creates: 1,
-      result: {
-        target_path_pattern: '/doc/:slug',
-        qr_path_pattern: '/doc/:slug/qr',
-        label: 'Doc',
-      },
-    },
-    endpoints: {
-      availability: '/api/tools/doc/availability',
-      create: '/api/tools/doc/create',
-      app_info: '/api/public/app/info',
-    },
-    slug: {
-      label: 'Document path',
-      validation_label: 'Document path',
-      placeholder: 'my-doc',
-      reserved: reservedGoQrDocumentIds,
-      taken_message: 'This doc path is already taken.',
-    },
-    ui: {
-      title: 'Upload a doc. Get a QR code.',
-      description: 'Turn a doc into a shareable QR page.',
-      upload_label: 'Upload your doc',
-      cta_label: 'Create QR code',
-      loading_label: 'Creating QR doc...',
-      success_title: 'Your QR doc is ready',
-      open_target_label: 'Open doc',
-      open_qr_label: 'Open QR page',
-    },
-    preview: {
-      base_url: docBaseUrl,
-      path_suffix: '/qr',
-    },
-  }
 }

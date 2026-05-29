@@ -1,6 +1,5 @@
 <template>
   <GoQrToolsText v-if="slug === 'text'" class="w-full max-w-xl" />
-  <GoQrToolsDoc v-else-if="slug === 'doc'" class="w-full max-w-xl" />
   <GoQrToolInstantPanel
     v-else-if="slug === 'url'"
     type="url"

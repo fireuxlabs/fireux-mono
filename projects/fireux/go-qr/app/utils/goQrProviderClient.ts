@@ -47,21 +47,6 @@ export type GoQrToolBaseContract = {
   }
 }
 
-export type GoQrDocToolContract = GoQrToolBaseContract & {
-  tool: GoQrToolBaseContract['tool'] & {
-    accepts: string[]
-    max_file_size_mb: number
-  }
-  ui: GoQrToolBaseContract['ui'] & {
-    upload_label: string
-    cta_label: string
-    loading_label: string
-    success_title: string
-    open_target_label: string
-    open_qr_label: string
-  }
-}
-
 export type GoQrTextToolContract = GoQrToolBaseContract & {
   tool: GoQrToolBaseContract['tool'] & {
     max_text_length: number
@@ -76,8 +61,8 @@ export type GoQrTextToolContract = GoQrToolBaseContract & {
   }
 }
 
-export type GoQrToolContract = GoQrDocToolContract
-export type GoQrAnyToolContract = GoQrDocToolContract | GoQrTextToolContract
+export type GoQrToolContract = GoQrTextToolContract
+export type GoQrAnyToolContract = GoQrTextToolContract
 
 export type GoQrAppInfo = {
   ok: boolean
@@ -112,26 +97,6 @@ export function createGoQrClient(options: { baseUrl?: string } = {}) {
   return {
     appInfo() {
       return fetchProvider<GoQrAppInfo>('/api/public/app/info')
-    },
-    publicDoc: {
-      async config() {
-        return await fetchProvider<GoQrDocToolContract>('/api/tools/doc')
-      },
-      availability(slug: string) {
-        return fetchProvider('/api/tools/doc/availability', {
-          query: { id: slug },
-        })
-      },
-      create(input: { slug: string; file: File }) {
-        const formData = new FormData()
-        formData.append('slug', input.slug)
-        formData.append('file', input.file)
-
-        return fetchProvider('/api/tools/doc/create', {
-          method: 'POST',
-          body: formData,
-        })
-      },
     },
     resolveUrl(path: string) {
       return resolveProviderUrl(baseUrl, path)

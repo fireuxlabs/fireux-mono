@@ -98,23 +98,7 @@ export const miseboxSolutions = {
       'Add ordering, delivery, table flows, or kitchen-managed availability later.',
     ],
     dev: {
-      endpoints: [
-        {
-          method: 'GET',
-          path: '/api/menu-qr/tool',
-          description: 'Read the Misebox menu QR contract derived from the Go QR doc primitive.',
-        },
-        {
-          method: 'GET',
-          path: '/api/menu-qr/availability?id=my-menu',
-          description: 'Check whether a menu path is valid and available before upload.',
-        },
-        {
-          method: 'POST',
-          path: '/api/menus',
-          description: 'Upload the menu file into Misebox storage and create the root Menu record.',
-        },
-      ],
+      endpoints: [],
     },
     seo: {
       title: 'QR menu',
