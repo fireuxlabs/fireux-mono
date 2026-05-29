@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
-    </GoQrSolutionTool>
+    <GoQrToolUrl class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
@@ -12,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'url',
   title: 'URL',
   description: 'Turn a URL into a scannable QR code.',
   badge: 'Coming soon',

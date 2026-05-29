@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
-    </GoQrSolutionTool>
+    <GoQrToolBookingLink class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
@@ -12,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'booking-link',
   title: 'Booking link',
   description: 'Create a QR code that opens a booking or appointment link.',
   badge: 'Coming soon',

@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
-    </GoQrSolutionTool>
+    <GoQrToolReviewLink class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
@@ -12,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'review-link',
   title: 'Review link',
   description: 'Create a QR code that sends customers to a review page.',
   badge: 'Coming soon',

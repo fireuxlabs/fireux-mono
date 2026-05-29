@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
-    </GoQrSolutionTool>
+    <GoQrToolLocation class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
@@ -12,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'location',
   title: 'Location',
   description: 'Create a QR code that opens a location or map pin.',
   badge: 'Coming soon',

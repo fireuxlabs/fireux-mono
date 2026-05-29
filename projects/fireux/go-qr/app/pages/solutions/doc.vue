@@ -10,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'doc',
   title: 'Doc',
   description: 'hello from Go QR solution doc',
 }

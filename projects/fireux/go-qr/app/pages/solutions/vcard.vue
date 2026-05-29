@@ -1,8 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolPlaceholder :name="solution.title" />
-    </GoQrSolutionTool>
+    <GoQrToolVcard class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
@@ -12,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'vcard',
   title: 'vCard',
   description: 'Create a QR code that saves contact details.',
   badge: 'Coming soon',

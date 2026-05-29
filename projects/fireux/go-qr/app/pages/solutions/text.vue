@@ -10,6 +10,7 @@ definePageMeta({
 })
 
 const solution = {
+  slug: 'text',
   title: 'Text',
   description: 'Send any message as a QR code.',
 }
