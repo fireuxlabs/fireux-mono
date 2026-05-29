@@ -70,16 +70,6 @@ export const goQrLanguage = {
   },
   solutions: [
     {
-      slug: 'text',
-      title: 'Text',
-      description: 'Send any message as a downloadable QR code.',
-      icon: 'i-lucide-qr-code',
-      cta: {
-        label: 'Create text QR',
-        to: '/solutions/text',
-      },
-    },
-    {
       slug: 'doc',
       title: 'Doc',
       description: 'Upload a doc, choose a short path, and get a QR page.',

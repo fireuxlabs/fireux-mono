@@ -1,23 +1,21 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrSolutionTool :solution="solution">
-      <GoQrToolText class="w-full max-w-xl" />
-    </GoQrSolutionTool>
-    <GoQrSolutionInstructions :items="solution.instructions" />
-    <GoQrSolutionIntegrations :integrations="solution.integrations" />
-    <GoQrSolutionUpgrades :items="solution.upgrades" />
-    <GoQrSolutionDev :dev="solution.dev" />
+    <GoQrToolText class="w-full max-w-xl" />
   </GoQrSolutionPage>
 </template>
 
 <script setup lang="ts">
-import { goQrSolutions } from '../../utils/goQrSolutions'
-
 definePageMeta({
   layout: 'landing',
 })
 
-const solution = goQrSolutions.text
+const solution = {
+  title: 'Text',
+  description: 'Send any message as a QR code.',
+}
 
-useSeoMeta(solution.seo)
+useSeoMeta({
+  title: 'Text - Go QR',
+  description: solution.description,
+})
 </script>

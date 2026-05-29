@@ -3,21 +3,22 @@
     <GoQrSolutionTool :solution="solution">
       <GoQrToolPlaceholder :name="solution.title" />
     </GoQrSolutionTool>
-    <GoQrSolutionInstructions :items="solution.instructions" />
-    <GoQrSolutionIntegrations :integrations="solution.integrations" />
-    <GoQrSolutionUpgrades :items="solution.upgrades" />
-    <GoQrSolutionDev :dev="solution.dev" />
   </GoQrSolutionPage>
 </template>
 
 <script setup lang="ts">
-import { goQrSolutions } from '../../utils/goQrSolutions'
-
 definePageMeta({
   layout: 'landing',
 })
 
-const solution = goQrSolutions.pdf
+const solution = {
+  title: 'PDF',
+  description: 'Upload a PDF and give people a QR code that opens it.',
+  badge: 'Coming soon',
+}
 
-useSeoMeta(solution.seo)
+useSeoMeta({
+  title: 'PDF - Go QR',
+  description: solution.description,
+})
 </script>

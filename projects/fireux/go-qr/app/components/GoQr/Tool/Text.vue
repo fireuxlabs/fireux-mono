@@ -1,7 +1,9 @@
 <template>
-  <GoQrToolShell tool-id="text" name="Text">
-    <template #default="{ tool }">
-      <GoQrToolTextForm :tool="tool" />
-    </template>
-  </GoQrToolShell>
+  <p class="text-sm leading-6 text-muted">
+    {{ data?.tool.message }}
+  </p>
 </template>
+
+<script setup lang="ts">
+const { data } = await useFetch('/api/tools/text')
+</script>

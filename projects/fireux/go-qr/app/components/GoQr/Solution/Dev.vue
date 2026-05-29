@@ -50,9 +50,17 @@
 </template>
 
 <script setup lang="ts">
-import type { GoQrSolution } from '../../../utils/goQrSolutions'
-
 defineProps<{
-  dev?: GoQrSolution['dev']
+  dev?: {
+    endpoints?: {
+      method: string
+      path: string
+      description: string
+    }[]
+    examples?: {
+      title: string
+      code: string
+    }[]
+  }
 }>()
 </script>

@@ -3,21 +3,22 @@
     <GoQrSolutionTool :solution="solution">
       <GoQrToolPlaceholder :name="solution.title" />
     </GoQrSolutionTool>
-    <GoQrSolutionInstructions :items="solution.instructions" />
-    <GoQrSolutionIntegrations :integrations="solution.integrations" />
-    <GoQrSolutionUpgrades :items="solution.upgrades" />
-    <GoQrSolutionDev :dev="solution.dev" />
   </GoQrSolutionPage>
 </template>
 
 <script setup lang="ts">
-import { goQrSolutions } from '../../utils/goQrSolutions'
-
 definePageMeta({
   layout: 'landing',
 })
 
-const solution = goQrSolutions['feedback-link']
+const solution = {
+  title: 'Feedback link',
+  description: 'Create a QR code that opens a feedback or survey form.',
+  badge: 'Coming soon',
+}
 
-useSeoMeta(solution.seo)
+useSeoMeta({
+  title: 'Feedback link - Go QR',
+  description: solution.description,
+})
 </script>

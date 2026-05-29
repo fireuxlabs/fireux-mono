@@ -1,5 +1,9 @@
 <template>
   <p class="text-sm leading-6 text-muted">
-    hello world
+    {{ data?.tool.message }}
   </p>
 </template>
+
+<script setup lang="ts">
+const { data } = await useFetch('/api/tools/doc')
+</script>

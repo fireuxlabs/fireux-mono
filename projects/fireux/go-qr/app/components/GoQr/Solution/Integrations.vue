@@ -70,9 +70,22 @@
 </template>
 
 <script setup lang="ts">
-import type { GoQrSolution } from '../../../utils/goQrSolutions'
-
 defineProps<{
-  integrations?: GoQrSolution['integrations']
+  integrations?: {
+    body: string
+    links?: {
+      label: string
+      to: string
+    }[]
+    consumers?: {
+      name: string
+      icon: string
+      to: string
+      cta: string
+      useGoQr: string
+      useApp: string
+      external?: boolean
+    }[]
+  }
 }>()
 </script>

@@ -1,21 +1,25 @@
 <template>
   <GoQrSolutionPage :solution="solution">
     <GoQrToolDoc class="w-full max-w-xl" />
-    <GoQrSolutionInstructions :items="solution.instructions" />
-    <GoQrSolutionIntegrations :integrations="solution.integrations" />
-    <GoQrSolutionUpgrades :items="solution.upgrades" />
-    <GoQrSolutionDev :dev="solution.dev" />
   </GoQrSolutionPage>
 </template>
 
 <script setup lang="ts">
-import { goQrSolutions } from '../../utils/goQrSolutions'
-
 definePageMeta({
   layout: 'landing',
 })
 
-const solution = goQrSolutions.doc
+const solution = {
+  title: 'Doc',
+  description: 'hello from Go QR solution doc',
+}
 
-useSeoMeta(solution.seo)
+useSeoMeta({
+  title: 'Doc - Go QR',
+  ogTitle: 'Doc - Go QR',
+  twitterTitle: 'Doc - Go QR',
+  description: solution.description,
+  ogDescription: solution.description,
+  twitterDescription: solution.description,
+})
 </script>
