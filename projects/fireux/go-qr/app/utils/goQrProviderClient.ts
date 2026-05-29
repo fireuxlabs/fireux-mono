@@ -2,6 +2,9 @@ export type GoQrToolBaseContract = {
   ok: boolean
   provider: {
     id: string
+    name: string
+    url: string
+    logo_url?: string
     app_info_url: string
     base_url: string
   }

@@ -1,6 +1,6 @@
 <template>
-  <GoQrToolFileUpload
-    endpoint="/api/docs/create"
+  <GoQrToolDoc
+    endpoint="/api/tools/doc/create"
     upload-type="doc"
     :upload-label="uploadLabel"
     :cta-label="ctaLabel"
@@ -10,7 +10,7 @@
     :preview-base-url="previewBaseUrl"
     slug-label="Document path"
     slug-validation-label="Document path"
-    availability-endpoint="/api/docs/availability"
+    availability-endpoint="/api/tools/doc/availability"
     taken-message="This doc path is already taken."
     :reserved-slugs="reservedDocumentSlugs"
     navigate-on-success

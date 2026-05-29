@@ -3,6 +3,7 @@ import {
   maxGoQrFileSizeMb,
   reservedGoQrDocumentIds,
 } from './goQrRecords'
+import { goQrBrand } from './goQrBrand'
 
 function normalizeSiteUrl(input: unknown) {
   const raw = String(input || '').trim()
@@ -33,6 +34,9 @@ export function docToolContract() {
     ok: true,
     provider: {
       id: 'go-qr',
+      name: goQrBrand.name,
+      url: goQrBrand.url,
+      logo_url: goQrBrand.logo_url,
       app_info_url: '/api/public/app/info',
       base_url: baseUrl,
     },

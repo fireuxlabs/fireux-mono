@@ -25,28 +25,8 @@
       </div>
     </template>
 
-    <GoQrToolFileUpload
-      :endpoint="tool.endpoints.create"
-      config-endpoint="/api/menu-qr/config"
-      :accept="tool.tool.accepts.join(',')"
-      :upload-label="tool.ui.upload_label"
-      :upload-description="tool.consumer_config?.uploadDescription"
-      :cta-label="tool.ui.cta_label"
-      :loading-label="tool.ui.loading_label"
-      :slug-label="tool.slug.label"
-      :slug-validation-label="tool.slug.validation_label"
-      :slug-placeholder="tool.slug.placeholder"
-      :preview-base-url="tool.preview.base_url"
-      :preview-path-suffix="tool.preview.path_suffix"
-      :result-base-url="tool.result_base_url"
-      :availability-endpoint="tool.endpoints.availability"
-      :taken-message="tool.slug.taken_message"
-      :reserved-slugs="tool.slug.reserved"
-      :max-file-size-mb="tool.tool.max_file_size_mb"
-      :success-title="tool.ui.success_title"
-      :open-target-label="tool.ui.open_target_label"
-      :open-qr-label="tool.ui.open_qr_label"
-      :show-powered-by="false"
+    <GoQrToolDoc
+      :tool="menuTool"
     />
   </UCard>
 
@@ -80,6 +60,9 @@ type MenuQrToolContract = {
   ok: boolean
   provider: {
     id: string
+    name?: string
+    url?: string
+    logo_url?: string
     app_info_url: string
     base_url: string
   }
@@ -143,6 +126,17 @@ const { data: tool, error, pending } = useAsyncData<MenuQrToolContract>(
 const toolErrorMessage = computed(() =>
   error.value?.message || 'The menu QR tool could not be loaded.'
 )
+const menuTool = computed(() => {
+  if (!tool.value) return null
+
+  return {
+    ...tool.value,
+    ui: {
+      ...tool.value.ui,
+      upload_description: tool.value.consumer_config?.uploadDescription,
+    },
+  }
+})
 const providerLogoUrl = computed(() => {
   const baseUrl = String(tool.value?.provider.base_url || 'https://go-qr.web.app').replace(/\/+$/, '')
   return `${baseUrl}/img/app/logo.svg`

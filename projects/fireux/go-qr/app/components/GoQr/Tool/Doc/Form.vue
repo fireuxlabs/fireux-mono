@@ -1,5 +1,5 @@
 <template>
-  <GoQrToolFileUpload
+  <GoQrToolDoc
     :tool="tool"
     :show-powered-by="false"
     navigate-on-success

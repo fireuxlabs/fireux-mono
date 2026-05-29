@@ -10,6 +10,9 @@ type GoQrToolContract = {
   ok: boolean
   provider: {
     id: string
+    name?: string
+    url?: string
+    logo_url?: string
     app_info_url: string
     base_url: string
   }
@@ -71,6 +74,9 @@ function fallbackDocToolContract(providerBaseUrl: string): GoQrToolContract {
     ok: true,
     provider: {
       id: 'go-qr',
+      name: 'Go QR',
+      url: 'https://go-qr.web.app',
+      logo_url: `${providerBaseUrl}/img/app/logo.png`,
       app_info_url: '/api/brand',
       base_url: providerBaseUrl,
     },

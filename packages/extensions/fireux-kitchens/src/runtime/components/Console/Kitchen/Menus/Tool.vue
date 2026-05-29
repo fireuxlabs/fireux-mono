@@ -6,7 +6,7 @@
     <template #header>
       <div class="flex items-start gap-3">
         <img
-          :src="tool.provider.logoUrl"
+          :src="tool.provider.logo_url"
           alt="Go QR"
           class="size-10 rounded-md"
         >
@@ -24,11 +24,10 @@
       </div>
     </template>
 
-    <GoQrToolFileUpload
+    <GoQrToolDoc
       v-if="canImport"
       :tool="tool"
       navigate-on-success
-      :show-powered-by="false"
     />
 
     <UAlert
@@ -61,7 +60,9 @@ const consoleMenuToolEndpoint = (action: 'availability' | 'config' | 'create') =
 const tool = computed(() => ({
   provider: {
     name: 'Go QR',
-    logoUrl: 'https://go-qr.web.app/img/app/logo.svg',
+    url: 'https://go-qr.web.app',
+    logo_url: 'https://go-qr.web.app/img/app/logo.png',
+    base_url: 'https://go-qr.web.app',
   },
   ui: {
     title: 'Menu',

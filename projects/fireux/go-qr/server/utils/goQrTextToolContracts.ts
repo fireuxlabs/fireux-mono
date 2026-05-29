@@ -3,6 +3,7 @@ import {
   maxGoQrTextLength,
   reservedGoQrTextIds,
 } from './goQrTextRecords'
+import { goQrBrand } from './goQrBrand'
 import { goQrProviderBaseUrl } from './goQrToolContracts'
 
 export function textToolContract() {
@@ -14,6 +15,9 @@ export function textToolContract() {
     ok: true,
     provider: {
       id: 'go-qr',
+      name: goQrBrand.name,
+      url: goQrBrand.url,
+      logo_url: goQrBrand.logo_url,
       app_info_url: '/api/public/app/info',
       base_url: baseUrl,
     },
