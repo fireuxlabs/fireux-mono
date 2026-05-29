@@ -1,7 +1,4 @@
 import { defineEventHandler } from 'h3'
-import { goQrTool } from '../../../utils/goQrTools'
+import { goQrToolResponse } from '../../../utils/goQrTools'
 
-export default defineEventHandler(() => ({
-  ok: true,
-  tool: goQrTool('text'),
-}))
+export default defineEventHandler((event) => goQrToolResponse(event, 'text'))

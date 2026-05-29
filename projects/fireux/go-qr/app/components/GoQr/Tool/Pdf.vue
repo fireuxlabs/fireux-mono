@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="PDF" />
+  <GoQrSystemToolComingSoon name="PDF" />
 </template>

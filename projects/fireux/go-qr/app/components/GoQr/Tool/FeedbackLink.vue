@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="Feedback link" />
+  <GoQrSystemToolComingSoon name="Feedback link" />
 </template>

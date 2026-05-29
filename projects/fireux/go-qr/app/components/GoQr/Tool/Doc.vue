@@ -1,7 +1,9 @@
 <template>
-  <p class="text-sm leading-6 text-muted">
-    {{ data?.tool.message }}
-  </p>
+  <GoQrSystemToolFrame>
+    <p class="text-sm leading-6 text-muted">
+      {{ data?.tool.message }}
+    </p>
+  </GoQrSystemToolFrame>
 </template>
 
 <script setup lang="ts">

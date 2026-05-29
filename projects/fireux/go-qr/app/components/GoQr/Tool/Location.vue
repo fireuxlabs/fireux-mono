@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="Location" />
+  <GoQrSystemToolComingSoon name="Location" />
 </template>

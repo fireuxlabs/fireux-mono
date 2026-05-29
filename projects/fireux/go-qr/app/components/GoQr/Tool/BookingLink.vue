@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="Booking link" />
+  <GoQrSystemToolComingSoon name="Booking link" />
 </template>

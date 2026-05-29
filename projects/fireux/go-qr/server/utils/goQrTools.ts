@@ -1,3 +1,5 @@
+import { setResponseHeaders, type H3Event } from 'h3'
+
 export type GoQrToolId = 'doc' | 'text'
 
 export type GoQrToolContract = {
@@ -18,4 +20,17 @@ const tools = {
 
 export function goQrTool(id: GoQrToolId) {
   return tools[id]
+}
+
+export function goQrToolResponse(event: H3Event, id: GoQrToolId) {
+  setResponseHeaders(event, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+  })
+
+  return {
+    ok: true,
+    tool: goQrTool(id),
+  }
 }

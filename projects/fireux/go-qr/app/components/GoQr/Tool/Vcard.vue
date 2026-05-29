@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="vCard" />
+  <GoQrSystemToolComingSoon name="vCard" />
 </template>

@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="Phone" />
+  <GoQrSystemToolComingSoon name="Phone" />
 </template>

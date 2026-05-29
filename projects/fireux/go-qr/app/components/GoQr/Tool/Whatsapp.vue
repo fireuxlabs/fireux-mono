@@ -1,3 +1,3 @@
 <template>
-  <GoQrToolPlaceholder name="WhatsApp" />
+  <GoQrSystemToolComingSoon name="WhatsApp" />
 </template>

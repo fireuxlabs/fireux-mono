@@ -1,12 +1,7 @@
 <template>
   <MiseboxSolutionPage :solution="solution">
     <MiseboxSolutionTool :solution="solution">
-      <UAlert
-        color="neutral"
-        variant="soft"
-        title="QR menu tool reset"
-        description="This tool surface has been cleared so we can rebuild the Go QR pipeline cleanly."
-      />
+      <GoQrToolDoc class="w-full max-w-xl" />
     </MiseboxSolutionTool>
     <MiseboxSolutionInstructions :items="solution.instructions" />
     <MiseboxSolutionIntegrations :integrations="solution.integrations" />
