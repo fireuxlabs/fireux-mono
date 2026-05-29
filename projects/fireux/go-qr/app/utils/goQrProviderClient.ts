@@ -11,6 +11,15 @@ export type GoQrToolBaseContract = {
   tool: {
     id: string
     name: string
+  }
+  ui: {
+    title: string
+    description: string
+  }
+}
+
+export type GoQrSavedToolContract = GoQrToolBaseContract & {
+  tool: GoQrToolBaseContract['tool'] & {
     upload_type: string
     anonymous_max_creates: number
     result: {
@@ -31,27 +40,17 @@ export type GoQrToolBaseContract = {
     reserved: string[]
     taken_message: string
   }
-  ui: {
-    title: string
-    description: string
-    upload_label: string
-    cta_label: string
-    loading_label: string
-    success_title: string
-    open_target_label: string
-    open_qr_label: string
-  }
   preview: {
     base_url: string
     path_suffix: string
   }
 }
 
-export type GoQrTextToolContract = GoQrToolBaseContract & {
-  tool: GoQrToolBaseContract['tool'] & {
+export type GoQrTextToolContract = GoQrSavedToolContract & {
+  tool: GoQrSavedToolContract['tool'] & {
     max_text_length: number
   }
-  ui: GoQrToolBaseContract['ui'] & {
+  ui: GoQrSavedToolContract['ui'] & {
     text_label: string
     text_placeholder: string
     cta_label: string
@@ -61,8 +60,15 @@ export type GoQrTextToolContract = GoQrToolBaseContract & {
   }
 }
 
-export type GoQrToolContract = GoQrTextToolContract
-export type GoQrAnyToolContract = GoQrTextToolContract
+export type GoQrDocToolContract = GoQrToolBaseContract & {
+  tool: GoQrToolBaseContract['tool'] & {
+    kind: 'doc'
+    message: string
+  }
+}
+
+export type GoQrToolContract = GoQrTextToolContract | GoQrDocToolContract
+export type GoQrAnyToolContract = GoQrToolContract
 
 export type GoQrAppInfo = {
   ok: boolean
@@ -97,6 +103,11 @@ export function createGoQrClient(options: { baseUrl?: string } = {}) {
   return {
     appInfo() {
       return fetchProvider<GoQrAppInfo>('/api/public/app/info')
+    },
+    doc: {
+      contract() {
+        return fetchProvider<GoQrDocToolContract>('/api/tools/doc')
+      },
     },
     resolveUrl(path: string) {
       return resolveProviderUrl(baseUrl, path)

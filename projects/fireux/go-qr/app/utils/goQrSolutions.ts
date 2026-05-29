@@ -148,7 +148,37 @@ export const goQrSolutions = {
       twitterDescription: 'Send any message as a QR code with Go QR.',
     },
   },
-  doc: comingSoonSolution('doc', 'Doc', 'Upload a doc, choose a short path, and get a QR page.', 'i-lucide-file-up', 'my-doc'),
+  doc: {
+    title: 'Doc',
+    description: 'hello from Go QR solution doc',
+    intro: 'hello from Go QR solution doc',
+    instructions: [
+      ['Contract', 'i-lucide-file-code', 'Expose the doc tool through a Go QR API contract.'],
+      ['Surface', 'i-lucide-panel-top', 'Render the doc tool on /solutions/doc.'],
+      ['Consumer', 'i-lucide-plug', 'Keep the contract small enough for Misebox to consume later.'],
+    ].map(toInstruction),
+    integrations: {
+      body: 'Doc is a Go QR primitive. Misebox can consume the contract when it needs a menu-flavoured document pipeline.',
+      links: [
+        { label: 'Text', to: '/solutions/text' },
+        { label: 'URL', to: '/solutions/url' },
+      ],
+    },
+    upgrades: [],
+    dev: {
+      endpoints: [
+        ['GET', '/api/tools/doc', 'Read the Go QR doc tool contract.'],
+      ].map(toEndpoint),
+    },
+    seo: {
+      title: 'Doc - Go QR',
+      ogTitle: 'Doc - Go QR',
+      twitterTitle: 'Doc - Go QR',
+      description: 'hello from Go QR solution doc',
+      ogDescription: 'hello from Go QR solution doc',
+      twitterDescription: 'hello from Go QR solution doc',
+    },
+  },
   url: withSeo('url', {
     title: 'URL',
     description: 'Turn a URL into a scannable QR code.',

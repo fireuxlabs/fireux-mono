@@ -1,7 +1,7 @@
 <template>
   <GoQrSolutionPage :solution="solution">
     <GoQrSolutionTool :solution="solution">
-      <GoQrSolutionToolSurface slug="doc" :name="solution.title" />
+      <GoQrToolsDoc class="w-full max-w-xl" />
     </GoQrSolutionTool>
     <GoQrSolutionInstructions :items="solution.instructions" />
     <GoQrSolutionIntegrations :integrations="solution.integrations" />
