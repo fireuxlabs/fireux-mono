@@ -39,10 +39,10 @@
 
       <UFileUpload
         :model-value="file"
-        :accept="accept"
+        :accept="toolAccept"
         :color="uploadError ? 'error' : 'primary'"
         :highlight="Boolean(uploadError)"
-        :label="uploadLabel"
+        :label="toolUploadLabel"
         :description="uploadDescription"
         size="xl"
         variant="area"
@@ -51,10 +51,10 @@
         @update:model-value="setFile"
       />
 
-      <UFormField :label="slugLabel">
+      <UFormField :label="toolSlugLabel">
         <UInput
           v-model="slugInput"
-          :placeholder="slugPlaceholder"
+          :placeholder="toolSlugPlaceholder"
           class="w-full"
         />
         <p class="mt-1 text-xs text-muted">
@@ -70,7 +70,7 @@
           v-else-if="slugTaken"
           class="mt-1 text-xs text-error"
         >
-          {{ takenMessage }}
+          {{ toolTakenMessage }}
         </p>
       </UFormField>
 
@@ -82,7 +82,7 @@
         :disabled="!canCreate"
         :loading="isCreating"
       >
-        {{ isCreating ? loadingLabel : ctaLabel }}
+        {{ isCreating ? toolLoadingLabel : toolCtaLabel }}
       </UButton>
 
       <p
@@ -99,7 +99,7 @@
     >
       <template #header>
         <h2 class="text-lg font-semibold text-highlighted">
-          {{ successTitle }}
+          {{ toolSuccessTitle }}
         </h2>
       </template>
 
@@ -110,7 +110,7 @@
           target="_blank"
           icon="i-lucide-external-link"
         >
-          {{ openTargetLabel }}
+          {{ toolOpenTargetLabel }}
         </UButton>
         <UButton
           :to="createdQrUrl"
@@ -118,7 +118,7 @@
           icon="i-lucide-qr-code"
           variant="soft"
         >
-          {{ openQrLabel }}
+          {{ toolOpenQrLabel }}
         </UButton>
       </div>
     </UCard>
@@ -136,8 +136,8 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, onMounted, ref, watch } from 'vue'
-import { normalizeSlug } from '../../utils/slug/normalizeSlug'
-import { validatePublicSlug } from '../../utils/slug/validatePublicSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
 type CreateResponse = {
   ok?: boolean
@@ -162,8 +162,45 @@ type ToolConfigResponse = {
   powered_by?: PoweredByBrand
 }
 
+type QrFileUploadToolContract = {
+  provider?: {
+    base_url?: string
+  }
+  tool?: {
+    upload_type?: string
+    accepts?: string[]
+    max_file_size_mb?: number
+  }
+  endpoints?: {
+    create?: string
+    availability?: string
+  }
+  slug?: {
+    label?: string
+    validation_label?: string
+    placeholder?: string
+    reserved?: string[]
+    taken_message?: string
+  }
+  ui?: {
+    upload_label?: string
+    upload_description?: string
+    cta_label?: string
+    loading_label?: string
+    success_title?: string
+    open_target_label?: string
+    open_qr_label?: string
+  }
+  preview?: {
+    base_url?: string
+    path_suffix?: string
+  }
+  result_base_url?: string
+}
+
 const props = withDefaults(defineProps<{
-  endpoint: string
+  tool?: QrFileUploadToolContract | null
+  endpoint?: string
   configEndpoint?: string
   uploadType?: string
   accept?: string
@@ -191,6 +228,8 @@ const props = withDefaults(defineProps<{
   openTargetLabel?: string
   openQrLabel?: string
 }>(), {
+  tool: null,
+  endpoint: '',
   configEndpoint: '',
   uploadType: '',
   accept: 'application/pdf,image/*,.doc,.docx',
@@ -235,42 +274,80 @@ const configuredResultBaseUrl = ref('')
 let availabilityTimer: ReturnType<typeof setTimeout> | undefined
 let availabilityRequest = 0
 
-const maxFileSizeBytes = computed(() => props.maxFileSizeMb * 1024 * 1024)
+const toolAccept = computed(() => props.tool?.tool?.accepts?.join(',') || props.accept)
+const toolEndpoint = computed(() => props.tool?.endpoints?.create || props.endpoint)
+const toolConfigEndpoint = computed(() => props.configEndpoint)
+const toolUploadType = computed(() => props.tool?.tool?.upload_type || props.uploadType)
+const toolUploadLabel = computed(() => props.tool?.ui?.upload_label || props.uploadLabel)
+const toolUploadDescription = computed(() =>
+  props.tool?.ui?.upload_description || props.uploadDescription
+)
+const toolCtaLabel = computed(() => props.tool?.ui?.cta_label || props.ctaLabel)
+const toolLoadingLabel = computed(() => props.tool?.ui?.loading_label || props.loadingLabel)
+const toolSlugLabel = computed(() => props.tool?.slug?.label || props.slugLabel)
+const toolSlugPlaceholder = computed(() => props.tool?.slug?.placeholder || props.slugPlaceholder)
+const toolSlugValidationLabel = computed(() =>
+  props.tool?.slug?.validation_label || props.slugValidationLabel
+)
+const toolPreviewBaseUrl = computed(() => props.tool?.preview?.base_url || props.previewBaseUrl)
+const toolPreviewPathSuffix = computed(() =>
+  props.tool?.preview?.path_suffix ?? props.previewPathSuffix
+)
+const toolResultBaseUrl = computed(() =>
+  props.tool?.result_base_url || props.tool?.provider?.base_url || props.resultBaseUrl
+)
+const toolAvailabilityEndpoint = computed(() =>
+  props.tool?.endpoints?.availability || props.availabilityEndpoint
+)
+const toolTakenMessage = computed(() => props.tool?.slug?.taken_message || props.takenMessage)
+const toolReservedSlugs = computed(() => props.tool?.slug?.reserved || props.reservedSlugs)
+const toolMaxFileSizeMb = computed(() =>
+  props.tool?.tool?.max_file_size_mb || props.maxFileSizeMb
+)
+const toolSuccessTitle = computed(() => props.tool?.ui?.success_title || props.successTitle)
+const toolOpenTargetLabel = computed(() =>
+  props.tool?.ui?.open_target_label || props.openTargetLabel
+)
+const toolOpenQrLabel = computed(() => props.tool?.ui?.open_qr_label || props.openQrLabel)
+
+const maxFileSizeBytes = computed(() => toolMaxFileSizeMb.value * 1024 * 1024)
 const normalizedSlug = computed(() => normalizeSlug(slugInput.value))
-const effectivePreviewBaseUrl = computed(() => configuredPreviewBaseUrl.value || props.previewBaseUrl)
-const effectivePreviewPathSuffix = computed(() => configuredPreviewPathSuffix.value || props.previewPathSuffix)
-const effectiveResultBaseUrl = computed(() => configuredResultBaseUrl.value || props.resultBaseUrl)
+const effectivePreviewBaseUrl = computed(() => configuredPreviewBaseUrl.value || toolPreviewBaseUrl.value)
+const effectivePreviewPathSuffix = computed(() => configuredPreviewPathSuffix.value || toolPreviewPathSuffix.value)
+const effectiveResultBaseUrl = computed(() => configuredResultBaseUrl.value || toolResultBaseUrl.value)
 const inferredConfigEndpoint = computed(() =>
-  props.configEndpoint || props.endpoint.replace(/\/create$/, '/config')
+  toolConfigEndpoint.value || toolEndpoint.value.replace(/\/create$/, '/config')
 )
 const uploadDescription = computed(() =>
-  uploadError.value || props.uploadDescription || `PDF, image, DOC, or DOCX. Max ${props.maxFileSizeMb} MB.`
+  uploadError.value ||
+  toolUploadDescription.value ||
+  `PDF, image, DOC, or DOCX. Max ${toolMaxFileSizeMb.value} MB.`
 )
 const previewUrl = computed(() => {
-  const slug = normalizedSlug.value || props.slugPlaceholder
+  const slug = normalizedSlug.value || toolSlugPlaceholder.value
   const base = effectivePreviewBaseUrl.value.replace(/\/+$/, '')
   return `${base ? `${base}/` : ''}${slug}${effectivePreviewPathSuffix.value}`
 })
 const debugPayload = computed(() => ({
   endpoints: {
-    create: props.endpoint,
+    create: toolEndpoint.value,
     config: inferredConfigEndpoint.value,
-    availability: props.availabilityEndpoint || null,
+    availability: toolAvailabilityEndpoint.value || null,
     poweredBy: props.poweredByEndpoint || null,
   },
   upload: {
-    type: props.uploadType || null,
-    accept: props.accept,
-    maxFileSizeMb: props.maxFileSizeMb,
-    label: props.uploadLabel,
+    type: toolUploadType.value || null,
+    accept: toolAccept.value,
+    maxFileSizeMb: toolMaxFileSizeMb.value,
+    label: toolUploadLabel.value,
     description: uploadDescription.value,
   },
   slug: {
-    label: props.slugLabel,
-    validationLabel: props.slugValidationLabel,
-    placeholder: props.slugPlaceholder,
-    reserved: props.reservedSlugs,
-    takenMessage: props.takenMessage,
+    label: toolSlugLabel.value,
+    validationLabel: toolSlugValidationLabel.value,
+    placeholder: toolSlugPlaceholder.value,
+    reserved: toolReservedSlugs.value,
+    takenMessage: toolTakenMessage.value,
     normalized: normalizedSlug.value || null,
     error: slugError.value || null,
     taken: slugTaken.value,
@@ -307,7 +384,7 @@ const canCreate = computed(() =>
 )
 
 onMounted(async () => {
-  if (inferredConfigEndpoint.value !== props.endpoint) {
+  if (inferredConfigEndpoint.value !== toolEndpoint.value) {
     try {
       const response = await $fetch<ToolConfigResponse>(inferredConfigEndpoint.value)
       if (response.preview_base_url) configuredPreviewBaseUrl.value = response.preview_base_url
@@ -338,7 +415,7 @@ watch(slugInput, (value) => {
   slugTaken.value = false
   slugError.value = validateSlug(slug)
 
-  if (!slug || slugError.value || !props.availabilityEndpoint) return
+  if (!slug || slugError.value || !toolAvailabilityEndpoint.value) return
 
   availabilityTimer = setTimeout(async () => {
     const requestId = ++availabilityRequest
@@ -348,17 +425,17 @@ watch(slugInput, (value) => {
         taken?: boolean
         is_valid?: boolean
         message?: string
-      }>(props.availabilityEndpoint, { query: { id: slug } })
+      }>(toolAvailabilityEndpoint.value, { query: { id: slug } })
 
       if (requestId === availabilityRequest) {
         slugTaken.value = Boolean(response.taken)
         slugError.value =
-          response.is_valid === false ? response.message || `${props.slugValidationLabel} is not valid.` : ''
+          response.is_valid === false ? response.message || `${toolSlugValidationLabel.value} is not valid.` : ''
       }
     } catch (error) {
       if (requestId === availabilityRequest) {
         slugTaken.value = false
-        slugError.value = errorMessage(error, `${props.slugValidationLabel} is not valid.`)
+        slugError.value = errorMessage(error, `${toolSlugValidationLabel.value} is not valid.`)
       }
     }
   }, 250)
@@ -366,12 +443,12 @@ watch(slugInput, (value) => {
 
 function validateSlug(value: string) {
   const result = validatePublicSlug(value, {
-    label: props.slugValidationLabel,
+    label: toolSlugValidationLabel.value,
     reservedScope: 'root',
-    reserved: props.reservedSlugs,
+    reserved: toolReservedSlugs.value,
   })
 
-  return result.isValid ? '' : result.message || `${props.slugValidationLabel} is not valid.`
+  return result.isValid ? '' : result.message || `${toolSlugValidationLabel.value} is not valid.`
 }
 
 function setFile(value: File | File[] | null | undefined) {
@@ -384,7 +461,7 @@ function setFile(value: File | File[] | null | undefined) {
   }
 
   if (nextFile.size > maxFileSizeBytes.value) {
-    uploadError.value = `Max file size is ${props.maxFileSizeMb} MB.`
+    uploadError.value = `Max file size is ${toolMaxFileSizeMb.value} MB.`
     file.value = null
     return
   }
@@ -405,9 +482,9 @@ async function createQr() {
     const formData = new FormData()
     formData.append('file', file.value)
     formData.append('slug', normalizedSlug.value)
-    if (props.uploadType) formData.append('type', props.uploadType)
+    if (toolUploadType.value) formData.append('type', toolUploadType.value)
 
-    const response = await $fetch<CreateResponse>(props.endpoint, {
+    const response = await $fetch<CreateResponse>(toolEndpoint.value, {
       method: 'POST',
       body: formData,
     })
@@ -435,7 +512,7 @@ async function createQr() {
 function resolveResultUrl(value: string) {
   if (!value) return ''
   if (/^https?:\/\//i.test(value)) return value
-  if (!import.meta.client && !props.resultBaseUrl) return value
+  if (!import.meta.client && !effectiveResultBaseUrl.value) return value
 
   const base = effectiveResultBaseUrl.value || window.location.origin
   return new URL(value, base).toString()

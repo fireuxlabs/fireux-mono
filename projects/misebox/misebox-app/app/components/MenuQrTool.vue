@@ -25,7 +25,7 @@
       </div>
     </template>
 
-    <PublicQrFileUploadTool
+    <GoQrToolFileUpload
       :endpoint="tool.endpoints.create"
       config-endpoint="/api/menu-qr/config"
       :accept="tool.tool.accepts.join(',')"

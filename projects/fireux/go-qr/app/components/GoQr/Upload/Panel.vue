@@ -1,5 +1,5 @@
 <template>
-  <PublicQrFileUploadTool
+  <GoQrToolFileUpload
     endpoint="/api/docs/create"
     upload-type="doc"
     :upload-label="uploadLabel"

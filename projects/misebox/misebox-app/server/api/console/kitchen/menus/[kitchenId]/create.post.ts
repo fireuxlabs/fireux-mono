@@ -61,7 +61,7 @@ async function readKitchenPublicSlug(kitchenId: string) {
     .doc(kitchenId)
     .get()
   const data = doc.data() || {}
-  return String(data.slug || kitchenId).trim()
+  return String(data.slug || '').trim()
 }
 
 export default defineEventHandler(async (event) => {
@@ -154,6 +154,12 @@ export default defineEventHandler(async (event) => {
 
   const docUrl = firebaseDownloadUrl(bucketName, objectPath, token)
   const kitchenSlug = await readKitchenPublicSlug(kitchenId)
+  if (!kitchenSlug) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Kitchen needs a public slug before menu import.',
+    })
+  }
   const publicMenuPath = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(slug)}`
   const now = FieldValue.serverTimestamp()
   await menuRef.set({
