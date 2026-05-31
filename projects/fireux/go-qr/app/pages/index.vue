@@ -10,6 +10,14 @@
         </p>
       </header>
 
+      <section class="mb-8">
+        <iframe
+          src="/tools/doc"
+          title="Go QR doc tool"
+          class="mx-auto h-[34rem] w-full max-w-xl rounded-lg border border-default"
+        />
+      </section>
+
       <LandingSolutions
         variant="preview"
         :limit="99"

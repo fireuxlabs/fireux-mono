@@ -1,6 +1,10 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolDoc class="w-full max-w-xl" />
+    <iframe
+      src="/tools/doc"
+      title="Go QR doc tool"
+      class="mx-auto h-[34rem] w-full max-w-xl rounded-lg border border-default"
+    />
   </GoQrSolutionPage>
 </template>
 
