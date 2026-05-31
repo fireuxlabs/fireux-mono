@@ -330,6 +330,34 @@
       }
     },
     {
+      "label": "pnpm dev:slap",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:slap"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "pnpm dev:yellow-velo",
       "type": "shell",
       "command": "pnpm",
@@ -363,34 +391,6 @@
       "command": "pnpm",
       "args": [
         "dev:granite"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:slap",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:slap"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
