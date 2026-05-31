@@ -1,30 +1,30 @@
 <template>
   <GoQrSystemToolFrame
-    :title="data?.tool.title"
-    :description="data?.tool.description"
+    :title="toolTitle"
+    :description="toolDescription"
     endpoint="/api/tools/doc"
   >
     <form
       class="space-y-4"
       @submit.prevent="createDoc"
     >
-      <UFormField label="Doc file">
+      <UFormField :label="fileLabel">
         <UFileUpload
           v-model="selectedFile"
-          accept="application/pdf,image/*,.doc,.docx"
+          :accept="accept"
           variant="area"
           size="xl"
           class="w-full"
         />
         <p class="mt-1 text-xs text-muted">
-          PDF, image, DOC, or DOCX. Max 10 MB.
+          {{ uploadHint }}
         </p>
       </UFormField>
 
-      <UFormField label="Doc path">
+      <UFormField :label="pathLabel">
         <UInput
           v-model="slugInput"
-          placeholder="my-doc"
+          :placeholder="slugPlaceholder"
           class="w-full"
         />
         <p class="mt-1 break-all text-xs text-muted">
@@ -46,7 +46,7 @@
         :disabled="!canCreate"
         :loading="isCreating"
       >
-        {{ isCreating ? 'Creating doc...' : 'Create doc QR' }}
+        {{ isCreating ? loadingLabel : ctaLabel }}
       </UButton>
 
       <p
@@ -66,7 +66,7 @@
         target="_blank"
         icon="i-lucide-external-link"
       >
-        Open doc
+        {{ openTargetLabel }}
       </UButton>
       <UButton
         :to="createdQrPath"
@@ -98,6 +98,34 @@ type ToolResponse = {
 
 const { data } = await useFetch<ToolResponse>('/api/tools/doc')
 
+const props = withDefaults(defineProps<{
+  title?: string
+  description?: string
+  fileLabel?: string
+  pathLabel?: string
+  slugPlaceholder?: string
+  previewBaseUrl?: string
+  previewPathSuffix?: string
+  accept?: string
+  uploadHint?: string
+  ctaLabel?: string
+  loadingLabel?: string
+  openTargetLabel?: string
+}>(), {
+  title: '',
+  description: '',
+  fileLabel: 'Doc file',
+  pathLabel: 'Doc path',
+  slugPlaceholder: 'my-doc',
+  previewBaseUrl: '',
+  previewPathSuffix: '',
+  accept: 'application/pdf,image/*,.doc,.docx',
+  uploadHint: 'PDF, image, DOC, or DOCX. Max 10 MB.',
+  ctaLabel: 'Create doc QR',
+  loadingLabel: 'Creating doc...',
+  openTargetLabel: 'Open doc',
+})
+
 const selectedFile = ref<File | File[] | null>(null)
 const slugInput = ref('')
 const slugTaken = ref(false)
@@ -112,6 +140,10 @@ const file = computed(() =>
     ? selectedFile.value[0] || null
     : selectedFile.value
 )
+const toolTitle = computed(() => props.title || data.value?.tool.title || 'Doc')
+const toolDescription = computed(() =>
+  props.description || data.value?.tool.description || ''
+)
 const normalizedSlug = computed(() =>
   slugInput.value
     .trim()
@@ -120,13 +152,13 @@ const normalizedSlug = computed(() =>
     .replace(/^-+|-+$/g, '')
 )
 const previewBaseUrl = computed(() =>
-  data.value?.tool.preview?.base_url || 'https://go-qr.web.app/doc'
+  props.previewBaseUrl || data.value?.tool.preview?.base_url || 'https://go-qr.web.app/doc'
 )
 const previewPathSuffix = computed(() =>
-  data.value?.tool.preview?.path_suffix ?? '/qr'
+  props.previewPathSuffix || data.value?.tool.preview?.path_suffix || '/qr'
 )
 const previewUrl = computed(() =>
-  `${previewBaseUrl.value}/${normalizedSlug.value || 'my-doc'}${previewPathSuffix.value}`
+  `${previewBaseUrl.value}/${normalizedSlug.value || props.slugPlaceholder}${previewPathSuffix.value}`
 )
 const availabilityEndpoint = computed(() =>
   data.value?.tool.endpoints?.availability || '/api/tools/doc/availability'

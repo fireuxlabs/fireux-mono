@@ -1,70 +1,9 @@
 <template>
-  <UCard
-    variant="subtle"
-    class="mx-auto w-full max-w-xl"
-  >
-    <div class="space-y-4">
-      <a
-        href="https://go-qr.web.app"
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-2 text-xs font-medium text-muted hover:text-highlighted"
-      >
-        <img
-          src="https://go-qr.web.app/img/app/logo.svg"
-          alt="Go QR"
-          class="size-4"
-        >
-        <span>Powered by Go QR</span>
-      </a>
-
-      <div class="space-y-2">
-        <div class="flex flex-wrap items-center gap-2">
-          <h1 class="text-lg font-semibold text-highlighted">
-            {{ tool?.title }}
-          </h1>
-          <UBadge
-            label="/api/tools/doc"
-            color="neutral"
-            variant="soft"
-          />
-        </div>
-        <p class="text-sm leading-6 text-muted">
-          {{ tool?.description }}
-        </p>
-      </div>
-
-      <UFormField label="Doc file">
-        <UFileUpload
-          accept="application/pdf,image/*,.doc,.docx"
-          variant="area"
-          size="xl"
-          class="w-full"
-        />
-        <p class="mt-1 text-xs text-muted">
-          PDF, image, DOC, or DOCX. Max 10 MB.
-        </p>
-      </UFormField>
-
-      <UFormField label="Doc path">
-        <UInput
-          model-value=""
-          placeholder="my-doc"
-          class="w-full"
-        />
-        <p class="mt-1 break-all text-xs text-muted">
-          {{ previewUrl }}
-        </p>
-      </UFormField>
-
-      <UButton
-        icon="i-lucide-qr-code"
-        block
-      >
-        Create doc QR
-      </UButton>
-    </div>
-  </UCard>
+  <iframe
+    :src="toolUrl"
+    title="Go QR menu tool"
+    class="mx-auto h-[34rem] w-full max-w-xl rounded-lg border border-default"
+  />
 </template>
 
 <script setup lang="ts">
@@ -76,12 +15,37 @@ const providerBaseUrl = import.meta.dev
   ? 'http://localhost:3013'
   : 'https://go-qr.web.app'
 
-const { data: response } = await useFetch(`${providerBaseUrl}/api/tools/doc`)
-const tool = computed(() => response.value?.tool)
-const previewUrl = computed(() => {
-  if (!tool.value?.preview) return ''
+const consumer = {
+  title: 'Menu',
+  description: 'Upload a menu, choose a short path, and get a QR menu.',
+  fileLabel: 'Menu file',
+  pathLabel: 'Menu path',
+  slugPlaceholder: 'my-menu',
+  publicBaseUrl: 'https://misebox.app',
+  publicPath: 'menus',
+  publicPathSuffix: '/qr',
+  accept: 'application/pdf,.doc,.docx',
+  uploadHint: 'PDF, DOC, or DOCX. Max 10 MB.',
+  ctaLabel: 'Create menu QR',
+}
 
-  return `${tool.value.preview.base_url}/my-doc${tool.value.preview.path_suffix}`
+const toolUrl = computed(() => {
+  const query = new URLSearchParams({
+    title: consumer.title,
+    description: consumer.description,
+    fileLabel: consumer.fileLabel,
+    pathLabel: consumer.pathLabel,
+    slugPlaceholder: consumer.slugPlaceholder,
+    previewBaseUrl: `${consumer.publicBaseUrl}/${consumer.publicPath}`,
+    previewPathSuffix: consumer.publicPathSuffix,
+    accept: consumer.accept,
+    uploadHint: consumer.uploadHint,
+    ctaLabel: consumer.ctaLabel,
+    loadingLabel: 'Creating menu...',
+    openTargetLabel: 'Open menu',
+  })
+
+  return `${providerBaseUrl}/tools/doc?${query}`
 })
 
 useSeoMeta({
