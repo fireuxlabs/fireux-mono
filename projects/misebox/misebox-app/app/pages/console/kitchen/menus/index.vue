@@ -6,8 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MiseboxConsoleKitchenMenuUrlQr />
-        <MiseboxConsoleKitchenMenuDocUpload />
+        <MiseboxConsoleKitchenMenuQrTools />
         <ConsoleKitchenMenus />
       </section>
     </template>
