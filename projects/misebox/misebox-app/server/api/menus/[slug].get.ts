@@ -33,5 +33,6 @@ export default defineEventHandler(async (event) => {
     doc_url: String(data.doc_url || ''),
     doc_name: String(data.doc_name || ''),
     doc_type: String(data.doc_type || ''),
+    doc_storage_path: String(data.doc_storage_path || ''),
   }
 })

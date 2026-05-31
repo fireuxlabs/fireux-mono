@@ -1,6 +1,6 @@
 import { setResponseHeaders, type H3Event } from 'h3'
 
-export type GoQrToolId = 'doc' | 'text'
+export type GoQrToolId = 'doc' | 'text' | 'url'
 
 export type GoQrToolContract = {
   id: GoQrToolId
@@ -36,6 +36,11 @@ const tools = {
     title: 'Text',
     description: 'Turn a short message into a shareable QR.',
     message: 'hello world',
+  },
+  url: {
+    id: 'url',
+    title: 'URL',
+    description: 'Create a QR code from any public URL.',
   },
 } satisfies Record<GoQrToolId, GoQrToolContract>
 

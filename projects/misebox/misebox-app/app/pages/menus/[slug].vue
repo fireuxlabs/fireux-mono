@@ -2,14 +2,25 @@
   <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white text-default">
     <header class="border-b border-amber-200 bg-amber-50 px-4 py-3">
       <div class="mx-auto max-w-5xl">
-        <p class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-950">
-          If you have a food allergy or intolerance, please speak to a member of the team before ordering.
-        </p>
+        <div class="flex items-center justify-center gap-2 text-center text-sm leading-6 text-amber-950">
+          <UIcon name="i-lucide-wheat-off" class="size-4 shrink-0" />
+          <p>
+            If you have a food allergy or intolerance, please speak to a member of the team before ordering.
+          </p>
+          <UIcon name="i-lucide-wheat-off" class="size-4 shrink-0" />
+        </div>
       </div>
     </header>
 
     <section class="min-h-0 overflow-auto bg-white" aria-label="Menu document">
+      <ClientOnly v-if="isPdf">
+        <MenuPdfViewer
+          :url="fileUrl"
+          :title="menu.name"
+        />
+      </ClientOnly>
       <iframe
+        v-else
         :src="displayUrl"
         :title="menu.name"
         class="h-[calc(100vh-4.75rem)] w-full border-0"
@@ -50,9 +61,10 @@ if (!data.value?.doc_url) {
 }
 
 const menu = computed(() => data.value as PublicMenu)
+const isPdf = computed(() => menu.value.doc_type.includes('pdf'))
+const fileUrl = computed(() => `/api/menus/${encodeURIComponent(slug)}/file`)
 const displayUrl = computed(() => {
-  if (!menu.value.doc_type.includes('pdf')) return menu.value.doc_url
-  return `${menu.value.doc_url}#toolbar=0&navpanes=0&scrollbar=0`
+  return menu.value.doc_url
 })
 
 useSeoMeta({

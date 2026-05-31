@@ -589,6 +589,30 @@ export const metaContent = defineFireuxMeta({
       },
     },
     {
+      slug: 'qr-menu-url',
+      title: 'Menu URL QR',
+      description: 'Paste an existing menu URL and get a printable QR menu.',
+      icon: 'i-lucide-link',
+      status: 'live',
+      keywords: ['menu url qr', 'restaurant menu qr code'],
+      cta: {
+        label: 'Create QR',
+        to: '/solutions/qr-menu-url',
+      },
+    },
+    {
+      slug: 'qr-menu',
+      title: 'QR menu',
+      description: 'Upload a menu, choose a short path, and get a QR menu.',
+      icon: 'i-lucide-qr-code',
+      status: 'live',
+      keywords: ['qr menu', 'pdf menu qr code'],
+      cta: {
+        label: 'Upload menu',
+        to: '/solutions/qr-menu',
+      },
+    },
+    {
       slug: 'restaurant-menu-management',
       title: 'Restaurant menu management',
       description: 'Manage sections, dishes, prices, status, and public menu presentation in one workflow.',

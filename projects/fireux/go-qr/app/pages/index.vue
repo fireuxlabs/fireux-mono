@@ -14,7 +14,7 @@
         <iframe
           src="/tools/doc"
           title="Go QR doc tool"
-          class="mx-auto h-[34rem] w-full max-w-xl rounded-lg border border-default"
+          class="mx-auto h-[34rem] w-full max-w-xl border-0"
         />
       </section>
 

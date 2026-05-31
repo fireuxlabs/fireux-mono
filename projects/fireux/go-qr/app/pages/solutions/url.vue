@@ -1,6 +1,10 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolUrl class="w-full max-w-xl" />
+    <iframe
+      src="/tools/url"
+      title="Go QR URL tool"
+      class="mx-auto h-[34rem] w-full max-w-xl border-0"
+    />
   </GoQrSolutionPage>
 </template>
 
@@ -12,8 +16,7 @@ definePageMeta({
 const solution = {
   slug: 'url',
   title: 'URL',
-  description: 'Turn a URL into a scannable QR code.',
-  badge: 'Coming soon',
+  description: 'Create a QR code from any public URL.',
 }
 
 useSeoMeta({

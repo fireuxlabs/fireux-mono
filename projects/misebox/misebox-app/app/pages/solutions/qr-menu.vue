@@ -2,11 +2,13 @@
   <iframe
     :src="toolUrl"
     title="Go QR menu tool"
-    class="mx-auto h-[34rem] w-full max-w-xl rounded-lg border border-default"
+    class="mx-auto h-[34rem] w-full max-w-xl border-0"
   />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 definePageMeta({
   layout: 'landing',
 })

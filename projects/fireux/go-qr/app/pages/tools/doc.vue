@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-default p-4 text-default">
+  <main class="bg-transparent text-default">
     <GoQrToolDoc
       class="mx-auto w-full max-w-xl"
       :title="config.title"
@@ -22,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const route = useRoute()
 
 definePageMeta({
