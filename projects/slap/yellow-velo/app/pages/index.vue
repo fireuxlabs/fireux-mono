@@ -18,8 +18,7 @@
               Yellow Velo
             </h1>
             <p class="yv-hero__lead">
-              Modern bicycles, practical accessories, and clean merchandise for
-              everyday riders who care about the ride and the look.
+              {{ instagramProfile.description }}
             </p>
           </div>
 
@@ -147,18 +146,22 @@ useSeoMeta({
   title: 'Yellow Velo - Bicycles and cycling merchandise',
   ogTitle: 'Yellow Velo - Bicycles and cycling merchandise',
   twitterTitle: 'Yellow Velo - Bicycles and cycling merchandise',
-  description:
-    'Yellow Velo sells modern bicycles, practical ride accessories, and clean cycling merchandise.',
-  ogDescription:
-    'Yellow Velo sells modern bicycles, practical ride accessories, and clean cycling merchandise.',
-  twitterDescription:
-    'Yellow Velo sells modern bicycles, practical ride accessories, and clean cycling merchandise.',
+  description: () => instagramProfile.description,
+  ogDescription: () => instagramProfile.description,
+  twitterDescription: () => instagramProfile.description,
 })
 
+const instagramProfile = {
+  handle: '@yellow.velo.interlaken',
+  url: 'https://www.instagram.com/yellow.velo.interlaken/',
+  description:
+    'Independent bike shop in Interlaken. Rentals & tours. Slingers of @sumocycleworks @erstwhile.brand @ultradynamico @swiftindustries @bombtrackbicycleco.',
+}
+
 const heroStats = [
-  { label: 'Bikes', value: 'City, gravel, road' },
-  { label: 'Goods', value: 'Caps, tees, bags' },
-  { label: 'Service', value: 'Fit and tune' },
+  { label: 'Shop', value: 'Independent Interlaken' },
+  { label: 'Ride', value: 'Rentals and tours' },
+  { label: 'Goods', value: 'Selected brands' },
 ]
 
 const categories = [
