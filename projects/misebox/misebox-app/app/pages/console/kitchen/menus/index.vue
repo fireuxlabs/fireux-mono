@@ -6,8 +6,9 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenMenuQrTools />
-        <ConsoleKitchenMenus />
+        <ConsoleKitchenMenuUrlQr />
+        <ConsoleKitchenMenuDocUpload />
+        <ConsoleKitchenMenuList />
       </section>
     </template>
   </UDashboardPanel>

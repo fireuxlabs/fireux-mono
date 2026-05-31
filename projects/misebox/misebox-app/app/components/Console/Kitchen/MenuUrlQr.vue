@@ -1,19 +1,10 @@
 <template>
-  <UCard
-    variant="subtle"
-    class="w-full"
+  <AppToolFoldaway
+    title="Create menu URL QR"
+    description="Use an existing online menu link for this kitchen."
+    provider="Go QR"
+    :open="open"
   >
-    <template #header>
-      <div class="space-y-1">
-        <h2 class="text-base font-semibold text-highlighted">
-          Create menu URL QR
-        </h2>
-        <p class="text-sm text-muted">
-          Use an existing online menu link for this kitchen.
-        </p>
-      </div>
-    </template>
-
     <UAlert
       v-if="!selectedKitchen"
       color="neutral"
@@ -22,12 +13,12 @@
       description="Choose a live kitchen before creating a menu URL QR."
     />
 
-    <GoQrUrlEmbed
+    <ProviderGoQrUrlTool
       v-else
       :description="description"
       url-placeholder="https://my-url.com/menu"
     />
-  </UCard>
+  </AppToolFoldaway>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +26,12 @@ import { computed } from 'vue'
 import { useKitchenConsoleMenus } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
 
 const { selectedKitchen } = useKitchenConsoleMenus()
+
+withDefaults(defineProps<{
+  open?: boolean
+}>(), {
+  open: false,
+})
 
 const kitchenName = computed(() =>
   String((selectedKitchen.value as any)?.display_name || selectedKitchen.value?.name || 'this kitchen').trim()

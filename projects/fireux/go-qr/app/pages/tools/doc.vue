@@ -1,5 +1,8 @@
 <template>
-  <main class="bg-transparent text-default">
+  <main
+    ref="toolRoot"
+    class="bg-transparent text-default"
+  >
     <GoQrToolDoc
       class="mx-auto w-full max-w-xl"
       :title="config.title"
@@ -22,9 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const route = useRoute()
+const toolRoot = ref<HTMLElement | null>(null)
+let resizeObserver: ResizeObserver | null = null
 
 definePageMeta({
   layout: false,
@@ -52,4 +57,28 @@ const config = computed(() => ({
   availabilityEndpoint: queryString('availabilityEndpoint', ''),
   takenMessage: queryString('takenMessage', 'This doc path is already taken.'),
 }))
+
+onMounted(async () => {
+  await nextTick()
+  postToolHeight()
+
+  if (!toolRoot.value) return
+  resizeObserver = new ResizeObserver(postToolHeight)
+  resizeObserver.observe(toolRoot.value)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+})
+
+function postToolHeight() {
+  const height = Math.ceil(toolRoot.value?.scrollHeight || document.documentElement.scrollHeight)
+  window.parent?.postMessage({
+    source: 'go-qr',
+    tool: 'doc',
+    type: 'tool-height',
+    height,
+  }, '*')
+}
 </script>

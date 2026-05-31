@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
+import { createError, defineEventHandler, getQuery, getRouterParam, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
@@ -7,6 +7,12 @@ const APP_ID = 'misebox-app'
 const reservedSlugs = ['create', 'edit', 'index', 'new', 'qr', 'sections']
 
 export default defineEventHandler(async (event) => {
+  setResponseHeaders(event, {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'content-type',
+  })
+
   const kitchenId = String(getRouterParam(event, 'kitchenId') || '').trim()
   const slug = normalizeSlug(String(getQuery(event).id || ''))
 

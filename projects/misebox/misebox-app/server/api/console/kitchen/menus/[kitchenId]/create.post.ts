@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { randomUUID } from 'node:crypto'
-import { createError, defineEventHandler, getRouterParam, readMultipartFormData } from 'h3'
+import { createError, defineEventHandler, getRouterParam, readMultipartFormData, setResponseHeaders } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
@@ -65,6 +65,12 @@ async function readKitchenPublicSlug(kitchenId: string) {
 }
 
 export default defineEventHandler(async (event) => {
+  setResponseHeaders(event, {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'content-type',
+  })
+
   const kitchenId = String(getRouterParam(event, 'kitchenId') || '').trim()
   const parts = await readMultipartFormData(event)
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)

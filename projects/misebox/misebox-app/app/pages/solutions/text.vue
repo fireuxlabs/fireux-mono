@@ -1,7 +1,16 @@
 <template>
   <SolutionPage :solution="solution">
     <SolutionTool :solution="solution">
-      <GoQrToolText class="w-full max-w-xl" />
+      <AppToolFoldaway
+        title="Text QR"
+        description="This Misebox test surface is paused while Go QR tools are rebuilt as provider embeds."
+        provider="Go QR"
+        open
+      >
+        <p class="text-sm text-muted">
+          Coming soon.
+        </p>
+      </AppToolFoldaway>
     </SolutionTool>
   </SolutionPage>
 </template>

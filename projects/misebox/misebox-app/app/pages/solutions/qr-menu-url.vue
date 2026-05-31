@@ -1,5 +1,5 @@
 <template>
-  <GoQrUrlEmbed />
+  <ProviderGoQrUrlTool />
 </template>
 
 <script setup lang="ts">
