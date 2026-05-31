@@ -1,7 +1,10 @@
 <template>
   <MiseboxSolutionPage :solution="solution">
     <MiseboxSolutionTool :solution="solution">
-      <GoQrToolDoc class="w-full max-w-xl" />
+      <GoQrToolDoc
+        class="w-full max-w-xl"
+        param="menu"
+      />
     </MiseboxSolutionTool>
     <MiseboxSolutionInstructions :items="solution.instructions" />
     <MiseboxSolutionIntegrations :integrations="solution.integrations" />

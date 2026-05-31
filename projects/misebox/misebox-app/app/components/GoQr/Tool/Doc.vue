@@ -21,7 +21,7 @@
       <div class="space-y-2">
         <div class="flex flex-wrap items-center gap-2">
           <h2 class="text-lg font-semibold text-highlighted">
-            {{ data?.tool.title }}
+            {{ title }}
           </h2>
           <UBadge
             label="/api/tools/doc"
@@ -30,7 +30,7 @@
           />
         </div>
         <p class="text-sm leading-6 text-muted">
-          {{ data?.tool.description }}
+          {{ description }}
         </p>
       </div>
 
@@ -38,7 +38,7 @@
         class="space-y-4"
         @submit.prevent="createMenu"
       >
-        <UFormField label="Menu file">
+        <UFormField :label="`${label} file`">
           <UFileUpload
             v-model="selectedFile"
             accept="application/pdf,.doc,.docx"
@@ -51,7 +51,7 @@
           </p>
         </UFormField>
 
-        <UFormField label="Menu path">
+        <UFormField :label="`${label} path`">
           <UInput
             v-model="slugInput"
             placeholder="my-menu"
@@ -76,7 +76,7 @@
           :disabled="!canCreate"
           :loading="isCreating"
         >
-          {{ isCreating ? 'Creating menu...' : 'Create QR menu' }}
+          {{ isCreating ? `Creating ${noun}...` : `Create QR ${noun}` }}
         </UButton>
 
         <p
@@ -96,7 +96,7 @@
           target="_blank"
           icon="i-lucide-external-link"
         >
-          Open menu
+        Open {{ noun }}
         </UButton>
         <UButton
           :to="createdQrPath"
@@ -120,6 +120,12 @@ const providerBaseUrl = import.meta.dev
 
 const { data } = await useFetch(`${providerBaseUrl}/api/tools/doc`)
 
+const props = withDefaults(defineProps<{
+  param?: string
+}>(), {
+  param: 'doc',
+})
+
 const selectedFile = ref<File | File[] | null>(null)
 const slugInput = ref('')
 const slugTaken = ref(false)
@@ -129,6 +135,18 @@ const createError = ref('')
 const createdPath = ref('')
 const createdQrPath = ref('')
 
+const noun = computed(() => props.param.trim().toLowerCase() || 'doc')
+const label = computed(() => noun.value.charAt(0).toUpperCase() + noun.value.slice(1))
+const title = computed(() =>
+  noun.value === 'doc'
+    ? data.value?.tool.title || 'Doc'
+    : label.value
+)
+const description = computed(() =>
+  noun.value === 'doc'
+    ? data.value?.tool.description || ''
+    : `Upload a ${noun.value}, choose a short path, and get a QR ${noun.value}.`
+)
 const file = computed(() =>
   Array.isArray(selectedFile.value)
     ? selectedFile.value[0] || null
