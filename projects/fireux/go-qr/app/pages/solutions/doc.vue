@@ -12,7 +12,7 @@ definePageMeta({
 const solution = {
   slug: 'doc',
   title: 'Doc',
-  description: 'hello from Go QR solution doc',
+  description: 'Upload a doc, choose a short path, and get a QR page.',
 }
 
 useSeoMeta({

@@ -34,20 +34,17 @@
         </p>
       </div>
 
-      <p class="text-sm leading-6 text-muted">
-        {{ data?.tool.message }}
-      </p>
-
       <form
         class="space-y-4"
         @submit.prevent="createMenu"
       >
         <UFormField label="Menu file">
-          <UInput
-            type="file"
+          <UFileUpload
+            v-model="selectedFile"
             accept="application/pdf,.doc,.docx"
+            variant="area"
+            size="xl"
             class="w-full"
-            @change="setFile"
           />
           <p class="mt-1 text-xs text-muted">
             PDF, DOC, or DOCX. Max 10 MB.
@@ -123,7 +120,7 @@ const providerBaseUrl = import.meta.dev
 
 const { data } = await useFetch(`${providerBaseUrl}/api/tools/doc`)
 
-const file = ref<File | null>(null)
+const selectedFile = ref<File | File[] | null>(null)
 const slugInput = ref('')
 const slugTaken = ref(false)
 const slugError = ref('')
@@ -132,6 +129,11 @@ const createError = ref('')
 const createdPath = ref('')
 const createdQrPath = ref('')
 
+const file = computed(() =>
+  Array.isArray(selectedFile.value)
+    ? selectedFile.value[0] || null
+    : selectedFile.value
+)
 const normalizedSlug = computed(() =>
   slugInput.value
     .trim()
@@ -176,12 +178,6 @@ watch(slugInput, async () => {
     slugError.value = error instanceof Error ? error.message : 'Menu path is not valid.'
   }
 })
-
-function setFile(event: Event) {
-  const input = event.target as HTMLInputElement
-  file.value = input.files?.[0] || null
-  createError.value = ''
-}
 
 async function createMenu() {
   if (!canCreate.value || !file.value) return

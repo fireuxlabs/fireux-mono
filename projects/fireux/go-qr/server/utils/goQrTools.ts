@@ -6,7 +6,15 @@ export type GoQrToolContract = {
   id: GoQrToolId
   title: string
   description: string
-  message: string
+  message?: string
+  endpoints?: {
+    create: string
+    availability: string
+  }
+  preview?: {
+    base_url: string
+    path_suffix: string
+  }
 }
 
 const tools = {
@@ -14,7 +22,14 @@ const tools = {
     id: 'doc',
     title: 'Doc',
     description: 'Upload a doc, choose a short path, and get a QR page.',
-    message: 'hello world',
+    endpoints: {
+      create: '/api/tools/doc/create',
+      availability: '/api/tools/doc/availability',
+    },
+    preview: {
+      base_url: 'https://go-qr.web.app/doc',
+      path_suffix: '/qr',
+    },
   },
   text: {
     id: 'text',
