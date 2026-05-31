@@ -44,18 +44,18 @@ const isDark = computed(() => resolvedMode.value === 'dark')
 const alt = computed(() => (props.alt || '').trim() || 'App logo')
 
 const resolvedSrc = computed(() => {
-  const raw = isDark.value ? props.darkSrc : props.lightSrc
+  const raw = isDark.value ? props.lightSrc : props.darkSrc
   const normalized = typeof raw === 'string' ? raw.trim() : ''
   if (normalized) return normalized
   return isDark.value
-    ? brandAssets.value.wordmarkDark
-    : brandAssets.value.wordmarkLight
+    ? brandAssets.value.wordmarkLight
+    : brandAssets.value.wordmarkDark
 })
 const failed = ref(false)
 const defaultSrc = computed(() =>
   isDark.value
-    ? CORE_BRAND_DEFAULT_ASSETS.wordmarkDark
-    : CORE_BRAND_DEFAULT_ASSETS.wordmarkLight
+    ? CORE_BRAND_DEFAULT_ASSETS.wordmarkLight
+    : CORE_BRAND_DEFAULT_ASSETS.wordmarkDark
 )
 const displaySrc = computed(() =>
   failed.value ? defaultSrc.value : resolvedSrc.value

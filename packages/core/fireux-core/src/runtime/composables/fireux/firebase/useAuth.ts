@@ -7,6 +7,7 @@ import {
     getRedirectResult,
     GoogleAuthProvider,
     onAuthStateChanged,
+    signInAnonymously,
     signInWithEmailAndPassword,
     signInWithPopup,
     signInWithRedirect,
@@ -290,6 +291,12 @@ export function useAuth() {
     return result?.user ?? null
   }
 
+  const signInAnonymous = async () => {
+    if (!auth.value) return null
+    const result = await signInAnonymously(auth.value).catch(() => null)
+    return result?.user ?? null
+  }
+
   const signOutUser = async (redirectTo: string = '/') => {
     if (!import.meta.client) return
 
@@ -338,6 +345,7 @@ export function useAuth() {
     lastBindError,
 
     signInWithGoogle,
+    signInAnonymous,
     signInWithEmailPassword,
     signUpWithEmailPassword,
     signOutUser,

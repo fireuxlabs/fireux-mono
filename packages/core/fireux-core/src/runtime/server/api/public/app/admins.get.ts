@@ -72,28 +72,49 @@ export default defineEventHandler(async (event: H3Event) => {
     'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
   })
 
-  const memberships = await appDb
-    .collection(AppStorage.collection)
-    .doc(cfg.appId)
-    .collection(AppUserStorage.collection)
-    .where('role', '==', 'admin')
-    .limit(limit)
-    .get()
+  try {
+    const memberships = await appDb
+      .collection(AppStorage.collection)
+      .doc(cfg.appId)
+      .collection(AppUserStorage.collection)
+      .where('role', '==', 'admin')
+      .limit(limit)
+      .get()
 
-  const admins: PublicAppAdmin[] = []
+    const admins: PublicAppAdmin[] = []
 
-  for (const membership of memberships.docs) {
-    const uid = membership.id.trim()
-    if (!uid) continue
+    for (const membership of memberships.docs) {
+      const uid = membership.id.trim()
+      if (!uid) continue
 
-    const userSnap = await identityDb.collection(UserStorage.rootCollection).doc(uid).get()
-    admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))
-  }
+      const userSnap = await identityDb.collection(UserStorage.rootCollection).doc(uid).get()
+      admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))
+    }
 
-  return {
-    ok: true,
-    appId: cfg.appId,
-    count: admins.length,
-    admins,
+    return {
+      ok: true,
+      appId: cfg.appId,
+      count: admins.length,
+      admins,
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+
+    const expectedMissingCredentials =
+      message.includes('Could not load the default credentials') ||
+      message.includes('admin credentials unavailable')
+
+    if (import.meta.dev && !expectedMissingCredentials) {
+      console.warn('[public/app/admins] unavailable:', message)
+    }
+
+    return {
+      ok: false,
+      appId: cfg.appId,
+      count: 0,
+      admins: [],
+      unavailable: true,
+      reason: 'admin_credentials_unavailable',
+    }
   }
 })

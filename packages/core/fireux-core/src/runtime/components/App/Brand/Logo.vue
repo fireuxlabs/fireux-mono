@@ -40,7 +40,7 @@ const baseSrc = computed(() => {
   return raw || brandAssets.value.logo
 })
 const themedSrc = computed(() => {
-  const raw = isDark.value ? props.darkSrc : props.lightSrc
+  const raw = isDark.value ? props.lightSrc : props.darkSrc
   return typeof raw === 'string' ? raw.trim() : ''
 })
 const resolvedSrc = computed(() => themedSrc.value || baseSrc.value)

@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "yellow-velo-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "yellowVelo"
+    }
+  ],
+  "hosting": {
+    "site": "yellowvelo",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "yellowVelo",
+          "codebase": "yellow-velo-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

@@ -3,11 +3,10 @@ import {
   collection,
   doc,
   getDoc,
-  getFirestore,
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore'
-import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Firestore } from 'firebase/firestore'
 import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
@@ -26,8 +25,7 @@ async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) 
 export function useEcosystemCreate() {
   const fireux = useFireUXConfig()
   const runtime = useRuntimeConfig()
-  const app = useFirebaseApp()
-  const db = getFirestore(app)
+  const db = useFirestore()
 
   async function createEcosystem() {
     if (fireux.role !== 'global') return

@@ -51,6 +51,36 @@ brand-colours.txt
 
 SVG files are useful for designers and future exports, but the app catalog and Storage sync currently publish the PNG set above.
 
+## App-Owned Fonts
+
+Most FireUX apps should use the shared system font stack. Add app-owned font
+files only when the brand/site genuinely needs a non-default typeface.
+
+When an app owns a font, keep it in:
+
+```text
+projects/<ecosystem>/<app>/public/fonts/<family>/
+```
+
+Use provider-readable filenames so Nuxt Fonts can resolve local fonts from
+`public/`:
+
+```text
+montserrat-400.woff2
+montserrat-700.woff2
+montserrat-800.ttf
+```
+
+Include the font license in the same family folder:
+
+```text
+OFL.txt
+```
+
+Do not add font binaries only to create raster logo exports. If the runtime site
+does not use the font, keep the exported PNG/SVG wordmarks under
+`public/img/app` and record the source font in `brand-colours.txt`.
+
 ## Size Canon
 
 Ask designers for:

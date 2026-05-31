@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.projects.json",
+  "compilerOptions": {
+    "composite": false,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts",
+    "./**/*",
+    "../../../types/**/*.d.ts"
+  ]
+}

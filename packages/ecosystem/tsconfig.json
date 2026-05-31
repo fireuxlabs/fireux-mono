@@ -16,6 +16,9 @@
     },
     {
       "path": "fireux-granite"
+    },
+    {
+      "path": "fireux-slap"
     }
   ],
   "compilerOptions": {

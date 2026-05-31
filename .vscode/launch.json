@@ -142,6 +142,17 @@
       }
     },
     {
+      "name": "Yellow Velo dev (3014)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:yellow-velo",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 11
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -149,7 +160,18 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 11
+        "order": 12
+      }
+    },
+    {
+      "name": "Slap dev (3009)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:slap",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 13
       }
     },
     {
@@ -160,7 +182,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 12
+        "order": 14
       }
     }
   ],
@@ -196,7 +218,9 @@
         "Sproochli dev (3011)",
         "BuenoHost dev (3012)",
         "Go QR dev (3013)",
+        "Yellow Velo dev (3014)",
         "Granite dev (3007)",
+        "Slap dev (3009)",
         "La Tap Berne dev (3008)"
       ]
     }

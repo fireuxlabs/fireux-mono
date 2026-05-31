@@ -1,6 +1,6 @@
-import { doc, getDoc, serverTimestamp, setDoc, getFirestore } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useRuntimeConfig } from '#imports'
-import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
@@ -8,8 +8,7 @@ import { ProjectStorage } from '../../../../../../models/system/project.model'
 export function useProjectBootstrapCreate() {
   const fireux = useFireUXConfig()
   const runtime = useRuntimeConfig()
-  const app = useFirebaseApp()
-  const db = getFirestore(app)
+  const db = useFirestore()
 
   async function createProjectDoc() {
     if (fireux.role !== 'global') return

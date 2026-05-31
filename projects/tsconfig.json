@@ -6,6 +6,7 @@
     { "path": "fireux/sproochli" },
     { "path": "fireux/buenohost" },
     { "path": "fireux/go-qr" },
+    { "path": "slap/yellow-velo" },
     { "path": "bringli/bringli-app" },
     { "path": "cleanbox/cleanbox-app" },
     { "path": "cleanbox/richies-reinigung" },
@@ -14,6 +15,7 @@
     { "path": "granite/granite-app" },
     { "path": "misebox/la-tap-berne" },
     { "path": "misebox/misebox-app" },
+    { "path": "slap/slap-app" },
     { "path": "templates/fireux-template" }
   ],
   "compilerOptions": {

@@ -20,7 +20,7 @@ export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
   thumbnail: '/img/app/thumbnail.png',
   cover: '/img/app/cover.png',
   favicon: '/img/app/favicon.ico',
-  wordmarkLight: '/img/app/wordmark-light.svg',
+  wordmarkLight: '/img/app/wordmark-light.png',
   wordmarkDark: '/img/app/wordmark-dark.png',
   pwaIcon192: '/img/app/pwa/icon-192.png',
   pwaIcon512: '/img/app/pwa/icon-512.png',

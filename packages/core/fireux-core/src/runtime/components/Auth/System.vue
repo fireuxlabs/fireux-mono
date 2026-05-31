@@ -53,6 +53,18 @@
             Continue with Google
           </UButton>
 
+          <UButton
+            block
+            color="neutral"
+            variant="ghost"
+            :loading="anonymousLoading"
+            :disabled="providerLoading || anonymousLoading"
+            icon="i-lucide-user-round"
+            @click="handleAnonymous"
+          >
+            Continue as guest
+          </UButton>
+
           <USeparator label="or continue with email" />
 
           <AuthEmailPanel :brand-label="ecosystemLabel" />
@@ -76,11 +88,13 @@ const {
   hasAuthState,
   signOutUser,
   signInWithGoogle,
+  signInAnonymous,
   currentUser: authUser,
 } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
+const anonymousLoading = ref(false)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
@@ -141,6 +155,19 @@ const handleGoogle = async () => {
     }
   } finally {
     providerLoading.value = false
+  }
+}
+
+const handleAnonymous = async () => {
+  if (anonymousLoading.value) return
+  anonymousLoading.value = true
+  try {
+    const user = await signInAnonymous()
+    if (user?.uid) {
+      await router.push(postAuthPath.value).catch(() => {})
+    }
+  } finally {
+    anonymousLoading.value = false
   }
 }
 </script>

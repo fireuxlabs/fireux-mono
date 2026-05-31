@@ -88,10 +88,14 @@ Note: The repository `AI/` folder was moved to `docs/ai/`. See `docs/ai/` for AI
 
 ## Working rules for agents
 - Work pattern-first:
+  - before beginning development on a new app, package, route family, console surface, or reusable runtime seam, run the pre-dev gate: identify the owning docs/checklist, inspect the nearest sibling implementation, name the system-owned registration/generated surfaces, and only then edit
   - identify the family/concept before implementing
   - look for the repeated repo pattern hidden in existing apps/packages
+  - follow the existing factory path before inventing a local path; templates, registries, generators, toolbar lists, workspace refs, guards, and sync scripts are part of the implementation, not optional polish
+  - when a task says "new", first find the nearest documented creation checklist or existing sibling implementation and complete the whole registration/check loop
   - patch the shared family or documented canon before adding app-local deltas
   - do not treat documentation-only canon as implemented canon; verify the matching routes, config, app registry, file tree, and guard/check coverage
+  - do not stop at a working page or package if the repo has derived surfaces for that thing; update or run the generator that owns those surfaces
   - if a shape is proposed or scaffold-only, label it that way instead of presenting it as current behavior
   - never remove an accidental working surface without adding or preserving the intended inspection/operation path when the user needs it
   - treat missing `useXFetch`, `useXCollection`, `useXInterface`, model, card, collection-manager, dashboard, or console seams as alignment clues

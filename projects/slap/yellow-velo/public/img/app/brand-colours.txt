@@ -1,0 +1,26 @@
+Primary:
+  Yellow Velo Yellow: #eddb08
+  Chain Black: #050504
+
+Secondary:
+  Alpine Cream: #f6f2e6
+
+Accent:
+  Shop Wall Green: #589589
+  TODO: Replace with the exact shop wall paint hex once confirmed.
+
+Dark:
+  Black: #050504
+
+Light:
+  White: #ffffff
+
+Fonts:
+  Wordmark: Montserrat ExtraBold, 800
+  Brand heading candidate: Gilroy ExtraBold if a licensed source is supplied; Montserrat is the open licensed fallback.
+
+Notes:
+  The current Yellow Velo site declares Montserrat for logo/button text and Gilroy for headings.
+  The circular badge lettering is closest to a heavy geometric sans, so the generated wordmark uses Montserrat ExtraBold.
+  Brand should read black and yellow first. Use shop wall green as a restrained accent only.
+  Screenshot wall sample was around #4a7d73 in shadow; #589589 is the temporary lighter working accent.

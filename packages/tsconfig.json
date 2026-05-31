@@ -74,6 +74,9 @@
     },
     {
       "path": "ecosystem/fireux-granite"
+    },
+    {
+      "path": "ecosystem/fireux-slap"
     }
   ],
   "compilerOptions": {

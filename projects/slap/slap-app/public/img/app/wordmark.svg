@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256" role="img" aria-label="Slap">
+  <g transform="translate(34 48)">
+    <path d="M72 0l20 48 52-16-30 44 46 30-55 7 3 55-36-42-39 39 7-55-55-12 48-27L0 28l54 18z" fill="#ffec23" stroke="#050507" stroke-width="10" stroke-linejoin="round"/>
+    <circle cx="74" cy="82" r="44" fill="#ff2b89" stroke="#050507" stroke-width="9"/>
+  </g>
+  <text x="210" y="174" font-family="Impact, Arial Black, sans-serif" font-size="172" fill="#ff2b89" stroke="#050507" stroke-width="8" paint-order="stroke">SLAP</text>
+</svg>

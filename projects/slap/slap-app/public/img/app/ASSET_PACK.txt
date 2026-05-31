@@ -1,0 +1,16 @@
+Slap asset pack generated from ChatGPT Image May 30, 2026, 01_29_23 PM.png.
+
+This pack is Slap-only branding.
+
+Generated files:
+- slap-illustration.png: source illustration copy
+- slap-illustration-transparent.png: transparent cutout illustration
+- logo.png: 512x512 transparent app logo
+- thumbnail.png: 1200x630 social thumbnail
+- cover.png: 1280x720 cover image
+- wordmark.png / wordmark-dark.png: transparent Slap wordmark for light surfaces
+- wordmark-light.png: transparent Slap wordmark for dark surfaces
+- wordmark.svg / wordmark-light.svg: crisp SVG wordmarks
+- favicon.ico
+- pwa/icon-192.png
+- pwa/icon-512.png

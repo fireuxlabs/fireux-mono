@@ -89,9 +89,9 @@ function updateTsconfigBase(repoRoot, pkgName) {
   const data = JSON.parse(readFileSync(file, 'utf8'))
   const paths = (data.compilerOptions ||= {}).paths ||= {}
 
-  paths[pkgName] ||= [`packages/ecosystem/${pkgName}/src/module.ts`]
-  paths[`${pkgName}/*`] ||= [`packages/ecosystem/${pkgName}/src/*`]
-  paths[`@${pkgName}/*`] ||= [`packages/ecosystem/${pkgName}/src/*`]
+  paths[pkgName] ||= [`./packages/ecosystem/${pkgName}/src/module.ts`]
+  paths[`${pkgName}/*`] ||= [`./packages/ecosystem/${pkgName}/src/*`]
+  paths[`@${pkgName}/*`] ||= [`./packages/ecosystem/${pkgName}/src/*`]
 
   writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
 }
@@ -230,7 +230,7 @@ This package defines ${displayName} branding, configuration, and ecosystem-speci
     ['docs/.gitkeep', '# Keep docs directory for ecosystem package contract.\n'],
     ['src/module.ts', `import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
-import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureImports } from './config/module/imports-config'
@@ -246,19 +246,14 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   },
   async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    setRuntimeFirebaseEcosystem(nuxt as any, {
-      id: ecosystemConfig.id,
-      name: ecosystemConfig.name,
-      description: ecosystemConfig.description,
-      firebase: ecosystemConfig.firebase,
+    configureFireuxEcosystemModule(resolver, nuxt, {
+      ecosystem: ecosystemConfig,
+      configureRuntimeConfig,
+      configurePages: configureModulePages,
+      configureComponents,
+      configureImports,
+      configurePublicAssets,
     })
-
-    configureRuntimeConfig(nuxt)
-    configureModulePages(resolver, nuxt)
-    configureComponents(resolver, nuxt)
-    configureImports(resolver, nuxt)
-    configurePublicAssets(resolver, nuxt)
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {
@@ -283,6 +278,7 @@ export const ecosystemConfig = {
     projectId: '${firebaseProject}',
     storageBucket: '${storageBucket}',
     messagingSenderId: 'REPLACE_WITH_MESSAGING_SENDER_ID',
+    databaseId: '${slug}',
   },
   ssrRegion: '${ssrRegion}',
 } as const satisfies FireuxEcosystemConfig
@@ -291,7 +287,7 @@ export const ecosystemConfig = {
   "type": "service_account",
   "project_id": "${firebaseProject}",
   "private_key_id": "replace_me",
-  "private_key": "-----BEGIN PRIVATE KEY-----\\nREPLACE_ME\\n-----END PRIVATE KEY-----\\n",
+  "private_key": "",
   "client_email": "firebase-adminsdk-${safeSlug}@${firebaseProject}.iam.gserviceaccount.com",
   "client_id": "000000000000000000000",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -371,19 +367,19 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
 
-  const currentDrop = fireux.drop
-  const currentPlaces = fireux.places
+  const currentEcosystem = fireux['${slug}']
 
-  const dropDefaults = { enabled: true }
-  const placesDefaults = { enabled: true }
+  const ecosystemDefaults = {
+    enabled: true,
+    branding: {
+      label: '${displayName}',
+      tagline: '${displayName} ecosystem.',
+    },
+  }
 
-  fireux.drop = currentDrop && typeof currentDrop === 'object'
-    ? { ...dropDefaults, ...currentDrop }
-    : { ...dropDefaults }
-
-  fireux.places = currentPlaces && typeof currentPlaces === 'object'
-    ? { ...placesDefaults, ...currentPlaces }
-    : { ...placesDefaults }
+  fireux['${slug}'] = currentEcosystem && typeof currentEcosystem === 'object'
+    ? { ...ecosystemDefaults, ...currentEcosystem }
+    : { ...ecosystemDefaults }
 }
 `],
     ['src/runtime/pages/dev/fireux-' + slug + '.vue', `<template>
@@ -512,7 +508,9 @@ function main() {
   console.log('Next steps:')
   console.log(`  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`)
   console.log(`  2. Replace service-account placeholder in packages/ecosystem/${pkgName}/src/config/firebase/service-account.json`)
-  console.log(`  3. Run: pnpm install --lockfile-only && pnpm guard`)
+  console.log('  3. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
+  console.log('  4. In Firebase Auth authorized domains, add localhost, Hosting domains, and any custom domains')
+  console.log(`  5. Run: pnpm install --lockfile-only && pnpm guard`)
 }
 
 try {

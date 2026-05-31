@@ -307,6 +307,15 @@
       ],
       "@fireux-granite/*": [
         "./packages/ecosystem/fireux-granite/src/*"
+      ],
+      "fireux-slap": [
+        "./packages/ecosystem/fireux-slap/src/module.ts"
+      ],
+      "fireux-slap/*": [
+        "./packages/ecosystem/fireux-slap/src/*"
+      ],
+      "@fireux-slap/*": [
+        "./packages/ecosystem/fireux-slap/src/*"
       ]
     }
   }

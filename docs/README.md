@@ -1,7 +1,7 @@
 # FireUX Documentation Hub
 Status: Active human documentation hub
 Authority: Tier2 (Operational index)
-Updated: 2026-03-28
+Updated: 2026-05-30
 
 This is the docs landing map for weekly maintenance and day-to-day navigation.
 System definition: `docs/system.md`.
@@ -37,6 +37,7 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 - package/project docs under `packages/**/docs/` and `projects/**/docs/`
 
 Current operational note:
+- new deployable apps must start with `docs/guide/new-app.creation.md`; complete or explicitly block its pre-dev gate before app-local development begins
 - repo-wide drift inspection now depends on runtime collection-manager dev JSON showing raw docs and direct subcollections where they exist
 - the shared behavior is documented in the runtime `components/`, `composables/`, and `server/` branch READMEs
 - console visibility is now app-config driven through `consoles`; the shared `/console` hub no longer discovers families by route scanning

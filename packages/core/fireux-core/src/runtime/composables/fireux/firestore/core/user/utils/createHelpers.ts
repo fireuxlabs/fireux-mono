@@ -118,10 +118,7 @@ export async function createCoreUserDocument(
   if (!displayName) {
     throw new Error('[createCoreUserDocument] Missing displayName')
   }
-  const email = options.email
-  if (!email) {
-    throw new Error('[createCoreUserDocument] Missing email')
-  }
+  const email = options.email ?? ''
   const resolvedAvatar = resolveCoreUserAvatar(options.avatar)
   // Core user create is responsible for the core document, but should not
   // create membership side effects (like notifications) by default.

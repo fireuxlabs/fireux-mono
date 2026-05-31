@@ -15,7 +15,9 @@ function looksLikeEmail(value: string): boolean {
 
 function toPublicDisplayNameSeed(
   displayName?: string | null,
-  email?: string | null
+  email?: string | null,
+  uid?: string | null,
+  isAnonymous?: boolean
 ): string {
   const primary = String(displayName ?? '').trim()
   if (primary) {
@@ -23,7 +25,10 @@ function toPublicDisplayNameSeed(
   }
 
   const fallback = String(email ?? '').trim()
-  if (!fallback) return ''
+  if (!fallback) {
+    const suffix = String(uid ?? '').trim().slice(0, 6)
+    return isAnonymous && suffix ? `Guest ${suffix}` : ''
+  }
   return looksLikeEmail(fallback) ? fallback.split('@')[0]?.trim() || '' : fallback
 }
 
@@ -36,7 +41,12 @@ export function useUserCreate() {
     const { uid, auth } = await requireUid()
     const { appId } = useFireUXConfig()
     const core = await createCoreUserDocument(uid, {
-      displayName: toPublicDisplayNameSeed(auth.displayName, auth.email),
+      displayName: toPublicDisplayNameSeed(
+        auth.displayName,
+        auth.email,
+        uid,
+        auth.isAnonymous
+      ),
       email: auth.email ?? '',
       avatar: auth.photoURL ?? '',
     })

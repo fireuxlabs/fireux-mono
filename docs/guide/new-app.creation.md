@@ -1,7 +1,7 @@
 ---
 title: New App Creation
 description: Checklist and improvement notes for adding a first-class FireUX app.
-updated: 2026-05-22
+updated: 2026-05-30
 ---
 
 # New App Creation
@@ -12,6 +12,31 @@ This checklist is for adding a new deployable app to the FireUX monorepo. It exi
 ## First Rule
 
 Do not scaffold a standalone Nuxt app until the repo conventions have been inspected.
+
+FireUX app creation is a factory process, not a one-off local build. A new app is not done when a page renders. It is done only when the app folder, runtime config, registry, TypeScript references, Explorer launcher, generated VS Code files, package scripts, Firebase shape, docs note, assets, and fast checks agree.
+
+Do not invent a parallel path because it is quicker in the moment. If an existing sibling app, script, generated file, or checklist owns a part of the shape, follow that system and update the source that generates derived files.
+
+## Pre-Dev Gate
+
+Before beginning product page work, styling, data wiring, or feature implementation for a new app, complete this gate:
+
+1. Confirm the monorepo root and working tree.
+2. Read this checklist and any app-specific seed note.
+3. Inspect the nearest sibling app in the same ecosystem.
+4. Identify the app class: global, tenant, standalone, console-backed, or public-only.
+5. Name the system-owned surfaces that must be updated before feature work:
+   - app folder and `defineFireuxConfig`
+   - `projects/tsconfig.json`
+   - `scripts/_lib/app-registry.mjs`
+   - `tools/vscode-fireux-toolbar/extension.js`
+   - generated `package.json`, `.vscode/tasks.json`, `.vscode/launch.json`
+   - app media files
+   - Firebase/Firestore/catalog setup when deployment or runtime data is in scope
+6. Decide which items can be completed now and which are blocked by credentials, Firebase console access, network, or user approval.
+7. Report the gate status before calling the app first-class or starting deeper product work.
+
+If this gate is incomplete, keep changes to inspection or factory wiring. Do not start app-local feature work and then backfill the system later.
 
 Start from the real monorepo root and confirm:
 
@@ -44,6 +69,8 @@ Read at least these before adding files:
 - `docs/guide/app-assets-dump.md` when adding or replacing app logos/wordmarks/covers
 
 For a standalone app inside the FireUX ecosystem, inspect `projects/fireux/sproochli`, `projects/fireux/buenohost`, or `projects/fireux/find-my-seo-app`. For a global ecosystem app, inspect `projects/fireux/fireux-app`, `projects/bringli/bringli-app`, or the matching ecosystem app.
+
+If there is an app-specific project seed note, read it before choosing routes, modules, or product scope. Seed notes are not Tier1 canon, but they can define the requested first-pass product intent. When a seed note conflicts with an implementation impulse, pause and keep the first pass smaller unless the user asks for expansion.
 
 ## Create The App In The Right Layer
 
@@ -104,11 +131,13 @@ After adding the app folder, wire the repo-level registration points:
 6. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
 7. Check `package.json` has the expected `dev:<key>` script.
 8. If Firebase deploy is in scope, create/confirm the Firebase Hosting site and keep `firebase.json` aligned with the app id and hosting site.
-9. Create/confirm the Firebase Web App config, record app-specific env values, and add the deployed app domain to Firebase Auth authorized domains.
+9. Create/confirm the Firebase Web App config, record app-specific env values, enable baseline Auth providers, and add Auth authorized domains.
 10. Before any real deploy, confirm the Firestore rules are acceptable for this ship.
 11. During the first browser initialization, verify the blocked setup screen shows a clearly visible `Continue` button under the requirements list, click it intentionally, then confirm the app document and admin membership were created. Do not mark initialization as complete from green environment checks alone.
 
 Do not hand-edit generated VS Code task/launch files unless the generator itself is wrong.
+
+Treat this checklist as a completion gate. If any registration item is skipped because Firebase, network, credentials, localhost binding, or user approval is unavailable, call that out explicitly in the handoff. Do not imply the app is first-class when the Explorer, workspace sync, catalog, database, or deploy setup is still pending.
 
 ## Explorer Server Launcher
 
@@ -138,6 +167,21 @@ This list is not generated from `scripts/_lib/app-registry.mjs` yet. When creati
 Keep `key`, `port`, and launch order aligned with `scripts/_lib/app-registry.mjs`. The `taskLabel` should match the generated VS Code task label, and `pnpmCommand` is the fallback terminal command when the task is unavailable.
 
 Do not add a one-off `server:<key>` root script just to make the Explorer server launcher work. Add the app to the toolbar server list instead, then reload the VS Code window or restart the toolbar extension host.
+
+After changing the toolbar app list, always run:
+
+```sh
+pnpm sync:dev-workspace
+pnpm sync:dev-workspace:check
+```
+
+Then confirm the app appears in both generated files:
+
+```sh
+rg '<app-key>|<Display Name>' .vscode/tasks.json .vscode/launch.json
+```
+
+If the Explorer tab is already open, reload the VS Code window before concluding the entry is missing.
 
 ## Firebase And Firestore Registration
 
@@ -192,6 +236,12 @@ Before a real client, staging, or production ship:
 - Replace `allow read, write: if true` with rules scoped to the app's real public, signed-in, admin, and membership surfaces.
 - Confirm the deployed rules target the database the app actually uses through `databaseId`.
 - Treat open rules as a launch blocker unless the deployment is explicitly a private demo/preflight.
+
+For named Firestore databases, deploy rules with the database target, not only the generic rules alias:
+
+```sh
+firebase deploy --only firestore:<databaseId> --project <firebase-project-id>
+```
 
 ## Firebase Web App Config
 
@@ -292,6 +342,21 @@ Set the deployed domain in env/deploy config:
 APP_DOMAIN=<site-id>.web.app
 ```
 
+Then enable the app's baseline Firebase Auth providers:
+
+```text
+Firebase Console
+  -> Authentication
+  -> Sign-in method
+  -> enable Email/Password
+  -> enable Google
+  -> enable Anonymous
+```
+
+Use Email/Password, Google, and Anonymous as the first-pass ecosystem baseline. Add Apple,
+Microsoft, GitHub, Phone, passkeys, custom OIDC, or SAML later only when the app's product
+surface needs them. For Google, confirm the project support email before launch.
+
 Then add the deployed domain to Firebase Auth authorized domains:
 
 ```text
@@ -308,7 +373,23 @@ Example:
 go-qr.web.app
 ```
 
-Do not treat `firebase.json` hosting config as enough on its own. If the deployed domain is missing from Auth authorized domains, Google sign-in can fail even when Hosting deploys correctly.
+Auth authorized domains are hostnames only. Do not include `https://` or ports. Confirm
+`localhost` for local dev, and add every deployed Hosting/custom domain the app can use:
+
+```text
+localhost
+<site-id>.web.app
+<site-id>.firebaseapp.com
+<custom-domain>
+```
+
+Prefer `localhost` over `127.0.0.1` for local Firebase Auth flows unless the provider explicitly
+supports the numeric host in the project's Auth settings. Do not treat `firebase.json` hosting
+config as enough on its own. If the deployed domain is missing from Auth authorized domains,
+Google sign-in can fail even when Hosting deploys correctly.
+
+Auth provider and authorized-domain setup is Firebase project state, not Nuxt app config. Record
+the enabled providers and domains in the app launch notes so the next deployment can be audited.
 
 Do not paste real Firebase config snippets or API keys into repo docs. Use app `.env`, deploy configuration, or secrets/runtime config as appropriate.
 
@@ -447,6 +528,12 @@ node --check scripts/_lib/app-registry.mjs
 pnpm sync:dev-workspace:check
 CI=1 pnpm --filter ./projects/<ecosystem>/<app> exec nuxi prepare
 git diff --check
+```
+
+For a first-class app scaffold, also verify the visible factory surfaces:
+
+```sh
+rg '<app-key>|<Display Name>' package.json projects/tsconfig.json scripts/_lib/app-registry.mjs tools/vscode-fireux-toolbar/extension.js .vscode/tasks.json .vscode/launch.json
 ```
 
 Before deploying, add a human deploy check:

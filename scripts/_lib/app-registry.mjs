@@ -182,6 +182,19 @@ export const APP_REGISTRY = {
     smokeRoutes: ['/'],
     launchOrder: 10,
   },
+  'yellow-velo': {
+    key: 'yellow-velo',
+    name: 'Yellow Velo',
+    appId: 'yellow-velo',
+    ecosystem: 'slap',
+    databaseId: 'slap',
+    role: 'tenant',
+    workspace: './projects/slap/yellow-velo',
+    port: 3014,
+    consoles: [],
+    smokeRoutes: ['/', '/bikes', '/merch', '/products', '/blog'],
+    launchOrder: 12,
+  },
   granite: {
     key: 'granite',
     name: 'Granite',
@@ -192,6 +205,19 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoles: ['portfolio'],
+    launchOrder: 13,
+  },
+  slap: {
+    key: 'slap',
+    name: 'Slap',
+    appId: 'slap-app',
+    ecosystem: 'slap',
+    databaseId: 'slap',
+    role: 'global',
+    workspace: './projects/slap/slap-app',
+    port: 3009,
+    consoles: [],
+    smokeRoutes: ['/', '/about', '/get-started', '/products', '/blog', '/console'],
     launchOrder: 11,
   },
   'la-tap-berne': {
@@ -204,14 +230,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoles: ['kitchen'],
-    launchOrder: 12,
+    launchOrder: 14,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'slap', 'yellow-velo', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)
