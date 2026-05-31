@@ -1,5 +1,5 @@
 <template>
-  <MiseboxGoQrUrlEmbed />
+  <GoQrUrlEmbed />
 </template>
 
 <script setup lang="ts">

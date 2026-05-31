@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MiseboxSolution } from '../../../utils/miseboxSolutions'
+import type { MiseboxSolution } from '../../utils/miseboxSolutions'
 
 defineProps<{
   integrations: MiseboxSolution['integrations']

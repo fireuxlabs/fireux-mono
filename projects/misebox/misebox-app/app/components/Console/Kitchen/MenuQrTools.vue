@@ -6,8 +6,8 @@
     >
       <template #body>
         <div class="space-y-4">
-          <MiseboxConsoleKitchenMenuUrlQr />
-          <MiseboxConsoleKitchenMenuDocUpload />
+          <ConsoleKitchenMenuUrlQr />
+          <ConsoleKitchenMenuDocUpload />
         </div>
       </template>
     </UAccordionItem>

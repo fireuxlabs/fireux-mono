@@ -22,7 +22,7 @@
       description="Choose a live kitchen before creating a menu URL QR."
     />
 
-    <MiseboxGoQrUrlEmbed
+    <GoQrUrlEmbed
       v-else
       :description="description"
       url-placeholder="https://my-url.com/menu"

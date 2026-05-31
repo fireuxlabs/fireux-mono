@@ -1,9 +1,9 @@
 <template>
-  <MiseboxSolutionPage :solution="solution">
-    <MiseboxSolutionTool :solution="solution">
+  <SolutionPage :solution="solution">
+    <SolutionTool :solution="solution">
       <GoQrToolText class="w-full max-w-xl" />
-    </MiseboxSolutionTool>
-  </MiseboxSolutionPage>
+    </SolutionTool>
+  </SolutionPage>
 </template>
 
 <script setup lang="ts">
