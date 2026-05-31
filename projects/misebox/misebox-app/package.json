@@ -40,6 +40,7 @@
     "fireux-products": "workspace:*",
     "nuxt": "4.4.6",
     "pdfjs-dist": "^5.4.296",
+    "qrcode": "^1.5.4",
     "vue": "3.5.20",
     "vue-router": "4.5.1"
   },

@@ -14,6 +14,9 @@
       :cta-label="config.ctaLabel"
       :loading-label="config.loadingLabel"
       :open-target-label="config.openTargetLabel"
+      :create-endpoint="config.createEndpoint"
+      :availability-endpoint="config.availabilityEndpoint"
+      :taken-message="config.takenMessage"
     />
   </main>
 </template>
@@ -43,5 +46,8 @@ const config = computed(() => ({
   ctaLabel: queryString('ctaLabel', 'Create doc QR'),
   loadingLabel: queryString('loadingLabel', 'Creating doc...'),
   openTargetLabel: queryString('openTargetLabel', 'Open doc'),
+  createEndpoint: queryString('createEndpoint', ''),
+  availabilityEndpoint: queryString('availabilityEndpoint', ''),
+  takenMessage: queryString('takenMessage', 'This doc path is already taken.'),
 }))
 </script>

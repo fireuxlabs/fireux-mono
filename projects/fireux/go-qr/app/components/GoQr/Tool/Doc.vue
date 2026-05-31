@@ -111,6 +111,9 @@ const props = withDefaults(defineProps<{
   ctaLabel?: string
   loadingLabel?: string
   openTargetLabel?: string
+  createEndpoint?: string
+  availabilityEndpoint?: string
+  takenMessage?: string
 }>(), {
   title: '',
   description: '',
@@ -124,6 +127,9 @@ const props = withDefaults(defineProps<{
   ctaLabel: 'Create doc QR',
   loadingLabel: 'Creating doc...',
   openTargetLabel: 'Open doc',
+  createEndpoint: '',
+  availabilityEndpoint: '',
+  takenMessage: 'This doc path is already taken.',
 })
 
 const selectedFile = ref<File | File[] | null>(null)
@@ -161,17 +167,17 @@ const previewUrl = computed(() =>
   `${previewBaseUrl.value}/${normalizedSlug.value || props.slugPlaceholder}${previewPathSuffix.value}`
 )
 const availabilityEndpoint = computed(() =>
-  data.value?.tool.endpoints?.availability || '/api/tools/doc/availability'
+  props.availabilityEndpoint || data.value?.tool.endpoints?.availability || '/api/tools/doc/availability'
 )
 const createEndpoint = computed(() =>
-  data.value?.tool.endpoints?.create || '/api/tools/doc/create'
+  props.createEndpoint || data.value?.tool.endpoints?.create || '/api/tools/doc/create'
 )
 const canUseSlug = computed(() =>
   Boolean(normalizedSlug.value && !slugTaken.value && !slugError.value)
 )
 const slugMessage = computed(() => {
   if (slugError.value) return slugError.value
-  if (slugTaken.value) return 'This doc path is already taken.'
+  if (slugTaken.value) return props.takenMessage
   return normalizedSlug.value ? 'Path is available.' : ''
 })
 const canCreate = computed(() =>
@@ -219,13 +225,15 @@ async function createDoc() {
     const response = await $fetch<{
       path?: string
       qr_path?: string
+      url?: string
+      qr_url?: string
     }>(createEndpoint.value, {
       method: 'POST',
       body: form,
     })
 
-    createdPath.value = response.path || ''
-    createdQrPath.value = response.qr_path || ''
+    createdPath.value = response.url || response.path || ''
+    createdQrPath.value = response.qr_url || response.qr_path || ''
   } catch (error) {
     createError.value = error instanceof Error ? error.message : 'Doc could not be created.'
   } finally {

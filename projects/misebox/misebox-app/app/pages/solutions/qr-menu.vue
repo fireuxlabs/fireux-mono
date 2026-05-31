@@ -14,6 +14,9 @@ definePageMeta({
 const providerBaseUrl = import.meta.dev
   ? 'http://localhost:3013'
   : 'https://go-qr.web.app'
+const consumerBaseUrl = import.meta.dev
+  ? 'http://localhost:3001'
+  : 'https://misebox.app'
 
 const consumer = {
   title: 'Menu',
@@ -21,7 +24,6 @@ const consumer = {
   fileLabel: 'Menu file',
   pathLabel: 'Menu path',
   slugPlaceholder: 'my-menu',
-  publicBaseUrl: 'https://misebox.app',
   publicPath: 'menus',
   publicPathSuffix: '/qr',
   accept: 'application/pdf,.doc,.docx',
@@ -36,13 +38,16 @@ const toolUrl = computed(() => {
     fileLabel: consumer.fileLabel,
     pathLabel: consumer.pathLabel,
     slugPlaceholder: consumer.slugPlaceholder,
-    previewBaseUrl: `${consumer.publicBaseUrl}/${consumer.publicPath}`,
+    previewBaseUrl: `${consumerBaseUrl}/${consumer.publicPath}`,
     previewPathSuffix: consumer.publicPathSuffix,
+    createEndpoint: `${consumerBaseUrl}/api/menus/create`,
+    availabilityEndpoint: `${consumerBaseUrl}/api/menus/availability`,
     accept: consumer.accept,
     uploadHint: consumer.uploadHint,
     ctaLabel: consumer.ctaLabel,
     loadingLabel: 'Creating menu...',
     openTargetLabel: 'Open menu',
+    takenMessage: 'This menu path is already taken.',
   })
 
   return `${providerBaseUrl}/tools/doc?${query}`
