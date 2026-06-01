@@ -17,7 +17,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that rule changes later, update the models README first, then this file.
  */
 export const IngredientStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'ingredients/{ingredientId}',
   collection: 'ingredients',
   idParam: 'ingredientId',

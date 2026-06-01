@@ -14,12 +14,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 3) Identity rule
 - Jobs are id-based (`job.id`); profile entities use stable profile ids (typically user-linked ids).
 - `Professional` is a reusable person/service-provider profile, not a console workspace.
-- Root `Professional` identity may be reused across apps; app overlays provide app-specific meaning such as hospitality worker, cleaning professional, or SEO consultant.
+- Root `Professional` identity may be reused across apps; app records provide app-specific meaning such as hospitality worker, cleaning professional, or SEO consultant.
 
 ## 4) Collections + paths
 - `jobs/{jobId}`
-- `agents/{id}` and app-scoped agent overlays where configured
-- `professionals/{id}` and app-scoped professional overlays where configured
+- `agents/{id}` and app-scoped agent records where configured
+- `professionals/{id}` and app-scoped professional records where configured
 - `apps/{appId}/professionals/{id}`
 
 Composable stack canon:

@@ -5,13 +5,12 @@
         <div class="space-y-2">
           <div class="text-sm font-semibold">Menu stack (demo scenario)</div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Canon kitchen scenario for ingredients, mise, recipes, dishes, and menus.
+            Canon kitchen scenario for mise, recipes, dishes, and menus.
           </p>
         </div>
       </template>
 
       <div class="flex flex-wrap gap-2 text-xs text-dimmed">
-        <UBadge variant="soft">Ingredients: {{ counts.ingredients }}</UBadge>
         <UBadge variant="soft">Mise: {{ counts.mise }}</UBadge>
         <UBadge variant="soft">Recipes: {{ counts.recipes }}</UBadge>
         <UBadge variant="soft">Dishes: {{ counts.dishes }}</UBadge>
@@ -39,7 +38,6 @@ defineOptions({ name: 'DevMenuStackSystem' })
 const demoKitchenScenario = getDefaultDemoKitchen()
 
 const counts = computed(() => ({
-  ingredients: demoKitchenScenario.globalIngredients.length,
   mise: demoKitchenScenario.menuStack.miseTasks.length,
   recipes: demoKitchenScenario.menuStack.recipes.length,
   dishes: demoKitchenScenario.menuStack.dishes.length,
@@ -47,7 +45,6 @@ const counts = computed(() => ({
 }))
 
 const menuStackDevJson = computed(() => ({
-  ingredients: [...demoKitchenScenario.globalIngredients],
   mise: demoKitchenScenario.menuStack.miseTasks,
   recipes: demoKitchenScenario.menuStack.recipes,
   dishes: demoKitchenScenario.menuStack.dishes,

@@ -72,23 +72,6 @@ const withKitchenId = (docs, nextKitchenId) =>
     kitchen_id: nextKitchenId,
   }))
 
-const buildKitchenIngredientsForSync = (demoKitchenScenario) => {
-  const map = new Map()
-
-  for (const entry of demoKitchenScenario.kitchenIngredients) {
-    const id = String(entry.id || entry.ingredient_id || '').trim()
-    if (!id) continue
-
-    map.set(id, {
-      ...entry,
-      id,
-      ingredient_id: String(entry.ingredient_id || id).trim(),
-    })
-  }
-
-  return [...map.values()]
-}
-
 const chunk = (items, size) => {
   const chunks = []
   for (let index = 0; index < items.length; index += size) {
@@ -166,7 +149,6 @@ const writeCollection = async ({ db, kitchenRef, name, docs }) => {
 }
 
 const buildOperationalCollections = (demoKitchenScenario, nextKitchenId) => ({
-  ingredients: buildKitchenIngredientsForSync(demoKitchenScenario),
   mise: withKitchenId(asDocs(demoKitchenScenario.menuStack.miseTasks), nextKitchenId),
   recipes: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), nextKitchenId),
   dishes: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), nextKitchenId),
@@ -174,10 +156,6 @@ const buildOperationalCollections = (demoKitchenScenario, nextKitchenId) => ({
   stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), nextKitchenId),
   team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), nextKitchenId),
   suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), nextKitchenId),
-  supplierIngredients: withKitchenId(
-    asDocs(demoKitchenScenario.procurementStack.supplierIngredients),
-    nextKitchenId
-  ),
   purchases: withKitchenId(asDocs(demoKitchenScenario.procurementStack.purchases), nextKitchenId),
   orders: withKitchenId(asDocs(demoKitchenScenario.serviceStack.incomingOrders), nextKitchenId),
 })

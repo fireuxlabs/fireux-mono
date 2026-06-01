@@ -22,7 +22,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `suppliers/{supplierId}/catalogues/{catalogueId}` (presentation/grouping, not product sale terms)
 - Treat `Supplier` as a console/business entity family with:
   - a public canonical supplier record
-  - an app-scoped supplier console overlay
+  - an app-scoped supplier console record
 - Root supplier records carry explicit app relationship metadata:
   - `app_scope_state`
   - `app_scope_app_id`
@@ -50,7 +50,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `test-suppliers/{uid}`
   - ensured on entry to `/console/supplier` in `test` mode
   - not created during auth
-- `my real suppliers` means suppliers the current user can operate through the app overlay:
+- `my real suppliers` means suppliers the current user can operate through the app console record:
   - `apps/{appId}/suppliers/{supplierId}`
   - `operator_ids` contains the user
 - Supplier relationship or operator linkage may inform onboarding or claiming, but it is not the access rule by itself.

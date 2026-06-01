@@ -23,9 +23,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Portfolio identity is id-based (`portfolio.id` is canonical).
-- Portfolio console authority is user-based in the app-hosted overlay.
+- Portfolio console authority is user-based in the app-hosted console record.
 - `owner_label` is presentation only; it is not the console ownership rule.
-- If a future operator/team profile is added, it remains a prerequisite or presentation layer over the same overlay governance pattern.
+- If a future operator/team profile is added, it remains a prerequisite or presentation layer over the same console governance pattern.
 - Decision note: current implementation drift creates some portfolios with `id = slug`.
   Keep this contract id-based until a future portfolio identity pass explicitly chooses
   between id-based identity and slug-id public routing.
@@ -126,7 +126,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `test-portfolios/{uid}`
   - ensured on entry to `/console/portfolio` in `test` mode
   - not created during auth
-- `my real portfolios` means portfolios the current user can operate through the app overlay:
+- `my real portfolios` means portfolios the current user can operate through the app console record:
   - `apps/{appId}/portfolios/{portfolioId}`
   - `operator_ids` contains the user
 - Console selection is runtime-state based, not query-param selection.

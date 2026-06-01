@@ -69,21 +69,22 @@ later promoted into their own root model.
 
 ### Both
 
-The entity has root identity plus an app-scoped overlay.
+The entity has root identity plus a second stored residence.
 
 ```text
 kitchens/{kitchenId}
 apps/{appId}/kitchens/{kitchenId}
 ```
 
-The root record is the thing. The app overlay is the app's operating context,
-membership, permissions, and console state.
+The root record is the thing. When the second record is app-owned operating
+state, call it the console record. It carries membership, permissions, and
+console state.
 
 For console-backed entities, use this naming:
 
 ```text
 createX        -> root record only
-createXConsole -> root record plus app overlay
+createXConsole -> root record plus app console record
 ```
 
 Examples:
@@ -205,40 +206,40 @@ Creation and reading should mirror each other:
 ```text
 root   create -> root fetch / root collection
 scoped create -> scoped fetch / scoped collection
-both   create -> root fetch plus overlay fetch, or root collection plus overlay collection
+both   create -> root fetch plus console fetch, or root collection plus console collection
 ```
 
 The read seam should make the storage shape obvious. A caller should be able to
 tell whether it is reading a root record, scoped operational records, or a
-root-plus-overlay operating context without reading the implementation.
+root-plus-console operating context without reading the implementation.
 
 Examples:
 
 ```text
 useKitchenFetch(id)          -> root kitchen read
 useKitchenCollection()       -> root kitchen collection read
-useKitchenInterface().surface -> root/place/overlay surface composition
+useKitchenInterface().surface -> root/place/console surface composition
 
 useKitchenMiseCollection()   -> scoped kitchen child collection read
 useConversationMessageFetch  -> scoped child single read
 
-useKitchenConsole()          -> both/root plus app overlay operating read
+useKitchenConsole()          -> both/root plus app console operating read
 ```
 
 For `both` entities, keep the raw reads separable:
 
 ```text
 root record       -> kitchens/{kitchenId}
-overlay record    -> apps/{appId}/kitchens/{kitchenId}
-surface/interface -> root + overlay projected for the current surface
+console record    -> apps/{appId}/kitchens/{kitchenId}
+surface/interface -> root + console projected for the current surface
 ```
 
 The same applies to collection reads:
 
 ```text
 root collection       -> kitchens
-overlay collection    -> apps/{appId}/kitchens
-hydrated collection   -> overlay ids, then exact root docs, then merge/project
+console collection    -> apps/{appId}/kitchens
+hydrated collection   -> console ids, then exact root docs, then merge/project
 ```
 
 `useXInterface` may meld already-read records into a stable surface shape. It
@@ -281,8 +282,8 @@ useXInterface  -> project already-read records
 Complex hydrated seams should describe the surface:
 
 ```text
-useKitchenConsole        -> selected kitchen root/overlay operating context
-usePropertyCollection    -> root properties plus app overlay access filter
+useKitchenConsole        -> selected kitchen root/console operating context
+usePropertyCollection    -> root properties plus app console access filter
 useMenu route surface    -> public menu route composition
 ```
 
@@ -351,7 +352,7 @@ Use only these storage shapes:
 ```text
 root   -> canonical top-level record
 scoped -> child or parent-scoped record
-both   -> root truth plus app/parent overlay or operating context
+both   -> root truth plus console or parent-scoped operating context
 ```
 
 Status language:

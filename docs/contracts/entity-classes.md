@@ -33,7 +33,7 @@ Shared defaults:
 - Hydrated or enriched read shapes belong in fetch, runtime, or interface seams, not in the model file.
 
 ## Shape A: `root`
-Use when one canonical top-level collection is the source of truth and there is no official stored overlay.
+Use when one canonical top-level collection is the source of truth and there is no official secondary stored record.
 
 Firestore shape:
 - `collection/{id}`
@@ -74,7 +74,7 @@ export type EntityUpdateInput = Partial<Omit<Entity, 'id' | 'created' | 'updated
 Rules:
 - One canonical stored object: `EntityModel`
 - One canonical stored type: `Entity`
-- No official overlay in the same contract
+- No official secondary stored record in the same contract
 
 ## Shape B: `scoped`
 Use when the entity only exists because a parent console or parent entity owns it.
@@ -112,14 +112,14 @@ export type Child = {
 Rules:
 - `parent_id` must exist explicitly in the stored shape when parent identity matters
 - the entity is not globally canonical on its own
-- no second overlay unless the extension contract makes that need explicit
+- no second stored residence unless the extension contract makes that need explicit
 
 ## Shape C: `both`
-Use when one entity has root truth plus app/parent overlay or operating context.
+Use when one entity has root truth plus console or parent-scoped operating context.
 
 Firestore shape:
 - Root path: `collection/{id}`
-- Overlay path: `apps/{appId}/collection/{id}`
+- Console path: `apps/{appId}/collection/{id}`
 
 Examples:
 - `users/{userId}` + `apps/{appId}/users/{userId}`
@@ -130,7 +130,7 @@ Examples:
 - `chefs/{uid}` + `apps/{appId}/chefs/{uid}`
 - `menus/{menuId}` + `kitchens/{kitchenId}/menus/{menuId}`
 
-For `both`, the second record may be an app overlay or a parent-scoped
+For `both`, the second record may be an app console record or a parent-scoped
 operating/publication context. Do not turn those into separate entity families.
 
 Model contract:
@@ -174,15 +174,15 @@ Rules:
 - identity families use `AppXModel` / `AppX`
 - console-backed families use `ConsoleXModel` / `ConsoleX`
 - root shape stays honest and compact
-- overlay/scoped shape stays focused on operating truth, governance, console
+- console/scoped shape stays focused on operating truth, governance, console
   access, or publication context
 - no hydrated `Resolved` type in the model file
 
 ## Naming Canon
 - `root` entities: `EntityModel`, `Entity`
 - `scoped` entities: `EntityModel`, `Entity`
-- Identity overlays: `EntityModel`, `Entity`, `AppEntityModel`, `AppEntity`
-- Console overlays: `EntityModel`, `Entity`, `ConsoleEntityModel`, `ConsoleEntity`
+- App records: `EntityModel`, `Entity`, `AppEntityModel`, `AppEntity`
+- Console records: `EntityModel`, `Entity`, `ConsoleEntityModel`, `ConsoleEntity`
 - Write helpers: `EntityCreateInput`, `EntityUpdateInput`
 
 ## Drift Signals
@@ -203,6 +203,6 @@ For new work:
   - `ConsoleEntityModel` + `ConsoleEntity`
 
 For migration work:
-1. Normalize overlay-backed entities first
+1. Normalize console-backed entities first
 2. Then normalize root entities
 3. Then normalize scoped entities

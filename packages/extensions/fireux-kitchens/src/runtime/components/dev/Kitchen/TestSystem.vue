@@ -39,7 +39,6 @@
         </div>
 
         <div class="flex flex-wrap gap-2 text-xs text-dimmed">
-          <UBadge variant="soft">Ingredients: {{ syncCounts.ingredients }}</UBadge>
           <UBadge variant="soft">Mise: {{ syncCounts.mise }}</UBadge>
           <UBadge variant="soft">Recipes: {{ syncCounts.recipes }}</UBadge>
           <UBadge variant="soft">Dishes: {{ syncCounts.dishes }}</UBadge>
@@ -47,7 +46,6 @@
           <UBadge variant="soft">Stations: {{ syncCounts.stations }}</UBadge>
           <UBadge variant="soft">Team: {{ syncCounts.team }}</UBadge>
           <UBadge variant="soft">Suppliers: {{ syncCounts.suppliers }}</UBadge>
-          <UBadge variant="soft">Supplier Ingredients: {{ syncCounts.supplierIngredients }}</UBadge>
           <UBadge variant="soft">Purchases: {{ syncCounts.purchases }}</UBadge>
           <UBadge variant="soft">Orders: {{ syncCounts.orders }}</UBadge>
         </div>
@@ -121,7 +119,6 @@ import {
 } from '../../../composables/fireux/app/kitchens/testKitchenIdentity'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'
-import { IngredientStorage } from '../../../models/ingredient.model'
 import { MenuStorage } from '../../../models/menu.model'
 import { RecipeStorage } from '../../../models/recipe.model'
 import type { Kitchen } from '../../../models/kitchen.model'
@@ -205,7 +202,6 @@ const kitchensDriftCopyPayload = buildKitchensCopyPayload({
 })
 
 type KitchenCollectionName =
-  | typeof IngredientStorage.collection
   | 'mise'
   | typeof RecipeStorage.collection
   | typeof DishStorage.collection
@@ -213,7 +209,6 @@ type KitchenCollectionName =
   | 'stations'
   | 'team'
   | 'suppliers'
-  | 'supplierIngredients'
   | 'purchases'
   | 'orders'
 
@@ -234,7 +229,6 @@ watch(
 )
 
 const syncCounts = computed(() => ({
-  ingredients: demoKitchenScenario.kitchenIngredients.length,
   mise: demoKitchenScenario.menuStack.miseTasks.length,
   recipes: demoKitchenScenario.menuStack.recipes.length,
   dishes: demoKitchenScenario.menuStack.dishes.length,
@@ -242,7 +236,6 @@ const syncCounts = computed(() => ({
   stations: demoKitchenScenario.menuStack.stations.length,
   team: demoKitchenScenario.menuStack.team.length,
   suppliers: demoKitchenScenario.procurementStack.suppliers.length,
-  supplierIngredients: demoKitchenScenario.procurementStack.supplierIngredients.length,
   purchases: demoKitchenScenario.procurementStack.purchases.length,
   orders: demoKitchenScenario.serviceStack.incomingOrders.length,
 }))
@@ -277,27 +270,6 @@ const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
     created: (existingKitchen as any)?.created || { at: {} },
     updated: { at: {} },
   } as Kitchen
-}
-
-const buildKitchenIngredientsForSync = () => {
-  const map = new Map<string, Record<string, unknown>>()
-
-  const push = (entry: Record<string, unknown>) => {
-    const id = String(entry.id || entry.ingredient_id || '').trim()
-    if (!id) return
-
-    map.set(id, {
-      ...entry,
-      id,
-      ingredient_id: String(entry.ingredient_id || id).trim(),
-    })
-  }
-
-  for (const ingredient of demoKitchenScenario.kitchenIngredients) {
-    push(ingredient as unknown as Record<string, unknown>)
-  }
-
-  return [...map.values()]
 }
 
 const asDocs = (value: unknown): Record<string, unknown>[] =>
@@ -358,7 +330,6 @@ const syncDemoToTestKitchen = async () => {
     })
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
-      [IngredientStorage.collection]: buildKitchenIngredientsForSync(),
       mise: withKitchenId(asDocs(demoKitchenScenario.menuStack.miseTasks), kitchenId),
       [RecipeStorage.collection]: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), kitchenId),
       [DishStorage.collection]: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), kitchenId),
@@ -366,10 +337,6 @@ const syncDemoToTestKitchen = async () => {
       stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), kitchenId),
       team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), kitchenId),
       suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), kitchenId),
-      supplierIngredients: withKitchenId(
-        asDocs(demoKitchenScenario.procurementStack.supplierIngredients),
-        kitchenId
-      ),
       purchases: withKitchenId(asDocs(demoKitchenScenario.procurementStack.purchases), kitchenId),
       orders: withKitchenId(asDocs(demoKitchenScenario.serviceStack.incomingOrders), kitchenId),
     }
@@ -378,7 +345,6 @@ const syncDemoToTestKitchen = async () => {
     let totalPruned = 0
 
     for (const name of [
-      IngredientStorage.collection,
       'mise',
       RecipeStorage.collection,
       DishStorage.collection,
@@ -386,7 +352,6 @@ const syncDemoToTestKitchen = async () => {
       'stations',
       'team',
       'suppliers',
-      'supplierIngredients',
       'purchases',
       'orders',
     ] as KitchenCollectionName[]) {

@@ -158,7 +158,7 @@ Public menu copy packs:
   - `misebox-simulation/kitchens/{uid}`
   - ensured on entry to `/console/kitchen` in `test` mode
   - not created during auth
-- `my real kitchens` means kitchens the current user can operate through the app overlay:
+- `my real kitchens` means kitchens the current user can operate through the app console record:
   - `apps/{appId}/kitchens/{kitchenId}`
   - `operator_ids` contains the user
 - Chef linkage, workplace history, or profile association may support prerequisites or presentation, but they are not the console-access rule.
@@ -174,7 +174,7 @@ Public menu copy packs:
 ## 7b) Interface seam
 - `useKitchenInterface` is canonically a thin interface seam.
 - Its job is:
-  - already-read kitchen/place/overlay shapes in
+  - already-read kitchen/place/console shapes in
   - composed kitchen surface out
   - small stable UI-ready projections out
 - It must not become:

@@ -8,7 +8,6 @@ export type DemoKitchenListItem = {
 export type DemoKitchenCollectionName =
   | 'menus'
   | 'dishes'
-  | 'ingredients'
   | 'recipes'
   | 'mise'
   | 'stations'
@@ -19,7 +18,6 @@ export type DemoKitchenCollectionName =
 export type DemoKitchenScenario = DemoKitchenListItem & {
   menus: Record<string, unknown>[]
   dishes: Record<string, unknown>[]
-  ingredients: Record<string, unknown>[]
   recipes: Record<string, unknown>[]
   mise: Record<string, unknown>[]
   stations: Record<string, unknown>[]
@@ -645,151 +643,6 @@ const scenarios: DemoKitchenScenario[] = [
         mise_ids: [],
         sort_order: 19,
         active: true,
-        created: { at: {} },
-        updated: { at: {} },
-      },
-    ],
-    ingredients: [
-      {
-        id: 'beef-smash-patties',
-        ingredient_id: 'beef-smash-patties',
-        name: 'Beef Smash Patties',
-        slug: 'beef-smash-patties',
-        image_url:
-          'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'city-butchers',
-        supplier_name: 'City Butchers',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'potato-buns',
-        ingredient_id: 'potato-buns',
-        name: 'Potato Buns',
-        slug: 'potato-buns',
-        image_url:
-          'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'daily-bakehouse',
-        supplier_name: 'Daily Bakehouse',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'brioche-buns',
-        ingredient_id: 'brioche-buns',
-        name: 'Brioche Buns',
-        slug: 'brioche-buns',
-        image_url:
-          'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'daily-bakehouse',
-        supplier_name: 'Daily Bakehouse',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'gua-bao-buns',
-        ingredient_id: 'gua-bao-buns',
-        name: 'Gua Bao Buns',
-        slug: 'gua-bao-buns',
-        image_url:
-          'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'daily-bakehouse',
-        supplier_name: 'Daily Bakehouse',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'mini-buns',
-        ingredient_id: 'mini-buns',
-        name: 'Mini Buns',
-        slug: 'mini-buns',
-        image_url:
-          'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'daily-bakehouse',
-        supplier_name: 'Daily Bakehouse',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'american-cheese',
-        ingredient_id: 'american-cheese',
-        name: 'American Cheese',
-        slug: 'american-cheese',
-        image_url:
-          'https://images.unsplash.com/photo-1552767059-ce182ead6c1b?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'iceberg-lettuce',
-        ingredient_id: 'iceberg-lettuce',
-        name: 'Iceberg Lettuce',
-        slug: 'iceberg-lettuce',
-        image_url:
-          'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'green-larder',
-        supplier_name: 'Green Larder',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'house-pickles',
-        ingredient_id: 'house-pickles',
-        name: 'House Pickles',
-        slug: 'house-pickles',
-        image_url:
-          'https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'mayonnaise',
-        ingredient_id: 'mayonnaise',
-        name: 'Mayonnaise',
-        slug: 'mayonnaise',
-        image_url:
-          'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'ketchup',
-        ingredient_id: 'ketchup',
-        name: 'Ketchup',
-        slug: 'ketchup',
-        image_url:
-          'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'yellow-mustard',
-        ingredient_id: 'yellow-mustard',
-        name: 'Yellow Mustard',
-        slug: 'yellow-mustard',
-        image_url:
-          'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
         created: { at: {} },
         updated: { at: {} },
       },
@@ -1432,7 +1285,6 @@ const scenarios: DemoKitchenScenario[] = [
     image_url: prepImage,
     menus: [],
     dishes: [],
-    ingredients: [],
     recipes: [],
     mise: [
       {
@@ -1538,112 +1390,6 @@ const scenarios: DemoKitchenScenario[] = [
         mise_ids: ['marinate-chicken', 'roast-potatoes'],
         sort_order: 2,
         active: true,
-        created: { at: {} },
-        updated: { at: {} },
-      },
-    ],
-    ingredients: [
-      {
-        id: 'sourdough-loaf',
-        ingredient_id: 'sourdough-loaf',
-        name: 'Sourdough Loaf',
-        slug: 'sourdough-loaf',
-        image_url:
-          'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'daily-bakehouse',
-        supplier_name: 'Daily Bakehouse',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'ricotta',
-        ingredient_id: 'ricotta',
-        name: 'Ricotta',
-        slug: 'ricotta',
-        image_url:
-          'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'courgette',
-        ingredient_id: 'courgette',
-        name: 'Courgette',
-        slug: 'courgette',
-        image_url:
-          'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'green-larder',
-        supplier_name: 'Green Larder',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'basil-oil',
-        ingredient_id: 'basil-oil',
-        name: 'Basil Oil',
-        slug: 'basil-oil',
-        image_url:
-          'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'green-larder',
-        supplier_name: 'Green Larder',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'chicken-thigh',
-        ingredient_id: 'chicken-thigh',
-        name: 'Chicken Thigh',
-        slug: 'chicken-thigh',
-        image_url:
-          'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'city-butchers',
-        supplier_name: 'City Butchers',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'baby-potatoes',
-        ingredient_id: 'baby-potatoes',
-        name: 'Baby Potatoes',
-        slug: 'baby-potatoes',
-        image_url:
-          'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'green-larder',
-        supplier_name: 'Green Larder',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'bitter-leaves',
-        ingredient_id: 'bitter-leaves',
-        name: 'Bitter Leaves',
-        slug: 'bitter-leaves',
-        image_url:
-          'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'green-larder',
-        supplier_name: 'Green Larder',
-        status: 'active',
-        created: { at: {} },
-        updated: { at: {} },
-      },
-      {
-        id: 'herb-butter',
-        ingredient_id: 'herb-butter',
-        name: 'Herb Butter',
-        slug: 'herb-butter',
-        image_url:
-          'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=240&h=240&q=80',
-        supplier_id: 'pantry-house',
-        supplier_name: 'Pantry House',
-        status: 'active',
         created: { at: {} },
         updated: { at: {} },
       },
@@ -2005,8 +1751,6 @@ export const getDefaultDemoKitchen = () => {
       created: { at: {} },
       updated: { at: {} },
     },
-    globalIngredients: cloneRecords(scenario.ingredients),
-    kitchenIngredients: cloneRecords(scenario.ingredients),
     menuStack: {
       menus: canonicalMenuRecords(scenario.menus),
       dishes: cloneRecords(scenario.dishes),
@@ -2017,7 +1761,6 @@ export const getDefaultDemoKitchen = () => {
     },
     procurementStack: {
       suppliers: cloneRecords(scenario.suppliers),
-      supplierIngredients: [],
       purchases: [],
     },
     serviceStack: {
