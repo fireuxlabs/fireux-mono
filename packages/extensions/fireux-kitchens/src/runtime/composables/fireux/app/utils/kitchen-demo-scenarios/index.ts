@@ -32,6 +32,173 @@ const prepImage =
   'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=640&h=520&q=80'
 const diningImage =
   'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=640&h=520&q=80'
+const butcherImage =
+  'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80'
+const chickenImage =
+  'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80'
+
+const cityButchersCatalogue = [
+  {
+    id: 'city-butchers-service-catalogue',
+    supplier_id: 'city-butchers',
+    name: 'Service Catalogue',
+    description: 'Supplier-owned purchasing options grouped by ingredient.',
+    active: true,
+    sort_order: 0,
+    sections: [
+      {
+        id: 'beef-smash-patties',
+        label: 'Beef Smash Patties',
+        description: '3 purchasing options',
+        sort_order: 0,
+        items: [
+          {
+            id: 'city-butchers-beef-smash-patties-10-pack-catalogue-item',
+            supplier_product_id: 'city-butchers-beef-smash-patties-10-pack',
+            product_id: 'beef-smash-patties-10-pack',
+            label: '10 patties pack',
+            active: true,
+            sort_order: 0,
+          },
+          {
+            id: 'city-butchers-beef-smash-patties-20-case-catalogue-item',
+            supplier_product_id: 'city-butchers-beef-smash-patties-20-case',
+            product_id: 'beef-smash-patties-20-case',
+            label: '20 patties case',
+            active: true,
+            sort_order: 1,
+          },
+          {
+            id: 'city-butchers-beef-smash-patties-100-crate-catalogue-item',
+            supplier_product_id: 'city-butchers-beef-smash-patties-100-crate',
+            product_id: 'beef-smash-patties-100-crate',
+            label: '100 patties crate',
+            active: true,
+            sort_order: 2,
+          },
+        ],
+      },
+      {
+        id: 'chicken-thigh',
+        label: 'Chicken Thigh',
+        description: '3 purchasing options',
+        sort_order: 1,
+        items: [
+          {
+            id: 'city-butchers-chicken-thigh-2kg-tray-catalogue-item',
+            supplier_product_id: 'city-butchers-chicken-thigh-2kg-tray',
+            product_id: 'chicken-thigh-2kg-tray',
+            label: '2 kg tray',
+            active: true,
+            sort_order: 0,
+          },
+          {
+            id: 'city-butchers-chicken-thigh-5kg-tray-catalogue-item',
+            supplier_product_id: 'city-butchers-chicken-thigh-5kg-tray',
+            product_id: 'chicken-thigh-5kg-tray',
+            label: '5 kg tray',
+            active: true,
+            sort_order: 1,
+          },
+          {
+            id: 'city-butchers-chicken-thigh-10kg-case-catalogue-item',
+            supplier_product_id: 'city-butchers-chicken-thigh-10kg-case',
+            product_id: 'chicken-thigh-10kg-case',
+            label: '10 kg case',
+            active: true,
+            sort_order: 2,
+          },
+        ],
+      },
+    ],
+    supplier_products: [
+      {
+        id: 'city-butchers-beef-smash-patties-10-pack',
+        supplier_id: 'city-butchers',
+        product_id: 'beef-smash-patties-10-pack',
+        ingredient_id: 'beef-smash-patties',
+        name_override: 'Beef Smash Patties',
+        image_override: butcherImage,
+        pack_size_label: '10 patties pack',
+        quantity_per_pack: 10,
+        order_unit: 'pack',
+        pack_cost_minor: 1900,
+        currency_code: 'CHF',
+        unit: 'piece',
+      },
+      {
+        id: 'city-butchers-beef-smash-patties-20-case',
+        supplier_id: 'city-butchers',
+        product_id: 'beef-smash-patties-20-case',
+        ingredient_id: 'beef-smash-patties',
+        name_override: 'Beef Smash Patties',
+        image_override: butcherImage,
+        pack_size_label: '20 patties case',
+        quantity_per_pack: 20,
+        order_unit: 'case',
+        pack_cost_minor: 3600,
+        currency_code: 'CHF',
+        unit: 'piece',
+      },
+      {
+        id: 'city-butchers-beef-smash-patties-100-crate',
+        supplier_id: 'city-butchers',
+        product_id: 'beef-smash-patties-100-crate',
+        ingredient_id: 'beef-smash-patties',
+        name_override: 'Beef Smash Patties',
+        image_override: butcherImage,
+        pack_size_label: '100 patties crate',
+        quantity_per_pack: 100,
+        order_unit: 'crate',
+        pack_cost_minor: 17000,
+        currency_code: 'CHF',
+        unit: 'piece',
+      },
+      {
+        id: 'city-butchers-chicken-thigh-2kg-tray',
+        supplier_id: 'city-butchers',
+        product_id: 'chicken-thigh-2kg-tray',
+        ingredient_id: 'chicken-thigh',
+        name_override: 'Chicken Thigh',
+        image_override: chickenImage,
+        pack_size_label: '2 kg tray',
+        quantity_per_pack: 20,
+        order_unit: 'tray',
+        pack_cost_minor: 4600,
+        currency_code: 'CHF',
+        unit: '100g',
+      },
+      {
+        id: 'city-butchers-chicken-thigh-5kg-tray',
+        supplier_id: 'city-butchers',
+        product_id: 'chicken-thigh-5kg-tray',
+        ingredient_id: 'chicken-thigh',
+        name_override: 'Chicken Thigh',
+        image_override: chickenImage,
+        pack_size_label: '5 kg tray',
+        quantity_per_pack: 50,
+        order_unit: 'tray',
+        pack_cost_minor: 11000,
+        currency_code: 'CHF',
+        unit: '100g',
+      },
+      {
+        id: 'city-butchers-chicken-thigh-10kg-case',
+        supplier_id: 'city-butchers',
+        product_id: 'chicken-thigh-10kg-case',
+        ingredient_id: 'chicken-thigh',
+        name_override: 'Chicken Thigh',
+        image_override: chickenImage,
+        pack_size_label: '10 kg case',
+        quantity_per_pack: 100,
+        order_unit: 'case',
+        pack_cost_minor: 21000,
+        currency_code: 'CHF',
+        unit: '100g',
+      },
+    ],
+  },
+]
 
 const scenarios: DemoKitchenScenario[] = [
   {
@@ -980,6 +1147,7 @@ const scenarios: DemoKitchenScenario[] = [
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: ['beef-smash-patties', 'chicken-thigh'],
+        catalogue: cityButchersCatalogue,
         supplier_image:
           'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1624,6 +1792,7 @@ const scenarios: DemoKitchenScenario[] = [
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: ['chicken-thigh'],
+        catalogue: cityButchersCatalogue,
         supplier_image:
           'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
