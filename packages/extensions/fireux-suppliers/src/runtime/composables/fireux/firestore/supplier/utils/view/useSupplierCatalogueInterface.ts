@@ -30,6 +30,7 @@ export namespace SupplierCatalogueItemCard {
     id: string
     label: string
     description: string
+    imageUrl: string
     options: Option[]
   }
 
@@ -63,11 +64,8 @@ export function useSupplierCatalogueInterface() {
 
     const sections = [...(item.sections ?? [])]
       .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
-      .map((section): SupplierCatalogueItemCard.Section => ({
-        id: safeString(section.id).trim(),
-        label: safeString(section.label || section.id).trim(),
-        description: safeString(section.description).trim(),
-        options: [...(section.items ?? [])]
+      .map((section): SupplierCatalogueItemCard.Section => {
+        const options = [...(section.items ?? [])]
           .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
           .map((option): SupplierCatalogueItemCard.Option => {
             const supplierProductId = safeString(option.supplier_product_id).trim()
@@ -94,8 +92,16 @@ export function useSupplierCatalogueInterface() {
                   badge !== `Unit ${productCard?.unitPriceLabel}`
               ),
             }
-          }),
-      }))
+          })
+
+        return {
+          id: safeString(section.id).trim(),
+          label: safeString(section.label || section.id).trim(),
+          description: safeString(section.description).trim(),
+          imageUrl: safeString(options.find((option) => option.imageUrl)?.imageUrl).trim(),
+          options,
+        }
+      })
 
     const optionCount = sections.reduce(
       (total, section) => total + section.options.length,

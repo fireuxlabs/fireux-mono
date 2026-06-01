@@ -16,7 +16,7 @@
               :placeholder="searchPlaceholder"
             />
             <UBadge
-              v-if="showCount"
+              v-if="showCountBadge"
               variant="soft"
               color="neutral"
             >
@@ -32,7 +32,10 @@
       :cards="cardsFiltered"
     >
       <template #pill="{ card }">
-        <SupplierCatalogueCardsPill v-bind="card" />
+        <SupplierCatalogueCardsPill
+          v-bind="card"
+          :show-header="cardsFiltered.length > 1"
+        />
       </template>
     </SupplierCatalogueCollectionList>
 
@@ -104,6 +107,7 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
+const showCountBadge = computed(() => showCount.value && totalCount.value > 1)
 const emptyStateTitle = computed(() =>
   props.pending ? 'Loading catalogues' : props.emptyTitle
 )
