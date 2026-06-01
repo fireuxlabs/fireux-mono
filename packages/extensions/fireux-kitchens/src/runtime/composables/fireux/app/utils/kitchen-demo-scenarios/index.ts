@@ -979,7 +979,7 @@ const scenarios: DemoKitchenScenario[] = [
           'Official supplier record with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
         state: 'official',
         catalogue_state: 'integrated',
-        linked_ingredient_ids: ['beef-smash-patties'],
+        linked_ingredient_ids: ['beef-smash-patties', 'chicken-thigh'],
         supplier_image:
           'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:

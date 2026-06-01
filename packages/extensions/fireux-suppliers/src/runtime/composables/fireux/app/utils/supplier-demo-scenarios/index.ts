@@ -1,5 +1,6 @@
 import type {
   Supplier,
+  SupplierCatalogue,
   SupplierCatalogueState,
   SupplierProduct,
   SupplierState,
@@ -172,69 +173,24 @@ const demoSupplierProductsBySupplierId: Record<
 > = {
   'city-butchers': [
     {
-      id: 'city-butchers-beef-chuck-roll',
+      id: 'city-butchers-beef-smash-patties-10-pack',
       supplier_id: 'city-butchers',
-      product_id: 'beef-chuck-roll',
-      ingredient_id: 'beef-chuck-roll',
-      name_override: 'Beef Chuck Roll',
-      pack_size_label: '6 kg primal',
+      product_id: 'beef-smash-patties-10-pack',
+      ingredient_id: 'beef-smash-patties',
+      name_override: 'Beef Smash Patties',
+      pack_size_label: '10 patties pack',
       image_override:
         'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      quantity_per_pack: 60,
-      order_unit: 'primal',
-      pack_cost_minor: 14400,
+      quantity_per_pack: 10,
+      order_unit: 'pack',
+      pack_cost_minor: 1900,
       currency_code: 'CHF',
-      unit: '100g',
+      unit: 'piece',
     },
     {
-      id: 'city-butchers-beef-brisket-point',
+      id: 'city-butchers-beef-smash-patties-20-case',
       supplier_id: 'city-butchers',
-      product_id: 'beef-brisket-point',
-      ingredient_id: 'beef-brisket-point',
-      name_override: 'Beef Brisket Point',
-      pack_size_label: '4 kg brisket point',
-      image_override:
-        'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      quantity_per_pack: 40,
-      order_unit: 'point',
-      pack_cost_minor: 8400,
-      currency_code: 'CHF',
-      unit: '100g',
-    },
-    {
-      id: 'city-butchers-beef-short-rib',
-      supplier_id: 'city-butchers',
-      product_id: 'beef-short-rib',
-      ingredient_id: 'beef-short-rib',
-      name_override: 'Beef Short Rib',
-      pack_size_label: '3 kg tray',
-      image_override:
-        'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=240&h=240&q=80',
-      quantity_per_pack: 30,
-      order_unit: 'tray',
-      pack_cost_minor: 9600,
-      currency_code: 'CHF',
-      unit: '100g',
-    },
-    {
-      id: 'city-butchers-beef-fat-trimmings',
-      supplier_id: 'city-butchers',
-      product_id: 'beef-fat-trimmings',
-      ingredient_id: 'beef-fat-trimmings',
-      name_override: 'Beef Fat Trimmings',
-      pack_size_label: '2 kg tub',
-      image_override:
-        'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      quantity_per_pack: 20,
-      order_unit: 'tub',
-      pack_cost_minor: 1400,
-      currency_code: 'CHF',
-      unit: '100g',
-    },
-    {
-      id: 'city-butchers-beef-smash-patties',
-      supplier_id: 'city-butchers',
-      product_id: 'beef-smash-patties',
+      product_id: 'beef-smash-patties-20-case',
       ingredient_id: 'beef-smash-patties',
       name_override: 'Beef Smash Patties',
       pack_size_label: '20 patties case',
@@ -247,9 +203,39 @@ const demoSupplierProductsBySupplierId: Record<
       unit: 'piece',
     },
     {
-      id: 'city-butchers-chicken-thigh',
+      id: 'city-butchers-beef-smash-patties-100-crate',
       supplier_id: 'city-butchers',
-      product_id: 'chicken-thigh',
+      product_id: 'beef-smash-patties-100-crate',
+      ingredient_id: 'beef-smash-patties',
+      name_override: 'Beef Smash Patties',
+      pack_size_label: '100 patties crate',
+      image_override:
+        'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
+      quantity_per_pack: 100,
+      order_unit: 'crate',
+      pack_cost_minor: 17000,
+      currency_code: 'CHF',
+      unit: 'piece',
+    },
+    {
+      id: 'city-butchers-chicken-thigh-2kg-tray',
+      supplier_id: 'city-butchers',
+      product_id: 'chicken-thigh-2kg-tray',
+      ingredient_id: 'chicken-thigh',
+      name_override: 'Chicken Thigh',
+      pack_size_label: '2 kg tray',
+      image_override:
+        'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80',
+      quantity_per_pack: 20,
+      order_unit: 'tray',
+      pack_cost_minor: 4600,
+      currency_code: 'CHF',
+      unit: '100g',
+    },
+    {
+      id: 'city-butchers-chicken-thigh-5kg-tray',
+      supplier_id: 'city-butchers',
+      product_id: 'chicken-thigh-5kg-tray',
       ingredient_id: 'chicken-thigh',
       name_override: 'Chicken Thigh',
       pack_size_label: '5 kg tray',
@@ -258,6 +244,21 @@ const demoSupplierProductsBySupplierId: Record<
       quantity_per_pack: 50,
       order_unit: 'tray',
       pack_cost_minor: 11000,
+      currency_code: 'CHF',
+      unit: '100g',
+    },
+    {
+      id: 'city-butchers-chicken-thigh-10kg-case',
+      supplier_id: 'city-butchers',
+      product_id: 'chicken-thigh-10kg-case',
+      ingredient_id: 'chicken-thigh',
+      name_override: 'Chicken Thigh',
+      pack_size_label: '10 kg case',
+      image_override:
+        'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80',
+      quantity_per_pack: 100,
+      order_unit: 'case',
+      pack_cost_minor: 21000,
       currency_code: 'CHF',
       unit: '100g',
     },
@@ -378,6 +379,13 @@ const cloneProductItem = (
   },
 })
 
+const titleFromSlug = (value: unknown) =>
+  normalizeString(value)
+    .split('-')
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(' ')
+
 export const getDemoSupplier = (supplierId?: string): DemoSupplierListItem | null => {
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return null
@@ -397,4 +405,70 @@ export const getDemoSupplierProductItems = (
 
   const items = demoSupplierProductsBySupplierId[resolvedId] ?? []
   return items.map((item) => cloneProductItem(item))
+}
+
+export const getDemoSupplierCatalogueItems = (
+  supplierId?: string
+): SupplierCatalogue[] => {
+  const resolvedId = normalizeString(supplierId)
+  if (!resolvedId) return []
+
+  const products = getDemoSupplierProductItems(resolvedId)
+  if (!products.length) return []
+
+  const sectionsByIngredient = new Map<string, SupplierCatalogue['sections'][number]>()
+
+  for (const product of products) {
+    const ingredientId = normalizeString(product.ingredient_id || product.product_id)
+    if (!ingredientId) continue
+
+    let section = sectionsByIngredient.get(ingredientId)
+    if (!section) {
+      section = {
+        id: ingredientId,
+        label: normalizeString(product.name_override) || titleFromSlug(ingredientId),
+        description: '',
+        items: [],
+        sort_order: sectionsByIngredient.size,
+      }
+      sectionsByIngredient.set(ingredientId, section)
+    }
+
+    section.items.push({
+      id: `${product.id}-catalogue-item`,
+      supplier_product_id: product.id,
+      product_id: product.product_id,
+      label: product.pack_size_label || product.name_override || product.product_id,
+      active: product.active !== false,
+      sort_order: section.items.length,
+    })
+  }
+
+  const sections = [...sectionsByIngredient.values()].map((section) => ({
+    ...section,
+    description: `${section.items.length} purchasing ${
+      section.items.length === 1 ? 'option' : 'options'
+    }`,
+  }))
+
+  return [
+    {
+      id: `${resolvedId}-service-catalogue`,
+      supplier_id: resolvedId,
+      name: 'Service Catalogue',
+      description: 'Purchasing options grouped by ingredient.',
+      active: true,
+      sections,
+      sort_order: 0,
+      created: {
+        at: DEMO_TIMESTAMP,
+        by: undefined,
+        app_id: undefined,
+      },
+      updated: {
+        at: DEMO_TIMESTAMP,
+        by: undefined,
+      },
+    },
+  ]
 }

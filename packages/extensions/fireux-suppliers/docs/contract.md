@@ -1,6 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-17
+Updated: 2026-06-01
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -8,6 +8,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 2) Core entities
 - `Supplier`
+- `SupplierIngredient` (supplier-owned coverage wrapper over canonical `Ingredient`)
 - `SupplierProduct` (supplier-owned sale/procurement wrapper over canonical `Product`)
 - `SupplierCatalogue` (future supplier-owned presentation/grouping surface for supplier offers)
 
@@ -18,6 +19,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - `suppliers/{supplierId}`
 - `apps/{appId}/suppliers/{supplierId}`
+- `suppliers/{supplierId}/ingredients/{ingredientId}`
 - `suppliers/{supplierId}/products/{supplierProductId}`
 - `suppliers/{supplierId}/catalogues/{catalogueId}` (presentation/grouping, not product sale terms)
 - Treat `Supplier` as a console/business entity family with:
@@ -28,6 +30,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Profile-style supplier paths are not target design.
 - Supplier console governance belongs to `apps/{appId}/suppliers/{supplierId}`.
+- Supplier-owned ingredient coverage belongs to `suppliers/{supplierId}/ingredients/{ingredientId}`.
+- SupplierIngredient records must link to canonical Ingredient identity through `ingredient_id`.
 - Supplier-owned product offers belong to `suppliers/{supplierId}/products/{supplierProductId}`.
 - SupplierProduct records must link to canonical Product identity through `product_id`.
 - SupplierCatalogue records present/group SupplierProduct records; they do not own sale terms.
@@ -40,6 +44,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/suppliers/[id]/operator`
   - `/console/supplier/*`
   - `/dashboard/supplier/*`
+- `/console/supplier/ingredients` shows selected supplier ingredient coverage.
+- `/console/supplier/products` shows concrete supplier product offers.
+- `/console/supplier/catalogue` presents/groups supplier product offers.
 - `/suppliers/[id]/operator` is the public-to-private operator bridge.
 - Public `admin` route language is prohibited because app/platform admin is not the same thing as operating one supplier target.
 - `/console/supplier` is the family entry page:

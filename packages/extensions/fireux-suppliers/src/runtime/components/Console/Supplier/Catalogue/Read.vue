@@ -3,9 +3,11 @@
     <SupplierCatalogueCollectionManager
       :collection="catalogues"
       :pending="pending"
-      :collection-path="supplierCataloguesCollectionPath"
       :title="catalogueTitle"
       :description="catalogueDescription"
+      :empty-title="emptyTitle"
+      :empty-description="emptyDescription"
+      :dev-context="devJsonContext"
     />
 
     <DevFireuxDebugPanel
@@ -25,7 +27,9 @@ const {
   pending,
   catalogueTitle,
   catalogueDescription,
-  supplierCataloguesCollectionPath,
+  emptyTitle,
+  emptyDescription,
+  devJsonContext,
   debug,
 } = useSupplierConsoleCatalogue()
 const isDev = import.meta.dev

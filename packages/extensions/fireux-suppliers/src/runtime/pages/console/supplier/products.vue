@@ -22,7 +22,7 @@ definePageMeta({
     icon: 'i-lucide-package',
     position: 'top',
     requiresSelection: true,
-    order: 1,
+    order: 2,
     desktop: true,
     mobile: true,
     layouts: ['console'],

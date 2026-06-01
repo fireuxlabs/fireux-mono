@@ -58,7 +58,7 @@ definePageMeta({
     icon: 'i-lucide-info',
     position: 'top',
     requiresSelection: true,
-    order: 3,
+    order: 4,
     desktop: true,
     mobile: true,
     layouts: ['console'],

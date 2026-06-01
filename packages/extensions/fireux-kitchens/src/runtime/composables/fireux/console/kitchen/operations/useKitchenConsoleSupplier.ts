@@ -32,6 +32,27 @@ export function useKitchenConsoleSupplier() {
         | undefined) ??
       null
   )
+  const supplierState = computed(() => normalizeString(supplier.value?.state))
+  const catalogueState = computed(() =>
+    normalizeString(supplier.value?.catalogue_state)
+  )
+  const hasIntegratedCatalogue = computed(() =>
+    catalogueState.value === 'integrated'
+  )
+  const isEcosystemSupplier = computed(() =>
+    supplierState.value === 'official' || hasIntegratedCatalogue.value
+  )
+  const supplierBasePath = computed(() =>
+    supplierId.value
+      ? `/console/kitchen/suppliers/${encodeURIComponent(supplierId.value)}`
+      : ''
+  )
+  const cataloguePath = computed(() =>
+    supplierBasePath.value ? `${supplierBasePath.value}/catalogue` : ''
+  )
+  const procurementPath = computed(() =>
+    supplierBasePath.value ? `${supplierBasePath.value}/procurement` : ''
+  )
 
   const debug = computed(() => ({
     mode: selectedMode.value,
@@ -40,6 +61,10 @@ export function useKitchenConsoleSupplier() {
     collectionPath: collectionPath.value,
     supplierId: supplierId.value,
     hasSupplier: Boolean(supplier.value),
+    supplierState: supplierState.value,
+    catalogueState: catalogueState.value,
+    hasIntegratedCatalogue: hasIntegratedCatalogue.value,
+    isEcosystemSupplier: isEcosystemSupplier.value,
     pending: pending.value,
     canWrite: canWrite.value,
   }))
@@ -55,6 +80,13 @@ export function useKitchenConsoleSupplier() {
     pending,
     supplierId,
     supplier,
+    supplierState,
+    catalogueState,
+    hasIntegratedCatalogue,
+    isEcosystemSupplier,
+    supplierBasePath,
+    cataloguePath,
+    procurementPath,
     debug,
   }
 }

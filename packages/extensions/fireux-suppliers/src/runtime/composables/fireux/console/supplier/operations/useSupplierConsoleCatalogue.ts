@@ -1,5 +1,10 @@
 import { computed } from 'vue'
+import {
+  getDemoSupplierCatalogueItems,
+  getDemoSupplierProductItems,
+} from '../../../app/utils/supplier-demo-scenarios'
 import { useSupplierCatalogueCollection } from '../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
+import { useSupplierProductCollection } from '../../../firestore/supplier/fetch/useSupplierProductCollection'
 import { useSupplierConsole } from '../useSupplierConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -32,11 +37,35 @@ export function useSupplierConsoleCatalogue() {
     enabled: supplierCataloguesEnabled,
     supplierCollectionPath: rootCollection,
   })
+
+  const {
+    supplierProducts,
+    pending: supplierProductsPending,
+  } = useSupplierProductCollection(supplierId, {
+    enabled: supplierCataloguesEnabled,
+    supplierCollectionPath: rootCollection,
+  })
+
+  const productItems = computed(() =>
+    selectedMode.value === 'demo' && supplierId.value
+      ? getDemoSupplierProductItems(supplierId.value)
+      : supplierProducts.value
+  )
+  const rawCatalogues = computed(() =>
+    selectedMode.value === 'demo' && supplierId.value
+      ? getDemoSupplierCatalogueItems(supplierId.value)
+      : supplierCatalogues.value
+  )
   const catalogues = computed(() =>
-    selectedMode.value === 'demo' ? [] : supplierCatalogues.value
+    rawCatalogues.value.map((catalogue) => ({
+      ...catalogue,
+      supplier_products: productItems.value,
+    }))
   )
   const pending = computed(() =>
-    selectedMode.value === 'demo' ? false : supplierCataloguesPending.value
+    selectedMode.value === 'demo'
+      ? false
+      : supplierCataloguesPending.value || supplierProductsPending.value
   )
 
   const isIntegratedCatalogue = computed(
@@ -100,6 +129,8 @@ export function useSupplierConsoleCatalogue() {
     state: state.value,
     catalogueState: catalogueState.value,
     supplierCataloguesCollectionPath: supplierCataloguesCollectionPath.value,
+    productItemsCount: productItems.value.length,
+    catalogueItemsCount: catalogues.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
   }))

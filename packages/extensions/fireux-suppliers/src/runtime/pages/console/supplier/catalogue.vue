@@ -22,7 +22,7 @@ definePageMeta({
     icon: 'i-lucide-book-open',
     position: 'top',
     requiresSelection: true,
-    order: 2,
+    order: 3,
     desktop: true,
     mobile: true,
     layouts: ['console'],

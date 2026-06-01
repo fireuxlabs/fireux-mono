@@ -35,6 +35,7 @@ type WidenLiteral<T> =
  * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier console governance belongs to the app-hosted supplier record.
+ * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned product offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier product offers rather than replace them.
  * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
@@ -49,6 +50,7 @@ export const SupplierStorage = {
   idParam: 'supplierId',
   children: {
     catalogues: 'suppliers/{supplierId}/catalogues/{catalogueId}',
+    ingredients: 'suppliers/{supplierId}/ingredients/{ingredientId}',
     products: 'suppliers/{supplierId}/products/{supplierProductId}',
   },
 } as const
@@ -107,6 +109,62 @@ export type SupplierCreateInput = Omit<
   Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline'>>
 
 export type SupplierUpdateInput = Partial<Omit<Supplier, 'id' | 'created' | 'updated'>>
+
+export type SupplierIngredientState =
+  | 'available'
+  | 'limited'
+  | 'unavailable'
+  | string
+
+/**
+ * Family: Supplier-scoped
+ * Storage: supplier-owned coverage wrapper over canonical Ingredient
+ * Path: /suppliers/<supplierId>/ingredients/<ingredientId>
+ *
+ * Decision note:
+ * - SupplierIngredient means "this supplier supplies this global ingredient."
+ * - It is not a replacement for Ingredient.
+ * - Supplier products remain the concrete purchasable lines, packs, SKUs, and pricing.
+ */
+export const SupplierIngredientStorage = {
+  shape: 'scoped',
+  path: 'suppliers/{supplierId}/ingredients/{ingredientId}',
+  collection: 'ingredients',
+  parent: 'supplier',
+  idParam: 'ingredientId',
+} as const
+
+export const SupplierIngredientModel = {
+  id: '',
+  supplier_id: '',
+  ingredient_id: '',
+
+  status: 'available' as SupplierIngredientState,
+  preferred_product_id: '',
+  notes: '',
+  active: true as boolean,
+
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type SupplierIngredient = WidenLiteral<typeof SupplierIngredientModel>
+
+export type SupplierIngredientCreateInput = Omit<
+  SupplierIngredient,
+  'id' | 'created' | 'updated'
+>
+
+export type SupplierIngredientUpdateInput = Partial<
+  Omit<SupplierIngredient, 'id' | 'supplier_id' | 'ingredient_id' | 'created' | 'updated'>
+>
 
 export type SupplierProductAvailabilityState =
   | 'available'
