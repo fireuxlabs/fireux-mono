@@ -1,59 +1,71 @@
 <template>
-  <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
-    <UButton
-      :to="`/kitchens/${encodeURIComponent(slug)}`"
-      color="neutral"
-      variant="ghost"
-      icon="i-lucide-arrow-left"
-      size="sm"
+  <UPage
+    class="misebox-menu-index misebox-menu-index--default"
+    :style="menuIndexStyle"
+  >
+    <UPageHeader
+      headline="Menus"
+      :title="kitchen?.name || 'Kitchen menus'"
     >
-      Back to kitchen
-    </UButton>
+      <template #links>
+        <UButton
+          :to="`/kitchens/${encodeURIComponent(slug)}`"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          size="sm"
+        >
+          Back to kitchen
+        </UButton>
+      </template>
 
-    <header class="space-y-2">
-      <p class="text-sm font-medium uppercase tracking-wide text-dimmed">Menus</p>
-      <h1 class="text-3xl font-semibold text-highlighted">
-        {{ kitchen?.name || 'Kitchen menus' }}
-      </h1>
       <MenuSproochliLanguageTrigger
-        class="pt-2"
         :language-options="languageOptions"
         :selected-language="selectedLanguage"
       />
-    </header>
+    </UPageHeader>
 
-    <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
+    <UPageBody>
+      <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
-    <div
-      v-else-if="!kitchen"
-      class="rounded-lg border border-default bg-muted p-4"
-    >
-      <h2 class="text-base font-semibold text-highlighted">Kitchen unavailable</h2>
-      <p class="mt-1 text-sm text-dimmed">This kitchen could not be found.</p>
-    </div>
+      <UAlert
+        v-else-if="!kitchen"
+        color="neutral"
+        variant="soft"
+        title="Kitchen unavailable"
+        description="This kitchen could not be found."
+      />
 
-    <div v-else-if="menus.length" class="space-y-3">
-      <NuxtLink
-        v-for="menu in menus"
-        :key="menu.id"
-        :to="menuLink(menu.id)"
-        class="block rounded-xl border border-default bg-default p-4 transition hover:bg-elevated"
-      >
-        <h2 class="text-lg font-semibold text-highlighted">{{ menu.name || menu.id }}</h2>
-        <p v-if="menu.description" class="mt-1 text-sm text-dimmed">
-          {{ menu.description }}
-        </p>
-      </NuxtLink>
-    </div>
+      <div v-else-if="menus.length" class="grid gap-4 md:grid-cols-2">
+        <NuxtLink
+          v-for="menu in menus"
+          :key="menu.id"
+          :to="menuLink(menu.id)"
+          class="block"
+        >
+          <UCard
+            variant="subtle"
+            class="misebox-menu-index__card"
+          >
+            <h2 class="text-lg font-semibold text-highlighted">
+              {{ menu.name || menu.id }}
+            </h2>
+            <p v-if="menu.description" class="mt-1 text-sm text-muted">
+              {{ menu.description }}
+            </p>
+          </UCard>
+        </NuxtLink>
+      </div>
 
-    <div
-      v-else
-      class="rounded-lg border border-default bg-muted p-4"
-    >
-      <h2 class="text-base font-semibold text-highlighted">No published menus</h2>
-      <p class="mt-1 text-sm text-dimmed">This kitchen has not published a menu yet.</p>
-    </div>
-  </main>
+      <UAlert
+        v-else
+        color="neutral"
+        variant="soft"
+        title="No published menus"
+        description="This kitchen has not published a menu yet."
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -119,6 +131,26 @@ const languageOptions = computed(() =>
 const publicLanguageQuery = computed(() =>
   selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
 )
+const colorRe = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i
+const fontFamilies = {
+  serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+  sans: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+}
+const menuIndexStyle = computed(() => {
+  const style = asRecord((kitchen.value as any)?.public_menu_style)
+  const vars: Record<string, string> = {}
+  const backgroundColor = clean(style.background_color)
+  const surfaceColor = clean(style.surface_color)
+  const accentColor = clean(style.accent_color)
+  const font = clean(style.font).toLowerCase() as keyof typeof fontFamilies
+
+  if (colorRe.test(backgroundColor)) vars['--misebox-menu-bg'] = backgroundColor
+  if (colorRe.test(surfaceColor)) vars['--misebox-menu-card'] = surfaceColor
+  if (colorRe.test(accentColor)) vars['--misebox-menu-accent'] = accentColor
+  if (fontFamilies[font]) vars['--misebox-menu-font'] = fontFamilies[font]
+
+  return vars
+})
 const menuRead = useMenuCollection(kitchenId, {
   shape: 'scoped',
   kitchenCollectionPath: KitchenStorage.rootCollection,

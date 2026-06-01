@@ -41,6 +41,13 @@ export type KitchenLanguageSettings = {
 }
 
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
+export type KitchenPublicMenuStyle = {
+  color_mode?: 'light' | 'dark'
+  background_color?: string
+  surface_color?: string
+  accent_color?: string
+  font?: 'serif' | 'sans'
+}
 
 export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
   default_language: 'de',
@@ -106,6 +113,7 @@ export const KitchenModel = {
   primary_language: '',
   currency_code: 'CHF',
   currency_format: 'dash' as KitchenCurrencyFormat,
+  public_menu_style: undefined as KitchenPublicMenuStyle | undefined,
   short_name: '',
   short_address: '',
   formatted_address: '',
@@ -162,6 +170,7 @@ export type KitchenCreateInput = Omit<
       | 'primary_language'
       | 'currency_code'
       | 'currency_format'
+      | 'public_menu_style'
       | 'short_name'
       | 'short_address'
       | 'formatted_address'
@@ -184,6 +193,7 @@ export type KitchenUpdateInput = Partial<
     | 'primary_language'
     | 'currency_code'
     | 'currency_format'
+    | 'public_menu_style'
     | 'short_name'
     | 'short_address'
     | 'formatted_address'

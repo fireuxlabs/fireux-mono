@@ -18,4 +18,46 @@
 		--ui-primary-hover: var(--color-theme-600);
 		--ui-primary-active: var(--color-theme-700);
 	}
+
+	.misebox-menu-index {
+		min-height: 100vh;
+	}
+
+	.misebox-menu-index--default {
+		--misebox-menu-bg: #fffaf4;
+		--misebox-menu-card: rgba(255, 255, 255, 0.78);
+		--misebox-menu-accent: #9b5934;
+		--misebox-menu-font: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+		background: var(--misebox-menu-bg);
+	}
+
+	.dark .misebox-menu-index--default {
+		--misebox-menu-bg: #17120f;
+		--misebox-menu-card: rgba(255, 255, 255, 0.05);
+		--misebox-menu-accent: #e5b97b;
+		background: var(--misebox-menu-bg);
+	}
+
+	.misebox-menu-index--default h1,
+	.misebox-menu-index--default h2 {
+		font-family: var(--misebox-menu-font);
+	}
+
+	.misebox-menu-index--default [data-slot="headline"] {
+		color: var(--misebox-menu-accent);
+	}
+
+	.misebox-menu-index--default .misebox-menu-index__card {
+		background: var(--misebox-menu-card);
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			transform 160ms ease;
+	}
+
+	.misebox-menu-index--default .misebox-menu-index__card:hover {
+		border-color: color-mix(in srgb, var(--misebox-menu-accent) 45%, transparent);
+		transform: translateY(-1px);
+	}
+
 }
