@@ -24,12 +24,6 @@ const SYSTEM_ACTOR = 'system:seed-la-tapberne-public-menus'
 const ATTACHED_LANGUAGES = LA_TAPBERNE_ATTACHED_LANGUAGES
 const CACHE_LANGUAGES = [...new Set([...LA_TAPBERNE_CACHE_LANGUAGES, 'bo'])]
 const PUBLIC_LANGUAGES = [...new Set([...ATTACHED_LANGUAGES, ...CACHE_LANGUAGES])]
-const LA_TAP_PUBLIC_MENU_DESIGN_PACK = {
-  preset: 'dark-gold',
-  theme: 'la-tapberne',
-  color_mode: 'dark',
-  accent: '#F0C84D',
-}
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -721,12 +715,6 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
-        design: {
-          color_mode: 'dark',
-        },
-        design_packs: {
-          public_menu: LA_TAP_PUBLIC_MENU_DESIGN_PACK,
-        },
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',

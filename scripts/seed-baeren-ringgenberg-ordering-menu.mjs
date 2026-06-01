@@ -179,7 +179,6 @@ function buildMenuPayload(seed, kitchenId, snap) {
     service_modes: menu.service_modes || [],
     source: seed.source,
     source_promotions: menu.promotions || [],
-    ...(menu.design ? { design: menu.design } : {}),
     created: stamp(snap),
     updated: updatedStamp(),
   }

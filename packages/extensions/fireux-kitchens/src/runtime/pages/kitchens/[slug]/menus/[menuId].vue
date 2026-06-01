@@ -20,7 +20,6 @@
       :section-rows="sectionRows"
       :language-options="languageOptions"
       :selected-language="selectedLanguage"
-      :design-sources="[kitchen]"
     />
   </div>
 </template>

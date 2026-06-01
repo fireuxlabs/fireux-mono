@@ -1162,9 +1162,6 @@ async function main() {
     kitchenRef,
     {
       show: false,
-      design: {
-        color_mode: 'light',
-      },
       language_settings: {
         default_language: 'de',
         supported_languages: ATTACHED_LANGUAGES,

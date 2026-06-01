@@ -7,13 +7,6 @@ export default defineFireuxConfig({
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',
-  designPacks: {
-    publicMenu: {
-      preset: 'dark-gold',
-      color_mode: 'dark',
-      accent: '#F0C84D',
-    },
-  },
   consoles: ['kitchen'],
   profiles: [],
   navHiddenKeys: ['kitchens'],

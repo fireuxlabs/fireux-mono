@@ -8,22 +8,12 @@
     </template>
 
     <div class="space-y-5">
-      <div class="grid gap-3 md:grid-cols-3">
+      <div class="grid gap-3 md:grid-cols-2">
         <UFormField label="Name">
           <UInput v-model="name" :disabled="saving || !canWrite" />
         </UFormField>
         <UFormField label="Description">
           <UInput v-model="description" :disabled="saving || !canWrite" />
-        </UFormField>
-        <UFormField label="Design">
-          <select
-            v-model="colorMode"
-            class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
-            :disabled="Boolean(saving) || !canWrite"
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
         </UFormField>
       </div>
 
@@ -88,7 +78,6 @@ const toast = useToastify()
 const saving = ref<'' | 'menu' | 'section'>('')
 const name = ref('')
 const description = ref('')
-const colorMode = ref<'light' | 'dark'>('light')
 const sectionLabel = ref('')
 const sectionDescription = ref('')
 
@@ -97,7 +86,6 @@ watch(
   (next) => {
     name.value = next?.name ?? ''
     description.value = next?.description ?? ''
-    colorMode.value = next?.design?.color_mode === 'dark' ? 'dark' : 'light'
   },
   { immediate: true }
 )
@@ -116,7 +104,6 @@ async function saveMenu() {
     await updateMenu(kitchenId.value, menuId.value, {
       name: name.value.trim(),
       description: description.value.trim(),
-      design: { color_mode: colorMode.value },
     })
     toast.add({ title: 'Menu details saved', color: 'success', icon: 'i-lucide-check' })
   } catch (error) {

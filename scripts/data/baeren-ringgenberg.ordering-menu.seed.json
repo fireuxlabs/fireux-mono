@@ -10,16 +10,7 @@
     "primary_language": "de",
     "currency_code": "CHF",
     "currency_format": "symbol",
-    "show": false,
-    "design": {
-      "public_menu": {
-        "preset": "clean",
-        "style": {
-          "font": "sans",
-          "heading_font": "sans"
-        }
-      }
-    }
+    "show": false
   },
   "menu": {
     "id": "delivery-ordering",

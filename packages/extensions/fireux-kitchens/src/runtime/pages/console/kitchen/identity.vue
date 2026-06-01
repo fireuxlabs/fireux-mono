@@ -22,15 +22,6 @@
             >
               Edit
             </UButton>
-
-            <UButton
-              to="/console/kitchen/identity/design"
-              icon="i-lucide-palette"
-              variant="ghost"
-              color="neutral"
-            >
-              Design
-            </UButton>
           </UFieldGroup>
         </template>
       </LayoutsConsoleNavbar>

@@ -644,9 +644,6 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
-        design: {
-          color_mode: 'light',
-        },
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',

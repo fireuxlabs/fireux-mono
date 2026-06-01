@@ -112,11 +112,7 @@ Ingredient composable stack canon:
 - `Menu` presents selected dishes.
 - QR points guests to the exact published menu URL.
 - Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
-- Menu owns presentation-only fields: name, description, status, service modes, sort order, simple design, section order, item order, and item price.
-- Public menu design resolves in this order:
-  - menu design override
-  - kitchen `design.public_menu`
-  - app/default public menu design
+- Menu owns presentation-only fields: name, description, status, service modes, sort order, section order, item order, and item price.
 - Public menu routes render published menus only.
 - Missing, unpublished, or invalid menus must show an explicit unavailable state.
 - There is no automatic first-menu, active-menu, slug-fallback, translation-engine, ordering, or demo-prototype canon in V1.
