@@ -14,10 +14,10 @@ This file is a compact docs map. The human documentation hub is `README.md`; doc
 
 ## Start Here
 - Documentation system: `system.md`
-- Canon: `fireux-canon.md`, `runtime-contract.md`, `seo-canon.md`
+- Canon: `fireux-canon.md`, `entity-creation.md`, `runtime-contract.md`, `seo-canon.md`
 - Changelog system: `changelog/README.md`
 - Runtime docs entry: `../packages/core/fireux-docs/src/runtime/README.md`
-- Entity layers: `entity-layer-canon.md`
+- Entity creation and storage shapes: `entity-creation.md`
 - Handbook ToC: `copilot-documentation/copilot-00-toc.md`
 - Package contracts: `copilot-documentation/package-docs-index.md`
 - Weekly reports: `reports/README.md`

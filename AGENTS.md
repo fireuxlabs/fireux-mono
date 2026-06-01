@@ -9,6 +9,7 @@ Repository: fireux-mono
 
 ### Tier1 (authoritative canon)
 - `docs/fireux-canon.md`
+- `docs/entity-creation.md`
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 - `packages/extensions/fireux-*/docs/contract.md`

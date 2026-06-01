@@ -6,7 +6,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `packages/extens
 ## 1) Purpose
 - Own Portfolio document vault records, document storage helpers, and document-to-entity link records.
 - Provide document operation seams mounted inside the selected Portfolio console workspace.
-- Document surfaces are operational Portfolio console surfaces, not public/root document browsing surfaces.
+- Document surfaces are operational Portfolio console surfaces, not root/public document browsing surfaces.
 
 ## 2) Core entities
 - `Document`

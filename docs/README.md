@@ -19,6 +19,7 @@ Shared docs under `docs/**` should stay app-agnostic unless a Tier1 canon file e
 
 ## Tier 1 (Authoritative Canon)
 - `docs/fireux-canon.md`
+- `docs/entity-creation.md`
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 - `packages/extensions/fireux-*/docs/contract.md`
@@ -29,7 +30,6 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 - `docs/copilot-documentation/` handbook chapters and appendices
 - `docs/changelog/README.md` decision-history and change-history system
 - `docs/guide/` implementation guides
-- `docs/entity-layer-canon.md` layer strategy rules
 - `docs/migrations/README.md` migration runbook
 - `docs/reports/` weekly and generated audit reports
 - `packages/core/fireux-docs/src/runtime/README.md` runtime docs entry

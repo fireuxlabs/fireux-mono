@@ -22,6 +22,9 @@ Purpose: maintenance inventory for docs hygiene. This file does not define canon
 - `projects/**/docs/**`
 - root operational docs (`README.md`, `AGENTS.md`)
 
+## Agent Steering Docs
+- `docs/dev/agent-canon-steering.md`: operational pre-edit checklist for agents; does not define new canon.
+
 ## Branch History System
 - Repo-level decision history lives under `docs/changelog/**`.
 - Runtime branch history is paired with `packages/core/fireux-docs/src/runtime/*/README.md`.

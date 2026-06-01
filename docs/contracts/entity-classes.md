@@ -1,6 +1,6 @@
 # Entity Classes
 Authority: Tier2 (Operational contract)
-Updated: 2026-03-29
+Updated: 2026-06-01
 
 Purpose: define the FireUX entity classes so model files, naming, and stamps feel like they were designed by one team.
 
@@ -9,11 +9,15 @@ This guide is operational and must not conflict with Tier1 canon:
 - `docs/runtime-contract.md`
 
 ## One Sentence Canon
-Every FireUX entity must belong to exactly one class: `Root`, `Scoped`, or `Overlay-backed`.
+Every FireUX entity must declare exactly one storage shape: `root`, `scoped`, or `both`.
+
+The repo-wide current matrix for those shapes lives in `docs/entity-creation.md`.
+This document keeps the model naming and stamp contract aligned with that
+matrix.
 
 ## Shared Rules
 Every entity model must answer these questions in the same order:
-1. What class is it: `Root`, `Scoped`, or `Overlay-backed`?
+1. What storage shape is it: `root`, `scoped`, or `both`?
 2. What is its canonical Firestore path?
 3. What is the stored model object called?
 4. What are its stamps called?
@@ -28,7 +32,7 @@ Shared defaults:
 - Model files describe stored shapes only.
 - Hydrated or enriched read shapes belong in fetch, runtime, or interface seams, not in the model file.
 
-## Class A: Root
+## Shape A: `root`
 Use when one canonical top-level collection is the source of truth and there is no official stored overlay.
 
 Firestore shape:
@@ -72,7 +76,7 @@ Rules:
 - One canonical stored type: `Entity`
 - No official overlay in the same contract
 
-## Class B: Scoped
+## Shape B: `scoped`
 Use when the entity only exists because a parent console or parent entity owns it.
 
 Firestore shape:
@@ -80,7 +84,7 @@ Firestore shape:
 - or `apps/{appId}/parents/{parentId}/children/{childId}`
 
 Examples:
-- kitchen-owned `Menu`, `Dish`, `Recipe`, `KitchenOrder`
+- kitchen-owned `Dish`, `Recipe`, `KitchenOrder`, `MenuSection`, `MenuItem`
 - portfolio-owned `Property`, `Unit`, `Client`, `Document`
 
 Model contract:
@@ -110,8 +114,8 @@ Rules:
 - the entity is not globally canonical on its own
 - no second overlay unless the extension contract makes that need explicit
 
-## Class C: Overlay-backed
-Use when one root entity has one real stored overlay.
+## Shape C: `both`
+Use when one entity has root truth plus app/parent overlay or operating context.
 
 Firestore shape:
 - Root path: `collection/{id}`
@@ -124,6 +128,10 @@ Examples:
 - `projects/{projectId}` + `apps/{appId}/projects/{projectId}`
 - `suppliers/{supplierId}` + `apps/{appId}/suppliers/{supplierId}`
 - `chefs/{uid}` + `apps/{appId}/chefs/{uid}`
+- `menus/{menuId}` + `kitchens/{kitchenId}/menus/{menuId}`
+
+For `both`, the second record may be an app overlay or a parent-scoped
+operating/publication context. Do not turn those into separate entity families.
 
 Model contract:
 
@@ -166,12 +174,13 @@ Rules:
 - identity families use `AppXModel` / `AppX`
 - console-backed families use `ConsoleXModel` / `ConsoleX`
 - root shape stays honest and compact
-- overlay shape stays focused on scoped truth, governance, or console access
+- overlay/scoped shape stays focused on operating truth, governance, console
+  access, or publication context
 - no hydrated `Resolved` type in the model file
 
 ## Naming Canon
-- Root entities: `EntityModel`, `Entity`
-- Scoped entities: `EntityModel`, `Entity`
+- `root` entities: `EntityModel`, `Entity`
+- `scoped` entities: `EntityModel`, `Entity`
 - Identity overlays: `EntityModel`, `Entity`, `AppEntityModel`, `AppEntity`
 - Console overlays: `EntityModel`, `Entity`, `ConsoleEntityModel`, `ConsoleEntity`
 - Write helpers: `EntityCreateInput`, `EntityUpdateInput`
@@ -188,7 +197,7 @@ Flag a model when any of the following are true:
 For new work:
 - Root entities use `EntityModel` + `Entity`
 - Scoped entities use the same style plus parent linkage where needed
-- Overlay-backed entities use:
+- `both` entities use:
   - `EntityModel` + `Entity`
   - `AppEntityModel` + `AppEntity`, or
   - `ConsoleEntityModel` + `ConsoleEntity`

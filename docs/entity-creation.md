@@ -1,5 +1,5 @@
 Authority: Tier1 canon companion to `docs/fireux-canon.md`
-Updated: 2026-05-28
+Updated: 2026-06-01
 
 # Entity Creation Canon
 
@@ -32,7 +32,7 @@ Example:
 
 ```ts
 export const AppStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'apps/{appId}',
   collection: 'apps',
   idParam: 'appId',
@@ -64,7 +64,7 @@ apps/{appId}/kitchens/{kitchenId}/mise/{miseId}
 apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}
 ```
 
-Scoped records should not pretend to be public/root entities unless they are
+Scoped records should not pretend to be root entities unless they are
 later promoted into their own root model.
 
 ### Both
@@ -209,7 +209,7 @@ both   create -> root fetch plus overlay fetch, or root collection plus overlay 
 ```
 
 The read seam should make the storage shape obvious. A caller should be able to
-tell whether it is reading public/root truth, scoped operational records, or a
+tell whether it is reading a root record, scoped operational records, or a
 root-plus-overlay operating context without reading the implementation.
 
 Examples:

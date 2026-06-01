@@ -66,7 +66,7 @@ export function useMenuInterface() {
 
     return {
       id,
-      to: `/console/kitchen/menus/${encodeURIComponent(id)}`,
+      to: `/menus/${encodeURIComponent(id)}`,
       imageUrl: '',
       title: name,
       subtitle: description,

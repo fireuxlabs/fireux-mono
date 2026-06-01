@@ -1,19 +1,53 @@
 <template>
-  <main class="mx-auto w-full max-w-2xl px-4 py-10">
-    <UCard>
-      <template #header>
-        <h1 class="text-xl font-semibold text-highlighted">Menus</h1>
-      </template>
+  <UPage>
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      :description="pageDescription"
+    />
 
-      <p class="text-sm text-dimmed">
-        Public menus belong to kitchens. Open a kitchen page to view its published menus.
-      </p>
-
-      <template #footer>
-        <UButton to="/kitchens" icon="i-lucide-utensils">
-          Browse kitchens
-        </UButton>
-      </template>
-    </UCard>
-  </main>
+    <UPageBody class="pagebody">
+      <MenuCollectionManager :collection="collection" />
+    </UPageBody>
+  </UPage>
 </template>
+
+<script setup lang="ts">
+import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+
+definePageMeta({
+  tag: 'menus',
+  nav: {
+    key: 'menus',
+    label: 'Menus',
+    icon: 'i-lucide-book-open',
+    order: 56,
+    desktop: false,
+    mobile: false,
+    layouts: ['default'],
+  },
+  title: 'Menus',
+  description: 'Browse root menus.',
+  layout: 'default',
+  name: 'MenusIndexPage',
+  index: false,
+  sitemap: false,
+})
+
+const pageTitle = 'Menus'
+const pageDescription = 'Root menu index for the current runtime.'
+const { menus: collection } = useMenuCollection(undefined, {
+  shape: 'root',
+})
+
+const { appName } = useFireUXConfig()
+useHead({ title: `${appName} | ${pageTitle}` })
+
+useSeoMeta({
+  title: 'Menus',
+  description: pageDescription,
+  robots: 'noindex, nofollow',
+})
+</script>
