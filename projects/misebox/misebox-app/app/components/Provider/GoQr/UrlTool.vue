@@ -16,12 +16,14 @@ const props = withDefaults(defineProps<{
   urlLabel?: string
   urlPlaceholder?: string
   ctaLabel?: string
+  qrCentreLabel?: string
 }>(), {
   title: 'Menu URL',
   description: 'Paste an existing menu URL and get a printable QR menu.',
   urlLabel: 'Menu URL',
   urlPlaceholder: 'https://my-url.com/menu',
   ctaLabel: 'Create menu URL QR',
+  qrCentreLabel: 'Food Menu',
 })
 
 const providerBaseUrl = import.meta.dev
@@ -35,6 +37,7 @@ const toolUrl = computed(() => {
     urlLabel: props.urlLabel,
     urlPlaceholder: props.urlPlaceholder,
     ctaLabel: props.ctaLabel,
+    qrCentreLabel: props.qrCentreLabel,
   })
 
   return `${providerBaseUrl}/tools/url?${query}`

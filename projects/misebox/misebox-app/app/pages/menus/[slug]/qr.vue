@@ -24,7 +24,7 @@
           class="absolute left-1/2 top-1/2 grid size-[18%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] px-1 text-center text-[clamp(0.45rem,3.25vw,1.45rem)] font-black uppercase leading-none text-white shadow-sm"
           aria-hidden="true"
         >
-          Menu
+          {{ qrCentreLabel }}
         </div>
       </div>
 
@@ -42,6 +42,7 @@ import { toDataURL } from 'qrcode'
 type PublicMenu = {
   id: string
   name: string
+  qr_centre_label?: string
 }
 
 const route = useRoute()
@@ -68,6 +69,7 @@ if (!data.value) {
 }
 
 const menu = computed(() => data.value as PublicMenu)
+const qrCentreLabel = computed(() => menu.value.qr_centre_label || 'Food Menu')
 const publicUrl = computed(() => {
   const origin = import.meta.client ? window.location.origin : 'https://misebox.app'
   return `${origin}/menus/${encodeURIComponent(slug)}`

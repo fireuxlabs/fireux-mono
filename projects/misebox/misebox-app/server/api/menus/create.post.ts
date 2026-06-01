@@ -161,6 +161,7 @@ export default defineEventHandler(async (event) => {
     name: menuNameFromSlug(slug),
     description: '',
     status: 'published',
+    qr_centre_label: 'Food Menu',
     doc_url: docUrl,
     doc_name: fileName,
     doc_type: fileType,

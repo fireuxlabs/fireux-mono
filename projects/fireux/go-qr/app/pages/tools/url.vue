@@ -10,6 +10,7 @@
       :url-label="config.urlLabel"
       :url-placeholder="config.urlPlaceholder"
       :cta-label="config.ctaLabel"
+      :qr-centre-label="config.qrCentreLabel"
     />
   </main>
 </template>
@@ -36,6 +37,7 @@ const config = computed(() => ({
   urlLabel: queryString('urlLabel', 'URL'),
   urlPlaceholder: queryString('urlPlaceholder', 'https://example.com'),
   ctaLabel: queryString('ctaLabel', 'Create URL QR'),
+  qrCentreLabel: queryString('qrCentreLabel', ''),
 }))
 
 onMounted(async () => {

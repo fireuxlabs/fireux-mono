@@ -30,6 +30,7 @@ export default defineEventHandler(async (event) => {
     name: String(data.name || slug),
     description: String(data.description || ''),
     status: String(data.status || ''),
+    qr_centre_label: String(data.qr_centre_label || 'Food Menu'),
     doc_url: String(data.doc_url || ''),
     doc_name: String(data.doc_name || ''),
     doc_type: String(data.doc_type || ''),

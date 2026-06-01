@@ -175,6 +175,7 @@ export default defineEventHandler(async (event) => {
     description: '',
     source_language: '',
     status: 'published',
+    qr_centre_label: 'Food Menu',
     doc_url: docUrl,
     doc_name: fileName,
     doc_type: fileType,
