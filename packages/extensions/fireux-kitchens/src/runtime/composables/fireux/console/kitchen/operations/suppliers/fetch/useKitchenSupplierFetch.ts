@@ -5,8 +5,8 @@ import {
   AppSupplierStorage,
   SupplierStorage,
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
-import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, unref, watch } from 'vue'
+import type { Ref } from 'vue'
+import { computed, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
@@ -70,8 +70,6 @@ export function useKitchenSupplierFetch(
       ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const databaseIdKey = computed(() => normalizeString(unref(options.databaseId)))
-
   const canonicalCorePath = computed(() => (
     isEnabled.value ? SupplierStorage.rootCollection : ''
   ))
@@ -82,37 +80,13 @@ export function useKitchenSupplierFetch(
       : ''
   )
 
-  const supplierLinksRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>
-  const coreSuppliersRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>
-  const appSuppliersRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>
+  const supplierLinksRef = firestoreFetchCollection<SupplierRecord>(collectionPath)
+  const coreSuppliersRef = firestoreFetchCollection<SupplierRecord>(canonicalCorePath)
+  const appSuppliersRef = firestoreFetchCollection<SupplierRecord>(canonicalAppPath)
 
-  watch(
-    [collectionPath, databaseIdKey],
-    ([nextPath]) => {
-      supplierLinksRef.value = nextPath ? firestoreFetchCollection<SupplierRecord>(nextPath) : null
-    },
-    { immediate: true }
-  )
-
-  watch(
-    canonicalCorePath,
-    (nextPath) => {
-      coreSuppliersRef.value = nextPath ? firestoreFetchCollection<SupplierRecord>(nextPath) : null
-    },
-    { immediate: true }
-  )
-
-  watch(
-    canonicalAppPath,
-    (nextPath) => {
-      appSuppliersRef.value = nextPath ? firestoreFetchCollection<SupplierRecord>(nextPath) : null
-    },
-    { immediate: true }
-  )
-
-  const supplierLinks = computed<SupplierRecord[]>(() => supplierLinksRef.value?.value ?? [])
-  const coreSuppliers = computed<SupplierRecord[]>(() => coreSuppliersRef.value?.value ?? [])
-  const appSuppliers = computed<SupplierRecord[]>(() => appSuppliersRef.value?.value ?? [])
+  const supplierLinks = computed<SupplierRecord[]>(() => supplierLinksRef.value ?? [])
+  const coreSuppliers = computed<SupplierRecord[]>(() => coreSuppliersRef.value ?? [])
+  const appSuppliers = computed<SupplierRecord[]>(() => appSuppliersRef.value ?? [])
 
   const canonicalSupplierById = computed(() => {
     const map = new Map<string, SupplierRecord>()
@@ -174,10 +148,10 @@ export function useKitchenSupplierFetch(
     if (!isEnabled.value || !resolvedKitchenId.value) return false
 
     return (
-      supplierLinksRef.value?.value === undefined ||
-      coreSuppliersRef.value?.value === undefined ||
+      supplierLinksRef.value === undefined ||
+      coreSuppliersRef.value === undefined ||
       (Boolean(canonicalAppPath.value) &&
-        appSuppliersRef.value?.value === undefined)
+        appSuppliersRef.value === undefined)
     )
   })
 

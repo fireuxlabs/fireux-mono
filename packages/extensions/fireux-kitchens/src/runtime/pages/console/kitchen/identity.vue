@@ -3,7 +3,7 @@
     <template #header>
       <LayoutsConsoleNavbar :title="navTitle">
         <template #right>
-          <UButtonGroup size="sm">
+          <UFieldGroup size="sm">
             <UButton
               icon="i-lucide-eye"
               :variant="view === 'identity' ? 'solid' : 'ghost'"
@@ -22,7 +22,16 @@
             >
               Edit
             </UButton>
-          </UButtonGroup>
+
+            <UButton
+              to="/console/kitchen/identity/design"
+              icon="i-lucide-palette"
+              variant="ghost"
+              color="neutral"
+            >
+              Design
+            </UButton>
+          </UFieldGroup>
         </template>
       </LayoutsConsoleNavbar>
     </template>

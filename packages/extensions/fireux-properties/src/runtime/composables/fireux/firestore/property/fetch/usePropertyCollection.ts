@@ -106,7 +106,7 @@ export function usePropertyCollection(
   const liveRootSource = firestoreFetchCollection<PropertyCollectionDoc>(
     DEFAULT_COLLECTION_PATH
   )
-  const overlaySource = computed(() => {
+  const overlayQuery = computed<Query<AppPropertyOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
     if (resolvedShape.value === 'root') return null
     if (hasOperatorFilter.value && !filterOperatorId.value) return null
@@ -124,14 +124,19 @@ export function usePropertyCollection(
         ) as Query<AppPropertyOverlay>
       : fsq(baseCollection) as Query<AppPropertyOverlay>
 
-    return firestoreQuery<AppPropertyOverlay>(
-      q,
-      `${AppStorage.collection}-${resolvedAppId.value}-${PropertyStorage.overlayCollection}-${hasOperatorFilter.value ? `operator-${filterOperatorId.value}` : 'all'}`,
-      `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.overlayCollection}`
-    )
+    return q
   })
+  const overlaySource = firestoreQuery<AppPropertyOverlay>(
+    overlayQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.overlayCollection}`
+        : ''
+    )
+  )
   const allowedPropertyIds = computed(() =>
-    (overlaySource.value?.value ?? [])
+    (overlaySource.value ?? [])
       .map((property) => resolvePropertyId(property))
       .filter(Boolean)
   )
@@ -152,7 +157,7 @@ export function usePropertyCollection(
 
   const liveItems = computed<PropertyCollectionDoc[]>(() => {
     if (resolvedShape.value === 'root') return liveRootSource.value ?? []
-    if (resolvedShape.value === 'overlay') return overlaySource.value?.value ?? []
+    if (resolvedShape.value === 'overlay') return overlaySource.value ?? []
     if (!hasOperatorFilter.value) return liveRootSource.value ?? []
 
     const rootById = new Map<string, PropertyCollectionDoc>()
@@ -167,7 +172,7 @@ export function usePropertyCollection(
       })
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolvePropertyId(overlay)
       if (!id) continue
       overlayById.set(id, {
@@ -191,7 +196,7 @@ export function usePropertyCollection(
       })
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolvePropertyId(overlay)
       if (!id || seen.has(id)) continue
       seen.add(id)
@@ -239,13 +244,13 @@ export function usePropertyCollection(
     if (sourceMode.value === 'test') return false
     if (resolvedShape.value === 'root') return liveRootSource.value === undefined
     if (resolvedShape.value === 'overlay') {
-      return overlaySource.value ? overlaySource.value.value === undefined : false
+      return overlaySource.value === undefined
     }
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      (overlaySource.value ? overlaySource.value.value === undefined : false)
+      overlaySource.value === undefined
     )
   })
 

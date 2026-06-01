@@ -41,8 +41,13 @@ export type KitchenLanguageSettings = {
 }
 
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
-export type KitchenDesign = {
-  color_mode: 'light' | 'dark'
+export type KitchenDesignPack = {
+  preset?: string
+  color_mode?: 'light' | 'dark'
+  style?: Record<string, string>
+}
+export type KitchenDesign = KitchenDesignPack & {
+  public_menu?: KitchenDesignPack
 }
 
 export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {

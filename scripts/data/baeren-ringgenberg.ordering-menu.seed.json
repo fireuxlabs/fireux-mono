@@ -1,0 +1,160 @@
+{
+  "source": "Hotel Baeren Ringgenberg current ordering system paste.",
+  "kitchen": {
+    "id": "ChIJE-GP3-Kjj0cRzAv0WviwcsY",
+    "slug": "baeren-ringgenberg",
+    "place_id": "ChIJE-GP3-Kjj0cRzAv0WviwcsY",
+    "name": "Hotel Bären Ringgenberg",
+    "display_name": "Hotel Bären Ringgenberg",
+    "description": "Pizza, snacks, drinks and delivery ordering.",
+    "primary_language": "de",
+    "currency_code": "CHF",
+    "currency_format": "symbol",
+    "show": false,
+    "design": {
+      "public_menu": {
+        "preset": "clean",
+        "style": {
+          "font": "sans",
+          "heading_font": "sans"
+        }
+      }
+    }
+  },
+  "menu": {
+    "id": "delivery-ordering",
+    "name": "Bären Ordering Menu",
+    "description": "Special ordering menu for delivery and collection.",
+    "source_language": "de",
+    "service_modes": ["delivery", "collection"],
+    "promotions": [
+      "15% Rabatt auf Ihre 1. Bestellung",
+      "Gratis Dessertpizza bei einer Bestellung von über 80.-- Fr."
+    ],
+    "sections": [
+      {
+        "id": "pizza",
+        "label": "Pizza",
+        "description": "Alle unsere Pizzas welche wir anbieten. Neu auch mit der Option Käserand (Cheesecrust).",
+        "items": [
+          { "id": "pizza-margherita", "name": "Pizza Margherita", "description": "Tomaten Sauce, Mozzarella", "price": 13, "dietary_tags": ["vegetarian"] },
+          { "id": "pizza-prosciutto", "name": "Pizza Prosciutto", "description": "Tomaten Sauce, Mozzarella, Trutenschinken", "price": 15 },
+          { "id": "pizza-funghi", "name": "Pizza Funghi", "description": "Tomaten Sauce, Mozzarella, Champignons", "price": 15, "dietary_tags": ["vegetarian"] },
+          { "id": "pizza-prosciutto-funghi", "name": "Pizza Prosciutto & Funghi", "description": "Tomaten Sauce, Mozzarella, Champignons, Trutenschinken", "price": 16 },
+          { "id": "pizza-holiday", "name": "Pizza Holiday", "description": "Tomaten Sauce, Mozzarella, Ananas, Hamme", "price": 17 },
+          { "id": "pizza-caprichosa", "name": "Pizza Caprichosa", "description": "Tomaten Sauce, Mozzarella, scharfe Salami, Pilze, scharfes Öl", "price": 16 },
+          { "id": "pizza-tonno", "name": "Pizza Tonno", "description": "Tomaten Sauce, Mozzarella, Thunfisch, Zwiebeln, Kapern", "price": 16 },
+          { "id": "pizza-napoli", "name": "Pizza Napoli", "description": "Tomaten Sauce, Mozzarella, Sardellen, Kapern, Oliven", "price": 16 },
+          { "id": "pizza-quattro-stagione", "name": "Pizza Quattro Stagione", "description": "Tomaten Sauce, Mozzarella, Artischocken, Trutenschinken, Salami, Pilze", "price": 17 },
+          { "id": "pizza-broccoli", "name": "Pizza Broccoli", "description": "Tomaten Sauce, Mozzarella, Broccoli, Spinat", "price": 15, "dietary_tags": ["vegetarian"] },
+          { "id": "pizza-tre-salami", "name": "Pizza Tre Salami", "description": "Tomaten Sauce, Mozzarella, Salami, scharfe Salami, Rauchwurst", "price": 17 },
+          { "id": "pizza-de-pollo", "name": "Pizza de Pollo", "description": "Tomaten Sauce, Mozzarella, Poulet, Peperoni, Mais", "price": 18 },
+          { "id": "pizza-calzone-gedeckt", "name": "Pizza Calzone (gedeckt)", "description": "Tomaten Sauce, Pilze, Ei, Trutenschinken", "price": 17 },
+          { "id": "pizza-madras", "name": "Pizza Madras", "description": "Tomaten Sauce, Poulet, Curry, Peperoni, Mais", "price": 18 },
+          { "id": "pizza-salami", "name": "Pizza Salami", "description": "Tomaten Sauce, Mozzarella, Salami", "price": 16 },
+          { "id": "pizza-al-capone", "name": "Pizza Al Capone", "description": "Tomaten Sauce, Mozzarella, scharfe Salami, Gorgonzola, Ananas", "price": 16 },
+          { "id": "pizza-baeren-swiss", "name": "Pizza Bären Swiss", "description": "Tomaten Sauce, Raclettkäse, scharfe Salami, Zwiebel", "price": 19 },
+          { "id": "pizza-quattro-fromaggi", "name": "Pizza Quattro Fromaggi", "description": "Tomaten Sauce, Mozzarella, Gorgonzola, Mascapone, Raclettekäse", "price": 16, "dietary_tags": ["vegetarian"] },
+          { "id": "dessert-pizza", "name": "Dessert Pizza", "description": "Süsse Dessert-Pizza mit Marshmallows, Schokolade, Schokosträusel", "price": 11 }
+        ]
+      },
+      {
+        "id": "snacks",
+        "label": "Snacks",
+        "description": "Kleiner Food für zwischendurch.",
+        "items": [
+          { "id": "baeren-beef-burger", "name": "Bären Beef Burger", "description": "Unser Bären Spezialburger mit einem mächtigen Stück Fleisch und eigener Sauce", "price": 11.5 },
+          { "id": "baeren-prime-burger", "name": "Bären Prime Burger", "description": "Unser Bären Spezialburger im Doppel. 2 x 200 gr. Rindsfleisch mit Ei, Speck, Salat, Gurke, Käse, BBQ Sauce und Röstzwiebeln", "price": 19.5 },
+          { "id": "pulled-pork-burger", "name": "Pulled Pork Burger", "description": "Dieses saftige und butterzarte Schweinefleisch belohnt die Geduld beim Garen mit einzigartigem Geschmack. Deshalb gehört Pulled Pork klar zur Holy Trinity des amerikanischen Barbecues. Wir garen das Fleisch im Ofen und machen daraus einen klassischen Burger.", "price": 11.5 },
+          { "id": "crispy-chicken-burger", "name": "Crispy Chicken Burger", "description": "Anstelle des Beef aus dem Bären Burger, verwenden wir Crispy Chicken für den Burger", "price": 11.5 },
+          { "id": "crispy-chicken-wrap", "name": "Crispy Chicken Wrap", "description": "Kommt mit Cocktailsauce mit Knoblauch, Salat und Crispy Chicken", "price": 10 },
+          { "id": "pulled-pork-wrap", "name": "Pulled Pork Wrap", "description": "Kommt mit Cocktailsauce mit Knoblauch, Salat", "price": 10 },
+          { "id": "fish-wrap", "name": "Fish Wrap", "description": "Mit Tartare Sauce, Egli Filet", "price": 15 },
+          { "id": "fish-and-chips", "name": "Fish & Chips", "description": "Pommes mit Fish und Tartaresauce", "price": 15 },
+          { "id": "chicken-wings-7-stk", "name": "Chicken Wings 7 Stk.", "description": "Auswahlsweise mit Chilli- oder mit BBQ-Sauce", "price": 9 },
+          { "id": "country-fries", "name": "Country Fries", "description": "", "price": 7.5 },
+          { "id": "chicken-nuggets", "name": "Chicken Nuggets", "description": "8 Chicken Nuggets", "price": 8 }
+        ]
+      },
+      {
+        "id": "flammkuchen",
+        "label": "Flammkuchen",
+        "description": "Diverse Flammkuchen.",
+        "items": [
+          { "id": "flammkuchen-pilze", "name": "Flammkuchen Pilze", "description": "mit Champignons und Spinat", "price": 15, "dietary_tags": ["vegetarian", "halal"] },
+          { "id": "flammkuchen-tomaten", "name": "Flammkuchen Tomaten", "description": "mit Tomaten und Zwiebeln", "price": 15, "dietary_tags": ["vegetarian", "halal"] },
+          { "id": "flammkuchen-truthan", "name": "Flammkuchen Truthan", "description": "mit Truthanschinken und Zwiebeln", "price": 15, "dietary_tags": ["halal"] },
+          { "id": "flammkuchen-speck", "name": "Flammkuchen Speck", "description": "Mit Speck und Zwiebeln belegt.", "price": 15 }
+        ]
+      },
+      {
+        "id": "knoblauchbrot",
+        "label": "Knoblauchbrot",
+        "description": "Knoblauchbrot mit Mozzarella.",
+        "items": [
+          { "id": "knoblauchbrot-mit-mozzarella", "name": "Knoblauchbrot mit Mozzarella", "description": "Selbstgemachtes Knoblauchbrot", "price": 12 },
+          { "id": "knoblauchbrot-ohne-mozzarella", "name": "Knoblauchbrot ohne Mozzarella", "description": "Selbstgemachtes Knoblauchbrot", "price": 9 }
+        ]
+      },
+      {
+        "id": "getraenke-ohne-alkohol",
+        "label": "Getränke ohne Alkohol",
+        "orderable_type": "product",
+        "description": "Wir liefern Mineral und Süssgetränke in unseren eigenen Austauschflaschen. Pfand für Flasche ist 10.00 Fr. Lieferung Getränke in Flaschen ab ca. 23.03",
+        "items": [
+          { "id": "red-bull-dose", "name": "Red Bull Dose", "description": "", "price": 5 },
+          { "id": "cola-5dl", "name": "Cola 5dl", "description": "Cola in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "mineral-5dl", "name": "Mineral 5dl", "description": "Mineral in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "citro", "name": "Citro", "description": "Citro in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "holunderbluete", "name": "Holunderblüte", "description": "Holundeblüte in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "cola-zero", "name": "Cola Zero", "description": "Cola Zero in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "apfelschorle", "name": "Apfelschorle", "description": "Apfelschorle in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "orange", "name": "Orange", "description": "Orange in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "tonic", "name": "Tonic", "description": "Tonic in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "bitter-lemon", "name": "Bitter Lemon", "description": "Bitter Lemon in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "ginger-ale", "name": "Ginger ale", "description": "Ginger ale in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "orangensaft", "name": "Orangensaft", "description": "Saft in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "ananassaft", "name": "Ananassaft", "description": "Saft in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 },
+          { "id": "ice-tea-lemon", "name": "Ice Tea Lemon", "description": "Mineral in unserer Mehrwegflasche. Preis Pfand für Flasche 10.00. Bei Austausch wird nur das Getränk verrechnet.", "price": 4 }
+        ]
+      },
+      {
+        "id": "xxl-cocktails",
+        "label": "XXL Cocktails (nur über 18)",
+        "orderable_type": "product",
+        "description": "Cocktails im Eimer für Zuhause mit Strohhalmen.",
+        "items": [
+          { "id": "bahama-mamma", "name": "Bahama Mamma", "description": "Rum, Kokos Sirup, Kahlua, Ananassaft, Zitronensaft", "price": 40 },
+          { "id": "banana-colada", "name": "Banana Colada", "description": "Rum Weiss, Rum Braun, Kokos Sirup, Bananen Sirup, Ananassaft, Sahne", "price": 40 },
+          { "id": "caipirinha", "name": "Caipirinha", "description": "Pitu, Limetten Sirup, Limetten, Rohrzucker", "price": 50 },
+          { "id": "coconut-kiss-ohne-alkohol", "name": "Coconut Kiss ohne Alkohol", "description": "Kokos Sirup, Ananassaft, Orangensaft, Grenadine, Sahne", "price": 28 },
+          { "id": "cuba-libre", "name": "Cuba Libre", "description": "Brauner Rum, Limetten Sirup, Cola", "price": 50 },
+          { "id": "italien-colada", "name": "Italien Colada", "description": "Kokos Sirup, Grenadine, Rum weiss, Rum Braun, Amaretto, Ananassaft, Sahne", "price": 50 },
+          { "id": "mai-tai", "name": "Mai Tai", "description": "Rum weiss, Rum braun, Mandelsirup, Apricot Brandy, Limetten Sirup, Ananassaft", "price": 50 },
+          { "id": "mojito", "name": "Mojito", "description": "Rum Weiss, Soda, Rohrzucker, Limetten, Minze", "price": 50 },
+          { "id": "pina-colada", "name": "Pina Colada", "description": "Kokos Sirup, Rum weiss, Rum braun, Ananassaft", "price": 40 },
+          { "id": "sex-on-the-beach", "name": "Sex on the Beach", "description": "Vodak, Peach tree, Ananassaft, Orangensaft, Cranberrysaft, Grenadine, Zitronensaft", "price": 40 }
+        ]
+      },
+      {
+        "id": "bier",
+        "label": "Bier",
+        "orderable_type": "product",
+        "description": "mit Alkohol",
+        "items": [
+          { "id": "rugenbraeu-lager-5dl-dose", "name": "Rugenbräu Lager 5dl Dose", "description": "Lager Bier in der Dose", "price": 5 }
+        ]
+      },
+      {
+        "id": "salate",
+        "label": "Salate",
+        "description": "Salat",
+        "items": [
+          { "id": "kleiner-salat", "name": "Kleiner Salat", "description": "", "price": 5.5 },
+          { "id": "kleiner-gemischter-salat", "name": "Kleiner Gemischter Salat", "description": "Gemischter Salat mit Französicher oder Italienischer Sauce. Geliefert mit Brot", "price": 7.5 },
+          { "id": "baerensalat", "name": "Bärensalat", "description": "", "price": 18 }
+        ]
+      }
+    ]
+  }
+}

@@ -1,10 +1,12 @@
 import type { Dish } from '../../../models/dish.model'
+import type { Product } from 'fireux-products/runtime/models/product.model'
 import { KitchenStorage } from '../../../models/kitchen.model'
 import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
 
 export type PublicMenuItemRow = {
   item: MenuItem
   dish: Dish | null
+  product: Product | null
   label: string
   description: string
   price: number
@@ -36,6 +38,13 @@ export const resolveItemPrice = (item: MenuItem): number => {
   if (Number.isFinite(price) && price > 0) return price
 
   return 0
+}
+
+export const resolveProductPrice = (product: Product | null): number => {
+  const unitAmount = Number(product?.default_price?.unit_amount || 0)
+  if (!Number.isFinite(unitAmount) || unitAmount <= 0) return 0
+
+  return unitAmount / 100
 }
 
 export const menuFieldId = (menu: Pick<Menu, 'id'>, field: string) =>

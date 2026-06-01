@@ -132,7 +132,7 @@
               label="Currency display"
               :description="currencyFormatHelp"
             >
-              <UButtonGroup size="sm">
+              <UFieldGroup size="sm">
                 <UButton
                   v-for="option in currencyFormatChoices"
                   :key="option.value"
@@ -142,7 +142,7 @@
                 >
                   {{ option.label }}
                 </UButton>
-              </UButtonGroup>
+              </UFieldGroup>
             </UFormField>
           </div>
         </UCard>

@@ -1,6 +1,6 @@
 import { collection, query, where, type Query } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, isRef, shallowRef, unref, watch, type Ref, type ShallowRef } from 'vue'
+import { computed, isRef, unref, type Ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { OrderStorage, type Order } from '../models/order.model'
 
@@ -49,32 +49,19 @@ export function useOrdersFetchByScope(scope: Ref<OrderScopeRef | null> | OrderSc
     ).trim()
   )
 
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Order[] | undefined> | null>
-
-  watch(
-    [resolvedScopeType, resolvedScopeId],
-    ([nextScopeType, nextScopeId]: [string, string]) => {
-      if (!nextScopeType || !nextScopeId) {
-        sourceRef.value = null
-        return
-      }
-
-      const q = query(
-        collection(db, OrderStorage.collection),
-        where('scope_type', '==', nextScopeType),
-        where('scope_id', '==', nextScopeId)
-      ) as Query<Order>
-
-      sourceRef.value = firestoreQuery<Order>(
-        q,
-        `${OrderStorage.collection}-${nextScopeType}-${nextScopeId}`
-      )
-    },
-    { immediate: true }
+  const orderQuery = computed<Query<Order> | null>(() =>
+    resolvedScopeType.value && resolvedScopeId.value
+      ? query(
+          collection(db, OrderStorage.collection),
+          where('scope_type', '==', resolvedScopeType.value),
+          where('scope_id', '==', resolvedScopeId.value)
+        ) as Query<Order>
+      : null
   )
+  const source = firestoreQuery<Order>(orderQuery)
 
   const orders = computed<Order[]>(() => {
-    const base = sourceRef.value?.value ?? []
+    const base = source.value ?? []
     return [...base].sort(
       (a, b) =>
         toMillis((b as any).updated?.at ?? (b as any).updated_at) -

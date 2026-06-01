@@ -46,7 +46,7 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <UButtonGroup size="xs">
+            <UFieldGroup size="xs">
               <UButton
                 :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
                 color="neutral"
@@ -68,7 +68,7 @@
               >
                 Test
               </UButton>
-            </UButtonGroup>
+            </UFieldGroup>
             <UButton
               size="xs"
               color="neutral"
@@ -78,7 +78,7 @@
             >
               {{ supplierIngredientsFetched ? 'Refresh supplier ingredients' : 'Fetch supplier ingredients' }}
             </UButton>
-            <UButtonGroup size="xs">
+            <UFieldGroup size="xs">
               <UButton
                 :variant="supplierIngredientStateFilter === 'all' ? 'solid' : 'ghost'"
                 color="neutral"
@@ -100,7 +100,7 @@
               >
                 Public
               </UButton>
-            </UButtonGroup>
+            </UFieldGroup>
             <UInput
               v-model="supplierIngredientQuery"
               size="xs"

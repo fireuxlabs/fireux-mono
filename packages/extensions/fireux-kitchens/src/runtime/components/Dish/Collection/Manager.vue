@@ -15,7 +15,7 @@
               v-if="showFilters"
               class="flex flex-wrap items-center justify-end gap-1"
             >
-              <UButtonGroup
+              <UFieldGroup
                 v-if="showMenuFilter"
                 size="xs"
               >
@@ -35,9 +35,9 @@
                 >
                   {{ filterButtonLabel(menu.label, menu.count) }}
                 </UButton>
-              </UButtonGroup>
+              </UFieldGroup>
 
-              <UButtonGroup
+              <UFieldGroup
                 v-if="showSectionFilter"
                 size="xs"
               >
@@ -62,7 +62,7 @@
                     )
                   }}
                 </UButton>
-              </UButtonGroup>
+              </UFieldGroup>
             </div>
             <UInput
               v-if="showSearchInput"

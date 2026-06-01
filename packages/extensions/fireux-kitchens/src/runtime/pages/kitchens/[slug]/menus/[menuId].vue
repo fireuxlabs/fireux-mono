@@ -29,7 +29,12 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  ProductStorage,
+  type Product,
+} from 'fireux-products/runtime/models/product.model'
 import MenuPublic from '../../../../components/Menu/Public.vue'
 import { useDishCollection } from '../../../../composables/fireux/firestore/dish/fetch/useDishCollection'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
@@ -41,6 +46,7 @@ import {
   clean,
   cleanIdentity,
   isPublicMenu,
+  resolveProductPrice,
   resolveItemPrice,
   type PublicMenuSectionRow,
 } from '../../../../composables/fireux/app/public-menu-runtime'
@@ -54,19 +60,20 @@ definePageMeta({
 
 const route = useRoute()
 const resolveDb = useFirestoreResolver()
+const { firestoreLoadDocsByIds } = useFirestoreRead()
 const slug = computed(() => String(route.params.slug || '').trim())
 const menuId = computed(() => String(route.params.menuId || '').trim())
 
 const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const kitchen = computed(
   () =>
-    kitchens.value.find(
+    (kitchens.value ?? []).find(
       (item) => cleanIdentity((item as any).slug) === cleanIdentity(slug.value)
     ) ?? null
 )
 const kitchenByRouteId = computed(
   () =>
-    kitchens.value.find(
+    (kitchens.value ?? []).find(
       (item) => cleanIdentity((item as any).id) === cleanIdentity(slug.value)
     ) ?? null
 )
@@ -83,7 +90,7 @@ const menuRead = useMenuCollection(kitchenId, {
   shape: 'scoped',
   kitchenCollectionPath: ROOT_KITCHENS,
 })
-const menus = computed(() => menuRead.menus.value.filter(isPublicMenu))
+const menus = computed(() => (menuRead.menus.value ?? []).filter(isPublicMenu))
 const menu = computed(() =>
   menus.value.find((item) => clean(item.id) === menuId.value) ?? null
 )
@@ -103,7 +110,7 @@ watch(
   async () => {
     const currentKitchenId = kitchenId.value
     const currentMenuId = clean(menu.value?.id)
-    const sections = sectionRead.sections.value
+    const sections = sectionRead.sections.value ?? []
     itemRows.value = []
 
     if (!currentKitchenId || !currentMenuId || !sections.length) return
@@ -136,25 +143,51 @@ watch(
 
 const dishesById = computed(() => {
   const map = new Map<string, (typeof dishRead.dishes.value)[number]>()
-  dishRead.dishes.value.forEach((dish) => {
+  const dishes = dishRead.dishes.value ?? []
+
+  dishes.forEach((dish) => {
     const id = clean(dish.id)
     if (id) map.set(id, dish)
   })
   return map
 })
+const productIds = computed(() =>
+  itemRows.value
+    .map((row) => clean((row.item as any).product_id))
+    .filter(Boolean)
+)
+const productRead = firestoreLoadDocsByIds<Product>({
+  collectionPath: ProductStorage.collection,
+  ids: productIds,
+})
+const productsById = computed(() => {
+  const map = new Map<string, Product>()
+  const products = productRead.docs.value ?? []
+
+  products.forEach((product) => {
+    const id = clean(product.id)
+    if (id) map.set(id, product)
+  })
+  return map
+})
 const sectionRows = computed<PublicMenuSectionRow[]>(() =>
-  sectionRead.sections.value.map((section) => ({
+  (sectionRead.sections.value ?? []).map((section) => ({
     section,
     items: itemRows.value
       .filter((row) => row.sectionId === clean(section.id))
       .map((row) => {
         const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
+        const product = productsById.value.get(clean((row.item as any).product_id)) ?? null
         return {
           item: row.item,
           dish,
-          label: dish?.name || clean((row.item as any).label),
-          description: dish?.description || clean((row.item as any).description),
-          price: resolveItemPrice(row.item),
+          product,
+          label: dish?.name || product?.name || clean((row.item as any).label),
+          description:
+            dish?.description ||
+            product?.description ||
+            clean((row.item as any).description),
+          price: resolveItemPrice(row.item) || resolveProductPrice(product),
         }
       })
       .filter((row) => row.label),
@@ -168,6 +201,7 @@ const pending = computed(
     menuRead.pending.value ||
     sectionRead.pending.value ||
     dishRead.pending.value ||
+    productRead.pending.value ||
     itemsPending.value
 )
 const unavailable = computed(

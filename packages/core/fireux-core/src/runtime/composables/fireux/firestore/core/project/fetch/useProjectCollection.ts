@@ -65,32 +65,34 @@ export function useProjectCollection(
   const demoProjects = computed<ProjectSurface[]>(() =>
     getDemoProjectScenarios().map(toDemoProjectSurface)
   )
+  const liveSource = firestoreFetchCollection<ProjectSurface>(PROJECT_COLLECTION_PATH)
+  const testSource = firestoreFetchCollection<ProjectSurface>(TEST_PROJECT_COLLECTION_PATH)
+  const operatorQuery = computed<Query<ProjectSurface> | null>(() => {
+    if (sourceMode.value !== 'live') return null
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(db, PROJECT_COLLECTION_PATH),
+      where('operator_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<ProjectSurface>
+  })
+  const operatorSource = firestoreQuery<ProjectSurface>(
+    operatorQuery,
+    undefined,
+    PROJECT_COLLECTION_PATH
+  )
   const firestoreSource = computed(() => {
     if (sourceMode.value === 'demo') return null
 
     if (sourceMode.value === 'live') {
       if (!hasOperatorFilter.value || !filterOperatorId.value) {
-        return firestoreFetchCollection<ProjectSurface>(PROJECT_COLLECTION_PATH)
+        return liveSource
       }
 
-      const q = fsq(
-        collection(db, PROJECT_COLLECTION_PATH),
-        where('operator_ids', 'array-contains', filterOperatorId.value)
-      ) as Query<ProjectSurface>
-
-      return firestoreQuery<ProjectSurface>(
-        q,
-        `${PROJECT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
-        PROJECT_COLLECTION_PATH
-      )
+      return operatorSource
     }
 
-    const collectionPath =
-      sourceMode.value === 'test'
-        ? TEST_PROJECT_COLLECTION_PATH
-        : PROJECT_COLLECTION_PATH
-
-    return firestoreFetchCollection<ProjectSurface>(collectionPath)
+    return testSource
   })
   const collectionItems = computed<ProjectSurface[]>(() => {
     if (sourceMode.value === 'demo') return demoProjects.value

@@ -75,7 +75,7 @@
               </div>
             </div>
 
-            <UDivider />
+            <USeparator />
 
             <div v-if="isFirebaseAdminCredentialError" class="space-y-3">
               <p class="text-sm font-medium text-gray-900 dark:text-white">

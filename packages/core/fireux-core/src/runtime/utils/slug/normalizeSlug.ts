@@ -5,11 +5,28 @@ export type NormalizeSlugOptions = {
 
 export const normalizeString = (value: unknown) => String(value ?? '').trim()
 
+function transliterateSlugString(value: string): string {
+  return value
+    .replace(/\u00c4/g, 'Ae')
+    .replace(/\u00d6/g, 'Oe')
+    .replace(/\u00dc/g, 'Ue')
+    .replace(/\u00e4/g, 'ae')
+    .replace(/\u00f6/g, 'oe')
+    .replace(/\u00fc/g, 'ue')
+    .replace(/\u00df/g, 'ss')
+    .replace(/\u00c6/g, 'Ae')
+    .replace(/\u00e6/g, 'ae')
+    .replace(/\u0152/g, 'Oe')
+    .replace(/\u0153/g, 'oe')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
 export function normalizeSlug(
   value: unknown,
   options: NormalizeSlugOptions = {}
 ): string {
-  let candidate = normalizeString(value)
+  let candidate = transliterateSlugString(normalizeString(value))
     .toLowerCase()
 
   if (options.stripLeadingAt !== false) {

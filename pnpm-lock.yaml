@@ -538,6 +538,9 @@ importers:
       fireux-orders:
         specifier: workspace:*
         version: link:../fireux-orders
+      fireux-products:
+        specifier: workspace:*
+        version: link:../fireux-products
       fireux-suppliers:
         specifier: workspace:*
         version: link:../fireux-suppliers

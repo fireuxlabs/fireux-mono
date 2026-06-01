@@ -1,7 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, unref, watch } from 'vue'
+import type { Ref } from 'vue'
+import { computed, unref } from 'vue'
 import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
 import { resolveKitchenChildCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
@@ -37,23 +37,15 @@ export function useRecipeCollection(
       ? resolveRecipesPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const databaseIdKey = computed(() => String(unref(options.databaseId) || '').trim())
-
-  const collectionRef = shallowRef(null) as ShallowRef<Ref<Record<string, unknown>[] | undefined> | null>
-
-  watch(
-    [collectionPath, databaseIdKey],
-    ([nextPath]) => {
-      collectionRef.value = nextPath ? firestoreFetchCollection<Record<string, unknown>>(nextPath) : null
-    },
-    { immediate: true }
+  const collectionRef = firestoreFetchCollection<Record<string, unknown>>(
+    collectionPath
   )
 
   const recipes = computed<Recipe[]>(() =>
-    (collectionRef.value?.value ?? []).map((entry) => normalizeRecipe(entry))
+    (collectionRef.value ?? []).map((entry) => normalizeRecipe(entry))
   )
   const pending = computed(
-    () => Boolean(collectionPath.value) && collectionRef.value?.value === undefined
+    () => Boolean(collectionPath.value) && collectionRef.value === undefined
   )
 
   return {

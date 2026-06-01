@@ -4,7 +4,7 @@ import {
   where,
   type Query,
 } from 'firebase/firestore'
-import { computed, isRef, ref, type Ref } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
@@ -103,20 +103,19 @@ export function useKitchenCollection(
   const liveRootSource = firestoreFetchCollection<KitchenCollectionDoc>(
     DEFAULT_COLLECTION_PATH
   )
-  const testFirestoreSource = simulationDatabaseId.value
-    ? (() => {
-        const q = fsq(
+  const testFirestoreQuery = computed<Query<KitchenCollectionDoc> | null>(() =>
+    simulationDatabaseId.value
+      ? fsq(
           collection(resolveSimulationDb(), DEFAULT_COLLECTION_PATH),
           where('simulation_kind', '==', 'test')
         ) as Query<KitchenCollectionDoc>
-
-        return simulationRead.firestoreQuery<KitchenCollectionDoc>(
-          q,
-          `${simulationDatabaseId.value}-${DEFAULT_COLLECTION_PATH}-test`,
-          DEFAULT_COLLECTION_PATH
-        )
-      })()
-    : ref(undefined)
+      : null
+  )
+  const testFirestoreSource = simulationRead.firestoreQuery<KitchenCollectionDoc>(
+    testFirestoreQuery,
+    undefined,
+    DEFAULT_COLLECTION_PATH
+  )
 
   const firestoreSource = computed(() => {
     if (sourceMode.value === 'demo') return localDemoSource
@@ -126,46 +125,44 @@ export function useKitchenCollection(
     }
     return hasOperatorFilter.value ? liveFirestoreDocs.docs : liveRootSource
   })
-  const operatorOverlaySource = computed(() => {
+  const operatorOverlayQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
     if (sourceMode.value !== 'live') return null
     if (!hasOperatorFilter.value || !filterOperatorId.value || !currentAppId.value) {
       return null
     }
 
-    const q = fsq(
+    return fsq(
       collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
-
-    return firestoreQuery<AppKitchenCollectionDoc>(
-      q,
-      `${AppStorage.collection}-${currentAppId.value}-${KitchenStorage.overlayCollection}-operator-${filterOperatorId.value}`,
-      overlayCollectionPath
-    )
   })
-  const teamOverlaySource = computed(() => {
+  const operatorOverlaySource = firestoreQuery<AppKitchenCollectionDoc>(
+    operatorOverlayQuery,
+    undefined,
+    overlayCollectionPath
+  )
+  const teamOverlayQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
     if (sourceMode.value !== 'live') return null
     if (!hasOperatorFilter.value || !filterOperatorId.value || !currentAppId.value) {
       return null
     }
 
-    const q = fsq(
+    return fsq(
       collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.overlayCollection),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
-
-    return firestoreQuery<AppKitchenCollectionDoc>(
-      q,
-      `${AppStorage.collection}-${currentAppId.value}-${KitchenStorage.overlayCollection}-team-${filterOperatorId.value}`,
-      overlayCollectionPath
-    )
   })
+  const teamOverlaySource = firestoreQuery<AppKitchenCollectionDoc>(
+    teamOverlayQuery,
+    undefined,
+    overlayCollectionPath
+  )
   const overlayItems = computed<AppKitchenCollectionDoc[]>(() => {
     const overlaysById = new Map<string, AppKitchenCollectionDoc>()
 
     for (const overlay of [
-      ...(operatorOverlaySource.value?.value ?? []),
-      ...(teamOverlaySource.value?.value ?? []),
+      ...(operatorOverlaySource.value ?? []),
+      ...(teamOverlaySource.value ?? []),
     ]) {
       const id = String(overlay?.id || '').trim()
       if (!id) continue
@@ -272,8 +269,8 @@ export function useKitchenCollection(
       hasOperatorFilter.value &&
       currentAppId.value &&
       (
-        operatorOverlaySource.value?.value === undefined ||
-        teamOverlaySource.value?.value === undefined
+        operatorOverlaySource.value === undefined ||
+        teamOverlaySource.value === undefined
       )
     ) {
       return true

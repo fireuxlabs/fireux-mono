@@ -218,7 +218,7 @@
         />
       </div>
 
-      <UDivider />
+      <USeparator />
 
       <div class="fx-card__detail-grid">
         <div class="fx-card__stack fx-card__stack--tight">

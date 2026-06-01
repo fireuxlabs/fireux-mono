@@ -80,27 +80,27 @@ export function useSupplierCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const testSource = computed(() => {
-    if (sourceMode.value !== 'test') return null
-    return firestoreFetchCollection<SupplierCollectionDoc>(TEST_COLLECTION_PATH)
-  })
+  const testSource = firestoreFetchCollection<SupplierCollectionDoc>(TEST_COLLECTION_PATH)
   const resolvedAppId = computed(() => normalizeString(appId))
-  const overlaySource = computed(() => {
+  const overlayQuery = computed<Query<AppSupplierOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
-    const q = fsq(
+    return fsq(
       collection(db, AppStorage.collection, resolvedAppId.value, SupplierStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppSupplierOverlay>
-
-    return firestoreQuery<AppSupplierOverlay>(
-      q,
-      `${AppStorage.collection}-${resolvedAppId.value}-${SupplierStorage.overlayCollection}-operator-${filterOperatorId.value}`,
-      `${AppStorage.collection}/${resolvedAppId.value}/${SupplierStorage.overlayCollection}`
-    )
   })
+  const overlaySource = firestoreQuery<AppSupplierOverlay>(
+    overlayQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${SupplierStorage.overlayCollection}`
+        : ''
+    )
+  )
   const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
@@ -128,7 +128,7 @@ export function useSupplierCollection(
     DEFAULT_COLLECTION_PATH
   )
   const allowedSupplierIds = computed(() =>
-    (overlaySource.value?.value ?? [])
+    (overlaySource.value ?? [])
       .map((supplier) => resolveSupplierId(supplier))
       .filter(Boolean)
   )
@@ -150,7 +150,7 @@ export function useSupplierCollection(
       })
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolveSupplierId(overlay)
       if (!id) continue
       overlayById.set(id, {
@@ -177,7 +177,7 @@ export function useSupplierCollection(
       if (item) merged.push(item)
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolveSupplierId(overlay)
       if (!id || seen.has(id)) continue
       seen.add(id)
@@ -197,7 +197,7 @@ export function useSupplierCollection(
 
   const collectionItems = computed<SupplierCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return demoItems.value
-    if (sourceMode.value === 'test') return testSource.value?.value ?? []
+    if (sourceMode.value === 'test') return testSource.value ?? []
     if (!hasOperatorFilter.value) return liveRootSource.value ?? []
     return liveItems.value
   })
@@ -227,12 +227,12 @@ export function useSupplierCollection(
   const count = computed(() => suppliers.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return testSource.value?.value === undefined
+    if (sourceMode.value === 'test') return testSource.value === undefined
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      (overlaySource.value ? overlaySource.value.value === undefined : false)
+      overlaySource.value === undefined
     )
   })
 

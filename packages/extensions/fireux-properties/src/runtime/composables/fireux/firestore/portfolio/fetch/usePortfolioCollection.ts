@@ -64,27 +64,27 @@ export function usePortfolioCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const testSource = computed(() => {
-    if (sourceMode.value !== 'test') return null
-    return firestoreFetchCollection<PortfolioCollectionDoc>(TEST_COLLECTION_PATH)
-  })
+  const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(TEST_COLLECTION_PATH)
   const resolvedAppId = computed(() => normalizeString(appId))
-  const overlaySource = computed(() => {
+  const overlayQuery = computed<Query<AppPortfolioOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
-    const q = fsq(
+    return fsq(
       collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.overlayCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppPortfolioOverlay>
-
-    return firestoreQuery<AppPortfolioOverlay>(
-      q,
-      `${AppStorage.collection}-${resolvedAppId.value}-${PortfolioStorage.overlayCollection}-operator-${filterOperatorId.value}`,
-      `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.overlayCollection}`
-    )
   })
+  const overlaySource = firestoreQuery<AppPortfolioOverlay>(
+    overlayQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.overlayCollection}`
+        : ''
+    )
+  )
   const resolvedFilter = computed<PortfolioCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
@@ -106,7 +106,7 @@ export function usePortfolioCollection(
       )
   )
   const allowedPortfolioIds = computed(() =>
-    (overlaySource.value?.value ?? [])
+    (overlaySource.value ?? [])
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)
   )
@@ -131,7 +131,7 @@ export function usePortfolioCollection(
       })
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolvePortfolioId(overlay)
       if (!id) continue
       overlayById.set(id, {
@@ -158,7 +158,7 @@ export function usePortfolioCollection(
       if (item) merged.push(item)
     }
 
-    for (const overlay of overlaySource.value?.value ?? []) {
+    for (const overlay of overlaySource.value ?? []) {
       const id = resolvePortfolioId(overlay)
       if (!id || seen.has(id)) continue
       seen.add(id)
@@ -178,7 +178,7 @@ export function usePortfolioCollection(
 
   const collectionItems = computed<PortfolioCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') return testSource.value?.value ?? []
+    if (sourceMode.value === 'test') return testSource.value ?? []
     if (!hasOperatorFilter.value) return liveRootSource.value ?? []
     return liveItems.value
   })
@@ -208,12 +208,12 @@ export function usePortfolioCollection(
   const count = computed(() => portfolios.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return testSource.value?.value === undefined
+    if (sourceMode.value === 'test') return testSource.value === undefined
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      (overlaySource.value ? overlaySource.value.value === undefined : false)
+      overlaySource.value === undefined
     )
   })
 

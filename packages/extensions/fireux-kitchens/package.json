@@ -27,6 +27,7 @@
     "fireux-core": "workspace:*",
     "fireux-translation": "workspace:*",
     "fireux-orders": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-suppliers": "workspace:*"
   },
   "peerDependencies": {

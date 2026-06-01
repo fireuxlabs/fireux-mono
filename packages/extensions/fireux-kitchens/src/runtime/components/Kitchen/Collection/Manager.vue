@@ -11,7 +11,7 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UButtonGroup v-if="showSourceToggle" size="xs">
+            <UFieldGroup v-if="showSourceToggle" size="xs">
               <UButton
                 :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
                 color="neutral"
@@ -33,9 +33,9 @@
               >
                 Test
               </UButton>
-            </UButtonGroup>
+            </UFieldGroup>
 
-            <UButtonGroup v-if="showFilterToggle" size="xs">
+            <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
                 :variant="filterMode === 'all' ? 'solid' : 'ghost'"
                 color="neutral"
@@ -50,7 +50,7 @@
               >
                 Mine
               </UButton>
-            </UButtonGroup>
+            </UFieldGroup>
 
             <UInput
               v-if="showSearchInput"
