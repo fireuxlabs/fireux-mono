@@ -24,23 +24,19 @@ definePageMeta({
     label: 'Menus',
     icon: 'i-lucide-book-open',
     order: 56,
-    desktop: false,
-    mobile: false,
+    desktop: true,
+    mobile: true,
     layouts: ['default'],
   },
   title: 'Menus',
-  description: 'Browse root menus.',
+  description: 'Browse menus.',
   layout: 'default',
   name: 'MenusIndexPage',
-  index: false,
-  sitemap: false,
 })
 
 const pageTitle = 'Menus'
-const pageDescription = 'Root menu index for the current runtime.'
-const { menus: collection } = useMenuCollection(undefined, {
-  shape: 'root',
-})
+const pageDescription = 'Browse menus.'
+const { menus: collection } = useMenuCollection()
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
@@ -48,6 +44,5 @@ useHead({ title: `${appName} | ${pageTitle}` })
 useSeoMeta({
   title: 'Menus',
   description: pageDescription,
-  robots: 'noindex, nofollow',
 })
 </script>

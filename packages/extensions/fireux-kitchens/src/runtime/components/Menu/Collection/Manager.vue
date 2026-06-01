@@ -90,7 +90,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Menus',
-    description: 'Browse menus for this kitchen.',
+    description: 'Browse menus.',
     searchPlaceholder: 'Search menus...',
     showSearch: true,
     showVariantToggle: true,
