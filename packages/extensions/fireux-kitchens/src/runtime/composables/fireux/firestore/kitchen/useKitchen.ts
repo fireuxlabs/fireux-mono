@@ -11,6 +11,10 @@ import { useKitchenInterface } from './utils/view/useKitchenInterface'
 import { useKitchenProfileView } from './utils/view/useKitchenProfileView'
 
 export type { Kitchen }
+export type {
+  KitchenCollectionFilter,
+  KitchenCollectionSource,
+} from './fetch/useKitchenCollection'
 
 export {
   useKitchenCollection,

@@ -5,7 +5,7 @@ import {
   useKitchenCollection,
   type KitchenCollectionFilter,
   type KitchenCollectionSource,
-} from '../../firestore/kitchen/fetch/useKitchenCollection'
+} from '../../firestore/kitchen/useKitchen'
 
 type MaybeRef<T> = T | Ref<T>
 

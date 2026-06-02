@@ -16,6 +16,13 @@ export { useMenuUpdate } from './mutations/useMenuUpdate'
 export { useMenuDelete } from './mutations/useMenuDelete'
 export { useMenuSectionMutations } from './mutations/useMenuSectionMutations'
 export { useMenuItemMutations } from './mutations/useMenuItemMutations'
+export {
+  menuItemsPath,
+  menuPath,
+  menuSectionsPath,
+  rootMenuPath,
+  scopedMenuPath,
+} from './utils/paths'
 export { useMenuComputed } from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
 

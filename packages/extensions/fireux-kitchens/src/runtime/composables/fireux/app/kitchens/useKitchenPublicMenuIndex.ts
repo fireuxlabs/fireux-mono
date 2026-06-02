@@ -4,8 +4,8 @@ import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
 } from '../public-kitchen-language'
-import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
-import { useMenuCollection } from '../../firestore/menu/fetch/useMenuCollection'
+import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
+import { useMenuCollection } from '../../firestore/menu/useMenu'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 import type { Menu } from '../../../../models/menu.model'
 import {

@@ -38,10 +38,6 @@
             Kitchens:
             <code>{{ devKitchenCount }}</code>
           </li>
-          <li v-if="sourceMode === 'test'">
-            Test probe:
-            <code>{{ devTestProbe }}</code>
-          </li>
         </ul>
       </div>
 
@@ -61,7 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchens } from '../../composables/fireux/app/kitchens/useKitchens'
+import { computed, ref, watch } from 'vue'
+import { useHead, useRoute } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
+import type { KitchenCollectionSource } from '../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKitchenPublicAccess } from '../../composables/fireux/app/kitchens/useKitchenPublicAccess'
 
 definePageMeta({
   tag: 'kitchens',
@@ -81,17 +82,37 @@ definePageMeta({
   alias: ['/kitchens.demo', '/kitchens.test'],
 })
 
-const {
-  pageTitle,
-  pageDescription,
-  sourceMode,
-  kitchens,
-  pending,
-  showDevNotes,
-  routePath,
-  devSourceLabel,
-  devKitchenCount,
-  devTestProbe,
-  setSourceMode,
-} = useKitchens()
+const pageTitle = 'Kitchens'
+const pageDescription = 'Choose a kitchen surface for this runtime.'
+const route = useRoute()
+const { appName } = useFireUXConfig()
+const { notesVisible } = useDevUi()
+
+const sourceFromPath = (path: string): KitchenCollectionSource =>
+  path.endsWith('.demo')
+    ? 'demo'
+    : path.endsWith('.test')
+      ? 'test'
+      : 'live'
+
+const routePath = computed(() => route.fullPath || route.path)
+const sourceMode = ref<KitchenCollectionSource>(sourceFromPath(routePath.value))
+const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
+const { kitchens, pending } = useKitchenPublicAccess({ source: sourceMode })
+const devSourceLabel = computed(() => {
+  if (sourceMode.value === 'demo') return 'local demo scenario'
+  if (sourceMode.value === 'test') return 'simulation database/kitchens?simulation_kind=test'
+  return 'runtime database/kitchens'
+})
+const devKitchenCount = computed(() => kitchens.value.length)
+
+watch(routePath, (path) => {
+  sourceMode.value = sourceFromPath(path)
+})
+
+const setSourceMode = (value: KitchenCollectionSource) => {
+  sourceMode.value = value
+}
+
+useHead({ title: `${appName} | ${pageTitle}` })
 </script>

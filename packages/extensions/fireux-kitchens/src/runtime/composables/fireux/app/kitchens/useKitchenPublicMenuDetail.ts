@@ -7,11 +7,13 @@ import {
   ProductStorage,
   type Product,
 } from 'fireux-products/runtime/models/product.model'
-import { useDishCollection } from '../../firestore/dish/fetch/useDishCollection'
-import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
-import { useMenuCollection } from '../../firestore/menu/fetch/useMenuCollection'
-import { useMenuSectionCollection } from '../../firestore/menu/fetch/useMenuSectionCollection'
-import { menuItemsPath } from '../../firestore/menu/utils/paths'
+import { useDishCollection } from '../../firestore/dish/useDish'
+import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
+import {
+  menuItemsPath,
+  useMenuCollection,
+  useMenuSectionCollection,
+} from '../../firestore/menu/useMenu'
 import {
   ROOT_KITCHENS,
   clean,
