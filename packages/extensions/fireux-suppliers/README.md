@@ -12,7 +12,7 @@ It currently:
 
 Supplier ingredient records are supplier-owned coverage wrappers around canonical Ingredient identity.
 Supplier item records are supplier-owned sale/procurement wrappers around canonical Product identity.
-Use `SupplierItem.product_id` to link to `products/{productId}` and optional `ingredient_id` only when a supplier item maps to kitchen stock/use.
+Use `product_id` to link a supplier Item to `products/{productId}`. Use optional `ingredient_id` only when the item maps to kitchen stock/use.
 
 Canonical contract:
 - `docs/contract.md`

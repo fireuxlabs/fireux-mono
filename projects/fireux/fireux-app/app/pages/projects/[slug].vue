@@ -4,19 +4,7 @@
       class="pageheader"
       :title="pageTitle"
       :description="pageDescription"
-    >
-      <template #links>
-        <UButton
-          v-if="operatorTo"
-          :to="operatorTo"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-key-round"
-        >
-          Operator
-        </UButton>
-      </template>
-    </UPageHeader>
+    />
 
     <UPageBody class="pagebody space-y-6">
       <UAlert
@@ -166,6 +154,8 @@
             </dl>
           </UCard>
         </div>
+
+        <EntityOperatorPanel entity-label="Project" />
       </template>
     </UPageBody>
   </UPage>
@@ -190,9 +180,6 @@ const { appName } = useFireUXConfig()
 const { profile } = useProjectInterface()
 
 const routeSlug = computed<string | null>(() => String(route.params.slug || '').trim() || null)
-const operatorTo = computed(() =>
-  routeSlug.value ? `/projects/${encodeURIComponent(routeSlug.value)}/operator` : ''
-)
 const { project, pending } = useProjectFetch(routeSlug)
 
 const projectCard = computed(() => profile(project.value))

@@ -79,7 +79,7 @@ export function useSupplierConsoleItems() {
   })
 
   const itemsTitle = computed(() =>
-    supplierLabel.value ? `${supplierLabel.value} Items` : 'Supplier Items'
+    supplierLabel.value ? `${supplierLabel.value} Items` : 'Items'
   )
 
   const itemsDescription = computed(() => {

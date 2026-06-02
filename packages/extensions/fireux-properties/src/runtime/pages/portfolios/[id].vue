@@ -1,18 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
-      <template #links>
-        <UButton
-          v-if="portfolioId"
-          :to="`/portfolios/${encodeURIComponent(portfolioId)}/operator`"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-key-round"
-        >
-          Operator
-        </UButton>
-      </template>
-    </UPageHeader>
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <UAlert
@@ -29,10 +17,11 @@
         title="Portfolio not found"
         description="This portfolio could not be found in the current runtime."
       />
-      <PortfolioCardsProfile
-        v-else-if="portfolioCard"
-        :card="portfolioCard"
-      />
+      <template v-else-if="portfolioCard">
+        <PortfolioCardsProfile :card="portfolioCard" />
+
+        <EntityOperatorPanel entity-label="Portfolio" />
+      </template>
     </UPageBody>
   </UPage>
 </template>

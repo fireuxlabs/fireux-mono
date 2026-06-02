@@ -98,7 +98,7 @@ const props = withDefaults(
     devContext?: string
   }>(),
   {
-    title: 'Supplier Items',
+    title: 'Items',
     description: 'Browse supplier item offers.',
     pending: false,
     link: false,
@@ -115,7 +115,7 @@ const props = withDefaults(
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Supplier Items'))
+const title = computed(() => String(props.title || 'Items'))
 const description = computed(() =>
   String(props.description || 'Browse supplier item offers.')
 )
