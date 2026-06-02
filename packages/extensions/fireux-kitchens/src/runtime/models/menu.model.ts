@@ -2,39 +2,37 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Family: Menu presentation records.
+ * Family: Both-facing app-scoped Kitchen presentation records.
  *
- * Menu is both:
- * - root/public when published and opened from QR or public routes
- * - kitchen-scoped when managed operationally inside a kitchen
+ * Menu is managed under the app-scoped Kitchen record. A Kitchen can start in
+ * the Misebox app and later move into its own app, but Menu storage remains
+ * app-scoped either way. Menu is "both" because it has a Kitchen Console
+ * management facade and a public published facade.
  *
  * Dish describes food. Menu presents selected dishes. MenuItem is a
  * placement/link to a Dish, not a second food entity.
  *
  * Canon paths:
- * - menus/{menuId}
- * - kitchens/{kitchenId}/menus/{menuId}
- * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
- * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
+ * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}
+ * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
+ * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
 export const MenuStorage = {
   shape: 'both',
-  root: 'menus/{menuId}',
-  scoped: 'kitchens/{kitchenId}/menus/{menuId}',
-  path: 'menus/{menuId}',
-  rootCollection: 'menus',
+  scoped: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
   collection: 'menus',
   parent: 'kitchen',
   idParam: 'menuId',
   children: {
-    sections: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
-    items: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+    sections: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+    items: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   },
 } as const
 
 export const MenuSectionStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
   collection: 'sections',
   parent: 'menu',
   idParam: 'sectionId',
@@ -42,7 +40,7 @@ export const MenuSectionStorage = {
 
 export const MenuItemStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   collection: 'items',
   parent: 'menu-section',
   idParam: 'itemId',

@@ -1,3 +1,4 @@
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { unref, type Ref } from 'vue'
@@ -18,12 +19,14 @@ const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(valu
 export function useMenuSectionMutations(options: Options = {}) {
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { appId } = useFireUXConfig()
 
   const path = (kitchenId: string, menuId: string) =>
     menuSectionsPath({
       kitchenCollectionPath: optionPath(options.kitchenCollectionPath),
       kitchenId,
       menuId,
+      appId,
     })
 
   const createSection = async (input: {

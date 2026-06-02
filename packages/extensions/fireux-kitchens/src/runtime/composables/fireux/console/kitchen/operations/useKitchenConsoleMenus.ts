@@ -15,7 +15,6 @@ export function useKitchenConsoleMenus() {
   )
   const { menus: liveMenus, pending: livePending, collectionPath } =
     useMenuCollection(fetchKitchenId, {
-      shape: 'scoped',
       kitchenCollectionPath: rootCollection,
       databaseId,
   })
@@ -31,13 +30,11 @@ export function useKitchenConsoleMenus() {
   const menus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const create = useMenuCreate({
-    shape: 'scoped',
     kitchenCollectionPath: rootCollection,
     kitchenId,
     databaseId,
   })
   const update = useMenuUpdate({
-    shape: 'scoped',
     kitchenCollectionPath: rootCollection,
     databaseId,
   })

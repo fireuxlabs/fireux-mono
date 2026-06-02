@@ -4,10 +4,10 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Kitchen-scoped
+ * Family: App-scoped Kitchen child
  * Storage: scoped guest-facing food record
- * Path: /kitchens/<kitchenId>/dishes/<dishId>
- * Owner app scope: Kitchen
+ * Path: apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}
+ * Owner app scope: Kitchen within an app runtime
  *
  * Dish owns guest-facing food copy. Menus decide where dishes appear.
  * Ingredients, prep, recipes, pricing, stock, images, and service workflow are
@@ -15,18 +15,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const DishStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/dishes/{dishId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
   collection: 'dishes',
   parent: 'kitchen',
   idParam: 'dishId',
 } as const
 
 export type DishTranslatedText = Partial<Record<string, string>>
-
-export type DishMenuPlacement = {
-  menu_id: string
-  section_id: string
-}
 
 export const DishModel = {
   id: '' as string,
@@ -59,39 +54,6 @@ export type DishUpdateInput = Partial<
 >
 
 const pickString = (value: unknown) => String(value ?? '').trim()
-
-export function normalizeDishStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-
-  return Array.from(
-    new Set(value.map((entry) => pickString(entry)).filter(Boolean))
-  )
-}
-
-export function normalizeDishMenuPlacements(value: unknown): DishMenuPlacement[] {
-  if (!Array.isArray(value)) return []
-
-  const seen = new Set<string>()
-  const placements: DishMenuPlacement[] = []
-
-  for (const entry of value) {
-    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue
-    const source = entry as Record<string, unknown>
-    const menuId = pickString(source.menu_id)
-    const sectionId = pickString(source.section_id)
-    if (!menuId || !sectionId) continue
-
-    const key = `${menuId}:${sectionId}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    placements.push({
-      menu_id: menuId,
-      section_id: sectionId,
-    })
-  }
-
-  return placements
-}
 
 export function normalizeDishTranslatedText(value: unknown): DishTranslatedText {
   if (typeof value === 'string') {

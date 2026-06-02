@@ -74,7 +74,7 @@ import {
 } from '../../composables/fireux/app/public-kitchen-language'
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
-import { KitchenStorage, type Kitchen } from '../../models/kitchen.model'
+import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
 const props = defineProps<{
@@ -140,8 +140,7 @@ const chromeLanguage = computed(() =>
 
 const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
 const { publishedMenus, pending: menusPending } = useMenuCollection(
-  kitchenId,
-  { shape: 'scoped', kitchenCollectionPath: KitchenStorage.rootCollection }
+  kitchenId
 )
 
 const menusLoading = computed(() =>

@@ -54,7 +54,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenConsoleDishes } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDishes'
-import { useDishCreate } from '../../../../composables/fireux/firestore/dish/mutations/useDishCreate'
+import { useDish } from '../../../../composables/fireux/firestore/dish/useDish'
 
 const {
   kitchenId,
@@ -62,7 +62,7 @@ const {
   databaseId,
   canWrite,
 } = useKitchenConsoleDishes({ resolveMenuSections: false })
-const { createDish } = useDishCreate({
+const { createDish } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })

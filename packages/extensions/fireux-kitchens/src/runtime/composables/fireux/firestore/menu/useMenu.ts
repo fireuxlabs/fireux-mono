@@ -20,15 +20,12 @@ export {
   menuItemsPath,
   menuPath,
   menuSectionsPath,
-  rootMenuPath,
   scopedMenuPath,
 } from './utils/paths'
 export { useMenuComputed } from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
 
 type UseMenuOptions = {
-  shape?: 'root' | 'scoped'
-  kitchenSlug?: Ref<string>
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   kitchenId?: string | Ref<string | null | undefined>
   useSelectedKitchen?: boolean
@@ -42,8 +39,8 @@ type UseMenuOptions = {
  * - docs/fireux-canon.md
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * The base Menu seam reads root Menu records by default. Kitchen-scoped menu
- * operations use explicit `shape: 'scoped'` options on Menu-owned seams.
+ * Menu records live under app-scoped Kitchen records. Public routes render
+ * eligible published menus from that same app-scoped Kitchen child stack.
  */
 export function useMenu(
   menuId: string | Ref<string>,

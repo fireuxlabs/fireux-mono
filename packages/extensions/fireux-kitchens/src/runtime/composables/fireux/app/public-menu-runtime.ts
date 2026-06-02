@@ -1,6 +1,5 @@
 import type { Dish } from '../../../models/dish.model'
 import type { Product } from 'fireux-products/runtime/models/product.model'
-import { KitchenStorage } from '../../../models/kitchen.model'
 import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
 
 export type PublicMenuItemRow = {
@@ -17,7 +16,6 @@ export type PublicMenuSectionRow = {
   items: PublicMenuItemRow[]
 }
 
-export const ROOT_KITCHENS = KitchenStorage.rootCollection
 export const clean = (value: unknown) => String(value ?? '').trim()
 export const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
 export const asRecord = (value: unknown): Record<string, unknown> =>

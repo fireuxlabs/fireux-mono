@@ -9,8 +9,6 @@ import {
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
-export type MenuCreateShape = 'root' | 'scoped'
-
 export type MenuCreateInput = {
   kitchenId?: string
   name: string
@@ -47,7 +45,6 @@ function buildMenuPayload(
 
 export function useMenuCreate(
   options: {
-    shape?: MenuCreateShape
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     kitchenId?: string | Ref<string | null | undefined>
     useSelectedKitchen?: boolean
@@ -70,16 +67,12 @@ export function useMenuCreate(
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
-    const shape: MenuCreateShape =
-      options.shape || (kitchenId ? 'scoped' : 'root')
 
     if (!name) throw new Error('Menu name is required')
-    if (shape === 'scoped' && !kitchenId) throw new Error('Kitchen id is required')
+    if (!kitchenId) throw new Error('Kitchen id is required')
 
     const id = await createDocument<Partial<Menu>>(
-      shape === 'scoped'
-        ? `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`
-        : MenuStorage.rootCollection,
+      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`,
       buildMenuPayload({ ...input, kitchenId }, name),
       { app: true, creator: true }
     )

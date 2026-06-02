@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 
-import type { DishCard } from '../../../composables/fireux/firestore/dish/utils/view/useDishInterface'
+import type { DishCard } from '../../../composables/fireux/firestore/dish/useDish'
 
 type Props = Pick<
   DishCard.Card,

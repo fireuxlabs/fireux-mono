@@ -190,8 +190,7 @@ import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleDish } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDish'
-import { useDishDelete } from '../../../../composables/fireux/firestore/dish/mutations/useDishDelete'
-import { useDishUpdate } from '../../../../composables/fireux/firestore/dish/mutations/useDishUpdate'
+import { useDish } from '../../../../composables/fireux/firestore/dish/useDish'
 import {
   normalizeDishTranslatedText,
   type Dish,
@@ -210,11 +209,7 @@ const {
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
-const { updateDish } = useDishUpdate({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
-const { deleteDish } = useDishDelete({
+const { updateDish, deleteDish } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })

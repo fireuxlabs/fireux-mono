@@ -2,8 +2,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, unref, type Ref } from 'vue'
 import {
-  normalizeDishMenuPlacements,
-  normalizeDishStringArray,
   normalizeDishTranslatedText,
   DishStorage,
   type Dish,
@@ -14,7 +12,6 @@ import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelectio
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined
-const normalizeLanguageCode = (value: unknown) => optional(value)?.replace(/_/g, '-')
 
 export function useDishUpdate(
   options: {
@@ -42,25 +39,14 @@ export function useDishUpdate(
     const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    const next: Partial<Dish> & Record<string, unknown> = { ...patch }
+    const next: Partial<Dish> = {}
 
-    if ('name' in next) next.name = trim(next.name)
-    if ('slug' in next) next.slug = optional(next.slug) || ''
-    if ('description' in next) next.description = trim(next.description)
-    if ('source_language' in next) {
-      next.source_language = normalizeLanguageCode(next.source_language) || ''
-    }
-    if ('names' in next) next.names = normalizeDishTranslatedText(next.names)
-    if ('descriptions' in next) {
-      next.descriptions = normalizeDishTranslatedText(next.descriptions)
-    }
-    if ('translated' in next) next.translated = next.translated === true
-    if ('menu_placements' in next) {
-      next.menu_placements = normalizeDishMenuPlacements(next.menu_placements)
-    }
-    if ('mise_ids' in next) next.mise_ids = normalizeDishStringArray(next.mise_ids)
-    if ('ingredient_ids' in next) {
-      next.ingredient_ids = normalizeDishStringArray(next.ingredient_ids)
+    if ('name' in patch) next.name = trim(patch.name)
+    if ('slug' in patch) next.slug = optional(patch.slug) || ''
+    if ('description' in patch) next.description = trim(patch.description)
+    if ('names' in patch) next.names = normalizeDishTranslatedText(patch.names)
+    if ('descriptions' in patch) {
+      next.descriptions = normalizeDishTranslatedText(patch.descriptions)
     }
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`

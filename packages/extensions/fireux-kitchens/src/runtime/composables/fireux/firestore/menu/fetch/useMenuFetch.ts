@@ -7,7 +7,6 @@ import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/oper
 export function useMenuFetch(
   menuId: string,
   options: {
-    shape?: 'root' | 'scoped'
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     kitchenId?: string | Ref<string | null | undefined>
     databaseId?: string | Ref<string | null | undefined>
@@ -17,23 +16,18 @@ export function useMenuFetch(
   const { appId } = useFireUXConfig()
   const clean = (value: unknown) => String(value ?? '').trim()
   const kitchenId = clean(unref(options.kitchenId))
-  const shape = options.shape || (kitchenId ? 'scoped' : 'root')
-  const collectionPath =
-    shape === 'scoped'
-      ? resolveKitchenChildCollectionPath({
-          kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-          kitchenId,
-          collectionName: MenuStorage.collection,
-          appId,
-        })
-      : MenuStorage.rootCollection
+  const collectionPath = resolveKitchenChildCollectionPath({
+    kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
+    kitchenId,
+    collectionName: MenuStorage.collection,
+    appId,
+  })
   const menu = collectionPath && menuId
     ? firestoreFetchDoc<Menu>(collectionPath, menuId)
     : computed<Menu | undefined>(() => undefined)
   const exists = computed(() => Boolean(menu.value))
 
   return {
-    shape,
     collectionPath,
     menu,
     exists,

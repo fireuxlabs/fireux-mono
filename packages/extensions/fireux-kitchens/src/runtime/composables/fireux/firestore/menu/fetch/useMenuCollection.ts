@@ -4,12 +4,7 @@ import { computed, unref, type Ref } from 'vue'
 import { MenuStorage, type Menu } from '../../../../../models/menu.model'
 import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
-const ROOT_COLLECTION_PATH = MenuStorage.rootCollection
-
-export type MenuCollectionShape = 'root' | 'scoped'
-
 type UseMenuCollectionOptions = {
-  shape?: MenuCollectionShape
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
@@ -31,18 +26,13 @@ export function useMenuCollection(
   })
   const { appId } = useFireUXConfig()
   const resolvedKitchenId = computed(() => clean(unref(kitchenId)))
-  const shape = computed<MenuCollectionShape>(() =>
-    options.shape || (resolvedKitchenId.value ? 'scoped' : 'root')
-  )
   const collectionPath = computed(() =>
-    shape.value === 'scoped'
-      ? resolveKitchenChildCollectionPath({
-          kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-          kitchenId: resolvedKitchenId.value,
-          collectionName: MenuStorage.collection,
-          appId,
-        })
-      : ROOT_COLLECTION_PATH
+    resolveKitchenChildCollectionPath({
+      kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
+      kitchenId: resolvedKitchenId.value,
+      collectionName: MenuStorage.collection,
+      appId,
+    })
   )
   const menus = firestoreFetchCollection<Menu>(collectionPath)
   const activeMenus = computed(() =>
@@ -58,7 +48,6 @@ export function useMenuCollection(
 
   return {
     kitchenId: resolvedKitchenId,
-    shape,
     collectionPath,
     menus,
     activeMenus,

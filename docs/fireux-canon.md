@@ -58,6 +58,8 @@ Current learned examples:
   - Kitchen runs the operation.
   - Dish describes guest-facing food.
   - Menu presents selected dishes.
+  - Menu is both-facing: managed in Kitchen Console and rendered publicly when published.
+  - Menu storage is app-scoped under Kitchen; both-facing does not mean root `menus/{menuId}` truth.
   - QR points guests to one exact published menu URL.
   - Menu items require real `dish_id` links; public menus do not own dish copy.
 - App roles:
@@ -352,8 +354,8 @@ composables/fireux/firestore/<entity>/
 - `useFirestoreCreate` must not own idempotent setup behavior, provision behavior, server/API transport, storage upload, external provider logic, slug validation, entity validation, or overlay composition.
 - `useXCreate` is the entity-owned Create seam. It decides whether the Create behavior is out of the box, idempotent, or with provision, then delegates plain Firestore writes to lower-level helpers.
 - Record location language must describe where truth lives:
-  - root record: `menus/{menuId}`, `ingredients/{ingredientId}`, `kitchens/{kitchenId}`.
-  - parent-scoped record: `kitchens/{kitchenId}/menus/{menuId}`.
+  - root record: `ingredients/{ingredientId}`, `kitchens/{kitchenId}`.
+  - parent-scoped record: a record stored directly under its owning parent when that is the canon path.
   - app-scoped record: `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`.
   - root plus app overlay: root truth plus app relationship or overlay record.
   - child record: sections, items, messages, and similar records under a parent record.
@@ -387,7 +389,8 @@ composables/fireux/firestore/<entity>/
 | Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/create/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
 | System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
-| Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder`, `Dish`, `Menu`, `MenuSection`, `MenuItem`, `Recipe` |
+| Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder`, `Dish`, `MenuSection`, `MenuItem`, `Recipe` |
+| Both-facing scoped child entity | Scoped child stored under a parent, with both console management and public published rendering | scoped storage/read/write seams plus public route/publish/SEO surfaces; no root duplicate truth | `Menu` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/create/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 

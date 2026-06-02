@@ -130,8 +130,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed, ref, watch } from 'vue'
-import { useDishInterface } from '../../../composables/fireux/firestore/dish/utils/view/useDishInterface'
-import type { Dish } from '../../../models/dish.model'
+import { useDishInterface, type Dish } from '../../../composables/fireux/firestore/dish/useDish'
 
 type DishCollectionSection = {
   id: string

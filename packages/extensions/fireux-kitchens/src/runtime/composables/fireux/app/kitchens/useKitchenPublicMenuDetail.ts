@@ -1,6 +1,7 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -15,7 +16,6 @@ import {
   useMenuSectionCollection,
 } from '../../firestore/menu/useMenu'
 import {
-  ROOT_KITCHENS,
   clean,
   cleanIdentity,
   isPublicMenu,
@@ -33,6 +33,7 @@ export function useKitchenPublicMenuDetail() {
   const route = useRoute()
   const resolveDb = useFirestoreResolver()
   const { firestoreLoadDocsByIds } = useFirestoreRead()
+  const { appId } = useFireUXConfig()
   const slug = computed(() => clean(route.params.slug))
   const menuId = computed(() => clean(route.params.menuId))
 
@@ -58,22 +59,16 @@ export function useKitchenPublicMenuDetail() {
       cleanIdentity(canonicalSlug.value) !== cleanIdentity(slug.value)
   )
   const kitchenId = computed(() => clean(kitchen.value?.id))
-  const menuRead = useMenuCollection(kitchenId, {
-    shape: 'scoped',
-    kitchenCollectionPath: ROOT_KITCHENS,
-  })
+  const menuRead = useMenuCollection(kitchenId)
   const menus = computed(() => (menuRead.menus.value ?? []).filter(isPublicMenu))
   const menu = computed(() =>
     menus.value.find((item) => clean(item.id) === menuId.value) ?? null
   )
   const sectionRead = useMenuSectionCollection(
     kitchenId,
-    computed(() => clean(menu.value?.id)),
-    { kitchenCollectionPath: ROOT_KITCHENS }
+    computed(() => clean(menu.value?.id))
   )
-  const dishRead = useDishCollection(kitchenId, {
-    kitchenCollectionPath: ROOT_KITCHENS,
-  })
+  const dishRead = useDishCollection(kitchenId)
   const itemRows = ref<Array<{ sectionId: string; item: MenuItem }>>([])
   const itemsPending = ref(false)
 
@@ -93,10 +88,10 @@ export function useKitchenPublicMenuDetail() {
         for (const section of sections) {
           const sectionId = clean(section.id)
           const path = menuItemsPath({
-            kitchenCollectionPath: ROOT_KITCHENS,
             kitchenId: currentKitchenId,
             menuId: currentMenuId,
             sectionId,
+            appId,
           })
           if (!path) continue
 

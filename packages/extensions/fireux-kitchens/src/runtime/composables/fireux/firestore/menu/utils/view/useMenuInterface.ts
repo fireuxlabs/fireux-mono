@@ -66,7 +66,7 @@ export function useMenuInterface() {
 
     return {
       id,
-      to: `/menus/${encodeURIComponent(id)}`,
+      to: '',
       imageUrl: '',
       title: name,
       subtitle: description,

@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { DishCard } from '../../../composables/fireux/firestore/dish/utils/view/useDishInterface'
+import type { DishCard } from '../../../composables/fireux/firestore/dish/useDish'
 
 type PillProps = Pick<DishCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'> & {
   badges?: string[]

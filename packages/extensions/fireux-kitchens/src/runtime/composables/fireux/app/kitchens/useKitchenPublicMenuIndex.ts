@@ -6,7 +6,6 @@ import {
 } from '../public-kitchen-language'
 import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../firestore/menu/useMenu'
-import { KitchenStorage } from '../../../../models/kitchen.model'
 import type { Menu } from '../../../../models/menu.model'
 import {
   asRecord,
@@ -66,10 +65,7 @@ export function useKitchenPublicMenuIndex() {
   const publicLanguageQuery = computed(() =>
     selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
   )
-  const menuRead = useMenuCollection(kitchenId, {
-    shape: 'scoped',
-    kitchenCollectionPath: KitchenStorage.rootCollection,
-  })
+  const menuRead = useMenuCollection(kitchenId)
   const menus = computed(() =>
     [...menuRead.menus.value].filter(isVisibleMenu).sort(sortMenus)
   )

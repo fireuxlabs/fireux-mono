@@ -37,12 +37,11 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_state`
   - `app_scope_app_id`
 - Global ingredients: `ingredients/{ingredientId}`
-- Root public kitchen children:
-  - `kitchens/{kitchenId}/menus/{menuId}`
-  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
-  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
-  - `kitchens/{kitchenId}/dishes/{dishId}`
 - App-scoped operational kitchen children:
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
+  - `apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}`
   - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
   - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
   - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
@@ -69,20 +68,23 @@ Recipe composable stack canon:
 - `firestore/recipe/utils/view/useRecipeInterface.ts` owns Recipe UI projections.
 
 Menu composable stack canon:
-- `Menu` is the public presentation record for menu surfaces.
-- Root `menus/{menuId}` is allowed for public-first or anonymous menu records, such as a quick QR menu upload.
-- Kitchen-scoped menus remain valid when the menu belongs to or is operated inside a kitchen:
-  - `kitchens/{kitchenId}/menus/{menuId}` for root kitchen menu records
-  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` for app-scoped kitchen menu records
+- `Menu` is the Kitchen presentation record for menu surfaces.
+- `Menu` is both-facing:
+  - console facade: Kitchen operators create/edit/publish menus
+  - public facade: guests read published menus from `/kitchens/[slug]/menus/**`
+- Kitchen menus are app-scoped child records:
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+- A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
+- Root `menus/{menuId}` is not V1 Kitchen/Menu canon.
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
 - Public menu pages and app/API upload flows are route consumers of `Menu`; they must not create a second Menu family or a special public Menu composable.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
-- `firestore/menu/fetch/useMenuFetch.ts` owns read-one root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.
-- `firestore/menu/fetch/useMenuCollection.ts` owns read-many root Menu reads by default and kitchen-scoped reads through explicit `shape: 'scoped'`.
+- `firestore/menu/fetch/useMenuFetch.ts` owns read-one app-scoped Kitchen Menu reads.
+- `firestore/menu/fetch/useMenuCollection.ts` owns read-many app-scoped Kitchen Menu reads.
 - `firestore/menu/fetch/useMenuSectionCollection.ts` and `useMenuItemCollection.ts` own Menu child reads.
-- `firestore/menu/mutations/useMenuCreate.ts` owns root Menu creates by default and kitchen-scoped creates through explicit `shape: 'scoped'`.
-- `firestore/menu/mutations/useMenuUpdate.ts` owns root Menu updates by default and kitchen-scoped updates through explicit `shape: 'scoped'`.
-- `firestore/menu/mutations/useMenuDelete.ts` owns root Menu deletes by default and kitchen-scoped deletes through explicit `shape: 'scoped'`.
+- `firestore/menu/mutations/useMenuCreate.ts` owns app-scoped Kitchen Menu creates.
+- `firestore/menu/mutations/useMenuUpdate.ts` owns app-scoped Kitchen Menu updates.
+- `firestore/menu/mutations/useMenuDelete.ts` owns app-scoped Kitchen Menu deletes/removals.
 - `firestore/menu/mutations/useMenuSectionMutations.ts` and `useMenuItemMutations.ts` own Menu child writes.
 - `firestore/menu/utils/view/useMenuComputed.ts` owns derived Menu facts.
 - `firestore/menu/utils/view/useMenuInterface.ts` owns Menu UI projections.
@@ -102,11 +104,11 @@ Ingredient composable stack canon:
 - Selected kitchen ingredient operations live under `console/kitchen/operations/ingredients`.
 
 ## 4b) Public menu publishing
-- Published menu routes use eligible root kitchen menu records and their child records:
-  - `kitchens/{kitchenId}/menus/{menuId}`
-  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
-  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
-  - `kitchens/{kitchenId}/dishes/{dishId}`
+- Published menu routes use eligible app-scoped Kitchen menu records and their child records:
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
+  - `apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}`
 - Kitchen runs the operation.
 - `Dish` describes guest-facing food.
 - `Menu` presents selected dishes.

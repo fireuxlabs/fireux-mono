@@ -1,10 +1,15 @@
+import type { Ref } from 'vue'
+import type { Dish } from '../../../../models/dish.model'
 import { useDishCollection } from './fetch/useDishCollection'
 import { useDishFetch } from './fetch/useDishFetch'
 import { useDishCreate } from './mutations/useDishCreate'
 import { useDishUpdate } from './mutations/useDishUpdate'
 import { useDishDelete } from './mutations/useDishDelete'
+import { useDishComputed } from './utils/view/useDishComputed'
 import { useDishInterface } from './utils/view/useDishInterface'
-import { resolveDishSemanticLine } from './utils/view/resolveDishSemanticLine'
+
+export type { Dish }
+export type { DishCard, DishProfile } from './utils/view/useDishInterface'
 
 export {
   useDishCollection,
@@ -12,8 +17,8 @@ export {
   useDishCreate,
   useDishUpdate,
   useDishDelete,
+  useDishComputed,
   useDishInterface,
-  resolveDishSemanticLine,
 }
 
 /**
@@ -28,11 +33,17 @@ export {
  * Dish is scoped to Kitchen-owned menu/dish publishing and operations.
  * It is not a global root entity or a selected console workspace.
  */
-export function useDish() {
+type UseDishOptions = {
+  kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
+}
+
+export function useDish(options: UseDishOptions = {}) {
   return {
-    ...useDishCreate(),
-    ...useDishUpdate(),
-    ...useDishDelete(),
+    ...useDishCreate(options),
+    ...useDishUpdate(options),
+    ...useDishDelete(options),
+    ...useDishComputed(),
     ...useDishInterface(),
   }
 }

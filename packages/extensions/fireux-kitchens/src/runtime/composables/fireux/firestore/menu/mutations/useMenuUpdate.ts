@@ -1,10 +1,11 @@
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/dish.model'
-import { MenuStorage, type Menu, type MenuItem, type MenuSection, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu.model'
+import { type Menu, type MenuItem, type MenuSection, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu.model'
 import {
   menuItemsPath,
   menuPath,
@@ -16,26 +17,25 @@ const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useMenuUpdate(
   options: {
-    shape?: 'root' | 'scoped'
     kitchenCollectionPath?: string | Ref<string | null | undefined>
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const resolveDb = useFirestoreResolver(options.databaseId)
+  const { appId } = useFireUXConfig()
 
   const collectionPath = (kitchenId: string) =>
-    options.shape === 'scoped' || clean(kitchenId)
-      ? menuPath({
-          shape: 'scoped',
-          kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-          kitchenId,
-        })
-      : MenuStorage.rootCollection
+    menuPath({
+      kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
+      kitchenId,
+      appId,
+    })
 
   const dishesPath = (kitchenId: string) => {
     const basePath = resolveKitchenCollectionBasePath(
-      clean(unref(options.kitchenCollectionPath))
+      clean(unref(options.kitchenCollectionPath)),
+      appId
     )
     const id = clean(kitchenId)
     return basePath && id ? `${basePath}/${id}/${DishStorage.collection}` : ''
@@ -49,7 +49,7 @@ export function useMenuUpdate(
   }
 
   async function setMenuStatus(kitchenId: string, menuId: string, status: MenuStatus) {
-    if (status === 'published' && (options.shape === 'scoped' || clean(kitchenId))) {
+    if (status === 'published') {
       await assertMenuCanPublish(kitchenId, menuId)
     }
     await updateMenu(kitchenId, menuId, { status })
@@ -60,6 +60,7 @@ export function useMenuUpdate(
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
       kitchenId,
       menuId,
+      appId,
     })
     if (!sectionsPath) throw new Error('Missing menu sections')
 
@@ -77,6 +78,7 @@ export function useMenuUpdate(
         kitchenId,
         menuId,
         sectionId: section.id,
+        appId,
       })
       const itemsSnap = await getDocs(collection(resolveDb(), itemsPath))
       const items = itemsSnap.docs

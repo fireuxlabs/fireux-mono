@@ -34,14 +34,14 @@ This README only explains the Kitchen family delta.
 - the rest of the routes are kitchen-owned operational delivery
 
 Kitchen-specific delta:
-- live kitchen entry is Chef-aware
+- live kitchen console entry is operator-based
 - `index.vue` and `/kitchens` intentionally share the same chooser component
 - console create creates `apps/<appId>/kitchens/<kitchenId>` when missing
 - console create creates the public kitchen first when missing
 - console create seeds user-based console authority; Chef profile links are optional relationship/display data
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`
 - app-scoped operation children include ingredients, mise, recipes, orders, team, stations, and suppliers
-- public menus and dishes are root public children, not private console operation records
+- public menu routes render app-scoped Kitchen menu and dish records
 - public menu translation must not depend on private working `mise`
 
 Kitchen is currently the reference implementation of the shared console-entry pattern.

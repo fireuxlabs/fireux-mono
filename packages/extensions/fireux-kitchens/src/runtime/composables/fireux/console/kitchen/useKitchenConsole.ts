@@ -1,10 +1,10 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   readRuntimeFirestoreDatabaseId,
@@ -22,6 +22,7 @@ import {
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'
+import { resolveKitchenConsoleCollectionPath } from './operations/collections/useKitchenChildCollection'
 import type { Ref } from 'vue'
 
 type KitchenConsoleMode = ConsoleMode
@@ -45,6 +46,7 @@ type UseKitchenConsoleOptions = {
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {
+  const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<KitchenCollectionFilter>(() => {
@@ -86,7 +88,7 @@ export function useKitchenConsole(
       ? ''
       : selectedMode.value === 'test'
         ? KitchenStorage.rootCollection
-        : resolveConsoleRootCollection(KitchenStorage.rootCollection, selectedMode.value)
+        : resolveKitchenConsoleCollectionPath(appId)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

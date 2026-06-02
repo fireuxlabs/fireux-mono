@@ -36,10 +36,10 @@ Kitchen-specific delta:
 - public kitchen URLs use `kitchen.slug`; `kitchen.id` remains the stored Firestore identity
 - public create is place-backed and creates `kitchens/<id>` when missing
 - when app context exists, the shared console create seam may also create `apps/<appId>/kitchens/<id>`
-- entering live kitchen routes normally ensure a Chef profile first
-- public menu publishing reads root public children:
-  - `kitchens/<kitchenId>/menus/<menuId>`
-  - `kitchens/<kitchenId>/dishes/<dishId>`
+- entering live kitchen console routes uses operator-based Kitchen access, not Chef profile presence
+- public menu publishing reads app-scoped Kitchen children:
+  - `apps/<appId>/kitchens/<kitchenId>/menus/<menuId>`
+  - `apps/<appId>/kitchens/<kitchenId>/dishes/<dishId>`
 - public menu and dish copy is translated directly from menu/dish text
 - public menu delivery must not depend on private working `mise` or console operation lines
 
@@ -49,4 +49,4 @@ This folder owns the public kitchen side of the shared console-entry concept.
 Its delta is:
 - public browsing
 - public kitchen create
-- Chef-aware live entry from the public chooser
+- operator-aware live entry from the public chooser
