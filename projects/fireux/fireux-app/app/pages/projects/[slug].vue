@@ -175,7 +175,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
+import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import {
   useProjectInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
@@ -193,15 +193,7 @@ const routeSlug = computed<string | null>(() => String(route.params.slug || '').
 const operatorTo = computed(() =>
   routeSlug.value ? `/projects/${encodeURIComponent(routeSlug.value)}/operator` : ''
 )
-const { projects, pending } = useProjectCollection({ source: 'live' })
-const project = computed(() => {
-  const slug = String(routeSlug.value || '').toLowerCase()
-  if (!slug) return null
-
-  return projects.value.find(
-    (entry) => String(entry.slug || '').trim().toLowerCase() === slug
-  ) ?? null
-})
+const { project, pending } = useProjectFetch(routeSlug)
 
 const projectCard = computed(() => profile(project.value))
 const pageTitle = computed(

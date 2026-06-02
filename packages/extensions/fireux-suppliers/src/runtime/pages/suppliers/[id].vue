@@ -1,7 +1,7 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
-      <template #ctas>
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
+      <template #links>
         <UButton
           v-if="supplierRecord && isAdminUser && docId"
           icon="i-lucide-key-round"
@@ -18,7 +18,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/console/supplier')"
+          to="/console/supplier"
         >
           Manage supplier
         </UButton>
@@ -26,83 +26,72 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <ClientOnly>
-        <div class="supplier-page">
-          <div v-if="loading" class="py-10 text-sm opacity-70">
-            Loading supplier…
-          </div>
+      <UAlert
+        v-if="pending"
+        color="neutral"
+        variant="soft"
+        title="Loading supplier"
+        description="Fetching this supplier."
+      />
 
-          <div v-else-if="!supplierRecord" class="space-y-2">
-            <MoleculesProfilesAdminCreateCard
-              v-if="isAdminUser"
-              title="Supplier not available"
-              description="Create a supplier record for this user."
-              :button-label="supplierCreateCta"
-              :loading="isCreating"
-              :error="createError"
-              @create="createSupplier"
-            />
+      <MoleculesProfilesAdminCreateCard
+        v-else-if="!supplierRecord && isAdminUser"
+        title="Supplier not available"
+        description="Create a supplier record for this user."
+        :button-label="supplierCreateCta"
+        :loading="isCreating"
+        :error="createError"
+        @create="createSupplier"
+      />
 
-            <div v-else>
-              <h1 class="text-lg font-semibold">Supplier Not Found</h1>
-              <p>The supplier you're looking for doesn't exist.</p>
-              <NuxtLink to="/suppliers" class="text-primary hover:underline"
-                >← Back</NuxtLink
-              >
-            </div>
-          </div>
+      <UAlert
+        v-else-if="!supplierRecord"
+        color="warning"
+        variant="soft"
+        title="Supplier not found"
+        description="This supplier is not available."
+      />
 
-          <div v-else class="space-y-4">
-            <SupplierCardsProfile v-if="supplierCard" :card="supplierCard" />
+      <template v-else>
+        <SupplierCardsProfile v-if="supplierCard" :card="supplierCard" />
 
-            <DevJson
-              v-if="isDev && supplierRecord"
-              :title="'Supplier (Doc)'"
-              context="Supplier detail page · suppliers/[id] · supplier doc"
-              :data="supplierRecord"
-              :default-open="false"
-            />
-          </div>
-        </div>
-
-        <template #fallback>
-          <div class="py-10 text-sm opacity-70">Loading supplier…</div>
-        </template>
-      </ClientOnly>
+        <DevJson
+          v-if="isDev"
+          :title="'Supplier (JSON)'"
+          context="Supplier detail page · suppliers/[id] · supplier doc"
+          :data="supplierRecord"
+          :default-open="false"
+        />
+      </template>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
+import { useRoute } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
+import { useSupplierFetch } from '../../composables/fireux/firestore/supplier/fetch/useSupplierFetch'
 import { useSupplierCreate } from '../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
 import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-const supplierCollection = 'suppliers'
 const supplierCreateCta =
   'Create your supplier workspace record to appear in listings.'
 
 const route = useRoute()
-const raw = route.params.id
-const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
+const docId = computed(() => {
+  const raw = route.params.id
+  return Array.isArray(raw) ? String(raw[0] || '').trim() : String(raw || '').trim()
+})
 
-const { user, coreUser, appUser } = useUser()
-
-const { firestoreFetchDoc } = useFirestoreRead()
-const rawDoc = docId ? await firestoreFetchDoc(supplierCollection, docId) : null
-const supplierRecord = computed<any>(
-  () => (rawDoc as any)?.value ?? rawDoc ?? null
-)
-const loading = computed(() => !rawDoc && !!docId)
+const { user, appUser } = useUser()
+const { supplier: supplierRecord, pending } = useSupplierFetch(docId)
 const { profile: supplierToProfile } = useSupplierInterface()
 const supplierCard = computed(() => supplierToProfile(supplierRecord.value))
 
 const displayName = computed(() =>
-  supplierCard.value?.title || docId || null
+  supplierCard.value?.title || docId.value || null
 )
 const pageTitle = computed(() => displayName.value ?? 'Supplier')
 const pageDescription = computed(() =>
@@ -114,7 +103,7 @@ const isDev = import.meta.dev
 
 useSupplierSeo(supplierRecord)
 
-const isSelf = computed(() => Boolean(docId && user.value?.id === docId))
+const isSelf = computed(() => Boolean(docId.value && user.value?.id === docId.value))
 
 const isAdminUser = computed(
   () => appUser.value?.role === 'admin'
@@ -125,13 +114,13 @@ const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
 const createSupplier = async () => {
-  if (isCreating.value || !docId) return
+  if (isCreating.value || !docId.value) return
   isCreating.value = true
   createError.value = null
 
   try {
     await createSupplierConsole({
-      existingRootId: docId,
+      existingRootId: docId.value,
       mode: 'console',
     })
   } catch (error) {

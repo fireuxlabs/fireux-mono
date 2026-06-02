@@ -2,8 +2,8 @@
   <NuxtPage v-if="hasChildRoute" />
 
   <UPage v-else>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
-      <template #ctas>
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
+      <template #links>
         <UButton
           size="xs"
           variant="ghost"
@@ -13,43 +13,52 @@
           Back
         </UButton>
         <UButton
-          v-if="canEdit && kitchenId"
+          v-if="operatorTo"
           size="xs"
           variant="soft"
           color="neutral"
-          icon="i-lucide-pencil"
-          @click="goToEdit"
+          icon="i-lucide-key-round"
+          :to="operatorTo"
         >
-          Edit
+          Operator
+        </UButton>
+        <UButton
+          v-if="canEdit"
+          size="xs"
+          variant="soft"
+          color="neutral"
+          icon="i-lucide-layout-dashboard"
+          to="/console/kitchen"
+        >
+          Manage kitchen
         </UButton>
       </template>
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <div v-if="loading" class="py-10 text-sm opacity-70">
-        Loading kitchen...
-      </div>
+      <UAlert
+        v-if="loading"
+        color="neutral"
+        variant="soft"
+        title="Loading kitchen"
+        description="Fetching this kitchen."
+      />
 
-      <div v-else-if="!kitchen" class="space-y-2">
-        <h1 class="text-lg font-semibold">Kitchen Not Found</h1>
-        <p>The kitchen you are looking for does not exist or is not public-ready.</p>
-        <NuxtLink to="/kitchens" class="text-primary hover:underline">
-          &larr; Back
-        </NuxtLink>
-      </div>
+      <UAlert
+        v-else-if="!kitchen"
+        color="warning"
+        variant="soft"
+        title="Kitchen not found"
+        description="This kitchen does not exist or is not public-ready."
+      />
 
       <div v-else class="space-y-4">
-        <div class="flex items-start gap-3">
-          <div
-            v-if="kitchenImageUrl"
-            class="flex max-h-48 max-w-2xl flex-1 items-center justify-center overflow-hidden rounded-lg border border-default bg-muted p-3 sm:max-h-64"
-          >
-            <img
-              :src="kitchenImageUrl"
-              :alt="kitchenImageAlt"
-              class="h-auto max-h-40 max-w-full object-contain sm:max-h-56"
-            >
-          </div>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <KitchenCardsProfile
+            v-if="kitchenProfileModel"
+            class="flex-1"
+            :model="kitchenProfileModel"
+          />
 
           <MenuSproochliLanguageTrigger
             class="shrink-0"
@@ -169,10 +178,10 @@
                     size="xs"
                     variant="soft"
                     color="primary"
-                    icon="i-lucide-pencil"
-                    @click="goToEdit"
+                    icon="i-lucide-layout-dashboard"
+                    to="/console/kitchen"
                   >
-                    Edit kitchen
+                    Manage kitchen
                   </UButton>
                   <UButton
                     v-if="showClaimButton"
@@ -204,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute, useRuntimeConfig } from '#imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
@@ -217,6 +226,7 @@ import {
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenProfileView } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
 import { KitchenStorage, type Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
@@ -268,6 +278,10 @@ const kitchen = computed<Kitchen | null>(() => {
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
 const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.value)
+const operatorTo = computed(() =>
+  kitchenSlug.value ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}/operator` : ''
+)
+const { model: kitchenProfileModel } = useKitchenProfileView(kitchen)
 
 const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId,
@@ -342,9 +356,6 @@ const localizedMenuDescription = (menu: Menu) =>
 
 const menuSummary = (_menu: Menu) => chromeLabels.value.openMenu
 
-const kitchenImageUrl = computed(() => String((kitchen.value as any)?.image_url || '').trim())
-const kitchenImageAlt = computed(() => pageTitle.value)
-
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => String((kitchen.value as any)?.claimed_by || '').trim())
 const claimedByLabel = computed(() => claimedBy.value || '')
@@ -390,11 +401,6 @@ const pageDescription = computed(() =>
   kitchen.value?.short_address || kitchen.value?.formatted_address || 'Kitchen details.'
 )
 const isDev = import.meta.dev
-
-const goToEdit = async () => {
-  if (!kitchenId.value) return
-  await navigateTo(`/kitchens/edit/${encodeURIComponent(kitchenId.value)}`)
-}
 
 useKitchenSeo(kitchen)
 </script>

@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
       <template #links>
         <UButton
           v-if="portfolioId"
@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioSeo } from '../../composables/fireux/firestore/portfolio/utils/usePortfolioSeo'
 import { usePortfolioInterface } from '../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
@@ -50,11 +50,8 @@ definePageMeta({
 
 const route = useRoute()
 const portfolioId = computed(() => String(route.params.id || '').trim())
-const { portfolios, pending } = usePortfolioCollection()
+const { portfolio, pending } = usePortfolioFetch(portfolioId)
 const { profile } = usePortfolioInterface()
-const portfolio = computed(() =>
-  portfolios.value.find((entry) => entry.id === portfolioId.value) ?? null
-)
 const portfolioCard = computed(() => profile(portfolio.value))
 const pageTitle = computed(() =>
   portfolioCard.value?.title || portfolioId.value || 'Portfolio'

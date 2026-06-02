@@ -206,6 +206,39 @@ The canonical family entry component shape is:
 - keep domain data hooks, cards, collection managers, and create/ensure behaviour in the owning family.
 - do not copy the whole target-selection shell into every console family.
 
+## Console Child Matrix
+
+Use this matrix when comparing console roots and their children. Keep it small:
+- `root/public`: a browsable root record outside the console
+- `scoped`: only meaningful inside a parent console/workspace
+- `both`: operational inside the console and public/published outside it
+
+| Console root | Child / relation | Mode | Notes |
+| --- | --- | --- | --- |
+| Kitchen | Dish | scoped | Kitchen-owned food/content record. Public guests see dishes through menus, not as a root catalogue. |
+| Kitchen | Menu | both | Kitchen-owned operational record with a published guest-facing surface and QR target. |
+| Kitchen | MenuSection | scoped | Belongs to one menu. |
+| Kitchen | MenuItem | scoped | Belongs to one menu section and points at a dish. |
+| Kitchen | Recipe | scoped publishable child | Kitchen-owned authored content; public projection is deferred. |
+| Kitchen | KitchenIngredient | scoped | Kitchen usage/link record for root Ingredient truth. |
+| Kitchen | KitchenSupplierIngredient | scoped | Kitchen/supplier/ingredient linkage record. |
+| Kitchen | Mise, Order, Team, Station | scoped | Operational kitchen records. Authority comes from Kitchen operator/membership seams. |
+| Supplier | SupplierCatalogue | scoped | Supplier-owned catalogue structure. |
+| Supplier | SupplierProduct | scoped | Supplier-owned product/catalogue item unless future canon promotes it. |
+| Supplier | SupplierIngredient links | scoped | Supplier-side links to root Ingredient truth. |
+| Portfolio | Document, DocumentLink | scoped | Portfolio-scoped console operation records. |
+| Portfolio | Task, ComplianceRecord | scoped | Portfolio operational/governance records. |
+| Portfolio | Client, Property, Unit links | scoped | Portfolio-private relationships unless future canon promotes a public/root entity. |
+| Project | App relation | root reference | App is root truth; Project manages/relates to it. |
+| Project | Ecosystem relation | root reference | Ecosystem is root/system truth; Project connects to it. |
+| Project | Module/config/deployment records | scoped/system adapter | Project/App management settings, not public child entities. |
+| Project | Operator membership | scoped | Project authority belongs to project operator/membership records. |
+
+The current product focus is:
+- Kitchen > Menu as the main `both` child flow
+- Kitchen > Dish as scoped content feeding menus
+- Supplier, Portfolio, and Project as comparison rails for console shape
+
 ## Kitchen As Reference Variant
 
 `Kitchen` is the clearest current implementation of this concept.
