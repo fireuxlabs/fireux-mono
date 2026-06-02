@@ -2,6 +2,7 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type {
   Place,
   PlaceImageShade,
+  PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { Kitchen, KitchenOpeningHours } from '../../../../../../models/kitchen.model'
@@ -37,6 +38,19 @@ export namespace KitchenCard {
 
     // Ownership
     claimedBy?: string
+  }
+
+  export type Profile = Card & {
+    card: Card
+    prop?: string
+    website?: string
+    address?: string
+    phone?: string
+    socialLinks?: Partial<PlaceSocialLinks>
+    coverImage?: string
+    galleryImages?: string[]
+    about?: string
+    verified?: boolean
   }
 }
 
@@ -107,7 +121,9 @@ const resolveKitchenPath = (target: {
 }
 
 export function useKitchenInterface() {
+  type KitchenIdentity = KitchenCard.Card
   type KitchenPill = KitchenCard.Card
+  type KitchenProfile = KitchenCard.Profile
 
   type KitchenCell = Pick<
     KitchenCard.Card,
@@ -192,6 +208,38 @@ export function useKitchenInterface() {
 
   const toInterface = buildInterface
 
+  function identity(
+    target?: KitchenSurface | null | undefined
+  ): KitchenIdentity | null {
+    return buildInterface(target)
+  }
+
+  function profile(
+    target?: KitchenSurface | null | undefined
+  ): KitchenProfile | null {
+    const card = identity(target)
+    if (!card || !target) return null
+    const address = card.shortAddress || card.formattedAddress
+
+    return {
+      ...card,
+      card,
+      prop: safeString((target as any)?.brand_tagline),
+      website: safeString((target as any)?.website),
+      address,
+      phone: safeString((target as any)?.phone),
+      socialLinks: (target as any)?.social_links as
+        | Partial<PlaceSocialLinks>
+        | undefined,
+      coverImage: safeString((target as any)?.cover_image),
+      galleryImages: (
+        (target as any)?.gallery_images as string[] | undefined
+      )?.slice(0, 3),
+      about: safeString((target as any)?.about),
+      verified: Boolean((target as any)?.verified),
+    }
+  }
+
   function pill(
     target?: KitchenSurface | null | undefined
   ): KitchenPill | null {
@@ -236,15 +284,10 @@ export function useKitchenInterface() {
     }
   }
 
-  function profile(
-    target?: KitchenSurface | null | undefined
-  ): KitchenCard.Card | null {
-    return buildInterface(target)
-  }
-
   return {
     surface,
     interface: toInterface,
+    identity,
     pill,
     cell,
     preview,

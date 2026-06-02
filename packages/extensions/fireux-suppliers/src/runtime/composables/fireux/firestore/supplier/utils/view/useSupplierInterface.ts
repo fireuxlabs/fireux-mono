@@ -38,6 +38,7 @@ export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
 }
 
 export function useSupplierInterface(supplier?: SupplierRefs | null) {
+  type SupplierIdentity = SupplierCard.Card
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
   type SupplierPreview = SupplierCard.Card
@@ -104,6 +105,12 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
 
   const toInterface = buildInterface
 
+  function identity(
+    target?: SupplierSurface | null | undefined
+  ): SupplierIdentity | null {
+    return buildInterface(target)
+  }
+
   function pill(
     target?: SupplierSurface | null | undefined
   ): SupplierPill | null {
@@ -125,12 +132,13 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
   function profile(
     target?: SupplierSurface | null | undefined
   ): SupplierProfile | null {
-    return buildInterface(target)
+    return identity(target)
   }
 
   return {
     surface,
     interface: toInterface,
+    identity,
     pill,
     cell,
     preview,

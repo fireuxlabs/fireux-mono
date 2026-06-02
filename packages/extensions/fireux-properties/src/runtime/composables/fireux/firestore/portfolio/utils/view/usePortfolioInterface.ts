@@ -29,6 +29,7 @@ export namespace PortfolioCard {
 }
 
 export function usePortfolioInterface() {
+  type PortfolioIdentity = PortfolioCard.Card
   type PortfolioPill = PortfolioCard.Card
   type PortfolioCell = PortfolioCard.Card
   type PortfolioPreview = PortfolioCard.Card
@@ -87,6 +88,12 @@ export function usePortfolioInterface() {
 
   const toInterface = buildInterface
 
+  function identity(
+    target?: PortfolioSurface | null | undefined
+  ): PortfolioIdentity | null {
+    return buildInterface(target)
+  }
+
   function pill(target?: PortfolioSurface | null | undefined): PortfolioPill | null {
     return buildInterface(target)
   }
@@ -104,12 +111,13 @@ export function usePortfolioInterface() {
   function profile(
     target?: PortfolioSurface | null | undefined
   ): PortfolioProfile | null {
-    return buildInterface(target)
+    return identity(target)
   }
 
   return {
     surface,
     interface: toInterface,
+    identity,
     pill,
     cell,
     preview,

@@ -57,6 +57,7 @@ export type ProjectInterfaceCard = {
 }
 
 export function useProjectInterface() {
+  type ProjectIdentity = ProjectInterfaceCard
   type ProjectPill = ProjectInterfaceCard
   type ProjectCell = ProjectInterfaceCard
   type ProjectPreview = ProjectInterfaceCard
@@ -108,6 +109,12 @@ export function useProjectInterface() {
 
   const toInterface = buildInterface
 
+  function identity(
+    target?: ProjectSurface | null | undefined
+  ): ProjectIdentity | null {
+    return buildInterface(target)
+  }
+
   function pill(
     target?: ProjectSurface | null | undefined
   ): ProjectPill | null {
@@ -129,12 +136,13 @@ export function useProjectInterface() {
   function profile(
     target?: ProjectSurface | null | undefined
   ): ProjectProfile | null {
-    return buildInterface(target)
+    return identity(target)
   }
 
   return {
     surface,
     interface: toInterface,
+    identity,
     pill,
     cell,
     preview,

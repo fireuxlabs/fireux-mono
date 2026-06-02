@@ -63,14 +63,13 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { demoKitchenHydratedList } from '../../../../../../../../demo/kitchen.demo';
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
-import { useKitchenProfileView } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 import type { Kitchen } from '../../../models/kitchen.model';
 
 const emit = defineEmits<{
   (event: 'ready', kitchen: Kitchen): void
 }>()
 
-const { pill, cell, preview } = useKitchenInterface()
+const { pill, cell, preview, profile } = useKitchenInterface()
 
 const selectedId = ref(String(demoKitchenHydratedList[0]?.id ?? ''))
 
@@ -97,7 +96,7 @@ const pillItems = computed(() =>
 const demoPill = computed(() => pill(demoKitchen.value))
 const demoCell = computed(() => cell(demoKitchen.value))
 const demoPreview = computed(() => preview(demoKitchen.value))
-const { model: demoProfile } = useKitchenProfileView(demoKitchen)
+const demoProfile = computed(() => profile(demoKitchen.value))
 
 onMounted(() => {
   emit('ready', demoKitchen.value)

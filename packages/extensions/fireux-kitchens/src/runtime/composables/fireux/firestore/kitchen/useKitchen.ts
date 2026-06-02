@@ -8,7 +8,6 @@ import { useKitchenPublish } from './mutations/useKitchenPublish'
 import { useKitchenUpdate } from './mutations/useKitchenUpdate'
 import { useKitchenSeo } from './utils/useKitchenSeo'
 import { useKitchenInterface } from './utils/view/useKitchenInterface'
-import { useKitchenProfileView } from './utils/view/useKitchenProfileView'
 
 export type { Kitchen }
 export type {
@@ -25,12 +24,10 @@ export {
   useKitchenPublish,
   useKitchenSeo,
   useKitchenInterface,
-  useKitchenProfileView,
 }
 
 export function useKitchen(id: string | Ref<string>) {
   const fetched = useKitchenFetch(id)
-  const profileView = useKitchenProfileView(fetched.kitchen)
 
   return {
     ...fetched,
@@ -40,7 +37,6 @@ export function useKitchen(id: string | Ref<string>) {
     ...useKitchenUpdate(),
     ...useKitchenPublish(),
     ...useKitchenInterface(),
-    ...profileView,
     useKitchenSeo,
   }
 }

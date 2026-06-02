@@ -206,6 +206,30 @@ The canonical family entry component shape is:
 - keep domain data hooks, cards, collection managers, and create/ensure behaviour in the owning family.
 - do not copy the whole target-selection shell into every console family.
 
+## Public Identity Surface
+
+Console roots expose public identity through their interface seam, not through a
+stored `identity` submodel.
+
+The shared display helper is:
+- `useXInterface().identity(record)`
+
+It returns the small public shape needed by cards and `[id]` / `[slug]` pages:
+- id
+- route
+- title
+- subtitle
+- summary or meta where useful
+- image
+- badges
+
+`profile(record)` may remain as the page-facing helper, but it should derive
+from the same identity projection.
+
+Public identity is display truth.
+Console authority still comes from operator/membership seams, not from public
+identity fields.
+
 ## Console Child Matrix
 
 Use this matrix when comparing console roots and their children. Keep it small:

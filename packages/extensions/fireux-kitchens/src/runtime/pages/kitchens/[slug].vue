@@ -134,7 +134,7 @@ import {
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { useKitchenProfileView } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
+import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
 import { KitchenStorage, type Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
@@ -186,7 +186,8 @@ const kitchen = computed<Kitchen | null>(() => {
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
 const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.value)
-const { model: kitchenProfileModel } = useKitchenProfileView(kitchen)
+const { profile } = useKitchenInterface()
+const kitchenProfileModel = computed(() => profile(kitchen.value))
 
 const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId,
