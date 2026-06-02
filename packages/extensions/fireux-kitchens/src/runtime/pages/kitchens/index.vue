@@ -3,66 +3,23 @@
     <UPageHeader
       class="pageheader"
       :title="pageTitle"
-      :description="pageDescription"
+      description="Browse kitchens that can be operated in this app."
     />
+
     <UPageBody class="pagebody">
-      <KitchenCTA :count="kitchens.length" />
-
-      <div
-        v-if="showDevNotes"
-        data-dev-note="true"
-        data-dev-note-title="Collection"
-        class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
-      >
-        <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-          Developer Note
-        </p>
-        <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-          <li>
-            Source mode:
-            <code>{{ sourceMode }}</code>
-          </li>
-          <li>
-            Source:
-            <code>{{ devSourceLabel }}</code>
-          </li>
-          <li>
-            Route:
-            <code>{{ routePath }}</code>
-          </li>
-          <li>
-            Pending:
-            <code>{{ String(pending) }}</code>
-          </li>
-          <li>
-            Kitchens:
-            <code>{{ devKitchenCount }}</code>
-          </li>
-        </ul>
-      </div>
-
-      <UCard v-if="pending">
-        <p>Loading kitchens…</p>
-      </UCard>
-
-      <KitchenCollectionManager
-        v-else
-        :collection="kitchens"
-        :source-mode="sourceMode"
-        :show-source-toggle="true"
-        @update:source-mode="setSourceMode"
+      <EntityIndexCta
+        family="console"
+        cta="Create or open a kitchen console to manage dishes, menus, and daily kitchen work."
       />
+
+      <KitchenCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useHead, useRoute } from '#imports'
+import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import type { KitchenCollectionSource } from '../../composables/fireux/firestore/kitchen/useKitchen'
-import { useKitchenPublicAccess } from '../../composables/fireux/app/kitchens/useKitchenPublicAccess'
 
 definePageMeta({
   tag: 'kitchens',
@@ -75,44 +32,13 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  title: 'Kitchens',
-  description: 'Browse kitchens.',
   layout: 'default',
   name: 'KitchensIndexPage',
-  alias: ['/kitchens.demo', '/kitchens.test'],
+  title: 'Kitchens',
+  description: 'Browse kitchens.',
 })
 
 const pageTitle = 'Kitchens'
-const pageDescription = 'Choose a kitchen surface for this runtime.'
-const route = useRoute()
 const { appName } = useFireUXConfig()
-const { notesVisible } = useDevUi()
-
-const sourceFromPath = (path: string): KitchenCollectionSource =>
-  path.endsWith('.demo')
-    ? 'demo'
-    : path.endsWith('.test')
-      ? 'test'
-      : 'live'
-
-const routePath = computed(() => route.fullPath || route.path)
-const sourceMode = ref<KitchenCollectionSource>(sourceFromPath(routePath.value))
-const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
-const { kitchens, pending } = useKitchenPublicAccess({ source: sourceMode })
-const devSourceLabel = computed(() => {
-  if (sourceMode.value === 'demo') return 'local demo scenario'
-  if (sourceMode.value === 'test') return 'simulation database/kitchens?simulation_kind=test'
-  return 'runtime database/kitchens'
-})
-const devKitchenCount = computed(() => kitchens.value.length)
-
-watch(routePath, (path) => {
-  sourceMode.value = sourceFromPath(path)
-})
-
-const setSourceMode = (value: KitchenCollectionSource) => {
-  sourceMode.value = value
-}
-
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

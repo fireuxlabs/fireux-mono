@@ -11,30 +11,6 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup v-if="showSourceToggle" size="xs">
-              <UButton
-                :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('live')"
-              >
-                Live
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('demo')"
-              >
-                Demo
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('test')"
-              >
-                Test
-              </UButton>
-            </UFieldGroup>
-
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
                 :variant="filterMode === 'all' ? 'solid' : 'ghost'"
@@ -67,8 +43,10 @@
       </div>
     </template>
 
+    <p v-if="pending">Loading projects...</p>
+
     <ProjectCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -113,6 +91,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import { useProjectCollection } from '../../../composables/fireux/firestore/core/project/useProject'
 import {
   useProjectInterface,
   type ProjectSurface,
@@ -122,13 +101,11 @@ const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
     filterMode?: 'all' | 'mine'
-    sourceMode?: 'live' | 'demo' | 'test'
     title?: string
     description?: string
     link?: boolean
     action?: boolean
     showFilterToggle?: boolean
-    showSourceToggle?: boolean
     showSubtitle?: boolean
     showBadges?: boolean
     searchPlaceholder?: string
@@ -140,14 +117,11 @@ const props = withDefaults(
     devJsonContext?: string
   }>(),
   {
-    collection: () => [],
     filterMode: 'all',
-    sourceMode: 'live',
     title: 'Projects',
-    link: false,
+    link: true,
     action: false,
     showFilterToggle: false,
-    showSourceToggle: false,
     showSubtitle: true,
     showBadges: true,
     searchPlaceholder: 'Search projects…',
@@ -162,10 +136,15 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'select', projectId: string): void
   (event: 'update:filterMode', value: 'all' | 'mine'): void
-  (event: 'update:sourceMode', value: 'live' | 'demo' | 'test'): void
 }>()
 
-const rawCollection = computed(() => props.collection ?? [])
+const fetched = useProjectCollection()
+const rawCollection = computed(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.projects.value
+)
+const pending = computed(() =>
+  Array.isArray(props.collection) ? false : fetched.pending.value
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Projects'))
 const description = computed(() =>
@@ -174,15 +153,9 @@ const description = computed(() =>
 const filterMode = computed<'all' | 'mine'>(() =>
   props.filterMode === 'mine' ? 'mine' : 'all'
 )
-const sourceMode = computed<'live' | 'demo' | 'test'>(() => {
-  if (props.sourceMode === 'demo') return 'demo'
-  if (props.sourceMode === 'test') return 'test'
-  return 'live'
-})
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
-const showSourceToggle = computed(() => props.showSourceToggle === true)
 const showSubtitle = computed(() => props.showSubtitle !== false)
 const showBadges = computed(() => props.showBadges !== false)
 const searchPlaceholder = computed(() =>
@@ -249,9 +222,5 @@ const isDev = import.meta.dev
 
 function setFilterMode(value: 'all' | 'mine') {
   emit('update:filterMode', value)
-}
-
-function setSourceMode(value: 'live' | 'demo' | 'test') {
-  emit('update:sourceMode', value)
 }
 </script>

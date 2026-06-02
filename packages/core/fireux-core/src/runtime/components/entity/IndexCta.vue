@@ -1,8 +1,8 @@
 <template>
   <div :data-entity-cta-family="family || undefined">
     <UPageCTA
-      :title="title"
-      :description="description"
+      :title="title || cta || undefined"
+      :description="title ? cta || description || undefined : undefined"
       orientation="horizontal"
     >
       <template #links>
@@ -27,12 +27,10 @@
       </template>
 
       <template #default>
-        <div class="space-y-4 rounded-xl border border-default bg-default/40 p-5">
-          <div class="space-y-2">
-            <p class="text-sm font-semibold text-highlighted">{{ title }}</p>
-            <p class="text-sm text-muted">{{ description }}</p>
-          </div>
-
+        <div
+          v-if="source || countLabel"
+          class="flex flex-wrap gap-2 rounded-xl border border-default bg-default/40 p-5"
+        >
           <div class="flex flex-wrap gap-2">
             <UBadge v-if="source" color="neutral" variant="soft">
               {{ source }}
@@ -64,8 +62,9 @@ type EntityIndexAction = {
 }
 
 withDefaults(defineProps<{
-  title: string
-  description: string
+  title?: string
+  description?: string
+  cta?: string
   source?: string
   countLabel?: string
   family?: EntityIndexCtaFamily

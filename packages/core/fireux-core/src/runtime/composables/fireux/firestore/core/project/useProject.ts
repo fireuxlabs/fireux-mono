@@ -1,5 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { computed, isRef, type Ref } from 'vue'
+import { useProjectCollection } from './fetch/useProjectCollection'
 import { useProjectFetch } from './fetch/useProjectFetch'
 import { useProjectBootstrapCreate } from './mutations/useProjectBootstrapCreate'
 import { useProjectCreate } from './mutations/useProjectCreate'
@@ -8,6 +9,14 @@ import { useProjectUpdate } from './mutations/useProjectUpdate'
 import { useProjectInterface } from './utils/view/useProjectInterface'
 
 export type { Project } from '../../../../../models/system/project.model'
+export type {
+  ProjectCollectionFilter,
+  ProjectCollectionSource,
+} from './fetch/useProjectCollection'
+
+export {
+  useProjectCollection,
+}
 
 export function useProject(id?: string | Ref<string>) {
   const runtime = useRuntimeConfig()

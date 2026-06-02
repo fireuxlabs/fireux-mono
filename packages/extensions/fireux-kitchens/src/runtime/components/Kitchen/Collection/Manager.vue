@@ -11,30 +11,6 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup v-if="showSourceToggle" size="xs">
-              <UButton
-                :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="emit('update:sourceMode', 'live')"
-              >
-                Live
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="emit('update:sourceMode', 'demo')"
-              >
-                Demo
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="emit('update:sourceMode', 'test')"
-              >
-                Test
-              </UButton>
-            </UFieldGroup>
-
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
                 :variant="filterMode === 'all' ? 'solid' : 'ghost'"
@@ -82,8 +58,10 @@
       </div>
     </template>
 
+    <p v-if="pending">Loading kitchens...</p>
+
     <KitchenCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -127,6 +105,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../models/kitchen.model'
 
@@ -134,7 +113,6 @@ const props = withDefaults(
   defineProps<{
     collection?: Kitchen[]
     filterMode?: 'all' | 'mine'
-    sourceMode?: 'live' | 'demo' | 'test'
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -145,15 +123,12 @@ const props = withDefaults(
     link?: boolean
     action?: boolean
     showFilterToggle?: boolean
-    showSourceToggle?: boolean
     showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
-    collection: () => [],
     filterMode: 'all',
-    sourceMode: 'live',
     title: 'Kitchens',
     description: 'Browse kitchen records available to this runtime.',
     searchPlaceholder: 'Search kitchens…',
@@ -164,7 +139,6 @@ const props = withDefaults(
     link: true,
     action: false,
     showFilterToggle: false,
-    showSourceToggle: false,
     showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
     devJsonContext: 'collection manager · kitchens · raw collection',
@@ -174,10 +148,15 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'select', kitchenId: string): void
   (event: 'update:filterMode', value: 'all' | 'mine'): void
-  (event: 'update:sourceMode', value: 'live' | 'demo' | 'test'): void
 }>()
 
-const rawCollection = computed(() => props.collection ?? [])
+const fetched = useKitchenCollection()
+const rawCollection = computed(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.kitchens.value
+)
+const pending = computed(() =>
+  Array.isArray(props.collection) ? false : fetched.pending.value
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
@@ -188,11 +167,6 @@ const description = computed(() =>
 const filterMode = computed<'all' | 'mine'>(() =>
   props.filterMode === 'mine' ? 'mine' : 'all'
 )
-const sourceMode = computed<'live' | 'demo' | 'test'>(() => {
-  if (props.sourceMode === 'demo') return 'demo'
-  if (props.sourceMode === 'test') return 'test'
-  return 'live'
-})
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search kitchens…')
 )
@@ -201,7 +175,6 @@ const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
-const showSourceToggle = computed(() => props.showSourceToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(() => props.showBadges !== false)
 const devJsonTitle = computed(() =>

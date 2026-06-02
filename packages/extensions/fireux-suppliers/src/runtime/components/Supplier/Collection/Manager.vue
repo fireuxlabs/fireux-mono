@@ -11,30 +11,6 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup v-if="showSourceToggle" size="xs">
-              <UButton
-                :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('live')"
-              >
-                Live
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('demo')"
-              >
-                Demo
-              </UButton>
-              <UButton
-                :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('test')"
-              >
-                Test
-              </UButton>
-            </UFieldGroup>
-
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
                 :variant="filterMode === 'all' ? 'solid' : 'ghost'"
@@ -82,8 +58,10 @@
       </div>
     </template>
 
+    <p v-if="pending">Loading suppliers...</p>
+
     <SupplierCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -127,13 +105,13 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
+import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/useSupplier'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
     filterMode?: 'all' | 'mine'
-    sourceMode?: 'live' | 'demo' | 'test'
     title?: string
     description?: string
     link?: boolean
@@ -144,15 +122,12 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     showFilterToggle?: boolean
-    showSourceToggle?: boolean
     initialVariant?: 'pill' | 'cell'
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
-    collection: () => [],
     filterMode: 'all',
-    sourceMode: 'live',
     title: 'Suppliers',
     description: 'Browse supplier records available to this runtime.',
     link: true,
@@ -163,7 +138,6 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     showFilterToggle: false,
-    showSourceToggle: false,
     initialVariant: 'pill',
     devJsonTitle: 'Suppliers (JSON)',
     devJsonContext: 'collection manager · suppliers · raw collection',
@@ -173,10 +147,15 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'select', supplierId: string): void
   (event: 'update:filterMode', value: 'all' | 'mine'): void
-  (event: 'update:sourceMode', value: 'live' | 'demo' | 'test'): void
 }>()
 
-const rawCollection = computed(() => props.collection ?? [])
+const fetched = useSupplierCollection()
+const rawCollection = computed(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.suppliers.value
+)
+const pending = computed(() =>
+  Array.isArray(props.collection) ? false : fetched.pending.value
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Suppliers'))
 const description = computed(() =>
@@ -187,11 +166,6 @@ const description = computed(() =>
 const filterMode = computed<'all' | 'mine'>(() =>
   props.filterMode === 'mine' ? 'mine' : 'all'
 )
-const sourceMode = computed<'live' | 'demo' | 'test'>(() => {
-  if (props.sourceMode === 'demo') return 'demo'
-  if (props.sourceMode === 'test') return 'test'
-  return 'live'
-})
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
@@ -201,7 +175,6 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
-const showSourceToggle = computed(() => props.showSourceToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
@@ -260,9 +233,5 @@ const isDev = import.meta.dev
 
 function setFilterMode(value: 'all' | 'mine') {
   emit('update:filterMode', value)
-}
-
-function setSourceMode(value: 'live' | 'demo' | 'test') {
-  emit('update:sourceMode', value)
 }
 </script>

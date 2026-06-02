@@ -1,20 +1,18 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      description="Browse portfolios that can be operated in this app."
+    />
+
     <UPageBody class="pagebody">
-      <PortfolioCTA :count="portfolios.length" />
-
-      <UCard v-if="pending">
-        <p>Loading portfolios…</p>
-      </UCard>
-
-      <PortfolioCollectionManager
-        v-else
-        :collection="portfolios"
-        :source-mode="sourceMode"
-        :show-source-toggle="true"
-        @update:source-mode="sourceMode = $event"
+      <EntityIndexCta
+        family="console"
+        cta="Create or open a portfolio console to manage clients, properties, documents, and tasks."
       />
+
+      <PortfolioCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -22,11 +20,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { ref } from 'vue'
-import {
-  usePortfolioCollection,
-  type PortfolioCollectionSource,
-} from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 
 definePageMeta({
   tag: 'portfolios',
@@ -42,18 +35,13 @@ definePageMeta({
       apps: ['granite-app'],
     },
   },
-  title: 'Portfolios',
-  description: 'Browse portfolios.',
   layout: 'default',
   name: 'PortfoliosIndexPage',
+  title: 'Portfolios',
+  description: 'Browse portfolios.',
 })
 
 const pageTitle = 'Portfolios'
-const pageDescription = 'Select a portfolio runtime for the current workspace.'
-const sourceMode = ref<PortfolioCollectionSource>('live')
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-const { portfolios, pending } = usePortfolioCollection({
-  source: sourceMode,
-})
 </script>

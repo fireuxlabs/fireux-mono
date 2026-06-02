@@ -9,6 +9,10 @@ import { usePortfolioSeo } from './utils/usePortfolioSeo'
 import { usePortfolioInterface } from './utils/view/usePortfolioInterface'
 
 export type { Portfolio }
+export type {
+  PortfolioCollectionFilter,
+  PortfolioCollectionSource,
+} from './fetch/usePortfolioCollection'
 
 export {
   usePortfolioCollection,

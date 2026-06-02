@@ -22,16 +22,13 @@
 
     <SupplierCollectionManager
       :collection="suppliers"
-      :source-mode="sourceMode"
       title="Suppliers"
-      description="Browse supplier records for the selected source."
+      description="Browse supplier records for the developer-selected source."
       :link="false"
       :action="true"
-      :show-source-toggle="true"
       :show-badges="true"
       dev-json-title="Suppliers (JSON)"
       dev-json-context="dev suppliers · selected source"
-      @update:source-mode="setSourceMode"
       @select="selectSupplier"
     />
 

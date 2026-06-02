@@ -8,6 +8,11 @@ import { usePropertyUpdate } from './mutations/usePropertyUpdate'
 import { usePropertyInterface } from './utils/view/usePropertyInterface'
 
 export type { Property }
+export type {
+  PropertyCollectionFilter,
+  PropertyCollectionShape,
+  PropertyCollectionSource,
+} from './fetch/usePropertyCollection'
 
 export {
   usePropertyCollection,

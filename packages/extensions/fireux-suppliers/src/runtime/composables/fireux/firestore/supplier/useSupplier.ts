@@ -5,6 +5,7 @@ import type { AppSupplier, Supplier } from '../../../../models/supplier/Supplier
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
+import { useSupplierCollection } from './fetch/useSupplierCollection'
 import { useSupplierRecord } from './fetch/useSupplierRecord'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
 import { useSupplierSeo } from './utils/useSupplierSeo'
@@ -14,6 +15,13 @@ export type {
   SupplierCard,
   Supplier as SupplierRecord,
   AppSupplier as SupplierWorkspace,
+}
+export type {
+  SupplierCollectionFilter,
+  SupplierCollectionSource,
+} from './fetch/useSupplierCollection'
+export {
+  useSupplierCollection,
 }
 
 /**
