@@ -33,6 +33,7 @@
   </UPage>
 </template>
 
+<script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
