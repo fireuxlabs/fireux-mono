@@ -77,7 +77,8 @@ Menu composable stack canon:
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
 - Root `menus/{menuId}` is not V1 Kitchen/Menu canon.
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
-- Public menu pages and app/API upload flows are route consumers of `Menu`; they must not create a second Menu family or a special public Menu composable.
+- Public Kitchen menu pages are route consumers of Kitchen `Menu`; they must not create a second Menu family or a special public Menu composable.
+- App-local uploaded menu document routes such as `/menus/**` are a separate upload/link tool and must not imply root Kitchen Menu truth.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
 - `firestore/menu/fetch/useMenuFetch.ts` owns read-one app-scoped Kitchen Menu reads.
 - `firestore/menu/fetch/useMenuCollection.ts` owns read-many app-scoped Kitchen Menu reads.
