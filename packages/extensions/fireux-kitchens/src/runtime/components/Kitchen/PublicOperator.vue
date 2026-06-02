@@ -7,12 +7,11 @@
 </template>
 
 <script setup lang="ts">
-const aligned = ['Identity']
+const aligned = ['Identity', 'Recipe', 'Ingredient']
 const notAligned = [
   'Dish',
   'Menu',
-  'Recipe',
-  'Ingredient',
+  'Supplier',
   'Mise',
   'Order',
   'Team',

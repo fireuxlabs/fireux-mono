@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-const aligned = ['Identity']
-const notAligned = ['Document', 'Task', 'Compliance']
+const aligned = ['Identity', 'Document', 'Task', 'Compliance']
+const notAligned = ['Client', 'Property', 'Unit']
 </script>

@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-const aligned = ['Identity']
-const notAligned = ['App', 'Ecosystem']
+const aligned = ['Identity', 'App', 'Ecosystem']
+const notAligned = []
 </script>
