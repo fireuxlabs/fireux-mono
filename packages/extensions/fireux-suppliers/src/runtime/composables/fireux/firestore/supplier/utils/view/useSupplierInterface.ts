@@ -5,11 +5,17 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import {
   SupplierStorage,
+  type AppSupplier,
   type Supplier,
 } from '../../../../../../models/supplier/Supplier.model'
-import type { SupplierRefs } from '../../fetch/useSupplierRecord'
+import type { Ref } from 'vue'
 
 const supplierCollection = SupplierStorage.rootCollection
+
+type SupplierRootAndOverlay = {
+  coreSupplier: Ref<Supplier | null | undefined>
+  appSupplier: Ref<AppSupplier | null | undefined>
+}
 
 export namespace SupplierCard {
   export type Card = {
@@ -37,7 +43,7 @@ export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
   overlay?: Record<string, unknown> | null | undefined
 }
 
-export function useSupplierInterface(supplier?: SupplierRefs | null) {
+export function useSupplierInterface(supplier?: SupplierRootAndOverlay | null) {
   type SupplierIdentity = SupplierCard.Card
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
@@ -65,6 +71,7 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
 
   function map(target: SupplierSurface): SupplierCard.Card {
     const id = safeString(target.id).trim()
+    const slug = safeString(target.slug).trim()
     const organizationName = safeString(target.supplier_organization_name)
     const badges = safeStringArray(target.supplier_item_categories)
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
@@ -76,7 +83,7 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
 
     return {
       id,
-      to: id ? `/${supplierCollection}/${encodeURIComponent(id)}` : '',
+      to: slug ? `/${supplierCollection}/${encodeURIComponent(slug)}` : '',
       imageUrl,
       avatarUrl: imageUrl,
       title: organizationName,
@@ -86,7 +93,7 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
       locationsLabel,
       summary,
       status: safeString(target.state),
-      shortName: '',
+      shortName: slug,
       ownerLabel: organizationName,
       locationLabel: locationsLabel,
       categoriesCsv: categoriesCsv || undefined,

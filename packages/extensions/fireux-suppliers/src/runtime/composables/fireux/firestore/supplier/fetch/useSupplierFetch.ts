@@ -1,5 +1,13 @@
+import {
+  collection,
+  limit,
+  query as fsq,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   SupplierStorage,
   type Supplier,
@@ -13,9 +21,11 @@ type SupplierFetchDoc = Partial<Supplier> & {
   short_name?: string
 }
 export type SupplierFetchSource = 'live' | 'test' | 'demo'
+export type SupplierFetchKey = 'id' | 'slug'
 
 type UseSupplierFetchOptions = {
   source?: SupplierFetchSource | Ref<SupplierFetchSource>
+  key?: SupplierFetchKey | Ref<SupplierFetchKey>
   collectionPath?: string | Ref<string>
   hydrate?: boolean
 }
@@ -27,9 +37,13 @@ export function useSupplierFetch(
   id: string | Ref<string>,
   options: UseSupplierFetchOptions = {}
 ) {
-  const { firestoreFetchDoc } = useFirestoreRead()
+  const db = useFirestore()
+  const { firestoreFetchDoc, firestoreQuery } = useFirestoreRead()
   const { surface } = useSupplierInterface()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
+  const keyRef = isRef(options.key)
+    ? options.key
+    : computed<SupplierFetchKey>(() => options.key ?? 'id')
   const sourceRef = isRef(options.source)
     ? options.source
     : computed<SupplierFetchSource>(() =>
@@ -47,17 +61,32 @@ export function useSupplierFetch(
 
   const source = shallowRef(null) as ShallowRef<Ref<SupplierFetchDoc | undefined> | null>
   watch(
-    [sourceRef, pathRef, idRef],
-    ([nextSource, nextPath, nextId]) => {
+    [sourceRef, pathRef, idRef, keyRef],
+    ([nextSource, nextPath, nextId, nextKey]) => {
       const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
       const docId = String(nextId || '').trim()
 
       source.value =
-        nextSource === 'demo' || !docId
+        nextSource === 'demo' || nextKey === 'slug' || !docId
           ? null
           : firestoreFetchDoc<SupplierFetchDoc>(collectionPath, docId)
     },
     { immediate: true }
+  )
+  const slugQuery = computed<Query<SupplierFetchDoc> | null>(() => {
+    const slug = String(idRef.value || '').trim()
+    if (sourceRef.value !== 'live' || keyRef.value !== 'slug' || !slug) return null
+
+    return fsq(
+      collection(db, DEFAULT_COLLECTION_PATH),
+      where('slug', '==', slug),
+      limit(1)
+    ) as Query<SupplierFetchDoc>
+  })
+  const slugSource = firestoreQuery<SupplierFetchDoc>(
+    slugQuery,
+    undefined,
+    DEFAULT_COLLECTION_PATH
   )
 
   const supplier = computed<SupplierFetchDoc | null>(() => {
@@ -74,6 +103,13 @@ export function useSupplierFetch(
       }) as SupplierFetchDoc | null
     }
 
+    if (keyRef.value === 'slug') {
+      const entry = slugSource.value?.[0]
+      if (!docId || !entry || String(entry.slug || '').trim() !== docId) return null
+
+      return surface({ supplier: entry }) as SupplierFetchDoc | null
+    }
+
     const entry = source.value?.value
     if (!docId || !entry) return null
     return surface({
@@ -88,6 +124,7 @@ export function useSupplierFetch(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
+    if (keyRef.value === 'slug') return slugSource.value === undefined
     return source.value?.value === undefined
   })
 

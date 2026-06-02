@@ -5,14 +5,20 @@ import {
   type ConsoleEntityRuntimeMode,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import type { Ref } from 'vue'
 import {
   SupplierStorage,
   type AppSupplier,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
-import type { SupplierRefs } from '../fetch/useSupplierRecord'
 
 const supplierCollection = SupplierStorage.rootCollection
+
+type SupplierRootAndOverlay = {
+  coreSupplier: Ref<Supplier | null | undefined>
+  appSupplier: Ref<AppSupplier | null | undefined>
+}
 
 type SupplierUpdateCollectionOptions = {
   collectionPath?: string | null
@@ -28,7 +34,7 @@ type SupplierUpdateCollectionOptions = {
  * Shared update surface for v1 scoped fields.
  */
 export function useSupplierUpdate(
-  supplier?: SupplierRefs | null,
+  supplier?: SupplierRootAndOverlay | null,
   defaults: SupplierUpdateCollectionOptions = {}
 ) {
   const { updateDocument } = useFirestoreUpdate()
@@ -203,8 +209,12 @@ export function useSupplierUpdate(
     options: UpdateOptions = {}
   ) => {
     const normalized = cleanString(value)
+    const slug = normalized ? normalizeSlug(normalized) : undefined
     await updateCoreSupplier(
-      { supplier_organization_name: normalized ?? undefined },
+      {
+        supplier_organization_name: normalized ?? undefined,
+        slug,
+      },
       options
     )
   }

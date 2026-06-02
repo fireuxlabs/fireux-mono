@@ -31,7 +31,7 @@
         <DevJson
           v-if="isDev"
           :title="'Supplier (JSON)'"
-          context="Supplier detail page · suppliers/[id] · supplier doc"
+          context="Supplier detail page · suppliers/[slug] · supplier doc"
           :data="supplierRecord"
           :default-open="false"
         />
@@ -56,11 +56,13 @@ definePageMeta({
 
 const route = useRoute()
 const routeKey = computed(() => {
-  const raw = route.params.id
+  const raw = route.params.slug
   return Array.isArray(raw) ? String(raw[0] || '').trim() : String(raw || '').trim()
 })
 
-const { supplier: supplierRecord, pending } = useSupplierFetch(routeKey)
+const { supplier: supplierRecord, pending } = useSupplierFetch(routeKey, {
+  key: 'slug',
+})
 const { profile } = useSupplierInterface()
 const profileCard = computed(() => profile(supplierRecord.value))
 

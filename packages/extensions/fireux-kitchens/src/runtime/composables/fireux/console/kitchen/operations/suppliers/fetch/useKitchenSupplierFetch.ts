@@ -12,7 +12,7 @@ import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitc
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${SupplierStorage.rootCollection}`
 
-type SupplierRecord = Record<string, unknown>
+type SupplierDoc = Record<string, unknown>
 
 type UseKitchenSupplierFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -30,7 +30,7 @@ const firstNonEmpty = (...values: unknown[]): string => {
   return ''
 }
 
-const resolveSupplierReferenceId = (supplierLink: SupplierRecord): string =>
+const resolveSupplierReferenceId = (supplierLink: SupplierDoc): string =>
   // Canon key for Kitchen<->Supplier links is supplier_id.
   // Migration alias only — do not use aliases in new writes.
   firstNonEmpty(
@@ -80,18 +80,18 @@ export function useKitchenSupplierFetch(
       : ''
   )
 
-  const supplierLinksRef = firestoreFetchCollection<SupplierRecord>(collectionPath)
-  const coreSuppliersRef = firestoreFetchCollection<SupplierRecord>(canonicalCorePath)
-  const appSuppliersRef = firestoreFetchCollection<SupplierRecord>(canonicalAppPath)
+  const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
+  const coreSuppliersRef = firestoreFetchCollection<SupplierDoc>(canonicalCorePath)
+  const appSuppliersRef = firestoreFetchCollection<SupplierDoc>(canonicalAppPath)
 
-  const supplierLinks = computed<SupplierRecord[]>(() => supplierLinksRef.value ?? [])
-  const coreSuppliers = computed<SupplierRecord[]>(() => coreSuppliersRef.value ?? [])
-  const appSuppliers = computed<SupplierRecord[]>(() => appSuppliersRef.value ?? [])
+  const supplierLinks = computed<SupplierDoc[]>(() => supplierLinksRef.value ?? [])
+  const coreSuppliers = computed<SupplierDoc[]>(() => coreSuppliersRef.value ?? [])
+  const appSuppliers = computed<SupplierDoc[]>(() => appSuppliersRef.value ?? [])
 
   const canonicalSupplierById = computed(() => {
-    const map = new Map<string, SupplierRecord>()
+    const map = new Map<string, SupplierDoc>()
 
-    const append = (entry: SupplierRecord) => {
+    const append = (entry: SupplierDoc) => {
       const refId = firstNonEmpty((entry as any).id, (entry as any).supplier_id)
       if (!refId) return
 
@@ -108,14 +108,14 @@ export function useKitchenSupplierFetch(
     return map
   })
 
-  const suppliers = computed<SupplierRecord[]>(() =>
+  const suppliers = computed<SupplierDoc[]>(() =>
     supplierLinks.value.map((entry) => {
-      const overlay = entry as SupplierRecord
+      const overlay = entry as SupplierDoc
       const overlayId = normalizeString((overlay as any).id)
       const supplierRefId = resolveSupplierReferenceId(overlay)
       const canonical = supplierRefId ? canonicalSupplierById.value.get(supplierRefId) ?? null : null
 
-      const merged: SupplierRecord = {
+      const merged: SupplierDoc = {
         ...(canonical ?? {}),
         ...overlay,
         id: overlayId || supplierRefId,

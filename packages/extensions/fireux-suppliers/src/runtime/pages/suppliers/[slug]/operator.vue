@@ -26,7 +26,10 @@ definePageMeta({
 
 const route = useRoute()
 const { uid } = useAuth()
-const supplierId = computed(() => String(route.params.id || '').trim())
+const routeKey = computed(() => {
+  const raw = route.params.slug
+  return Array.isArray(raw) ? String(raw[0] || '').trim() : String(raw || '').trim()
+})
 const userId = computed(() => String(uid.value || '').trim())
 const operatorFilter = computed<SupplierCollectionFilter>(() =>
   userId.value ? { operatorId: userId.value } : { ids: [] }
@@ -37,20 +40,28 @@ const { suppliers: operatorSuppliers } = useSupplierCollection({
 })
 
 const publicSupplier = computed(() =>
-  publicSuppliers.value.find((supplier) => supplier.id === supplierId.value) ?? null
+  publicSuppliers.value.find(
+    (supplier) => String(supplier.slug || '').trim() === routeKey.value
+  ) ?? null
+)
+const supplierId = computed(() =>
+  String(publicSupplier.value?.id || '').trim()
 )
 const hasAuthority = computed(() =>
-  Boolean(supplierId.value && operatorSuppliers.value.some((supplier) => supplier.id === supplierId.value))
+  Boolean(
+    supplierId.value &&
+      operatorSuppliers.value.some((supplier) => supplier.id === supplierId.value)
+  )
 )
 const supplierTitle = computed(() =>
   String(
-    publicSupplier.value?.supplier_organization_name ||
+      publicSupplier.value?.supplier_organization_name ||
       publicSupplier.value?.name ||
-      supplierId.value ||
+      routeKey.value ||
       'Supplier'
   ).trim()
 )
 const publicTo = computed(() =>
-  supplierId.value ? `/suppliers/${encodeURIComponent(supplierId.value)}` : '/suppliers'
+  routeKey.value ? `/suppliers/${encodeURIComponent(routeKey.value)}` : '/suppliers'
 )
 </script>

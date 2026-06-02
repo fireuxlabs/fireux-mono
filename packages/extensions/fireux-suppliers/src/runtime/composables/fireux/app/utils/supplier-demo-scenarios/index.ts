@@ -50,6 +50,7 @@ const DEMO_TIMESTAMP = { seconds: 0, nanoseconds: 0 } as const
 const demoSuppliers: DemoSupplierListItem[] = [
   {
     id: 'city-butchers',
+    slug: 'city-butchers',
     company_id: 'city-butchers',
     app_scope_state: 'parent_app',
     app_scope_app_id: 'misebox-app',
@@ -70,6 +71,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'daily-bakehouse',
+    slug: 'daily-bakehouse',
     company_id: 'daily-bakehouse',
     app_scope_state: 'parent_app',
     app_scope_app_id: 'misebox-app',
@@ -95,6 +97,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'green-larder',
+    slug: 'green-larder',
     company_id: 'green-larder',
     app_scope_state: 'root_only',
     app_scope_app_id: '',
@@ -122,6 +125,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'pantry-house',
+    slug: 'pantry-house',
     company_id: 'pantry-house',
     app_scope_state: 'root_only',
     app_scope_app_id: '',

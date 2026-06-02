@@ -49,12 +49,16 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplier } from '../../../composables/fireux/firestore/supplier/useSupplier'
+import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/operations/useSupplierConsoleIdentity'
+import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-const { coreSupplier, pending, preview: supplierInterface } = useSupplier()
+const { selectedSupplier } = useSupplierConsoleIdentity()
+const { preview: supplierInterface } = useSupplierInterface()
 
-const previewCard = computed(() => (coreSupplier.value ? supplierInterface(coreSupplier.value) : null))
-const isLoading = computed(() => Boolean(pending.value))
+const previewCard = computed(() =>
+  selectedSupplier.value ? supplierInterface(selectedSupplier.value) : null
+)
+const isLoading = computed(() => selectedSupplier.value === undefined)
 const hasPreview = computed(() => Boolean(previewCard.value))
 
 const canToggle = computed(() => Boolean(previewCard.value))

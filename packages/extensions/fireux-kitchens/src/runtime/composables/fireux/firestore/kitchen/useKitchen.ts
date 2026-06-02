@@ -7,6 +7,7 @@ import { useKitchenDelete } from './mutations/useKitchenDelete'
 import { useKitchenPublish } from './mutations/useKitchenPublish'
 import { useKitchenUpdate } from './mutations/useKitchenUpdate'
 import { useKitchenSeo } from './utils/useKitchenSeo'
+import { useKitchenComputed } from './utils/view/useKitchenComputed'
 import { useKitchenInterface } from './utils/view/useKitchenInterface'
 
 export type { Kitchen }
@@ -23,6 +24,7 @@ export {
   useKitchenUpdate,
   useKitchenPublish,
   useKitchenSeo,
+  useKitchenComputed,
   useKitchenInterface,
 }
 
@@ -36,6 +38,7 @@ export function useKitchen(id: string | Ref<string>) {
     ...useKitchenDelete(),
     ...useKitchenUpdate(),
     ...useKitchenPublish(),
+    ...useKitchenComputed(fetched.kitchen),
     ...useKitchenInterface(),
     useKitchenSeo,
   }

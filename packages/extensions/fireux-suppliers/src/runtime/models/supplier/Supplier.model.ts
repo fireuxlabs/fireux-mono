@@ -25,7 +25,8 @@ type WidenLiteral<T> =
  *
  * Family: Domain
  * Storage: root canonical record plus app-scoped record
- * Root path: /suppliers/<supplierId>
+ * Root storage path: /suppliers/<supplierId>
+ * Public route: /suppliers/<slug>
  * App path: /apps/<appId>/suppliers/<supplierId>
  * Child scope: /apps/<appId>/suppliers/<supplierId>/<childCollection>/<childId>
  *
@@ -68,6 +69,7 @@ export const SupplierModel = {
   ...FireuxAppScope,
   ...FireuxConsoleAccessModel,
   company_id: '',
+  slug: '',
 
   // Public-facing supplier identity
   supplier_organization_name: '',
@@ -104,9 +106,21 @@ export type AppSupplier = FireuxAppOverlay
 
 export type SupplierCreateInput = Omit<
   Supplier,
-  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline'
+  | 'id'
+  | 'created'
+  | 'updated'
+  | 'app_scope_state'
+  | 'app_scope_app_id'
+  | 'operator_ids'
+  | 'tagline'
+  | 'slug'
 > &
-  Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline'>>
+  Partial<
+    Pick<
+      Supplier,
+      'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline' | 'slug'
+    >
+  >
 
 export type SupplierUpdateInput = Partial<Omit<Supplier, 'id' | 'created' | 'updated'>>
 

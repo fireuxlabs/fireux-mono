@@ -1,19 +1,18 @@
-// FILE: packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts
-
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { Ref } from 'vue'
 import type { AppSupplier, Supplier } from '../../../../models/supplier/Supplier.model'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
 import { useSupplierCollection } from './fetch/useSupplierCollection'
-import { useSupplierRecord } from './fetch/useSupplierRecord'
+import { useSupplierFetch } from './fetch/useSupplierFetch'
+import { useSupplierDelete } from './mutations/useSupplierDelete'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
 import { useSupplierSeo } from './utils/useSupplierSeo'
-import { useSupplierComputed } from './utils/useSupplierComputed'
+import { useSupplierComputed } from './utils/view/useSupplierComputed'
 
 export type {
   SupplierCard,
-  Supplier as SupplierRecord,
+  Supplier as SupplierEntity,
   AppSupplier as SupplierWorkspace,
 }
 export type {
@@ -22,36 +21,38 @@ export type {
 } from './fetch/useSupplierCollection'
 export {
   useSupplierCollection,
+  useSupplierFetch,
+  useSupplierCreate,
+  useSupplierDelete,
+  useSupplierUpdate,
+  useSupplierSeo,
+  useSupplierComputed,
+  useSupplierInterface,
 }
 
 /**
  * useSupplier
- * - Runtime facade for Supplier records and supplier workspace state
+ * - Canonical Supplier entity entry seam.
  * - Exposes:
- *   - raw refs: supplier, coreSupplier, appSupplier, pending
+ *   - fetch one Supplier by id
+ *   - Supplier collection
+ *   - create/update/delete helpers
  *   - computed helpers
- *   - UI helpers (pill etc.) that use coreUser
- *   - update helpers
+ *   - interface helpers
+ *
+ * Selected supplier console runtime lives under console/supplier, not here.
  */
-export function useSupplier() {
-  const { uid } = useAuth()
-  const { supplier, coreSupplier, appSupplier, pending } = useSupplierRecord(uid)
-  const refs = { coreSupplier, appSupplier }
-
-  const computed = useSupplierComputed(refs, pending)
-  const ui = useSupplierInterface(refs)
-  const update = useSupplierUpdate(refs)
-  const create = useSupplierCreate()
+export function useSupplier(id: string | Ref<string>) {
+  const fetched = useSupplierFetch(id)
 
   return {
-    supplier,
-    coreSupplier,
-    appSupplier,
-    pending,
-    ...computed,
-    ...ui,
-    ...update,
-    ...create,
+    ...fetched,
+    ...useSupplierCollection(),
+    ...useSupplierCreate(),
+    ...useSupplierDelete(),
+    ...useSupplierUpdate(),
+    ...useSupplierComputed(fetched.supplier),
+    ...useSupplierInterface(),
     useSupplierSeo,
   }
 }

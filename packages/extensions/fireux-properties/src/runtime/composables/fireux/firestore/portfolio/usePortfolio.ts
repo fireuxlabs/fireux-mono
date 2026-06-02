@@ -6,6 +6,7 @@ import { usePortfolioCreate } from './mutations/usePortfolioCreate'
 import { usePortfolioDelete } from './mutations/usePortfolioDelete'
 import { usePortfolioUpdate } from './mutations/usePortfolioUpdate'
 import { usePortfolioSeo } from './utils/usePortfolioSeo'
+import { usePortfolioComputed } from './utils/view/usePortfolioComputed'
 import { usePortfolioInterface } from './utils/view/usePortfolioInterface'
 
 export type { Portfolio }
@@ -21,6 +22,7 @@ export {
   usePortfolioDelete,
   usePortfolioUpdate,
   usePortfolioSeo,
+  usePortfolioComputed,
   usePortfolioInterface,
 }
 
@@ -33,6 +35,7 @@ export function usePortfolio(id: string | Ref<string>) {
     ...usePortfolioCreate(),
     ...usePortfolioDelete(),
     ...usePortfolioUpdate(),
+    ...usePortfolioComputed(fetched.portfolio),
     ...usePortfolioInterface(),
     usePortfolioSeo,
   }

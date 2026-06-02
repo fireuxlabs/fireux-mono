@@ -1,6 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-01
+Updated: 2026-06-02
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -13,7 +13,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `Catalogue` (supplier-owned presentation/grouping surface for supplier item offers)
 
 ## 3) Identity rule
-- Supplier identity is id-based (`supplier.id` is canonical).
+- Supplier storage identity is id-based (`supplier.id` is canonical for writes and operator authority).
+- Supplier public identity is slug-based (`supplier.slug` drives public supplier routes).
 - Supplier relationship or operator linkage is not console authority by itself.
 
 ## 4) Collections + paths
@@ -38,16 +39,16 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Ingredient linkage is optional through `ingredient_id`; it is not supplier item identity.
 
 ## 5) Routes (public vs internal; slug vs id)
-- Current id-based routes:
+- Public slug routes:
   - `/suppliers`
-  - `/suppliers/[id]`
-  - `/suppliers/[id]/operator`
+  - `/suppliers/[slug]`
+  - `/suppliers/[slug]/operator`
   - `/console/supplier/*`
   - `/dashboard/supplier/*`
 - `/console/supplier/ingredients` shows selected supplier ingredient coverage.
 - `/console/supplier/items` shows concrete supplier item offers.
 - `/console/supplier/catalogue` presents/groups supplier item offers.
-- `/suppliers/[id]/operator` is the public-to-private operator bridge.
+- `/suppliers/[slug]/operator` is the public-to-private operator bridge.
 - Public `admin` route language is prohibited because app/platform admin is not the same thing as operating one supplier target.
 - `/console/supplier` is the family entry page:
   - `demo`: curated demo suppliers
@@ -83,5 +84,5 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback to alternate supplier ids or old owner modules for canonical selection.
-- No implicit routing substitution when supplier id is missing.
+- No implicit routing substitution when supplier slug is missing.
 - No treating supplier relationship or operator linkage as console permission.

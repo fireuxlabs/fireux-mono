@@ -89,11 +89,11 @@ const handleCreate = async () => {
       setRuntimeSupplier({ supplierId: result.id, mode: 'live' })
     }
     emit('created', result)
-    const fallbackTo =
+    const defaultReturnTo =
       resolvedMode.value === 'public'
-        ? `/suppliers/${encodeURIComponent(result.id)}`
+        ? '/suppliers'
         : '/console/supplier'
-    await router.push(props.returnTo || fallbackTo)
+    await router.push(props.returnTo || defaultReturnTo)
   } catch (error) {
     const message =
       error instanceof Error

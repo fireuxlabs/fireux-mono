@@ -11,6 +11,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   SupplierStorage,
   type AppSupplier,
@@ -86,6 +87,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     }
 
     const payload: Partial<Supplier> = {
+      slug: normalizeSlug(name),
       supplier_organization_name: name,
       supplier_headline: userLabel,
       operator_ids: [id],
@@ -132,6 +134,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       app_scope_state: 'root_only',
       app_scope_app_id: '',
       company_id: '',
+      slug: defaultName ? normalizeSlug(defaultName) : '',
       supplier_organization_name: defaultName,
       supplier_headline: '',
       summary: '',

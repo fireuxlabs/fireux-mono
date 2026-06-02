@@ -1,7 +1,7 @@
 # Suppliers Pages
 
 Authority: Operational
-Updated: 2026-05-17
+Updated: 2026-06-02
 Scope: `packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/*`.
 
 This folder owns the public `Supplier` route tree.
@@ -12,21 +12,22 @@ This README only explains the supplier delta.
 ## Current Routes
 
 - `index.vue`
-- `[id].vue`
-- `[id]/operator.vue`
+- `[slug].vue`
+- `[slug]/operator.vue`
 - `create.vue`
 - `learn-more.vue`
 
 ## Local Contract
 
-- `index.vue`, `[id].vue`, and `learn-more.vue` are public supplier pages
-- `[id]/operator.vue` is the public-to-private operator bridge
+- `index.vue`, `[slug].vue`, and `learn-more.vue` are public supplier pages
+- `[slug]/operator.vue` is the public-to-private operator bridge
 - `create.vue` is the public root-create page for `Supplier`
 - `console/supplier/create.vue` is the operational console create page
 
 Supplier-specific delta:
 - public create creates `suppliers/<id>` when missing
 - public create does not ensure `apps/<appId>/suppliers/<id>`
+- public detail routes use `supplier.slug`
 - live supplier entry still follows the current operator/company assumption
 - supplier remains intentionally thinner than Kitchen and Portfolio
 

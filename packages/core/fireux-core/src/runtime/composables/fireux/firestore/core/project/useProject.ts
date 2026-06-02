@@ -6,6 +6,7 @@ import { useProjectBootstrapCreate } from './mutations/useProjectBootstrapCreate
 import { useProjectCreate } from './mutations/useProjectCreate'
 import { useProjectDelete } from './mutations/useProjectDelete'
 import { useProjectUpdate } from './mutations/useProjectUpdate'
+import { useProjectComputed } from './utils/view/useProjectComputed'
 import { useProjectInterface } from './utils/view/useProjectInterface'
 
 export type { Project } from '../../../../../models/system/project.model'
@@ -34,6 +35,7 @@ export function useProject(id?: string | Ref<string>) {
   return {
     project,
     pending,
+    ...useProjectComputed(project),
     ...useProjectInterface(),
     ...useProjectBootstrapCreate(),
     ...useProjectCreate(),
