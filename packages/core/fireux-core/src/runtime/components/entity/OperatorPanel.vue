@@ -1,23 +1,28 @@
 <template>
-  <UCard>
+  <UCard class="border-primary/30 bg-primary/5 ring-1 ring-primary/20">
     <div class="space-y-4">
-      <div class="flex flex-wrap gap-2">
-        <UBadge color="neutral" variant="soft">
-          Identity
-        </UBadge>
-      </div>
+      <UBadge color="primary" variant="soft">
+        Identity
+      </UBadge>
 
       <div class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-toned">
-          Operator
-        </p>
-        <h2 class="text-xl font-semibold text-highlighted">
-          Is this your {{ entityLowerLabel }}?
-        </h2>
-        <p class="text-sm leading-6 text-muted">
-          Manage your {{ entityLowerLabel }} from its console when you have
-          operator access.
-        </p>
+        <div class="flex items-start gap-3">
+          <UAvatar
+            icon="i-lucide-key-round"
+            size="md"
+            class="bg-primary/10 text-primary"
+          />
+
+          <div class="min-w-0 space-y-2">
+            <h2 class="text-xl font-semibold">
+              Is this your {{ entityLowerLabel }}?
+            </h2>
+            <p class="text-sm leading-6 text-muted">
+              Manage your {{ entityLowerLabel }} from its console when you have
+              operator access.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </UCard>
