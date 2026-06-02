@@ -35,6 +35,21 @@
               :placeholder="searchPlaceholder"
             />
 
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
+              @click="toggleVariant"
+            />
+
             <UBadge v-if="showCount" variant="soft">
               {{ countLabel }}
             </UBadge>
@@ -164,6 +179,7 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const collection = computed<Portfolio[]>(() =>
   rawCollection.value.filter((portfolio): portfolio is Portfolio =>
     Boolean(makeCard(portfolio))
@@ -182,7 +198,7 @@ const devJsonContext = computed(() =>
   ).trim()
 )
 
-const { query, variant, visibleItems, visibleCount } =
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<Portfolio, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (portfolio) => makeCard(portfolio),

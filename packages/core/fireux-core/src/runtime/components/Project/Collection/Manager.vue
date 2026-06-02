@@ -35,6 +35,21 @@
               :placeholder="searchPlaceholder"
             />
 
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
+              @click="toggleVariant"
+            />
+
             <UBadge v-if="showCount" variant="soft">
               {{ countLabel }}
             </UBadge>
@@ -162,6 +177,7 @@ const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search projects…')
 )
 const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const devJsonTitle = computed(() =>
   String(props.devJsonTitle || 'Projects (JSON)').trim()
@@ -183,7 +199,7 @@ const collection = computed<ProjectSurface[]>(() =>
   )
 )
 
-const { query, variant, visibleItems, visibleCount } =
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<ProjectSurface, NonNullable<ReturnType<typeof makeCard>>>(
     {
       items: collection,

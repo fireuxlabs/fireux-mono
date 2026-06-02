@@ -11,6 +11,23 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
+            <UFieldGroup v-if="showFilterToggle" size="xs">
+              <UButton
+                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setFilterMode('all')"
+              >
+                All
+              </UButton>
+              <UButton
+                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setFilterMode('mine')"
+              >
+                Mine
+              </UButton>
+            </UFieldGroup>
+
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -96,6 +113,7 @@ import PropertyCollectionList from './List.vue'
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
+    filterMode?: 'all' | 'mine'
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -105,11 +123,13 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
     link?: boolean
     action?: boolean
+    showFilterToggle?: boolean
     showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
+    filterMode: 'all',
     title: 'Properties',
     description: 'Browse property records available to this runtime.',
     searchPlaceholder: 'Search properties...',
@@ -119,6 +139,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     link: true,
     action: false,
+    showFilterToggle: false,
     showBadges: true,
     devJsonTitle: 'Properties (JSON)',
     devJsonContext: 'collection manager · properties',
@@ -127,6 +148,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', propertyId: string): void
+  (event: 'update:filterMode', value: 'all' | 'mine'): void
 }>()
 
 const {
@@ -148,11 +170,15 @@ const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search properties...')
 )
+const filterMode = computed<'all' | 'mine'>(() =>
+  props.filterMode === 'mine' ? 'mine' : 'all'
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
+const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -195,4 +221,8 @@ const devJsonContext = computed(() =>
   String(props.devJsonContext || 'collection manager · properties').trim()
 )
 const isDev = import.meta.dev
+
+function setFilterMode(value: 'all' | 'mine') {
+  emit('update:filterMode', value)
+}
 </script>
