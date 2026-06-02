@@ -1,33 +1,33 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      :description="pageDescription"
+    />
 
     <UPageBody class="pagebody">
-      <UAlert
-        v-if="pending"
-        color="neutral"
-        variant="soft"
-        title="Loading supplier"
-        description="Fetching this supplier."
-      />
+      <UPageCard v-if="pending" variant="subtle">
+        <p class="text-sm text-dimmed">Loading supplier…</p>
+      </UPageCard>
 
-      <UAlert
+      <UPageCard
         v-else-if="!supplierRecord"
-        color="warning"
-        variant="soft"
         title="Supplier not found"
         description="This supplier is not available."
+        variant="subtle"
       />
 
-      <template v-else>
-        <SupplierCardsProfile v-if="supplierCard" :card="supplierCard" />
+      <div v-else class="space-y-4">
+        <!-- profile -->
+        <SupplierCardsProfile v-if="profileCard" :card="profileCard" />
 
-        <EntityOperatorPanel
-          entity-label="Supplier"
-          :aligned="operatorAlignedBadges"
-          :not-aligned="operatorNotAlignedBadges"
-        />
+        <!-- main -->
 
+        <!-- operator -->
+        <SupplierPublicOperator />
+
+        <!-- dev -->
         <DevJson
           v-if="isDev"
           :title="'Supplier (JSON)'"
@@ -35,7 +35,7 @@
           :data="supplierRecord"
           :default-open="false"
         />
-      </template>
+      </div>
     </UPageBody>
   </UPage>
 </template>
@@ -47,27 +47,29 @@ import { useSupplierFetch } from '../../composables/fireux/firestore/supplier/fe
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
 import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
+definePageMeta({
+  layout: 'default',
+  title: 'Supplier',
+  description: 'View a supplier.',
+  name: 'SupplierDetailPage',
+})
+
 const route = useRoute()
-const docId = computed(() => {
+const routeKey = computed(() => {
   const raw = route.params.id
   return Array.isArray(raw) ? String(raw[0] || '').trim() : String(raw || '').trim()
 })
 
-const { supplier: supplierRecord, pending } = useSupplierFetch(docId)
-const { profile: supplierToProfile } = useSupplierInterface()
-const supplierCard = computed(() => supplierToProfile(supplierRecord.value))
+const { supplier: supplierRecord, pending } = useSupplierFetch(routeKey)
+const { profile } = useSupplierInterface()
+const profileCard = computed(() => profile(supplierRecord.value))
 
-const displayName = computed(() =>
-  supplierCard.value?.title || docId.value || null
+const pageTitle = computed(() =>
+  profileCard.value?.title || routeKey.value || 'Supplier'
 )
-const pageTitle = computed(() => displayName.value ?? 'Supplier')
 const pageDescription = computed(() =>
-  displayName.value
-    ? `Review the public supplier record for ${displayName.value}.`
-    : 'Public supplier record.'
+  profileCard.value?.summary || 'Public supplier record.'
 )
-const operatorAlignedBadges = ['Identity']
-const operatorNotAlignedBadges = ['Item', 'Catalogue', 'Ingredient']
 const isDev = import.meta.dev
 
 useSupplierSeo(supplierRecord)

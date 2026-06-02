@@ -1,36 +1,40 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      :description="pageDescription"
+    />
 
     <UPageBody class="pagebody">
-      <UAlert
-        v-if="pending"
-        color="neutral"
-        variant="soft"
-        title="Loading portfolio"
-        description="Fetching the selected portfolio."
-      />
-      <UAlert
+      <UPageCard v-if="pending" variant="subtle">
+        <p class="text-sm text-dimmed">Loading portfolio…</p>
+      </UPageCard>
+
+      <UPageCard
         v-else-if="!portfolio"
-        color="warning"
-        variant="soft"
         title="Portfolio not found"
         description="This portfolio could not be found in the current runtime."
+        variant="subtle"
       />
-      <template v-else-if="portfolioCard">
-        <PortfolioCardsProfile :card="portfolioCard" />
 
-        <EntityOperatorPanel
-          entity-label="Portfolio"
-          :aligned="operatorAlignedBadges"
-          :not-aligned="operatorNotAlignedBadges"
-        />
-      </template>
+      <div v-else class="space-y-4">
+        <!-- profile -->
+        <PortfolioCardsProfile v-if="profileCard" :card="profileCard" />
+
+        <!-- main -->
+
+        <!-- operator -->
+        <PortfolioPublicOperator />
+
+        <!-- dev -->
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { computed } from 'vue'
 import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioSeo } from '../../composables/fireux/firestore/portfolio/utils/usePortfolioSeo'
@@ -38,22 +42,21 @@ import { usePortfolioInterface } from '../../composables/fireux/firestore/portfo
 
 definePageMeta({
   layout: 'default',
+  title: 'Portfolio',
+  description: 'View a portfolio.',
   name: 'PortfolioDetailPage',
 })
 
 const route = useRoute()
-const portfolioId = computed(() => String(route.params.id || '').trim())
-const { portfolio, pending } = usePortfolioFetch(portfolioId)
+const routeKey = computed(() => String(route.params.id || '').trim())
+const { portfolio, pending } = usePortfolioFetch(routeKey)
 const { profile } = usePortfolioInterface()
-const portfolioCard = computed(() => profile(portfolio.value))
+const profileCard = computed(() => profile(portfolio.value))
 const pageTitle = computed(() =>
-  portfolioCard.value?.title || portfolioId.value || 'Portfolio'
+  profileCard.value?.title || routeKey.value || 'Portfolio'
 )
 const pageDescription = computed(() =>
-  portfolioCard.value?.summary || 'Portfolio public information surface.'
+  profileCard.value?.summary || 'Portfolio public information surface.'
 )
-const operatorAlignedBadges = ['Identity']
-const operatorNotAlignedBadges = ['Document', 'Task', 'Compliance']
-
 usePortfolioSeo(portfolio)
 </script>

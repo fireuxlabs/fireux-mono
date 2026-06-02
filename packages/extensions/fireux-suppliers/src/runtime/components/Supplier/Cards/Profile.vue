@@ -1,67 +1,64 @@
 <template>
-  <UCard class="space-y-6">
-    <div class="flex items-start gap-4">
-      <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
+  <UCard>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <UAvatar
+        :src="vm.avatar || undefined"
+        :alt="vm.title"
+        icon="i-lucide-truck"
+        size="3xl"
+      />
 
-      <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex items-start justify-between gap-4">
-          <div class="min-w-0">
-            <div class="truncate text-lg font-semibold">{{ vm.title }}</div>
-            <div v-if="vm.subtitle" class="truncate text-sm text-dimmed">
-              {{ vm.subtitle }}
-            </div>
+      <div class="min-w-0 flex-1 space-y-3">
+        <div class="space-y-1">
+          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+            Supplier
           </div>
+          <h2 class="text-2xl font-semibold text-highlighted">
+            {{ vm.title }}
+          </h2>
+          <p v-if="vm.subtitle" class="max-w-3xl text-sm text-toned">
+            {{ vm.subtitle }}
+          </p>
+          <p v-if="vm.prop" class="max-w-3xl text-sm text-muted">
+            {{ vm.prop }}
+          </p>
+        </div>
 
-          <div v-if="vm.badges.length" class="flex flex-wrap justify-end gap-1">
-            <UBadge
-              v-for="badge in vm.badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
+        <div v-if="vm.badges.length" class="flex flex-wrap gap-2">
+          <UBadge
+            v-for="badge in vm.badges"
+            :key="badge"
+            color="neutral"
+            variant="soft"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+
+        <dl class="grid gap-3 text-sm sm:grid-cols-2">
+          <div v-if="vm.organizationName" class="space-y-1">
+            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+              Organization
+            </dt>
+            <dd class="text-default">{{ vm.organizationName }}</dd>
           </div>
-        </div>
+          <div v-if="vm.locationsLabel" class="space-y-1">
+            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+              Coverage
+            </dt>
+            <dd class="text-default">{{ vm.locationsLabel }}</dd>
+          </div>
+          <div v-if="vm.categoriesCsv" class="space-y-1">
+            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+              Categories
+            </dt>
+            <dd class="text-default">{{ vm.categoriesCsv }}</dd>
+          </div>
+        </dl>
 
-        <div class="text-sm text-dimmed">
-          <span v-if="vm.prop">{{ vm.prop }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-4">
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Summary</div>
-        <div class="text-sm">
-          <span v-if="vm.summary">{{ vm.summary }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
-
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Organization</div>
-        <div class="text-sm">
-          <span v-if="vm.organizationName">{{ vm.organizationName }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
-
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Coverage</div>
-        <div class="text-sm">
-          <span v-if="vm.locationsLabel">{{ vm.locationsLabel }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
-
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Categories</div>
-        <div class="text-sm">
-          <span v-if="vm.categoriesCsv">{{ vm.categoriesCsv }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
+        <p v-if="vm.summary" class="text-sm text-muted">
+          {{ vm.summary }}
+        </p>
       </div>
     </div>
   </UCard>
