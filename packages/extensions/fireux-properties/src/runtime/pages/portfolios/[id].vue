@@ -20,7 +20,11 @@
       <template v-else-if="portfolioCard">
         <PortfolioCardsProfile :card="portfolioCard" />
 
-        <EntityOperatorPanel entity-label="Portfolio" />
+        <EntityOperatorPanel
+          entity-label="Portfolio"
+          :aligned="operatorAlignedBadges"
+          :not-aligned="operatorNotAlignedBadges"
+        />
       </template>
     </UPageBody>
   </UPage>
@@ -48,6 +52,8 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   portfolioCard.value?.summary || 'Portfolio public information surface.'
 )
+const operatorAlignedBadges = ['Identity']
+const operatorNotAlignedBadges = ['Document', 'Task', 'Compliance']
 
 usePortfolioSeo(portfolio)
 </script>

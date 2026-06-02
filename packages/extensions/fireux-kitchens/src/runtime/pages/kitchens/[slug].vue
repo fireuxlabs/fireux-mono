@@ -113,7 +113,11 @@
               </div>
         </UCard>
 
-        <EntityOperatorPanel entity-label="Kitchen" />
+        <EntityOperatorPanel
+          entity-label="Kitchen"
+          :aligned="operatorAlignedBadges"
+          :not-aligned="operatorNotAlignedBadges"
+        />
       </div>
     </UPageBody>
   </UPage>
@@ -261,6 +265,17 @@ const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
 const pageDescription = computed(() =>
   kitchen.value?.short_address || kitchen.value?.formatted_address || 'Kitchen details.'
 )
+const operatorAlignedBadges = ['Identity']
+const operatorNotAlignedBadges = [
+  'Dish',
+  'Menu',
+  'Recipe',
+  'Ingredient',
+  'Mise',
+  'Order',
+  'Team',
+  'Station',
+]
 const isDev = import.meta.dev
 
 useKitchenSeo(kitchen)

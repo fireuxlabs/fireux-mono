@@ -155,7 +155,11 @@
           </UCard>
         </div>
 
-        <EntityOperatorPanel entity-label="Project" />
+        <EntityOperatorPanel
+          entity-label="Project"
+          :aligned="operatorAlignedBadges"
+          :not-aligned="operatorNotAlignedBadges"
+        />
       </template>
     </UPageBody>
   </UPage>
@@ -193,6 +197,8 @@ const pageDescription = computed(() => {
   if (projectCard.value?.meta) return projectCard.value.meta
   return 'Project details for the current runtime.'
 })
+const operatorAlignedBadges = ['Identity']
+const operatorNotAlignedBadges = ['App', 'Ecosystem']
 
 useHead(() => ({
   title: `${appName} | ${pageTitle.value}`,

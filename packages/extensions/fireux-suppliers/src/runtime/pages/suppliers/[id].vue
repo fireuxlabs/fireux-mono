@@ -22,7 +22,11 @@
       <template v-else>
         <SupplierCardsProfile v-if="supplierCard" :card="supplierCard" />
 
-        <EntityOperatorPanel entity-label="Supplier" />
+        <EntityOperatorPanel
+          entity-label="Supplier"
+          :aligned="operatorAlignedBadges"
+          :not-aligned="operatorNotAlignedBadges"
+        />
 
         <DevJson
           v-if="isDev"
@@ -62,6 +66,8 @@ const pageDescription = computed(() =>
     ? `Review the public supplier record for ${displayName.value}.`
     : 'Public supplier record.'
 )
+const operatorAlignedBadges = ['Identity']
+const operatorNotAlignedBadges = ['Item', 'Catalogue', 'Ingredient']
 const isDev = import.meta.dev
 
 useSupplierSeo(supplierRecord)
