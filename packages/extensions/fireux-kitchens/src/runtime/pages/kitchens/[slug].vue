@@ -218,7 +218,6 @@ import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/use
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
-import MenuSproochliLanguageTrigger from '../../components/Menu/SproochliLanguageTrigger.vue'
 import { KitchenStorage, type Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 

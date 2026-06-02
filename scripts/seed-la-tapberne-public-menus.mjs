@@ -715,13 +715,6 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
-        public_menu_style: {
-          color_mode: 'light',
-          background_color: '#ffffff',
-          surface_color: '#ffffff',
-          accent_color: '#000000',
-          font: 'sans',
-        },
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',

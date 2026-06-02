@@ -112,11 +112,7 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
-import {
-  resolveTestKitchenName,
-  resolveTestKitchenShortAddress,
-  resolveTestKitchenSlug,
-} from '../../../composables/fireux/app/kitchens/testKitchenIdentity'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'
 import { MenuStorage } from '../../../models/menu.model'
@@ -243,6 +239,12 @@ const syncCounts = computed(() => ({
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
   `${KitchenStorage.rootCollection}/${kitchenId}/${name}`
 
+const resolveTestKitchenName = (displayName: unknown, kitchenId: string) => {
+  const name = String(displayName || '').trim()
+  const firstName = name.split(/\s+/).find(Boolean)
+  return `${firstName || `User ${kitchenId.slice(0, 6)}`}'s Test Kitchen`
+}
+
 const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: string) =>
   docs.map((doc) => ({
     ...doc,
@@ -260,9 +262,9 @@ const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
   return {
     id: kitchenId,
     place_id: String(existingKitchen?.place_id || kitchenId).trim(),
-    slug: resolveTestKitchenSlug(authUser.value?.displayName, kitchenId),
+    slug: normalizeSlug(resolveTestKitchenName(authUser.value?.displayName, kitchenId)) || 'user-test-kitchen',
     name: resolveTestKitchenName(authUser.value?.displayName, kitchenId),
-    short_address: resolveTestKitchenShortAddress(),
+    short_address: '123 Sandbox Street',
     image_url: existingImageUrl || userAvatarUrl || undefined,
     is_test_kitchen: true,
     simulation_kind: 'test',

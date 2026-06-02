@@ -10,13 +10,6 @@
     "primary_language": "de",
     "currency_code": "CHF",
     "currency_format": "symbol",
-    "public_menu_style": {
-      "color_mode": "light",
-      "background_color": "#fff8ed",
-      "surface_color": "#ffffff",
-      "accent_color": "#8c4f20",
-      "font": "serif"
-    },
     "show": false
   },
   "menu": {
