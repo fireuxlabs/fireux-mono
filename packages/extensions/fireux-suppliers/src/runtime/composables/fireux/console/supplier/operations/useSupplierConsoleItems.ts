@@ -1,12 +1,12 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../useSupplierConsole'
-import { getDemoSupplierProductItems } from '../../../app/utils/supplier-demo-scenarios'
-import { useSupplierProductCollection } from '../../../firestore/supplier/fetch/useSupplierProductCollection'
-import type { SupplierProductInterfaceItem } from '../../../firestore/supplier/utils/view/useSupplierProductInterface'
+import { getDemoSupplierItems } from '../../../app/utils/supplier-demo-scenarios'
+import { useSupplierItemCollection } from '../../../firestore/supplier/fetch/useSupplierItemCollection'
+import type { SupplierItemSurface } from '../../../firestore/supplier/utils/view/useSupplierItemInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierConsoleProducts() {
+export function useSupplierConsoleItems() {
   const {
     selectedSupplier,
     selectedMode,
@@ -31,45 +31,45 @@ export function useSupplierConsoleProducts() {
   const catalogueState = computed(() =>
     normalizeString(selectedSupplier.value?.catalogue_state)
   )
-  const supplierProductsEnabled = computed(() =>
+  const supplierItemsEnabled = computed(() =>
     Boolean(rootCollection.value && supplierId.value)
   )
   const {
-    collectionPath: supplierProductsCollectionPath,
-    supplierProducts,
-    pending: supplierProductsPending,
-  } = useSupplierProductCollection(supplierId, {
-    enabled: supplierProductsEnabled,
+    collectionPath: supplierItemsCollectionPath,
+    supplierItems: supplierItemsFromStore,
+    pending: supplierItemsPending,
+  } = useSupplierItemCollection(supplierId, {
+    enabled: supplierItemsEnabled,
     supplierCollectionPath: rootCollection,
   })
 
-  const productItems = computed<SupplierProductInterfaceItem[]>(() =>
+  const supplierItems = computed<SupplierItemSurface[]>(() =>
     selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierProductItems(supplierId.value)
+      ? getDemoSupplierItems(supplierId.value)
       : rootCollection.value
-        ? supplierProducts.value
+        ? supplierItemsFromStore.value
         : []
   )
   const pending = computed(() =>
-    rootCollection.value ? supplierProductsPending.value : false
+    rootCollection.value ? supplierItemsPending.value : false
   )
 
   const emptyTitle = computed(() => {
-    if (selectedMode.value === 'live') return 'No live supplier products yet'
-    if (selectedMode.value === 'test') return 'No test supplier products yet'
-    return 'No supplier products available'
+    if (selectedMode.value === 'live') return 'No live supplier items yet'
+    if (selectedMode.value === 'test') return 'No test supplier items yet'
+    return 'No supplier items available'
   })
 
   const emptyDescription = computed(() => {
     if (selectedMode.value === 'live') {
-      return 'No supplier-owned product rows are available for this supplier yet.'
+      return 'No supplier-owned item rows are available for this supplier yet.'
     }
 
     if (selectedMode.value === 'test') {
-      return 'This test supplier does not have any product rows yet.'
+      return 'This test supplier does not have any item rows yet.'
     }
 
-    return 'No supplier products are available for the selected supplier.'
+    return 'No supplier items are available for the selected supplier.'
   })
 
   const modeLabel = computed(() => {
@@ -78,11 +78,11 @@ export function useSupplierConsoleProducts() {
     return 'Live'
   })
 
-  const productsTitle = computed(() =>
-    supplierLabel.value ? `${supplierLabel.value} Products` : 'Supplier Products'
+  const itemsTitle = computed(() =>
+    supplierLabel.value ? `${supplierLabel.value} Items` : 'Supplier Items'
   )
 
-  const productsDescription = computed(() => {
+  const itemsDescription = computed(() => {
     const parts = [
       modeLabel.value,
       `state: ${state.value || 'missing'}`,
@@ -94,14 +94,14 @@ export function useSupplierConsoleProducts() {
   })
 
   const devJsonContext = computed(
-    () => `console supplier · products · ${selectedMode.value}`
+    () => `console supplier · items · ${selectedMode.value}`
   )
   const debug = computed(() => ({
     mode: selectedMode.value,
     supplierId: supplierId.value,
     supplierName: supplierLabel.value,
-    supplierProductsCollectionPath: supplierProductsCollectionPath.value,
-    productItemsCount: productItems.value.length,
+    supplierItemsCollectionPath: supplierItemsCollectionPath.value,
+    supplierItemsCount: supplierItems.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
   }))
@@ -114,20 +114,20 @@ export function useSupplierConsoleProducts() {
     linkedIngredientIds,
     state,
     catalogueState,
-    supplierProductsCollectionPath,
-    productItems,
+    supplierItemsCollectionPath,
+    supplierItems,
     pending,
     canWrite,
     emptyTitle,
     emptyDescription,
     modeLabel,
-    productsTitle,
-    productsDescription,
+    itemsTitle,
+    itemsDescription,
     devJsonContext,
     debug,
   }
 }
 
-export type SupplierConsoleProductsState = ReturnType<
-  typeof useSupplierConsoleProducts
+export type SupplierConsoleItemsState = ReturnType<
+  typeof useSupplierConsoleItems
 >

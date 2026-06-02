@@ -1,8 +1,8 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { SupplierProduct } from '../../../../../../models/supplier/Supplier.model'
+import type { SupplierItem } from '../../../../../../models/supplier/Supplier.model'
 
-export type SupplierProductInterfaceItem = Partial<SupplierProduct> &
-  Pick<SupplierProduct, 'id' | 'supplier_id' | 'product_id'> & {
+export type SupplierItemSurface = Partial<SupplierItem> &
+  Pick<SupplierItem, 'id' | 'supplier_id' | 'product_id'> & {
     supplier_name?: string
   }
 
@@ -14,14 +14,14 @@ const formatPrice = (valueMinor?: number | null, currencyCode?: string) =>
     maximumFractionDigits: 2,
   }).format(Number(valueMinor || 0) / 100)
 
-const resolveUnitCostMinor = (item: SupplierProductInterfaceItem) => {
+const resolveUnitCostMinor = (item: SupplierItemSurface) => {
   const packCostMinor = Number(item.pack_cost_minor || 0)
   const quantityPerPack = Number(item.quantity_per_pack || 0)
   if (!packCostMinor || !quantityPerPack) return 0
   return Math.round(packCostMinor / quantityPerPack)
 }
 
-export namespace SupplierProductItemCard {
+export namespace SupplierItemCard {
   export type Card = {
     id: string
     to: string
@@ -39,11 +39,11 @@ export namespace SupplierProductItemCard {
   }
 }
 
-export function useSupplierProductInterface() {
-  type SupplierProductPill = SupplierProductItemCard.Card
+export function useSupplierItemInterface() {
+  type SupplierItemPill = SupplierItemCard.Card
 
-  type SupplierProductCell = Pick<
-    SupplierProductItemCard.Card,
+  type SupplierItemCell = Pick<
+    SupplierItemCard.Card,
     | 'id'
     | 'to'
     | 'imageUrl'
@@ -56,7 +56,7 @@ export function useSupplierProductInterface() {
     | 'packLabel'
   >
 
-  function map(item: SupplierProductInterfaceItem): SupplierProductItemCard.Card {
+  function map(item: SupplierItemSurface): SupplierItemCard.Card {
     const id = safeString(item.id).trim()
     const productId = safeString(item.product_id || item.ingredient_id).trim()
     const name = safeString(item.name_override || item.product_id).trim()
@@ -89,8 +89,8 @@ export function useSupplierProductInterface() {
   }
 
   function buildInterface(
-    target?: SupplierProductInterfaceItem | null | undefined
-  ): SupplierProductItemCard.Card | null {
+    target?: SupplierItemSurface | null | undefined
+  ): SupplierItemCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
@@ -99,16 +99,16 @@ export function useSupplierProductInterface() {
   const toInterface = buildInterface
 
   function pill(
-    target?: SupplierProductInterfaceItem | null | undefined
-  ): SupplierProductPill | null {
+    target?: SupplierItemSurface | null | undefined
+  ): SupplierItemPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return base
   }
 
   function cell(
-    target?: SupplierProductInterfaceItem | null | undefined
-  ): SupplierProductCell | null {
+    target?: SupplierItemSurface | null | undefined
+  ): SupplierItemCell | null {
     const base = buildInterface(target)
     if (!base) return null
 

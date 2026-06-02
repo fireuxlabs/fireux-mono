@@ -1,21 +1,21 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
-  SupplierProductStorage,
-  type SupplierProduct,
-  type SupplierProductCreateInput,
+  SupplierItemStorage,
+  type SupplierItem,
+  type SupplierItemCreateInput,
 } from '../../../../../models/supplier/Supplier.model'
-import { resolveSupplierProductCollectionPath } from '../fetch/useSupplierProductCollection'
+import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierProductCreate(options: {
+export function useSupplierItemCreate(options: {
   supplierCollectionPath?: string
 } = {}) {
   const { createDocument } = useFirestoreCreate()
 
-  async function createSupplierProduct(
+  async function createSupplierItem(
     supplierId: string,
-    input: SupplierProductCreateInput
+    input: SupplierItemCreateInput
   ): Promise<string> {
     const resolvedSupplierId = normalizeString(supplierId)
     if (!resolvedSupplierId) {
@@ -27,17 +27,17 @@ export function useSupplierProductCreate(options: {
       throw new Error('[fireux-suppliers] product_id is required.')
     }
 
-    const collectionPath = resolveSupplierProductCollectionPath(
+    const collectionPath = resolveSupplierItemCollectionPath(
       resolvedSupplierId,
       options.supplierCollectionPath
     )
-    const payload: Partial<SupplierProduct> = {
+    const payload: Partial<SupplierItem> = {
       ...input,
       supplier_id: resolvedSupplierId,
       product_id: productId,
     }
 
-    return createDocument<Partial<SupplierProduct>>(collectionPath, payload, {
+    return createDocument<Partial<SupplierItem>>(collectionPath, payload, {
       stamp: true,
       creator: true,
       app: true,
@@ -45,7 +45,7 @@ export function useSupplierProductCreate(options: {
   }
 
   return {
-    createSupplierProduct,
-    collectionName: SupplierProductStorage.collection,
+    createSupplierItem,
+    collectionName: SupplierItemStorage.collection,
   }
 }

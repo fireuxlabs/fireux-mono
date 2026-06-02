@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Learn More: Supplier"
-      description="Introduce your products to kitchens and venues that need them."
+      description="Introduce your supplier items to kitchens and venues that need them."
     />
 
     <UPageBody class="pagebody">

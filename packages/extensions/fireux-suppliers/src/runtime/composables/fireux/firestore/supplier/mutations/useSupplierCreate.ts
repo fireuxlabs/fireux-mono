@@ -137,7 +137,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       summary: '',
       supplier_bio: '',
       supplier_image: '',
-      supplier_product_categories: [] as string[],
+      supplier_item_categories: [] as string[],
       supplier_delivery_areas: [] as string[],
       state: 'public',
       catalogue_state: 'public_only',

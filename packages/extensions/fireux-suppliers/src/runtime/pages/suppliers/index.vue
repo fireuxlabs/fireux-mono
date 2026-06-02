@@ -9,7 +9,7 @@
     <UPageBody class="pagebody">
       <EntityIndexCta
         family="console"
-        cta="Create or open a supplier console to manage catalogue, products, and ingredient supply."
+        cta="Create or open a supplier console to manage catalogue items and ingredient supply."
       />
 
       <SupplierCollectionManager />

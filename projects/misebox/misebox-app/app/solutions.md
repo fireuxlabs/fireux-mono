@@ -373,7 +373,7 @@ Kitchen operations depend on clear responsibility. This solution should engage o
 
 ## restaurant-supplier-management
 
-Connect suppliers, ingredients, products, sourcing, and kitchen needs.
+Connect suppliers, ingredients, items, sourcing, and kitchen needs.
 
 Current state: Misebox has supplier and ingredient concepts, plus kitchen supplier surfaces. The deeper sourcing workflow is planned.
 

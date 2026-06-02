@@ -1,10 +1,10 @@
 import { computed } from 'vue'
 import {
   getDemoSupplierCatalogueItems,
-  getDemoSupplierProductItems,
+  getDemoSupplierItems,
 } from '../../../app/utils/supplier-demo-scenarios'
 import { useSupplierCatalogueCollection } from '../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
-import { useSupplierProductCollection } from '../../../firestore/supplier/fetch/useSupplierProductCollection'
+import { useSupplierItemCollection } from '../../../firestore/supplier/fetch/useSupplierItemCollection'
 import { useSupplierConsole } from '../useSupplierConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -39,17 +39,17 @@ export function useSupplierConsoleCatalogue() {
   })
 
   const {
-    supplierProducts,
-    pending: supplierProductsPending,
-  } = useSupplierProductCollection(supplierId, {
+    supplierItems: supplierItemsFromStore,
+    pending: supplierItemsPending,
+  } = useSupplierItemCollection(supplierId, {
     enabled: supplierCataloguesEnabled,
     supplierCollectionPath: rootCollection,
   })
 
-  const productItems = computed(() =>
+  const supplierItems = computed(() =>
     selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierProductItems(supplierId.value)
-      : supplierProducts.value
+      ? getDemoSupplierItems(supplierId.value)
+      : supplierItemsFromStore.value
   )
   const rawCatalogues = computed(() =>
     selectedMode.value === 'demo' && supplierId.value
@@ -59,13 +59,13 @@ export function useSupplierConsoleCatalogue() {
   const catalogues = computed(() =>
     rawCatalogues.value.map((catalogue) => ({
       ...catalogue,
-      supplier_products: productItems.value,
+      supplier_items: supplierItems.value,
     }))
   )
   const pending = computed(() =>
     selectedMode.value === 'demo'
       ? false
-      : supplierCataloguesPending.value || supplierProductsPending.value
+      : supplierCataloguesPending.value || supplierItemsPending.value
   )
 
   const isIntegratedCatalogue = computed(
@@ -129,7 +129,7 @@ export function useSupplierConsoleCatalogue() {
     state: state.value,
     catalogueState: catalogueState.value,
     supplierCataloguesCollectionPath: supplierCataloguesCollectionPath.value,
-    productItemsCount: productItems.value.length,
+    supplierItemsCount: supplierItems.value.length,
     catalogueItemsCount: catalogues.value.length,
     pending: pending.value,
     canWrite: canWrite.value,

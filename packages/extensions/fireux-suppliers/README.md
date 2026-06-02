@@ -11,8 +11,8 @@ It currently:
 - Ships supplier runtime domain surfaces (pages/components/composables/models)
 
 Supplier ingredient records are supplier-owned coverage wrappers around canonical Ingredient identity.
-Supplier product records are supplier-owned sale/procurement wrappers around canonical Product identity.
-Use `SupplierProduct.product_id` to link to `products/{productId}` and optional `ingredient_id` only when a supplier product maps to kitchen stock/use.
+Supplier item records are supplier-owned sale/procurement wrappers around canonical Product identity.
+Use `SupplierItem.product_id` to link to `products/{productId}` and optional `ingredient_id` only when a supplier item maps to kitchen stock/use.
 
 Canonical contract:
 - `docs/contract.md`

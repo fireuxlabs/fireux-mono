@@ -80,10 +80,10 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 
-import type { SupplierProductItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+import type { SupplierItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
 
-type Props = Partial<SupplierProductItemCard.Card> & {
-  card?: SupplierProductItemCard.Card
+type Props = Partial<SupplierItemCard.Card> & {
+  card?: SupplierItemCard.Card
   showSubtitle?: boolean
   link?: boolean
   action?: boolean

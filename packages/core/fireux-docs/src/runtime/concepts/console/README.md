@@ -224,7 +224,7 @@ Use this matrix when comparing console roots and their children. Keep it small:
 | Kitchen | KitchenSupplierIngredient | scoped | Kitchen/supplier/ingredient linkage record. |
 | Kitchen | Mise, Order, Team, Station | scoped | Operational kitchen records. Authority comes from Kitchen operator/membership seams. |
 | Supplier | SupplierCatalogue | scoped | Supplier-owned catalogue structure. |
-| Supplier | SupplierProduct | scoped | Supplier-owned product/catalogue item unless future canon promotes it. |
+| Supplier | SupplierItem | scoped | Supplier-owned item wrapper over root Product truth. |
 | Supplier | SupplierIngredient links | scoped | Supplier-side links to root Ingredient truth. |
 | Portfolio | Document, DocumentLink | scoped | Portfolio-scoped console operation records. |
 | Portfolio | Task, ComplianceRecord | scoped | Portfolio operational/governance records. |

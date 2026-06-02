@@ -396,7 +396,7 @@ n/a     -> the seam is not expected for this entity shape yet
 | Kitchen order | scoped | `KitchenOrderStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Kitchen cost snapshot | scoped | `KitchenCostSnapshotStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Supplier | both | `SupplierStorage`, `AppSupplierStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
-| Supplier product | scoped | `SupplierProductStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
+| Supplier item | scoped | `SupplierItemStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Supplier catalogue | scoped | `SupplierCatalogueStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |
 | Portfolio | both | `PortfolioStorage`, `AppPortfolioStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Property | both | `PropertyStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |

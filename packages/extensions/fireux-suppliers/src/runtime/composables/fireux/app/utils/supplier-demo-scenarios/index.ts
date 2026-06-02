@@ -2,7 +2,7 @@ import type {
   Supplier,
   SupplierCatalogue,
   SupplierCatalogueState,
-  SupplierProduct,
+  SupplierItem,
   SupplierState,
 } from '../../../../../models/supplier/Supplier.model'
 
@@ -17,8 +17,8 @@ export type DemoSupplierListItem = Partial<Supplier> & {
   linked_ingredient_ids?: string[]
 }
 
-type DemoSupplierProductSeed = Pick<
-  SupplierProduct,
+type DemoSupplierItemSeed = Pick<
+  SupplierItem,
   | 'id'
   | 'supplier_id'
   | 'product_id'
@@ -28,7 +28,7 @@ type DemoSupplierProductSeed = Pick<
   | 'currency_code'
 > &
   Partial<Pick<
-    SupplierProduct,
+    SupplierItem,
     | 'ingredient_id'
     | 'name_override'
     | 'description_override'
@@ -43,7 +43,7 @@ type DemoSupplierProductSeed = Pick<
     | 'metadata'
   >>
 
-export type DemoSupplierProductItem = SupplierProduct
+export type DemoSupplierItem = SupplierItem
 
 const DEMO_TIMESTAMP = { seconds: 0, nanoseconds: 0 } as const
 
@@ -56,7 +56,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
     supplier_organization_name: 'City Butchers',
     tagline: 'Fresh produce and kitchen essentials for busy service',
     supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
-    supplier_product_categories: ['Meat', 'Dry Store'],
+    supplier_item_categories: ['Meat', 'Dry Store'],
     supplier_delivery_areas: ['Central'],
     summary:
       'Official supplier record with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
@@ -76,7 +76,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
     supplier_organization_name: 'Daily Bakehouse',
     tagline: 'Service-ready breads and buns for busy kitchens',
     supplier_headline: 'Buns and breads before service',
-    supplier_product_categories: ['Bakery'],
+    supplier_item_categories: ['Bakery'],
     supplier_delivery_areas: ['Central'],
     summary: 'Official supplier record with a live bakery catalogue used across service kitchens.',
     supplier_bio:
@@ -101,7 +101,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
     supplier_organization_name: 'Green Larder',
     tagline: 'Leafy produce and herbs for quick kitchen prep',
     supplier_headline: 'Leafy greens and herbs for fast service kitchens',
-    supplier_product_categories: ['Produce', 'Herbs'],
+    supplier_item_categories: ['Produce', 'Herbs'],
     supplier_delivery_areas: ['Central'],
     summary:
       'Public supplier record already linked by kitchens while the official supplier catalogue is still pending.',
@@ -128,7 +128,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
     supplier_organization_name: 'Pantry House',
     tagline: 'Dairy, pickles, and pantry staples for service',
     supplier_headline: 'Cultured dairy, pickles, and pantry staples for service kitchens',
-    supplier_product_categories: ['Dairy', 'Preserves', 'Pantry'],
+    supplier_item_categories: ['Dairy', 'Preserves', 'Pantry'],
     supplier_delivery_areas: ['Central'],
     summary:
       'Public supplier record linked by kitchens for dairy and pantry items before the official catalogue is connected.',
@@ -156,8 +156,8 @@ const normalizeCurrency = (value: unknown) =>
 
 const cloneSupplier = (supplier: DemoSupplierListItem): DemoSupplierListItem => ({
   ...supplier,
-  supplier_product_categories: Array.isArray(supplier.supplier_product_categories)
-    ? [...supplier.supplier_product_categories]
+  supplier_item_categories: Array.isArray(supplier.supplier_item_categories)
+    ? [...supplier.supplier_item_categories]
     : [],
   supplier_delivery_areas: Array.isArray(supplier.supplier_delivery_areas)
     ? [...supplier.supplier_delivery_areas]
@@ -167,9 +167,9 @@ const cloneSupplier = (supplier: DemoSupplierListItem): DemoSupplierListItem => 
     : [],
 })
 
-const demoSupplierProductsBySupplierId: Record<
+const demoSupplierItemSeedsBySupplierId: Record<
   string,
-  DemoSupplierProductSeed[]
+  DemoSupplierItemSeed[]
 > = {
   'city-butchers': [
     {
@@ -342,9 +342,9 @@ const demoSupplierProductsBySupplierId: Record<
   ],
 }
 
-const cloneProductItem = (
-  item: DemoSupplierProductSeed
-): DemoSupplierProductItem => ({
+const cloneSupplierItem = (
+  item: DemoSupplierItemSeed
+): DemoSupplierItem => ({
   ...item,
   id: normalizeString(item.id),
   supplier_id: normalizeString(item.supplier_id),
@@ -397,14 +397,14 @@ export const getDemoSupplier = (supplierId?: string): DemoSupplierListItem | nul
 export const getDemoSuppliers = (): DemoSupplierListItem[] =>
   demoSuppliers.map((supplier) => cloneSupplier(supplier))
 
-export const getDemoSupplierProductItems = (
+export const getDemoSupplierItems = (
   supplierId?: string
-): DemoSupplierProductItem[] => {
+): DemoSupplierItem[] => {
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return []
 
-  const items = demoSupplierProductsBySupplierId[resolvedId] ?? []
-  return items.map((item) => cloneProductItem(item))
+  const items = demoSupplierItemSeedsBySupplierId[resolvedId] ?? []
+  return items.map((item) => cloneSupplierItem(item))
 }
 
 export const getDemoSupplierCatalogueItems = (
@@ -413,20 +413,24 @@ export const getDemoSupplierCatalogueItems = (
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return []
 
-  const products = getDemoSupplierProductItems(resolvedId)
-  if (!products.length) return []
+  const items = getDemoSupplierItems(resolvedId)
+  if (!items.length) return []
 
   const sectionsByIngredient = new Map<string, SupplierCatalogue['sections'][number]>()
 
-  for (const product of products) {
-    const ingredientId = normalizeString(product.ingredient_id || product.product_id)
+  for (const supplierItem of items) {
+    const ingredientId = normalizeString(
+      supplierItem.ingredient_id || supplierItem.product_id
+    )
     if (!ingredientId) continue
 
     let section = sectionsByIngredient.get(ingredientId)
     if (!section) {
       section = {
         id: ingredientId,
-        label: normalizeString(product.name_override) || titleFromSlug(ingredientId),
+        label:
+          normalizeString(supplierItem.name_override) ||
+          titleFromSlug(ingredientId),
         description: '',
         items: [],
         sort_order: sectionsByIngredient.size,
@@ -435,11 +439,14 @@ export const getDemoSupplierCatalogueItems = (
     }
 
     section.items.push({
-      id: `${product.id}-catalogue-item`,
-      supplier_product_id: product.id,
-      product_id: product.product_id,
-      label: product.pack_size_label || product.name_override || product.product_id,
-      active: product.active !== false,
+      id: `${supplierItem.id}-catalogue-item`,
+      supplier_item_id: supplierItem.id,
+      product_id: supplierItem.product_id,
+      label:
+        supplierItem.pack_size_label ||
+        supplierItem.name_override ||
+        supplierItem.product_id,
+      active: supplierItem.active !== false,
       sort_order: section.items.length,
     })
   }

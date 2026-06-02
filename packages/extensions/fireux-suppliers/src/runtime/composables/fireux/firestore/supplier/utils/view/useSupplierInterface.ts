@@ -65,7 +65,7 @@ export function useSupplierInterface(supplier?: SupplierRefs | null) {
   function map(target: SupplierSurface): SupplierCard.Card {
     const id = safeString(target.id).trim()
     const organizationName = safeString(target.supplier_organization_name)
-    const badges = safeStringArray(target.supplier_product_categories)
+    const badges = safeStringArray(target.supplier_item_categories)
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
     const headline = safeString(target.supplier_headline)
     const summary = safeString(target.summary)

@@ -1,44 +1,44 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
-  type SupplierProduct,
-  type SupplierProductUpdateInput,
+  type SupplierItem,
+  type SupplierItemUpdateInput,
 } from '../../../../../models/supplier/Supplier.model'
-import { resolveSupplierProductCollectionPath } from '../fetch/useSupplierProductCollection'
+import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierProductUpdate(options: {
+export function useSupplierItemUpdate(options: {
   supplierCollectionPath?: string
 } = {}) {
   const { updateDocument } = useFirestoreUpdate()
 
-  async function updateSupplierProduct(
+  async function updateSupplierItem(
     supplierId: string,
-    supplierProductId: string,
-    patch: SupplierProductUpdateInput
+    supplierItemId: string,
+    patch: SupplierItemUpdateInput
   ): Promise<void> {
     const resolvedSupplierId = normalizeString(supplierId)
-    const resolvedSupplierProductId = normalizeString(supplierProductId)
+    const resolvedSupplierItemId = normalizeString(supplierItemId)
     if (!resolvedSupplierId) {
       throw new Error('[fireux-suppliers] supplier id is required.')
     }
-    if (!resolvedSupplierProductId) {
-      throw new Error('[fireux-suppliers] supplier product id is required.')
+    if (!resolvedSupplierItemId) {
+      throw new Error('[fireux-suppliers] supplier item id is required.')
     }
 
-    const collectionPath = resolveSupplierProductCollectionPath(
+    const collectionPath = resolveSupplierItemCollectionPath(
       resolvedSupplierId,
       options.supplierCollectionPath
     )
 
-    await updateDocument<SupplierProduct>(
+    await updateDocument<SupplierItem>(
       collectionPath,
-      resolvedSupplierProductId,
+      resolvedSupplierItemId,
       patch
     )
   }
 
   return {
-    updateSupplierProduct,
+    updateSupplierItem,
   }
 }

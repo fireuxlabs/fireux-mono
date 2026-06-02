@@ -54,7 +54,7 @@ import {
   useSupplierInterface,
   type SupplierSurface,
 } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { resolveSupplierProductCollectionPath } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierProductCollection'
+import { resolveSupplierItemCollectionPath } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierItemCollection'
 
 type SupplierPillCard = NonNullable<
   ReturnType<ReturnType<typeof useSupplierInterface>['pill']>
@@ -97,9 +97,9 @@ const supplierDocPath = computed(() => {
   if (!supplierCollectionPath.value || !props.focus.id) return ''
   return `${supplierCollectionPath.value}/${props.focus.id}`
 })
-const supplierProductsCollectionPath = computed(() => {
-  if (props.focus.mode === 'demo') return 'demo supplier product offers'
-  return resolveSupplierProductCollectionPath(
+const supplierItemsCollectionPath = computed(() => {
+  if (props.focus.mode === 'demo') return 'demo supplier item offers'
+  return resolveSupplierItemCollectionPath(
     props.focus.id,
     supplierCollectionPath.value
   )
@@ -122,13 +122,13 @@ const focusDebugData = computed(() => {
         collectionPath: supplierCollectionPath.value || 'demo supplier scenarios',
         docPath: supplierDocPath.value,
       },
-      products: {
-        collectionPath: supplierProductsCollectionPath.value,
+      items: {
+        collectionPath: supplierItemsCollectionPath.value,
         itemPath:
-          supplierProductsCollectionPath.value && props.focus.mode !== 'demo'
-            ? `${supplierProductsCollectionPath.value}/<supplierProductId>`
+          supplierItemsCollectionPath.value && props.focus.mode !== 'demo'
+            ? `${supplierItemsCollectionPath.value}/<supplierItemId>`
             : '',
-        productPath: '/products/<productId>',
+        productPath: '/items/<productId>',
       },
       catalogues: {
         collectionPath: supplierCataloguesCollectionPath.value,

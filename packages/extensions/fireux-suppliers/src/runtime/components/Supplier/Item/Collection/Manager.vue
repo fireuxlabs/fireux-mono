@@ -40,18 +40,18 @@
       </div>
     </template>
 
-    <SupplierProductCollectionList
+    <SupplierItemCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <SupplierProductCardsPill v-bind="card" :link="linkEnabled" />
+        <SupplierItemCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <SupplierProductCardsCell v-bind="card" :link="linkEnabled" />
+        <SupplierItemCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </SupplierProductCollectionList>
+    </SupplierItemCollectionList>
 
     <UAlert
       v-else
@@ -77,13 +77,13 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import {
-  useSupplierProductInterface,
-  type SupplierProductInterfaceItem,
-} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+  useSupplierItemInterface,
+  type SupplierItemSurface,
+} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
 
 const props = withDefaults(
   defineProps<{
-    collection?: SupplierProductInterfaceItem[]
+    collection?: SupplierItemSurface[]
     pending?: boolean
     title?: string
     description?: string
@@ -98,30 +98,30 @@ const props = withDefaults(
     devContext?: string
   }>(),
   {
-    title: 'Supplier Products',
-    description: 'Browse supplier product offers.',
+    title: 'Supplier Items',
+    description: 'Browse supplier item offers.',
     pending: false,
     link: false,
-    searchPlaceholder: 'Search supplier products...',
+    searchPlaceholder: 'Search supplier items...',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
-    emptyTitle: 'No products',
-    emptyDescription: 'No supplier products found.',
-    devContext: 'supplier product collection manager',
+    emptyTitle: 'No items',
+    emptyDescription: 'No supplier items found.',
+    devContext: 'supplier item collection manager',
   }
 )
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Supplier Products'))
+const title = computed(() => String(props.title || 'Supplier Items'))
 const description = computed(() =>
-  String(props.description || 'Browse supplier product offers.')
+  String(props.description || 'Browse supplier item offers.')
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search supplier products...')
+  String(props.searchPlaceholder || 'Search supplier items...')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -130,30 +130,30 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
-const emptyTitle = computed(() => String(props.emptyTitle || 'No products'))
+const emptyTitle = computed(() => String(props.emptyTitle || 'No items'))
 const emptyDescription = computed(() =>
-  String(props.emptyDescription || 'No supplier products found.')
+  String(props.emptyDescription || 'No supplier items found.')
 )
 const emptyStateTitle = computed(() =>
-  props.pending ? 'Loading products' : emptyTitle.value
+  props.pending ? 'Loading items' : emptyTitle.value
 )
 const emptyStateDescription = computed(() =>
-  props.pending ? 'Fetching supplier products.' : emptyDescription.value
+  props.pending ? 'Fetching supplier items.' : emptyDescription.value
 )
 
 const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = useSupplierProductInterface()
+} = useSupplierItemInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    SupplierProductInterfaceItem,
+    SupplierItemSurface,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (item: SupplierProductInterfaceItem) => makeCard(item),
+    makeCard: (item: SupplierItemSurface) => makeCard(item),
     initialVariant: props.initialVariant,
   })
 

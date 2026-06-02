@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
-    <SupplierProductCollectionManager
-      :collection="productItems"
+    <SupplierItemCollectionManager
+      :collection="supplierItems"
       :pending="pending"
       :link="false"
       :dev-context="devJsonContext"
@@ -9,7 +9,7 @@
 
     <DevFireuxDebugPanel
       v-if="isDev"
-      title="Supplier products"
+      title="Supplier items"
       scope="console"
       :data="debug"
     />
@@ -17,13 +17,13 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleProducts } from '../../../../composables/fireux/console/supplier/operations/useSupplierConsoleProducts'
+import { useSupplierConsoleItems } from '../../../../composables/fireux/console/supplier/operations/useSupplierConsoleItems'
 
 const {
-  productItems,
+  supplierItems,
   pending,
   devJsonContext,
   debug,
-} = useSupplierConsoleProducts()
+} = useSupplierConsoleItems()
 const isDev = import.meta.dev
 </script>

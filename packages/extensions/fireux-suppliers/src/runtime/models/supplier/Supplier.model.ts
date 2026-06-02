@@ -36,8 +36,8 @@ type WidenLiteral<T> =
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier console governance belongs to the app-hosted supplier record.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
- * - Supplier-owned product offers live beneath the root supplier record and link to Product.
- * - Supplier catalogue records, when introduced, should present/group supplier product offers rather than replace them.
+ * - Supplier-owned item offers live beneath the root supplier record and link to Product.
+ * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
  * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
  * - If that changes later, update the models README first, then this file.
  */
@@ -51,7 +51,7 @@ export const SupplierStorage = {
   children: {
     catalogues: 'suppliers/{supplierId}/catalogues/{catalogueId}',
     ingredients: 'suppliers/{supplierId}/ingredients/{ingredientId}',
-    products: 'suppliers/{supplierId}/products/{supplierProductId}',
+    items: 'suppliers/{supplierId}/items/{supplierItemId}',
   },
 } as const
 
@@ -76,7 +76,7 @@ export const SupplierModel = {
   summary: '',
   supplier_bio: '',
   supplier_image: '',
-  supplier_product_categories: [] as string[],
+  supplier_item_categories: [] as string[],
   supplier_delivery_areas: [] as string[],
   state: 'public' as SupplierState,
   catalogue_state: 'public_only' as SupplierCatalogueState,
@@ -124,7 +124,7 @@ export type SupplierIngredientState =
  * Decision note:
  * - SupplierIngredient means "this supplier supplies this global ingredient."
  * - It is not a replacement for Ingredient.
- * - Supplier products remain the concrete purchasable lines, packs, SKUs, and pricing.
+ * - Supplier items remain the concrete purchasable lines, packs, SKUs, and pricing.
  */
 export const SupplierIngredientStorage = {
   shape: 'scoped',
@@ -166,7 +166,7 @@ export type SupplierIngredientUpdateInput = Partial<
   Omit<SupplierIngredient, 'id' | 'supplier_id' | 'ingredient_id' | 'created' | 'updated'>
 >
 
-export type SupplierProductAvailabilityState =
+export type SupplierItemAvailabilityState =
   | 'available'
   | 'limited'
   | 'unavailable'
@@ -175,23 +175,23 @@ export type SupplierProductAvailabilityState =
 /**
  * Family: Supplier-scoped
  * Storage: supplier-owned sale/procurement wrapper over canonical Product
- * Path: /suppliers/<supplierId>/products/<supplierProductId>
+ * Path: /suppliers/<supplierId>/items/<supplierItemId>
  *
  * Decision note:
- * - SupplierProduct is not a replacement for Product.
+ * - SupplierItem is not a replacement for Product.
  * - Keep `product_id` as the required link to commercial identity.
- * - Keep `ingredient_id` optional because only some supplier products map to kitchen stock/use items.
+ * - Keep `ingredient_id` optional because only some supplier items map to kitchen stock/use items.
  * - Supplier-specific packaging, SKU, availability, and procurement cost live here.
  */
-export const SupplierProductStorage = {
+export const SupplierItemStorage = {
   shape: 'scoped',
-  path: 'suppliers/{supplierId}/products/{supplierProductId}',
-  collection: 'products',
+  path: 'suppliers/{supplierId}/items/{supplierItemId}',
+  collection: 'items',
   parent: 'supplier',
-  idParam: 'supplierProductId',
+  idParam: 'supplierItemId',
 } as const
 
-export const SupplierProductModel = {
+export const SupplierItemModel = {
   id: '',
   supplier_id: '',
   product_id: '',
@@ -208,7 +208,7 @@ export const SupplierProductModel = {
   order_unit: '',
   pack_cost_minor: null as number | null,
   currency_code: '',
-  availability_state: 'available' as SupplierProductAvailabilityState,
+  availability_state: 'available' as SupplierItemAvailabilityState,
   lead_time_days: null as number | null,
   min_order_quantity: null as number | null,
   active: true as boolean,
@@ -225,24 +225,24 @@ export const SupplierProductModel = {
   },
 } as const
 
-type SupplierProductModelShape = WidenLiteral<typeof SupplierProductModel>
+type SupplierItemModelShape = WidenLiteral<typeof SupplierItemModel>
 
-export type SupplierProduct = Omit<SupplierProductModelShape, 'ingredient_id'> & {
+export type SupplierItem = Omit<SupplierItemModelShape, 'ingredient_id'> & {
   ingredient_id?: string
 }
 
-export type SupplierProductCreateInput = Omit<
-  SupplierProduct,
+export type SupplierItemCreateInput = Omit<
+  SupplierItem,
   'id' | 'created' | 'updated'
 >
 
-export type SupplierProductUpdateInput = Partial<
-  Omit<SupplierProduct, 'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'>
+export type SupplierItemUpdateInput = Partial<
+  Omit<SupplierItem, 'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'>
 >
 
 export type SupplierCatalogueItem = {
   id: string
-  supplier_product_id: string
+  supplier_item_id: string
   product_id: string
   label: string
   active: boolean
@@ -263,9 +263,9 @@ export type SupplierCatalogueSection = {
  * Path: /suppliers/<supplierId>/catalogues/<catalogueId>
  *
  * Decision note:
- * - SupplierCatalogue organizes SupplierProduct rows for presentation.
+ * - SupplierCatalogue organizes SupplierItem rows for presentation.
  * - It does not own SKU, pack, price, or availability terms.
- * - Catalogue items point back to supplier products and may carry light labels/sort state.
+ * - Catalogue items point back to supplier items and may carry light labels/sort state.
  */
 export const SupplierCatalogueStorage = {
   shape: 'scoped',

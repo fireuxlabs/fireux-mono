@@ -174,13 +174,13 @@ export function useSupplierUpdate(
     await updateCoreSupplier({ supplier_image: normalized ?? undefined }, options)
   }
 
-  const updateProductCategories = async (
+  const updateItemCategories = async (
     value: string | string[],
     options: UpdateOptions = {}
   ) => {
     await updateCoreSupplier(
       {
-        supplier_product_categories: toStringArray(value),
+        supplier_item_categories: toStringArray(value),
       },
       options
     )
@@ -225,7 +225,7 @@ export function useSupplierUpdate(
     updateSummary,
     updateBio,
     updateImage,
-    updateProductCategories,
+    updateItemCategories,
     updateDeliveryAreas,
     updateOrganizationName,
     updateTagline,

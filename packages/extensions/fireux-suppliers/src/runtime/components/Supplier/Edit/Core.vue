@@ -40,10 +40,10 @@
           />
 
           <MoleculesFormsFirestoreArrayOfStrings
-            label="Product Categories"
+            label="Item Categories"
             :firebase-value="categories"
-            item-placeholder="Product category"
-            new-item-placeholder="Add product category"
+            item-placeholder="Item category"
+            new-item-placeholder="Add item category"
             :update-function="handleCategories"
           />
 
@@ -76,7 +76,7 @@ const {
   updateSummary,
   updateBio,
   updateImage,
-  updateProductCategories,
+  updateItemCategories,
   updateDeliveryAreas,
 } = useSupplierUpdate()
 
@@ -88,8 +88,8 @@ const bio = computed(() => supplier.value?.supplier_bio ?? '')
 const imageUrl = computed(() => supplier.value?.supplier_image ?? '')
 
 const categories = computed(() =>
-  Array.isArray(supplier.value?.supplier_product_categories)
-    ? supplier.value?.supplier_product_categories
+  Array.isArray(supplier.value?.supplier_item_categories)
+    ? supplier.value?.supplier_item_categories
     : []
 )
 
@@ -130,9 +130,9 @@ const handleImage = async (value: string) =>
 
 const handleCategories = async (value: string[]) =>
   wrap(
-    () => updateProductCategories(value),
-    'Product categories updated',
-    'Failed to update product categories'
+    () => updateItemCategories(value),
+    'Item categories updated',
+    'Failed to update item categories'
   )
 
 const handleDeliveryAreas = async (value: string[]) =>

@@ -7,7 +7,7 @@
     </template>
 
     <p class="console-card-header__description">
-      hello world - WRITE Products
+      hello world - WRITE Items
     </p>
   </UCard>
 </template>

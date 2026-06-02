@@ -1,20 +1,20 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   SupplierCatalogue,
-  SupplierProduct,
+  SupplierItem,
 } from '../../../../../../models/supplier/Supplier.model'
-import { useSupplierProductInterface } from './useSupplierProductInterface'
+import { useSupplierItemInterface } from './useSupplierItemInterface'
 
 export type SupplierCatalogueInterfaceItem = Partial<SupplierCatalogue> &
   Pick<SupplierCatalogue, 'id' | 'supplier_id'> & {
-    supplier_products?: SupplierProduct[]
+    supplier_items?: SupplierItem[]
   }
 
 export namespace SupplierCatalogueItemCard {
   export type Option = {
     id: string
     label: string
-    supplierProductId: string
+    supplierItemId: string
     productId: string
     active: boolean
     imageUrl: string
@@ -46,20 +46,20 @@ export namespace SupplierCatalogueItemCard {
 }
 
 export function useSupplierCatalogueInterface() {
-  const { interface: makeProductCard } = useSupplierProductInterface()
+  const { interface: makeItemCard } = useSupplierItemInterface()
 
   function map(item: SupplierCatalogueInterfaceItem): SupplierCatalogueItemCard.Card {
     const id = safeString(item.id).trim()
-    const productCardsById = new Map<
+    const itemCardsById = new Map<
       string,
-      NonNullable<ReturnType<typeof makeProductCard>>
+      NonNullable<ReturnType<typeof makeItemCard>>
     >()
 
-    for (const product of item.supplier_products ?? []) {
-      const card = makeProductCard(product)
+    for (const supplierItem of item.supplier_items ?? []) {
+      const card = makeItemCard(supplierItem)
       if (!card) continue
-      productCardsById.set(card.id, card)
-      productCardsById.set(card.productId, card)
+      itemCardsById.set(card.id, card)
+      itemCardsById.set(card.productId, card)
     }
 
     const sections = [...(item.sections ?? [])]
@@ -68,28 +68,28 @@ export function useSupplierCatalogueInterface() {
         const options = [...(section.items ?? [])]
           .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
           .map((option): SupplierCatalogueItemCard.Option => {
-            const supplierProductId = safeString(option.supplier_product_id).trim()
+            const supplierItemId = safeString(option.supplier_item_id).trim()
             const productId = safeString(option.product_id).trim()
-            const productCard =
-              productCardsById.get(supplierProductId) ||
-              productCardsById.get(productId)
+            const itemCard =
+              itemCardsById.get(supplierItemId) ||
+              itemCardsById.get(productId)
 
             return {
               id: safeString(option.id).trim(),
-              label: safeString(productCard?.title || option.label || supplierProductId).trim(),
-              supplierProductId,
+              label: safeString(itemCard?.title || option.label || supplierItemId).trim(),
+              supplierItemId,
               productId,
               active: option.active !== false,
-              imageUrl: safeString(productCard?.imageUrl).trim(),
-              subtitle: safeString(productCard?.subtitle).trim(),
-              packLabel: safeString(productCard?.packLabel).trim(),
-              packPriceLabel: safeString(productCard?.packPriceLabel).trim(),
-              unitPriceLabel: safeString(productCard?.unitPriceLabel).trim(),
-              unit: safeString(productCard?.unit).trim(),
-              badges: (productCard?.badges ?? []).filter(
+              imageUrl: safeString(itemCard?.imageUrl).trim(),
+              subtitle: safeString(itemCard?.subtitle).trim(),
+              packLabel: safeString(itemCard?.packLabel).trim(),
+              packPriceLabel: safeString(itemCard?.packPriceLabel).trim(),
+              unitPriceLabel: safeString(itemCard?.unitPriceLabel).trim(),
+              unit: safeString(itemCard?.unit).trim(),
+              badges: (itemCard?.badges ?? []).filter(
                 (badge) =>
-                  badge !== productCard?.unit &&
-                  badge !== `Unit ${productCard?.unitPriceLabel}`
+                  badge !== itemCard?.unit &&
+                  badge !== `Unit ${itemCard?.unitPriceLabel}`
               ),
             }
           })

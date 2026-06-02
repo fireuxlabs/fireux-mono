@@ -11,7 +11,7 @@ This folder owns the operational supplier console workspace.
 - `overview.vue` — selected supplier overview
 - `catalogue.vue` — selected supplier catalogue
 - `ingredients.vue` — selected supplier ingredient coverage
-- `products.vue` — selected supplier product offers
+- `items.vue` — selected supplier item offers
 - `create.vue` — supplier create flow
 
 ## Local Contract

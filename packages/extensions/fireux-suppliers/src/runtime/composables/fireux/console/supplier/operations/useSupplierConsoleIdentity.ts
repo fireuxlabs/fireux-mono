@@ -20,8 +20,8 @@ export function useSupplierConsoleIdentity() {
   const summary = computed(() => normalizeString(selectedSupplier.value?.summary))
   const imageUrl = computed(() => normalizeString(selectedSupplier.value?.supplier_image))
   const categories = computed(() =>
-    Array.isArray(selectedSupplier.value?.supplier_product_categories)
-      ? selectedSupplier.value?.supplier_product_categories
+    Array.isArray(selectedSupplier.value?.supplier_item_categories)
+      ? selectedSupplier.value?.supplier_item_categories
       : []
   )
   const deliveryAreas = computed(() =>

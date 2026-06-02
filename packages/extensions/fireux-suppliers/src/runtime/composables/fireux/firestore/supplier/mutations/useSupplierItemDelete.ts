@@ -1,35 +1,35 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
-import { resolveSupplierProductCollectionPath } from '../fetch/useSupplierProductCollection'
+import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierProductDelete(options: {
+export function useSupplierItemDelete(options: {
   supplierCollectionPath?: string
 } = {}) {
   const { deleteDocument } = useFirestoreDelete()
 
-  async function deleteSupplierProduct(
+  async function deleteSupplierItem(
     supplierId: string,
-    supplierProductId: string
+    supplierItemId: string
   ): Promise<void> {
     const resolvedSupplierId = normalizeString(supplierId)
-    const resolvedSupplierProductId = normalizeString(supplierProductId)
+    const resolvedSupplierItemId = normalizeString(supplierItemId)
     if (!resolvedSupplierId) {
       throw new Error('[fireux-suppliers] supplier id is required.')
     }
-    if (!resolvedSupplierProductId) {
-      throw new Error('[fireux-suppliers] supplier product id is required.')
+    if (!resolvedSupplierItemId) {
+      throw new Error('[fireux-suppliers] supplier item id is required.')
     }
 
-    const collectionPath = resolveSupplierProductCollectionPath(
+    const collectionPath = resolveSupplierItemCollectionPath(
       resolvedSupplierId,
       options.supplierCollectionPath
     )
 
-    await deleteDocument(collectionPath, resolvedSupplierProductId)
+    await deleteDocument(collectionPath, resolvedSupplierItemId)
   }
 
   return {
-    deleteSupplierProduct,
+    deleteSupplierItem,
   }
 }

@@ -2,16 +2,16 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed, isRef, type Ref } from 'vue'
 import {
-  SupplierProductStorage,
+  SupplierItemStorage,
   SupplierStorage,
-  type SupplierProduct,
+  type SupplierItem,
 } from '../../../../../models/supplier/Supplier.model'
 
 const DEFAULT_SUPPLIER_COLLECTION_PATH: string = SupplierStorage.rootCollection
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export const resolveSupplierProductCollectionPath = (
+export const resolveSupplierItemCollectionPath = (
   supplierId?: string | null | undefined,
   supplierCollectionPath = DEFAULT_SUPPLIER_COLLECTION_PATH
 ) => {
@@ -21,10 +21,10 @@ export const resolveSupplierProductCollectionPath = (
 
   if (!resolvedSupplierId) return ''
 
-  return `${resolvedCollectionPath}/${resolvedSupplierId}/${SupplierProductStorage.collection}`
+  return `${resolvedCollectionPath}/${resolvedSupplierId}/${SupplierItemStorage.collection}`
 }
 
-export function useSupplierProductCollection(
+export function useSupplierItemCollection(
   supplierId: string | null | undefined | Ref<string | null | undefined>,
   options: {
     enabled?: boolean | Ref<boolean>
@@ -50,25 +50,25 @@ export function useSupplierProductCollection(
   const collectionPath = computed(() => {
     if (!enabled.value) return ''
 
-    return resolveSupplierProductCollectionPath(
+    return resolveSupplierItemCollectionPath(
       resolvedSupplierId.value,
       supplierCollectionPath.value
     )
   })
-  const sourceRef = firestoreFetchCollection<SupplierProduct>(collectionPath)
+  const sourceRef = firestoreFetchCollection<SupplierItem>(collectionPath)
 
-  const supplierProducts = computed<SupplierProduct[]>(() =>
+  const supplierItems = computed<SupplierItem[]>(() =>
     sourceRef.value ?? []
   )
   const pending = computed(
     () => Boolean(collectionPath.value) && sourceRef.value === undefined
   )
-  const { byId: supplierProduct } = useCollectionById(supplierProducts)
+  const { byId: supplierItem } = useCollectionById(supplierItems)
 
   return {
     collectionPath,
-    supplierProducts,
-    supplierProduct,
+    supplierItems,
+    supplierItem,
     pending,
   }
 }

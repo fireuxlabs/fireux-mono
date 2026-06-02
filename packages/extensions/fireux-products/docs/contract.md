@@ -30,7 +30,7 @@ Composable stack canon:
 - Product authoring UI belongs under Product create/edit components or Product-owned composables.
 - Use `app/` only when a Product flow coordinates whole-app setup or multiple entity families; do not use `app/` as the default bucket for normal Product authoring state.
 
-SupplierProduct records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records at `suppliers/{supplierId}/products/{supplierProductId}` with a `product_id` link. SupplierCatalogue records are presentation/grouping surfaces for those supplier product offers.
+SupplierItem records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records at `suppliers/{supplierId}/items/{supplierItemId}` with a `product_id` link. SupplierCatalogue records are presentation/grouping surfaces for those supplier item offers.
 
 `ProductPrice` owns pricing terms. Product identity should not be split into fake products for naming variants such as `Pro` or `Enterprise` when the real commercial product is one product with multiple prices or terms.
 

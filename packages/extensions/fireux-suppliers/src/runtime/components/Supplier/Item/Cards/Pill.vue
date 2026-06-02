@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { SupplierProductItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+import type { SupplierItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
 
 const emit = defineEmits<{
   (event: 'action'): void
@@ -61,7 +61,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<
     Pick<
-      SupplierProductItemCard.Card,
+      SupplierItemCard.Card,
       'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges' | 'packPriceLabel'
     > & {
       showSubtitle?: boolean
