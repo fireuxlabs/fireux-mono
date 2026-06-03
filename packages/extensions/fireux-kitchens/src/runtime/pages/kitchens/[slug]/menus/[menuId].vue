@@ -1,8 +1,8 @@
 <template>
   <div class="contents">
-    <div v-if="pending" class="mx-auto max-w-3xl px-4 py-8 text-sm text-dimmed">
-      Loading menu...
-    </div>
+    <UPageCard v-if="pending" class="mx-auto mt-8 max-w-3xl" variant="subtle">
+      <p class="text-sm text-dimmed">Loading menu...</p>
+    </UPageCard>
 
     <UAlert
       v-else-if="!kitchen || !menu"

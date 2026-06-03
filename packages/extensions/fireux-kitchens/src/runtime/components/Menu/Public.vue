@@ -14,8 +14,8 @@
       <UAlert
         color="neutral"
         variant="soft"
-        title="Menu details coming next"
-        description="This public route has resolved the published menu. Sections, items, and dishes will be added once the scoped-to-public pipeline is settled."
+        title="Published menu"
+        description="This public route resolves a published menu from the kitchen. Sections, items, and dishes will be added next."
       />
     </section>
   </main>
