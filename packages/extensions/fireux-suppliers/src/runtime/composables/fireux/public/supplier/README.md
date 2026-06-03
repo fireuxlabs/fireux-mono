@@ -1,5 +1,6 @@
 Authority: fireux-suppliers public supplier layer
 Updated: 2026-06-03
+Extends: packages/core/fireux-core/src/runtime/composables/fireux/public/README.md
 
 # Supplier Public Layer
 
