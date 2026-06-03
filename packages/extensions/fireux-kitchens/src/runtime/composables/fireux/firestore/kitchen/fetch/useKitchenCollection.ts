@@ -14,7 +14,7 @@ import {
   useFirestore,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
+import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'

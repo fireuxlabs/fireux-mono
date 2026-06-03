@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { getDemoKitchenCollection } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
+import { getDemoKitchenCollection } from '../../../composables/fireux/demo/kitchen/scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { Menu } from '../../../models/menu.model'
 

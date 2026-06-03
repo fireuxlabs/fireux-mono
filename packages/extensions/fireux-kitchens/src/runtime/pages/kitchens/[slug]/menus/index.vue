@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenPublicMenuIndex } from '../../../../composables/fireux/app/kitchens/useKitchenPublicMenuIndex'
+import { useKitchenPublicMenuIndex } from '../../../../composables/fireux/public/kitchen/useKitchenPublicMenuIndex'
 
 const {
   slug,

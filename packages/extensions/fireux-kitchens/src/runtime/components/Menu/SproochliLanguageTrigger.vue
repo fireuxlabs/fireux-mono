@@ -83,7 +83,7 @@ import {
   isPublicKitchenRtlLanguage,
   type PublicKitchenLanguageCode,
   type PublicKitchenLanguageOption,
-} from '../../composables/fireux/app/kitchens/publicLanguage'
+} from '../../composables/fireux/public/kitchen/publicLanguage'
 
 const triggerImageSrc = new URL(
   '../../../assets/sproochli/translate-trigger-compact.png',

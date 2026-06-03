@@ -111,7 +111,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
+import { getDefaultDemoKitchen } from '../../../composables/fireux/demo/kitchen/scenarios'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'

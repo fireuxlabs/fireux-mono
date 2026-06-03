@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getDemoKitchenCollection } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
+import { getDemoKitchenCollection } from '../../../composables/fireux/demo/kitchen/scenarios'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu } from '../../../models/menu.model'
 

@@ -3,7 +3,7 @@ import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/con
 import {
   getDemoKitchenCollection,
   type DemoKitchenCollectionName,
-} from '../../../app/utils/kitchen-demo-scenarios'
+} from '../../../demo/kitchen/scenarios'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>

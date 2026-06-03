@@ -4,7 +4,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDemoKitchen } from '../../../app/utils/kitchen-demo-scenarios'
+import { getDemoKitchen } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 

@@ -39,7 +39,7 @@
 import { computed, ref } from 'vue'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenConsoleStations } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleStations'
-import { useKitchenStationCreate } from '../../../../composables/fireux/console/kitchen/operations/station/mutations/useKitchenStationCreate'
+import { useKitchenStationCreate } from '../../../../composables/fireux/console/kitchen/operations/stations/mutations/useKitchenStationCreate'
 
 const {
   selectedMode,
