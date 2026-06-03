@@ -13,6 +13,16 @@ type WidenLiteral<T> =
   : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
   : T
 
+export type KitchenPublicMenuPolish = {
+  /**
+   * One-kitchen final polish for public menu layout.
+   *
+   * This is intentionally not part of shared PageStyle. If multiple kitchens
+   * need the same controls later, graduate them into a real shared layout seam.
+   */
+  content_inset_left?: string
+}
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -66,6 +76,7 @@ export const KitchenModel = {
   formatted_address: '',
   image_url: '',
   style: undefined as PageStyle | undefined,
+  public_menu_polish: undefined as KitchenPublicMenuPolish | undefined,
   /**
    * Kitchen-level service/opening schedule.
    *
@@ -129,6 +140,7 @@ export type KitchenUpdateInput = Partial<
     | 'formatted_address'
     | 'image_url'
     | 'style'
+    | 'public_menu_polish'
     | 'opening_hours'
   >
 >
