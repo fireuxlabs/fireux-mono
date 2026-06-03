@@ -58,8 +58,8 @@ Current learned examples:
   - Kitchen runs the operation.
   - Dish describes guest-facing food.
   - Menu presents selected dishes.
-  - Menu is both-facing: managed in Kitchen Console and rendered publicly when published.
-  - Menu storage is app-scoped under Kitchen; both-facing does not mean root `menus/{menuId}` truth.
+  - Menu is scoped to Kitchen: managed in Kitchen Console and rendered publicly when published.
+  - Menu storage is app-scoped under Kitchen; public rendering does not mean root `menus/{menuId}` truth.
   - QR points guests to one exact published menu URL.
   - Menu items require real `dish_id` links; public menus do not own dish copy.
   - App-local uploaded menu documents may use thin `/menus/**` routes, but they are not the Kitchen Menu stack or a root Kitchen Menu canon.
@@ -391,7 +391,7 @@ composables/fireux/firestore/<entity>/
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
 | System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
 | Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder`, `Dish`, `MenuSection`, `MenuItem`, `Recipe` |
-| Both-facing scoped child entity | Scoped child stored under a parent, with both console management and public published rendering | scoped storage/read/write seams plus public route/publish/SEO surfaces; no root duplicate truth | `Menu` |
+| Public-rendered scoped child entity | Scoped child stored under a parent, with console management and public published rendering | scoped storage/read/write seams plus public route/publish/SEO surfaces; no root duplicate truth | `Menu` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/create/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 

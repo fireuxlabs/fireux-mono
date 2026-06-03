@@ -5,7 +5,7 @@
     </div>
 
     <UAlert
-      v-if="showUnavailable"
+      v-else-if="!kitchen || !menu"
       class="mx-auto mt-8 max-w-3xl"
       color="neutral"
       variant="soft"
@@ -14,18 +14,15 @@
     />
 
     <MenuPublic
-      v-if="showMenu"
-      :kitchen-name="kitchenName"
+      v-else
+      :kitchen-name="kitchen.name"
       :menu="menu"
-      :section-rows="sectionRows"
-      :language-options="languageOptions"
-      :selected-language="selectedLanguage"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 definePageMeta({
   layout: 'public-menu',
@@ -34,12 +31,7 @@ definePageMeta({
 
 const {
   pending,
-  showUnavailable,
-  showMenu,
-  kitchenName,
+  kitchen,
   menu,
-  sectionRows,
-  languageOptions,
-  selectedLanguage,
-} = useKitchenPublicMenuDetail()
+} = useKitchenPublicMenu()
 </script>

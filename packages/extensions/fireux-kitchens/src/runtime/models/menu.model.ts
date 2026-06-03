@@ -2,12 +2,12 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Family: Both-facing app-scoped Kitchen presentation records.
+ * Family: App-scoped Kitchen presentation records.
  *
  * Menu is managed under the app-scoped Kitchen record. A Kitchen can start in
  * the Misebox app and later move into its own app, but Menu storage remains
- * app-scoped either way. Menu is "both" because it has a Kitchen Console
- * management facade and a public published facade.
+ * app-scoped either way. Public menu routes render published Kitchen Menu
+ * records; they do not create root Menu truth.
  *
  * Dish describes food. Menu presents selected dishes. MenuItem is a
  * placement/link to a Dish, not a second food entity.
@@ -18,7 +18,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
 export const MenuStorage = {
-  shape: 'both',
+  shape: 'scoped',
   scoped: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
   path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
   collection: 'menus',

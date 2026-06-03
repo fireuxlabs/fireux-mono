@@ -128,10 +128,12 @@ Examples:
 - `projects/{projectId}` + `apps/{appId}/projects/{projectId}`
 - `suppliers/{supplierId}` + `apps/{appId}/suppliers/{supplierId}`
 - `chefs/{uid}` + `apps/{appId}/chefs/{uid}`
-- `menus/{menuId}` + `kitchens/{kitchenId}/menus/{menuId}`
 
-For `both`, the second record may be an app console record or a parent-scoped
-operating/publication context. Do not turn those into separate entity families.
+For `both`, the second record may be an app console record or operating
+context. Do not turn those into separate entity families.
+
+Published public routes do not make an entity `both` by themselves. For example,
+Kitchen Menu is scoped to Kitchen even though published menus can render publicly.
 
 Model contract:
 

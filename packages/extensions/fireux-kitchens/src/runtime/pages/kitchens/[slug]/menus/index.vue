@@ -1,7 +1,7 @@
 <template>
   <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
     <UButton
-      :to="`/kitchens/${encodeURIComponent(slug)}`"
+      :to="`/kitchens/${encodeURIComponent(kitchenSlug)}`"
       color="neutral"
       variant="ghost"
       icon="i-lucide-arrow-left"
@@ -13,13 +13,8 @@
     <header class="space-y-2">
       <p class="text-sm font-medium uppercase tracking-wide text-dimmed">Menus</p>
       <h1 class="text-3xl font-semibold text-highlighted">
-        {{ kitchenTitle }}
+        {{ kitchen?.name || 'Kitchen menus' }}
       </h1>
-      <MenuSproochliLanguageTrigger
-        class="pt-2"
-        :language-options="languageOptions"
-        :selected-language="selectedLanguage"
-      />
     </header>
 
     <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
@@ -57,16 +52,13 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenPublicMenuIndex } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 const {
-  slug,
+  kitchenSlug,
   kitchen,
   menus,
   pending,
-  languageOptions,
-  selectedLanguage,
   menuLink,
-  kitchenTitle,
-} = useKitchenPublicMenuIndex()
+} = useKitchenPublicMenu()
 </script>
