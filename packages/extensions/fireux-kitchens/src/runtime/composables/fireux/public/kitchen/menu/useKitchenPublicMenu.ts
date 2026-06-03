@@ -1,6 +1,6 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
-import { useRoute } from '#imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useDishCollection } from '../../../firestore/dish/useDish'
@@ -10,18 +10,46 @@ import {
   useMenuCollection,
   useMenuSectionCollection,
 } from '../../../firestore/menu/useMenu'
+import type { Dish } from '../../../../../models/dish.model'
+import type { Menu, MenuItem, MenuSection } from '../../../../../models/menu.model'
 import {
-  clean,
-  cleanIdentity,
-  isPublicMenu,
-  resolveItemPrice,
-  type PublicMenuSectionRow,
-} from './useKitchenPublicMenuRows'
-import type {
-  PublicKitchenLanguageCode,
-  PublicKitchenLanguageOption,
+  normalizePublicKitchenLanguage,
+  resolvePublicKitchenLanguageOptions,
+  type PublicKitchenLanguageCode,
+  type PublicKitchenLanguageOption,
 } from '../sproochli/publicLanguage'
-import type { MenuItem } from '../../../../../models/menu.model'
+
+export type PublicMenuItemRow = {
+  item: MenuItem
+  dish: Dish
+  label: string
+  description: string
+  price: number
+}
+
+export type PublicMenuSectionRow = {
+  section: MenuSection
+  items: PublicMenuItemRow[]
+}
+
+const clean = (value: unknown) => String(value ?? '').trim()
+const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const queryString = (value: unknown) =>
+  Array.isArray(value) ? clean(value[0]) : clean(value)
+const isPublicMenu = (menu: Menu) => clean(menu.status) === 'published'
+const isPublicReadyMenu = (menu: Menu) =>
+  isPublicMenu(menu) && Boolean(clean(menu.name))
+const resolveItemPrice = (item: MenuItem): number => {
+  const price = Number(item.price ?? 0)
+  return Number.isFinite(price) && price > 0 ? price : 0
+}
+const sortMenus = (a: Menu, b: Menu) =>
+  Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
+  String(a.name).localeCompare(String(b.name))
 
 function publicKitchenName(kitchen: unknown) {
   const record = kitchen as { name?: unknown; display_name?: unknown } | null
@@ -29,9 +57,69 @@ function publicKitchenName(kitchen: unknown) {
   if (name) return name
 
   const displayName = clean(record?.display_name)
-  if (displayName) return displayName
+  return displayName || 'Kitchen'
+}
 
-  return 'Kitchen'
+export function useKitchenPublicMenuIndex() {
+  const route = useRoute()
+  const runtimeConfig = useRuntimeConfig()
+  const slug = computed(() => clean(route.params.slug))
+  const publicConfig = runtimeConfig.public as Record<string, unknown>
+  const fireuxConfig = asRecord(publicConfig.fireux)
+  const publicMenuConfig = asRecord(asRecord(fireuxConfig.misebox).publicMenu)
+  const runtimeSproochli = asRecord(fireuxConfig.sproochli)
+  const { kitchens, pending: kitchensPending } = useKitchenCollection()
+
+  const kitchen = computed(
+    () =>
+      kitchens.value.find(
+        (item) => cleanIdentity((item as any).slug) === cleanIdentity(slug.value)
+      ) ?? null
+  )
+  const kitchenId = computed(() => clean(kitchen.value?.id))
+  const languageSettings = computed(() =>
+    asRecord((kitchen.value as any)?.language_settings)
+  )
+  const sproochliEnabled = computed(
+    () =>
+      runtimeSproochli.enabled !== false &&
+      publicMenuConfig.sproochli !== false &&
+      languageSettings.value.sproochli !== false
+  )
+  const selectedLanguage = computed(() =>
+    sproochliEnabled.value
+      ? normalizePublicKitchenLanguage(queryString(route.query.sproochli))
+      : ''
+  )
+  const languageOptions = computed(() =>
+    sproochliEnabled.value
+      ? resolvePublicKitchenLanguageOptions(kitchen.value)
+      : []
+  )
+  const publicLanguageQuery = computed(() =>
+    selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
+  )
+  const menuRead = useMenuCollection(kitchenId)
+  const menus = computed(() =>
+    [...menuRead.menus.value].filter(isPublicReadyMenu).sort(sortMenus)
+  )
+  const pending = computed(
+    () => kitchensPending.value || (Boolean(kitchenId.value) && menuRead.pending.value)
+  )
+  const kitchenTitle = computed(() => clean(kitchen.value?.name) || 'Kitchen menus')
+  const menuLink = (menuId: Menu['id']) =>
+    `/kitchens/${encodeURIComponent(slug.value)}/menus/${encodeURIComponent(clean(menuId))}${publicLanguageQuery.value}`
+
+  return {
+    slug,
+    kitchen,
+    menus,
+    pending,
+    languageOptions,
+    selectedLanguage,
+    kitchenTitle,
+    menuLink,
+  }
 }
 
 export function useKitchenPublicMenuDetail() {
@@ -40,8 +128,8 @@ export function useKitchenPublicMenuDetail() {
   const { appId } = useFireUXConfig()
   const slug = computed(() => clean(route.params.slug))
   const menuId = computed(() => clean(route.params.menuId))
-
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
+
   const kitchen = computed(
     () =>
       (kitchens.value ?? []).find(
@@ -101,12 +189,10 @@ export function useKitchenPublicMenuDetail() {
 
   const dishesById = computed(() => {
     const map = new Map<string, (typeof dishRead.dishes.value)[number]>()
-    const dishes = dishRead.dishes.value ?? []
-
-    dishes.forEach((dish) => {
+    for (const dish of dishRead.dishes.value ?? []) {
       const id = clean(dish.id)
       if (id) map.set(id, dish)
-    })
+    }
     return map
   })
   const sectionRows = computed<PublicMenuSectionRow[]>(() =>
@@ -116,10 +202,8 @@ export function useKitchenPublicMenuDetail() {
         .filter((row) => row.sectionId === clean(section.id))
         .map((row) => {
           const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
-          if (!dish) return null
-
-          const label = clean(dish.name)
-          if (!label) return null
+          const label = clean(dish?.name)
+          if (!dish || !label) return null
 
           return {
             item: row.item,
@@ -129,7 +213,7 @@ export function useKitchenPublicMenuDetail() {
             price: resolveItemPrice(row.item),
           }
         })
-        .filter((row): row is NonNullable<typeof row> => Boolean(row)),
+        .filter((row): row is PublicMenuItemRow => Boolean(row)),
     }))
   )
   const languageOptions = computed<PublicKitchenLanguageOption[]>(() => [])

@@ -4,9 +4,9 @@ Extends: packages/extensions/fireux-kitchens/src/runtime/composables/fireux/publ
 
 # Kitchen Public Menu Layer
 
-This directory owns guest-facing Kitchen Menu route helpers.
+This directory owns the guest-facing Kitchen Menu route helper.
 
-Use it for `/kitchens/[slug]/menus/**` shaping that combines Kitchen, Menu, Section, Item, Dish, publish state, and unavailable states.
+`useKitchenPublicMenu.ts` exports the public menu index/detail seams and row types for `/kitchens/[slug]/menus/**`.
 
 Keep stored Menu CRUD in `firestore/menu`.
 Keep selected operator menu workflows in `console/kitchen/operations`.

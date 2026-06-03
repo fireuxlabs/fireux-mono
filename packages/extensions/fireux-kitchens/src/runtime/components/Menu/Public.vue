@@ -71,7 +71,7 @@ import type {
   PublicKitchenLanguageOption,
 } from '../../composables/fireux/public/kitchen/sproochli/publicLanguage'
 import { isPublicKitchenRtlLanguage } from '../../composables/fireux/public/kitchen/sproochli/publicLanguage'
-import type { PublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuRows'
+import type { PublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 const props = defineProps<{
   kitchenName: string

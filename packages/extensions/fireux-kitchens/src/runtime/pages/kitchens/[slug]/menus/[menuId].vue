@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuDetail'
+import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 definePageMeta({
   layout: 'public-menu',
