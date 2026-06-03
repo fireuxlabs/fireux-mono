@@ -155,11 +155,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { Weekday, WeeklySchedule } from 'fireux-core/runtime/models/core/time.model'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
-import type {
-  KitchenOpeningHours,
-  Weekday,
-} from '../../../../models/kitchen.model'
 
 const {
   selectedKitchen,
@@ -180,7 +177,7 @@ const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
 const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
 const openingHours = computed(
-  () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
+  () => kitchen.value?.opening_hours as WeeklySchedule | undefined
 )
 
 const currencyFormatLabel = computed(() => {

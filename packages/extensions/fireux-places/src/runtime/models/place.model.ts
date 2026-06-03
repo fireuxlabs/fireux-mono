@@ -113,7 +113,13 @@ export const PlaceModel = {
   rating_count: 0 as number,
   price_level: '' as string,
 
-  // Hours (MVP-friendly)
+  /**
+   * MVP-friendly business/place hours.
+   *
+   * Future polish should promote Place business hours to a structured
+   * WeeklySchedule-style field. Do not treat Kitchen opening hours or Menu
+   * availability as a replacement for Place/business hours.
+   */
   hours_text: [] as string[],
 
   /** Claimed owner (uid); empty string means unclaimed. */

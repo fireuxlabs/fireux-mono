@@ -63,6 +63,11 @@ export const MenuModel = {
   description: '' as string,
   source_language: '' as string,
   status: 'draft' as MenuStatus,
+  /**
+   * Future note: Menu availability is distinct from Kitchen opening hours and
+   * Place business hours. Add an explicit schedule field only when the menu
+   * needs service-window behavior; do not infer it from Kitchen or Place.
+   */
   sort_order: 0 as number,
   doc_url: '' as string,
   doc_name: '' as string,

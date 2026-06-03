@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-27
+Updated: 2026-06-03
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -118,6 +118,10 @@ Ingredient composable stack canon:
 - Public menu routes render published menus only.
 - Missing, unpublished, or invalid menus must show an explicit unavailable state.
 - There is no automatic first-menu, active-menu, slug-fallback, translation-engine, ordering, or demo-prototype canon in V1.
+- Schedule meanings stay separate:
+  - Place/business hours describe when the venue is open.
+  - Kitchen opening/service hours describe when the kitchen operation is available.
+  - Menu availability should be explicit when needed and must not be inferred from Place or Kitchen hours.
 - Kitchen/Menu runtime files must stay below 400 lines.
 - Future nutrition or production support may let `Dish` reference ingredients, mise, or recipes.
 - Those references are operational/data-enrichment links, not the public menu translation source.

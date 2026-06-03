@@ -1,11 +1,12 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import type { WeeklySchedule } from 'fireux-core/runtime/models/core/time.model'
 import type {
   Place,
   PlaceImageShade,
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { Kitchen, KitchenOpeningHours } from '../../../../../../models/kitchen.model'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {
@@ -78,7 +79,7 @@ export type KitchenSurface = {
   website?: string
   phone?: string
   social_links?: unknown
-  opening_hours?: KitchenOpeningHours
+  opening_hours?: WeeklySchedule
   cover_image?: string
   gallery_images?: string[]
   about?: string

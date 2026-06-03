@@ -9,6 +9,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   AppKitchen,
@@ -28,7 +29,7 @@ type KitchenPlaceDraft = Record<string, unknown> & {
   place_image?: string
   slug?: string
   currency_code?: string
-  currency_format?: Kitchen['currency_format']
+  currency_format?: CurrencyDisplayFormat
 }
 type KitchenCreateDraft = KitchenCreateInput & {
   place?: KitchenPlaceDraft

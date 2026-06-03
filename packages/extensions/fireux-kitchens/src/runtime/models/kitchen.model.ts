@@ -1,5 +1,8 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
 import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
+import type { WeeklySchedule } from 'fireux-core/runtime/models/core/time.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -9,30 +12,6 @@ type WidenLiteral<T> =
   : T extends readonly (infer U)[] ? WidenLiteral<U>[]
   : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
   : T
-
-export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
-
-export type TimeWindow = {
-  start: string
-  end: string
-}
-
-export type KitchenOpeningHours = {
-  timezone: string
-  weekly: Partial<Record<Weekday, TimeWindow[]>>
-  notes?: string
-}
-
-export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
-
-export type KitchenStyle = {
-  background_color_light: string
-  background_color_dark: string
-  font_color_light: string
-  font_color_dark: string
-  primary_color: string
-  secondary_color: string
-}
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
@@ -81,13 +60,20 @@ export const KitchenModel = {
   name: '',
   tagline: '',
   currency_code: 'CHF',
-  currency_format: 'dash' as KitchenCurrencyFormat,
+  currency_format: 'dash' as CurrencyDisplayFormat,
   short_name: '',
   short_address: '',
   formatted_address: '',
   image_url: '',
-  style: undefined as KitchenStyle | undefined,
-  opening_hours: undefined as KitchenOpeningHours | undefined,
+  style: undefined as PageStyle | undefined,
+  /**
+   * Kitchen-level service/opening schedule.
+   *
+   * This can differ from Place/business hours and from Menu availability.
+   * Place should own venue polish before shipping; Menu can later own its own
+   * availability when a menu is only served during specific windows.
+   */
+  opening_hours: undefined as WeeklySchedule | undefined,
 
   created: {
     at: {} as FirebaseTimestamp,

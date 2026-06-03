@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-05-23
+Updated: 2026-06-03
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -22,6 +22,14 @@ This directory can contain:
 - app-scoped records over root entities
 - scoped operational entities owned by an app-scoped domain
 - model support contracts that belong with runtime models
+
+Shared primitive model support lives in core model files such as `core/time.model.ts`, `core/style.model.ts`, and `core/money.model.ts`.
+Domain models can compose primitives like `Weekday`, `TimeWindow`, `WeeklyTimeWindows`, `WeeklySchedule`, `PageStyle`, and `CurrencyDisplayFormat`, but should not redefine them.
+
+Schedule meaning belongs to the stored field, not the primitive:
+- Place business/opening hours describe when the venue is open.
+- Kitchen opening/service hours describe when the kitchen operation is available.
+- Menu availability, when added, should describe when a specific menu is served.
 
 ## Model Families
 

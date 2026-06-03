@@ -304,16 +304,15 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { Weekday, WeeklySchedule } from 'fireux-core/runtime/models/core/time.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
-  KitchenCurrencyFormat,
-  KitchenOpeningHours,
   KitchenUpdateInput,
-  Weekday,
 } from '../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 
@@ -400,13 +399,13 @@ const openingTimezone = ref('Europe/Zurich')
 const openingNotes = ref('')
 const openingRows = reactive(createClosedOpeningRows())
 const openingHours = computed(
-  () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
+  () => kitchen.value?.opening_hours as WeeklySchedule | undefined
 )
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const currencyFormatChoices: Array<{
   label: string
-  value: KitchenCurrencyFormat
+  value: CurrencyDisplayFormat
 }> = [
   { label: 'Dash', value: 'dash' },
   { label: 'Symbol', value: 'symbol' },
@@ -529,12 +528,12 @@ const handleCurrencyCode = async (value: string) =>
     'Failed to update currency'
   )
 
-const currencyFormatOptions = new Set<KitchenCurrencyFormat>(['dash', 'symbol', 'code'])
+const currencyFormatOptions = new Set<CurrencyDisplayFormat>(['dash', 'symbol', 'code'])
 const formatCurrencyFormatField = (value: string) =>
   normalizeString(value).toLowerCase().replace(/[^a-z]/g, '').slice(0, 12)
 
 const handleCurrencyFormat = async (value: string) => {
-  const format = formatCurrencyFormatField(value) as KitchenCurrencyFormat
+  const format = formatCurrencyFormatField(value) as CurrencyDisplayFormat
 
   return updateIdentityField(
     { currency_format: currencyFormatOptions.has(format) ? format : 'dash' },
@@ -543,7 +542,7 @@ const handleCurrencyFormat = async (value: string) => {
   )
 }
 
-const handleCurrencyFormatOption = async (value: KitchenCurrencyFormat) =>
+const handleCurrencyFormatOption = async (value: CurrencyDisplayFormat) =>
   handleCurrencyFormat(value)
 
 const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 })
@@ -590,7 +589,7 @@ const handleOpeningHours = async () => {
   openingHoursMessage.value = ''
 
   try {
-    const weekly: KitchenOpeningHours['weekly'] = {}
+    const weekly: WeeklySchedule['weekly'] = {}
 
     for (const { key } of weekdays) {
       const row = openingRows[key]
@@ -605,7 +604,7 @@ const handleOpeningHours = async () => {
     }
 
     const notes = normalizeString(openingNotes.value)
-    const nextOpeningHours: KitchenOpeningHours = {
+    const nextOpeningHours: WeeklySchedule = {
       timezone: normalizeString(openingTimezone.value) || 'Europe/Zurich',
       weekly,
     }
