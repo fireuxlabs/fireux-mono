@@ -5,7 +5,7 @@ const key = (value: unknown) => text(value).toLowerCase()
 
 export type PublicScopeOptions<TScope> = {
   scopeKey: MaybeRef<unknown>
-  scopes: MaybeRef<TScope[]>
+  scopes: MaybeRef<TScope[] | null | undefined>
   scopeKeyOf: (scope: TScope) => unknown
   scopeIdOf: (scope: TScope) => unknown
   pending?: MaybeRef<boolean>
@@ -13,7 +13,7 @@ export type PublicScopeOptions<TScope> = {
 
 export type PublicScopedRecordsOptions<TEntity> = {
   recordKey?: MaybeRef<unknown>
-  records: MaybeRef<TEntity[]>
+  records: MaybeRef<TEntity[] | null | undefined>
   recordKeyOf: (record: TEntity) => unknown
   isPublicRecord: (record: TEntity) => boolean
   pending?: MaybeRef<boolean>
@@ -22,7 +22,7 @@ export type PublicScopedRecordsOptions<TEntity> = {
 export function usePublicScope<TScope>(options: PublicScopeOptions<TScope>) {
   const scope = computed<TScope | null>(
     () =>
-      unref(options.scopes).find(
+      (unref(options.scopes) ?? []).find(
         (item) => key(options.scopeKeyOf(item)) === key(unref(options.scopeKey))
       ) ?? null
   )
@@ -40,7 +40,7 @@ export function usePublicScopedRecords<TEntity>(
   options: PublicScopedRecordsOptions<TEntity>
 ) {
   const records = computed(() =>
-    unref(options.records).filter((record) => options.isPublicRecord(record))
+    (unref(options.records) ?? []).filter((record) => options.isPublicRecord(record))
   )
   const record = computed<TEntity | null>(() => {
     const selectedKey = text(unref(options.recordKey))

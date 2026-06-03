@@ -1,4 +1,12 @@
-import { computed, isRef, unref, type ComputedRef, type Ref } from 'vue'
+import {
+  computed,
+  isRef,
+  shallowRef,
+  unref,
+  watchEffect,
+  type ComputedRef,
+  type Ref,
+} from 'vue'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 
@@ -88,7 +96,10 @@ export function useDevDebugData(
   data: MaybeRef<unknown>,
   options: DevDebugDataOptions = {}
 ) {
-  const normalizedData = computed(() => normalizeForJson(unref(data)))
+  const normalizedData = shallowRef<unknown>()
+  watchEffect(() => {
+    normalizedData.value = normalizeForJson(unref(data))
+  })
   const treatsEmptyContainersAsEmpty = computed(
     () => options.treatEmptyContainersAsEmpty !== false
   )

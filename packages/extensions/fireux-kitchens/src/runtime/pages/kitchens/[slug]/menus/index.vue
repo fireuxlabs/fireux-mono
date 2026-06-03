@@ -62,10 +62,20 @@
       title="No published menus"
       description="This kitchen has not published a menu yet."
     />
+
+    <DevJson
+      v-if="isDev"
+      title="Kitchen public menu debug"
+      context="Kitchen menu index · /kitchens/[slug]/menus"
+      :data="pageDebug"
+      :default-open="true"
+      :hide-when-empty="false"
+    />
   </main>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 const {
@@ -74,5 +84,34 @@ const {
   menus,
   pending,
   menuLink,
+  debug,
 } = useKitchenPublicMenu()
+const isDev = import.meta.dev
+const pageDebug = computed(() => ({
+  route: debug.value.route,
+  rendered: {
+    hasKitchen: Boolean(kitchen.value),
+    kitchenId: kitchen.value?.id ?? '',
+    kitchenName: kitchen.value?.name ?? '',
+    kitchenStyle: {
+      imageUrl: kitchen.value?.image_url ?? '',
+      primaryLanguage: kitchen.value?.primary_language ?? '',
+      currencyCode: kitchen.value?.currency_code ?? '',
+      currencyFormat: kitchen.value?.currency_format ?? '',
+    },
+    pending: pending.value,
+    menusCount: menus.value.length,
+    menuLinks: menus.value.map((menu) => ({
+      id: menu.id,
+      name: menu.name,
+      status: menu.status,
+      to: menuLink(menu.id),
+    })),
+  },
+  source: {
+    kitchenLookup: debug.value.kitchenLookup,
+    menuLookup: debug.value.menuLookup,
+    pending: debug.value.pending,
+  },
+}))
 </script>

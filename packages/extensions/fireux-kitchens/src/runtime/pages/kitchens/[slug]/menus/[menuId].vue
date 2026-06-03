@@ -1,6 +1,6 @@
 <template>
   <div class="contents">
-    <UPageCard v-if="pending" class="mx-auto mt-8 max-w-3xl" variant="subtle">
+    <UPageCard v-if="detailPending" class="mx-auto mt-8 max-w-3xl" variant="subtle">
       <p class="text-sm text-dimmed">Loading menu...</p>
     </UPageCard>
 
@@ -17,12 +17,22 @@
       v-else
       :kitchen-name="kitchen.name"
       :menu="menu"
+      :sections="sectionRows"
+    />
+
+    <DevJson
+      v-if="isDev"
+      class="mx-auto my-8 max-w-3xl"
+      title="Kitchen public menu detail debug"
+      context="Kitchen menu detail · /kitchens/[slug]/menus/[menuId]"
+      :data="debug"
+      :default-open="false"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 
 definePageMeta({
   layout: 'public-menu',
@@ -30,8 +40,11 @@ definePageMeta({
 })
 
 const {
-  pending,
+  detailPending,
   kitchen,
   menu,
-} = useKitchenPublicMenu()
+  sectionRows,
+  debug,
+} = useKitchenPublicMenuDetail()
+const isDev = import.meta.dev
 </script>

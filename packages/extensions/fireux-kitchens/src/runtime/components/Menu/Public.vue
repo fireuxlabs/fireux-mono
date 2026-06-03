@@ -12,22 +12,69 @@
       </header>
 
       <UAlert
+        v-if="!sections.length"
         color="neutral"
         variant="soft"
-        title="Published menu"
-        description="This public route resolves a published menu from the kitchen. Sections, items, and dishes will be added next."
+        title="Menu unavailable"
+        description="This menu has no public sections yet."
       />
+
+      <div v-else class="menu-sections">
+        <section
+          v-for="section in sections"
+          :key="section.id"
+          class="menu-section"
+        >
+          <header class="section-header">
+            <h2>{{ section.label }}</h2>
+            <p v-if="section.description">
+              {{ section.description }}
+            </p>
+          </header>
+
+          <div v-if="section.items.length" class="menu-items">
+            <article
+              v-for="item in section.items"
+              :key="item.id"
+              class="menu-item"
+            >
+              <div class="item-copy">
+                <h3>{{ item.name }}</h3>
+                <p v-if="item.description">
+                  {{ item.description }}
+                </p>
+              </div>
+
+              <div v-if="formatPrice(item.price)" class="item-price">
+                {{ formatPrice(item.price) }}
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
+import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 
 defineProps<{
   kitchenName: string
   menu: Menu
+  sections: KitchenPublicMenuSectionRow[]
 }>()
+
+const priceFormatter = new Intl.NumberFormat('de-CH', {
+  style: 'currency',
+  currency: 'CHF',
+})
+
+const formatPrice = (price: number) => {
+  const value = Number(price || 0)
+  return Number.isFinite(value) && value > 0 ? priceFormatter.format(value) : ''
+}
 </script>
 
 <style scoped>
@@ -85,5 +132,76 @@ defineProps<{
   max-width: 42rem;
   line-height: 1.55;
   color: var(--menu-muted);
+}
+
+.menu-sections {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.menu-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.section-header {
+  text-align: center;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--menu-text);
+}
+
+.section-header p {
+  margin: 0.5rem auto 0;
+  max-width: 36rem;
+  color: var(--menu-muted);
+}
+
+.menu-items {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.menu-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-muted) 20%, transparent);
+}
+
+.item-copy h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  color: var(--menu-text);
+}
+
+.item-copy p {
+  margin: 0.3rem 0 0;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--menu-muted);
+}
+
+.item-price {
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--menu-accent);
+}
+
+@media (max-width: 520px) {
+  .menu-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
 }
 </style>
