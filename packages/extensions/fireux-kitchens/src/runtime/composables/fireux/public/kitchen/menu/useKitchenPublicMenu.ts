@@ -134,7 +134,7 @@ export function useKitchenPublicMenu() {
   const debug = computed(() => ({
     route: {
       kitchenSlug: kitchenSlug.value,
-      menuId: menuId.value,
+      menuId: menuId.value || null,
     },
     kitchen: publicKitchen.scope.value
       ? {

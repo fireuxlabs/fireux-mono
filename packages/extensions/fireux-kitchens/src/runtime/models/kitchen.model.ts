@@ -42,6 +42,22 @@ export type KitchenLanguageSettings = {
 
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
 
+export type KitchenStyle = {
+  background_color_light: string
+  background_color_dark: string
+  font_color_light: string
+  font_color_dark: string
+  primary_color: string
+  secondary_color: string
+}
+
+export type KitchenSproochliMigrate = {
+  primary_language?: string
+  language_settings?: KitchenLanguageSettings
+  design?: Record<string, unknown>
+  design_packs?: Record<string, unknown>
+}
+
 export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
   default_language: 'de',
   supported_languages: ['de', 'en', 'it', 'fr'],
@@ -110,6 +126,8 @@ export const KitchenModel = {
   short_address: '',
   formatted_address: '',
   image_url: '',
+  style: undefined as KitchenStyle | undefined,
+  sproochli_migrate: undefined as KitchenSproochliMigrate | undefined,
   opening_hours: undefined as KitchenOpeningHours | undefined,
   language_settings: undefined as KitchenLanguageSettings | undefined,
 
@@ -166,6 +184,8 @@ export type KitchenCreateInput = Omit<
       | 'short_address'
       | 'formatted_address'
       | 'image_url'
+      | 'style'
+      | 'sproochli_migrate'
       | 'opening_hours'
       | 'language_settings'
     >
@@ -188,6 +208,8 @@ export type KitchenUpdateInput = Partial<
     | 'short_address'
     | 'formatted_address'
     | 'image_url'
+    | 'style'
+    | 'sproochli_migrate'
     | 'opening_hours'
     | 'language_settings'
   >

@@ -19,7 +19,8 @@ const normalizeForJson = (
   value: unknown,
   seen = new WeakSet<object>()
 ): unknown => {
-  const source = isRef(value) ? unref(value) : value
+  let source = value
+  while (isRef(source)) source = unref(source)
 
   if (source === null || source === undefined) return source
   if (typeof source === 'function') return undefined
@@ -98,7 +99,7 @@ export function useDevDebugData(
 ) {
   const normalizedData = shallowRef<unknown>()
   watchEffect(() => {
-    normalizedData.value = normalizeForJson(unref(data))
+    normalizedData.value = normalizeForJson(data)
   })
   const treatsEmptyContainersAsEmpty = computed(
     () => options.treatEmptyContainersAsEmpty !== false
