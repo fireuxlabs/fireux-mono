@@ -19,6 +19,9 @@ export type KitchenPublicMenuPolish = {
    *
    * This is intentionally not part of shared PageStyle. If multiple kitchens
    * need the same controls later, graduate them into a real shared layout seam.
+   * Current pipeline: store a value here, MenuPublic maps it to a CSS var, and
+   * the public menu detail debug reports the stored value plus rendered layout.
+   * Leave empty unless a real client needs last-mile visual adjustment.
    */
   content_inset_left?: string
 }

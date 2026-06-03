@@ -106,7 +106,7 @@ const readRenderedStyle = async () => {
   await nextTick()
 
   const root = document.querySelector<HTMLElement>('.public-menu')
-  const page = document.querySelector<HTMLElement>('.menu-page')
+  const sections = document.querySelector<HTMLElement>('.menu-sections')
   if (!root) {
     renderedStyle.value = {
       found: false,
@@ -116,7 +116,7 @@ const readRenderedStyle = async () => {
   }
 
   const styles = getComputedStyle(root)
-  const pageStyles = page ? getComputedStyle(page) : null
+  const sectionStyles = sections ? getComputedStyle(sections) : null
   renderedStyle.value = {
     found: true,
     activeColorScheme: activeColorScheme.value,
@@ -135,7 +135,7 @@ const readRenderedStyle = async () => {
     },
     layout: {
       contentInsetLeft: styles.getPropertyValue('--menu-content-inset-left').trim(),
-      pagePaddingLeft: pageStyles?.paddingLeft ?? '',
+      bodyPaddingLeft: sectionStyles?.paddingLeft ?? '',
     },
   }
 }

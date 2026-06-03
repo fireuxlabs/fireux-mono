@@ -125,6 +125,7 @@ const formatPrice = (price: number) => {
   --menu-font: Georgia, 'Times New Roman', serif;
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
   --menu-page-padding-inline: clamp(1.5rem, 4vw, 3rem);
+  --menu-body-inset-left: 0rem;
 
   min-height: 100vh;
   background: var(--menu-bg);
@@ -139,8 +140,8 @@ const formatPrice = (price: number) => {
 }
 
 @media (min-width: 768px) {
-  .menu-page {
-    padding-left: var(--menu-content-inset-left, var(--menu-page-padding-inline));
+  .menu-sections {
+    padding-left: var(--menu-content-inset-left, var(--menu-body-inset-left));
   }
 }
 

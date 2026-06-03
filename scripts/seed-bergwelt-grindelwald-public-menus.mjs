@@ -644,9 +644,7 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'none',
-        public_menu_polish: {
-          content_inset_left: 'clamp(2rem, 12vw, 9rem)',
-        },
+        public_menu_polish: FieldValue.delete(),
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',
