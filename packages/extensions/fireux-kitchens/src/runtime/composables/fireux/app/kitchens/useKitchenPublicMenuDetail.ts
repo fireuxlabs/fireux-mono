@@ -1,13 +1,8 @@
 import { collection, getDocs } from 'firebase/firestore'
-import { computed, ref, watch, watchEffect } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import {
-  ProductStorage,
-  type Product,
-} from 'fireux-products/runtime/models/product.model'
 import { useDishCollection } from '../../firestore/dish/useDish'
 import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
 import {
@@ -20,19 +15,28 @@ import {
   cleanIdentity,
   isPublicMenu,
   resolveItemPrice,
-  resolveProductPrice,
   type PublicMenuSectionRow,
-} from '../public-menu-runtime'
+} from './useKitchenPublicMenuRows'
 import type {
   PublicKitchenLanguageCode,
   PublicKitchenLanguageOption,
-} from '../public-kitchen-language'
+} from './publicLanguage'
 import type { MenuItem } from '../../../../models/menu.model'
+
+function publicKitchenName(kitchen: unknown) {
+  const record = kitchen as { name?: unknown; display_name?: unknown } | null
+  const name = clean(record?.name)
+  if (name) return name
+
+  const displayName = clean(record?.display_name)
+  if (displayName) return displayName
+
+  return 'Kitchen'
+}
 
 export function useKitchenPublicMenuDetail() {
   const route = useRoute()
   const resolveDb = useFirestoreResolver()
-  const { firestoreLoadDocsByIds } = useFirestoreRead()
   const { appId } = useFireUXConfig()
   const slug = computed(() => clean(route.params.slug))
   const menuId = computed(() => clean(route.params.menuId))
@@ -43,20 +47,6 @@ export function useKitchenPublicMenuDetail() {
       (kitchens.value ?? []).find(
         (item) => cleanIdentity((item as any).slug) === cleanIdentity(slug.value)
       ) ?? null
-  )
-  const kitchenByRouteId = computed(
-    () =>
-      (kitchens.value ?? []).find(
-        (item) => cleanIdentity((item as any).id) === cleanIdentity(slug.value)
-      ) ?? null
-  )
-  const canonicalSlug = computed(() => clean((kitchenByRouteId.value as any)?.slug))
-  const routeMatchesKitchenId = computed(
-    () =>
-      Boolean(kitchenByRouteId.value) &&
-      cleanIdentity((kitchenByRouteId.value as any)?.id) === cleanIdentity(slug.value) &&
-      Boolean(canonicalSlug.value) &&
-      cleanIdentity(canonicalSlug.value) !== cleanIdentity(slug.value)
   )
   const kitchenId = computed(() => clean(kitchen.value?.id))
   const menuRead = useMenuCollection(kitchenId)
@@ -119,25 +109,6 @@ export function useKitchenPublicMenuDetail() {
     })
     return map
   })
-  const productIds = computed(() =>
-    itemRows.value
-      .map((row) => clean((row.item as any).product_id))
-      .filter(Boolean)
-  )
-  const productRead = firestoreLoadDocsByIds<Product>({
-    collectionPath: ProductStorage.collection,
-    ids: productIds,
-  })
-  const productsById = computed(() => {
-    const map = new Map<string, Product>()
-    const products = productRead.docs.value ?? []
-
-    products.forEach((product) => {
-      const id = clean(product.id)
-      if (id) map.set(id, product)
-    })
-    return map
-  })
   const sectionRows = computed<PublicMenuSectionRow[]>(() =>
     (sectionRead.sections.value ?? []).map((section) => ({
       section,
@@ -145,20 +116,20 @@ export function useKitchenPublicMenuDetail() {
         .filter((row) => row.sectionId === clean(section.id))
         .map((row) => {
           const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
-          const product = productsById.value.get(clean((row.item as any).product_id)) ?? null
+          if (!dish) return null
+
+          const label = clean(dish.name)
+          if (!label) return null
+
           return {
             item: row.item,
             dish,
-            product,
-            label: dish?.name || product?.name || clean((row.item as any).label),
-            description:
-              dish?.description ||
-              product?.description ||
-              clean((row.item as any).description),
-            price: resolveItemPrice(row.item) || resolveProductPrice(product),
+            label,
+            description: clean(dish.description),
+            price: resolveItemPrice(row.item),
           }
         })
-        .filter((row) => row.label),
+        .filter((row): row is NonNullable<typeof row> => Boolean(row)),
     }))
   )
   const languageOptions = computed<PublicKitchenLanguageOption[]>(() => [])
@@ -169,7 +140,6 @@ export function useKitchenPublicMenuDetail() {
       menuRead.pending.value ||
       sectionRead.pending.value ||
       dishRead.pending.value ||
-      productRead.pending.value ||
       itemsPending.value
   )
   const showUnavailable = computed(
@@ -178,21 +148,7 @@ export function useKitchenPublicMenuDetail() {
   const showMenu = computed(
     () => !pending.value && !showUnavailable.value && Boolean(menu.value && kitchen.value)
   )
-  const kitchenName = computed(
-    () => kitchen.value?.name || (kitchen.value as any)?.display_name || kitchen.value?.id || 'Kitchen'
-  )
-
-  watchEffect(() => {
-    if (!routeMatchesKitchenId.value || !canonicalSlug.value) return
-
-    navigateTo(
-      {
-        path: `/kitchens/${encodeURIComponent(canonicalSlug.value)}/menus/${encodeURIComponent(menuId.value)}`,
-        query: route.query,
-      },
-      { replace: true }
-    )
-  })
+  const kitchenName = computed(() => publicKitchenName(kitchen.value))
 
   return {
     pending,

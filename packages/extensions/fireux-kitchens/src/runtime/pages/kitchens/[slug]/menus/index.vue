@@ -13,7 +13,7 @@
     <header class="space-y-2">
       <p class="text-sm font-medium uppercase tracking-wide text-dimmed">Menus</p>
       <h1 class="text-3xl font-semibold text-highlighted">
-        {{ kitchen?.name || 'Kitchen menus' }}
+        {{ kitchenTitle }}
       </h1>
       <MenuSproochliLanguageTrigger
         class="pt-2"
@@ -39,7 +39,7 @@
         :to="menuLink(menu.id)"
         class="block rounded-xl border border-default bg-default p-4 transition hover:bg-elevated"
       >
-        <h2 class="text-lg font-semibold text-highlighted">{{ menu.name || menu.id }}</h2>
+        <h2 class="text-lg font-semibold text-highlighted">{{ menu.name }}</h2>
         <p v-if="menu.description" class="mt-1 text-sm text-dimmed">
           {{ menu.description }}
         </p>
@@ -67,5 +67,6 @@ const {
   languageOptions,
   selectedLanguage,
   menuLink,
+  kitchenTitle,
 } = useKitchenPublicMenuIndex()
 </script>

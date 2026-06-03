@@ -3,7 +3,7 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
-} from '../public-kitchen-language'
+} from './publicLanguage'
 import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../firestore/menu/useMenu'
 import type { Menu } from '../../../../models/menu.model'
@@ -11,20 +11,18 @@ import {
   asRecord,
   clean,
   cleanIdentity,
+  isPublicMenu,
   queryString,
-} from '../public-menu-runtime'
+} from './useKitchenPublicMenuRows'
 
-function isVisibleMenu(menu: Menu) {
-  if ((menu as any).active === false) return false
-
-  const status = clean(menu.status).toLowerCase()
-  return !status || !['archived', 'draft', 'inactive', 'private'].includes(status)
+function isPublicReadyMenu(menu: Menu) {
+  return isPublicMenu(menu) && Boolean(clean(menu.name))
 }
 
 function sortMenus(a: Menu, b: Menu) {
   return (
-    Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
-    String(a.name || '').localeCompare(String(b.name || ''))
+    Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
+    String(a.name).localeCompare(String(b.name))
   )
 }
 
@@ -67,11 +65,16 @@ export function useKitchenPublicMenuIndex() {
   )
   const menuRead = useMenuCollection(kitchenId)
   const menus = computed(() =>
-    [...menuRead.menus.value].filter(isVisibleMenu).sort(sortMenus)
+    [...menuRead.menus.value].filter(isPublicReadyMenu).sort(sortMenus)
   )
   const pending = computed(
     () => kitchensPending.value || (Boolean(kitchenId.value) && menuRead.pending.value)
   )
+  const kitchenTitle = computed(() => {
+    const name = clean(kitchen.value?.name)
+    if (name) return name
+    return 'Kitchen menus'
+  })
   const menuLink = (menuId: Menu['id']) =>
     `/kitchens/${encodeURIComponent(slug.value)}/menus/${encodeURIComponent(clean(menuId))}${publicLanguageQuery.value}`
 
@@ -82,6 +85,7 @@ export function useKitchenPublicMenuIndex() {
     pending,
     languageOptions,
     selectedLanguage,
+    kitchenTitle,
     menuLink,
   }
 }

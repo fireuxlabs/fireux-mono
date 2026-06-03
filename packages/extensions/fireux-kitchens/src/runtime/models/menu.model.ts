@@ -63,6 +63,7 @@ export const MenuModel = {
   description: '' as string,
   source_language: '' as string,
   status: 'draft' as MenuStatus,
+  sort_order: 0 as number,
   doc_url: '' as string,
   doc_name: '' as string,
   doc_type: '' as string,

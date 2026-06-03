@@ -7,7 +7,7 @@ import {
   resolvePublicKitchenChromeLabels,
   resolvePublicKitchenChromeLanguage,
   type PublicKitchenChromeLabels,
-} from '../public-kitchen-language'
+} from './publicLanguage'
 
 type LanguageSource = Record<string, unknown> | null
 

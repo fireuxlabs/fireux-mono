@@ -69,9 +69,9 @@ import type { Menu } from '../../models/menu.model'
 import type {
   PublicKitchenLanguageCode,
   PublicKitchenLanguageOption,
-} from '../../composables/fireux/app/public-kitchen-language'
-import { isPublicKitchenRtlLanguage } from '../../composables/fireux/app/public-kitchen-language'
-import type { PublicMenuSectionRow } from '../../composables/fireux/app/public-menu-runtime'
+} from '../../composables/fireux/app/kitchens/publicLanguage'
+import { isPublicKitchenRtlLanguage } from '../../composables/fireux/app/kitchens/publicLanguage'
+import type { PublicMenuSectionRow } from '../../composables/fireux/app/kitchens/useKitchenPublicMenuRows'
 
 const props = defineProps<{
   kitchenName: string

@@ -47,7 +47,7 @@ export function useMenu(
   options: UseMenuOptions = {}
 ) {
   const { menu, exists } = useMenuFetch(
-    typeof menuId === 'string' ? menuId : menuId.value,
+    menuId,
     options
   )
 
