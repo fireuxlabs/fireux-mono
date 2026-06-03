@@ -3,13 +3,13 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useDishCollection } from '../../firestore/dish/useDish'
-import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
+import { useDishCollection } from '../../../firestore/dish/useDish'
+import { useKitchenCollection } from '../../../firestore/kitchen/useKitchen'
 import {
   menuItemsPath,
   useMenuCollection,
   useMenuSectionCollection,
-} from '../../firestore/menu/useMenu'
+} from '../../../firestore/menu/useMenu'
 import {
   clean,
   cleanIdentity,
@@ -20,8 +20,8 @@ import {
 import type {
   PublicKitchenLanguageCode,
   PublicKitchenLanguageOption,
-} from './publicLanguage'
-import type { MenuItem } from '../../../../models/menu.model'
+} from '../sproochli/publicLanguage'
+import type { MenuItem } from '../../../../../models/menu.model'
 
 function publicKitchenName(kitchen: unknown) {
   const record = kitchen as { name?: unknown; display_name?: unknown } | null

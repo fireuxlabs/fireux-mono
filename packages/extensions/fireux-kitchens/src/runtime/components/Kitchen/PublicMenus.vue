@@ -71,8 +71,8 @@ import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenChromeLanguage,
   resolvePublicKitchenLanguageOptions,
-} from '../../composables/fireux/public/kitchen/publicLanguage'
-import { usePublicMenuLanguage } from '../../composables/fireux/public/kitchen/usePublicMenuLanguage'
+} from '../../composables/fireux/public/kitchen/sproochli/publicLanguage'
+import { usePublicMenuLanguage } from '../../composables/fireux/public/kitchen/sproochli/usePublicMenuLanguage'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'

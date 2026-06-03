@@ -108,7 +108,7 @@ export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   { code: 'bo', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.bo, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.bo },
 ]
 
-export const PUBLIC_KITCHEN_CHROME_FALLBACK_LABELS: PublicKitchenChromeLabels = {
+export const PUBLIC_KITCHEN_CHROME_DEFAULT_LABELS: PublicKitchenChromeLabels = {
   menus: 'Menus',
   chooseMenu: 'Choose a menu',
   openMenus: 'Open menus',
@@ -152,7 +152,7 @@ export function resolvePublicKitchenChromeLabels(input: {
   tenantPack?: unknown
 } = {}): PublicKitchenChromeLabels {
   return {
-    ...PUBLIC_KITCHEN_CHROME_FALLBACK_LABELS,
+    ...PUBLIC_KITCHEN_CHROME_DEFAULT_LABELS,
     ...readChromeLabels(input.ecosystemPack),
     ...readChromeLabels(input.tenantPack),
   }

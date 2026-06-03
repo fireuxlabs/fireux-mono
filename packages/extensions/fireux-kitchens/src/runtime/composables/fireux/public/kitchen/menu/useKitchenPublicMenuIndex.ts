@@ -3,10 +3,10 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
-} from './publicLanguage'
-import { useKitchenCollection } from '../../firestore/kitchen/useKitchen'
-import { useMenuCollection } from '../../firestore/menu/useMenu'
-import type { Menu } from '../../../../models/menu.model'
+} from '../sproochli/publicLanguage'
+import { useKitchenCollection } from '../../../firestore/kitchen/useKitchen'
+import { useMenuCollection } from '../../../firestore/menu/useMenu'
+import type { Menu } from '../../../../../models/menu.model'
 import {
   asRecord,
   clean,

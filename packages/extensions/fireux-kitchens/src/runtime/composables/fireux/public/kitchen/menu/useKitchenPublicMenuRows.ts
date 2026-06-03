@@ -1,5 +1,5 @@
-import type { Dish } from '../../../../models/dish.model'
-import type { Menu, MenuItem, MenuSection } from '../../../../models/menu.model'
+import type { Dish } from '../../../../../models/dish.model'
+import type { Menu, MenuItem, MenuSection } from '../../../../../models/menu.model'
 
 export type PublicMenuItemRow = {
   item: MenuItem
