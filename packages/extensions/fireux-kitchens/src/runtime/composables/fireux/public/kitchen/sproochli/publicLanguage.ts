@@ -264,80 +264,17 @@ export function resolvePublicKitchenLanguageOptions(
 }
 
 export function resolvePublicKitchenLanguageState(
-  kitchen: unknown
+  _kitchen: unknown
 ): PublicKitchenLanguageState {
-  const kitchenRecord =
-    kitchen && typeof kitchen === 'object'
-      ? (kitchen as Record<string, unknown>)
-      : null
-  const settings =
-    kitchen && typeof kitchen === 'object'
-      ? (kitchen as Record<string, unknown>).language_settings
-      : null
-  const languageSettings =
-    settings && typeof settings === 'object' && !Array.isArray(settings)
-      ? (settings as Record<string, unknown>)
-      : {}
-  const primaryLanguage = normalizePublicKitchenLanguage(
-    kitchenRecord?.primary_language
-  ) as PublicKitchenChromeLanguage | ''
-  const defaultLanguage = normalizePublicKitchenLanguage(
-    languageSettings.default_language
-  ) as PublicKitchenChromeLanguage | ''
-  const normalizeLanguageList = (values: unknown): PublicKitchenChromeLanguage[] => {
-    if (!Array.isArray(values)) return []
-
-    const seen = new Set<PublicKitchenChromeLanguage>()
-    const languages: PublicKitchenChromeLanguage[] = []
-
-    for (const value of values) {
-      const code = normalizePublicKitchenLanguage(value)
-      if (!code || seen.has(code)) continue
-
-      seen.add(code)
-      languages.push(code)
-    }
-
-    return languages
-  }
-  const attachedLanguages = [
-    ...normalizeLanguageList(languageSettings.attached_languages),
-    ...normalizeLanguageList(languageSettings.certified_languages),
-  ].filter((language, index, languages) => languages.indexOf(language) === index)
-  const cachedLanguages = [
-    ...normalizeLanguageList(languageSettings.cache_languages),
-    ...normalizeLanguageList(languageSettings.cached_languages),
-  ].filter((language, index, languages) => languages.indexOf(language) === index)
-  const publicLanguages = normalizeLanguageList(languageSettings.public_languages)
-  const seen = new Set<PublicKitchenLanguageCode>([''])
   const options: PublicKitchenLanguageOption[] = [
     { code: '', label: 'Original', name: 'Original', source: 'original' },
   ]
-  const addLanguage = (
-    value: unknown,
-    source: PublicKitchenLanguageOption['source']
-  ) => {
-    const code = normalizePublicKitchenLanguage(value)
-    if (!code || seen.has(code)) return
-
-    seen.add(code)
-    options.push({
-      code,
-      label: PUBLIC_KITCHEN_LANGUAGE_LABELS[code],
-      name: PUBLIC_KITCHEN_LANGUAGE_NAMES[code],
-      source,
-    })
-  }
-
-  for (const language of publicLanguages) {
-    addLanguage(language, 'public')
-  }
 
   return {
-    primaryLanguage,
-    defaultLanguage,
-    attachedLanguages,
-    cachedLanguages,
+    primaryLanguage: '',
+    defaultLanguage: '',
+    attachedLanguages: [],
+    cachedLanguages: [],
     selectableLanguages: options.map((option) => option.code),
     options,
   }

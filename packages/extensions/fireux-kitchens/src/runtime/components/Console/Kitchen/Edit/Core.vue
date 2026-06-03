@@ -199,89 +199,6 @@
             <button
               type="button"
               class="flex w-full items-center justify-between gap-4 text-left"
-              :aria-expanded="editSections.languages"
-              @click="toggleEditSection('languages')"
-            >
-              <span>
-                <span class="block text-base font-semibold text-highlighted">
-                  Languages
-                </span>
-                <span class="block text-sm text-dimmed">
-                  Public and kitchen-owned content languages.
-                </span>
-              </span>
-
-              <UIcon
-                :name="editSections.languages ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                class="size-4 shrink-0 text-muted"
-              />
-            </button>
-          </template>
-
-          <div v-show="editSections.languages" class="space-y-4">
-            <div class="max-w-md">
-              <UFormField label="Default language">
-                <UInputMenu
-                  v-model="languageDefaultLanguage"
-                  :items="languagePickerItems"
-                  value-key="value"
-                  label-key="label"
-                  open-on-click
-                  placeholder="Pick a default language"
-                  :disabled="languageSettingsSaving"
-                />
-              </UFormField>
-            </div>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div
-                v-for="group in languageGroups"
-                :key="group.key"
-                class="rounded-lg border border-default p-3"
-              >
-                <p class="mb-2 text-xs font-semibold text-muted">
-                  {{ group.label }}
-                </p>
-
-                <div class="grid gap-2">
-                  <UCheckbox
-                    v-for="language in group.options"
-                    :key="language.code"
-                    :model-value="languageSelection[language.code] || false"
-                    :label="`${language.label} (${language.code})`"
-                    :disabled="languageSettingsSaving"
-                    @update:model-value="setLanguageSelected(language.code, $event)"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <UButton
-                icon="i-lucide-save"
-                :loading="languageSettingsSaving"
-                :disabled="!canSaveLanguageSettings"
-                @click="handleLanguageSettings"
-              >
-                Save languages
-              </UButton>
-
-              <p
-                v-if="languageSettingsStatus"
-                class="text-xs"
-                :class="languageSettingsError ? 'text-error' : 'text-dimmed'"
-              >
-                {{ languageSettingsStatus }}
-              </p>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <button
-              type="button"
-              class="flex w-full items-center justify-between gap-4 text-left"
               :aria-expanded="editSections.openingHours"
               @click="toggleEditSection('openingHours')"
             >
@@ -389,24 +306,16 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import {
-  FIREUX_LANGUAGE_OPTIONS,
-  type FireuxLanguageOption,
-} from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   KitchenCurrencyFormat,
-  KitchenLanguageSettings,
   KitchenOpeningHours,
   KitchenUpdateInput,
   Weekday,
 } from '../../../../models/kitchen.model'
-import {
-  KitchenStorage,
-  KITCHEN_STARTER_LANGUAGE_SETTINGS,
-} from '../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 
 const { selectedKitchen, kitchenId, rootCollection, canWrite } =
   useKitchenConsoleIdentity()
@@ -448,9 +357,6 @@ const imageInitials = computed(() => {
 const imageUploading = ref(false)
 const openingHoursSaving = ref(false)
 const openingHoursMessage = ref('')
-const languageSettingsSaving = ref(false)
-const languageSettingsMessage = ref('')
-const languageSettingsError = ref(false)
 
 type OpeningHoursDayDraft = {
   closed: boolean
@@ -458,12 +364,11 @@ type OpeningHoursDayDraft = {
   end: string
 }
 
-type EditSectionKey = 'core' | 'address' | 'languages' | 'openingHours'
+type EditSectionKey = 'core' | 'address' | 'openingHours'
 
 const editSections = reactive<Record<EditSectionKey, boolean>>({
   core: true,
   address: false,
-  languages: false,
   openingHours: false,
 })
 
@@ -494,33 +399,11 @@ const createClosedOpeningRows = (): Record<Weekday, OpeningHoursDayDraft> => ({
 const openingTimezone = ref('Europe/Zurich')
 const openingNotes = ref('')
 const openingRows = reactive(createClosedOpeningRows())
-const languageDefaultLanguage = ref(KITCHEN_STARTER_LANGUAGE_SETTINGS.default_language)
-const languageSelection = reactive<Record<string, boolean>>({})
 const openingHours = computed(
   () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
 )
-const languageSettings = computed(
-  () => kitchen.value?.language_settings as KitchenLanguageSettings | undefined
-)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const languageOptions: FireuxLanguageOption[] = FIREUX_LANGUAGE_OPTIONS
-const languageGroups = [
-  {
-    key: 'core',
-    label: 'Misebox Core Languages',
-    options: languageOptions.filter((language) => language.tier === 'core'),
-  },
-  {
-    key: 'optional',
-    label: 'Misebox Optional Languages',
-    options: languageOptions.filter((language) => language.tier === 'optional'),
-  },
-]
-const languagePickerItems = languageOptions.map((language) => ({
-  label: `${language.label} (${language.code})`,
-  value: language.code,
-}))
 const currencyFormatChoices: Array<{
   label: string
   value: KitchenCurrencyFormat
@@ -529,13 +412,6 @@ const currencyFormatChoices: Array<{
   { label: 'Symbol', value: 'symbol' },
   { label: 'Code', value: 'code' },
 ]
-const languageByLowercase = new Map(
-  languageOptions.map((language) => [language.code.toLowerCase(), language.code])
-)
-const normalizeLanguageCode = (value: unknown) => {
-  const language = normalizeString(value).replace(/_/g, '-')
-  return languageByLowercase.get(language.toLowerCase()) || language
-}
 const isTimeValue = (value: unknown) =>
   /^([01]\d|2[0-3]):[0-5]\d$/.test(normalizeString(value))
 
@@ -558,34 +434,6 @@ const openingHoursStatus = computed(() => {
   if (!invalidOpeningRows.value.length) return ''
   return 'Each open day needs valid start and end times.'
 })
-const selectedLanguages = computed(() =>
-  languageOptions
-    .map((language) => language.code)
-    .filter((code) => languageSelection[code])
-)
-const normalizedDefaultLanguage = computed(() =>
-  normalizeLanguageCode(languageDefaultLanguage.value)
-)
-const canSaveLanguageSettings = computed(
-  () =>
-    canWrite.value &&
-    !languageSettingsSaving.value &&
-    Boolean(normalizedDefaultLanguage.value) &&
-    selectedLanguages.value.includes(normalizedDefaultLanguage.value)
-)
-const languageSettingsStatus = computed(() => {
-  if (languageSettingsMessage.value) return languageSettingsMessage.value
-  if (!normalizedDefaultLanguage.value) return 'Default language is required.'
-  if (!selectedLanguages.value.includes(normalizedDefaultLanguage.value)) {
-    return 'Default language must be selected.'
-  }
-  return ''
-})
-
-const setLanguageSelected = (code: string, value: boolean | 'indeterminate') => {
-  languageSelection[code] = value === true
-}
-
 watch(
   openingHours,
   (next) => {
@@ -600,37 +448,6 @@ watch(
       openingRows[key].start = start
       openingRows[key].end = end
       openingRows[key].closed = !start && !end
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  languageSettings,
-  (next) => {
-    languageSettingsMessage.value = ''
-    languageSettingsError.value = false
-
-    const existingSupportedLanguages =
-      Array.isArray(next?.supported_languages)
-        ? next.supported_languages
-        : KITCHEN_STARTER_LANGUAGE_SETTINGS.supported_languages
-    const supportedLanguages = existingSupportedLanguages
-      .map((language) => normalizeLanguageCode(language))
-      .filter(Boolean)
-
-    const defaultLanguage =
-      normalizeLanguageCode(next?.default_language) ||
-      KITCHEN_STARTER_LANGUAGE_SETTINGS.default_language
-
-    languageDefaultLanguage.value = defaultLanguage
-
-    for (const language of languageOptions) {
-      languageSelection[language.code] = supportedLanguages.includes(language.code)
-    }
-
-    if (!languageSelection[defaultLanguage]) {
-      languageSelection[defaultLanguage] = true
     }
   },
   { immediate: true }
@@ -805,36 +622,6 @@ const handleOpeningHours = async () => {
     openingHoursMessage.value = 'Opening hours saved.'
   } finally {
     openingHoursSaving.value = false
-  }
-}
-
-const handleLanguageSettings = async () => {
-  if (!canSaveLanguageSettings.value) {
-    languageSettingsError.value = true
-    languageSettingsMessage.value = languageSettingsStatus.value
-    return
-  }
-
-  languageSettingsSaving.value = true
-  languageSettingsMessage.value = ''
-  languageSettingsError.value = false
-
-  try {
-    const nextLanguageSettings: KitchenLanguageSettings = {
-      default_language: normalizedDefaultLanguage.value,
-      supported_languages: selectedLanguages.value,
-    }
-
-    await updateIdentityField(
-      { language_settings: nextLanguageSettings },
-      'Languages updated',
-      'Failed to update languages'
-    )
-    languageSettingsMessage.value = 'Languages saved.'
-  } catch {
-    languageSettingsError.value = true
-  } finally {
-    languageSettingsSaving.value = false
   }
 }
 

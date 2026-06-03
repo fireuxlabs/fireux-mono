@@ -101,7 +101,7 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'source'
     | 'slug'
   >> | null | undefined
-  overlay?: Record<string, unknown> | null | undefined
+  scope?: Record<string, unknown> | null | undefined
   routeScope?: KitchenSurface['route_scope']
 }
 
@@ -151,7 +151,7 @@ export function useKitchenInterface() {
     const merged = {
       ...(parts.place ?? {}),
       ...kitchen,
-      ...(parts.overlay ?? {}),
+      ...(parts.scope ?? {}),
     } as TKitchen & KitchenSurface
     const id = safeString(merged.id).trim()
     if (!id) return null

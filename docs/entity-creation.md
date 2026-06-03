@@ -380,7 +380,7 @@ n/a     -> the seam is not expected for this entity shape yet
 | Company | root | `CompanyStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Product | root | `ProductStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned |
 | Product price | scoped | `ProductPriceStorage` | aligned | aligned | aligned | n/a | n/a | n/a | aligned | aligned as Product child reader plus Product create/API price provisioning |
-| Kitchen | both | `KitchenStorage`, `AppKitchenStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned in runtime and app-local menu translation cache |
+| Kitchen | both | `KitchenStorage` | aligned | aligned | aligned | aligned | aligned | aligned | aligned | aligned in runtime and app-scoped menu stack |
 | Ingredient | root | `IngredientStorage` | aligned | aligned | aligned | aligned | aligned | aligned | n/a | aligned |
 | Kitchen ingredient | scoped | `KitchenIngredientStorage` | aligned | aligned | aligned | n/a | aligned | n/a | n/a | aligned as kitchen relationship record selection |
 | Kitchen supplier ingredient | scoped | `KitchenSupplierIngredientStorage` | aligned | aligned | aligned | aligned | aligned | n/a | n/a | aligned |

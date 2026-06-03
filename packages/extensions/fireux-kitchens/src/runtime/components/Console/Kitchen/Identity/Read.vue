@@ -53,17 +53,11 @@
             </div>
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <div class="rounded-lg border border-default px-3 py-2">
               <div class="text-xs font-medium text-muted">Slug</div>
               <div class="truncate text-sm font-medium text-highlighted">
                 {{ slug || 'Unset' }}
-              </div>
-            </div>
-            <div class="rounded-lg border border-default px-3 py-2">
-              <div class="text-xs font-medium text-muted">Primary language</div>
-              <div class="truncate text-sm font-medium text-highlighted">
-                {{ primaryLanguageLabel }}
               </div>
             </div>
             <div class="rounded-lg border border-default px-3 py-2">
@@ -76,34 +70,7 @@
         </div>
       </UCard>
 
-      <div class="grid gap-4 lg:grid-cols-3">
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-3">
-              <UIcon name="i-lucide-languages" class="size-5 text-muted" />
-              <div>
-                <div class="text-base font-semibold text-highlighted">
-                  Languages
-                </div>
-                <p class="text-sm text-dimmed">{{ languageSummary }}</p>
-              </div>
-            </div>
-          </template>
-
-          <div class="space-y-3">
-            <div class="console-summary-field">
-              Default:
-              <span class="console-summary-value">{{ defaultLanguageLabel }}</span>
-            </div>
-            <div class="console-summary-field">
-              Supported:
-              <span class="console-summary-value">
-                {{ supportedLanguageLabels.join(', ') || 'Unset' }}
-              </span>
-            </div>
-          </div>
-        </UCard>
-
+      <div class="grid gap-4 lg:grid-cols-2">
         <UCard>
           <template #header>
             <div class="flex items-center gap-3">
@@ -187,13 +154,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-  FIREUX_LANGUAGE_OPTIONS,
-} from 'fireux-translation/runtime/languages'
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import type {
-  KitchenLanguageSettings,
   KitchenOpeningHours,
   Weekday,
 } from '../../../../models/kitchen.model'
@@ -216,43 +179,10 @@ const source = computed(() => String(kitchen.value?.source ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
 const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
-const primaryLanguage = computed(() => String(kitchen.value?.primary_language ?? ''))
-const languageSettings = computed(
-  () => kitchen.value?.language_settings as KitchenLanguageSettings | undefined
-)
 const openingHours = computed(
   () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
 )
 
-const languageOptionsByCode = new Map(
-  FIREUX_LANGUAGE_OPTIONS.map((language) => [language.code, language])
-)
-const formatLanguage = (code: string) => {
-  const language = languageOptionsByCode.get(code)
-  return language ? `${language.label} (${language.code})` : code
-}
-const defaultLanguage = computed(() =>
-  String(languageSettings.value?.default_language ?? '')
-)
-const defaultLanguageLabel = computed(() =>
-  defaultLanguage.value ? formatLanguage(defaultLanguage.value) : 'Unset'
-)
-const primaryLanguageLabel = computed(() =>
-  primaryLanguage.value ? formatLanguage(primaryLanguage.value) : defaultLanguageLabel.value
-)
-const supportedLanguages = computed(() =>
-  Array.isArray(languageSettings.value?.supported_languages)
-    ? languageSettings.value.supported_languages
-    : []
-)
-const supportedLanguageLabels = computed(() =>
-  supportedLanguages.value.map((code) => formatLanguage(code))
-)
-const languageSummary = computed(() => {
-  const count = supportedLanguages.value.length
-  const defaultLabel = defaultLanguage.value || 'unset'
-  return count ? `${defaultLabel} default, ${count} active` : 'Not set yet'
-})
 const currencyFormatLabel = computed(() => {
   if (currencyFormat.value === 'symbol') return 'Symbol'
   if (currencyFormat.value === 'code') return 'Code'

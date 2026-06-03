@@ -306,9 +306,6 @@ async function ensureCollectionRecord(
     if (!snap.exists()) {
       await createKitchen({
         id: placeId,
-        website: '',
-        professionals_current: [],
-        professionals_alumni: [],
         place,
       })
     }

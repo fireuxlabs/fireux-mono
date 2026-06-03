@@ -1,12 +1,5 @@
-import type {
-  FireuxAppOverlay,
-  FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
-import {
-  FireuxConsoleAccessModel,
-  FireuxAppOverlayModel,
-  FireuxAppScope,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
+import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -30,16 +23,6 @@ export type KitchenOpeningHours = {
   notes?: string
 }
 
-export type KitchenLanguageSettings = {
-  default_language: string
-  supported_languages: string[]
-  public_languages?: string[]
-  attached_languages?: string[]
-  certified_languages?: string[]
-  cache_languages?: string[]
-  cached_languages?: string[]
-}
-
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
 
 export type KitchenStyle = {
@@ -49,18 +32,6 @@ export type KitchenStyle = {
   font_color_dark: string
   primary_color: string
   secondary_color: string
-}
-
-export type KitchenSproochliMigrate = {
-  primary_language?: string
-  language_settings?: KitchenLanguageSettings
-  design?: Record<string, unknown>
-  design_packs?: Record<string, unknown>
-}
-
-export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
-  default_language: 'de',
-  supported_languages: ['de', 'en', 'it', 'fr'],
 }
 
 /**
@@ -84,12 +55,11 @@ export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
 export const KitchenStorage = {
   shape: 'both',
   root: 'kitchens/{kitchenId}',
-  overlay: 'apps/{appId}/kitchens/{kitchenId}',
+  scope: 'apps/{appId}/kitchens/{kitchenId}',
   rootCollection: 'kitchens',
-  overlayCollection: 'kitchens',
+  scopeCollection: 'kitchens',
   idParam: 'kitchenId',
   children: {
-    costs: 'apps/{appId}/kitchens/{kitchenId}/costs/{costId}',
     dishes: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
     ingredients: 'apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
     menus: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
@@ -101,25 +71,15 @@ export const KitchenStorage = {
   },
 } as const
 
-export const AppKitchenStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}',
-  collection: 'kitchens',
-  parent: 'app',
-  idParam: 'kitchenId',
-} as const
-
 export const KitchenModel = {
   id: '',
   ...FireuxAppScope,
-  ...FireuxConsoleAccessModel,
   is_test_kitchen: false,
   show: false,
   place_id: '',
   slug: '',
   name: '',
   tagline: '',
-  primary_language: '',
   currency_code: 'CHF',
   currency_format: 'dash' as KitchenCurrencyFormat,
   short_name: '',
@@ -127,9 +87,7 @@ export const KitchenModel = {
   formatted_address: '',
   image_url: '',
   style: undefined as KitchenStyle | undefined,
-  sproochli_migrate: undefined as KitchenSproochliMigrate | undefined,
   opening_hours: undefined as KitchenOpeningHours | undefined,
-  language_settings: undefined as KitchenLanguageSettings | undefined,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -144,64 +102,40 @@ export const KitchenModel = {
 
 export type Kitchen = WidenLiteral<typeof KitchenModel>
 
-export const AppKitchenModel = {
-  ...FireuxAppOverlayModel,
-} as const
+export type AppKitchen = {
+  id: string
+  operator_ids: string[]
+  team_ids: string[]
+  join_requests: string[]
+  created: FireuxStamped['created']
+  updated: FireuxStamped['updated']
+}
 
-export type AppKitchen = FireuxAppOverlay
-
-export type KitchenCreateInput = Omit<
-  Kitchen,
-  | 'created'
-  | 'updated'
-  | 'app_scope_state'
-  | 'app_scope_app_id'
-  | 'is_test_kitchen'
-  | 'show'
-  | 'slug'
-  | 'name'
-  | 'tagline'
-  | 'short_name'
-  | 'short_address'
-  | 'formatted_address'
-  | 'image_url'
-> &
-  Partial<
-    Pick<
-      Kitchen,
-      | 'app_scope_state'
-      | 'app_scope_app_id'
-      | 'operator_ids'
-      | 'is_test_kitchen'
-      | 'show'
-      | 'slug'
-      | 'name'
-      | 'tagline'
-      | 'primary_language'
-      | 'currency_code'
-      | 'currency_format'
-      | 'short_name'
-      | 'short_address'
-      | 'formatted_address'
-      | 'image_url'
-      | 'style'
-      | 'sproochli_migrate'
-      | 'opening_hours'
-      | 'language_settings'
-    >
+export type KitchenCreateInput = Partial<
+  Pick<
+    Kitchen,
+    | 'id'
+    | 'place_id'
+    | 'slug'
+    | 'name'
+    | 'currency_code'
+    | 'currency_format'
+    | 'short_name'
+    | 'short_address'
+    | 'formatted_address'
+    | 'image_url'
   >
+>
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
     | 'is_test_kitchen'
-    | 'operator_ids'
     | 'show'
     | 'place_id'
     | 'slug'
     | 'name'
     | 'tagline'
-    | 'primary_language'
     | 'currency_code'
     | 'currency_format'
     | 'short_name'
@@ -209,8 +143,6 @@ export type KitchenUpdateInput = Partial<
     | 'formatted_address'
     | 'image_url'
     | 'style'
-    | 'sproochli_migrate'
     | 'opening_hours'
-    | 'language_settings'
   >
 >

@@ -30,8 +30,7 @@ type KitchenPlaceDraft = Record<string, unknown> & {
   currency_code?: string
   currency_format?: Kitchen['currency_format']
 }
-type KitchenCreateDraft = Partial<KitchenCreateInput> & {
-  id?: string
+type KitchenCreateDraft = KitchenCreateInput & {
   place?: KitchenPlaceDraft
 }
 

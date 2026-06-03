@@ -49,7 +49,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
   - `apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`
   - `apps/{appId}/kitchens/{kitchenId}/suppliers/{supplierId}`
-  - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
 - Kitchen console mode mapping follows `docs/runtime-contract.md`.
 
 Recipe composable stack canon:

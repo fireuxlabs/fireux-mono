@@ -244,7 +244,7 @@ A scoped model must declare:
 
 Examples:
 - Kitchen-scoped under `apps/<appId>/kitchens/<kitchenId>/...`:
-  `Menu`, `Dish`, `Recipe`, `KitchenOrder`, `KitchenTeamMember`, `KitchenMiseTask`, `KitchenCostSnapshot`
+  `Menu`, `Dish`, `Recipe`, `KitchenOrder`, `KitchenTeamMember`, `KitchenMiseTask`
 - Portfolio-scoped under `apps/<appId>/portfolios/<portfolioId>/...`:
   `Property`, `Unit`, `Client`, `Document`, `DocumentLink`, `ComplianceRecord`, `Task`
 

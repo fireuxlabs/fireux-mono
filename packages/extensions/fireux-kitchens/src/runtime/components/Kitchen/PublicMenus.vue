@@ -1,14 +1,7 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="text-sm font-semibold">{{ chromeLabels.menus }}</div>
-
-        <MenuSproochliLanguageTrigger
-          :language-options="publicLanguageOptions"
-          :selected-language="selectedLanguage"
-        />
-      </div>
+      <div class="text-sm font-semibold">{{ chromeLabels.menus }}</div>
     </template>
 
     <div class="space-y-4">
@@ -65,14 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
-import {
-  normalizePublicKitchenLanguage,
-  resolvePublicKitchenChromeLanguage,
-  resolvePublicKitchenLanguageOptions,
-} from '../../composables/fireux/public/kitchen/sproochli/publicLanguage'
-import { usePublicMenuLanguage } from '../../composables/fireux/public/kitchen/sproochli/usePublicMenuLanguage'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
@@ -81,64 +67,15 @@ const props = defineProps<{
   kitchen: Kitchen
 }>()
 
-const route = useRoute()
-const runtimeConfig = useRuntimeConfig()
-
-const asRecord = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-
-const publicConfig = runtimeConfig.public as Record<string, unknown>
-const fireuxConfig = asRecord(publicConfig.fireux)
-const miseboxConfig = asRecord(fireuxConfig.misebox)
-const publicMenuConfig = asRecord(miseboxConfig.publicMenu)
-const runtimeSproochli = asRecord(fireuxConfig.sproochli)
-
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
-
-const runtimeSproochliEnabled = computed(() => runtimeSproochli.enabled !== false)
-const publicMenuSproochliEnabled = computed(() => publicMenuConfig.sproochli !== false)
-const languageSettings = computed(() => asRecord((props.kitchen as any)?.language_settings))
-const kitchenSproochliEnabled = computed(() => languageSettings.value.sproochli !== false)
-const sproochliEnabled = computed(
-  () =>
-    runtimeSproochliEnabled.value &&
-    publicMenuSproochliEnabled.value &&
-    kitchenSproochliEnabled.value
-)
-
-const publicLanguageOptions = computed(() =>
-  sproochliEnabled.value
-    ? resolvePublicKitchenLanguageOptions(props.kitchen)
-    : []
-)
-
-const selectedLanguage = computed(() => {
-  if (!sproochliEnabled.value) return ''
-  const raw = route.query.sproochli
-  const value = Array.isArray(raw) ? raw[0] : raw
-  return normalizePublicKitchenLanguage(value)
-})
-
-const primaryLanguage = computed(() => {
-  const settings = (props.kitchen as Record<string, any> | null)?.language_settings
-  return (
-    normalizePublicKitchenLanguage((props.kitchen as any)?.primary_language) ||
-    normalizePublicKitchenLanguage(settings?.default_language) ||
-    'en'
-  )
-})
-
-const chromeLanguage = computed(() =>
-  resolvePublicKitchenChromeLanguage({
-    selectedLanguage: selectedLanguage.value,
-    primaryLanguage: primaryLanguage.value,
-  })
-)
-
-const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
+const chromeLabels = {
+  menus: 'Menus',
+  openMenus: 'Open menus',
+  loadingMenus: 'Loading menus...',
+  noMenusAvailable: 'No menus available',
+  openMenu: 'Open menu',
+}
 const { publishedMenus, pending: menusPending } = useMenuCollection(
   kitchenId
 )
@@ -156,22 +93,19 @@ const sortedMenus = computed(() =>
   )
 )
 
-const publicLanguageQuery = (language = selectedLanguage.value) =>
-  language ? `?sproochli=${encodeURIComponent(language)}` : ''
-
 const menusIndexLink = computed(() => {
   if (!kitchenSlug.value) return ''
-  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus${publicLanguageQuery()}`
+  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
 })
 
 const menuLink = (menuIdRaw: unknown) => {
   const menuId = String(menuIdRaw || '').trim()
   if (!kitchenSlug.value || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}${publicLanguageQuery()}`
+  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}`
 }
 
 const localizedMenuName = (menu: Menu) => normalizeString(menu.name)
 const localizedMenuDescription = (menu: Menu) =>
   normalizeString(menu.description)
-const menuSummary = (_menu: Menu) => chromeLabels.value.openMenu
+const menuSummary = (_menu: Menu) => chromeLabels.openMenu
 </script>

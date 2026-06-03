@@ -71,7 +71,7 @@ function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput })
 async function createKitchenIfMissing(id: string, place: PlaceUpsertInput) {
   const existingSnap = await getDoc(doc(db, KitchenStorage.rootCollection, id))
   if (!existingSnap.exists()) {
-    await createKitchen({ id, place, website: '' })
+    await createKitchen({ id, place })
   }
 
   const label =

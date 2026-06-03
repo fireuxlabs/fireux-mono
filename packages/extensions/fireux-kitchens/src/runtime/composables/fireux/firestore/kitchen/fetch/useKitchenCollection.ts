@@ -70,9 +70,9 @@ export function useKitchenCollection(
     return options.filter ?? undefined
   })
   const currentAppId = computed(() => String(appId || '').trim())
-  const overlayCollectionPath = computed(() =>
+  const scopeCollectionPath = computed(() =>
     currentAppId.value
-      ? `${AppStorage.collection}/${currentAppId.value}/${KitchenStorage.overlayCollection}`
+      ? `${AppStorage.collection}/${currentAppId.value}/${KitchenStorage.scopeCollection}`
       : ''
   )
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
@@ -125,81 +125,81 @@ export function useKitchenCollection(
     }
     return hasOperatorFilter.value ? liveFirestoreDocs.docs : liveRootSource
   })
-  const operatorOverlayQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
+  const operatorScopeQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
     if (sourceMode.value !== 'live') return null
     if (!hasOperatorFilter.value || !filterOperatorId.value || !currentAppId.value) {
       return null
     }
 
     return fsq(
-      collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.overlayCollection),
+      collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.scopeCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
   })
-  const operatorOverlaySource = firestoreQuery<AppKitchenCollectionDoc>(
-    operatorOverlayQuery,
+  const operatorScopeSource = firestoreQuery<AppKitchenCollectionDoc>(
+    operatorScopeQuery,
     undefined,
-    overlayCollectionPath
+    scopeCollectionPath
   )
-  const teamOverlayQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
+  const teamScopeQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
     if (sourceMode.value !== 'live') return null
     if (!hasOperatorFilter.value || !filterOperatorId.value || !currentAppId.value) {
       return null
     }
 
     return fsq(
-      collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.overlayCollection),
+      collection(db, AppStorage.collection, currentAppId.value, KitchenStorage.scopeCollection),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
   })
-  const teamOverlaySource = firestoreQuery<AppKitchenCollectionDoc>(
-    teamOverlayQuery,
+  const teamScopeSource = firestoreQuery<AppKitchenCollectionDoc>(
+    teamScopeQuery,
     undefined,
-    overlayCollectionPath
+    scopeCollectionPath
   )
-  const overlayItems = computed<AppKitchenCollectionDoc[]>(() => {
-    const overlaysById = new Map<string, AppKitchenCollectionDoc>()
+  const scopeItems = computed<AppKitchenCollectionDoc[]>(() => {
+    const scopesById = new Map<string, AppKitchenCollectionDoc>()
 
-    for (const overlay of [
-      ...(operatorOverlaySource.value ?? []),
-      ...(teamOverlaySource.value ?? []),
+    for (const scope of [
+      ...(operatorScopeSource.value ?? []),
+      ...(teamScopeSource.value ?? []),
     ]) {
-      const id = String(overlay?.id || '').trim()
+      const id = String(scope?.id || '').trim()
       if (!id) continue
 
-      overlaysById.set(id, {
-        ...overlaysById.get(id),
-        ...overlay,
+      scopesById.set(id, {
+        ...scopesById.get(id),
+        ...scope,
         id,
         operator_ids: Array.from(
           new Set([
-            ...(overlaysById.get(id)?.operator_ids ?? []),
-            ...(overlay.operator_ids ?? []),
+            ...(scopesById.get(id)?.operator_ids ?? []),
+            ...(scope.operator_ids ?? []),
           ])
         ),
         team_ids: Array.from(
           new Set([
-            ...(overlaysById.get(id)?.team_ids ?? []),
-            ...(overlay.team_ids ?? []),
+            ...(scopesById.get(id)?.team_ids ?? []),
+            ...(scope.team_ids ?? []),
           ])
         ),
       })
     }
 
-    return Array.from(overlaysById.values())
+    return Array.from(scopesById.values())
   })
-  const overlaysByKitchenId = computed(() => {
+  const scopesByKitchenId = computed(() => {
     const map = new Map<string, AppKitchenCollectionDoc>()
 
-    for (const overlay of overlayItems.value) {
-      const id = String(overlay?.id || '').trim()
-      if (id) map.set(id, overlay)
+    for (const scope of scopeItems.value) {
+      const id = String(scope?.id || '').trim()
+      if (id) map.set(id, scope)
     }
 
     return map
   })
   const allowedKitchenIds = computed(() =>
-    overlayItems.value
+    scopeItems.value
       .map((kitchen) => String(kitchen?.id || '').trim())
       .filter(Boolean)
   )
@@ -238,7 +238,7 @@ export function useKitchenCollection(
             ...kitchen,
             id: kitchenId,
           },
-          overlay: overlaysByKitchenId.value.get(kitchenId) ?? null,
+          scope: scopesByKitchenId.value.get(kitchenId) ?? null,
           routeScope:
             sourceMode.value === 'demo' || sourceMode.value === 'test'
               ? sourceMode.value
@@ -269,8 +269,8 @@ export function useKitchenCollection(
       hasOperatorFilter.value &&
       currentAppId.value &&
       (
-        operatorOverlaySource.value === undefined ||
-        teamOverlaySource.value === undefined
+        operatorScopeSource.value === undefined ||
+        teamScopeSource.value === undefined
       )
     ) {
       return true

@@ -33,7 +33,7 @@ export const resolveKitchenConsoleCollectionPath = (
 ): string => {
   const resolvedAppId = normalizeString(appId)
   return resolvedAppId
-    ? `${AppStorage.collection}/${resolvedAppId}/${KitchenStorage.overlayCollection}`
+    ? `${AppStorage.collection}/${resolvedAppId}/${KitchenStorage.scopeCollection}`
     : KitchenStorage.rootCollection
 }
 
