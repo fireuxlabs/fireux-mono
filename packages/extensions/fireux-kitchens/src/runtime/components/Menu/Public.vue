@@ -1,5 +1,5 @@
 <template>
-  <main class="public-menu">
+  <main class="public-menu" :style="menuStyleVars">
     <section class="menu-page">
       <header class="menu-header">
         <p v-if="kitchenName" class="kitchen-name">
@@ -57,33 +57,66 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import {
+  formatCurrencyAmount,
+  type CurrencyDisplayFormat,
+} from 'fireux-core/runtime/models/core/money.model'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 
-defineProps<{
+const props = defineProps<{
   kitchenName: string
   menu: Menu
   sections: KitchenPublicMenuSectionRow[]
+  pageStyle?: Partial<PageStyle> | null
+  currencyCode?: string
+  currencyFormat?: CurrencyDisplayFormat
 }>()
 
-const priceFormatter = new Intl.NumberFormat('de-CH', {
-  style: 'currency',
-  currency: 'CHF',
+const color = (value: unknown) => String(value ?? '').trim()
+
+const menuStyleVars = computed(() => {
+  const style = props.pageStyle ?? {}
+  const vars: Record<string, string> = {}
+  const backgroundLight = color(style.background_color_light)
+  const backgroundDark = color(style.background_color_dark)
+  const fontLight = color(style.font_color_light)
+  const fontDark = color(style.font_color_dark)
+  const primary = color(style.primary_color)
+  const secondary = color(style.secondary_color)
+
+  if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
+  if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
+  if (fontDark) vars['--menu-text-dark'] = fontDark
+  if (fontLight) vars['--menu-text-light'] = fontLight
+  if (primary) vars['--menu-accent'] = primary
+  if (secondary) vars['--menu-secondary'] = secondary
+
+  return vars
 })
 
 const formatPrice = (price: number) => {
-  const value = Number(price || 0)
-  return Number.isFinite(value) && value > 0 ? priceFormatter.format(value) : ''
+  return formatCurrencyAmount(price, {
+    currencyCode: props.currencyCode,
+    format: props.currencyFormat,
+  })
 }
 </script>
 
 <style scoped>
 .public-menu {
-  --menu-bg: #fffaf2;
-  --menu-text: #211915;
-  --menu-muted: #4f4037;
-  --menu-dimmed: #756a60;
+  --menu-bg-light: #fffaf2;
+  --menu-bg-dark: #171717;
+  --menu-text-light: #211915;
+  --menu-text-dark: #f8f1e8;
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
+  --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
   --menu-accent: var(--ui-primary);
+  --menu-secondary: color-mix(in srgb, var(--menu-accent) 70%, var(--menu-text));
   --menu-font: Georgia, 'Times New Roman', serif;
 
   min-height: 100vh;
@@ -114,7 +147,7 @@ const formatPrice = (price: number) => {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--menu-dimmed);
+  color: var(--menu-secondary);
 }
 
 .menu-header h1 {
@@ -173,7 +206,7 @@ const formatPrice = (price: number) => {
   gap: 1rem;
   align-items: start;
   padding-block: 0.85rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-muted) 20%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-secondary) 24%, transparent);
 }
 
 .item-copy h3 {
@@ -202,6 +235,13 @@ const formatPrice = (price: number) => {
   .menu-item {
     grid-template-columns: 1fr;
     gap: 0.35rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .public-menu {
+    --menu-bg: var(--menu-bg-dark);
+    --menu-text: var(--menu-text-dark);
   }
 }
 </style>

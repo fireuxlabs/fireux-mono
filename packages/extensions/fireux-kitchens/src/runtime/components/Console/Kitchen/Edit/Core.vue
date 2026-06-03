@@ -329,6 +329,7 @@ const tagline = computed(() => String(kitchen.value?.tagline ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
 const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
 const currencyFormatLabel = computed(() => {
+  if (currencyFormat.value === 'none') return 'None'
   if (currencyFormat.value === 'symbol') return 'Symbol'
   if (currencyFormat.value === 'code') return 'Code'
   return 'Dash'
@@ -337,6 +338,7 @@ const currencySummary = computed(
   () => `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value}`
 )
 const currencyFormatHelp = computed(() => {
+  if (currencyFormat.value === 'none') return 'Show prices without a currency marker.'
   if (currencyFormat.value === 'symbol') return 'Show symbols such as $27 or £27.'
   if (currencyFormat.value === 'code') return 'Show the currency code beside the price.'
   return 'Show Luna-style prices such as 27.-.'
@@ -407,6 +409,7 @@ const currencyFormatChoices: Array<{
   label: string
   value: CurrencyDisplayFormat
 }> = [
+  { label: 'None', value: 'none' },
   { label: 'Dash', value: 'dash' },
   { label: 'Symbol', value: 'symbol' },
   { label: 'Code', value: 'code' },
@@ -528,7 +531,12 @@ const handleCurrencyCode = async (value: string) =>
     'Failed to update currency'
   )
 
-const currencyFormatOptions = new Set<CurrencyDisplayFormat>(['dash', 'symbol', 'code'])
+const currencyFormatOptions = new Set<CurrencyDisplayFormat>([
+  'none',
+  'dash',
+  'symbol',
+  'code',
+])
 const formatCurrencyFormatField = (value: string) =>
   normalizeString(value).toLowerCase().replace(/[^a-z]/g, '').slice(0, 12)
 

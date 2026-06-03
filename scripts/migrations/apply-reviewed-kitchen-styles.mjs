@@ -20,8 +20,8 @@ const REVIEWED_STYLES = [
     style: {
       background_color_light: '#F4E8D2',
       background_color_dark: '#171717',
-      font_color_light: '#F7F1E6',
-      font_color_dark: '#1F1A14',
+      font_color_light: '#1F1A14',
+      font_color_dark: '#F7F1E6',
       primary_color: '#F0C84D',
       secondary_color: '#67C96F',
     },
@@ -33,8 +33,8 @@ const REVIEWED_STYLES = [
     style: {
       background_color_light: '#F7F7F5',
       background_color_dark: '#3D3F41',
-      font_color_light: '#F7F7F5',
-      font_color_dark: '#57585A',
+      font_color_light: '#57585A',
+      font_color_dark: '#F7F7F5',
       primary_color: '#3D3F41',
       secondary_color: '#B8B8B8',
     },
@@ -46,8 +46,8 @@ const REVIEWED_STYLES = [
     style: {
       background_color_light: '#FFFDF7',
       background_color_dark: '#2D2B20',
-      font_color_light: '#FFFDF7',
-      font_color_dark: '#111111',
+      font_color_light: '#111111',
+      font_color_dark: '#FFFDF7',
       primary_color: '#C81010',
       secondary_color: '#568B44',
     },

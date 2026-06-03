@@ -643,7 +643,7 @@ async function main() {
         description: 'BG’S BAR & SOUL FOOD',
         primary_language: 'de',
         currency_code: 'CHF',
-        currency_format: 'dash',
+        currency_format: 'none',
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',

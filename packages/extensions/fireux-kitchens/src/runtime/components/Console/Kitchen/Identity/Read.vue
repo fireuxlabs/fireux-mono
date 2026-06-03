@@ -181,6 +181,7 @@ const openingHours = computed(
 )
 
 const currencyFormatLabel = computed(() => {
+  if (currencyFormat.value === 'none') return 'None'
   if (currencyFormat.value === 'symbol') return 'Symbol'
   if (currencyFormat.value === 'code') return 'Code'
   return 'Dash'

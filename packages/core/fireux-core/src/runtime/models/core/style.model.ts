@@ -7,6 +7,8 @@
  *
  * Decision note:
  * - PageStyle is a small reusable style token shape.
+ * - `*_light` means the value used in light mode; `*_dark` means the value
+ *   used in dark mode. It does not mean light-coloured or dark-coloured.
  * - Domain models may store a `style` field using this shape, but should not
  *   define their own copy of these page-level color tokens.
  */
