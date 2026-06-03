@@ -13,7 +13,7 @@ import {
   SupplierStorage,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
-import { getDemoSuppliers } from '../../../app/utils/supplier-demo-scenarios'
+import { getDemoSuppliers } from '../../../demo/supplier/scenarios'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 
 type SupplierCollectionDoc = Partial<Supplier> & {

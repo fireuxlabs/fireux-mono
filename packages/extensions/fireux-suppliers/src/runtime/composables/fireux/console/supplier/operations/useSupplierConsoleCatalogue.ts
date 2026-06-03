@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import {
   getDemoSupplierCatalogueItems,
   getDemoSupplierItems,
-} from '../../../app/utils/supplier-demo-scenarios'
+} from '../../../demo/supplier/scenarios'
 import { useSupplierCatalogueCollection } from '../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
 import { useSupplierItemCollection } from '../../../firestore/supplier/fetch/useSupplierItemCollection'
 import { useSupplierConsole } from '../useSupplierConsole'

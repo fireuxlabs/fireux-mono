@@ -5,7 +5,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
-import { getDemoProjectScenarios } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { getDemoProjectScenarios } from 'fireux-core/runtime/composables/fireux/demo/project/scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'

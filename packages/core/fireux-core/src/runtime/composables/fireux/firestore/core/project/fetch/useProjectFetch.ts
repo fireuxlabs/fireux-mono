@@ -1,5 +1,5 @@
 import { computed, isRef, type Ref } from 'vue'
-import { getDemoProject } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { getDemoProject } from 'fireux-core/runtime/composables/fireux/demo/project/scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'

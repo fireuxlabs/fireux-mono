@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getDemoProject } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { getDemoProject } from 'fireux-core/runtime/composables/fireux/demo/project/scenarios/index'
 import { useEcosystemFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemFetch'
 import type { EcosystemSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 import { useProjectConsole } from '../useProjectConsole'

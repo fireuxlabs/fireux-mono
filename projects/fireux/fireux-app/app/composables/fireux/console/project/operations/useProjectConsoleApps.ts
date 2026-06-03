@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getDemoProject } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { getDemoProject } from 'fireux-core/runtime/composables/fireux/demo/project/scenarios/index'
 import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import type { App } from 'fireux-core/runtime/models/core/app.model'
