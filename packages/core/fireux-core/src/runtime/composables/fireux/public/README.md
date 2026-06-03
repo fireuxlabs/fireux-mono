@@ -12,6 +12,9 @@ Use this layer when a public page needs shaping that does not belong in the stor
 - guest-facing SEO/view text
 - combining multiple stored records for a public page
 
+Shared helpers:
+- `scoped/usePublicScopedEntity.ts` shapes public projections of scoped records after the owning package has performed the actual reads.
+
 Do not put stored CRUD, selected console state, or demo scenario data here.
 
 Layer split:
