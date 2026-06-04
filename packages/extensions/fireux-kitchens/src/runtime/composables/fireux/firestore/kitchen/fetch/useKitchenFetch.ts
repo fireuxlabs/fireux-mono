@@ -136,9 +136,8 @@ export function useKitchenFetch(
   })
 
   const placeId = computed(() => {
-    const docId = String(idRef.value || '').trim()
     const entry = sourceEntry.value
-    return String(entry?.place_id || docId).trim()
+    return String(entry?.place_id || '').trim()
   })
   const placeQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()

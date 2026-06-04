@@ -22,7 +22,7 @@ const props = defineProps<{
 }>()
 
 const placeId = computed(() =>
-  String(props.kitchen?.place_id || props.kitchen?.id || '').trim()
+  String(props.kitchen?.place_id || '').trim()
 )
 const { place, pending } = usePlaceFetch(placeId)
 const { profile } = usePlaceInterface()

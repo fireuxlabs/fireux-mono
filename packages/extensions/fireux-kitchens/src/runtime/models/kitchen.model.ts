@@ -57,8 +57,8 @@ export const KitchenModel = {
   place_id: '',
   slug: '',
 
-  // Optional Kitchen presentation overrides.
-  // Empty means public Kitchen surfaces inherit linked Place name/image.
+  // Standalone Kitchen identity or explicit presentation overrides.
+  // Empty means public Kitchen surfaces inherit linked Place name/image when a Place exists.
   display_name: '',
   tagline: '',
   display_image_url: '',

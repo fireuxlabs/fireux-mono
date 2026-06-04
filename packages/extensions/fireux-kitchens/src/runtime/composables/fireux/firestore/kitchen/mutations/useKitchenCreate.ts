@@ -62,6 +62,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const placeName = normalizeString(place.name || place.short_name)
     const displayName = normalizeString(input.display_name)
     const displayImageUrl = normalizeString(input.display_image_url)
+    const placeId = normalizeString(input.place_id || place.id)
     const slug = normalizeSlug(
       input.slug ||
       place.slug ||
@@ -71,7 +72,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const payload: Partial<Kitchen> = {
       app_scope_state: 'root_only',
       app_scope_app_id: '',
-      place_id: normalizeString(input.place_id || place.id || id) || id,
       show: false,
       is_test_kitchen: false,
       menu_currency_format: input.menu_currency_format || 'dash',
@@ -79,6 +79,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       menu_available: true,
     }
 
+    if (placeId) payload.place_id = placeId
     if (slug) payload.slug = slug
     if (displayName) payload.display_name = displayName
     if (displayImageUrl) payload.display_image_url = displayImageUrl

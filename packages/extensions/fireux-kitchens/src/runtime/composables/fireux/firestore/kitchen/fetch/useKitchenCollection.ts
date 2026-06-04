@@ -230,9 +230,11 @@ export function useKitchenCollection(
         if (hasFilter.value && !filterIdSet.value.has(kitchenId)) return null
         if (hasOperatorFilter.value && !allowedKitchenIdSet.has(kitchenId)) return null
 
-        const resolvedPlaceId = String(kitchen?.place_id || kitchenId).trim()
+        const resolvedPlaceId = String(kitchen?.place_id || '').trim()
         const place =
-          shouldHydrate.value ? placesById.get(resolvedPlaceId) ?? null : null
+          shouldHydrate.value && resolvedPlaceId
+            ? placesById.get(resolvedPlaceId) ?? null
+            : null
 
         return surface({
           place,

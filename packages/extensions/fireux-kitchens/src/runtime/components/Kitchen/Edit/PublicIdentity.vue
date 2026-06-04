@@ -10,9 +10,10 @@
 
     <div class="grid gap-4">
       <MoleculesFormsFirestoreSimpleField
-        label="Display name"
+        v-if="!hasLinkedPlace"
+        label="Kitchen name"
         :firebase-value="displayName"
-        placeholder="Kitchen display name"
+        placeholder="Public kitchen name"
         :maxlength="120"
         :update-function="handleDisplayName"
       />
@@ -55,6 +56,7 @@ const toast = useToastify()
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const kitchenId = computed(() => clean(props.kitchenId))
+const hasLinkedPlace = computed(() => Boolean(clean((props.kitchen as any)?.place_id)))
 const displayName = computed(() => clean((props.kitchen as any)?.display_name))
 const tagline = computed(() => clean((props.kitchen as any)?.tagline))
 const foodGallery = computed(() =>
@@ -91,8 +93,8 @@ async function updateKitchenIdentity(
 async function handleDisplayName(value: string) {
   await updateKitchenIdentity(
     { display_name: clean(value) },
-    'Display name updated',
-    'Failed to update display name'
+    'Kitchen name updated',
+    'Failed to update kitchen name'
   )
 }
 

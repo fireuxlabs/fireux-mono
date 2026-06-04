@@ -43,29 +43,39 @@
                 <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
                   Editing kitchen
                 </p>
-                <KitchenCardsPill
-                  v-if="kitchenPill"
-                  v-bind="kitchenPill"
-                  :show-badges="false"
-                  :link="false"
-                />
+                <p class="text-sm font-medium text-highlighted">
+                  {{ kitchenTitle }}
+                </p>
+                <p v-if="kitchenSubtitle" class="text-xs text-dimmed">
+                  {{ kitchenSubtitle }}
+                </p>
               </div>
 
-              <UButton
-                size="xs"
-                variant="soft"
-                color="neutral"
-                icon="i-lucide-eye"
-                :to="detailTo"
-              >
-                View public page
-              </UButton>
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  size="xs"
+                  variant="soft"
+                  color="neutral"
+                  icon="i-lucide-eye"
+                  :to="detailTo"
+                >
+                  View public page
+                </UButton>
+                <UButton
+                  v-if="placeEditTo"
+                  size="xs"
+                  variant="soft"
+                  color="neutral"
+                  icon="i-lucide-map-pin"
+                  :to="placeEditTo"
+                >
+                  Edit linked place
+                </UButton>
+              </div>
             </div>
           </UPageCard>
 
           <template v-if="canEdit">
-            <PlaceEdit :place="placeObject" />
-
             <KitchenEditPublicIdentity
               :kitchen="hydratedKitchen"
               :kitchen-id="kitchenId"
@@ -94,12 +104,8 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import {
-  useKitchenFetch,
-  useKitchenInterface,
-} from '../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
 
 const props = defineProps<{
   locator: string
@@ -129,20 +135,19 @@ const canEdit = computed(() => {
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 
-const { pill } = useKitchenInterface()
-const kitchenPill = computed(() => pill(hydratedKitchen.value))
-
-const placeObject = computed<Place | null>(() => {
-  const v = hydratedKitchen.value
-  if (!v) return null
-  const placeId = String(v.place_id || v.id || '').trim()
-  if (!placeId) return null
-
-  return {
-    ...v,
-    id: placeId,
-  } as Place
-})
+const clean = (value: unknown) => String(value ?? '').trim()
+const kitchenTitle = computed(() =>
+  clean(hydratedKitchen.value?.display_name || hydratedKitchen.value?.name) || 'Kitchen'
+)
+const kitchenSubtitle = computed(() => clean(hydratedKitchen.value?.tagline))
+const placeLocator = computed(() =>
+  clean(hydratedKitchen.value?.place_id)
+)
+const placeEditTo = computed(() =>
+  placeLocator.value
+    ? `/places/${encodeURIComponent(placeLocator.value)}/edit`
+    : ''
+)
 
 const pageTitle = computed(
   () =>
