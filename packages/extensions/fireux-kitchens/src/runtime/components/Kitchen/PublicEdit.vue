@@ -36,41 +36,48 @@
           description="We could not find this kitchen. Return to the kitchens list and try again."
         />
 
-        <div v-else class="space-y-4">
-          <PlaceCardsPreview
-            v-if="placePreview"
-            v-bind="placePreview"
-            :show-badges="false"
-            :show-body="false"
-            :details="placePreviewDetails"
-            :map-url="placePreviewMapUrl"
-          />
-          <UAlert
-            v-if="!canEdit"
-            color="warning"
-            variant="soft"
-            title="Claim required"
-            description="You can only edit places you’ve claimed. Ask an admin or claim this business first."
-          >
-            <template #actions>
+        <div v-else class="space-y-6">
+          <UPageCard variant="subtle">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                  Editing kitchen
+                </p>
+                <KitchenCardsPill
+                  v-if="kitchenPill"
+                  v-bind="kitchenPill"
+                  :show-badges="false"
+                  :link="false"
+                />
+              </div>
+
               <UButton
                 size="xs"
                 variant="soft"
-                color="primary"
+                color="neutral"
+                icon="i-lucide-eye"
                 :to="detailTo"
               >
-                Go to details
+                View public page
               </UButton>
-            </template>
-          </UAlert>
+            </div>
+          </UPageCard>
 
-          <PlaceEdit v-if="canEdit" :place="placeObject" />
+          <template v-if="canEdit">
+            <PlaceEdit :place="placeObject" />
+
+            <KitchenEditPublicIdentity
+              :kitchen="hydratedKitchen"
+              :kitchen-id="kitchenId"
+              :can-write="canEdit"
+            />
+          </template>
           <UAlert
             v-else
             color="warning"
             variant="soft"
-            title="Editing locked"
-            description="Only the claiming user or an admin can edit this place."
+            title="Edit access required"
+            description="Use an operator or admin account to edit this kitchen and its linked place details."
           />
         </div>
 
@@ -87,10 +94,12 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
+import {
+  useKitchenFetch,
+  useKitchenInterface,
+} from '../../composables/fireux/firestore/kitchen/useKitchen'
 
 const props = defineProps<{
   locator: string
@@ -120,44 +129,8 @@ const canEdit = computed(() => {
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 
-const { preview } = usePlaceInterface()
-const placePreview = computed(() => preview(hydratedKitchen.value))
-const placePreviewDetails = computed(() => {
-  const v = hydratedKitchen.value
-  if (!v) return []
-  const details = [
-    { label: 'Place name', value: v.name ?? '' },
-    { label: 'Place address', value: v.short_address ?? '' },
-    { label: 'Search term', value: v.search_term ?? '' },
-    { label: 'Brand tagline', value: v.brand_tagline ?? '' },
-    { label: 'About', value: v.about ?? '' },
-    { label: 'Phone', value: v.phone ?? '' },
-    { label: 'Website', value: v.website ?? '' },
-    { label: 'Price level', value: v.price_level ?? '' },
-    {
-      label: 'Tags',
-      value: Array.isArray(v.tags)
-        ? v.tags.filter(Boolean).join(', ')
-        : '',
-    },
-    {
-      label: 'Types',
-      value: Array.isArray(v.types)
-        ? v.types.filter(Boolean).join(', ')
-        : '',
-    },
-    { label: 'Claimed by', value: v.claimed_by ?? '' },
-    { label: 'Verified', value: v.verified ? 'Yes' : '' },
-  ]
-
-  return details.filter((item) => String(item.value ?? '').trim().length > 0)
-})
-const placePreviewMapUrl = computed(() => {
-  const v = hydratedKitchen.value
-  if (!v) return ''
-  if (v.google_maps_url) return v.google_maps_url
-  return ''
-})
+const { pill } = useKitchenInterface()
+const kitchenPill = computed(() => pill(hydratedKitchen.value))
 
 const placeObject = computed<Place | null>(() => {
   const v = hydratedKitchen.value
@@ -165,41 +138,9 @@ const placeObject = computed<Place | null>(() => {
   const placeId = String(v.place_id || v.id || '').trim()
   if (!placeId) return null
 
-  const {
-    name,
-    short_name,
-    short_address,
-    formatted_address,
-    lat,
-    lng,
-    image_url,
-    image_shade,
-    claimed_by,
-    default_currency_code,
-    email,
-    phone,
-    source,
-    timezone,
-    website,
-  } = v
-
   return {
+    ...v,
     id: placeId,
-    name,
-    short_name,
-    short_address,
-    formatted_address,
-    lat,
-    lng,
-    image_url,
-    image_shade,
-    claimed_by,
-    default_currency_code,
-    email,
-    phone,
-    source,
-    timezone,
-    website,
   } as Place
 })
 

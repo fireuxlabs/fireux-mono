@@ -5,9 +5,6 @@
 				<div class="text-base font-semibold text-highlighted">
 					Public story
 				</div>
-				<p class="text-sm text-dimmed">
-					Owner-added public copy and images that Google does not provide.
-				</p>
 			</div>
 		</template>
 

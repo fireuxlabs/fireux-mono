@@ -90,6 +90,8 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
+    const handleLabel = handle ? `@${handle}` : ''
+    const displayName = safeString(user.display_name).trim() || handleLabel || id
     const appCount = safeArray(user.userOf).length
     const profiles = safeArray<string>(user.profiles)
 
@@ -102,12 +104,12 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       imageUrl: resolveAvatarUrl(user),
       avatarUrl: resolveAvatarUrl(user),
       secondaryAvatarUrl: '',
-      displayName: safeString(user.display_name).trim(),
+      displayName,
       title: profiles[0] || '',
-      subtitle: handle ? `@${handle}` : '',
+      subtitle: displayName !== handleLabel ? handleLabel : '',
       summary: safeString(user.bio),
 
-      handle: handle ? `@${handle}` : '',
+      handle: handleLabel,
       badges: profiles,
 
       contactEmail: '',

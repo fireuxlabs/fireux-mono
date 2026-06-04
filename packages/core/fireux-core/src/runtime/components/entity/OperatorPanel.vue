@@ -38,6 +38,19 @@
             />
           </div>
         </div>
+
+        <div v-if="showManageAction" class="flex flex-wrap gap-2">
+          <UButton
+            :class="{ 'fx-admin-edit-button': isAdminEdit }"
+            size="xs"
+            :color="isAdminEdit ? 'warning' : 'neutral'"
+            variant="soft"
+            :icon="isAdminEdit ? 'i-lucide-shield-check' : 'i-lucide-pencil'"
+            :to="editTo"
+          >
+            {{ isAdminEdit ? adminManageLabel : manageLabel }}
+          </UButton>
+        </div>
       </div>
 
       <div
@@ -91,12 +104,22 @@ const props = withDefaults(
     description?: string
     operatorLabel?: string
     operatorUserPill?: UserCard.Card | null
+    canEdit?: boolean
+    isAdminEdit?: boolean
+    editTo?: string
+    manageLabel?: string
+    adminManageLabel?: string
     aligned?: string[]
     notAligned?: string[]
   }>(),
   {
     operatorLabel: 'Operator',
     operatorUserPill: null,
+    canEdit: false,
+    isAdminEdit: false,
+    editTo: '',
+    manageLabel: 'Edit details',
+    adminManageLabel: 'Admin Edit',
     aligned: () => [],
     notAligned: () => [],
   }
@@ -115,6 +138,11 @@ const panelDescription = computed(
 )
 const operatorUserPill = computed(() => props.operatorUserPill ?? null)
 const operatorLabel = computed(() => props.operatorLabel || 'Operator')
+const editTo = computed(() => String(props.editTo || '').trim())
+const showManageAction = computed(() => props.canEdit && Boolean(editTo.value))
+const isAdminEdit = computed(() => Boolean(props.isAdminEdit))
+const manageLabel = computed(() => props.manageLabel || 'Edit details')
+const adminManageLabel = computed(() => props.adminManageLabel || 'Admin Edit')
 </script>
 
 <style scoped>
@@ -122,5 +150,11 @@ const operatorLabel = computed(() => props.operatorLabel || 'Operator')
   display: block;
   max-width: 100%;
   width: min(100%, 260px);
+}
+
+.fx-admin-edit-button {
+  border-color: var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
+  color: var(--fx-fireux-yellow-muted);
 }
 </style>

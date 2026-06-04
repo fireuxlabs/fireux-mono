@@ -8,6 +8,7 @@ type SocialPlatform =
   | 'github'
   | 'instagram'
   | 'facebook'
+  | 'tiktok'
   | 'youtube'
   | (string & {})
 
@@ -27,6 +28,7 @@ const ICONS: Record<string, string> = {
   github: 'skill-icons:github-dark',
   instagram: 'skill-icons:instagram',
   facebook: 'logos:facebook',
+  tiktok: 'simple-icons:tiktok',
   youtube: 'logos:youtube-icon',
 }
 
@@ -38,6 +40,7 @@ const BASE: Record<string, string> = {
   github: 'https://github.com/',
   instagram: 'https://instagram.com/',
   facebook: 'https://facebook.com/',
+  tiktok: 'https://tiktok.com/@',
   youtube: 'https://youtube.com/',
 }
 

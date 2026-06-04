@@ -31,18 +31,16 @@
             <span class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
               Claimed by
             </span>
-            <div class="fx-claim-admin-user">
-              <UserCardsPill
-                v-if="claimState.claimedUserPill"
-                v-bind="claimState.claimedUserPill"
-                :show-badges="false"
-                :link="Boolean(claimState.claimedUserPill.to)"
-                class="block"
-              />
-              <span v-else class="text-sm text-muted">
-                Claimed
-              </span>
-            </div>
+            <UserCardsPill
+              v-if="claimState.claimedUserPill"
+              v-bind="claimState.claimedUserPill"
+              :link="Boolean(claimState.claimedUserPill.to)"
+              :show-badges="false"
+              class="block"
+            />
+            <span v-else class="text-sm text-muted">
+              Claimed
+            </span>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -177,9 +175,4 @@ const panelCopy = computed(() => {
   color: var(--fx-fireux-yellow-muted);
 }
 
-.fx-claim-admin-user {
-  display: block;
-  max-width: 100%;
-  width: min(100%, 260px);
-}
 </style>

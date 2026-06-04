@@ -36,41 +36,40 @@
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <div v-else class="space-y-4">
-          <PlaceCardsPreview
-            v-if="placePreview"
-            v-bind="placePreview"
-            :show-badges="false"
-            :show-body="false"
-            :details="placePreviewDetails"
-            :map-url="placePreviewMapUrl"
-          />
-          <UAlert
-            v-if="!canEdit"
-            color="warning"
-            variant="soft"
-            title="Claim required"
-            description="You can only edit places you’ve claimed. Ask an admin or claim this business first."
-          >
-            <template #actions>
+        <div v-else class="space-y-6">
+          <UPageCard variant="subtle">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                  Editing place
+                </p>
+                <PlaceCardsPill
+                  v-if="placePill"
+                  v-bind="placePill"
+                  :show-badges="false"
+                  :link="false"
+                />
+              </div>
+
               <UButton
                 size="xs"
                 variant="soft"
-                color="primary"
+                color="neutral"
+                icon="i-lucide-eye"
                 :to="backTo"
               >
-                Go to details
+                View public page
               </UButton>
-            </template>
-          </UAlert>
+            </div>
+          </UPageCard>
 
           <PlaceEdit v-if="canEdit" :place="place" />
           <UAlert
             v-else
             color="warning"
             variant="soft"
-            title="Editing locked"
-            description="Only the claiming user or an admin can edit this place."
+            title="Edit access required"
+            description="Claim this place from the public page, or use an admin account when maintaining FireUX data."
           />
         </div>
 
@@ -97,7 +96,6 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
 import {
-  formatPlaceTypeLabel,
   usePlaceFetch,
   usePlaceInterface,
 } from '../../composables/fireux/firestore/place/usePlace'
@@ -123,58 +121,8 @@ const canEdit = computed(() =>
   Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
 )
 
-const { preview } = usePlaceInterface()
-const placePreview = computed(() => preview(place.value))
-const placePreviewDetails = computed(() => {
-  const v = place.value
-  if (!v) return []
-  const details = [
-    { label: 'Short name', value: v.short_name ?? '' },
-    { label: 'Short address', value: v.short_address ?? '' },
-    { label: 'Search term', value: v.search_term ?? '' },
-    { label: 'Brand tagline', value: v.brand_tagline ?? '' },
-    { label: 'About', value: v.about ?? '' },
-    { label: 'Cover image', value: v.cover_image ?? '' },
-    {
-      label: 'Gallery images',
-      value: Array.isArray(v.gallery_images)
-        ? v.gallery_images.filter(Boolean).join(', ')
-        : '',
-    },
-    { label: 'Phone', value: v.phone ?? '' },
-    { label: 'Email', value: v.email ?? '' },
-    { label: 'Website', value: v.website ?? '' },
-    {
-      label: 'Social links',
-      value: v.social_links
-        ? Object.entries(v.social_links)
-            .filter(([, value]) => String(value ?? '').trim())
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ')
-        : '',
-    },
-    { label: 'Default currency', value: v.default_currency_code ?? '' },
-    { label: 'Timezone', value: v.timezone ?? '' },
-    { label: 'Price level', value: v.price_level ?? '' },
-    {
-      label: 'Tags',
-      value: Array.isArray(v.tags)
-        ? v.tags.map(formatPlaceTypeLabel).filter(Boolean).join(', ')
-        : '',
-    },
-    {
-      label: 'Types',
-      value: Array.isArray(v.types)
-        ? v.types.map(formatPlaceTypeLabel).filter(Boolean).join(', ')
-        : '',
-    },
-    { label: 'Claimed by', value: v.claimed_by ?? '' },
-    { label: 'Verified', value: v.verified ? 'Yes' : '' },
-  ]
-
-  return details.filter((item) => String(item.value ?? '').trim().length > 0)
-})
-const placePreviewMapUrl = computed(() => place.value?.google_maps_url ?? '')
+const { pill } = usePlaceInterface()
+const placePill = computed(() => pill(place.value))
 
 const toast = useToastify()
 
@@ -191,9 +139,11 @@ async function onCopyPlaceId() {
   }
 }
 
-const pageTitle = computed(() => place.value?.name || 'Edit place')
+const pageTitle = computed(() =>
+  place.value?.name ? `Edit ${place.value.name}` : 'Edit place'
+)
 const pageSubtitle = computed(() =>
-  placeId.value ? `Place ID: ${placeId.value}` : 'Edit a place'
+  place.value?.formatted_address || 'Public place details and owner-added content.'
 )
 
 const editableFields = computed(() => {

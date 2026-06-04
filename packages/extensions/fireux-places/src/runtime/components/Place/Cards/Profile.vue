@@ -206,6 +206,7 @@
 </template>
 
 <script setup lang="ts">
+import { useSocialLinks } from 'fireux-core/runtime/composables/fireux/app/ui/useSocialLinks'
 import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import PlaceGoogleHours from '../GoogleHours.vue'
@@ -221,45 +222,22 @@ const tagChips = computed(() =>
     .slice(0, 6)
 )
 
+const socialLabels: Record<string, string> = {
+  website: 'Website',
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  linkedin: 'LinkedIn',
+  youtube: 'YouTube',
+}
+const { toItems: toSocialItems } = useSocialLinks()
 const socialItems = computed(() =>
-  [
-    {
-      key: 'website',
-      label: 'Website',
-      icon: 'i-lucide-globe',
-      url: model.value.socialLinks?.website ?? '',
-    },
-    {
-      key: 'instagram',
-      label: 'Instagram',
-      icon: 'i-logos-instagram',
-      url: model.value.socialLinks?.instagram ?? '',
-    },
-    {
-      key: 'facebook',
-      label: 'Facebook',
-      icon: 'i-logos-facebook',
-      url: model.value.socialLinks?.facebook ?? '',
-    },
-    {
-      key: 'tiktok',
-      label: 'TikTok',
-      icon: 'i-logos-tiktok-icon',
-      url: model.value.socialLinks?.tiktok ?? '',
-    },
-    {
-      key: 'linkedin',
-      label: 'LinkedIn',
-      icon: 'i-logos-linkedin-icon',
-      url: model.value.socialLinks?.linkedin ?? '',
-    },
-    {
-      key: 'youtube',
-      label: 'YouTube',
-      icon: 'i-logos-youtube-icon',
-      url: model.value.socialLinks?.youtube ?? '',
-    },
-  ].filter((item) => item.url)
+  toSocialItems(model.value.socialLinks).map((item) => ({
+    key: item.platform,
+    label: socialLabels[item.platform] || item.platform,
+    icon: item.icon,
+    url: item.url,
+  }))
 )
 
 const contactItems = computed(
