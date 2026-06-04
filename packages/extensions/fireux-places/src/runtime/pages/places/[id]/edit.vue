@@ -1,5 +1,5 @@
 <template>
-  <PlacePublicEdit :id="placeId" />
+  <PlacePublicEdit :locator="placeLocator" />
 </template>
 
 <script setup lang="ts">
@@ -15,5 +15,5 @@ definePageMeta({
 
 const route = useRoute()
 const raw = route.params.id
-const placeId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+const placeLocator = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 </script>

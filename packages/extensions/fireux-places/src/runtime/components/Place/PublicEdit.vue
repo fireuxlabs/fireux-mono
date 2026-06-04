@@ -6,7 +6,7 @@
           size="xs"
           variant="ghost"
           icon="i-lucide-arrow-left"
-          :to="id ? `/places/${encodeURIComponent(id)}` : '/places'"
+          :to="backTo"
         >
           Back to details
         </UButton>
@@ -15,7 +15,7 @@
           variant="ghost"
           color="neutral"
           icon="i-lucide-copy"
-          :disabled="!id"
+          :disabled="!placeId"
           aria-label="Copy place id"
           @click="onCopyPlaceId"
         />
@@ -57,7 +57,7 @@
                 size="xs"
                 variant="soft"
                 color="primary"
-                :to="id ? `/places/${encodeURIComponent(id)}` : '/places'"
+                :to="backTo"
               >
                 Go to details
               </UButton>
@@ -102,14 +102,18 @@ import {
 } from '../../composables/fireux/firestore/place/usePlace'
 
 const props = defineProps<{
-  id: string
+  locator: string
 }>()
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Place` })
 
-const { place, pending } = usePlaceFetch(computed(() => props.id))
+const { place, pending } = usePlaceFetch(computed(() => props.locator))
 const loading = computed(() => pending.value)
+const placeId = computed(() => place.value?.id ?? '')
+const backTo = computed(() =>
+  props.locator ? `/places/${encodeURIComponent(props.locator)}` : '/places'
+)
 const showDebug = import.meta.dev
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => place.value?.claimed_by ?? '')
@@ -134,8 +138,6 @@ const placePreviewDetails = computed(() => {
     { label: 'Default currency', value: v.default_currency_code ?? '' },
     { label: 'Timezone', value: v.timezone ?? '' },
     { label: 'Price level', value: v.price_level ?? '' },
-    { label: 'Rating', value: v.rating ? String(v.rating) : '' },
-    { label: 'Rating count', value: v.rating_count ? String(v.rating_count) : '' },
     { label: 'Tags', value: Array.isArray(v.tags) ? v.tags.filter(Boolean).join(', ') : '' },
     { label: 'Types', value: Array.isArray(v.types) ? v.types.filter(Boolean).join(', ') : '' },
     { label: 'Claimed by', value: v.claimed_by ?? '' },
@@ -149,10 +151,10 @@ const placePreviewMapUrl = computed(() => place.value?.google_maps_url ?? '')
 const toast = useToastify()
 
 async function onCopyPlaceId() {
-  if (!props.id) return
+  if (!placeId.value) return
   try {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(props.id)
+      await navigator.clipboard.writeText(placeId.value)
     }
     toast.success('Place ID copied')
   } catch (error) {
@@ -162,7 +164,9 @@ async function onCopyPlaceId() {
 }
 
 const pageTitle = computed(() => place.value?.name || 'Edit place')
-const pageSubtitle = computed(() => (props.id ? `Place ID: ${props.id}` : 'Edit a place'))
+const pageSubtitle = computed(() =>
+  placeId.value ? `Place ID: ${placeId.value}` : 'Edit a place'
+)
 
 const editableFields = computed(() => {
   const v = place.value

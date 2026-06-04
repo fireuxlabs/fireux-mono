@@ -31,6 +31,7 @@ if (!existsSync(configPath)) {
 }
 
 const firebaseConfig = readJson(configPath)
+printShipReminders()
 const localFunctions = readLocalFunctions(firebaseConfig)
 
 if (!localFunctions.length) {
@@ -62,6 +63,12 @@ if (violations.length) {
 }
 
 console.log('[firebase-preflight] No stale app function leftovers detected.')
+
+function printShipReminders() {
+  console.warn(
+    '[firebase-preflight] Reminder: fireux-places Place claiming is pre-ship only. Before production deploy, add verified claim flow and update Firestore rules for places/{placeId}.'
+  )
+}
 
 function readJson(filePath) {
   try {

@@ -55,8 +55,6 @@ export type PlaceProfile = {
   subtitle: string
   imageUrl?: string
   prop?: string
-  rating?: number
-  ratingCount?: number
   priceLevel?: string
   tags?: string[]
   types?: string[]
@@ -158,8 +156,6 @@ export function usePlaceInterface() {
     const base = buildInterface(target)
     if (!base || !target) return null
     const source = (target as any)?.source as PlaceSource | undefined
-    const rating = (target as any)?.rating as number | undefined
-    const ratingCount = (target as any)?.rating_count as number | undefined
     const tags = (target as any)?.tags as string[] | undefined
     const types = (target as any)?.types as string[] | undefined
     const phone = (target as any)?.phone as string | undefined
@@ -186,8 +182,6 @@ export function usePlaceInterface() {
         (target as any)?.gallery_images as string[] | undefined
       )?.slice(0, 3),
       about: (target as any)?.about,
-      rating,
-      ratingCount,
       priceLevel: (target as any)?.price_level,
       tags,
       types,

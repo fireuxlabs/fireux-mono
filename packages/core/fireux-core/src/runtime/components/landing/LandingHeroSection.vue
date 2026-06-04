@@ -53,7 +53,7 @@
                 variant="subtle"
                 color="primary"
                 :to="entry.path"
-                icon="i-lucide-circle-play"
+                :icon="entry.icon"
               >
                 {{ entry.label }}
               </UButton>
@@ -169,7 +169,6 @@ import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app/useFireuxBrandAssets'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
-import { toConsoleFamilyLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
 
 type RightPanelItem = {
@@ -247,27 +246,7 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { hasConsoleEntry, consoleRootPath, consoles } = useConsoleEntryCta()
-
-const consoleCtas = computed(() => {
-  if (!hasConsoleEntry.value) return []
-
-  if (!consoles.value.length) {
-    return [
-      {
-        key: 'console',
-        path: consoleRootPath,
-        label: 'Open Console',
-      },
-    ]
-  }
-
-  return consoles.value.map((entry) => ({
-    key: entry.key,
-    path: entry.path,
-    label: `${toConsoleFamilyLabel(entry.key) || 'Console'} Console`,
-  }))
-})
+const { consoleActions: consoleCtas } = useConsoleEntryCta()
 const auth = import.meta.client ? useAuth() : null
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
 

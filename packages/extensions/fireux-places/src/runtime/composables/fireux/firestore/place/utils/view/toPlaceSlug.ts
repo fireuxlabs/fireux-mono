@@ -1,14 +1,13 @@
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
 /**
- * Generate a display/search slug from a place name + short address.
- * Place route identity is id-only; this must not be used for public routing.
+ * Generate the default public locator from the place name.
+ * The stored Place id remains canonical; slug is a clean public URL key.
  *
  * Examples:
- *   toPlaceSlug('La Tap', 'Berne, Interlaken') -> 'la-tap-berne-interlaken'
- *   toPlaceSlug('Cafe du Soleil', 'Geneve')    -> 'cafe-du-soleil-geneve'
+ *   toPlaceSlug('La Tap Berne')     -> 'la-tap-berne'
+ *   toPlaceSlug('Cafe du Soleil')   -> 'cafe-du-soleil'
  */
-export function toPlaceSlug(name: string, shortAddress?: string): string {
-  const raw = [name, shortAddress].filter(Boolean).join(' ')
-  return normalizeSlug(raw)
+export function toPlaceSlug(name: string): string {
+  return normalizeSlug(name)
 }

@@ -22,6 +22,9 @@
         />
 
         <div v-else class="space-y-4">
+          <!-- place -->
+          <KitchenPublicPlace :kitchen="kitchen" />
+
           <!-- profile -->
           <KitchenCardsProfile
             v-if="profileCard"

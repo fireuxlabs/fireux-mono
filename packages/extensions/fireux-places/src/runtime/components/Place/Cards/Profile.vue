@@ -73,23 +73,11 @@
         </div>
       </div>
 
-      <div class="fx-card__section-grid fx-card__section-grid--cols">
-        <div v-if="ratingText" class="fx-card__panel fx-card__panel--compact">
-          <div class="fx-card__panel-heading">
-            <UIcon name="i-lucide-star" class="fx-card__icon" />
-            <span>Rating</span>
-          </div>
-          <div class="fx-card__panel-value">
-            {{ ratingText }}
-            <span v-if="ratingCountText" class="fx-card__panel-subtitle"
-              >({{ ratingCountText }})</span
-            >
-          </div>
-        </div>
-        <div
-          v-if="model.priceLevel"
-          class="fx-card__panel fx-card__panel--compact"
-        >
+      <div
+        v-if="model.priceLevel"
+        class="fx-card__section-grid fx-card__section-grid--cols"
+      >
+        <div class="fx-card__panel fx-card__panel--compact">
           <div class="fx-card__panel-heading">
             <UIcon name="i-lucide-banknote" class="fx-card__icon" />
             <span>Price</span>
@@ -177,6 +165,14 @@
               <span class="fx-card__detail-label">Formatted address:</span>
               {{ model.card.formattedAddress }}
             </div>
+            <div v-if="model.defaultCurrencyCode" class="pt-1">
+              <span class="fx-card__detail-label">Currency:</span>
+              {{ model.defaultCurrencyCode }}
+            </div>
+            <div v-if="model.timezone">
+              <span class="fx-card__detail-label">Timezone:</span>
+              {{ model.timezone }}
+            </div>
           </div>
         </div>
         <div
@@ -202,25 +198,6 @@
             </div>
           </div>
         </div>
-        <div
-          v-if="hasDefaultDetails"
-          class="fx-card__stack fx-card__stack--tight"
-        >
-          <div class="fx-card__panel-heading">
-            <UIcon name="i-lucide-settings-2" class="fx-card__icon" />
-            Defaults
-          </div>
-          <div class="fx-card__stack">
-            <div v-if="model.defaultCurrencyCode">
-              <span class="fx-card__detail-label">Currency:</span>
-              {{ model.defaultCurrencyCode }}
-            </div>
-            <div v-if="model.timezone">
-              <span class="fx-card__detail-label">Timezone:</span>
-              {{ model.timezone }}
-            </div>
-          </div>
-        </div>
       </div>
 
       <PlaceGoogleHours :place-id="model.card.id" />
@@ -237,13 +214,6 @@ const props = defineProps<{
   model: PlaceProfile
 }>()
 const { model } = toRefs(props)
-
-const ratingText = computed(() =>
-  model.value.rating ? model.value.rating.toFixed(1) : ''
-)
-const ratingCountText = computed(() =>
-  model.value.ratingCount ? model.value.ratingCount.toLocaleString() : ''
-)
 
 const tagChips = computed(() =>
   [...(model.value.tags ?? []), ...(model.value.types ?? [])]
@@ -337,9 +307,5 @@ const contactItems = computed(
 
 const hasContactDetails = computed(() =>
   Boolean(model.value.phone || model.value.email || model.value.website)
-)
-
-const hasDefaultDetails = computed(() =>
-  Boolean(model.value.defaultCurrencyCode || model.value.timezone)
 )
 </script>

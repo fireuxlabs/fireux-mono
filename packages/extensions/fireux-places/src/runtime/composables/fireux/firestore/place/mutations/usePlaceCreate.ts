@@ -22,11 +22,6 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeStringArray = (value: unknown): string[] =>
   Array.isArray(value) ? value.map(normalizeString).filter(Boolean) : []
 
-const normalizeNumber = (value: unknown): number => {
-  const number = Number(value)
-  return Number.isFinite(number) ? number : 0
-}
-
 const normalizeBoolean = (value: unknown): boolean => value === true
 
 const normalizeAddress = (value: unknown) => {
@@ -209,7 +204,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
         ? shadeRaw
         : 'none'
 
-    const slug = toPlaceSlug(name, shortAddress)
+    const slug = toPlaceSlug(name)
 
     const payload = {
       id,
@@ -237,8 +232,6 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       place_type: 'physical',
       types: normalizeStringArray((place as any)?.types),
       tags: normalizeStringArray((place as any)?.tags),
-      rating: normalizeNumber((place as any)?.rating),
-      rating_count: normalizeNumber((place as any)?.rating_count),
       price_level: normalizeString((place as any)?.price_level),
       default_currency_code: normalizeString(
         (place as any)?.default_currency_code

@@ -66,7 +66,22 @@ const addressFromGoogle = (components) => {
   }
 }
 const currencyCodeFromCountry = (countryCode) =>
-  countryCode === 'CH' ? 'CHF' : ''
+  ({
+    AT: 'EUR',
+    AU: 'AUD',
+    CA: 'CAD',
+    CH: 'CHF',
+    DE: 'EUR',
+    ES: 'EUR',
+    FR: 'EUR',
+    GB: 'GBP',
+    IE: 'EUR',
+    IT: 'EUR',
+    NL: 'EUR',
+    NZ: 'NZD',
+    PT: 'EUR',
+    US: 'USD',
+  })[clean(countryCode).toUpperCase()] ?? ''
 
 function payloadFromGoogle(placeIdValue, result) {
   const components = Array.isArray(result?.address_components)
@@ -110,8 +125,6 @@ function payloadFromGoogle(placeIdValue, result) {
     place_type: 'physical',
     types: cleanArray(result?.types),
     tags: [],
-    rating: numberValue(result?.rating),
-    rating_count: numberValue(result?.user_ratings_total),
     price_level: result?.price_level === undefined ? '' : clean(result.price_level),
     default_currency_code: currencyCodeFromCountry(address.country_code),
     claimed_by: '',
@@ -196,8 +209,6 @@ console.log(
         phone: payload.phone,
         website: payload.website,
         google_maps_url: payload.google_maps_url,
-        rating: payload.rating,
-        rating_count: payload.rating_count,
         types: payload.types,
         default_currency_code: payload.default_currency_code,
       },

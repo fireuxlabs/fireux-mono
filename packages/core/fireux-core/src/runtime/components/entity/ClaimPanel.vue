@@ -25,17 +25,17 @@
           </div>
 
           <div
-            v-if="claim.claimedUserPill || claim.isClaimed"
+            v-if="claimState.claimedUserPill || claimState.isClaimed"
             class="flex flex-wrap items-center gap-2"
           >
             <span class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
               Claimed by
             </span>
             <UserCardsPill
-              v-if="claim.claimedUserPill"
-              v-bind="claim.claimedUserPill"
+              v-if="claimState.claimedUserPill"
+              v-bind="claimState.claimedUserPill"
               :show-subtitle="false"
-              :link="Boolean(claim.claimedUserPill.to)"
+              :link="Boolean(claimState.claimedUserPill.to)"
             />
             <UBadge v-else color="success" variant="soft">
               Claimed
@@ -48,31 +48,32 @@
               size="xs"
               color="primary"
               variant="soft"
-              :loading="claim.isClaiming"
-              :disabled="claim.isClaiming"
-              @click="claim.onClaim"
+              :loading="claimState.isClaiming"
+              :disabled="claimState.isClaiming"
+              @click="claimState.onClaim"
             >
               {{ claimLabel }}
             </UButton>
             <UButton
               v-if="showManageAction"
+              :class="{ 'fx-admin-edit-button': claimState.isAdminEdit }"
               size="xs"
-              color="neutral"
+              :color="claimState.isAdminEdit ? 'warning' : 'neutral'"
               variant="soft"
-              icon="i-lucide-pencil"
-              :to="claim.editTo"
+              :icon="claimState.isAdminEdit ? 'i-lucide-shield-check' : 'i-lucide-pencil'"
+              :to="claimState.editTo"
             >
-              {{ manageLabel }}
+              {{ claimState.isAdminEdit ? adminManageLabel : manageLabel }}
             </UButton>
           </div>
 
-          <div v-if="claim.consoleActions?.length" class="space-y-2">
+          <div v-if="claimState.consoleActions?.length" class="space-y-2">
             <p class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
               Consoles
             </p>
             <div class="flex flex-wrap gap-2">
               <UButton
-              v-for="action in claim.consoleActions"
+                v-for="action in claimState.consoleActions"
                 :key="action.to"
                 size="xs"
                 color="primary"
@@ -92,7 +93,7 @@
 
 <script setup lang="ts">
 import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 
 type ClaimConsoleAction = {
   label: string
@@ -106,6 +107,7 @@ type EntityClaimState = {
   canClaim?: boolean
   isClaiming?: boolean
   canEdit?: boolean
+  isAdminEdit?: boolean
   editTo?: string
   consoleActions?: ClaimConsoleAction[]
   onClaim?: () => void | Promise<void>
@@ -117,6 +119,7 @@ const props = withDefaults(
     claim?: EntityClaimState
     claimLabel?: string
     manageLabel?: string
+    adminManageLabel?: string
     claimedCopy?: string
     unclaimedCopy?: string
   }>(),
@@ -124,6 +127,7 @@ const props = withDefaults(
     claim: () => ({}),
     claimLabel: 'Claim this record',
     manageLabel: 'Edit details',
+    adminManageLabel: 'Admin Edit',
     claimedCopy: '',
     unclaimedCopy: '',
   }
@@ -133,12 +137,26 @@ const entityLowerLabel = computed(() =>
   String(props.entityLabel || 'record').trim().toLowerCase()
 )
 
-const claim = computed<EntityClaimState>(() => props.claim || {})
-const showClaimAction = computed(() => claim.value.canClaim && !claim.value.isClaimed)
-const showManageAction = computed(() => claim.value.canEdit && Boolean(claim.value.editTo))
+const claimState = computed<EntityClaimState>(() => {
+  const source = props.claim || {}
+
+  return {
+    claimedUserPill: unref(source.claimedUserPill as any) ?? null,
+    isClaimed: Boolean(unref(source.isClaimed as any)),
+    canClaim: Boolean(unref(source.canClaim as any)),
+    isClaiming: Boolean(unref(source.isClaiming as any)),
+    canEdit: Boolean(unref(source.canEdit as any)),
+    isAdminEdit: Boolean(unref(source.isAdminEdit as any)),
+    editTo: String(unref(source.editTo as any) ?? '').trim(),
+    consoleActions: unref(source.consoleActions as any) ?? [],
+    onClaim: source.onClaim,
+  }
+})
+const showClaimAction = computed(() => claimState.value.canClaim && !claimState.value.isClaimed)
+const showManageAction = computed(() => claimState.value.canEdit && Boolean(claimState.value.editTo))
 
 const panelCopy = computed(() => {
-  if (claim.value.isClaimed) {
+  if (claimState.value.isClaimed) {
     return props.claimedCopy || `This ${entityLowerLabel.value} is linked to an owner.`
   }
 
@@ -148,3 +166,11 @@ const panelCopy = computed(() => {
   )
 })
 </script>
+
+<style scoped>
+.fx-admin-edit-button {
+  border-color: var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
+  color: var(--fx-fireux-yellow-muted);
+}
+</style>

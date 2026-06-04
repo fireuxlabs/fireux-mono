@@ -13,3 +13,4 @@ Package-root and `src/` structure for FireUX modules are defined centrally in:
 
 ## Notes
 - Do not commit build output
+- Before shipping, replace the simple Place claim click with verified claim authority and matching Firestore rules.

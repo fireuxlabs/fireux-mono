@@ -109,8 +109,6 @@ export const PlaceModel = {
   tags: [] as string[],
 
   // Simple signals
-  rating: 0 as number,
-  rating_count: 0 as number,
   price_level: '' as string,
   default_currency_code: 'CHF' as string,
 
@@ -118,7 +116,7 @@ export const PlaceModel = {
   claimed_by: '' as string,
   verified: false as boolean,
 
-  /** Display/search slug derived from name + location; not route identity. */
+  /** Optional public route locator. The document id remains canonical. */
   slug: '' as string,
 
   source: 'fireux' as PlaceSource,
@@ -164,8 +162,6 @@ export type GooglePlace = BasePlace & {
   address: PlaceAddress
   website: string
   phone: string
-  rating: number
-  rating_count: number
   price_level: string
   google_maps_url: string
   types: string[]

@@ -2,7 +2,6 @@ import { computed, ref, type Ref } from 'vue'
 import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useUserInterface } from '../../firestore/core/user/utils/view/useUserInterface'
-import { toConsoleFamilyLabel } from '../routing/consoleRoutes'
 import { useToastify } from './useToastify'
 import { useConsoleEntryCta } from './nav/useConsoleEntryCta'
 
@@ -46,15 +45,21 @@ export function useEntityClaimPanel(options: ClaimPanelOptions) {
       (claimedBy.value && currentUser.value?.id === claimedBy.value)
     )
   )
+  const isAdminEdit = computed(() =>
+    Boolean(
+      isAdmin.value &&
+      (!claimedBy.value || currentUser.value?.id !== claimedBy.value)
+    )
+  )
 
-  const { consoles } = useConsoleEntryCta()
+  const { consoleActions: consoleEntryActions } = useConsoleEntryCta()
   const consoleActions = computed(() => {
     if (!canEdit.value) return []
 
-    return consoles.value.map((entry) => ({
-      label: `Add ${toConsoleFamilyLabel(entry.key).toLowerCase()} console`,
-      to: `${entry.path}/create`,
-      icon: 'i-lucide-plus',
+    return consoleEntryActions.value.map((entry) => ({
+      label: entry.label,
+      to: entry.path,
+      icon: entry.icon,
     }))
   })
 
@@ -81,6 +86,8 @@ export function useEntityClaimPanel(options: ClaimPanelOptions) {
     isClaimed,
     canClaim,
     canEdit,
+    isAdminEdit,
+    editTo,
     isClaiming,
     consoleActions,
     onClaim,

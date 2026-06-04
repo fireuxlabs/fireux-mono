@@ -218,8 +218,6 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     website: g.website,
     google_maps_url: g.google_maps_url,
     types: g.types,
-    rating: g.rating,
-    rating_count: g.rating_count,
     price_level: g.price_level,
     default_currency_code: g.default_currency_code,
     search_term,
@@ -276,8 +274,24 @@ function addressFromGoogle(
 }
 
 function currencyCodeFromCountry(countryCode: string): string {
-  if (countryCode === 'CH') return 'CHF'
-  return ''
+  const code = countryCode.toUpperCase()
+  const map: Record<string, string> = {
+    AT: 'EUR',
+    AU: 'AUD',
+    CA: 'CAD',
+    CH: 'CHF',
+    DE: 'EUR',
+    ES: 'EUR',
+    FR: 'EUR',
+    GB: 'GBP',
+    IE: 'EUR',
+    IT: 'EUR',
+    NL: 'EUR',
+    NZ: 'NZD',
+    PT: 'EUR',
+    US: 'USD',
+  }
+  return map[code] ?? ''
 }
 
 export function mapDetailsToGooglePlace(
@@ -318,8 +332,6 @@ export function mapDetailsToGooglePlace(
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     google_maps_url: typeof result?.url === 'string' ? result.url : '',
-    rating: numberValue(result?.rating),
-    rating_count: numberValue(result?.user_ratings_total),
     price_level: priceLevel(result?.price_level),
     types: stringArray(result?.types),
     default_currency_code: currencyCodeFromCountry(address.country_code),

@@ -1,6 +1,6 @@
 # fireux-places Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-03
+Updated: 2026-06-04
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -11,6 +11,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Place identity is id-based and canonical per persisted place record.
+- Place slug is an optional public locator. It may resolve a public route, but writes still use the canonical Place id.
 
 ## 4) Collections + paths
 - `places/{placeId}`
@@ -18,16 +19,25 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4b) Hours
 - Place owns business/place hours: when the venue itself is open.
 - Kitchen opening/service hours and Menu availability are separate meanings and must not replace Place hours.
-- Operating hours are provider-live inspection, not stored Place truth.
+- Operating hours are manual provider lookup, not stored Place truth.
 - Public Place surfaces may offer “View operating hours” and fetch the latest Google details on demand.
 
+## 4c) Claims
+- Current claim UI is a pre-ship convenience surface only.
+- Before shipping, Place claiming needs a real verification flow, not just a one-click `claimed_by` write.
+- Firestore rules must enforce Place claim/edit authority before production release.
+- Claim/edit writes must only be allowed for verified owners, admins, or trusted server workflows.
+- Public slug routing must not weaken claim/edit rules; writes still use canonical `places/{placeId}`.
+
 ## 5) Routes (public vs internal; slug vs id)
-- Current routes are id-based:
+- Current routes accept canonical id or slug:
   - `/places`
-  - `/places/[id]`
+  - `/places/[id-or-slug]`
   - `/places/create`
-  - `/places/[id]/edit`
-- Place route identity is id-only. Any stored `slug` field is display/search metadata only and must not be used for public routing.
+  - `/places/[id-or-slug]/edit`
+- Canonical Place id remains stored truth, usually the provider id.
+- Slug is a clean public locator for human URLs. It must be unique when used.
+- Claim/edit mutations must resolve slug to the canonical Place id before writing.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported.
@@ -49,6 +59,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `usePlaceUpdate`
 - `usePlaceDelete`
 
-## 10) Non-goals / prohibited fallbacks
-- No silent fallback between provider IDs and canonical place IDs for selection/routing.
-- No implicit route identity substitution when place id is missing.
+## 10) Non-goals / prohibited hidden routing
+- No route guessing beyond exact canonical id or exact stored slug.
+- No implicit route identity substitution when both id and slug are missing.

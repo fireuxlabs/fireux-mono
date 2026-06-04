@@ -9,9 +9,9 @@ This folder owns the `Place` public route tree.
 ## Current Routes
 
 - `index.vue`
-- `[id]/index.vue`
+- `[id]/index.vue` accepts canonical Place id or stored slug
 - `create.vue`
-- `[id]/edit.vue`
+- `[id]/edit.vue` accepts canonical Place id or stored slug
 - `learn-more.vue`
 
 ## Local Contract

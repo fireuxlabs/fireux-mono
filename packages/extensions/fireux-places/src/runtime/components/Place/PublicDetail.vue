@@ -27,7 +27,7 @@
           />
 
           <!-- claim -->
-          <PlacePublicClaim :place="place" :id="id" />
+          <PlacePublicClaim :place="place" :id="placeId" />
 
           <!-- dev -->
           <DevJson
@@ -68,10 +68,11 @@ import {
 } from '../../composables/fireux/firestore/place/usePlace'
 
 const props = defineProps<{
-  id: string
+  locator: string
 }>()
 
-const { place, pending: loading } = usePlaceFetch(computed(() => props.id))
+const { place, pending: loading } = usePlaceFetch(computed(() => props.locator))
+const placeId = computed(() => place.value?.id ?? '')
 const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(
   () => place.value?.formatted_address || 'Saved place details.'

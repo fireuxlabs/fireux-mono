@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-03
+Updated: 2026-06-04
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -145,6 +145,8 @@ Public menu copy packs:
 - The operator bridge may show sign-in, request-access, or console-entry state, but it must not edit the kitchen directly.
 - The active public kitchen route family is `/kitchens/**`; singular `/kitchen/**` is stale.
 - Stored kitchen identity remains `kitchens/{kitchenId}` even when the public URL uses slug.
+- Public kitchen detail presents linked Place information first, then Kitchen-specific operational/public information.
+- Misebox users usually enter through Kitchen flows; `/places/**` remains valid but secondary location truth.
 - Console/internal:
   - `/console/kitchen/*`
 - Console selection is runtime-state based, not query-param selection.

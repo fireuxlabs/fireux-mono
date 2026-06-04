@@ -11,16 +11,19 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 
-type PlaceIdInput = string | Ref<string | null | undefined>
+type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>
 
+const cleanLocator = (value: unknown) => String(value ?? '').trim()
+const cleanSlug = (value: unknown) => cleanLocator(value).toLowerCase()
+
 export function usePlaceFetch(): { place: PlaceFetchFunction }
-export function usePlaceFetch(id: PlaceIdInput): {
+export function usePlaceFetch(id: PlaceLocatorInput): {
   place: ComputedRef<Place | null>
   pending: ComputedRef<boolean>
   fetchPlace: PlaceFetchFunction
 }
-export function usePlaceFetch(id?: PlaceIdInput) {
+export function usePlaceFetch(id?: PlaceLocatorInput) {
   const { firestoreFetchDoc, firestoreQuery } = useFirestoreRead()
   const resolveDb = useFirestoreResolver()
   const fetchPlace: PlaceFetchFunction = (placeId: string) =>
@@ -28,25 +31,46 @@ export function usePlaceFetch(id?: PlaceIdInput) {
 
   if (id === undefined) return { place: fetchPlace }
 
-  const placeId = isRef(id)
-    ? computed(() => String(id.value ?? '').trim())
-    : computed(() => String(id ?? '').trim())
-  const placeQuery = computed<Query<Place> | null>(() => {
-    if (!placeId.value) return null
+  const placeLocator = isRef(id)
+    ? computed(() => cleanLocator(id.value))
+    : computed(() => cleanLocator(id))
+  const placeSlug = computed(() => cleanSlug(placeLocator.value))
+  const placeIdQuery = computed<Query<Place> | null>(() => {
+    if (!placeLocator.value) return null
 
     return fsq(
       collection(resolveDb(), PlaceStorage.collection),
-      where(documentId(), '==', placeId.value),
+      where(documentId(), '==', placeLocator.value),
       limit(1)
     ) as Query<Place>
   })
-  const source = firestoreQuery<Place>(
-    placeQuery,
-    'place-fetch',
+  const placeSlugQuery = computed<Query<Place> | null>(() => {
+    if (!placeSlug.value) return null
+
+    return fsq(
+      collection(resolveDb(), PlaceStorage.collection),
+      where('slug', '==', placeSlug.value),
+      limit(1)
+    ) as Query<Place>
+  })
+  const byIdSource = firestoreQuery<Place>(
+    placeIdQuery,
+    'place-fetch-by-id',
     PlaceStorage.collection
   )
-  const place = computed<Place | null>(() => source.value?.[0] ?? null)
-  const pending = computed(() => Boolean(placeId.value) && source.value === undefined)
+  const bySlugSource = firestoreQuery<Place>(
+    placeSlugQuery,
+    'place-fetch-by-slug',
+    PlaceStorage.collection
+  )
+  const place = computed<Place | null>(
+    () => byIdSource.value?.[0] ?? bySlugSource.value?.[0] ?? null
+  )
+  const pending = computed(
+    () =>
+      Boolean(placeLocator.value) &&
+      (byIdSource.value === undefined || bySlugSource.value === undefined)
+  )
 
   return {
     place,

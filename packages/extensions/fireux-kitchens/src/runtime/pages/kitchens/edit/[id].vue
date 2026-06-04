@@ -131,8 +131,6 @@ const placePreviewDetails = computed(() => {
     { label: 'Phone', value: (v as any).phone ?? '' },
     { label: 'Website', value: (v as any).website ?? '' },
     { label: 'Price level', value: (v as any).price_level ?? '' },
-    { label: 'Rating', value: (v as any).rating ? String((v as any).rating) : '' },
-    { label: 'Rating count', value: (v as any).rating_count ? String((v as any).rating_count) : '' },
     { label: 'Tags', value: Array.isArray((v as any).tags) ? (v as any).tags.filter(Boolean).join(', ') : '' },
     { label: 'Types', value: Array.isArray((v as any).types) ? (v as any).types.filter(Boolean).join(', ') : '' },
     { label: 'Claimed by', value: (v as any).claimed_by ?? '' },
