@@ -121,8 +121,12 @@ export function useUserFetch(
       : null
   )
 
-  const coreState = useDocument<User | undefined>(coreDoc as any)
-  const appState = useDocument<AppUser | undefined>(appDoc as any)
+  const coreState = useDocument<User | undefined>(coreDoc as any, {
+    ssrKey: 'user-fetch-core',
+  } as any)
+  const appState = useDocument<AppUser | undefined>(appDoc as any, {
+    ssrKey: 'user-fetch-app',
+  } as any)
   const coreUserRef = coreState.data
   const corePending = coreState.pending
   const appUserRef = appState.data

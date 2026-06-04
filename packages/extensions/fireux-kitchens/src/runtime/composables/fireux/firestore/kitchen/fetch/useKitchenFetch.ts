@@ -1,8 +1,17 @@
-import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import {
+  collection,
+  documentId,
+  limit,
+  query as fsq,
+  where,
+  type Query,
+} from 'firebase/firestore'
+import { computed, isRef, type Ref } from 'vue'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
+  useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDemoKitchen } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
@@ -39,6 +48,8 @@ export function useKitchenFetch(
   const simulationDatabaseId = computed(
     () => requireSimulationDatabaseId()
   )
+  const resolveLiveDb = useFirestoreResolver()
+  const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const liveRead = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
@@ -56,67 +67,85 @@ export function useKitchenFetch(
   })
   const shouldHydrate = options.hydrate !== false
 
-  const source = shallowRef(null) as ShallowRef<Ref<KitchenFetchDoc | undefined> | null>
-  watch(
-    [sourceRef, pathRef, idRef],
-    ([nextSource, nextPath, nextId]) => {
-      const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
-      const docId = String(nextId || '').trim()
+  const liveDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
+    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const docId = String(idRef.value || '').trim()
+    if (sourceRef.value !== 'live' || !docId) return null
 
-      if (!docId) {
-        source.value = null
-        return
-      }
+    return fsq(
+      collection(resolveLiveDb(), collectionPath),
+      where(documentId(), '==', docId),
+      limit(1)
+    ) as Query<KitchenFetchDoc>
+  })
+  const testDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
+    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const docId = String(idRef.value || '').trim()
+    if (sourceRef.value !== 'test' || !docId) return null
 
-      if (nextSource === 'demo') {
-        source.value = computed<KitchenFetchDoc | undefined>(() => {
-          const scenario = getDemoKitchen(docId)
-          if (!scenario) return undefined
-
-          return {
-            id: scenario.id,
-            place_id: scenario.id,
-            display_name: scenario.name,
-            display_image_url: scenario.image_url,
-            route_scope: 'demo',
-          } as KitchenFetchDoc
-        })
-        return
-      }
-
-      source.value =
-        nextSource === 'test'
-          ? simulationRead.firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
-          : liveRead.firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
-    },
-    { immediate: true }
+    return fsq(
+      collection(resolveSimulationDb(), collectionPath),
+      where(documentId(), '==', docId),
+      limit(1)
+    ) as Query<KitchenFetchDoc>
+  })
+  const liveSource = liveRead.firestoreQuery<KitchenFetchDoc>(
+    liveDocQuery,
+    'kitchen-fetch-live',
+    pathRef
   )
+  const testSource = simulationRead.firestoreQuery<KitchenFetchDoc>(
+    testDocQuery,
+    'kitchen-fetch-test',
+    pathRef
+  )
+  const sourceEntry = computed<KitchenFetchDoc | undefined>(() => {
+    const docId = String(idRef.value || '').trim()
+
+    if (sourceRef.value === 'demo') {
+      const scenario = getDemoKitchen(docId)
+      if (!scenario) return undefined
+
+      return {
+        id: scenario.id,
+        place_id: scenario.id,
+        display_name: scenario.name,
+        display_image_url: scenario.image_url,
+        route_scope: 'demo',
+      } as KitchenFetchDoc
+    }
+
+    if (sourceRef.value === 'test') return testSource.value?.[0]
+    return liveSource.value?.[0]
+  })
 
   const placeId = computed(() => {
     const docId = String(idRef.value || '').trim()
-    const entry = source.value?.value
+    const entry = sourceEntry.value
     return String(entry?.place_id || docId).trim()
   })
+  const placeQuery = computed<Query<Place> | null>(() => {
+    const resolvedPlaceId = String(placeId.value || '').trim()
+    if (!shouldHydrate || sourceRef.value !== 'live' || !resolvedPlaceId) return null
 
-  const placeSource = shallowRef(null) as ShallowRef<Ref<Place | undefined> | null>
-  watch(
-    [placeId, sourceRef],
-    ([nextPlaceId, nextSource]) => {
-      const resolvedPlaceId = String(nextPlaceId || '').trim()
-      placeSource.value =
-        !shouldHydrate || nextSource !== 'live' || !resolvedPlaceId
-          ? null
-          : liveRead.firestoreFetchDoc<Place>(PlaceStorage.collection, resolvedPlaceId)
-    },
-    { immediate: true }
+    return fsq(
+      collection(resolveLiveDb(), PlaceStorage.collection),
+      where(documentId(), '==', resolvedPlaceId),
+      limit(1)
+    ) as Query<Place>
+  })
+  const placeSource = liveRead.firestoreQuery<Place>(
+    placeQuery,
+    'kitchen-fetch-place',
+    PlaceStorage.collection
   )
 
   const kitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
-    const entry = source.value?.value
+    const entry = sourceEntry.value
     if (!docId || !entry) return null
 
-    const place = shouldHydrate ? placeSource.value?.value ?? null : null
+    const place = shouldHydrate ? placeSource.value?.[0] ?? null : null
 
     return surface({
       place,
@@ -135,7 +164,8 @@ export function useKitchenFetch(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
-    return source.value?.value === undefined
+    if (sourceRef.value === 'test') return testSource.value === undefined
+    return liveSource.value === undefined
   })
 
   return {

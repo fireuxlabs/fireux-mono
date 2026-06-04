@@ -115,7 +115,7 @@ export function useKitchenCollection(
   )
   const testFirestoreSource = simulationRead.firestoreQuery<KitchenCollectionDoc>(
     testFirestoreQuery,
-    undefined,
+    'kitchen-collection-test',
     DEFAULT_COLLECTION_PATH
   )
 
@@ -140,7 +140,7 @@ export function useKitchenCollection(
   })
   const operatorScopeSource = firestoreQuery<AppKitchenCollectionDoc>(
     operatorScopeQuery,
-    undefined,
+    'kitchen-collection-operator-scope',
     scopeCollectionPath
   )
   const teamScopeQuery = computed<Query<AppKitchenCollectionDoc> | null>(() => {
@@ -156,7 +156,7 @@ export function useKitchenCollection(
   })
   const teamScopeSource = firestoreQuery<AppKitchenCollectionDoc>(
     teamScopeQuery,
-    undefined,
+    'kitchen-collection-team-scope',
     scopeCollectionPath
   )
   const scopeItems = computed<AppKitchenCollectionDoc[]>(() => {

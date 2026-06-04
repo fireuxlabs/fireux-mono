@@ -1,49 +1,67 @@
 <template>
   <NuxtPage v-if="hasChildRoute" />
 
-  <UPage v-else>
-    <UPageHeader
-      class="pageheader"
-      :title="pageTitle"
-      :description="pageDescription"
-    />
-
-    <UPageBody class="pagebody">
-      <UPageCard v-if="pending" variant="subtle">
-        <p class="text-sm text-dimmed">Loading kitchen…</p>
-      </UPageCard>
-
-      <UPageCard
-        v-else-if="!kitchen"
-        title="Kitchen not found"
-        description="This kitchen does not exist or is not public-ready."
-        variant="subtle"
+  <ClientOnly v-else>
+    <UPage>
+      <UPageHeader
+        class="pageheader"
+        :title="pageTitle"
+        :description="pageDescription"
       />
 
-      <div v-else class="space-y-4">
-        <!-- profile -->
-        <KitchenCardsProfile
-          v-if="profileCard"
-          :card="profileCard"
+      <UPageBody class="pagebody">
+        <UPageCard v-if="pending" variant="subtle">
+          <p class="text-sm text-dimmed">Loading kitchen…</p>
+        </UPageCard>
+
+        <UPageCard
+          v-else-if="!kitchen"
+          title="Kitchen not found"
+          description="This kitchen does not exist or is not public-ready."
+          variant="subtle"
         />
 
-        <!-- main -->
-        <KitchenPublicMenus :kitchen="kitchen" />
+        <div v-else class="space-y-4">
+          <!-- profile -->
+          <KitchenCardsProfile
+            v-if="profileCard"
+            :card="profileCard"
+          />
 
-        <!-- operator -->
-        <KitchenPublicOperator />
+          <!-- main -->
+          <KitchenPublicMenus :kitchen="kitchen" />
 
-        <!-- dev -->
-        <DevJson
-          v-if="isDev && kitchen"
-          :title="'Kitchen (Doc)'"
-          context="Kitchen detail page · kitchens/[slug] · hydrated kitchen doc"
-          :data="kitchen"
-          :default-open="false"
+          <!-- operator -->
+          <KitchenPublicOperator />
+
+          <!-- dev -->
+          <DevJson
+            v-if="isDev && kitchen"
+            :title="'Kitchen (Doc)'"
+            context="Kitchen detail page · kitchens/[slug] · hydrated kitchen doc"
+            :data="kitchen"
+            :default-open="false"
+          />
+        </div>
+      </UPageBody>
+    </UPage>
+
+    <template #fallback>
+      <UPage>
+        <UPageHeader
+          class="pageheader"
+          :title="pageTitle"
+          description="Kitchen details."
         />
-      </div>
-    </UPageBody>
-  </UPage>
+
+        <UPageBody class="pagebody">
+          <UPageCard variant="subtle">
+            <p class="text-sm text-dimmed">Loading kitchen…</p>
+          </UPageCard>
+        </UPageBody>
+      </UPage>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
