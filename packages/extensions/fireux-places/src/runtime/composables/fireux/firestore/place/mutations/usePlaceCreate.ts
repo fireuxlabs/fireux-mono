@@ -19,6 +19,38 @@ export const PlaceCreatePlan = defineFireuxCreatePlan({
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const normalizeStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map(normalizeString).filter(Boolean) : []
+
+const normalizeNumber = (value: unknown): number => {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+
+const normalizeBoolean = (value: unknown): boolean => value === true
+
+const normalizeAddress = (value: unknown) => {
+  const source = (value ?? {}) as Record<string, unknown>
+  return {
+    street: normalizeString(source.street),
+    city: normalizeString(source.city),
+    region: normalizeString(source.region),
+    postal_code: normalizeString(source.postal_code),
+    country_code: normalizeString(source.country_code),
+  }
+}
+
+const normalizeSocialLinks = (value: unknown) => {
+  const source = (value ?? {}) as Record<string, unknown>
+  return {
+    website: normalizeString(source.website),
+    instagram: normalizeString(source.instagram),
+    facebook: normalizeString(source.facebook),
+    tiktok: normalizeString(source.tiktok),
+    linkedin: normalizeString(source.linkedin),
+    youtube: normalizeString(source.youtube),
+  }
+}
 
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
   const { setDocument } = useFirestoreManager()
@@ -56,23 +88,21 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       Number.isFinite(latValueInitial) && Number.isFinite(lngValueInitial)
     const isZeroCoordsInitial =
       hasCoordsInitial && latValueInitial === 0 && lngValueInitial === 0
-    const shouldHydrate = !hasCoordsInitial || isZeroCoordsInitial
+    const shouldHydrate =
+      !hasCoordsInitial ||
+      isZeroCoordsInitial ||
+      normalizeString((place as any)?.source) === 'google'
 
     if (shouldHydrate) {
       const details = await fetchPlaceDetails(id)
       if (details?.google) {
+        const currentImage =
+          normalizeString((place as any)?.image_url) ||
+          normalizeString((place as any)?.place_image)
         place = {
           ...place,
-          name: details.google.name,
-          formatted_address: details.google.formatted_address,
-          short_address: toShortAddress(details.google.formatted_address),
-          lat: details.google.lat,
-          lng: details.google.lng,
-          image_url:
-            (place as any)?.image_url ??
-            (place as any)?.place_image ??
-            details.google.image_url ??
-            '',
+          ...details.stored,
+          image_url: currentImage || details.google.image_url || '',
           source: (place as any)?.source ?? 'google',
         }
         if (import.meta.dev) {
@@ -186,14 +216,35 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       source: 'fireux',
       name,
       short_name: shortName,
+      brand_tagline: normalizeString((place as any)?.brand_tagline),
+      about: normalizeString((place as any)?.about),
       formatted_address: formatted,
       short_address: shortAddress,
+      address: normalizeAddress((place as any)?.address),
+      timezone: normalizeString((place as any)?.timezone),
       slug,
       image_url,
+      cover_image: normalizeString((place as any)?.cover_image),
+      gallery_images: normalizeStringArray((place as any)?.gallery_images),
       image_shade,
+      phone: normalizeString((place as any)?.phone),
+      email: normalizeString((place as any)?.email),
+      website: normalizeString((place as any)?.website),
+      google_maps_url: normalizeString((place as any)?.google_maps_url),
+      social_links: normalizeSocialLinks((place as any)?.social_links),
       lat,
       lng,
       place_type: 'physical',
+      types: normalizeStringArray((place as any)?.types),
+      tags: normalizeStringArray((place as any)?.tags),
+      rating: normalizeNumber((place as any)?.rating),
+      rating_count: normalizeNumber((place as any)?.rating_count),
+      price_level: normalizeString((place as any)?.price_level),
+      default_currency_code: normalizeString(
+        (place as any)?.default_currency_code
+      ).toUpperCase(),
+      claimed_by: normalizeString((place as any)?.claimed_by),
+      verified: normalizeBoolean((place as any)?.verified),
       search_term: normalizedSearchTerm,
     } as any as PlaceUpsertInput
 

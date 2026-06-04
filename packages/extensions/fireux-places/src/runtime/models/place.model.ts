@@ -114,15 +114,6 @@ export const PlaceModel = {
   price_level: '' as string,
   default_currency_code: 'CHF' as string,
 
-  /**
-   * MVP-friendly business/place hours.
-   *
-   * Future polish should promote Place business hours to a structured
-   * WeeklySchedule-style field. Do not treat Kitchen opening hours or Menu
-   * availability as a replacement for Place/business hours.
-   */
-  hours_text: [] as string[],
-
   /** Claimed owner (uid); empty string means unclaimed. */
   claimed_by: '' as string,
   verified: false as boolean,
@@ -170,14 +161,19 @@ export type BasePlace = Pick<
 /** Google Place (transient/provider). */
 export type GooglePlace = BasePlace & {
   source: 'google'
+  address: PlaceAddress
   website: string
   phone: string
   rating: number
-  user_ratings_total: number
+  rating_count: number
+  price_level: string
+  google_maps_url: string
+  types: string[]
+  default_currency_code: string
 }
 
 export type PlaceCreateInput = Omit<Place, 'created' | 'updated'>
 export type PlaceUpdateInput = Partial<Omit<Place, 'id' | 'created' | 'updated'>>
 
-/** Compatibility alias while existing create/save flows still use the older name. */
+/** Create/update input used by Place create flows. */
 export type PlaceUpsertInput = PlaceCreateInput

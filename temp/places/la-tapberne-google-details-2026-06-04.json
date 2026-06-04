@@ -1,0 +1,485 @@
+{
+  "result": {
+    "address_components": [
+      {
+        "long_name": "49",
+        "short_name": "49",
+        "types": [
+          "street_number"
+        ]
+      },
+      {
+        "long_name": "Hauptstrasse",
+        "short_name": "Hauptstrasse",
+        "types": [
+          "route"
+        ]
+      },
+      {
+        "long_name": "Matten bei Interlaken",
+        "short_name": "Matten bei Interlaken",
+        "types": [
+          "locality",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Interlaken-Oberhasli",
+        "short_name": "Interlaken-Oberhasli",
+        "types": [
+          "administrative_area_level_2",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Bern",
+        "short_name": "BE",
+        "types": [
+          "administrative_area_level_1",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Switzerland",
+        "short_name": "CH",
+        "types": [
+          "country",
+          "political"
+        ]
+      },
+      {
+        "long_name": "3800",
+        "short_name": "3800",
+        "types": [
+          "postal_code"
+        ]
+      }
+    ],
+    "adr_address": "<span class=\"street-address\">Hauptstrasse 49</span>, <span class=\"postal-code\">3800</span> <span class=\"locality\">Matten bei Interlaken</span>, <span class=\"country-name\">Switzerland</span>",
+    "business_status": "OPERATIONAL",
+    "curbside_pickup": false,
+    "current_opening_hours": {
+      "open_now": false,
+      "periods": [
+        {
+          "close": {
+            "date": "2026-06-08",
+            "day": 1,
+            "time": "0030"
+          },
+          "open": {
+            "date": "2026-06-07",
+            "day": 0,
+            "time": "1400"
+          }
+        },
+        {
+          "close": {
+            "date": "2026-06-10",
+            "day": 3,
+            "time": "2359",
+            "truncated": true
+          },
+          "open": {
+            "date": "2026-06-10",
+            "day": 3,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "date": "2026-06-04",
+            "day": 4,
+            "time": "0030"
+          },
+          "open": {
+            "date": "2026-06-04",
+            "day": 4,
+            "time": "0000",
+            "truncated": true
+          }
+        },
+        {
+          "close": {
+            "date": "2026-06-05",
+            "day": 5,
+            "time": "0030"
+          },
+          "open": {
+            "date": "2026-06-04",
+            "day": 4,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "date": "2026-06-06",
+            "day": 6,
+            "time": "0030"
+          },
+          "open": {
+            "date": "2026-06-05",
+            "day": 5,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "date": "2026-06-07",
+            "day": 0,
+            "time": "0030"
+          },
+          "open": {
+            "date": "2026-06-06",
+            "day": 6,
+            "time": "1600"
+          }
+        }
+      ],
+      "weekday_text": [
+        "Monday: Closed",
+        "Tuesday: Closed",
+        "Wednesday: 4:00 PM – 12:30 AM",
+        "Thursday: 4:00 PM – 12:30 AM",
+        "Friday: 4:00 PM – 12:30 AM",
+        "Saturday: 4:00 PM – 12:30 AM",
+        "Sunday: 2:00 PM – 12:30 AM"
+      ]
+    },
+    "delivery": false,
+    "dine_in": true,
+    "formatted_address": "Hauptstrasse 49, 3800 Matten bei Interlaken, Switzerland",
+    "formatted_phone_number": "033 822 32 33",
+    "geometry": {
+      "location": {
+        "lat": 46.68063679999999,
+        "lng": 7.8642542
+      },
+      "viewport": {
+        "northeast": {
+          "lat": 46.6819415302915,
+          "lng": 7.865512630291501
+        },
+        "southwest": {
+          "lat": 46.6792435697085,
+          "lng": 7.862814669708497
+        }
+      }
+    },
+    "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bar-71.png",
+    "icon_background_color": "#FF9E67",
+    "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/bar_pinlet",
+    "international_phone_number": "+41 33 822 32 33",
+    "name": "La Tapberne",
+    "opening_hours": {
+      "open_now": false,
+      "periods": [
+        {
+          "close": {
+            "day": 1,
+            "time": "0030"
+          },
+          "open": {
+            "day": 0,
+            "time": "1400"
+          }
+        },
+        {
+          "close": {
+            "day": 4,
+            "time": "0030"
+          },
+          "open": {
+            "day": 3,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 5,
+            "time": "0030"
+          },
+          "open": {
+            "day": 4,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 6,
+            "time": "0030"
+          },
+          "open": {
+            "day": 5,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 0,
+            "time": "0030"
+          },
+          "open": {
+            "day": 6,
+            "time": "1600"
+          }
+        }
+      ],
+      "weekday_text": [
+        "Monday: Closed",
+        "Tuesday: Closed",
+        "Wednesday: 4:00 PM – 12:30 AM",
+        "Thursday: 4:00 PM – 12:30 AM",
+        "Friday: 4:00 PM – 12:30 AM",
+        "Saturday: 4:00 PM – 12:30 AM",
+        "Sunday: 2:00 PM – 12:30 AM"
+      ]
+    },
+    "photos": [
+      {
+        "height": 2317,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/117541223773217790310\">La Tapberne</a>"
+        ],
+        "photo_reference": "AaVGc3ksE-1X2PpLgTdbsFEe6mFqMk2-orXxihMhgFWhv_v_iDzCUSOZ6A8ClMHiBZKU05PIo1SlM6dH_QYQcDSXfh9CiuKFSRQ7SmpRgrpa1HY2GGViwBVyPmgFJfgmCEZr3vQ-2TwSqAzrtvrlwi_BKI28dLeN2Km8MKgrCrla73RtgQcLD3m8T-Re6fO0zlDjKdeRTVOXLqZahcfm0zb21bFKrkiVlkm-T0SJKxIcnYS905-0jpEPd0l1IgvmTVIaYZeT0Oa3or5z9nH-dCdz7EVTBTbQx_ma6QdcYH8DSxFSSiNXbXeibuYZkNfeL0SyFWm62D24oslVROhnVpxgwZPRKDU50YUBQpjPGoCcoKZNj8dRzoPz9H3tVHHfJVrsWOccRxZDdVropVqJYExkte_K14an4oETNNkakIbj5jjha0Qo",
+        "width": 2963
+      },
+      {
+        "height": 4000,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/117541223773217790310\">La Tapberne</a>"
+        ],
+        "photo_reference": "AaVGc3lWkBk9FHtMAQ7erYjqgNgCdDY9ICsvMVKEU-D-u-6OT0EXVb5uNMHxu3GZO9X02ryw-sWWO3apReD8Wa7jtUX1m4zkadLQYh5Rdp4mCUsMtFMmn3H0M1-DlPnrFkfJ16i_Pn2m0590vO_yPgQwmqk5GjCiX8Vkv8jLsnnS3spKL6y1cY_3JWDWbNZiGocfL3ocndvJqV6UH1WulxwJjjzXhlI9X4iiUUQ3mBXWnVaaplXtYLZIb6iwu06YYNInzdWNJtOshoRouxqNQyWYki50ktDQ00n88JiXem-Km3Rjxbs9RLnlH--wiMUsab6d6ubQ-Z9T1azNtJa5lD_LN1h8qzyWqiFJ1LPXHdOELFYXGO7NMADcggDn9PO1RuzzjcLBpnTOymh4n_dWCq0bNuguDDr_TBHr7qgPWb65BmM",
+        "width": 3000
+      },
+      {
+        "height": 4080,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/108151558980991357769\">Marta Joss</a>"
+        ],
+        "photo_reference": "AaVGc3nVkTmXkj4zasHRraJ5X5RNXttXDr_g_hsZh5fdn8EWJ_9SqY02L2dEM1JOYbg7bfw-tKgrXcprNl8MsoHZ2Dir8ZEvivoy6wgyxhXzq7cBuFvUNkxDoL7zk5boOHj0IIPKFwl_I8dl4irWG98fcyKb9aauUktw6_pTAb5R4XD1TOWPV5wDtdBNZtiNbtafrKK6S5I3AOYm7-cWJNS_nwjwYjDe2ft-QIMIcZjIr3WTPAHhQLFzOhjrRUjvRn40qKgxkaaQfumy4SM26jDkqcMIWTtOtG8B9e5k9-P40V2p9wEO8CKXI8MK6BfGX1jUUqiOprkDfliGSAbiQ_yD9AXdw2iW9Uhupk7JGuKuZvDjqSc9IId3LkdStvYgvZx0-QWy3RRcJNwCHT1NMLHCW6DxoFvmG5kArBlA43hzd1CF2WnE",
+        "width": 3060
+      },
+      {
+        "height": 4000,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/117541223773217790310\">La Tapberne</a>"
+        ],
+        "photo_reference": "AaVGc3mr7-C_1V4sT7wR45aeTVC5z1-noO4Mbs4t6U05vvAk4U-g3jQnfVCQvT-dQ_qKVSnm3sL1_ddFrqEDQqcOAbGmIvmBdIv9g2JuWxk3xCRfHZ7br9fPBBWkn467pk6b_Hl0jQHYZ08nw6zK6lwsIX0AxNiixwHawobJbd6i6_mKgF1NEvixn-ROLVwHYVVpndOMM34cmy8wC7Fruxwj4Z_E0jb0Sn8OfGqoIHihqKP_xZpEQoFxZK2hfsDQgA13jfDNj_WeHEZGONmpfnsWiFnGziRLTOJYCx1rM8ry29aU2jO6pIWDp_IeN7D4cWC2YiRykTSSB80J2WZB6esOLTZUHob0U9AjB-ORIHE_XOSmvig824_Oxxp3BkTlXlZCykSbV9-K22ymTvZ0R5kWSRLgUvVifdVQSBghM1qy-yHL8EQ",
+        "width": 3000
+      },
+      {
+        "height": 2560,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/104946431585340629560\">Aika Verzosa</a>"
+        ],
+        "photo_reference": "AaVGc3khISsdakdaPH0Y1GuivibiOgJQNFSKorZwxDk7Q5Ejtfxc48Am2iR388atVo_t-bekkAESbbSOzogdROMHLtvQAhg6zQyrU8qQRLFusz77wEg2kaDGML3XluJaSzGIMT5NQHDn76GPBpnmy33P7zifOKdaGXX-Inwxt7F-Z52oIuTvfPhTibj3ItpCYSwLFmECLxZDRBZm60tzD8N1tEmdesNzPbxdQNQfzzOfAj8y96zGi9utU37NBrNacK-9Vc27ruMRGZYvWC_BBFgB24OIeHTN-bu92zcNyYwvtQLvcyH9hJduJgfH22tZI6fXJin6F16o_T192I5fYRpUwRIG1p8vjdQerk6V3j1mGSyw9lSx--tMEFetinBYOrUsLFtfBfBBcBhAYqiVV2V4qxzqhqajdsYXm_boZ5sPm1hECeVP-OJ5oKbxMCXIr8yc",
+        "width": 3840
+      },
+      {
+        "height": 2560,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/104946431585340629560\">Aika Verzosa</a>"
+        ],
+        "photo_reference": "AaVGc3lD3pcOYrEd9Z7bQSPVtmkSD7q8C-z9Mg38ef82XwZFSC8fWgaWqGkf5Y3oojJlstxhd9K6udDjKQuPvURUL0lqvG2wnbvkA_a9QVuIEaCVaYC2-Df0ELws00POhoUEhBF83i1Toeoq78DvuZRd6V8Lpa5Ejvxh41MbeLBf4hrggjLw4pPmaIxoKI5txRUMq77khFWi63bHycwnT-O8lizPsgIoVIFlUFinBc_Xc9OtmSqxxukQnicwUAOLYIwpuDMh0S2sE7jNFiJVTGjAnx1gEXk3270RQJapUGkIZuh1-tuQBM7xndBCzc-PAifmg4WNDOWyIH_hsuyEDxQtz5OdDkHrlZbonPQ68TaAsugnIaFt-w5tJOho0lIICz-lLf0XGAqF0mMkACHGo8MyTt20FK9diGPVwRPJYyOoUKWBVwSwnVisGypdOl8i3nZT",
+        "width": 3840
+      },
+      {
+        "height": 4032,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/105955317728907850474\">Bárbara Santos</a>"
+        ],
+        "photo_reference": "AaVGc3k9uJI4c_dz8ZOLDtRITC4ShXpLIgOkjDlA120bG_0xsRIg4UzeFj_cNF46g-RldnHb69ax8XojglZ2kr0zGehvdnXRsxElAfKhCuIBEoxmj7KxvyXLPzX1pFcqN5NB-tCHv04O9gLCrHSvMBftt1aXydlKWXmeIOcoKnnSN8oRv4WMlvwCA7ldJpOhnOz3DqsF4mwJLgLAWeqRW7qKQ82AQwQt90X5KPA8ET_dPAZN6GUDh5ihHQYZCp3_OFVdn-JZ5u7nrYaLmtOWeCv91Y9PunaqyPsp4BxPR70TDNwPY91fENFKccnlf2rpXOHQBtyZSorBGHHU2VE11DNyYUGz7C4EMZ-dBxCurv3lW0t9EjKRsEYKeoCgXM1DjGf--8YNJbwXF3910_iqDde88MFjWwHIwTNlajHEaW87fF8jhNQ15zuH2saXUsKPnA",
+        "width": 3024
+      },
+      {
+        "height": 4032,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/113562330587805662030\">David Mella Ortega</a>"
+        ],
+        "photo_reference": "AaVGc3lZVd_1Ch2faBrLYYptyufITVEkNfAkR2aw-0uaMG25YaQx8nOL9mZdgTVZKxbALGeta62IpcZaHfI_Wkgl3b90zC6uwrJ43UvJlo-s1CoRVMmd2LerCLgj7pzwOrFnUIltvq11TkklOMU2qI3pTUEkMp8xn700RIUpMeOkt58K3qSCjivhi5onhvLu57J1MkcJxI9SSIu5LsgmqOgzjDEGovLuKUkprhlL2lFHpRPBtKHNoFbxEDXQq5JSWVyRbl4bATLwu-eFcpVUbWxgyUcSw96E6u-jqlore7RNJa5lGCSuoJ9hQwM2dzdOR--KgM52CJ-Idpw7gwA3F-FtgpkLXcCCZlH-EvxvUnJn0GQOF4bUN0MNCnCN9NwS4a1OaufidOBsJukv9jerl7vR3DR5MsLqx4Fl3uOknwNAa55Pevu4",
+        "width": 3024
+      },
+      {
+        "height": 4032,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/110033814432800770999\">Edjalma Queiroz</a>"
+        ],
+        "photo_reference": "AaVGc3lfOS4NO3lQDAFcy71x7n3nkYVru7z0vicW_l6rh8upR8XlQjLzoJkPpDy7E-OXBukujsHnIH2bHOJoYAvsiHS_MtgJATOSHnBZmYn9ku2wgMc373i4LJfhuMX_EL3Qemju_M5F2qjShsUHkU2aTSnNhzjEx9mFnyUddlXO41eCXLocwKJlS7dVkefGKOFfc3O0usBEgJFtOeRwKxr7wTMMtPaZVNkMJcdbdMMaafyXsMLXUBfSH2MLLFGSyFLjbByzuelUV_rk8PQgZFuHgevCSHdMSi8KocHaqYcW8q1Xp7gvEjbabcfF7cRRUNcC2Z8iYGwIazY1T4pqM0cU-Gk0YddH988Jte9pygNYfZA-VsO8XccoGVcLU2nT_8hn7jukYVQVUcHKRa4ySt4ssN-B6WepCrMXCRH76_T1Udx403rB",
+        "width": 3024
+      },
+      {
+        "height": 4800,
+        "html_attributions": [
+          "<a href=\"https://maps.google.com/maps/contrib/110044491709586197341\">Aspen</a>"
+        ],
+        "photo_reference": "AaVGc3mI9FAIGDRtmSctRD1iCHfSd6X_NbNRrT2MwI21FZ5X72TgkhCro1qY0hEUOlboZbT-6mVcolCbjoz1TY_FCCRDOg_qGQzXSo8-IitmZ61SRgKws2rS9Zl01NnNoVWwyh0x_YdPlKBxyZLL26OjkoflTQEHmkHsBhK32vd5X29Fx_a70gkxW_6_9xii9lLeKof0Yb-iOaf_UC5_BqT_szwHX6DDPStMKhlt3c2eCDcLNfHk-ltJacMbDar7UoGIvlvfCMeHAp-kbktEoBeIxDp0LVVH81sbmPjoi6YIZlej1XOyCJiRWzThKZIjyfr5fZQqdoAeS3ichli-sK2bd_WJKhJoCBhGdDUBoDCc034F0jaZpBFcI2sUdqg_FmsERGtA0BQWoSC-n9vnhpXd-K9W6oFu0C4Gx8VEEpkQ1DrBrN1paTLoeucrih2yaJXk",
+        "width": 3600
+      }
+    ],
+    "place_id": "ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+    "plus_code": {
+      "compound_code": "MVJ7+7P Matten bei Interlaken, Switzerland",
+      "global_code": "8FR9MVJ7+7P"
+    },
+    "rating": 4.8,
+    "reference": "ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+    "reservable": true,
+    "reviews": [
+      {
+        "author_name": "Aika Verzosa",
+        "author_url": "https://www.google.com/maps/contrib/104946431585340629560/reviews",
+        "language": "en",
+        "original_language": "en",
+        "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjXRwZvxgltQO25N2sp2E89l-2Zw4GAjlCMoxdrTCFO4hAgegvo1tg=s128-c0x00000000-cc-rp-mo-ba4",
+        "rating": 5,
+        "relative_time_description": "10 months ago",
+        "text": "Delicious food, unforgettable cocktails, and warm hospitality—La Tapberne delivered on all fronts. Every dish was rich with flavour and perfectly cooked, and their cocktails? To die for. Smooth, strong, and dangerously good.\n\nThe staff were friendly and welcoming, making the whole experience feel relaxed and enjoyable. Prices were fair, especially for the quality and portions.\n\nWould absolutely come back. Come hungry—and maybe a little thirsty too. 😉",
+        "time": 1754225482,
+        "translated": false
+      },
+      {
+        "author_name": "pronins",
+        "author_url": "https://www.google.com/maps/contrib/108465661175606255624/reviews",
+        "language": "en",
+        "original_language": "en",
+        "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocIMwYT3BL9q5zA26y1NSYdaHwbu4pnYWpedgwF826zeSVGxjQ=s128-c0x00000000-cc-rp-mo-ba6",
+        "rating": 5,
+        "relative_time_description": "a year ago",
+        "text": "The food was quite decent, standard bar food and tapas. Really friendly and accommodating service. I reserved a table for 8 people but more showed up, and the staff members were flexible and made the evening fun and memorable. The owner is a really nice person from Spain and I’m glad to have had an opportunity to meet him. Highly recommended when in Interlaken.",
+        "time": 1746255802,
+        "translated": false
+      },
+      {
+        "author_name": "Lina Wong",
+        "author_url": "https://www.google.com/maps/contrib/111850904877483377503/reviews",
+        "language": "en",
+        "original_language": "en",
+        "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjWlOp8CSnOsgJv71lqFw7TIlKuhUR3irQj3gqwCgiXPndxEn7s8=s128-c0x00000000-cc-rp-mo-ba5",
+        "rating": 5,
+        "relative_time_description": "a year ago",
+        "text": "Oh man... Everything is delicious here and portions were huge. Drinks were yummy. Server actually recommended us to not order so many dishes so we had to cut out a dish. Highly recommend!",
+        "time": 1748114413,
+        "translated": false
+      },
+      {
+        "author_name": "Aspen",
+        "author_url": "https://www.google.com/maps/contrib/110044491709586197341/reviews",
+        "language": "en",
+        "original_language": "en",
+        "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjUEjHTY0InqqkpmX6aRG3D3NBSmid_rm4oxsdr1ej2uQTVRadnZIA=s128-c0x00000000-cc-rp-mo",
+        "rating": 5,
+        "relative_time_description": "9 months ago",
+        "text": "The atmosphere was amazing and light and perfect for dinner!! Our waitress was so sweet and was very helpful with picking what to order. The plates were delicious and the drinks great too :). Would totally go back!",
+        "time": 1755357927,
+        "translated": false
+      },
+      {
+        "author_name": "keval malushte",
+        "author_url": "https://www.google.com/maps/contrib/111252804030867104914/reviews",
+        "language": "en",
+        "original_language": "en",
+        "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjXPq3wpRAi5Q1FAioBak40Pb11fPtj_dlV9OrBIXnfdPAiZ6_j6=s128-c0x00000000-cc-rp-mo-ba4",
+        "rating": 5,
+        "relative_time_description": "2 years ago",
+        "text": "I tried their Swiss Wagyu Burger and pulled beef sandwich. The burger was one of the best burgers I have ever had if not for The Best. I'm also so glad that I tried their pulled beef sandwich which was so much different in flavour and absolutely delicious. Anyone planning to go to this place, I recommend that you go in a group and get these two dishes and share them. If you are going alone, go there twice. You won't regret it at all.",
+        "time": 1700554367,
+        "translated": false
+      }
+    ],
+    "secondary_opening_hours": [
+      {
+        "open_now": false,
+        "periods": [
+          {
+            "close": {
+              "date": "2026-06-07",
+              "day": 0,
+              "time": "2130"
+            },
+            "open": {
+              "date": "2026-06-07",
+              "day": 0,
+              "time": "1600"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-10",
+              "day": 3,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-10",
+              "day": 3,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-04",
+              "day": 4,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-04",
+              "day": 4,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-05",
+              "day": 5,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-05",
+              "day": 5,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-06",
+              "day": 6,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-06",
+              "day": 6,
+              "time": "1600"
+            }
+          }
+        ],
+        "type": "KITCHEN",
+        "weekday_text": [
+          "Monday: Closed",
+          "Tuesday: Closed",
+          "Wednesday: 5:00 – 10:30 PM",
+          "Thursday: 5:00 – 10:30 PM",
+          "Friday: 5:00 – 10:30 PM",
+          "Saturday: 4:00 – 10:30 PM",
+          "Sunday: 4:00 – 9:30 PM"
+        ]
+      }
+    ],
+    "serves_beer": true,
+    "serves_dinner": true,
+    "serves_lunch": true,
+    "serves_wine": true,
+    "types": [
+      "bar",
+      "establishment",
+      "food",
+      "point_of_interest",
+      "restaurant"
+    ],
+    "url": "https://maps.google.com/?cid=5554649304607795727",
+    "user_ratings_total": 173,
+    "utc_offset": 120,
+    "vicinity": "Hauptstrasse 49, Matten bei Interlaken",
+    "website": "https://www.tapberne.ch/",
+    "wheelchair_accessible_entrance": true
+  }
+}

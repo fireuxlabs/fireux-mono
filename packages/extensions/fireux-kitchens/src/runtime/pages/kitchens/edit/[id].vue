@@ -135,7 +135,6 @@ const placePreviewDetails = computed(() => {
     { label: 'Rating count', value: (v as any).rating_count ? String((v as any).rating_count) : '' },
     { label: 'Tags', value: Array.isArray((v as any).tags) ? (v as any).tags.filter(Boolean).join(', ') : '' },
     { label: 'Types', value: Array.isArray((v as any).types) ? (v as any).types.filter(Boolean).join(', ') : '' },
-    { label: 'Hours', value: Array.isArray((v as any).hours_text) ? (v as any).hours_text.filter(Boolean).join(' · ') : '' },
     { label: 'Claimed by', value: (v as any).claimed_by ?? '' },
     { label: 'Verified', value: (v as any).verified ? 'Yes' : '' },
   ]

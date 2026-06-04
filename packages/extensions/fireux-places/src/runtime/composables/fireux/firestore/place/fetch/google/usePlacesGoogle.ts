@@ -2,6 +2,7 @@ import {
   PlaceModel,
   type BasePlace,
   type GooglePlace,
+  type PlaceAddress,
   type PlaceUpsertInput,
 } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
@@ -205,6 +206,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     id: g.id,
     name: g.name,
     short_name: '',
+    address: g.address,
     formatted_address: g.formatted_address,
     short_address: toShortAddress(g.formatted_address),
     lat: g.lat,
@@ -212,16 +214,81 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     place_type: 'physical',
     source: 'fireux',
     image_url: '',
+    phone: g.phone,
+    website: g.website,
+    google_maps_url: g.google_maps_url,
+    types: g.types,
+    rating: g.rating,
+    rating_count: g.rating_count,
+    price_level: g.price_level,
+    default_currency_code: g.default_currency_code,
     search_term,
   } as PlaceUpsertInput
 }
 
+type GoogleAddressComponent = {
+  long_name?: string
+  short_name?: string
+  types?: string[]
+}
+
+const text = (value: unknown) => String(value ?? '').trim()
+
+const stringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map(text).filter(Boolean) : []
+
+const numberValue = (value: unknown): number => {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+
+const priceLevel = (value: unknown): string => {
+  const number = Number(value)
+  return Number.isFinite(number) ? String(number) : ''
+}
+
+function component(
+  components: GoogleAddressComponent[],
+  type: string
+): GoogleAddressComponent | null {
+  return components.find((item) => item.types?.includes(type)) ?? null
+}
+
+function addressFromGoogle(
+  components: GoogleAddressComponent[]
+): PlaceAddress {
+  const streetNumber = text(component(components, 'street_number')?.long_name)
+  const streetName = text(component(components, 'route')?.long_name)
+  const locality = text(component(components, 'locality')?.long_name)
+  const region = text(
+    component(components, 'administrative_area_level_1')?.short_name
+  )
+  const postalCode = text(component(components, 'postal_code')?.long_name)
+  const countryCode = text(component(components, 'country')?.short_name)
+
+  return {
+    street: [streetName, streetNumber].filter(Boolean).join(' '),
+    city: locality,
+    region,
+    postal_code: postalCode,
+    country_code: countryCode,
+  }
+}
+
+function currencyCodeFromCountry(countryCode: string): string {
+  if (countryCode === 'CH') return 'CHF'
+  return ''
+}
 
 export function mapDetailsToGooglePlace(
   id: string,
   result: Record<string, any>
 ): GooglePlace {
   const location = result?.geometry?.location ?? {}
+  const components = Array.isArray(result?.address_components)
+    ? result.address_components
+    : []
+  const address = addressFromGoogle(components)
 
   let phone = ''
   if (typeof result?.international_phone_number === 'string') {
@@ -240,8 +307,9 @@ export function mapDetailsToGooglePlace(
     short_address: toShortAddress(
       result?.formatted_address ?? result?.vicinity ?? 'Unknown address'
     ),
-    lat: Number(location?.lat ?? 0),
-    lng: Number(location?.lng ?? 0),
+    address,
+    lat: numberValue(location?.lat),
+    lng: numberValue(location?.lng),
     source: 'google',
     image_url: '',
     image_shade: 'none',
@@ -249,11 +317,12 @@ export function mapDetailsToGooglePlace(
     slug: '',
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
-    rating: typeof result?.rating === 'number' ? result.rating : 0,
-    user_ratings_total:
-      typeof result?.user_ratings_total === 'number'
-        ? result.user_ratings_total
-        : 0,
+    google_maps_url: typeof result?.url === 'string' ? result.url : '',
+    rating: numberValue(result?.rating),
+    rating_count: numberValue(result?.user_ratings_total),
+    price_level: priceLevel(result?.price_level),
+    types: stringArray(result?.types),
+    default_currency_code: currencyCodeFromCountry(address.country_code),
   }
 }
 

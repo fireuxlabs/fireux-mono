@@ -60,7 +60,6 @@ export type PlaceProfile = {
   priceLevel?: string
   tags?: string[]
   types?: string[]
-  hoursText?: string[]
   phone?: string
   email?: string
   website?: string
@@ -192,7 +191,6 @@ export function usePlaceInterface() {
       priceLevel: (target as any)?.price_level,
       tags,
       types,
-      hoursText: (target as any)?.hours_text,
       phone,
       email,
       website,

@@ -18,7 +18,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4b) Hours
 - Place owns business/place hours: when the venue itself is open.
 - Kitchen opening/service hours and Menu availability are separate meanings and must not replace Place hours.
-- Current `hours_text` is MVP-friendly display data; future shipping polish can promote Place hours to a structured schedule shape.
+- Operating hours are provider-live inspection, not stored Place truth.
+- Public Place surfaces may offer “View operating hours” and fetch the latest Google details on demand.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Current routes are id-based:

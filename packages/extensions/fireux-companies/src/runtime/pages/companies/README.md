@@ -9,14 +9,14 @@ This folder owns the `Company` public route tree.
 ## Current Routes
 
 - `index.vue`
-- `[id].vue`
+- `[id]/index.vue`
 - `[id]/edit.vue`
 - `create.vue`
 - `learn-more.vue`
 
 ## Local Contract
 
-- `index.vue`, `[id].vue`, and `learn-more.vue` are public entity pages
+- `index.vue`, `[id]/index.vue`, and `learn-more.vue` are public entity pages
 - `[id]/edit.vue` belongs to the public entity edit family
 - `create.vue` exists, but is still placeholder-like and should not be treated as a locked family example yet
 

@@ -112,6 +112,9 @@ Canonical route shape:
 - `/<entities>/<id>/edit`
 
 The edit route belongs under the public entity detail route because it edits that public entity's canonical stored truth.
+When a public entity has detail and edit children, prefer:
+- `/<entities>/[id]/index.vue` as the public detail page
+- `/<entities>/[id]/edit.vue` as the public edit page
 
 Current strongest family:
 - `packages/extensions/fireux-companies/src/runtime/pages/companies/[id]/edit.vue`

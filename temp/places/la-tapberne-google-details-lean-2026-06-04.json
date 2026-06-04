@@ -1,0 +1,235 @@
+{
+  "result": {
+    "address_components": [
+      {
+        "long_name": "49",
+        "short_name": "49",
+        "types": [
+          "street_number"
+        ]
+      },
+      {
+        "long_name": "Hauptstrasse",
+        "short_name": "Hauptstrasse",
+        "types": [
+          "route"
+        ]
+      },
+      {
+        "long_name": "Matten bei Interlaken",
+        "short_name": "Matten bei Interlaken",
+        "types": [
+          "locality",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Interlaken-Oberhasli",
+        "short_name": "Interlaken-Oberhasli",
+        "types": [
+          "administrative_area_level_2",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Bern",
+        "short_name": "BE",
+        "types": [
+          "administrative_area_level_1",
+          "political"
+        ]
+      },
+      {
+        "long_name": "Switzerland",
+        "short_name": "CH",
+        "types": [
+          "country",
+          "political"
+        ]
+      },
+      {
+        "long_name": "3800",
+        "short_name": "3800",
+        "types": [
+          "postal_code"
+        ]
+      }
+    ],
+    "business_status": "OPERATIONAL",
+    "formatted_address": "Hauptstrasse 49, 3800 Matten bei Interlaken, Switzerland",
+    "formatted_phone_number": "033 822 32 33",
+    "geometry": {
+      "location": {
+        "lat": 46.68063679999999,
+        "lng": 7.8642542
+      },
+      "viewport": {
+        "northeast": {
+          "lat": 46.6819415302915,
+          "lng": 7.865512630291501
+        },
+        "southwest": {
+          "lat": 46.6792435697085,
+          "lng": 7.862814669708497
+        }
+      }
+    },
+    "international_phone_number": "+41 33 822 32 33",
+    "name": "La Tapberne",
+    "opening_hours": {
+      "open_now": false,
+      "periods": [
+        {
+          "close": {
+            "day": 1,
+            "time": "0030"
+          },
+          "open": {
+            "day": 0,
+            "time": "1400"
+          }
+        },
+        {
+          "close": {
+            "day": 4,
+            "time": "0030"
+          },
+          "open": {
+            "day": 3,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 5,
+            "time": "0030"
+          },
+          "open": {
+            "day": 4,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 6,
+            "time": "0030"
+          },
+          "open": {
+            "day": 5,
+            "time": "1600"
+          }
+        },
+        {
+          "close": {
+            "day": 0,
+            "time": "0030"
+          },
+          "open": {
+            "day": 6,
+            "time": "1600"
+          }
+        }
+      ],
+      "weekday_text": [
+        "Monday: Closed",
+        "Tuesday: Closed",
+        "Wednesday: 4:00 PM – 12:30 AM",
+        "Thursday: 4:00 PM – 12:30 AM",
+        "Friday: 4:00 PM – 12:30 AM",
+        "Saturday: 4:00 PM – 12:30 AM",
+        "Sunday: 2:00 PM – 12:30 AM"
+      ]
+    },
+    "place_id": "ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+    "rating": 4.8,
+    "secondary_opening_hours": [
+      {
+        "open_now": false,
+        "periods": [
+          {
+            "close": {
+              "date": "2026-06-07",
+              "day": 0,
+              "time": "2130"
+            },
+            "open": {
+              "date": "2026-06-07",
+              "day": 0,
+              "time": "1600"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-10",
+              "day": 3,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-10",
+              "day": 3,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-04",
+              "day": 4,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-04",
+              "day": 4,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-05",
+              "day": 5,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-05",
+              "day": 5,
+              "time": "1700"
+            }
+          },
+          {
+            "close": {
+              "date": "2026-06-06",
+              "day": 6,
+              "time": "2230"
+            },
+            "open": {
+              "date": "2026-06-06",
+              "day": 6,
+              "time": "1600"
+            }
+          }
+        ],
+        "type": "KITCHEN",
+        "weekday_text": [
+          "Monday: Closed",
+          "Tuesday: Closed",
+          "Wednesday: 5:00 – 10:30 PM",
+          "Thursday: 5:00 – 10:30 PM",
+          "Friday: 5:00 – 10:30 PM",
+          "Saturday: 4:00 – 10:30 PM",
+          "Sunday: 4:00 – 9:30 PM"
+        ]
+      }
+    ],
+    "types": [
+      "bar",
+      "establishment",
+      "food",
+      "point_of_interest",
+      "restaurant"
+    ],
+    "url": "https://maps.google.com/?cid=5554649304607795727",
+    "user_ratings_total": 173,
+    "utc_offset": 120,
+    "vicinity": "Hauptstrasse 49, Matten bei Interlaken",
+    "website": "https://www.tapberne.ch/"
+  }
+}

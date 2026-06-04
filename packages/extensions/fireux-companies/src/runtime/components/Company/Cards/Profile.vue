@@ -76,15 +76,6 @@
       </div>
 
       <div class="fx-card__section-grid fx-card__section-grid--cols">
-        <div class="fx-card__panel fx-card__panel--compact">
-          <div class="fx-card__panel-heading">
-            <UIcon name="i-lucide-building-2" class="fx-card__icon" />
-            <span>Record</span>
-          </div>
-          <div class="fx-card__panel-value">{{ claimedStatus }}</div>
-          <div class="fx-card__panel-subtitle">{{ recordSummary }}</div>
-        </div>
-
         <div v-if="model.website" class="fx-card__panel fx-card__panel--compact">
           <div class="fx-card__panel-heading">
             <UIcon name="i-lucide-globe" class="fx-card__icon" />
@@ -199,16 +190,6 @@ const sourceLabel = computed(() =>
       : props.model.source === 'google'
         ? 'Google'
         : ''
-)
-
-const claimedStatus = computed(() =>
-  props.model.card.claimedBy ? 'Claimed place record' : 'Unclaimed place record'
-)
-
-const recordSummary = computed(() =>
-  props.model.card.claimedBy
-    ? 'Company layer is attached to a claimed place.'
-    : 'Claim the underlying place before treating this as an owned company record.'
 )
 
 const websiteLabel = computed(() => {

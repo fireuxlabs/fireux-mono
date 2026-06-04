@@ -65,6 +65,29 @@ export default defineEventHandler(async (event: any) => {
 
   const url = new URL('https://maps.googleapis.com/maps/api/place/details/json')
   url.searchParams.set('place_id', placeId)
+  url.searchParams.set(
+    'fields',
+    [
+      'address_component',
+      'business_status',
+      'formatted_address',
+      'formatted_phone_number',
+      'geometry',
+      'international_phone_number',
+      'name',
+      'opening_hours',
+      'place_id',
+      'price_level',
+      'rating',
+      'secondary_opening_hours',
+      'type',
+      'url',
+      'user_ratings_total',
+      'utc_offset',
+      'vicinity',
+      'website',
+    ].join(',')
+  )
   url.searchParams.set('key', key)
 
   try {

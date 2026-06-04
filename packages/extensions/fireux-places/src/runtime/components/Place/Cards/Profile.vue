@@ -96,31 +96,6 @@
           </div>
           <div class="fx-card__panel-value">{{ model.priceLevel }}</div>
         </div>
-        <div class="fx-card__panel fx-card__panel--compact">
-          <div class="fx-card__panel-heading">
-            <UIcon name="i-lucide-shield" class="fx-card__icon" />
-            <span>Status</span>
-          </div>
-          <div class="fx-card__panel-value">{{ claimedStatus }}</div>
-          <div class="fx-card__panel-actions">
-            <UserCardsPill
-              v-if="claimedUserPill"
-              v-bind="claimedUserPill"
-              :link="Boolean(claimedUserPill.to)"
-            />
-            <UButton
-              v-if="showClaimButton"
-              size="xs"
-              variant="soft"
-              color="primary"
-              :loading="isClaiming"
-              :disabled="isClaiming"
-              @click="emit('claim')"
-            >
-              Claim this business
-            </UButton>
-          </div>
-        </div>
       </div>
 
       <div v-if="model.about" class="fx-card__copy">
@@ -248,35 +223,18 @@
         </div>
       </div>
 
-      <div v-if="model.hoursText?.length" class="fx-card__detail-grid">
-        <div class="fx-card__stack fx-card__stack--tight">
-          <div class="fx-card__panel-heading">
-            <UIcon name="i-lucide-clock" class="fx-card__icon" />
-            Hours
-          </div>
-          <div class="fx-card__stack">
-            <div v-for="line in model.hoursText" :key="line">{{ line }}</div>
-          </div>
-        </div>
-      </div>
+      <PlaceGoogleHours :place-id="model.card.id" />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import PlaceGoogleHours from '../GoogleHours.vue'
 
 const props = defineProps<{
   model: PlaceProfile
-  claimedUserPill?: UserCard.Card | null
-  claimedStatus?: string
-  showClaimButton?: boolean
-  isClaiming?: boolean
-}>()
-const emit = defineEmits<{
-  (event: 'claim'): void
 }>()
 const { model } = toRefs(props)
 

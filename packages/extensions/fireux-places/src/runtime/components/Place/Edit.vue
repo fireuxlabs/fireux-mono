@@ -179,16 +179,6 @@
 					/>
 				</UCard>
 
-				<UCard>
-					<MoleculesFormsFirestoreArrayOfStrings
-						label="Business hours"
-						:firebase-value="place.hours_text || []"
-						item-placeholder="Monday: 09:00–18:00"
-						new-item-placeholder="Add opening hours line"
-						:update-function="handleHoursText"
-					/>
-				</UCard>
-
 				<UCard v-if="isManual">
 					<MoleculesFormsFirestoreSimpleField
 						label="Formatted address"
@@ -463,20 +453,6 @@ async function handleTimezone(value: string) {
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
 		toast.error(`Failed to update timezone: ${msg}`)
-		throw error
-	}
-}
-
-async function handleHoursText(value: string[]) {
-	if (!placeId.value) return
-	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-			hours_text: value.map(sanitize).filter(Boolean),
-		})
-		toast.success('Business hours updated')
-	} catch (error) {
-		const msg = error instanceof Error ? error.message : 'Please try again.'
-		toast.error(`Failed to update business hours: ${msg}`)
 		throw error
 	}
 }

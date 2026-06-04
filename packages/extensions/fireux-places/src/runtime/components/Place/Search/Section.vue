@@ -179,11 +179,11 @@ function toDraft(
   const sanitizedPlaceImage =
     sanitizeLogoAvatar(String((place as any)?.image_url ?? (place as any)?.place_image ?? '')) ?? ''
 
-  // Prefer override; else fall back to sanitized stored image
+  // Prefer an explicit discovered logo; otherwise store an empty image.
   let resolvedLogo =
     typeof logoOverride === 'string' ? logoOverride : sanitizedPlaceImage
 
-  // For google sources: if we didn’t find a real logo, store empty string (so UI can hydrate later).
+  // Google places should stay empty unless discovery found a real logo.
   if (selectedSource.value === 'google' && !resolvedLogo) {
     resolvedLogo = ''
   }

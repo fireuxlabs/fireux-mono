@@ -9,14 +9,14 @@ This folder owns the `Place` public route tree.
 ## Current Routes
 
 - `index.vue`
-- `[id].vue`
+- `[id]/index.vue`
 - `create.vue`
 - `[id]/edit.vue`
 - `learn-more.vue`
 
 ## Local Contract
 
-- `index.vue`, `[id].vue`, and `learn-more.vue` are public place pages
+- `index.vue`, `[id]/index.vue`, and `learn-more.vue` are public place pages
 - `create.vue` is a real place creation surface
 - `[id]/edit.vue` belongs to the public entity edit family
 
