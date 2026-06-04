@@ -46,7 +46,7 @@
           variant="soft"
           color="neutral"
           icon="i-lucide-map-pin"
-          :to="`/places/edit/${encodeURIComponent(placeId)}`"
+          :to="`/places/${encodeURIComponent(placeId)}/edit`"
         >
           Full Place editor
         </UButton>
@@ -58,25 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 
 const { placeId } = useKitchenConsoleIdentity()
-const { firestoreFetchDoc } = useFirestoreRead()
-const placeSource = shallowRef(null) as ShallowRef<Ref<Place | undefined> | null>
-
-watch(
-  placeId,
-  (nextPlaceId) => {
-    placeSource.value = nextPlaceId
-      ? firestoreFetchDoc<Place>(PlaceStorage.collection, nextPlaceId)
-      : null
-  },
-  { immediate: true }
-)
-
-const pending = computed(() => Boolean(placeId.value) && placeSource.value?.value === undefined)
-const place = computed(() => placeSource.value?.value ?? null)
+const { place, pending } = usePlaceFetch(placeId)
 </script>

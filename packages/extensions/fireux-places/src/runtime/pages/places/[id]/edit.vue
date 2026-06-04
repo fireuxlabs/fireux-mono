@@ -77,7 +77,7 @@
         <DevJson
           v-if="showDebug && editableFields"
           :title="'Place (Editable)'"
-          context="Place edit page · places/edit/[id] · editable fields"
+          context="Place edit page · places/[id]/edit · editable fields"
           :data="editableFields"
           :default-open="false"
         />
@@ -95,10 +95,9 @@ import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
+import { usePlaceFetch } from '../../../composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { PlaceStorage, type Place } from '../../../models/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -116,13 +115,8 @@ const route = useRoute()
 const raw = route.params.id
 const placeId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { firestoreFetchDoc } = useFirestoreRead()
-const docRef = placeId
-  ? firestoreFetchDoc<Place>(PlaceStorage.collection, placeId)
-  : null
-
-const place = computed<Place | null>(() => docRef?.value ?? null)
-const loading = computed(() => Boolean(placeId) && docRef?.value === undefined)
+const { place, pending } = usePlaceFetch(placeId)
+const loading = computed(() => pending.value)
 const showDebug = import.meta.dev
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => place.value?.claimed_by ?? '')
@@ -142,7 +136,10 @@ const placePreviewDetails = computed(() => {
     { label: 'Brand tagline', value: v.brand_tagline ?? '' },
     { label: 'About', value: v.about ?? '' },
     { label: 'Phone', value: v.phone ?? '' },
+    { label: 'Email', value: v.email ?? '' },
     { label: 'Website', value: v.website ?? '' },
+    { label: 'Default currency', value: v.default_currency_code ?? '' },
+    { label: 'Timezone', value: v.timezone ?? '' },
     { label: 'Price level', value: v.price_level ?? '' },
     { label: 'Rating', value: v.rating ? String(v.rating) : '' },
     { label: 'Rating count', value: v.rating_count ? String(v.rating_count) : '' },
@@ -197,6 +194,12 @@ const editableFields = computed(() => {
     image_url: v.image_url ?? (v as any).place_image ?? '',
     image_shade: v.image_shade ?? 'none',
     short_name: v.short_name ?? '',
+    phone: v.phone ?? '',
+    email: v.email ?? '',
+    website: v.website ?? '',
+    default_currency_code: v.default_currency_code ?? '',
+    timezone: v.timezone ?? '',
+    hours_text: Array.isArray(v.hours_text) ? v.hours_text : [],
     claimed_by: v.claimed_by ?? '',
   }
 

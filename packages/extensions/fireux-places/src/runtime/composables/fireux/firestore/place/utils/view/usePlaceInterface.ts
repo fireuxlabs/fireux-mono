@@ -64,11 +64,14 @@ export type PlaceProfile = {
   phone?: string
   email?: string
   website?: string
+  googleMapsUrl?: string
   socialLinks?: Partial<PlaceSocialLinks>
   coverImage?: string
   galleryImages?: string[]
   about?: string
   verified?: boolean
+  timezone?: string
+  defaultCurrencyCode?: string
   source?: PlaceSource
 }
 
@@ -161,7 +164,15 @@ export function usePlaceInterface() {
     const tags = (target as any)?.tags as string[] | undefined
     const types = (target as any)?.types as string[] | undefined
     const phone = (target as any)?.phone as string | undefined
+    const email = (target as any)?.email as string | undefined
     const website = (target as any)?.website as string | undefined
+    const googleMapsUrl = safeString((target as any)?.google_maps_url)
+    const lat = Number((target as any)?.lat)
+    const lng = Number((target as any)?.lng)
+    const coordinatesMapUrl =
+      Number.isFinite(lat) && Number.isFinite(lng)
+        ? `https://maps.google.com/?q=${lat},${lng}`
+        : ''
     const socialLinks = (target as any)?.social_links as
       | Partial<PlaceSocialLinks>
       | undefined
@@ -183,9 +194,13 @@ export function usePlaceInterface() {
       types,
       hoursText: (target as any)?.hours_text,
       phone,
+      email,
       website,
+      googleMapsUrl: googleMapsUrl || coordinatesMapUrl,
       socialLinks,
       verified: (target as any)?.verified,
+      timezone: (target as any)?.timezone,
+      defaultCurrencyCode: (target as any)?.default_currency_code,
       source,
     }
   }

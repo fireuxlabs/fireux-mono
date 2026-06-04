@@ -25,7 +25,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/places`
   - `/places/[id]`
   - `/places/create`
-  - `/places/edit/[id]`
+  - `/places/[id]/edit`
 - Place route identity is id-only. Any stored `slug` field is display/search metadata only and must not be used for public routing.
 
 ## 6) Surfaces supported

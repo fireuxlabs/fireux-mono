@@ -36,15 +36,6 @@
             >
               Verified
             </UBadge>
-            <UBadge
-              v-if="sourceLabel"
-              size="xs"
-              variant="soft"
-              color="neutral"
-              class="fx-card__badge fx-card__badge--overlay"
-            >
-              {{ sourceLabel }}
-            </UBadge>
           </div>
         </div>
       </div>
@@ -77,35 +68,7 @@
                 color="emerald"
                 >Verified</UBadge
               >
-              <UBadge
-                v-if="sourceLabel"
-                size="xs"
-                variant="soft"
-                color="neutral"
-                >{{ sourceLabel }}</UBadge
-              >
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="fx-card__panel">
-        <div class="fx-card__panel-title">Basics</div>
-        <div class="fx-card__panel-value fx-truncate">
-          {{ model.card.name }}
-        </div>
-        <div
-          v-if="model.card.shortName"
-          class="fx-card__panel-subtitle fx-truncate"
-        >
-          {{ model.card.shortName }}
-        </div>
-        <div class="fx-card__panel-row">
-          <div v-if="model.card.shortAddress" class="fx-truncate">
-            {{ model.card.shortAddress }}
-          </div>
-          <div v-if="model.card.formattedAddress" class="fx-truncate">
-            {{ model.card.formattedAddress }}
           </div>
         </div>
       </div>
@@ -224,13 +187,9 @@
         <div class="fx-card__stack fx-card__stack--tight">
           <div class="fx-card__panel-heading">
             <UIcon name="i-lucide-map-pin" class="fx-card__icon" />
-            Details
+            Location
           </div>
           <div class="fx-card__stack">
-            <div>
-              <span class="fx-card__detail-label">Name:</span>
-              {{ model.card.name }}
-            </div>
             <div v-if="model.card.shortName">
               <span class="fx-card__detail-label">Short name:</span>
               {{ model.card.shortName }}
@@ -258,9 +217,32 @@
               <span class="fx-card__detail-label">Phone:</span>
               {{ model.phone }}
             </div>
+            <div v-if="model.email">
+              <span class="fx-card__detail-label">Email:</span>
+              {{ model.email }}
+            </div>
             <div v-if="model.website">
               <span class="fx-card__detail-label">Website:</span>
               <span>{{ model.website }}</span>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="hasDefaultDetails"
+          class="fx-card__stack fx-card__stack--tight"
+        >
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-settings-2" class="fx-card__icon" />
+            Defaults
+          </div>
+          <div class="fx-card__stack">
+            <div v-if="model.defaultCurrencyCode">
+              <span class="fx-card__detail-label">Currency:</span>
+              {{ model.defaultCurrencyCode }}
+            </div>
+            <div v-if="model.timezone">
+              <span class="fx-card__detail-label">Timezone:</span>
+              {{ model.timezone }}
             </div>
           </div>
         </div>
@@ -363,12 +345,28 @@ const contactItems = computed(
             href: `tel:${model.value.phone}`,
           }
         : null,
+      model.value.email
+        ? {
+            key: 'email',
+            label: 'Email',
+            icon: 'i-lucide-mail',
+            href: `mailto:${model.value.email}`,
+          }
+        : null,
       model.value.website
         ? {
             key: 'website',
             label: 'Website',
             icon: 'i-lucide-globe',
             href: model.value.website,
+          }
+        : null,
+      model.value.googleMapsUrl
+        ? {
+            key: 'map',
+            label: 'Map',
+            icon: 'i-lucide-map-pin',
+            href: model.value.googleMapsUrl,
           }
         : null,
     ].filter(Boolean) as {
@@ -380,14 +378,10 @@ const contactItems = computed(
 )
 
 const hasContactDetails = computed(() =>
-  Boolean(model.value.phone || model.value.website)
+  Boolean(model.value.phone || model.value.email || model.value.website)
 )
 
-const sourceLabel = computed(() => {
-  const source = model.value.source
-  if (source === 'fireux') return 'FireUX'
-  if (source === 'manual') return 'Manual'
-  if (source === 'google') return 'Google'
-  return ''
-})
+const hasDefaultDetails = computed(() =>
+  Boolean(model.value.defaultCurrencyCode || model.value.timezone)
+)
 </script>

@@ -40,9 +40,6 @@
           >
             {{ badge }}
           </UBadge>
-          <UBadge v-if="sourceLabel" color="neutral" variant="soft">
-            {{ sourceLabel }}
-          </UBadge>
         </div>
       </div>
     </div>
@@ -63,13 +60,4 @@ const avatarShadeClass = computed(() => {
   return ''
 })
 
-const sourceLabel = computed(() =>
-  props.card.source === 'fireux'
-    ? 'FireUX'
-    : props.card.source === 'manual'
-      ? 'Manual'
-      : props.card.source === 'google'
-        ? 'Google'
-        : ''
-)
 </script>

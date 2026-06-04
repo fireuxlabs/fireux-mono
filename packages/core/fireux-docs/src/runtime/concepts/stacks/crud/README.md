@@ -1,7 +1,7 @@
 # Update Concept
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-06-04
 Scope: runtime update behaviour across `pages/`, `components/`, and `composables/`.
 
 Learn how FireUX update behaviour works at runtime, which stored truth is being edited, and how current edit families are supposed to behave.
@@ -108,10 +108,15 @@ These are not ordinary edit pages, but behaviourally they can still update broke
 
 A public or shareable edit surface for a canonical entity.
 
+Canonical route shape:
+- `/<entities>/<id>/edit`
+
+The edit route belongs under the public entity detail route because it edits that public entity's canonical stored truth.
+
 Current strongest family:
-- `packages/extensions/fireux-companies/src/runtime/pages/companies/edit/[id].vue`
+- `packages/extensions/fireux-companies/src/runtime/pages/companies/[id]/edit.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/edit/[id].vue`
-- `packages/extensions/fireux-places/src/runtime/pages/places/edit/[id].vue`
+- `packages/extensions/fireux-places/src/runtime/pages/places/[id]/edit.vue`
 
 ### Managed-record Edit
 
@@ -184,6 +189,11 @@ Shared shape:
 - preview first
 - edit guard
 - edit surface after the guard
+
+Route status:
+- Place uses `/places/[id]/edit`.
+- Company uses `/companies/[id]/edit`.
+- Kitchen still uses `/kitchens/edit/[id]` until the Kitchen/Place edit truth is reconciled.
 
 ### Managed-record Edit Family
 

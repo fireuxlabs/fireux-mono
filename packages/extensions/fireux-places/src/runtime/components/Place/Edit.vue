@@ -127,6 +127,68 @@
 					/>
 				</UCard>
 
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Phone"
+						:firebase-value="place.phone"
+						placeholder="+41 ..."
+						:maxlength="80"
+						:update-function="handlePhone"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Email"
+						type="email"
+						:firebase-value="place.email"
+						placeholder="hello@example.com"
+						:maxlength="160"
+						:update-function="handleEmail"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Website"
+						type="url"
+						:firebase-value="place.website"
+						placeholder="https://example.com"
+						:maxlength="240"
+						:update-function="handleWebsite"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Default currency"
+						:firebase-value="place.default_currency_code"
+						placeholder="CHF"
+						:maxlength="3"
+						:update-function="handleDefaultCurrencyCode"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Timezone"
+						:firebase-value="place.timezone"
+						placeholder="Europe/Zurich"
+						:maxlength="80"
+						:update-function="handleTimezone"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreArrayOfStrings
+						label="Business hours"
+						:firebase-value="place.hours_text || []"
+						item-placeholder="Monday: 09:00–18:00"
+						new-item-placeholder="Add opening hours line"
+						:update-function="handleHoursText"
+					/>
+				</UCard>
+
 				<UCard v-if="isManual">
 					<MoleculesFormsFirestoreSimpleField
 						label="Formatted address"
@@ -233,6 +295,7 @@ const { claimPlace } = usePlaceClaim()
 
 const canClaim = computed(() => !place.value?.claimed_by)
 const sanitize = (value: string) => value.trim()
+const sanitizeCurrency = (value: string) => sanitize(value).toUpperCase()
 const parseNumber = (value: string | number) => {
 	const n = typeof value === 'number' ? value : Number(String(value).trim())
 	return Number.isFinite(n) ? n : null
@@ -330,6 +393,90 @@ async function handleShortName(value: string) {
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
 		toast.error(`Failed to update short name: ${msg}`)
+		throw error
+	}
+}
+
+async function handlePhone(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			phone: sanitize(value),
+		})
+		toast.success('Phone updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update phone: ${msg}`)
+		throw error
+	}
+}
+
+async function handleEmail(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			email: sanitize(value),
+		})
+		toast.success('Email updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update email: ${msg}`)
+		throw error
+	}
+}
+
+async function handleWebsite(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			website: sanitize(value),
+		})
+		toast.success('Website updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update website: ${msg}`)
+		throw error
+	}
+}
+
+async function handleDefaultCurrencyCode(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			default_currency_code: sanitizeCurrency(value),
+		})
+		toast.success('Default currency updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update default currency: ${msg}`)
+		throw error
+	}
+}
+
+async function handleTimezone(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			timezone: sanitize(value),
+		})
+		toast.success('Timezone updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update timezone: ${msg}`)
+		throw error
+	}
+}
+
+async function handleHoursText(value: string[]) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+			hours_text: value.map(sanitize).filter(Boolean),
+		})
+		toast.success('Business hours updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update business hours: ${msg}`)
 		throw error
 	}
 }

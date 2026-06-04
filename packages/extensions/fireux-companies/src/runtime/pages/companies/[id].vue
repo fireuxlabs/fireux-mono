@@ -1,5 +1,7 @@
 <template>
-  <UPage>
+  <NuxtPage v-if="hasChildRoute" />
+
+  <UPage v-else>
     <UPageHeader :title="pageTitle" :description="pageDescription">
       <template #ctas>
         <UButton
@@ -132,11 +134,15 @@ definePageMeta({
 })
 
 const route = useRoute()
+const hasChildRoute = computed(() => {
+  const path = String(route.path || '').trim()
+  return /\/companies\/[^/]+\/edit(?:\/|$)/.test(path)
+})
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
 const editTo = computed(() =>
-  docId ? `/companies/edit/${encodeURIComponent(docId)}` : '/companies'
+  docId ? `/companies/${encodeURIComponent(docId)}/edit` : '/companies'
 )
 
 const { company: fetchCompany } = useCompanyFetch()

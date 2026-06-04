@@ -1,7 +1,7 @@
 # Companies Pages
 
 Authority: Operational
-Updated: 2026-03-21
+Updated: 2026-06-04
 Scope: `packages/extensions/fireux-companies/src/runtime/pages/companies/*`.
 
 This folder owns the `Company` public route tree.
@@ -10,21 +10,22 @@ This folder owns the `Company` public route tree.
 
 - `index.vue`
 - `[id].vue`
+- `[id]/edit.vue`
 - `create.vue`
-- `edit/[id].vue`
 - `learn-more.vue`
 
 ## Local Contract
 
 - `index.vue`, `[id].vue`, and `learn-more.vue` are public entity pages
-- `edit/[id].vue` belongs to the public entity edit family
+- `[id]/edit.vue` belongs to the public entity edit family
 - `create.vue` exists, but is still placeholder-like and should not be treated as a locked family example yet
 
 ## Aligned With
 
 Public entity edit family examples:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/edit/[id].vue`
-- `packages/extensions/fireux-places/src/runtime/pages/places/edit/[id].vue`
+- `packages/extensions/fireux-places/src/runtime/pages/places/[id]/edit.vue`
+- `packages/extensions/fireux-companies/src/runtime/pages/companies/[id]/edit.vue`
 
 ## Not Aligned Yet
 

@@ -1,5 +1,6 @@
 # fireux-companies Contract
 Authority: Tier1 (Authoritative)
+Updated: 2026-06-04
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -19,8 +20,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Current routes are id-based:
   - `/companies`
   - `/companies/[id]`
+  - `/companies/[id]/edit`
   - `/companies/create`
-  - `/companies/edit/[id]`
 - Public slug routes are not canonical for companies yet.
 
 ## 6) Surfaces supported
