@@ -11,9 +11,11 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { computed } from 'vue'
 import EntityOperatorBridge from 'fireux-core/runtime/components/entity/OperatorBridge.vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import {
   useKitchenCollection,
   type KitchenCollectionFilter,
@@ -26,30 +28,27 @@ definePageMeta({
 
 const route = useRoute()
 const { uid } = useAuth()
-const routeSlug = computed(() => String(route.params.slug || '').trim())
+const routeLocator = computed(() => String(route.params.slug || '').trim())
 const userId = computed(() => String(uid.value || '').trim())
 const operatorFilter = computed<KitchenCollectionFilter>(() =>
   userId.value ? { operatorId: userId.value } : { ids: [] }
 )
-const { kitchens: publicKitchens, pending } = useKitchenCollection()
+const { kitchen: publicKitchen, pending } = useKitchenFetch(routeLocator)
 const { kitchens: operatorKitchens } = useKitchenCollection({
   filter: operatorFilter,
 })
 
-const publicKitchen = computed(() => {
-  const slug = routeSlug.value.toLowerCase()
-  return publicKitchens.value.find(
-    (kitchen) => String(kitchen.slug || '').trim().toLowerCase() === slug
-  ) ?? null
-})
 const kitchenId = computed(() => String(publicKitchen.value?.id || '').trim())
 const hasAuthority = computed(() =>
-  Boolean(kitchenId.value && operatorKitchens.value.some((kitchen) => kitchen.id === kitchenId.value))
+  Boolean(
+    kitchenId.value &&
+      operatorKitchens.value.some((kitchen) => kitchen.id === kitchenId.value)
+  )
 )
 const kitchenTitle = computed(() =>
-  String(publicKitchen.value?.name || routeSlug.value || 'Kitchen').trim()
+  String(publicKitchen.value?.name || routeLocator.value || 'Kitchen').trim()
 )
 const publicTo = computed(() =>
-  routeSlug.value ? `/kitchens/${encodeURIComponent(routeSlug.value)}` : '/kitchens'
+  routeLocator.value ? `/kitchens/${encodeURIComponent(routeLocator.value)}` : '/kitchens'
 )
 </script>

@@ -8,7 +8,7 @@
       />
 
       <UPageBody class="pagebody">
-        <UPageCard v-if="loading" variant="subtle">
+        <UPageCard v-if="pending" variant="subtle">
           <p class="text-sm text-dimmed">Loading place…</p>
         </UPageCard>
 
@@ -27,7 +27,11 @@
           />
 
           <!-- claim -->
-          <PlacePublicClaim :place="place" :id="placeId" />
+          <PlacePublicClaim
+            :place="place"
+            :id="placeId"
+            :locator="locator"
+          />
 
           <!-- dev -->
           <DevJson
@@ -71,7 +75,8 @@ const props = defineProps<{
   locator: string
 }>()
 
-const { place, pending: loading } = usePlaceFetch(computed(() => props.locator))
+const locator = computed(() => String(props.locator || '').trim())
+const { place, pending } = usePlaceFetch(locator)
 const placeId = computed(() => place.value?.id ?? '')
 const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(

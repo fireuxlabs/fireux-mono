@@ -93,16 +93,19 @@ import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
 
 const props = defineProps<{
-  id: string
+  locator: string
 }>()
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
-const kitchenId = computed(() => String(props.id || '').trim())
-const { kitchen, pending } = useKitchenFetch(kitchenId)
-const loading = computed(() => Boolean(kitchenId.value) && pending.value)
+const locator = computed(() => String(props.locator || '').trim())
+const { kitchen, pending } = useKitchenFetch(locator)
+const loading = computed(() => Boolean(locator.value) && pending.value)
 const hydratedKitchen = computed(() => kitchen.value as any | null)
+const kitchenId = computed(() =>
+  String(hydratedKitchen.value?.id || locator.value || '').trim()
+)
 const detailTo = computed(() => {
   const slug = String(hydratedKitchen.value?.slug ?? '').trim()
   return slug ? `/kitchens/${encodeURIComponent(slug)}` : '/kitchens'

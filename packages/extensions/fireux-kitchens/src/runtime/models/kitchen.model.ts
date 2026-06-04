@@ -62,6 +62,7 @@ export const KitchenModel = {
   display_name: '',
   tagline: '',
   display_image_url: '',
+  food_gallery: [] as string[],
 
   // Kitchen/menu presentation. Place owns default currency code.
   menu_currency_format: 'dash' as CurrencyDisplayFormat,
@@ -99,6 +100,7 @@ export type KitchenCreateInput = Partial<
     | 'slug'
     | 'display_name'
     | 'display_image_url'
+    | 'food_gallery'
     | 'menu_currency_format'
     | 'menu_show_currency'
   >
@@ -114,6 +116,7 @@ export type KitchenUpdateInput = Partial<
     | 'display_name'
     | 'tagline'
     | 'display_image_url'
+    | 'food_gallery'
     | 'menu_currency_format'
     | 'menu_show_currency'
     | 'menu_style'

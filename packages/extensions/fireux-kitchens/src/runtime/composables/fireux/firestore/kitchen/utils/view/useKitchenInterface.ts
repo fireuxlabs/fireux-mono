@@ -2,7 +2,6 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type {
   Place,
   PlaceImageShade,
-  PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
@@ -44,15 +43,8 @@ export namespace KitchenCard {
 
   export type Profile = Card & {
     card: Card
-    prop?: string
-    website?: string
-    address?: string
-    phone?: string
-    socialLinks?: Partial<PlaceSocialLinks>
-    coverImage?: string
-    galleryImages?: string[]
-    about?: string
-    verified?: boolean
+    tagline: string
+    foodGallery: string[]
   }
 }
 
@@ -69,10 +61,13 @@ export type KitchenSurface = {
   updated?: unknown
   name?: string
   display_name?: string
+  tagline?: string
   short_name?: string
+  food_gallery?: string[]
   default_currency_code?: string
   menu_currency_format?: CurrencyDisplayFormat
   menu_show_currency?: boolean
+  menu_available?: boolean
   menu_style?: Partial<PageStyle>
   formatted_address?: string
   short_address?: string
@@ -226,26 +221,52 @@ export function useKitchenInterface() {
   function profile(
     target?: KitchenSurface | null | undefined
   ): KitchenProfile | null {
-    const card = identity(target)
-    if (!card || !target) return null
-    const address = card.shortAddress || card.formattedAddress
+    if (!target) return null
+
+    const id = safeString(target.id).trim()
+    const slug = safeString(target.slug).trim()
+    const displayName = safeString(target.display_name).trim()
+    const tagline = safeString(target.tagline).trim()
+    const imageUrl = safeString(target.display_image_url).trim()
+    const foodGallery = Array.isArray(target.food_gallery)
+      ? target.food_gallery
+          .map((image) => safeString(image).trim())
+          .filter(Boolean)
+      : []
+    const hasKitchenPublicData = Boolean(
+      displayName ||
+        tagline ||
+        imageUrl ||
+        foodGallery.length
+    )
+
+    if (!id || !hasKitchenPublicData) return null
+
+    const badges = [
+      target.show === false ? 'Hidden' : '',
+    ].filter((badge): badge is string => Boolean(badge))
+    const title = displayName || 'Kitchen'
+    const card: KitchenCard.Card = {
+      id,
+      to: resolveKitchenPath({ id, slug, route_scope: target.route_scope }),
+      title,
+      subtitle: tagline,
+      badges,
+      name: title,
+      shortName: '',
+      formattedAddress: '',
+      shortAddress: '',
+      imageUrl,
+      imageShade: undefined,
+      source: undefined,
+      claimedBy: '',
+    }
 
     return {
       ...card,
       card,
-      prop: safeString((target as any)?.brand_tagline),
-      website: safeString((target as any)?.website),
-      address,
-      phone: safeString((target as any)?.phone),
-      socialLinks: (target as any)?.social_links as
-        | Partial<PlaceSocialLinks>
-        | undefined,
-      coverImage: safeString((target as any)?.cover_image),
-      galleryImages: (
-        (target as any)?.gallery_images as string[] | undefined
-      )?.slice(0, 3),
-      about: safeString((target as any)?.about),
-      verified: Boolean((target as any)?.verified),
+      tagline,
+      foodGallery,
     }
   }
 

@@ -18,11 +18,22 @@ import type { Place } from '../../models/place.model'
 const props = defineProps<{
   place: Place | null
   id: string
+  locator?: string
 }>()
 
 const { claimPlace } = usePlaceClaim()
+const publicLocator = computed(() => {
+  const current = String(props.locator ?? '').trim()
+  const id = String(props.id ?? '').trim()
+  const slug = String(props.place?.slug ?? '').trim()
+
+  if (current && current !== id) return current
+  return slug || id
+})
 const editTo = computed(() =>
-  props.id ? `/places/${encodeURIComponent(props.id)}/edit` : '/places'
+  publicLocator.value
+    ? `/places/${encodeURIComponent(publicLocator.value)}/edit`
+    : '/places'
 )
 
 const claim = useEntityClaimPanel({

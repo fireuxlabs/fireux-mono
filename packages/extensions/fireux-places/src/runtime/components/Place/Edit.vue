@@ -117,6 +117,8 @@
 					/>
 				</UCard>
 
+				<PlaceEditPublicStory :place="place" />
+
 				<UCard>
 					<MoleculesFormsFirestoreSimpleField
 						label="Short name"
@@ -158,6 +160,8 @@
 						:update-function="handleWebsite"
 					/>
 				</UCard>
+
+				<PlaceEditSocialLinks :place="place" />
 
 				<UCard>
 					<MoleculesFormsFirestoreSimpleField

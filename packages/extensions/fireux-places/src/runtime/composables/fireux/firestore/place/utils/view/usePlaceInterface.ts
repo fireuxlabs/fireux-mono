@@ -72,6 +72,19 @@ export type PlaceProfile = {
   source?: PlaceSource
 }
 
+export function formatPlaceTypeLabel(value: unknown) {
+  return safeString(value)
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+const formatPlaceTypeList = (values?: string[]) =>
+  (values ?? [])
+    .map((value) => formatPlaceTypeLabel(value))
+    .filter(Boolean)
+
 export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
@@ -183,8 +196,8 @@ export function usePlaceInterface() {
       )?.slice(0, 3),
       about: (target as any)?.about,
       priceLevel: (target as any)?.price_level,
-      tags,
-      types,
+      tags: formatPlaceTypeList(tags),
+      types: formatPlaceTypeList(types),
       phone,
       email,
       website,

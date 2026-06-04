@@ -26,20 +26,23 @@
 
           <div
             v-if="claimState.claimedUserPill || claimState.isClaimed"
-            class="flex flex-wrap items-center gap-2"
+            class="space-y-2"
           >
             <span class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
               Claimed by
             </span>
-            <UserCardsPill
-              v-if="claimState.claimedUserPill"
-              v-bind="claimState.claimedUserPill"
-              :show-subtitle="false"
-              :link="Boolean(claimState.claimedUserPill.to)"
-            />
-            <UBadge v-else color="success" variant="soft">
-              Claimed
-            </UBadge>
+            <div class="fx-claim-admin-user">
+              <UserCardsPill
+                v-if="claimState.claimedUserPill"
+                v-bind="claimState.claimedUserPill"
+                :show-badges="false"
+                :link="Boolean(claimState.claimedUserPill.to)"
+                class="block"
+              />
+              <span v-else class="text-sm text-muted">
+                Claimed
+              </span>
+            </div>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -172,5 +175,11 @@ const panelCopy = computed(() => {
   border-color: var(--fx-debug-yellow-border);
   background: var(--fx-debug-yellow-bg);
   color: var(--fx-fireux-yellow-muted);
+}
+
+.fx-claim-admin-user {
+  display: block;
+  max-width: 100%;
+  width: min(100%, 260px);
 }
 </style>

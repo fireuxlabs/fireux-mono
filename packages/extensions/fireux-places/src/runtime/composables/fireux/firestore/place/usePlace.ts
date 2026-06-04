@@ -9,7 +9,10 @@ import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
 import { usePlaceSeo } from './utils/usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
-import { usePlaceInterface } from './utils/view/usePlaceInterface'
+import {
+  formatPlaceTypeLabel,
+  usePlaceInterface,
+} from './utils/view/usePlaceInterface'
 
 export {
   usePlaceCollection,
@@ -21,6 +24,7 @@ export {
   usePlaceDelete,
   usePlaceSeo,
   usePlaceComputed,
+  formatPlaceTypeLabel,
   usePlaceInterface,
 }
 

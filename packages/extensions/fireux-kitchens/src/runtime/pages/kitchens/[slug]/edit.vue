@@ -1,5 +1,5 @@
 <template>
-  <KitchenPublicEdit :id="routeSlug" />
+  <KitchenPublicEdit :locator="routeLocator" />
 </template>
 
 <script setup lang="ts">
@@ -15,7 +15,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const routeSlug = computed(() => {
+const routeLocator = computed(() => {
   const raw = route.params.slug
   return Array.isArray(raw)
     ? String(raw[0] ?? '').trim()

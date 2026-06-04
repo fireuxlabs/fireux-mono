@@ -31,7 +31,14 @@ export function useKitchenSeo(kitchen: MaybeRefOrGetter<Partial<Kitchen> | null 
       return clean(kitchen?.display_name || kitchen?.name) || 'Kitchen'
     }),
     description: computed(() =>
-      excerpt(entry.value?.tagline || entry.value?.short_address || entry.value?.formatted_address || 'Kitchen details.')
+      excerpt(
+        entry.value?.tagline ||
+          entry.value?.short_address ||
+          entry.value?.formatted_address ||
+          entry.value?.display_name ||
+          entry.value?.name ||
+          ''
+      )
     ),
     image: computed(() => {
       const kitchen = entry.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined

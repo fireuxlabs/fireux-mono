@@ -77,7 +77,7 @@
         <DevJson
           v-if="showDebug && editableFields"
           :title="'Place (Editable)'"
-          context="Place edit page · places/[id]/edit · editable fields"
+          context="Place edit page · places/[id-or-slug]/edit · editable fields"
           :data="editableFields"
           :default-open="false"
         />
@@ -97,6 +97,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
 import {
+  formatPlaceTypeLabel,
   usePlaceFetch,
   usePlaceInterface,
 } from '../../composables/fireux/firestore/place/usePlace'
@@ -108,11 +109,12 @@ const props = defineProps<{
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Place` })
 
-const { place, pending } = usePlaceFetch(computed(() => props.locator))
+const locator = computed(() => String(props.locator || '').trim())
+const { place, pending } = usePlaceFetch(locator)
 const loading = computed(() => pending.value)
 const placeId = computed(() => place.value?.id ?? '')
 const backTo = computed(() =>
-  props.locator ? `/places/${encodeURIComponent(props.locator)}` : '/places'
+  locator.value ? `/places/${encodeURIComponent(locator.value)}` : '/places'
 )
 const showDebug = import.meta.dev
 const { currentUser, isAdmin } = useUser()
@@ -132,14 +134,40 @@ const placePreviewDetails = computed(() => {
     { label: 'Search term', value: v.search_term ?? '' },
     { label: 'Brand tagline', value: v.brand_tagline ?? '' },
     { label: 'About', value: v.about ?? '' },
+    { label: 'Cover image', value: v.cover_image ?? '' },
+    {
+      label: 'Gallery images',
+      value: Array.isArray(v.gallery_images)
+        ? v.gallery_images.filter(Boolean).join(', ')
+        : '',
+    },
     { label: 'Phone', value: v.phone ?? '' },
     { label: 'Email', value: v.email ?? '' },
     { label: 'Website', value: v.website ?? '' },
+    {
+      label: 'Social links',
+      value: v.social_links
+        ? Object.entries(v.social_links)
+            .filter(([, value]) => String(value ?? '').trim())
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ')
+        : '',
+    },
     { label: 'Default currency', value: v.default_currency_code ?? '' },
     { label: 'Timezone', value: v.timezone ?? '' },
     { label: 'Price level', value: v.price_level ?? '' },
-    { label: 'Tags', value: Array.isArray(v.tags) ? v.tags.filter(Boolean).join(', ') : '' },
-    { label: 'Types', value: Array.isArray(v.types) ? v.types.filter(Boolean).join(', ') : '' },
+    {
+      label: 'Tags',
+      value: Array.isArray(v.tags)
+        ? v.tags.map(formatPlaceTypeLabel).filter(Boolean).join(', ')
+        : '',
+    },
+    {
+      label: 'Types',
+      value: Array.isArray(v.types)
+        ? v.types.map(formatPlaceTypeLabel).filter(Boolean).join(', ')
+        : '',
+    },
     { label: 'Claimed by', value: v.claimed_by ?? '' },
     { label: 'Verified', value: v.verified ? 'Yes' : '' },
   ]
@@ -176,9 +204,14 @@ const editableFields = computed(() => {
     image_url: v.image_url ?? (v as any).place_image ?? '',
     image_shade: v.image_shade ?? 'none',
     short_name: v.short_name ?? '',
+    brand_tagline: v.brand_tagline ?? '',
+    about: v.about ?? '',
+    cover_image: v.cover_image ?? '',
+    gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
     phone: v.phone ?? '',
     email: v.email ?? '',
     website: v.website ?? '',
+    social_links: v.social_links ?? {},
     default_currency_code: v.default_currency_code ?? '',
     timezone: v.timezone ?? '',
     claimed_by: v.claimed_by ?? '',

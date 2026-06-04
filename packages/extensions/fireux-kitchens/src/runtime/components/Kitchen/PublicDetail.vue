@@ -23,17 +23,14 @@
           <!-- place -->
           <KitchenPublicPlace :kitchen="kitchen" />
 
-          <!-- profile -->
-          <KitchenCardsProfile
-            v-if="profileCard"
-            :card="profileCard"
-          />
+          <!-- identity -->
+          <KitchenPublicIdentity :kitchen="kitchen" />
 
           <!-- main -->
           <KitchenPublicMenus :kitchen="kitchen" />
 
           <!-- operator -->
-          <KitchenPublicOperator />
+          <KitchenPublicOperator :kitchen="kitchen" />
 
           <!-- dev -->
           <DevJson
@@ -52,7 +49,7 @@
         <UPageHeader
           class="pageheader"
           :title="pageTitle"
-          description="Kitchen details."
+          :description="pageDescription"
         />
 
         <UPageBody class="pagebody">
@@ -74,20 +71,26 @@ import {
 } from '../../composables/fireux/firestore/kitchen/useKitchen'
 
 const props = defineProps<{
-  slug: string
+  locator: string
 }>()
 
-const routeSlug = computed(() => String(props.slug || '').trim())
+const locator = computed(() => String(props.locator || '').trim())
 
-const { kitchen, pending } = useKitchenFetch(routeSlug)
-const { profile } = useKitchenInterface()
-const profileCard = computed(() => profile(kitchen.value))
+const { kitchen, pending } = useKitchenFetch(locator)
+const { identity } = useKitchenInterface()
+const identityCard = computed(() => identity(kitchen.value))
+const kitchenDisplayName = computed(() =>
+  String(kitchen.value?.display_name ?? '').trim()
+)
+const kitchenTagline = computed(() =>
+  String(kitchen.value?.tagline ?? '').trim()
+)
 
 const pageTitle = computed(() =>
-  profileCard.value?.title || routeSlug.value || 'Kitchen'
+  kitchenDisplayName.value || identityCard.value?.title || locator.value || 'Kitchen'
 )
 const pageDescription = computed(() =>
-  profileCard.value?.subtitle || 'Kitchen details.'
+  kitchenTagline.value || identityCard.value?.subtitle || ''
 )
 const isDev = import.meta.dev
 

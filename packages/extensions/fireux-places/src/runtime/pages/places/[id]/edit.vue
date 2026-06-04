@@ -1,9 +1,10 @@
 <template>
-  <PlacePublicEdit :locator="placeLocator" />
+  <PlacePublicEdit :locator="routeLocator" />
 </template>
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'default',
@@ -14,6 +15,10 @@ definePageMeta({
 })
 
 const route = useRoute()
-const raw = route.params.id
-const placeLocator = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+const routeLocator = computed(() => {
+  const raw = route.params.id
+  return Array.isArray(raw)
+    ? String(raw[0] ?? '').trim()
+    : String(raw ?? '').trim()
+})
 </script>

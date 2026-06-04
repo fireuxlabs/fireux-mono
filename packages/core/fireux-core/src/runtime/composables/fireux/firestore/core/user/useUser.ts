@@ -7,6 +7,8 @@ import { useUserComputed } from './utils/view/useUserComputed'
 import { useUserInterface } from './utils/view/useUserInterface'
 
 export type { AppUser, User } from '../../../../../models/core/user.model'
+export { useUserFetch } from './fetch/useUserFetch'
+export { useUserInterface } from './utils/view/useUserInterface'
 
 /**
  * FireUX stack family: Active identity + app overlay.

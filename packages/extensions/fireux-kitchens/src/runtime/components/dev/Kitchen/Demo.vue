@@ -52,7 +52,7 @@
         <div class="text-xs font-medium text-dimmed">Profile</div>
         <KitchenCardsProfile
           v-if="demoProfile"
-          :card="demoProfile"
+          :model="demoProfile"
         />
       </div>
     </div>

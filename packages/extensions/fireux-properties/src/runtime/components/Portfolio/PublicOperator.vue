@@ -1,6 +1,8 @@
 <template>
   <EntityOperatorPanel
     entity-label="Portfolio"
+    title="Portfolio console"
+    description="Portfolio operators manage documents, tasks, compliance, and private portfolio work from the portfolio console."
     :aligned="aligned"
     :not-aligned="notAligned"
   />
