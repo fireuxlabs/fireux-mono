@@ -19,6 +19,11 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Live kitchen stored identity is place-backed and id-based; console runtime selection is state-based.
+- Place sits above Kitchen in the hierarchy:
+  - Place owns real-world venue/location truth: name, address, contact, website, map, default currency, and business/place hours.
+  - Kitchen owns the Misebox domain operation: menus, dishes, recipes, ingredients, mise, orders, stations, team, and kitchen/menu presentation.
+  - Public Kitchen surfaces hydrate from Place instead of copying Place fields into Kitchen.
+  - Kitchen `display_name` and `display_image_url` are explicit overrides only; empty means inherit from Place.
 - Public kitchen route identity is slug-based:
   - `kitchen.id` remains the Firestore document/root identity.
   - `kitchen.slug` is required before a kitchen is ready for public URL publishing.

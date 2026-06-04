@@ -56,9 +56,14 @@ export const KitchenModel = {
   show: false,
   place_id: '',
   slug: '',
+
+  // Optional Kitchen presentation overrides.
+  // Empty means public Kitchen surfaces inherit linked Place name/image.
   display_name: '',
   tagline: '',
   display_image_url: '',
+
+  // Kitchen/menu presentation. Place owns default currency code.
   menu_currency_format: 'dash' as CurrencyDisplayFormat,
   menu_show_currency: true,
   menu_style: undefined as PageStyle | undefined,

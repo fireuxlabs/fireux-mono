@@ -59,14 +59,14 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     input: KitchenCreateDraft
   ): Partial<Kitchen> {
     const place = input.place ?? {}
-    const name = normalizeString(input.display_name || place.name || place.short_name)
-    const imageUrl = normalizeString(
-      input.display_image_url || place.image_url || place.place_image
-    )
+    const placeName = normalizeString(place.name || place.short_name)
+    const displayName = normalizeString(input.display_name)
+    const displayImageUrl = normalizeString(input.display_image_url)
     const slug = normalizeSlug(
       input.slug ||
       place.slug ||
-      [name, place.short_address || place.formatted_address].filter(Boolean).join(' ')
+      displayName ||
+      placeName
     )
     const payload: Partial<Kitchen> = {
       app_scope_state: 'root_only',
@@ -80,10 +80,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     }
 
     if (slug) payload.slug = slug
-    if (name) {
-      payload.display_name = name
-    }
-    if (imageUrl) payload.display_image_url = imageUrl
+    if (displayName) payload.display_name = displayName
+    if (displayImageUrl) payload.display_image_url = displayImageUrl
 
     return payload
   }

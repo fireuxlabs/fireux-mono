@@ -72,7 +72,10 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import {
+  usePlaceCollection,
+  usePlaceInterface,
+} from '../../../composables/fireux/firestore/place/usePlace'
 import type { BasePlace } from '../../../models/place.model'
 
 const props = withDefaults(
@@ -99,7 +102,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = usePlaceCollection()
+const collection = computed(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.collection.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(() =>

@@ -6,7 +6,7 @@
           size="xs"
           variant="ghost"
           icon="i-lucide-arrow-left"
-          :to="kitchenId ? `/kitchens/${encodeURIComponent(kitchenId)}` : '/kitchens'"
+          :to="detailTo"
         >
           Back to details
         </UButton>
@@ -57,7 +57,7 @@
                 size="xs"
                 variant="soft"
                 color="primary"
-                :to="kitchenId ? `/kitchens/${encodeURIComponent(kitchenId)}` : '/kitchens'"
+                :to="detailTo"
               >
                 Go to details
               </UButton>
@@ -83,99 +83,145 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRoute } from '#imports'
+import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
+import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import type { Kitchen } from '../../../models/kitchen.model'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
 
-definePageMeta({
-  layout: 'default',
-  title: 'Edit Kitchen',
-  description: 'Edit a saved kitchen.',
-  head: { title: 'Edit Kitchen' },
-  name: 'KitchensEditPage',
-})
+const props = defineProps<{
+  id: string
+}>()
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
-const route = useRoute()
-const raw = route.params.id
-const kitchenId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
-
+const kitchenId = computed(() => String(props.id || '').trim())
 const { kitchen, pending } = useKitchenFetch(kitchenId)
-const loading = computed(() => Boolean(kitchenId) && pending.value)
+const loading = computed(() => Boolean(kitchenId.value) && pending.value)
+const hydratedKitchen = computed(() => kitchen.value as any | null)
+const detailTo = computed(() => {
+  const slug = String(hydratedKitchen.value?.slug ?? '').trim()
+  return slug ? `/kitchens/${encodeURIComponent(slug)}` : '/kitchens'
+})
 
 const { currentUser, isAdmin } = useUser()
-const claimedBy = computed(() => String(kitchen.value?.claimed_by ?? '').trim())
+const claimedBy = computed(() =>
+  String(hydratedKitchen.value?.claimed_by ?? '').trim()
+)
 const canEdit = computed(() => {
   if (!claimedBy.value) return Boolean(isAdmin.value)
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 
 const { preview } = usePlaceInterface()
-const placePreview = computed(() => preview(kitchen.value as any))
+const placePreview = computed(() => preview(hydratedKitchen.value))
 const placePreviewDetails = computed(() => {
-  const v = kitchen.value
+  const v = hydratedKitchen.value
   if (!v) return []
   const details = [
-    { label: 'Place name', value: (v as any).name ?? '' },
-    { label: 'Place address', value: (v as any).short_address ?? '' },
-    { label: 'Search term', value: (v as any).search_term ?? '' },
-    { label: 'Brand tagline', value: (v as any).brand_tagline ?? '' },
-    { label: 'About', value: (v as any).about ?? '' },
-    { label: 'Phone', value: (v as any).phone ?? '' },
-    { label: 'Website', value: (v as any).website ?? '' },
-    { label: 'Price level', value: (v as any).price_level ?? '' },
-    { label: 'Tags', value: Array.isArray((v as any).tags) ? (v as any).tags.filter(Boolean).join(', ') : '' },
-    { label: 'Types', value: Array.isArray((v as any).types) ? (v as any).types.filter(Boolean).join(', ') : '' },
-    { label: 'Claimed by', value: (v as any).claimed_by ?? '' },
-    { label: 'Verified', value: (v as any).verified ? 'Yes' : '' },
+    { label: 'Place name', value: v.name ?? '' },
+    { label: 'Place address', value: v.short_address ?? '' },
+    { label: 'Search term', value: v.search_term ?? '' },
+    { label: 'Brand tagline', value: v.brand_tagline ?? '' },
+    { label: 'About', value: v.about ?? '' },
+    { label: 'Phone', value: v.phone ?? '' },
+    { label: 'Website', value: v.website ?? '' },
+    { label: 'Price level', value: v.price_level ?? '' },
+    {
+      label: 'Tags',
+      value: Array.isArray(v.tags)
+        ? v.tags.filter(Boolean).join(', ')
+        : '',
+    },
+    {
+      label: 'Types',
+      value: Array.isArray(v.types)
+        ? v.types.filter(Boolean).join(', ')
+        : '',
+    },
+    { label: 'Claimed by', value: v.claimed_by ?? '' },
+    { label: 'Verified', value: v.verified ? 'Yes' : '' },
   ]
 
   return details.filter((item) => String(item.value ?? '').trim().length > 0)
 })
 const placePreviewMapUrl = computed(() => {
-  const v = kitchen.value as any
+  const v = hydratedKitchen.value
   if (!v) return ''
   if (v.google_maps_url) return v.google_maps_url
   return ''
 })
 
-// Pass Place-shaped object to edit organism
-const placeObject = computed(() => {
-  if (!kitchen.value) return null
+const placeObject = computed<Place | null>(() => {
+  const v = hydratedKitchen.value
+  if (!v) return null
+  const placeId = String(v.place_id || v.id || '').trim()
+  if (!placeId) return null
+
   const {
-    id, name, short_name, short_address, formatted_address, lat, lng,
-    image_url, image_shade, claimed_by, source
-  } = kitchen.value
+    name,
+    short_name,
+    short_address,
+    formatted_address,
+    lat,
+    lng,
+    image_url,
+    image_shade,
+    claimed_by,
+    default_currency_code,
+    email,
+    phone,
+    source,
+    timezone,
+    website,
+  } = v
+
   return {
-    id, name, short_name, short_address, formatted_address, lat, lng,
-    image_url, image_shade, claimed_by, source
-  }
+    id: placeId,
+    name,
+    short_name,
+    short_address,
+    formatted_address,
+    lat,
+    lng,
+    image_url,
+    image_shade,
+    claimed_by,
+    default_currency_code,
+    email,
+    phone,
+    source,
+    timezone,
+    website,
+  } as Place
 })
 
 const pageTitle = computed(
-  () => String((kitchen.value as any)?.display_name || kitchen.value?.name || 'Edit kitchen')
+  () =>
+    String(
+      hydratedKitchen.value?.display_name ||
+        hydratedKitchen.value?.name ||
+        'Edit kitchen'
+    )
 )
 const pageSubtitle = computed(() =>
-  kitchenId ? `Kitchen: ${kitchenId}` : 'Edit a kitchen'
+  kitchenId.value ? `Kitchen: ${kitchenId.value}` : 'Edit a kitchen'
 )
 
 const toast = useToastify()
 
 async function onCopyKitchenId() {
-  if (!kitchenId) return
+  if (!kitchenId.value) return
   try {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(kitchenId)
+      await navigator.clipboard.writeText(kitchenId.value)
     } else if (typeof document !== 'undefined') {
       const textarea = document.createElement('textarea')
-      textarea.value = kitchenId
+      textarea.value = kitchenId.value
       textarea.style.position = 'fixed'
       textarea.style.opacity = '0'
       document.body.appendChild(textarea)
@@ -189,5 +235,4 @@ async function onCopyKitchenId() {
     toast.error(`Failed to copy kitchen ID: ${msg}`)
   }
 }
-
 </script>

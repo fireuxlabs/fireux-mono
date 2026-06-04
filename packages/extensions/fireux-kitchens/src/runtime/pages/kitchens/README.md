@@ -12,12 +12,12 @@ This README only explains the kitchen delta.
 ## Current Routes
 
 - `index.vue`
-- `[slug].vue`
+- `[slug]/index.vue`
+- `[slug]/edit.vue`
 - `[slug]/menus/index.vue`
 - `[slug]/menus/[menuId].vue`
 - `[slug]/operator.vue`
 - `create.vue`
-- `edit/[id].vue`
 - `learn-more.vue`
 - `learn-more/dev.vue`
 
@@ -25,10 +25,10 @@ This README only explains the kitchen delta.
 
 - `index.vue` is the public kitchen index
 - `index.vue` embeds the same chooser used by `/console/kitchen`
-- `[slug].vue` and menus index/detail are public kitchen delivery
+- `[slug]/index.vue` and menus index/detail are public kitchen delivery
+- `[slug]/edit.vue` belongs to the public kitchen edit family
 - `[slug]/operator.vue` is the public-to-private operator bridge
 - `create.vue` is the public kitchen create page
-- `edit/[id].vue` belongs to the public kitchen edit family
 
 Kitchen-specific delta:
 - the public index can browse kitchens and also enter the kitchen chooser

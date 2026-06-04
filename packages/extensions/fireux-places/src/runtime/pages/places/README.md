@@ -9,8 +9,8 @@ This folder owns the `Place` public route tree.
 ## Current Routes
 
 - `index.vue`
-- `[id]/index.vue` accepts canonical Place id or stored slug
 - `create.vue`
+- `[id]/index.vue` accepts canonical Place id or stored slug
 - `[id]/edit.vue` accepts canonical Place id or stored slug
 - `learn-more.vue`
 
@@ -19,12 +19,13 @@ This folder owns the `Place` public route tree.
 - `index.vue`, `[id]/index.vue`, and `learn-more.vue` are public place pages
 - `create.vue` is a real place creation surface
 - `[id]/edit.vue` belongs to the public entity edit family
+- `[id]` is the Place public locator segment; it may receive a canonical Place id or a stored slug
 
 ## Aligned With
 
 Public entity edit family examples:
 - `packages/extensions/fireux-companies/src/runtime/pages/companies/[id]/edit.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/edit/[id].vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/edit.vue`
 - `packages/extensions/fireux-places/src/runtime/pages/places/[id]/edit.vue`
 
 ## Not Aligned Yet

@@ -57,6 +57,8 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
+  // View surface only: Place-like fields here are hydrated from Place, not
+  // repeated Kitchen storage truth.
   id?: string
   slug?: string
   show?: boolean

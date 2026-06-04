@@ -1,16 +1,18 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      description="Browse canonical place records for this runtime."
+    />
+
     <UPageBody class="pagebody">
       <EntityIndexCta
-        title="Places index"
-        description="Browse canonical place records for this runtime and use the place creation flow when a new location needs to be captured."
         family="domain-managed"
-        source="places collection"
-        :count-label="`${collection.length} place${collection.length === 1 ? '' : 's'}`"
-        :actions="actions"
+        cta="Create or open a place record when a venue or location needs canonical location truth."
       />
-      <PlaceCollectionManager :collection="collection" />
+
+      <PlaceCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -18,7 +20,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlace } from '../../composables/fireux/firestore/place/usePlace'
 
 definePageMeta({
   layout: 'default',
@@ -39,29 +40,5 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Places'
-const pageDescription = 'Canonical place index for the current runtime.'
-
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { collection } = usePlace()
-const actions = [
-  {
-    label: 'Create',
-    cta: 'Create place',
-    to: '/places/create',
-    icon: 'i-lucide-plus',
-  },
-  {
-    label: 'Related',
-    cta: 'Browse kitchens',
-    to: '/kitchens',
-    icon: 'i-lucide-chef-hat',
-  },
-  {
-    label: 'Guide',
-    cta: 'Learn more',
-    to: '/places/learn-more',
-    icon: 'i-lucide-book-open',
-  },
-] as const
 </script>
