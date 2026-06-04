@@ -64,6 +64,9 @@ export const KitchenModel = {
   display_image_url: '',
   food_gallery: [] as string[],
 
+  // Kitchen plugin toggles. Sproochli enhances menu language; it does not own menu truth.
+  sproochli_enabled: false,
+
   // Kitchen/menu presentation. Place owns default currency code.
   menu_currency_format: 'dash' as CurrencyDisplayFormat,
   menu_show_currency: true,
@@ -101,6 +104,7 @@ export type KitchenCreateInput = Partial<
     | 'display_name'
     | 'display_image_url'
     | 'food_gallery'
+    | 'sproochli_enabled'
     | 'menu_currency_format'
     | 'menu_show_currency'
   >
@@ -117,6 +121,7 @@ export type KitchenUpdateInput = Partial<
     | 'tagline'
     | 'display_image_url'
     | 'food_gallery'
+    | 'sproochli_enabled'
     | 'menu_currency_format'
     | 'menu_show_currency'
     | 'menu_style'

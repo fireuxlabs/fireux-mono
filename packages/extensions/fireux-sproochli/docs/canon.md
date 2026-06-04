@@ -22,6 +22,7 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 
 ## 4) Package vs App Boundary
 - Package owns generic info-page language helpers, response helpers, and runtime config exposure under `runtimeConfig.public.fireux.sproochli`.
+- Package owns generic public language UI/helpers, including the Sproochli language picker and translated-text resolver.
 - The Sproochli app currently owns the prototype public route, sample content, page styling, and public JSON endpoint behavior.
 - Domain meaning stays with the consuming app. This package must not import Misebox, kitchens, suppliers, menus, restaurants, QR generators, or app-specific product models.
 - Sproochli may manage or generate language/copy packs for consuming apps, but those packs remain stored in the owning app or ecosystem database unless a separate Sproochli service-job record is explicitly introduced.

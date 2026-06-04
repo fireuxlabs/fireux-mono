@@ -29,6 +29,7 @@
     "fireux-core": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-places": "workspace:*",
+    "fireux-sproochli": "workspace:*",
     "fireux-suppliers": "workspace:*"
   },
   "peerDependencies": {

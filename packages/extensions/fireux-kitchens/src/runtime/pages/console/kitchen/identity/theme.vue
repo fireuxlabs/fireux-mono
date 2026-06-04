@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-kitchen-identity-theme">
     <template #header>
-      <LayoutsConsoleNavbar title="Theme">
+      <LayoutsConsoleNavbar title="Themes">
         <template #right>
           <UButton
             size="sm"

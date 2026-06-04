@@ -14,7 +14,15 @@
       class="pageheader"
       :title="kitchenName"
       description="Published menus from this kitchen."
-    />
+    >
+      <template #links>
+        <SproochliLanguageTrigger
+          v-if="sproochliEnabled"
+          :language-options="languageOptions"
+          :selected-language="selectedLanguage"
+        />
+      </template>
+    </UPageHeader>
 
     <div class="space-y-3">
       <UPageCard v-if="pending" variant="subtle">
@@ -38,10 +46,10 @@
           <div class="flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0 space-y-1">
               <h2 class="text-lg font-semibold text-highlighted">
-                {{ menu.name }}
+                {{ localizedMenuName(menu) }}
               </h2>
-              <p v-if="menu.description" class="text-sm text-dimmed">
-                {{ menu.description }}
+              <p v-if="localizedMenuDescription(menu)" class="text-sm text-dimmed">
+                {{ localizedMenuDescription(menu) }}
               </p>
             </div>
 
@@ -78,12 +86,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
+import {
+  resolveSproochliLanguageOptions,
+  resolveSproochliTranslatedText,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import type { Menu } from '../../../../models/menu.model'
 
 const {
   kitchenSlug,
   kitchen,
   menus,
+  selectedLanguage,
   pending,
   menuLink,
   debug,
@@ -92,6 +107,24 @@ const isDev = import.meta.dev
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )
+const sproochliEnabled = computed(
+  () => (kitchen.value as any)?.sproochli_enabled === true
+)
+const languageOptions = computed(() =>
+  resolveSproochliLanguageOptions(sproochliEnabled.value)
+)
+const localizedMenuName = (menu: Menu) =>
+  resolveSproochliTranslatedText({
+    defaultText: menu.name,
+    translations: (menu as any)?.names ?? (menu as any)?.translations,
+    selectedLanguage: selectedLanguage.value,
+  }).text || String(menu.name || '').trim()
+const localizedMenuDescription = (menu: Menu) =>
+  resolveSproochliTranslatedText({
+    defaultText: menu.description,
+    translations: (menu as any)?.descriptions,
+    selectedLanguage: selectedLanguage.value,
+  }).text || String(menu.description || '').trim()
 const kitchenStyle = computed(() => {
   const style = kitchen.value && typeof (kitchen.value as any).menu_style === 'object'
     ? (kitchen.value as any).menu_style
@@ -114,6 +147,8 @@ const pageDebug = computed(() => ({
     kitchenName: kitchenName.value,
     kitchenStyle: kitchenStyle.value,
     pending: pending.value,
+    selectedLanguage: selectedLanguage.value || null,
+    sproochliEnabled: sproochliEnabled.value,
     menusCount: menus.value.length,
     menuLinks: menus.value.map((menu) => ({
       id: menu.id,

@@ -13,6 +13,10 @@ import { useMenuCollection } from '../../../firestore/menu/useMenu'
 import { useMenuSectionCollection } from '../../../firestore/menu/fetch/useMenuSectionCollection'
 import type { Menu } from '../../../../../models/menu.model'
 import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
+import {
+  normalizeSproochliLanguage,
+  resolveSproochliTranslatedText,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
@@ -28,6 +32,16 @@ const sortItems = (items: MenuItem[]) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
       text(a.dish_id).localeCompare(text(b.dish_id))
   )
+const translatedText = (
+  defaultText: unknown,
+  translations: unknown,
+  selectedLanguage: unknown
+) =>
+  resolveSproochliTranslatedText({
+    defaultText,
+    translations,
+    selectedLanguage,
+  }).text
 
 export type KitchenPublicMenuItemRow = {
   id: string
@@ -108,6 +122,11 @@ export function useKitchenPublicMenu() {
   const route = useRoute()
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
+  const selectedLanguage = computed(() =>
+    normalizeSproochliLanguage(
+      route.query.sproochli ?? route.query.lang ?? route.query.language
+    )
+  )
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const publicKitchen = usePublicScope({
     scopeKey: kitchenSlug,
@@ -129,12 +148,18 @@ export function useKitchenPublicMenu() {
       publicKitchen.pending.value ||
       (Boolean(publicKitchen.scopeId.value) && publicMenus.pending.value)
   )
+  const languageQuery = computed(() =>
+    selectedLanguage.value
+      ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}`
+      : ''
+  )
   const menuLink = (id: Menu['id']) =>
-    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
+    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}${languageQuery.value}`
   const debug = computed(() => ({
     route: {
       kitchenSlug: kitchenSlug.value,
       menuId: menuId.value || null,
+      selectedLanguage: selectedLanguage.value || null,
     },
     kitchen: publicKitchen.scope.value
       ? {
@@ -168,6 +193,7 @@ export function useKitchenPublicMenu() {
     kitchen: publicKitchen.scope,
     menus: publicMenus.records,
     menu: publicMenus.record,
+    selectedLanguage,
     pending,
     menuLink,
     debug,
@@ -209,16 +235,35 @@ export function useKitchenPublicMenuDetail() {
       return {
         id: sectionId,
         section,
-        label: text(section.label),
-        description: text(section.description),
+        label:
+          translatedText(
+            section.label,
+            (section as any)?.labels ?? (section as any)?.translations,
+            state.selectedLanguage.value
+          ) || text(section.label),
+        description:
+          translatedText(
+            section.description,
+            (section as any)?.descriptions,
+            state.selectedLanguage.value
+          ) || text(section.description),
         items: items.map((item) => {
           const dish = dishesById.value.get(text(item.dish_id)) ?? null
           return {
             id: text(item.id),
             item,
             dish,
-            name: text(dish?.name) || text(item.dish_id),
-            description: text(dish?.description),
+            name:
+              translatedText(
+                dish?.name,
+                (dish as any)?.names,
+                state.selectedLanguage.value
+              ) || text(item.dish_id),
+            description: translatedText(
+              dish?.description,
+              (dish as any)?.descriptions,
+              state.selectedLanguage.value
+            ),
             price: Number(item.price || 0),
           }
         }),

@@ -9,6 +9,12 @@
         <p v-if="kitchenName" class="kitchen-name">
           {{ kitchenName }}
         </p>
+        <div v-if="languageOptions?.length > 1" class="menu-language">
+          <SproochliLanguageTrigger
+            :language-options="languageOptions"
+            :selected-language="selectedLanguage"
+          />
+        </div>
         <h1>{{ menu.name }}</h1>
         <p v-if="menu.description" class="description">
           {{ menu.description }}
@@ -67,6 +73,11 @@ import {
   type CurrencyDisplayFormat,
 } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
+import type {
+  SproochliLanguageCode,
+  SproochliLanguageOption,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 
@@ -78,6 +89,8 @@ const props = defineProps<{
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
+  languageOptions?: SproochliLanguageOption[]
+  selectedLanguage?: SproochliLanguageCode
   variant?: 'page' | 'preview'
 }>()
 
@@ -193,6 +206,12 @@ const formatPrice = (price: number) => {
 .menu-header {
   text-align: center;
   margin-bottom: 2.5rem;
+}
+
+.menu-language {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .kitchen-name,

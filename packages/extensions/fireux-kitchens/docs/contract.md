@@ -127,6 +127,12 @@ Ingredient composable stack canon:
 - Public menu routes render published menus only.
 - Missing, unpublished, or invalid menus must show an explicit unavailable state.
 - There is no automatic first-menu, active-menu, slug-fallback, translation-engine, ordering, or demo-prototype canon in V1.
+- Sproochli is a package-owned language layer consumed by Kitchen/Menu routes:
+  - `fireux-sproochli` owns Sproochli language UI/helpers.
+  - `kitchen.sproochli_enabled` only decides whether this Kitchen exposes those tools.
+  - Kitchen public menu routes adapt Kitchen/Menu/Dish data into the Sproochli helper seam.
+  - Menu records should store the actual language/translation status when Sproochli work happens.
+  - Place does not own Sproochli settings.
 - Schedule meanings stay separate:
   - Place/business hours describe when the venue is open.
   - Kitchen opening/service hours describe when the kitchen operation is available.

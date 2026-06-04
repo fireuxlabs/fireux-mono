@@ -14,7 +14,7 @@ Kitchen public helpers are needed because public menus combine Kitchen, Menu, Se
 
 Subfolders:
 - `menu/` owns public Kitchen Menu route shaping.
-- `sproochli/` owns public language, translated chrome labels, and Sproochli query state.
+- Sproochli language UI/helpers are owned by `fireux-sproochli`; Kitchen public routes only adapt Kitchen/Menu/Dish data into that seam.
 
 Keep stored CRUD in `firestore/`.
 Keep selected operator workspace behavior in `console/kitchen`.

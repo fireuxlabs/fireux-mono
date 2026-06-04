@@ -41,6 +41,11 @@ export function useKitchenConsoleIdentity() {
   const placeId = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.place_id)
   )
+  const sproochliEnabled = computed(
+    () =>
+      (selectedKitchen.value as Record<string, unknown> | null)
+        ?.sproochli_enabled === true
+  )
   const address = computed(() => {
     const kitchen = selectedKitchen.value as Record<string, unknown> | null
     return normalizeString(kitchen?.short_address || kitchen?.formatted_address)
@@ -55,6 +60,7 @@ export function useKitchenConsoleIdentity() {
     currencyCode: currencyCode.value,
     slug: slug.value,
     placeId: placeId.value,
+    sproochliEnabled: sproochliEnabled.value,
     address: address.value,
     selectedKitchen: selectedKitchen.value,
   }))
@@ -71,6 +77,7 @@ export function useKitchenConsoleIdentity() {
     currencyCode,
     slug,
     placeId,
+    sproochliEnabled,
     address,
     debug,
   }

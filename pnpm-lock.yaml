@@ -347,6 +347,9 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../extensions/fireux-places
+      fireux-sproochli:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-sproochli
       fireux-suppliers:
         specifier: workspace:*
         version: link:../../extensions/fireux-suppliers
@@ -541,6 +544,9 @@ importers:
       fireux-products:
         specifier: workspace:*
         version: link:../fireux-products
+      fireux-sproochli:
+        specifier: workspace:*
+        version: link:../fireux-sproochli
       fireux-suppliers:
         specifier: workspace:*
         version: link:../fireux-suppliers

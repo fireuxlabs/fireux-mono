@@ -15,9 +15,9 @@ Menu is a public-rendered scoped entity:
 - Public routes do not create root Menu truth.
 - Public routes do not promote or migrate scoped records.
 
-The menu layer is intentionally ignorant of Sproochli/language. Language helpers may decorate public menu routes from `public/kitchen/sproochli`, but Menu loading and publish truth do not depend on that layer.
+The menu layer keeps Menu loading and publish truth in Kitchens. Sproochli owns language UI/helpers; Kitchen menu routes may call those helpers to decorate already-loaded public menu data.
 <!-- docs:public:end -->
 
 Keep stored Menu CRUD in `firestore/menu`.
 Keep selected operator menu workflows in `console/kitchen/operations`.
-Keep Sproochli/language chrome helpers in `public/kitchen/sproochli`.
+Keep Sproochli/language chrome helpers in `fireux-sproochli`.

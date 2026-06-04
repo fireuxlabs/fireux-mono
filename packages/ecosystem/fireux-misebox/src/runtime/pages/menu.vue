@@ -14,7 +14,7 @@
         {{ menuDescription }}
       </p>
 
-      <MenuSproochliLanguageTrigger
+      <SproochliLanguageTrigger
         :language-options="languageOptions"
         :selected-language="selectedLanguage"
       />
@@ -79,22 +79,13 @@ import { computed, ref, watch } from 'vue'
 import { useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import {
-  isPublicKitchenCacheLanguage,
-  isPublicKitchenRtlLanguage,
-  normalizePublicKitchenLanguage,
-  resolvePublicKitchenChromeLanguage,
-  resolvePublicKitchenLanguageOptions,
-  resolvePublicKitchenLanguageState,
-  resolvePublicTranslatedText,
-} from 'fireux-kitchens/runtime/composables/fireux/app/public-kitchen-language'
-import { usePublicMenuLanguage } from 'fireux-kitchens/runtime/composables/fireux/app/kitchens/usePublicMenuLanguage'
-import {
-  resolvePublicMenuDesign,
-  resolvePublicMenuDesignSource,
-  resolvePublicMenuDesignStyle,
-} from 'fireux-kitchens/runtime/composables/fireux/app/public-menu-design'
-import MenuSproochliLanguageTrigger from 'fireux-kitchens/runtime/components/Menu/SproochliLanguageTrigger.vue'
+  isSproochliRtlLanguage,
+  normalizeSproochliLanguage,
+  resolveSproochliLanguageOptions,
+  resolveSproochliTranslatedText,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Dish } from 'fireux-kitchens/runtime/models/dish.model'
@@ -239,7 +230,6 @@ const dishesPath = computed(() =>
     : ''
 )
 
-const languageState = computed(() => resolvePublicKitchenLanguageState(kitchen.value))
 const kitchenSproochliEnabled = computed(() => {
   const settings = kitchen.value?.language_settings
   return !(
@@ -257,37 +247,17 @@ const sproochliEnabled = computed(
 )
 const selectedLanguage = computed(() =>
   sproochliEnabled.value
-    ? normalizePublicKitchenLanguage(
+    ? normalizeSproochliLanguage(
         normalizeRouteQueryString(route.query.sproochli)
       )
     : ''
 )
 const pageDirection = computed(() =>
-  isPublicKitchenRtlLanguage(selectedLanguage.value) ? 'rtl' : 'ltr'
+  isSproochliRtlLanguage(selectedLanguage.value) ? 'rtl' : 'ltr'
 )
-const chromeLanguage = computed(() =>
-  resolvePublicKitchenChromeLanguage({
-    selectedLanguage: selectedLanguage.value,
-    primaryLanguage:
-      languageState.value.defaultLanguage || languageState.value.primaryLanguage,
-  })
-)
-const activeContentLanguage = computed(
-  () =>
-    selectedLanguage.value ||
-    languageState.value.defaultLanguage ||
-    languageState.value.primaryLanguage ||
-    ''
-)
-const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
-const selectedLanguageUsesCache = computed(() => {
-  const language = selectedLanguage.value
-  return Boolean(
-    language &&
-      isPublicKitchenCacheLanguage(language) &&
-      languageState.value.cachedLanguages.includes(language)
-  )
-})
+const activeContentLanguage = computed(() => selectedLanguage.value || '')
+const chromeLabels = { loadingMenu: 'Loading menu...' }
+const selectedLanguageUsesCache = computed(() => false)
 const translationCachePath = computed(() =>
   kitchenId.value && selectedLanguageUsesCache.value
     ? `${rootKitchenCollectionPath.value}/${kitchenId.value}/menus/${routeMenuId.value}/translation_cache`
@@ -333,23 +303,8 @@ const selectedMenu = computed<PublicMenuRecord | null>(() => {
   const list = menus.value ?? []
   return list.find((entry) => normalizeString(entry.id) === routeMenuId.value) ?? null
 })
-const publicMenuDesignSources = computed(() => [
-  selectedMenu.value,
-  kitchen.value,
-  publicMenuConfig.value,
-  (runtimeConfig.public as Record<string, unknown>).fireux,
-])
-const publicMenuDesign = computed(() =>
-  resolvePublicMenuDesign(...publicMenuDesignSources.value)
-)
-const publicMenuPageClass = computed(
-  () => `public-menu-page--${publicMenuDesign.value.color_mode}`
-)
-const publicMenuDesignStyle = computed(() =>
-  resolvePublicMenuDesignStyle(
-    resolvePublicMenuDesignSource(...publicMenuDesignSources.value)
-  )
-)
+const publicMenuPageClass = 'public-menu-page--light'
+const publicMenuDesignStyle = {}
 const dishesById = computed(() => {
   const map = new Map<string, Dish>()
   for (const dish of dishes.value ?? []) {
@@ -375,7 +330,7 @@ const translationCacheByField = computed(() => {
 })
 const languageOptions = computed(() =>
   sproochliEnabled.value
-    ? resolvePublicKitchenLanguageOptions(kitchen.value)
+    ? resolveSproochliLanguageOptions(true)
     : []
 )
 const loading = computed(() => {
@@ -404,7 +359,7 @@ const textForLanguage = (
   translations: unknown,
   cacheFieldId = ''
 ) =>
-  resolvePublicTranslatedText({
+  resolveSproochliTranslatedText({
     defaultText,
     translations,
     selectedLanguage: activeContentLanguage.value,

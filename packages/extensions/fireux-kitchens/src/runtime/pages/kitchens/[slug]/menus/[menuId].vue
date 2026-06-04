@@ -16,12 +16,14 @@
     <MenuPublic
       v-else
       :kitchen-name="kitchenName"
-      :menu="menu"
+      :menu="displayMenu"
       :sections="sectionRows"
       :page-style="kitchen.menu_style"
       :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
       :show-currency="showCurrency"
+      :language-options="languageOptions"
+      :selected-language="selectedLanguage"
     />
 
     <DevJson
@@ -39,7 +41,12 @@
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import {
+  resolveSproochliLanguageOptions,
+  resolveSproochliTranslatedText,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import type { Menu } from '../../../../models/menu.model'
 
 definePageMeta({
   layout: 'public-menu',
@@ -51,6 +58,7 @@ const {
   kitchen,
   menu,
   sectionRows,
+  selectedLanguage,
   debug,
 } = useKitchenPublicMenuDetail()
 const isDev = import.meta.dev
@@ -68,6 +76,29 @@ const text = (value: unknown) => String(value ?? '').trim()
 const kitchenName = computed(() =>
   text(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
 )
+const languageOptions = computed(() =>
+  resolveSproochliLanguageOptions((kitchen.value as any)?.sproochli_enabled === true)
+)
+const displayMenu = computed<Menu>(() => {
+  const current = menu.value as Menu | null
+  if (!current) return {} as Menu
+
+  return {
+    ...current,
+    name:
+      resolveSproochliTranslatedText({
+        defaultText: current.name,
+        translations: (current as any)?.names ?? (current as any)?.translations,
+        selectedLanguage: selectedLanguage.value,
+      }).text || current.name,
+    description:
+      resolveSproochliTranslatedText({
+        defaultText: current.description,
+        translations: (current as any)?.descriptions,
+        selectedLanguage: selectedLanguage.value,
+      }).text || current.description,
+  }
+})
 const currencyFormat = computed(
   () => (text(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
 )
@@ -180,6 +211,11 @@ const pageDebug = computed(() => ({
       code: text(kitchen.value?.default_currency_code) || 'CHF',
       format: currencyFormat.value,
       show: showCurrency.value,
+    },
+    sproochli: {
+      enabled: (kitchen.value as any)?.sproochli_enabled === true,
+      selectedLanguage: selectedLanguage.value || null,
+      languageOptions: languageOptions.value.map((option) => option.code || 'original'),
     },
   },
 }))

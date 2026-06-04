@@ -7,19 +7,21 @@
       :title="triggerLabel"
       @click="open = true"
     >
-      <img
-        :src="triggerImageSrc"
-        alt=""
-        class="sproochli-trigger-image"
-        loading="lazy"
-        decoding="async"
-      >
+      <span class="sproochli-trigger-mark">
+        <img
+          :src="triggerImageSrc"
+          alt=""
+          class="sproochli-trigger-image"
+          loading="lazy"
+          decoding="async"
+        >
+      </span>
+      <span class="sproochli-trigger-copy">
+        <span class="sproochli-trigger-title">Translate menu</span>
+        <span class="sproochli-trigger-current">{{ selectedOption.name }}</span>
+      </span>
       <span class="sr-only">{{ triggerLabel }}</span>
     </button>
-
-    <span class="sproochli-trigger-current">
-      {{ selectedOption.name }}
-    </span>
 
     <ClientOnly>
       <Teleport to="body">
@@ -80,19 +82,19 @@
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import {
-  isPublicKitchenRtlLanguage,
-  type PublicKitchenLanguageCode,
-  type PublicKitchenLanguageOption,
-} from '../../composables/fireux/public/kitchen/sproochli/publicLanguage'
+  isSproochliRtlLanguage,
+  type SproochliLanguageCode,
+  type SproochliLanguageOption,
+} from '../../composables/fireux/sproochli/publicLanguage'
 
 const triggerImageSrc = new URL(
-  '../../../assets/sproochli/translate-trigger-compact.png',
+  '../../assets/sproochli/translate-trigger-compact.png',
   import.meta.url
 ).href
 
 const props = defineProps<{
-  languageOptions: PublicKitchenLanguageOption[]
-  selectedLanguage?: PublicKitchenLanguageCode
+  languageOptions: SproochliLanguageOption[]
+  selectedLanguage?: SproochliLanguageCode
 }>()
 
 const route = useRoute()
@@ -133,7 +135,7 @@ const appendQueryValue = (
   if (normalized) params.append(key, normalized)
 }
 
-const languageHref = (language: PublicKitchenLanguageCode) => {
+const languageHref = (language: SproochliLanguageCode) => {
   const params = new URLSearchParams()
   Object.entries(passThroughQuery.value).forEach(([key, value]) => {
     appendQueryValue(params, key, value)
@@ -142,35 +144,58 @@ const languageHref = (language: PublicKitchenLanguageCode) => {
   const query = params.toString()
   return query ? `${route.path}?${query}` : route.path
 }
-const languageOptionActive = (language: PublicKitchenLanguageCode) =>
+const languageOptionActive = (language: SproochliLanguageCode) =>
   language
     ? language === (props.selectedLanguage || '')
     : !props.selectedLanguage
-const languageDirection = (language: PublicKitchenLanguageCode) =>
-  isPublicKitchenRtlLanguage(language) ? 'rtl' : 'ltr'
+const languageDirection = (language: SproochliLanguageCode) =>
+  isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
 </script>
 
 <style scoped>
 .sproochli-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
 }
 
 .sproochli-trigger-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: min(42vw, 142px);
-  padding: 0;
-  border: 0;
-  background: transparent;
+  gap: 0.65rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.75rem 0.45rem 0.5rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-bg-elevated);
+  color: var(--ui-text-highlighted);
+  box-shadow: var(--ui-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.08));
   cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.sproochli-trigger-button:hover {
+  border-color: var(--ui-primary);
+  background: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-bg-elevated));
+  transform: translateY(-1px);
 }
 
 .sproochli-trigger-button:focus-visible {
   outline: 2px solid var(--ui-primary);
   outline-offset: 3px;
+}
+
+.sproochli-trigger-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--ui-bg);
 }
 
 .sproochli-trigger-image {
@@ -179,10 +204,24 @@ const languageDirection = (language: PublicKitchenLanguageCode) =>
   height: auto;
 }
 
+.sproochli-trigger-copy {
+  display: grid;
+  gap: 0.05rem;
+  text-align: left;
+}
+
+.sproochli-trigger-title {
+  color: var(--ui-text-highlighted);
+  font-size: 0.85rem;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
 .sproochli-trigger-current {
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 650;
+  line-height: 1.1;
 }
 
 .sproochli-language-list {

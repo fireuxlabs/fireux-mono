@@ -5,6 +5,8 @@ Generic multilingual info-page tooling for FireUX apps.
 
 This package owns reusable language and public-response helpers for QR-friendly pages:
 
+- public language picker component
+- public language options
 - info page types
 - language normalization
 - RTL direction helpers
@@ -29,6 +31,15 @@ import {
   normalizeInfoLanguage,
   resolveLocalizedText,
 } from 'fireux-sproochli/runtime/info'
+```
+
+```ts
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
+import {
+  normalizeSproochliLanguage,
+  resolveSproochliLanguageOptions,
+  resolveSproochliTranslatedText,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 ```
 
 Enable as a Nuxt module when runtime config exposure is useful:
