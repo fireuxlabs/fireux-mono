@@ -27,18 +27,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
-  nav: {
-    visibility: { modules: ['fireux-kitchens'] },
-    key: 'console-kitchen-identity-theme',
-    label: 'Theme',
-    icon: 'i-lucide-palette',
-    position: 'top',
-    requiresSelection: true,
-    order: 4,
-    desktop: true,
-    mobile: true,
-    layouts: ['console'],
-  },
   requiresAuth: true,
 })
 </script>

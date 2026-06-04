@@ -19,7 +19,6 @@
       :menu="menu"
       :sections="sectionRows"
       :page-style="kitchen.menu_style"
-      :public-menu-polish="kitchen.public_menu_polish"
       :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
       :show-currency="showCurrency"
@@ -41,7 +40,6 @@ import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/mone
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
-import type { KitchenPublicMenuPolish } from '../../../../models/kitchen.model'
 
 definePageMeta({
   layout: 'public-menu',
@@ -77,10 +75,6 @@ const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 const kitchenStyle = computed<Partial<PageStyle>>(() => {
   const style = kitchen.value?.menu_style
   return style && typeof style === 'object' ? style : {}
-})
-const publicMenuPolish = computed<Partial<KitchenPublicMenuPolish>>(() => {
-  const polish = kitchen.value?.public_menu_polish
-  return polish && typeof polish === 'object' ? polish : {}
 })
 const expectedStyle = computed(() => {
   const style = kitchenStyle.value
@@ -136,10 +130,8 @@ const readRenderedStyle = async () => {
       menuTextLight: styles.getPropertyValue('--menu-text-light').trim(),
       menuAccent: styles.getPropertyValue('--menu-accent').trim(),
       menuSecondary: styles.getPropertyValue('--menu-secondary').trim(),
-      menuContentInsetLeft: styles.getPropertyValue('--menu-content-inset-left').trim(),
     },
     layout: {
-      contentInsetLeft: styles.getPropertyValue('--menu-content-inset-left').trim(),
       bodyPaddingLeft: sectionStyles?.paddingLeft ?? '',
     },
   }
@@ -184,10 +176,6 @@ const pageDebug = computed(() => ({
     },
     expected: expectedStyle.value,
     rendered: renderedStyle.value,
-    polish: {
-      note: 'Local one-kitchen public menu polish. Not shared PageStyle.',
-      contentInsetLeft: text(publicMenuPolish.value.content_inset_left),
-    },
     currency: {
       code: text(kitchen.value?.default_currency_code) || 'CHF',
       format: currencyFormat.value,

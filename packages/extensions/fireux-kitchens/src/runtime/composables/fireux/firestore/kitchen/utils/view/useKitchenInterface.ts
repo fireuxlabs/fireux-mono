@@ -5,6 +5,8 @@ import type {
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
@@ -67,6 +69,9 @@ export type KitchenSurface = {
   display_name?: string
   short_name?: string
   default_currency_code?: string
+  menu_currency_format?: CurrencyDisplayFormat
+  menu_show_currency?: boolean
+  menu_style?: Partial<PageStyle>
   formatted_address?: string
   short_address?: string
   lat?: number

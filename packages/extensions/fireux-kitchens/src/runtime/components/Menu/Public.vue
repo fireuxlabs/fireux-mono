@@ -68,7 +68,6 @@ import {
 } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
-import type { KitchenPublicMenuPolish } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
 const props = defineProps<{
@@ -76,7 +75,6 @@ const props = defineProps<{
   menu: Menu
   sections: KitchenPublicMenuSectionRow[]
   pageStyle?: Partial<PageStyle> | null
-  publicMenuPolish?: Partial<KitchenPublicMenuPolish> | null
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
@@ -87,7 +85,6 @@ const color = (value: unknown) => String(value ?? '').trim()
 
 const menuStyleVars = computed(() => {
   const style = props.pageStyle ?? {}
-  const polish = props.publicMenuPolish ?? {}
   const vars: Record<string, string> = {}
   const backgroundLight = color(style.background_color_light)
   const backgroundDark = color(style.background_color_dark)
@@ -95,7 +92,6 @@ const menuStyleVars = computed(() => {
   const fontDark = color(style.font_color_dark)
   const primary = color(style.primary_color)
   const secondary = color(style.secondary_color)
-  const contentInsetLeft = color(polish.content_inset_left)
 
   if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
   if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
@@ -103,7 +99,6 @@ const menuStyleVars = computed(() => {
   if (fontLight) vars['--menu-text-light'] = fontLight
   if (primary) vars['--menu-accent'] = primary
   if (secondary) vars['--menu-secondary'] = secondary
-  if (contentInsetLeft) vars['--menu-content-inset-left'] = contentInsetLeft
 
   return vars
 })
@@ -132,7 +127,6 @@ const formatPrice = (price: number) => {
   --menu-font: Georgia, 'Times New Roman', serif;
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
   --menu-page-padding-inline: clamp(1.5rem, 4vw, 3rem);
-  --menu-body-inset-left: 0rem;
 
   min-height: 100vh;
   background: var(--menu-bg);
@@ -194,12 +188,6 @@ const formatPrice = (price: number) => {
   width: min(100%, 72rem);
   margin: 0 auto;
   padding: var(--menu-page-padding-block) var(--menu-page-padding-inline);
-}
-
-@media (min-width: 768px) {
-  .menu-sections {
-    padding-left: var(--menu-content-inset-left, var(--menu-body-inset-left));
-  }
 }
 
 .menu-header {

@@ -27,18 +27,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
-  nav: {
-    visibility: { modules: ['fireux-kitchens'] },
-    key: 'console-kitchen-identity-place',
-    label: 'Place',
-    icon: 'i-lucide-map-pin',
-    position: 'top',
-    requiresSelection: true,
-    order: 5,
-    desktop: true,
-    mobile: true,
-    layouts: ['console'],
-  },
   requiresAuth: true,
 })
 </script>

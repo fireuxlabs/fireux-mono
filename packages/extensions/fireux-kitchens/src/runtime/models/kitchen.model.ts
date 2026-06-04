@@ -12,19 +12,6 @@ type WidenLiteral<T> =
   : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
   : T
 
-export type KitchenPublicMenuPolish = {
-  /**
-   * One-kitchen final polish for public menu layout.
-   *
-   * This is intentionally not part of shared PageStyle. If multiple kitchens
-   * need the same controls later, graduate them into a real shared layout seam.
-   * Current pipeline: store a value here, MenuPublic maps it to a CSS var, and
-   * the public menu detail debug reports the stored value plus rendered layout.
-   * Leave empty unless a real client needs last-mile visual adjustment.
-   */
-  content_inset_left?: string
-}
-
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -75,7 +62,6 @@ export const KitchenModel = {
   menu_currency_format: 'dash' as CurrencyDisplayFormat,
   menu_show_currency: true,
   menu_style: undefined as PageStyle | undefined,
-  public_menu_polish: undefined as KitchenPublicMenuPolish | undefined,
   menu_available: true,
 
   created: {
@@ -126,7 +112,6 @@ export type KitchenUpdateInput = Partial<
     | 'menu_currency_format'
     | 'menu_show_currency'
     | 'menu_style'
-    | 'public_menu_polish'
     | 'menu_available'
   >
 >
