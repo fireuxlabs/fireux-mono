@@ -165,7 +165,7 @@ const {
   collection: kitchensCollectionValue,
   runtimeModel: kitchenModelRuntime,
   driftMode: 'extras-only',
-  requiredPaths: ['name'],
+  requiredPaths: ['display_name'],
 })
 
 const hydratedById = computed(() => {
@@ -185,7 +185,10 @@ const filteredKitchensResolved = computed(() =>
 const filteredKitchensDriftPayload = buildKitchensDriftPayload({
   map: ({ doc, id, drift }) => ({
     id,
-    name: hydratedById.value.get(id)?.name ?? (doc as any).name ?? '',
+    display_name:
+      (hydratedById.value.get(id) as any)?.display_name ??
+      (doc as any).display_name ??
+      '',
     drift,
   }),
 })
@@ -254,18 +257,18 @@ const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: 
 
 const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
   const existingKitchen = hydratedById.value.get(kitchenId)
-  const existingImageUrl = String(existingKitchen?.image_url || '').trim()
+  const existingImageUrl = String((existingKitchen as any)?.display_image_url || '').trim()
   const userAvatarUrl =
     String(avatarSrc.value || '').trim() ||
     String(authUser.value?.photoURL || '').trim()
+  const displayName = resolveTestKitchenName(authUser.value?.displayName, kitchenId)
 
   return {
     id: kitchenId,
     place_id: String(existingKitchen?.place_id || kitchenId).trim(),
-    slug: normalizeSlug(resolveTestKitchenName(authUser.value?.displayName, kitchenId)) || 'user-test-kitchen',
-    name: resolveTestKitchenName(authUser.value?.displayName, kitchenId),
-    short_address: '123 Sandbox Street',
-    image_url: existingImageUrl || userAvatarUrl || undefined,
+    slug: normalizeSlug(displayName) || 'user-test-kitchen',
+    display_name: displayName,
+    display_image_url: existingImageUrl || userAvatarUrl || undefined,
     is_test_kitchen: true,
     simulation_kind: 'test',
     can_write: true,

@@ -2,7 +2,6 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.t
 import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
-import type { WeeklySchedule } from 'fireux-core/runtime/models/core/time.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -70,24 +69,14 @@ export const KitchenModel = {
   show: false,
   place_id: '',
   slug: '',
-  name: '',
+  display_name: '',
   tagline: '',
-  currency_code: 'CHF',
-  currency_format: 'dash' as CurrencyDisplayFormat,
-  short_name: '',
-  short_address: '',
-  formatted_address: '',
-  image_url: '',
-  style: undefined as PageStyle | undefined,
+  display_image_url: '',
+  menu_currency_format: 'dash' as CurrencyDisplayFormat,
+  menu_show_currency: true,
+  menu_style: undefined as PageStyle | undefined,
   public_menu_polish: undefined as KitchenPublicMenuPolish | undefined,
-  /**
-   * Kitchen-level service/opening schedule.
-   *
-   * This can differ from Place/business hours and from Menu availability.
-   * Place should own venue polish before shipping; Menu can later own its own
-   * availability when a menu is only served during specific windows.
-   */
-  opening_hours: undefined as WeeklySchedule | undefined,
+  menu_available: true,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -117,13 +106,10 @@ export type KitchenCreateInput = Partial<
     | 'id'
     | 'place_id'
     | 'slug'
-    | 'name'
-    | 'currency_code'
-    | 'currency_format'
-    | 'short_name'
-    | 'short_address'
-    | 'formatted_address'
-    | 'image_url'
+    | 'display_name'
+    | 'display_image_url'
+    | 'menu_currency_format'
+    | 'menu_show_currency'
   >
 >
 
@@ -134,16 +120,13 @@ export type KitchenUpdateInput = Partial<
     | 'show'
     | 'place_id'
     | 'slug'
-    | 'name'
+    | 'display_name'
     | 'tagline'
-    | 'currency_code'
-    | 'currency_format'
-    | 'short_name'
-    | 'short_address'
-    | 'formatted_address'
-    | 'image_url'
-    | 'style'
+    | 'display_image_url'
+    | 'menu_currency_format'
+    | 'menu_show_currency'
+    | 'menu_style'
     | 'public_menu_polish'
-    | 'opening_hours'
+    | 'menu_available'
   >
 >

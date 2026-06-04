@@ -112,6 +112,7 @@ export const PlaceModel = {
   rating: 0 as number,
   rating_count: 0 as number,
   price_level: '' as string,
+  default_currency_code: 'CHF' as string,
 
   /**
    * MVP-friendly business/place hours.

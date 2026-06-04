@@ -46,8 +46,8 @@
                 <UBadge v-if="placeId" color="neutral" variant="subtle">
                   Place linked
                 </UBadge>
-                <UBadge color="neutral" variant="soft">
-                  {{ currencyDisplaySummary }}
+        <UBadge color="neutral" variant="soft">
+          {{ menuDisplaySummary }}
                 </UBadge>
               </div>
             </div>
@@ -77,9 +77,9 @@
               <UIcon name="i-lucide-wallet" class="size-5 text-muted" />
               <div>
                 <div class="text-base font-semibold text-highlighted">
-                  Currency
+                  Menu display
                 </div>
-                <p class="text-sm text-dimmed">{{ currencyDisplaySummary }}</p>
+                <p class="text-sm text-dimmed">{{ menuDisplaySummary }}</p>
               </div>
             </div>
           </template>
@@ -87,58 +87,18 @@
           <div class="space-y-3">
             <div class="console-summary-field">
               Code:
-              <span class="console-summary-value">{{ currencyCode || 'CHF' }}</span>
+              <span class="console-summary-value">{{ currencyCode || 'CHF' }} from Place</span>
             </div>
             <div class="console-summary-field">
               Display:
               <span class="console-summary-value">{{ currencyFormatLabel }}</span>
             </div>
             <div class="console-summary-field">
-              Source:
-              <span class="console-summary-value">{{ source || 'Unset' }}</span>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-3">
-              <UIcon name="i-lucide-clock" class="size-5 text-muted" />
-              <div>
-                <div class="text-base font-semibold text-highlighted">
-                  Opening Hours
-                </div>
-                <p class="text-sm text-dimmed">{{ openingSummary }}</p>
-              </div>
-            </div>
-          </template>
-
-          <div class="space-y-3">
-            <div class="console-summary-field">
-              Timezone:
+              Public menu:
               <span class="console-summary-value">
-                {{ openingTimezone }}
+                {{ showCurrency ? 'Currency shown' : 'Currency hidden' }}
               </span>
             </div>
-
-            <div v-if="openingRows.length" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-              <div
-                v-for="row in openingRows"
-                :key="row.key"
-                class="rounded-md border border-default px-3 py-2 text-sm"
-              >
-                <span class="font-medium text-highlighted">{{ row.label }}</span>
-                <span class="ml-2 text-dimmed">{{ row.value }}</span>
-              </div>
-            </div>
-
-            <p v-if="openingNotes" class="text-sm text-dimmed">
-              {{ openingNotes }}
-            </p>
-
-            <p v-if="!openingRows.length" class="text-sm text-dimmed">
-              Opening hours are not set yet.
-            </p>
           </div>
         </UCard>
       </div>
@@ -155,7 +115,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Weekday, WeeklySchedule } from 'fireux-core/runtime/models/core/time.model'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 
 const {
@@ -169,57 +128,27 @@ const {
 const isDev = import.meta.dev
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
-const imageUrl = computed(() => String(kitchen.value?.image_url ?? ''))
+const imageUrl = computed(() =>
+  String(kitchen.value?.display_image_url || kitchen.value?.image_url || '')
+)
 const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
 const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
-const source = computed(() => String(kitchen.value?.source ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
-const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
-const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
-const openingHours = computed(
-  () => kitchen.value?.opening_hours as WeeklySchedule | undefined
-)
+const currencyCode = computed(() => String(kitchen.value?.default_currency_code ?? 'CHF'))
+const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format ?? 'dash'))
+const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 
 const currencyFormatLabel = computed(() => {
-  if (currencyFormat.value === 'none') return 'None'
   if (currencyFormat.value === 'symbol') return 'Symbol'
   if (currencyFormat.value === 'code') return 'Code'
   return 'Dash'
 })
-const currencyDisplaySummary = computed(
-  () => `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value}`
+const menuDisplaySummary = computed(
+  () =>
+    `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value} · ${
+      showCurrency.value ? 'Shown' : 'Hidden'
+    }`
 )
-const weekdays: Array<{ key: Weekday; label: string }> = [
-  { key: 'mon', label: 'Mon' },
-  { key: 'tue', label: 'Tue' },
-  { key: 'wed', label: 'Wed' },
-  { key: 'thu', label: 'Thu' },
-  { key: 'fri', label: 'Fri' },
-  { key: 'sat', label: 'Sat' },
-  { key: 'sun', label: 'Sun' },
-]
-const openingTimezone = computed(
-  () => String(openingHours.value?.timezone || 'Europe/Zurich')
-)
-const openingNotes = computed(() => String(openingHours.value?.notes || ''))
-const openingRows = computed(() => {
-  if (!openingHours.value) return []
-
-  return weekdays.map(({ key, label }) => {
-    const windows = openingHours.value?.weekly?.[key] ?? []
-    return {
-      key,
-      label,
-      value: windows.length
-        ? windows.map((window) => `${window.start}-${window.end}`).join(', ')
-        : 'Closed',
-    }
-  })
-})
-const openingSummary = computed(() => {
-  if (!openingRows.value.length) return 'Not set yet'
-  return `${openingTimezone.value}, weekly schedule set`
-})
 const imageInitials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'K'

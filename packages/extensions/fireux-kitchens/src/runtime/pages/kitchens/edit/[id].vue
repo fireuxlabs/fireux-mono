@@ -123,8 +123,8 @@ const placePreviewDetails = computed(() => {
   const v = kitchen.value
   if (!v) return []
   const details = [
-    { label: 'Short name', value: (v as any).short_name ?? '' },
-    { label: 'Short address', value: (v as any).short_address ?? '' },
+    { label: 'Place name', value: (v as any).name ?? '' },
+    { label: 'Place address', value: (v as any).short_address ?? '' },
     { label: 'Search term', value: (v as any).search_term ?? '' },
     { label: 'Brand tagline', value: (v as any).brand_tagline ?? '' },
     { label: 'About', value: (v as any).about ?? '' },
@@ -162,7 +162,9 @@ const placeObject = computed(() => {
   }
 })
 
-const pageTitle = computed(() => kitchen.value?.name || 'Edit kitchen')
+const pageTitle = computed(
+  () => String((kitchen.value as any)?.display_name || kitchen.value?.name || 'Edit kitchen')
+)
 const pageSubtitle = computed(() =>
   kitchenId ? `Kitchen: ${kitchenId}` : 'Edit a kitchen'
 )

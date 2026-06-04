@@ -6,7 +6,7 @@ export function useKitchenComputed(
 ) {
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
   const hasMissingName = computed(() =>
-    !String(kitchen?.value?.name || '').trim()
+    !String((kitchen?.value as any)?.display_name || kitchen?.value?.name || '').trim()
   )
   const hasMissingSlug = computed(() =>
     !String(kitchen?.value?.slug || '').trim()
@@ -19,7 +19,8 @@ export function useKitchenComputed(
   )
   const displayName = computed(() =>
     String(
-      kitchen?.value?.name ||
+      (kitchen?.value as any)?.display_name ||
+        kitchen?.value?.name ||
         kitchen?.value?.short_name ||
         kitchen?.value?.slug ||
         kitchen?.value?.id ||
@@ -27,7 +28,7 @@ export function useKitchenComputed(
     ).trim()
   )
   const displayImageUrl = computed(() =>
-    String(kitchen?.value?.image_url || '').trim()
+    String((kitchen?.value as any)?.display_image_url || kitchen?.value?.image_url || '').trim()
   )
   const hasAddress = computed(() =>
     Boolean(

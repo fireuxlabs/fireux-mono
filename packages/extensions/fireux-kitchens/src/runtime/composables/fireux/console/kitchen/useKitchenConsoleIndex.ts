@@ -54,7 +54,7 @@ export function useKitchenConsoleIndex(
         {
           id: testId,
           displayName,
-          image_url: normalizeString(avatarSrc),
+          display_image_url: normalizeString(avatarSrc),
         }
       )
 

@@ -76,9 +76,8 @@ export function useKitchenFetch(
           return {
             id: scenario.id,
             place_id: scenario.id,
-            name: scenario.name,
-            short_address: scenario.label,
-            image_url: scenario.image_url,
+            display_name: scenario.name,
+            display_image_url: scenario.image_url,
             route_scope: 'demo',
           } as KitchenFetchDoc
         })

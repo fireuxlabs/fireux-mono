@@ -165,7 +165,7 @@ const {
   collection: kitchensCollectionValue,
   runtimeModel: kitchenModelRuntime,
   driftMode: 'extras-only',
-  requiredPaths: ['name'],
+  requiredPaths: ['display_name'],
 })
 
 const hydratedById = computed(() => {
@@ -209,7 +209,10 @@ const filteredKitchensResolved = computed(() =>
 const filteredKitchensDriftPayload = buildKitchensDriftPayload({
   map: ({ doc, id, drift }) => ({
     id,
-    name: hydratedById.value.get(id)?.name ?? (doc as any).name ?? '',
+    display_name:
+      (hydratedById.value.get(id) as any)?.display_name ??
+      (doc as any).display_name ??
+      '',
     drift,
   }),
 })

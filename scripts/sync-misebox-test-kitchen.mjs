@@ -14,7 +14,6 @@ const DEFAULT_SERVICE_ACCOUNT =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_SCENARIO_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/utils/kitchen-demo-scenarios/index.ts'
-const TEST_KITCHEN_ADDRESS = '123 Sandbox Street'
 
 const args = parseArgs(process.argv.slice(2))
 const serviceAccountPath = String(args['service-account'] || DEFAULT_SERVICE_ACCOUNT).trim()
@@ -200,9 +199,14 @@ const syncKitchen = async ({
         id: nextKitchenId,
         place_id: String(identity.place_id || nextKitchenId).trim(),
         slug: String(identity.slug || nextKitchenId).trim(),
-        name: String(identity.name || nextKitchenId).trim(),
-        short_address: String(identity.short_address || '').trim(),
-        image_url: existingKitchen.image_url || identity.image_url || undefined,
+        display_name: String(identity.display_name || nextKitchenId).trim(),
+        display_image_url:
+          existingKitchen.display_image_url ||
+          identity.display_image_url ||
+          undefined,
+        name: FieldValue.delete(),
+        short_address: FieldValue.delete(),
+        image_url: FieldValue.delete(),
         is_test_kitchen: simulationKind === 'test',
         simulation_kind: simulationKind,
         can_write: canWrite,
@@ -274,9 +278,8 @@ const testWriteSummary = await syncKitchen({
   identity: {
     place_id: kitchenId,
     slug: resolveTestKitchenSlug(testUserIdentity.displayName, kitchenId),
-    name: resolveTestKitchenName(testUserIdentity.displayName, kitchenId),
-    short_address: TEST_KITCHEN_ADDRESS,
-    image_url: testUserIdentity.photoURL || undefined,
+    display_name: resolveTestKitchenName(testUserIdentity.displayName, kitchenId),
+    display_image_url: testUserIdentity.photoURL || undefined,
   },
 })
 

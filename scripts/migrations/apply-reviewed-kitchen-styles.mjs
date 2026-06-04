@@ -17,7 +17,7 @@ const REVIEWED_STYLES = [
     id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
     name: 'La Tapberne',
     source: 'physical menu photo review',
-    style: {
+    menuStyle: {
       background_color_light: '#F4E8D2',
       background_color_dark: '#171717',
       font_color_light: '#1F1A14',
@@ -30,7 +30,7 @@ const REVIEWED_STYLES = [
     id: 'bergwelt-grindelwald',
     name: 'Bergwelt Grindelwald',
     source: 'physical menu PDF review',
-    style: {
+    menuStyle: {
       background_color_light: '#F7F7F5',
       background_color_dark: '#3D3F41',
       font_color_light: '#57585A',
@@ -43,7 +43,7 @@ const REVIEWED_STYLES = [
     id: 'ChIJ93_ggY-jj0cRTCyLcfBuK2w',
     name: 'Luna Piccante',
     source: 'physical menu PDF review',
-    style: {
+    menuStyle: {
       background_color_light: '#FFFDF7',
       background_color_dark: '#2D2B20',
       font_color_light: '#111111',
@@ -70,7 +70,7 @@ const kitchenCollection = String(
 
 if (args.help || args.h) {
   console.log(`
-Apply reviewed Kitchen style values.
+Apply reviewed Kitchen menu_style values.
 
 Dry-run by default. Pass --commit to write.
 
@@ -127,22 +127,23 @@ for (const entry of reviewedStyles) {
   }
 
   const current = snap.data() || {}
-  const currentStyle = current.style || null
+  const currentStyle = current.menu_style || current.style || null
   report.changed += 1
   report.kitchens.push({
     path: ref.path,
     id: entry.id,
-    name: current.name || entry.name,
+    display_name: current.display_name || current.name || entry.name,
     source: entry.source,
     before: currentStyle,
-    after: entry.style,
+    after: entry.menuStyle,
   })
 
   if (!commit) continue
 
   await ref.set(
     {
-      style: entry.style,
+      menu_style: entry.menuStyle,
+      style: FieldValue.delete(),
       updated: {
         at: FieldValue.serverTimestamp(),
         by: SYSTEM_ACTOR,

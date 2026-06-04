@@ -94,8 +94,10 @@ export function useKitchenCollection(
   const shouldHydrate = computed(() => sourceMode.value === 'live')
   const localDemoSource = computed<KitchenCollectionDoc[]>(() =>
     getDemoKitchens().map((kitchen) => ({
-      ...kitchen,
-      short_address: kitchen.label,
+      id: kitchen.id,
+      place_id: kitchen.id,
+      display_name: kitchen.name,
+      display_image_url: kitchen.image_url,
       route_scope: 'demo',
     }))
   )

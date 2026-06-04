@@ -14,12 +14,11 @@ import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.mode
 type KitchenTestCreateInput = {
   id?: string
   displayName?: string
-  name?: string
-  image_url?: string
+  display_name?: string
+  display_image_url?: string
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const TEST_KITCHEN_ADDRESS = '123 Sandbox Street'
 
 function resolveTestKitchenName(displayName: unknown, uid: unknown) {
   const name = normalizeString(displayName)
@@ -65,10 +64,10 @@ export function useKitchenTestCreate() {
       normalizeString(input.displayName) ||
       normalizeString(currentUser.value?.displayName)
     const name =
-      normalizeString(input.name) ||
+      normalizeString(input.display_name) ||
       resolveTestKitchenName(displayName, uid.value)
     const imageUrl =
-      normalizeString(input.image_url) ||
+      normalizeString(input.display_image_url) ||
       normalizeString(currentUser.value?.photoURL)
 
     if (!testId) {
@@ -78,12 +77,11 @@ export function useKitchenTestCreate() {
     const ref = doc(simulationDb, KitchenStorage.rootCollection, testId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
-      const existingImageUrl = normalizeString(snap.data()?.image_url)
+      const existingImageUrl = normalizeString(snap.data()?.display_image_url)
       await updateDocument<Kitchen>(KitchenStorage.rootCollection, testId, {
-        name,
+        display_name: name,
         slug: resolveTestKitchenSlug(displayName, uid.value),
-        short_address: TEST_KITCHEN_ADDRESS,
-        ...(existingImageUrl ? {} : { image_url: imageUrl }),
+        ...(existingImageUrl ? {} : { display_image_url: imageUrl }),
       })
       return { id: testId, created: false }
     }
@@ -96,9 +94,8 @@ export function useKitchenTestCreate() {
 
     await setDocument<Partial<Kitchen> & {
       slug?: string
-      name?: string
-      short_address?: string
-      image_url?: string
+      display_name?: string
+      display_image_url?: string
       operator_ids?: string[]
       team_ids?: string[]
       simulation_kind?: string
@@ -110,9 +107,8 @@ export function useKitchenTestCreate() {
       {
         place_id: testId,
         slug,
-        name,
-        short_address: TEST_KITCHEN_ADDRESS,
-        image_url: imageUrl,
+        display_name: name,
+        display_image_url: imageUrl,
         operator_ids: [testId],
         team_ids: [testId],
         simulation_kind: 'test',

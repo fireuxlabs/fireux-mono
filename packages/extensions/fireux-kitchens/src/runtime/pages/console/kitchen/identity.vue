@@ -45,8 +45,8 @@
 import { useKitchenConsoleIdentity } from '../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import { ref } from 'vue'
 
-const navTitle = 'Kitchen Identity'
-const view = ref<'identity' | 'edit'>('identity')
+const navTitle = 'Identity'
+const view = ref<'identity' | 'edit'>('edit')
 const { canWrite } = useKitchenConsoleIdentity()
 
 definePageMeta({

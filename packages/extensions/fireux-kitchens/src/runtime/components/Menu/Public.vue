@@ -1,5 +1,9 @@
 <template>
-  <main class="public-menu" :style="menuStyleVars">
+  <main
+    class="public-menu"
+    :class="{ 'public-menu--preview': variant === 'preview' }"
+    :style="menuStyleVars"
+  >
     <section class="menu-page">
       <header class="menu-header">
         <p v-if="kitchenName" class="kitchen-name">
@@ -75,6 +79,8 @@ const props = defineProps<{
   publicMenuPolish?: Partial<KitchenPublicMenuPolish> | null
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
+  showCurrency?: boolean
+  variant?: 'page' | 'preview'
 }>()
 
 const color = (value: unknown) => String(value ?? '').trim()
@@ -106,6 +112,7 @@ const formatPrice = (price: number) => {
   return formatCurrencyAmount(price, {
     currencyCode: props.currencyCode,
     format: props.currencyFormat,
+    showCurrency: props.showCurrency,
   })
 }
 </script>
@@ -131,6 +138,56 @@ const formatPrice = (price: number) => {
   background: var(--menu-bg);
   color: var(--menu-text);
   font-family: var(--menu-font);
+}
+
+.public-menu--preview {
+  min-height: auto;
+  border-radius: 1rem;
+}
+
+.public-menu--preview .menu-page {
+  width: 100%;
+  padding: 1rem;
+}
+
+.public-menu--preview .menu-header {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.public-menu--preview .kitchen-name {
+  letter-spacing: 0.12em;
+}
+
+.public-menu--preview .menu-header h1 {
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+}
+
+.public-menu--preview .description {
+  margin-inline: 0;
+  font-size: 0.85rem;
+}
+
+.public-menu--preview .menu-sections {
+  gap: 1rem;
+}
+
+.public-menu--preview .section-header {
+  text-align: left;
+}
+
+.public-menu--preview .section-header h2 {
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+}
+
+.public-menu--preview .menu-items {
+  gap: 0.35rem;
+}
+
+.public-menu--preview .menu-item {
+  padding-block: 0.55rem;
 }
 
 .menu-page {

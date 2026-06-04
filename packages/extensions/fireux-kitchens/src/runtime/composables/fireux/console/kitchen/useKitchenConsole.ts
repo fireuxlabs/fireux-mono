@@ -13,6 +13,7 @@ import {
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
+  type ConsoleHeaderSelectorItem,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
@@ -95,43 +96,73 @@ export function useKitchenConsole(
     if (selectedMode.value === 'test') return Boolean(userId.value && kitchenId.value === userId.value)
     return targetHasOperator(selectedKitchen.value, userId.value)
   })
+  const clearSelectedKitchen = () => {
+    clearSelection()
+  }
+  const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
+    selectEntity(kitchenId, mode)
+  }
+  const kitchenName = (kitchen: KitchenConsoleEntity | null | undefined) =>
+    normalizeString((kitchen as Record<string, unknown> | null)?.display_name) ||
+    normalizeString(kitchen?.name) ||
+    normalizeString((kitchen as Record<string, unknown> | null)?.slug) ||
+    'Kitchen'
+  const kitchenImage = (kitchen: KitchenConsoleEntity | null | undefined) =>
+    normalizeString((kitchen as Record<string, unknown> | null)?.display_image_url) ||
+    normalizeString(kitchen?.image_url) ||
+    undefined
+  const selectorItem = (
+    kitchen: KitchenConsoleEntity,
+    mode: KitchenConsoleMode
+  ): ConsoleHeaderSelectorItem => {
+    const id = normalizeString(kitchen?.id)
+
+    return {
+      label: kitchenName(kitchen),
+      icon: mode === 'live'
+        ? 'i-lucide-store'
+        : mode === 'test'
+          ? 'i-lucide-flask-conical'
+          : 'i-lucide-sparkles',
+      disabled: !id,
+      onSelect: () => {
+        if (id) selectKitchen(id, mode)
+      },
+    }
+  }
+  const selectorItems = computed<ConsoleHeaderSelectorItem[][]>(() => {
+    const groups: ConsoleHeaderSelectorItem[][] = []
+    const live = liveKitchens.value.filter((kitchen) => normalizeString(kitchen?.id))
+
+    if (live.length) {
+      groups.push(live.map((kitchen) => selectorItem(kitchen, 'live')))
+    }
+
+    if (testKitchen.value && normalizeString(testKitchen.value.id)) {
+      groups.push([selectorItem(testKitchen.value, 'test')])
+    }
+
+    const demo = demoKitchens.value.filter((kitchen) => normalizeString(kitchen?.id))
+    if (demo.length) {
+      groups.push(demo.map((kitchen) => selectorItem(kitchen, 'demo')))
+    }
+
+    return groups
+  })
 
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value
     if (!kitchen) return null
 
-    if (selectedMode.value === 'demo') {
-      return {
-        title: normalizeString(kitchen.name),
-        subtitle: normalizeString((kitchen as any).tagline) || undefined,
-        imageUrl: normalizeString(kitchen.image_url) || undefined,
-      }
-    }
-
-    if (selectedMode.value === 'test') {
-      return {
-        title: normalizeString(kitchen.name),
-        subtitle: normalizeString((kitchen as any).tagline) || undefined,
-        imageUrl: normalizeString(kitchen.image_url) || undefined,
-      }
-    }
-
     return {
-      title: normalizeString(kitchen.name),
+      title: kitchenName(kitchen),
       subtitle: normalizeString((kitchen as any).tagline) || undefined,
-      imageUrl: normalizeString(kitchen.image_url) || undefined,
+      imageUrl: kitchenImage(kitchen),
+      selectorItems: selectorItems.value,
     }
   })
 
   usePublishConsoleHeader('kitchen', header)
-
-  const clearSelectedKitchen = () => {
-    clearSelection()
-  }
-
-  const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
-    selectEntity(kitchenId, mode)
-  }
 
   return {
     liveKitchens,

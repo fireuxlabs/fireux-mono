@@ -37,15 +37,15 @@ const kitchenIdFilter = String(args['kitchen-id'] || args.kitchenId || '').trim(
 
 if (args.help || args.h) {
   console.log(`
-Backfill Kitchen style shape.
+Backfill Kitchen menu_style shape.
 
 Ensures every root Kitchen record has:
-  style.background_color_light
-  style.background_color_dark
-  style.font_color_light
-  style.font_color_dark
-  style.primary_color
-  style.secondary_color
+  menu_style.background_color_light
+  menu_style.background_color_dark
+  menu_style.font_color_light
+  menu_style.font_color_dark
+  menu_style.primary_color
+  menu_style.secondary_color
 
 Dry-run by default. Pass --commit to write.
 `)
@@ -108,7 +108,7 @@ for (const ref of refs) {
 
   report.inspected += 1
   const data = snap.data() || {}
-  const before = data.style ?? null
+  const before = data.menu_style ?? data.style ?? null
   const after = normalizedStyle(before)
 
   if (sameStyle(asRecord(before), after)) {
@@ -120,7 +120,7 @@ for (const ref of refs) {
   report.kitchens.push({
     path: ref.path,
     id: snap.id,
-    name: clean(data.name) || clean(data.slug),
+    display_name: clean(data.display_name) || clean(data.slug),
     before,
     after,
   })
@@ -129,7 +129,8 @@ for (const ref of refs) {
 
   await ref.set(
     {
-      style: after,
+      menu_style: after,
+      style: FieldValue.delete(),
       updated: {
         at: FieldValue.serverTimestamp(),
         by: SYSTEM_ACTOR,

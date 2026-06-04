@@ -5,7 +5,7 @@ import { KitchenStorage } from '../../../../../models/kitchen.model'
 export type KitchenPublishInput = {
   id: string
   slug: string
-  name?: string
+  displayName?: string
 }
 
 function clean(value: unknown) {
@@ -15,12 +15,13 @@ function clean(value: unknown) {
 function assertKitchenPublishReady(input: KitchenPublishInput) {
   const id = clean(input.id)
   const slug = clean(input.slug)
-  const name = input.name === undefined ? undefined : clean(input.name)
+  const displayName =
+    input.displayName === undefined ? undefined : clean(input.displayName)
 
   if (!id) throw new Error('Kitchen id is required before publishing.')
   if (!slug) throw new Error('Kitchen slug is required before publishing.')
-  if (input.name !== undefined && !name) {
-    throw new Error('Kitchen name is required before publishing.')
+  if (input.displayName !== undefined && !displayName) {
+    throw new Error('Kitchen display name is required before publishing.')
   }
 
   const result = validateSlug(slug, {

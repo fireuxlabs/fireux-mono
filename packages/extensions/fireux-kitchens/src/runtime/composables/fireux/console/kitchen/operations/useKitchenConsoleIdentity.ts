@@ -1,24 +1,38 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../useKitchenConsole'
 
 export function useKitchenConsoleIdentity() {
   const {
-    selectedKitchen,
+    selectedKitchen: selectedConsoleKitchen,
     selectedMode,
     kitchenId,
     rootCollection,
     canWrite,
     clearSelectedKitchen,
   } = useKitchenConsole()
+  const { kitchen: selectedKitchenDoc } = useKitchenFetch(kitchenId, {
+    source: selectedMode,
+    collectionPath: KitchenStorage.rootCollection,
+  })
+  const selectedKitchen = computed(
+    () => selectedKitchenDoc.value ?? selectedConsoleKitchen.value
+  )
 
-  const name = computed(() => normalizeString(selectedKitchen.value?.name))
+  const name = computed(() =>
+    normalizeString(
+      (selectedKitchen.value as Record<string, unknown> | null)?.display_name ||
+        selectedKitchen.value?.name
+    )
+  )
   const tagline = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.tagline)
   )
   const currencyCode = computed(() =>
     normalizeString(
-      (selectedKitchen.value as Record<string, unknown> | null)?.currency_code
+      (selectedKitchen.value as Record<string, unknown> | null)?.default_currency_code
     ) || 'CHF'
   )
   const slug = computed(() =>
@@ -26,9 +40,6 @@ export function useKitchenConsoleIdentity() {
   )
   const placeId = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.place_id)
-  )
-  const openingHours = computed(
-    () => (selectedKitchen.value as Record<string, unknown> | null)?.opening_hours
   )
   const address = computed(() => {
     const kitchen = selectedKitchen.value as Record<string, unknown> | null
@@ -45,7 +56,6 @@ export function useKitchenConsoleIdentity() {
     slug: slug.value,
     placeId: placeId.value,
     address: address.value,
-    openingHours: openingHours.value,
     selectedKitchen: selectedKitchen.value,
   }))
 
@@ -61,7 +71,6 @@ export function useKitchenConsoleIdentity() {
     currencyCode,
     slug,
     placeId,
-    openingHours,
     address,
     debug,
   }

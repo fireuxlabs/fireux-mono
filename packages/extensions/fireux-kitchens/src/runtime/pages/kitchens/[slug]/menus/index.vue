@@ -12,7 +12,7 @@
 
     <UPageHeader
       class="pageheader"
-      :title="kitchen?.name || 'Kitchen menus'"
+      :title="kitchenName"
       description="Published menus from this kitchen."
     />
 
@@ -89,9 +89,12 @@ const {
   debug,
 } = useKitchenPublicMenu()
 const isDev = import.meta.dev
+const kitchenName = computed(
+  () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
+)
 const kitchenStyle = computed(() => {
-  const style = kitchen.value && typeof (kitchen.value as any).style === 'object'
-    ? (kitchen.value as any).style
+  const style = kitchen.value && typeof (kitchen.value as any).menu_style === 'object'
+    ? (kitchen.value as any).menu_style
     : {}
 
   return {
@@ -108,7 +111,7 @@ const pageDebug = computed(() => ({
   rendered: {
     hasKitchen: Boolean(kitchen.value),
     kitchenId: kitchen.value?.id ?? '',
-    kitchenName: kitchen.value?.name ?? '',
+    kitchenName: kitchenName.value,
     kitchenStyle: kitchenStyle.value,
     pending: pending.value,
     menusCount: menus.value.length,

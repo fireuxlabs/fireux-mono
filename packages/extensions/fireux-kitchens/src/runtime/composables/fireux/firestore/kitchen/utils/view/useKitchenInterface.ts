@@ -1,5 +1,4 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { WeeklySchedule } from 'fireux-core/runtime/models/core/time.model'
 import type {
   Place,
   PlaceImageShade,
@@ -65,13 +64,15 @@ export type KitchenSurface = {
   created?: unknown
   updated?: unknown
   name?: string
+  display_name?: string
   short_name?: string
-  currency_code?: string
+  default_currency_code?: string
   formatted_address?: string
   short_address?: string
   lat?: number
   lng?: number
   image_url?: string
+  display_image_url?: string
   image_shade?: PlaceImageShade
   source?: PlaceSource
   claimed_by?: string
@@ -79,7 +80,6 @@ export type KitchenSurface = {
   website?: string
   phone?: string
   social_links?: unknown
-  opening_hours?: WeeklySchedule
   cover_image?: string
   gallery_images?: string[]
   about?: string
@@ -99,6 +99,7 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'image_url'
     | 'image_shade'
     | 'claimed_by'
+    | 'default_currency_code'
     | 'source'
     | 'slug'
   >> | null | undefined
@@ -167,11 +168,11 @@ export function useKitchenInterface() {
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString(kitchen.slug).trim()
-    const name = safeString(kitchen.name)
+    const name = safeString(kitchen.display_name || kitchen.name)
     const shortName = safeString(kitchen.short_name)
     const shortAddress = safeString(kitchen.short_address)
     const formattedAddress = safeString(kitchen.formatted_address)
-    const imageUrl = safeString(kitchen.image_url)
+    const imageUrl = safeString(kitchen.display_image_url || kitchen.image_url)
 
     const badges = kitchen.show === false ? ['Hidden'] : []
 

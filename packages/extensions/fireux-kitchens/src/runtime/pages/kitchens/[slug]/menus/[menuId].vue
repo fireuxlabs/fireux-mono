@@ -15,13 +15,14 @@
 
     <MenuPublic
       v-else
-      :kitchen-name="kitchen.name"
+      :kitchen-name="kitchenName"
       :menu="menu"
       :sections="sectionRows"
-      :page-style="kitchen.style"
+      :page-style="kitchen.menu_style"
       :public-menu-polish="kitchen.public_menu_polish"
-      :currency-code="kitchen.currency_code"
+      :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
+      :show-currency="showCurrency"
     />
 
     <DevJson
@@ -66,11 +67,15 @@ const defaultMenuStyle = {
 } as const
 
 const text = (value: unknown) => String(value ?? '').trim()
-const currencyFormat = computed(
-  () => (text(kitchen.value?.currency_format) || 'dash') as CurrencyDisplayFormat
+const kitchenName = computed(() =>
+  text(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
 )
+const currencyFormat = computed(
+  () => (text(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
+)
+const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 const kitchenStyle = computed<Partial<PageStyle>>(() => {
-  const style = kitchen.value?.style
+  const style = kitchen.value?.menu_style
   return style && typeof style === 'object' ? style : {}
 })
 const publicMenuPolish = computed<Partial<KitchenPublicMenuPolish>>(() => {
@@ -158,7 +163,7 @@ onUnmounted(() => {
 })
 
 watch(
-  () => [detailPending.value, kitchen.value?.style, menu.value?.id],
+  () => [detailPending.value, kitchen.value?.menu_style, menu.value?.id],
   () => {
     void readRenderedStyle()
   },
@@ -168,7 +173,7 @@ watch(
 const pageDebug = computed(() => ({
   ...debug.value,
   style: {
-    note: 'Menu colours come from kitchen.style. Light/dark switches with prefers-color-scheme.',
+    note: 'Menu colours come from kitchen.menu_style. Light/dark switches with prefers-color-scheme.',
     kitchenStyle: {
       backgroundColorLight: text(kitchenStyle.value.background_color_light),
       backgroundColorDark: text(kitchenStyle.value.background_color_dark),
@@ -184,8 +189,9 @@ const pageDebug = computed(() => ({
       contentInsetLeft: text(publicMenuPolish.value.content_inset_left),
     },
     currency: {
-      code: text(kitchen.value?.currency_code) || 'CHF',
+      code: text(kitchen.value?.default_currency_code) || 'CHF',
       format: currencyFormat.value,
+      show: showCurrency.value,
     },
   },
 }))

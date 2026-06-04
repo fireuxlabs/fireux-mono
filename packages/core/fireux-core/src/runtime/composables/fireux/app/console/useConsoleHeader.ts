@@ -5,7 +5,15 @@ export type ConsoleHeaderData = {
   title: string
   subtitle?: string
   imageUrl?: string
+  selectorItems?: ConsoleHeaderSelectorItem[][]
 } | null
+
+export type ConsoleHeaderSelectorItem = {
+  label: string
+  icon?: string
+  disabled?: boolean
+  onSelect?: () => void
+}
 
 type HeaderRef = Ref<ConsoleHeaderData> | ComputedRef<ConsoleHeaderData>
 

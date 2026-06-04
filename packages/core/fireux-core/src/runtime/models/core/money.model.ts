@@ -11,11 +11,12 @@
  *   settings seam when more public/product surfaces need show/hide currency.
  * - Domain models may compose it, but should not own one-off copies.
  */
-export type CurrencyDisplayFormat = 'none' | 'dash' | 'symbol' | 'code'
+export type CurrencyDisplayFormat = 'dash' | 'symbol' | 'code'
 
 export type CurrencyAmountFormatOptions = {
   currencyCode?: string
   format?: CurrencyDisplayFormat
+  showCurrency?: boolean
   locale?: string
 }
 
@@ -35,7 +36,7 @@ export const formatCurrencyAmount = (
   const currencyCode = cleanCurrencyCode(options.currencyCode) || 'CHF'
   const format = options.format ?? 'dash'
 
-  if (format === 'none') return cleanNumber(value)
+  if (options.showCurrency === false) return cleanNumber(value)
   if (format === 'dash') {
     return Number.isInteger(value) ? `${value}.-` : cleanNumber(value)
   }
