@@ -657,6 +657,10 @@ export const metaContent = defineFireuxMeta({
         external: true,
         description: 'Sproochli owns translation-ready public pages and language workflows.',
       },
+      cta: {
+        label: 'Prepare translation',
+        to: '/solutions/multilingual-restaurant-menu',
+      },
     },
     {
       slug: 'recipe-management-software',

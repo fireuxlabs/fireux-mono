@@ -190,7 +190,7 @@ Allergen information is high-trust menu data. Misebox can win by connecting alle
 
 Publish restaurant menus in more than one language.
 
-Current state: Misebox has language settings and public menu language work. Sproochli owns the deeper translation-ready public page workflow.
+Current state: Misebox has public menu language work. Sproochli owns the translation handoff tool and future review/generation workflow.
 
 Roadmap: connect kitchen language settings, dish translations, public menu chrome, and Sproochli so multilingual menus can be created, reviewed, cached, and published.
 
@@ -214,14 +214,14 @@ Multilingual menus are a real customer search intent, especially in tourism and 
 - Dish and menu translation fields or cache.
 - Public menu language selector.
 - Copy pack resolution.
-- Sproochli bridge for translation workflow.
+- Sproochli menu translation handoff.
 
 ### Checklist
 
 - [x] Confirm kitchen language settings exist.
-- [ ] Confirm public menu language selector.
+- [x] Confirm public menu language selector.
 - [ ] Confirm dish translation cache/fields.
-- [ ] Add Sproochli handoff for translation review.
+- [x] Add Sproochli handoff for translation review.
 
 ## recipe-management-software
 

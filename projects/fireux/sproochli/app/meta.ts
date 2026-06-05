@@ -17,6 +17,7 @@ export const sproochliRoutes: SproochliRoute[] = [
   { label: 'Holiday with Nats Wi-Fi', path: '/bnb/holiday-with-nats/wifi', kind: 'public' },
   { label: 'Bike Rental Instructions', path: '/info/bern-bike-rental/rental-instructions', kind: 'public' },
   { label: 'Read-only Menus', path: '/menus', kind: 'public' },
+  { label: 'Menu Translation Tool', path: '/tools/menu', kind: 'public' },
 ]
 
 export const metaContent = defineFireuxMeta({

@@ -142,7 +142,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
   },
   fr: {
     menu: {
-      name: 'Comida Casera',
+      name: 'Cuisine maison',
       description: 'Tapas-Gastro-Pub · Cuisine maison',
       note: 'Tous les prix sont en CHF, TVA incluse.',
     },
@@ -762,6 +762,8 @@ async function main() {
     typeof args['kitchen-collection'] === 'string'
       ? normalizeString(args['kitchen-collection'])
       : DEFAULT_KITCHEN_COLLECTION_PATH
+  const kitchenId =
+    typeof args['kitchen-id'] === 'string' ? normalizeString(args['kitchen-id']) : ''
   const commit = Boolean(args.commit)
   const app = initializeApp(
     { credential: cert(account), projectId },
@@ -771,12 +773,16 @@ async function main() {
   const kitchensRef = db.collection(kitchenCollectionPath)
   const slugSnap = await kitchensRef.where('slug', '==', KITCHEN_SLUG).limit(1).get()
 
-  if (slugSnap.empty) {
+  const kitchenSnap = slugSnap.empty && kitchenId
+    ? await kitchensRef.doc(kitchenId).get()
+    : slugSnap.docs[0]
+
+  if (!kitchenSnap?.exists) {
     throw new Error(`Kitchen not found by slug: ${KITCHEN_SLUG}`)
   }
 
-  const kitchenRef = slugSnap.docs[0].ref
-  const kitchenData = slugSnap.docs[0].data() || {}
+  const kitchenRef = kitchenSnap.ref
+  const kitchenData = kitchenSnap.data() || {}
   const menuRef = kitchenRef.collection('menus').doc(MENU_ID)
   const menuSnap = await menuRef.get()
 

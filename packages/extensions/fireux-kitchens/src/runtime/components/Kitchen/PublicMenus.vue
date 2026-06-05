@@ -66,10 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { collection, getDocs } from 'firebase/firestore'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
@@ -85,14 +87,24 @@ const props = defineProps<{
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
 const route = useRoute()
-const chromeLabels = {
+const resolveDb = useFirestoreResolver()
+const defaultChromeLabels = {
   menus: 'Menus',
   openMenus: 'Open menus',
   loadingMenus: 'Loading menus...',
   noMenusAvailable: 'No menus available',
   openMenu: 'Open menu',
 }
-const { publishedMenus, pending: menusPending } = useMenuCollection(
+const translatedChromeLabels: Record<string, Partial<typeof defaultChromeLabels>> = {
+  fr: {
+    menus: 'Menus',
+    openMenus: 'Voir les menus',
+    loadingMenus: 'Chargement des menus...',
+    noMenusAvailable: 'Aucun menu disponible',
+    openMenu: 'Ouvrir le menu',
+  },
+}
+const { publishedMenus, pending: menusPending, collectionPath } = useMenuCollection(
   kitchenId
 )
 
@@ -104,13 +116,19 @@ const sproochliEnabled = computed(
   () => (props.kitchen as any)?.sproochli_enabled === true
 )
 const selectedLanguage = computed(() =>
-  normalizeSproochliLanguage(
-    route.query.sproochli ?? route.query.lang ?? route.query.language
-  )
+  sproochliEnabled.value
+    ? normalizeSproochliLanguage(
+        route.query.sproochli ?? route.query.lang ?? route.query.language
+      )
+    : ''
 )
 const languageOptions = computed(() =>
   resolveSproochliLanguageOptions(sproochliEnabled.value)
 )
+const chromeLabels = computed(() => ({
+  ...defaultChromeLabels,
+  ...(translatedChromeLabels[selectedLanguage.value] ?? {}),
+}))
 const languageQuery = computed(() =>
   selectedLanguage.value
     ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}`
@@ -124,6 +142,8 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
+const menuTranslationCache = ref<Record<string, string>>({})
+let translationCacheRequestId = 0
 
 const menusIndexLink = computed(() => {
   if (!kitchenSlug.value) return ''
@@ -136,17 +156,70 @@ const menuLink = (menuIdRaw: unknown) => {
   return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}${languageQuery.value}`
 }
 
+const menuFieldId = (menu: Menu, field: 'name' | 'description') =>
+  `menu:${normalizeString(menu.id)}:${field}`
+const menuCacheText = (menu: Menu, field: 'name' | 'description') =>
+  menuTranslationCache.value[menuFieldId(menu, field)] ?? ''
 const localizedMenuName = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.name,
     translations: (menu as any)?.names ?? (menu as any)?.translations,
     selectedLanguage: selectedLanguage.value,
+    cacheText: menuCacheText(menu, 'name'),
   }).text || normalizeString(menu.name)
 const localizedMenuDescription = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.description,
     translations: (menu as any)?.descriptions,
     selectedLanguage: selectedLanguage.value,
+    cacheText: menuCacheText(menu, 'description'),
   }).text || normalizeString(menu.description)
-const menuSummary = (_menu: Menu) => chromeLabels.openMenu
+
+watch(
+  () => ({
+    language: selectedLanguage.value,
+    menusPath: collectionPath.value,
+    menuIds: sortedMenus.value.map((menu) => normalizeString(menu.id)),
+  }),
+  async ({ language, menusPath, menuIds }) => {
+    const requestId = ++translationCacheRequestId
+
+    if (import.meta.server || !language || !menusPath || !menuIds.length) {
+      menuTranslationCache.value = {}
+      return
+    }
+
+    const rows: Record<string, string> = {}
+
+    try {
+      const snapshots = await Promise.all(
+        menuIds.map((menuId) =>
+          getDocs(collection(resolveDb(), `${menusPath}/${menuId}/translation_cache`))
+        )
+      )
+
+      if (requestId !== translationCacheRequestId) return
+
+      for (const snapshot of snapshots) {
+        for (const doc of snapshot.docs) {
+          const data = doc.data() as Record<string, unknown>
+          const targetLanguage = normalizeString(data.target_language)
+          const fieldId = normalizeString(data.field_id)
+          const text = normalizeString(data.translated_text)
+          if (targetLanguage === language && fieldId && text) rows[fieldId] = text
+        }
+      }
+
+      menuTranslationCache.value = rows
+    } catch (error) {
+      if (import.meta.dev) {
+        console.warn('[KitchenPublicMenus] menu translation cache read failed', error)
+      }
+      if (requestId === translationCacheRequestId) menuTranslationCache.value = {}
+    }
+  },
+  { immediate: true }
+)
+
+const menuSummary = (_menu: Menu) => chromeLabels.value.openMenu
 </script>

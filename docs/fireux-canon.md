@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-27
+Updated: 2026-06-05
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -566,6 +566,26 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
   - place lookup services
   - notifications/dev/proxy endpoints
 - Public projection endpoints such as `/api/public/*` are not the canonical loading path for entity index pages delivered by `CollectionManager`.
+
+## Tool Provider Canon
+- Tool providers are product apps that expose focused embedded tools to consuming apps.
+- Current tool providers include:
+  - Go QR
+  - Sproochli
+- Provider apps own:
+  - `/tools/{toolId}` embedded tool pages
+  - `/api/tools/{toolId}` tool contracts
+  - provider-branded `System/ToolFrame` and `Tool/*` components
+- Consuming apps own:
+  - provider iframe wrappers
+  - solution pages
+  - the source domain data passed into the provider tool
+- Embedded tools report height using the shared `tool-height` message shape from `fireux-core/runtime/types/tool-provider.types`.
+- Tool contracts use the shared `ToolProviderToolContract` type.
+- Provider tools must not silently take ownership of consuming-app truth.
+- Example:
+  - Go QR may create and store QR/doc output because that is Go QR truth.
+  - Sproochli may prepare a menu translation handoff, but Misebox Kitchen/Menu/Dish truth stays in Misebox unless an explicit Sproochli service record is introduced.
 
 ## Deterministic Field Precedence (Allowed Exception)
 - Deterministic field precedence is allowed when documented for one entity shape.

@@ -1,6 +1,6 @@
 # fireux-sproochli Canon
 Authority: Tier1 (Package canon)
-Updated: 2026-05-12
+Updated: 2026-06-05
 
 ## 1) Purpose
 - Own reusable multilingual info-page primitives for QR-friendly FireUX pages.
@@ -23,7 +23,12 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 ## 4) Package vs App Boundary
 - Package owns generic info-page language helpers, response helpers, and runtime config exposure under `runtimeConfig.public.fireux.sproochli`.
 - Package owns generic public language UI/helpers, including the Sproochli language picker and translated-text resolver.
-- The Sproochli app currently owns the prototype public route, sample content, page styling, and public JSON endpoint behavior.
+- The Sproochli app currently owns prototype public routes, sample content, page styling, public JSON endpoint behavior, and provider-style tool/API surfaces.
+- Current Sproochli tool/API seam:
+  - `/tools/menu` embeds the Menu translation handoff tool.
+  - `/api/tools/menu` returns the Menu tool contract.
+  - The tool contract uses the shared FireUX `ToolProviderToolContract` family.
+  - The tool accepts consuming-app menu context and endpoints; it does not own Misebox Kitchen/Menu/Dish truth.
 - Domain meaning stays with the consuming app. This package must not import Misebox, kitchens, suppliers, menus, restaurants, QR generators, or app-specific product models.
 - Sproochli may manage or generate language/copy packs for consuming apps, but those packs remain stored in the owning app or ecosystem database unless a separate Sproochli service-job record is explicitly introduced.
 
@@ -42,4 +47,4 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 ## 7) Future / Not Canon Yet
 - The Sproochli app owns its product storage path: `sproochli_sites/{siteId}` with `maintainers`, `pages`, `sections`, and `translation_cache` subcollections.
 - The shared package does not yet own mutation entrypoints for those records.
-- Editor workflows, translation generation, QR creation, and package-owned public routes are not canon yet.
+- Translation generation, translation mutation endpoints, QR creation, and package-owned public routes are not canon yet.

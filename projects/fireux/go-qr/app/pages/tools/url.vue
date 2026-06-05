@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import type { ToolProviderHeightMessage } from 'fireux-core/runtime/types/tool-provider.types'
 
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
@@ -26,9 +27,9 @@ definePageMeta({
   layout: false,
 })
 
-function queryString(key: string, fallback: string) {
+function queryString(key: string, defaultValue: string) {
   const value = route.query[key]
-  return typeof value === 'string' && value.trim() ? value.trim() : fallback
+  return typeof value === 'string' && value.trim() ? value.trim() : defaultValue
 }
 
 const config = computed(() => ({
@@ -56,11 +57,13 @@ onBeforeUnmount(() => {
 
 function postToolHeight() {
   const height = Math.ceil(toolRoot.value?.scrollHeight || document.documentElement.scrollHeight)
-  window.parent?.postMessage({
+  const message = {
     source: 'go-qr',
     tool: 'url',
     type: 'tool-height',
     height,
-  }, '*')
+  } satisfies ToolProviderHeightMessage<'go-qr', 'url'>
+
+  window.parent?.postMessage(message, '*')
 }
 </script>

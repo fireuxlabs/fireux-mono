@@ -1,25 +1,15 @@
 import { setResponseHeaders, type H3Event } from 'h3'
+import type { ToolProviderToolContract } from 'fireux-core/runtime/types/tool-provider.types'
 
 export type GoQrToolId = 'doc' | 'text' | 'url'
 
-export type GoQrToolContract = {
-  id: GoQrToolId
-  title: string
-  description: string
-  message?: string
-  endpoints?: {
-    create: string
-    availability: string
-  }
-  preview?: {
-    base_url: string
-    path_suffix: string
-  }
-}
+export type GoQrToolContract = ToolProviderToolContract<GoQrToolId, 'go-qr'>
 
 const tools = {
   doc: {
     id: 'doc',
+    provider: 'go-qr',
+    messageSource: 'go-qr',
     title: 'Doc',
     description: 'Upload a doc, choose a short path, and get a QR page.',
     endpoints: {
@@ -33,12 +23,16 @@ const tools = {
   },
   text: {
     id: 'text',
+    provider: 'go-qr',
+    messageSource: 'go-qr',
     title: 'Text',
     description: 'Turn a short message into a shareable QR.',
     message: 'hello world',
   },
   url: {
     id: 'url',
+    provider: 'go-qr',
+    messageSource: 'go-qr',
     title: 'URL',
     description: 'Create a QR code from any public URL.',
   },
