@@ -4,7 +4,7 @@
     :description="toolDescription"
     endpoint="/api/tools/ordering"
   >
-    <div class="grid min-h-64 place-items-center rounded-2xl bg-white p-8">
+    <div class="grid min-h-72 place-items-center rounded-2xl border border-default bg-muted/40 p-8">
       <img
         src="/img/app/logo.png"
         alt="Misebox"

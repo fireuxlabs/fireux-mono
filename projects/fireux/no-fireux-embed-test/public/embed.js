@@ -10,7 +10,8 @@ function connectProviderIframe(options) {
     var height = Number(event.data.height)
     if (!Number.isFinite(height) || height <= 0) return
 
-    frame.style.height = Math.ceil(height) + 'px'
+    var minHeight = Number(options.minHeight || 560)
+    frame.style.height = Math.max(Math.ceil(height), minHeight) + 'px'
   })
 }
 
@@ -62,7 +63,8 @@ function connectLocalProviderIframe(options) {
     connectProviderIframe({
       selector: options.selector,
       providerOrigin: options.localOrigin,
-      messageSource: options.messageSource
+      messageSource: options.messageSource,
+      minHeight: options.minHeight
     })
   })
 }
