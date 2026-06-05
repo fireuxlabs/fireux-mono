@@ -40,10 +40,59 @@
       iframe {
         display: block;
         width: 100%;
-        max-width: 52rem;
         min-height: 520px;
         border: 0;
         border-radius: 1rem;
+      }
+
+      section {
+        margin-top: 2rem;
+      }
+
+      .embed-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 980px) {
+        .embed-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .embed-card {
+        border-radius: 1.25rem;
+        background: #fffaf0;
+        padding: 1rem;
+      }
+
+      .notice {
+        border-radius: 0.75rem;
+        background: #eee3cf;
+        padding: 0.75rem 1rem;
+      }
+
+      .source-preview {
+        margin-top: 1rem;
+      }
+
+      .source-preview summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .source-preview pre {
+        max-height: 26rem;
+        overflow: auto;
+        border-radius: 0.75rem;
+        background: #1f1d1a;
+        color: #f7efe0;
+        padding: 1rem;
+        white-space: pre-wrap;
+      }
+
+      [hidden] {
+        display: none;
       }
     </style>
   </head>
@@ -51,19 +100,115 @@
     <main>
       <p><a href="/">Back to harness</a></p>
       <h1>Go QR plain embed</h1>
-      <p>Source: <code>https://go-qr.web.app/tools/url</code></p>
-      <iframe
-        id="go-qr-tool"
-        title="Go QR URL tool"
-        src="https://go-qr.web.app/tools/url?title=Menu%20URL&description=Paste%20an%20existing%20menu%20URL%20and%20get%20a%20printable%20QR%20menu.&urlLabel=Menu%20URL&urlPlaceholder=https%3A%2F%2Fmy-url.com%2Fmenu&ctaLabel=Create%20menu%20URL%20QR&qrCentreLabel=Food%20Menu"
-      ></iframe>
+      <p>Provider source: <code>https://go-qr.web.app/tools/**</code></p>
+
+      <section>
+        <h2>URL tool</h2>
+        <div class="embed-grid">
+          <div class="embed-card">
+            <h3>Deployed</h3>
+            <p>Source: <code>https://go-qr.web.app/tools/url</code></p>
+            <iframe
+              id="go-qr-url-deployed-tool"
+              title="Go QR deployed URL tool"
+              src="https://go-qr.web.app/tools/url?title=Menu%20URL&description=Paste%20an%20existing%20menu%20URL%20and%20get%20a%20printable%20QR%20menu.&urlLabel=Menu%20URL&urlPlaceholder=https%3A%2F%2Fmy-url.com%2Fmenu&ctaLabel=Create%20menu%20URL%20QR&qrCentreLabel=Food%20Menu"
+            ></iframe>
+          </div>
+
+          <div class="embed-card">
+            <h3>Local</h3>
+            <p>Source: <code id="go-qr-url-local-source">Waiting for local harness</code></p>
+            <p id="go-qr-url-local-status" class="notice" hidden>
+              Local provider tests only run from the local Plain Jane harness.
+            </p>
+            <iframe
+              id="go-qr-url-local-tool"
+              title="Go QR local URL tool"
+              hidden
+            ></iframe>
+            <details class="source-preview" data-source-preview="go-qr-url">
+              <summary>Source preview, no runtime</summary>
+              <p class="notice">
+                Reads the local repo files through the Plain Jane harness. This
+                does not run Nuxt or test the iframe.
+              </p>
+              <pre data-source-preview-output>Loading source preview...</pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Doc tool</h2>
+        <div class="embed-grid">
+          <div class="embed-card">
+            <h3>Deployed</h3>
+            <p>Source: <code>https://go-qr.web.app/tools/doc</code></p>
+            <iframe
+              id="go-qr-doc-deployed-tool"
+              title="Go QR deployed doc upload tool"
+              src="https://go-qr.web.app/tools/doc?title=Menu%20document&description=Upload%20a%20menu%20document%20and%20create%20a%20QR%20page.&fileLabel=Menu%20file&pathLabel=Menu%20path&slugPlaceholder=my-menu&previewBaseUrl=https%3A%2F%2Fgo-qr.web.app%2Fdoc&previewPathSuffix=%2Fqr&accept=application%2Fpdf%2C.doc%2C.docx&uploadHint=PDF%2C%20DOC%2C%20or%20DOCX.%20Max%2010%20MB.&ctaLabel=Create%20menu%20QR&loadingLabel=Creating%20menu...&openTargetLabel=Open%20menu&takenMessage=This%20menu%20path%20is%20already%20taken."
+            ></iframe>
+          </div>
+
+          <div class="embed-card">
+            <h3>Local</h3>
+            <p>Source: <code id="go-qr-doc-local-source">Waiting for local harness</code></p>
+            <p id="go-qr-doc-local-status" class="notice" hidden>
+              Local provider tests only run from the local Plain Jane harness.
+            </p>
+            <iframe
+              id="go-qr-doc-local-tool"
+              title="Go QR local doc upload tool"
+              hidden
+            ></iframe>
+            <details class="source-preview" data-source-preview="go-qr-doc">
+              <summary>Source preview, no runtime</summary>
+              <p class="notice">
+                Reads the local repo files through the Plain Jane harness. This
+                does not run Nuxt or test the iframe.
+              </p>
+              <pre data-source-preview-output>Loading source preview...</pre>
+            </details>
+          </div>
+        </div>
+      </section>
     </main>
     <script src="/embed.js"></script>
     <script>
+      var goQrUrlPath = '/tools/url?title=Menu%20URL&description=Paste%20an%20existing%20menu%20URL%20and%20get%20a%20printable%20QR%20menu.&urlLabel=Menu%20URL&urlPlaceholder=https%3A%2F%2Fmy-url.com%2Fmenu&ctaLabel=Create%20menu%20URL%20QR&qrCentreLabel=Food%20Menu'
+      var goQrDocPath = '/tools/doc?title=Menu%20document&description=Upload%20a%20menu%20document%20and%20create%20a%20QR%20page.&fileLabel=Menu%20file&pathLabel=Menu%20path&slugPlaceholder=my-menu&previewBaseUrl=https%3A%2F%2Fgo-qr.web.app%2Fdoc&previewPathSuffix=%2Fqr&accept=application%2Fpdf%2C.doc%2C.docx&uploadHint=PDF%2C%20DOC%2C%20or%20DOCX.%20Max%2010%20MB.&ctaLabel=Create%20menu%20QR&loadingLabel=Creating%20menu...&openTargetLabel=Open%20menu&takenMessage=This%20menu%20path%20is%20already%20taken.'
+
       connectProviderIframe({
-        selector: '#go-qr-tool',
+        selector: '#go-qr-url-deployed-tool',
         providerOrigin: 'https://go-qr.web.app',
         messageSource: 'go-qr'
+      })
+
+      connectProviderIframe({
+        selector: '#go-qr-doc-deployed-tool',
+        providerOrigin: 'https://go-qr.web.app',
+        messageSource: 'go-qr'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#go-qr-url-local-tool',
+        sourceSelector: '#go-qr-url-local-source',
+        statusSelector: '#go-qr-url-local-status',
+        localOrigin: 'http://localhost:3013',
+        path: goQrUrlPath,
+        messageSource: 'go-qr',
+        startCommand: 'pnpm dev:go-qr'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#go-qr-doc-local-tool',
+        sourceSelector: '#go-qr-doc-local-source',
+        statusSelector: '#go-qr-doc-local-status',
+        localOrigin: 'http://localhost:3013',
+        path: goQrDocPath,
+        messageSource: 'go-qr',
+        startCommand: 'pnpm dev:go-qr'
       })
     </script>
   </body>

@@ -40,10 +40,55 @@
       iframe {
         display: block;
         width: 100%;
-        max-width: 52rem;
         min-height: 560px;
         border: 0;
         border-radius: 1rem;
+      }
+
+      .embed-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 980px) {
+        .embed-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .embed-card {
+        border-radius: 1.25rem;
+        background: #fffaf0;
+        padding: 1rem;
+      }
+
+      .notice {
+        border-radius: 0.75rem;
+        background: #eee3cf;
+        padding: 0.75rem 1rem;
+      }
+
+      .source-preview {
+        margin-top: 1rem;
+      }
+
+      .source-preview summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .source-preview pre {
+        max-height: 26rem;
+        overflow: auto;
+        border-radius: 0.75rem;
+        background: #1f1d1a;
+        color: #f7efe0;
+        padding: 1rem;
+        white-space: pre-wrap;
+      }
+
+      [hidden] {
+        display: none;
       }
     </style>
   </head>
@@ -52,22 +97,59 @@
       <p><a href="/">Back to harness</a></p>
       <h1>Misebox plain embed</h1>
       <p>
-        This page tests the deployed Misebox provider. It should only work when
-        the ordering tool has been deployed by Misebox.
+        This page compares the deployed Misebox provider with the local provider
+        when the Plain Jane harness is opened locally.
       </p>
-      <p>Source: <code>https://misebox-78f9c.web.app/tools/ordering</code></p>
-      <iframe
-        id="misebox-tool"
-        title="Misebox ordering tool"
-        src="https://misebox-78f9c.web.app/tools/ordering"
-      ></iframe>
+
+      <div class="embed-grid">
+        <section class="embed-card">
+          <h2>Deployed</h2>
+          <p>Source: <code>https://misebox-78f9c.web.app/tools/ordering</code></p>
+          <iframe
+            id="misebox-deployed-tool"
+            title="Misebox deployed ordering tool"
+            src="https://misebox-78f9c.web.app/tools/ordering"
+          ></iframe>
+        </section>
+
+        <section class="embed-card">
+          <h2>Local</h2>
+          <p>Source: <code id="misebox-local-source">Waiting for local harness</code></p>
+          <p id="misebox-local-status" class="notice" hidden>
+            Local provider tests only run from the local Plain Jane harness.
+          </p>
+          <iframe
+            id="misebox-local-tool"
+            title="Misebox local ordering tool"
+            hidden
+          ></iframe>
+          <details class="source-preview" data-source-preview="misebox-ordering">
+            <summary>Source preview, no runtime</summary>
+            <p class="notice">
+              Reads the local repo files through the Plain Jane harness. This
+              does not run Nuxt or test the iframe.
+            </p>
+            <pre data-source-preview-output>Loading source preview...</pre>
+          </details>
+        </section>
+      </div>
     </main>
     <script src="/embed.js"></script>
     <script>
       connectProviderIframe({
-        selector: '#misebox-tool',
+        selector: '#misebox-deployed-tool',
         providerOrigin: 'https://misebox-78f9c.web.app',
         messageSource: 'misebox'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#misebox-local-tool',
+        sourceSelector: '#misebox-local-source',
+        statusSelector: '#misebox-local-status',
+        localOrigin: 'http://localhost:3001',
+        path: '/tools/ordering',
+        messageSource: 'misebox',
+        startCommand: 'pnpm dev:misebox'
       })
     </script>
   </body>

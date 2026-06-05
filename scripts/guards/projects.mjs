@@ -279,14 +279,17 @@ function checkStaticProjectHarnessContent(appPath) {
   if (!existsSync(publicDir)) return null
 
   const endpointViolations = []
+  const localComparisonViolations = []
   for (const filePath of listFiles(publicDir)) {
     const rel = path.relative(appPath, filePath)
     const content = readFileSync(filePath, 'utf8')
-    if (
-      /\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)\b/i.test(content) ||
-      /http:\/\//i.test(content)
-    ) {
+
+    if (hasForbiddenHarnessEndpoint(content)) {
       endpointViolations.push(rel)
+    }
+
+    if (hasUnsafeLocalComparisonEndpoint(content)) {
+      localComparisonViolations.push(rel)
     }
   }
 
@@ -299,7 +302,11 @@ function checkStaticProjectHarnessContent(appPath) {
     if (missing.length) providerViolations.push({ ...page, missing })
   }
 
-  if (!endpointViolations.length && !providerViolations.length) return null
+  if (
+    !endpointViolations.length &&
+    !localComparisonViolations.length &&
+    !providerViolations.length
+  ) return null
 
   const lines = [
     '[guard] ❌ static project harness content violation:',
@@ -307,8 +314,16 @@ function checkStaticProjectHarnessContent(appPath) {
   ]
 
   if (endpointViolations.length) {
-    lines.push('  Local or insecure endpoints are forbidden:')
+    lines.push('  Insecure endpoints are forbidden outside approved local comparisons:')
     endpointViolations
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((rel) => lines.push(`    - ${rel}`))
+  }
+
+  if (localComparisonViolations.length) {
+    lines.push('  Local comparison endpoints must use the safe local helper:')
+    localComparisonViolations
       .slice()
       .sort((a, b) => a.localeCompare(b))
       .forEach((rel) => lines.push(`    - ${rel}`))
@@ -325,12 +340,39 @@ function checkStaticProjectHarnessContent(appPath) {
   lines.push(
     '',
     '[guard] Fix:',
-    '- Plain external-site harness pages must only embed deployed HTTPS provider URLs.',
-    '- Do not use localhost, 127.0.0.1, 0.0.0.0, or http:// in the harness.',
+    '- Plain external-site harness pages must always include deployed HTTPS provider URLs.',
+    '- Local provider URLs are allowed only through connectLocalProviderIframe.',
+    '- Do not set iframe src directly to localhost, 127.0.0.1, 0.0.0.0, or other http:// origins.',
     '- Keep Go QR, Sproochli, and Misebox pages pointed at their deployed provider origins.'
   )
 
   return lines.join('\n')
+}
+
+function hasForbiddenHarnessEndpoint(content) {
+  let checkedContent = content.replace(
+    /http:\/\/localhost:(?:3001|3011|3013)\b/g,
+    ''
+  )
+
+  if (checkedContent.includes('function isLocalHarness()')) {
+    checkedContent = checkedContent.replace(
+      /['"](?:localhost|127\.0\.0\.1|\[::1\]|::1)['"]/g,
+      ''
+    )
+  }
+
+  return (
+    /\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)\b/i.test(checkedContent) ||
+    /http:\/\//i.test(checkedContent)
+  )
+}
+
+function hasUnsafeLocalComparisonEndpoint(content) {
+  if (!/http:\/\/localhost:(?:3001|3011|3013)\b/i.test(content)) return false
+  if (!content.includes('connectLocalProviderIframe')) return true
+  if (/\bsrc=["']http:\/\/localhost:/i.test(content)) return true
+  return false
 }
 
 function listFiles(dir) {

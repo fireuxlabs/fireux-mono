@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { defineToolProviderRegistry } from 'fireux-core/runtime/server/utils/tool-provider'
+import { defineToolProviderRegistry } from 'fireux-core/runtime/server/utils/tool-provider.ts'
 import { docTool } from './tools/doc'
 import { textTool } from './tools/text'
 import { urlTool } from './tools/url'

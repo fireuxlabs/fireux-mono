@@ -40,10 +40,55 @@
       iframe {
         display: block;
         width: 100%;
-        max-width: 52rem;
         min-height: 560px;
         border: 0;
         border-radius: 1rem;
+      }
+
+      .embed-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 980px) {
+        .embed-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .embed-card {
+        border-radius: 1.25rem;
+        background: #fffaf0;
+        padding: 1rem;
+      }
+
+      .notice {
+        border-radius: 0.75rem;
+        background: #eee3cf;
+        padding: 0.75rem 1rem;
+      }
+
+      .source-preview {
+        margin-top: 1rem;
+      }
+
+      .source-preview summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .source-preview pre {
+        max-height: 26rem;
+        overflow: auto;
+        border-radius: 0.75rem;
+        background: #1f1d1a;
+        color: #f7efe0;
+        padding: 1rem;
+        white-space: pre-wrap;
+      }
+
+      [hidden] {
+        display: none;
       }
     </style>
   </head>
@@ -51,19 +96,59 @@
     <main>
       <p><a href="/">Back to harness</a></p>
       <h1>Sproochli plain embed</h1>
-      <p>Source: <code>https://sproochli.web.app/tools/menu</code></p>
-      <iframe
-        id="sproochli-tool"
-        title="Sproochli menu translation tool"
-        src="https://sproochli.web.app/tools/menu?title=Menu%20translation&description=Translate%20menu%20copy%20with%20the%20Sproochli%20provider.&publicMenuUrl=&publicMenuUrlLabel=Public%20menu%20URL&publicMenuUrlPlaceholder=https%3A%2F%2Fmisebox.app%2Fkitchens%2Fla-tapberne%2Fmenus%2Fmain&kitchenSlug=&kitchenSlugLabel=Kitchen&menuId=&menuIdLabel=Menu&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20menu%20translation"
-      ></iframe>
+      <p>Provider source: <code>https://sproochli.web.app/tools/menu</code></p>
+
+      <div class="embed-grid">
+        <section class="embed-card">
+          <h2>Deployed</h2>
+          <p>Source: <code>https://sproochli.web.app/tools/menu</code></p>
+          <iframe
+            id="sproochli-deployed-tool"
+            title="Sproochli deployed menu translation tool"
+            src="https://sproochli.web.app/tools/menu?title=Menu%20translation&description=Translate%20menu%20copy%20with%20the%20Sproochli%20provider.&publicMenuUrl=&publicMenuUrlLabel=Public%20menu%20URL&publicMenuUrlPlaceholder=https%3A%2F%2Fmisebox.app%2Fkitchens%2Fla-tapberne%2Fmenus%2Fmain&kitchenSlug=&kitchenSlugLabel=Kitchen&menuId=&menuIdLabel=Menu&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20menu%20translation"
+          ></iframe>
+        </section>
+
+        <section class="embed-card">
+          <h2>Local</h2>
+          <p>Source: <code id="sproochli-local-source">Waiting for local harness</code></p>
+          <p id="sproochli-local-status" class="notice" hidden>
+            Local provider tests only run from the local Plain Jane harness.
+          </p>
+          <iframe
+            id="sproochli-local-tool"
+            title="Sproochli local menu translation tool"
+            hidden
+          ></iframe>
+          <details class="source-preview" data-source-preview="sproochli-menu">
+            <summary>Source preview, no runtime</summary>
+            <p class="notice">
+              Reads the local repo files through the Plain Jane harness. This
+              does not run Nuxt or test the iframe.
+            </p>
+            <pre data-source-preview-output>Loading source preview...</pre>
+          </details>
+        </section>
+      </div>
     </main>
     <script src="/embed.js"></script>
     <script>
+      var sproochliMenuPath = '/tools/menu?title=Menu%20translation&description=Translate%20menu%20copy%20with%20the%20Sproochli%20provider.&publicMenuUrl=&publicMenuUrlLabel=Public%20menu%20URL&publicMenuUrlPlaceholder=https%3A%2F%2Fmisebox.app%2Fkitchens%2Fla-tapberne%2Fmenus%2Fmain&kitchenSlug=&kitchenSlugLabel=Kitchen&menuId=&menuIdLabel=Menu&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20menu%20translation'
+
       connectProviderIframe({
-        selector: '#sproochli-tool',
+        selector: '#sproochli-deployed-tool',
         providerOrigin: 'https://sproochli.web.app',
         messageSource: 'sproochli'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#sproochli-local-tool',
+        sourceSelector: '#sproochli-local-source',
+        statusSelector: '#sproochli-local-status',
+        localOrigin: 'http://localhost:3011',
+        path: sproochliMenuPath,
+        messageSource: 'sproochli',
+        startCommand: 'pnpm dev:sproochli'
       })
     </script>
   </body>

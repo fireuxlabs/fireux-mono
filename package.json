@@ -25,6 +25,8 @@
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
     "dev:go-qr": "node scripts/dev-app-with-smoke.mjs --app go-qr",
     "dev:yellow-velo": "node scripts/dev-app-with-smoke.mjs --app yellow-velo",
+    "dev:embed-harness": "node scripts/serve-static-harness.mjs",
+    "dev:embed-tools": "node scripts/dev-embed-tools.mjs",
     "dev:all": "node scripts/dev-app-group.mjs --group all",
     "dev:all-extended": "node scripts/dev-app-group.mjs --group all-extended",
     "dev:full": "node scripts/dev-app-group.mjs --group full",

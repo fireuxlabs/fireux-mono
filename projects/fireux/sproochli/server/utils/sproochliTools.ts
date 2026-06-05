@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import {
   defineToolProviderRegistry,
   setToolProviderResponseHeaders,
-} from 'fireux-core/runtime/server/utils/tool-provider'
+} from 'fireux-core/runtime/server/utils/tool-provider.ts'
 import { menuTool } from './tools/menu'
 import type { SproochliToolContract, SproochliToolId } from './tools/types'
 
