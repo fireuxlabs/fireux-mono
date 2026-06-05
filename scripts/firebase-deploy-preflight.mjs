@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 import { parseArgs } from './_lib/args.mjs'
 
@@ -13,12 +14,14 @@ const FIREBASE_TOOLS_VERSION = '15.8.0'
 
 const args = parseArgs(process.argv.slice(2))
 const cwd = process.cwd()
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const project =
   typeof args.project === 'string' && args.project.trim()
     ? args.project.trim()
     : process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || ''
 const configArg = typeof args.config === 'string' && args.config.trim() ? args.config.trim() : 'firebase.json'
 const configPath = path.resolve(cwd, configArg)
+const appRoot = path.dirname(configPath)
 
 if (!project) {
   console.error('[firebase-preflight] Missing --project (or FIREBASE_PROJECT_ID / GCLOUD_PROJECT).')
@@ -29,6 +32,10 @@ if (!existsSync(configPath)) {
   console.error(`[firebase-preflight] Could not find config at ${configPath}`)
   process.exit(2)
 }
+
+prepareDeployBuildInputs()
+assertNoActiveNuxtDevServer()
+printArtifactReminder()
 
 const firebaseConfig = readJson(configPath)
 printShipReminders()
@@ -64,10 +71,116 @@ if (violations.length) {
 
 console.log('[firebase-preflight] No stale app function leftovers detected.')
 
+function prepareDeployBuildInputs() {
+  const buildConfigScript = path.join(repoRoot, 'scripts/build-fireux-core-config.mjs')
+  if (!existsSync(buildConfigScript)) return
+
+  console.log('[firebase-preflight] Preparing fireux-core config helpers...')
+
+  const result = spawnSync('node', [buildConfigScript], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+
+  if (result.stdout) process.stdout.write(result.stdout)
+
+  if (result.status === 0) return
+
+  if (result.stderr) process.stderr.write(result.stderr)
+  console.error('[firebase-preflight] Could not prepare fireux-core config helpers.')
+  console.error('Fix this before deploy: node scripts/build-fireux-core-config.mjs')
+  process.exit(result.status || 1)
+}
+
+function assertNoActiveNuxtDevServer() {
+  const packagePath = path.join(appRoot, 'package.json')
+  if (!existsSync(packagePath)) return
+
+  const packageJson = readJson(packagePath)
+  const devScript = typeof packageJson?.scripts?.dev === 'string' ? packageJson.scripts.dev : ''
+  if (!devScript.includes('nuxi dev') && !devScript.includes('nuxt dev')) return
+
+  const port = readNuxtDevPort(devScript)
+  const result = spawnSync('ps', ['-ax', '-o', 'pid=,command='], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+
+  if (result.status !== 0) {
+    console.warn('[firebase-preflight] Could not inspect running processes for Nuxt dev servers.')
+    if (result.stderr) process.stderr.write(result.stderr)
+    return
+  }
+
+  const blockers = result.stdout
+    .split('\n')
+    .map(parseProcessLine)
+    .filter(Boolean)
+    .filter((entry) => entry.pid !== process.pid)
+    .filter((entry) => isMatchingNuxtDevProcess(entry.command, port))
+
+  if (!blockers.length) return
+
+  console.error('\n[firebase-preflight] Active Nuxt dev server detected for this app.\n')
+  console.error(
+    'Nuxt build can fail when the same app still has a dev server running. Stop it before deploying.'
+  )
+
+  for (const blocker of blockers) {
+    console.error(`- PID ${blocker.pid}: ${blocker.command}`)
+  }
+
+  console.error('\nThen rerun the deploy command.')
+  process.exit(1)
+}
+
+function printArtifactReminder() {
+  const cleanScript = path.join(repoRoot, 'scripts/pre-guard-clean.mjs')
+  if (!existsSync(cleanScript)) return
+
+  console.log(
+    '[firebase-preflight] Note: deploy builds create local artifacts. After deploy, run node scripts/pre-guard-clean.mjs before guard/save.'
+  )
+}
+
 function printShipReminders() {
   console.warn(
     '[firebase-preflight] Reminder: fireux-places Place claiming is pre-ship only. Before production deploy, add verified claim flow and update Firestore rules for places/{placeId}.'
   )
+}
+
+function readNuxtDevPort(devScript) {
+  const spaced = devScript.match(/--port\s+(\d+)/)
+  if (spaced) return spaced[1]
+
+  const assigned = devScript.match(/--port=(\d+)/)
+  return assigned?.[1] ?? ''
+}
+
+function parseProcessLine(line) {
+  const match = line.match(/^\s*(\d+)\s+(.+?)\s*$/)
+  if (!match) return null
+
+  return {
+    pid: Number(match[1]),
+    command: match[2],
+  }
+}
+
+function isMatchingNuxtDevProcess(command, port) {
+  const normalized = command.replace(/\s+/g, ' ').trim()
+  const isNuxtDev =
+    /\bnuxi(?:\.mjs)? dev\b/.test(normalized) || /\bnuxt(?:\.mjs)? dev\b/.test(normalized)
+
+  if (!isNuxtDev) return false
+
+  const appPathMatch = normalized.includes(appRoot)
+  const portMatch = Boolean(
+    port && (normalized.includes(`--port ${port}`) || normalized.includes(`--port=${port}`))
+  )
+
+  return appPathMatch || portMatch
 }
 
 function readJson(filePath) {

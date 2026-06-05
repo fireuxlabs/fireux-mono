@@ -6,7 +6,7 @@
 // Called by scripts/guard.mjs.
 // MUST NOT be run directly.
 
-import { readdirSync, existsSync } from 'node:fs'
+import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const REQUIRED_L1 = [
@@ -22,6 +22,35 @@ const REQUIRED_L1 = [
 
 const STATIC_PROJECT_HARNESSES = new Set(['fireux/no-fireux-embed-test'])
 const STATIC_HARNESS_REQUIRED_L1 = ['public', 'firebase.json']
+const STATIC_HARNESS_PROVIDER_PAGES = [
+  {
+    rel: 'public/go-qr.html',
+    provider: 'Go QR',
+    required: [
+      'https://go-qr.web.app/tools/',
+      "providerOrigin: 'https://go-qr.web.app'",
+      "messageSource: 'go-qr'",
+    ],
+  },
+  {
+    rel: 'public/sproochli.html',
+    provider: 'Sproochli',
+    required: [
+      'https://sproochli.web.app/tools/',
+      "providerOrigin: 'https://sproochli.web.app'",
+      "messageSource: 'sproochli'",
+    ],
+  },
+  {
+    rel: 'public/misebox.html',
+    provider: 'Misebox',
+    required: [
+      'https://misebox-78f9c.web.app/tools/',
+      "providerOrigin: 'https://misebox-78f9c.web.app'",
+      "messageSource: 'misebox'",
+    ],
+  },
+]
 
 // Explicitly allowed, but never required.
 const ALLOWED_L1 = ['docs', 'content.config.ts']
@@ -106,6 +135,8 @@ export async function run(ctx) {
       if (STATIC_PROJECT_HARNESSES.has(projectKey)) {
         const staticViolation = checkStaticProjectHarness(appPath)
         if (staticViolation) violations.push(staticViolation)
+        const contentViolation = checkStaticProjectHarnessContent(appPath)
+        if (contentViolation) violations.push(contentViolation)
         continue
       }
 
@@ -241,6 +272,81 @@ function checkStaticProjectHarness(appPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkStaticProjectHarnessContent(appPath) {
+  const publicDir = path.join(appPath, 'public')
+  if (!existsSync(publicDir)) return null
+
+  const endpointViolations = []
+  for (const filePath of listFiles(publicDir)) {
+    const rel = path.relative(appPath, filePath)
+    const content = readFileSync(filePath, 'utf8')
+    if (
+      /\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)\b/i.test(content) ||
+      /http:\/\//i.test(content)
+    ) {
+      endpointViolations.push(rel)
+    }
+  }
+
+  const providerViolations = []
+  for (const page of STATIC_HARNESS_PROVIDER_PAGES) {
+    const filePath = path.join(appPath, page.rel)
+    if (!existsSync(filePath)) continue
+    const content = readFileSync(filePath, 'utf8')
+    const missing = page.required.filter((needle) => !content.includes(needle))
+    if (missing.length) providerViolations.push({ ...page, missing })
+  }
+
+  if (!endpointViolations.length && !providerViolations.length) return null
+
+  const lines = [
+    '[guard] ❌ static project harness content violation:',
+    `  Path: ${appPath}`,
+  ]
+
+  if (endpointViolations.length) {
+    lines.push('  Local or insecure endpoints are forbidden:')
+    endpointViolations
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((rel) => lines.push(`    - ${rel}`))
+  }
+
+  if (providerViolations.length) {
+    lines.push('  Provider page contract violations:')
+    providerViolations.forEach((violation) => {
+      lines.push(`    - ${violation.rel} (${violation.provider})`)
+      violation.missing.forEach((needle) => lines.push(`      missing: ${needle}`))
+    })
+  }
+
+  lines.push(
+    '',
+    '[guard] Fix:',
+    '- Plain external-site harness pages must only embed deployed HTTPS provider URLs.',
+    '- Do not use localhost, 127.0.0.1, 0.0.0.0, or http:// in the harness.',
+    '- Keep Go QR, Sproochli, and Misebox pages pointed at their deployed provider origins.'
+  )
+
+  return lines.join('\n')
+}
+
+function listFiles(dir) {
+  const files = []
+
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === '.DS_Store') continue
+    const entryPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...listFiles(entryPath))
+      continue
+    }
+    if (entry.isFile()) files.push(entryPath)
+  }
+
+  return files
 }
 
 function checkProjectPublicImageLibrary(appPath) {

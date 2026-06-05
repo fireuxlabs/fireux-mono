@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Misebox Embed Test</title>
+    <style>
+      :root {
+        color: #1d1d1f;
+        background: #f5f2ea;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        box-sizing: border-box;
+        min-height: 100svh;
+        padding: clamp(1rem, 5vw, 4rem);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      p {
+        max-width: 52rem;
+        color: #5a5246;
+        line-height: 1.7;
+      }
+
+      code {
+        border-radius: 999px;
+        background: #eee3cf;
+        padding: 0.15rem 0.45rem;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        max-width: 52rem;
+        min-height: 560px;
+        border: 0;
+        border-radius: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">Back to harness</a></p>
+      <h1>Misebox plain embed</h1>
+      <p>
+        This page tests the deployed Misebox provider. It should only work when
+        the ordering tool has been deployed by Misebox.
+      </p>
+      <p>Source: <code>https://misebox-78f9c.web.app/tools/ordering</code></p>
+      <iframe
+        id="misebox-tool"
+        title="Misebox ordering tool"
+        src="https://misebox-78f9c.web.app/tools/ordering"
+      ></iframe>
+    </main>
+    <script src="/embed.js"></script>
+    <script>
+      connectProviderIframe({
+        selector: '#misebox-tool',
+        providerOrigin: 'https://misebox-78f9c.web.app',
+        messageSource: 'misebox'
+      })
+    </script>
+  </body>
+</html>

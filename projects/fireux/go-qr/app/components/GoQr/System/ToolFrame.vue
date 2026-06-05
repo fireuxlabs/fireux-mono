@@ -12,8 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import ProviderToolFrame from 'fireux-core/runtime/components/Provider/Tool/Frame.vue'
-
 defineProps<{
   title?: string
   description?: string
