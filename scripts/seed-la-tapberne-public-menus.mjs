@@ -354,18 +354,24 @@ const MENU = {
   id: 'main',
   name: 'Comida Casera',
   names: {
-    de: 'Comida Casera',
-    en: 'Comida Casera',
+    de: 'Hausgemachte Küche',
+    en: 'Home Cooking',
+    es: 'Comida casera',
+    pt: 'Comida caseira',
   },
   description: '',
   descriptions: {
     de: 'Tapas-Gastro-Pub · Hausgemachte Küche',
     en: 'Tapas-Gastro-Pub · Homemade food',
+    es: 'Tapas-Gastro-Pub · Comida casera',
+    pt: 'Tapas-Gastro-Pub · Comida caseira',
   },
   note: 'Alle Preise in CHF inkl. MwSt.',
   notes: {
     de: 'Alle Preise in CHF inkl. MwSt.',
     en: 'All prices in CHF incl. VAT.',
+    es: 'Todos los precios en CHF, IVA incluido.',
+    pt: 'Todos os preços em CHF, IVA incluído.',
   },
   sections: SECTIONS,
 }
@@ -433,6 +439,7 @@ Options:
   --database <id>                  Firestore database id. Defaults to misebox.
   --service-account <path>         Service account JSON path.
   --kitchen-collection <path>      Kitchen collection path. Defaults to kitchens.
+  --kitchen-id <id>                Kitchen doc id when slug lookup is unavailable.
 `)
 }
 
@@ -524,7 +531,11 @@ function buildMenuPayload(menu, kitchenId, snap) {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
+    names: menu.names,
     description: menu.description,
+    descriptions: menu.descriptions,
+    note: menu.note,
+    notes: menu.notes,
     status: 'published',
     source_language: 'de',
     created: createdStamp(snap),
@@ -606,6 +617,8 @@ async function main() {
     typeof args['kitchen-collection'] === 'string'
       ? normalizeString(args['kitchen-collection'])
       : DEFAULT_KITCHEN_COLLECTION_PATH
+  const requestedKitchenId =
+    typeof args['kitchen-id'] === 'string' ? normalizeString(args['kitchen-id']) : ''
   const commit = Boolean(args.commit)
   const reset = Boolean(args.reset)
   const app = initializeApp(
@@ -616,7 +629,7 @@ async function main() {
   const kitchensRef = db.collection(kitchenCollectionPath)
   const slugSnap = await kitchensRef.where('slug', '==', KITCHEN_SLUG).limit(1).get()
   const kitchenRef = slugSnap.empty
-    ? db.doc(`${kitchenCollectionPath}/${FALLBACK_KITCHEN_ID}`)
+    ? db.doc(`${kitchenCollectionPath}/${requestedKitchenId || FALLBACK_KITCHEN_ID}`)
     : slugSnap.docs[0].ref
   const kitchenId = kitchenRef.id
   const dishEntries = MENU.sections.flatMap((section) => section.items)

@@ -1,15 +1,35 @@
 type SproochliChromeLanguage =
+  | 'ar'
+  | 'bo'
+  | 'cs'
+  | 'da'
   | 'de'
   | 'en'
-  | 'it'
-  | 'fr'
-  | 'ar'
+  | 'el'
   | 'es'
-  | 'pt'
+  | 'fa'
+  | 'fi'
+  | 'fr'
   | 'he'
+  | 'hi'
+  | 'hu'
+  | 'id'
+  | 'it'
   | 'ko'
   | 'ja'
-  | 'bo'
+  | 'nl'
+  | 'no'
+  | 'pl'
+  | 'pt'
+  | 'ro'
+  | 'ru'
+  | 'sv'
+  | 'th'
+  | 'tr'
+  | 'uk'
+  | 'ur'
+  | 'vi'
+  | 'zh'
 
 export type SproochliLanguageCode = '' | SproochliChromeLanguage
 
@@ -17,7 +37,7 @@ export type SproochliLanguageOption = {
   code: SproochliLanguageCode
   label: string
   name: string
-  source?: 'original' | 'attached' | 'cache' | 'public'
+  source?: 'original' | 'attached' | 'cache' | 'public' | 'on_demand'
 }
 
 export type SproochliLanguageState = {
@@ -29,47 +49,91 @@ export type SproochliLanguageState = {
   options: SproochliLanguageOption[]
 }
 
+export type SproochliLanguageOptionsInput = {
+  enabled?: unknown
+  defaultLanguage?: unknown
+  attachedLanguages?: unknown
+  cachedLanguages?: unknown
+  publicLanguages?: unknown
+  onDemandLanguages?: unknown
+}
+
 const SPROOCHLI_LANGUAGE_LABELS: Record<SproochliChromeLanguage, string> = {
+  ar: '🇸🇦',
+  bo: 'bo',
+  cs: '🇨🇿',
+  da: '🇩🇰',
   de: '🇩🇪',
   en: '🇬🇧',
-  it: '🇮🇹',
-  fr: '🇫🇷',
-  ar: 'العربية',
+  el: '🇬🇷',
   es: '🇪🇸',
-  pt: '🇵🇹',
-  he: 'עברית',
+  fa: '🇮🇷',
+  fi: '🇫🇮',
+  fr: '🇫🇷',
+  he: '🇮🇱',
+  hi: '🇮🇳',
+  hu: '🇭🇺',
+  id: '🇮🇩',
+  it: '🇮🇹',
   ko: '🇰🇷',
   ja: '🇯🇵',
-  bo: 'བོད་སྐད་',
+  nl: '🇳🇱',
+  no: '🇳🇴',
+  pl: '🇵🇱',
+  pt: '🇵🇹',
+  ro: '🇷🇴',
+  ru: '🇷🇺',
+  sv: '🇸🇪',
+  th: '🇹🇭',
+  tr: '🇹🇷',
+  uk: '🇺🇦',
+  ur: '🇵🇰',
+  vi: '🇻🇳',
+  zh: '🇨🇳',
 }
 
 const SPROOCHLI_LANGUAGE_NAMES: Record<SproochliChromeLanguage, string> = {
+  ar: 'العربية',
+  bo: 'བོད་སྐད་',
+  cs: 'Čeština',
+  da: 'Dansk',
   de: 'Deutsch',
   en: 'English',
-  it: 'Italiano',
-  fr: 'Français',
-  ar: 'العربية',
+  el: 'Ελληνικά',
   es: 'Español',
-  pt: 'Português',
+  fa: 'فارسی',
+  fi: 'Suomi',
+  fr: 'Français',
   he: 'עברית',
+  hi: 'हिन्दी',
+  hu: 'Magyar',
+  id: 'Bahasa Indonesia',
+  it: 'Italiano',
   ko: '한국어',
   ja: '日本語',
-  bo: 'བོད་སྐད་',
+  nl: 'Nederlands',
+  no: 'Norsk',
+  pl: 'Polski',
+  pt: 'Português',
+  ro: 'Română',
+  ru: 'Русский',
+  sv: 'Svenska',
+  th: 'ไทย',
+  tr: 'Türkçe',
+  uk: 'Українська',
+  ur: 'اردو',
+  vi: 'Tiếng Việt',
+  zh: '中文',
 }
 
 export const SPROOCHLI_LANGUAGE_OPTIONS: SproochliLanguageOption[] = [
-  { code: '', label: 'Original', name: 'Original', source: 'original' },
-  { code: 'de', label: SPROOCHLI_LANGUAGE_LABELS.de, name: SPROOCHLI_LANGUAGE_NAMES.de, source: 'public' },
-  { code: 'en', label: SPROOCHLI_LANGUAGE_LABELS.en, name: SPROOCHLI_LANGUAGE_NAMES.en, source: 'public' },
-  { code: 'it', label: SPROOCHLI_LANGUAGE_LABELS.it, name: SPROOCHLI_LANGUAGE_NAMES.it, source: 'public' },
-  { code: 'fr', label: SPROOCHLI_LANGUAGE_LABELS.fr, name: SPROOCHLI_LANGUAGE_NAMES.fr, source: 'public' },
-  { code: 'ar', label: SPROOCHLI_LANGUAGE_LABELS.ar, name: SPROOCHLI_LANGUAGE_NAMES.ar, source: 'public' },
-  { code: 'es', label: SPROOCHLI_LANGUAGE_LABELS.es, name: SPROOCHLI_LANGUAGE_NAMES.es, source: 'public' },
-  { code: 'pt', label: SPROOCHLI_LANGUAGE_LABELS.pt, name: SPROOCHLI_LANGUAGE_NAMES.pt, source: 'public' },
-  { code: 'he', label: SPROOCHLI_LANGUAGE_LABELS.he, name: SPROOCHLI_LANGUAGE_NAMES.he, source: 'public' },
-  { code: 'ko', label: SPROOCHLI_LANGUAGE_LABELS.ko, name: SPROOCHLI_LANGUAGE_NAMES.ko, source: 'public' },
-  { code: 'ja', label: SPROOCHLI_LANGUAGE_LABELS.ja, name: SPROOCHLI_LANGUAGE_NAMES.ja, source: 'public' },
-  { code: 'bo', label: SPROOCHLI_LANGUAGE_LABELS.bo, name: SPROOCHLI_LANGUAGE_NAMES.bo, source: 'public' },
+  { code: '', label: '', name: 'Original', source: 'original' },
+  ...Object.keys(SPROOCHLI_LANGUAGE_NAMES).map((code) => ({
+    code: code as SproochliChromeLanguage,
+    label: SPROOCHLI_LANGUAGE_LABELS[code as SproochliChromeLanguage],
+    name: SPROOCHLI_LANGUAGE_NAMES[code as SproochliChromeLanguage],
+    source: 'public' as const,
+  })),
 ]
 
 export function normalizeSproochliLanguage(
@@ -86,9 +150,41 @@ export function normalizeSproochliLanguage(
     language === 'he' ||
     language === 'ko' ||
     language === 'ja' ||
-    language === 'bo'
+    language === 'bo' ||
+    language === 'nl' ||
+    language === 'pl' ||
+    language === 'tr' ||
+    language === 'zh' ||
+    language === 'ru' ||
+    language === 'uk' ||
+    language === 'hi' ||
+    language === 'sv' ||
+    language === 'da' ||
+    language === 'no' ||
+    language === 'fi' ||
+    language === 'el' ||
+    language === 'cs' ||
+    language === 'ro' ||
+    language === 'hu' ||
+    language === 'th' ||
+    language === 'vi' ||
+    language === 'id' ||
+    language === 'fa' ||
+    language === 'ur'
     ? language
     : ''
+}
+
+function normalizeLanguageList(value: unknown): SproochliChromeLanguage[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((entry) => normalizeSproochliLanguage(entry))
+    .filter((entry): entry is SproochliChromeLanguage => Boolean(entry))
+}
+
+function uniqueLanguages(values: SproochliChromeLanguage[]): SproochliChromeLanguage[] {
+  return [...new Set(values)]
 }
 
 function normalizeSproochliText(value: unknown): string {
@@ -145,23 +241,97 @@ export function isSproochliRtlLanguage(value: unknown): boolean {
 }
 
 export function resolveSproochliLanguageOptions(
-  enabled: unknown
+  input: unknown
 ): SproochliLanguageOption[] {
+  const config =
+    input && typeof input === 'object'
+      ? (input as SproochliLanguageOptionsInput)
+      : { enabled: input }
+  const enabled = config.enabled === true
+
+  if (!enabled) {
+    return [{ code: '', label: '', name: 'Original', source: 'original' }]
+  }
+
+  const defaultLanguage = normalizeSproochliLanguage(config.defaultLanguage)
+  const attachedLanguages = uniqueLanguages([
+    ...(defaultLanguage ? [defaultLanguage] : []),
+    ...normalizeLanguageList(config.attachedLanguages),
+  ])
+  const cachedLanguages = uniqueLanguages(
+    normalizeLanguageList(config.cachedLanguages).filter(
+      (language) => !attachedLanguages.includes(language)
+    )
+  )
+  const publicLanguages = uniqueLanguages(
+    normalizeLanguageList(config.publicLanguages).filter(
+      (language) =>
+        !attachedLanguages.includes(language) && !cachedLanguages.includes(language)
+    )
+  )
+  const configuredLanguageSet = new Set([
+    ...attachedLanguages,
+    ...cachedLanguages,
+    ...publicLanguages,
+  ])
+  const onDemandLanguages = uniqueLanguages(
+    (
+      normalizeLanguageList(config.onDemandLanguages).length
+        ? normalizeLanguageList(config.onDemandLanguages)
+        : SPROOCHLI_LANGUAGE_OPTIONS
+            .map((option) => option.code)
+            .filter((code): code is SproochliChromeLanguage => Boolean(code))
+    ).filter((language) => !configuredLanguageSet.has(language))
+  )
+  const configuredLanguages = uniqueLanguages([
+    ...attachedLanguages,
+    ...cachedLanguages,
+    ...publicLanguages,
+  ])
+  const sourceFor = (
+    language: SproochliChromeLanguage
+  ): SproochliLanguageOption['source'] => {
+    if (attachedLanguages.includes(language)) return 'attached'
+    if (cachedLanguages.includes(language)) return 'cache'
+    return 'public'
+  }
+  const languageOptions = configuredLanguages.map((language) => ({
+    code: language,
+    label: SPROOCHLI_LANGUAGE_LABELS[language],
+    name: SPROOCHLI_LANGUAGE_NAMES[language],
+    source: sourceFor(language),
+  }))
+  const onDemandOptions = onDemandLanguages.map((language) => ({
+    code: language,
+    label: SPROOCHLI_LANGUAGE_LABELS[language],
+    name: SPROOCHLI_LANGUAGE_NAMES[language],
+    source: 'on_demand' as const,
+  }))
+
   return enabled === true
-    ? SPROOCHLI_LANGUAGE_OPTIONS
-    : [{ code: '', label: 'Original', name: 'Original', source: 'original' }]
+    ? [
+        { code: '', label: '', name: 'Original', source: 'original' },
+        ...languageOptions,
+        ...onDemandOptions,
+      ]
+    : [{ code: '', label: '', name: 'Original', source: 'original' }]
 }
 
 export function resolveSproochliLanguageState(input: {
   enabled?: unknown
+  defaultLanguage?: unknown
+  attachedLanguages?: unknown
+  cachedLanguages?: unknown
+  publicLanguages?: unknown
+  onDemandLanguages?: unknown
 } = {}): SproochliLanguageState {
-  const options = resolveSproochliLanguageOptions(input.enabled)
+  const options = resolveSproochliLanguageOptions(input)
 
   return {
-    primaryLanguage: '',
-    defaultLanguage: '',
-    attachedLanguages: [],
-    cachedLanguages: [],
+    primaryLanguage: normalizeSproochliLanguage(input.defaultLanguage),
+    defaultLanguage: normalizeSproochliLanguage(input.defaultLanguage),
+    attachedLanguages: uniqueLanguages(normalizeLanguageList(input.attachedLanguages)),
+    cachedLanguages: uniqueLanguages(normalizeLanguageList(input.cachedLanguages)),
     selectableLanguages: options.map((option) => option.code),
     options,
   }

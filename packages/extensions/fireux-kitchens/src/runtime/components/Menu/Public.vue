@@ -13,6 +13,7 @@
           <SproochliLanguageTrigger
             :language-options="languageOptions"
             :selected-language="selectedLanguage"
+            :show-group-labels="showLanguageGroupLabels"
           />
         </div>
         <h1>{{ menu.name }}</h1>
@@ -91,6 +92,7 @@ const props = defineProps<{
   showCurrency?: boolean
   languageOptions?: SproochliLanguageOption[]
   selectedLanguage?: SproochliLanguageCode
+  showLanguageGroupLabels?: boolean
   variant?: 'page' | 'preview'
 }>()
 

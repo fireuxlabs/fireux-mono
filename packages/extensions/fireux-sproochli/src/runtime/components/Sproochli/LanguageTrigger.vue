@@ -52,24 +52,43 @@
             </header>
 
             <div class="sproochli-language-list">
-              <a
-                v-for="option in visibleLanguageOptions"
-                :key="option.code || 'original'"
-                :href="languageHref(option.code)"
-                class="sproochli-language-option"
-                :class="{ 'is-active': languageOptionActive(option.code) }"
-                :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
-                :dir="languageDirection(option.code)"
-                @click="open = false"
+              <template
+                v-for="group in languageGroups"
+                :key="group.key"
               >
-                <span class="sproochli-language-mark">{{ option.label }}</span>
-                <span class="sproochli-language-name">{{ option.name }}</span>
-                <UIcon
-                  v-if="languageOptionActive(option.code)"
-                  name="i-lucide-check"
-                  class="sproochli-language-check"
+                <USeparator
+                  v-if="group.showSeparator"
+                  class="sproochli-language-separator"
+                  :label="showAdminGroupLabels ? group.label : undefined"
                 />
-              </a>
+
+                <a
+                  v-for="option in group.options"
+                  :key="`${group.key}:${option.code || 'original'}`"
+                  :href="languageHref(option.code)"
+                  class="sproochli-language-option"
+                  :class="{
+                    'has-mark': Boolean(option.label),
+                    'is-active': languageOptionActive(option.code),
+                  }"
+                  :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
+                  :dir="languageDirection(option.code)"
+                  @click="open = false"
+                >
+                  <span
+                    v-if="option.label"
+                    class="sproochli-language-mark"
+                  >
+                    {{ option.label }}
+                  </span>
+                  <span class="sproochli-language-name">{{ option.name }}</span>
+                  <UIcon
+                    v-if="languageOptionActive(option.code)"
+                    name="i-lucide-check"
+                    class="sproochli-language-check"
+                  />
+                </a>
+              </template>
             </div>
           </section>
         </div>
@@ -87,6 +106,15 @@ import {
   type SproochliLanguageOption,
 } from '../../composables/fireux/sproochli/publicLanguage'
 
+type LanguageGroupKey = NonNullable<SproochliLanguageOption['source']>
+
+type LanguageGroup = {
+  key: LanguageGroupKey
+  label: string
+  showSeparator: boolean
+  options: SproochliLanguageOption[]
+}
+
 const triggerImageSrc = new URL(
   '../../assets/sproochli/translate-trigger-compact.png',
   import.meta.url
@@ -95,11 +123,56 @@ const triggerImageSrc = new URL(
 const props = defineProps<{
   languageOptions: SproochliLanguageOption[]
   selectedLanguage?: SproochliLanguageCode
+  showGroupLabels?: boolean
 }>()
 
 const route = useRoute()
 const open = ref(false)
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
+const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
+const groupLabel: Record<LanguageGroupKey, string> = {
+  original: 'Original',
+  attached: 'Attached',
+  cache: 'Cached',
+  public: 'Public',
+  on_demand: 'On demand',
+}
+const groupOrder: LanguageGroupKey[] = [
+  'original',
+  'attached',
+  'cache',
+  'public',
+  'on_demand',
+]
+const optionGroup = (option: SproochliLanguageOption): LanguageGroupKey => {
+  if (option.source) return option.source
+  return option.code ? 'public' : 'original'
+}
+const languageGroups = computed<LanguageGroup[]>(() => {
+  const groups = new Map<LanguageGroupKey, SproochliLanguageOption[]>()
+
+  for (const option of visibleLanguageOptions.value) {
+    const key = optionGroup(option)
+    groups.set(key, [...(groups.get(key) ?? []), option])
+  }
+
+  let hasRenderedGroup = false
+  return groupOrder
+    .map((key) => {
+      const options = groups.get(key) ?? []
+      if (!options.length) return null
+
+      const group: LanguageGroup = {
+        key,
+        label: groupLabel[key],
+        showSeparator: hasRenderedGroup,
+        options,
+      }
+      hasRenderedGroup = true
+      return group
+    })
+    .filter((group): group is LanguageGroup => Boolean(group))
+})
 const selectedOption = computed(
   () =>
     visibleLanguageOptions.value.find(
@@ -107,7 +180,7 @@ const selectedOption = computed(
     ) ??
     visibleLanguageOptions.value[0] ?? {
       code: '',
-      label: 'Original',
+      label: '',
       name: 'Original',
     }
 )
@@ -229,6 +302,10 @@ const languageDirection = (language: SproochliLanguageCode) =>
   gap: 0.5rem;
 }
 
+.sproochli-language-separator {
+  margin: 0.15rem 0;
+}
+
 .sproochli-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -287,7 +364,7 @@ const languageDirection = (language: SproochliLanguageCode) =>
 
 .sproochli-language-option {
   display: grid;
-  grid-template-columns: minmax(3.5rem, auto) 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 0.75rem;
   min-height: 3rem;
@@ -296,6 +373,10 @@ const languageDirection = (language: SproochliLanguageCode) =>
   border-radius: 8px;
   color: var(--ui-text);
   text-decoration: none;
+}
+
+.sproochli-language-option.has-mark {
+  grid-template-columns: minmax(3.5rem, auto) 1fr auto;
 }
 
 .sproochli-language-option:hover,

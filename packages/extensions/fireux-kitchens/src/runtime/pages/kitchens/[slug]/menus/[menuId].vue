@@ -24,6 +24,7 @@
       :show-currency="showCurrency"
       :language-options="languageOptions"
       :selected-language="selectedLanguage"
+      :show-language-group-labels="showLanguageGroupLabels"
     />
 
     <DevJson
@@ -40,6 +41,7 @@
 <script setup lang="ts">
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   resolveSproochliLanguageOptions,
@@ -61,6 +63,7 @@ const {
   selectedLanguage,
   debug,
 } = useKitchenPublicMenuDetail()
+const { isAdmin } = useUser()
 const isDev = import.meta.dev
 
 const defaultMenuStyle = {
@@ -76,9 +79,21 @@ const text = (value: unknown) => String(value ?? '').trim()
 const kitchenName = computed(() =>
   text(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
 )
-const languageOptions = computed(() =>
-  resolveSproochliLanguageOptions((kitchen.value as any)?.sproochli_enabled === true)
+const languageSettings = computed(() =>
+  kitchen.value && typeof (kitchen.value as any).language_settings === 'object'
+    ? (kitchen.value as any).language_settings
+    : {}
 )
+const languageOptions = computed(() =>
+  resolveSproochliLanguageOptions({
+    enabled: (kitchen.value as any)?.sproochli_enabled === true,
+    defaultLanguage: (languageSettings.value as any)?.default_language,
+    attachedLanguages: (languageSettings.value as any)?.attached_languages,
+    cachedLanguages: (languageSettings.value as any)?.cache_languages,
+    publicLanguages: (languageSettings.value as any)?.public_languages,
+  })
+)
+const showLanguageGroupLabels = computed(() => isAdmin.value === true)
 const displayMenu = computed<Menu>(() => {
   const current = menu.value as Menu | null
   if (!current) return {} as Menu

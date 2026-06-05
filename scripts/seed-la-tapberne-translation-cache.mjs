@@ -30,10 +30,23 @@ const STALE_ATTACHED_CACHE_LANGUAGES = ['es', 'pt']
 
 const normalizeString = (value) => String(value ?? '').trim()
 
+const LA_TAPBERNE_MENU_TITLE = {
+  de: 'Hausgemachte Küche',
+  en: 'Home Cooking',
+  es: 'Comida casera',
+  fr: 'Cuisine maison',
+  it: 'Cucina casalinga',
+  pt: 'Comida caseira',
+  ar: 'طعام منزلي',
+  he: 'אוכל ביתי',
+  ko: '가정식',
+  ja: '家庭料理',
+}
+
 export const LA_TAPBERNE_TRANSLATIONS = {
   es: {
     menu: {
-      name: 'Comida Casera',
+      name: LA_TAPBERNE_MENU_TITLE.es,
       description: 'Tapas-Gastro-Pub · Comida casera',
       note: 'Todos los precios en CHF, IVA incluido.',
     },
@@ -142,7 +155,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
   },
   fr: {
     menu: {
-      name: 'Cuisine maison',
+      name: LA_TAPBERNE_MENU_TITLE.fr,
       description: 'Tapas-Gastro-Pub · Cuisine maison',
       note: 'Tous les prix sont en CHF, TVA incluse.',
     },
@@ -245,7 +258,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
   },
   it: {
     menu: {
-      name: 'Comida Casera',
+      name: LA_TAPBERNE_MENU_TITLE.it,
       description: 'Tapas-Gastro-Pub · Cucina casalinga',
       note: 'Tutti i prezzi sono in CHF, IVA inclusa.',
     },
@@ -339,7 +352,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
   },
   pt: {
     menu: {
-      name: 'Comida Casera',
+      name: LA_TAPBERNE_MENU_TITLE.pt,
       description: 'Tapas-Gastro-Pub · Comida caseira',
       note: 'Todos os preços em CHF, IVA incluído.',
     },
@@ -393,7 +406,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
     },
   },
   ar: {
-    menu: { name: 'Comida Casera', description: 'تاباس-غاسترو-بوب · طعام منزلي', note: 'جميع الأسعار بالفرنك السويسري وتشمل ضريبة القيمة المضافة.' },
+    menu: { name: LA_TAPBERNE_MENU_TITLE.ar, description: 'تاباس-غاسترو-بوب · طعام منزلي', note: 'جميع الأسعار بالفرنك السويسري وتشمل ضريبة القيمة المضافة.' },
     sections: {
       'las-tapas': 'تاباس',
       'ein-bisschen-meer': 'قليل من البحر',
@@ -441,7 +454,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
     },
   },
   he: {
-    menu: { name: 'Comida Casera', description: 'טאפאס-גסטרו-פאב · אוכל ביתי', note: 'כל המחירים בפרנק שווייצרי, כולל מע״מ.' },
+    menu: { name: LA_TAPBERNE_MENU_TITLE.he, description: 'טאפאס-גסטרו-פאב · אוכל ביתי', note: 'כל המחירים בפרנק שווייצרי, כולל מע״מ.' },
     sections: {
       'las-tapas': 'טאפאס',
       'ein-bisschen-meer': 'קצת מן הים',
@@ -489,7 +502,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
     },
   },
   ko: {
-    menu: { name: 'Comida Casera', description: '타파스 가스트로 펍 · 홈메이드 음식', note: '모든 가격은 CHF이며 부가세가 포함되어 있습니다.' },
+    menu: { name: LA_TAPBERNE_MENU_TITLE.ko, description: '타파스 가스트로 펍 · 홈메이드 음식', note: '모든 가격은 CHF이며 부가세가 포함되어 있습니다.' },
     sections: {
       'las-tapas': '타파스',
       'ein-bisschen-meer': '바다의 맛',
@@ -537,7 +550,7 @@ export const LA_TAPBERNE_TRANSLATIONS = {
     },
   },
   ja: {
-    menu: { name: 'Comida Casera', description: 'タパス・ガストロパブ · 家庭料理', note: '価格はすべてCHF、税込です。' },
+    menu: { name: LA_TAPBERNE_MENU_TITLE.ja, description: 'タパス・ガストロパブ · 家庭料理', note: '価格はすべてCHF、税込です。' },
     sections: {
       'las-tapas': 'タパス',
       'ein-bisschen-meer': '少し海の味',

@@ -37,6 +37,13 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 - Certified translations may be supplied as explicit localized fields.
 - Generated/cached translations may be merged into public responses when supplied by the app.
 - The public response must expose the resolved language, requested language, text direction, and translation source.
+- Public language pickers may group options as:
+  - original
+  - attached
+  - cache
+  - public
+  - on-demand
+- Guest-facing language pickers should not expose technical cache labels; admin/debug views may show labels for inspection.
 
 ## 6) Non-Goals
 - Not the Sproochli product app shell.

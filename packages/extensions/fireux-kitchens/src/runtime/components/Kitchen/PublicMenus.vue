@@ -2,12 +2,13 @@
   <UCard>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="text-sm font-semibold">{{ chromeLabels.menus }}</div>
+        <div class="text-sm font-semibold">{{ defaultChromeLabels.menus }}</div>
 
         <SproochliLanguageTrigger
           v-if="sproochliEnabled"
           :language-options="languageOptions"
           :selected-language="selectedLanguage"
+          :show-group-labels="showLanguageGroupLabels"
         />
       </div>
     </template>
@@ -21,15 +22,15 @@
         icon="i-lucide-book-open-check"
         :to="menusIndexLink"
       >
-        {{ chromeLabels.openMenus }}
+        {{ defaultChromeLabels.openMenus }}
       </UButton>
 
       <div v-if="menusLoading" class="py-4 text-sm text-dimmed">
-        {{ chromeLabels.loadingMenus }}
+        {{ defaultChromeLabels.loadingMenus }}
       </div>
 
       <div v-else-if="!sortedMenus.length" class="py-4 text-sm text-dimmed">
-        {{ chromeLabels.noMenusAvailable }}
+        {{ defaultChromeLabels.noMenusAvailable }}
       </div>
 
       <div v-else class="grid gap-3 sm:grid-cols-2">
@@ -45,10 +46,10 @@
                 {{ localizedMenuName(menu) }}
               </h2>
               <p
-                v-if="localizedMenuDescription(menu)"
+                v-if="normalizeString(menu.description)"
                 class="mt-1 text-sm text-dimmed"
               >
-                {{ localizedMenuDescription(menu) }}
+                {{ normalizeString(menu.description) }}
               </p>
               <p v-else class="mt-1 text-sm text-dimmed">
                 {{ menuSummary(menu) }}
@@ -70,6 +71,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -87,6 +89,7 @@ const props = defineProps<{
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
 const route = useRoute()
+const { isAdmin } = useUser()
 const resolveDb = useFirestoreResolver()
 const defaultChromeLabels = {
   menus: 'Menus',
@@ -94,15 +97,6 @@ const defaultChromeLabels = {
   loadingMenus: 'Loading menus...',
   noMenusAvailable: 'No menus available',
   openMenu: 'Open menu',
-}
-const translatedChromeLabels: Record<string, Partial<typeof defaultChromeLabels>> = {
-  fr: {
-    menus: 'Menus',
-    openMenus: 'Voir les menus',
-    loadingMenus: 'Chargement des menus...',
-    noMenusAvailable: 'Aucun menu disponible',
-    openMenu: 'Ouvrir le menu',
-  },
 }
 const { publishedMenus, pending: menusPending, collectionPath } = useMenuCollection(
   kitchenId
@@ -122,13 +116,21 @@ const selectedLanguage = computed(() =>
       )
     : ''
 )
-const languageOptions = computed(() =>
-  resolveSproochliLanguageOptions(sproochliEnabled.value)
+const languageSettings = computed(() =>
+  props.kitchen && typeof (props.kitchen as any).language_settings === 'object'
+    ? (props.kitchen as any).language_settings
+    : {}
 )
-const chromeLabels = computed(() => ({
-  ...defaultChromeLabels,
-  ...(translatedChromeLabels[selectedLanguage.value] ?? {}),
-}))
+const languageOptions = computed(() =>
+  resolveSproochliLanguageOptions({
+    enabled: sproochliEnabled.value,
+    defaultLanguage: (languageSettings.value as any)?.default_language,
+    attachedLanguages: (languageSettings.value as any)?.attached_languages,
+    cachedLanguages: (languageSettings.value as any)?.cache_languages,
+    publicLanguages: (languageSettings.value as any)?.public_languages,
+  })
+)
+const showLanguageGroupLabels = computed(() => isAdmin.value === true)
 const languageQuery = computed(() =>
   selectedLanguage.value
     ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}`
@@ -156,24 +158,16 @@ const menuLink = (menuIdRaw: unknown) => {
   return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}${languageQuery.value}`
 }
 
-const menuFieldId = (menu: Menu, field: 'name' | 'description') =>
-  `menu:${normalizeString(menu.id)}:${field}`
-const menuCacheText = (menu: Menu, field: 'name' | 'description') =>
-  menuTranslationCache.value[menuFieldId(menu, field)] ?? ''
+const menuNameFieldId = (menu: Menu) => `menu:${normalizeString(menu.id)}:name`
+const menuNameCacheText = (menu: Menu) =>
+  menuTranslationCache.value[menuNameFieldId(menu)] ?? ''
 const localizedMenuName = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.name,
     translations: (menu as any)?.names ?? (menu as any)?.translations,
     selectedLanguage: selectedLanguage.value,
-    cacheText: menuCacheText(menu, 'name'),
+    cacheText: menuNameCacheText(menu),
   }).text || normalizeString(menu.name)
-const localizedMenuDescription = (menu: Menu) =>
-  resolveSproochliTranslatedText({
-    defaultText: menu.description,
-    translations: (menu as any)?.descriptions,
-    selectedLanguage: selectedLanguage.value,
-    cacheText: menuCacheText(menu, 'description'),
-  }).text || normalizeString(menu.description)
 
 watch(
   () => ({
@@ -206,7 +200,9 @@ watch(
           const targetLanguage = normalizeString(data.target_language)
           const fieldId = normalizeString(data.field_id)
           const text = normalizeString(data.translated_text)
-          if (targetLanguage === language && fieldId && text) rows[fieldId] = text
+          if (targetLanguage === language && fieldId.endsWith(':name') && text) {
+            rows[fieldId] = text
+          }
         }
       }
 
@@ -221,5 +217,5 @@ watch(
   { immediate: true }
 )
 
-const menuSummary = (_menu: Menu) => chromeLabels.value.openMenu
+const menuSummary = (_menu: Menu) => defaultChromeLabels.openMenu
 </script>

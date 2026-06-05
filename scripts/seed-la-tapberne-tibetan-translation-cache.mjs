@@ -25,7 +25,7 @@ const ATTACHED_LANGUAGES = ['de', 'en', 'es', 'pt']
 const normalizeString = (value) => String(value ?? '').trim()
 
 const TIBETAN_MENU = {
-  name: 'Comida Casera',
+  name: 'ཁྱིམ་བཟོའི་ཟས་',
   description: 'Tapas-Gastro-Pub · ཁྱིམ་བཟོའི་ཟས་',
   note: 'རིན་གོང་ཚང་མ CHF ནང་། MwSt. ཚུད་ཡོད།',
 }

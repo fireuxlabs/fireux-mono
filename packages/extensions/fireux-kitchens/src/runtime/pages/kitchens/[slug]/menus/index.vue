@@ -20,6 +20,7 @@
           v-if="sproochliEnabled"
           :language-options="languageOptions"
           :selected-language="selectedLanguage"
+          :show-group-labels="showLanguageGroupLabels"
         />
       </template>
     </UPageHeader>
@@ -86,6 +87,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import {
   resolveSproochliLanguageOptions,
@@ -103,6 +105,7 @@ const {
   menuLink,
   debug,
 } = useKitchenPublicMenu()
+const { isAdmin } = useUser()
 const isDev = import.meta.dev
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
@@ -110,9 +113,21 @@ const kitchenName = computed(
 const sproochliEnabled = computed(
   () => (kitchen.value as any)?.sproochli_enabled === true
 )
-const languageOptions = computed(() =>
-  resolveSproochliLanguageOptions(sproochliEnabled.value)
+const languageSettings = computed(() =>
+  kitchen.value && typeof (kitchen.value as any).language_settings === 'object'
+    ? (kitchen.value as any).language_settings
+    : {}
 )
+const languageOptions = computed(() =>
+  resolveSproochliLanguageOptions({
+    enabled: sproochliEnabled.value,
+    defaultLanguage: (languageSettings.value as any)?.default_language,
+    attachedLanguages: (languageSettings.value as any)?.attached_languages,
+    cachedLanguages: (languageSettings.value as any)?.cache_languages,
+    publicLanguages: (languageSettings.value as any)?.public_languages,
+  })
+)
+const showLanguageGroupLabels = computed(() => isAdmin.value === true)
 const localizedMenuName = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.name,
