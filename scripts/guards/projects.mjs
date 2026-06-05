@@ -20,6 +20,9 @@ const REQUIRED_L1 = [
   '.env',
 ]
 
+const STATIC_PROJECT_HARNESSES = new Set(['fireux/no-fireux-embed-test'])
+const STATIC_HARNESS_REQUIRED_L1 = ['public', 'firebase.json']
+
 // Explicitly allowed, but never required.
 const ALLOWED_L1 = ['docs', 'content.config.ts']
 
@@ -42,6 +45,16 @@ const FORBIDDEN_L1 = [
   'tsconfig.tsbuildinfo',
   '.firebase',
   '.firebaserc',
+]
+
+const STATIC_HARNESS_FORBIDDEN_L1 = [
+  ...FORBIDDEN_L1,
+  'app',
+  'server',
+  'package.json',
+  'nuxt.config.ts',
+  'tsconfig.json',
+  '.env',
 ]
 
 // pnpm workspaces create per-app node_modules. We allow them locally,
@@ -88,6 +101,14 @@ export async function run(ctx) {
 
     for (const appName of apps) {
       const appPath = path.join(ecoPath, appName)
+      const projectKey = `${eco}/${appName}`
+
+      if (STATIC_PROJECT_HARNESSES.has(projectKey)) {
+        const staticViolation = checkStaticProjectHarness(appPath)
+        if (staticViolation) violations.push(staticViolation)
+        continue
+      }
+
       const shapeViolation = checkProjectApp(appPath)
       if (shapeViolation) {
         violations.push(shapeViolation)
@@ -158,6 +179,65 @@ function checkProjectApp(appPath) {
     `- Delete build output (.nuxt/.output/dist/etc) before saving`,
     `- Move implementation details into /app or /server`,
     `- Do NOT commit Firebase CLI artifacts (.firebase) or app-level project selectors (.firebaserc)`
+  )
+
+  return lines.join('\n')
+}
+
+function checkStaticProjectHarness(appPath) {
+  const entries = readdirSync(appPath, { withFileTypes: true })
+    .filter((e) => e.name !== '.DS_Store')
+    .map((e) => e.name)
+
+  const missing = STATIC_HARNESS_REQUIRED_L1.filter((r) => !entries.includes(r))
+  const forbiddenFound = entries.filter((e) =>
+    STATIC_HARNESS_FORBIDDEN_L1.includes(e)
+  )
+
+  const allowed = new Set(STATIC_HARNESS_REQUIRED_L1)
+  const unexpected = entries.filter((e) => {
+    if (STATIC_HARNESS_FORBIDDEN_L1.includes(e)) return false
+    if (allowed.has(e)) return false
+    if (ALLOWED_NOISE_L1.includes(e)) return false
+    return true
+  })
+
+  if (!missing.length && !forbiddenFound.length && !unexpected.length) {
+    return null
+  }
+
+  const lines = [
+    '[guard] ❌ static project harness shape violation:',
+    `  Path: ${appPath}`,
+  ]
+
+  if (missing.length) {
+    lines.push('  Missing required:')
+    missing.forEach((m) => lines.push(`    - ${m}`))
+  }
+
+  if (forbiddenFound.length) {
+    lines.push('  Forbidden (must not exist at L1):')
+    forbiddenFound
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((f) => lines.push(`    - ${f}`))
+  }
+
+  if (unexpected.length) {
+    lines.push('  Unexpected:')
+    unexpected
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((u) => lines.push(`    - ${u}`))
+  }
+
+  lines.push(
+    '',
+    '[guard] Fix:',
+    '- Static project harnesses are plain external-site tests, not FireUX apps.',
+    `- Required: ${STATIC_HARNESS_REQUIRED_L1.join(', ')}`,
+    '- Do not add Nuxt, FireUX runtime, app config, server, env, or build output.'
   )
 
   return lines.join('\n')
