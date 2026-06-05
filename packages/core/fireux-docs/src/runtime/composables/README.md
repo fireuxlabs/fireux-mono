@@ -144,6 +144,8 @@ Important FireUX seams include:
   resolve active target/runtime path
 - `useXConsole`
   adapt active target into console-facing state
+- `useToolProviderHeight`
+  publish hosted tool height to a consuming iframe
 
 The important FireUX rule is:
 

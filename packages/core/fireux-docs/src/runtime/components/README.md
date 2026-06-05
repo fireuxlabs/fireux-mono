@@ -47,6 +47,8 @@ The main repo-wide component seams are:
 - `public/SimplePage.vue`
 - `public/PricingPage.vue`
 - `public/PartnerPricingPage.vue`
+- `Provider/Tool/Iframe.vue`
+- `Provider/Tool/Frame.vue`
 
 Read them like this:
 
@@ -66,6 +68,10 @@ Read them like this:
   FireUX shell for app-owned pricing pages; app pages provide plan copy, optional plan groups, and actions while core owns the frame and pricing JSON-LD
 - `public/PartnerPricingPage.vue`
   FireUX shell for ecosystem partner pricing details; app pages provide only the route and page meta
+- `Provider/Tool/Iframe.vue`
+  FireUX consumer shell for embedding hosted provider tools
+- `Provider/Tool/Frame.vue`
+  FireUX hosted-provider card shell for provider apps such as Go QR and Sproochli
 
 `EntityIndexCta` uses management-path families:
 

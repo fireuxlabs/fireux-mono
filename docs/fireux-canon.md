@@ -77,6 +77,10 @@ Current learned examples:
   - package-provided UI lives under `runtime/components/**`.
   - component names follow Nuxt path-based names from that directory.
   - do not add taxonomy folders or one-off aliases just to alter generated component names.
+- Tool providers:
+  - Core owns reusable provider plumbing: contract types, hosted frame, consumer iframe, height messages, and standard tool response headers.
+  - Provider apps own tool behavior and brand. Go QR hosts QR tools. Sproochli hosts translation tools.
+  - Consumer apps embed or call provider tools; they do not copy provider plumbing locally.
 
 ## Structural Canon
 - Extensions own domain logic and contracts.

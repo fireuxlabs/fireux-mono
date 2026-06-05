@@ -39,6 +39,8 @@ The current concept map is:
   Firestore collection id naming canon for simple plural storage names and scoped parent paths
 - `solutions-canon.md`
   shared solution page meaning, app meta declarations, and the boundary between solutions and domains
+- `tool-provider.md`
+  shared hosted tool-provider meaning for apps such as Go QR and Sproochli
 - `spine/`
   how FireUX extends the plain Nuxt runtime spine
 - `stacks/`
@@ -103,6 +105,12 @@ Firestore collection names are shared storage vocabulary. They should stay short
 ### `solutions-canon.md`
 
 Solutions are authored SEO and segue pages declared in `metaContent.solutions`. Core owns `/solutions` and `/solutions/:slug` as a shared page pair, while app-local pages can override individual solution slugs when a real tool or richer bridge is needed.
+
+### `tool-provider.md`
+
+Tool providers are hosted apps that expose small tool surfaces for other apps
+to embed or call. Core owns the shared iframe, frame, height-message, and
+server response plumbing. Provider apps own their tool behavior and brand.
 
 ### `spine/`
 

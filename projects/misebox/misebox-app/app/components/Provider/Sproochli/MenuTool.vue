@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import ProviderToolIframe from 'fireux-core/runtime/components/Provider/Tool/Iframe.vue'
 import { sproochliProviderBaseUrl } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
 
 const props = withDefaults(defineProps<{

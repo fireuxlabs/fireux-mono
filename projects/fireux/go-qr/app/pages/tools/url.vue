@@ -16,15 +16,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import type { ToolProviderHeightMessage } from 'fireux-core/runtime/types/tool-provider.types'
+import { computed, ref } from 'vue'
+import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
-let resizeObserver: ResizeObserver | null = null
 
 definePageMeta({
   layout: false,
+})
+
+useToolProviderHeight({
+  provider: 'go-qr',
+  root: toolRoot,
+  tool: 'url',
 })
 
 function queryString(key: string, defaultValue: string) {
@@ -40,30 +45,4 @@ const config = computed(() => ({
   ctaLabel: queryString('ctaLabel', 'Create URL QR'),
   qrCentreLabel: queryString('qrCentreLabel', ''),
 }))
-
-onMounted(async () => {
-  await nextTick()
-  postToolHeight()
-
-  if (!toolRoot.value) return
-  resizeObserver = new ResizeObserver(postToolHeight)
-  resizeObserver.observe(toolRoot.value)
-})
-
-onBeforeUnmount(() => {
-  resizeObserver?.disconnect()
-  resizeObserver = null
-})
-
-function postToolHeight() {
-  const height = Math.ceil(toolRoot.value?.scrollHeight || document.documentElement.scrollHeight)
-  const message = {
-    source: 'go-qr',
-    tool: 'url',
-    type: 'tool-height',
-    height,
-  } satisfies ToolProviderHeightMessage<'go-qr', 'url'>
-
-  window.parent?.postMessage(message, '*')
-}
 </script>

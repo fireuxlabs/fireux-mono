@@ -24,6 +24,7 @@ Valid FireUX server uses include:
 - package-owned API handlers
 - runtime-only service seams
 - internal inspection routes
+- hosted tool-provider response helpers
 - registry or mirror reads that should stay off the client
 - server support code that belongs directly to delivered runtime behavior
 

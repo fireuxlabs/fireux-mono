@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import ProviderToolIframe from 'fireux-core/runtime/components/Provider/Tool/Iframe.vue'
 
 const props = withDefaults(defineProps<{
   title?: string

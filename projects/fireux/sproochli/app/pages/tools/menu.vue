@@ -24,15 +24,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import type { ToolProviderHeightMessage } from 'fireux-core/runtime/types/tool-provider.types'
+import { computed, ref } from 'vue'
+import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
-let resizeObserver: ResizeObserver | null = null
 
 definePageMeta({
   layout: false,
+})
+
+useToolProviderHeight({
+  provider: 'sproochli',
+  root: toolRoot,
+  tool: 'menu',
 })
 
 function queryString(key: string, defaultValue: string) {
@@ -59,30 +64,4 @@ const config = computed(() => ({
   targetLanguagesLabel: queryString('targetLanguagesLabel', 'Target languages'),
   ctaLabel: queryString('ctaLabel', 'Prepare menu translation'),
 }))
-
-onMounted(async () => {
-  await nextTick()
-  postToolHeight()
-
-  if (!toolRoot.value) return
-  resizeObserver = new ResizeObserver(postToolHeight)
-  resizeObserver.observe(toolRoot.value)
-})
-
-onBeforeUnmount(() => {
-  resizeObserver?.disconnect()
-  resizeObserver = null
-})
-
-function postToolHeight() {
-  const height = Math.ceil(toolRoot.value?.scrollHeight || document.documentElement.scrollHeight)
-  const message = {
-    source: 'sproochli',
-    tool: 'menu',
-    type: 'tool-height',
-    height,
-  } satisfies ToolProviderHeightMessage<'sproochli', 'menu'>
-
-  window.parent?.postMessage(message, '*')
-}
 </script>
