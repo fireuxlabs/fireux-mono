@@ -317,14 +317,17 @@ export async function translateTextBatch(
 export function menuTranslationCacheDocRef(
   db: Firestore,
   input: {
+    kitchenCollectionPath?: string
     kitchenId: string
     menuId: string
     id: string
   }
 ) {
+  const kitchenCollectionPath =
+    normalizeString(input.kitchenCollectionPath) || KitchenStorage.rootCollection
+
   return db
-    .collection(KitchenStorage.rootCollection)
-    .doc(input.kitchenId)
+    .doc(`${kitchenCollectionPath}/${input.kitchenId}`)
     .collection(MenuStorage.collection)
     .doc(input.menuId)
     .collection(CACHE_COLLECTION)

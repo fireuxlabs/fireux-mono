@@ -94,9 +94,11 @@ import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import type { MenuStatus } from '../../../../models/menu.model'
 import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenMenuSproochliSync } from '../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 
 const { menus, pending, kitchenId, canWrite, publishMenu, archiveMenu } =
   useKitchenConsoleMenus()
+const { canSyncSproochli, syncMenuTranslations } = useKitchenMenuSproochliSync()
 const toast = useToastify()
 const busyId = ref('')
 
@@ -121,8 +123,53 @@ async function run(menuId: string, action: () => Promise<void>, title: string) {
   }
 }
 
+function showTranslationFailures(
+  failures: Array<{ language?: string; message?: string }> = []
+) {
+  if (!failures.length) return
+
+  toast.add({
+    title: 'Some translations need attention',
+    description: failures
+      .map((failure) => failure.language || failure.message)
+      .filter(Boolean)
+      .join(', '),
+    color: 'warning',
+    icon: 'i-lucide-languages',
+  })
+}
+
+async function refreshPublishedMenuTranslations(menuId: string) {
+  if (!canSyncSproochli.value) return
+
+  const target = menus.value.find((menu) => menu.id === menuId)
+  if (!target) return
+
+  try {
+    const results = await syncMenuTranslations(
+      { ...target, status: 'published' },
+      { force: true }
+    )
+    showTranslationFailures(results.flatMap((result) => result.failures ?? []))
+  } catch (error) {
+    toast.add({
+      title: 'Translations were not refreshed',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'warning',
+      icon: 'i-lucide-languages',
+    })
+  }
+}
+
 const publish = (menuId: string) =>
-  run(menuId, () => publishMenu(kitchenId.value, menuId), 'Menu published')
+  run(
+    menuId,
+    async () => {
+      await publishMenu(kitchenId.value, menuId)
+      await refreshPublishedMenuTranslations(menuId)
+    },
+    'Menu published'
+  )
 
 const archive = (menuId: string) =>
   run(menuId, () => archiveMenu(kitchenId.value, menuId), 'Menu archived')

@@ -21,6 +21,7 @@ type TranslationCacheRequestItem = {
 type TranslationCacheRequestBody = {
   domain?: unknown
   glossaryVersion?: unknown
+  kitchenCollectionPath?: unknown
   kitchenId?: unknown
   menuId?: unknown
   targetLanguage?: unknown
@@ -46,6 +47,9 @@ export default defineEventHandler(async (event) => {
   const body = (await readBody(event).catch(() => null)) as TranslationCacheRequestBody | null
   const domain = normalizeDomain(body?.domain || 'restaurant_menu')
   const glossaryVersion = normalizeDomain(body?.glossaryVersion || RESTAURANT_MENU_GLOSSARY_VERSION)
+  const kitchenCollectionPath = normalizeString(
+    body?.kitchenCollectionPath || 'apps/misebox-app/kitchens'
+  )
   const kitchenId = normalizeString(body?.kitchenId)
   const menuId = normalizeString(body?.menuId)
   const targetLanguage = normalizeLanguageCode(body?.targetLanguage)
@@ -111,6 +115,7 @@ export default defineEventHandler(async (event) => {
   const unique = Array.from(uniqueByCacheId.values())
   const cacheSnapshots = await Promise.all(
     unique.map((item) => menuTranslationCacheDocRef(nativeDb, {
+      kitchenCollectionPath,
       kitchenId,
       menuId,
       id: item.cacheId,
@@ -186,7 +191,12 @@ export default defineEventHandler(async (event) => {
       cached: false,
     })
     batch.set(
-      menuTranslationCacheDocRef(nativeDb, { kitchenId, menuId, id: item.cacheId }),
+      menuTranslationCacheDocRef(nativeDb, {
+        kitchenCollectionPath,
+        kitchenId,
+        menuId,
+        id: item.cacheId,
+      }),
       {
         ...buildTranslationCacheDoc({
           id: item.cacheId,
@@ -235,7 +245,12 @@ export default defineEventHandler(async (event) => {
           cached: false,
         })
         batch.set(
-          menuTranslationCacheDocRef(nativeDb, { kitchenId, menuId, id: item.cacheId }),
+          menuTranslationCacheDocRef(nativeDb, {
+            kitchenCollectionPath,
+            kitchenId,
+            menuId,
+            id: item.cacheId,
+          }),
           {
             ...buildTranslationCacheDoc({
               id: item.cacheId,
@@ -263,7 +278,7 @@ export default defineEventHandler(async (event) => {
   if (ops > 0) await batch.commit()
 
   return {
-    cache_path: `kitchens/${kitchenId}/menus/${menuId}/translation_cache`,
+    cache_path: `${kitchenCollectionPath}/${kitchenId}/menus/${menuId}/translation_cache`,
     glossary_collection: 'translation_glossary',
     items: normalizedItems.map((item) => {
       const cached = item.cacheId ? byCacheId.get(item.cacheId) : null

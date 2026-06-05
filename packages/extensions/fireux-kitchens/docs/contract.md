@@ -132,6 +132,11 @@ Ingredient composable stack canon:
   - `kitchen.sproochli_enabled` only decides whether this Kitchen exposes those tools.
   - Kitchen public menu routes adapt Kitchen/Menu/Dish data into the Sproochli helper seam.
   - Menu records should store the actual language/translation status when Sproochli work happens.
+  - Sproochli generation/cache refresh is publish-gated for Kitchen Menus:
+    - draft menu edits update menu truth only and must not call translation providers.
+    - publishing a menu refreshes the menu translation fields needed for the public menu.
+    - editing an already-published menu may refresh the changed field only.
+    - dev-only refresh controls may force-refresh a published menu when translation cache inspection needs it.
   - Place does not own Sproochli settings.
 - Schedule meanings stay separate:
   - Place/business hours describe when the venue is open.
