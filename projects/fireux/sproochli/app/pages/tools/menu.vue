@@ -3,7 +3,7 @@
     ref="toolRoot"
     class="bg-transparent text-default"
   >
-    <SproochliToolMenu
+    <SproochliProviderToolsMenu
       class="mx-auto w-full max-w-xl"
       :title="config.title"
       :description="config.description"

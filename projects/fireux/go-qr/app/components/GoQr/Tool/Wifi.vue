@@ -1,3 +1,3 @@
 <template>
-  <GoQrSystemToolComingSoon name="Wi-Fi" />
+  <GoQrProviderToolsComingSoon name="Wi-Fi" />
 </template>

@@ -1,17 +1,17 @@
 <template>
-  <MiseboxSystemToolFrame
+  <MiseboxProviderFrame
     :title="toolTitle"
     :description="toolDescription"
     endpoint="/api/tools/ordering"
   >
-    <div class="grid min-h-72 place-items-center rounded-2xl border border-default bg-muted/40 p-8">
+    <div class="flex justify-center">
       <img
         src="/img/app/logo.png"
         alt="Misebox"
-        class="h-24 w-24 rounded-2xl object-contain shadow-sm"
+        class="h-24 w-24 object-contain"
       >
     </div>
-  </MiseboxSystemToolFrame>
+  </MiseboxProviderFrame>
 </template>
 
 <script setup lang="ts">

@@ -576,10 +576,11 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Current tool providers include:
   - Go QR
   - Sproochli
+  - Misebox
 - Provider apps own:
   - `/tools/{toolId}` embedded tool pages
   - `/api/tools/{toolId}` tool contracts
-  - provider-branded `System/ToolFrame` and `Tool/*` components
+  - provider-branded `Provider/Frame.vue` and `Provider/Tools/{Tool}.vue` components
 - Consuming apps own:
   - provider iframe wrappers
   - solution pages

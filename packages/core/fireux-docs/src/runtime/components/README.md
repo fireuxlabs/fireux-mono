@@ -71,7 +71,7 @@ Read them like this:
 - `Provider/Tool/Iframe.vue`
   FireUX consumer shell for embedding hosted provider tools
 - `Provider/Tool/Frame.vue`
-  FireUX hosted-provider card shell for provider apps such as Go QR and Sproochli
+  FireUX hosted-provider card shell for provider apps such as Go QR, Sproochli, and Misebox
 
 `EntityIndexCta` uses management-path families:
 

@@ -5,5 +5,5 @@ export const orderingTool = {
   provider: 'misebox',
   messageSource: 'misebox',
   title: 'Misebox ordering',
-  description: 'Embed a Misebox ordering surface on an external website.',
+  description: '',
 } satisfies MiseboxToolContract

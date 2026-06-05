@@ -3,7 +3,7 @@
     ref="toolRoot"
     class="bg-transparent text-default"
   >
-    <GoQrToolUrl
+    <GoQrProviderToolsUrl
       class="mx-auto w-full max-w-xl"
       :title="config.title"
       :description="config.description"

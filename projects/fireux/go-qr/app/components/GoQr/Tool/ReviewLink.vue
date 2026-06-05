@@ -1,3 +1,3 @@
 <template>
-  <GoQrSystemToolComingSoon name="Review link" />
+  <GoQrProviderToolsComingSoon name="Review link" />
 </template>

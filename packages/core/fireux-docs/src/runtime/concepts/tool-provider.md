@@ -29,6 +29,12 @@ Current provider apps:
 
 - Go QR hosts QR tools.
 - Sproochli hosts translation tools.
+- Misebox hosts ordering tools.
+
+Provider apps keep hosted tool components in their app namespace under
+`Provider/`, for example `Provider/Frame.vue` plus specific tool components
+such as `Provider/Tools/Url.vue`, `Provider/Tools/Menu.vue`, or
+`Provider/Tools/Ordering.vue`.
 
 ## Consumer Apps
 

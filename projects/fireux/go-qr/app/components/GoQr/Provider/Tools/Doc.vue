@@ -1,5 +1,5 @@
 <template>
-  <GoQrSystemToolFrame
+  <GoQrProviderFrame
     :title="toolTitle"
     :description="toolDescription"
     endpoint="/api/tools/doc"
@@ -77,7 +77,7 @@
         Open QR
       </UButton>
     </div>
-  </GoQrSystemToolFrame>
+  </GoQrProviderFrame>
 </template>
 
 <script setup lang="ts">

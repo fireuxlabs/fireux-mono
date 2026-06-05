@@ -1,5 +1,5 @@
 <template>
-  <GoQrSystemToolFrame
+  <GoQrProviderFrame
     :title="toolTitle"
     :description="toolDescription"
     endpoint="/api/tools/url"
@@ -70,7 +70,7 @@
         </UButton>
       </div>
     </div>
-  </GoQrSystemToolFrame>
+  </GoQrProviderFrame>
 </template>
 
 <script setup lang="ts">

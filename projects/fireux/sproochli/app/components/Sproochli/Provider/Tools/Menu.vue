@@ -1,5 +1,5 @@
 <template>
-  <SproochliSystemToolFrame
+  <SproochliProviderFrame
     :title="toolTitle"
     :description="toolDescription"
     endpoint="/api/tools/menu"
@@ -80,7 +80,7 @@
       </template>
       <pre class="overflow-auto rounded-md bg-muted p-3 text-xs leading-5">{{ handoff }}</pre>
     </UCard>
-  </SproochliSystemToolFrame>
+  </SproochliProviderFrame>
 </template>
 
 <script setup lang="ts">

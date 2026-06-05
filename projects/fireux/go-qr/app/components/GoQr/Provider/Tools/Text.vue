@@ -1,5 +1,5 @@
 <template>
-  <GoQrSystemToolFrame
+  <GoQrProviderFrame
     :title="data?.tool.title"
     :description="data?.tool.description"
     endpoint="/api/tools/text"
@@ -7,7 +7,7 @@
     <p class="text-sm leading-6 text-muted">
       {{ data?.tool.message }}
     </p>
-  </GoQrSystemToolFrame>
+  </GoQrProviderFrame>
 </template>
 
 <script setup lang="ts">
