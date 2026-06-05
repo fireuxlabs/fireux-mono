@@ -6,9 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenMenuUrlQr />
-        <ConsoleKitchenMenuDocUpload />
-        <ConsoleKitchenMenuList />
+        <ConsoleKitchenMenus />
       </section>
     </template>
   </UDashboardPanel>
@@ -32,4 +30,3 @@ definePageMeta({
   requiresAuth: true,
 })
 </script>
-º
