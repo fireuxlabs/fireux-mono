@@ -14,8 +14,6 @@ const registry = defineToolProviderRegistry({
   } satisfies Record<GoQrToolId, GoQrToolContract>,
 })
 
-export type { GoQrToolContract, GoQrToolId } from './tools/types'
-
 export function goQrTool(id: GoQrToolId) {
   return registry.tool(id)
 }

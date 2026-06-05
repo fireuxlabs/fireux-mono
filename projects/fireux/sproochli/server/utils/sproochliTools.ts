@@ -13,8 +13,6 @@ const registry = defineToolProviderRegistry({
   } satisfies Record<SproochliToolId, SproochliToolContract>,
 })
 
-export type { SproochliToolContract, SproochliToolId } from './tools/types'
-
 export function sproochliTool(id: SproochliToolId) {
   return registry.tool(id)
 }
