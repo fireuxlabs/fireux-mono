@@ -37,6 +37,13 @@ const sourcePreviews = {
     'projects/fireux/go-qr/server/utils/tools/doc.ts',
     'projects/fireux/go-qr/server/api/tools/doc/index.get.ts',
   ],
+  'go-qr-text': [
+    'projects/fireux/go-qr/app/pages/tools/text.vue',
+    'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Text.vue',
+    'projects/fireux/go-qr/app/components/GoQr/Provider/Frame.vue',
+    'projects/fireux/go-qr/server/utils/tools/text.ts',
+    'projects/fireux/go-qr/server/api/tools/text/index.get.ts',
+  ],
   'sproochli-menu': [
     'projects/fireux/sproochli/app/pages/tools/menu.vue',
     'projects/fireux/sproochli/app/components/Sproochli/Provider/Tools/Menu.vue',

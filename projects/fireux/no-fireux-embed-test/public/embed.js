@@ -1,8 +1,10 @@
 function connectProviderIframe(options) {
   var frame = document.querySelector(options.selector)
   if (!frame) return
+  var receivedHeight = false
 
   function requestProviderHeight() {
+    if (receivedHeight) return
     if (!frame.contentWindow) return
 
     frame.contentWindow.postMessage({
@@ -14,16 +16,21 @@ function connectProviderIframe(options) {
   window.addEventListener('message', function (event) {
     if (event.origin !== options.providerOrigin) return
     if (!event.data || event.data.source !== options.messageSource) return
+    if (options.tool && event.data.tool !== options.tool) return
     if (event.data.type !== 'tool-height') return
 
     var height = Number(event.data.height)
     if (!Number.isFinite(height) || height <= 0) return
 
+    receivedHeight = true
     frame.style.height = Math.ceil(height) + 'px'
   })
 
   frame.addEventListener('load', requestProviderHeight)
   requestProviderHeight()
+  setTimeout(requestProviderHeight, 100)
+  setTimeout(requestProviderHeight, 500)
+  setTimeout(requestProviderHeight, 1500)
 }
 
 function isLocalHarness() {
@@ -67,15 +74,16 @@ function connectLocalProviderIframe(options) {
       return
     }
 
-    frame.src = src
-    frame.hidden = false
-    if (status) status.hidden = true
-
     connectProviderIframe({
       selector: options.selector,
       providerOrigin: options.localOrigin,
-      messageSource: options.messageSource
+      messageSource: options.messageSource,
+      tool: options.tool
     })
+
+    frame.src = src
+    frame.hidden = false
+    if (status) status.hidden = true
   })
 }
 

@@ -14,6 +14,7 @@ export function useToolProviderHeight<
 }) {
   let resizeObserver: ResizeObserver | null = null
   let animationFrame = 0
+  let targetOrigin = '*'
 
   function postToolHeight() {
     const root = input.root.value
@@ -29,7 +30,7 @@ export function useToolProviderHeight<
       height,
     } satisfies ToolProviderHeightMessage<ProviderId, ToolId>
 
-    window.parent?.postMessage(message, '*')
+    window.parent?.postMessage(message, targetOrigin)
   }
 
   function scheduleToolHeight() {
@@ -47,6 +48,7 @@ export function useToolProviderHeight<
     if (data?.source !== 'fireux-tool-iframe') return
     if (data?.type !== 'tool-height-request') return
 
+    targetOrigin = event.origin
     scheduleToolHeight()
   }
 

@@ -71,6 +71,21 @@
         padding: 0.75rem 1rem;
       }
 
+      .link-grid {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        list-style: none;
+        padding: 0;
+      }
+
+      .link-grid a {
+        display: block;
+        border-radius: 0.75rem;
+        background: #fffaf0;
+        padding: 0.75rem 1rem;
+      }
+
       .source-preview {
         margin-top: 1rem;
       }
@@ -138,6 +153,42 @@
       </section>
 
       <section>
+        <h2>Text tool</h2>
+        <div class="embed-grid">
+          <div class="embed-card">
+            <h3>Deployed</h3>
+            <p>Source: <code>https://go-qr.web.app/tools/text</code></p>
+            <iframe
+              id="go-qr-text-deployed-tool"
+              title="Go QR deployed text tool"
+              src="https://go-qr.web.app/tools/text"
+            ></iframe>
+          </div>
+
+          <div class="embed-card">
+            <h3>Local</h3>
+            <p>Source: <code id="go-qr-text-local-source">Waiting for local harness</code></p>
+            <p id="go-qr-text-local-status" class="notice" hidden>
+              Local provider tests only run from the local Plain Jane harness.
+            </p>
+            <iframe
+              id="go-qr-text-local-tool"
+              title="Go QR local text tool"
+              hidden
+            ></iframe>
+            <details class="source-preview" data-source-preview="go-qr-text">
+              <summary>Source preview, no runtime</summary>
+              <p class="notice">
+                Reads the local repo files through the Plain Jane harness. This
+                does not run Nuxt or test the iframe.
+              </p>
+              <pre data-source-preview-output>Loading source preview...</pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section>
         <h2>Doc tool</h2>
         <div class="embed-grid">
           <div class="embed-card">
@@ -172,22 +223,55 @@
           </div>
         </div>
       </section>
+
+      <section>
+        <h2>Solution prototypes</h2>
+        <p>
+          These are Go QR solution pages, not provider <code>/tools/*</code>
+          embeds. Open them directly when reviewing the wider Go QR product.
+        </p>
+        <ul class="link-grid">
+          <li><a href="https://go-qr.web.app/solutions/text" target="_blank" rel="noopener">Text</a></li>
+          <li><a href="https://go-qr.web.app/solutions/url" target="_blank" rel="noopener">URL</a></li>
+          <li><a href="https://go-qr.web.app/solutions/doc" target="_blank" rel="noopener">Doc</a></li>
+          <li><a href="https://go-qr.web.app/solutions/pdf" target="_blank" rel="noopener">PDF</a></li>
+          <li><a href="https://go-qr.web.app/solutions/wifi" target="_blank" rel="noopener">Wi-Fi</a></li>
+          <li><a href="https://go-qr.web.app/solutions/vcard" target="_blank" rel="noopener">vCard</a></li>
+          <li><a href="https://go-qr.web.app/solutions/phone" target="_blank" rel="noopener">Phone</a></li>
+          <li><a href="https://go-qr.web.app/solutions/whatsapp" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="https://go-qr.web.app/solutions/location" target="_blank" rel="noopener">Location</a></li>
+          <li><a href="https://go-qr.web.app/solutions/event" target="_blank" rel="noopener">Event</a></li>
+          <li><a href="https://go-qr.web.app/solutions/booking-link" target="_blank" rel="noopener">Booking link</a></li>
+          <li><a href="https://go-qr.web.app/solutions/review-link" target="_blank" rel="noopener">Review link</a></li>
+          <li><a href="https://go-qr.web.app/solutions/feedback-link" target="_blank" rel="noopener">Feedback link</a></li>
+        </ul>
+      </section>
     </main>
     <script src="/embed.js"></script>
     <script>
       var goQrUrlPath = '/tools/url?title=Menu%20URL&description=Paste%20an%20existing%20menu%20URL%20and%20get%20a%20printable%20QR%20menu.&urlLabel=Menu%20URL&urlPlaceholder=https%3A%2F%2Fmy-url.com%2Fmenu&ctaLabel=Create%20menu%20URL%20QR&qrCentreLabel=Food%20Menu'
       var goQrDocPath = '/tools/doc?title=Menu%20document&description=Upload%20a%20menu%20document%20and%20create%20a%20QR%20page.&fileLabel=Menu%20file&pathLabel=Menu%20path&slugPlaceholder=my-menu&previewBaseUrl=https%3A%2F%2Fgo-qr.web.app%2Fdoc&previewPathSuffix=%2Fqr&accept=application%2Fpdf%2C.doc%2C.docx&uploadHint=PDF%2C%20DOC%2C%20or%20DOCX.%20Max%2010%20MB.&ctaLabel=Create%20menu%20QR&loadingLabel=Creating%20menu...&openTargetLabel=Open%20menu&takenMessage=This%20menu%20path%20is%20already%20taken.'
+      var goQrTextPath = '/tools/text'
 
       connectProviderIframe({
         selector: '#go-qr-url-deployed-tool',
         providerOrigin: 'https://go-qr.web.app',
-        messageSource: 'go-qr'
+        messageSource: 'go-qr',
+        tool: 'url'
       })
 
       connectProviderIframe({
         selector: '#go-qr-doc-deployed-tool',
         providerOrigin: 'https://go-qr.web.app',
-        messageSource: 'go-qr'
+        messageSource: 'go-qr',
+        tool: 'doc'
+      })
+
+      connectProviderIframe({
+        selector: '#go-qr-text-deployed-tool',
+        providerOrigin: 'https://go-qr.web.app',
+        messageSource: 'go-qr',
+        tool: 'text'
       })
 
       connectLocalProviderIframe({
@@ -197,6 +281,18 @@
         localOrigin: 'http://localhost:3013',
         path: goQrUrlPath,
         messageSource: 'go-qr',
+        tool: 'url',
+        startCommand: 'pnpm dev:go-qr'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#go-qr-text-local-tool',
+        sourceSelector: '#go-qr-text-local-source',
+        statusSelector: '#go-qr-text-local-status',
+        localOrigin: 'http://localhost:3013',
+        path: goQrTextPath,
+        messageSource: 'go-qr',
+        tool: 'text',
         startCommand: 'pnpm dev:go-qr'
       })
 
@@ -207,6 +303,7 @@
         localOrigin: 'http://localhost:3013',
         path: goQrDocPath,
         messageSource: 'go-qr',
+        tool: 'doc',
         startCommand: 'pnpm dev:go-qr'
       })
     </script>

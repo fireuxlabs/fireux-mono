@@ -137,7 +137,8 @@
       connectProviderIframe({
         selector: '#sproochli-deployed-tool',
         providerOrigin: 'https://sproochli.web.app',
-        messageSource: 'sproochli'
+        messageSource: 'sproochli',
+        tool: 'menu'
       })
 
       connectLocalProviderIframe({
@@ -147,6 +148,7 @@
         localOrigin: 'http://localhost:3011',
         path: sproochliMenuPath,
         messageSource: 'sproochli',
+        tool: 'menu',
         startCommand: 'pnpm dev:sproochli'
       })
     </script>
