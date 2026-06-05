@@ -8,7 +8,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   TranslationDocumentStorage,
   TranslationStorage,
-} from 'fireux-sproochli/runtime/models/translation.model'
+} from 'fireux-sproochli/runtime/models/translation.model.ts'
 
 type PublishedTranslation = {
   code: string

@@ -157,7 +157,8 @@ export function useKitchenMenuSproochliSync() {
     for (const language of attachedLanguages.value) {
       const translation = translationByLanguage.get(language)
       if (!translation) continue
-      attachedPatch[language] = normalizeString(translation.text)
+      const translatedText = normalizeString(translation.text)
+      if (!input.sourceText || translatedText) attachedPatch[language] = translatedText
     }
 
     if (Object.keys(attachedPatch).length) {

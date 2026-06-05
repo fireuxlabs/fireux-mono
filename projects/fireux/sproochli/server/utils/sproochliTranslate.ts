@@ -14,6 +14,7 @@ export type SproochliServiceAccount = {
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const TOKEN_SCOPE = 'https://www.googleapis.com/auth/cloud-translation'
+const METADATA_URL = 'http://metadata.google.internal/computeMetadata/v1'
 
 let cachedToken: { token: string; expiresAt: number } | null = null
 
@@ -56,8 +57,12 @@ async function readServiceAccount(pathValue: string) {
 }
 
 export async function resolveSproochliServiceAccount() {
-  const inline = normalizeSproochliText(process.env.FIREBASE_SERVICE_ACCOUNT)
+  const inline =
+    normalizeSproochliText(process.env.SPROOCHLI_FIREBASE_SERVICE_ACCOUNT) ||
+    normalizeSproochliText(process.env.FIREBASE_SERVICE_ACCOUNT)
   const file =
+    normalizeSproochliText(process.env.SPROOCHLI_GOOGLE_APPLICATION_CREDENTIALS) ||
+    normalizeSproochliText(process.env.SPROOCHLI_FIREBASE_SERVICE_ACCOUNT_FILE) ||
     normalizeSproochliText(process.env.GOOGLE_APPLICATION_CREDENTIALS) ||
     normalizeSproochliText(process.env.FIREBASE_SERVICE_ACCOUNT_FILE)
   const account = inline
@@ -67,9 +72,7 @@ export async function resolveSproochliServiceAccount() {
       : null
 
   if (!account) {
-    throw new Error(
-      'Sproochli translation requires FIREBASE_SERVICE_ACCOUNT or GOOGLE_APPLICATION_CREDENTIALS.'
-    )
+    return null
   }
 
   if (
@@ -83,10 +86,76 @@ export async function resolveSproochliServiceAccount() {
   return account
 }
 
-async function getGoogleAccessToken(account: SproochliServiceAccount) {
+function parseFirebaseConfigProjectId() {
+  const raw = normalizeSproochliText(process.env.FIREBASE_CONFIG)
+  if (!raw) return ''
+
+  try {
+    const config = JSON.parse(raw) as { projectId?: string, project_id?: string }
+    return normalizeSproochliText(config.projectId || config.project_id)
+  } catch {
+    return ''
+  }
+}
+
+async function readMetadata(path: string) {
+  const response = await fetch(`${METADATA_URL}/${path}`, {
+    headers: { 'Metadata-Flavor': 'Google' },
+    signal: AbortSignal.timeout(2000),
+  })
+
+  if (!response.ok) return ''
+  return normalizeSproochliText(await response.text())
+}
+
+async function resolveSproochliProjectId(account: SproochliServiceAccount | null) {
+  return serviceAccountField(account || {}, 'project_id', 'projectId') ||
+    normalizeSproochliText(process.env.SPROOCHLI_GOOGLE_PROJECT_ID) ||
+    normalizeSproochliText(process.env.GOOGLE_CLOUD_PROJECT) ||
+    normalizeSproochliText(process.env.GCLOUD_PROJECT) ||
+    normalizeSproochliText(process.env.GCP_PROJECT) ||
+    parseFirebaseConfigProjectId() ||
+    await readMetadata('project/project-id')
+}
+
+async function getMetadataAccessToken() {
+  const tokenResponse = await fetch(
+    `${METADATA_URL}/instance/service-accounts/default/token`,
+    {
+      headers: { 'Metadata-Flavor': 'Google' },
+      signal: AbortSignal.timeout(2000),
+    }
+  )
+  const tokenData = await tokenResponse.json().catch(() => ({})) as {
+    access_token?: string
+    expires_in?: number
+    error?: string
+    error_description?: string
+  }
+
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    throw new Error(
+      tokenData.error_description ||
+      tokenData.error ||
+      'Google metadata auth failed'
+    )
+  }
+
+  cachedToken = {
+    token: tokenData.access_token,
+    expiresAt:
+      Date.now() + Math.max(Number(tokenData.expires_in || 3600) - 60, 60) * 1000,
+  }
+
+  return cachedToken.token
+}
+
+async function getGoogleAccessToken(account: SproochliServiceAccount | null) {
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) {
     return cachedToken.token
   }
+
+  if (!account) return await getMetadataAccessToken()
 
   const clientEmail = serviceAccountField(account, 'client_email', 'clientEmail')
   const privateKey = serviceAccountField(account, 'private_key', 'privateKey')
@@ -157,14 +226,16 @@ export function makeSproochliMenuCacheKey(input: {
 }
 
 export async function translateSproochliTextBatch(
-  account: SproochliServiceAccount,
+  account: SproochliServiceAccount | null,
   input: {
     texts: string[]
     sourceLanguage: string
     targetLanguage: string
   }
 ) {
-  const projectId = serviceAccountField(account, 'project_id', 'projectId')
+  const projectId = await resolveSproochliProjectId(account)
+  if (!projectId) throw new Error('Missing Sproochli Google project id')
+
   const token = await getGoogleAccessToken(account)
   const response = await fetch(
     `https://translation.googleapis.com/v3/projects/${encodeURIComponent(projectId)}:translateText`,
