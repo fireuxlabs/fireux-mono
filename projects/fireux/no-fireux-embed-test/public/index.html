@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>No FireUX Embed Test</title>
+    <style>
+      :root {
+        color: #1d1d1f;
+        background: #f5f2ea;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        box-sizing: border-box;
+        min-height: 100svh;
+        padding: clamp(2rem, 7vw, 6rem);
+      }
+
+      .card {
+        max-width: 44rem;
+        border: 1px solid #d8ceb9;
+        border-radius: 1rem;
+        background: #fffaf0;
+        padding: clamp(1.5rem, 4vw, 3rem);
+      }
+
+      p {
+        color: #5a5246;
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      code {
+        border-radius: 999px;
+        background: #eee3cf;
+        padding: 0.15rem 0.45rem;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 2rem;
+      }
+
+      a {
+        border: 1px solid #c9b895;
+        border-radius: 999px;
+        color: #1d1d1f;
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <p><code>no-fireux-embed-test</code></p>
+        <h1>Plain website harness</h1>
+        <p>
+          This page has no FireUX runtime, no Nuxt app, and no Firebase client
+          SDK. It exists to prove that hosted FireUX/provider tools can be used
+          by a normal external website.
+        </p>
+        <nav aria-label="Embed tests">
+          <a href="/go-qr.html">Go QR test</a>
+          <a href="/sproochli.html">Sproochli test</a>
+        </nav>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Go QR Embed Test</title>
+    <style>
+      :root {
+        color: #1d1d1f;
+        background: #f5f2ea;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        box-sizing: border-box;
+        min-height: 100svh;
+        padding: clamp(1rem, 5vw, 4rem);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        max-width: 52rem;
+        min-height: 520px;
+        border: 0;
+        border-radius: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">Back to harness</a></p>
+      <h1>Go QR plain embed</h1>
+      <iframe
+        id="go-qr-tool"
+        title="Go QR URL tool"
+        src="https://go-qr.web.app/tools/url?title=Menu%20URL&description=Paste%20an%20existing%20menu%20URL%20and%20get%20a%20printable%20QR%20menu.&urlLabel=Menu%20URL&urlPlaceholder=https%3A%2F%2Fmy-url.com%2Fmenu&ctaLabel=Create%20menu%20URL%20QR&qrCentreLabel=Food%20Menu"
+      ></iframe>
+    </main>
+    <script src="/embed.js"></script>
+    <script>
+      connectProviderIframe({
+        selector: '#go-qr-tool',
+        providerOrigin: 'https://go-qr.web.app',
+        messageSource: 'go-qr'
+      })
+    </script>
+  </body>
+</html>
