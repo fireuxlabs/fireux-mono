@@ -136,6 +136,7 @@ Ingredient composable stack canon:
     - draft menu edits update menu truth only and must not call translation providers.
     - publishing a menu refreshes the menu translation fields needed for the public menu.
     - editing an already-published menu may refresh the changed field only.
+    - structural published-menu edits, such as adding sections or items, mark `menu.sproochli_refresh_needed` and require republish.
     - dev-only refresh controls may force-refresh a published menu when translation cache inspection needs it.
   - Place does not own Sproochli settings.
 - Schedule meanings stay separate:

@@ -63,6 +63,7 @@ export const MenuModel = {
   description: '' as string,
   source_language: '' as string,
   status: 'draft' as MenuStatus,
+  sproochli_refresh_needed: false as boolean,
   /**
    * Future note: Menu availability is distinct from Kitchen opening hours and
    * Place business hours. Add an explicit schedule field only when the menu

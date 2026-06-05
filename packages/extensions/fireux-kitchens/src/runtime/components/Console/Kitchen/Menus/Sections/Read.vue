@@ -1,15 +1,5 @@
 <template>
   <div class="space-y-4">
-    <UButton
-      to="/console/kitchen/menus"
-      color="neutral"
-      variant="ghost"
-      icon="i-lucide-arrow-left"
-      size="sm"
-    >
-      Back to menus
-    </UButton>
-
     <UAlert
       v-if="!menu"
       color="neutral"
@@ -22,8 +12,10 @@
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-base font-semibold text-highlighted">{{ menu.name }}</h2>
-            <p class="text-sm text-dimmed">{{ menu.description || 'No description yet.' }}</p>
+            <h2 class="text-base font-semibold text-highlighted">Menu sections</h2>
+            <p class="text-sm text-dimmed">
+              {{ menu.description || 'Build the public menu from sections and dish-backed items.' }}
+            </p>
           </div>
           <UBadge :color="menu.status === 'published' ? 'success' : 'warning'" variant="soft">
             {{ menu.status }}

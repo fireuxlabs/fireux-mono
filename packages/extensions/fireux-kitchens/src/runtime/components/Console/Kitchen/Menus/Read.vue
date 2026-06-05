@@ -98,7 +98,11 @@ import { useKitchenMenuSproochliSync } from '../../../../composables/fireux/cons
 
 const { menus, pending, kitchenId, canWrite, publishMenu, archiveMenu } =
   useKitchenConsoleMenus()
-const { canSyncSproochli, syncMenuTranslations } = useKitchenMenuSproochliSync()
+const {
+  canSyncSproochli,
+  markMenuNeedsTranslationRefresh,
+  syncMenuTranslations,
+} = useKitchenMenuSproochliSync()
 const toast = useToastify()
 const busyId = ref('')
 
@@ -148,10 +152,15 @@ async function refreshPublishedMenuTranslations(menuId: string) {
   try {
     const results = await syncMenuTranslations(
       { ...target, status: 'published' },
-      { force: true }
+      { clearRefreshNeeded: true, force: true }
     )
-    showTranslationFailures(results.flatMap((result) => result.failures ?? []))
+    const failures = results.flatMap((result) => result.failures ?? [])
+    showTranslationFailures(failures)
+    if (failures.length) {
+      await markMenuNeedsTranslationRefresh({ ...target, status: 'published' })
+    }
   } catch (error) {
+    await markMenuNeedsTranslationRefresh({ ...target, status: 'published' })
     toast.add({
       title: 'Translations were not refreshed',
       description: error instanceof Error ? error.message : 'Please try again.',

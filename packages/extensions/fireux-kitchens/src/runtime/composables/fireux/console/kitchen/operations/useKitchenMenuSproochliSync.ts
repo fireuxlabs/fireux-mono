@@ -17,6 +17,7 @@ export function useKitchenMenuSproochliSync() {
     selectedKitchen,
     rootCollection,
     kitchenId,
+    updateMenu,
   } = useKitchenConsoleMenus()
 
   const languageSettings = computed(() => selectedKitchen.value?.language_settings ?? {})
@@ -86,17 +87,40 @@ export function useKitchenMenuSproochliSync() {
 
   async function syncMenuTranslations(
     menu: Menu | null | undefined,
-    options: { force?: boolean } = {}
+    options: { clearRefreshNeeded?: boolean; force?: boolean } = {}
   ) {
-    return await Promise.all([
+    const results = await Promise.all([
       syncMenuField({ menu, field: 'name', force: options.force }),
       syncMenuField({ menu, field: 'description', force: options.force }),
     ])
+    const hasFailures = results.some((result) => result.failures?.length)
+    const menuId = normalizeString(menu?.id)
+
+    if (options.clearRefreshNeeded && menuId && !hasFailures) {
+      await updateMenu(kitchenId.value, menuId, {
+        sproochli_refresh_needed: false,
+      })
+    }
+
+    return results
+  }
+
+  async function markMenuNeedsTranslationRefresh(menu: Menu | null | undefined) {
+    if (!canSyncSproochli.value) return
+    if (menu?.status !== 'published') return
+
+    const menuId = normalizeString(menu.id)
+    if (!kitchenId.value || !menuId) return
+
+    await updateMenu(kitchenId.value, menuId, {
+      sproochli_refresh_needed: true,
+    })
   }
 
   return {
     sproochliEnabled,
     canSyncSproochli,
+    markMenuNeedsTranslationRefresh,
     syncMenuField,
     syncMenuTranslations,
   }

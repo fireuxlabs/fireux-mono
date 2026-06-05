@@ -46,10 +46,10 @@
                 {{ localizedMenuName(menu) }}
               </h2>
               <p
-                v-if="normalizeString(menu.description)"
+                v-if="localizedMenuDescription(menu)"
                 class="mt-1 text-sm text-dimmed"
               >
-                {{ normalizeString(menu.description) }}
+                {{ localizedMenuDescription(menu) }}
               </p>
               <p v-else class="mt-1 text-sm text-dimmed">
                 {{ menuSummary(menu) }}
@@ -159,8 +159,12 @@ const menuLink = (menuIdRaw: unknown) => {
 }
 
 const menuNameFieldId = (menu: Menu) => `menu:${normalizeString(menu.id)}:name`
+const menuDescriptionFieldId = (menu: Menu) =>
+  `menu:${normalizeString(menu.id)}:description`
 const menuNameCacheText = (menu: Menu) =>
   menuTranslationCache.value[menuNameFieldId(menu)] ?? ''
+const menuDescriptionCacheText = (menu: Menu) =>
+  menuTranslationCache.value[menuDescriptionFieldId(menu)] ?? ''
 const localizedMenuName = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.name,
@@ -168,6 +172,13 @@ const localizedMenuName = (menu: Menu) =>
     selectedLanguage: selectedLanguage.value,
     cacheText: menuNameCacheText(menu),
   }).text || normalizeString(menu.name)
+const localizedMenuDescription = (menu: Menu) =>
+  resolveSproochliTranslatedText({
+    defaultText: menu.description,
+    translations: (menu as any)?.descriptions,
+    selectedLanguage: selectedLanguage.value,
+    cacheText: menuDescriptionCacheText(menu),
+  }).text || normalizeString(menu.description)
 
 watch(
   () => ({
@@ -200,7 +211,11 @@ watch(
           const targetLanguage = normalizeString(data.target_language)
           const fieldId = normalizeString(data.field_id)
           const text = normalizeString(data.translated_text)
-          if (targetLanguage === language && fieldId.endsWith(':name') && text) {
+          if (
+            targetLanguage === language &&
+            (fieldId.endsWith(':name') || fieldId.endsWith(':description')) &&
+            text
+          ) {
             rows[fieldId] = text
           }
         }
