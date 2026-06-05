@@ -51,6 +51,14 @@ const sourcePreviews = {
     'projects/fireux/sproochli/server/utils/tools/menu.ts',
     'projects/fireux/sproochli/server/api/tools/menu/index.get.ts',
   ],
+  'sproochli-language-trigger': [
+    'projects/fireux/sproochli/app/pages/tools/language-trigger.vue',
+    'projects/fireux/sproochli/app/components/Sproochli/Provider/Tools/LanguageTrigger.vue',
+    'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/LanguageTrigger.vue',
+    'projects/fireux/sproochli/app/components/Sproochli/Provider/Frame.vue',
+    'projects/fireux/sproochli/server/utils/tools/language-trigger.ts',
+    'projects/fireux/sproochli/server/api/tools/language-trigger/index.get.ts',
+  ],
   'misebox-ordering': [
     'projects/misebox/misebox-app/app/pages/tools/ordering.vue',
     'projects/misebox/misebox-app/app/components/Misebox/Provider/Tools/Ordering.vue',

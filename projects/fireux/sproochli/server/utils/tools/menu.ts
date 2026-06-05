@@ -10,9 +10,9 @@ export const menuTool = {
     translate: '/api/tools/menu/translate',
   },
   inputs: [
-    'publicMenuUrl',
-    'kitchenSlug',
-    'menuId',
+    'sourceUrl',
+    'sourceSlug',
+    'documentId',
     'sourceLanguage',
     'targetLanguages',
     'fields',

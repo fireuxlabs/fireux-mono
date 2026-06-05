@@ -7,13 +7,13 @@
       class="w-full"
       :title="config.title"
       :description="config.description"
-      :public-menu-url="config.publicMenuUrl"
-      :public-menu-url-label="config.publicMenuUrlLabel"
-      :public-menu-url-placeholder="config.publicMenuUrlPlaceholder"
-      :kitchen-slug="config.kitchenSlug"
-      :kitchen-slug-label="config.kitchenSlugLabel"
-      :menu-id="config.menuId"
-      :menu-id-label="config.menuIdLabel"
+      :source-url="config.sourceUrl"
+      :source-url-label="config.sourceUrlLabel"
+      :source-url-placeholder="config.sourceUrlPlaceholder"
+      :source-slug="config.sourceSlug"
+      :source-slug-label="config.sourceSlugLabel"
+      :document-id="config.documentId"
+      :document-id-label="config.documentIdLabel"
       :source-language="config.sourceLanguage"
       :source-language-label="config.sourceLanguageLabel"
       :target-languages="config.targetLanguages"
@@ -48,16 +48,16 @@ function queryString(key: string, defaultValue: string) {
 const config = computed(() => ({
   title: queryString('title', ''),
   description: queryString('description', ''),
-  publicMenuUrl: queryString('publicMenuUrl', ''),
-  publicMenuUrlLabel: queryString('publicMenuUrlLabel', 'Public menu URL'),
-  publicMenuUrlPlaceholder: queryString(
-    'publicMenuUrlPlaceholder',
-    'https://misebox.app/kitchens/la-tapberne/menus/main'
+  sourceUrl: queryString('sourceUrl', ''),
+  sourceUrlLabel: queryString('sourceUrlLabel', 'Source URL'),
+  sourceUrlPlaceholder: queryString(
+    'sourceUrlPlaceholder',
+    'https://example.com/page'
   ),
-  kitchenSlug: queryString('kitchenSlug', ''),
-  kitchenSlugLabel: queryString('kitchenSlugLabel', 'Kitchen'),
-  menuId: queryString('menuId', ''),
-  menuIdLabel: queryString('menuIdLabel', 'Menu'),
+  sourceSlug: queryString('sourceSlug', ''),
+  sourceSlugLabel: queryString('sourceSlugLabel', 'Source slug'),
+  documentId: queryString('documentId', ''),
+  documentIdLabel: queryString('documentIdLabel', 'Document'),
   sourceLanguage: queryString('sourceLanguage', 'de'),
   sourceLanguageLabel: queryString('sourceLanguageLabel', 'Source language'),
   targetLanguages: queryString('targetLanguages', 'en, fr, it'),

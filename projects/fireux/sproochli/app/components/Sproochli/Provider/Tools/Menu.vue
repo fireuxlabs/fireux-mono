@@ -8,27 +8,27 @@
       class="space-y-4"
       @submit.prevent="prepareHandoff"
     >
-      <UFormField :label="publicMenuUrlLabel">
+      <UFormField :label="sourceUrlLabel">
         <UInput
-          v-model="publicMenuUrlInput"
-          :placeholder="publicMenuUrlPlaceholder"
+          v-model="sourceUrlInput"
+          :placeholder="sourceUrlPlaceholder"
           class="w-full"
         />
       </UFormField>
 
       <div class="grid gap-3 sm:grid-cols-2">
-        <UFormField :label="kitchenSlugLabel">
+        <UFormField :label="sourceSlugLabel">
           <UInput
-            v-model="kitchenSlugInput"
-            placeholder="la-tapberne"
+            v-model="sourceSlugInput"
+            placeholder="source-slug"
             class="w-full"
           />
         </UFormField>
 
-        <UFormField :label="menuIdLabel">
+        <UFormField :label="documentIdLabel">
           <UInput
-            v-model="menuIdInput"
-            placeholder="main"
+            v-model="documentIdInput"
+            placeholder="document-id"
             class="w-full"
           />
         </UFormField>
@@ -98,13 +98,13 @@ const { data } = await useFetch<ToolResponse>('/api/tools/menu')
 const props = withDefaults(defineProps<{
   title?: string
   description?: string
-  publicMenuUrl?: string
-  publicMenuUrlLabel?: string
-  publicMenuUrlPlaceholder?: string
-  kitchenSlug?: string
-  kitchenSlugLabel?: string
-  menuId?: string
-  menuIdLabel?: string
+  sourceUrl?: string
+  sourceUrlLabel?: string
+  sourceUrlPlaceholder?: string
+  sourceSlug?: string
+  sourceSlugLabel?: string
+  documentId?: string
+  documentIdLabel?: string
   sourceLanguage?: string
   sourceLanguageLabel?: string
   targetLanguages?: string
@@ -113,13 +113,13 @@ const props = withDefaults(defineProps<{
 }>(), {
   title: '',
   description: '',
-  publicMenuUrl: '',
-  publicMenuUrlLabel: 'Public menu URL',
-  publicMenuUrlPlaceholder: 'https://misebox.app/kitchens/la-tapberne/menus/main',
-  kitchenSlug: '',
-  kitchenSlugLabel: 'Kitchen',
-  menuId: '',
-  menuIdLabel: 'Menu',
+  sourceUrl: '',
+  sourceUrlLabel: 'Source URL',
+  sourceUrlPlaceholder: 'https://example.com/page',
+  sourceSlug: '',
+  sourceSlugLabel: 'Source slug',
+  documentId: '',
+  documentIdLabel: 'Document',
   sourceLanguage: 'de',
   sourceLanguageLabel: 'Source language',
   targetLanguages: 'en, fr, it',
@@ -127,9 +127,9 @@ const props = withDefaults(defineProps<{
   ctaLabel: 'Prepare menu translation',
 })
 
-const publicMenuUrlInput = ref(props.publicMenuUrl)
-const kitchenSlugInput = ref(props.kitchenSlug)
-const menuIdInput = ref(props.menuId)
+const sourceUrlInput = ref(props.sourceUrl)
+const sourceSlugInput = ref(props.sourceSlug)
+const documentIdInput = ref(props.documentId)
 const sourceLanguageInput = ref(props.sourceLanguage)
 const targetLanguagesInput = ref(props.targetLanguages)
 const handoff = ref('')
@@ -146,7 +146,7 @@ const targetLanguages = computed(() =>
     .filter(Boolean)
 )
 const canPrepare = computed(() =>
-  Boolean(text(publicMenuUrlInput.value) && targetLanguages.value.length)
+  Boolean(text(sourceUrlInput.value) && targetLanguages.value.length)
 )
 
 function prepareHandoff() {
@@ -155,9 +155,9 @@ function prepareHandoff() {
   handoff.value = JSON.stringify(
     {
       kind: 'sproochli-menu-translation-request',
-      publicMenuUrl: text(publicMenuUrlInput.value),
-      kitchenSlug: text(kitchenSlugInput.value),
-      menuId: text(menuIdInput.value),
+      sourceUrl: text(sourceUrlInput.value),
+      sourceSlug: text(sourceSlugInput.value),
+      documentId: text(documentIdInput.value),
       sourceLanguage: text(sourceLanguageInput.value).toLowerCase() || 'de',
       targetLanguages: targetLanguages.value,
       status: 'ready-for-provider-translation',

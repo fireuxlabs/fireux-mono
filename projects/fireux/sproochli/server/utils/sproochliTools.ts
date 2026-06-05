@@ -3,12 +3,14 @@ import {
   defineToolProviderRegistry,
   setToolProviderResponseHeaders,
 } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { languageTriggerTool } from './tools/language-trigger'
 import { menuTool } from './tools/menu'
 import type { SproochliToolContract, SproochliToolId } from './tools/types'
 
 const registry = defineToolProviderRegistry({
   provider: 'sproochli',
   tools: {
+    'language-trigger': languageTriggerTool,
     menu: menuTool,
   } satisfies Record<SproochliToolId, SproochliToolContract>,
 })

@@ -1,100 +1,82 @@
 <template>
-  <div v-if="visibleLanguageOptions.length > 1" class="sproochli-trigger">
-    <button
+  <UPopover
+    v-if="visibleLanguageOptions.length > 1"
+    v-model:open="open"
+  >
+    <UButton
       type="button"
-      class="sproochli-trigger-button"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      icon="i-lucide-languages"
+      trailing-icon="i-lucide-chevron-down"
+      class="rounded-full"
       :aria-label="triggerLabel"
-      :title="triggerLabel"
-      @click="open = true"
     >
-      <span class="sproochli-trigger-mark">
-        <img
-          :src="triggerImageSrc"
-          alt=""
-          class="sproochli-trigger-image"
-          loading="lazy"
-          decoding="async"
-        >
-      </span>
-      <span class="sproochli-trigger-copy">
-        <span class="sproochli-trigger-title">Translate menu</span>
-        <span class="sproochli-trigger-current">{{ selectedOption.name }}</span>
-      </span>
-      <span class="sr-only">{{ triggerLabel }}</span>
-    </button>
+      <span class="hidden sm:inline">Translate</span>
+      <span class="text-muted">{{ selectedOption.name }}</span>
+    </UButton>
 
-    <ClientOnly>
-      <Teleport to="body">
-        <div
-          v-if="open"
-          class="sproochli-modal-backdrop"
-          @click.self="open = false"
-        >
-          <section
-            class="sproochli-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="sproochli-language-title"
+    <template #content>
+      <UCard class="w-80 max-w-[calc(100vw-2rem)]">
+        <template #header>
+          <div class="space-y-1">
+            <div class="text-sm font-semibold text-highlighted">
+              Language
+            </div>
+            <p class="text-xs text-muted">
+              Choose how to read this content.
+            </p>
+          </div>
+        </template>
+
+        <div class="max-h-[min(26rem,calc(100vh-10rem))] space-y-2 overflow-y-auto pr-1">
+          <template
+            v-for="group in languageGroups"
+            :key="group.key"
           >
-            <header class="sproochli-modal-header">
-              <div>
-                <h2 id="sproochli-language-title">Translate with Sproochli</h2>
-                <p>Choose a menu language.</p>
-              </div>
-              <button
-                type="button"
-                class="sproochli-modal-close"
-                aria-label="Close language picker"
+            <USeparator
+              v-if="group.showSeparator"
+              :label="showAdminGroupLabels ? group.label : undefined"
+            />
+
+            <div class="space-y-1">
+              <UButton
+                v-for="option in group.options"
+                :key="`${group.key}:${option.code || 'original'}`"
+                :to="languageHref(option.code)"
+                :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
+                :dir="languageDirection(option.code)"
+                block
+                color="neutral"
+                :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
+                class="justify-start"
                 @click="open = false"
               >
-                <UIcon name="i-lucide-x" />
-              </button>
-            </header>
-
-            <div class="sproochli-language-list">
-              <template
-                v-for="group in languageGroups"
-                :key="group.key"
-              >
-                <USeparator
-                  v-if="group.showSeparator"
-                  class="sproochli-language-separator"
-                  :label="showAdminGroupLabels ? group.label : undefined"
-                />
-
-                <a
-                  v-for="option in group.options"
-                  :key="`${group.key}:${option.code || 'original'}`"
-                  :href="languageHref(option.code)"
-                  class="sproochli-language-option"
-                  :class="{
-                    'has-mark': Boolean(option.label),
-                    'is-active': languageOptionActive(option.code),
-                  }"
-                  :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
-                  :dir="languageDirection(option.code)"
-                  @click="open = false"
-                >
+                <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
                   <span
                     v-if="option.label"
-                    class="sproochli-language-mark"
+                    class="w-10 shrink-0 text-sm font-semibold text-highlighted"
                   >
                     {{ option.label }}
                   </span>
-                  <span class="sproochli-language-name">{{ option.name }}</span>
-                  <UIcon
-                    v-if="languageOptionActive(option.code)"
-                    name="i-lucide-check"
-                    class="sproochli-language-check"
-                  />
-                </a>
-              </template>
+                  <span class="min-w-0 truncate text-sm font-medium">
+                    {{ option.name }}
+                  </span>
+                </span>
+
+                <UIcon
+                  v-if="languageOptionActive(option.code)"
+                  name="i-lucide-check"
+                  class="shrink-0 text-primary"
+                />
+              </UButton>
             </div>
-          </section>
+          </template>
         </div>
-      </Teleport>
-    </ClientOnly>
-  </div>
+      </UCard>
+    </template>
+  </UPopover>
 </template>
 
 <script setup lang="ts">
@@ -115,11 +97,6 @@ type LanguageGroup = {
   options: SproochliLanguageOption[]
 }
 
-const triggerImageSrc = new URL(
-  '../../assets/sproochli/translate-trigger-compact.png',
-  import.meta.url
-).href
-
 const props = defineProps<{
   languageOptions: SproochliLanguageOption[]
   selectedLanguage?: SproochliLanguageCode
@@ -130,6 +107,7 @@ const route = useRoute()
 const open = ref(false)
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
 const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
+
 const groupLabel: Record<LanguageGroupKey, string> = {
   original: 'Original',
   attached: 'Attached',
@@ -144,10 +122,10 @@ const groupOrder: LanguageGroupKey[] = [
   'public',
   'on_demand',
 ]
-const optionGroup = (option: SproochliLanguageOption): LanguageGroupKey => {
-  if (option.source) return option.source
-  return option.code ? 'public' : 'original'
-}
+
+const optionGroup = (option: SproochliLanguageOption): LanguageGroupKey =>
+  option.source || (option.code ? 'public' : 'original')
+
 const languageGroups = computed<LanguageGroup[]>(() => {
   const groups = new Map<LanguageGroupKey, SproochliLanguageOption[]>()
 
@@ -173,6 +151,7 @@ const languageGroups = computed<LanguageGroup[]>(() => {
     })
     .filter((group): group is LanguageGroup => Boolean(group))
 })
+
 const selectedOption = computed(
   () =>
     visibleLanguageOptions.value.find(
@@ -185,7 +164,7 @@ const selectedOption = computed(
     }
 )
 const triggerLabel = computed(
-  () => `Translate with Sproochli. Current language: ${selectedOption.value.name}.`
+  () => `Translate content. Current language: ${selectedOption.value.name}.`
 )
 const passThroughQuery = computed(() =>
   Object.fromEntries(
@@ -224,180 +203,3 @@ const languageOptionActive = (language: SproochliLanguageCode) =>
 const languageDirection = (language: SproochliLanguageCode) =>
   isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
 </script>
-
-<style scoped>
-.sproochli-trigger {
-  display: inline-flex;
-  align-items: center;
-}
-
-.sproochli-trigger-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.75rem 0.45rem 0.5rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  background: var(--ui-bg-elevated);
-  color: var(--ui-text-highlighted);
-  box-shadow: var(--ui-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.08));
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    transform 150ms ease;
-}
-
-.sproochli-trigger-button:hover {
-  border-color: var(--ui-primary);
-  background: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-bg-elevated));
-  transform: translateY(-1px);
-}
-
-.sproochli-trigger-button:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 3px;
-}
-
-.sproochli-trigger-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.15rem;
-  height: 2.15rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--ui-bg);
-}
-
-.sproochli-trigger-image {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.sproochli-trigger-copy {
-  display: grid;
-  gap: 0.05rem;
-  text-align: left;
-}
-
-.sproochli-trigger-title {
-  color: var(--ui-text-highlighted);
-  font-size: 0.85rem;
-  font-weight: 750;
-  line-height: 1.1;
-}
-
-.sproochli-trigger-current {
-  color: var(--ui-text-muted);
-  font-size: 0.72rem;
-  font-weight: 650;
-  line-height: 1.1;
-}
-
-.sproochli-language-list {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.sproochli-language-separator {
-  margin: 0.15rem 0;
-}
-
-.sproochli-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.48);
-}
-
-.sproochli-modal {
-  width: min(100%, 460px);
-  max-height: min(720px, calc(100vh - 2rem));
-  overflow: auto;
-  padding: 1rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 8px;
-  background: var(--ui-bg);
-  color: var(--ui-text);
-  box-shadow: var(--ui-shadow-xl, 0 24px 60px rgba(0, 0, 0, 0.28));
-}
-
-.sproochli-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.sproochli-modal-header h2 {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: 1rem;
-  font-weight: 750;
-}
-
-.sproochli-modal-header p {
-  margin: 0.2rem 0 0;
-  color: var(--ui-text-muted);
-  font-size: 0.9rem;
-}
-
-.sproochli-modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ui-text-muted);
-  cursor: pointer;
-}
-
-.sproochli-language-option {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 0.75rem;
-  min-height: 3rem;
-  padding: 0.75rem 0.85rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 8px;
-  color: var(--ui-text);
-  text-decoration: none;
-}
-
-.sproochli-language-option.has-mark {
-  grid-template-columns: minmax(3.5rem, auto) 1fr auto;
-}
-
-.sproochli-language-option:hover,
-.sproochli-language-option.is-active {
-  border-color: var(--ui-primary);
-  background: color-mix(in srgb, var(--ui-primary) 10%, transparent);
-}
-
-.sproochli-language-mark {
-  color: var(--ui-text-highlighted);
-  font-size: 1.05rem;
-  font-weight: 750;
-}
-
-.sproochli-language-name {
-  color: var(--ui-text-highlighted);
-  font-size: 0.95rem;
-  font-weight: 650;
-}
-
-.sproochli-language-check {
-  color: var(--ui-primary);
-}
-</style>

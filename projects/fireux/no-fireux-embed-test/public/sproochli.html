@@ -104,7 +104,7 @@
           <iframe
             id="sproochli-deployed-tool"
             title="Sproochli deployed menu translation tool"
-            src="https://sproochli.web.app/tools/menu?title=Menu%20translation&description=Translate%20menu%20copy%20with%20the%20Sproochli%20provider.&publicMenuUrl=&publicMenuUrlLabel=Public%20menu%20URL&publicMenuUrlPlaceholder=https%3A%2F%2Fmisebox.app%2Fkitchens%2Fla-tapberne%2Fmenus%2Fmain&kitchenSlug=&kitchenSlugLabel=Kitchen&menuId=&menuIdLabel=Menu&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20menu%20translation"
+            src="https://sproochli.web.app/tools/menu?title=Menu%20translation&description=Translate%20public%20content%20with%20the%20Sproochli%20provider.&sourceUrl=&sourceUrlLabel=Source%20URL&sourceUrlPlaceholder=https%3A%2F%2Fexample.com%2Fpage&sourceSlug=&sourceSlugLabel=Source%20slug&documentId=&documentIdLabel=Document&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20translation"
           ></iframe>
         </section>
 
@@ -129,10 +129,32 @@
           </details>
         </section>
       </div>
+
+      <section class="embed-card">
+        <h2>Language trigger design</h2>
+        <p>Source: <code id="sproochli-trigger-local-source">Waiting for local harness</code></p>
+        <p id="sproochli-trigger-local-status" class="notice" hidden>
+          Local provider tests only run from the local Plain Jane harness.
+        </p>
+        <iframe
+          id="sproochli-trigger-local-tool"
+          title="Sproochli local language trigger"
+          hidden
+        ></iframe>
+        <details class="source-preview" data-source-preview="sproochli-language-trigger">
+          <summary>Source preview, no runtime</summary>
+          <p class="notice">
+            Reads the local repo files through the Plain Jane harness. This
+            does not run Nuxt or test the iframe.
+          </p>
+          <pre data-source-preview-output>Loading source preview...</pre>
+        </details>
+      </section>
     </main>
     <script src="/embed.js"></script>
     <script>
-      var sproochliMenuPath = '/tools/menu?title=Menu%20translation&description=Translate%20menu%20copy%20with%20the%20Sproochli%20provider.&publicMenuUrl=&publicMenuUrlLabel=Public%20menu%20URL&publicMenuUrlPlaceholder=https%3A%2F%2Fmisebox.app%2Fkitchens%2Fla-tapberne%2Fmenus%2Fmain&kitchenSlug=&kitchenSlugLabel=Kitchen&menuId=&menuIdLabel=Menu&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20menu%20translation'
+      var sproochliMenuPath = '/tools/menu?title=Menu%20translation&description=Translate%20public%20content%20with%20the%20Sproochli%20provider.&sourceUrl=&sourceUrlLabel=Source%20URL&sourceUrlPlaceholder=https%3A%2F%2Fexample.com%2Fpage&sourceSlug=&sourceSlugLabel=Source%20slug&documentId=&documentIdLabel=Document&sourceLanguage=de&sourceLanguageLabel=Source%20language&targetLanguages=en%2C%20fr%2C%20it&targetLanguagesLabel=Target%20languages&ctaLabel=Prepare%20translation'
+      var sproochliTriggerPath = '/tools/language-trigger?title=Language%20trigger&description=Design%20the%20public%20language%20selector.&showGroupLabels=true&contentTitle=Source%20document&contentDescription=Sample%20public%20content%20header%20with%20a%20language%20trigger.'
 
       connectProviderIframe({
         selector: '#sproochli-deployed-tool',
@@ -149,6 +171,17 @@
         path: sproochliMenuPath,
         messageSource: 'sproochli',
         tool: 'menu',
+        startCommand: 'pnpm dev:sproochli'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#sproochli-trigger-local-tool',
+        sourceSelector: '#sproochli-trigger-local-source',
+        statusSelector: '#sproochli-trigger-local-status',
+        localOrigin: 'http://localhost:3011',
+        path: sproochliTriggerPath,
+        messageSource: 'sproochli',
+        tool: 'language-trigger',
         startCommand: 'pnpm dev:sproochli'
       })
     </script>
