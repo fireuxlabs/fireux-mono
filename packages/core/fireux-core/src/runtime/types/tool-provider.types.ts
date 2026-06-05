@@ -26,3 +26,8 @@ export type ToolProviderHeightMessage<
   type: 'tool-height'
   height: number
 }
+
+export type ToolProviderHeightRequestMessage = {
+  source: 'fireux-tool-iframe'
+  type: 'tool-height-request'
+}

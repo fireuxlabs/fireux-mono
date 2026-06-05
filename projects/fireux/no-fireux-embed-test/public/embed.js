@@ -2,6 +2,15 @@ function connectProviderIframe(options) {
   var frame = document.querySelector(options.selector)
   if (!frame) return
 
+  function requestProviderHeight() {
+    if (!frame.contentWindow) return
+
+    frame.contentWindow.postMessage({
+      source: 'fireux-tool-iframe',
+      type: 'tool-height-request'
+    }, options.providerOrigin)
+  }
+
   window.addEventListener('message', function (event) {
     if (event.origin !== options.providerOrigin) return
     if (!event.data || event.data.source !== options.messageSource) return
@@ -10,9 +19,11 @@ function connectProviderIframe(options) {
     var height = Number(event.data.height)
     if (!Number.isFinite(height) || height <= 0) return
 
-    var minHeight = Number(options.minHeight || 560)
-    frame.style.height = Math.max(Math.ceil(height), minHeight) + 'px'
+    frame.style.height = Math.ceil(height) + 'px'
   })
+
+  frame.addEventListener('load', requestProviderHeight)
+  requestProviderHeight()
 }
 
 function isLocalHarness() {
@@ -63,8 +74,7 @@ function connectLocalProviderIframe(options) {
     connectProviderIframe({
       selector: options.selector,
       providerOrigin: options.localOrigin,
-      messageSource: options.messageSource,
-      minHeight: options.minHeight
+      messageSource: options.messageSource
     })
   })
 }

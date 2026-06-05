@@ -3,13 +3,15 @@
     ref="toolFrame"
     :src="src"
     :title="title"
-    class="mx-auto w-full max-w-xl border-0"
+    class="block w-full overflow-hidden rounded-[var(--radius-lg)]"
     :style="{ height: `${toolHeight}px` }"
+    @load="requestToolHeight"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import type { ToolProviderHeightRequestMessage } from '../../../types/tool-provider.types'
 
 const props = withDefaults(defineProps<{
   src: string
@@ -26,8 +28,10 @@ const expectedOrigin = computed(() => new URL(props.providerOrigin).origin)
 const toolFrame = ref<HTMLIFrameElement | null>(null)
 const toolHeight = ref(props.initialHeight)
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('message', handleToolMessage)
+  await nextTick()
+  requestToolHeight()
 })
 
 onBeforeUnmount(() => {
@@ -42,5 +46,14 @@ function handleToolMessage(event: MessageEvent) {
 
   const height = Number(event.data.height)
   if (Number.isFinite(height) && height > 0) toolHeight.value = height
+}
+
+function requestToolHeight() {
+  const message = {
+    source: 'fireux-tool-iframe',
+    type: 'tool-height-request',
+  } satisfies ToolProviderHeightRequestMessage
+
+  toolFrame.value?.contentWindow?.postMessage(message, expectedOrigin.value)
 }
 </script>

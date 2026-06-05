@@ -4,7 +4,6 @@
     :title="title"
     :provider-origin="providerBaseUrl"
     message-source="sproochli"
-    :initial-height="560"
   />
 </template>
 

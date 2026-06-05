@@ -4,7 +4,7 @@
     class="bg-transparent text-default"
   >
     <GoQrProviderToolsDoc
-      class="mx-auto w-full max-w-xl"
+      class="w-full"
       :title="config.title"
       :description="config.description"
       :file-label="config.fileLabel"

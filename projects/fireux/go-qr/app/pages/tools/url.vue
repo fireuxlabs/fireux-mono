@@ -4,7 +4,7 @@
     class="bg-transparent text-default"
   >
     <GoQrProviderToolsUrl
-      class="mx-auto w-full max-w-xl"
+      class="w-full"
       :title="config.title"
       :description="config.description"
       :url-label="config.urlLabel"

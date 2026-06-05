@@ -4,7 +4,6 @@
     :title="title"
     :provider-origin="providerBaseUrl"
     message-source="go-qr"
-    :initial-height="544"
   />
 </template>
 

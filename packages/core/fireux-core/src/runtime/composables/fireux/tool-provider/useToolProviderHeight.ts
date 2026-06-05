@@ -1,5 +1,8 @@
 import { nextTick, onBeforeUnmount, onMounted, type Ref } from 'vue'
-import type { ToolProviderHeightMessage } from '../../../types/tool-provider.types'
+import type {
+  ToolProviderHeightMessage,
+  ToolProviderHeightRequestMessage,
+} from '../../../types/tool-provider.types'
 
 export function useToolProviderHeight<
   ProviderId extends string,
@@ -10,10 +13,14 @@ export function useToolProviderHeight<
   tool: ToolId
 }) {
   let resizeObserver: ResizeObserver | null = null
+  let animationFrame = 0
 
   function postToolHeight() {
+    const root = input.root.value
     const height = Math.ceil(
-      input.root.value?.scrollHeight || document.documentElement.scrollHeight
+      root
+        ? Math.max(root.scrollHeight, root.getBoundingClientRect().height)
+        : document.body.scrollHeight
     )
     const message = {
       source: input.provider,
@@ -25,21 +32,46 @@ export function useToolProviderHeight<
     window.parent?.postMessage(message, '*')
   }
 
+  function scheduleToolHeight() {
+    if (animationFrame) cancelAnimationFrame(animationFrame)
+    animationFrame = requestAnimationFrame(() => {
+      animationFrame = 0
+      postToolHeight()
+    })
+  }
+
+  function handleToolHeightRequest(event: MessageEvent) {
+    if (event.source !== window.parent) return
+
+    const data = event.data as Partial<ToolProviderHeightRequestMessage>
+    if (data?.source !== 'fireux-tool-iframe') return
+    if (data?.type !== 'tool-height-request') return
+
+    scheduleToolHeight()
+  }
+
   onMounted(async () => {
     await nextTick()
-    postToolHeight()
+    scheduleToolHeight()
 
     if (!input.root.value) return
-    resizeObserver = new ResizeObserver(postToolHeight)
+    resizeObserver = new ResizeObserver(scheduleToolHeight)
     resizeObserver.observe(input.root.value)
+    resizeObserver.observe(document.body)
+    window.addEventListener('message', handleToolHeightRequest)
+    window.addEventListener('resize', scheduleToolHeight)
   })
 
   onBeforeUnmount(() => {
+    if (animationFrame) cancelAnimationFrame(animationFrame)
     resizeObserver?.disconnect()
     resizeObserver = null
+    window.removeEventListener('message', handleToolHeightRequest)
+    window.removeEventListener('resize', scheduleToolHeight)
   })
 
   return {
     postToolHeight,
+    scheduleToolHeight,
   }
 }
