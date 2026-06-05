@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { sproochliProviderBaseUrl } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
 
 const props = withDefaults(defineProps<{
   title?: string
@@ -25,12 +26,10 @@ const props = withDefaults(defineProps<{
   sourceLanguageLabel?: string
   targetLanguages?: string
   targetLanguagesLabel?: string
-  readEndpoint?: string
-  saveEndpoint?: string
   ctaLabel?: string
 }>(), {
   title: 'Menu translation',
-  description: 'Prepare a Sproochli translation handoff for a Misebox public menu.',
+  description: 'Translate menu copy with the Sproochli provider.',
   publicMenuUrl: '',
   publicMenuUrlLabel: 'Public menu URL',
   publicMenuUrlPlaceholder: 'https://misebox.app/kitchens/la-tapberne/menus/main',
@@ -42,14 +41,10 @@ const props = withDefaults(defineProps<{
   sourceLanguageLabel: 'Source language',
   targetLanguages: 'en, fr, it',
   targetLanguagesLabel: 'Target languages',
-  readEndpoint: '',
-  saveEndpoint: '',
-  ctaLabel: 'Prepare translation handoff',
+  ctaLabel: 'Prepare menu translation',
 })
 
-const providerBaseUrl = import.meta.dev
-  ? 'http://localhost:3011'
-  : 'https://sproochli.web.app'
+const providerBaseUrl = sproochliProviderBaseUrl()
 
 const toolUrl = computed(() => {
   const query = new URLSearchParams({
@@ -66,8 +61,6 @@ const toolUrl = computed(() => {
     sourceLanguageLabel: props.sourceLanguageLabel,
     targetLanguages: props.targetLanguages,
     targetLanguagesLabel: props.targetLanguagesLabel,
-    readEndpoint: props.readEndpoint,
-    saveEndpoint: props.saveEndpoint,
     ctaLabel: props.ctaLabel,
   })
 

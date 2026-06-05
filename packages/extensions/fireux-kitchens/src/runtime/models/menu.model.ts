@@ -61,6 +61,8 @@ export const MenuModel = {
   kitchen_id: '' as string,
   name: '' as string,
   description: '' as string,
+  names: {} as Record<string, string>,
+  descriptions: {} as Record<string, string>,
   source_language: '' as string,
   status: 'draft' as MenuStatus,
   sproochli_refresh_needed: false as boolean,

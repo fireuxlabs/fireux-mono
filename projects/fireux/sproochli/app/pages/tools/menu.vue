@@ -18,8 +18,6 @@
       :source-language-label="config.sourceLanguageLabel"
       :target-languages="config.targetLanguages"
       :target-languages-label="config.targetLanguagesLabel"
-      :read-endpoint="config.readEndpoint"
-      :save-endpoint="config.saveEndpoint"
       :cta-label="config.ctaLabel"
     />
   </main>
@@ -59,9 +57,7 @@ const config = computed(() => ({
   sourceLanguageLabel: queryString('sourceLanguageLabel', 'Source language'),
   targetLanguages: queryString('targetLanguages', 'en, fr, it'),
   targetLanguagesLabel: queryString('targetLanguagesLabel', 'Target languages'),
-  readEndpoint: queryString('readEndpoint', ''),
-  saveEndpoint: queryString('saveEndpoint', ''),
-  ctaLabel: queryString('ctaLabel', 'Prepare translation handoff'),
+  ctaLabel: queryString('ctaLabel', 'Prepare menu translation'),
 }))
 
 onMounted(async () => {

@@ -63,11 +63,10 @@
     </form>
 
     <UAlert
-      v-if="!readEndpoint || !saveEndpoint"
-      color="warning"
+      color="primary"
       variant="soft"
-      title="Handoff only"
-      description="This tool has menu context. Translation generation and saving will use explicit read/save endpoints when the consuming app provides them."
+      title="Provider API ready"
+      description="Sproochli generates translations. The consuming app still owns reading and saving its menu records."
     />
 
     <UCard
@@ -76,7 +75,7 @@
     >
       <template #header>
         <div class="text-sm font-semibold text-highlighted">
-          Translation handoff
+          Translation request
         </div>
       </template>
       <pre class="overflow-auto rounded-md bg-muted p-3 text-xs leading-5">{{ handoff }}</pre>
@@ -110,8 +109,6 @@ const props = withDefaults(defineProps<{
   sourceLanguageLabel?: string
   targetLanguages?: string
   targetLanguagesLabel?: string
-  readEndpoint?: string
-  saveEndpoint?: string
   ctaLabel?: string
 }>(), {
   title: '',
@@ -127,9 +124,7 @@ const props = withDefaults(defineProps<{
   sourceLanguageLabel: 'Source language',
   targetLanguages: 'en, fr, it',
   targetLanguagesLabel: 'Target languages',
-  readEndpoint: '',
-  saveEndpoint: '',
-  ctaLabel: 'Prepare translation handoff',
+  ctaLabel: 'Prepare menu translation',
 })
 
 const publicMenuUrlInput = ref(props.publicMenuUrl)
@@ -159,15 +154,13 @@ function prepareHandoff() {
 
   handoff.value = JSON.stringify(
     {
-      kind: 'sproochli-menu-translation-handoff',
+      kind: 'sproochli-menu-translation-request',
       publicMenuUrl: text(publicMenuUrlInput.value),
       kitchenSlug: text(kitchenSlugInput.value),
       menuId: text(menuIdInput.value),
       sourceLanguage: text(sourceLanguageInput.value).toLowerCase() || 'de',
       targetLanguages: targetLanguages.value,
-      readEndpoint: text(props.readEndpoint),
-      saveEndpoint: text(props.saveEndpoint),
-      status: 'ready-for-review-tool',
+      status: 'ready-for-provider-translation',
     },
     null,
     2

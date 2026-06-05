@@ -10,21 +10,23 @@ const tools = {
     id: 'menu',
     provider: 'sproochli',
     title: 'Menu translation',
-    description: 'Prepare a menu translation handoff from a consuming app.',
+    description: 'Translate menu copy for a consuming app.',
     messageSource: 'sproochli',
+    endpoints: {
+      translate: '/api/tools/menu/translate',
+    },
     inputs: [
       'publicMenuUrl',
       'kitchenSlug',
       'menuId',
       'sourceLanguage',
       'targetLanguages',
-      'readEndpoint',
-      'saveEndpoint',
+      'fields',
     ],
     outputs: [
-      'translation plan',
-      'review state',
-      'future translation cache rows',
+      'translations',
+      'cache ids',
+      'source hashes',
     ],
   },
 } satisfies Record<SproochliToolId, SproochliToolContract>
@@ -34,14 +36,20 @@ export function sproochliTool(id: SproochliToolId) {
 }
 
 export function sproochliToolResponse(event: H3Event, id: SproochliToolId) {
-  setResponseHeaders(event, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'no-store',
-    'Access-Control-Allow-Origin': '*',
-  })
+  setSproochliToolHeaders(event)
 
   return {
     ok: true,
     tool: sproochliTool(id),
   }
+}
+
+export function setSproochliToolHeaders(event: H3Event) {
+  setResponseHeaders(event, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+  })
 }

@@ -35,7 +35,7 @@ const solution = {
     {
       title: 'Choose languages',
       icon: 'i-lucide-languages',
-      body: 'Select the source language and the target languages for the translation handoff.',
+      body: 'Select the source language and the target languages for Sproochli.',
     },
     {
       title: 'Review',

@@ -585,7 +585,7 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Provider tools must not silently take ownership of consuming-app truth.
 - Example:
   - Go QR may create and store QR/doc output because that is Go QR truth.
-  - Sproochli may prepare a menu translation handoff, but Misebox Kitchen/Menu/Dish truth stays in Misebox unless an explicit Sproochli service record is introduced.
+  - Sproochli may generate menu translations, cache IDs, and source hashes, but Misebox Kitchen/Menu/Dish truth stays in Misebox unless an explicit Sproochli service record is introduced.
 
 ## Deterministic Field Precedence (Allowed Exception)
 - Deterministic field precedence is allowed when documented for one entity shape.

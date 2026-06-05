@@ -26,6 +26,8 @@ pids/
 # Dummy data fixtures (local only)
 temp/dummy-data/
 temp/dummy-data/**
+temp/sproochli-menu-refresh/
+temp/sproochli-menu-refresh/**
 dummy/
 dummy/**
 
