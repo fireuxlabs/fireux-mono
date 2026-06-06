@@ -1,12 +1,10 @@
 <template>
   <main
     ref="toolRoot"
-    class="bg-transparent text-default"
+    class="inline-flex bg-transparent p-2 text-default"
   >
     <SproochliProviderToolsLanguageTrigger
       class="w-full"
-      :title="config.title"
-      :description="config.description"
       :selected-language="config.selectedLanguage"
       :default-language="config.defaultLanguage"
       :attached-languages="config.attachedLanguages"
@@ -14,8 +12,6 @@
       :public-languages="config.publicLanguages"
       :on-demand-languages="config.onDemandLanguages"
       :show-group-labels="config.showGroupLabels"
-      :content-title="config.contentTitle"
-      :content-description="config.contentDescription"
     />
   </main>
 </template>
@@ -51,8 +47,6 @@ function queryBoolean(key: string, defaultValue: boolean) {
 }
 
 const config = computed(() => ({
-  title: queryString('title', ''),
-  description: queryString('description', ''),
   selectedLanguage: queryString(
     'selectedLanguage',
     queryString('sproochli', '')
@@ -63,10 +57,5 @@ const config = computed(() => ({
   publicLanguages: queryString('publicLanguages', 'es, pt'),
   onDemandLanguages: queryString('onDemandLanguages', 'nl, pl, tr, zh, ja'),
   showGroupLabels: queryBoolean('showGroupLabels', false),
-  contentTitle: queryString('contentTitle', 'Source document'),
-  contentDescription: queryString(
-    'contentDescription',
-    'A compact preview of the language trigger.'
-  ),
 }))
 </script>

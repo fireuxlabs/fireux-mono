@@ -128,6 +128,7 @@ function usePublicMenuTranslations(
   const resolveDb = useFirestoreResolver()
   const rows = ref<Record<string, string>>({})
   const pending = ref(false)
+  const reloadToken = ref(0)
   let requestId = 0
 
   watch(
@@ -137,6 +138,7 @@ function usePublicMenuTranslations(
         menuCollectionPath.value && menuId.value
           ? `${menuCollectionPath.value}/${menuId.value}`
           : '',
+      reloadToken: reloadToken.value,
     }),
     async ({ language, menuPath }) => {
       const currentRequestId = ++requestId
@@ -177,6 +179,9 @@ function usePublicMenuTranslations(
   return {
     rows,
     pending,
+    reload: () => {
+      reloadToken.value += 1
+    },
     text: (fieldId: string) => rows.value[fieldId] ?? '',
   }
 }
@@ -278,6 +283,9 @@ export function useKitchenPublicMenuDetail() {
     resolvedMenuId,
     state.selectedLanguage
   )
+  const translationPreparePending = ref(false)
+  const translationPrepareError = ref('')
+  const translationPrepareKey = ref('')
   const dishState = useDishCollection(kitchenId)
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
@@ -287,6 +295,100 @@ export function useKitchenPublicMenuDetail() {
     }
     return map
   })
+  const publicTranslationFieldIds = computed(() => {
+    const menu = state.menu.value
+    const ids: string[] = []
+    const add = (id: string, sourceText: unknown) => {
+      if (text(id) && text(sourceText)) ids.push(id)
+    }
+
+    if (menu) {
+      const menuId = text(menu.id)
+      add(`menu:${menuId}:name`, menu.name)
+      add(`menu:${menuId}:description`, menu.description)
+    }
+
+    for (const section of sectionState.sections.value) {
+      const sectionId = text(section.id)
+      add(`section:${sectionId}:label`, section.label)
+      add(`section:${sectionId}:description`, section.description)
+    }
+
+    for (const item of itemState.items.value) {
+      const dishId = text(item.dish_id)
+      const dish = dishesById.value.get(dishId)
+      add(`dish:${dishId}:name`, dish?.name)
+      add(`dish:${dishId}:description`, dish?.description)
+    }
+
+    return [...new Set(ids)]
+  })
+  const publicMenuSourceLanguage = computed(() => {
+    const settings =
+      state.kitchen.value &&
+      typeof (state.kitchen.value as any).language_settings === 'object'
+        ? (state.kitchen.value as any).language_settings
+        : {}
+
+    return normalizeSproochliLanguage(
+      state.menu.value?.source_language ||
+      settings.default_language ||
+      'en'
+    )
+  })
+  const missingTranslationFieldCount = computed(() => {
+    if (!state.selectedLanguage.value) return 0
+    if (state.selectedLanguage.value === publicMenuSourceLanguage.value) return 0
+    return publicTranslationFieldIds.value.filter(
+      (fieldId) => !text(translationCache.rows.value[fieldId])
+    ).length
+  })
+
+  watch(
+    () => ({
+      enabled: (state.kitchen.value as any)?.sproochli_enabled === true,
+      language: state.selectedLanguage.value,
+      kitchenSlug: state.kitchenSlug.value,
+      menuId: resolvedMenuId.value,
+      pending:
+        state.pending.value ||
+        sectionState.pending.value ||
+        itemState.pending.value ||
+        dishState.pending.value ||
+        translationCache.pending.value,
+      missingCount: missingTranslationFieldCount.value,
+    }),
+    async ({ enabled, language, kitchenSlug, menuId, pending, missingCount }) => {
+      if (import.meta.server) return
+      if (!enabled || !language || !kitchenSlug || !menuId || pending) return
+      if (missingCount < 1) return
+
+      const requestKey = `${kitchenSlug}:${menuId}:${language}`
+      if (translationPrepareKey.value === requestKey) return
+
+      translationPrepareKey.value = requestKey
+      translationPreparePending.value = true
+      translationPrepareError.value = ''
+
+      try {
+        await $fetch('/api/kitchens/public-menu/prepare-language', {
+          method: 'POST',
+          body: {
+            kitchenSlug,
+            menuId,
+            language,
+          },
+        })
+        translationCache.reload()
+      } catch (error) {
+        translationPrepareError.value =
+          error instanceof Error ? error.message : String(error)
+      } finally {
+        translationPreparePending.value = false
+      }
+    },
+    { immediate: true }
+  )
   const itemsBySectionId = computed(() => {
     const map = new Map<string, MenuItem[]>()
     for (const item of itemState.items.value) {
@@ -350,7 +452,8 @@ export function useKitchenPublicMenuDetail() {
       sectionState.pending.value ||
       itemState.pending.value ||
       dishState.pending.value ||
-      translationCache.pending.value
+      translationCache.pending.value ||
+      translationPreparePending.value
   )
   const debug = computed(() => ({
     ...state.debug.value,
@@ -363,6 +466,9 @@ export function useKitchenPublicMenuDetail() {
       itemsCount: itemState.items.value.length,
       dishesCount: dishState.dishes.value.length,
       translationCacheCount: Object.keys(translationCache.rows.value).length,
+      missingTranslationFieldCount: missingTranslationFieldCount.value,
+      translationPreparePending: translationPreparePending.value,
+      translationPrepareError: translationPrepareError.value,
       sectionRowsCount: sectionRows.value.length,
       pending: detailPending.value,
     },

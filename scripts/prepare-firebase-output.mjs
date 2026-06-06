@@ -7,13 +7,21 @@ const outputWorkspaceYaml = join(outputServerDir, 'pnpm-workspace.yaml')
 const outputNpmrc = join(outputServerDir, '.npmrc')
 const packageJson = JSON.parse(readFileSync(outputPackageJson, 'utf8'))
 const onlyBuiltDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'better-sqlite3']
+const deployOverrides = {
+  '@types/node': '22.18.1',
+  tinyexec: '1.1.2',
+  'which-typed-array': '1.1.19',
+}
 
 packageJson.dependencies ||= {}
 packageJson.dependencies['@google-cloud/functions-framework'] ||= '^3.5.1'
 packageJson.pnpm ||= {}
 packageJson.pnpm.overrides ||= {}
-packageJson.pnpm.overrides.tinyexec ||= '1.1.2'
 packageJson.pnpm.onlyBuiltDependencies ||= []
+
+for (const [name, version] of Object.entries(deployOverrides)) {
+  packageJson.pnpm.overrides[name] ||= version
+}
 
 for (const dependency of onlyBuiltDependencies) {
   if (!packageJson.pnpm.onlyBuiltDependencies.includes(dependency)) {
@@ -29,7 +37,9 @@ writeFileSync(
     "  - '.'",
     'strictDepBuilds: false',
     'overrides:',
-    "  tinyexec: '1.1.2'",
+    ...Object.entries(deployOverrides).map(
+      ([name, version]) => `  '${name}': '${version}'`
+    ),
     'onlyBuiltDependencies:',
     ...onlyBuiltDependencies.map((dependency) => `  - '${dependency}'`),
     '',

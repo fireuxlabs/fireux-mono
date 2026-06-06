@@ -5,14 +5,19 @@
   >
     <UButton
       type="button"
-      color="neutral"
+      color="primary"
       variant="soft"
       size="sm"
-      icon="i-lucide-languages"
       trailing-icon="i-lucide-chevron-down"
-      class="rounded-full"
+      class="rounded-full pl-1.5"
       :aria-label="triggerLabel"
     >
+      <img
+        :src="triggerBrandSrc"
+        alt=""
+        aria-hidden="true"
+        class="h-5 w-auto shrink-0"
+      >
       <span class="hidden sm:inline">Translate</span>
       <span class="text-muted">{{ selectedOption.name }}</span>
     </UButton>
@@ -48,7 +53,7 @@
                 :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
                 :dir="languageDirection(option.code)"
                 block
-                color="neutral"
+                :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
                 class="justify-start"
                 @click="open = false"
@@ -82,6 +87,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
+import triggerBrandSrc from '../../assets/sproochli/translate-trigger-compact.png'
 import {
   isSproochliRtlLanguage,
   type SproochliLanguageCode,

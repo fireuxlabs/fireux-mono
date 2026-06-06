@@ -145,6 +145,11 @@ const sortedMenus = computed(() =>
   )
 )
 const menuTranslationCache = ref<Record<string, string>>({})
+const menuTranslationCachePending = ref(false)
+const menuTranslationCacheReloadToken = ref(0)
+const translationPreparePending = ref(false)
+const translationPrepareError = ref('')
+const translationPrepareKey = ref('')
 let translationCacheRequestId = 0
 
 const menusIndexLink = computed(() => {
@@ -165,36 +170,63 @@ const menuNameCacheText = (menu: Menu) =>
   menuTranslationCache.value[menuNameFieldId(menu)] ?? ''
 const menuDescriptionCacheText = (menu: Menu) =>
   menuTranslationCache.value[menuDescriptionFieldId(menu)] ?? ''
-const localizedMenuName = (menu: Menu) =>
+const localizedMenuNameResult = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.name,
     translations: (menu as any)?.names ?? (menu as any)?.translations,
     selectedLanguage: selectedLanguage.value,
     cacheText: menuNameCacheText(menu),
-  }).text || normalizeString(menu.name)
-const localizedMenuDescription = (menu: Menu) =>
+  })
+const localizedMenuDescriptionResult = (menu: Menu) =>
   resolveSproochliTranslatedText({
     defaultText: menu.description,
     translations: (menu as any)?.descriptions,
     selectedLanguage: selectedLanguage.value,
     cacheText: menuDescriptionCacheText(menu),
-  }).text || normalizeString(menu.description)
+  })
+const localizedMenuName = (menu: Menu) =>
+  localizedMenuNameResult(menu).text || normalizeString(menu.name)
+const localizedMenuDescription = (menu: Menu) =>
+  localizedMenuDescriptionResult(menu).text || normalizeString(menu.description)
+const menuSourceLanguage = (menu: Menu) =>
+  normalizeSproochliLanguage(
+    (menu as any)?.source_language ||
+    (languageSettings.value as any)?.default_language ||
+    'en'
+  )
+const menusNeedingPreparedLanguage = computed(() => {
+  if (!selectedLanguage.value) return []
+
+  return sortedMenus.value.filter((menu) => {
+    if (selectedLanguage.value === menuSourceLanguage(menu)) return false
+
+    const missingName =
+      normalizeString(menu.name) && localizedMenuNameResult(menu).source === 'default'
+    const missingDescription =
+      normalizeString(menu.description) &&
+      localizedMenuDescriptionResult(menu).source === 'default'
+    return missingName || missingDescription
+  })
+})
 
 watch(
   () => ({
     language: selectedLanguage.value,
     menusPath: collectionPath.value,
     menuIds: sortedMenus.value.map((menu) => normalizeString(menu.id)),
+    reloadToken: menuTranslationCacheReloadToken.value,
   }),
   async ({ language, menusPath, menuIds }) => {
     const requestId = ++translationCacheRequestId
 
     if (import.meta.server || !language || !menusPath || !menuIds.length) {
       menuTranslationCache.value = {}
+      menuTranslationCachePending.value = false
       return
     }
 
     const rows: Record<string, string> = {}
+    menuTranslationCachePending.value = true
 
     try {
       const snapshots = await Promise.all(
@@ -227,6 +259,53 @@ watch(
         console.warn('[KitchenPublicMenus] menu translation cache read failed', error)
       }
       if (requestId === translationCacheRequestId) menuTranslationCache.value = {}
+    } finally {
+      if (requestId === translationCacheRequestId) {
+        menuTranslationCachePending.value = false
+      }
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => ({
+    enabled: sproochliEnabled.value,
+    language: selectedLanguage.value,
+    kitchenSlug: kitchenSlug.value,
+    menuIds: menusNeedingPreparedLanguage.value.map((menu) => normalizeString(menu.id)),
+    pending: menusLoading.value || menuTranslationCachePending.value,
+  }),
+  async ({ enabled, language, kitchenSlug, menuIds, pending }) => {
+    if (import.meta.server) return
+    if (!enabled || !language || !kitchenSlug || pending || !menuIds.length) return
+
+    const requestKey = `${kitchenSlug}:${language}:${menuIds.join(',')}`
+    if (translationPrepareKey.value === requestKey) return
+
+    translationPrepareKey.value = requestKey
+    translationPreparePending.value = true
+    translationPrepareError.value = ''
+
+    try {
+      await Promise.all(
+        menuIds.map((menuId) =>
+          $fetch('/api/kitchens/public-menu/prepare-language', {
+            method: 'POST',
+            body: {
+              kitchenSlug,
+              menuId,
+              language,
+            },
+          })
+        )
+      )
+      menuTranslationCacheReloadToken.value += 1
+    } catch (error) {
+      translationPrepareError.value =
+        error instanceof Error ? error.message : String(error)
+    } finally {
+      translationPreparePending.value = false
     }
   },
   { immediate: true }
