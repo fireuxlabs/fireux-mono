@@ -11,6 +11,7 @@ These files are internal source material for:
 
 Planning method:
 - [Solution Search System](./solution-search-system.md)
+- [Misebox/Sproochli Customer Lanes](./misebox-sproochli-customer-lanes.md)
 
 Rules:
 - Business case describes the intended finished product shape.

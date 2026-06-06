@@ -25,6 +25,8 @@ Lead with: turn the menu into a working kitchen system.
 
 For operators, the pitch is less drift and fewer repeated explanations. For chefs, it is service-ready kitchen knowledge. For groups, it is a repeatable operating model. For suppliers and professionals, it is connection to real kitchen demand.
 
+For live customer triage, use [Misebox/Sproochli Customer Lanes](./misebox-sproochli-customer-lanes.md) before touching code or data.
+
 ## Meta Dissemination
 Misebox meta should describe the finished kitchen operating system, not only current scaffolding. It should keep public routes grounded in kitchens, menus, jobs, professionals, suppliers, and console workflows.
 

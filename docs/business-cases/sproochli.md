@@ -22,6 +22,8 @@ Lead with: translation-ready public pages for real-world information.
 
 Sproochli should be practical, not generic translation software. It is strongest when tied to physical-world contexts: signs, rentals, guest stays, menus, safety notes, and visitor guides.
 
+For live hospitality triage, use [Misebox/Sproochli Customer Lanes](./misebox-sproochli-customer-lanes.md) before deciding whether Sproochli should stay light or bridge into Misebox.
+
 ## Meta Dissemination
 Sproochli meta should focus on multilingual QR pages, public information translation, certified page translations, cached generated translations, and language layers for sibling FireUX apps.
 
