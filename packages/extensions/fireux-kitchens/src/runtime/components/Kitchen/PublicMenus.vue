@@ -34,53 +34,33 @@
       </div>
 
       <div v-else class="grid gap-3 sm:grid-cols-2">
-        <NuxtLink
+        <KitchenPublicMenuLink
           v-for="menu in sortedMenus"
           :key="menu.id"
+          :kitchen="kitchen"
+          :menu="menu"
+          :menu-collection-path="collectionPath"
+          :selected-language="selectedLanguage"
           :to="menuLink(menu.id)"
-          class="rounded-lg border border-default p-4 transition hover:bg-elevated/50"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h2 class="text-base font-semibold text-highlighted">
-                {{ localizedMenuName(menu) }}
-              </h2>
-              <p
-                v-if="localizedMenuDescription(menu)"
-                class="mt-1 text-sm text-dimmed"
-              >
-                {{ localizedMenuDescription(menu) }}
-              </p>
-              <p v-else class="mt-1 text-sm text-dimmed">
-                {{ menuSummary(menu) }}
-              </p>
-            </div>
-            <UIcon
-              name="i-lucide-arrow-up-right"
-              class="mt-1 size-4 shrink-0 text-muted"
-            />
-          </div>
-        </NuxtLink>
+          :summary="defaultChromeLabels.openMenu"
+        />
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { collection, getDocs } from 'firebase/firestore'
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from '#imports'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
-  resolveSproochliTranslatedText,
 } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import KitchenPublicMenuLink from './PublicMenuLink.vue'
 import type { Kitchen } from '../../models/kitchen.model'
-import type { Menu } from '../../models/menu.model'
 
 const props = defineProps<{
   kitchen: Kitchen
@@ -90,7 +70,6 @@ const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
 const route = useRoute()
 const { isAdmin } = useUser()
-const resolveDb = useFirestoreResolver()
 const defaultChromeLabels = {
   menus: 'Menus',
   openMenus: 'Open menus',
@@ -105,7 +84,6 @@ const { publishedMenus, pending: menusPending, collectionPath } = useMenuCollect
 const menusLoading = computed(() =>
   Boolean(kitchenId.value) && menusPending.value
 )
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 const sproochliEnabled = computed(
   () => (props.kitchen as any)?.sproochli_enabled === true
 )
@@ -144,13 +122,6 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
-const menuTranslationCache = ref<Record<string, string>>({})
-const menuTranslationCachePending = ref(false)
-const menuTranslationCacheReloadToken = ref(0)
-const translationPreparePending = ref(false)
-const translationPrepareError = ref('')
-const translationPrepareKey = ref('')
-let translationCacheRequestId = 0
 
 const menusIndexLink = computed(() => {
   if (!kitchenSlug.value) return ''
@@ -162,154 +133,4 @@ const menuLink = (menuIdRaw: unknown) => {
   if (!kitchenSlug.value || !menuId) return ''
   return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}${languageQuery.value}`
 }
-
-const menuNameFieldId = (menu: Menu) => `menu:${normalizeString(menu.id)}:name`
-const menuDescriptionFieldId = (menu: Menu) =>
-  `menu:${normalizeString(menu.id)}:description`
-const menuNameCacheText = (menu: Menu) =>
-  menuTranslationCache.value[menuNameFieldId(menu)] ?? ''
-const menuDescriptionCacheText = (menu: Menu) =>
-  menuTranslationCache.value[menuDescriptionFieldId(menu)] ?? ''
-const localizedMenuNameResult = (menu: Menu) =>
-  resolveSproochliTranslatedText({
-    defaultText: menu.name,
-    translations: (menu as any)?.names ?? (menu as any)?.translations,
-    selectedLanguage: selectedLanguage.value,
-    cacheText: menuNameCacheText(menu),
-  })
-const localizedMenuDescriptionResult = (menu: Menu) =>
-  resolveSproochliTranslatedText({
-    defaultText: menu.description,
-    translations: (menu as any)?.descriptions,
-    selectedLanguage: selectedLanguage.value,
-    cacheText: menuDescriptionCacheText(menu),
-  })
-const localizedMenuName = (menu: Menu) =>
-  localizedMenuNameResult(menu).text || normalizeString(menu.name)
-const localizedMenuDescription = (menu: Menu) =>
-  localizedMenuDescriptionResult(menu).text || normalizeString(menu.description)
-const menuSourceLanguage = (menu: Menu) =>
-  normalizeSproochliLanguage(
-    (menu as any)?.source_language ||
-    (languageSettings.value as any)?.default_language ||
-    'en'
-  )
-const menusNeedingPreparedLanguage = computed(() => {
-  if (!selectedLanguage.value) return []
-
-  return sortedMenus.value.filter((menu) => {
-    if (selectedLanguage.value === menuSourceLanguage(menu)) return false
-
-    const missingName =
-      normalizeString(menu.name) && localizedMenuNameResult(menu).source === 'default'
-    const missingDescription =
-      normalizeString(menu.description) &&
-      localizedMenuDescriptionResult(menu).source === 'default'
-    return missingName || missingDescription
-  })
-})
-
-watch(
-  () => ({
-    language: selectedLanguage.value,
-    menusPath: collectionPath.value,
-    menuIds: sortedMenus.value.map((menu) => normalizeString(menu.id)),
-    reloadToken: menuTranslationCacheReloadToken.value,
-  }),
-  async ({ language, menusPath, menuIds }) => {
-    const requestId = ++translationCacheRequestId
-
-    if (import.meta.server || !language || !menusPath || !menuIds.length) {
-      menuTranslationCache.value = {}
-      menuTranslationCachePending.value = false
-      return
-    }
-
-    const rows: Record<string, string> = {}
-    menuTranslationCachePending.value = true
-
-    try {
-      const snapshots = await Promise.all(
-        menuIds.map((menuId) =>
-          getDocs(collection(resolveDb(), `${menusPath}/${menuId}/translation_cache`))
-        )
-      )
-
-      if (requestId !== translationCacheRequestId) return
-
-      for (const snapshot of snapshots) {
-        for (const doc of snapshot.docs) {
-          const data = doc.data() as Record<string, unknown>
-          const targetLanguage = normalizeString(data.target_language)
-          const fieldId = normalizeString(data.field_id)
-          const text = normalizeString(data.translated_text)
-          if (
-            targetLanguage === language &&
-            (fieldId.endsWith(':name') || fieldId.endsWith(':description')) &&
-            text
-          ) {
-            rows[fieldId] = text
-          }
-        }
-      }
-
-      menuTranslationCache.value = rows
-    } catch (error) {
-      if (import.meta.dev) {
-        console.warn('[KitchenPublicMenus] menu translation cache read failed', error)
-      }
-      if (requestId === translationCacheRequestId) menuTranslationCache.value = {}
-    } finally {
-      if (requestId === translationCacheRequestId) {
-        menuTranslationCachePending.value = false
-      }
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => ({
-    enabled: sproochliEnabled.value,
-    language: selectedLanguage.value,
-    kitchenSlug: kitchenSlug.value,
-    menuIds: menusNeedingPreparedLanguage.value.map((menu) => normalizeString(menu.id)),
-    pending: menusLoading.value || menuTranslationCachePending.value,
-  }),
-  async ({ enabled, language, kitchenSlug, menuIds, pending }) => {
-    if (import.meta.server) return
-    if (!enabled || !language || !kitchenSlug || pending || !menuIds.length) return
-
-    const requestKey = `${kitchenSlug}:${language}:${menuIds.join(',')}`
-    if (translationPrepareKey.value === requestKey) return
-
-    translationPrepareKey.value = requestKey
-    translationPreparePending.value = true
-    translationPrepareError.value = ''
-
-    try {
-      await Promise.all(
-        menuIds.map((menuId) =>
-          $fetch('/api/kitchens/public-menu/prepare-language', {
-            method: 'POST',
-            body: {
-              kitchenSlug,
-              menuId,
-              language,
-            },
-          })
-        )
-      )
-      menuTranslationCacheReloadToken.value += 1
-    } catch (error) {
-      translationPrepareError.value =
-        error instanceof Error ? error.message : String(error)
-    } finally {
-      translationPreparePending.value = false
-    }
-  },
-  { immediate: true }
-)
-
-const menuSummary = (_menu: Menu) => defaultChromeLabels.openMenu
 </script>

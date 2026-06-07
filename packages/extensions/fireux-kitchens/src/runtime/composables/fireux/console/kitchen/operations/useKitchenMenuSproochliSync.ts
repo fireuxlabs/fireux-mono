@@ -3,7 +3,11 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { sproochliProviderUrl } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import {
+  requestSproochliMenuTranslations,
+  type SproochliMenuTranslateResponse,
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
 import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
 
@@ -19,34 +23,12 @@ export type KitchenMenuSproochliSyncResult = {
   failures?: Array<{ language?: string; message?: string }>
 }
 
-type SproochliTranslation = {
-  cache_id?: string
-  language?: string
-  provider?: string
-  text?: string
-}
-
-type SproochliTranslateResponse = {
-  fields?: Array<{
-    id?: string
-    source_hash?: string
-    source_text?: string
-    translations?: SproochliTranslation[]
-  }>
-  failures?: Array<{
-    field_id?: string
-    language?: string
-    message?: string
-  }>
-  glossary_version?: string
-}
-
 const CACHE_COLLECTION = 'translation_cache'
 const DEFAULT_GLOSSARY_VERSION = 'restaurant_menu_v1'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeLanguageCode = (value: unknown) =>
-  normalizeString(value).replace(/_/g, '-').toLowerCase()
-const uniqueLanguages = (value: string[]) =>
+  normalizeSproochliLanguage(value)
+const uniqueLanguages = (value: unknown[]) =>
   [...new Set(value.map(normalizeLanguageCode).filter(Boolean))]
 
 const fieldMap: Record<KitchenMenuSproochliField, 'names' | 'descriptions'> = {
@@ -69,12 +51,12 @@ export function useKitchenMenuSproochliSync() {
   const sproochliEnabled = computed(() => selectedKitchen.value?.sproochli_enabled === true)
   const attachedLanguages = computed(() =>
     Array.isArray(languageSettings.value.attached_languages)
-      ? languageSettings.value.attached_languages.map(normalizeString).filter(Boolean)
+      ? uniqueLanguages(languageSettings.value.attached_languages)
       : []
   )
   const cacheLanguages = computed(() =>
     Array.isArray(languageSettings.value.cache_languages)
-      ? languageSettings.value.cache_languages.map(normalizeString).filter(Boolean)
+      ? uniqueLanguages(languageSettings.value.cache_languages)
       : []
   )
   const hasTranslationTargets = computed(
@@ -85,8 +67,8 @@ export function useKitchenMenuSproochliSync() {
   )
 
   const sourceLanguageFor = (menu: Menu) =>
-    normalizeString(menu.source_language) ||
-    normalizeString(languageSettings.value.default_language) ||
+    normalizeSproochliLanguage(menu.source_language) ||
+    normalizeSproochliLanguage(languageSettings.value.default_language) ||
     'en'
 
   const sourceTextFor = (menu: Menu, field: KitchenMenuSproochliField) =>
@@ -94,35 +76,10 @@ export function useKitchenMenuSproochliSync() {
       ? normalizeString(menu.description)
       : normalizeString(menu.name)
 
-  async function requestSproochliTranslation(input: {
-    field: KitchenMenuSproochliField
-    menuId: string
-    sourceLanguage: string
-    sourceText: string
-    targetLanguages: string[]
-  }) {
-    return await $fetch<SproochliTranslateResponse>(
-      sproochliProviderUrl('/api/tools/menu/translate'),
-      {
-        method: 'POST',
-        body: {
-          sourceLanguage: input.sourceLanguage,
-          targetLanguages: input.targetLanguages,
-          fields: [
-            {
-              id: `menu:${input.menuId}:${input.field}`,
-              sourceText: input.sourceText,
-            },
-          ],
-        },
-      }
-    )
-  }
-
   async function writeSproochliTranslation(input: {
     field: KitchenMenuSproochliField
     menuId: string
-    response: SproochliTranslateResponse
+    response: SproochliMenuTranslateResponse
     sourceLanguage: string
     sourceText: string
   }): Promise<KitchenMenuSproochliSyncResult> {
@@ -252,15 +209,18 @@ export function useKitchenMenuSproochliSync() {
 
     const sourceLanguage = sourceLanguageFor(menu)
     const sourceText = input.sourceText ?? sourceTextFor(menu, input.field)
-    const response = await requestSproochliTranslation({
-      field: input.field,
-      menuId,
+    const response = await requestSproochliMenuTranslations({
       sourceLanguage,
-      sourceText,
       targetLanguages: uniqueLanguages([
         ...attachedLanguages.value,
         ...cacheLanguages.value,
       ]),
+      fields: [
+        {
+          id: `menu:${menuId}:${input.field}`,
+          sourceText,
+        },
+      ],
     })
 
     return await writeSproochliTranslation({

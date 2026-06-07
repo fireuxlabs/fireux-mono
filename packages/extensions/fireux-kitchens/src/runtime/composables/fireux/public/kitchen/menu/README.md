@@ -1,5 +1,5 @@
 Authority: fireux-kitchens public kitchen menu layer
-Updated: 2026-06-03
+Updated: 2026-06-06
 Extends: packages/extensions/fireux-kitchens/src/runtime/composables/fireux/public/kitchen/README.md
 
 # Kitchen Public Menu Layer
@@ -7,7 +7,22 @@ Extends: packages/extensions/fireux-kitchens/src/runtime/composables/fireux/publ
 <!-- docs:public:start -->
 This directory owns the guest-facing Kitchen Menu route helper.
 
-`useKitchenPublicMenu.ts` exports the public menu index/detail seams and row types for `/kitchens/[slug]/menus/**`.
+`useKitchenPublicMenu.ts` is the entry point for `/kitchens/[slug]/menus/**`.
+
+The menu public seam is split by job:
+- `useKitchenPublicMenuScope.ts` finds the public Kitchen and published Menu.
+- `useKitchenPublicMenuDetail.ts` composes the detail route data.
+- `useKitchenPublicMenuRows.ts` shapes sections, items, and dishes into display rows.
+- `useKitchenPublicMenuItems.ts` reads scoped menu items.
+- `useKitchenPublicMenuTranslations.ts` reads cached public translations.
+- `useKitchenPublicMenuLanguagePrepare.ts` requests missing Sproochli cache rows.
+- `types.ts` owns public row types.
+
+The route-triggered language prepare path is split outside this composable layer:
+- `server/api/kitchens/public-menu/prepare-language.post.ts` owns the HTTP route.
+- `server/utils/kitchens/publicMenuLanguageFields.ts` adapts Kitchen/Menu/Dish truth into translatable fields.
+- `server/utils/kitchens/publicMenuTranslationCache.ts` reads and writes the Kitchen-owned translation cache.
+- `fireux-sproochli` owns supported languages, provider URLs, and Menu translation provider contracts.
 
 Menu is a public-rendered scoped entity:
 - Kitchen owns the scoped Menu records.

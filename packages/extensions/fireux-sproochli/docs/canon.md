@@ -23,6 +23,7 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 ## 4) Package vs App Boundary
 - Package owns generic info-page language helpers, response helpers, and runtime config exposure under `runtimeConfig.public.fireux.sproochli`.
 - Package owns generic public language UI/helpers, including the Sproochli language picker and translated-text resolver.
+- Package owns provider-client helpers for Sproochli tool calls, including provider URL resolution and Menu translation response/request types.
 - The Sproochli app owns prototype public routes, sample content, page styling, public JSON endpoint behavior, and provider-style tool/API surfaces.
 - Current Sproochli tool/API seam:
   - `/tools/menu` embeds the Menu translation provider tool.
@@ -33,6 +34,7 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 - Domain meaning stays with the consuming app. This package must not import Misebox, kitchens, suppliers, menus, restaurants, QR generators, or app-specific product models.
 - Sproochli may generate language/copy packs for consuming apps, but those packs remain stored in the owning app or ecosystem database unless a separate Sproochli service-job record is explicitly introduced.
 - Tool provider rule: Sproochli hosts Sproochli, the same way Go QR hosts Go QR. Consuming apps call the provider endpoint for translation generation and then write their own storage truth.
+- Consuming apps may call Sproochli provider-client helpers, but they must not duplicate supported language registries, provider host URLs, or Sproochli response contracts.
 
 ## 5) Multilingual Responsibility
 - Owner-written original content is the base truth.

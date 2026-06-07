@@ -61,6 +61,7 @@ const {
   menu,
   sectionRows,
   selectedLanguage,
+  menuText,
   debug,
 } = useKitchenPublicMenuDetail()
 const { isAdmin } = useUser()
@@ -105,12 +106,14 @@ const displayMenu = computed<Menu>(() => {
         defaultText: current.name,
         translations: (current as any)?.names ?? (current as any)?.translations,
         selectedLanguage: selectedLanguage.value,
+        cacheText: menuText(`menu:${text(current.id)}:name`),
       }).text || current.name,
     description:
       resolveSproochliTranslatedText({
         defaultText: current.description,
         translations: (current as any)?.descriptions,
         selectedLanguage: selectedLanguage.value,
+        cacheText: menuText(`menu:${text(current.id)}:description`),
       }).text || current.description,
   }
 })
