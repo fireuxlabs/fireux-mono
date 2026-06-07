@@ -35,4 +35,5 @@ useSeoMeta({
   object-fit: cover;
   object-position: center bottom;
 }
+
 </style>

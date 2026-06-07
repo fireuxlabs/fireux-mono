@@ -35,6 +35,8 @@ export const CORE_BRAND_DEFAULT_ASSETS = Object.freeze({
 type ResolveBrandAssetInput = {
   role?: FireuxBrandRole | string | null
   appLogo?: string | null
+  appLogoLight?: string | null
+  appLogoDark?: string | null
   appThumbnail?: string | null
 }
 
@@ -69,10 +71,13 @@ export function resolveFireuxBrandAssets(
   input: ResolveBrandAssetInput = {}
 ): ResolvedFireuxBrandAssets {
   const base = GLOBAL_BRAND_ASSETS
+  const logo = normalizePublicImgAsset(input.appLogo, base.logo)
 
   return {
     ...base,
-    logo: normalizePublicImgAsset(input.appLogo, base.logo),
+    logo,
+    logoLight: normalizePublicImgAsset(input.appLogoLight, logo),
+    logoDark: normalizePublicImgAsset(input.appLogoDark, logo),
     thumbnail: normalizePublicImgAsset(input.appThumbnail, base.thumbnail),
   }
 }

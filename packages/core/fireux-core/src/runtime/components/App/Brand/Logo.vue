@@ -1,6 +1,7 @@
 <template>
   <ClientOnly>
     <img
+      v-bind="$attrs"
       :src="displaySrc"
       :alt="alt"
       class="fx-brand-logo"
@@ -35,15 +36,22 @@ const props = withDefaults(defineProps<Props>(), {
 const brandAssets = useFireuxBrandAssets()
 const resolvedMode = useResolvedColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')
-const baseSrc = computed(() => {
+const explicitSrc = computed(() => {
   const raw = typeof props.src === 'string' ? props.src.trim() : ''
-  return raw || brandAssets.value.logo
+  return raw
 })
+const baseSrc = computed(() => explicitSrc.value || brandAssets.value.logo)
 const themedSrc = computed(() => {
   const raw = isDark.value ? props.lightSrc : props.darkSrc
   return typeof raw === 'string' ? raw.trim() : ''
 })
-const resolvedSrc = computed(() => themedSrc.value || baseSrc.value)
+const configuredThemedSrc = computed(() => {
+  if (explicitSrc.value) return ''
+  return isDark.value ? brandAssets.value.logoLight : brandAssets.value.logoDark
+})
+const resolvedSrc = computed(() =>
+  themedSrc.value || configuredThemedSrc.value || baseSrc.value
+)
 const failedSrcs = ref<string[]>([])
 const displaySrc = computed(() => {
   if (!failedSrcs.value.includes(resolvedSrc.value)) return resolvedSrc.value

@@ -23,17 +23,7 @@
     </Transition>
 
     <Transition name="content-fade">
-      <nav v-if="!isOpen" class="menu-reveal__mini" aria-label="Venue shortcuts">
-        <button
-          v-for="item in miniMenuItems"
-          :key="item.label"
-          class="menu-reveal__mini-button"
-          type="button"
-          :aria-label="item.label"
-        >
-          <UIcon :name="item.icon" />
-        </button>
-      </nav>
+      <LaTapBerneMiniMenu v-if="!isOpen" />
     </Transition>
 
     <Transition name="menu-pop">
@@ -65,14 +55,6 @@ import { useMiseboxTenantChrome } from 'fireux-misebox/runtime/composables/fireu
 const { setChromeHidden } = useMiseboxTenantChrome()
 const isOpen = ref(false)
 
-const miniMenuItems = [
-  { label: 'Home', icon: 'i-ph-house' },
-  { label: 'Location', icon: 'i-ph-map-pin' },
-  { label: 'Drinks', icon: 'i-ph-wine' },
-  { label: 'Gallery', icon: 'i-ph-camera' },
-  { label: 'Contact', icon: 'i-ph-phone' },
-] as const
-
 const openMenu = () => {
   isOpen.value = true
   setChromeHidden(true)
@@ -100,13 +82,13 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: color-mix(in srgb, var(--brand-accent) 80%, transparent);
+  background: color-mix(in srgb, var(--brand-accent) 87%, transparent);
 }
 
 .menu-reveal__content {
   position: absolute;
   inset-inline: 0;
-  top: 42%;
+  top: 25%;
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -169,47 +151,6 @@ onBeforeUnmount(() => {
   width: 1.25rem;
   height: 1.25rem;
   flex: 0 0 auto;
-}
-
-.menu-reveal__mini {
-  position: absolute;
-  inset-inline: 0;
-  bottom: clamp(5.5rem, 10vw, 7.5rem);
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  gap: clamp(0.45rem, 1.5vw, 0.8rem);
-  pointer-events: auto;
-}
-
-.menu-reveal__mini-button {
-  display: grid;
-  width: 3.1rem;
-  height: 3.1rem;
-  padding: 0;
-  border: 1px solid color-mix(in srgb, var(--brand-canvas) 58%, transparent);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--brand-ink) 18%, transparent);
-  color: var(--brand-canvas);
-  cursor: pointer;
-  place-items: center;
-  box-shadow: 0 0.85rem 2rem rgb(42 14 7 / 22%);
-  backdrop-filter: blur(16px);
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
-}
-
-.menu-reveal__mini-button:hover {
-  border-color: color-mix(in srgb, var(--brand-canvas) 80%, transparent);
-  background: color-mix(in srgb, var(--brand-ink) 26%, transparent);
-  transform: translateY(-2px);
-}
-
-.menu-reveal__mini-button :deep(.iconify) {
-  width: 1.3rem;
-  height: 1.3rem;
 }
 
 .menu-reveal__panel {
@@ -275,16 +216,7 @@ onBeforeUnmount(() => {
 
 @media (max-width: 720px) {
   .menu-reveal__content {
-    top: 40%;
-  }
-
-  .menu-reveal__mini-button {
-    width: 2.85rem;
-    height: 2.85rem;
-  }
-
-  .menu-reveal__mini {
-    bottom: clamp(5.75rem, 18vw, 7rem);
+    top: 25%;
   }
 
   .menu-reveal__panel {

@@ -8,10 +8,13 @@ const fireuxConfig = defineFireuxConfig({
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',
+  appLogo: '/img/app/logo.png',
+  appLogoLight: '/img/app/logo-light.png',
+  appLogoDark: '/img/app/logo-dark.png',
   consoles: ['kitchen'],
   profiles: [],
-  navHiddenKeys: ['kitchens'],
-  modules: ['fireux-kitchens'],
+  navHiddenKeys: ['kitchens', 'places'],
+  modules: ['fireux-places', 'fireux-kitchens'],
 })
 
 export default defineNuxtConfig({

@@ -9,6 +9,8 @@ export function useFireuxBrandAssets() {
     resolveFireuxBrandAssets({
       role: config.role,
       appLogo: config.appLogo,
+      appLogoLight: config.appLogoLight,
+      appLogoDark: config.appLogoDark,
       appThumbnail: config.appThumbnail,
     })
   )

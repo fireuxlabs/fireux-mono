@@ -39,6 +39,10 @@ export type FireuxAppConfig = {
   appThumbnail?: string
   /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
   appLogo?: string
+  /** Optional light logo path/URL for dark backgrounds. */
+  appLogoLight?: string
+  /** Optional dark logo path/URL for light backgrounds. */
+  appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Optional app-level design pack. Surface-specific packs belong in designPacks. */
@@ -375,6 +379,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const brandAssets = resolveFireuxBrandAssets({
     role: app.role,
     appLogo: app.appLogo,
+    appLogoLight: app.appLogoLight,
+    appLogoDark: app.appLogoDark,
     appThumbnail: app.appThumbnail,
   })
 

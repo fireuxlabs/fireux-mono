@@ -4,7 +4,19 @@
     <UCard class="w-full">
       <div class="space-y-4">
         <div class="flex w-full justify-center" aria-label="Brand wordmark">
-          <AppBrandWordmark size="large" class="h-16 w-auto max-w-full object-contain" />
+          <AppBrandWordmark
+            v-if="!isTenantApp"
+            size="large"
+            class="h-16 w-auto max-w-full object-contain"
+          />
+          <AppBrandWordmark
+            v-else
+            size="medium"
+            :light-src="ecosystemWordmarkLight"
+            :dark-src="ecosystemWordmarkDark"
+            :alt="ecosystemBrandAlt"
+            class="h-10 w-auto max-w-40 object-contain"
+          />
         </div>
 
         <template v-if="isAuthenticated">
@@ -54,6 +66,7 @@
           </UButton>
 
           <UButton
+            v-if="allowAnonymousAuth"
             block
             color="neutral"
             variant="ghost"
@@ -98,6 +111,14 @@ const anonymousLoading = ref(false)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
+const isTenantApp = computed(() => config.isTenant)
+const allowAnonymousAuth = computed(() => !config.isTenant)
+const ecosystemBrandLabel = computed(() =>
+  ecosystemLabel === 'misebox' ? 'Misebox' : ecosystemLabel
+)
+const ecosystemBrandAlt = computed(() => `${ecosystemBrandLabel.value} ecosystem`)
+const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
+const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
 const { currentUser } = useUser()
 const { pill: userInterface } = useUserInterface()
@@ -159,6 +180,7 @@ const handleGoogle = async () => {
 }
 
 const handleAnonymous = async () => {
+  if (!allowAnonymousAuth.value) return
   if (anonymousLoading.value) return
   anonymousLoading.value = true
   try {

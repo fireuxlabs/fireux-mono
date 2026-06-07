@@ -3,8 +3,8 @@
     <UContainer class="auth-page">
       <section v-if="isTenant" class="tenant-brand">
         <div class="tenant-brand__stack" :aria-label="`${appName} brand`">
-          <img
-            :src="tenantIcon"
+          <AppBrandLogo
+            size="large"
             :alt="`${appName} icon`"
             class="tenant-brand__icon"
           />
@@ -17,17 +17,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, definePageMeta } from '#imports'
+import { definePageMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
-import { useFireuxBrandAssets } from '../composables/fireux/app/useFireuxBrandAssets'
 
 definePageMeta({
   layout: 'auth'
 })
 
 const { appName, isTenant } = useFireUXConfig()
-const brandAssets = useFireuxBrandAssets()
-const tenantIcon = computed(() => brandAssets.value.logo)
 
 </script>
 
