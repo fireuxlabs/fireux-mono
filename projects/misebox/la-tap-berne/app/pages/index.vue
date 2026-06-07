@@ -1,9 +1,13 @@
 <template>
-  <img
-    class="landing-cover"
-    src="/img/gallery/image-1.png"
-    alt="La Tap Berne terrace food"
-  >
+  <section class="landing-stage">
+    <img
+      class="landing-cover"
+      src="/img/gallery/image-1.png"
+      alt="La Tap Berne terrace food"
+    >
+
+    <LaTapBerneMenuReveal />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -18,6 +22,12 @@ useSeoMeta({
 </script>
 
 <style scoped>
+.landing-stage {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
 .landing-cover {
   display: block;
   width: 100%;
