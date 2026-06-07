@@ -1,5 +1,5 @@
 <template>
-  <footer class="misebox-tenant-footer">
+  <footer v-if="!chromeHidden" class="misebox-tenant-footer">
     <a
       href="https://misebox.app"
       target="_blank"
@@ -14,34 +14,13 @@
         class="misebox-tenant-footer__wordmark"
       >
     </a>
-
-    <DesignPaletteStrip
-      v-if="showPalette"
-      class="misebox-tenant-footer__palette"
-      :palette="tenantPalette"
-      aria-label="Tenant brand palette"
-    />
   </footer>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAppConfig } from '#imports'
-import type { PaletteStripColour } from 'fireux-core/runtime/types/design'
+import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
-const appConfig = useAppConfig() as {
-  miseboxTenant?: {
-    palette?: readonly PaletteStripColour[]
-  }
-}
-
-const isDev = import.meta.dev
-const tenantPalette = computed(
-  () => appConfig.miseboxTenant?.palette ?? []
-)
-const showPalette = computed(
-  () => isDev && tenantPalette.value.length > 0
-)
+const { chromeHidden } = useMiseboxTenantChrome()
 </script>
 
 <style scoped>
@@ -51,36 +30,42 @@ const showPalette = computed(
   bottom: clamp(1rem, 3vw, 2rem);
   left: clamp(1rem, 3vw, 2rem);
   z-index: 2;
-  display: grid;
-  gap: 0.75rem;
-  justify-items: center;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .misebox-tenant-footer__powered {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   width: fit-content;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--brand-canvas, white) 22%, transparent);
-  border-radius: 999px;
-  background: rgb(42 14 7 / 54%);
+  padding: 0.4rem 0.15rem;
   color: var(--brand-canvas, white);
   font-size: 0.62rem;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   line-height: 1;
   text-decoration: none;
   text-transform: uppercase;
-  backdrop-filter: blur(14px);
+  text-shadow: 0 0.2rem 1.4rem rgb(42 14 7 / 70%);
+  opacity: 0.9;
+  pointer-events: auto;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.misebox-tenant-footer__powered:hover {
+  opacity: 1;
+  transform: translateY(-1px);
 }
 
 .misebox-tenant-footer__wordmark {
   display: block;
   width: auto;
-  height: 0.8rem;
-}
-
-.misebox-tenant-footer__palette {
-  width: min(760px, 100%);
+  height: 1.05rem;
+  filter: drop-shadow(0 0.2rem 1.4rem rgb(42 14 7 / 60%));
 }
 </style>

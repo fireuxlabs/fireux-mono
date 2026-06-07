@@ -1,24 +1,28 @@
 <template>
-  <UHeader
-    :title="appName"
-    to="/"
-    :toggle="false"
-    :ui="tenantHeaderUi"
-    class="misebox-tenant-header"
-  >
-    <template #title>
-      <AppBrandWordmark
-        size="hero"
-        alt="Tenant wordmark"
-      />
-    </template>
-  </UHeader>
+  <div v-if="!chromeHidden">
+    <UHeader
+      :title="appName"
+      to="/"
+      :toggle="false"
+      :ui="tenantHeaderUi"
+      class="misebox-tenant-header"
+    >
+      <template #title>
+        <AppBrandWordmark
+          size="hero"
+          alt="Tenant wordmark"
+        />
+      </template>
+    </UHeader>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
 const { appName } = useFireUXConfig()
+const { chromeHidden } = useMiseboxTenantChrome()
 
 const tenantHeaderUi = {
   container: 'misebox-tenant-header__container',
@@ -63,5 +67,10 @@ const tenantHeaderUi = {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:global(.misebox-tenant-header__title .fx-brand-wordmark) {
+  height: clamp(5rem, 10vw, 9rem);
+  max-width: min(34rem, 86vw);
 }
 </style>
