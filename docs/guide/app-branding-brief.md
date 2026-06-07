@@ -19,7 +19,7 @@ Please provide these exact files:
 | `thumbnail.png` | 1200 x 630 px | ~1.91:1 | Can be solid/brand background |
 | `wordmark-light.png` | 768 x 192 px | 4:1 | Transparent |
 | `wordmark-dark.png` | 768 x 192 px | 4:1 | Transparent |
-| `cover.png` | 1280 x 720 px or larger | 16:9 | Designed background/image |
+| `cover.png` | 1280 x 720 px or larger | 16:9 | Brand cover with logo, wordmark, tagline, or app identity composition |
 | `favicon.ico` | 48 x 48 px or multi-size ICO | 1:1 | Transparent where possible |
 | `pwa/icon-192.png` | 192 x 192 px | 1:1 | Solid or transparent |
 | `pwa/icon-512.png` | 512 x 512 px | 1:1 | Solid or transparent |

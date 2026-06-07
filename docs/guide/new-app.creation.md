@@ -436,6 +436,8 @@ projects/<ecosystem>/<app>/public/img/app/wordmark-dark.png
 projects/<ecosystem>/<app>/public/img/app/cover.png
 ```
 
+`cover.png` is app brand media, not tenant venue/gallery photography.
+
 Standard dimensions are enforced by the developer setup check and media sync:
 
 ```text

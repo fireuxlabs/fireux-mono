@@ -446,6 +446,7 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - App branding is app-local for every app role.
 - The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
+- App `cover.png` is brand media: it should represent the app with logo, wordmark, tagline, or brand composition. Tenant venue/gallery photography should live outside the app brand folder, for example `/public/img/gallery/image-1.png`.
 - `/public` is filesystem-only; rendered/runtime URLs must start with `/img/...`.
 - App brand/media values in config or Firestore must be either external absolute URLs or canonical public-image URLs such as `/img/app/thumbnail.png`; bare filenames such as `thumbnail.png` and `wordmark-dark.png` are compatibility input only and must be normalized before rendering.
 - Standard app asset requirements are enforced by `/api/internal/app/env-check` and app media sync:

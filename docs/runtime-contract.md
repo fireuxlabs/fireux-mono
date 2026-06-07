@@ -166,6 +166,7 @@ Updated: 2026-05-25
 - Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
 - Tenant apps consume selected ecosystem capability through app config; they do not automatically receive every module, profile, or console surface from the parent ecosystem.
 - Tenant apps must ship and use their own local app assets under `/public/img/app`.
+- Tenant app `cover.png` is app brand media, not venue gallery photography. Tenant public/gallery images should live in a separate public media path such as `/public/img/gallery/image-1.png`.
 - Runtime URLs for local app assets must use `/img/app/*`; never render or store browser-facing `public/img/*` or bare filenames.
 - Standard app asset dimensions are enforced during setup and sync: `logo.png` exactly `512x512`, `thumbnail.png` exactly `1200x630`, wordmarks at least `256x64` with aspect at least `3:1`, `cover.png` `16:9` at least `1280x720`, favicon square at least `32x32`, and PWA icons exactly `192x192`/`512x512`.
 - Syncable app media must also exist in the app's dedicated Storage space under `apps/{appId}/media/*`; Firestore stores the download URLs under `apps/{appId}.media`.
