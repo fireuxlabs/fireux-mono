@@ -5,6 +5,7 @@ import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureImports } from './config/module/imports-config'
+import { configureLayouts } from './config/module/layouts-config'
 import { configureModulePages } from './config/module/pages-config'
 import { configurePublicAssets } from './config/module/public-assets-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
@@ -25,6 +26,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       configureRuntimeConfig,
       configurePages: configureModulePages,
       configureComponents,
+      configureLayouts,
       configureImports,
       configurePublicAssets,
     })

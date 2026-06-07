@@ -1,0 +1,24 @@
+@layer base {
+  :root {
+    --brand-canvas: #f2e8d8;
+    --brand-ink: #2a0e07;
+    --brand-primary: #9c2c18;
+    --brand-accent: #e99f5e;
+
+    --color-theme-50: color-mix(in srgb, var(--brand-primary) 8%, white);
+    --color-theme-100: color-mix(in srgb, var(--brand-primary) 16%, white);
+    --color-theme-200: color-mix(in srgb, var(--brand-primary) 28%, white);
+    --color-theme-300: color-mix(in srgb, var(--brand-primary) 42%, white);
+    --color-theme-400: color-mix(in srgb, var(--brand-primary) 68%, white);
+    --color-theme-500: var(--brand-primary);
+    --color-theme-600: color-mix(in srgb, var(--brand-primary) 88%, black);
+    --color-theme-700: color-mix(in srgb, var(--brand-primary) 76%, black);
+    --color-theme-800: color-mix(in srgb, var(--brand-primary) 60%, black);
+    --color-theme-900: color-mix(in srgb, var(--brand-primary) 44%, black);
+    --color-theme-950: color-mix(in srgb, var(--brand-primary) 32%, black);
+
+    --ui-primary: var(--color-theme-500);
+    --ui-primary-hover: var(--color-theme-600);
+    --ui-primary-active: var(--color-theme-700);
+  }
+}

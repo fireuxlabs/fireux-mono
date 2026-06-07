@@ -1,7 +1,8 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineNuxtConfig } from 'nuxt/config'
 
-export default defineFireuxConfig({
+const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
   id: 'la-tap-berne',
   name: 'La Tap Berne',
@@ -11,4 +12,9 @@ export default defineFireuxConfig({
   profiles: [],
   navHiddenKeys: ['kitchens'],
   modules: ['fireux-kitchens'],
+})
+
+export default defineNuxtConfig({
+  ...fireuxConfig,
+  css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
 })

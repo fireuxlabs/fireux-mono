@@ -49,6 +49,7 @@ The main repo-wide component seams are:
 - `public/PartnerPricingPage.vue`
 - `Provider/Tool/Iframe.vue`
 - `Provider/Tool/Frame.vue`
+- `Design/PaletteStrip.vue`
 
 Read them like this:
 
@@ -72,6 +73,8 @@ Read them like this:
   FireUX consumer shell for embedding hosted provider tools
 - `Provider/Tool/Frame.vue`
   FireUX hosted-provider card shell for provider apps such as Go QR, Sproochli, and Misebox
+- `Design/PaletteStrip.vue`
+  FireUX visual primitive for rendering named colour palettes; app or ecosystem assets own the actual colour values
 
 `EntityIndexCta` uses management-path families:
 

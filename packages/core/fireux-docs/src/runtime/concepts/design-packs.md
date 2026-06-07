@@ -28,6 +28,14 @@ Legacy surface fields such as `public_menu_design` may be read during migration,
 - Tenant/app: local override packs when the app is the closest owner of the visual treatment.
 - Extension: consume tokens and render the surface; do not hardcode tenant-specific style.
 
+## Visual Primitives
+
+Use core design components for reusable presentation of design values.
+
+- `Design/PaletteStrip.vue`: renders named colour swatches
+
+Apps and ecosystems provide palette values. Core renders the generic strip.
+
 ## Promotion
 
 When a console-managed entity becomes a tenant app, local app packs are allowed as the first safe step. Once the entity/app relationship is proven, promote the pack into the ecosystem-owned source of truth rather than duplicating style in every app page.

@@ -28,6 +28,7 @@ export type ConfigureFireuxEcosystemModuleOptions = {
   configureRuntimeConfig?: EcosystemNuxtStep
   configurePages?: EcosystemResolverStep
   configureComponents: EcosystemResolverStep
+  configureLayouts?: EcosystemResolverStep
   configureImports?: EcosystemResolverStep
   configurePublicAssets?: EcosystemResolverStep
 }
@@ -84,6 +85,7 @@ export function configureFireuxEcosystemModule(
   options.configureRuntimeConfig?.(nuxt)
   ;(options.configurePages || configurePages)(resolver, nuxt)
   options.configureComponents(resolver, nuxt)
+  options.configureLayouts?.(resolver, nuxt)
 
   if (options.configureImports) {
     options.configureImports(resolver, nuxt)
