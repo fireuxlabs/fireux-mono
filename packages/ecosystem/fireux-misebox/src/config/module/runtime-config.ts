@@ -9,8 +9,8 @@ const getJobsConfig = () => ({
 const getPublicMenuDefaults = (appId: string) => {
   if (appId === 'la-tap-berne') {
     return {
-      kitchenCollectionPath: 'kitchens',
-      kitchenId: 'la-tapberne',
+      kitchenCollectionPath: 'apps/la-tap-berne/kitchens',
+      kitchenId: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
       menuId: 'main',
       sproochli: true,
     }

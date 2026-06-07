@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { resolveSproochliTranslatedText } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import { resolveSproochliTranslatedText } from 'fireux-sproochli/runtime/sproochli'
 import type { Dish } from '../../../../../models/dish.model'
 import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
 import type { KitchenPublicMenuSectionRow } from './types'

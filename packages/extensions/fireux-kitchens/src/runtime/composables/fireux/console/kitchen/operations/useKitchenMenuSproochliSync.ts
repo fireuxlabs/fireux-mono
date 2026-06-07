@@ -3,11 +3,11 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import {
   requestSproochliMenuTranslations,
   type SproochliMenuTranslateResponse,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
+} from 'fireux-sproochli/runtime/sproochli'
 import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
 

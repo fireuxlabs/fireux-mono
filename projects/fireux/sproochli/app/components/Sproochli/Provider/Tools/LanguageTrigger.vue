@@ -13,7 +13,7 @@ import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+} from 'fireux-sproochli/runtime/sproochli'
 
 const props = withDefaults(defineProps<{
   selectedLanguage?: string

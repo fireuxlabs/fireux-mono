@@ -2,7 +2,7 @@ import type {
   DocumentReference,
   Firestore,
 } from 'firebase-admin/firestore'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 
 export type KitchenPublicMenuLanguageField = {
   id: string

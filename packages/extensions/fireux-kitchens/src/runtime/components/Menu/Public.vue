@@ -78,7 +78,7 @@ import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sprooc
 import type {
   SproochliLanguageCode,
   SproochliLanguageOption,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+} from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 

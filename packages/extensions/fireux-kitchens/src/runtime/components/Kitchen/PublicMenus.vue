@@ -58,7 +58,7 @@ import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch
 import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+} from 'fireux-sproochli/runtime/sproochli'
 import KitchenPublicMenuLink from './PublicMenuLink.vue'
 import type { Kitchen } from '../../models/kitchen.model'
 

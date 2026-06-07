@@ -3,7 +3,7 @@ import {
   type DocumentReference,
   type Firestore,
 } from 'firebase-admin/firestore'
-import type { SproochliMenuTranslateResponse } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
+import type { SproochliMenuTranslateResponse } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenPublicMenuLanguageField } from './publicMenuLanguageFields'
 
 export const KITCHEN_PUBLIC_MENU_TRANSLATION_CACHE_COLLECTION = 'translation_cache'

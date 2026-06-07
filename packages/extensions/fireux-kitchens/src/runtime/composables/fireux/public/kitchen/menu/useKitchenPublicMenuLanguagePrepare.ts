@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { Dish } from '../../../../../models/dish.model'
 import type { Menu, MenuItem, MenuSection } from '../../../../../models/menu.model'
 

@@ -46,7 +46,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   resolveSproochliLanguageOptions,
   resolveSproochliTranslatedText,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+} from 'fireux-sproochli/runtime/sproochli'
 import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../../../models/menu.model'
 

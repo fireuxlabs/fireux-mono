@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { sproochliProviderBaseUrl } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
+import { sproochliProviderBaseUrl } from 'fireux-sproochli/runtime/sproochli'
 
 const props = withDefaults(defineProps<{
   title?: string

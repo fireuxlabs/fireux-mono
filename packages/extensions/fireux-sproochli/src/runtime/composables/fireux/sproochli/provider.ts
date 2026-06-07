@@ -15,6 +15,12 @@ export type SproochliMenuTranslationField = {
   sourceText: string
 }
 
+export type SproochliMenuTranslateRequest = {
+  sourceLanguage: string
+  targetLanguages: string[]
+  fields: SproochliMenuTranslationField[]
+}
+
 export type SproochliMenuTranslation = {
   cache_id?: string
   language?: string
@@ -37,11 +43,9 @@ export type SproochliMenuTranslateResponse = {
   glossary_version?: string
 }
 
-export async function requestSproochliMenuTranslations(input: {
-  sourceLanguage: string
-  targetLanguages: string[]
-  fields: SproochliMenuTranslationField[]
-}) {
+export async function requestSproochliMenuTranslations(
+  input: SproochliMenuTranslateRequest
+) {
   const response = await fetch(sproochliProviderUrl('/api/tools/menu/translate'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

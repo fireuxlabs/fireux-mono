@@ -8,6 +8,8 @@
   "exports": {
     ".": "./src/module.ts",
     "./runtime/info": "./src/runtime/info/index.ts",
+    "./runtime/sproochli": "./src/runtime/sproochli.ts",
+    "./runtime/sproochli.ts": "./src/runtime/sproochli.ts",
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },

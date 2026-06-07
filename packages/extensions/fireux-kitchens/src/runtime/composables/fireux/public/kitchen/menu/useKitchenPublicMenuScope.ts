@@ -4,7 +4,7 @@ import {
   usePublicScope,
   usePublicScopedRecords,
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import { useKitchenCollection } from '../../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../../firestore/menu/useMenu'
 import type { Menu } from '../../../../../models/menu.model'

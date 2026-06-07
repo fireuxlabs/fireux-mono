@@ -1,5 +1,6 @@
 # fireux-sproochli
 Authority: Tier2 (Overview)
+Updated: 2026-06-07
 
 Generic multilingual info-page tooling for FireUX apps.
 
@@ -37,10 +38,14 @@ import {
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import {
   normalizeSproochliLanguage,
+  requestSproochliMenuTranslations,
   resolveSproochliLanguageOptions,
   resolveSproochliTranslatedText,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+  sproochliProviderBaseUrl,
+} from 'fireux-sproochli/runtime/sproochli'
 ```
+
+Consuming apps should use `fireux-sproochli/runtime/sproochli` for Sproochli helper imports. Deep paths under `runtime/composables/fireux/sproochli` are package internals.
 
 Enable as a Nuxt module when runtime config exposure is useful:
 

@@ -31,7 +31,7 @@ import { computed } from 'vue'
 import {
   resolveSproochliTranslatedText,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
+} from 'fireux-sproochli/runtime/sproochli'
 import { useKitchenPublicMenuLanguagePrepare } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuLanguagePrepare'
 import { useKitchenPublicMenuTranslations } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTranslations'
 import type { Dish } from '../../models/dish.model'

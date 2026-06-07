@@ -1,8 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
-import { requestSproochliMenuTranslations } from 'fireux-sproochli/runtime/composables/fireux/sproochli/provider'
+import {
+  normalizeSproochliLanguage,
+  requestSproochliMenuTranslations,
+} from 'fireux-sproochli/runtime/sproochli'
 import {
   readKitchenPublicMenuLanguageFields,
   readKitchenPublicMenuLanguageSource,

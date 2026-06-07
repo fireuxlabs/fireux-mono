@@ -1,6 +1,6 @@
 # fireux-sproochli Canon
 Authority: Tier1 (Package canon)
-Updated: 2026-06-05
+Updated: 2026-06-07
 
 ## 1) Purpose
 - Own reusable multilingual info-page primitives for QR-friendly FireUX pages.
@@ -24,6 +24,8 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 - Package owns generic info-page language helpers, response helpers, and runtime config exposure under `runtimeConfig.public.fireux.sproochli`.
 - Package owns generic public language UI/helpers, including the Sproochli language picker and translated-text resolver.
 - Package owns provider-client helpers for Sproochli tool calls, including provider URL resolution and Menu translation response/request types.
+- The public consuming-app helper seam is `fireux-sproochli/runtime/sproochli`.
+- Consuming apps must not import deep paths under `fireux-sproochli/runtime/composables/fireux/sproochli`; those paths are package internals and may move.
 - The Sproochli app owns prototype public routes, sample content, page styling, public JSON endpoint behavior, and provider-style tool/API surfaces.
 - Current Sproochli tool/API seam:
   - `/tools/menu` embeds the Menu translation provider tool.
