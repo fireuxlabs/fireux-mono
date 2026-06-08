@@ -12,6 +12,7 @@ export function useKitchenConsoleOverview() {
     selectedKitchen,
     selectedMode,
     kitchenId,
+    activeKitchenAppId,
     rootCollection,
     canWrite,
     clearSelectedKitchen,
@@ -29,6 +30,7 @@ export function useKitchenConsoleOverview() {
   const debug = computed(() => ({
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
+    activeKitchenAppId: activeKitchenAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     focus: overview.focus.value,
@@ -43,6 +45,7 @@ export function useKitchenConsoleOverview() {
     selectedKitchen,
     selectedMode,
     kitchenId,
+    activeKitchenAppId,
     rootCollection,
     canWrite,
     clearSelectedKitchen,

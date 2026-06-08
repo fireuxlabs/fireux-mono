@@ -5,6 +5,7 @@ import type {
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 
@@ -52,6 +53,8 @@ export type KitchenSurface = {
   // View surface only: Place-like fields here are hydrated from Place, not
   // repeated Kitchen storage truth.
   id?: string
+  app_scope_state?: FireuxAppScopeState
+  app_scope_app_id?: string
   slug?: string
   show?: boolean
   route_scope?: 'live' | 'demo' | 'test'

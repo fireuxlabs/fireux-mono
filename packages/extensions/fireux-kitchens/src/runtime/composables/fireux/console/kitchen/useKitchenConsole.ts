@@ -6,15 +6,11 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-  type ConsoleHeaderSelectorItem,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useKitchenCollection,
@@ -24,6 +20,7 @@ import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 import { resolveKitchenConsoleCollectionPath } from './operations/collections/useKitchenChildCollection'
+import { useKitchenConsoleHeader } from './useKitchenConsoleHeader'
 import type { Ref } from 'vue'
 
 type KitchenConsoleMode = ConsoleMode
@@ -77,6 +74,11 @@ export function useKitchenConsole(
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(() => selectedEntity.value)
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
+  const activeKitchenAppId = computed(() =>
+    selectedMode.value === 'live'
+      ? resolveConsoleEntityAppId(selectedKitchen.value, appId)
+      : ''
+  )
   const databaseId = computed(() =>
     selectedMode.value === 'live'
       ? readRuntimeFirestoreDatabaseId() || ''
@@ -89,11 +91,13 @@ export function useKitchenConsole(
       ? ''
       : selectedMode.value === 'test'
         ? KitchenStorage.rootCollection
-        : resolveKitchenConsoleCollectionPath(appId)
+        : resolveKitchenConsoleCollectionPath(activeKitchenAppId.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false
-    if (selectedMode.value === 'test') return Boolean(userId.value && kitchenId.value === userId.value)
+    if (selectedMode.value === 'test') {
+      return Boolean(userId.value && kitchenId.value === userId.value)
+    }
     return targetHasOperator(selectedKitchen.value, userId.value)
   })
   const clearSelectedKitchen = () => {
@@ -102,67 +106,13 @@ export function useKitchenConsole(
   const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
     selectEntity(kitchenId, mode)
   }
-  const kitchenName = (kitchen: KitchenConsoleEntity | null | undefined) =>
-    normalizeString((kitchen as Record<string, unknown> | null)?.display_name) ||
-    normalizeString(kitchen?.name) ||
-    normalizeString((kitchen as Record<string, unknown> | null)?.slug) ||
-    'Kitchen'
-  const kitchenImage = (kitchen: KitchenConsoleEntity | null | undefined) =>
-    normalizeString((kitchen as Record<string, unknown> | null)?.display_image_url) ||
-    normalizeString(kitchen?.image_url) ||
-    undefined
-  const selectorItem = (
-    kitchen: KitchenConsoleEntity,
-    mode: KitchenConsoleMode
-  ): ConsoleHeaderSelectorItem => {
-    const id = normalizeString(kitchen?.id)
-
-    return {
-      label: kitchenName(kitchen),
-      icon: mode === 'live'
-        ? 'i-lucide-store'
-        : mode === 'test'
-          ? 'i-lucide-flask-conical'
-          : 'i-lucide-sparkles',
-      disabled: !id,
-      onSelect: () => {
-        if (id) selectKitchen(id, mode)
-      },
-    }
-  }
-  const selectorItems = computed<ConsoleHeaderSelectorItem[][]>(() => {
-    const groups: ConsoleHeaderSelectorItem[][] = []
-    const live = liveKitchens.value.filter((kitchen) => normalizeString(kitchen?.id))
-
-    if (live.length) {
-      groups.push(live.map((kitchen) => selectorItem(kitchen, 'live')))
-    }
-
-    if (testKitchen.value && normalizeString(testKitchen.value.id)) {
-      groups.push([selectorItem(testKitchen.value, 'test')])
-    }
-
-    const demo = demoKitchens.value.filter((kitchen) => normalizeString(kitchen?.id))
-    if (demo.length) {
-      groups.push(demo.map((kitchen) => selectorItem(kitchen, 'demo')))
-    }
-
-    return groups
+  useKitchenConsoleHeader({
+    selectedKitchen,
+    liveKitchens,
+    demoKitchens,
+    testKitchen,
+    selectKitchen,
   })
-
-  const header = computed<ConsoleHeaderData>(() => {
-    const kitchen = selectedKitchen.value
-    if (!kitchen) return null
-
-    return {
-      title: kitchenName(kitchen),
-      subtitle: normalizeString((kitchen as any).tagline) || undefined,
-      imageUrl: kitchenImage(kitchen),
-      selectorItems: selectorItems.value,
-    }
-  })
-
-  usePublishConsoleHeader('kitchen', header)
 
   return {
     liveKitchens,
@@ -171,6 +121,7 @@ export function useKitchenConsole(
     selectedKitchen,
     selectedMode,
     kitchenId,
+    activeKitchenAppId,
     rootCollection,
     databaseId,
     canWrite,
