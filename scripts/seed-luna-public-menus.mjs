@@ -1478,6 +1478,7 @@ async function main() {
         slug: 'luna-picante',
         show: false,
         primary_language: 'de',
+        sproochli_enabled: true,
         menu_currency_format: 'dash',
         menu_show_currency: false,
         name: FieldValue.delete(),

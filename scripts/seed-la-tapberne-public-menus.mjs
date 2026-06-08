@@ -725,6 +725,7 @@ async function main() {
         description: 'Tapas-Gastro-Pub · Comida Casera',
         address: 'Herrenackerstrasse 49, 3800 Matten bei Interlaken',
         primary_language: 'de',
+        sproochli_enabled: true,
         menu_currency_format: 'dash',
         menu_show_currency: false,
         name: FieldValue.delete(),

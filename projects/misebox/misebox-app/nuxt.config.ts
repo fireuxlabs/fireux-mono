@@ -20,6 +20,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-places',
     'fireux-companies',
     'fireux-kitchens',
+    'fireux-sproochli',
     'fireux-orders',
     'fireux-suppliers',
     ['fireux-jobs', { workplaces: ['kitchen', 'ship', 'truck'] }],

@@ -934,6 +934,7 @@ async function main() {
     kitchenRef,
     {
       show: true,
+      sproochli_enabled: true,
       language_settings: {
         default_language: 'de',
         supported_languages: PUBLIC_LANGUAGES,

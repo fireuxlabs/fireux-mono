@@ -251,6 +251,7 @@ async function main() {
   batch.set(
     kitchenRef,
     {
+      sproochli_enabled: true,
       language_settings: {
         default_language: 'de',
         supported_languages: publicLanguages,

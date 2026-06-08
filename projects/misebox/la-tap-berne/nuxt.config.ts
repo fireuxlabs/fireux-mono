@@ -14,7 +14,7 @@ const fireuxConfig = defineFireuxConfig({
   consoles: ['kitchen'],
   profiles: [],
   navHiddenKeys: ['kitchens', 'places'],
-  modules: ['fireux-places', 'fireux-kitchens'],
+  modules: ['fireux-places', 'fireux-kitchens', 'fireux-sproochli'],
 })
 
 export default defineNuxtConfig({

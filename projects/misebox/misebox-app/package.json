@@ -38,6 +38,7 @@
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-products": "workspace:*",
+    "fireux-sproochli": "workspace:*",
     "nuxt": "4.4.6",
     "pdfjs-dist": "^5.4.296",
     "qrcode": "^1.5.4",
