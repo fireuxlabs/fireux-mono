@@ -2,6 +2,7 @@
   <UPopover
     v-if="visibleLanguageOptions.length > 1"
     v-model:open="open"
+    :content="popoverContent"
   >
     <UButton
       type="button"
@@ -9,7 +10,7 @@
       variant="soft"
       size="sm"
       trailing-icon="i-lucide-chevron-down"
-      class="rounded-full pl-1.5"
+      class="max-w-[calc(100vw-2rem)] rounded-full pl-1.5"
       :aria-label="triggerLabel"
     >
       <img
@@ -19,11 +20,11 @@
         class="h-5 w-auto shrink-0"
       >
       <span class="hidden sm:inline">Translate</span>
-      <span class="text-muted">{{ selectedOption.name }}</span>
+      <span class="truncate text-muted">{{ selectedOption.name }}</span>
     </UButton>
 
     <template #content>
-      <UCard class="w-80 max-w-[calc(100vw-2rem)]">
+      <UCard class="w-[calc(100vw-1rem)] sm:w-80">
         <template #header>
           <div class="space-y-1">
             <div class="text-sm font-semibold text-highlighted">
@@ -35,7 +36,7 @@
           </div>
         </template>
 
-        <div class="max-h-[min(26rem,calc(100vh-10rem))] space-y-2 overflow-y-auto pr-1">
+        <div class="max-h-[min(32rem,calc(100dvh-8rem))] space-y-2 overflow-y-auto pr-1">
           <template
             v-for="group in languageGroups"
             :key="group.key"
@@ -54,7 +55,7 @@
                 block
                 :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
-                class="justify-start"
+                class="min-h-11 justify-start"
                 @click="open = false"
               >
                 <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
@@ -65,7 +66,7 @@
                     {{ option.label }}
                   </span>
                   <span
-                    class="min-w-0 truncate text-sm font-medium"
+                    class="min-w-0 whitespace-normal text-sm font-medium leading-snug"
                     :dir="languageDirection(option.code)"
                   >
                     {{ optionName(option) }}
@@ -115,6 +116,12 @@ const route = useRoute()
 const open = ref(false)
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
 const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
+const popoverContent = {
+  align: 'center' as const,
+  side: 'bottom' as const,
+  sideOffset: 8,
+  collisionPadding: 8,
+}
 
 const groupLabel: Record<LanguageGroupKey, string> = {
   original: 'Original',

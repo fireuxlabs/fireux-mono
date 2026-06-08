@@ -11,6 +11,22 @@
             <p class="text-sm text-dimmed">
               Stored menu display values for this kitchen.
             </p>
+
+            <div v-if="previewMenus.length" class="mt-3 flex flex-wrap items-center gap-2">
+              <span class="text-xs font-medium text-dimmed">
+                Preview menu
+              </span>
+              <UButton
+                v-for="menu in previewMenus"
+                :key="menu.id"
+                size="xs"
+                color="neutral"
+                :variant="previewMenuId === menu.id ? 'solid' : 'soft'"
+                @click="selectPreviewMenu(menu.id)"
+              >
+                {{ menu.name || menu.id }}
+              </UButton>
+            </div>
           </div>
         </div>
       </UCard>
@@ -92,8 +108,10 @@ const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
     background_color_dark: normalizeString(style?.background_color_dark),
     font_color_light: normalizeString(style?.font_color_light),
     font_color_dark: normalizeString(style?.font_color_dark),
-    primary_color: normalizeString(style?.primary_color),
-    secondary_color: normalizeString(style?.secondary_color),
+    title_color_light: normalizeString(style?.title_color_light),
+    title_color_dark: normalizeString(style?.title_color_dark),
+    primary_color: '',
+    secondary_color: '',
     title_font_source: titleFont.source,
     title_font_family: titleFont.family,
     font_source: font.source,
@@ -106,7 +124,17 @@ const kitchenName = computed(() =>
   normalizeString(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
 )
 const kitchenSlug = computed(() => normalizeString(kitchen.value?.slug))
-const previewMenu = computed(() => publishedMenus.value[0] ?? null)
+const selectedPreviewMenuId = ref('')
+const previewMenus = computed(() => publishedMenus.value)
+const fallbackPreviewMenu = computed(() =>
+  previewMenus.value.find((menu) => normalizeString(menu.id) === 'main') ??
+  previewMenus.value[0] ??
+  null
+)
+const previewMenu = computed(() =>
+  previewMenus.value.find((menu) => normalizeString(menu.id) === selectedPreviewMenuId.value) ??
+  fallbackPreviewMenu.value
+)
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
 const previewSectionState = useMenuSectionCollection(kitchenId, previewMenuId)
 const previewItemState = useKitchenPublicMenuItems(
@@ -154,6 +182,19 @@ const menuCurrencyFormat = computed(
 )
 const menuShowCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 watch(
+  previewMenus,
+  (menus) => {
+    const ids = menus.map((menu) => normalizeString(menu.id)).filter(Boolean)
+    if (selectedPreviewMenuId.value && ids.includes(selectedPreviewMenuId.value)) return
+
+    selectedPreviewMenuId.value = normalizeString(fallbackPreviewMenu.value?.id)
+  },
+  {
+    immediate: true,
+  }
+)
+
+watch(
   storedPageStyle,
   (style) => {
     const normalized = normalizePageStyle(style)
@@ -170,6 +211,10 @@ function setDraftPageStyle(style: PageStyle) {
   const normalized = normalizePageStyle(style)
   draftPageStyle.value = normalized
   queueThemeSave(normalized)
+}
+
+function selectPreviewMenu(menuId: string) {
+  selectedPreviewMenuId.value = normalizeString(menuId)
 }
 
 function queueThemeSave(style: PageStyle) {

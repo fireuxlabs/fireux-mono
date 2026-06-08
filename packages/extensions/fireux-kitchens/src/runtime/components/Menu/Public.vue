@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
   formatCurrencyAmount,
   type CurrencyDisplayFormat,
@@ -105,10 +105,17 @@ const props = defineProps<{
 }>()
 
 const color = (value: unknown) => String(value ?? '').trim()
+const systemColorMode = ref<'light' | 'dark'>('light')
+let colorSchemeQuery: MediaQueryList | null = null
+const activeColorMode = computed(() =>
+  props.colorMode === 'light' || props.colorMode === 'dark'
+    ? props.colorMode
+    : systemColorMode.value
+)
 const menuClasses = computed(() => ({
   'public-menu--preview': props.variant === 'preview',
-  'public-menu--light': props.colorMode === 'light',
-  'public-menu--dark': props.colorMode === 'dark',
+  'public-menu--light': activeColorMode.value === 'light',
+  'public-menu--dark': activeColorMode.value === 'dark',
 }))
 const resolvedFont = computed(() => resolveKitchenPublicMenuFont(props.pageStyle))
 const resolvedTitleFont = computed(() => resolveKitchenPublicMenuTitleFont(props.pageStyle))
@@ -135,15 +142,15 @@ const menuStyleVars = computed(() => {
   const backgroundDark = color(style.background_color_dark)
   const fontLight = color(style.font_color_light)
   const fontDark = color(style.font_color_dark)
-  const primary = color(style.primary_color)
-  const secondary = color(style.secondary_color)
+  const titleLight = color(style.title_color_light)
+  const titleDark = color(style.title_color_dark)
 
   if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
   if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
   if (fontDark) vars['--menu-text-dark'] = fontDark
   if (fontLight) vars['--menu-text-light'] = fontLight
-  if (primary) vars['--menu-accent'] = primary
-  if (secondary) vars['--menu-secondary'] = secondary
+  if (titleLight) vars['--menu-title-light'] = titleLight
+  if (titleDark) vars['--menu-title-dark'] = titleDark
   vars['--menu-font'] = resolvedFont.value.cssFamily
   vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
 
@@ -157,29 +164,60 @@ const formatPrice = (price: number) => {
     showCurrency: props.showCurrency,
   })
 }
+
+const updateSystemColorMode = () => {
+  systemColorMode.value = colorSchemeQuery?.matches ? 'dark' : 'light'
+}
+
+onMounted(() => {
+  colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  colorSchemeQuery.addEventListener('change', updateSystemColorMode)
+  updateSystemColorMode()
+})
+
+onUnmounted(() => {
+  colorSchemeQuery?.removeEventListener('change', updateSystemColorMode)
+  colorSchemeQuery = null
+})
 </script>
 
 <style scoped>
 .public-menu {
-  --menu-bg-light: var(--ui-bg, #ffffff);
-  --menu-bg-dark: var(--ui-bg, #111827);
-  --menu-text-light: var(--ui-text, #111827);
-  --menu-text-dark: var(--ui-text, #f8fafc);
+  --menu-bg-light: #ffffff;
+  --menu-bg-dark: #111827;
+  --menu-text-light: #111827;
+  --menu-text-dark: #f8fafc;
+  --menu-title-light: var(--menu-text-light);
+  --menu-title-dark: var(--menu-text-dark);
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
   --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
   --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
-  --menu-accent: var(--ui-primary);
-  --menu-secondary: color-mix(in srgb, var(--menu-accent) 70%, var(--menu-text));
+  --menu-secondary: var(--menu-muted);
   --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-title-font: var(--menu-font);
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
   --menu-page-padding-inline: clamp(1.5rem, 4vw, 3rem);
 
+  width: 100%;
   min-height: 100vh;
-  background: var(--menu-bg);
+  min-height: 100dvh;
+  background-color: var(--menu-bg);
+  background-image: none;
   color: var(--menu-text);
   font-family: var(--menu-font);
+  isolation: isolate;
+  position: relative;
+  z-index: 0;
+}
+
+.public-menu:not(.public-menu--preview)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--menu-bg);
 }
 
 .public-menu--preview {
@@ -191,11 +229,13 @@ const formatPrice = (price: number) => {
 .public-menu--light {
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
 }
 
 .public-menu--dark {
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
+  --menu-title: var(--menu-title-dark);
 }
 
 .public-menu--preview .menu-page {
@@ -206,6 +246,7 @@ const formatPrice = (price: number) => {
   width: min(100%, 72rem);
   margin: 0 auto;
   padding: var(--menu-page-padding-block) var(--menu-page-padding-inline);
+  background-color: var(--menu-bg);
 }
 
 :deep(.menu-breadcrumbs) {
@@ -244,7 +285,7 @@ const formatPrice = (price: number) => {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 0;
-  color: var(--menu-text);
+  color: var(--menu-title);
 }
 
 .description {
@@ -272,7 +313,7 @@ const formatPrice = (price: number) => {
   margin: 0;
   font-size: clamp(1.25rem, 3vw, 1.65rem);
   letter-spacing: 0;
-  color: var(--menu-text);
+  color: var(--menu-title);
 }
 
 .section-header p {
@@ -314,20 +355,20 @@ const formatPrice = (price: number) => {
   white-space: nowrap;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--menu-accent);
+  color: var(--menu-text);
 }
 
-@media (max-width: 520px) {
-  .menu-item {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
+@media (min-width: 920px) {
+  .menu-sections {
+    display: block;
+    column-count: 2;
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  .menu-section {
+    break-inside: avoid;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .public-menu:not(.public-menu--light) {
-    --menu-bg: var(--menu-bg-dark);
-    --menu-text: var(--menu-text-dark);
-  }
-}
 </style>

@@ -160,6 +160,7 @@ import {
 type ColorStyleKey = Exclude<
   keyof PageStyle,
   'title_font_source' | 'title_font_family' | 'font_source' | 'font_family'
+  | 'primary_color' | 'secondary_color'
 >
 
 const props = defineProps<{
@@ -185,6 +186,7 @@ const colorGroups: { title: string, description: string, fields: ColorField[] }[
     fields: [
       { key: 'background_color_light', label: 'Background', placeholder: '#fffaf2' },
       { key: 'font_color_light', label: 'Text', placeholder: '#211915' },
+      { key: 'title_color_light', label: 'Title', placeholder: '#7c2d12' },
     ],
   },
   {
@@ -193,14 +195,7 @@ const colorGroups: { title: string, description: string, fields: ColorField[] }[
     fields: [
       { key: 'background_color_dark', label: 'Background', placeholder: '#171717' },
       { key: 'font_color_dark', label: 'Text', placeholder: '#f8f1e8' },
-    ],
-  },
-  {
-    title: 'Shared accents',
-    description: 'Used across both light and dark mode.',
-    fields: [
-      { key: 'primary_color', label: 'Primary accent', placeholder: '#b45309' },
-      { key: 'secondary_color', label: 'Secondary accent', placeholder: '#166534' },
+      { key: 'title_color_dark', label: 'Title', placeholder: '#fbbf24' },
     ],
   },
 ]
@@ -229,8 +224,10 @@ const normalizeStyle = (style: Partial<PageStyle>): PageStyle => {
     background_color_dark: normalizeString(style.background_color_dark),
     font_color_light: normalizeString(style.font_color_light),
     font_color_dark: normalizeString(style.font_color_dark),
-    primary_color: normalizeString(style.primary_color),
-    secondary_color: normalizeString(style.secondary_color),
+    title_color_light: normalizeString(style.title_color_light),
+    title_color_dark: normalizeString(style.title_color_dark),
+    primary_color: '',
+    secondary_color: '',
     title_font_source: titleFont.source,
     title_font_family: titleFont.family,
     font_source: font.source,

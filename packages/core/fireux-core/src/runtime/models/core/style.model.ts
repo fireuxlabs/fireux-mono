@@ -13,6 +13,8 @@
  *   define their own copy of these page-level color tokens.
  * - Font tokens store intent only. Renderers decide how to load/resolve a
  *   controlled font family.
+ * - Title color tokens are per-mode emphasis tokens. Avoid hidden shared
+ *   accent colors for surfaces that only expose light and dark modes.
  */
 export type PageStyleFontSource = 'system' | 'google'
 
@@ -21,6 +23,8 @@ export type PageStyle = {
   background_color_dark: string
   font_color_light: string
   font_color_dark: string
+  title_color_light?: string
+  title_color_dark?: string
   primary_color: string
   secondary_color: string
   title_font_source?: PageStyleFontSource

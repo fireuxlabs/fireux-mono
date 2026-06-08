@@ -9,6 +9,7 @@ const packageJson = JSON.parse(readFileSync(outputPackageJson, 'utf8'))
 const onlyBuiltDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'better-sqlite3']
 const deployOverrides = {
   '@types/node': '22.18.1',
+  'side-channel': '1.1.0',
   tinyexec: '1.1.2',
   'which-typed-array': '1.1.19',
 }

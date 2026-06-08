@@ -11,6 +11,9 @@
             <p class="text-xs text-dimmed">
               Uses the current public menu component.
             </p>
+            <p v-if="previewMenuLabel" class="text-xs text-dimmed">
+              Previewing {{ previewMenuLabel }}
+            </p>
           </div>
         </div>
 
@@ -146,6 +149,7 @@ const sampleSections = computed<KitchenPublicMenuSectionRow[]>(() => [
   },
 ])
 const previewMenu = computed(() => props.menu ?? sampleMenu.value)
+const previewMenuLabel = computed(() => previewMenu.value.name || previewMenu.value.id)
 const previewSections = computed(() =>
   props.sections?.length ? props.sections : sampleSections.value
 )
@@ -159,8 +163,8 @@ const snapshot = computed(() => ({
     backgroundColorDark: props.pageStyle.background_color_dark ?? '',
     fontColorLight: props.pageStyle.font_color_light ?? '',
     fontColorDark: props.pageStyle.font_color_dark ?? '',
-    primaryColor: props.pageStyle.primary_color ?? '',
-    secondaryColor: props.pageStyle.secondary_color ?? '',
+    titleColorLight: props.pageStyle.title_color_light ?? '',
+    titleColorDark: props.pageStyle.title_color_dark ?? '',
     titleFontSource: props.pageStyle.title_font_source ?? '',
     titleFontFamily: props.pageStyle.title_font_family ?? '',
     fontSource: props.pageStyle.font_source ?? '',
