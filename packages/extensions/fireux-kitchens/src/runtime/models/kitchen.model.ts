@@ -67,7 +67,8 @@ export const KitchenModel = {
   // Kitchen plugin toggles. Sproochli enhances menu language; it does not own menu truth.
   sproochli_enabled: false,
   language_settings: {
-    default_language: '',
+    // Optional kitchen/venue native language metadata. Menu source language lives on Menu.
+    native_language: '',
     attached_languages: [] as string[],
     cache_languages: [] as string[],
     public_languages: [] as string[],

@@ -71,7 +71,7 @@ export type KitchenSurface = {
   menu_style?: Partial<PageStyle>
   sproochli_enabled?: boolean
   language_settings?: {
-    default_language?: string
+    native_language?: string
     attached_languages?: string[]
     cache_languages?: string[]
     public_languages?: string[]

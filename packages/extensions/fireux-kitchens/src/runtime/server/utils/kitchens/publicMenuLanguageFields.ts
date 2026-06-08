@@ -29,22 +29,8 @@ const unique = (values: string[]) => [...new Set(values.map(text).filter(Boolean
 const isActiveChild = (value: Record<string, unknown>) =>
   text(value.status) !== 'archived'
 
-function sourceLanguageFor(
-  menu: Record<string, unknown>,
-  kitchen: Record<string, unknown>
-) {
-  const settings =
-    kitchen.language_settings &&
-    typeof kitchen.language_settings === 'object' &&
-    !Array.isArray(kitchen.language_settings)
-      ? kitchen.language_settings as Record<string, unknown>
-      : {}
-
-  return (
-    normalizeSproochliLanguage(menu.source_language) ||
-    normalizeSproochliLanguage(settings.default_language) ||
-    'en'
-  )
+function sourceLanguageFor(menu: Record<string, unknown>) {
+  return normalizeSproochliLanguage(menu.source_language)
 }
 
 function languageField(
@@ -53,12 +39,13 @@ function languageField(
   sourceText: unknown
 ): KitchenPublicMenuLanguageField | null {
   const normalizedId = text(id)
+  const normalizedSourceLanguage = text(sourceLanguage)
   const normalizedText = text(sourceText)
-  if (!normalizedId || !normalizedText) return null
+  if (!normalizedId || !normalizedSourceLanguage || !normalizedText) return null
 
   return {
     id: normalizedId,
-    sourceLanguage,
+    sourceLanguage: normalizedSourceLanguage,
     sourceText: normalizedText,
   }
 }
@@ -110,13 +97,12 @@ export async function readKitchenPublicMenuLanguageSource(
 
 export async function readKitchenPublicMenuLanguageFields(input: {
   appKitchenRef: DocumentReference
-  kitchen: Record<string, unknown>
   menu: Record<string, unknown>
   menuId: string
   menuRef: DocumentReference
   maxFields: number
 }) {
-  const menuSourceLanguage = sourceLanguageFor(input.menu, input.kitchen)
+  const menuSourceLanguage = sourceLanguageFor(input.menu)
   const sectionsSnap = await input.menuRef.collection('sections').get()
   const sections = sectionsSnap.docs
     .map((doc) => ({

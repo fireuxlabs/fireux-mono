@@ -119,6 +119,9 @@ export const PlaceModel = {
   /** Optional public route locator. The document id remains canonical. */
   slug: '' as string,
 
+  /** Projection only. Source of truth is the linked family record. */
+  entity_families: [] as string[],
+
   source: 'fireux' as PlaceSource,
 
   /** How we found this place. */

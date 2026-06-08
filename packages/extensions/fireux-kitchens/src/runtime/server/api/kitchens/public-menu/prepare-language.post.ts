@@ -75,7 +75,6 @@ export default defineEventHandler(async (event) => {
 
   const fields = await readKitchenPublicMenuLanguageFields({
     appKitchenRef: source.appKitchenRef,
-    kitchen: source.kitchen,
     menu: source.menu,
     menuId,
     menuRef: source.menuRef,

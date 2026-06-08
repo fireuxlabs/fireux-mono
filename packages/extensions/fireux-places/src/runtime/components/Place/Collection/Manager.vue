@@ -10,7 +10,29 @@
         <div
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
-          <div class="ml-auto flex items-center gap-2">
+          <div class="ml-auto flex flex-wrap items-center gap-2">
+            <UFieldGroup
+              v-if="showFilters"
+              size="xs"
+            >
+              <UButton
+                color="neutral"
+                :variant="activeEntityFamily === 'all' ? 'solid' : 'ghost'"
+                @click="setActiveEntityFamily('all')"
+              >
+                All
+              </UButton>
+              <UButton
+                v-for="family in entityFamilyFilters"
+                :key="family.id"
+                color="neutral"
+                :variant="activeEntityFamily === family.id ? 'solid' : 'ghost'"
+                @click="setActiveEntityFamily(family.id)"
+              >
+                {{ filterButtonLabel(family.label, family.count) }}
+              </UButton>
+            </UFieldGroup>
+
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -71,7 +93,7 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   usePlaceCollection,
   usePlaceInterface,
@@ -86,6 +108,7 @@ const props = withDefaults(
     link?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
+    showFilterToggle?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
@@ -96,6 +119,7 @@ const props = withDefaults(
     link: true,
     searchPlaceholder: 'Search places…',
     showSearch: true,
+    showFilterToggle: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
@@ -116,6 +140,7 @@ const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search places…')
 )
 const showSearch = computed(() => props.showSearch !== false)
+const showFilterToggle = computed(() => props.showFilterToggle !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
@@ -127,8 +152,29 @@ const {
   pill: makePill,
   cell: makeCell,
 } = usePlaceInterface()
+const activeEntityFamily = ref('all')
+const entityFamilyFilters = computed(() => {
+  const counts = new Map<string, number>()
 
-const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  for (const place of collection.value) {
+    for (const family of placeEntityFamilies(place)) {
+      counts.set(family, (counts.get(family) ?? 0) + 1)
+    }
+  }
+
+  return [...counts.entries()]
+    .map(([id, count]) => ({
+      id,
+      label: formatConsoleFamilyLabel(id),
+      count,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+const showFilters = computed(
+  () => showFilterToggle.value && entityFamilyFilters.value.length > 0
+)
+
+const { query, variant, toggleVariant, visibleItems } =
   useCollectionSearch<BasePlace, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (place: BasePlace) => makeCard(place),
@@ -137,6 +183,7 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
 
 const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
   visibleItems.value
+    .filter((place) => matchesEntityFamilyFilter(place))
     .map((place) => {
       if (variant.value === 'cell') {
         const base = makeCard(place)
@@ -153,9 +200,48 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
 )
 
 const countLabel = computed(() =>
-  showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
+  (showSearchInput.value && query.value) || activeEntityFamily.value !== 'all'
+    ? `${cardsFiltered.value.length} / ${totalCount.value}`
     : `${totalCount.value}`
 )
 const isDev = import.meta.dev
+
+function placeEntityFamilies(place: BasePlace) {
+  return Array.isArray((place as any)?.entity_families)
+    ? (place as any).entity_families
+        .map((entry: unknown) => String(entry || '').trim())
+        .filter(Boolean)
+    : []
+}
+
+function matchesEntityFamilyFilter(place: BasePlace) {
+  if (activeEntityFamily.value === 'all') return true
+
+  const families = placeEntityFamilies(place)
+
+  return families.includes(activeEntityFamily.value)
+}
+
+function formatConsoleFamilyLabel(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+watch(
+  entityFamilyFilters,
+  (nextFilters) => {
+    if (activeEntityFamily.value === 'all') return
+    if (nextFilters.some((filter) => filter.id === activeEntityFamily.value)) return
+    activeEntityFamily.value = 'all'
+  },
+  { immediate: true }
+)
+
+const filterButtonLabel = (label: string, count?: number) => {
+  const suffix = typeof count === 'number' ? ` (${count})` : ''
+  return `${label}${suffix}`
+}
+
+function setActiveEntityFamily(family: string) {
+  activeEntityFamily.value = String(family || 'all').trim() || 'all'
+}
 </script>

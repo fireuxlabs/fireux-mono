@@ -36,19 +36,9 @@ export function useKitchenPublicMenuLanguagePrepare(
       : null
   )
 
-  const sourceLanguage = computed(() => {
-    const settings =
-      kitchen.value &&
-      typeof kitchen.value.language_settings === 'object'
-        ? kitchen.value.language_settings as Record<string, unknown>
-        : {}
-
-    return normalizeSproochliLanguage(
-      options.menu.value?.source_language ||
-      settings.default_language ||
-      'en'
-    )
-  })
+  const sourceLanguage = computed(() =>
+    normalizeSproochliLanguage(options.menu.value?.source_language)
+  )
   const fieldIds = computed(() => {
     const menu = options.menu.value
     const ids: string[] = []
@@ -79,6 +69,7 @@ export function useKitchenPublicMenuLanguagePrepare(
   const missingFieldCount = computed(() => {
     const selectedLanguage = options.selectedLanguage.value
     if (!selectedLanguage) return 0
+    if (!sourceLanguage.value) return 0
     if (selectedLanguage === sourceLanguage.value) return 0
 
     return fieldIds.value.filter(

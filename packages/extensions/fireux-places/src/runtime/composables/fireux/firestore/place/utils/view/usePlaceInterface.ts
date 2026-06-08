@@ -88,18 +88,28 @@ const formatPlaceTypeList = (values?: string[]) =>
 export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
+    const slug = safeString((place as any)?.slug).trim()
     const name = safeString(place.name)
     const shortName = safeString((place as any)?.short_name)
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)
     const image = safeString((place as any)?.image_url)
+    const entityFamilies = Array.isArray((place as any)?.entity_families)
+      ? (place as any).entity_families
+          .map((entry: unknown) => safeString(entry).trim())
+          .filter(Boolean)
+      : []
 
     return {
       id,
-      to: id ? `/${PlaceStorage.collection}/${encodeURIComponent(id)}` : '',
+      to: slug || id
+        ? `/${PlaceStorage.collection}/${encodeURIComponent(slug || id)}`
+        : '',
       title: name,
       subtitle: shortAddress || address,
-      badges: [],
+      badges: entityFamilies.map((entry: string) =>
+        entry.charAt(0).toUpperCase() + entry.slice(1)
+      ),
       name,
       shortName,
       formattedAddress: address,

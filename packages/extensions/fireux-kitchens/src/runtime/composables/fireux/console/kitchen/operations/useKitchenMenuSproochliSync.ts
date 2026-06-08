@@ -15,7 +15,7 @@ export type KitchenMenuSproochliField = 'name' | 'description'
 
 export type KitchenMenuSproochliSyncResult = {
   field?: KitchenMenuSproochliField
-  skipped?: 'disabled' | 'missing-menu' | 'unpublished'
+  skipped?: 'disabled' | 'missing-menu' | 'missing-source-language' | 'unpublished'
   attached_languages?: string[]
   cache_languages?: string[]
   cache_written?: string[]
@@ -67,9 +67,7 @@ export function useKitchenMenuSproochliSync() {
   )
 
   const sourceLanguageFor = (menu: Menu) =>
-    normalizeSproochliLanguage(menu.source_language) ||
-    normalizeSproochliLanguage(languageSettings.value.default_language) ||
-    'en'
+    normalizeSproochliLanguage(menu.source_language)
 
   const sourceTextFor = (menu: Menu, field: KitchenMenuSproochliField) =>
     field === 'description'
@@ -208,6 +206,10 @@ export function useKitchenMenuSproochliSync() {
     }
 
     const sourceLanguage = sourceLanguageFor(menu)
+    if (!sourceLanguage) {
+      return { field: input.field, skipped: 'missing-source-language' }
+    }
+
     const sourceText = input.sourceText ?? sourceTextFor(menu, input.field)
     const response = await requestSproochliMenuTranslations({
       sourceLanguage,

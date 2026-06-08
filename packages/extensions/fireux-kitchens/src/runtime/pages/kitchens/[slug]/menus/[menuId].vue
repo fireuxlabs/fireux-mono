@@ -88,7 +88,6 @@ const languageSettings = computed(() =>
 const languageOptions = computed(() =>
   resolveSproochliLanguageOptions({
     enabled: (kitchen.value as any)?.sproochli_enabled === true,
-    defaultLanguage: (languageSettings.value as any)?.default_language,
     attachedLanguages: (languageSettings.value as any)?.attached_languages,
     cachedLanguages: (languageSettings.value as any)?.cache_languages,
     publicLanguages: (languageSettings.value as any)?.public_languages,

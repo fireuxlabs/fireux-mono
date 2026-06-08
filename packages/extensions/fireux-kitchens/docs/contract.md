@@ -130,6 +130,8 @@ Ingredient composable stack canon:
 - Sproochli is a package-owned language layer consumed by Kitchen/Menu routes:
   - `fireux-sproochli` owns Sproochli language UI/helpers.
   - `kitchen.sproochli_enabled` only decides whether this Kitchen exposes those tools.
+  - `kitchen.language_settings.native_language` is optional Kitchen metadata, not the source language for menu translation.
+  - `menu.source_language` is the concrete source language for Sproochli requests. Mixed/original menu voice remains the public default display state until mixed-source provider support is explicitly added.
   - Kitchen public menu routes adapt Kitchen/Menu/Dish data into the Sproochli helper seam.
   - Menu records should store the actual language/translation status when Sproochli work happens.
   - Sproochli generation/cache refresh is publish-gated for Kitchen Menus:
