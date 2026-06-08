@@ -58,6 +58,10 @@ import {
   resolveSproochliLanguageOptions,
   resolveSproochliTranslatedText,
 } from 'fireux-sproochli/runtime/sproochli'
+import {
+  resolveKitchenPublicMenuFont,
+  resolveKitchenPublicMenuTitleFont,
+} from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
 import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../../../models/menu.model'
 
@@ -86,6 +90,10 @@ const defaultMenuStyle = {
   fontColorDark: '#f8f1e8',
   primaryColor: 'var(--ui-primary)',
   secondaryColor: 'color-mix(in srgb, var(--menu-accent) 70%, var(--menu-text))',
+  titleFontSource: 'system',
+  titleFontFamily: '',
+  fontSource: 'system',
+  fontFamily: '',
 } as const
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -144,6 +152,8 @@ const kitchenStyle = computed<Partial<PageStyle>>(() => {
 const publicMenuPageStyle = computed(() => kitchenStyle.value)
 const expectedStyle = computed(() => {
   const style = kitchenStyle.value
+  const font = resolveKitchenPublicMenuFont(style)
+  const titleFont = resolveKitchenPublicMenuTitleFont(style)
 
   return {
     light: {
@@ -157,6 +167,12 @@ const expectedStyle = computed(() => {
     shared: {
       primary: text(style.primary_color) || defaultMenuStyle.primaryColor,
       secondary: text(style.secondary_color) || defaultMenuStyle.secondaryColor,
+      titleFontSource: text(style.title_font_source) || defaultMenuStyle.titleFontSource,
+      titleFontFamily: text(style.title_font_family) || defaultMenuStyle.titleFontFamily,
+      titleFontCssFamily: titleFont.cssFamily,
+      fontSource: text(style.font_source) || defaultMenuStyle.fontSource,
+      fontFamily: text(style.font_family) || defaultMenuStyle.fontFamily,
+      fontCssFamily: font.cssFamily,
     },
   }
 })
@@ -196,6 +212,8 @@ const readRenderedStyle = async () => {
       menuTextLight: styles.getPropertyValue('--menu-text-light').trim(),
       menuAccent: styles.getPropertyValue('--menu-accent').trim(),
       menuSecondary: styles.getPropertyValue('--menu-secondary').trim(),
+      menuTitleFont: styles.getPropertyValue('--menu-title-font').trim(),
+      menuFont: styles.getPropertyValue('--menu-font').trim(),
     },
     layout: {
       bodyPaddingLeft: sectionStyles?.paddingLeft ?? '',
@@ -246,6 +264,10 @@ const pageDebug = computed(() => ({
       fontColorDark: text(kitchenStyle.value.font_color_dark),
       primaryColor: text(kitchenStyle.value.primary_color),
       secondaryColor: text(kitchenStyle.value.secondary_color),
+      titleFontSource: text(kitchenStyle.value.title_font_source),
+      titleFontFamily: text(kitchenStyle.value.title_font_family),
+      fontSource: text(kitchenStyle.value.font_source),
+      fontFamily: text(kitchenStyle.value.font_family),
     },
     expected: expectedStyle.value,
     rendered: renderedStyle.value,

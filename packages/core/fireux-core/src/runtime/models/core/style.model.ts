@@ -11,7 +11,11 @@
  *   used in dark mode. It does not mean light-coloured or dark-coloured.
  * - Domain models may store a `style` field using this shape, but should not
  *   define their own copy of these page-level color tokens.
+ * - Font tokens store intent only. Renderers decide how to load/resolve a
+ *   controlled font family.
  */
+export type PageStyleFontSource = 'system' | 'google'
+
 export type PageStyle = {
   background_color_light: string
   background_color_dark: string
@@ -19,4 +23,8 @@ export type PageStyle = {
   font_color_dark: string
   primary_color: string
   secondary_color: string
+  title_font_source?: PageStyleFontSource
+  title_font_family?: string
+  font_source?: PageStyleFontSource
+  font_family?: string
 }

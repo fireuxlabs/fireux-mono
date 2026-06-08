@@ -1,7 +1,7 @@
 <template>
   <main
     class="public-menu"
-    :class="{ 'public-menu--preview': variant === 'preview' }"
+    :class="menuClasses"
     :style="menuStyleVars"
   >
     <section class="menu-page">
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
 import { computed } from 'vue'
 import {
   formatCurrencyAmount,
@@ -81,6 +82,10 @@ import type {
   SproochliLanguageCode,
   SproochliLanguageOption,
 } from 'fireux-sproochli/runtime/sproochli'
+import {
+  resolveKitchenPublicMenuFont,
+  resolveKitchenPublicMenuTitleFont,
+} from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 
@@ -96,9 +101,32 @@ const props = defineProps<{
   selectedLanguage?: SproochliLanguageCode
   showLanguageGroupLabels?: boolean
   variant?: 'page' | 'preview'
+  colorMode?: 'system' | 'light' | 'dark'
 }>()
 
 const color = (value: unknown) => String(value ?? '').trim()
+const menuClasses = computed(() => ({
+  'public-menu--preview': props.variant === 'preview',
+  'public-menu--light': props.colorMode === 'light',
+  'public-menu--dark': props.colorMode === 'dark',
+}))
+const resolvedFont = computed(() => resolveKitchenPublicMenuFont(props.pageStyle))
+const resolvedTitleFont = computed(() => resolveKitchenPublicMenuTitleFont(props.pageStyle))
+const stylesheetLinks = computed(() => {
+  const urls = [
+    resolvedFont.value.stylesheetUrl,
+    resolvedTitleFont.value.stylesheetUrl,
+  ].filter(Boolean)
+
+  return [...new Set(urls)].map((href) => ({
+    rel: 'stylesheet',
+    href,
+  }))
+})
+
+useHead(computed(() => ({
+  link: stylesheetLinks.value,
+})))
 
 const menuStyleVars = computed(() => {
   const style = props.pageStyle ?? {}
@@ -116,6 +144,8 @@ const menuStyleVars = computed(() => {
   if (fontLight) vars['--menu-text-light'] = fontLight
   if (primary) vars['--menu-accent'] = primary
   if (secondary) vars['--menu-secondary'] = secondary
+  vars['--menu-font'] = resolvedFont.value.cssFamily
+  vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
 
   return vars
 })
@@ -142,11 +172,12 @@ const formatPrice = (price: number) => {
   --menu-accent: var(--ui-primary);
   --menu-secondary: color-mix(in srgb, var(--menu-accent) 70%, var(--menu-text));
   --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-title-font: var(--menu-font);
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
   --menu-page-padding-inline: clamp(1.5rem, 4vw, 3rem);
 
   min-height: 100vh;
-  background: color-mix(in srgb, var(--menu-bg) 18%, var(--ui-bg, #ffffff));
+  background: var(--menu-bg);
   color: var(--menu-text);
   font-family: var(--menu-font);
 }
@@ -154,51 +185,21 @@ const formatPrice = (price: number) => {
 .public-menu--preview {
   min-height: auto;
   border-radius: 1rem;
+  overflow: hidden;
+}
+
+.public-menu--light {
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+}
+
+.public-menu--dark {
+  --menu-bg: var(--menu-bg-dark);
+  --menu-text: var(--menu-text-dark);
 }
 
 .public-menu--preview .menu-page {
   width: 100%;
-  padding: 1rem;
-}
-
-.public-menu--preview .menu-header {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-.public-menu--preview .kitchen-name {
-  letter-spacing: 0;
-}
-
-.public-menu--preview .menu-header h1 {
-  font-size: 1.2rem;
-  letter-spacing: 0;
-}
-
-.public-menu--preview .description {
-  margin-inline: 0;
-  font-size: 0.85rem;
-}
-
-.public-menu--preview .menu-sections {
-  gap: 1rem;
-}
-
-.public-menu--preview .section-header {
-  text-align: left;
-}
-
-.public-menu--preview .section-header h2 {
-  font-size: 0.95rem;
-  letter-spacing: 0;
-}
-
-.public-menu--preview .menu-items {
-  gap: 0.35rem;
-}
-
-.public-menu--preview .menu-item {
-  padding-block: 0.55rem;
 }
 
 .menu-page {
@@ -225,7 +226,7 @@ const formatPrice = (price: number) => {
 
 .kitchen-name,
 .description {
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: inherit;
 }
 
 .kitchen-name {
@@ -238,6 +239,7 @@ const formatPrice = (price: number) => {
 
 .menu-header h1 {
   margin: 0;
+  font-family: var(--menu-title-font);
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.15;
@@ -302,7 +304,7 @@ const formatPrice = (price: number) => {
 
 .item-copy p {
   margin: 0.3rem 0 0;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: inherit;
   font-size: 0.92rem;
   line-height: 1.45;
   color: var(--menu-muted);
@@ -323,7 +325,7 @@ const formatPrice = (price: number) => {
 }
 
 @media (prefers-color-scheme: dark) {
-  .public-menu {
+  .public-menu:not(.public-menu--light) {
     --menu-bg: var(--menu-bg-dark);
     --menu-text: var(--menu-text-dark);
   }

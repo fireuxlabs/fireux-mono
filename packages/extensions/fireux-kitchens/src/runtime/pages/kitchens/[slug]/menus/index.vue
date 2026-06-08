@@ -153,6 +153,10 @@ const kitchenStyle = computed(() => {
     fontColorDark: String(style.font_color_dark ?? ''),
     primaryColor: String(style.primary_color ?? ''),
     secondaryColor: String(style.secondary_color ?? ''),
+    titleFontSource: String(style.title_font_source ?? ''),
+    titleFontFamily: String(style.title_font_family ?? ''),
+    fontSource: String(style.font_source ?? ''),
+    fontFamily: String(style.font_family ?? ''),
   }
 })
 const pageDebug = computed(() => ({

@@ -19,6 +19,10 @@ const EMPTY_STYLE = {
   font_color_dark: '',
   primary_color: '',
   secondary_color: '',
+  title_font_source: '',
+  title_font_family: '',
+  font_source: '',
+  font_family: '',
 }
 
 const args = parseArgs(process.argv.slice(2))
@@ -46,6 +50,10 @@ Ensures every root Kitchen record has:
   menu_style.font_color_dark
   menu_style.primary_color
   menu_style.secondary_color
+  menu_style.title_font_source
+  menu_style.title_font_family
+  menu_style.font_source
+  menu_style.font_family
 
 Dry-run by default. Pass --commit to write.
 `)
@@ -65,6 +73,10 @@ function normalizedStyle(value) {
     font_color_dark: clean(style.font_color_dark),
     primary_color: clean(style.primary_color),
     secondary_color: clean(style.secondary_color),
+    title_font_source: clean(style.title_font_source),
+    title_font_family: clean(style.title_font_family),
+    font_source: clean(style.font_source),
+    font_family: clean(style.font_family),
   }
 }
 

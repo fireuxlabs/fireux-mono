@@ -50,6 +50,10 @@ const REVIEWED_STYLES = [
       font_color_dark: '#FFFDF7',
       primary_color: '#C81010',
       secondary_color: '#568B44',
+      title_font_source: 'google',
+      title_font_family: 'Playfair Display',
+      font_source: 'google',
+      font_family: 'Lora',
     },
   },
 ]

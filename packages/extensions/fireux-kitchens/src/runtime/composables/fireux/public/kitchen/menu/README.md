@@ -16,6 +16,7 @@ The menu public seam is split by job:
 - `useKitchenPublicMenuItems.ts` reads scoped menu items.
 - `useKitchenPublicMenuTranslations.ts` reads cached public translations.
 - `useKitchenPublicMenuLanguagePrepare.ts` requests missing Sproochli cache rows.
+- `useKitchenPublicMenuTheme.ts` resolves small public menu theme tokens.
 - `types.ts` owns public row types.
 
 The route-triggered language prepare path is split outside this composable layer:

@@ -19,19 +19,19 @@
         <ConsoleKitchenIdentityThemeEditor
           :style="draftPageStyle"
           :can-write="canWrite"
-          :saving="saving"
-          :has-changes="hasChanges"
+          :save-state="saveState"
           @update:style="setDraftPageStyle"
-          @save="saveTheme"
-          @reset="resetDraftPageStyle"
         />
 
         <ConsoleKitchenIdentityMenuPreview
           :kitchen-name="kitchenName"
+          :menu="previewMenu"
+          :sections="previewSections"
           :page-style="draftPageStyle"
           :place-currency-code="placeCurrencyCode"
           :menu-currency-format="menuCurrencyFormat"
           :menu-show-currency="menuShowCurrency"
+          :public-menu-url="publicMenuUrl"
         />
       </div>
     </div>
@@ -41,12 +41,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import type { Dish } from '../../../../models/dish.model'
+import { useDishCollection } from '../../../../composables/fireux/firestore/dish/fetch/useDishCollection'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useMenuSectionCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuSectionCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
+import { useKitchenPublicMenuItems } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuItems'
+import { useKitchenPublicMenuRows } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuRows'
+import {
+  resolveKitchenPublicMenuFont,
+  resolveKitchenPublicMenuTitleFont,
+} from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
 
 const {
   selectedKitchen,
@@ -54,27 +64,87 @@ const {
   canWrite,
 } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate()
+const { publishedMenus } = useMenuCollection(kitchenId)
 const toast = useToastify()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => ({
-  background_color_light: normalizeString(style?.background_color_light),
-  background_color_dark: normalizeString(style?.background_color_dark),
-  font_color_light: normalizeString(style?.font_color_light),
-  font_color_dark: normalizeString(style?.font_color_dark),
-  primary_color: normalizeString(style?.primary_color),
-  secondary_color: normalizeString(style?.secondary_color),
-})
+const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
+  const fontSource = normalizeString(style?.font_source) === 'google' ? 'google' : 'system'
+  const titleFontSource =
+    normalizeString(style?.title_font_source) === 'google' ? 'google' : 'system'
+  const hasTitleFont = Boolean(
+    normalizeString(style?.title_font_source) || normalizeString(style?.title_font_family)
+  )
+  const font = resolveKitchenPublicMenuFont({
+    font_source: fontSource,
+    font_family: normalizeString(style?.font_family),
+  })
+  const titleFont = hasTitleFont
+    ? resolveKitchenPublicMenuTitleFont({
+        title_font_source: titleFontSource,
+        title_font_family: normalizeString(style?.title_font_family),
+      })
+    : font
+
+  return {
+    background_color_light: normalizeString(style?.background_color_light),
+    background_color_dark: normalizeString(style?.background_color_dark),
+    font_color_light: normalizeString(style?.font_color_light),
+    font_color_dark: normalizeString(style?.font_color_dark),
+    primary_color: normalizeString(style?.primary_color),
+    secondary_color: normalizeString(style?.secondary_color),
+    title_font_source: titleFont.source,
+    title_font_family: titleFont.family,
+    font_source: font.source,
+    font_family: font.family,
+  }
+}
 const pageStyleEquals = (a: PageStyle, b: PageStyle) =>
   JSON.stringify(normalizePageStyle(a)) === JSON.stringify(normalizePageStyle(b))
 const kitchenName = computed(() =>
   normalizeString(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
 )
+const kitchenSlug = computed(() => normalizeString(kitchen.value?.slug))
+const previewMenu = computed(() => publishedMenus.value[0] ?? null)
+const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
+const previewSectionState = useMenuSectionCollection(kitchenId, previewMenuId)
+const previewItemState = useKitchenPublicMenuItems(
+  previewSectionState.collectionPath,
+  previewSectionState.sections
+)
+const previewDishState = useDishCollection(kitchenId)
+const previewDishesById = computed(() => {
+  const map = new Map<string, Dish>()
+  for (const dish of previewDishState.dishes.value) {
+    const id = normalizeString(dish.id)
+    if (id) map.set(id, dish)
+  }
+  return map
+})
+const previewRows = useKitchenPublicMenuRows({
+  sections: previewSectionState.sections,
+  items: previewItemState.items,
+  dishesById: previewDishesById,
+  selectedLanguage: computed(() => ''),
+  textFor: () => '',
+})
+const previewSections = computed(() => previewRows.sectionRows.value)
+const publicMenuUrl = computed(() => {
+  if (!kitchenSlug.value) return ''
+
+  const menuId = previewMenuId.value
+  const menuIndexUrl = `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
+
+  return menuId ? `${menuIndexUrl}/${encodeURIComponent(menuId)}` : menuIndexUrl
+})
 const pageStyle = computed(() => (kitchen.value?.menu_style ?? {}) as Partial<PageStyle>)
 const storedPageStyle = computed(() => normalizePageStyle(pageStyle.value))
 const draftPageStyle = ref<PageStyle>(normalizePageStyle())
 const saving = ref(false)
+const saveState = ref('')
+const pendingPersistStyle = ref<PageStyle | null>(null)
+let saveTimer: ReturnType<typeof setTimeout> | undefined
 const placeCurrencyCode = computed(() =>
   normalizeString(kitchen.value?.default_currency_code) || 'CHF'
 )
@@ -83,14 +153,13 @@ const menuCurrencyFormat = computed(
     (normalizeString(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
 )
 const menuShowCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
-const hasChanges = computed(() =>
-  !pageStyleEquals(draftPageStyle.value, storedPageStyle.value)
-)
-
 watch(
   storedPageStyle,
   (style) => {
-    draftPageStyle.value = normalizePageStyle(style)
+    const normalized = normalizePageStyle(style)
+    if (!saving.value || pageStyleEquals(draftPageStyle.value, normalized)) {
+      draftPageStyle.value = normalized
+    }
   },
   {
     immediate: true,
@@ -98,34 +167,59 @@ watch(
 )
 
 function setDraftPageStyle(style: PageStyle) {
-  draftPageStyle.value = normalizePageStyle(style)
+  const normalized = normalizePageStyle(style)
+  draftPageStyle.value = normalized
+  queueThemeSave(normalized)
 }
 
-function resetDraftPageStyle() {
-  draftPageStyle.value = normalizePageStyle(storedPageStyle.value)
+function queueThemeSave(style: PageStyle) {
+  if (!canWrite.value) return
+
+  if (saveTimer) clearTimeout(saveTimer)
+  saveState.value = 'Pending changes'
+  saveTimer = setTimeout(() => {
+    void flushThemeSave(style)
+  }, 450)
 }
 
-async function saveTheme() {
-  const id = normalizeString(kitchenId.value)
-  if (!canWrite.value || saving.value) return
-
-  if (!id) {
-    toast.error('Select a kitchen before saving a theme.')
-    return
-  }
-
+async function flushThemeSave(style: PageStyle) {
+  pendingPersistStyle.value = normalizePageStyle(style)
+  if (saving.value) return
   saving.value = true
 
   try {
-    await updateKitchen(id, {
-      menu_style: normalizePageStyle(draftPageStyle.value),
-    })
-    toast.success('Menu theme saved')
+    while (pendingPersistStyle.value) {
+      const nextStyle = pendingPersistStyle.value
+      const id = normalizeString(kitchenId.value)
+      pendingPersistStyle.value = null
+
+      if (!canWrite.value || !id) {
+        saveState.value = ''
+        return
+      }
+
+      if (pageStyleEquals(nextStyle, storedPageStyle.value)) {
+        saveState.value = 'Saved'
+        continue
+      }
+
+      saveState.value = 'Saving...'
+      await updateKitchen(id, {
+        menu_style: nextStyle,
+      })
+    }
+
+    saveState.value = 'Saved'
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to save menu theme: ${message}`)
+    saveState.value = 'Save failed'
+    toast.error(`Failed to update menu theme: ${message}`)
   } finally {
     saving.value = false
   }
 }
+
+onBeforeUnmount(() => {
+  if (saveTimer) clearTimeout(saveTimer)
+})
 </script>
