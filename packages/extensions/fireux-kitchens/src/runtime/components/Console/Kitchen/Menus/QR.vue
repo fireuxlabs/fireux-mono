@@ -12,27 +12,12 @@
       <template #header>
         <div>
           <h2 class="text-base font-semibold text-highlighted">Menu QR</h2>
-          <p class="text-sm text-dimmed">QR codes point to one exact published menu URL.</p>
+          <p class="text-sm text-dimmed">QR codes point to the public menu picker.</p>
         </div>
       </template>
 
       <div class="grid gap-6 md:grid-cols-[1fr_320px]">
         <div class="space-y-4">
-          <UFormField label="Published menu">
-            <select
-              v-model="selectedMenuId"
-              class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
-            >
-              <option
-                v-for="menu in publishedMenus"
-                :key="menu.id"
-                :value="menu.id"
-              >
-                {{ menu.name }}
-              </option>
-            </select>
-          </UFormField>
-
           <UFormField label="Public URL">
             <UInput :model-value="publicMenuUrl" readonly />
           </UFormField>
@@ -43,7 +28,7 @@
               :to="publicMenuUrl"
               target="_blank"
             >
-              Open menu
+              Open menus
             </UButton>
             <UButton
               variant="soft"
@@ -66,8 +51,9 @@
               alt="Menu QR code"
               class="h-full w-full"
             />
-            <div class="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-[22px] bg-white" />
+            <div class="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-[20px] bg-white" />
             <ConsoleKitchenMenusCentreMark
+              :label="kitchenName"
               :logo="kitchenLogo"
               class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             />
@@ -91,13 +77,15 @@ import ConsoleKitchenMenusCentreMark from './CentreMark.vue'
 
 const { selectedKitchen, menus } = useKitchenConsoleMenus()
 const fireuxConfig = useFireUXConfig()
-const selectedMenuId = ref('')
 const qrDataUrl = ref('')
 const qrArtworkDataUrl = ref('')
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const kitchenSlug = computed(() => clean(kitchen.value?.slug))
+const kitchenName = computed(
+  () => clean(kitchen.value?.display_name) || clean(kitchen.value?.name) || kitchenSlug.value
+)
 const kitchenLogo = computed(
   () => clean(kitchen.value?.display_image_url) || clean(kitchen.value?.image_url)
 )
@@ -108,30 +96,15 @@ const canonicalOrigin = computed(() =>
 const publishedMenus = computed(() =>
   menus.value.filter((menu) => menu.status === 'published' && clean(menu.id))
 )
-const selectedMenu = computed(() =>
-  publishedMenus.value.find((menu) => menu.id === selectedMenuId.value) ?? publishedMenus.value[0] ?? null
-)
 const publicMenuPath = computed(() =>
-  kitchenSlug.value && selectedMenu.value
-    ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(selectedMenu.value.id)}`
+  kitchenSlug.value && publishedMenus.value.length
+    ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
     : ''
 )
 const publicMenuUrl = computed(() => {
   if (!publicMenuPath.value || !canonicalOrigin.value) return publicMenuPath.value
   return new URL(publicMenuPath.value, canonicalOrigin.value).toString()
 })
-
-watch(
-  publishedMenus,
-  (next) => {
-    if (next.some((menu) => menu.id === selectedMenuId.value)) return
-    selectedMenuId.value =
-      next.find((menu) => menu.id === 'main')?.id ??
-      next[0]?.id ??
-      ''
-  },
-  { immediate: true }
-)
 
 watch(
   publicMenuUrl,
@@ -146,24 +119,24 @@ watch(
 )
 
 watch(
-  [qrDataUrl, kitchenLogo],
-  async ([qrUrl, logoUrl]) => {
+  [qrDataUrl, kitchenLogo, kitchenName],
+  async ([qrUrl, logoUrl, label]) => {
     if (!import.meta.client || !qrUrl) {
       qrArtworkDataUrl.value = ''
       return
     }
 
     const logoSvgHref = await imageToSvgHref(logoUrl)
-    qrArtworkDataUrl.value = buildQrArtwork(qrUrl, logoSvgHref)
+    qrArtworkDataUrl.value = buildQrArtwork(qrUrl, logoSvgHref, label)
   },
   { immediate: true }
 )
 
 function downloadQr() {
-  if (!import.meta.client || !qrArtworkDataUrl.value || !selectedMenu.value) return
+  if (!import.meta.client || !qrArtworkDataUrl.value || !publicMenuPath.value) return
   const link = document.createElement('a')
   link.href = qrArtworkDataUrl.value
-  link.download = `${kitchenSlug.value}-${selectedMenu.value.id}-qr.svg`
+  link.download = `${kitchenSlug.value}-menus-qr.svg`
   link.click()
 }
 
@@ -185,29 +158,29 @@ async function imageToSvgHref(src: string) {
   }
 }
 
-function buildQrArtwork(qrUrl: string, logoUrl: string) {
+function buildQrArtwork(qrUrl: string, logoUrl: string, label: string) {
+  const fallbackLabel = qrFallbackLabel(label)
   const logo = logoUrl
-    ? `<image href="${escapeSvg(logoUrl)}" x="412" y="392" width="200" height="118" preserveAspectRatio="xMidYMid meet" clip-path="url(#kitchen-logo-clip)" />`
-    : `<path d="M470 430h84v74h-84z" fill="#ffffff" opacity=".82" />`
+    ? `<image href="${escapeSvg(logoUrl)}" x="390" y="378" width="244" height="132" preserveAspectRatio="xMidYMid meet" clip-path="url(#kitchen-logo-clip)" />`
+    : `<text x="512" y="456" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="900" fill="#ffffff" letter-spacing="4">${escapeSvg(fallbackLabel)}</text>`
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 1024 1024">
   <defs>
     <clipPath id="kitchen-logo-clip">
-      <rect x="412" y="392" width="200" height="118" rx="28" />
+      <rect x="390" y="378" width="244" height="132" rx="30" />
     </clipPath>
   </defs>
   <rect width="1024" height="1024" fill="#ffffff" />
   <image href="${escapeSvg(qrUrl)}" width="1024" height="1024" />
   <g>
-    <rect x="256" y="256" width="512" height="512" rx="118" fill="#ffffff" />
-    <rect x="320" y="320" width="384" height="384" rx="84" fill="#ffffff" />
-    <rect x="362" y="350" width="302" height="192" rx="54" fill="#111827" />
+    <rect x="348" y="334" width="328" height="356" rx="84" fill="#ffffff" />
+    <rect x="376" y="360" width="272" height="188" rx="52" fill="#111827" />
     ${logo}
-    <rect x="362" y="572" width="302" height="72" rx="36" fill="#111827" />
-    <text x="500" y="618" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" fill="#ffffff" letter-spacing="2">
+    <rect x="378" y="574" width="268" height="72" rx="36" fill="#111827" />
+    <text x="498" y="619" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="900" fill="#ffffff" letter-spacing="1.8">
       FOOD MENU
     </text>
-    <g transform="translate(602 594)" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(596 592)" fill="none" stroke="#ffffff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
       <path d="m5 8 6 6" />
       <path d="m4 14 6-6 2-3" />
       <path d="M2 5h12" />
@@ -251,6 +224,13 @@ function buildRoundedQrDataUrl(value: string) {
 
 function round(value: number) {
   return Number(value.toFixed(2))
+}
+
+function qrFallbackLabel(label: string) {
+  const words = clean(label).split(/\s+/).filter(Boolean)
+  const primaryWord = words.find((word) => word.length > 2) ?? words[0] ?? 'Menu'
+
+  return primaryWord.slice(0, 5).toUpperCase()
 }
 
 function escapeSvg(value: string) {

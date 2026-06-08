@@ -1297,7 +1297,9 @@ function buildMenuPayload(menu, kitchenId, snap) {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
+    names: certifiedLanguageMap(menu.names),
     description: menu.description,
+    sort_order: Number(menu.sortOrder ?? 0) || 0,
     source_language: 'de',
     status: 'published',
     created: createdStamp(snap),
@@ -1308,7 +1310,7 @@ function buildMenuPayload(menu, kitchenId, snap) {
 function writeMenuStructure(batch, menuRef, menu, kitchenId) {
   buildSections(menu.sections).forEach((section) => {
     const sectionRef = menuRef.collection('sections').doc(section.id)
-    const { items, labels, descriptions, active, ...sectionPayload } = section
+    const { items, active, ...sectionPayload } = section
 
     batch.set(
       sectionRef,
@@ -1324,19 +1326,12 @@ function writeMenuStructure(batch, menuRef, menu, kitchenId) {
     )
 
     items.forEach((item) => {
-      const {
-        active: itemActive,
-        label,
-        labels,
-        description,
-        descriptions,
-        ...itemPayload
-      } = item
+      const { active: itemActive, ...itemPayload } = item
       batch.set(
         sectionRef.collection('items').doc(item.id),
         {
           ...itemPayload,
-          dish_id: itemPayload.dish_id || item.id,
+          ...(itemPayload.dish_id ? { dish_id: itemPayload.dish_id } : {}),
           kitchen_id: kitchenId,
           menu_id: menu.id,
           section_id: section.id,

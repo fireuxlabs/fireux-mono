@@ -258,9 +258,8 @@ async function readCache(menuRef) {
   return cache
 }
 
-function collectDishIds(menu) {
+function collectDishIds(sections) {
   const ids = new Set()
-  const sections = Array.isArray(menu.sections) ? menu.sections : []
 
   for (const section of sections) {
     for (const item of Array.isArray(section.items) ? section.items : []) {
@@ -270,6 +269,24 @@ function collectDishIds(menu) {
   }
 
   return Array.from(ids)
+}
+
+async function readMenuSections(menuRef) {
+  const sectionsSnap = await menuRef.collection('sections').get()
+  const sections = await Promise.all(
+    sectionsSnap.docs.map(async (sectionSnap) => {
+      const section = { id: sectionSnap.id, ...(sectionSnap.data() || {}) }
+      const itemsSnap = await sectionSnap.ref.collection('items').get()
+      const items = itemsSnap.docs.map((itemSnap) => ({
+        id: itemSnap.id,
+        ...(itemSnap.data() || {}),
+      }))
+
+      return { ...section, items }
+    })
+  )
+
+  return sections.sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0))
 }
 
 async function readDishes(kitchenRef, ids) {
@@ -490,10 +507,8 @@ async function main() {
     }
 
     const menu = { id: menuId, ...(menuSnap.data() || {}) }
-    const sections = (Array.isArray(menu.sections) ? menu.sections : [])
-      .slice()
-      .sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0))
-    const dishesById = await readDishes(kitchenRef, collectDishIds(menu))
+    const sections = await readMenuSections(menuRef)
+    const dishesById = await readDishes(kitchenRef, collectDishIds(sections))
     const cache = await readCache(menuRef)
 
     stats.menus += 1
