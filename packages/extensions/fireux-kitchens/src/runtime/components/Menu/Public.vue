@@ -5,6 +5,8 @@
     :style="menuStyleVars"
   >
     <section class="menu-page">
+      <slot name="breadcrumbs" />
+
       <header class="menu-header">
         <p v-if="kitchenName" class="kitchen-name">
           {{ kitchenName }}
@@ -129,22 +131,22 @@ const formatPrice = (price: number) => {
 
 <style scoped>
 .public-menu {
-  --menu-bg-light: #fffaf2;
-  --menu-bg-dark: #171717;
-  --menu-text-light: #211915;
-  --menu-text-dark: #f8f1e8;
+  --menu-bg-light: var(--ui-bg, #ffffff);
+  --menu-bg-dark: var(--ui-bg, #111827);
+  --menu-text-light: var(--ui-text, #111827);
+  --menu-text-dark: var(--ui-text, #f8fafc);
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
   --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
   --menu-accent: var(--ui-primary);
   --menu-secondary: color-mix(in srgb, var(--menu-accent) 70%, var(--menu-text));
-  --menu-font: Georgia, 'Times New Roman', serif;
+  --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
   --menu-page-padding-inline: clamp(1.5rem, 4vw, 3rem);
 
   min-height: 100vh;
-  background: var(--menu-bg);
+  background: color-mix(in srgb, var(--menu-bg) 18%, var(--ui-bg, #ffffff));
   color: var(--menu-text);
   font-family: var(--menu-font);
 }
@@ -165,12 +167,12 @@ const formatPrice = (price: number) => {
 }
 
 .public-menu--preview .kitchen-name {
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
 }
 
 .public-menu--preview .menu-header h1 {
   font-size: 1.2rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
 }
 
 .public-menu--preview .description {
@@ -188,7 +190,7 @@ const formatPrice = (price: number) => {
 
 .public-menu--preview .section-header h2 {
   font-size: 0.95rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
 }
 
 .public-menu--preview .menu-items {
@@ -203,6 +205,11 @@ const formatPrice = (price: number) => {
   width: min(100%, 72rem);
   margin: 0 auto;
   padding: var(--menu-page-padding-block) var(--menu-page-padding-inline);
+}
+
+:deep(.menu-breadcrumbs) {
+  margin-bottom: 2rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
 .menu-header {
@@ -224,20 +231,18 @@ const formatPrice = (price: number) => {
 .kitchen-name {
   margin: 0 0 0.5rem;
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0;
   color: var(--menu-secondary);
 }
 
 .menu-header h1 {
   margin: 0;
-  font-size: clamp(2rem, 7vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--menu-accent);
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--menu-text);
 }
 
 .description {
@@ -263,9 +268,8 @@ const formatPrice = (price: number) => {
 
 .section-header h2 {
   margin: 0;
-  font-size: clamp(1.35rem, 4vw, 2rem);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+  letter-spacing: 0;
   color: var(--menu-text);
 }
 
@@ -307,7 +311,7 @@ const formatPrice = (price: number) => {
 .item-price {
   white-space: nowrap;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--menu-accent);
 }
 

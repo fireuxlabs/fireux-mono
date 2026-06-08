@@ -2,25 +2,32 @@
   <EntityOperatorPanel
     entity-label="Kitchen"
     title="Kitchen console"
-    description="Operators manage menus, recipes, ingredients, and kitchen work from the kitchen console."
-    operator-label="Operator"
+    :description="panelDescription"
+    :operator-label="operatorLabel"
     :operator-user-pill="operatorUserPill"
     :can-edit="canEdit"
     :is-admin-edit="isAdminEdit"
     :edit-to="editTo"
-    manage-label="Edit kitchen"
+    :manage-label="manageLabel"
     :aligned="aligned"
     :not-aligned="notAligned"
+    @manage="selectConsoleKitchen"
   />
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import {
   useUser,
   useUserFetch,
   useUserInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
+import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKitchenSelection } from '../../composables/fireux/console/kitchen/useKitchenSelection'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
@@ -40,23 +47,115 @@ const notAligned = [
 const claimedBy = computed(() => String(props.kitchen?.claimed_by ?? '').trim())
 const { user: ownerUser } = useUserFetch(claimedBy)
 const { pill } = useUserInterface()
-const operatorUserPill = computed(() => pill(ownerUser.value))
 const { currentUser, isAdmin } = useUser()
+const { appId } = useFireUXConfig()
+const currentAppId = computed(() => String(appId || '').trim())
+const operatorAppId = computed(() =>
+  String(props.kitchen?.app_scope_app_id || currentAppId.value).trim()
+)
+const isTenantConsoleHandoff = computed(() =>
+  Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
+)
+const { app: operatorApp } = useAppFetch(operatorAppId)
+const currentUserId = computed(() => String(currentUser.value?.id ?? '').trim())
+const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
+const consoleFilter = computed(() => ({
+  ids: kitchenId.value ? [kitchenId.value] : [],
+  operatorId: currentUserId.value,
+}))
+const { kitchens: operatorKitchens } = useKitchenCollection({
+  appId: operatorAppId,
+  filter: consoleFilter,
+})
+const consoleKitchen = computed(() =>
+  operatorKitchens.value.find((kitchen) => kitchen.id === kitchenId.value) ?? null
+)
+const hasConsoleAccess = computed(() =>
+  targetHasOperator(consoleKitchen.value, currentUserId.value)
+)
+const operatorUserPill = computed(() =>
+  hasConsoleAccess.value
+    ? pill(currentUser.value)
+    : pill(ownerUser.value)
+)
+const operatorAppName = computed(() =>
+  String((operatorApp.value as any)?.app_short_name || (operatorApp.value as any)?.app_name || '').trim()
+)
+const panelDescription = computed(() =>
+  hasConsoleAccess.value && isTenantConsoleHandoff.value
+    ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app console.`
+    : hasConsoleAccess.value
+    ? 'You have operator access for this kitchen console.'
+    : 'Operators manage menus, recipes, ingredients, and kitchen work from the kitchen console.'
+)
+const operatorLabel = computed(() =>
+  hasConsoleAccess.value ? 'Signed in as' : 'Operator'
+)
 const canEdit = computed(() =>
-  Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
+  Boolean(
+    hasConsoleAccess.value ||
+      isAdmin.value ||
+      (claimedBy.value && currentUserId.value === claimedBy.value)
+  )
 )
 const isAdminEdit = computed(() =>
   Boolean(
     isAdmin.value &&
-      (!claimedBy.value || currentUser.value?.id !== claimedBy.value)
+      !hasConsoleAccess.value &&
+      (!claimedBy.value || currentUserId.value !== claimedBy.value)
   )
 )
 const editLocator = computed(() =>
   String(props.kitchen?.slug || props.kitchen?.id || '').trim()
 )
-const editTo = computed(() =>
-  editLocator.value
-    ? `/kitchens/${encodeURIComponent(editLocator.value)}/edit`
-    : ''
+const consolePath = '/console/kitchen'
+const operatorAppOrigin = computed(() =>
+  normalizeOrigin(
+    (operatorApp.value as any)?.social_links?.website ||
+      (operatorApp.value as any)?.website
+  )
 )
+const editTo = computed(() =>
+  hasConsoleAccess.value
+    ? isTenantConsoleHandoff.value
+      ? operatorAppOrigin.value
+        ? `${operatorAppOrigin.value}${consolePath}`
+        : ''
+      : consolePath
+    : editLocator.value
+      ? `/kitchens/${encodeURIComponent(editLocator.value)}/edit`
+      : ''
+)
+const manageLabel = computed(() =>
+  hasConsoleAccess.value && isTenantConsoleHandoff.value
+    ? `Open ${operatorAppName.value || 'tenant'} console`
+    : hasConsoleAccess.value
+    ? 'Open console'
+    : 'Edit kitchen'
+)
+const { setKitchenSelection } = useKitchenSelection()
+
+async function selectConsoleKitchen(event: MouseEvent) {
+  if (!hasConsoleAccess.value || !kitchenId.value) return
+  if (isTenantConsoleHandoff.value) return
+
+  event.preventDefault()
+  setKitchenSelection({
+    kitchenId: kitchenId.value,
+    mode: 'live',
+  })
+
+  await navigateTo(consolePath)
+}
+
+function normalizeOrigin(value: unknown) {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+
+  try {
+    return new URL(raw).origin
+  } catch {
+    return ''
+  }
+}
 </script>

@@ -43,7 +43,7 @@ export function useKitchenConsoleIndex(
     entities: sourceKitchens,
     selectEntity: selectKitchen,
     getTestId: (kitchen) => normalizeString(kitchen.id),
-    autoCreateTest: true,
+    autoCreateTest: false,
     testPending: testKitchenPending,
     testCreateKey: userId,
     createTestEntity: async ({ avatarSrc, displayName }) => {

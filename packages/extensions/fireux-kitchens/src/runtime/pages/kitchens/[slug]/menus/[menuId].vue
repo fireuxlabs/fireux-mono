@@ -18,14 +18,25 @@
       :kitchen-name="kitchenName"
       :menu="displayMenu"
       :sections="sectionRows"
-      :page-style="kitchen.menu_style"
+      :page-style="publicMenuPageStyle"
       :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
       :show-currency="showCurrency"
       :language-options="languageOptions"
       :selected-language="selectedLanguage"
       :show-language-group-labels="showLanguageGroupLabels"
-    />
+    >
+      <template #breadcrumbs>
+        <KitchenPublicBreadcrumbs
+          class="menu-breadcrumbs"
+          :kitchen-name="kitchenName"
+          :kitchen-slug="kitchenSlug"
+          :menu-name="displayMenu.name"
+          :selected-language="selectedLanguage"
+          current="menu"
+        />
+      </template>
+    </MenuPublic>
 
     <DevJson
       v-if="isDev"
@@ -57,6 +68,7 @@ definePageMeta({
 
 const {
   detailPending,
+  kitchenSlug,
   kitchen,
   menu,
   sectionRows,
@@ -120,10 +132,16 @@ const currencyFormat = computed(
   () => (text(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
 )
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
+const storedKitchenMenuStyleEnabled = computed(
+  () => text((kitchen.value as any)?.app_scope_state) !== 'dedicated_app'
+)
 const kitchenStyle = computed<Partial<PageStyle>>(() => {
+  if (!storedKitchenMenuStyleEnabled.value) return {}
+
   const style = kitchen.value?.menu_style
   return style && typeof style === 'object' ? style : {}
 })
+const publicMenuPageStyle = computed(() => kitchenStyle.value)
 const expectedStyle = computed(() => {
   const style = kitchenStyle.value
 
@@ -203,7 +221,12 @@ onUnmounted(() => {
 })
 
 watch(
-  () => [detailPending.value, kitchen.value?.menu_style, menu.value?.id],
+  () => [
+    detailPending.value,
+    storedKitchenMenuStyleEnabled.value,
+    kitchen.value?.menu_style,
+    menu.value?.id,
+  ],
   () => {
     void readRenderedStyle()
   },
@@ -213,7 +236,9 @@ watch(
 const pageDebug = computed(() => ({
   ...debug.value,
   style: {
-    note: 'Menu colours come from kitchen.menu_style. Light/dark switches with prefers-color-scheme.',
+    note: 'Parent-app kitchens may use kitchen.menu_style. Dedicated tenant apps use their app/runtime styling.',
+    source: storedKitchenMenuStyleEnabled.value ? 'kitchen.menu_style' : 'tenant-app',
+    storedKitchenMenuStyleEnabled: storedKitchenMenuStyleEnabled.value,
     kitchenStyle: {
       backgroundColorLight: text(kitchenStyle.value.background_color_light),
       backgroundColorDark: text(kitchenStyle.value.background_color_dark),

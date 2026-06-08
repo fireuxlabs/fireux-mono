@@ -1,14 +1,11 @@
 <template>
   <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
-    <UButton
-      :to="`/kitchens/${encodeURIComponent(kitchenSlug)}`"
-      color="neutral"
-      variant="ghost"
-      icon="i-lucide-arrow-left"
-      size="sm"
-    >
-      Back to kitchen
-    </UButton>
+    <KitchenPublicBreadcrumbs
+      :kitchen-name="kitchenName"
+      :kitchen-slug="kitchenSlug"
+      :selected-language="selectedLanguage"
+      current="menus"
+    />
 
     <UPageHeader
       class="pageheader"
@@ -139,8 +136,13 @@ const localizedMenuDescription = (menu: Menu) =>
     translations: (menu as any)?.descriptions,
     selectedLanguage: selectedLanguage.value,
   }).text || String(menu.description || '').trim()
+const storedKitchenMenuStyleEnabled = computed(
+  () => String((kitchen.value as any)?.app_scope_state ?? '').trim() !== 'dedicated_app'
+)
 const kitchenStyle = computed(() => {
-  const style = kitchen.value && typeof (kitchen.value as any).menu_style === 'object'
+  const style = storedKitchenMenuStyleEnabled.value &&
+    kitchen.value &&
+    typeof (kitchen.value as any).menu_style === 'object'
     ? (kitchen.value as any).menu_style
     : {}
 
@@ -160,6 +162,7 @@ const pageDebug = computed(() => ({
     kitchenId: kitchen.value?.id ?? '',
     kitchenName: kitchenName.value,
     kitchenStyle: kitchenStyle.value,
+    styleSource: storedKitchenMenuStyleEnabled.value ? 'kitchen.menu_style' : 'tenant-app',
     pending: pending.value,
     selectedLanguage: selectedLanguage.value || null,
     sproochliEnabled: sproochliEnabled.value,

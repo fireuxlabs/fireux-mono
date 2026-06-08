@@ -47,6 +47,7 @@
             variant="soft"
             :icon="isAdminEdit ? 'i-lucide-shield-check' : 'i-lucide-pencil'"
             :to="editTo"
+            @click="emit('manage', $event)"
           >
             {{ isAdminEdit ? adminManageLabel : manageLabel }}
           </UButton>
@@ -124,6 +125,9 @@ const props = withDefaults(
     notAligned: () => [],
   }
 )
+const emit = defineEmits<{
+  manage: [event: MouseEvent]
+}>()
 
 const entityLowerLabel = computed(() =>
   String(props.entityLabel || 'record').trim().toLowerCase()

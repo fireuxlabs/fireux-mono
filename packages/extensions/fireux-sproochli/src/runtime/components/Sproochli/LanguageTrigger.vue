@@ -51,7 +51,6 @@
                 :key="`${group.key}:${option.code || 'original'}`"
                 :to="languageHref(option.code)"
                 :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
-                :dir="languageDirection(option.code)"
                 block
                 :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
@@ -61,12 +60,15 @@
                 <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
                   <span
                     v-if="option.label"
-                    class="w-10 shrink-0 text-sm font-semibold text-highlighted"
+                    class="inline-flex w-10 shrink-0 justify-center text-sm font-semibold text-highlighted"
                   >
                     {{ option.label }}
                   </span>
-                  <span class="min-w-0 truncate text-sm font-medium">
-                    {{ option.name }}
+                  <span
+                    class="min-w-0 truncate text-sm font-medium"
+                    :dir="languageDirection(option.code)"
+                  >
+                    {{ optionName(option) }}
                   </span>
                 </span>
 
@@ -208,4 +210,6 @@ const languageOptionActive = (language: SproochliLanguageCode) =>
     : !props.selectedLanguage
 const languageDirection = (language: SproochliLanguageCode) =>
   isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
+const optionName = (option: SproochliLanguageOption) =>
+  String(option.name || option.code || 'Original')
 </script>

@@ -46,6 +46,7 @@ export type KitchenCollectionSource = 'live' | 'demo' | 'test'
 
 type UseKitchenCollectionOptions = {
   source?: KitchenCollectionSource | Ref<KitchenCollectionSource | null | undefined> | null
+  appId?: string | Ref<string | null | undefined> | null
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
 }
 
@@ -69,7 +70,10 @@ export function useKitchenCollection(
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
-  const currentAppId = computed(() => String(appId || '').trim())
+  const currentAppId = computed(() => {
+    if (isRef(options.appId)) return String(options.appId.value || '').trim()
+    return String(options.appId || appId || '').trim()
+  })
   const scopeCollectionPath = computed(() =>
     currentAppId.value
       ? `${AppStorage.collection}/${currentAppId.value}/${KitchenStorage.scopeCollection}`
