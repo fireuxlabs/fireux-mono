@@ -5,7 +5,9 @@ import {
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
@@ -36,6 +38,7 @@ type UsePropertyConsoleOptions = {
  * It should not become a Portfolio management seam or a public property info page helper.
  */
 export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
+  const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<PropertyCollectionFilter>(() => {
@@ -72,6 +75,11 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
 
   const selectedProperty = computed<Property | null>(() => selectedEntity.value)
   const propertyId = computed(() => normalizeString(selectedId.value))
+  const activePropertyAppId = computed(() =>
+    selectedMode.value === 'live'
+      ? resolveConsoleEntityAppId(selectedProperty.value, appId)
+      : ''
+  )
   const rootCollection = computed(() =>
     resolveConsoleRootCollection(PropertyStorage.rootCollection, selectedMode.value)
   )
@@ -112,6 +120,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     selectedProperty,
     selectedMode,
     propertyId,
+    activePropertyAppId,
     rootCollection,
     canWrite,
     clearSelectedProperty,

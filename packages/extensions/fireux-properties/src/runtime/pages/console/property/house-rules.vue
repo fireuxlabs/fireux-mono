@@ -5,14 +5,12 @@
     </template>
 
     <template #body>
-      <PropertyInfoEditor page-key="house-rules" />
+      <ConsolePropertiesInfoEditor page-key="house-rules" />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import PropertyInfoEditor from '../../../components/Console/Properties/InfoEditor.vue'
-
 definePageMeta({
   layout: 'console',
   nav: {

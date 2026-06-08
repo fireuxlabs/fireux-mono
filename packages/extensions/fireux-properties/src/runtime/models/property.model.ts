@@ -1,4 +1,5 @@
 import {
+  FireuxAppScope,
   FireuxConsoleAccessModel,
   type FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -126,6 +127,7 @@ export const PropertyModel = {
   id: '' as string,
   slug: '' as string,
   portfolio_id: '' as string,
+  ...FireuxAppScope,
   ...FireuxConsoleAccessModel,
   identity: PropertyIdentityModel,
   manual: PropertyManualModel,

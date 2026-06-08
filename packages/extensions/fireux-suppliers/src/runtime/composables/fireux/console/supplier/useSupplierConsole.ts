@@ -5,7 +5,9 @@ import {
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
@@ -40,6 +42,7 @@ type UseSupplierConsoleOptions = {
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
+  const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<SupplierCollectionFilter>(() => {
@@ -80,6 +83,11 @@ export function useSupplierConsole(
     () => selectedEntity.value as SupplierSurface | null
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
+  const activeSupplierAppId = computed(() =>
+    selectedMode.value === 'live'
+      ? resolveConsoleEntityAppId(selectedSupplier.value, appId)
+      : ''
+  )
   const rootCollection = computed(() =>
     resolveConsoleRootCollection(SupplierStorage.rootCollection, selectedMode.value)
   )
@@ -125,6 +133,7 @@ export function useSupplierConsole(
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     clearSelectedSupplier,

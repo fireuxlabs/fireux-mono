@@ -12,6 +12,7 @@ export function usePropertyConsoleOverview() {
     selectedProperty,
     selectedMode,
     propertyId,
+    activePropertyAppId,
     rootCollection,
     canWrite,
     clearSelectedProperty,
@@ -28,6 +29,7 @@ export function usePropertyConsoleOverview() {
   const debug = computed(() => ({
     mode: selectedMode.value,
     propertyId: propertyId.value,
+    activePropertyAppId: activePropertyAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     focus: overview.focus.value,
@@ -42,6 +44,7 @@ export function usePropertyConsoleOverview() {
     selectedProperty,
     selectedMode,
     propertyId,
+    activePropertyAppId,
     rootCollection,
     canWrite,
     clearSelectedProperty,

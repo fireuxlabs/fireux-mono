@@ -12,6 +12,7 @@ export function useSupplierConsoleOverview() {
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     clearSelectedSupplier,
@@ -29,6 +30,7 @@ export function useSupplierConsoleOverview() {
   const debug = computed(() => ({
     mode: selectedMode.value,
     supplierId: supplierId.value,
+    activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     focus: overview.focus.value,
@@ -43,6 +45,7 @@ export function useSupplierConsoleOverview() {
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     clearSelectedSupplier,

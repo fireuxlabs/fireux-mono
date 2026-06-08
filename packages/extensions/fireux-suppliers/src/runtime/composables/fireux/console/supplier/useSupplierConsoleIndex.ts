@@ -26,6 +26,7 @@ export function useSupplierConsoleIndex(
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     selectSupplier,
@@ -65,6 +66,7 @@ export function useSupplierConsoleIndex(
   const debug = computed(() => ({
     mode: selectedMode.value,
     supplierId: supplierId.value,
+    activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     selectedSupplier: selectedSupplier.value,
@@ -83,6 +85,7 @@ export function useSupplierConsoleIndex(
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     debug,

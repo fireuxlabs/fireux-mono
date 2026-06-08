@@ -7,6 +7,7 @@ export function useSupplierConsoleIdentity() {
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     clearSelectedSupplier,
@@ -32,6 +33,7 @@ export function useSupplierConsoleIdentity() {
   const debug = computed(() => ({
     mode: selectedMode.value,
     supplierId: supplierId.value,
+    activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     name: name.value,
@@ -45,6 +47,7 @@ export function useSupplierConsoleIdentity() {
     selectedSupplier,
     selectedMode,
     supplierId,
+    activeSupplierAppId,
     rootCollection,
     canWrite,
     clearSelectedSupplier,

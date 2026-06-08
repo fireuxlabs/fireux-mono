@@ -23,6 +23,7 @@ export function usePropertyConsoleIndex(
     selectedProperty,
     selectedMode,
     propertyId,
+    activePropertyAppId,
     rootCollection,
     canWrite,
     selectProperty,
@@ -49,6 +50,7 @@ export function usePropertyConsoleIndex(
   const debug = computed(() => ({
     mode: selectedMode.value,
     propertyId: propertyId.value,
+    activePropertyAppId: activePropertyAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     selectedProperty: selectedProperty.value,
@@ -68,6 +70,7 @@ export function usePropertyConsoleIndex(
     selectedProperty,
     selectedMode,
     propertyId,
+    activePropertyAppId,
     rootCollection,
     canWrite,
     debug,
