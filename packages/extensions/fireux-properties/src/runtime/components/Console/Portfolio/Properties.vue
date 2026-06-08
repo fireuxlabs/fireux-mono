@@ -41,26 +41,31 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { PropertyStorage } from '../../../models/property.model'
-import { usePortfolioConsole } from '../../../composables/fireux/console/portfolio/usePortfolioConsole'
+import {
+  useActivePortfolio,
+  usePortfolioConsoleChildPath,
+} from '../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
 
-const {
-  selectedPortfolio,
-  selectedMode,
-  portfolioId,
-  rootCollection,
-  canWrite,
-} = usePortfolioConsole()
+const runtimePortfolio = useActivePortfolio()
+const selectedPortfolio = runtimePortfolio.entity
+const selectedMode = runtimePortfolio.mode
+const portfolioId = runtimePortfolio.id
+const rootCollection = runtimePortfolio.rootCollection
+const canWrite = runtimePortfolio.canWrite
 
-const portfolioName = computed(() => String(selectedPortfolio.value?.name ?? '').trim())
-const collectionPath = computed(() =>
-  rootCollection.value && portfolioId.value
-    ? `${rootCollection.value}/${portfolioId.value}/${PropertyStorage.overlayCollection}`
-    : ''
+const portfolioName = computed(() =>
+  String(selectedPortfolio.value?.name ?? '').trim()
+)
+const collectionPath = usePortfolioConsoleChildPath(
+  runtimePortfolio,
+  PropertyStorage.overlayCollection
 )
 const debug = computed(() => ({
   mode: selectedMode.value,
   portfolioId: portfolioId.value,
+  consoleAppId: runtimePortfolio.consoleAppId.value,
   rootCollection: rootCollection.value,
+  portfolioCollectionPath: runtimePortfolio.collectionPath.value,
   collectionPath: collectionPath.value,
   canWrite: canWrite.value,
   selectedPortfolio: selectedPortfolio.value,

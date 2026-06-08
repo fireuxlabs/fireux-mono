@@ -33,6 +33,7 @@ export function usePortfolioConsoleIndex(
     selectedPortfolio,
     selectedMode,
     portfolioId,
+    activePortfolioAppId,
     rootCollection,
     canWrite,
     selectPortfolio,
@@ -77,6 +78,7 @@ export function usePortfolioConsoleIndex(
   const debug = computed(() => ({
     mode: selectedMode.value,
     portfolioId: portfolioId.value,
+    activePortfolioAppId: activePortfolioAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     selectedPortfolio: selectedPortfolio.value,
@@ -95,6 +97,7 @@ export function usePortfolioConsoleIndex(
     selectedPortfolio,
     selectedMode,
     portfolioId,
+    activePortfolioAppId,
     rootCollection,
     canWrite,
     debug,

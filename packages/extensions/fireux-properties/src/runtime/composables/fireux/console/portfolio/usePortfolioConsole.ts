@@ -5,7 +5,9 @@ import {
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
@@ -52,6 +54,7 @@ type UsePortfolioConsoleOptions = {
  * It should not own Portfolio child operation records; those live under console/portfolio/operations.
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
+  const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
   const { avatarSrc } = useUser()
@@ -98,6 +101,11 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     () => selectedEntity.value as PortfolioConsoleEntity | null
   )
   const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
+  const activePortfolioAppId = computed(() =>
+    selectedMode.value === 'live'
+      ? resolveConsoleEntityAppId(selectedPortfolio.value, appId)
+      : ''
+  )
   const rootCollection = computed(() =>
     resolveConsoleRootCollection(PortfolioStorage.rootCollection, selectedMode.value)
   )
@@ -177,6 +185,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     selectedPortfolio,
     selectedMode,
     portfolioId,
+    activePortfolioAppId,
     rootCollection,
     canWrite,
     clearSelectedPortfolio,

@@ -14,6 +14,7 @@ export function usePortfolioConsoleOverview() {
     selectedPortfolio,
     selectedMode,
     portfolioId,
+    activePortfolioAppId,
     rootCollection,
     canWrite,
     clearSelectedPortfolio,
@@ -30,6 +31,7 @@ export function usePortfolioConsoleOverview() {
   const debug = computed(() => ({
     mode: selectedMode.value,
     portfolioId: portfolioId.value,
+    activePortfolioAppId: activePortfolioAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     focus: overview.focus.value,
@@ -44,6 +46,7 @@ export function usePortfolioConsoleOverview() {
     selectedPortfolio,
     selectedMode,
     portfolioId,
+    activePortfolioAppId,
     rootCollection,
     canWrite,
     clearSelectedPortfolio,

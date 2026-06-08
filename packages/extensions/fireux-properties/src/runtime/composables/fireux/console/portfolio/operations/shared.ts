@@ -1,3 +1,4 @@
+import { resolveConsoleEntityCollectionPath } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { AppPortfolioStorage, PortfolioStorage } from '../../../../../models/portfolio.model'
 
 export const ROOT_PORTFOLIO_COLLECTION_PATH = PortfolioStorage.rootCollection
@@ -9,10 +10,11 @@ const normalizePath = (value: unknown) =>
   normalizeString(value).replace(/^\/+|\/+$/g, '')
 
 export function resolvePortfolioConsoleCollectionPath(appId: unknown) {
-  const normalizedAppId = normalizePath(appId)
-  return normalizedAppId
-    ? `apps/${normalizedAppId}/${APP_PORTFOLIO_COLLECTION_NAME}`
-    : ''
+  return resolveConsoleEntityCollectionPath({
+    family: APP_PORTFOLIO_COLLECTION_NAME,
+    appId: normalizePath(appId),
+    useAppOverlay: true,
+  })
 }
 
 export function resolveRuntimePortfolioPath(
