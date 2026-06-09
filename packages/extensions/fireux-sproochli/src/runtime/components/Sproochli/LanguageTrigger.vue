@@ -50,13 +50,13 @@
               <UButton
                 v-for="option in group.options"
                 :key="`${group.key}:${option.code || 'original'}`"
-                :to="languageHref(option.code)"
+                type="button"
                 :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
                 block
                 :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
                 class="min-h-11 justify-start"
-                @click="open = false"
+                @click="selectLanguage(option.code)"
               >
                 <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
                   <span
@@ -88,8 +88,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
+import { computed, nextTick, ref } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import triggerBrandSrc from '../../assets/sproochli/translate-trigger-compact.png'
 import {
   isSproochliRtlLanguage,
@@ -215,6 +215,12 @@ const languageOptionActive = (language: SproochliLanguageCode) =>
   language
     ? language === (props.selectedLanguage || '')
     : !props.selectedLanguage
+const selectLanguage = async (language: SproochliLanguageCode) => {
+  const href = languageHref(language)
+  open.value = false
+  await nextTick()
+  await navigateTo(href)
+}
 const languageDirection = (language: SproochliLanguageCode) =>
   isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
 const optionName = (option: SproochliLanguageOption) =>

@@ -64,6 +64,11 @@ export const laTapBerneMenuSections: LaTapBerneMenuSection[] = [
     label: 'Ein bisschen Meer',
     items: [
       {
+        name: 'Tabla Ibérica',
+        description: 'Iberische kalte Platte mit Serrano, Lomo, Chorizo, Salchichón und Manchego Käse',
+        price: '25',
+      },
+      {
         name: 'Black Tiger al Ajillo',
         description: 'Garnelen in Knoblauch-Chili-Öl',
         price: '18',

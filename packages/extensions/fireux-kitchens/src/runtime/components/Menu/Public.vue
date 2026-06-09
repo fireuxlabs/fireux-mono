@@ -58,8 +58,8 @@
                 </p>
               </div>
 
-              <div v-if="formatPrice(item.price)" class="item-price">
-                {{ formatPrice(item.price) }}
+              <div v-if="formatItemPrice(item)" class="item-price">
+                {{ formatItemPrice(item) }}
               </div>
             </article>
           </div>
@@ -86,7 +86,10 @@ import {
   resolveKitchenPublicMenuFont,
   resolveKitchenPublicMenuTitleFont,
 } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
-import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import type {
+  KitchenPublicMenuItemRow,
+  KitchenPublicMenuSectionRow,
+} from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../models/menu.model'
 
 const props = defineProps<{
@@ -163,6 +166,40 @@ const formatPrice = (price: number) => {
     format: props.currencyFormat,
     showCurrency: props.showCurrency,
   })
+}
+const formatOptionUnit = (quantity: number, unit: string) => {
+  const language = props.selectedLanguage
+  if (unit === 'gram') {
+    return language === 'de' || !language ? `${quantity} gr` : `${quantity} g`
+  }
+
+  if (unit === 'piece') {
+    if (language === 'en') return `${quantity} pcs`
+    if (language === 'fr') return `${quantity} pieces`
+    if (language === 'it') return `${quantity} pz.`
+    if (language === 'ar') return `${quantity} قطع`
+
+    return `${quantity} Stk.`
+  }
+
+  return [quantity, unit].filter(Boolean).join(' ')
+}
+const formatItemPrice = (item: KitchenPublicMenuItemRow) => {
+  if (item.priceOptions.length) {
+    return item.priceOptions
+      .map((option) => {
+        const price = formatPrice(option.price)
+        if (!price) return ''
+
+        return [formatOptionUnit(option.quantity, option.unit), price]
+          .filter(Boolean)
+          .join(' ')
+      })
+      .filter(Boolean)
+      .join(' / ')
+  }
+
+  return formatPrice(item.price)
 }
 
 const updateSystemColorMode = () => {

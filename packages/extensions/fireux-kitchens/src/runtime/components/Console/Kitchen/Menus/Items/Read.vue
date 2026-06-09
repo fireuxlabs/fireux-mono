@@ -43,7 +43,7 @@
             <p class="text-xs text-dimmed">Dish: {{ row.dishId }}</p>
           </div>
           <div class="flex items-center gap-2">
-            <UBadge color="neutral" variant="soft">{{ formatPrice(row.price) }}</UBadge>
+            <UBadge color="neutral" variant="soft">{{ formatItemPrice(row) }}</UBadge>
             <UButton
               size="sm"
               color="error"
@@ -65,7 +65,10 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenuSection } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
+import {
+  type MenuSectionItemRow,
+  useKitchenConsoleMenuSection,
+} from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
 import { useKitchenMenuSproochliSync } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 
 const {
@@ -83,7 +86,32 @@ const { markMenuNeedsTranslationRefresh } = useKitchenMenuSproochliSync()
 const toast = useToastify()
 
 const formatPrice = (price: number) =>
-  new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'CHF' }).format(price || 0)
+  price
+    ? new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'CHF' }).format(price)
+    : ''
+const formatOptionUnit = (quantity: number, unit: string) => {
+  if (unit === 'gram') return `${quantity} g`
+  if (unit === 'piece') return `${quantity} Stk.`
+
+  return [quantity, unit].filter(Boolean).join(' ')
+}
+const formatItemPrice = (row: MenuSectionItemRow) => {
+  if (row.priceOptions.length) {
+    return row.priceOptions
+      .map((option) => {
+        const price = formatPrice(option.price)
+        if (!price) return ''
+
+        return [formatOptionUnit(option.quantity, option.unit), price]
+          .filter(Boolean)
+          .join(' ')
+      })
+      .filter(Boolean)
+      .join(' / ')
+  }
+
+  return formatPrice(row.price) || 'No price'
+}
 
 async function archive(itemId: string) {
   try {

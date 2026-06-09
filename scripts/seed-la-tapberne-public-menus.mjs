@@ -59,6 +59,7 @@ const SECTIONS = [
         name: 'Tortilla de Patata',
         deDescription: 'Die spanische Kartoffel-Omelette. Ø24cm. Klein 9.50, mittel 16.-, gross 25.-',
         enDescription: 'The Spanish potato omelette. Ø24cm. Small 9.50, medium 16.-, large 25.-',
+        price: 9.5,
       }),
       dish({
         id: 'gebratene-pimientos-de-padron',
@@ -116,6 +117,13 @@ const SECTIONS = [
       en: 'A little bit of the sea',
     },
     items: [
+      dish({
+        id: 'tabla-iberica',
+        name: 'Tabla Ibérica',
+        deDescription: 'Iberische kalte Platte mit Serrano, Lomo, Chorizo, Salchichón und Manchego Käse',
+        enDescription: 'Iberian charcuterie board with Serrano, Lomo, Chorizo, Salchichón and Manchego cheese',
+        price: 25,
+      }),
       dish({
         id: 'black-tiger-al-ajillo',
         name: 'Black Tiger al Ajillo',
@@ -351,7 +359,7 @@ const SECTIONS = [
 ]
 
 const MENU = {
-  id: 'main',
+  id: 'default',
   name: 'Comida Casera',
   names: {
     de: 'Hausgemachte Küche',
@@ -775,7 +783,7 @@ async function main() {
     reset,
     routes: [
       '/kitchens/la-tapberne/menus',
-      '/kitchens/la-tapberne/menus/main',
+      '/kitchens/la-tapberne/menus/default',
     ],
     paths: {
       kitchen: kitchenRef.path,

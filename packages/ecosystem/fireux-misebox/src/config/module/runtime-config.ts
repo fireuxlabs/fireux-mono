@@ -11,7 +11,7 @@ const getPublicMenuDefaults = (appId: string) => {
     return {
       kitchenCollectionPath: 'apps/la-tap-berne/kitchens',
       kitchenId: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-      menuId: 'main',
+      menuId: 'default',
       sproochli: true,
     }
   }

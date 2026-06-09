@@ -48,6 +48,32 @@ export const MenuItemStorage = {
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuChildStatus = 'active' | 'archived'
+export type MenuItemPriceOption = {
+  quantity: number
+  unit: string
+  price: number
+}
+
+const cleanText = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown) =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+
+export function normalizeMenuItemPriceOptions(value: unknown): MenuItemPriceOption[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((option) => {
+      const data = record(option)
+      return {
+        quantity: Number(data.quantity || 0),
+        unit: cleanText(data.unit),
+        price: Number(data.price || 0),
+      }
+    })
+    .filter((option) => option.quantity > 0 && option.price > 0)
+}
 
 export type MenuDocument = {
   url: string
@@ -106,8 +132,9 @@ export const MenuItemModel = {
   section_id: '' as string,
   // Placement link: Dish owns food truth; MenuItem only positions it on a menu.
   dish_id: '' as string,
-  // Current override field. Keep lightweight; do not duplicate Dish copy here.
+  // Current override fields. Keep lightweight; do not duplicate Dish copy here.
   price: 0 as number,
+  price_options: [] as MenuItemPriceOption[],
   status: 'active' as MenuChildStatus,
   sort_order: 0 as number,
   created: MenuModel.created,

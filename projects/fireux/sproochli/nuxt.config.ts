@@ -12,5 +12,5 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://sproochli.web.app',
   },
-  modules: ['fireux-sproochli', 'fireux-products', 'fireux-blogs'],
+  modules: ['fireux-sproochli', 'fireux-products', 'fireux-blogs', 'fireux-ai'],
 })

@@ -1,5 +1,6 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import { setSproochliToolHeaders } from '../../../utils/sproochliTools'
+import { translateSproochliMenuFieldWithAi } from '../../../utils/sproochliMenuAi'
 import {
   makeSproochliMenuCacheKey,
   makeSproochliSourceHash,
@@ -108,21 +109,46 @@ export default defineEventHandler(async (event) => {
   const failures: Array<{ field_id: string; language: string; message: string }> = []
   const translationTargets = targetLanguages.filter((language) => language !== sourceLanguage)
   const fieldsWithText = fields.filter((field) => field.sourceText)
+  const responseFieldById = new Map(responseFields.map((field) => [field.id, field]))
 
   if (translationTargets.length && fieldsWithText.length) {
     const account = await resolveSproochliServiceAccount()
 
     for (const language of translationTargets) {
+      const fieldsNeedingMachineTranslation = []
+
+      for (const field of fieldsWithText) {
+        const aiTranslation = await translateSproochliMenuFieldWithAi(event, {
+          fieldId: field.id,
+          sourceText: field.sourceText,
+          sourceLanguage,
+          targetLanguage: language,
+          glossaryVersion,
+        })
+        const translation = responseFieldById.get(field.id)?.translations.find(
+          (entry) => entry.language === language
+        )
+
+        if (aiTranslation?.text && translation) {
+          translation.text = aiTranslation.text
+          translation.provider = aiTranslation.provider
+        } else {
+          fieldsNeedingMachineTranslation.push(field)
+        }
+      }
+
+      if (!fieldsNeedingMachineTranslation.length) continue
+
       try {
         const translated = await translateSproochliTextBatch(account, {
           sourceLanguage,
           targetLanguage: language,
-          texts: fieldsWithText.map((field) => field.sourceText),
+          texts: fieldsNeedingMachineTranslation.map((field) => field.sourceText),
         })
 
-        fieldsWithText.forEach((field, index) => {
+        fieldsNeedingMachineTranslation.forEach((field, index) => {
           const translatedText = normalizeSproochliText(translated[index])
-          const responseField = responseFields.find((entry) => entry.id === field.id)
+          const responseField = responseFieldById.get(field.id)
           const translation = responseField?.translations.find(
             (entry) => entry.language === language
           )

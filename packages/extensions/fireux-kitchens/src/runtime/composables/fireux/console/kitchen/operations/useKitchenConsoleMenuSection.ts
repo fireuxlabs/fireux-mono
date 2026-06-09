@@ -1,13 +1,22 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
-import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
+import type {
+  MenuItem,
+  MenuItemPriceOption,
+  MenuSection,
+} from '../../../../../models/menu.model'
+import { normalizeMenuItemPriceOptions } from '../../../../../models/menu.model'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
 import { useMenuItemCollection } from '../../../firestore/menu/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../firestore/menu/mutations/useMenuItemMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown) =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 export type MenuSectionItemRow = {
   id: string
@@ -16,6 +25,7 @@ export type MenuSectionItemRow = {
   dishId: string
   label: string
   price: number
+  priceOptions: MenuItemPriceOption[]
 }
 
 export function useKitchenConsoleMenuSection() {
@@ -62,6 +72,7 @@ export function useKitchenConsoleMenuSection() {
         dishId: clean(item.dish_id),
         label: clean(dish?.name) || clean(item.dish_id),
         price: Number(item.price || 0),
+        priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
       }
     })
   )

@@ -1,5 +1,9 @@
 import type { Dish } from '../../../../../models/dish.model'
-import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
+import type {
+  MenuItem,
+  MenuItemPriceOption,
+  MenuSection,
+} from '../../../../../models/menu.model'
 
 export type KitchenPublicMenuItemRow = {
   id: string
@@ -8,6 +12,7 @@ export type KitchenPublicMenuItemRow = {
   name: string
   description: string
   price: number
+  priceOptions: MenuItemPriceOption[]
 }
 
 export type KitchenPublicMenuSectionRow = {

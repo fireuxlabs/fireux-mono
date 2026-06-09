@@ -1,0 +1,261 @@
+{
+  "summary": {
+    "projectId": "misebox-78f9c",
+    "databaseId": "misebox",
+    "model": "gpt-4o-mini",
+    "no_ai": false,
+    "menus_discovered": 2,
+    "menus_processed": 2,
+    "calls": 16,
+    "fields_reviewed": 1072,
+    "diff_rows": 8,
+    "failed_calls": 13
+  },
+  "menus": [
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "languages": [
+        "en",
+        "it",
+        "fr",
+        "ar"
+      ],
+      "fieldCount": 134,
+      "diffCount": 8
+    },
+    {
+      "scope": "root",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "Luna Piccante",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "languages": [
+        "en",
+        "it",
+        "fr",
+        "ar"
+      ],
+      "fieldCount": 134,
+      "diffCount": 0
+    }
+  ],
+  "diffs": [
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:antipasti:label",
+      "cacheDocId": "en__6e20424e2c91a73b5dd22219f473df1e8a809eb0",
+      "kind": "section_label",
+      "sourceText": "Antipasti",
+      "currentText": "Antipasti",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Starters",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/antipasti"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:zuppa:label",
+      "cacheDocId": "en__3d70b34926d5060808b02b62e65ca8ce862092e0",
+      "kind": "section_label",
+      "sourceText": "Zuppa",
+      "currentText": "Zuppa",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Soups",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/zuppa"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:kinder-karte:label",
+      "cacheDocId": "en__bcf01a610cd64882c204e7889ce0273ac4b3249d",
+      "kind": "section_label",
+      "sourceText": "Kinder Karte",
+      "currentText": "Children's card",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Kids Menu",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/kinder-karte"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:pasta:label",
+      "cacheDocId": "en__4f7d93f86ff6417db7b6668e92cbafeb5c3e4a6f",
+      "kind": "section_label",
+      "sourceText": "Pasta",
+      "currentText": "pasta",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Pasta",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/pasta"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:pesce:label",
+      "cacheDocId": "en__33c6e6c9fe4bb68275dce8bd27de076b2bb41d41",
+      "kind": "section_label",
+      "sourceText": "Pesce",
+      "currentText": "Pesce",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Fish",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/pesce"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:carne:label",
+      "cacheDocId": "en__e0cbabde9bd6727e11b8823a5234fcf47685379d",
+      "kind": "section_label",
+      "sourceText": "Carne",
+      "currentText": "Carne",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Meat",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/carne"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:heisser-stein:label",
+      "cacheDocId": "en__c4ba845fac235a291b3e9ee62f42a21f53c4d566",
+      "kind": "section_label",
+      "sourceText": "Heisser Stein",
+      "currentText": "Hot stone",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Hot Stone",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/heisser-stein"
+    },
+    {
+      "scope": "misebox-app",
+      "kitchenId": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "kitchenName": "",
+      "menuId": "main",
+      "menuName": "Hauptkarte",
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "fieldId": "section:contorni:label",
+      "cacheDocId": "en__e316300376a9db2c19c42b5fca97ce54102eb2a6",
+      "kind": "section_label",
+      "sourceText": "Contorni",
+      "currentText": "contours",
+      "currentSource": "cache",
+      "currentProvider": "google",
+      "aiText": "Side Dishes",
+      "sourcePath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main/sections/contorni"
+    }
+  ],
+  "failures": [
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "it",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "it",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "fr",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "ar",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "apps/misebox-app/kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "ar",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "en",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "it",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "it",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "fr",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "ar",
+      "message": "This operation was aborted"
+    },
+    {
+      "menuPath": "kitchens/ChIJ93_ggY-jj0cRTCyLcfBuK2w/menus/main",
+      "language": "ar",
+      "message": "This operation was aborted"
+    }
+  ]
+}

@@ -1,7 +1,11 @@
 import { computed, type Ref } from 'vue'
 import { resolveSproochliTranslatedText } from 'fireux-sproochli/runtime/sproochli'
 import type { Dish } from '../../../../../models/dish.model'
-import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
+import type {
+  MenuItem,
+  MenuSection,
+} from '../../../../../models/menu.model'
+import { normalizeMenuItemPriceOptions } from '../../../../../models/menu.model'
 import type { KitchenPublicMenuSectionRow } from './types'
 
 type MenuRowOptions = {
@@ -84,6 +88,7 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
               options.textFor(`dish:${dishId}:description`)
             ),
             price: Number(item.price || 0),
+            priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
           }
         }),
       }
