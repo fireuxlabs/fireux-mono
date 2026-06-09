@@ -61,6 +61,7 @@ Current learned examples:
   - Menu is scoped to Kitchen: managed in Kitchen Console and rendered publicly when published.
   - Menu storage is app-scoped under Kitchen; public rendering does not mean root `menus/{menuId}` truth.
   - QR points guests to one exact published menu URL.
+  - The same public menu URL can mature from source document to structured menu to orderable menu.
   - Menu items require real `dish_id` links; public menus do not own dish copy.
   - App-local uploaded menu documents may use thin `/menus/**` routes, but they are not the Kitchen Menu stack or a root Kitchen Menu canon.
 - App roles:

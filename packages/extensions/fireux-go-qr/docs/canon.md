@@ -19,3 +19,4 @@ References: `docs/fireux-canon.md`, `packages/core/fireux-docs/src/runtime/compo
 - Component names use Nuxt path-based names.
 - Wrappers pass configuration to hosted Go QR `/tools/**` pages.
 - Wrappers do not create storage records and do not duplicate Go QR tool internals.
+- FireUX consumers should pass one provider tool config object. Explicit per-field props remain for plain external embeds and small ad-hoc tests.

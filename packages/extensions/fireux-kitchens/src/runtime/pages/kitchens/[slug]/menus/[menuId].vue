@@ -13,6 +13,32 @@
       description="This menu is missing, unpublished, or no longer available."
     />
 
+    <UAlert
+      v-else-if="!hasSource && !hasStructuredItems"
+      class="mx-auto mt-8 max-w-3xl"
+      color="neutral"
+      variant="soft"
+      title="Menu unavailable"
+      description="This menu has no public source or structured items yet."
+    />
+
+    <MenuSource
+      v-else-if="maturity === 'source'"
+      :kitchen-name="kitchenName"
+      :menu="displayMenu"
+      :source-url="sourceUrl"
+    >
+      <template #breadcrumbs>
+        <KitchenPublicBreadcrumbs
+          class="menu-breadcrumbs"
+          :kitchen-name="kitchenName"
+          :kitchen-slug="kitchenSlug"
+          :menu-name="displayMenu.name"
+          current="menu"
+        />
+      </template>
+    </MenuSource>
+
     <MenuPublic
       v-else
       :kitchen-name="kitchenName"
@@ -22,6 +48,7 @@
       :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
       :show-currency="showCurrency"
+      :orderable="isOrderable"
     >
       <template #breadcrumbs>
         <KitchenPublicBreadcrumbs
@@ -63,6 +90,10 @@ const {
   kitchen,
   menu,
   sectionRows,
+  hasSource,
+  hasStructuredItems,
+  isOrderable,
+  maturity,
   debug,
 } = useKitchenPublicMenuDetail()
 const isDev = import.meta.dev
@@ -75,6 +106,7 @@ const displayMenu = computed<Menu>(() => {
   const current = menu.value as Menu | null
   return current ?? {} as Menu
 })
+const sourceUrl = computed(() => text(displayMenu.value.doc_url))
 const currencyFormat = computed(
   () => (text(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
 )
@@ -112,6 +144,12 @@ const pageDebug = computed(() => ({
       code: text(kitchen.value?.default_currency_code) || 'CHF',
       format: currencyFormat.value,
       show: showCurrency.value,
+    },
+    maturity: {
+      hasSource: hasSource.value,
+      hasStructuredItems: hasStructuredItems.value,
+      isOrderable: isOrderable.value,
+      maturity: maturity.value,
     },
   },
 }))

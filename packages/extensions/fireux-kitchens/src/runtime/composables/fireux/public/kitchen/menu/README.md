@@ -16,6 +16,8 @@ The menu public seam is split by job:
 - `useKitchenPublicMenuItems.ts` reads scoped menu items.
 - `useKitchenPublicMenuTheme.ts` resolves small public menu theme tokens.
 - `types.ts` owns public row types.
+- Menu maturity is derived, not stored. The route can render source, structured,
+  or orderable presentations without changing the URL.
 
 Menu is a public-rendered scoped entity:
 - Kitchen owns the scoped Menu records.

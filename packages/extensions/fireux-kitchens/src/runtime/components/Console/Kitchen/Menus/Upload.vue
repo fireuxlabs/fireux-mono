@@ -2,22 +2,7 @@
   <section>
     <ProviderGoQrDoc
       v-if="canUseTool"
-      title="Menu source"
-      description="Upload a source menu PDF to this kitchen."
-      file-label="Menu PDF"
-      path-label="Menu id"
-      slug-placeholder="main-menu"
-      :preview-base-url="`${consumerBaseUrl}/console/kitchen/menus`"
-      preview-path-suffix=""
-      :create-endpoint="createEndpoint"
-      :availability-endpoint="availabilityEndpoint"
-      accept="application/pdf,.pdf"
-      upload-hint="PDF. Max 10 MB."
-      cta-label="Upload source"
-      loading-label="Uploading source..."
-      open-target-label="Open menu"
-      taken-message="This menu id already exists for this kitchen."
-      :auth-token="authToken"
+      :tool="tool"
     />
 
     <UAlert
@@ -39,13 +24,21 @@ const {
   selectedMode,
   kitchenId,
   activeKitchenAppId,
+  selectedKitchen,
   canWrite,
 } = useKitchenConsoleMenus()
 const { currentUser } = useAuth()
 const authToken = ref('')
 
-const consumerBaseUrl = computed(() =>
+const text = (value: unknown) => String(value ?? '').trim()
+const kitchenSlug = computed(() => text((selectedKitchen.value as any)?.slug))
+const appOrigin = computed(() =>
   import.meta.client ? window.location.origin : ''
+)
+const publicMenuPreviewBaseUrl = computed(() =>
+  kitchenSlug.value
+    ? `${appOrigin.value}/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
+    : `${appOrigin.value}/kitchens`
 )
 const toolQuery = computed(() =>
   new URLSearchParams({
@@ -56,14 +49,42 @@ const toolQuery = computed(() =>
 const canUseTool = computed(() =>
   selectedMode.value === 'live' &&
   canWrite.value &&
-  Boolean(kitchenId.value && activeKitchenAppId.value && authToken.value)
+  Boolean(kitchenId.value && activeKitchenAppId.value && kitchenSlug.value && authToken.value)
 )
 const createEndpoint = computed(() =>
-  `${consumerBaseUrl.value}/api/console/kitchen/menus/upload-source?${toolQuery.value}`
+  `${appOrigin.value}/api/console/kitchen/menus/upload-source?${toolQuery.value}`
 )
 const availabilityEndpoint = computed(() =>
-  `${consumerBaseUrl.value}/api/console/kitchen/menus/availability?${toolQuery.value}`
+  `${appOrigin.value}/api/console/kitchen/menus/availability?${toolQuery.value}`
 )
+const tool = computed(() => ({
+  authToken: authToken.value,
+  copy: {
+    title: 'Menu source',
+    description: 'Upload a source menu PDF to this kitchen.',
+    ctaLabel: 'Upload source',
+    loadingLabel: 'Uploading source...',
+    openTargetLabel: 'Open menu',
+  },
+  upload: {
+    fileLabel: 'Menu PDF',
+    accept: 'application/pdf,.pdf',
+    hint: 'PDF. Max 10 MB.',
+  },
+  slug: {
+    label: 'Menu id',
+    placeholder: 'main-menu',
+    takenMessage: 'This menu id already exists for this kitchen.',
+  },
+  preview: {
+    baseUrl: publicMenuPreviewBaseUrl.value,
+    pathSuffix: '',
+  },
+  endpoints: {
+    create: createEndpoint.value,
+    availability: availabilityEndpoint.value,
+  },
+}))
 
 watch(currentUser, async (user) => {
   authToken.value = import.meta.client && user ? await user.getIdToken() : ''

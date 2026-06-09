@@ -145,10 +145,19 @@ export default defineEventHandler(async (event) => {
   const db = getRuntimeFirestore()
   const kitchenPath = `${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
   const kitchenSnap = await db.doc(kitchenPath).get()
-  if (!kitchenSnap.exists || !hasOperator(kitchenSnap.data(), uid)) {
+  const kitchenData = kitchenSnap.data()
+  if (!kitchenSnap.exists || !hasOperator(kitchenData, uid)) {
     throw createError({
       statusCode: 403,
       statusMessage: 'You do not have access to this kitchen.',
+    })
+  }
+  const rootKitchenSnap = await db.doc(`${KitchenStorage.rootCollection}/${kitchenId}`).get()
+  const kitchenSlug = text(kitchenData?.slug) || text(rootKitchenSnap.data()?.slug)
+  if (!kitchenSlug) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen needs a public slug before uploading a menu source.',
     })
   }
 
@@ -184,7 +193,12 @@ export default defineEventHandler(async (event) => {
     kitchen_id: kitchenId,
     name: menuName,
     ...(description ? { description } : {}),
-    ...(!existing.exists ? { status: 'draft', sort_order: 0 } : {}),
+    status: 'published',
+    ...(!existing.exists ? {
+      sort_order: 0,
+      ordering_enabled: false,
+      ordering_modes: [],
+    } : {}),
     doc_url: firebaseDownloadUrl(bucketName, objectPath, tokenId),
     doc_name: fileName,
     doc_type: storedFileType,
@@ -202,11 +216,14 @@ export default defineEventHandler(async (event) => {
     },
   }, { merge: true })
 
+  const publicPath = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
+
   return {
     ok: true,
     id: menuId,
-    path: `/console/kitchen/menus/${encodeURIComponent(menuId)}`,
-    url: `${getRequestURL(event).origin}/console/kitchen/menus/${encodeURIComponent(menuId)}`,
+    path: publicPath,
+    url: `${getRequestURL(event).origin}${publicPath}`,
+    console_path: `/console/kitchen/menus/${encodeURIComponent(menuId)}`,
     doc_storage_path: objectPath,
   }
 })

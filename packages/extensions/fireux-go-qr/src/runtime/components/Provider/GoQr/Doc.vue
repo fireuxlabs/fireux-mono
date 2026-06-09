@@ -1,9 +1,9 @@
 <template>
   <ProviderToolIframe
     :src="toolUrl"
-    :title="title"
+    :title="resolved.title"
     :provider-origin="providerBaseUrl"
-    :auth-token="authToken"
+    :auth-token="resolved.authToken"
     message-source="go-qr"
   />
 </template>
@@ -11,7 +11,37 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+type GoQrDocToolConfig = {
+  authToken?: string
+  copy?: {
+    title?: string
+    description?: string
+    ctaLabel?: string
+    loadingLabel?: string
+    openTargetLabel?: string
+  }
+  upload?: {
+    fileLabel?: string
+    accept?: string
+    hint?: string
+  }
+  slug?: {
+    label?: string
+    placeholder?: string
+    takenMessage?: string
+  }
+  preview?: {
+    baseUrl?: string
+    pathSuffix?: string
+  }
+  endpoints?: {
+    create?: string
+    availability?: string
+  }
+}
+
 const props = withDefaults(defineProps<{
+  tool?: GoQrDocToolConfig | null
   title?: string
   description?: string
   fileLabel?: string
@@ -29,6 +59,7 @@ const props = withDefaults(defineProps<{
   takenMessage?: string
   authToken?: string
 }>(), {
+  tool: null,
   title: 'Doc',
   description: 'Upload a doc, choose a short path, and get a QR.',
   fileLabel: 'Doc file',
@@ -50,24 +81,42 @@ const props = withDefaults(defineProps<{
 const providerBaseUrl = import.meta.dev
   ? 'http://localhost:3013'
   : 'https://go-qr.web.app'
+const resolved = computed(() => ({
+  title: props.tool?.copy?.title || props.title,
+  description: props.tool?.copy?.description || props.description,
+  fileLabel: props.tool?.upload?.fileLabel || props.fileLabel,
+  pathLabel: props.tool?.slug?.label || props.pathLabel,
+  slugPlaceholder: props.tool?.slug?.placeholder || props.slugPlaceholder,
+  previewBaseUrl: props.tool?.preview?.baseUrl || props.previewBaseUrl,
+  previewPathSuffix: props.tool?.preview?.pathSuffix ?? props.previewPathSuffix,
+  createEndpoint: props.tool?.endpoints?.create || props.createEndpoint,
+  availabilityEndpoint: props.tool?.endpoints?.availability || props.availabilityEndpoint,
+  accept: props.tool?.upload?.accept || props.accept,
+  uploadHint: props.tool?.upload?.hint || props.uploadHint,
+  ctaLabel: props.tool?.copy?.ctaLabel || props.ctaLabel,
+  loadingLabel: props.tool?.copy?.loadingLabel || props.loadingLabel,
+  openTargetLabel: props.tool?.copy?.openTargetLabel || props.openTargetLabel,
+  takenMessage: props.tool?.slug?.takenMessage || props.takenMessage,
+  authToken: props.tool?.authToken || props.authToken,
+}))
 
 const toolUrl = computed(() => {
   const query = new URLSearchParams({
-    title: props.title,
-    description: props.description,
-    fileLabel: props.fileLabel,
-    pathLabel: props.pathLabel,
-    slugPlaceholder: props.slugPlaceholder,
-    previewBaseUrl: props.previewBaseUrl,
-    previewPathSuffix: props.previewPathSuffix,
-    createEndpoint: props.createEndpoint,
-    availabilityEndpoint: props.availabilityEndpoint,
-    accept: props.accept,
-    uploadHint: props.uploadHint,
-    ctaLabel: props.ctaLabel,
-    loadingLabel: props.loadingLabel,
-    openTargetLabel: props.openTargetLabel,
-    takenMessage: props.takenMessage,
+    title: resolved.value.title,
+    description: resolved.value.description,
+    fileLabel: resolved.value.fileLabel,
+    pathLabel: resolved.value.pathLabel,
+    slugPlaceholder: resolved.value.slugPlaceholder,
+    previewBaseUrl: resolved.value.previewBaseUrl,
+    previewPathSuffix: resolved.value.previewPathSuffix,
+    createEndpoint: resolved.value.createEndpoint,
+    availabilityEndpoint: resolved.value.availabilityEndpoint,
+    accept: resolved.value.accept,
+    uploadHint: resolved.value.uploadHint,
+    ctaLabel: resolved.value.ctaLabel,
+    loadingLabel: resolved.value.loadingLabel,
+    openTargetLabel: resolved.value.openTargetLabel,
+    takenMessage: resolved.value.takenMessage,
   })
 
   return `${providerBaseUrl}/tools/doc?${query}`

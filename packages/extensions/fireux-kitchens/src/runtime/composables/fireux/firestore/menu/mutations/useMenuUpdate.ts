@@ -6,6 +6,7 @@ import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/dish.model'
 import { type Menu, type MenuItem, type MenuSection, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu.model'
+import { resolveMenuMaturity } from '../utils/view/useMenuMaturity'
 import {
   menuItemsPath,
   menuPath,
@@ -56,6 +57,15 @@ export function useMenuUpdate(
   }
 
   async function assertMenuCanPublish(kitchenId: string, menuId: string) {
+    const menuSnap = await getDoc(doc(resolveDb(), collectionPath(kitchenId), clean(menuId)))
+    const menuMaturity = resolveMenuMaturity({
+      menu: menuSnap.exists()
+        ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
+        : null,
+      structuredItemsCount: 0,
+    })
+    if (menuMaturity.hasSource) return
+
     const sectionsPath = menuSectionsPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
       kitchenId,

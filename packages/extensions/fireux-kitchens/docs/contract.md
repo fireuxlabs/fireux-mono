@@ -122,6 +122,12 @@ Ingredient composable stack canon:
 - `Dish` describes guest-facing food.
 - `Menu` presents selected dishes.
 - QR points guests to the exact published menu URL.
+- Menu progress is expressed as derived maturity, not separate menu types:
+  - `source`: a published Menu has a source document such as `doc_url`
+  - `structured`: a published Menu has real section/item rows linked to Dish records
+  - `orderable`: a structured Menu has `ordering_enabled`
+- The public route remains `/kitchens/{slug}/menus/{menuId}` across all maturity levels.
+- Do not store a `maturity` field; derive it from source fields, structured rows, and ordering fields.
 - Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
 - Menu owns presentation-only fields: name, description, status, service modes, sort order, section order, item order, and item price.
 - Public menu routes render published menus only.
