@@ -1,5 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { resolveSproochliTranslatedText } from 'fireux-sproochli/runtime/sproochli'
 
 const text = (value: unknown) => String(value ?? '').trim()
 type TranslationCacheRow = {
@@ -35,6 +36,16 @@ export function useKitchenPublicMenuTranslations(
   return {
     rows,
     pending,
-    text: (fieldId: string) => rows.value[fieldId] ?? '',
+    text: (
+      fieldId: string,
+      defaultText?: unknown,
+      translations?: unknown
+    ) =>
+      resolveSproochliTranslatedText({
+        defaultText,
+        translations,
+        selectedLanguage: selectedLanguage.value,
+        cacheText: rows.value[fieldId],
+      }).text,
   }
 }

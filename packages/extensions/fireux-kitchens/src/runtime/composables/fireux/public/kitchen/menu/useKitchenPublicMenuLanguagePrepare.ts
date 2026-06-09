@@ -1,5 +1,4 @@
 import { computed, ref, watch } from 'vue'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { Dish } from '../../../../../models/dish.model'
 import type { Menu, MenuItem, MenuSection } from '../../../../../models/menu.model'
 
@@ -21,6 +20,8 @@ type LanguagePrepareOptions = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const normalizeLanguageCode = (value: unknown) =>
+  text(Array.isArray(value) ? value[0] : value).toLowerCase().replace(/_/g, '-')
 
 export function useKitchenPublicMenuLanguagePrepare(
   options: LanguagePrepareOptions
@@ -37,7 +38,7 @@ export function useKitchenPublicMenuLanguagePrepare(
   )
 
   const sourceLanguage = computed(() =>
-    normalizeSproochliLanguage(options.menu.value?.source_language)
+    normalizeLanguageCode(options.menu.value?.source_language)
   )
   const fieldIds = computed(() => {
     const menu = options.menu.value

@@ -64,7 +64,6 @@ export function useKitchenPublicMenuDetail() {
     sections: sectionState.sections,
     items: itemState.items,
     dishesById,
-    selectedLanguage: state.selectedLanguage,
     textFor: translationCache.text,
   })
   const debug = computed(() => ({

@@ -4,12 +4,13 @@ import {
   usePublicScope,
   usePublicScopedRecords,
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import { useKitchenCollection } from '../../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../../firestore/menu/useMenu'
 import type { Menu } from '../../../../../models/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const normalizeLanguageCode = (value: unknown) =>
+  text(Array.isArray(value) ? value[0] : value).toLowerCase().replace(/_/g, '-')
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
 const menuDebug = (menu: Menu) => ({
   id: text(menu.id),
@@ -22,9 +23,7 @@ export function useKitchenPublicMenuScope() {
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
   const selectedLanguage = computed(() =>
-    normalizeSproochliLanguage(
-      route.query.sproochli ?? route.query.lang ?? route.query.language
-    )
+    normalizeLanguageCode(route.query.language ?? route.query.lang ?? route.query.sproochli)
   )
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const publicKitchen = usePublicScope({
@@ -49,7 +48,7 @@ export function useKitchenPublicMenuScope() {
   )
   const languageQuery = computed(() =>
     selectedLanguage.value
-      ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}`
+      ? `?language=${encodeURIComponent(selectedLanguage.value)}`
       : ''
   )
   const menuLink = (id: Menu['id']) =>

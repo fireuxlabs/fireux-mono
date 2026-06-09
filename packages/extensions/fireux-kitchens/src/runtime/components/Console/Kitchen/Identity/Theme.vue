@@ -154,7 +154,6 @@ const previewRows = useKitchenPublicMenuRows({
   sections: previewSectionState.sections,
   items: previewItemState.items,
   dishesById: previewDishesById,
-  selectedLanguage: computed(() => ''),
   textFor: () => '',
 })
 const previewSections = computed(() => previewRows.sectionRows.value)

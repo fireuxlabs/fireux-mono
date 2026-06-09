@@ -1,5 +1,4 @@
 import { computed, type Ref } from 'vue'
-import { resolveSproochliTranslatedText } from 'fireux-sproochli/runtime/sproochli'
 import type { Dish } from '../../../../../models/dish.model'
 import type {
   MenuItem,
@@ -12,8 +11,11 @@ type MenuRowOptions = {
   sections: Ref<MenuSection[]>
   items: Ref<MenuItem[]>
   dishesById: Ref<Map<string, Dish>>
-  selectedLanguage: Ref<unknown>
-  textFor: (fieldId: string) => string
+  textFor: (
+    fieldId: string,
+    defaultText?: unknown,
+    translations?: unknown
+  ) => string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -21,18 +23,6 @@ const record = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
-const translatedText = (
-  defaultText: unknown,
-  translations: unknown,
-  selectedLanguage: unknown,
-  cacheText?: unknown
-) =>
-  resolveSproochliTranslatedText({
-    defaultText,
-    translations,
-    selectedLanguage,
-    cacheText,
-  }).text
 
 export function useKitchenPublicMenuRows(options: MenuRowOptions) {
   const itemsBySectionId = computed(() => {
@@ -54,18 +44,16 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
         id: sectionId,
         section,
         label:
-          translatedText(
+          options.textFor(
+            `section:${sectionId}:label`,
             section.label,
-            record(section).labels ?? record(section).translations,
-            options.selectedLanguage.value,
-            options.textFor(`section:${sectionId}:label`)
+            record(section).labels ?? record(section).translations
           ) || text(section.label),
         description:
-          translatedText(
+          options.textFor(
+            `section:${sectionId}:description`,
             section.description,
-            record(section).descriptions,
-            options.selectedLanguage.value,
-            options.textFor(`section:${sectionId}:description`)
+            record(section).descriptions
           ) || text(section.description),
         items: items.map((item) => {
           const dishId = text(item.dish_id)
@@ -75,17 +63,15 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
             item,
             dish,
             name:
-              translatedText(
+              options.textFor(
+                `dish:${dishId}:name`,
                 dish?.name,
-                record(dish).names,
-                options.selectedLanguage.value,
-                options.textFor(`dish:${dishId}:name`)
+                record(dish).names
               ) || dishId,
-            description: translatedText(
+            description: options.textFor(
+              `dish:${dishId}:description`,
               dish?.description,
-              record(dish).descriptions,
-              options.selectedLanguage.value,
-              options.textFor(`dish:${dishId}:description`)
+              record(dish).descriptions
             ),
             price: Number(item.price || 0),
             priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),

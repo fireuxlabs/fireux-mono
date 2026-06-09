@@ -11,12 +11,8 @@
         <p v-if="kitchenName" class="kitchen-name">
           {{ kitchenName }}
         </p>
-        <div v-if="languageOptions?.length > 1" class="menu-language">
-          <SproochliLanguageTrigger
-            :language-options="languageOptions"
-            :selected-language="selectedLanguage"
-            :show-group-labels="showLanguageGroupLabels"
-          />
+        <div v-if="$slots.language" class="menu-language">
+          <slot name="language" />
         </div>
         <h1>{{ menu.name }}</h1>
         <p v-if="menu.description" class="description">
@@ -72,20 +68,13 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import {
-  formatCurrencyAmount,
-  type CurrencyDisplayFormat,
-} from 'fireux-core/runtime/models/core/money.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
-import type {
-  SproochliLanguageCode,
-  SproochliLanguageOption,
-} from 'fireux-sproochli/runtime/sproochli'
 import {
   resolveKitchenPublicMenuFont,
   resolveKitchenPublicMenuTitleFont,
 } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
+import { formatKitchenPublicMenuItemPrice } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuPrice'
 import type {
   KitchenPublicMenuItemRow,
   KitchenPublicMenuSectionRow,
@@ -100,9 +89,7 @@ const props = defineProps<{
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
-  languageOptions?: SproochliLanguageOption[]
-  selectedLanguage?: SproochliLanguageCode
-  showLanguageGroupLabels?: boolean
+  languageCode?: string
   variant?: 'page' | 'preview'
   colorMode?: 'system' | 'light' | 'dark'
 }>()
@@ -160,47 +147,13 @@ const menuStyleVars = computed(() => {
   return vars
 })
 
-const formatPrice = (price: number) => {
-  return formatCurrencyAmount(price, {
+const formatItemPrice = (item: KitchenPublicMenuItemRow) =>
+  formatKitchenPublicMenuItemPrice(item, {
     currencyCode: props.currencyCode,
-    format: props.currencyFormat,
+    currencyFormat: props.currencyFormat,
     showCurrency: props.showCurrency,
+    languageCode: props.languageCode,
   })
-}
-const formatOptionUnit = (quantity: number, unit: string) => {
-  const language = props.selectedLanguage
-  if (unit === 'gram') {
-    return language === 'de' || !language ? `${quantity} gr` : `${quantity} g`
-  }
-
-  if (unit === 'piece') {
-    if (language === 'en') return `${quantity} pcs`
-    if (language === 'fr') return `${quantity} pieces`
-    if (language === 'it') return `${quantity} pz.`
-    if (language === 'ar') return `${quantity} قطع`
-
-    return `${quantity} Stk.`
-  }
-
-  return [quantity, unit].filter(Boolean).join(' ')
-}
-const formatItemPrice = (item: KitchenPublicMenuItemRow) => {
-  if (item.priceOptions.length) {
-    return item.priceOptions
-      .map((option) => {
-        const price = formatPrice(option.price)
-        if (!price) return ''
-
-        return [formatOptionUnit(option.quantity, option.unit), price]
-          .filter(Boolean)
-          .join(' ')
-      })
-      .filter(Boolean)
-      .join(' / ')
-  }
-
-  return formatPrice(item.price)
-}
 
 const updateSystemColorMode = () => {
   systemColorMode.value = colorSchemeQuery?.matches ? 'dark' : 'light'

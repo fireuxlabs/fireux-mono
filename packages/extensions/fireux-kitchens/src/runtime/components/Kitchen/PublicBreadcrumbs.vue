@@ -30,7 +30,7 @@ const kitchenSlug = computed(() => text(props.kitchenSlug))
 const selectedLanguage = computed(() => text(props.selectedLanguage))
 const languageQuery = computed(() =>
   selectedLanguage.value
-    ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}`
+    ? `?language=${encodeURIComponent(selectedLanguage.value)}`
     : ''
 )
 const kitchenPath = computed(() =>

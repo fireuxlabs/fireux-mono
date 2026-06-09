@@ -22,10 +22,16 @@
       :currency-code="kitchen.default_currency_code"
       :currency-format="currencyFormat"
       :show-currency="showCurrency"
-      :language-options="languageOptions"
-      :selected-language="selectedLanguage"
-      :show-language-group-labels="showLanguageGroupLabels"
+      :language-code="selectedLanguage"
     >
+      <template v-if="languageOptions.length > 1" #language>
+        <SproochliLanguageTrigger
+          :language-options="languageOptions"
+          :selected-language="selectedLanguage"
+          :show-group-labels="showLanguageGroupLabels"
+        />
+      </template>
+
       <template #breadcrumbs>
         <KitchenPublicBreadcrumbs
           class="menu-breadcrumbs"
@@ -58,6 +64,7 @@ import {
   resolveSproochliLanguageOptions,
   resolveSproochliTranslatedText,
 } from 'fireux-sproochli/runtime/sproochli'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useKitchenPublicMenuDetail } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
 import type { Menu } from '../../../../models/menu.model'
 
