@@ -168,6 +168,8 @@ The same stack DNA can appear in different modes. Do not force every mode to hav
 | System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
 | System/adapter seam | Runtime helper around stack behaviour, not a stored domain entity | ensure/selection/adapter helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
+Console workspace entities use `console/<family>/operations` as a selected-workspace code bucket. `operations` is not a Firestore collection or entity. It groups composables for operator work inside the selected Kitchen, Supplier, Portfolio, Project, or Property workspace while the stored records keep their real parent paths.
+
 ## Create And Edit Modes
 
 CRUD uses shared Firestore primitives, but user-facing create/edit flows are allowed to differ by mode.

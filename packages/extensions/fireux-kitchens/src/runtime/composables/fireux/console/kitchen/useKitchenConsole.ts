@@ -15,9 +15,9 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { getDemoKitchens } from '../../demo/kitchen/scenarios'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import {
-  useKitchenList,
-  type KitchenListFilter,
-} from '../../firestore/kitchen/fetch/useKitchenList'
+  useKitchenConsoleList,
+  type KitchenConsoleListFilter,
+} from './useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'
@@ -28,7 +28,7 @@ import type { Ref } from 'vue'
 type KitchenConsoleMode = ConsoleMode
 type KitchenConsoleEntity = KitchenSurface
 type UseKitchenConsoleOptions = {
-  filter?: KitchenListFilter | Ref<KitchenListFilter | null | undefined> | null
+  filter?: KitchenConsoleListFilter | Ref<KitchenConsoleListFilter | null | undefined> | null
 }
 
 /**
@@ -50,7 +50,7 @@ export function useKitchenConsole(
   const { uid } = useAuth()
   const { surface } = useKitchenInterface()
   const userId = computed(() => normalizeString(uid.value))
-  const liveFilter = computed<KitchenListFilter>(() => {
+  const liveFilter = computed<KitchenConsoleListFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
       : options.filter ?? {}
@@ -60,7 +60,7 @@ export function useKitchenConsole(
       operatorId: userId.value,
     }
   })
-  const { kitchens: liveKitchens } = useKitchenList({
+  const { kitchens: liveKitchens } = useKitchenConsoleList({
     appId: computed(() => normalizeString(appId)),
     filter: liveFilter,
   })

@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import { useKitchenList } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenList'
+import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { computed, defineComponent } from 'vue'
@@ -150,7 +150,7 @@ const statusLabel = computed(() =>
   props.form.status === 'closed' ? 'Closed' : 'Open'
 )
 
-const { kitchens } = useKitchenList()
+const { kitchens } = useKitchenCollection()
 const { companies } = useCompanyFetch()
 
 const selectedKitchen = computed(() =>

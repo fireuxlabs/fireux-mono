@@ -116,6 +116,29 @@ the core console spine. When comparing domain children across families, list
 them separately from domain-specific operation routes such as menus, info, team,
 orders, messages, or rooms.
 
+### 2c) Selected Target Operations
+
+`console/<family>/operations` is a code bucket for the selected workspace.
+
+Meaning:
+- the operator is already inside one selected target
+- helpers here can assume parent/console context is required
+- domain children and actions live here when they depend on that selected target
+
+This is not a Firestore collection name.
+This is not a stored entity.
+This is not a public route layer.
+
+Examples:
+- `console/kitchen/operations` for selected Kitchen work such as menus, dishes, ingredients, team, orders, or stations
+- `console/supplier/operations` for selected Supplier work such as items, catalogues, ingredients, or identity
+- `console/portfolio/operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
+- `console/project/operations` for selected Project management such as apps, ecosystem links, or identity
+
+Stored CRUD remains in the entity's Firestore stack or explicit child stack.
+Public route shaping remains in `public/`.
+Demo scenario data remains in `demo/`.
+
 ### 3) Public Family Surface
 
 `/X`

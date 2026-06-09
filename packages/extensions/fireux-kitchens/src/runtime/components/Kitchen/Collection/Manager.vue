@@ -105,7 +105,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useKitchenList } from '../../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../models/kitchen.model'
 
@@ -150,7 +150,7 @@ const emit = defineEmits<{
   (event: 'update:filterMode', value: 'all' | 'mine'): void
 }>()
 
-const fetched = useKitchenList()
+const fetched = useKitchenCollection()
 const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.kitchens.value
 )

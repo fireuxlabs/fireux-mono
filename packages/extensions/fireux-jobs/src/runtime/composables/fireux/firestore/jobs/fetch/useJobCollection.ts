@@ -1,6 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useKitchenList } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenList'
+import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
 import { computed } from 'vue'
 import { JobStorage, type Job } from '../../../../../models/job.model'
@@ -15,7 +15,7 @@ export function useJobCollection() {
 
   const jobs = firestoreFetchCollection<Job>(JobStorage.collection)
   const pending = computed(() => jobs.value === undefined)
-  const { kitchens } = useKitchenList()
+  const { kitchens } = useKitchenCollection()
 
   const kitchenById = computed(() => {
     const map = new Map<string, any>()

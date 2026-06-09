@@ -4,13 +4,13 @@ import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/cons
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenTestCreate } from '../../firestore/kitchen/mutations/useKitchenTestCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
-import type { KitchenListFilter } from '../../firestore/kitchen/fetch/useKitchenList'
+import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
 import type { Ref } from 'vue'
 
 type UseKitchenConsoleIndexOptions = {
-  filter?: KitchenListFilter | Ref<KitchenListFilter | null | undefined> | null
+  filter?: KitchenConsoleListFilter | Ref<KitchenConsoleListFilter | null | undefined> | null
 }
 
 export function useKitchenConsoleIndex(

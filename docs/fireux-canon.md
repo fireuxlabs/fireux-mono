@@ -401,6 +401,14 @@ composables/fireux/firestore/<entity>/
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/create/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
+Console workspace entities use an `operations` code bucket for selected-workspace work:
+
+```text
+console/<family>/operations
+```
+
+`operations` is a code directory, not a Firestore collection, stored entity, or child record name. It owns composables for things an operator does inside the selected workspace. Stored data still belongs to the real collection path, such as `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` or `apps/{appId}/portfolios/{portfolioId}/documents/{documentId}`.
+
 ### Entity CTA Family Matrix
 
 Entity index CTA surfaces classify the management path, not the marketing copy.
