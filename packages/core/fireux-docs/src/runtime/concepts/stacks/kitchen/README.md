@@ -50,7 +50,7 @@ For the current `Kitchen` stack, the shared contract is:
 - the app overlay hosts kitchen console operation
 - overlay `operator_ids` is the authority rule for console access
 - `Chef` linkage is relationship only
-- `useKitchenCollection()` stays the generic public collection seam
+- `useKitchenList()` is the generic live Kitchen read-many seam
 - kitchen console visibility/scope belongs in kitchen console seams rather than redefining the generic collection
 - `useKitchenInterface` should converge toward the thin projector canon
 - richer kitchen presentation belongs in a second layer, not in the base interface seam

@@ -113,7 +113,6 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/demo/kitchen/scenarios'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'
 import { MenuStorage } from '../../../models/menu.model'
 import { RecipeStorage } from '../../../models/recipe.model'
@@ -148,9 +147,9 @@ const { firestoreFetchCollection } = useFirestoreRead({
   databaseId: simulationDatabaseId,
 })
 const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.rootCollection)
-const { kitchens: hydratedKitchens } = useKitchenCollection({ source: 'test' })
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
+const hydratedKitchens = computed(() => kitchensCollectionValue.value)
 
 const {
   driftKind: kitchensDriftKind,

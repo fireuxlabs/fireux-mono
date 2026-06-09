@@ -1,10 +1,9 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import {
-  usePublicScope,
   usePublicScopedRecords,
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenCollection } from '../../../firestore/kitchen/useKitchen'
+import { useKitchenFetch } from '../../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../../firestore/menu/useMenu'
 import type { Menu } from '../../../../../models/menu.model'
 
@@ -20,15 +19,9 @@ export function useKitchenPublicMenuScope() {
   const route = useRoute()
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
-  const { kitchens, pending: kitchensPending } = useKitchenCollection()
-  const publicKitchen = usePublicScope({
-    scopeKey: kitchenSlug,
-    scopes: kitchens,
-    scopeKeyOf: (kitchen) => kitchen.slug,
-    scopeIdOf: (kitchen) => kitchen.id,
-    pending: kitchensPending,
-  })
-  const menuRead = useMenuCollection(publicKitchen.scopeId)
+  const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenSlug)
+  const kitchenId = computed(() => text(kitchen.value?.id))
+  const menuRead = useMenuCollection(kitchenId)
   const publicMenus = usePublicScopedRecords({
     recordKey: menuId,
     records: menuRead.menus,
@@ -38,8 +31,8 @@ export function useKitchenPublicMenuScope() {
   })
   const pending = computed(
     () =>
-      publicKitchen.pending.value ||
-      (Boolean(publicKitchen.scopeId.value) && publicMenus.pending.value)
+      kitchenPending.value ||
+      (Boolean(kitchenId.value) && publicMenus.pending.value)
   )
   const menuLink = (id: Menu['id']) =>
     `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
@@ -48,20 +41,19 @@ export function useKitchenPublicMenuScope() {
       kitchenSlug: kitchenSlug.value,
       menuId: menuId.value || null,
     },
-    kitchen: publicKitchen.scope.value
+    kitchen: kitchen.value
       ? {
-          id: text(publicKitchen.scope.value.id),
-          slug: text(publicKitchen.scope.value.slug),
-          name: text(publicKitchen.scope.value.name),
+          id: text(kitchen.value.id),
+          slug: text(kitchen.value.slug),
+          name: text(kitchen.value.name),
         }
       : null,
     kitchenLookup: {
-      pending: kitchensPending.value,
-      count: (kitchens.value ?? []).length,
-      matchesSlug: Boolean(publicKitchen.scope.value),
+      pending: kitchenPending.value,
+      matchesSlug: Boolean(kitchen.value),
     },
     menuLookup: {
-      kitchenId: publicKitchen.scopeId.value,
+      kitchenId: kitchenId.value,
       collectionPath: menuRead.collectionPath.value,
       pending: menuRead.pending.value,
       rawCount: (menuRead.menus.value ?? []).length,
@@ -77,7 +69,7 @@ export function useKitchenPublicMenuScope() {
 
   return {
     kitchenSlug,
-    kitchen: publicKitchen.scope,
+    kitchen,
     menus: publicMenus.records,
     menu: publicMenus.record,
     menuCollectionPath: menuRead.collectionPath,

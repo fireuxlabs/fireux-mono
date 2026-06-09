@@ -6,7 +6,7 @@
     console-to="/console/kitchen"
     :signed-in="Boolean(userId)"
     :has-authority="hasAuthority"
-    :missing="!publicKitchen && !pending"
+    :missing="!publicKitchen && !bridgePending"
   />
 </template>
 
@@ -14,12 +14,11 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 import EntityOperatorBridge from 'fireux-core/runtime/components/entity/OperatorBridge.vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
-import {
-  useKitchenCollection,
-  type KitchenCollectionFilter,
-} from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { resolveKitchenConsoleCollectionPath } from '../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 
 definePageMeta({
   layout: 'default',
@@ -28,22 +27,21 @@ definePageMeta({
 
 const route = useRoute()
 const { uid } = useAuth()
+const { appId } = useFireUXConfig()
 const routeLocator = computed(() => String(route.params.slug || '').trim())
 const userId = computed(() => String(uid.value || '').trim())
-const operatorFilter = computed<KitchenCollectionFilter>(() =>
-  userId.value ? { operatorId: userId.value } : { ids: [] }
-)
+const currentAppId = computed(() => String(appId || '').trim())
 const { kitchen: publicKitchen, pending } = useKitchenFetch(routeLocator)
-const { kitchens: operatorKitchens } = useKitchenCollection({
-  filter: operatorFilter,
-})
-
 const kitchenId = computed(() => String(publicKitchen.value?.id || '').trim())
+const operatorCollectionPath = computed(() =>
+  currentAppId.value ? resolveKitchenConsoleCollectionPath(currentAppId.value) : ''
+)
+const { kitchen: operatorKitchen, pending: operatorPending } = useKitchenFetch(kitchenId, {
+  collectionPath: operatorCollectionPath,
+  hydrate: false,
+})
 const hasAuthority = computed(() =>
-  Boolean(
-    kitchenId.value &&
-      operatorKitchens.value.some((kitchen) => kitchen.id === kitchenId.value)
-  )
+  targetHasOperator(operatorKitchen.value, userId.value)
 )
 const kitchenTitle = computed(() =>
   String(publicKitchen.value?.name || routeLocator.value || 'Kitchen').trim()
@@ -51,4 +49,5 @@ const kitchenTitle = computed(() =>
 const publicTo = computed(() =>
   routeLocator.value ? `/kitchens/${encodeURIComponent(routeLocator.value)}` : '/kitchens'
 )
+const bridgePending = computed(() => pending.value || operatorPending.value)
 </script>

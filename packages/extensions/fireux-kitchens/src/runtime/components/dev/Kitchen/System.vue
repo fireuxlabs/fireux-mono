@@ -112,7 +112,7 @@ import {
   ROOT_KITCHEN_COLLECTION_PATH,
   resolveKitchenConsoleCollectionPath,
 } from '../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
-import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenList } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenList'
 import { DishStorage } from '../../../models/dish.model'
 import { IngredientStorage } from '../../../models/ingredient.model'
 import { MenuStorage } from '../../../models/menu.model'
@@ -131,7 +131,7 @@ const { firestoreFetchCollection } = useFirestoreRead()
 const { appId } = useFireUXConfig()
 const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.rootCollection)
 const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
-const { kitchens: hydratedKitchens } = useKitchenCollection()
+const { kitchens: hydratedKitchens } = useKitchenList()
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
 const placesCollectionValue = computed(() => placesCollection.value ?? [])

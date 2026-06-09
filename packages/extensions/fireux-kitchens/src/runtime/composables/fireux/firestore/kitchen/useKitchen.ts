@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { Kitchen } from '../../../../models/kitchen.model'
-import { useKitchenCollection } from './fetch/useKitchenCollection'
 import { useKitchenFetch } from './fetch/useKitchenFetch'
+import { useKitchenList } from './fetch/useKitchenList'
 import { useKitchenCreate } from './mutations/useKitchenCreate'
 import { useKitchenDelete } from './mutations/useKitchenDelete'
 import { useKitchenPublish } from './mutations/useKitchenPublish'
@@ -12,13 +12,12 @@ import { useKitchenInterface } from './utils/view/useKitchenInterface'
 
 export type { Kitchen }
 export type {
-  KitchenCollectionFilter,
-  KitchenCollectionSource,
-} from './fetch/useKitchenCollection'
+  KitchenListFilter,
+} from './fetch/useKitchenList'
 
 export {
-  useKitchenCollection,
   useKitchenFetch,
+  useKitchenList,
   useKitchenCreate,
   useKitchenDelete,
   useKitchenUpdate,
@@ -33,7 +32,6 @@ export function useKitchen(id: string | Ref<string>) {
 
   return {
     ...fetched,
-    ...useKitchenCollection(),
     ...useKitchenCreate(),
     ...useKitchenDelete(),
     ...useKitchenUpdate(),

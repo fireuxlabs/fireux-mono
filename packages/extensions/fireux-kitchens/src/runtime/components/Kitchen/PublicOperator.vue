@@ -26,7 +26,8 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
-import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
+import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import { useKitchenSelection } from '../../composables/fireux/console/kitchen/useKitchenSelection'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -59,17 +60,13 @@ const isTenantConsoleHandoff = computed(() =>
 const { app: operatorApp } = useAppFetch(operatorAppId)
 const currentUserId = computed(() => String(currentUser.value?.id ?? '').trim())
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
-const consoleFilter = computed(() => ({
-  ids: kitchenId.value ? [kitchenId.value] : [],
-  operatorId: currentUserId.value,
-}))
-const { kitchens: operatorKitchens } = useKitchenCollection({
-  appId: operatorAppId,
-  filter: consoleFilter,
-})
-const consoleKitchen = computed(() =>
-  operatorKitchens.value.find((kitchen) => kitchen.id === kitchenId.value) ?? null
+const operatorCollectionPath = computed(() =>
+  operatorAppId.value ? resolveKitchenConsoleCollectionPath(operatorAppId.value) : ''
 )
+const { kitchen: consoleKitchen } = useKitchenFetch(kitchenId, {
+  collectionPath: operatorCollectionPath,
+  hydrate: false,
+})
 const hasConsoleAccess = computed(() =>
   targetHasOperator(consoleKitchen.value, currentUserId.value)
 )

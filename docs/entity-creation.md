@@ -217,7 +217,7 @@ Examples:
 
 ```text
 useKitchenFetch(id)          -> root kitchen read
-useKitchenCollection()       -> root kitchen collection read
+useKitchenList()             -> live kitchen list read
 useKitchenInterface().surface -> root/place/console surface composition
 
 useKitchenMiseCollection()   -> scoped kitchen child collection read

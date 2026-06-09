@@ -45,8 +45,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getDemoKitchenCollection } from '../../../composables/fireux/demo/kitchen/scenarios'
-import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import {
+  getDemoKitchenCollection,
+  getDemoKitchens,
+} from '../../../composables/fireux/demo/kitchen/scenarios'
 import type { Menu } from '../../../models/menu.model'
 
 definePageMeta({
@@ -57,11 +59,12 @@ definePageMeta({
   name: 'DemoKitchensIndexPage',
 })
 
-const { kitchens: demoKitchens } = useKitchenCollection({
-  source: 'demo',
-})
-
-const kitchens = computed(() => demoKitchens.value)
+const kitchens = computed(() =>
+  getDemoKitchens().map((kitchen) => ({
+    ...kitchen,
+    short_address: kitchen.label || 'Kitchen simulation',
+  }))
+)
 
 const resolveDefaultMenuId = (kitchenId: string) => {
   const menus = getDemoKitchenCollection<Menu>(kitchenId, 'menus')
