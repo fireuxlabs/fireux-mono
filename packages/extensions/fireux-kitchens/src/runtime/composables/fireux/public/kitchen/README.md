@@ -10,11 +10,10 @@ Current active surface:
 - `/kitchens/[slug]/menus`
 - `/kitchens/[slug]/menus/[menuId]`
 
-Kitchen public helpers are needed because public menus combine Kitchen, Menu, Section, Item, Dish, publish state, language/chrome state, and unavailable states.
+Kitchen public helpers are needed because public menus combine Kitchen, Menu, Section, Item, Dish, publish state, presentation chrome, and unavailable states.
 
 Subfolders:
 - `menu/` owns public Kitchen Menu route shaping.
-- Sproochli language UI/helpers are owned by `fireux-sproochli`; Kitchen public routes only adapt Kitchen/Menu/Dish data into that seam.
 
 Keep stored CRUD in `firestore/`.
 Keep selected operator workspace behavior in `console/kitchen`.

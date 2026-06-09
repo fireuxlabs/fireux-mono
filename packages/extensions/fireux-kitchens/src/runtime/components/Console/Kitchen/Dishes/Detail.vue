@@ -191,10 +191,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleDish } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDish'
 import { useDish } from '../../../../composables/fireux/firestore/dish/useDish'
-import {
-  normalizeDishTranslatedText,
-  type Dish,
-} from '../../../../models/dish.model'
+import type { Dish } from '../../../../models/dish.model'
 
 const {
   dish,
@@ -226,16 +223,6 @@ const form = reactive({
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const certifiedLanguageMap = (value: unknown) => {
-  const source = normalizeDishTranslatedText(value)
-
-  return Object.fromEntries(
-    ['de', 'en']
-      .map((language) => [language, normalizeString(source[language])])
-      .filter(([, text]) => text)
-  )
-}
-
 const buildSignature = () =>
   JSON.stringify({
     name: normalizeString(form.name),
@@ -290,24 +277,11 @@ const saveDish = async () => {
 
   try {
     const description = normalizeString(form.description)
-    const names = certifiedLanguageMap(dish.value.names)
-    const descriptions = certifiedLanguageMap(dish.value.descriptions)
-    names.de = name
-    names.en = name
-
-    if (description) {
-      descriptions.de = description
-    } else {
-      delete descriptions.de
-    }
-
     await updateDish(
       dishId.value,
       {
         name,
         description,
-        names,
-        descriptions,
       },
       { kitchenId: kitchenId.value }
     )

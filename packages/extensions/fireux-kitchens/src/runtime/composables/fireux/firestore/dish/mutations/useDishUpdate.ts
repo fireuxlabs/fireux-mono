@@ -2,7 +2,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, unref, type Ref } from 'vue'
 import {
-  normalizeDishTranslatedText,
   DishStorage,
   type Dish,
   type DishUpdateInput,
@@ -44,10 +43,6 @@ export function useDishUpdate(
     if ('name' in patch) next.name = trim(patch.name)
     if ('slug' in patch) next.slug = optional(patch.slug) || ''
     if ('description' in patch) next.description = trim(patch.description)
-    if ('names' in patch) next.names = normalizeDishTranslatedText(patch.names)
-    if ('descriptions' in patch) {
-      next.descriptions = normalizeDishTranslatedText(patch.descriptions)
-    }
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`
     await updateDocument<Dish>(collectionPath, resolvedDishId, next)

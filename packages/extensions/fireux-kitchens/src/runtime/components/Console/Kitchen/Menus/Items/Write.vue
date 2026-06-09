@@ -43,7 +43,6 @@
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenuSection } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
-import { useKitchenMenuSproochliSync } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 
 const {
   kitchenId,
@@ -54,9 +53,7 @@ const {
   itemRows,
   canWrite,
   createItem,
-  menu,
 } = useKitchenConsoleMenuSection()
-const { markMenuNeedsTranslationRefresh } = useKitchenMenuSproochliSync()
 const toast = useToastify()
 const dishId = ref('')
 const price = ref(0)
@@ -78,7 +75,6 @@ async function add() {
       price: Number(price.value || 0),
       sort_order: itemRows.value.length + 1,
     })
-    await markMenuNeedsTranslationRefresh(menu.value)
     dishId.value = ''
     price.value = 0
     toast.add({ title: 'Dish added to menu', color: 'success', icon: 'i-lucide-check' })

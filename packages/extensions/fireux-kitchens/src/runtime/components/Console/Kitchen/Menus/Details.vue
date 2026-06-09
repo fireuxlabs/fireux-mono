@@ -38,26 +38,19 @@
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
-import { useKitchenMenuSproochliSync } from '../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 import type { MenuUpdateInput } from '../../../../models/menu.model'
 
 const {
   menu,
-  menuId,
   kitchenId,
   canWrite,
   updateMenu,
 } = useKitchenConsoleMenu()
-const {
-  markMenuNeedsTranslationRefresh,
-  syncMenuField,
-} = useKitchenMenuSproochliSync()
 const toast = useToastify()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => normalizeString(menu.value?.name))
 const menuDescription = computed(() => normalizeString(menu.value?.description))
-const isPublished = computed(() => menu.value?.status === 'published')
 
 const validateMenuName = (value: string) => {
   const next = normalizeString(value)
@@ -68,20 +61,15 @@ const validateMenuName = (value: string) => {
 }
 
 async function updateDetailsField(
-  field: 'name' | 'description',
   patch: MenuUpdateInput,
-  sourceText: string,
   successTitle: string,
   failTitle: string
 ) {
   if (!canWrite.value) throw new Error('This menu is read-only.')
-  if (!kitchenId.value || !menuId.value) throw new Error('No menu selected.')
-  const shouldRefreshTranslations = isPublished.value
+  const currentMenuId = normalizeString(menu.value?.id)
+  if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
   try {
-    await updateMenu(kitchenId.value, menuId.value, patch)
-    if (shouldRefreshTranslations) {
-      await refreshPublishedField(field, sourceText)
-    }
+    await updateMenu(kitchenId.value, currentMenuId, patch)
     toast.add({ title: successTitle, color: 'success', icon: 'i-lucide-check' })
     return 'success'
   } catch (error) {
@@ -95,58 +83,16 @@ async function updateDetailsField(
   }
 }
 
-function showTranslationFailures(
-  failures: Array<{ language?: string; message?: string }> = []
-) {
-  if (!failures.length) return
-
-  toast.add({
-    title: 'Some translations need attention',
-    description: failures
-      .map((failure) => failure.language || failure.message)
-      .filter(Boolean)
-      .join(', '),
-    color: 'warning',
-    icon: 'i-lucide-languages',
-  })
-}
-
-async function refreshPublishedField(field: 'name' | 'description', sourceText: string) {
-  try {
-    const result = await syncMenuField({
-      menu: menu.value,
-      field,
-      sourceText,
-    })
-    showTranslationFailures(result.failures)
-    if (result.failures?.length) {
-      await markMenuNeedsTranslationRefresh(menu.value)
-    }
-  } catch (error) {
-    await markMenuNeedsTranslationRefresh(menu.value)
-    toast.add({
-      title: 'Translations were not refreshed',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'warning',
-      icon: 'i-lucide-languages',
-    })
-  }
-}
-
 const handleName = async (value: string) =>
   updateDetailsField(
-    'name',
     { name: normalizeString(value) },
-    normalizeString(value),
     'Menu name updated',
     'Could not update menu name'
   )
 
 const handleDescription = async (value: string) =>
   updateDetailsField(
-    'description',
     { description: normalizeString(value) },
-    normalizeString(value),
     'Menu description updated',
     'Could not update menu description'
   )

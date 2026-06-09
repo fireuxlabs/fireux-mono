@@ -11,11 +11,6 @@ type MenuRowOptions = {
   sections: Ref<MenuSection[]>
   items: Ref<MenuItem[]>
   dishesById: Ref<Map<string, Dish>>
-  textFor: (
-    fieldId: string,
-    defaultText?: unknown,
-    translations?: unknown
-  ) => string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -43,18 +38,8 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
       return {
         id: sectionId,
         section,
-        label:
-          options.textFor(
-            `section:${sectionId}:label`,
-            section.label,
-            record(section).labels ?? record(section).translations
-          ) || text(section.label),
-        description:
-          options.textFor(
-            `section:${sectionId}:description`,
-            section.description,
-            record(section).descriptions
-          ) || text(section.description),
+        label: text(section.label),
+        description: text(section.description),
         items: items.map((item) => {
           const dishId = text(item.dish_id)
           const dish = options.dishesById.value.get(dishId) ?? null
@@ -62,17 +47,8 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
             id: text(item.id),
             item,
             dish,
-            name:
-              options.textFor(
-                `dish:${dishId}:name`,
-                dish?.name,
-                record(dish).names
-              ) || dishId,
-            description: options.textFor(
-              `dish:${dishId}:description`,
-              dish?.description,
-              record(dish).descriptions
-            ),
+            name: text(dish?.name) || dishId,
+            description: text(dish?.description),
             price: Number(item.price || 0),
             priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
           }

@@ -194,7 +194,7 @@ const sourceMeta = {
         {
           name: 'Menu',
           purpose: 'Kitchen-owned menu identity. Sections and items live in child collections.',
-          keyFields: ['id', 'kitchen_id', 'name', 'description', 'source_language', 'status'],
+          keyFields: ['id', 'kitchen_id', 'name', 'description', 'status'],
           linksTo: ['Dish'],
         },
         {
@@ -289,7 +289,6 @@ const sourceMeta = {
             kitchen_id: 'k_demo_grill_yard',
             name: 'Lunch Core',
             description: 'Core lunch menu.',
-            source_language: 'en',
             status: 'published',
           },
         },

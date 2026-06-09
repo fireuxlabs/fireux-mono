@@ -95,7 +95,7 @@ const addDish = async () => {
   message.value = ''
 
   try {
-    const result = await createDish(
+    await createDish(
       {
         name: dishName,
         description: normalizeString(description.value),
@@ -105,16 +105,7 @@ const addDish = async () => {
     name.value = ''
     description.value = ''
     message.value = `Created ${dishName}.`
-    if (result.failedLanguages.length) {
-      toast.add({
-        title: 'Dish created with translation gaps',
-        description: `Failed languages: ${result.failedLanguages.join(', ')}`,
-        color: 'amber',
-        icon: 'i-heroicons-exclamation-triangle',
-      })
-    } else {
-      toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
-    }
+    toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     const errorMessage = String((error as any)?.message || error || 'Create dish failed.')
     message.value = errorMessage

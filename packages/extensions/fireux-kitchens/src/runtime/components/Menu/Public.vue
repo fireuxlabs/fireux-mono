@@ -89,7 +89,6 @@ const props = defineProps<{
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
-  languageCode?: string
   variant?: 'page' | 'preview'
   colorMode?: 'system' | 'light' | 'dark'
 }>()
@@ -152,7 +151,6 @@ const formatItemPrice = (item: KitchenPublicMenuItemRow) =>
     currencyCode: props.currencyCode,
     currencyFormat: props.currencyFormat,
     showCurrency: props.showCurrency,
-    languageCode: props.languageCode,
   })
 
 const updateSystemColorMode = () => {

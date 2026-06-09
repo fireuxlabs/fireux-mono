@@ -9,8 +9,6 @@ import { useMenuCollection } from '../../../firestore/menu/useMenu'
 import type { Menu } from '../../../../../models/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const normalizeLanguageCode = (value: unknown) =>
-  text(Array.isArray(value) ? value[0] : value).toLowerCase().replace(/_/g, '-')
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
 const menuDebug = (menu: Menu) => ({
   id: text(menu.id),
@@ -22,9 +20,6 @@ export function useKitchenPublicMenuScope() {
   const route = useRoute()
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
-  const selectedLanguage = computed(() =>
-    normalizeLanguageCode(route.query.language ?? route.query.lang ?? route.query.sproochli)
-  )
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const publicKitchen = usePublicScope({
     scopeKey: kitchenSlug,
@@ -46,18 +41,12 @@ export function useKitchenPublicMenuScope() {
       publicKitchen.pending.value ||
       (Boolean(publicKitchen.scopeId.value) && publicMenus.pending.value)
   )
-  const languageQuery = computed(() =>
-    selectedLanguage.value
-      ? `?language=${encodeURIComponent(selectedLanguage.value)}`
-      : ''
-  )
   const menuLink = (id: Menu['id']) =>
-    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}${languageQuery.value}`
+    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
   const debug = computed(() => ({
     route: {
       kitchenSlug: kitchenSlug.value,
       menuId: menuId.value || null,
-      selectedLanguage: selectedLanguage.value || null,
     },
     kitchen: publicKitchen.scope.value
       ? {
@@ -92,7 +81,6 @@ export function useKitchenPublicMenuScope() {
     menus: publicMenus.records,
     menu: publicMenus.record,
     menuCollectionPath: menuRead.collectionPath,
-    selectedLanguage,
     pending,
     menuLink,
     debug,

@@ -15,30 +15,22 @@ const props = withDefaults(defineProps<{
   kitchenSlug?: string
   menuName?: string
   current?: 'kitchen' | 'menus' | 'menu'
-  selectedLanguage?: string
 }>(), {
   kitchenName: 'Kitchen',
   kitchenSlug: '',
   menuName: 'Menu',
   current: 'kitchen',
-  selectedLanguage: '',
 })
 
 const text = (value: unknown) => String(value ?? '').trim()
 const kitchenName = computed(() => text(props.kitchenName) || 'Kitchen')
 const kitchenSlug = computed(() => text(props.kitchenSlug))
-const selectedLanguage = computed(() => text(props.selectedLanguage))
-const languageQuery = computed(() =>
-  selectedLanguage.value
-    ? `?language=${encodeURIComponent(selectedLanguage.value)}`
-    : ''
-)
 const kitchenPath = computed(() =>
   kitchenSlug.value
     ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}`
     : '/kitchens'
 )
-const menusPath = computed(() => `${kitchenPath.value}/menus${languageQuery.value}`)
+const menusPath = computed(() => `${kitchenPath.value}/menus`)
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   if (props.current === 'kitchen') {

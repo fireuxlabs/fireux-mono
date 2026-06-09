@@ -16,30 +16,16 @@
       </UCard>
 
       <UCard>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-languages" class="size-5 text-muted" />
-              <div class="text-base font-semibold text-highlighted">
-                Sproochli
-              </div>
-            </div>
+        <div class="flex items-start gap-3">
+          <UIcon name="i-lucide-puzzle" class="mt-1 size-5 shrink-0 text-muted" />
+          <div>
+            <h3 class="text-base font-semibold text-highlighted">
+              No kitchen plugins yet
+            </h3>
             <p class="text-sm text-dimmed">
-              Use Sproochli language tools for this kitchen's public menus.
-            </p>
-            <p class="text-xs text-muted">
-              Kitchen decides if language tools are available. Menu stores the actual language work.
+              Optional tools can be added here once they have their own package layer.
             </p>
           </div>
-
-          <USwitch
-            :model-value="sproochliEnabled"
-            :disabled="!canWrite || saving"
-            unchecked-icon="i-lucide-x"
-            checked-icon="i-lucide-check"
-            :label="sproochliLabel"
-            @update:model-value="updateSproochli"
-          />
         </div>
       </UCard>
     </div>
@@ -49,44 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 
 const {
   selectedKitchen,
-  kitchenId,
-  canWrite,
-  sproochliEnabled,
 } = useKitchenConsoleIdentity()
-const { updateKitchen } = useKitchenUpdate()
-const toast = useToastify()
-const saving = ref(false)
-
-const sproochliLabel = computed(() =>
-  sproochliEnabled.value ? 'Sproochli enabled' : 'Sproochli disabled'
-)
-
-async function updateSproochli(value: boolean) {
-  if (!canWrite.value || saving.value) return
-
-  const id = String(kitchenId.value || '').trim()
-  if (!id) {
-    toast.error('Select a kitchen before updating plugins.')
-    return
-  }
-
-  saving.value = true
-
-  try {
-    await updateKitchen(id, { sproochli_enabled: value === true })
-    toast.success(value ? 'Sproochli enabled' : 'Sproochli disabled')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to update Sproochli: ${message}`)
-  } finally {
-    saving.value = false
-  }
-}
 </script>

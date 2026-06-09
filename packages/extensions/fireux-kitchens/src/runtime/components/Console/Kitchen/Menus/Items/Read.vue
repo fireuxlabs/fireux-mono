@@ -69,7 +69,6 @@ import {
   type MenuSectionItemRow,
   useKitchenConsoleMenuSection,
 } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
-import { useKitchenMenuSproochliSync } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 
 const {
   kitchenId,
@@ -80,9 +79,7 @@ const {
   pending,
   canWrite,
   archiveItem,
-  menu,
 } = useKitchenConsoleMenuSection()
-const { markMenuNeedsTranslationRefresh } = useKitchenMenuSproochliSync()
 const toast = useToastify()
 
 const formatPrice = (price: number) =>
@@ -91,7 +88,7 @@ const formatPrice = (price: number) =>
     : ''
 const formatOptionUnit = (quantity: number, unit: string) => {
   if (unit === 'gram') return `${quantity} g`
-  if (unit === 'piece') return `${quantity} Stk.`
+  if (unit === 'piece') return `${quantity} pc`
 
   return [quantity, unit].filter(Boolean).join(' ')
 }
@@ -116,7 +113,6 @@ const formatItemPrice = (row: MenuSectionItemRow) => {
 async function archive(itemId: string) {
   try {
     await archiveItem(kitchenId.value, menuId.value, sectionId.value, itemId)
-    await markMenuNeedsTranslationRefresh(menu.value)
     toast.add({ title: 'Item archived', color: 'success', icon: 'i-lucide-check' })
   } catch (error) {
     toast.add({

@@ -40,7 +40,7 @@ Kitchen-specific delta:
 - public menu publishing reads app-scoped Kitchen children:
   - `apps/<appId>/kitchens/<kitchenId>/menus/<menuId>`
   - `apps/<appId>/kitchens/<kitchenId>/dishes/<dishId>`
-- public menu and dish copy is translated directly from menu/dish text
+- public menu and dish copy renders directly from menu/dish text
 - public menu delivery must not depend on private working `mise` or console operation lines
 
 ## Short Version

@@ -72,13 +72,6 @@ export type KitchenSurface = {
   menu_show_currency?: boolean
   menu_available?: boolean
   menu_style?: Partial<PageStyle>
-  sproochli_enabled?: boolean
-  language_settings?: {
-    native_language?: string
-    attached_languages?: string[]
-    cache_languages?: string[]
-    public_languages?: string[]
-  }
   formatted_address?: string
   short_address?: string
   lat?: number

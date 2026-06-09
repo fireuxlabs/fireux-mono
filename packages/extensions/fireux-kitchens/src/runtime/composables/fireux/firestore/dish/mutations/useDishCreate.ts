@@ -3,7 +3,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
   DishStorage,
@@ -16,65 +15,28 @@ import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelectio
 type DishCreateDraft = {
   name: string
   description?: string
-  names?: unknown
-  descriptions?: unknown
-}
-
-type DishCreateOptions = {
-  languageCodes?: string[]
-  sourceLanguage?: string
-  translate?: boolean
 }
 
 export type DishCreateResult = {
   id: string
-  failedLanguages: string[]
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-async function buildDishPayload(
+function buildDishPayload(
   dishId: string,
   draft: DishCreateDraft,
-  kitchenId: string,
-  seedTranslations: ReturnType<typeof useTranslationSeed>['seedTranslations'],
-  options: DishCreateOptions
-): Promise<{ payload: DishCreateInput; failedLanguages: string[] }> {
+  kitchenId: string
+): DishCreateInput {
   const name = normalizeString(draft.name)
   const description = normalizeString(draft.description)
-  const nameSeed = await seedTranslations({
-    text: name,
-    sourceLanguage: options.sourceLanguage,
-    languageCodes: options.languageCodes,
-    existingText: draft.names,
-    translate: options.translate,
-  })
-  const descriptionSeed = description
-    ? await seedTranslations({
-        text: description,
-        sourceLanguage: nameSeed.sourceLanguage,
-        languageCodes: options.languageCodes,
-        existingText: draft.descriptions,
-        translate: options.translate,
-      })
-    : null
 
   return {
-    failedLanguages: Array.from(
-      new Set([
-        ...nameSeed.failedLanguages,
-        ...(descriptionSeed?.failedLanguages ?? []),
-      ])
-    ),
-    payload: {
-      id: dishId,
-      name,
-      slug: dishId,
-      description,
-      names: nameSeed.text,
-      descriptions: descriptionSeed?.text ?? {},
-      kitchen_id: kitchenId,
-    },
+    id: dishId,
+    name,
+    slug: dishId,
+    description,
+    kitchen_id: kitchenId,
   }
 }
 
@@ -88,7 +50,6 @@ export function useDishCreate(
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenSelection()
-  const { seedTranslations } = useTranslationSeed()
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
@@ -97,8 +58,7 @@ export function useDishCreate(
 
   const createDish = async (
     draft: DishCreateDraft,
-    overrides: { kitchenId?: string } = {},
-    createOptions: DishCreateOptions = {}
+    overrides: { kitchenId?: string } = {}
   ): Promise<DishCreateResult> => {
     const kitchenId = normalizeString(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
@@ -116,12 +76,10 @@ export function useDishCreate(
       throw new Error('Dish already exists')
     }
 
-    const { payload, failedLanguages } = await buildDishPayload(
+    const payload = buildDishPayload(
       dishId,
       draft,
-      kitchenId,
-      seedTranslations,
-      createOptions
+      kitchenId
     )
 
     await setDocument<Dish>(collectionPath, dishId, payload as Dish, {
@@ -129,7 +87,7 @@ export function useDishCreate(
       creator: true,
     })
 
-    return { id: dishId, failedLanguages }
+    return { id: dishId }
   }
 
   return { createDish }

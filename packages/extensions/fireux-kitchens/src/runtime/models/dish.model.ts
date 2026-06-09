@@ -21,15 +21,11 @@ export const DishStorage = {
   idParam: 'dishId',
 } as const
 
-export type DishTranslatedText = Partial<Record<string, string>>
-
 export const DishModel = {
   id: '' as string,
   name: '' as string,
   slug: '' as string,
   description: '' as string,
-  names: {} as DishTranslatedText,
-  descriptions: {} as DishTranslatedText,
   kitchen_id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
@@ -55,24 +51,6 @@ export type DishUpdateInput = Partial<
 
 const pickString = (value: unknown) => String(value ?? '').trim()
 
-export function normalizeDishTranslatedText(value: unknown): DishTranslatedText {
-  if (typeof value === 'string') {
-    const text = pickString(value)
-    return text ? { en: text } : {}
-  }
-
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  const translated: DishTranslatedText = {}
-  for (const [language, text] of Object.entries(value as Record<string, unknown>)) {
-    const code = pickString(language).replace(/_/g, '-')
-    const copy = pickString(text)
-    if (code && copy) translated[code] = copy
-  }
-
-  return translated
-}
-
 export function normalizeDish(value: unknown): Dish {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   const created = source.created && typeof source.created === 'object'
@@ -88,8 +66,6 @@ export function normalizeDish(value: unknown): Dish {
     name: pickString(source.name),
     slug: pickString(source.slug),
     description: pickString(source.description),
-    names: normalizeDishTranslatedText(source.names),
-    descriptions: normalizeDishTranslatedText(source.descriptions),
     kitchen_id: pickString(source.kitchen_id),
     created,
     updated,

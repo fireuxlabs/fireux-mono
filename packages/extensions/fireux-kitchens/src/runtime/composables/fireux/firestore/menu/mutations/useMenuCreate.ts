@@ -13,7 +13,6 @@ export type MenuCreateInput = {
   kitchenId?: string
   name: string
   description?: string
-  source_language?: string
   status?: Menu['status']
   doc_url?: string
   doc_name?: string
@@ -34,7 +33,6 @@ function buildMenuPayload(
     kitchen_id: kitchenId,
     name,
     description: normalizeString(input.description),
-    source_language: normalizeString(input.source_language) || 'en',
     status: input.status || 'draft',
     doc_url: normalizeString(input.doc_url),
     doc_name: normalizeString(input.doc_name),

@@ -14,16 +14,8 @@ The menu public seam is split by job:
 - `useKitchenPublicMenuDetail.ts` composes the detail route data.
 - `useKitchenPublicMenuRows.ts` shapes sections, items, and dishes into display rows.
 - `useKitchenPublicMenuItems.ts` reads scoped menu items.
-- `useKitchenPublicMenuTranslations.ts` reads cached public translations.
-- `useKitchenPublicMenuLanguagePrepare.ts` requests missing Sproochli cache rows.
 - `useKitchenPublicMenuTheme.ts` resolves small public menu theme tokens.
 - `types.ts` owns public row types.
-
-The route-triggered language prepare path is split outside this composable layer:
-- `server/api/kitchens/public-menu/prepare-language.post.ts` owns the HTTP route.
-- `server/utils/kitchens/publicMenuLanguageFields.ts` adapts Kitchen/Menu/Dish truth into translatable fields.
-- `server/utils/kitchens/publicMenuTranslationCache.ts` reads and writes the Kitchen-owned translation cache.
-- `fireux-sproochli` owns supported languages, provider URLs, and Menu translation provider contracts.
 
 Menu is a public-rendered scoped entity:
 - Kitchen owns the scoped Menu records.
@@ -31,9 +23,9 @@ Menu is a public-rendered scoped entity:
 - Public routes do not create root Menu truth.
 - Public routes do not promote or migrate scoped records.
 
-The menu layer keeps Menu loading and publish truth in Kitchens. Sproochli owns language UI/helpers; Kitchen menu routes may call those helpers to decorate already-loaded public menu data.
+The menu layer keeps Menu loading and publish truth in Kitchens. Translation/language upgrades should decorate already-loaded Menu data from outside this base seam.
 <!-- docs:public:end -->
 
 Keep stored Menu CRUD in `firestore/menu`.
 Keep selected operator menu workflows in `console/kitchen/operations`.
-Keep Sproochli/language chrome helpers in `fireux-sproochli`.
+Keep translation/language chrome helpers outside the base Kitchen Menu layer.

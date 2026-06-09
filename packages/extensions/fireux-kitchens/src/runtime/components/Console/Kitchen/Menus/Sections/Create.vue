@@ -42,17 +42,14 @@
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
-import { useKitchenMenuSproochliSync } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenMenuSproochliSync'
 
 const {
-  menu,
   menuId,
   kitchenId,
   canWrite,
   sections,
   createSection,
 } = useKitchenConsoleMenu()
-const { markMenuNeedsTranslationRefresh } = useKitchenMenuSproochliSync()
 const toast = useToastify()
 const saving = ref(false)
 const sectionLabel = ref('')
@@ -73,7 +70,6 @@ async function addSection() {
       description: sectionDescription.value,
       sort_order: sections.value.length + 1,
     })
-    await markMenuNeedsTranslationRefresh(menu.value)
     sectionLabel.value = ''
     sectionDescription.value = ''
     toast.add({ title: 'Section added', color: 'success', icon: 'i-lucide-check' })
