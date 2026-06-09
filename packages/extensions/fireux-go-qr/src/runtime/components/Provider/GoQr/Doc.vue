@@ -3,6 +3,7 @@
     :src="toolUrl"
     :title="title"
     :provider-origin="providerBaseUrl"
+    :auth-token="authToken"
     message-source="go-qr"
   />
 </template>
@@ -26,22 +27,24 @@ const props = withDefaults(defineProps<{
   loadingLabel?: string
   openTargetLabel?: string
   takenMessage?: string
+  authToken?: string
 }>(), {
-  title: 'Menu',
-  description: 'Upload a menu, choose a short path, and get a QR menu.',
-  fileLabel: 'Menu file',
-  pathLabel: 'Menu path',
-  slugPlaceholder: 'my-menu',
+  title: 'Doc',
+  description: 'Upload a doc, choose a short path, and get a QR.',
+  fileLabel: 'Doc file',
+  pathLabel: 'Doc path',
+  slugPlaceholder: 'my-doc',
   previewBaseUrl: '',
   previewPathSuffix: '/qr',
   createEndpoint: '',
   availabilityEndpoint: '',
-  accept: 'application/pdf,.doc,.docx',
-  uploadHint: 'PDF, DOC, or DOCX. Max 10 MB.',
-  ctaLabel: 'Create menu QR',
-  loadingLabel: 'Creating menu...',
-  openTargetLabel: 'Open menu',
-  takenMessage: 'This menu path is already taken.',
+  accept: 'application/pdf,image/*,.doc,.docx',
+  uploadHint: 'PDF, image, DOC, or DOCX. Max 10 MB.',
+  ctaLabel: 'Create doc QR',
+  loadingLabel: 'Creating doc...',
+  openTargetLabel: 'Open doc',
+  takenMessage: 'This doc path is already taken.',
+  authToken: '',
 })
 
 const providerBaseUrl = import.meta.dev

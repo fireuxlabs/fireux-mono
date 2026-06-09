@@ -31,3 +31,18 @@ export type ToolProviderHeightRequestMessage = {
   source: 'fireux-tool-iframe'
   type: 'tool-height-request'
 }
+
+export type ToolProviderAuthRequestMessage<
+  ProviderId extends string = string,
+  ToolId extends string = string,
+> = {
+  source: ProviderId
+  tool: ToolId
+  type: 'tool-auth-request'
+}
+
+export type ToolProviderAuthMessage = {
+  source: 'fireux-tool-iframe'
+  type: 'tool-auth'
+  token: string
+}

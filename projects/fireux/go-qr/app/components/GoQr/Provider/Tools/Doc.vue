@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type ToolResponse = {
   tool: {
@@ -140,6 +140,8 @@ const isCreating = ref(false)
 const createError = ref('')
 const createdPath = ref('')
 const createdQrPath = ref('')
+const authToken = ref('')
+let authRequestResolve: ((token: string) => void) | null = null
 
 const file = computed(() =>
   Array.isArray(selectedFile.value)
@@ -194,12 +196,14 @@ watch(slugInput, async () => {
   if (!slug) return
 
   try {
+    const token = await requestToolAuth()
     const response = await $fetch<{
       taken?: boolean
       is_valid?: boolean
       message?: string
     }>(availabilityEndpoint.value, {
       query: { id: slug },
+      headers: token ? { authorization: `Bearer ${token}` } : undefined,
     })
 
     slugTaken.value = Boolean(response.taken)
@@ -208,6 +212,45 @@ watch(slugInput, async () => {
     slugError.value = error instanceof Error ? error.message : 'Doc path is not valid.'
   }
 })
+
+onMounted(() => {
+  window.addEventListener('message', handleToolAuthMessage)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', handleToolAuthMessage)
+})
+
+function handleToolAuthMessage(event: MessageEvent) {
+  if (event.source !== window.parent) return
+  if (event.data?.source !== 'fireux-tool-iframe') return
+  if (event.data?.type !== 'tool-auth') return
+
+  const token = typeof event.data.token === 'string' ? event.data.token : ''
+  authToken.value = token
+  authRequestResolve?.(token)
+  authRequestResolve = null
+}
+
+function requestToolAuth() {
+  if (!import.meta.client || window.parent === window) return Promise.resolve(authToken.value)
+  if (authToken.value) return Promise.resolve(authToken.value)
+
+  return new Promise<string>((resolve) => {
+    authRequestResolve = resolve
+    window.parent.postMessage({
+      source: 'go-qr',
+      tool: 'doc',
+      type: 'tool-auth-request',
+    }, '*')
+
+    window.setTimeout(() => {
+      if (!authRequestResolve) return
+      authRequestResolve = null
+      resolve(authToken.value)
+    }, 700)
+  })
+}
 
 async function createDoc() {
   if (!canCreate.value || !file.value) return
@@ -221,6 +264,7 @@ async function createDoc() {
     const form = new FormData()
     form.append('slug', normalizedSlug.value)
     form.append('file', file.value)
+    const token = await requestToolAuth()
 
     const response = await $fetch<{
       path?: string
@@ -229,6 +273,7 @@ async function createDoc() {
       qr_url?: string
     }>(createEndpoint.value, {
       method: 'POST',
+      headers: token ? { authorization: `Bearer ${token}` } : undefined,
       body: form,
     })
 

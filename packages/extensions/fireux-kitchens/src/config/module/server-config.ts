@@ -2,9 +2,15 @@ import { addServerHandler, type Resolver } from '@nuxt/kit'
 
 export function configureServer(resolver: Resolver) {
   addServerHandler({
-    route: '/api/kitchens/public-menu/prepare-language',
+    route: '/api/console/kitchen/menus/upload-source',
     handler: resolver.resolve(
-      './runtime/server/api/kitchens/public-menu/prepare-language.post'
+      './runtime/server/api/console/kitchen/menus/upload-source.post'
+    ),
+  })
+  addServerHandler({
+    route: '/api/console/kitchen/menus/availability',
+    handler: resolver.resolve(
+      './runtime/server/api/console/kitchen/menus/availability.get'
     ),
   })
 }

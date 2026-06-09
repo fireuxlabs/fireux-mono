@@ -1,6 +1,6 @@
 <template>
   <SolutionPage :solution="solution">
-    <ProviderGoQrDocTool
+    <ProviderGoQrDoc
       :preview-base-url="`${consumerBaseUrl}/menus`"
       preview-path-suffix="/qr"
       :create-endpoint="`${consumerBaseUrl}/api/menus/create`"

@@ -11,16 +11,21 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import type { ToolProviderHeightRequestMessage } from '../../../types/tool-provider.types'
+import type {
+  ToolProviderAuthMessage,
+  ToolProviderHeightRequestMessage,
+} from '../../../types/tool-provider.types'
 
 const props = withDefaults(defineProps<{
   src: string
   title: string
   providerOrigin: string
   messageSource?: string
+  authToken?: string
   initialHeight?: number
 }>(), {
   messageSource: '',
+  authToken: '',
   initialHeight: 280,
 })
 
@@ -42,10 +47,25 @@ function handleToolMessage(event: MessageEvent) {
   if (event.origin !== expectedOrigin.value) return
   if (event.source !== toolFrame.value?.contentWindow) return
   if (props.messageSource && event.data?.source !== props.messageSource) return
+  if (event.data?.type === 'tool-auth-request') {
+    sendToolAuth()
+    return
+  }
+
   if (event.data?.type !== 'tool-height') return
 
   const height = Number(event.data.height)
   if (Number.isFinite(height) && height > 0) toolHeight.value = height
+}
+
+function sendToolAuth() {
+  const message = {
+    source: 'fireux-tool-iframe',
+    type: 'tool-auth',
+    token: props.authToken || '',
+  } satisfies ToolProviderAuthMessage
+
+  toolFrame.value?.contentWindow?.postMessage(message, expectedOrigin.value)
 }
 
 function requestToolHeight() {

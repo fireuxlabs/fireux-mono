@@ -1,6 +1,7 @@
 <template>
   <section class="console-surface space-y-6">
     <template v-if="selectedKitchen">
+      <ConsoleKitchenMenusUpload />
       <ConsoleKitchenMenusWrite />
       <ConsoleKitchenMenusRead />
     </template>

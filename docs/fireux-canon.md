@@ -80,6 +80,7 @@ Current learned examples:
 - Tool providers:
   - Core owns reusable provider plumbing: contract types, hosted frame, consumer iframe, height messages, and standard tool response headers.
   - Provider apps own tool behavior and brand. Go QR hosts QR tools. Sproochli hosts translation tools.
+  - Provider integration packages own reusable provider-specific consumer wrappers. Example: `fireux-go-qr` owns `ProviderGoQr*` wrappers.
   - Consumer apps embed or call provider tools; they do not copy provider plumbing locally.
 
 ## Structural Canon

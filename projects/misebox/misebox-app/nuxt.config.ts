@@ -19,6 +19,7 @@ const fireuxConfig = defineFireuxConfig({
   modules: [
     'fireux-places',
     'fireux-companies',
+    'fireux-go-qr',
     'fireux-kitchens',
     'fireux-sproochli',
     'fireux-orders',

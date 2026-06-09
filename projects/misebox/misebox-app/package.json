@@ -31,6 +31,7 @@
     "fireux-blogs": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-go-qr": "workspace:*",
     "fireux-suppliers": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
