@@ -60,10 +60,7 @@ export function useKitchenConsole(
       operatorId: userId.value,
     }
   })
-  const { kitchens: liveKitchens } = useKitchenConsoleList({
-    appId: computed(() => normalizeString(appId)),
-    filter: liveFilter,
-  })
+  const { kitchens: liveKitchens } = useKitchenConsoleList({ filter: liveFilter })
   const demoKitchens = computed<KitchenSurface[]>(() =>
     getDemoKitchens()
       .map((kitchen) =>
