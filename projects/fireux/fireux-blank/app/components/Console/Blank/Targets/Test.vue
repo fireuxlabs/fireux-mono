@@ -1,6 +1,12 @@
 <template>
   <section class="space-y-2">
     <pre>ConsoleBlankTargetsTest</pre>
+
+    <UPageCard
+      title="No test target"
+      description="Blank does not use test targets."
+      variant="subtle"
+    />
   </section>
 </template>
 

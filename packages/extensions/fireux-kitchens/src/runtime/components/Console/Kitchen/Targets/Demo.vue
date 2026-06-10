@@ -1,7 +1,17 @@
 <template>
-  <span v-if="false" />
+  <section v-if="show" class="space-y-2">
+    <pre>ConsoleKitchenTargetsDemo</pre>
+
+    <UPageCard
+      title="Demo target enabled"
+      description="Kitchen demo targets can render here."
+      variant="subtle"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
-// Optional target slot. Kitchen demo targets are not part of the live pipeline today.
+defineProps<{
+  show?: boolean
+}>()
 </script>

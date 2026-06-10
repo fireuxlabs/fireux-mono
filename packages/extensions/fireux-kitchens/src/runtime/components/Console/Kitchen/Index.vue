@@ -1,25 +1,19 @@
 <template>
   <section class="space-y-4">
-    <pre>ConsoleKitchenTargetsSelected</pre>
     <ConsoleKitchenTargetsSelected
       :kitchen="selectedKitchen"
       :kitchen-id="kitchenId"
       @clear="clearSelectedKitchen"
     />
 
-    <pre>ConsoleKitchenTargetsLive</pre>
     <ConsoleKitchenTargetsLive
       :collection="kitchens.live"
       @select="actions.selectLive"
     />
 
-    <pre>ConsoleKitchenTargetsDemo</pre>
-    <ConsoleKitchenTargetsDemo />
+    <ConsoleKitchenTargetsDemo :show="false" />
+    <ConsoleKitchenTargetsTest :init="false" />
 
-    <pre>ConsoleKitchenTargetsTest</pre>
-    <ConsoleKitchenTargetsTest />
-
-    <pre>DevJson</pre>
     <DevJson
       title="Kitchen console debug"
       context="misebox · /console/kitchen"

@@ -1,7 +1,17 @@
 <template>
-  <span v-if="false" />
+  <section v-if="init" class="space-y-2">
+    <pre>ConsoleKitchenTargetsTest</pre>
+
+    <UPageCard
+      title="Test target ready"
+      description="Kitchen test target setup can render here."
+      variant="subtle"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
-// Optional target slot. Kitchen test targets are not part of the live pipeline today.
+defineProps<{
+  init?: boolean
+}>()
 </script>

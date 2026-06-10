@@ -33,7 +33,7 @@ const uniq = (values: unknown[]) =>
  * Console Kitchen read-many seam.
  *
  * Canon:
- * 1. Read the user's Kitchen index first: `users/{uid}.kitchen_ids`.
+ * 1. Read the user's Kitchen index first: `users/{uid}.myKitchens`.
  * 2. Hydrate those exact root Kitchen docs.
  * 3. Read exact app-scoped Kitchen records only for those ids.
  *
@@ -42,7 +42,7 @@ const uniq = (values: unknown[]) =>
 export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { appUser, pending: userPending } = useUser()
+  const { coreUser, pending: userPending } = useUser()
   const { surface } = useKitchenInterface()
   const scopeItems = ref<AppKitchenConsoleListDoc[]>([])
   const scopePending = ref(false)
@@ -55,19 +55,12 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
     (resolvedFilter.value?.ids ?? []).map((id) => normalize(id)).filter(Boolean)
   )
   const hasExplicitIds = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const userKitchenIds = computed(() =>
-    Array.isArray(appUser.value?.console_scopes)
-      ? appUser.value.console_scopes
-          .map((scope) => {
-            const normalized = normalize(scope)
-            return normalized.startsWith('kitchen:')
-              ? normalized.slice('kitchen:'.length)
-              : ''
-          })
-          .map((id) => normalize(id))
-          .filter(Boolean)
+  const userKitchenIds = computed(() => {
+    const myKitchens = coreUser.value?.myKitchens
+    return Array.isArray(myKitchens)
+      ? myKitchens.map((id) => normalize(id)).filter(Boolean)
       : []
-  )
+  })
   const collectionIds = computed(() =>
     uniq(hasExplicitIds.value ? explicitIds.value : userKitchenIds.value)
   )

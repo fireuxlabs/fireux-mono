@@ -11,7 +11,7 @@
 
     <UPageCard
       v-else
-      title="No Blank selected"
+      title="No selected Blank"
       description="Choose a live Blank target to test selected-target console state."
       variant="subtle"
     />

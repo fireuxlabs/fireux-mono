@@ -54,6 +54,7 @@ export const UserModel = {
   bio: '',
   profiles: [] as string[],
   projects: [] as string[],
+  myKitchens: [] as string[],
   userOf: [] as string[],
   adminOf: [] as string[],
   notifications: [] as UserNotification[],
@@ -77,6 +78,7 @@ export interface User {
   bio: string
   profiles: string[]
   projects: string[]
+  myKitchens: string[]
   userOf: string[]
   adminOf: string[]
   notifications: UserNotification[]
