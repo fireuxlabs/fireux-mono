@@ -8,8 +8,8 @@
       @select="actions.selectLive"
     />
 
-    <ConsoleBlankTargetsDemo />
-    <ConsoleBlankTargetsTest />
+    <ConsoleBlankTargetsDemo :show="false" />
+    <ConsoleBlankTargetsTest :init="false" />
 
     <DevJson
       title="Blank console debug"

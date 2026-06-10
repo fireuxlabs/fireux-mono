@@ -1,15 +1,17 @@
 <template>
-  <section class="space-y-2">
+  <section v-if="show" class="space-y-2">
     <pre>ConsoleBlankTargetsDemo</pre>
 
     <UPageCard
-      title="No demo target"
-      description="Blank does not use demo targets."
+      title="Demo target enabled"
+      description="Blank demo targets can render here."
       variant="subtle"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-// Optional target slot. Blank keeps the console target shape without rendering demo data.
+defineProps<{
+  show?: boolean
+}>()
 </script>
