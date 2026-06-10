@@ -1013,6 +1013,40 @@ importers:
         specifier: ^4.1.12
         version: 4.1.13
 
+  projects/fireux/fireux-blank:
+    dependencies:
+      '@nuxt/icon':
+        specifier: 2.x
+        version: 2.0.0(magicast@0.5.3)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue@3.5.20(typescript@5.9.2))
+      '@nuxt/ui':
+        specifier: ^4.0.0-alpha.2
+        version: 4.0.0-alpha.2(@babel/parser@7.29.3)(change-case@5.4.4)(db0@0.3.4(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.3)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@12.7.0)
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../../packages/core/fireux-core
+      fireux-fireux:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-fireux
+      nuxt:
+        specifier: 4.4.6
+        version: 4.4.6(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.30.1)(magicast@0.5.3)(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
+      vue:
+        specifier: 3.5.20
+        version: 3.5.20(typescript@5.9.2)
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.20(typescript@5.9.2))
+    devDependencies:
+      '@vite-pwa/nuxt':
+        specifier: ^1.0.4
+        version: 1.0.4(magicast@0.5.3)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   projects/fireux/go-qr:
     dependencies:
       '@nuxt/icon':
@@ -5188,11 +5222,6 @@ packages:
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
     deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
-  '@unhead/vue@2.0.19':
-    resolution: {integrity: sha512-7BYjHfOaoZ9+ARJkT10Q2TjnTUqDXmMpfakIAsD/hXiuff1oqWg1xeXT5+MomhNcC15HbiABpbbBmITLSHxdKg==}
-    peerDependencies:
-      vue: 3.5.20
-
   '@unhead/vue@2.1.15':
     resolution: {integrity: sha512-SSByXfEjhzPn8gXdEdgpYqpLMPSkLUH2HVE0GxZfOtNsJ0GgOHQs0g9T67ZZ1z0kTELLKdtOtYrzrbv9+ffF7g==}
     peerDependencies:
@@ -6974,10 +7003,6 @@ packages:
 
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
-
-  fuse.js@7.1.0:
-    resolution: {integrity: sha512-trLf4SzuuUxfusZADLINj+dE8clK1frKdmqiJNb1Es75fmI5oY6X2mxLVUciLLjxqw/xr72Dhy+lER6dGd02FQ==}
-    engines: {node: '>=10'}
 
   fuse.js@7.3.0:
     resolution: {integrity: sha512-plz8RVjfcDedTGfVngWH1jmJvBvAwi1v2jecfDerbEnMcmOYUEEwKFTHbNoCiYyzaK2Ws8lABkTCcRSqCY1q4w==}
@@ -10034,9 +10059,6 @@ packages:
   unenv@2.0.0-rc.24:
     resolution: {integrity: sha512-i7qRCmY42zmCwnYlh9H2SvLEypEFGye5iRmEMKjcGi7zk9UquigRjFtTLz0TYqr0ZGLZhaMHl/foy1bZR+Cwlw==}
 
-  unhead@2.0.19:
-    resolution: {integrity: sha512-gEEjkV11Aj+rBnY6wnRfsFtF2RxKOLaPN4i+Gx3UhBxnszvV6ApSNZbGk7WKyy/lErQ6ekPN63qdFL7sa1leow==}
-
   unhead@2.1.15:
     resolution: {integrity: sha512-MCt5T90mCWyr3Z6pUCdM9lVRXoMoVBlL7z7U4CYVIiaDiuzad/UCfLuMqz5MeNmpZUgoBCQnrucJimU7EZR+XA==}
 
@@ -10175,68 +10197,6 @@ packages:
 
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
-
-  unstorage@1.17.3:
-    resolution: {integrity: sha512-i+JYyy0DoKmQ3FximTHbGadmIYb8JEpq7lxUjnjeB702bCPum0vzo6oy5Mfu0lpqISw7hCyMW2yj4nWC8bqJ3Q==}
-    peerDependencies:
-      '@azure/app-configuration': ^1.8.0
-      '@azure/cosmos': ^4.2.0
-      '@azure/data-tables': ^13.3.0
-      '@azure/identity': ^4.6.0
-      '@azure/keyvault-secrets': ^4.9.0
-      '@azure/storage-blob': ^12.26.0
-      '@capacitor/preferences': ^6.0.3 || ^7.0.0
-      '@deno/kv': '>=0.9.0'
-      '@netlify/blobs': ^6.5.0 || ^7.0.0 || ^8.1.0 || ^9.0.0 || ^10.0.0
-      '@planetscale/database': ^1.19.0
-      '@upstash/redis': ^1.34.3
-      '@vercel/blob': '>=0.27.1'
-      '@vercel/functions': ^2.2.12 || ^3.0.0
-      '@vercel/kv': ^1.0.1
-      aws4fetch: ^1.0.20
-      db0: '>=0.2.1'
-      idb-keyval: ^6.2.1
-      ioredis: ^5.4.2
-      uploadthing: ^7.4.4
-    peerDependenciesMeta:
-      '@azure/app-configuration':
-        optional: true
-      '@azure/cosmos':
-        optional: true
-      '@azure/data-tables':
-        optional: true
-      '@azure/identity':
-        optional: true
-      '@azure/keyvault-secrets':
-        optional: true
-      '@azure/storage-blob':
-        optional: true
-      '@capacitor/preferences':
-        optional: true
-      '@deno/kv':
-        optional: true
-      '@netlify/blobs':
-        optional: true
-      '@planetscale/database':
-        optional: true
-      '@upstash/redis':
-        optional: true
-      '@vercel/blob':
-        optional: true
-      '@vercel/functions':
-        optional: true
-      '@vercel/kv':
-        optional: true
-      aws4fetch:
-        optional: true
-      db0:
-        optional: true
-      idb-keyval:
-        optional: true
-      ioredis:
-        optional: true
-      uploadthing:
-        optional: true
 
   unstorage@1.17.5:
     resolution: {integrity: sha512-0i3iqvRfx29hkNntHyQvJTpf5W9dQ9ZadSoRU8+xVlhVtT7jAX57fazYO9EHvcRCfBCyi5YRya7XCDOsbTgkPg==}
@@ -13277,10 +13237,10 @@ snapshots:
       '@nuxt/kit': 4.4.6(magicast@0.5.3)
       consola: 3.4.2
       css-tree: 3.1.0
-      defu: 6.1.4
+      defu: 6.1.7
       esbuild: 0.25.12
       fontaine: 0.6.0
-      h3: 1.15.4
+      h3: 1.15.11
       jiti: 2.7.0
       magic-regexp: 0.10.0
       magic-string: 0.30.21
@@ -13288,11 +13248,11 @@ snapshots:
       ohash: 2.0.11
       pathe: 2.0.3
       sirv: 3.0.2
-      tinyglobby: 0.2.15
-      ufo: 1.6.1
+      tinyglobby: 0.2.16
+      ufo: 1.6.4
       unifont: 0.4.1
       unplugin: 2.3.11
-      unstorage: 1.17.3(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1)
+      unstorage: 1.17.5(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13323,10 +13283,10 @@ snapshots:
       '@nuxt/kit': 4.4.6(magicast@0.5.3)
       consola: 3.4.2
       css-tree: 3.1.0
-      defu: 6.1.4
+      defu: 6.1.7
       esbuild: 0.25.12
       fontaine: 0.6.0
-      h3: 1.15.4
+      h3: 1.15.11
       jiti: 2.7.0
       magic-regexp: 0.10.0
       magic-string: 0.30.21
@@ -13334,11 +13294,11 @@ snapshots:
       ohash: 2.0.11
       pathe: 2.0.3
       sirv: 3.0.2
-      tinyglobby: 0.2.15
-      ufo: 1.6.1
+      tinyglobby: 0.2.16
+      ufo: 1.6.4
       unifont: 0.4.1
       unplugin: 2.3.11
-      unstorage: 1.17.3(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1)
+      unstorage: 1.17.5(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13610,12 +13570,12 @@ snapshots:
       '@tailwindcss/postcss': 4.1.13
       '@tailwindcss/vite': 4.1.13(vite@6.4.1(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
       '@tanstack/vue-table': 8.21.3(vue@3.5.20(typescript@5.9.2))
-      '@unhead/vue': 2.0.19(vue@3.5.20(typescript@5.9.2))
+      '@unhead/vue': 2.1.15(vue@3.5.20(typescript@5.9.2))
       '@vueuse/core': 13.9.0(vue@3.5.20(typescript@5.9.2))
-      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))
+      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.3.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))
       colortranslator: 5.0.0
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       embla-carousel-auto-height: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-auto-scroll: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-autoplay: 8.6.0(embla-carousel@8.6.0)
@@ -13623,11 +13583,11 @@ snapshots:
       embla-carousel-fade: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-vue: 8.6.0(vue@3.5.20(typescript@5.9.2))
       embla-carousel-wheel-gestures: 8.1.0(embla-carousel@8.6.0)
-      fuse.js: 7.1.0
+      fuse.js: 7.3.0
       hookable: 5.5.3
       knitwork: 1.3.0
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       motion-v: 1.7.1(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
       ohash: 2.0.11
       pathe: 2.0.3
@@ -13636,7 +13596,7 @@ snapshots:
       tailwind-merge: 3.3.1
       tailwind-variants: 3.1.1(tailwind-merge@3.3.1)(tailwindcss@4.1.18)
       tailwindcss: 4.1.18
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       typescript: 5.9.2
       unplugin: 2.3.11
       unplugin-auto-import: 20.1.0(@nuxt/kit@4.4.6(magicast@0.5.3))(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))
@@ -13703,12 +13663,12 @@ snapshots:
       '@tailwindcss/postcss': 4.1.13
       '@tailwindcss/vite': 4.1.13(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
       '@tanstack/vue-table': 8.21.3(vue@3.5.20(typescript@5.9.2))
-      '@unhead/vue': 2.0.19(vue@3.5.20(typescript@5.9.2))
+      '@unhead/vue': 2.1.15(vue@3.5.20(typescript@5.9.2))
       '@vueuse/core': 13.9.0(vue@3.5.20(typescript@5.9.2))
-      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))
+      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.3.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))
       colortranslator: 5.0.0
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       embla-carousel-auto-height: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-auto-scroll: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-autoplay: 8.6.0(embla-carousel@8.6.0)
@@ -13716,11 +13676,11 @@ snapshots:
       embla-carousel-fade: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-vue: 8.6.0(vue@3.5.20(typescript@5.9.2))
       embla-carousel-wheel-gestures: 8.1.0(embla-carousel@8.6.0)
-      fuse.js: 7.1.0
+      fuse.js: 7.3.0
       hookable: 5.5.3
       knitwork: 1.3.0
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       motion-v: 1.7.1(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
       ohash: 2.0.11
       pathe: 2.0.3
@@ -13729,7 +13689,7 @@ snapshots:
       tailwind-merge: 3.3.1
       tailwind-variants: 3.1.1(tailwind-merge@3.3.1)(tailwindcss@4.1.18)
       tailwindcss: 4.1.18
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       typescript: 5.9.2
       unplugin: 2.3.11
       unplugin-auto-import: 20.1.0(@nuxt/kit@4.4.6(magicast@0.5.3))(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))
@@ -13906,7 +13866,7 @@ snapshots:
       '@nuxt/kit': 4.4.6(magicast@0.5.3)
       pathe: 1.1.2
       pkg-types: 1.3.1
-      semver: 7.7.3
+      semver: 7.8.0
     transitivePeerDependencies:
       - magicast
 
@@ -14777,7 +14737,7 @@ snapshots:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.1.13
       '@tailwindcss/oxide': 4.1.13
-      postcss: 8.5.6
+      postcss: 8.5.15
       tailwindcss: 4.1.13
 
   '@tailwindcss/vite@4.1.13(vite@6.4.1(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))':
@@ -15184,12 +15144,6 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@unhead/vue@2.0.19(vue@3.5.20(typescript@5.9.2))':
-    dependencies:
-      hookable: 5.5.3
-      unhead: 2.0.19
-      vue: 3.5.20(typescript@5.9.2)
-
   '@unhead/vue@2.1.15(vue@3.5.20(typescript@5.9.2))':
     dependencies:
       hookable: 6.1.1
@@ -15523,14 +15477,14 @@ snapshots:
       '@vueuse/shared': 13.9.0(vue@3.5.20(typescript@5.9.2))
       vue: 3.5.20(typescript@5.9.2)
 
-  '@vueuse/integrations@13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))':
+  '@vueuse/integrations@13.9.0(change-case@5.4.4)(fuse.js@7.3.0)(qrcode@1.5.4)(vue@3.5.20(typescript@5.9.2))':
     dependencies:
       '@vueuse/core': 13.9.0(vue@3.5.20(typescript@5.9.2))
       '@vueuse/shared': 13.9.0(vue@3.5.20(typescript@5.9.2))
       vue: 3.5.20(typescript@5.9.2)
     optionalDependencies:
       change-case: 5.4.4
-      fuse.js: 7.1.0
+      fuse.js: 7.3.0
       qrcode: 1.5.4
 
   '@vueuse/metadata@10.11.1': {}
@@ -17284,7 +17238,7 @@ snapshots:
       magic-regexp: 0.10.0
       magic-string: 0.30.21
       pathe: 2.0.3
-      ufo: 1.6.1
+      ufo: 1.6.4
       unplugin: 2.3.11
     transitivePeerDependencies:
       - encoding
@@ -17365,8 +17319,6 @@ snapshots:
     optional: true
 
   functions-have-names@1.2.3: {}
-
-  fuse.js@7.1.0: {}
 
   fuse.js@7.3.0: {}
 
@@ -18440,10 +18392,10 @@ snapshots:
     dependencies:
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       regexp-tree: 0.1.27
       type-level-regexp: 0.1.17
-      ufo: 1.6.1
+      ufo: 1.6.4
       unplugin: 2.3.11
 
   magic-regexp@0.11.0:
@@ -20449,7 +20401,7 @@ snapshots:
       '@vueuse/core': 12.8.2(typescript@5.9.2)
       '@vueuse/shared': 12.8.2(typescript@5.9.2)
       aria-hidden: 1.2.6
-      defu: 6.1.4
+      defu: 6.1.7
       ohash: 2.0.11
       vue: 3.5.20(typescript@5.9.2)
     transitivePeerDependencies:
@@ -20466,7 +20418,7 @@ snapshots:
       '@vueuse/core': 12.8.2(typescript@5.9.2)
       '@vueuse/shared': 12.8.2(typescript@5.9.2)
       aria-hidden: 1.2.6
-      defu: 6.1.4
+      defu: 6.1.7
       ohash: 2.0.11
       vue: 3.5.20(typescript@5.9.2)
     transitivePeerDependencies:
@@ -21453,10 +21405,6 @@ snapshots:
     dependencies:
       pathe: 2.0.3
 
-  unhead@2.0.19:
-    dependencies:
-      hookable: 5.5.3
-
   unhead@2.1.15:
     dependencies:
       hookable: 6.1.1
@@ -21583,7 +21531,7 @@ snapshots:
     dependencies:
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       unimport: 5.6.0
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
@@ -21594,7 +21542,7 @@ snapshots:
   unplugin-utils@0.2.5:
     dependencies:
       pathe: 2.0.3
-      picomatch: 4.0.3
+      picomatch: 4.0.4
 
   unplugin-utils@0.3.1:
     dependencies:
@@ -21607,8 +21555,8 @@ snapshots:
       debug: 4.4.3
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
-      tinyglobby: 0.2.15
+      mlly: 1.8.2
+      tinyglobby: 0.2.16
       unplugin: 2.3.11
       unplugin-utils: 0.2.5
       vue: 3.5.20(typescript@5.9.2)
@@ -21621,8 +21569,8 @@ snapshots:
   unplugin@2.3.11:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      acorn: 8.15.0
-      picomatch: 4.0.3
+      acorn: 8.16.0
+      picomatch: 4.0.4
       webpack-virtual-modules: 0.6.2
 
   unplugin@3.0.0:
@@ -21659,20 +21607,6 @@ snapshots:
       '@unrs/resolver-binding-win32-arm64-msvc': 1.11.1
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
-
-  unstorage@1.17.3(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1):
-    dependencies:
-      anymatch: 3.1.3
-      chokidar: 4.0.3
-      destr: 2.0.5
-      h3: 1.15.4
-      lru-cache: 10.4.3
-      node-fetch-native: 1.6.7
-      ofetch: 1.5.1
-      ufo: 1.6.1
-    optionalDependencies:
-      db0: 0.3.4(better-sqlite3@12.6.0)
-      ioredis: 5.10.1
 
   unstorage@1.17.5(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1):
     dependencies:
