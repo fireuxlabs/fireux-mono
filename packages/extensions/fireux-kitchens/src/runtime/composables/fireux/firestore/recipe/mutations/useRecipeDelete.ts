@@ -3,7 +3,7 @@ import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { RecipeStorage } from '../../../../../models/recipe.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const trim = (value: unknown) => String(value || '').trim()
 
@@ -19,7 +19,7 @@ export function useRecipeDelete(
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
 
   const deleteRecipe = async (

@@ -9,7 +9,7 @@ import {
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 type DishCreateDraft = {
@@ -53,7 +53,7 @@ export function useDishCreate(
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
 
   const createDish = async (

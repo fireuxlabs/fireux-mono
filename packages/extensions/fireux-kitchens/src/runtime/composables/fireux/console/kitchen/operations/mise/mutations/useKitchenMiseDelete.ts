@@ -6,7 +6,7 @@ import { KitchenMiseTaskStorage } from '../../../../../../../models/kitchen-mise
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../Collections/useKitchenChildCollection'
+} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenMiseDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

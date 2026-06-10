@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <MiseCollectionManager
+    <ConsoleKitchenOperationsMiseCollectionManager
       :collection="miseTasks"
       title="Mise Tasks"
       description="Browse mise tasks for the selected kitchen."

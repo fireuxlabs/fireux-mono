@@ -107,11 +107,11 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
-import { useKitchenChildCollection } from '../../../composables/fireux/console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   ROOT_KITCHEN_COLLECTION_PATH,
-  resolveKitchenConsoleCollectionPath,
-} from '../../../composables/fireux/console/kitchen/Operations/Collections/useKitchenChildCollection'
+  resolveKitchenScopeCollectionPath,
+} from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'
 import { IngredientStorage } from '../../../models/ingredient.model'
@@ -137,7 +137,7 @@ const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
 const placesCollectionValue = computed(() => placesCollection.value ?? [])
 const resolvedAppId = computed(() => String(appId || '').trim())
 const overlayKitchenCollectionPath = computed(() =>
-  resolvedAppId.value ? resolveKitchenConsoleCollectionPath(resolvedAppId.value) : ''
+  resolvedAppId.value ? resolveKitchenScopeCollectionPath(resolvedAppId.value) : ''
 )
 
 const kitchenAppsRef = shallowRef<Ref<AppKitchen[] | undefined> | null>(null)

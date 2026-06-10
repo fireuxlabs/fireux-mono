@@ -1,6 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { resolveKitchenConsoleCollectionPath } from '../../Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
   KitchenMiseTaskModel,
@@ -93,7 +93,7 @@ export function useKitchenMiseCreate() {
 
     const payload = buildMisePayload(resolvedKitchenId, draft)
     const kitchenCollectionPath =
-      normalizeString(options.kitchenCollectionPath) || resolveKitchenConsoleCollectionPath(appId)
+      normalizeString(options.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
     const collectionPath = resolveKitchenCollectionPath(
       kitchenCollectionPath,
       resolvedKitchenId

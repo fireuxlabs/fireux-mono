@@ -4,7 +4,12 @@ import {
   useCollection,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
+import {
+  collection,
+  query as fsq,
+  type Query,
+  type QueryDocumentSnapshot,
+} from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
@@ -28,7 +33,7 @@ type ResolveKitchenChildCollectionPathOptions = {
 
 export const ROOT_KITCHEN_COLLECTION_PATH = KitchenStorage.rootCollection
 
-export const resolveKitchenConsoleCollectionPath = (
+export const resolveKitchenScopeCollectionPath = (
   appId?: string | null | undefined
 ): string => {
   const resolvedAppId = normalizeString(appId)
@@ -43,7 +48,7 @@ export const resolveKitchenCollectionBasePath = (
 ): string => {
   const explicitPath = normalizeString(kitchenCollectionPath)
   if (explicitPath) return explicitPath
-  return resolveKitchenConsoleCollectionPath(appId)
+  return resolveKitchenScopeCollectionPath(appId)
 }
 
 export const resolveKitchenChildCollectionBasePath = (
@@ -91,7 +96,9 @@ export function useKitchenChildCollection<T>(
     resolveKitchenCollectionBasePath(unref(options.kitchenCollectionPath), appId)
   )
 
-  const resolvedCollectionName = computed(() => normalizeString(unref(collectionName)))
+  const resolvedCollectionName = computed(() =>
+    normalizeString(unref(collectionName))
+  )
 
   const collectionPath = computed(() =>
     resolveKitchenChildCollectionPath({
@@ -109,20 +116,22 @@ export function useKitchenChildCollection<T>(
   const collectionBinding = import.meta.server
     ? null
     : useCollection<T>(collectionQuery, {
-        ssrKey: computed(() => collectionPath.value || `${resolvedCollectionName.value}-empty`),
+        ssrKey: computed(
+          () => collectionPath.value || `${resolvedCollectionName.value}-empty`
+        ),
         transform: (docSnap: QueryDocumentSnapshot<T>) => {
           const value = {
             ...(docSnap.data() as T),
             id: docSnap.id,
           } as T & Record<string, unknown>
           return collectionPath.value
-            ? attachDevCollectionMeta(value, collectionPath.value, docSnap.id) as T
-            : value as T
+            ? (attachDevCollectionMeta(value, collectionPath.value, docSnap.id) as T)
+            : (value as T)
         },
       } as any)
   const collectionItems = import.meta.server
-    ? ref(undefined) as Ref<T[] | undefined>
-    : (collectionBinding as any).data as Ref<T[] | undefined>
+    ? (ref(undefined) as Ref<T[] | undefined>)
+    : ((collectionBinding as any).data as Ref<T[] | undefined>)
 
   const items = computed<T[]>(() => collectionItems.value ?? [])
   const pending = computed(

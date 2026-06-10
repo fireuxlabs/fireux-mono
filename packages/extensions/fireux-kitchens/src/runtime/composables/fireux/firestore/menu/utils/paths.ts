@@ -1,7 +1,7 @@
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+} from '../../kitchen/utils/paths/useKitchenChildCollection'
 import {
   MenuItemStorage,
   MenuSectionStorage,

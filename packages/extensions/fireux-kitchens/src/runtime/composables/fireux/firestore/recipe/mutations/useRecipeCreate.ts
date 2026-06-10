@@ -10,7 +10,7 @@ import {
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 type RecipeCreateDraft = {
@@ -93,7 +93,7 @@ export function useRecipeCreate(
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
 
   const createRecipe = async (

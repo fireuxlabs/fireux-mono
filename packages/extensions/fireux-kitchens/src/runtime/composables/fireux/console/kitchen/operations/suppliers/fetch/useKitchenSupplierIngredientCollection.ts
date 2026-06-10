@@ -4,7 +4,7 @@ import {
   KitchenSupplierIngredientStorage,
   type KitchenSupplierIngredient,
 } from '../../../../../../../models/ingredient.model'
-import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenSupplierIngredientCollection(
   kitchenId: Ref<string> | string,

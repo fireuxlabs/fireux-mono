@@ -86,7 +86,7 @@ import {
   resolveSproochliLanguageOptions,
   resolveSproochliTranslatedText,
 } from 'fireux-sproochli/runtime/sproochli'
-import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Dish } from 'fireux-kitchens/runtime/models/dish.model'
 import type { Menu } from 'fireux-kitchens/runtime/models/menu.model'

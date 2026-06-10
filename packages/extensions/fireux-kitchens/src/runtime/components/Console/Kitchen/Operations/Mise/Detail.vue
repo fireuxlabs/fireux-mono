@@ -11,7 +11,7 @@
     </UButton>
 
     <template v-if="task">
-      <MiseProfile :task="task" />
+      <ConsoleKitchenOperationsMiseCardsProfile :task="task" />
 
       <ConsoleKitchenOperationsMiseEdit
         v-if="canEditMise"
@@ -41,7 +41,5 @@
 
 <script setup lang="ts">
 import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/Operations/Mise/useKitchenConsoleMiseTask'
-import MiseProfile from '../../../../Mise/Cards/Profile.vue'
-
 const { task, miseId, pending, canEditMise, debug } = useKitchenConsoleMiseTask()
 </script>

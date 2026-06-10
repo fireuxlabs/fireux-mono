@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
+          <p v-if="description">{{ description }}</p>
         </div>
 
         <div
@@ -39,28 +39,35 @@
       </div>
     </template>
 
-    <MiseCollectionList
+    <ConsolePortfolioOperationsClientsCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <MiseCardsPill v-bind="card" :link="linkEnabled" />
+        <ConsolePortfolioOperationsClientsCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :show-meta="true"
+        />
       </template>
-
       <template #cell="{ card }">
-        <MiseCardsCell v-bind="card" :link="linkEnabled" />
+        <ConsolePortfolioOperationsClientsCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :show-meta="true"
+        />
       </template>
-    </MiseCollectionList>
+    </ConsolePortfolioOperationsClientsCollectionList>
 
-    <p v-else class="text-sm text-dimmed">
-      {{ query ? 'No mise tasks match your search.' : 'No mise tasks found.' }}
+    <p v-else>
+      {{ query ? 'No clients match your search.' : 'No clients found.' }}
     </p>
 
     <div>
       <DevJson
-        :title="'Mise Tasks (JSON)'"
-        context="collection manager · mise"
+        :title="'Clients (JSON)'"
+        context="collection manager · clients"
         :data="devJsonData"
         :default-open="false"
       />
@@ -72,15 +79,12 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useMiseEnPlaceInterface } from '../../../composables/fireux/console/kitchen/Operations/Mise/utils/view/useMiseEnPlaceInterface'
-import type { KitchenMiseTask } from '../../../models/kitchen-mise.model'
-import MiseCardsCell from '../Cards/Cell.vue'
-import MiseCardsPill from '../Cards/Pill.vue'
-import MiseCollectionList from './List.vue'
+import { useClientInterface } from '../../../../../../composables/fireux/console/portfolio/Operations/Clients/utils/view/useClientInterface'
+import type { Client } from '../../../../../../models/client.model'
 
 const props = withDefaults(
   defineProps<{
-    collection?: KitchenMiseTask[]
+    collection?: Client[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -91,14 +95,14 @@ const props = withDefaults(
     link?: boolean
   }>(),
   {
-    title: 'Mise Tasks',
-    description: 'Browse mise tasks for this kitchen.',
-    searchPlaceholder: 'Search mise tasks...',
+    title: 'Clients',
+    description: 'Portfolio-scoped clients.',
+    searchPlaceholder: 'Search clients...',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
-    link: true,
+    link: false,
   }
 )
 
@@ -106,12 +110,14 @@ const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = useMiseEnPlaceInterface()
+} = useClientInterface()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
+const title = computed(() => String(props.title || 'Clients'))
+const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search mise tasks...')
+  String(props.searchPlaceholder || 'Search clients...')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -123,31 +129,29 @@ const showSearchInput = computed(
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<
-    KitchenMiseTask,
-    NonNullable<ReturnType<typeof makeCard>>
-  >({
+  useCollectionSearch<Client, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (task: KitchenMiseTask) => makeCard(task),
+    makeCard: (client: Client) => makeCard(client),
     initialVariant: props.initialVariant,
   })
 
 const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
   visibleItems.value
-    .map((task) => {
+    .map((client) => {
       if (variant.value === 'cell') {
-        const base = makeCard(task)
-        const cell = makeCell(task)
+        const base = makeCard(client)
+        const cell = makeCell(client)
         if (!base || !cell) return null
         return { ...base, ...cell }
       }
 
-      return makePill(task)
+      return makePill(client)
     })
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)
     )
 )
+
 const countLabel = computed(() =>
   showSearchInput.value && query.value
     ? `${visibleCount.value} / ${totalCount.value}`

@@ -6,7 +6,7 @@ import { KitchenOrderStorage } from '../../../../../../../models/order.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../Collections/useKitchenChildCollection'
+} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenOrderDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

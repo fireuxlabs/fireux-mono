@@ -21,7 +21,7 @@ import {
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'
-import { resolveKitchenConsoleCollectionPath } from './Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleHeader } from './useKitchenConsoleHeader'
 import type { Ref } from 'vue'
 
@@ -101,7 +101,7 @@ export function useKitchenConsole(
       ? ''
       : selectedMode.value === 'test'
         ? KitchenStorage.rootCollection
-        : resolveKitchenConsoleCollectionPath(activeKitchenAppId.value)
+        : resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
   )
   const canWrite = computed(() => {
     if (selectedMode.value === 'demo') return false

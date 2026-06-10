@@ -6,7 +6,7 @@ import {
   type Dish,
   type DishUpdateInput,
 } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
@@ -24,7 +24,7 @@ export function useDishUpdate(
 
   const kitchenCollectionPath = computed(() =>
     trim(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
 
   const updateDish = async (

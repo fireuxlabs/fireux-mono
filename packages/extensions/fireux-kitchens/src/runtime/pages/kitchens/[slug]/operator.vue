@@ -18,7 +18,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
-import { resolveKitchenConsoleCollectionPath } from '../../../composables/fireux/console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 definePageMeta({
   layout: 'default',
@@ -34,7 +34,7 @@ const currentAppId = computed(() => String(appId || '').trim())
 const { kitchen: publicKitchen, pending } = useKitchenFetch(routeLocator)
 const kitchenId = computed(() => String(publicKitchen.value?.id || '').trim())
 const operatorCollectionPath = computed(() =>
-  currentAppId.value ? resolveKitchenConsoleCollectionPath(currentAppId.value) : ''
+  currentAppId.value ? resolveKitchenScopeCollectionPath(currentAppId.value) : ''
 )
 const { kitchen: operatorKitchen, pending: operatorPending } = useKitchenFetch(kitchenId, {
   collectionPath: operatorCollectionPath,

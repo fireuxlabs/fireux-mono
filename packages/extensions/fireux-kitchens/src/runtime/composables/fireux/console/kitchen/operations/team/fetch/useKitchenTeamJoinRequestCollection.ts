@@ -4,7 +4,7 @@ import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
 } from '../../../../../../../models/kitchen-team.model'
-import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenTeamJoinRequestCollection(
   kitchenId: Ref<string> | string,

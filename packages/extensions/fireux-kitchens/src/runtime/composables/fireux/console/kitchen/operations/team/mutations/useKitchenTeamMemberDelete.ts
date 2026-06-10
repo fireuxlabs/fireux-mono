@@ -6,7 +6,7 @@ import { KitchenTeamMemberStorage } from '../../../../../../../models/kitchen-te
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../Collections/useKitchenChildCollection'
+} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenTeamMemberDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

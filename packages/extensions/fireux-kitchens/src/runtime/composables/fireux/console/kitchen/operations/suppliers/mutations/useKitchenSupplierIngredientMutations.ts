@@ -12,7 +12,7 @@ import {
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../Collections/useKitchenChildCollection'
+} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

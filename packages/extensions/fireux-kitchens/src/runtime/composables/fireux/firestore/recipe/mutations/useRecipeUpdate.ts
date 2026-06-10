@@ -7,7 +7,7 @@ import {
   type Recipe,
   type RecipeUpdateInput,
 } from '../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
@@ -26,7 +26,7 @@ export function useRecipeUpdate(
 
   const kitchenCollectionPath = computed(() =>
     trim(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
 
   const updateRecipe = async (

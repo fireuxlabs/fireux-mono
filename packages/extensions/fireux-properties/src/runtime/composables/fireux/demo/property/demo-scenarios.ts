@@ -1,5 +1,5 @@
-import { PropertyManualModel } from '../../../../../models/property.model'
-import type { Property, PropertyIdentity } from '../../../../../models/property.model'
+import { PropertyManualModel } from '../../../../models/property.model'
+import type { Property, PropertyIdentity } from '../../../../models/property.model'
 
 const stamp = () => ({
   at: {} as any,
@@ -12,7 +12,10 @@ const updateStamp = () => ({
   by: undefined,
 })
 
-type PropertySeed = Omit<Property, 'created' | 'updated' | 'operator_ids' | 'slug'> & {
+type PropertySeed = Omit<
+  Property,
+  'created' | 'updated' | 'operator_ids' | 'slug'
+> & {
   operator_ids?: string[]
   slug?: string
 }

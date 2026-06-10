@@ -7,7 +7,7 @@ import {
   type Menu,
 } from '../../../../../models/menu.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 export type MenuCreateInput = {
   kitchenId?: string
@@ -59,7 +59,7 @@ export function useMenuCreate(
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
   const defaultKitchenId = computed(() =>
     normalizeString(unref(options.kitchenId)) ||

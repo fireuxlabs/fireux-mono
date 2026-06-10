@@ -6,7 +6,7 @@ import { KitchenStationStorage } from '../../../../../../../models/kitchen-stati
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../Collections/useKitchenChildCollection'
+} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenStationDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

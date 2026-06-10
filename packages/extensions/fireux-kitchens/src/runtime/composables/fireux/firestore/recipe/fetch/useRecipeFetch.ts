@@ -4,7 +4,7 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import { computed, unref, type Ref } from 'vue'
 import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/${RecipeStorage.collection}`
@@ -28,7 +28,7 @@ export function useRecipeFetch(
   )
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenScopeCollectionPath(appId)
   )
   const collectionPath = computed(() =>
     resolvedKitchenId.value

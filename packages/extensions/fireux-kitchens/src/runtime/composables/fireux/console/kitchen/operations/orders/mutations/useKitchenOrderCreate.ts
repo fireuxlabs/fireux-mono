@@ -1,7 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { resolveKitchenConsoleCollectionPath } from '../../Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenOrderStorage,
   type KitchenOrder,
@@ -46,7 +46,7 @@ export function useKitchenOrderCreate() {
     if (!kitchenId) throw new Error('Missing kitchenId')
 
     const kitchenCollectionPath =
-      normalizeString(input.kitchenCollectionPath) || resolveKitchenConsoleCollectionPath(appId)
+      normalizeString(input.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
 
     const orderId = makeOrderId()
 

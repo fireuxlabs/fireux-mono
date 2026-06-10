@@ -1,9 +1,8 @@
-<!-- FILE: packages/extensions/fireux-suppliers/src/runtime/components/Supplier/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <section class="space-y-4">
       <UCard v-if="isLoading">
-        <p class="preview__fallback">Loading supplier preview…</p>
+        <p class="preview__state">Loading supplier preview…</p>
       </UCard>
 
       <UCard v-else-if="hasPreview" class="space-y-6">
@@ -41,7 +40,7 @@
       </UCard>
 
       <UCard v-else>
-        <p class="preview__fallback">Supplier preview unavailable.</p>
+        <p class="preview__state">Supplier preview unavailable.</p>
       </UCard>
     </section>
   </ClientOnly>
@@ -49,8 +48,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/Identity/useSupplierConsoleIdentity'
-import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { useSupplierConsoleIdentity } from '../../../../composables/fireux/console/supplier/Identity/useSupplierConsoleIdentity'
+import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const { selectedSupplier } = useSupplierConsoleIdentity()
 const { preview: supplierInterface } = useSupplierInterface()

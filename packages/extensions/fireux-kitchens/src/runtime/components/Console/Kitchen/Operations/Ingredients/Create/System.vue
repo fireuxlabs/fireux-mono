@@ -10,7 +10,7 @@
       </div>
     </template>
 
-    <KitchenIngredientsCreateWrite v-model:form="form" />
+    <ConsoleKitchenOperationsIngredientsCreateWrite v-model:form="form" />
 
     <div class="mt-4 flex flex-wrap justify-end gap-2">
       <UButton
@@ -54,18 +54,18 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore';
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire';
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug';
-import { computed, ref } from 'vue';
-import { IngredientStorage } from '../../../../models/ingredient.model';
-import { useIngredientCreate } from '../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
-import { useKitchenIngredientSelection } from '../../../../composables/fireux/console/kitchen/Operations/Ingredients/mutations/useKitchenIngredientSelection';
+import { doc, getDoc } from 'firebase/firestore'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { computed, ref } from 'vue'
+import { useKitchenIngredientSelection } from '../../../../../../composables/fireux/console/kitchen/Operations/Ingredients/mutations/useKitchenIngredientSelection'
+import { useIngredientCreate } from '../../../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate'
+import { IngredientStorage } from '../../../../../../models/ingredient.model'
 import {
-    createDefaultKitchenIngredientForm,
-    type KitchenIngredientCreateForm,
-} from './types';
+  createDefaultKitchenIngredientForm,
+  type KitchenIngredientCreateForm,
+} from './types'
 
 const props = defineProps<{
   kitchenId: string

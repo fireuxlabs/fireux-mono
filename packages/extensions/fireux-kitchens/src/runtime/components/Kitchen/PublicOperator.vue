@@ -27,7 +27,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
-import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenSelection } from '../../composables/fireux/console/kitchen/useKitchenSelection'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -61,7 +61,7 @@ const { app: operatorApp } = useAppFetch(operatorAppId)
 const currentUserId = computed(() => String(currentUser.value?.id ?? '').trim())
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const operatorCollectionPath = computed(() =>
-  operatorAppId.value ? resolveKitchenConsoleCollectionPath(operatorAppId.value) : ''
+  operatorAppId.value ? resolveKitchenScopeCollectionPath(operatorAppId.value) : ''
 )
 const { kitchen: consoleKitchen } = useKitchenFetch(kitchenId, {
   collectionPath: operatorCollectionPath,

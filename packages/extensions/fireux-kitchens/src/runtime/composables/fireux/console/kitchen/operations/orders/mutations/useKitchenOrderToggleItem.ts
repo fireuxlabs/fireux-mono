@@ -1,7 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { resolveKitchenConsoleCollectionPath } from '../../Collections/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenOrderStorage,
   type KitchenOrder,
@@ -25,7 +25,7 @@ export function useKitchenOrderToggleItem() {
 
     const kitchenCollectionPath = String(
       input.kitchenCollectionPath || ''
-    ).trim() || resolveKitchenConsoleCollectionPath(appId)
+    ).trim() || resolveKitchenScopeCollectionPath(appId)
 
     await updateDocument<KitchenOrder>(
       `${kitchenCollectionPath}/${kitchenId}/${KitchenOrderStorage.collection}`,

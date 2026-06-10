@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import type { MenuItem } from '../../../../../models/menu.model'
-import { useKitchenChildCollection } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
