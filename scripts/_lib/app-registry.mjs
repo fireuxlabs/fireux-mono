@@ -182,6 +182,19 @@ export const APP_REGISTRY = {
     smokeRoutes: ['/'],
     launchOrder: 10,
   },
+  'fireux-blank': {
+    key: 'fireux-blank',
+    name: 'FireUX Blank',
+    appId: 'fireux-blank',
+    ecosystem: 'fireux',
+    databaseId: 'fireux',
+    role: 'standalone',
+    workspace: './projects/fireux/fireux-blank',
+    port: 3015,
+    consoles: ['blank'],
+    smokeRoutes: ['/', '/console', '/console/blank'],
+    launchOrder: 15,
+  },
   'yellow-velo': {
     key: 'yellow-velo',
     name: 'Yellow Velo',
@@ -237,7 +250,7 @@ export const APP_REGISTRY = {
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'slap', 'yellow-velo', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

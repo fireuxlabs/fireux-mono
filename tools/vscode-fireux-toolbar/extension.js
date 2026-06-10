@@ -780,6 +780,18 @@ function activate(context) {
       url: 'http://localhost:3013',
     },
     {
+      key: 'fireux-blank',
+      name: 'FireUX Blank',
+      icon: '$(empty-window)',
+      port: 3015,
+      commandId: 'fireuxToolbar.startFireuxBlank',
+      taskLabel: 'pnpm dev:fireux-blank',
+      terminalName: 'FireUX Blank (3015)',
+      pnpmCommand: 'pnpm dev:fireux-blank --host',
+      tooltip: 'Start FireUX Blank dev (port 3015)',
+      url: 'http://localhost:3015',
+    },
+    {
       key: 'yellow-velo',
       name: 'Yellow Velo',
       icon: '$(symbol-color)',

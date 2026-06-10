@@ -24,6 +24,7 @@
     "dev:granite": "node scripts/dev-app-with-smoke.mjs --app granite",
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
     "dev:go-qr": "node scripts/dev-app-with-smoke.mjs --app go-qr",
+    "dev:fireux-blank": "node scripts/dev-app-with-smoke.mjs --app fireux-blank",
     "dev:yellow-velo": "node scripts/dev-app-with-smoke.mjs --app yellow-velo",
     "dev:embed-harness": "node scripts/serve-static-harness.mjs",
     "dev:embed-tools": "node scripts/dev-embed-tools.mjs",
