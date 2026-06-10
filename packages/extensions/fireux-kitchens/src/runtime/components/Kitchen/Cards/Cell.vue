@@ -58,6 +58,7 @@
 <div
   v-else
   class="block w-full"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
   @click="onClick"
 >
     <div
@@ -126,6 +127,7 @@ type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 
   showTagline?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -141,6 +143,7 @@ const props = withDefaults(defineProps<Props>(), {
   showTagline: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const resolvedAddress = computed(() => props.formattedAddress || '')
@@ -169,6 +172,8 @@ const visibleBadges = computed(() =>
 )
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
+
   if (props.action) {
     emit('action')
     return

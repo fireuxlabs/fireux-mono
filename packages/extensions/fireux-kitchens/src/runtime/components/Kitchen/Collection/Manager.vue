@@ -65,6 +65,7 @@
           v-bind="card"
           :link="linkEnabled"
           :action="actionEnabled"
+          :disabled="disabled"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -74,6 +75,7 @@
           v-bind="card"
           :link="linkEnabled"
           :action="actionEnabled"
+          :disabled="disabled"
           :show-source="showBadges"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
@@ -127,6 +129,7 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
     link?: boolean
     action?: boolean
+    disabled?: boolean
     showFilterToggle?: boolean
     showBadges?: boolean
     devJsonTitle?: string
@@ -148,6 +151,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     link: true,
     action: false,
+    disabled: false,
     showFilterToggle: false,
     showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
@@ -198,6 +202,7 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
+const disabled = computed(() => props.disabled === true)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(() => props.showBadges !== false)

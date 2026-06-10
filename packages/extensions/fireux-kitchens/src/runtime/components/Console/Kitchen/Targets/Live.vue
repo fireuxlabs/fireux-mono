@@ -19,6 +19,7 @@
       :description="managerDescription"
       :link="false"
       :action="liveMode === 'console'"
+      :disabled="liveMode === 'mine'"
       :show-badges="false"
       @select="selectConsoleKitchen"
     />
