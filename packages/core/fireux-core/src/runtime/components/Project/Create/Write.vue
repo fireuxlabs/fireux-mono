@@ -8,7 +8,6 @@
     />
 
     <DevJson
-      v-if="isDev"
       title="Project Create Debug"
       context="console/project · endpoint ingest disabled"
       :data="debugState"
@@ -56,8 +55,6 @@ const props = withDefaults(defineProps<{
 defineEmits<{
   (event: 'created', result: ConsoleCreateResult): void
 }>()
-
-const isDev = import.meta.dev
 
 const debugState = computed(() => ({
   mode: props.mode,

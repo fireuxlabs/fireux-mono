@@ -58,7 +58,7 @@
       {{ query ? 'No chefs match your search.' : 'No chefs found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Chefs (JSON)'"
         context="collection manager · chefs"
@@ -155,5 +155,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

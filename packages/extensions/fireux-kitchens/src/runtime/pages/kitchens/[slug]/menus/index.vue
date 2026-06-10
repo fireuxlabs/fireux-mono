@@ -62,7 +62,6 @@
     </div>
 
     <DevJson
-      v-if="isDev"
       title="Kitchen public menu debug"
       context="Kitchen menu index · /kitchens/[slug]/menus"
       :data="pageDebug"
@@ -84,7 +83,6 @@ const {
   menuLink,
   debug,
 } = useKitchenPublicMenu()
-const isDev = import.meta.dev
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )

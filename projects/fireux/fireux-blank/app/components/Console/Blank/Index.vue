@@ -29,7 +29,6 @@
       <ConsoleBlankTargetsTest />
 
       <DevJson
-        v-if="import.meta.dev"
         title="Blank console debug"
         context="fireux-blank · /console/blank"
         :data="debug"

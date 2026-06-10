@@ -52,7 +52,6 @@
             <ChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile" />
 
             <DevJson
-              v-if="isDev && profile"
               :title="'Chef (Doc)'"
               context="Chef detail page · chefs/[id] · profile doc"
               :data="profile"
@@ -125,7 +124,6 @@ const pageDescription = computed(() =>
     ? `Inspect ${displayName.value}.`
     : 'Chef profile details.'
 )
-const isDev = import.meta.dev
 
 useChefSeo(profile, { id: docId, displayName })
 

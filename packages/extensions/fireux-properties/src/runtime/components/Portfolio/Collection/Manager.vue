@@ -89,7 +89,7 @@
       {{ query ? 'No portfolios match your search.' : 'No portfolios found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="devJsonTitle"
         :context="devJsonContext"
@@ -227,7 +227,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 
 function setFilterMode(value: 'all' | 'mine') {
   emit('update:filterMode', value)

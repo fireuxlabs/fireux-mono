@@ -15,7 +15,6 @@
     <ConsoleProjectTargetsTest />
 
     <DevJson
-      v-if="import.meta.dev"
       title="Project console debug"
       context="fireux-app · /console/project"
       :data="debug"

@@ -29,7 +29,6 @@
 
         <!-- dev -->
         <DevJson
-          v-if="isDev"
           :title="'Supplier (JSON)'"
           context="Supplier detail page · suppliers/[slug] · supplier doc"
           :data="supplierRecord"
@@ -72,7 +71,6 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   profileCard.value?.summary || 'Public supplier record.'
 )
-const isDev = import.meta.dev
 
 useSupplierSeo(supplierRecord)
 </script>

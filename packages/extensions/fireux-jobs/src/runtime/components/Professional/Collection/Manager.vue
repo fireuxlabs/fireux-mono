@@ -62,7 +62,7 @@
       }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Professionals (JSON)'"
         context="collection manager · professionals"
@@ -166,5 +166,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

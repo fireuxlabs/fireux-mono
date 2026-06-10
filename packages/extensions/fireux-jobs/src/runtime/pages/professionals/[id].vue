@@ -62,7 +62,6 @@
         />
 
         <DevJson
-          v-if="isDev"
           :title="'Professional (JSON)'"
           context="professionals-id page"
           :data="devPayload"
@@ -166,7 +165,6 @@ const isAdminUser = computed(
 const { createProfile: createProfileRecord } = useProfileCreate(professionalConfig)
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
-const isDev = import.meta.dev
 const showBusinessCard = ref(false)
 const canShowQr = computed(() => Boolean(sessionUser.value?.id))
 

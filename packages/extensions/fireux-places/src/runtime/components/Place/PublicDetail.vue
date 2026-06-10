@@ -35,7 +35,6 @@
 
           <!-- dev -->
           <DevJson
-            v-if="isDev && place"
             :title="'Place (Doc)'"
             context="Place detail page · places/[id] · raw place doc"
             :data="place"
@@ -82,7 +81,6 @@ const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(
   () => place.value?.formatted_address || 'Saved place details.'
 )
-const isDev = import.meta.dev
 
 const { profile } = usePlaceInterface()
 const placeProfile = computed(() => profile(place.value))

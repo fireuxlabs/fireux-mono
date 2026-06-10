@@ -105,7 +105,6 @@
     </template>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen identity"
       scope="console"
       :data="debug"
@@ -125,7 +124,6 @@ const {
   placeId,
   debug,
 } = useKitchenConsoleIdentity()
-const isDev = import.meta.dev
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const imageUrl = computed(() =>

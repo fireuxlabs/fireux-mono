@@ -57,7 +57,7 @@
       {{ query ? 'No companies match your search.' : 'No companies found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Companies (JSON)'"
         context="collection manager · companies"
@@ -154,5 +154,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

@@ -62,7 +62,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen supplier detail"
       scope="console"
       :data="debug"
@@ -85,7 +84,6 @@ const {
   procurementPath,
   debug,
 } = useKitchenConsoleSupplier()
-const isDev = import.meta.dev
 const statusTitle = computed(() =>
   isEcosystemSupplier.value
     ? 'Supplier catalogue available'

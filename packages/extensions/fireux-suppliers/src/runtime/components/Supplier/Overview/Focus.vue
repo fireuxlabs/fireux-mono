@@ -37,7 +37,7 @@
       No supplier is currently selected.
     </p>
 
-    <div v-if="isDev" class="mt-4">
+    <div class="mt-4">
       <DevJson
         title="Supplier Focus (JSON)"
         context="console supplier overview · focus"
@@ -141,5 +141,4 @@ const focusDebugData = computed(() => {
     },
   }
 })
-const isDev = import.meta.dev
 </script>

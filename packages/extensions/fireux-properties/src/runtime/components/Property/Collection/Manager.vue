@@ -88,7 +88,7 @@
       {{ query ? 'No properties match your search.' : 'No properties found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="devJsonTitle"
         :context="devJsonContext"
@@ -220,7 +220,6 @@ const devJsonTitle = computed(() =>
 const devJsonContext = computed(() =>
   String(props.devJsonContext || 'collection manager · properties').trim()
 )
-const isDev = import.meta.dev
 
 function setFilterMode(value: 'all' | 'mine') {
   emit('update:filterMode', value)

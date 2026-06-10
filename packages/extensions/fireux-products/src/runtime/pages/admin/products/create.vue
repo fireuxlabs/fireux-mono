@@ -32,7 +32,7 @@
           <ProductCreatePreview />
         </template>
       </MoleculesCreateShell>
-      <div v-if="isDev" class="mt-6">
+      <div class="mt-6">
         <DevJson
           :title="'Create Product (JSON)'"
           context="admin/products/create"

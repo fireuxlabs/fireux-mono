@@ -57,7 +57,7 @@
       {{ query ? 'No recipes match your search.' : 'No recipes found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Recipes (JSON)'"
         context="collection manager · recipes"
@@ -151,5 +151,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

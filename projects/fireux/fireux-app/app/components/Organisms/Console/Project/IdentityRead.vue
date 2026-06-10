@@ -30,7 +30,6 @@
     </UCard>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Project identity"
       scope="console"
       :data="debug"
@@ -42,5 +41,4 @@
 import { useProjectConsoleIdentity } from '../../../../composables/fireux/console/project/operations/useProjectConsoleIdentity'
 
 const { name, description, imageUrl, debug } = useProjectConsoleIdentity()
-const isDev = import.meta.dev
 </script>

@@ -58,7 +58,7 @@
       {{ query ? 'No agents match your search.' : 'No agents found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Agents (JSON)'"
         context="collection manager · agents"
@@ -153,5 +153,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

@@ -15,7 +15,6 @@
     <ConsolePortfolioTargetsTest />
 
     <DevJson
-      v-if="import.meta.dev"
       title="Portfolio console debug"
       context="portfolio · /console/portfolio"
       :data="debug"

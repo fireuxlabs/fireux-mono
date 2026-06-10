@@ -115,7 +115,7 @@
       }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Dishes (JSON)'"
         context="collection manager · dishes"
@@ -305,5 +305,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

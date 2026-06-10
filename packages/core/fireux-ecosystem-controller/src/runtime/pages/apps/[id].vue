@@ -16,25 +16,7 @@
           description="The app document loaded, but the prepared profile model resolved empty."
         />
 
-        <UCard v-if="isDev" variant="subtle">
-          <div class="space-y-2 text-xs">
-            <div>
-              <strong>profile-model:</strong>
-              {{ appProfileModel ? 'ready' : 'missing' }}
-            </div>
-            <div>
-              <strong>profile-card:</strong>
-              {{ appProfileModel?.card?.id || 'missing' }}
-            </div>
-            <div>
-              <strong>app-doc:</strong>
-              {{ currentApp?.id || 'missing' }}
-            </div>
-          </div>
-        </UCard>
-
         <DevJson
-          v-if="isDev && currentApp"
           :title="'App (Doc)'"
           context="App detail page · apps/[id] · app doc"
           :data="currentApp"
@@ -42,7 +24,6 @@
         />
 
         <DevJson
-          v-if="isDev"
           :title="'App (Profile Model)'"
           context="App detail page · apps/[id] · prepared profile model"
           :data="appProfileModel"
@@ -175,8 +156,6 @@ const usersDescription = computed(() => {
   if (activeFilter.value === 'users') return 'Non-admin users for this app.'
   return 'All users for this app.'
 })
-const isDev = import.meta.dev
-
 const appName = computed(() => currentApp.value?.app_name ?? null)
 const pageTitle = computed(() => appName.value ?? 'App Details')
 const pageDescription = computed(() =>

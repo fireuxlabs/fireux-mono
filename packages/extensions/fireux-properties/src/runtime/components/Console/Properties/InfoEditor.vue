@@ -10,7 +10,6 @@
 
     <form v-else class="space-y-5" @submit.prevent="save">
       <DevFireuxDebugPanel
-        v-if="isDev"
         title="Property section"
         scope="console"
         :data="debug"
@@ -260,7 +259,6 @@ const {
 } = usePropertyConsoleIndex()
 const draft = ref(clonePage(pageDefaults[props.pageKey]))
 const savedMessage = ref('')
-const isDev = import.meta.dev
 
 const debug = computed(() => ({
   pageKey: props.pageKey,

@@ -66,7 +66,6 @@
     </UCard>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Project apps"
       scope="console"
       :data="debug"
@@ -110,5 +109,4 @@ const projectApps = computed(() => {
   return apps.value.filter((app) => !ecosystemAppIds.has(app.id))
 })
 const hasApps = computed(() => ecosystemApps.value.length > 0 || projectApps.value.length > 0)
-const isDev = import.meta.dev
 </script>

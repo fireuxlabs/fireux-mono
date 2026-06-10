@@ -85,7 +85,7 @@
       {{ query ? 'No kitchens match your search.' : 'No kitchens found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="devJsonTitle"
         :context="devJsonContext"
@@ -253,7 +253,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 
 function setFilterMode(value: KitchenFilterMode) {
   emit('update:filterMode', value)

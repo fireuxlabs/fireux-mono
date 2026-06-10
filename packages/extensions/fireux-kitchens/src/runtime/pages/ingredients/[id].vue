@@ -55,7 +55,6 @@
         />
 
         <DevJson
-          v-if="isDev && ingredient"
           :title="'Ingredient (Doc)'"
           context="Ingredient detail page · ingredients/[id] · ingredient doc"
           :data="ingredient"
@@ -363,7 +362,6 @@ const confirmDelete = async () => {
 
 const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
 const pageDescription = computed(() => 'Ingredient details.')
-const isDev = import.meta.dev
 
 useIngredientSeo(ingredient)
 </script>

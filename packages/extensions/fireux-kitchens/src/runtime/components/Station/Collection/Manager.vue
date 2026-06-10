@@ -37,7 +37,6 @@
     </p>
 
     <DevJson
-      v-if="isDev"
       title="Stations (JSON)"
       context="collection manager · stations"
       :data="collection"
@@ -83,5 +82,4 @@ const sortedStations = computed(() =>
     return normalizeString(left.id).localeCompare(normalizeString(right.id))
   })
 )
-const isDev = import.meta.dev
 </script>

@@ -56,7 +56,7 @@
       {{ query ? 'No clients match your search.' : 'No clients found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Clients (JSON)'"
         context="collection manager · clients"
@@ -152,5 +152,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

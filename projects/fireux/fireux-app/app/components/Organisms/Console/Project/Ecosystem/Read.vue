@@ -56,7 +56,6 @@
     </UCard>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Project ecosystem"
       scope="console"
       :data="debug"
@@ -104,5 +103,4 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
     },
   ]
 })
-const isDev = import.meta.dev
 </script>

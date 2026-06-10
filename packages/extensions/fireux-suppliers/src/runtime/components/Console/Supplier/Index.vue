@@ -15,7 +15,6 @@
     <ConsoleSupplierTargetsTest />
 
     <DevJson
-      v-if="import.meta.dev"
       title="Supplier console debug"
       context="supplier · /console/supplier"
       :data="debug"

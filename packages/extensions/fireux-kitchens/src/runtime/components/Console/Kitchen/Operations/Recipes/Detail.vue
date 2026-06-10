@@ -88,10 +88,7 @@
       "
     />
 
-    <details
-      v-if="isDev"
-      class="rounded-lg border border-default bg-default p-4"
-    >
+    <details class="rounded-lg border border-default bg-default p-4">
       <summary class="cursor-pointer text-sm font-medium text-highlighted">
         Debug
       </summary>
@@ -140,7 +137,6 @@ const { deleteRecipe } = useRecipeDelete({
   databaseId,
 })
 
-const isDev = import.meta.dev
 const saving = ref(false)
 const deleting = ref(false)
 const saveMessage = ref('')

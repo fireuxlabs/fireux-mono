@@ -57,7 +57,7 @@
       {{ query ? 'No products match your search.' : 'No products found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Products (JSON)'"
         :context="devJsonContext"
@@ -157,7 +157,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 const { getCollectionPath } = useFirestoreManager()
 const productCollectionRoot = getCollectionPath('products', false)
 const devJsonContext = computed(

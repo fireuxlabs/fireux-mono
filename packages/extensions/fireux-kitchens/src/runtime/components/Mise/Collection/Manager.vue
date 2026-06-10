@@ -57,7 +57,7 @@
       {{ query ? 'No mise tasks match your search.' : 'No mise tasks found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Mise Tasks (JSON)'"
         context="collection manager · mise"
@@ -153,5 +153,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

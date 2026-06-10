@@ -61,7 +61,7 @@
       :description="emptyStateDescription"
     />
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="`${title} (JSON)`"
         :context="devJsonContext"
@@ -179,6 +179,5 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 const devJsonContext = computed(() => String(props.devContext))
 </script>

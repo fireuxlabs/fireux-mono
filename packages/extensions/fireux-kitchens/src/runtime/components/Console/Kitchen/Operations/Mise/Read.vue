@@ -8,7 +8,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen mise"
       scope="console"
       :data="debug"
@@ -20,5 +19,4 @@
 import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMise'
 
 const { miseTasks, debug } = useKitchenConsoleMise()
-const isDev = import.meta.dev
 </script>

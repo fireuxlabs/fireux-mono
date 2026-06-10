@@ -7,14 +7,12 @@
       <UserCTA />
       <UserCollectionManager :collection="collection" />
 
-      <UCard v-if="isDev">
-        <DevJson
-          title="Users (dev)"
-          context="Users index · firestore collection"
-          :data="collection"
-          :default-open="false"
-        />
-      </UCard>
+      <DevJson
+        title="Users (dev)"
+        context="Users index · firestore collection"
+        :data="collection"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -48,7 +46,6 @@ const { users } = useUserCollection()
 const pageTitle = 'Users'
 const pageDescription = 'Browse users available to this runtime.'
 const collection = computed(() => users.value ?? [])
-const isDev = import.meta.dev
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

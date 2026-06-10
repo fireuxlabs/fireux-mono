@@ -30,7 +30,7 @@
 
     <p v-else class="text-sm text-dimmed">No orders found.</p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Orders (JSON)'"
         context="collection manager · orders"
@@ -167,5 +167,4 @@ const isNextTicket = (index: number) => {
 }
 
 const countLabel = computed(() => `${ticketOrders.value.length}`)
-const isDev = import.meta.dev
 </script>

@@ -7,7 +7,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen team"
       scope="console"
       :data="debug"
@@ -20,5 +19,4 @@ import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console
 import TeamCollectionManager from '../../../../Team/Collection/Manager.vue'
 
 const { teamMembers, debug } = useKitchenConsoleTeam()
-const isDev = import.meta.dev
 </script>

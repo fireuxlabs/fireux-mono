@@ -49,7 +49,6 @@
         <AgentCardsProfile v-if="agentCard" :card="agentCard" :profile="agentProfile" />
 
         <DevJson
-          v-if="isDev && agentProfile"
           :title="'Agent (Doc)'"
           context="Agent detail page · agents/[id] · core profile doc"
           :data="agentProfile"
@@ -109,7 +108,6 @@ const pageDescription = computed(() =>
     ? `Inspect ${displayName.value}.`
     : 'Inspect the selected agent profile.'
 )
-const isDev = import.meta.dev
 
 const isSelf = computed(() =>
   Boolean(agentId.value && sessionUser.value?.id === agentId.value)

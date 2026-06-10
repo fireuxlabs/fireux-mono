@@ -57,7 +57,7 @@
       {{ query ? 'No jobs match your search.' : 'No jobs found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Jobs (JSON)'"
         context="collection manager · jobs"
@@ -151,5 +151,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

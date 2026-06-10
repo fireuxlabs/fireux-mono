@@ -62,7 +62,6 @@
     </MenuPublic>
 
     <DevJson
-      v-if="isDev"
       class="mx-auto my-8 max-w-3xl"
       title="Kitchen public menu detail debug"
       context="Kitchen menu detail · /kitchens/[slug]/menus/[menuId]"
@@ -96,7 +95,6 @@ const {
   maturity,
   debug,
 } = useKitchenPublicMenuDetail()
-const isDev = import.meta.dev
 
 const text = (value: unknown) => String(value ?? '').trim()
 const kitchenName = computed(() =>

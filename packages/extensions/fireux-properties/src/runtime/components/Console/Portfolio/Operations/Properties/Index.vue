@@ -30,7 +30,6 @@
     </UCard>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Portfolio properties"
       scope="console"
       :data="debug"
@@ -70,5 +69,4 @@ const debug = computed(() => ({
   canWrite: canWrite.value,
   selectedPortfolio: selectedPortfolio.value,
 }))
-const isDev = import.meta.dev
 </script>

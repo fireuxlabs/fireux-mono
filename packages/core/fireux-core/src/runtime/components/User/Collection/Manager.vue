@@ -58,7 +58,7 @@
       {{ query ? 'No users match your search.' : 'No users found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Users (JSON)'"
         :context="devJsonContext"
@@ -152,6 +152,5 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 const devJsonContext = 'collection manager · users · root: users'
 </script>

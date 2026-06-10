@@ -32,7 +32,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen mise detail"
       scope="console"
       :data="debug"
@@ -45,5 +44,4 @@ import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/con
 import MiseProfile from '../../../../Mise/Cards/Profile.vue'
 
 const { task, miseId, pending, canEditMise, debug } = useKitchenConsoleMiseTask()
-const isDev = import.meta.dev
 </script>

@@ -60,7 +60,6 @@
     </p>
 
     <DevJson
-      v-if="isDev"
       :title="'Menus (JSON)'"
       context="collection manager · menus"
       :data="devJsonData"
@@ -151,5 +150,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

@@ -58,7 +58,7 @@
       }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="devJsonTitle"
         :context="devJsonContext"
@@ -184,7 +184,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 
 const devJsonTitle = computed(() => props.devJsonTitle || 'Ingredients (JSON)')
 const devJsonContext = computed(

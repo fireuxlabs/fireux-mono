@@ -58,7 +58,6 @@
           </div>
 
           <DevJson
-            v-if="isDev"
             :title="'Professional Admin (JSON)'"
             context="professionals/admin/[id]"
             :data="devPayload"
@@ -145,7 +144,6 @@ const pageDescription = computed(
   () =>
     'Review the public profile and edit the underlying professional documents.'
 )
-const isDev = import.meta.dev
 const devPayload = computed(() => ({
   userId: userId.value,
   coreProfile: resolvedCoreProfile.value,

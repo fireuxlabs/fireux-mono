@@ -6,7 +6,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen orders"
       scope="console"
       :data="debug"
@@ -18,5 +17,4 @@
 import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleOrders'
 
 const { orders, debug } = useKitchenConsoleOrders()
-const isDev = import.meta.dev
 </script>

@@ -15,7 +15,6 @@
     <ConsoleKitchenTargetsTest />
 
     <DevJson
-      v-if="import.meta.dev"
       title="Kitchen console debug"
       context="misebox · /console/kitchen"
       :data="debug"

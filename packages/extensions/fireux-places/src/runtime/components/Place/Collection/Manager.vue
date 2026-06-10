@@ -79,7 +79,7 @@
       {{ query ? 'No places match your search.' : 'No places found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Places (JSON)'"
         context="collection manager · places"
@@ -204,7 +204,6 @@ const countLabel = computed(() =>
     ? `${cardsFiltered.value.length} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 
 function placeEntityFamilies(place: BasePlace) {
   return Array.isArray((place as any)?.entity_families)

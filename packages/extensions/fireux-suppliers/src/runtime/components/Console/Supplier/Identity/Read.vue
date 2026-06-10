@@ -52,7 +52,6 @@
     </template>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Supplier identity"
       scope="console"
       :data="debug"
@@ -75,7 +74,6 @@ const {
   deliveryAreas,
   debug,
 } = useSupplierConsoleIdentity()
-const isDev = import.meta.dev
 const categoryLabel = computed(() => categories.value.join(', '))
 const deliveryAreaLabel = computed(() => deliveryAreas.value.join(', '))
 const imageInitials = computed(() => {

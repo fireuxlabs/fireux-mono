@@ -8,7 +8,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Supplier ingredients"
       scope="console"
       :data="debug"
@@ -25,5 +24,4 @@ const {
   ingredientsDescription,
   debug,
 } = useSupplierConsoleIngredients()
-const isDev = import.meta.dev
 </script>

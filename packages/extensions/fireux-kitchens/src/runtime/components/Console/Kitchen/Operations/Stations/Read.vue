@@ -7,7 +7,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen stations"
       scope="console"
       :data="debug"
@@ -20,5 +19,4 @@ import { useKitchenConsoleStations } from '../../../../../composables/fireux/con
 import StationCollectionManager from '../../../../Station/Collection/Manager.vue'
 
 const { stations, debug } = useKitchenConsoleStations()
-const isDev = import.meta.dev
 </script>

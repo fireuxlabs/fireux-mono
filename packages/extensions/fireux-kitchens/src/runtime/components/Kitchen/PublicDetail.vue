@@ -34,7 +34,6 @@
 
           <!-- dev -->
           <DevJson
-            v-if="isDev && kitchen"
             :title="'Kitchen (Doc)'"
             context="Kitchen detail page · kitchens/[slug] · hydrated kitchen doc"
             :data="kitchen"
@@ -92,7 +91,6 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   kitchenTagline.value || identityCard.value?.subtitle || ''
 )
-const isDev = import.meta.dev
 
 useKitchenSeo(kitchen)
 </script>

@@ -35,7 +35,6 @@
         description="This handle does not exist or is not public."
       />
       <DevJson
-        v-if="isDev && profile"
         :title="'Public User DTO'"
         context="User public page · users/[handle] · endpoint-first SSR"
         :data="profile"
@@ -149,7 +148,6 @@ const pageDescription = computed(() =>
     ? `Public profile for ${displayName.value}.`
     : 'Public user profile.')
 )
-const isDev = import.meta.dev
 
 const headTitle = computed(() =>
   displayName.value ? `${displayName.value} | ${appName}` : `User | ${appName}`

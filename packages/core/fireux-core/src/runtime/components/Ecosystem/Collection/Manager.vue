@@ -58,7 +58,7 @@
       {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         title="Ecosystems (JSON)"
         context="collection manager · ecosystems · raw collection"
@@ -162,5 +162,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 </script>

@@ -33,7 +33,6 @@
           <!-- claim -->
           <CompanyPublicClaim :company="company" :id="docId" />
           <DevJson
-            v-if="isDev && company"
             :title="'Company (Doc)'"
             context="Company detail page · companies/[id] · hydrated company doc"
             :data="company"
@@ -75,7 +74,6 @@ const pageTitle = computed(() => company.value?.name || 'Company')
 const pageDescription = computed(() =>
   company.value?.formatted_address || company.value?.website || 'Review the public company record and its underlying place ownership.'
 )
-const isDev = import.meta.dev
 
 const { profile } = useCompanyInterface()
 const companyProfile = computed(() => profile(company.value))

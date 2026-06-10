@@ -176,7 +176,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen dish detail"
       scope="console"
       :data="fireuxDebugData"
@@ -210,8 +209,6 @@ const { updateDish, deleteDish } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
-
-const isDev = import.meta.dev
 const saving = ref(false)
 const deleting = ref(false)
 const saveMessage = ref('')

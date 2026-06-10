@@ -94,7 +94,7 @@
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Apps (JSON)'"
         :context="devJsonContext"
@@ -235,7 +235,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 const devJsonContext = 'collection manager · apps · root: apps'
 
 const isSelected = (card: AppCollectionCard) =>

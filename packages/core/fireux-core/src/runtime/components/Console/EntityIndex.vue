@@ -39,13 +39,11 @@
         </p>
       </div>
 
-      <div v-if="isDev">
-        <DevFireuxDebugPanel
-          :title="debugTitleResolved"
-          scope="console"
-          :data="debug"
-        />
-      </div>
+      <DevFireuxDebugPanel
+        :title="debugTitleResolved"
+        scope="console"
+        :data="debug"
+      />
 
       <slot v-if="liveCount" name="live-collection" />
     </div>
@@ -206,7 +204,6 @@ const emit = defineEmits<{
   (event: 'createTest'): void
 }>()
 
-const isDev = import.meta.dev
 const entityLower = computed(() =>
   props.entityLowerLabel || props.entityLabel.toLowerCase()
 )

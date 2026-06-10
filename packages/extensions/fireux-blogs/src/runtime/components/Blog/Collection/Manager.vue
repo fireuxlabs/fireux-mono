@@ -57,7 +57,7 @@
       {{ query ? 'No posts match your search.' : 'No posts found.' }}
     </p>
 
-    <div v-if="isDev">
+    <div>
       <DevJson
         :title="'Blog (JSON)'"
         :context="devJsonContext"
@@ -150,6 +150,5 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const isDev = import.meta.dev
 const devJsonContext = 'collection manager · blogs · root: blogs'
 </script>

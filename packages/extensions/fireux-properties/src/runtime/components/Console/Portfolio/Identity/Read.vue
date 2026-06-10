@@ -51,7 +51,6 @@
     </template>
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Portfolio identity"
       scope="console"
       :data="debug"
@@ -74,7 +73,6 @@ const {
   regionLabel,
   debug,
 } = usePortfolioConsoleIdentity()
-const isDev = import.meta.dev
 const initials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'P'

@@ -10,7 +10,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen dishes"
       scope="console"
       :data="debug"
@@ -27,5 +26,4 @@ const {
   sectionFilters,
   debug,
 } = useKitchenConsoleDishes()
-const isDev = import.meta.dev
 </script>

@@ -25,7 +25,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen ingredient detail"
       scope="console"
       :data="debug"
@@ -42,5 +41,4 @@ import IngredientProfile from '../../../../Ingredient/Cards/Profile.vue'
 const { profile: makeProfile } = useIngredientInterface()
 const { ingredient, ingredientId, pending, debug } = useKitchenConsoleIngredient()
 const profile = computed(() => makeProfile(ingredient.value))
-const isDev = import.meta.dev
 </script>

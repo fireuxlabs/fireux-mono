@@ -29,7 +29,6 @@
 
       <template v-else>
         <DevJson
-          v-if="isDev && job"
           :title="'Job (Doc)'"
           context="Job detail page · jobs/[id] · job doc"
           :data="job"
@@ -177,7 +176,6 @@ const jobSubtitle = computed(() =>
 const statusColor = computed(() =>
   job.value?.status === 'open' ? 'emerald' : 'neutral'
 )
-const isDev = import.meta.dev
 
 const statusOptions = [
   { label: 'Open', value: 'open' },

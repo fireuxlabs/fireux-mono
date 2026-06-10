@@ -8,7 +8,6 @@
     />
 
     <DevFireuxDebugPanel
-      v-if="isDev"
       title="Kitchen ingredients"
       scope="console"
       :data="debug"
@@ -20,5 +19,4 @@
 import { useKitchenConsoleIngredients } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIngredients'
 
 const { ingredients, debug } = useKitchenConsoleIngredients()
-const isDev = import.meta.dev
 </script>
