@@ -410,6 +410,32 @@ console/<family>/operations
 
 `operations` is a code directory, not a Firestore collection, stored entity, or child record name. It owns composables for things an operator does inside the selected workspace. Stored data still belongs to the real collection path, such as `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}` or `apps/{appId}/portfolios/{portfolioId}/documents/{documentId}`.
 
+Console component trees use the same plain shape:
+
+```text
+components/Console/<Entity>/
+  Index.vue
+  Create.vue
+  Overview.vue
+  Targets/
+    Selected.vue
+    Live.vue
+    Demo.vue
+    Test.vue
+  Identity/
+    Index.vue
+    Read.vue
+    Edit.vue
+  Operations/
+    <Child>/
+      Index.vue
+      Read.vue
+      Write.vue
+      Detail.vue
+```
+
+`Index` chooses the target. `Targets` contains target-picker sections. `Identity` owns reading and editing the selected entity's own identity/config. `Operations` owns selected-workspace child work. Console-specific debug wrapper files are not canon; use the shared dev/debug component directly where useful.
+
 ### Entity CTA Family Matrix
 
 Entity index CTA surfaces classify the management path, not the marketing copy.

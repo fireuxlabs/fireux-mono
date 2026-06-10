@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-6">
-        <ConsoleProjectEcosystem />
+        <ConsoleProjectOperationsEcosystem />
       </section>
     </template>
   </UDashboardPanel>

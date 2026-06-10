@@ -108,6 +108,20 @@ composables/fireux/console/<entity>/
   operations/
 ```
 
+Console components should mirror that separation:
+
+```text
+components/Console/<Entity>/
+  Index.vue
+  Create.vue
+  Overview.vue
+  Targets/
+  Identity/
+  Operations/
+```
+
+`Index` is the picker. `Targets` is selected/live/demo/test sectioning. `Identity` reads or edits the selected entity itself. `Operations` contains child work for the selected console target. Use shared debug components directly instead of adding per-console `Debug.vue` wrappers.
+
 5. Keep shared app/runtime composables under `fireux/app/`.
 
 ```text

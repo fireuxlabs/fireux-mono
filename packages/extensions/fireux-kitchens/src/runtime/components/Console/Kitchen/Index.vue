@@ -1,17 +1,21 @@
 <template>
   <section class="space-y-4">
-    <KitchenCollectionManager
+    <ConsoleKitchenTargetsSelected
+      :kitchen="selectedKitchen"
+      :kitchen-id="kitchenId"
+      @clear="clearSelectedKitchen"
+    />
+
+    <ConsoleKitchenTargetsLive
       :collection="kitchens.live"
-      title="Choose Kitchen"
-      description="Select the kitchen you want to work on."
-      :link="false"
-      :action="true"
-      :show-badges="false"
       @select="actions.selectLive"
     />
 
+    <ConsoleKitchenTargetsDemo />
+    <ConsoleKitchenTargetsTest />
+
     <DevJson
-      v-if="isDev"
+      v-if="import.meta.dev"
       title="Kitchen console debug"
       context="misebox · /console/kitchen"
       :data="debug"
@@ -23,6 +27,12 @@
 <script setup lang="ts">
 import { useKitchenConsoleIndex } from '../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
 
-const { kitchens, actions, debug } = useKitchenConsoleIndex()
-const isDev = import.meta.dev
+const {
+  kitchens,
+  actions,
+  selectedKitchen,
+  kitchenId,
+  debug,
+  clearSelectedKitchen,
+} = useKitchenConsoleIndex()
 </script>

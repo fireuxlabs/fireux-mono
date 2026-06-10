@@ -27,6 +27,7 @@ export function useBlankConsoleIndex() {
 
   return {
     blank,
+    selectedId,
     actions,
     debug,
   }

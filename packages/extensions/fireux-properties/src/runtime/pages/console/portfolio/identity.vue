@@ -33,7 +33,7 @@
 
         <ClientOnly v-else>
           <div class="console-profile__section">
-            <ConsolePortfolioEdit />
+            <ConsolePortfolioIdentityEdit />
           </div>
         </ClientOnly>
       </div>

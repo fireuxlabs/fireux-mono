@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-6">
-        <ConsoleProjectApps />
+        <ConsoleProjectOperationsApps />
       </section>
     </template>
   </UDashboardPanel>

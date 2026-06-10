@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleSupplierCatalogue />
+        <ConsoleSupplierOperationsCatalogue />
       </section>
     </template>
   </UDashboardPanel>
