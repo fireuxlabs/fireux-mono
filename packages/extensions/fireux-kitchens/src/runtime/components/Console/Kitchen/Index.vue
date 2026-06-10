@@ -19,9 +19,12 @@
   >
     <template #live-collection>
       <KitchenCollectionManager
-        :collection="kitchens.live"
+        :collection="filteredLiveKitchens"
         title="Choose Live Kitchen"
-        description="Select the live kitchen you want to work on."
+        :description="liveDescription"
+        v-model:filter-mode="liveScope"
+        :filter-options="liveFilterOptions"
+        :show-filter-toggle="true"
         :link="false"
         :action="true"
         :show-badges="false"
@@ -32,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ConsoleEntityIndex from 'fireux-core/runtime/components/Console/EntityIndex.vue'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsoleIndex } from '../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
@@ -46,10 +49,47 @@ const {
   kitchens,
   actions,
   selectedKitchen,
+  userId,
   debug,
   clearSelectedKitchen,
 } = useKitchenConsoleIndex()
 const { pill } = useKitchenInterface()
+type LiveScope = 'all' | 'team' | 'operator'
+
+const liveScope = ref<LiveScope>('all')
+const liveFilterOptions = [
+  { value: 'all' as const, label: 'My kitchens' },
+  { value: 'team' as const, label: 'Team' },
+  { value: 'operator' as const, label: 'Operator' },
+]
+const hasUserId = (values?: string[]) =>
+  Array.isArray(values) &&
+  values.some((value) => String(value ?? '').trim() === userId.value)
+
+const filteredLiveKitchens = computed(() => {
+  if (liveScope.value === 'team') {
+    return kitchens.value.live.filter((kitchen) => hasUserId(kitchen.team_ids))
+  }
+
+  if (liveScope.value === 'operator') {
+    return kitchens.value.live.filter((kitchen) =>
+      hasUserId(kitchen.operator_ids)
+    )
+  }
+
+  return kitchens.value.live
+})
+const liveDescription = computed(() => {
+  if (liveScope.value === 'team') {
+    return 'Kitchens where you are listed on the team.'
+  }
+
+  if (liveScope.value === 'operator') {
+    return 'Kitchens where you have operator permission.'
+  }
+
+  return 'Select one of your kitchens to work on.'
+})
 
 const demoKitchenCards = computed<KitchenPillCard[]>(() =>
   kitchens.value.demo

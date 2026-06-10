@@ -89,6 +89,8 @@ export type KitchenSurface = {
   gallery_images?: string[]
   about?: string
   verified?: boolean
+  operator_ids?: string[]
+  team_ids?: string[]
 }
 
 export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {

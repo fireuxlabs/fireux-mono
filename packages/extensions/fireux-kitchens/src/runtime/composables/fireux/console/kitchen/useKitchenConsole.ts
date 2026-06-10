@@ -51,14 +51,9 @@ export function useKitchenConsole(
   const { surface } = useKitchenInterface()
   const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<KitchenConsoleListFilter>(() => {
-    const explicitFilter = isRef(options.filter)
+    return isRef(options.filter)
       ? options.filter.value ?? {}
       : options.filter ?? {}
-
-    return {
-      ...explicitFilter,
-      operatorId: userId.value,
-    }
   })
   const { kitchens: liveKitchens } = useKitchenConsoleList({ filter: liveFilter })
   const demoKitchens = computed<KitchenSurface[]>(() =>

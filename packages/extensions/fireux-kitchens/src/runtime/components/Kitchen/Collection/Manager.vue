@@ -13,18 +13,13 @@
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
-                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                v-for="option in filterOptions"
+                :key="option.value"
+                :variant="filterMode === option.value ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setFilterMode('all')"
+                @click="setFilterMode(option.value)"
               >
-                All
-              </UButton>
-              <UButton
-                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode('mine')"
-              >
-                Mine
+                {{ option.label }}
               </UButton>
             </UFieldGroup>
 
@@ -107,12 +102,21 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../models/kitchen.model'
+
+type KitchenCollectionItem = Kitchen | KitchenSurface
+type KitchenFilterMode = 'all' | 'team' | 'operator'
+type KitchenFilterOption = {
+  value: KitchenFilterMode
+  label: string
+}
 
 const props = withDefaults(
   defineProps<{
-    collection?: Kitchen[]
-    filterMode?: 'all' | 'mine'
+    collection?: KitchenCollectionItem[]
+    filterMode?: KitchenFilterMode
+    filterOptions?: KitchenFilterOption[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -129,6 +133,11 @@ const props = withDefaults(
   }>(),
   {
     filterMode: 'all',
+    filterOptions: () => [
+      { value: 'all', label: 'All' },
+      { value: 'team', label: 'Team' },
+      { value: 'operator', label: 'Operator' },
+    ],
     title: 'Kitchens',
     description: 'Browse kitchen records available to this runtime.',
     searchPlaceholder: 'Search kitchens…',
@@ -147,7 +156,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', kitchenId: string): void
-  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:filterMode', value: KitchenFilterMode): void
 }>()
 
 const fetched = useKitchenCollection()
@@ -164,8 +173,19 @@ const description = computed(() =>
     props.description || 'Browse kitchen records available to this runtime.'
   ).trim()
 )
-const filterMode = computed<'all' | 'mine'>(() =>
-  props.filterMode === 'mine' ? 'mine' : 'all'
+const filterMode = computed<KitchenFilterMode>(() =>
+  props.filterMode === 'team' || props.filterMode === 'operator'
+    ? props.filterMode
+    : 'all'
+)
+const filterOptions = computed<KitchenFilterOption[]>(() =>
+  Array.isArray(props.filterOptions) && props.filterOptions.length
+    ? props.filterOptions
+    : [
+        { value: 'all', label: 'All' },
+        { value: 'team', label: 'Team' },
+        { value: 'operator', label: 'Operator' },
+      ]
 )
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search kitchens…')
@@ -191,14 +211,19 @@ const {
   cell: makeCell,
 } = useKitchenInterface()
 
-const collection = computed<Kitchen[]>(() =>
-  rawCollection.value.filter((row): row is Kitchen => Boolean(makeCard(row)))
+const collection = computed<KitchenCollectionItem[]>(() =>
+  rawCollection.value.filter((row): row is KitchenCollectionItem =>
+    Boolean(makeCard(row))
+  )
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<Kitchen, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<
+    KitchenCollectionItem,
+    NonNullable<ReturnType<typeof makeCard>>
+  >({
     items: collection,
-    makeCard: (kitchen: Kitchen) => makeCard(kitchen),
+    makeCard: (kitchen: KitchenCollectionItem) => makeCard(kitchen),
     initialVariant: props.initialVariant,
   })
 
@@ -230,7 +255,7 @@ const countLabel = computed(() =>
 )
 const isDev = import.meta.dev
 
-function setFilterMode(value: 'all' | 'mine') {
+function setFilterMode(value: KitchenFilterMode) {
   emit('update:filterMode', value)
 }
 </script>

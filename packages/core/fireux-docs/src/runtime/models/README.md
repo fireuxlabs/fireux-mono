@@ -130,6 +130,8 @@ For app-scoped domains, the stored ownership pattern is shared:
 - app authority is user-based through:
   - `operator_ids`
   - `join_requests`
+- when a family needs fast personal console selection, app membership may carry explicit `console_scopes` entries such as `kitchen:<kitchenId>`
+- membership indexes are candidate lists; scoped records still carry the relationship and authority detail
 
 Optional family-specific operator profiles do not replace that app-scoped pattern.
 

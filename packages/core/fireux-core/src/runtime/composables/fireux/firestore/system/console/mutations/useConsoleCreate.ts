@@ -1,4 +1,5 @@
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -185,6 +186,28 @@ export function useConsoleCreate() {
         }
       )
       createdOverlay = true
+    }
+
+    const currentUid = normalizeId(uid.value)
+    if (currentUid) {
+      await setDoc(
+        doc(
+          db,
+          AppStorage.collection,
+          currentAppId,
+          AppUserStorage.collection,
+          currentUid
+        ),
+        {
+          console_enabled: true,
+          console_scopes: arrayUnion(`${options.type}:${id}`),
+          updated: {
+            at: serverTimestamp(),
+            by: currentUid,
+          },
+        },
+        { merge: true }
+      )
     }
 
     const rootRef = doc(db, collectionName, id)

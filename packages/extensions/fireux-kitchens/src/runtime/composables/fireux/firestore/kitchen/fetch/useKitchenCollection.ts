@@ -22,11 +22,7 @@ const normalize = (value: unknown) => String(value ?? '').trim()
  */
 export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) {
   const { surface } = useKitchenInterface()
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const rootSource = firestoreFetchCollection<KitchenCollectionDoc>(
-    KitchenStorage.rootCollection
-  )
-  const placeSource = firestoreFetchCollection<Place>(PlaceStorage.collection)
+  const { firestoreFetchCollection, firestoreLoadDocsByIds } = useFirestoreRead()
   const shouldHydrate = computed(() =>
     isRef(options.hydrate)
       ? options.hydrate.value !== false
@@ -40,12 +36,51 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     const ids = isRef(options.ids) ? options.ids.value : options.ids
     return Array.isArray(ids)
   })
+  const idList = computed(() => Array.from(idSet.value))
+  const rootCollectionPath = computed(() =>
+    hasIdFilter.value ? '' : KitchenStorage.rootCollection
+  )
+  const rootSource = firestoreFetchCollection<KitchenCollectionDoc>(
+    rootCollectionPath
+  )
+  const exactRootSource = firestoreLoadDocsByIds<KitchenCollectionDoc>({
+    collectionPath: KitchenStorage.rootCollection,
+    ids: idList,
+  })
+  const rootDocs = computed<KitchenCollectionDoc[]>(() =>
+    hasIdFilter.value
+      ? exactRootSource.docs.value ?? []
+      : rootSource.value ?? []
+  )
+  const placeIds = computed(() =>
+    Array.from(
+      new Set(
+        rootDocs.value
+          .map((kitchen) => normalize(kitchen?.place_id))
+          .filter(Boolean)
+      )
+    )
+  )
+  const placeCollectionPath = computed(() =>
+    shouldHydrate.value && !hasIdFilter.value ? PlaceStorage.collection : ''
+  )
+  const placeSource = firestoreFetchCollection<Place>(placeCollectionPath)
+  const exactPlaceSource = firestoreLoadDocsByIds<Place>({
+    collectionPath: PlaceStorage.collection,
+    ids: computed(() =>
+      shouldHydrate.value && hasIdFilter.value ? placeIds.value : []
+    ),
+  })
   const placesById = computed(() => {
     const map = new Map<string, Place>()
 
     if (!shouldHydrate.value) return map
 
-    for (const place of placeSource.value ?? []) {
+    const places = hasIdFilter.value
+      ? exactPlaceSource.docs.value ?? []
+      : placeSource.value ?? []
+
+    for (const place of places) {
       const placeId = normalize(place?.id)
       if (placeId) map.set(placeId, place)
     }
@@ -53,7 +88,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     return map
   })
   const kitchens = computed<KitchenCollectionDoc[]>(() =>
-    (rootSource.value ?? [])
+    rootDocs.value
       .map((kitchen) => {
         const id = normalize(kitchen?.id)
         if (!id) return null
@@ -72,10 +107,18 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       .filter((kitchen): kitchen is KitchenCollectionDoc => Boolean(kitchen))
   )
   const count = computed(() => kitchens.value.length)
-  const pending = computed(() =>
-    rootSource.value === undefined ||
-    (shouldHydrate.value && placeSource.value === undefined)
-  )
+  const pending = computed(() => {
+    const rootPending = hasIdFilter.value
+      ? exactRootSource.pending.value
+      : rootSource.value === undefined
+    const placePending = shouldHydrate.value
+      ? hasIdFilter.value
+        ? exactPlaceSource.pending.value
+        : placeSource.value === undefined
+      : false
+
+    return rootPending || placePending
+  })
 
   return {
     kitchens,

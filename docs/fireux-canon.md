@@ -95,8 +95,9 @@ Current learned examples:
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
 - In `live` mode, `/console/X` should show the current user's real targets for that family.
-- Live console visibility is governed by `operator_ids`.
-- If a user can see an entity in a live console, their uid must be in that entity's `operator_ids`.
+- Live console visibility should start from an explicit user target index when the family needs fast personal selection.
+- Kitchen uses app membership `console_scopes` entries such as `kitchen:<kitchenId>` as the current user's Kitchen index.
+- Scoped console records still carry relationship and authority detail through fields such as `operator_ids` and `team_ids`.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.

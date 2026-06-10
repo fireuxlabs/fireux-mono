@@ -1,14 +1,8 @@
-import {
-  collection,
-  getDocs,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { computed, isRef, ref, watch, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
@@ -25,8 +19,6 @@ type AppKitchenConsoleListDoc = {
 export type KitchenConsoleListFilterValue = string | number | null | undefined
 export type KitchenConsoleListFilter = {
   ids?: KitchenConsoleListFilterValue[] | null | undefined
-  operatorId?: KitchenConsoleListFilterValue
-  teamId?: KitchenConsoleListFilterValue
 }
 
 type UseKitchenConsoleListOptions = {
@@ -34,19 +26,23 @@ type UseKitchenConsoleListOptions = {
 }
 
 const normalize = (value: unknown) => String(value ?? '').trim()
-const uniq = (values: unknown[]) => Array.from(new Set(values.map(normalize).filter(Boolean)))
+const uniq = (values: unknown[]) =>
+  Array.from(new Set(values.map(normalize).filter(Boolean)))
 
 /**
  * Console Kitchen read-many seam.
  *
- * This composes root Kitchen identity with app-scoped operator records from
- * registered apps. It is intentionally separate from `useKitchenCollection()`,
- * which reads only public root Kitchens.
+ * Canon:
+ * 1. Read the user's Kitchen index first: `users/{uid}.kitchen_ids`.
+ * 2. Hydrate those exact root Kitchen docs.
+ * 3. Read exact app-scoped Kitchen records only for those ids.
+ *
+ * This avoids scanning every app scope or every root Kitchen in the browser.
  */
 export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { apps } = useAppCollection()
+  const { appUser, pending: userPending } = useUser()
   const { surface } = useKitchenInterface()
   const scopeItems = ref<AppKitchenConsoleListDoc[]>([])
   const scopePending = ref(false)
@@ -55,79 +51,83 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
-  const filterOperatorId = computed(() =>
-    normalize(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
   const explicitIds = computed(() =>
     (resolvedFilter.value?.ids ?? []).map((id) => normalize(id)).filter(Boolean)
   )
   const hasExplicitIds = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const appIds = computed(() =>
-    uniq([
-      appId,
-      ...(apps.value ?? []).map((app) => app.id),
-    ])
+  const userKitchenIds = computed(() =>
+    Array.isArray(appUser.value?.console_scopes)
+      ? appUser.value.console_scopes
+          .map((scope) => {
+            const normalized = normalize(scope)
+            return normalized.startsWith('kitchen:')
+              ? normalized.slice('kitchen:'.length)
+              : ''
+          })
+          .map((id) => normalize(id))
+          .filter(Boolean)
+      : []
+  )
+  const collectionIds = computed(() =>
+    uniq(hasExplicitIds.value ? explicitIds.value : userKitchenIds.value)
+  )
+  const rootCollection = useKitchenCollection({ ids: collectionIds })
+  const scopeTargets = computed(() =>
+    rootCollection.kitchens.value
+      .map((kitchen) => {
+        const kitchenId = normalize(kitchen.id)
+        const scopeAppId =
+          normalize(kitchen.app_scope_app_id) || normalize(appId)
+
+        return kitchenId && scopeAppId
+          ? { kitchenId, appId: scopeAppId }
+          : null
+      })
+      .filter(
+        (target): target is { kitchenId: string; appId: string } =>
+          Boolean(target)
+      )
   )
 
-  const loadAppScopes = async (ids: string[], operatorId: string) => {
-    const scopeById = new Map<string, AppKitchenConsoleListDoc>()
+  const loadAppScopes = async (
+    targets: { kitchenId: string; appId: string }[]
+  ) => {
+    const scopes = await Promise.all(
+      targets.map(async (target) => {
+        const snap = await getDoc(
+          doc(
+            db,
+            AppStorage.collection,
+            target.appId,
+            KitchenStorage.scopeCollection,
+            target.kitchenId
+          )
+        )
 
-    for (const currentAppId of ids) {
-      const scopeCollection = collection(
-        db,
-        AppStorage.collection,
-        currentAppId,
-        KitchenStorage.scopeCollection
-      )
-      const queries = [
-        fsq(scopeCollection, where('operator_ids', 'array-contains', operatorId)),
-        fsq(scopeCollection, where('team_ids', 'array-contains', operatorId)),
-      ] as Query<AppKitchenConsoleListDoc>[]
+        if (!snap.exists()) return null
 
-      for (const query of queries) {
-        const snapshot = await getDocs(query)
+        const data = snap.data() as AppKitchenConsoleListDoc
+        return {
+          ...data,
+          id: target.kitchenId,
+          app_scope_app_id: target.appId,
+          operator_ids: uniq(data.operator_ids ?? []),
+          team_ids: uniq(data.team_ids ?? []),
+        } satisfies AppKitchenConsoleListDoc
+      })
+    )
 
-        for (const docSnap of snapshot.docs) {
-          const data = docSnap.data()
-          const id = normalize(docSnap.id)
-          if (!id) continue
-
-          const previous = scopeById.get(id)
-          scopeById.set(id, {
-            ...previous,
-            ...data,
-            id,
-            app_scope_app_id: currentAppId,
-            operator_ids: uniq([
-              ...(previous?.operator_ids ?? []),
-              ...(data.operator_ids ?? []),
-            ]),
-            team_ids: uniq([
-              ...(previous?.team_ids ?? []),
-              ...(data.team_ids ?? []),
-            ]),
-          })
-        }
-      }
-    }
-
-    return Array.from(scopeById.values())
+    return scopes.filter((scope): scope is AppKitchenConsoleListDoc =>
+      Boolean(scope)
+    )
   }
 
   watch(
-    () => ({
-      appIds: appIds.value,
-      hasOperatorFilter: hasOperatorFilter.value,
-      operatorId: filterOperatorId.value,
-    }),
-    async ({ appIds, hasOperatorFilter, operatorId }) => {
+    () => scopeTargets.value,
+    async (targets) => {
       const currentRequestId = ++requestId
 
-      if (!hasOperatorFilter || !operatorId || import.meta.server) {
+      if (!targets.length || import.meta.server) {
         scopeItems.value = []
         scopePending.value = false
         return
@@ -136,11 +136,11 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
       scopePending.value = true
 
       try {
-        const scopes = await loadAppScopes(appIds, operatorId)
+        const scopes = await loadAppScopes(targets)
         if (currentRequestId === requestId) scopeItems.value = scopes
       } catch (error) {
         if (import.meta.dev) {
-          console.error('[useKitchenConsoleList] app-scoped kitchen read failed', error)
+          console.error('[useKitchenConsoleList] exact app-scope read failed', error)
         }
         if (currentRequestId === requestId) scopeItems.value = []
       } finally {
@@ -150,54 +150,16 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
     { immediate: true, deep: true }
   )
 
-  const mergedScopeItems = computed<AppKitchenConsoleListDoc[]>(() => {
-    const scopesById = new Map<string, AppKitchenConsoleListDoc>()
-
-    for (const scope of scopeItems.value) {
-      const id = normalize(scope?.id)
-      const scopeAppId = normalize(scope?.app_scope_app_id)
-      if (!id || !scopeAppId) continue
-
-      scopesById.set(id, {
-        ...scopesById.get(id),
-        ...scope,
-        id,
-        app_scope_app_id: scopeAppId,
-        operator_ids: Array.from(
-          new Set([
-            ...(scopesById.get(id)?.operator_ids ?? []),
-            ...(scope.operator_ids ?? []),
-          ])
-        ),
-        team_ids: Array.from(
-          new Set([
-            ...(scopesById.get(id)?.team_ids ?? []),
-            ...(scope.team_ids ?? []),
-          ])
-        ),
-      })
-    }
-
-    return Array.from(scopesById.values())
-  })
   const scopesByKitchenId = computed(() => {
     const map = new Map<string, AppKitchenConsoleListDoc>()
 
-    for (const scope of mergedScopeItems.value) {
+    for (const scope of scopeItems.value) {
       const id = normalize(scope?.id)
       if (id) map.set(id, scope)
     }
 
     return map
   })
-  const collectionIds = computed<string[] | undefined>(() => {
-    if (hasOperatorFilter.value) {
-      return mergedScopeItems.value.map((scope) => normalize(scope.id)).filter(Boolean)
-    }
-
-    return hasExplicitIds.value ? explicitIds.value : undefined
-  })
-  const rootCollection = useKitchenCollection({ ids: collectionIds })
   const kitchens = computed<KitchenSurface[]>(() =>
     rootCollection.kitchens.value
       .map((kitchen) =>
@@ -210,11 +172,12 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
       .filter((kitchen): kitchen is KitchenSurface => Boolean(kitchen))
   )
   const count = computed(() => kitchens.value.length)
-  const pending = computed(() => {
-    if (hasOperatorFilter.value && scopePending.value) return true
-
-    return rootCollection.pending.value
-  })
+  const pending = computed(
+    () =>
+      (!hasExplicitIds.value && userPending.value) ||
+      rootCollection.pending.value ||
+      scopePending.value
+  )
 
   return {
     kitchens,

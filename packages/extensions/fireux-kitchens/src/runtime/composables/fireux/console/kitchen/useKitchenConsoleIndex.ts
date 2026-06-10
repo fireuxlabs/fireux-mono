@@ -82,6 +82,7 @@ export function useKitchenConsoleIndex(
     selectedKitchen,
     selectedMode,
     kitchenId,
+    userId,
     rootCollection,
     canWrite,
     debug,
