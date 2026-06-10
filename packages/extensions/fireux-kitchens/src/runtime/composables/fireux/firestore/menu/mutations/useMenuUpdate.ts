@@ -12,7 +12,7 @@ import {
   menuPath,
   menuSectionsPath,
 } from '../utils/paths'
-import { resolveKitchenCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenCollectionBasePath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

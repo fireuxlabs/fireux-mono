@@ -15,7 +15,7 @@ import { PropertyStorage, type Property } from '../../../../../models/property.m
 import {
   createTestPropertySimulation,
   getDemoPropertySimulations,
-} from '../../../console/property/operations/demo-scenarios'
+} from '../../../console/property/Operations/demo-scenarios'
 
 type PropertyCollectionDoc = Partial<Property> & {
   id?: string

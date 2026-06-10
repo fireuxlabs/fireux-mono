@@ -72,7 +72,7 @@
 import { create } from 'qrcode'
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/Operations/Menus/useKitchenConsoleMenus'
 import ConsoleKitchenOperationsMenusCentreMark from './CentreMark.vue'
 
 const { selectedKitchen, menus } = useKitchenConsoleMenus()

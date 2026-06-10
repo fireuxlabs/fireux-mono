@@ -37,7 +37,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Supplier item records must link to canonical Product identity through `product_id`.
 - Supplier catalogue records present/group Item records; they do not own sale terms.
 - Ingredient linkage is optional through `ingredient_id`; it is not supplier item identity.
-- `console/supplier/operations` is a selected Supplier code bucket, not a Firestore collection. Use it for operator work that depends on the selected Supplier; keep stored CRUD in the relevant `firestore/*` stack and guest-facing shaping in `public/supplier/*`.
+- `console/supplier/Operations` is a selected Supplier code bucket, not a Firestore collection. Use it for operator work that depends on the selected Supplier; keep stored CRUD in the relevant `firestore/*` stack and guest-facing shaping in `public/supplier/*`.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Public slug routes:

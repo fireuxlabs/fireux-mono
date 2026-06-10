@@ -6,7 +6,7 @@ Extends: packages/core/fireux-docs/src/runtime/concepts/console/README.md
 
 This directory owns composables for work an operator does inside a selected Project workspace.
 
-`operations` is a code bucket, not a Firestore collection, stored entity, or public route.
+`Operations` is a code bucket, not a Firestore collection, stored entity, or public route.
 
 Use this layer for selected-Project work such as:
 - identity

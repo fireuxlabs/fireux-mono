@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/useProjectConsoleApps'
+import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/Operations/Apps/useProjectConsoleApps'
 
 const {
   selectedProject,

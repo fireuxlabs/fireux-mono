@@ -93,8 +93,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
-import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleTeam'
-import { useKitchenTeamMemberCreate } from '../../../../../composables/fireux/console/kitchen/operations/team/mutations/useKitchenTeamMemberCreate'
+import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/Operations/Team/useKitchenConsoleTeam'
+import { useKitchenTeamMemberCreate } from '../../../../../composables/fireux/console/kitchen/Operations/Team/mutations/useKitchenTeamMemberCreate'
 import type { KitchenTeamJoinRequest } from '../../../../../models/kitchen-team.model'
 
 const {

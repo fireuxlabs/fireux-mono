@@ -118,7 +118,7 @@ orders, messages, or rooms.
 
 ### 2c) Selected Target Operations
 
-`console/<family>/operations` is a code bucket for the selected workspace.
+`console/<family>/Operations` is a code bucket for selected workspace operations.
 
 Meaning:
 - the operator is already inside one selected target
@@ -130,10 +130,13 @@ This is not a stored entity.
 This is not a public route layer.
 
 Examples:
-- `console/kitchen/operations` for selected Kitchen work such as menus, dishes, ingredients, team, orders, or stations
-- `console/supplier/operations` for selected Supplier work such as items, catalogues, ingredients, or identity
-- `console/portfolio/operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
-- `console/project/operations` for selected Project management such as apps, ecosystem links, or identity
+- `console/kitchen/Operations` for selected Kitchen work such as menus, dishes, ingredients, team, orders, or stations
+- `console/supplier/Operations` for selected Supplier work such as items, catalogues, or ingredients
+- `console/portfolio/Operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
+- `console/project/Operations` for selected Project management such as apps or ecosystem links
+
+Identity helpers live beside operations in `console/<family>/Identity`.
+Target helpers live beside operations in `console/<family>/Targets`.
 
 Stored CRUD remains in the entity's Firestore stack or explicit child stack.
 Public route shaping remains in `public/`.

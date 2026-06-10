@@ -7,7 +7,7 @@ import {
   type Menu,
 } from '../../../../../models/menu.model'
 import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
 
 export type MenuCreateInput = {
   kitchenId?: string

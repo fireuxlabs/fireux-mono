@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDishes'
+import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/Operations/Dishes/useKitchenConsoleDishes'
 
 const {
   dishes,

@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/Identity/useKitchenConsoleIdentity'
 
 const { placeId } = useKitchenConsoleIdentity()
 const { place, pending } = usePlaceFetch(placeId)

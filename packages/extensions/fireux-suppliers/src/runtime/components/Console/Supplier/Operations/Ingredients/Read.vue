@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleIngredients } from '../../../../../composables/fireux/console/supplier/operations/useSupplierConsoleIngredients'
+import { useSupplierConsoleIngredients } from '../../../../../composables/fireux/console/supplier/Operations/Ingredients/useSupplierConsoleIngredients'
 
 const {
   ingredientItems,

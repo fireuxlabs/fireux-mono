@@ -53,8 +53,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
-import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMiseTask'
-import { useKitchenMiseUpdate } from '../../../../../composables/fireux/console/kitchen/operations/mise/mutations/useKitchenMiseUpdate'
+import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/Operations/Mise/useKitchenConsoleMiseTask'
+import { useKitchenMiseUpdate } from '../../../../../composables/fireux/console/kitchen/Operations/Mise/mutations/useKitchenMiseUpdate'
 
 const props = defineProps<{
   task: KitchenMiseTask

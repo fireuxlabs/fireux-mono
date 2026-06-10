@@ -10,7 +10,7 @@ import {
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../collections/useKitchenChildCollection'
+} from '../../Collections/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

@@ -1,7 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
+import { resolveKitchenConsoleCollectionPath } from '../../Collections/useKitchenChildCollection'
 import {
   KitchenOrderStorage,
   type KitchenOrder,

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMise'
+import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/Operations/Mise/useKitchenConsoleMise'
 
 const { miseTasks, debug } = useKitchenConsoleMise()
 </script>

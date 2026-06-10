@@ -4,7 +4,7 @@ import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/cons
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenTestCreate } from '../../firestore/kitchen/mutations/useKitchenTestCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
-import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
+import type { KitchenConsoleListFilter } from './Targets/Live/useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
 import type { Ref } from 'vue'

@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/Identity/useKitchenConsoleIdentity'
 
 const navTitle = 'Identity'
 const view = ref<'identity' | 'edit'>('edit')

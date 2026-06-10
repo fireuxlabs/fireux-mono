@@ -4,7 +4,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
+import { resolveKitchenConsoleCollectionPath } from '../../Collections/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,

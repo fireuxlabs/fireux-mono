@@ -8,7 +8,7 @@ import {
   TEST_PORTFOLIO_COLLECTION_PATH,
   resolvePortfolioConsoleCollectionPath,
   resolveRuntimePortfolioPath,
-} from './shared'
+} from './Shared/shared'
 import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,

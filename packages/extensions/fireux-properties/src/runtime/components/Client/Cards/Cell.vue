@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { ClientCard } from '../../../composables/fireux/console/portfolio/operations/client/utils/view/useClientInterface'
+import type { ClientCard } from '../../../composables/fireux/console/portfolio/Operations/Clients/utils/view/useClientInterface'
 
 type Props = Partial<ClientCard.Card> & {
   card?: ClientCard.Card

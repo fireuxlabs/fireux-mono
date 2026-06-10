@@ -4,7 +4,7 @@ import {
   KitchenTeamMemberStorage,
   type KitchenTeamMember,
 } from '../../../../../../../models/kitchen-team.model'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
 
 export function useKitchenTeamMemberCollection(
   kitchenId: Ref<string> | string,

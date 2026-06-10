@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipes'
+import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/Operations/Recipes/useKitchenConsoleRecipes'
 import RecipeCollectionManager from '../../../../Recipe/Collection/Manager.vue'
 
 const { recipes, debug } = useKitchenConsoleRecipes()

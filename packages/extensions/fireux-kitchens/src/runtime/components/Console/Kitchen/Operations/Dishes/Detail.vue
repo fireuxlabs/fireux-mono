@@ -188,7 +188,7 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, reactive, ref, watch } from 'vue'
-import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDish'
+import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/Operations/Dishes/useKitchenConsoleDish'
 import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
 import type { Dish } from '../../../../../models/dish.model'
 

@@ -42,7 +42,7 @@ import { computed } from 'vue'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from '../../../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
+} from '../../../../../composables/fireux/console/portfolio/Operations/useActivePortfolio'
 
 const runtimePortfolio = useActivePortfolio()
 const selectedPortfolio = runtimePortfolio.entity

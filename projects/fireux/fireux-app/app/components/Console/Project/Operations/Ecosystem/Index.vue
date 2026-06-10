@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/console/project/operations/useProjectConsoleEcosystem'
+import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/console/project/Operations/Ecosystem/useProjectConsoleEcosystem'
 
 const { canWrite } = useProjectConsoleEcosystem()
 </script>

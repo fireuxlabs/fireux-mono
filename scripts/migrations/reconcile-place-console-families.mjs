@@ -20,7 +20,7 @@ const CANONICAL_SLUG_BY_KITCHEN_ID = new Map([
 ])
 
 const CREATE_PLACE_FROM_KITCHEN_IDS = new Set(['bergwelt-grindelwald'])
-const SKIP_MISSING_PLACE_IDS = new Set(['codex-console-smoke-kitchen-20260517'])
+const SKIP_MISSING_PLACE_IDS = new Set()
 
 const args = parseArgs(process.argv.slice(2))
 const commit = Boolean(args.commit)

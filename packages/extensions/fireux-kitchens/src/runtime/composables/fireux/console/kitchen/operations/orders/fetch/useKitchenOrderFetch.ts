@@ -1,6 +1,6 @@
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref } from 'vue'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
 import {
   KitchenOrderStorage,
   type KitchenOrder,

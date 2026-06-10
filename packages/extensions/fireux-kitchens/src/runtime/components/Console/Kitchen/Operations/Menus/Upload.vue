@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/Operations/Menus/useKitchenConsoleMenus'
 
 const {
   selectedMode,

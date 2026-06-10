@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, unref, type Ref } from 'vue'
 import { MenuStorage, type Menu } from '../../../../../models/menu.model'
-import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
 
 type UseMenuCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

@@ -4,7 +4,7 @@ import {
   KitchenStationStorage,
   type KitchenStation,
 } from '../../../../../../../models/kitchen-station.model'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
 
 export function useKitchenStationCollection(
   kitchenId: Ref<string> | string,

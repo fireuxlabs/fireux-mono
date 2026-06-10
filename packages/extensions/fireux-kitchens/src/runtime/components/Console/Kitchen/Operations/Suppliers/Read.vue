@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleSuppliers } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleSuppliers'
+import { useKitchenConsoleSuppliers } from '../../../../../composables/fireux/console/kitchen/Operations/Suppliers/useKitchenConsoleSuppliers'
 
 const { suppliers, debug } = useKitchenConsoleSuppliers()
 </script>

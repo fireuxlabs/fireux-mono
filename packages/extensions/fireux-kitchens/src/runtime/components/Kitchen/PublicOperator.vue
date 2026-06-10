@@ -27,7 +27,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
-import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/console/kitchen/Operations/Collections/useKitchenChildCollection'
 import { useKitchenSelection } from '../../composables/fireux/console/kitchen/useKitchenSelection'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 

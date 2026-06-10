@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { MiseEnPlaceCard } from '../../../composables/fireux/console/kitchen/operations/mise/utils/view/useMiseEnPlaceInterface'
+import type { MiseEnPlaceCard } from '../../../composables/fireux/console/kitchen/Operations/Mise/utils/view/useMiseEnPlaceInterface'
 
 type PillProps = Pick<
   MiseEnPlaceCard.Card,

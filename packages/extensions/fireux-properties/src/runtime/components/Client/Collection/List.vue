@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ClientCard } from '../../../composables/fireux/console/portfolio/operations/client/utils/view/useClientInterface'
+import type { ClientCard } from '../../../composables/fireux/console/portfolio/Operations/Clients/utils/view/useClientInterface'
 
 withDefaults(
   defineProps<{

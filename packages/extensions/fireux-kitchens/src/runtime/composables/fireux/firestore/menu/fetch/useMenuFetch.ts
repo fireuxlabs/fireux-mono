@@ -7,7 +7,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import { MenuStorage, type Menu } from '../../../../../models/menu.model'
-import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../console/kitchen/Operations/Collections/useKitchenChildCollection'
 
 export function useMenuFetch(
   menuId: string | Ref<string | null | undefined>,

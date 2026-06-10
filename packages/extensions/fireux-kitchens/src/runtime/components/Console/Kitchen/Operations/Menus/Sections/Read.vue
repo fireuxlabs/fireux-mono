@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
+import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/Operations/Menus/useKitchenConsoleMenu'
 
 const { menu, menuId, sections, sectionsPending } = useKitchenConsoleMenu()
 </script>

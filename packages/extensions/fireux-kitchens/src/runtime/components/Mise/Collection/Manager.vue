@@ -72,7 +72,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useMiseEnPlaceInterface } from '../../../composables/fireux/console/kitchen/operations/mise/utils/view/useMiseEnPlaceInterface'
+import { useMiseEnPlaceInterface } from '../../../composables/fireux/console/kitchen/Operations/Mise/utils/view/useMiseEnPlaceInterface'
 import type { KitchenMiseTask } from '../../../models/kitchen-mise.model'
 import MiseCardsCell from '../Cards/Cell.vue'
 import MiseCardsPill from '../Cards/Pill.vue'

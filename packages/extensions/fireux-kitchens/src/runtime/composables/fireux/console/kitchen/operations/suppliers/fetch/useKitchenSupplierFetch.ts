@@ -7,7 +7,7 @@ import {
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionBasePath } from '../../Collections/useKitchenChildCollection'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${SupplierStorage.rootCollection}`

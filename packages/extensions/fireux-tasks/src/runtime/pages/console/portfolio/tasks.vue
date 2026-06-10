@@ -139,12 +139,12 @@
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioTaskCollection } from '../../../composables/fireux/console/portfolio/operations/tasks/fetch/usePortfolioTaskCollection'
-import { useTaskCreate } from '../../../composables/fireux/console/portfolio/operations/tasks/mutations/useTaskCreate'
-import { useTaskUpdate } from '../../../composables/fireux/console/portfolio/operations/tasks/mutations/useTaskUpdate'
-import { useTaskInterface } from '../../../composables/fireux/console/portfolio/operations/tasks/utils/view/useTaskInterface'
+import { usePortfolioTaskCollection } from '../../../composables/fireux/console/portfolio/Operations/Tasks/fetch/usePortfolioTaskCollection'
+import { useTaskCreate } from '../../../composables/fireux/console/portfolio/Operations/Tasks/mutations/useTaskCreate'
+import { useTaskUpdate } from '../../../composables/fireux/console/portfolio/Operations/Tasks/mutations/useTaskUpdate'
+import { useTaskInterface } from '../../../composables/fireux/console/portfolio/Operations/Tasks/utils/view/useTaskInterface'
 import { TaskStorage, type Task } from '../../../models/task.model'
 
 definePageMeta({

@@ -4,7 +4,7 @@ import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
 } from '../../../../../../../models/kitchen-mise.model'
-import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../Collections/useKitchenChildCollection'
 
 type UseKitchenMiseCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

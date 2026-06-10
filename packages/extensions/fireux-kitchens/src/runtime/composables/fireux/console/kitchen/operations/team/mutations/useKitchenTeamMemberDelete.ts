@@ -6,7 +6,7 @@ import { KitchenTeamMemberStorage } from '../../../../../../../models/kitchen-te
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../collections/useKitchenChildCollection'
+} from '../../Collections/useKitchenChildCollection'
 
 export function useKitchenTeamMemberDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

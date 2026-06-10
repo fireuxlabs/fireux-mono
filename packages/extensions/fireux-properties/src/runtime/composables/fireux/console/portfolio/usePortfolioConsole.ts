@@ -23,8 +23,8 @@ import {
   usePortfolioInterface,
   type PortfolioSurface,
 } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
-import { getDemoPortfolios } from './operations/demo-scenarios'
-import { TEST_PORTFOLIO_COLLECTION_PATH } from './operations/shared'
+import { getDemoPortfolios } from './Operations/demo-scenarios'
+import { TEST_PORTFOLIO_COLLECTION_PATH } from './Operations/Shared/shared'
 import { PortfolioStorage } from '../../../../models/portfolio.model'
 import type { Ref } from 'vue'
 
@@ -51,7 +51,7 @@ type UsePortfolioConsoleOptions = {
  * - packages/extensions/fireux-properties/docs/contract.md
  *
  * This file adapts Portfolio root/app authority sources into the private /console/portfolio selected runtime.
- * It should not own Portfolio child operation records; those live under console/portfolio/operations.
+ * It should not own Portfolio child operation records; those live under console/portfolio/Operations.
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const { appId } = useFireUXConfig()

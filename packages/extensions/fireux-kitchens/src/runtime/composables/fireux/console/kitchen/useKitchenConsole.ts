@@ -17,11 +17,11 @@ import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import {
   useKitchenConsoleList,
   type KitchenConsoleListFilter,
-} from './useKitchenConsoleList'
+} from './Targets/Live/useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'
-import { resolveKitchenConsoleCollectionPath } from './operations/collections/useKitchenChildCollection'
+import { resolveKitchenConsoleCollectionPath } from './Operations/Collections/useKitchenChildCollection'
 import { useKitchenConsoleHeader } from './useKitchenConsoleHeader'
 import type { Ref } from 'vue'
 
@@ -41,7 +41,7 @@ type UseKitchenConsoleOptions = {
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
  * This file adapts Kitchen root/app authority sources into the private /console/kitchen selected runtime.
- * It should not own Kitchen child operation records; those live under console/kitchen/operations.
+ * It should not own Kitchen child operation records; those live under console/kitchen/Operations.
  */
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}

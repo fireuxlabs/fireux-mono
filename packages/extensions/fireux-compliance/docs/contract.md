@@ -11,9 +11,9 @@ Updated: 2026-05-18
 
 ## Runtime Seams
 - Selected Portfolio operation seams live under:
-  - `composables/fireux/console/portfolio/operations/compliance/fetch/usePortfolioComplianceRecordCollection.ts`
-  - `composables/fireux/console/portfolio/operations/compliance/utils/status/useComplianceStatus.ts`
-  - `composables/fireux/console/portfolio/operations/compliance/utils/view/useComplianceInterface.ts`
+  - `composables/fireux/console/portfolio/Operations/Compliance/fetch/usePortfolioComplianceRecordCollection.ts`
+  - `composables/fireux/console/portfolio/Operations/Compliance/utils/status/useComplianceStatus.ts`
+  - `composables/fireux/console/portfolio/Operations/Compliance/utils/view/useComplianceInterface.ts`
 - `pages/console/portfolio/compliance.vue` is the Portfolio console route surface.
 
 ## Boundaries

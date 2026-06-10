@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/operations/useSupplierConsoleIdentity'
+import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/Identity/useSupplierConsoleIdentity'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const { selectedSupplier } = useSupplierConsoleIdentity()
