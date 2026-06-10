@@ -64,8 +64,8 @@
         <KitchenCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
-          :disabled="disabled"
+          :action="card.canAct"
+          :disabled="disabled || !card.canAct"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -74,8 +74,8 @@
         <KitchenCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
-          :disabled="disabled"
+          :action="card.canAct"
+          :disabled="disabled || !card.canAct"
           :show-source="showBadges"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
@@ -118,6 +118,7 @@ const props = withDefaults(
   defineProps<{
     collection?: KitchenCollectionItem[]
     consoleIds?: string[]
+    actionIds?: string[]
     filterMode?: KitchenFilterMode
     filterOptions?: KitchenFilterOption[]
     title?: string
@@ -228,6 +229,20 @@ const consoleIdSet = computed(
         .filter(Boolean)
     )
 )
+const actionIdSet = computed(
+  () =>
+    new Set(
+      (props.actionIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!actionEnabled.value) return false
+  const actionIds = props.actionIds ?? []
+  if (!actionIds.length) return true
+  return actionIdSet.value.has(String(cardId ?? '').trim())
+}
 const collection = computed<KitchenCollectionItem[]>(() =>
   rawCollection.value
     .filter((row): row is KitchenCollectionItem => Boolean(makeCard(row)))
@@ -247,21 +262,26 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+type KitchenManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
+  canAct: boolean
+}
+
+const cardsFiltered = computed<KitchenManagerCard[]>(() =>
   visibleItems.value
     .map((kitchen) => {
+      const canAct = cardCanAct(kitchen.id)
+
       if (variant.value === 'cell') {
         const base = makeCard(kitchen)
         const cell = makeCell(kitchen)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, canAct }
       }
 
-      return makePill(kitchen)
+      const pill = makePill(kitchen)
+      return pill ? { ...pill, canAct } : null
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+    .filter((card): card is KitchenManagerCard => Boolean(card))
 )
 
 const totalCount = computed(() => collection.value.length)
