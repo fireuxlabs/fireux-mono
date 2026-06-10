@@ -17,13 +17,14 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <ConsoleTargetIndex
-        entity-label="Blank"
-        :cards="blank.cards.value"
+      <BlankCollectionManager
+        :collection="blank.liveTargets.value"
         :pending="blank.pending.value"
-        create-to="/console/blank/create"
-        create-label="Create Blank"
-        empty-description="Create the first Blank target to test the root console lifecycle."
+        title="Choose Blank"
+        description="Select the Blank target you want to work on."
+        :action="true"
+        :show-badges="false"
+        @select="selectBlank"
       />
 
       <DevJson
@@ -40,6 +41,10 @@
 <script setup lang="ts">
 import { useBlankConsoleIndex } from '../../../composables/fireux/console/blank/useBlankConsoleIndex'
 
-const { blank, debug } = useBlankConsoleIndex()
+const { blank, debug, actions } = useBlankConsoleIndex()
 const isDev = import.meta.dev
+
+const selectBlank = (id: string) => {
+  actions.selectLive(id)
+}
 </script>
