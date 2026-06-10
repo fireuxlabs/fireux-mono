@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleMenu } from '../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
+import { useKitchenConsoleMenu } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
 
 const { menu } = useKitchenConsoleMenu()
 const breadcrumbItems = computed(() => [
