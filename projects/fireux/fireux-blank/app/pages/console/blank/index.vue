@@ -3,15 +3,59 @@
     <UPageHeader
       class="pageheader"
       title="Blank Console"
-      description="A clean console family with no targets, modes, operations, or child records."
-    />
+      description="A clean console family with live targets, no demo mode, no test mode, and no child operations."
+    >
+      <template #links>
+        <UButton
+          to="/console/blank/create"
+          icon="i-lucide-plus"
+          color="primary"
+        >
+          Create Blank
+        </UButton>
+      </template>
+    </UPageHeader>
 
     <UPageBody class="pagebody">
       <UPageCard
-        title="No live Blank targets"
-        description="This is the expected empty state. Blank does not fetch records or create console targets."
+        v-if="blank.pending.value"
+        title="Loading Blank targets"
+        description="Checking the app-scoped Blank console targets."
         variant="subtle"
       />
+
+      <UPageCard
+        v-else-if="!blank.hasLiveTargets.value"
+        title="No live Blank targets"
+        description="Create the first Blank target to test the root console lifecycle."
+        variant="subtle"
+      >
+        <template #footer>
+          <UButton
+            to="/console/blank/create"
+            icon="i-lucide-plus"
+            color="primary"
+          >
+            Create Blank
+          </UButton>
+        </template>
+      </UPageCard>
+
+      <div v-else class="grid gap-3 md:grid-cols-2">
+        <UPageCard
+          v-for="target in blank.liveTargets.value"
+          :key="target.id"
+          :title="target.name || target.id"
+          :description="target.id"
+          variant="subtle"
+        >
+          <template #footer>
+            <UBadge color="neutral" variant="soft">
+              {{ target.status }}
+            </UBadge>
+          </template>
+        </UPageCard>
+      </div>
 
       <UPageCard variant="subtle">
         <template #header>
@@ -46,9 +90,9 @@
             variant="soft"
           />
           <UAlert
-            title="No collection"
-            description="Blank is a harness route, not a stored entity family."
-            icon="i-lucide-database-zap"
+            title="Live create only"
+            description="Blank creates real root targets and app console scopes."
+            icon="i-lucide-database"
             color="neutral"
             variant="soft"
           />
@@ -91,6 +135,8 @@ const debug = computed(() => ({
   pending: blank.pending.value,
   liveCount: blank.liveTargets.value.length,
   hasLiveTargets: blank.hasLiveTargets.value,
+  rootCollectionPath: blank.rootCollectionPath,
+  appCollectionPath: blank.appCollectionPath.value,
   modes: [],
   operations: [],
 }))
@@ -98,7 +144,7 @@ const debug = computed(() => ({
 useSeoMeta({
   title: 'Blank Console',
   description:
-    'A clean console family with no targets, modes, operations, or child records.',
+    'A clean console family with live targets, no demo mode, no test mode, and no child operations.',
   robots: 'noindex, nofollow',
 })
 </script>

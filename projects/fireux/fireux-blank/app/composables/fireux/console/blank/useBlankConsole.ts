@@ -1,19 +1,23 @@
 import { computed } from 'vue'
+import { useBlankCollection } from '../../firestore/blank/useBlank'
 
 /**
  * Blank console harness.
  *
- * This intentionally has no entity model, no Firestore reads, no demo mode,
- * no test mode, no operations, and no child records.
+ * Blank has a root-target create/list seam so the console lifecycle can be
+ * tested without demo mode, test mode, operations, or child records.
  */
 export function useBlankConsole() {
-  const liveTargets = computed<never[]>(() => [])
-  const hasLiveTargets = computed(() => false)
-  const pending = computed(() => false)
+  const { blanks, pending, rootCollectionPath, appCollectionPath } =
+    useBlankCollection()
+  const liveTargets = computed(() => blanks.value)
+  const hasLiveTargets = computed(() => liveTargets.value.length > 0)
 
   return {
     liveTargets,
     hasLiveTargets,
     pending,
+    rootCollectionPath,
+    appCollectionPath,
   }
 }
