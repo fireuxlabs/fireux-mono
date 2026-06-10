@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "fireux-blank-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "fireuxBlank"
+    }
+  ],
+  "hosting": {
+    "site": "fireux-blank",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "fireuxBlank",
+          "codebase": "fireux-blank-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

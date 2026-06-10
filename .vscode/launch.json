@@ -184,6 +184,17 @@
         "group": "Dev Servers",
         "order": 14
       }
+    },
+    {
+      "name": "FireUX Blank dev (3015)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:fireux-blank",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 15
+      }
     }
   ],
   "compounds": [
@@ -221,7 +232,8 @@
         "Slap dev (3009)",
         "Yellow Velo dev (3014)",
         "Granite dev (3007)",
-        "La Tap Berne dev (3008)"
+        "La Tap Berne dev (3008)",
+        "FireUX Blank dev (3015)"
       ]
     }
   ]
