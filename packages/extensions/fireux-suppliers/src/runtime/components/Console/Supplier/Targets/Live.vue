@@ -1,6 +1,10 @@
 <template>
   <SupplierCollectionManager
     :collection="collection"
+    :console-ids="consoleIds"
+    v-model:filter-mode="liveMode"
+    :filter-options="liveModeOptions"
+    :show-filter-toggle="true"
     title="Choose Supplier"
     description="Select the supplier you want to work on."
     :link="false"
@@ -11,9 +15,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { Supplier } from '../../../../models/supplier/Supplier.model'
 
-withDefaults(
+type LiveMode = 'console' | 'mine'
+
+const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
   }>(),
@@ -25,4 +32,15 @@ withDefaults(
 const emit = defineEmits<{
   (event: 'select', id: string): void
 }>()
+
+const liveMode = ref<LiveMode>('console')
+const liveModeOptions = [
+  { value: 'console' as const, label: 'Supplier consoles' },
+  { value: 'mine' as const, label: 'My suppliers' },
+]
+const consoleIds = computed(() =>
+  props.collection
+    .map((supplier) => String(supplier.id ?? '').trim())
+    .filter(Boolean)
+)
 </script>

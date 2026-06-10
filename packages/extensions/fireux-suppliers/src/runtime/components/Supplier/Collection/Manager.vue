@@ -13,18 +13,13 @@
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
-                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                v-for="option in filterOptions"
+                :key="option.value"
+                :variant="filterMode === option.value ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setFilterMode('all')"
+                @click="setFilterMode(option.value)"
               >
-                All
-              </UButton>
-              <UButton
-                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode('mine')"
-              >
-                Mine
+                {{ option.label }}
               </UButton>
             </UFieldGroup>
 
@@ -108,10 +103,18 @@ import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/useSupplier'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
+type SupplierFilterMode = 'all' | 'mine' | 'console'
+type SupplierFilterOption = {
+  value: SupplierFilterMode
+  label: string
+}
+
 const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
-    filterMode?: 'all' | 'mine'
+    consoleIds?: string[]
+    filterMode?: SupplierFilterMode
+    filterOptions?: SupplierFilterOption[]
     title?: string
     description?: string
     link?: boolean
@@ -128,6 +131,10 @@ const props = withDefaults(
   }>(),
   {
     filterMode: 'all',
+    filterOptions: () => [
+      { value: 'all', label: 'All' },
+      { value: 'mine', label: 'Mine' },
+    ],
     title: 'Suppliers',
     description: 'Browse supplier records available to this runtime.',
     link: true,
@@ -146,7 +153,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', supplierId: string): void
-  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:filterMode', value: SupplierFilterMode): void
 }>()
 
 const fetched = useSupplierCollection()
@@ -163,8 +170,18 @@ const description = computed(() =>
     props.description || 'Browse supplier records available to this runtime.'
   )
 )
-const filterMode = computed<'all' | 'mine'>(() =>
-  props.filterMode === 'mine' ? 'mine' : 'all'
+const filterMode = computed<SupplierFilterMode>(() =>
+  props.filterMode === 'mine' || props.filterMode === 'console'
+    ? props.filterMode
+    : 'all'
+)
+const filterOptions = computed<SupplierFilterOption[]>(() =>
+  Array.isArray(props.filterOptions) && props.filterOptions.length
+    ? props.filterOptions
+    : [
+        { value: 'all', label: 'All' },
+        { value: 'mine', label: 'Mine' },
+      ]
 )
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
@@ -193,10 +210,21 @@ const {
   cell: makeCell,
 } = useSupplierInterface()
 
+const consoleIdSet = computed(
+  () =>
+    new Set(
+      (props.consoleIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
 const collection = computed<Supplier[]>(() =>
-  rawCollection.value.filter((entry): entry is Supplier =>
-    Boolean(makeCard(entry as Supplier))
-  )
+  rawCollection.value
+    .filter((entry): entry is Supplier => Boolean(makeCard(entry as Supplier)))
+    .filter((entry) => {
+      if (filterMode.value !== 'console') return true
+      return consoleIdSet.value.has(String(entry.id ?? '').trim())
+    })
 )
 const totalCount = computed(() => collection.value.length)
 
@@ -230,7 +258,7 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
-function setFilterMode(value: 'all' | 'mine') {
+function setFilterMode(value: SupplierFilterMode) {
   emit('update:filterMode', value)
 }
 </script>

@@ -8,6 +8,7 @@ import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenUserComputed } from './useKitchenUserComputed'
 
 type AppKitchenConsoleListDoc = {
   id?: string
@@ -36,16 +37,20 @@ const uniq = (values: unknown[]) =>
  * 1. Read the user's Kitchen index first: `users/{uid}.myKitchens`.
  * 2. Hydrate those exact root Kitchen docs.
  * 3. Read exact app-scoped Kitchen records only for those ids.
+ * 4. Show only kitchens where the user is listed in the app-scoped team.
  *
  * This avoids scanning every app scope or every root Kitchen in the browser.
  */
 export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { coreUser, pending: userPending } = useUser()
   const { surface } = useKitchenInterface()
+  const { coreUser, pending: userPending } = useUser()
   const scopeItems = ref<AppKitchenConsoleListDoc[]>([])
   const scopePending = ref(false)
+  const { consoleKitchenIds } = useKitchenUserComputed(
+    computed(() => scopeItems.value)
+  )
   let requestId = 0
   const resolvedFilter = computed<KitchenConsoleListFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
@@ -56,10 +61,7 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
   )
   const hasExplicitIds = computed(() => Array.isArray(resolvedFilter.value?.ids))
   const userKitchenIds = computed(() => {
-    const myKitchens = coreUser.value?.myKitchens
-    return Array.isArray(myKitchens)
-      ? myKitchens.map((id) => normalize(id)).filter(Boolean)
-      : []
+    return coreUser.value?.myKitchens ?? []
   })
   const collectionIds = computed(() =>
     uniq(hasExplicitIds.value ? explicitIds.value : userKitchenIds.value)
@@ -153,15 +155,20 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
 
     return map
   })
+  const consoleKitchenIdSet = computed(() => new Set(consoleKitchenIds.value))
   const kitchens = computed<KitchenSurface[]>(() =>
     rootCollection.kitchens.value
-      .map((kitchen) =>
-        surface({
+      .map((kitchen) => {
+        const kitchenId = normalize(kitchen.id)
+        const scope = scopesByKitchenId.value.get(kitchenId) ?? null
+        if (!consoleKitchenIdSet.value.has(kitchenId)) return null
+
+        return surface({
           kitchen,
-          scope: scopesByKitchenId.value.get(normalize(kitchen.id)) ?? null,
+          scope,
           routeScope: kitchen.route_scope,
         })
-      )
+      })
       .filter((kitchen): kitchen is KitchenSurface => Boolean(kitchen))
   )
   const count = computed(() => kitchens.value.length)

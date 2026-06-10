@@ -106,7 +106,7 @@ import type { KitchenSurface } from '../../../composables/fireux/firestore/kitch
 import type { Kitchen } from '../../../models/kitchen.model'
 
 type KitchenCollectionItem = Kitchen | KitchenSurface
-type KitchenFilterMode = 'all' | 'team' | 'operator'
+type KitchenFilterMode = 'all' | 'mine' | 'console' | 'team' | 'operator'
 type KitchenFilterOption = {
   value: KitchenFilterMode
   label: string
@@ -115,6 +115,7 @@ type KitchenFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: KitchenCollectionItem[]
+    consoleIds?: string[]
     filterMode?: KitchenFilterMode
     filterOptions?: KitchenFilterOption[]
     title?: string
@@ -174,7 +175,10 @@ const description = computed(() =>
   ).trim()
 )
 const filterMode = computed<KitchenFilterMode>(() =>
-  props.filterMode === 'team' || props.filterMode === 'operator'
+  props.filterMode === 'mine' ||
+  props.filterMode === 'console' ||
+  props.filterMode === 'team' ||
+  props.filterMode === 'operator'
     ? props.filterMode
     : 'all'
 )
@@ -211,10 +215,21 @@ const {
   cell: makeCell,
 } = useKitchenInterface()
 
+const consoleIdSet = computed(
+  () =>
+    new Set(
+      (props.consoleIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
 const collection = computed<KitchenCollectionItem[]>(() =>
-  rawCollection.value.filter((row): row is KitchenCollectionItem =>
-    Boolean(makeCard(row))
-  )
+  rawCollection.value
+    .filter((row): row is KitchenCollectionItem => Boolean(makeCard(row)))
+    .filter((row) => {
+      if (filterMode.value !== 'console') return true
+      return consoleIdSet.value.has(String(row.id ?? '').trim())
+    })
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =

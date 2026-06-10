@@ -13,18 +13,13 @@
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
-                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                v-for="option in filterOptions"
+                :key="option.value"
+                :variant="filterMode === option.value ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setFilterMode('all')"
+                @click="setFilterMode(option.value)"
               >
-                All
-              </UButton>
-              <UButton
-                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode('mine')"
-              >
-                Mine
+                {{ option.label }}
               </UButton>
             </UFieldGroup>
 
@@ -111,10 +106,18 @@ import PortfolioCardsCell from '../Cards/Cell.vue'
 import PortfolioCardsPill from '../Cards/Pill.vue'
 import PortfolioCollectionList from './List.vue'
 
+type PortfolioFilterMode = 'all' | 'mine' | 'console'
+type PortfolioFilterOption = {
+  value: PortfolioFilterMode
+  label: string
+}
+
 const props = withDefaults(
   defineProps<{
     collection?: Portfolio[]
-    filterMode?: 'all' | 'mine'
+    consoleIds?: string[]
+    filterMode?: PortfolioFilterMode
+    filterOptions?: PortfolioFilterOption[]
     title?: string
     description?: string
     link?: boolean
@@ -131,6 +134,10 @@ const props = withDefaults(
   }>(),
   {
     filterMode: 'all',
+    filterOptions: () => [
+      { value: 'all', label: 'All' },
+      { value: 'mine', label: 'Mine' },
+    ],
     title: 'Available Portfolios',
     description: 'Browse portfolios available in this workspace.',
     link: true,
@@ -149,7 +156,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', portfolioId: string): void
-  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:filterMode', value: PortfolioFilterMode): void
 }>()
 
 const {
@@ -167,8 +174,18 @@ const pending = computed(() =>
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())
-const filterMode = computed<'all' | 'mine'>(() =>
-  props.filterMode === 'mine' ? 'mine' : 'all'
+const filterMode = computed<PortfolioFilterMode>(() =>
+  props.filterMode === 'mine' || props.filterMode === 'console'
+    ? props.filterMode
+    : 'all'
+)
+const filterOptions = computed<PortfolioFilterOption[]>(() =>
+  Array.isArray(props.filterOptions) && props.filterOptions.length
+    ? props.filterOptions
+    : [
+        { value: 'all', label: 'All' },
+        { value: 'mine', label: 'Mine' },
+      ]
 )
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
@@ -180,10 +197,21 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const consoleIdSet = computed(
+  () =>
+    new Set(
+      (props.consoleIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
 const collection = computed<Portfolio[]>(() =>
-  rawCollection.value.filter((portfolio): portfolio is Portfolio =>
-    Boolean(makeCard(portfolio))
-  )
+  rawCollection.value
+    .filter((portfolio): portfolio is Portfolio => Boolean(makeCard(portfolio)))
+    .filter((portfolio) => {
+      if (filterMode.value !== 'console') return true
+      return consoleIdSet.value.has(String(portfolio.id ?? '').trim())
+    })
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -228,7 +256,7 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
-function setFilterMode(value: 'all' | 'mine') {
+function setFilterMode(value: PortfolioFilterMode) {
   emit('update:filterMode', value)
 }
 </script>

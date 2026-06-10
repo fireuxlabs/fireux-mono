@@ -13,18 +13,13 @@
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
-                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                v-for="option in filterOptions"
+                :key="option.value"
+                :variant="filterMode === option.value ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setFilterMode('all')"
+                @click="setFilterMode(option.value)"
               >
-                All
-              </UButton>
-              <UButton
-                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode('mine')"
-              >
-                Mine
+                {{ option.label }}
               </UButton>
             </UFieldGroup>
 
@@ -112,10 +107,18 @@ import {
   type ProjectSurface,
 } from '../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
+type ProjectFilterMode = 'all' | 'mine' | 'console'
+type ProjectFilterOption = {
+  value: ProjectFilterMode
+  label: string
+}
+
 const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
-    filterMode?: 'all' | 'mine'
+    consoleIds?: string[]
+    filterMode?: ProjectFilterMode
+    filterOptions?: ProjectFilterOption[]
     title?: string
     description?: string
     link?: boolean
@@ -133,6 +136,10 @@ const props = withDefaults(
   }>(),
   {
     filterMode: 'all',
+    filterOptions: () => [
+      { value: 'all', label: 'All' },
+      { value: 'mine', label: 'Mine' },
+    ],
     title: 'Projects',
     link: true,
     action: false,
@@ -150,7 +157,7 @@ const props = withDefaults(
 )
 const emit = defineEmits<{
   (event: 'select', projectId: string): void
-  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:filterMode', value: ProjectFilterMode): void
 }>()
 
 const fetched = useProjectCollection()
@@ -165,8 +172,18 @@ const title = computed(() => String(props.title || 'Projects'))
 const description = computed(() =>
   String(props.description || 'Browse project records available in this workspace.').trim()
 )
-const filterMode = computed<'all' | 'mine'>(() =>
-  props.filterMode === 'mine' ? 'mine' : 'all'
+const filterMode = computed<ProjectFilterMode>(() =>
+  props.filterMode === 'mine' || props.filterMode === 'console'
+    ? props.filterMode
+    : 'all'
+)
+const filterOptions = computed<ProjectFilterOption[]>(() =>
+  Array.isArray(props.filterOptions) && props.filterOptions.length
+    ? props.filterOptions
+    : [
+        { value: 'all', label: 'All' },
+        { value: 'mine', label: 'Mine' },
+      ]
 )
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
@@ -193,10 +210,21 @@ const {
   cell: makeCell,
 } = useProjectInterface()
 
+const consoleIdSet = computed(
+  () =>
+    new Set(
+      (props.consoleIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
 const collection = computed<ProjectSurface[]>(() =>
-  rawCollection.value.filter((row): row is ProjectSurface =>
-    Boolean(makeCard(row))
-  )
+  rawCollection.value
+    .filter((row): row is ProjectSurface => Boolean(makeCard(row)))
+    .filter((row) => {
+      if (filterMode.value !== 'console') return true
+      return consoleIdSet.value.has(String(row.id ?? '').trim())
+    })
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
@@ -235,7 +263,7 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
-function setFilterMode(value: 'all' | 'mine') {
+function setFilterMode(value: ProjectFilterMode) {
   emit('update:filterMode', value)
 }
 </script>
