@@ -881,6 +881,17 @@ function activate(context) {
     if (openUrl) await openAppUrl(app.url)
   }
 
+  const killApp = async (app) => {
+    if (!app) return
+
+    const taskLabel = `pnpm kill:${app.key}`
+    const ranTask = await runTaskIfPresent(taskLabel)
+    if (ranTask) return
+
+    const terminal = ensureNamedTerminal(`Kill ${app.name} (${app.port})`, { cwd })
+    terminal.sendText(`pnpm kill:${app.key}`)
+  }
+
   const resolveAppFromArg = (arg) => {
     if (typeof arg === 'string') return appByKey.get(arg)
     if (arg && typeof arg === 'object' && typeof arg.key === 'string') {
@@ -967,6 +978,13 @@ function activate(context) {
     const app = resolveAppFromArg(arg)
     if (!app) return
     await openAppUrl(app.url)
+  })
+
+  register('fireuxToolbar.killAppByKey', async (arg) => {
+    const app = resolveAppFromArg(arg)
+    if (!app) return
+    await killApp(app)
+    refreshServersView()
   })
 
   for (const app of apps) {

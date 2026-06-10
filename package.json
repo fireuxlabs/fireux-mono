@@ -79,7 +79,22 @@
     "reports:regenerate": "node scripts/reports/regenerate-reports.mjs",
     "sync:dev-workspace:check": "node scripts/sync-dev-workspace.mjs --check",
     "dev:buenohost": "node scripts/dev-app-with-smoke.mjs --app buenohost",
-    "dev:slap": "node scripts/dev-app-with-smoke.mjs --app slap"
+    "dev:slap": "node scripts/dev-app-with-smoke.mjs --app slap",
+    "kill:fireux": "node scripts/free-port.mjs 3000",
+    "kill:misebox": "node scripts/free-port.mjs 3001",
+    "kill:cleanbox": "node scripts/free-port.mjs 3002",
+    "kill:richies": "node scripts/free-port.mjs 3004",
+    "kill:tenant": "node scripts/free-port.mjs 3005",
+    "kill:bringli": "node scripts/free-port.mjs 3006",
+    "kill:find-my-seo": "node scripts/free-port.mjs 3010",
+    "kill:sproochli": "node scripts/free-port.mjs 3011",
+    "kill:buenohost": "node scripts/free-port.mjs 3012",
+    "kill:go-qr": "node scripts/free-port.mjs 3013",
+    "kill:fireux-blank": "node scripts/free-port.mjs 3015",
+    "kill:yellow-velo": "node scripts/free-port.mjs 3014",
+    "kill:granite": "node scripts/free-port.mjs 3007",
+    "kill:slap": "node scripts/free-port.mjs 3009",
+    "kill:la-tap-berne": "node scripts/free-port.mjs 3008"
   },
   "engines": {
     "node": ">=20.11 <23",

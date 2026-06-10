@@ -46,6 +46,12 @@
         "category": "FireUX"
       },
       {
+        "command": "fireuxToolbar.killAppByKey",
+        "title": "Kill FireUX App Dev Server",
+        "icon": "$(debug-stop)",
+        "category": "FireUX"
+      },
+      {
         "command": "fireuxToolbar.catTree",
         "title": "Cat Tree (Terminal)",
         "icon": "$(list-tree)"
@@ -212,6 +218,11 @@
         {
           "command": "fireuxToolbar.openAppByKey",
           "group": "inline@2",
+          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
+        },
+        {
+          "command": "fireuxToolbar.killAppByKey",
+          "group": "inline@3",
           "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
         }
       ]

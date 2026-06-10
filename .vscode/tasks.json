@@ -470,6 +470,261 @@
       }
     },
     {
+      "label": "pnpm kill:fireux",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:fireux"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:misebox",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:misebox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:cleanbox",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:cleanbox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:richies",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:richies"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:tenant",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:tenant"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:bringli",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:bringli"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:find-my-seo",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:find-my-seo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:sproochli",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:sproochli"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:buenohost",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:buenohost"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:go-qr",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:go-qr"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:slap",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:slap"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:yellow-velo",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:yellow-velo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:granite",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:granite"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:la-tap-berne",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:la-tap-berne"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:fireux-blank",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:fireux-blank"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
       "label": "pnpm: build:packages",
       "type": "shell",
       "command": "pnpm",

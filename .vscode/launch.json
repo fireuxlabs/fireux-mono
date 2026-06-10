@@ -195,6 +195,171 @@
         "group": "Dev Servers",
         "order": 15
       }
+    },
+    {
+      "name": "Kill FireUX dev (3000)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:fireux",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 101
+      }
+    },
+    {
+      "name": "Kill Misebox dev (3001)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:misebox",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 102
+      }
+    },
+    {
+      "name": "Kill Cleanbox dev (3002)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:cleanbox",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 103
+      }
+    },
+    {
+      "name": "Kill Richies Reinigung dev (3004)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:richies",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 104
+      }
+    },
+    {
+      "name": "Kill FireUX Tenant dev (3005)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:tenant",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 105
+      }
+    },
+    {
+      "name": "Kill Bringli dev (3006)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:bringli",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 106
+      }
+    },
+    {
+      "name": "Kill Find My SEO dev (3010)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:find-my-seo",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 107
+      }
+    },
+    {
+      "name": "Kill Sproochli dev (3011)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:sproochli",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 108
+      }
+    },
+    {
+      "name": "Kill BuenoHost dev (3012)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:buenohost",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 109
+      }
+    },
+    {
+      "name": "Kill Go QR dev (3013)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:go-qr",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 110
+      }
+    },
+    {
+      "name": "Kill Slap dev (3009)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:slap",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 111
+      }
+    },
+    {
+      "name": "Kill Yellow Velo dev (3014)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:yellow-velo",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 112
+      }
+    },
+    {
+      "name": "Kill Granite dev (3007)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:granite",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 113
+      }
+    },
+    {
+      "name": "Kill La Tap Berne dev (3008)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:la-tap-berne",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 114
+      }
+    },
+    {
+      "name": "Kill FireUX Blank dev (3015)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:fireux-blank",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 115
+      }
     }
   ],
   "compounds": [

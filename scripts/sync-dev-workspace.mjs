@@ -93,6 +93,19 @@ function buildTasks() {
           panel: 'dedicated',
         },
       })),
+      ...apps.map((app) => ({
+        label: `pnpm kill:${app.key}`,
+        type: 'shell',
+        command: 'pnpm',
+        args: [`kill:${app.key}`],
+        options: { cwd: '${workspaceFolder}' },
+        problemMatcher: [],
+        presentation: {
+          reveal: 'always',
+          focus: false,
+          panel: 'shared',
+        },
+      })),
       {
         label: 'pnpm: build:packages',
         type: 'shell',
@@ -189,6 +202,14 @@ function buildLaunchConfigurations() {
       cwd: '${workspaceFolder}',
       presentation: { group: 'Dev Servers', order: app.launchOrder },
     })),
+    ...apps.map((app) => ({
+      name: `Kill ${app.name} dev (${app.port})`,
+      type: 'node-terminal',
+      request: 'launch',
+      command: `pnpm kill:${app.key}`,
+      cwd: '${workspaceFolder}',
+      presentation: { group: 'Dev Servers', order: app.launchOrder + 100 },
+    })),
   ]
 }
 
@@ -221,7 +242,9 @@ function buildDevScripts(existingScripts) {
   const nextScripts = { ...existingScripts }
 
   for (const key of APP_KEYS) {
+    const app = getAppRegistryEntries([key])[0]
     nextScripts[`dev:${key}`] = `node scripts/dev-app-with-smoke.mjs --app ${key}`
+    nextScripts[`kill:${key}`] = `node scripts/free-port.mjs ${app.port}`
   }
 
   nextScripts['dev:all'] = 'node scripts/dev-app-group.mjs --group all'
