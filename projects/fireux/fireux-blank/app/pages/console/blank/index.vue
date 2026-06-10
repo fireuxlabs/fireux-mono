@@ -1,13 +1,21 @@
 <template>
   <UDashboardPanel id="console-blank-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Blank" />
+      <LayoutsConsoleNavbar title="Blank">
+        <template #right>
+          <UButton
+            to="/console/blank/create"
+            icon="i-lucide-plus"
+            color="primary"
+          >
+            Create Blank
+          </UButton>
+        </template>
+      </LayoutsConsoleNavbar>
     </template>
 
     <template #body>
-      <section class="space-y-4">
-        <ConsoleBlank />
-      </section>
+      <ConsoleBlank />
     </template>
   </UDashboardPanel>
 </template>

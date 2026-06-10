@@ -1,49 +1,27 @@
 <template>
-  <UPage>
-    <UPageHeader
-      class="pageheader"
-      title="Blank Console"
-      description="A clean console family for shaping the shared console base."
-    >
-      <template #links>
-        <UButton
-          to="/console/blank/create"
-          icon="i-lucide-plus"
-          color="primary"
-        >
-          Create Blank
-        </UButton>
-      </template>
-    </UPageHeader>
+  <section class="space-y-4">
+    <ConsoleBlankTargetsSelected :selected-id="selectedId.value" />
 
-    <UPageBody class="pagebody">
-      <ConsoleBlankTargetsSelected :selected-id="selectedId.value" />
+    <ConsoleBlankTargetsLive
+      :collection="blank.liveTargets.value"
+      :pending="blank.pending.value"
+      @select="actions.selectLive"
+    />
 
-      <ConsoleBlankTargetsLive
-        :collection="blank.liveTargets.value"
-        :pending="blank.pending.value"
-        @select="selectBlank"
-      />
+    <ConsoleBlankTargetsDemo />
+    <ConsoleBlankTargetsTest />
 
-      <ConsoleBlankTargetsDemo />
-      <ConsoleBlankTargetsTest />
-
-      <DevJson
-        title="Blank console debug"
-        context="fireux-blank · /console/blank"
-        :data="debug"
-        :default-open="false"
-      />
-    </UPageBody>
-  </UPage>
+    <DevJson
+      title="Blank console debug"
+      context="fireux-blank · /console/blank"
+      :data="debug"
+      :default-open="false"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
 import { useBlankConsoleIndex } from '../../../composables/fireux/console/blank/useBlankConsoleIndex'
 
 const { blank, selectedId, debug, actions } = useBlankConsoleIndex()
-
-const selectBlank = (id: string) => {
-  actions.selectLive(id)
-}
 </script>

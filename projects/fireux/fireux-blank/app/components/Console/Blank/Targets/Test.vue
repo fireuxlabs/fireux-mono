@@ -1,5 +1,7 @@
 <template>
-  <span v-if="false" />
+  <section class="space-y-2">
+    <pre>ConsoleBlankTargetsTest</pre>
+  </section>
 </template>
 
 <script setup lang="ts">

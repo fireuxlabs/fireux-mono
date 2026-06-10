@@ -1,5 +1,13 @@
 <template>
-  <span v-if="false" />
+  <section class="space-y-2">
+    <pre>ConsoleBlankTargetsDemo</pre>
+
+    <UPageCard
+      title="No demo target"
+      description="Blank does not use demo targets."
+      variant="subtle"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">

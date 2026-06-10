@@ -1,13 +1,17 @@
 <template>
-  <BlankCollectionManager
-    :collection="collection"
-    :pending="pending"
-    title="Choose Blank"
-    description="Select the Blank target you want to work on."
-    :action="true"
-    :show-badges="false"
-    @select="emit('select', $event)"
-  />
+  <section class="space-y-2">
+    <pre>ConsoleBlankTargetsLive</pre>
+
+    <BlankCollectionManager
+      :collection="collection"
+      :pending="pending"
+      title="Choose Blank"
+      description="Select the Blank target you want to work on."
+      :action="true"
+      :show-badges="false"
+      @select="emit('select', $event)"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
