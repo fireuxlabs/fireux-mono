@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <section class="space-y-6">
+      <section class="space-y-4">
         <ConsolePortfolioOverview />
       </section>
     </template>

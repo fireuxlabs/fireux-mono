@@ -2,9 +2,9 @@
   <section class="space-y-2">
     <pre>ConsoleKitchenTargetsLive</pre>
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Kitchen live user debug"
-      context="ConsoleKitchenTargetsLive · current user source"
+      scope="console"
       :data="userDebug"
       :default-open="true"
     />

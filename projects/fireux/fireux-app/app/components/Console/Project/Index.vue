@@ -18,9 +18,9 @@
     />
     <ConsoleProjectTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Project console debug"
-      context="fireux-app · /console/project"
+      scope="console"
       :data="debug"
       :default-open="false"
     />

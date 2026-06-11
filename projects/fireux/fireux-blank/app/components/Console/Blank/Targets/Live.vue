@@ -16,9 +16,9 @@
       @select="selectBlank"
     />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Blank live user debug"
-      context="ConsoleBlankTargetsLive · current user source"
+      scope="console"
       :data="userDebug"
       :default-open="false"
     />

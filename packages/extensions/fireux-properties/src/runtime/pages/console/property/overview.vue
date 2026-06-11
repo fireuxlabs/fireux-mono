@@ -5,7 +5,9 @@
     </template>
 
     <template #body>
-      <ConsolePropertyOverview />
+      <section class="space-y-4">
+        <ConsolePropertyOverview />
+      </section>
     </template>
   </UDashboardPanel>
 </template>

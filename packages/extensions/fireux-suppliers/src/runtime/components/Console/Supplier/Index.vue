@@ -18,9 +18,9 @@
     />
     <ConsoleSupplierTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Supplier console debug"
-      context="supplier · /console/supplier"
+      scope="console"
       :data="debug"
       :default-open="false"
     />

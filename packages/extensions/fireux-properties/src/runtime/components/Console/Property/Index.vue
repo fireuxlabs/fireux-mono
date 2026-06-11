@@ -18,9 +18,9 @@
     />
     <ConsolePropertyTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Property console debug"
-      context="property · /console/property"
+      scope="console"
       :data="debug"
       :default-open="false"
     />

@@ -18,9 +18,9 @@
     />
     <ConsoleBlankTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Blank console debug"
-      context="fireux-blank · /console/blank"
+      scope="console"
       :data="debug"
       :default-open="false"
     />

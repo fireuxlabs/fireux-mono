@@ -18,9 +18,9 @@
     />
     <ConsoleKitchenTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Kitchen console debug"
-      context="misebox · /console/kitchen"
+      scope="console"
       :data="debug"
       :default-open="false"
     />

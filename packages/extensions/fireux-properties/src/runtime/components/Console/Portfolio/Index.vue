@@ -18,9 +18,9 @@
     />
     <ConsolePortfolioTargetsTest :init="false" />
 
-    <DevJson
+    <DevFireuxDebugPanel
       title="Portfolio console debug"
-      context="portfolio · /console/portfolio"
+      scope="console"
       :data="debug"
       :default-open="false"
     />
