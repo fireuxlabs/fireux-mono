@@ -18,7 +18,7 @@ export function useProjectConsoleOverview() {
   } =
     useProjectConsole()
 
-  const overview = useConsoleOverview<ProjectSurface, ProjectSurface>({
+  const overview = useConsoleOverview<ProjectSurface>({
     selectedEntity: selectedProject,
     selectedMode,
     liveItems: liveProjects,
@@ -27,7 +27,7 @@ export function useProjectConsoleOverview() {
     getId: (project) => normalizeString(project?.id),
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     projectId: projectId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,

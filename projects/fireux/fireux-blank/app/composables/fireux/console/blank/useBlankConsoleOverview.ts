@@ -1,12 +1,50 @@
 import { computed } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
+import type { Blank } from '../../../models/blank.model'
 import { useBlankConsole } from './useBlankConsole'
 
 export function useBlankConsoleOverview() {
-  const blank = useBlankConsole()
+  const {
+    liveBlanks,
+    demoBlanks,
+    testBlank,
+    selectedBlank,
+    selectedMode,
+    blankId,
+    rootCollection,
+    canWrite,
+    clearSelectedBlank,
+  } = useBlankConsole()
+
+  const overview = useConsoleOverview<Blank>({
+    selectedEntity: selectedBlank,
+    selectedMode,
+    liveItems: liveBlanks,
+    demoItems: demoBlanks,
+    testItem: testBlank,
+    getId: (blank) => normalizeString(blank?.id),
+  })
+  const debug = computed(() => ({
+    selectedMode: selectedMode.value,
+    blankId: blankId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    focus: overview.focus.value,
+    group: {
+      count: overview.group.value.count,
+      ids: overview.group.value.items.map((item) => normalizeString(item?.id)),
+    },
+  }))
 
   return {
-    targetCount: computed(() => blank.liveTargets.value.length),
-    hasTargets: blank.hasLiveTargets,
-    pending: blank.pending,
+    ...overview,
+    selectedBlank,
+    selectedMode,
+    blankId,
+    rootCollection,
+    canWrite,
+    clearSelectedBlank,
+    debug,
   }
 }

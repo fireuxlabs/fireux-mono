@@ -34,7 +34,7 @@
     </p>
 
     <div v-else class="grid gap-3 md:grid-cols-2">
-      <ConsoleEntityIndexCard
+      <ConsoleTargetCard
         v-for="card in cards"
         :key="card.id"
         :card="card"
@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleEntityIndexCard } from 'fireux-core/runtime/components/Console/types'
+import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import type { Blank } from '../../../models/blank.model'
 
 type BlankFilterMode = 'all' | 'mine' | 'console'
@@ -112,7 +112,7 @@ const filterOptions = computed<BlankFilterOption[]>(() =>
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showCount = computed(() => props.showCount !== false)
 
-type BlankManagerCard = ConsoleEntityIndexCard & {
+type BlankManagerCard = ConsoleTargetCard & {
   canAct: boolean
 }
 

@@ -19,7 +19,7 @@ export function useKitchenConsoleOverview() {
   } =
     useKitchenConsole()
 
-  const overview = useConsoleOverview<KitchenSurface, KitchenSurface>({
+  const overview = useConsoleOverview<KitchenSurface>({
     selectedEntity: selectedKitchen,
     selectedMode,
     liveItems: liveKitchens,
@@ -28,7 +28,7 @@ export function useKitchenConsoleOverview() {
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     kitchenId: kitchenId.value,
     activeKitchenAppId: activeKitchenAppId.value,
     rootCollection: rootCollection.value,

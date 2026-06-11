@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Property } from '../../../../models/property.model'
 import type { PropertyCollectionFilter } from '../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from './usePropertyConsole'
@@ -14,8 +13,6 @@ type UsePropertyConsoleIndexOptions = {
 export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
-  const { uid } = useAuth()
-  const userId = computed(() => normalizeString(uid.value))
   const {
     liveProperties,
     demoProperties,
@@ -42,11 +39,8 @@ export function usePropertyConsoleIndex(
     entities: sourceProperties,
     selectEntity: selectProperty,
     getTestId: (property) => normalizeString(property.id),
-    autoCreateTest: true,
-    testCreateKey: userId,
-    createTestEntity: async () => userId.value || null,
     debug: computed(() => ({
-      mode: selectedMode.value,
+      selectedMode: selectedMode.value,
       propertyId: propertyId.value,
       activePropertyAppId: activePropertyAppId.value,
       rootCollection: rootCollection.value,
@@ -58,8 +52,6 @@ export function usePropertyConsoleIndex(
   const debug = consoleIndex.debug
 
   return {
-    state: consoleIndex.state,
-    user: consoleIndex.user,
     properties: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedProperty,

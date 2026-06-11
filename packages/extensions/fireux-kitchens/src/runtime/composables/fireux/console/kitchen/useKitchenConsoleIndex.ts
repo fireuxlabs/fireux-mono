@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenTestCreate } from '../../firestore/kitchen/mutations/useKitchenTestCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
@@ -18,8 +17,7 @@ export function useKitchenConsoleIndex(
 ) {
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(userId, { source: 'test' })
-  const { createTestKitchen } = useKitchenTestCreate()
+  const { kitchen: testKitchenSource } = useKitchenFetch(userId, { source: 'test' })
   const {
     liveKitchens,
     demoKitchens,
@@ -27,6 +25,7 @@ export function useKitchenConsoleIndex(
     selectedKitchen,
     selectedMode,
     kitchenId,
+    activeKitchenAppId,
     rootCollection,
     canWrite,
     clearSelectedKitchen,
@@ -43,26 +42,10 @@ export function useKitchenConsoleIndex(
     entities: sourceKitchens,
     selectEntity: selectKitchen,
     getTestId: (kitchen) => normalizeString(kitchen.id),
-    autoCreateTest: false,
-    testPending: testKitchenPending,
-    testCreateKey: userId,
-    createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = userId.value
-      if (!testId) return null
-
-      const result = await createTestKitchen(
-        {
-          id: testId,
-          displayName,
-          display_image_url: normalizeString(avatarSrc),
-        }
-      )
-
-      return normalizeString(result.id)
-    },
     debug: computed(() => ({
-      mode: selectedMode.value,
+      selectedMode: selectedMode.value,
       kitchenId: kitchenId.value,
+      activeKitchenAppId: activeKitchenAppId.value,
       rootCollection: rootCollection.value,
       canWrite: canWrite.value,
       selectedKitchen: selectedKitchen.value,
@@ -71,14 +54,12 @@ export function useKitchenConsoleIndex(
   const debug = consoleIndex.debug
 
   return {
-    state: consoleIndex.state,
-    user: consoleIndex.user,
     kitchens: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedKitchen,
     selectedMode,
     kitchenId,
-    userId,
+    activeKitchenAppId,
     rootCollection,
     canWrite,
     debug,

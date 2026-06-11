@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { usePortfolioConsole } from '../usePortfolioConsole'
+import { usePortfolioConsole } from './usePortfolioConsole'
 
 export function usePortfolioConsoleIdentity() {
   const {
@@ -30,7 +30,7 @@ export function usePortfolioConsoleIdentity() {
     normalizeString(selectedPortfolio.value?.region_label)
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     portfolioId: portfolioId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,

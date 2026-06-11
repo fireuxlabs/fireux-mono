@@ -4,7 +4,6 @@ import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/cons
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
-import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/project/mutations/useProjectCreate'
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsole } from './useProjectConsole'
 
@@ -17,10 +16,9 @@ export function useProjectConsoleIndex(
 ) {
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const { project: testProjectSource, pending: testProjectPending } = useProjectFetch(userId, {
+  const { project: testProjectSource } = useProjectFetch(userId, {
     source: 'test',
   })
-  const { createTestProject } = useProjectCreate()
   const {
     liveProjects,
     demoProjects,
@@ -45,27 +43,8 @@ export function useProjectConsoleIndex(
     entities: sourceProjects,
     selectEntity: selectProject,
     getTestId: (project) => normalizeString(project.id),
-    autoCreateTest: true,
-    testPending: testProjectPending,
-    testCreateKey: userId,
-    createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = userId.value
-      if (!testId) return null
-
-      const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
-      const result = await createTestProject(
-        {
-          id: testId,
-          name: 'Test Project',
-          subtitle: userLabel,
-          image_url: normalizeString(avatarSrc),
-        }
-      )
-
-      return normalizeString(result.id)
-    },
     debug: computed(() => ({
-      mode: selectedMode.value,
+      selectedMode: selectedMode.value,
       projectId: projectId.value,
       rootCollection: rootCollection.value,
       canWrite: canWrite.value,
@@ -75,8 +54,6 @@ export function useProjectConsoleIndex(
   const debug = consoleIndex.debug
 
   return {
-    state: consoleIndex.state,
-    user: consoleIndex.user,
     projects: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedProject,

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useProjectConsole } from '../useProjectConsole'
+import { useProjectConsole } from './useProjectConsole'
 
 export function useProjectConsoleIdentity() {
   const {
@@ -18,7 +18,7 @@ export function useProjectConsoleIdentity() {
   )
   const imageUrl = computed(() => normalizeString(selectedProject.value?.image_url))
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     projectId: projectId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,

@@ -1,19 +1,19 @@
 <template>
   <section class="space-y-4">
     <ConsoleBlankTargetsSelected
-      :selected-id="selectedId"
-      :mode="mode"
+      :blank="selectedBlank"
+      :blank-id="blankId"
+      :mode="selectedMode"
       @clear="clearSelectedBlank"
     />
 
     <ConsoleBlankTargetsLive
-      :collection="blank.liveTargets.value"
-      :pending="blank.pending.value"
+      :collection="blanks.live"
       @select="actions.selectLive"
     />
 
     <ConsoleBlankTargetsDemo
-      :collection="blank.demoTargets.value"
+      :collection="blanks.demo"
       @select="actions.selectDemo"
     />
     <ConsoleBlankTargetsTest :init="false" />
@@ -30,6 +30,13 @@
 <script setup lang="ts">
 import { useBlankConsoleIndex } from '../../../composables/fireux/console/blank/useBlankConsoleIndex'
 
-const { blank, selectedId, mode, debug, actions, clearSelectedBlank } =
-  useBlankConsoleIndex()
+const {
+  blanks,
+  actions,
+  selectedBlank,
+  selectedMode,
+  blankId,
+  debug,
+  clearSelectedBlank,
+} = useBlankConsoleIndex()
 </script>

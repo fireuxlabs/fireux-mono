@@ -48,11 +48,11 @@
 </template>
 
 <script setup lang="ts">
-import type { ConsoleEntityIndexCard } from './types'
+import type { ConsoleTargetCard } from './types'
 
 const props = withDefaults(
   defineProps<{
-    card: ConsoleEntityIndexCard
+    card: ConsoleTargetCard
     action?: boolean
     disabled?: boolean
     showBadges?: boolean

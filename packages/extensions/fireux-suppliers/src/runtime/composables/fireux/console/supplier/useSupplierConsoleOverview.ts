@@ -19,7 +19,7 @@ export function useSupplierConsoleOverview() {
   } =
     useSupplierConsole()
 
-  const overview = useConsoleOverview<SupplierSurface, SupplierSurface>({
+  const overview = useConsoleOverview<SupplierSurface>({
     selectedEntity: selectedSupplier,
     selectedMode,
     liveItems: liveSuppliers,
@@ -28,7 +28,7 @@ export function useSupplierConsoleOverview() {
     getId: (supplier) => normalizeString(supplier?.id),
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     supplierId: supplierId.value,
     activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,

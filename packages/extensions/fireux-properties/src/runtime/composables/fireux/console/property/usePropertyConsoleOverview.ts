@@ -18,7 +18,7 @@ export function usePropertyConsoleOverview() {
     clearSelectedProperty,
   } = usePropertyConsole()
 
-  const overview = useConsoleOverview<Property, Property>({
+  const overview = useConsoleOverview<Property>({
     selectedEntity: selectedProperty,
     selectedMode,
     liveItems: liveProperties,
@@ -27,7 +27,7 @@ export function usePropertyConsoleOverview() {
     getId: (property) => normalizeString(property?.id),
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     propertyId: propertyId.value,
     activePropertyAppId: activePropertyAppId.value,
     rootCollection: rootCollection.value,

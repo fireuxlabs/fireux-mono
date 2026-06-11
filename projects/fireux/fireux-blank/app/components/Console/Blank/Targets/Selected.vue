@@ -3,9 +3,9 @@
     <pre>ConsoleBlankTargetsSelected</pre>
 
     <UPageCard
-      v-if="selectedId"
+      v-if="blankId"
       :title="selectedTitle"
-      :description="selectedId"
+      :description="blankName || blankId"
       variant="subtle"
     >
       <template #footer>
@@ -33,9 +33,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { Blank } from '../../../../models/blank.model'
 
 const props = defineProps<{
-  selectedId?: string
+  blank?: Blank | null
+  blankId?: string
   mode?: ConsoleMode
 }>()
 
@@ -43,6 +45,9 @@ const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
+const blankName = computed(() =>
+  String(props.blank?.name || props.blank?.slug || '').trim()
+)
 const selectedTitle = computed(() =>
   props.mode === 'demo' ? 'Selected Demo Blank' : 'Selected Blank'
 )

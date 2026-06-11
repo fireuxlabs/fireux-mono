@@ -1,13 +1,7 @@
-import { computed, reactive, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { useUser } from '../../firestore/core/user/useUser'
+import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { normalizeConsoleString, type ConsoleMode } from './useConsole'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
-
-type ConsoleIndexUserContext = {
-  avatarSrc: string
-  displayName: string
-}
 
 type ConsoleIndexDebug = Record<string, unknown>
 
@@ -19,13 +13,6 @@ type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   }>
   selectEntity: (id: string, mode?: ConsoleMode) => void
   getTestId: (item: TTest) => string
-  autoCreateTest?: boolean
-  testPending?: MaybeRef<boolean>
-  testCreateKey?: MaybeRef<string | null | undefined>
-  createTestEntity?: (context: {
-    avatarSrc: string
-    displayName: string
-  }) => Promise<string | null | undefined>
   debug?: MaybeRef<ConsoleIndexDebug | null | undefined>
 }
 
@@ -34,20 +21,6 @@ export function useConsoleIndex<
   TDemo,
   TTest,
 >(options: UseConsoleIndexOptions<TLive, TDemo, TTest>) {
-  const { currentUser, avatarSrc } = useUser()
-  const createTestEntity = options.createTestEntity
-
-  const user = computed<ConsoleIndexUserContext>(() => ({
-    avatarSrc: normalizeConsoleString(avatarSrc.value),
-    displayName: normalizeConsoleString(currentUser.value?.display_name),
-  }))
-
-  const state = reactive({
-    showSimulations: false,
-    creatingTest: false,
-  })
-  const lastAutoCreateKey = ref('')
-
   const liveItems = computed<TLive[]>(() => {
     const source = unref(options.entities)
     return Array.isArray(source.live) ? (source.live as TLive[]) : []
@@ -80,14 +53,6 @@ export function useConsoleIndex<
     counts: counts.value,
   }))
 
-  const autoCreateTest = computed(
-    () => Boolean(options.autoCreateTest) && Boolean(createTestEntity)
-  )
-  const testPending = computed(() => Boolean(options.testPending ? unref(options.testPending) : false))
-  const testCreateKey = computed(() =>
-    normalizeConsoleString(options.testCreateKey ? unref(options.testCreateKey) : '')
-  )
-
   const actions = {
     selectLive: (id: string) => {
       options.selectEntity(id, 'live')
@@ -104,52 +69,9 @@ export function useConsoleIndex<
 
       options.selectEntity(id, 'test')
     },
-    createTest: createTestEntity
-      ? async () => {
-          if (state.creatingTest) return
-
-          state.creatingTest = true
-
-          try {
-            const id = normalizeConsoleString(
-              await createTestEntity({
-                avatarSrc: user.value.avatarSrc,
-                displayName: user.value.displayName,
-              })
-            )
-
-            if (!id) return
-
-            lastAutoCreateKey.value = testCreateKey.value
-            options.selectEntity(id, 'test')
-          } finally {
-            state.creatingTest = false
-          }
-        }
-      : undefined,
   }
 
-  watch(
-    () => ({
-      enabled: autoCreateTest.value,
-      pending: testPending.value,
-      hasTest: Boolean(testItem.value),
-      key: testCreateKey.value,
-    }),
-    async ({ enabled, pending, hasTest, key }) => {
-      if (!enabled || pending || hasTest || state.creatingTest) return
-      if (!key || lastAutoCreateKey.value === key) return
-
-      await actions.createTest?.()
-    },
-    {
-      immediate: true,
-    }
-  )
-
   return {
-    state,
-    user,
     entities,
     counts,
     debug,

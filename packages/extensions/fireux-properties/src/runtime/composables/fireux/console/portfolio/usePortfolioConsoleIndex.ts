@@ -4,7 +4,6 @@ import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/cons
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { PortfolioCollectionFilter } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
-import { usePortfolioCreate } from '../../firestore/portfolio/mutations/usePortfolioCreate'
 import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,
@@ -22,11 +21,10 @@ export function usePortfolioConsoleIndex(
 ) {
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
-  const { portfolio: testPortfolioSource, pending: testPortfolioPending } =
+  const { portfolio: testPortfolioSource } =
     usePortfolioFetch(normalizedUid, {
       collectionPath: 'test-portfolios',
     })
-  const { createTestPortfolio } = usePortfolioCreate()
   const {
     livePortfolios,
     demoPortfolios,
@@ -56,26 +54,8 @@ export function usePortfolioConsoleIndex(
     entities: sourcePortfolios,
     selectEntity: selectPortfolio,
     getTestId: (portfolio) => normalizeString(portfolio.id),
-    autoCreateTest: true,
-    testPending: testPortfolioPending,
-    testCreateKey: normalizedUid,
-    createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = normalizedUid.value
-      if (!testId) return null
-
-      const userLabel =
-        normalizeString(displayName) || `User ${testId.slice(0, 6)}`
-      const result = await createTestPortfolio({
-        id: testId,
-        name: 'Test Portfolio',
-        subtitle: userLabel,
-        image_url: normalizeString(avatarSrc),
-      })
-
-      return normalizeString(result.id)
-    },
     debug: computed(() => ({
-      mode: selectedMode.value,
+      selectedMode: selectedMode.value,
       portfolioId: portfolioId.value,
       activePortfolioAppId: activePortfolioAppId.value,
       rootCollection: rootCollection.value,
@@ -86,8 +66,6 @@ export function usePortfolioConsoleIndex(
   const debug = consoleIndex.debug
 
   return {
-    state: consoleIndex.state,
-    user: consoleIndex.user,
     portfolios: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedPortfolio,

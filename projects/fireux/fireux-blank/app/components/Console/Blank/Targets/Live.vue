@@ -36,11 +36,9 @@ type BlankLiveMode = 'console' | 'mine'
 const props = withDefaults(
   defineProps<{
     collection?: Blank[]
-    pending?: boolean
   }>(),
   {
     collection: () => [],
-    pending: false,
   }
 )
 
@@ -72,7 +70,7 @@ const managerCollection = computed(() =>
   liveMode.value === 'mine' ? myBlankCollection.value : props.collection
 )
 const managerPending = computed(() =>
-  liveMode.value === 'mine' ? myBlanks.pending.value : props.pending
+  liveMode.value === 'mine' ? myBlanks.pending.value : false
 )
 const managerTitle = computed(() =>
   liveMode.value === 'mine' ? 'My Blanks' : 'Choose Blank'

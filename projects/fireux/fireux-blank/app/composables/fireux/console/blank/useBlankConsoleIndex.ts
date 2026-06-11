@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useBlankConsole } from './useBlankConsole'
-import { useBlankConsoleTargets } from './useBlankConsoleTargets'
 import type { Blank } from '../../../models/blank.model'
 
 /**
@@ -13,45 +12,45 @@ import type { Blank } from '../../../models/blank.model'
 export function useBlankConsoleIndex() {
   const blank = useBlankConsole()
   const {
-    selectedId,
-    mode,
-    setBlankConsoleTarget,
-    clearBlankConsoleTarget,
-  } = useBlankConsoleTargets()
+    selectedBlank,
+    selectedMode,
+    blankId,
+    rootCollection,
+    canWrite,
+    selectBlank,
+    clearSelectedBlank,
+  } = blank
   const sourceBlanks = computed(() => ({
-    live: blank.liveTargets.value,
-    demo: blank.demoTargets.value,
-    test: null,
+    live: blank.liveBlanks.value,
+    demo: blank.demoBlanks.value,
+    test: blank.testBlank.value,
   }))
   const consoleIndex = useConsoleIndex<Blank, Blank, Blank>({
     entities: sourceBlanks,
     selectEntity: (id, targetMode = 'live') => {
-      setBlankConsoleTarget({
-        blankId: String(id ?? '').trim(),
-        mode: targetMode,
-      })
+      selectBlank(String(id ?? '').trim(), targetMode)
     },
     getTestId: (target) => String(target.id ?? '').trim(),
     debug: computed(() => ({
       family: 'blank',
-      selectedId: selectedId.value,
-      mode: mode.value,
+      blankId: blankId.value,
+      selectedMode: selectedMode.value,
       pending: blank.pending.value,
-      hasLiveTargets: blank.hasLiveTargets.value,
-      rootCollectionPath: blank.rootCollectionPath,
+      hasLiveBlanks: blank.hasLiveBlanks.value,
+      rootCollection: rootCollection.value,
       appCollectionPath: blank.appCollectionPath.value,
     })),
   })
   const debug = consoleIndex.debug
-  const clearSelectedBlank = () => {
-    clearBlankConsoleTarget()
-  }
 
   return {
-    blank,
-    selectedId,
-    mode,
+    blanks: consoleIndex.entities,
     actions: consoleIndex.actions,
+    selectedBlank,
+    selectedMode,
+    blankId,
+    rootCollection,
+    canWrite,
     debug,
     clearSelectedBlank,
   }

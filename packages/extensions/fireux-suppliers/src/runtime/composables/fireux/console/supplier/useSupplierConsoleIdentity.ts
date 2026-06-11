@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useSupplierConsole } from '../useSupplierConsole'
+import { useSupplierConsole } from './useSupplierConsole'
 
 export function useSupplierConsoleIdentity() {
   const {
@@ -31,7 +31,7 @@ export function useSupplierConsoleIdentity() {
       : []
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     supplierId: supplierId.value,
     activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,

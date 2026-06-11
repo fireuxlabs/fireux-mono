@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchenConsole } from '../useKitchenConsole'
+import { useKitchenConsole } from './useKitchenConsole'
 
 export function useKitchenConsoleIdentity() {
   const {
@@ -46,7 +46,7 @@ export function useKitchenConsoleIdentity() {
     return normalizeString(kitchen?.short_address || kitchen?.formatted_address)
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,

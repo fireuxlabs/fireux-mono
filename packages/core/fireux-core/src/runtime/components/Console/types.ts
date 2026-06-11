@@ -1,4 +1,4 @@
-export type ConsoleEntityIndexCard = {
+export type ConsoleTargetCard = {
   id: string
   title: string
   to?: string

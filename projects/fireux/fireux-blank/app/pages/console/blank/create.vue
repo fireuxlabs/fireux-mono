@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { ref } from 'vue'
+import { useBlankConsole } from '../../../composables/fireux/console/blank/useBlankConsole'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 
 definePageMeta({
@@ -91,6 +92,7 @@ const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
 const { createBlank } = useBlankCreate()
+const { selectBlank } = useBlankConsole()
 
 async function handleCreate() {
   if (creating.value) return
@@ -99,7 +101,8 @@ async function handleCreate() {
   error.value = ''
 
   try {
-    await createBlank({ name: name.value })
+    const result = await createBlank({ name: name.value })
+    selectBlank(result.id, 'live')
     await navigateTo('/console/blank')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)

@@ -20,7 +20,7 @@ export function usePortfolioConsoleOverview() {
     clearSelectedPortfolio,
   } = usePortfolioConsole()
 
-  const overview = useConsoleOverview<PortfolioConsoleEntity, PortfolioConsoleEntity>({
+  const overview = useConsoleOverview<PortfolioConsoleEntity>({
     selectedEntity: selectedPortfolio,
     selectedMode,
     liveItems: livePortfolios,
@@ -29,7 +29,7 @@ export function usePortfolioConsoleOverview() {
     getId: (portfolio) => normalizeString(portfolio?.id),
   })
   const debug = computed(() => ({
-    mode: selectedMode.value,
+    selectedMode: selectedMode.value,
     portfolioId: portfolioId.value,
     activePortfolioAppId: activePortfolioAppId.value,
     rootCollection: rootCollection.value,
