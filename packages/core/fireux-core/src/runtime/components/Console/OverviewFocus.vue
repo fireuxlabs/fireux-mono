@@ -4,56 +4,72 @@
       <div class="console-card-header">
         <div class="console-card-header__title">Focus</div>
         <p class="console-card-header__description">
-          Selected Blank in the console.
+          Selected {{ entityLower }} in the console.
         </p>
       </div>
     </template>
 
     <div v-if="focus.hasSelection" class="space-y-4">
+      <ConsoleTargetCard
+        v-if="card"
+        :card="card"
+        :show-badges="showBadges"
+      />
+
       <div class="console-summary-grid">
         <div class="console-summary-field">
           Mode:
           <span class="console-summary-value">{{ focusModeLabel }}</span>
         </div>
         <div class="console-summary-field">
-          Blank ID:
+          {{ entityLabel }} ID:
           <span class="console-summary-value">{{ focus.id }}</span>
         </div>
         <div class="console-summary-field">
-          Blanks in Scope:
-          <span class="console-summary-value">{{ groupCountLabel }}</span>
+          {{ entityPluralLabel }} in Scope:
+          <span class="console-summary-value">{{ multipleCountLabel }}</span>
         </div>
       </div>
     </div>
 
     <p v-else class="console-card-header__description">
-      No Blank is currently selected.
+      No {{ entityLower }} is currently selected.
     </p>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Blank } from '../../../models/blank.model'
+import type { ConsoleTargetCard as ConsoleTargetCardType } from './types'
 
-type BlankOverviewFocusState = {
-  entity: Blank | null
+type ConsoleOverviewFocusState = {
   id: string
   mode: string
   hasSelection: boolean
 }
 
-type BlankOverviewGroupSummary = {
+type ConsoleOverviewMultipleSummary = {
   count: number
 }
 
-const props = defineProps<{
-  focus: BlankOverviewFocusState
-  group: BlankOverviewGroupSummary
-}>()
+const props = withDefaults(
+  defineProps<{
+    entityLabel: string
+    entityPluralLabel: string
+    focus: ConsoleOverviewFocusState
+    multiple: ConsoleOverviewMultipleSummary
+    card?: ConsoleTargetCardType | null
+    showBadges?: boolean
+  }>(),
+  {
+    card: null,
+    showBadges: false,
+  }
+)
 
+const entityLower = computed(() => props.entityLabel.toLowerCase())
 const focusModeLabel = computed(() =>
   props.focus.mode === 'demo' ? 'Demo' : props.focus.mode === 'test' ? 'Test' : 'Live'
 )
-const groupCountLabel = computed(() => String(props.group.count))
+const multipleCountLabel = computed(() => String(props.multiple.count))
 </script>

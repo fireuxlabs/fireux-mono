@@ -33,9 +33,9 @@ export function usePropertyConsoleOverview() {
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
     focus: overview.focus.value,
-    group: {
-      count: overview.group.value.count,
-      ids: overview.group.value.items.map((item) => normalizeString(item?.id)),
+    multiple: {
+      count: overview.multiple.value.count,
+      ids: overview.multiple.value.items.map((item) => normalizeString(item?.id)),
     },
   }))
 

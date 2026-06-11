@@ -1,8 +1,20 @@
 <template>
   <section class="console-surface">
     <div class="console-surface__grid console-surface__grid--2">
-      <ConsoleProjectOverviewFocus :focus="focus" :group="group" />
-      <ConsoleProjectOverviewGroup :group="group" :mode="focus.mode" />
+      <ConsoleOverviewFocus
+        entity-label="Project"
+        entity-plural-label="Projects"
+        :focus="focus"
+        :multiple="multiple"
+        :card="focusCard"
+      />
+      <ConsoleOverviewMultiple
+        entity-label="Project"
+        entity-plural-label="Projects"
+        :multiple="multiple"
+        :mode="focus.mode"
+        :cards="multipleCards"
+      />
     </div>
 
     <div class="mt-4">
@@ -17,7 +29,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
+import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsoleOverview } from '../../../composables/fireux/console/project/useProjectConsoleOverview'
 
-const { focus, group, debug } = useProjectConsoleOverview()
+const { focus, multiple, debug } = useProjectConsoleOverview()
+const { pill } = useProjectInterface()
+const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
+const multipleCards = computed(() =>
+  multiple.value.items
+    .map((project) => pill(project) as ConsoleTargetCard | null)
+    .filter((card): card is ConsoleTargetCard => Boolean(card))
+)
 </script>

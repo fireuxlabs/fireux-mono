@@ -31,7 +31,7 @@ export function useConsoleOverview<T>(
     }
   })
 
-  const groupItems = computed<T[]>(() => {
+  const multipleItems = computed<T[]>(() => {
     const mode = focus.value.mode
     const items =
       mode === 'demo'
@@ -43,14 +43,14 @@ export function useConsoleOverview<T>(
     return Array.isArray(items) ? items.filter(isPresent) : []
   })
 
-  const group = computed(() => ({
-    items: groupItems.value,
-    count: groupItems.value.length,
-    hasItems: groupItems.value.length > 0,
+  const multiple = computed(() => ({
+    items: multipleItems.value,
+    count: multipleItems.value.length,
+    hasItems: multipleItems.value.length > 0,
   }))
 
   return {
     focus,
-    group,
+    multiple,
   }
 }

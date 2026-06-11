@@ -1,8 +1,20 @@
 <template>
   <section class="console-surface">
     <div class="console-surface__grid console-surface__grid--2">
-      <PropertyOverviewFocus :focus="focus" :group="group" />
-      <PropertyOverviewGroup :group="group" :mode="focus.mode" />
+      <ConsoleOverviewFocus
+        entity-label="Property"
+        entity-plural-label="Properties"
+        :focus="focus"
+        :multiple="multiple"
+        :card="focusCard"
+      />
+      <ConsoleOverviewMultiple
+        entity-label="Property"
+        entity-plural-label="Properties"
+        :multiple="multiple"
+        :mode="focus.mode"
+        :cards="multipleCards"
+      />
     </div>
 
     <div class="mt-4">
@@ -17,7 +29,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import { usePropertyConsoleOverview } from '../../../composables/fireux/console/property/usePropertyConsoleOverview'
+import { usePropertyInterface } from '../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
-const { focus, group, debug } = usePropertyConsoleOverview()
+const { focus, multiple, debug } = usePropertyConsoleOverview()
+const { pill } = usePropertyInterface()
+const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
+const multipleCards = computed(() =>
+  multiple.value.items
+    .map((property) => pill(property) as ConsoleTargetCard | null)
+    .filter((card): card is ConsoleTargetCard => Boolean(card))
+)
 </script>
