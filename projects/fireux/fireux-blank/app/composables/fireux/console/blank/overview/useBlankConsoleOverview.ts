@@ -7,8 +7,6 @@ import { useBlankConsole } from '../core/useBlankConsole'
 export function useBlankConsoleOverview() {
   const {
     liveBlanks,
-    demoBlanks,
-    testBlank,
     selectedBlank,
     selectedMode,
     blankId,
@@ -21,8 +19,6 @@ export function useBlankConsoleOverview() {
     selectedEntity: selectedBlank,
     selectedMode,
     liveItems: liveBlanks,
-    demoItems: demoBlanks,
-    testItem: testBlank,
     getId: (blank) => normalizeString(blank?.id),
   })
   const debug = computed(() => ({

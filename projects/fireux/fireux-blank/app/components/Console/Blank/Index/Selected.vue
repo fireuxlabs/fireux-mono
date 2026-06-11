@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Blank"
-      description="Choose a live or demo Blank target to open selected Blank console state."
+      description="Choose a Blank target to open selected Blank console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { Blank } from '../../../../models/blank.model'
 
 const props = defineProps<{
   blank?: Blank | null
   blankId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const blankName = computed(() =>
   String(props.blank?.name || props.blank?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Blank' : 'Selected Blank'
-)
+const selectedTitle = 'Selected Blank'
 </script>

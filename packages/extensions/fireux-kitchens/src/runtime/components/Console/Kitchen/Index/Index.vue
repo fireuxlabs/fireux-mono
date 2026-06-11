@@ -1,22 +1,27 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsoleKitchenIndexSelected
-      :kitchen="selectedKitchen"
-      :kitchen-id="kitchenId"
-      :mode="selectedMode"
-      @clear="clearSelectedKitchen"
+      :kitchen="selection.kitchen"
+      :kitchen-id="selection.kitchenId"
+      :mode="selection.mode"
+      @clear="actions.clear"
     />
 
     <ConsoleKitchenIndexLive
-      :collection="kitchens.live"
+      v-if="sections.live.show"
+      :collection="sections.live.collection"
       @select="actions.selectLive"
     />
 
     <ConsoleKitchenIndexDemo
-      :collection="kitchens.demo"
+      v-if="sections.demo.show"
+      :collection="sections.demo.collection"
       @select="actions.selectDemo"
     />
-    <ConsoleKitchenIndexTest :init="false" />
+    <ConsoleKitchenIndexTest
+      v-if="sections.test.show"
+      :init="sections.test.init"
+    />
 
     <DevFireuxDebugPanel
       title="Kitchen console debug"
@@ -31,12 +36,9 @@
 import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/index/useKitchenConsoleIndex'
 
 const {
-  kitchens,
+  selection,
+  sections,
   actions,
-  selectedKitchen,
-  selectedMode,
-  kitchenId,
   debug,
-  clearSelectedKitchen,
 } = useKitchenConsoleIndex()
 </script>

@@ -1,22 +1,17 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsoleBlankIndexSelected
-      :blank="selectedBlank"
-      :blank-id="blankId"
-      :mode="selectedMode"
-      @clear="clearSelectedBlank"
+      :blank="selection.blank"
+      :blank-id="selection.blankId"
+      @clear="actions.clear"
     />
 
     <ConsoleBlankIndexLive
-      :collection="blanks.live"
+      v-if="sections.live.show"
+      :collection="sections.live.collection"
+      :pending="sections.live.pending"
       @select="actions.selectLive"
     />
-
-    <ConsoleBlankIndexDemo
-      :collection="blanks.demo"
-      @select="actions.selectDemo"
-    />
-    <ConsoleBlankIndexTest :init="false" />
 
     <DevFireuxDebugPanel
       title="Blank console debug"
@@ -31,12 +26,9 @@
 import { useBlankConsoleIndex } from '../../../../composables/fireux/console/blank/index/useBlankConsoleIndex'
 
 const {
-  blanks,
+  selection,
+  sections,
   actions,
-  selectedBlank,
-  selectedMode,
-  blankId,
   debug,
-  clearSelectedBlank,
 } = useBlankConsoleIndex()
 </script>

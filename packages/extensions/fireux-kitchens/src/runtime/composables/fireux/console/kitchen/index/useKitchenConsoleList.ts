@@ -20,6 +20,7 @@ type AppKitchenConsoleListDoc = {
 export type KitchenConsoleListFilterValue = string | number | null | undefined
 export type KitchenConsoleListFilter = {
   ids?: KitchenConsoleListFilterValue[] | null | undefined
+  scopeAppId?: KitchenConsoleListFilterValue
 }
 
 type UseKitchenConsoleListOptions = {
@@ -59,6 +60,9 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
   const explicitIds = computed(() =>
     (resolvedFilter.value?.ids ?? []).map((id) => normalize(id)).filter(Boolean)
   )
+  const forcedScopeAppId = computed(() =>
+    normalize(resolvedFilter.value?.scopeAppId)
+  )
   const hasExplicitIds = computed(() => Array.isArray(resolvedFilter.value?.ids))
   const userKitchenIds = computed(() => {
     return coreUser.value?.myKitchens ?? []
@@ -72,7 +76,9 @@ export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}
       .map((kitchen) => {
         const kitchenId = normalize(kitchen.id)
         const scopeAppId =
-          normalize(kitchen.app_scope_app_id) || normalize(appId)
+          forcedScopeAppId.value ||
+          normalize(kitchen.app_scope_app_id) ||
+          normalize(appId)
 
         return kitchenId && scopeAppId
           ? { kitchenId, appId: scopeAppId }

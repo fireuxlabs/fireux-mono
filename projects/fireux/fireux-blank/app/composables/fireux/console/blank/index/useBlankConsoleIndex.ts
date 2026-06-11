@@ -1,7 +1,5 @@
 import { computed } from 'vue'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useBlankConsole } from '../core/useBlankConsole'
-import type { Blank } from '../../../../../models/blank.model'
 
 /**
  * Blank console main index seam.
@@ -12,6 +10,7 @@ import type { Blank } from '../../../../../models/blank.model'
 export function useBlankConsoleIndex() {
   const blank = useBlankConsole()
   const {
+    liveBlanks,
     selectedBlank,
     selectedMode,
     blankId,
@@ -20,38 +19,44 @@ export function useBlankConsoleIndex() {
     selectBlank,
     clearSelectedBlank,
   } = blank
-  const sourceBlanks = computed(() => ({
-    live: blank.liveBlanks.value,
-    demo: blank.demoBlanks.value,
-    test: blank.testBlank.value,
+  const selection = computed(() => ({
+    blank: selectedBlank.value,
+    mode: selectedMode.value,
+    blankId: blankId.value,
   }))
-  const consoleIndex = useConsoleIndex<Blank, Blank, Blank>({
-    entities: sourceBlanks,
-    selectEntity: (id, targetMode = 'live') => {
-      selectBlank(String(id ?? '').trim(), targetMode)
-    },
-    getTestId: (target) => String(target.id ?? '').trim(),
-    debug: computed(() => ({
-      family: 'blank',
-      blankId: blankId.value,
-      selectedMode: selectedMode.value,
+  const sections = computed(() => ({
+    live: {
+      show: true,
+      collection: liveBlanks.value,
       pending: blank.pending.value,
-      hasLiveBlanks: blank.hasLiveBlanks.value,
-      rootCollection: rootCollection.value,
-      appCollectionPath: blank.appCollectionPath.value,
-    })),
-  })
-  const debug = consoleIndex.debug
+    },
+  }))
+  const runtime = computed(() => ({
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+  }))
+  const actions = {
+    selectLive: (id: string) => {
+      selectBlank(String(id ?? '').trim(), 'live')
+    },
+    clear: clearSelectedBlank,
+  }
+  const debug = computed(() => ({
+    family: 'blank',
+    blankId: blankId.value,
+    selectedMode: selectedMode.value,
+    pending: blank.pending.value,
+    liveCount: liveBlanks.value.length,
+    hasLiveBlanks: blank.hasLiveBlanks.value,
+    rootCollection: rootCollection.value,
+    appCollectionPath: blank.appCollectionPath.value,
+  }))
 
   return {
-    blanks: consoleIndex.entities,
-    actions: consoleIndex.actions,
-    selectedBlank,
-    selectedMode,
-    blankId,
-    rootCollection,
-    canWrite,
+    selection,
+    sections,
+    runtime,
+    actions,
     debug,
-    clearSelectedBlank,
   }
 }
