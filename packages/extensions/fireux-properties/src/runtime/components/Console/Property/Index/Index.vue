@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/usePropertyConsoleIndex'
+import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/index/usePropertyConsoleIndex'
 
 const {
   properties,

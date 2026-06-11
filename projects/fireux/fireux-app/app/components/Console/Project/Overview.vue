@@ -32,7 +32,7 @@
 import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { useProjectConsoleOverview } from '../../../composables/fireux/console/project/useProjectConsoleOverview'
+import { useProjectConsoleOverview } from '../../../composables/fireux/console/project/overview/useProjectConsoleOverview'
 
 const { focus, multiple, debug } = useProjectConsoleOverview()
 const { pill } = useProjectInterface()

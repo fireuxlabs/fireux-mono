@@ -10,7 +10,7 @@ import {
   type DishCreateInput,
 } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
 
 type DishCreateDraft = {
   name: string

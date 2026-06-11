@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import type { PortfolioConsoleEntity } from '../../../../composables/fireux/console/portfolio/usePortfolioConsole'
+import type { PortfolioConsoleEntity } from '../../../../composables/fireux/console/portfolio/core/usePortfolioConsole'
 
 const props = defineProps<{
   portfolio?: PortfolioConsoleEntity | null

@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
+import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/index/useKitchenConsoleIndex'
 
 const {
   kitchens,

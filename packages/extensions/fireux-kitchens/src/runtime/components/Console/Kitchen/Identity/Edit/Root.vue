@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 
 const { selectedKitchen, kitchenId, canWrite } = useKitchenConsoleIdentity()
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)

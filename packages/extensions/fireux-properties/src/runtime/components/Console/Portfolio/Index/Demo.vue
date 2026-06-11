@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PortfolioConsoleEntity } from '../../../../composables/fireux/console/portfolio/usePortfolioConsole'
+import type { PortfolioConsoleEntity } from '../../../../composables/fireux/console/portfolio/core/usePortfolioConsole'
 
 withDefaults(
   defineProps<{

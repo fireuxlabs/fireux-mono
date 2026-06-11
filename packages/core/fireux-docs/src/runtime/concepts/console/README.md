@@ -135,9 +135,9 @@ Examples:
 - `console/portfolio/operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
 - `console/project/operations` for selected Project management such as apps or ecosystem links
 
-Identity helpers live as `console/<family>/useXConsoleIdentity.ts`.
-Target helpers live as `console/<family>/useXConsoleTargets.ts`.
-Composable console folders should not mirror UI folders except for `operations/`.
+Identity helpers live as `console/<family>/identity/useXConsoleIdentity.ts`.
+Target helpers live as `console/<family>/core/useXConsoleTargets.ts`.
+Composable console folders mirror the main surface seams: `core/`, `index/`, `overview/`, `identity/`, and `operations/`.
 
 Stored CRUD remains in the entity's Firestore stack or explicit child stack.
 Public route shaping remains in `public/`.
@@ -232,10 +232,12 @@ The canonical console spine shape is:
 - `pages/console/<family>/index.vue` renders the console dashboard panel and the single `<ConsoleXIndex />` entry component.
 - `<ConsoleXIndex />` is the target picker spine and renders the same vertical sections for every console family: selected, live, demo, test, then dev debug.
 - each section lives in `components/Console/X/Index/*` so the family can own labels and domain-specific cards without owning a different spine.
-- `useXConsoleIndex()` composes family data and calls `useConsoleIndex()` from `fireux-core`.
+- `useXConsoleIndex()` lives in `console/<family>/index/`, composes family data, and calls `useConsoleIndex()` from `fireux-core`.
 - `components/Console/X/Overview.vue` is the selected target spine and renders the same overview sections for every console family: focus, multiple, then dev debug.
-- `useXConsoleOverview()` composes family data and calls `useConsoleOverview()` from `fireux-core`.
-- `useXConsole()` owns selected entity, selected mode, root/app scope, write permission, and console header state.
+- `useXConsoleOverview()` lives in `console/<family>/overview/`, composes family data, and calls `useConsoleOverview()` from `fireux-core`.
+- `useXConsole()` lives in `console/<family>/core/` and owns selected entity, selected mode, root/app scope, write permission, and console header state.
+- `useXConsoleIdentity()` lives in `console/<family>/identity/` and owns selected target identity read/edit state.
+- `useXConsoleTargets()` lives in `console/<family>/core/` and owns selected/live/demo/test target state.
 - core provides primitives, not a whole all-in-one console shell: `useConsole()`, `useConsoleIndex()`, `useConsoleOverview()`, `useConsoleSelection()`, console authority helpers, and `ConsoleTargetCard`.
 
 ## Public Identity Surface

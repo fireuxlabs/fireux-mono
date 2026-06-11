@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
-import { useSupplierConsoleOverview } from '../../../composables/fireux/console/supplier/useSupplierConsoleOverview'
+import { useSupplierConsoleOverview } from '../../../composables/fireux/console/supplier/overview/useSupplierConsoleOverview'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const { focus, multiple, debug } = useSupplierConsoleOverview()

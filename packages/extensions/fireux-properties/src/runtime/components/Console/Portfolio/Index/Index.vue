@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioConsoleIndex } from '../../../../composables/fireux/console/portfolio/usePortfolioConsoleIndex'
+import { usePortfolioConsoleIndex } from '../../../../composables/fireux/console/portfolio/index/usePortfolioConsoleIndex'
 
 const {
   portfolios,

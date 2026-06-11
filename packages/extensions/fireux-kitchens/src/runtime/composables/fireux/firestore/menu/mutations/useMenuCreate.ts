@@ -6,7 +6,7 @@ import {
   MenuModel,
   type Menu,
 } from '../../../../../models/menu.model'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 export type MenuCreateInput = {

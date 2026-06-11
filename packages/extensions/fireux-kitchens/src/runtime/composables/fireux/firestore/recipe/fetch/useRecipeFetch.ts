@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>

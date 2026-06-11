@@ -3,7 +3,7 @@ import { getDemoProject } from 'fireux-core/runtime/composables/fireux/demo/proj
 import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import type { App } from 'fireux-core/runtime/models/core/app.model'
-import { useProjectConsole } from '../../useProjectConsole'
+import { useProjectConsole } from '../../core/useProjectConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

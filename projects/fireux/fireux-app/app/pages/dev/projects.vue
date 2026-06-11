@@ -103,7 +103,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectConsoleTargets } from '../../composables/fireux/console/project/useProjectConsoleTargets'
+import { useProjectConsoleTargets } from '../../composables/fireux/console/project/core/useProjectConsoleTargets'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import type { ConsoleProject, Project } from 'fireux-core/runtime/models/system/project.model'

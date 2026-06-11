@@ -114,10 +114,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - BuenoHost property console route segment:
   - `property`
 - Property console composables follow the shared console entity bucket canon:
-  - `composables/fireux/console/property/usePropertyConsole.ts`
-  - `composables/fireux/console/property/usePropertyConsoleIndex.ts`
-  - `composables/fireux/console/property/usePropertyConsoleOverview.ts`
-  - `composables/fireux/console/property/usePropertyConsoleTargets.ts`
+  - `composables/fireux/console/property/core/usePropertyConsole.ts`
+  - `composables/fireux/console/property/index/usePropertyConsoleIndex.ts`
+  - `composables/fireux/console/property/overview/usePropertyConsoleOverview.ts`
+  - `composables/fireux/console/property/core/usePropertyConsoleTargets.ts`
   - property operation helpers live under `composables/fireux/console/property/operations/**`
   - `Operations` is a selected Property code bucket, not a Firestore collection
 - `/console/portfolio` is the family entry page:

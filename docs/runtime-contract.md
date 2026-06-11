@@ -276,11 +276,11 @@ Updated: 2026-05-25
 - Generic folder shape:
   - `app/console/**` owns the shared generic console spine.
   - `firestore/<entity>/**` owns the usual root entity stack: `fetch/`, `mutations/`, and `utils/`.
-  - `console/<entity>/useXConsole.ts` owns the selected target runtime adapter for that entity.
-  - `console/<entity>/useXConsoleIndex.ts` owns the target selector/index seam for that entity.
-  - `console/<entity>/useXConsoleIdentity.ts` owns selected target identity state for that entity.
-  - `console/<entity>/useXConsoleOverview.ts` owns the selected target overview seam for that entity.
-  - `console/<entity>/useXConsoleTargets.ts` owns selected/live/demo/test target state for that entity.
+  - `console/<entity>/core/useXConsole.ts` owns the selected target runtime adapter for that entity.
+  - `console/<entity>/index/useXConsoleIndex.ts` owns the target selector/index seam for that entity.
+  - `console/<entity>/identity/useXConsoleIdentity.ts` owns selected target identity state for that entity.
+  - `console/<entity>/overview/useXConsoleOverview.ts` owns the selected target overview seam for that entity.
+  - `console/<entity>/core/useXConsoleTargets.ts` owns selected/live/demo/test target state for that entity.
   - `console/<entity>/operations/**` owns console operation data and workflows around a selected target, including child records such as menu, mise, orders, team, station, or suppliers.
 - No mixed-bucket runtime folders:
   - do not create `app/<entity>-console`

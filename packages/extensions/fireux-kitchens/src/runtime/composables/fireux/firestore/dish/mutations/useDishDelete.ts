@@ -3,7 +3,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, unref, type Ref } from 'vue'
 import { DishStorage } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
 
 const trim = (value: unknown) => String(value || '').trim()
 

@@ -49,7 +49,7 @@ import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import { useSupplierConsoleTargets } from '../../../composables/fireux/console/supplier/useSupplierConsoleTargets'
+import { useSupplierConsoleTargets } from '../../../composables/fireux/console/supplier/core/useSupplierConsoleTargets'
 import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{

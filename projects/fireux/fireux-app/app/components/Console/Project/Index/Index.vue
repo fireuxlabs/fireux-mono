@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleIndex } from '../../../../composables/fireux/console/project/useProjectConsoleIndex'
+import { useProjectConsoleIndex } from '../../../../composables/fireux/console/project/index/useProjectConsoleIndex'
 
 const {
   projects,

@@ -101,11 +101,16 @@ composables/fireux/firestore/<entity>/
 
 ```text
 composables/fireux/console/<entity>/
-  useXConsole.ts
-  useXConsoleIndex.ts
-  useXConsoleIdentity.ts
-  useXConsoleOverview.ts
-  useXConsoleTargets.ts
+  core/
+    useXConsole.ts
+    useXConsoleTargets.ts
+    optional selected-target plumbing
+  index/
+    useXConsoleIndex.ts
+  overview/
+    useXConsoleOverview.ts
+  identity/
+    useXConsoleIdentity.ts
   operations/
 ```
 
@@ -116,11 +121,10 @@ components/Console/<Entity>/
   Index.vue
   Overview.vue
   Identity/
-  Targets/
   Operations/
 ```
 
-`Index` assembles the console landing page. `Overview` summarizes the selected target. `Identity` reads or edits the selected entity itself. `Targets` is selected/live/demo/test sectioning. `Operations` contains child work for the selected console target. Component folders mirror visual sections; composable root files mirror behavioral seams. `operations/` is the only shared folder in both layers because operation deltas have their own child structure. Use shared debug components directly instead of adding per-console `Debug.vue` wrappers.
+`Index` assembles the console landing page and owns selected/live/demo/test sectioning. `Overview` summarizes the selected target. `Identity` reads or edits the selected entity itself. `Operations` contains child work for the selected console target. Component folders mirror visual sections; composable folders mirror behavioral seams. `operations/` is the shared delta bucket in both layers because operation children have their own structure. Use shared debug components directly instead of adding per-console `Debug.vue` wrappers.
 
 5. Keep shared app/runtime composables under `fireux/app/`.
 
@@ -206,7 +210,7 @@ FireUX adds structure on top of ordinary composable usage:
 - publish surfaces should keep the same shape: pages call `useXPublish`, while `useXPublish` owns entity readiness rules and can delegate shared write mechanics to core `fireux/publishing/usePublish`
 - sitemap registration must use explicit publication truth such as `show === true` or `visibility === 'public'`; missing publication fields must not fall back to slug presence
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour
-- console-backed entity runtime seams live at the root of `fireux/console/<entity>/`
+- console-backed entity runtime seams live in explicit buckets under `fireux/console/<entity>/`: `core/`, `index/`, `overview/`, `identity/`, and `operations/`
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`
 - console operation stacks may have entity-specific child folders under `operations/`, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`

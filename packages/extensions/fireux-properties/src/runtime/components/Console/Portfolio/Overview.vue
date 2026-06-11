@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
-import { usePortfolioConsoleOverview } from '../../../composables/fireux/console/portfolio/usePortfolioConsoleOverview'
+import { usePortfolioConsoleOverview } from '../../../composables/fireux/console/portfolio/overview/usePortfolioConsoleOverview'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 const { focus, multiple, debug } = usePortfolioConsoleOverview()

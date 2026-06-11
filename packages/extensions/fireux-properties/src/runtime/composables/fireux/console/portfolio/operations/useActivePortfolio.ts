@@ -12,8 +12,8 @@ import {
 import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,
-} from '../usePortfolioConsole'
-import { usePortfolioConsoleTargets } from '../usePortfolioConsoleTargets'
+} from '../core/usePortfolioConsole'
+import { usePortfolioConsoleTargets } from '../core/usePortfolioConsoleTargets'
 
 export type ActivePortfolioRuntime = {
   id: ComputedRef<string>

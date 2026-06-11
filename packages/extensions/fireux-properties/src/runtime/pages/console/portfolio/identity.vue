@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioConsoleIdentity } from '../../../composables/fireux/console/portfolio/usePortfolioConsoleIdentity'
+import { usePortfolioConsoleIdentity } from '../../../composables/fireux/console/portfolio/identity/usePortfolioConsoleIdentity'
 import { ref } from 'vue'
 
 const navTitle = 'Portfolio Identity'

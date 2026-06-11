@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { ref } from 'vue'
-import { useBlankConsole } from '../../../composables/fireux/console/blank/useBlankConsole'
+import { useBlankConsole } from '../../../composables/fireux/console/blank/core/useBlankConsole'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 
 definePageMeta({

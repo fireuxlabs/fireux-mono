@@ -2,7 +2,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { RecipeStorage } from '../../../../../models/recipe.model'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const trim = (value: unknown) => String(value || '').trim()

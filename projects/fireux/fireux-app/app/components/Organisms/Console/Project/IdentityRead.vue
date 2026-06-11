@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleIdentity } from '../../../../composables/fireux/console/project/useProjectConsoleIdentity'
+import { useProjectConsoleIdentity } from '../../../../composables/fireux/console/project/identity/useProjectConsoleIdentity'
 
 const { name, description, imageUrl, debug } = useProjectConsoleIdentity()
 </script>

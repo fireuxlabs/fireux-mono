@@ -32,7 +32,7 @@
 import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import type { Blank } from '../../../models/blank.model'
-import { useBlankConsoleOverview } from '../../../composables/fireux/console/blank/useBlankConsoleOverview'
+import { useBlankConsoleOverview } from '../../../composables/fireux/console/blank/overview/useBlankConsoleOverview'
 
 const { focus, multiple, debug } = useBlankConsoleOverview()
 

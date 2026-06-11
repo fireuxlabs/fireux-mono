@@ -71,7 +71,7 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { usePortfolioConsoleTargets } from '../../../composables/fireux/console/portfolio/usePortfolioConsoleTargets'
+import { usePortfolioConsoleTargets } from '../../../composables/fireux/console/portfolio/core/usePortfolioConsoleTargets'
 import { usePortfolioCreate } from '../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{

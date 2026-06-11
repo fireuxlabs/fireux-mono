@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRecipeCollection } from '../../../../firestore/recipe/fetch/useRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../../../models/recipe.model'
-import { useKitchenConsole } from '../../useKitchenConsole'
+import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

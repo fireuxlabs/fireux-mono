@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
-import { useKitchenConsoleOverview } from '../../../composables/fireux/console/kitchen/useKitchenConsoleOverview'
+import { useKitchenConsoleOverview } from '../../../composables/fireux/console/kitchen/overview/useKitchenConsoleOverview'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const { focus, multiple, debug } = useKitchenConsoleOverview()

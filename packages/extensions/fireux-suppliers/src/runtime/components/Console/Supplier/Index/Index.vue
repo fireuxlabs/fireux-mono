@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
+import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/index/useSupplierConsoleIndex'
 
 const {
   suppliers,

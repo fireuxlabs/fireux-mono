@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 
 const {
   selectedKitchen,

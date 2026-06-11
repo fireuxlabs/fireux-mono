@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBlankConsoleIndex } from '../../../../composables/fireux/console/blank/useBlankConsoleIndex'
+import { useBlankConsoleIndex } from '../../../../composables/fireux/console/blank/index/useBlankConsoleIndex'
 
 const {
   blanks,

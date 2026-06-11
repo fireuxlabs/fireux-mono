@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { getDemoProject } from 'fireux-core/runtime/composables/fireux/demo/project/scenarios/index'
 import { useEcosystemFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemFetch'
 import type { EcosystemSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import { useProjectConsole } from '../../useProjectConsole'
+import { useProjectConsole } from '../../core/useProjectConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

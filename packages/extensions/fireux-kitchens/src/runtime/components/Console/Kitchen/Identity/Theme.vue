@@ -66,7 +66,7 @@ import { useDishCollection } from '../../../../composables/fireux/firestore/dish
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useMenuSectionCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuSectionCollection'
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenPublicMenuItems } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuItems'
 import { useKitchenPublicMenuRows } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuRows'
 import {
