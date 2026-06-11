@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-supplier-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Supplier" />
+      <LayoutsConsoleNavbar title="Supplier Console" />
     </template>
 
     <template #body>

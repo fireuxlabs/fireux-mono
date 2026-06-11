@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-kitchen-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Kitchen" />
+      <LayoutsConsoleNavbar title="Kitchen Console" />
     </template>
 
     <template #body>

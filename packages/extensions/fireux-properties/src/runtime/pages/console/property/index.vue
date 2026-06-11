@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-property-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Properties" />
+      <LayoutsConsoleNavbar title="Property Console" />
     </template>
 
     <template #body>

@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-project-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Projects" />
+      <LayoutsConsoleNavbar title="Project Console" />
     </template>
 
     <template #body>

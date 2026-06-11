@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-blank-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Blank" />
+      <LayoutsConsoleNavbar title="Blank Console" />
     </template>
 
     <template #body>
