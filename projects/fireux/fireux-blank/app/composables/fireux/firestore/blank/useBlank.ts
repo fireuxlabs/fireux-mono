@@ -1,4 +1,5 @@
 import {
+  arrayUnion,
   collection,
   doc,
 } from 'firebase/firestore'
@@ -7,9 +8,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   BlankStorage,
@@ -120,6 +123,7 @@ export function useBlankCreate() {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
   const { setDocument } = useFirestoreCreate()
+  const { updateDocument } = useFirestoreUpdate()
 
   async function createBlank(input: CreateBlankInput = {}) {
     const uid = await requireUid()
@@ -162,6 +166,10 @@ export function useBlankCreate() {
       overlayPayload,
       { creator: true, app: true }
     )
+
+    await updateDocument(UserStorage.rootCollection, uid, {
+      myBlanks: arrayUnion(id) as unknown as string[],
+    })
 
     return {
       id,
