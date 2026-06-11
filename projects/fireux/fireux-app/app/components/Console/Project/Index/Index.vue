@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsoleProjectIndexSelected
       :project="selectedProject"
       :project-id="projectId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleIndex } from '../../../composables/fireux/console/project/useProjectConsoleIndex'
+import { useProjectConsoleIndex } from '../../../../composables/fireux/console/project/useProjectConsoleIndex'
 
 const {
   projects,

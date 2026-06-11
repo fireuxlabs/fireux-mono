@@ -1,18 +1,22 @@
 <template>
-  <SupplierCollectionManager
-    :collection="collection"
-    :console-ids="consoleIds"
-    :action-ids="consoleIds"
-    v-model:filter-mode="liveMode"
-    :filter-options="liveModeOptions"
-    :show-filter-toggle="true"
-    title="Choose Supplier"
-    description="Select the supplier you want to work on."
-    :link="false"
-    :action="true"
-    :show-badges="false"
-    @select="selectSupplier"
-  />
+  <section class="space-y-2">
+    <pre>ConsoleSupplierIndexLive</pre>
+
+    <SupplierCollectionManager
+      :collection="collection"
+      :console-ids="consoleIds"
+      :action-ids="consoleIds"
+      v-model:filter-mode="liveMode"
+      :filter-options="liveModeOptions"
+      :show-filter-toggle="true"
+      title="Choose Supplier"
+      description="Select the Supplier console target you want to work on."
+      :link="false"
+      :action="true"
+      :show-badges="false"
+      @select="selectSupplier"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">

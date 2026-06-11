@@ -2,13 +2,6 @@
   <section class="space-y-2">
     <pre>ConsoleKitchenIndexLive</pre>
 
-    <DevFireuxDebugPanel
-      title="Kitchen live user debug"
-      scope="console"
-      :data="userDebug"
-      :default-open="true"
-    />
-
     <KitchenCollectionManager
       :collection="managerCollection"
       :console-ids="kitchenConsoleUser.consoleKitchenIds"
@@ -23,6 +16,13 @@
       :disabled="false"
       :show-badges="false"
       @select="selectConsoleKitchen"
+    />
+
+    <DevFireuxDebugPanel
+      title="Kitchen live user debug"
+      scope="console"
+      :data="userDebug"
+      :default-open="false"
     />
   </section>
 </template>
@@ -70,7 +70,7 @@ const managerTitle = computed(() =>
 const managerDescription = computed(() =>
   liveMode.value === 'mine'
     ? 'Kitchens from your personal kitchen list.'
-    : 'Select the kitchen console you want to work on.'
+    : 'Select the Kitchen console target you want to work on.'
 )
 const managerCollection = computed(() =>
   liveMode.value === 'mine' ? myKitchenCollection.kitchens.value : props.collection

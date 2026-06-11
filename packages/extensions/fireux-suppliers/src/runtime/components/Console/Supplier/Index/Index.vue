@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsoleSupplierIndexSelected
       :supplier="selectedSupplier"
       :supplier-id="supplierId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleIndex } from '../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
+import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
 
 const {
   suppliers,

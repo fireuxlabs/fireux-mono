@@ -1,18 +1,22 @@
 <template>
-  <ProjectCollectionManager
-    :collection="collection"
-    :console-ids="consoleIds"
-    :action-ids="consoleIds"
-    v-model:filter-mode="liveMode"
-    :filter-options="liveModeOptions"
-    :show-filter-toggle="true"
-    title="Choose Project"
-    description="Select the project you want to work on."
-    :link="false"
-    :action="true"
-    :show-badges="false"
-    @select="selectProject"
-  />
+  <section class="space-y-2">
+    <pre>ConsoleProjectIndexLive</pre>
+
+    <ProjectCollectionManager
+      :collection="collection"
+      :console-ids="consoleIds"
+      :action-ids="consoleIds"
+      v-model:filter-mode="liveMode"
+      :filter-options="liveModeOptions"
+      :show-filter-toggle="true"
+      title="Choose Project"
+      description="Select the Project console target you want to work on."
+      :link="false"
+      :action="true"
+      :show-badges="false"
+      @select="selectProject"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">

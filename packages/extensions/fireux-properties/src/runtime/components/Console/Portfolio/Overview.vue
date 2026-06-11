@@ -22,7 +22,7 @@
         title="Portfolio overview"
         scope="console"
         :data="debug"
-        default-open
+        :default-open="false"
       />
     </div>
   </section>

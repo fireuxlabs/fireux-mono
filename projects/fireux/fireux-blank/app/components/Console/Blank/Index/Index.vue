@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsoleBlankIndexSelected
       :blank="selectedBlank"
       :blank-id="blankId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBlankConsoleIndex } from '../../../composables/fireux/console/blank/useBlankConsoleIndex'
+import { useBlankConsoleIndex } from '../../../../composables/fireux/console/blank/useBlankConsoleIndex'
 
 const {
   blanks,

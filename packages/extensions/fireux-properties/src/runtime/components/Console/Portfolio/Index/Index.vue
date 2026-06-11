@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsolePortfolioIndexSelected
       :portfolio="selectedPortfolio"
       :portfolio-id="portfolioId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioConsoleIndex } from '../../../composables/fireux/console/portfolio/usePortfolioConsoleIndex'
+import { usePortfolioConsoleIndex } from '../../../../composables/fireux/console/portfolio/usePortfolioConsoleIndex'
 
 const {
   portfolios,

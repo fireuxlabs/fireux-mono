@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsolePropertyIndexSelected
       :property="selectedProperty"
       :property-id="propertyId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePropertyConsoleIndex } from '../../../composables/fireux/console/property/usePropertyConsoleIndex'
+import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/usePropertyConsoleIndex'
 
 const {
   properties,

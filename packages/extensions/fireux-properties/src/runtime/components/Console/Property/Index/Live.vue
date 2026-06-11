@@ -1,18 +1,22 @@
 <template>
-  <PropertyCollectionManager
-    :collection="collection"
-    :console-ids="consoleIds"
-    :action-ids="consoleIds"
-    v-model:filter-mode="liveMode"
-    :filter-options="liveModeOptions"
-    :show-filter-toggle="true"
-    title="Choose Property"
-    description="Select the property you want to work on."
-    :link="false"
-    :action="true"
-    :show-badges="false"
-    @select="selectProperty"
-  />
+  <section class="space-y-2">
+    <pre>ConsolePropertyIndexLive</pre>
+
+    <PropertyCollectionManager
+      :collection="collection"
+      :console-ids="consoleIds"
+      :action-ids="consoleIds"
+      v-model:filter-mode="liveMode"
+      :filter-options="liveModeOptions"
+      :show-filter-toggle="true"
+      title="Choose Property"
+      description="Select the Property console target you want to work on."
+      :link="false"
+      :action="true"
+      :show-badges="false"
+      @select="selectProperty"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">

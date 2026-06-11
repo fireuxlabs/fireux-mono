@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="console-surface space-y-4">
     <ConsoleKitchenIndexSelected
       :kitchen="selectedKitchen"
       :kitchen-id="kitchenId"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIndex } from '../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
+import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
 
 const {
   kitchens,

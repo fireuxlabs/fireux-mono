@@ -78,7 +78,7 @@ const managerTitle = computed(() =>
 const managerDescription = computed(() =>
   liveMode.value === 'mine'
     ? 'Blank targets from your personal Blank list. Only team targets can be selected.'
-    : 'Select a Blank console target you can operate.'
+    : 'Select the Blank console target you want to work on.'
 )
 function selectBlank(id: string) {
   if (!consoleBlankIdSet.value.has(text(id))) return
