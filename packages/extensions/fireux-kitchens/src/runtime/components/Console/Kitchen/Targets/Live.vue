@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useKitchenUserComputed } from '../../../../composables/fireux/console/kitchen/Targets/Live/useKitchenUserComputed'
+import { useKitchenUserComputed } from '../../../../composables/fireux/console/kitchen/useKitchenUserComputed'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 

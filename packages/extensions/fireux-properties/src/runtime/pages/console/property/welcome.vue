@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="welcome" />
+      <ConsolePropertyInfoEditor page-key="welcome" />
     </template>
   </UDashboardPanel>
 </template>

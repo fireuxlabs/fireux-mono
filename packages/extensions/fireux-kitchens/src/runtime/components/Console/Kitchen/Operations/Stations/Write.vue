@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
-import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/Operations/Stations/useKitchenConsoleStations'
-import { useKitchenStationCreate } from '../../../../../composables/fireux/console/kitchen/Operations/Stations/mutations/useKitchenStationCreate'
+import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/operations/Stations/useKitchenConsoleStations'
+import { useKitchenStationCreate } from '../../../../../composables/fireux/console/kitchen/operations/Stations/mutations/useKitchenStationCreate'
 
 const {
   selectedMode,

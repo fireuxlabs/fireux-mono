@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleItems } from '../../../../../composables/fireux/console/supplier/Operations/Items/useSupplierConsoleItems'
+import { useSupplierConsoleItems } from '../../../../../composables/fireux/console/supplier/operations/Items/useSupplierConsoleItems'
 
 const { canWrite } = useSupplierConsoleItems()
 </script>

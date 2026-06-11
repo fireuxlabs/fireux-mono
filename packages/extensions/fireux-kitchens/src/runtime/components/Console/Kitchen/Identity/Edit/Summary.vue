@@ -47,7 +47,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref } from 'vue'
-import { useKitchenUpdate } from '../../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null

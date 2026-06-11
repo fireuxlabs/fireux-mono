@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleSupplier } from '../../../../../composables/fireux/console/kitchen/Operations/Suppliers/useKitchenConsoleSupplier'
+import { useKitchenConsoleSupplier } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplier'
 import SupplierProfile from '../../../../Supplier/Cards/Profile.vue'
 
 const {

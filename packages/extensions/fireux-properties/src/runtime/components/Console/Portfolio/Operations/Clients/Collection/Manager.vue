@@ -79,7 +79,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useClientInterface } from '../../../../../../composables/fireux/console/portfolio/Operations/Clients/utils/view/useClientInterface'
+import { useClientInterface } from '../../../../../../composables/fireux/console/portfolio/operations/Clients/utils/view/useClientInterface'
 import type { Client } from '../../../../../../models/client.model'
 
 const props = withDefaults(

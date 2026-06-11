@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenuSection } from '../../../../../../composables/fireux/console/kitchen/Operations/Menus/useKitchenConsoleMenuSection'
+import { useKitchenConsoleMenuSection } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuSection'
 
 const {
   kitchenId,

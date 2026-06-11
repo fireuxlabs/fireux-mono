@@ -11,11 +11,11 @@ Updated: 2026-05-18
 
 ## Runtime Seams
 - Selected Portfolio operation seams live under:
-  - `composables/fireux/console/portfolio/Operations/Tasks/fetch/usePortfolioTaskCollection.ts`
-  - `composables/fireux/console/portfolio/Operations/Tasks/mutations/useTaskCreate.ts`
-  - `composables/fireux/console/portfolio/Operations/Tasks/mutations/useTaskUpdate.ts`
-  - `composables/fireux/console/portfolio/Operations/Tasks/utils/projection/useTaskProjection.ts`
-  - `composables/fireux/console/portfolio/Operations/Tasks/utils/view/useTaskInterface.ts`
+  - `composables/fireux/console/portfolio/operations/Tasks/fetch/usePortfolioTaskCollection.ts`
+  - `composables/fireux/console/portfolio/operations/Tasks/mutations/useTaskCreate.ts`
+  - `composables/fireux/console/portfolio/operations/Tasks/mutations/useTaskUpdate.ts`
+  - `composables/fireux/console/portfolio/operations/Tasks/utils/projection/useTaskProjection.ts`
+  - `composables/fireux/console/portfolio/operations/Tasks/utils/view/useTaskInterface.ts`
 - `pages/console/portfolio/tasks.vue` is the Portfolio console route surface.
 
 ## Boundaries

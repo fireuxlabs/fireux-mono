@@ -2,7 +2,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { ComplianceRecordStorage } from '../../../../../../../models/compliance-record.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

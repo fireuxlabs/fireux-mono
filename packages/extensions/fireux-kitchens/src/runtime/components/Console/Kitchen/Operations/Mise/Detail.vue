@@ -40,6 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/Operations/Mise/useKitchenConsoleMiseTask'
+import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMiseTask'
 const { task, miseId, pending, canEditMise, debug } = useKitchenConsoleMiseTask()
 </script>

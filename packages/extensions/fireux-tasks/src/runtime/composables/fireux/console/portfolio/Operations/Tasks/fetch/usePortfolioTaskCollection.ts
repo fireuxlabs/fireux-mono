@@ -4,8 +4,8 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
-import type { DemoTask } from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/demo-scenarios'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+import type { DemoTask } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import { TaskStorage, type Task } from '../../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()

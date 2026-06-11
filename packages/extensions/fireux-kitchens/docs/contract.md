@@ -112,8 +112,8 @@ Ingredient composable stack canon:
 - `firestore/ingredient/utils/view/useIngredientComputed.ts` owns derived root Ingredient facts.
 - `firestore/ingredient/utils/view/useIngredientInterface.ts` owns Ingredient UI projections.
 - `KitchenIngredient` and `KitchenSupplierIngredient` remain scoped usage/link records.
-- Selected kitchen ingredient operations live under `console/kitchen/Operations/Ingredients`.
-- `console/kitchen/Operations` is a selected Kitchen code bucket, not a Firestore collection. Use it for operator work that depends on the selected Kitchen; keep stored CRUD in the relevant `firestore/*` stack and guest-facing shaping in `public/kitchen/*`.
+- Selected kitchen ingredient operations live under `console/kitchen/operations/Ingredients`.
+- `console/kitchen/operations` is a selected Kitchen code bucket, not a Firestore collection. Use it for operator work that depends on the selected Kitchen; keep stored CRUD in the relevant `firestore/*` stack and guest-facing shaping in `public/kitchen/*`.
 
 ## 4b) Public menu publishing
 - Published menu routes use eligible app-scoped Kitchen menu records and their child records:

@@ -120,8 +120,8 @@ import {
   ROOT_PORTFOLIO_COLLECTION_PATH,
   resolvePortfolioConsoleCollectionPath,
   resolveRuntimePortfolioPath,
-} from '../../../composables/fireux/console/portfolio/Operations/Shared/shared'
-import { useActivePortfolio } from '../../../composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from '../../../composables/fireux/console/portfolio/operations/Shared/shared'
+import { useActivePortfolio } from '../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { ComplianceRecordStorage } from 'fireux-compliance/runtime/models/compliance-record.model'
 import { DocumentLinkStorage } from 'fireux-documents/runtime/models/document-link.model'

@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="parking" />
+      <ConsolePropertyInfoEditor page-key="parking" />
     </template>
   </UDashboardPanel>
 </template>

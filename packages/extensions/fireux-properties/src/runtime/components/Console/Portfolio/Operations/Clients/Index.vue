@@ -43,7 +43,7 @@ import { ClientStorage } from '../../../../../models/client.model'
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from '../../../../../composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from '../../../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
 
 const runtimePortfolio = useActivePortfolio()
 const selectedPortfolio = runtimePortfolio.entity

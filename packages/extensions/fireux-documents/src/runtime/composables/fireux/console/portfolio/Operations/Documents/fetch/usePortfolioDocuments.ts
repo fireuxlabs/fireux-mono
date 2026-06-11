@@ -4,8 +4,8 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
-import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/demo-scenarios'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import { DocumentStorage, type Document } from '../../../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()

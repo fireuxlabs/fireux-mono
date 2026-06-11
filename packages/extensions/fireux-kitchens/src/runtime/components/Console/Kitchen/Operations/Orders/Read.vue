@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/Operations/Orders/useKitchenConsoleOrders'
+import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenConsoleOrders'
 
 const { orders, debug } = useKitchenConsoleOrders()
 </script>

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/Operations/Apps/useProjectConsoleApps'
+import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/Apps/useProjectConsoleApps'
 
 const { canWrite } = useProjectConsoleApps()
 </script>

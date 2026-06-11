@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/Operations/Stations/useKitchenConsoleStations'
+import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/operations/Stations/useKitchenConsoleStations'
 
 const { canWrite } = useKitchenConsoleStations()
 </script>

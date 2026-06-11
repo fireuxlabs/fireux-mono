@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/Identity/useSupplierConsoleIdentity'
+import { useSupplierConsoleIdentity } from '../../../composables/fireux/console/supplier/useSupplierConsoleIdentity'
 import { ref } from 'vue'
 
 const navTitle = 'Supplier Identity'

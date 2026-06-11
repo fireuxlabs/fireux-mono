@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesOverview />
+      <ConsolePropertyOverview />
     </template>
   </UDashboardPanel>
 </template>

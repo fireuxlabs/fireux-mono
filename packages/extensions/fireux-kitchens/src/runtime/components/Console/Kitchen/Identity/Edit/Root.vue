@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div v-if="kitchen" class="space-y-6">
-      <ConsoleKitchenIdentityEditSectionsSummary
+      <ConsoleKitchenIdentityEditSummary
         :kitchen="kitchen"
         :kitchen-id="kitchenId"
         :can-write="canWrite"
@@ -9,7 +9,7 @@
 
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div class="space-y-4">
-          <ConsoleKitchenIdentityEditSectionsPublicIdentity
+          <ConsoleKitchenIdentityEditPublicIdentity
             :kitchen="kitchen"
             :kitchen-id="kitchenId"
             :can-write="canWrite"
@@ -17,7 +17,7 @@
 
         </div>
 
-        <ConsoleKitchenIdentityEditSectionsLinks />
+        <ConsoleKitchenIdentityEditLinks />
       </div>
     </div>
 
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/Identity/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/useKitchenConsoleIdentity'
 
 const { selectedKitchen, kitchenId, canWrite } = useKitchenConsoleIdentity()
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)

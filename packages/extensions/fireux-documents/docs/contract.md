@@ -38,15 +38,15 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `packages/extens
   - `models/document.model.ts`
   - `models/document-link.model.ts`
 - Reads:
-  - `composables/fireux/console/portfolio/Operations/Documents/fetch/usePortfolioDocuments.ts`
-  - `composables/fireux/console/portfolio/Operations/Documents/fetch/usePortfolioDocumentLinks.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocuments.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocumentLinks.ts`
 - Mutations/storage:
-  - `composables/fireux/console/portfolio/Operations/Documents/mutations/useDocumentCreate.ts`
-  - `composables/fireux/console/portfolio/Operations/Documents/mutations/linkDocumentToEntity.ts`
-  - `composables/fireux/console/portfolio/Operations/Documents/mutations/useDocumentStorage.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentCreate.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/mutations/linkDocumentToEntity.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentStorage.ts`
 - Validation/interface:
-  - `composables/fireux/console/portfolio/Operations/Documents/utils/validation/validateDocumentLinkTarget.ts`
-  - `composables/fireux/console/portfolio/Operations/Documents/utils/view/useDocumentInterface.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/utils/validation/validateDocumentLinkTarget.ts`
+  - `composables/fireux/console/portfolio/operations/Documents/utils/view/useDocumentInterface.ts`
 - Console page:
   - `pages/console/portfolio/documents.vue`
 

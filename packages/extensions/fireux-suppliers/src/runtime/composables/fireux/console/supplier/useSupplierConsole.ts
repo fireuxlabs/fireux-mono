@@ -37,7 +37,7 @@ type UseSupplierConsoleOptions = {
  * - packages/extensions/fireux-suppliers/docs/contract.md
  *
  * This file adapts Supplier root/app authority sources into the private /console/supplier selected runtime.
- * It should not own Supplier catalogue or product operation records; those live under console/supplier/Operations.
+ * It should not own Supplier catalogue or product operation records; those live under console/supplier/operations.
  */
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}

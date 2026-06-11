@@ -172,15 +172,15 @@
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocuments } from '../../../composables/fireux/console/portfolio/Operations/Documents/fetch/usePortfolioDocuments'
-import { usePortfolioDocumentLinks } from '../../../composables/fireux/console/portfolio/Operations/Documents/fetch/usePortfolioDocumentLinks'
-import { linkDocumentToEntity } from '../../../composables/fireux/console/portfolio/Operations/Documents/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../composables/fireux/console/portfolio/Operations/Documents/mutations/useDocumentCreate'
-import { useDocumentStorage } from '../../../composables/fireux/console/portfolio/Operations/Documents/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../composables/fireux/console/portfolio/Operations/Documents/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../composables/fireux/console/portfolio/Operations/Documents/utils/view/useDocumentInterface'
+import { usePortfolioDocuments } from '../../../composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocuments'
+import { usePortfolioDocumentLinks } from '../../../composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocumentLinks'
+import { linkDocumentToEntity } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/linkDocumentToEntity'
+import { useDocumentCreate } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../composables/fireux/console/portfolio/operations/Documents/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../composables/fireux/console/portfolio/operations/Documents/utils/view/useDocumentInterface'
 import { DocumentStorage } from '../../../models/document.model'
 
 definePageMeta({

@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import SupplierCatalogueCollectionManager from 'fireux-suppliers/runtime/components/Supplier/Catalogue/Collection/Manager.vue'
-import { useKitchenConsoleSupplierCatalogue } from '../../../../../composables/fireux/console/kitchen/Operations/Suppliers/useKitchenConsoleSupplierCatalogue'
+import { useKitchenConsoleSupplierCatalogue } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplierCatalogue'
 
 const {
   supplierBasePath,

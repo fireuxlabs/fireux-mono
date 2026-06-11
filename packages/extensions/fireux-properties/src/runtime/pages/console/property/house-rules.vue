@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="house-rules" />
+      <ConsolePropertyInfoEditor page-key="house-rules" />
     </template>
   </UDashboardPanel>
 </template>

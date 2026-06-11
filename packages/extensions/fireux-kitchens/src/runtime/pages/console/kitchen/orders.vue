@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useKitchenConsoleOrders } from '../../../composables/fireux/console/kitchen/Operations/Orders/useKitchenConsoleOrders'
+import { useKitchenConsoleOrders } from '../../../composables/fireux/console/kitchen/operations/Orders/useKitchenConsoleOrders'
 
 const formatTime = (value: number) =>
   new Date(value).toLocaleTimeString([], {

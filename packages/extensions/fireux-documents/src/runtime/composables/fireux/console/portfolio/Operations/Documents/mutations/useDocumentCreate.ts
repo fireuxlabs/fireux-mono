@@ -2,7 +2,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { DocumentStorage, type Document, type DocumentCreateInput } from '../../../../../../../models/document.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

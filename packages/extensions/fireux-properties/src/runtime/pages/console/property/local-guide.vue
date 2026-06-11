@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="local-guide" />
+      <ConsolePropertyInfoEditor page-key="local-guide" />
     </template>
   </UDashboardPanel>
 </template>

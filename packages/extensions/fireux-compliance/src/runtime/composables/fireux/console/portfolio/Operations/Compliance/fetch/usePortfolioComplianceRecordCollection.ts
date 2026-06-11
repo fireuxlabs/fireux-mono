@@ -4,12 +4,12 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import {
   ComplianceRecordStorage,
   type ComplianceRecord,
 } from '../../../../../../../models/compliance-record.model'
-import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/demo-scenarios'
+import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 

@@ -57,9 +57,9 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed } from 'vue'
-import { useKitchenUpdate } from '../../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import type { KitchenUpdateInput } from '../../../../../../models/kitchen.model'
-import { KitchenStorage } from '../../../../../../models/kitchen.model'
+import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import type { KitchenUpdateInput } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null

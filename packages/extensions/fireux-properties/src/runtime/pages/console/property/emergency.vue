@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="emergency" />
+      <ConsolePropertyInfoEditor page-key="emergency" />
     </template>
   </UDashboardPanel>
 </template>

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/Operations/Dishes/useKitchenConsoleDishes'
+import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
 
 const { canWrite } = useKitchenConsoleDishes({ resolveMenuSections: false })
 </script>

@@ -4,8 +4,8 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/useActivePortfolio'
-import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/console/portfolio/Operations/demo-scenarios'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import { DocumentLinkStorage, type DocumentLink } from '../../../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
@@ -29,7 +29,7 @@ const toDocumentLink = (entry: DemoDocumentLink): DocumentLink => ({
  * - packages/core/fireux-docs/src/runtime/composables/README.md
  *
  * This file reads Portfolio-scoped document attachment records for the selected /console/portfolio workspace.
- * It belongs to console/portfolio/Operations/Documents, not root Firestore entity access.
+ * It belongs to console/portfolio/operations/Documents, not root Firestore entity access.
  */
 export function usePortfolioDocumentLinks(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()

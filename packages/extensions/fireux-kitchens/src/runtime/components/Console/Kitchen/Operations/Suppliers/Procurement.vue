@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleSupplierProcurement } from '../../../../../composables/fireux/console/kitchen/Operations/Suppliers/useKitchenConsoleSupplierProcurement'
+import { useKitchenConsoleSupplierProcurement } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplierProcurement'
 
 const {
   supplierBasePath,

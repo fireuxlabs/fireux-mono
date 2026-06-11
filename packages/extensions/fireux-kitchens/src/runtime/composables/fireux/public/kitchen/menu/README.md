@@ -29,5 +29,5 @@ The menu layer keeps Menu loading and publish truth in Kitchens. Translation/lan
 <!-- docs:public:end -->
 
 Keep stored Menu CRUD in `firestore/menu`.
-Keep selected operator menu workflows in `console/kitchen/Operations`.
+Keep selected operator menu workflows in `console/kitchen/operations`.
 Keep translation/language chrome helpers outside the base Kitchen Menu layer.
