@@ -17,7 +17,7 @@ import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import {
   useKitchenConsoleList,
   type KitchenConsoleListFilter,
-} from './Targets/Live/useKitchenConsoleList'
+} from './useKitchenConsoleList'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { KitchenStorage } from '../../../../models/kitchen.model'

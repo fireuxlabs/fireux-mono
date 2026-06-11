@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../useKitchenConsole'
 
