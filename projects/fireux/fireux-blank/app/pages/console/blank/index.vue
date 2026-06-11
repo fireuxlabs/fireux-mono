@@ -1,21 +1,13 @@
 <template>
   <UDashboardPanel id="console-blank-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Blank">
-        <template #right>
-          <UButton
-            to="/console/blank/create"
-            icon="i-lucide-plus"
-            color="primary"
-          >
-            Create Blank
-          </UButton>
-        </template>
-      </LayoutsConsoleNavbar>
+      <LayoutsConsoleNavbar title="Blank" />
     </template>
 
     <template #body>
-      <ConsoleBlank />
+      <section class="space-y-4">
+        <ConsoleBlank />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
@@ -28,10 +20,13 @@ definePageMeta({
     key: 'console-blank',
     label: 'Blank',
     icon: 'i-lucide-square-dashed',
-    order: 10,
+    position: 'bottom',
+    requiresSelection: false,
+    order: 900,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
+  requiresAuth: true,
 })
 </script>

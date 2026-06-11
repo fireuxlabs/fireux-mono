@@ -7,7 +7,19 @@
       title="Selected Blank"
       :description="selectedId"
       variant="subtle"
-    />
+    >
+      <template #footer>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-lucide-x"
+          @click="emit('clear')"
+        >
+          Clear
+        </UButton>
+      </template>
+    </UPageCard>
 
     <UPageCard
       v-else
@@ -21,5 +33,9 @@
 <script setup lang="ts">
 defineProps<{
   selectedId?: string
+}>()
+
+const emit = defineEmits<{
+  (event: 'clear'): void
 }>()
 </script>

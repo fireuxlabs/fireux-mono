@@ -24,11 +24,15 @@ export function useBlankConsoleIndex() {
       selectedId.value = String(id ?? '').trim()
     },
   }
+  const clearSelectedBlank = () => {
+    selectedId.value = ''
+  }
 
   return {
     blank,
     selectedId,
     actions,
     debug,
+    clearSelectedBlank,
   }
 }
