@@ -4,10 +4,10 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { KitchenStorage } from '../../../../models/kitchen.model'
-import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
-import type { KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
+import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenInterface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenUserComputed } from './useKitchenUserComputed'
 
 type AppKitchenConsoleListDoc = {

@@ -6,23 +6,27 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import {
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+  type ConsoleHeaderSelectorItem,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { getDemoKitchens } from '../../demo/kitchen/scenarios'
-import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
+import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import {
   useKitchenConsoleList,
   type KitchenConsoleListFilter,
-} from './useKitchenConsoleList'
-import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
-import { KitchenStorage } from '../../../../models/kitchen.model'
-import { resolveKitchenScopeCollectionPath } from '../../firestore/kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleHeader } from './useKitchenConsoleHeader'
+} from '../index/useKitchenConsoleList'
+import { type KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenInterface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import type { Ref } from 'vue'
 
 type KitchenConsoleMode = ConsoleMode
@@ -30,6 +34,37 @@ type KitchenConsoleEntity = KitchenSurface
 type UseKitchenConsoleOptions = {
   filter?: KitchenConsoleListFilter | Ref<KitchenConsoleListFilter | null | undefined> | null
 }
+
+type KitchenConsoleHeaderKitchen = Partial<
+  Pick<
+    KitchenSurface,
+    | 'id'
+    | 'display_name'
+    | 'name'
+    | 'slug'
+    | 'display_image_url'
+    | 'image_url'
+    | 'tagline'
+  >
+>
+
+const kitchenName = (kitchen: KitchenConsoleHeaderKitchen | null | undefined) =>
+  normalizeString(kitchen?.display_name) ||
+  normalizeString(kitchen?.name) ||
+  normalizeString(kitchen?.slug) ||
+  'Kitchen'
+
+const kitchenImage = (kitchen: KitchenConsoleHeaderKitchen | null | undefined) =>
+  normalizeString(kitchen?.display_image_url) ||
+  normalizeString(kitchen?.image_url) ||
+  undefined
+
+const modeIcon = (mode: ConsoleMode) =>
+  mode === 'live'
+    ? 'i-lucide-store'
+    : mode === 'test'
+      ? 'i-lucide-flask-conical'
+      : 'i-lucide-sparkles'
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -116,13 +151,56 @@ export function useKitchenConsole(
   const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
     selectEntity(kitchenId, mode)
   }
-  useKitchenConsoleHeader({
-    selectedKitchen,
-    liveKitchens,
-    demoKitchens,
-    testKitchen,
-    selectKitchen,
+  const selectorItem = (
+    kitchen: KitchenConsoleHeaderKitchen,
+    mode: ConsoleMode
+  ): ConsoleHeaderSelectorItem => {
+    const id = normalizeString(kitchen.id)
+
+    return {
+      label: kitchenName(kitchen),
+      icon: modeIcon(mode),
+      disabled: !id,
+      onSelect: () => {
+        if (id) selectKitchen(id, mode)
+      },
+    }
+  }
+  const selectorItems = computed<ConsoleHeaderSelectorItem[][]>(() => {
+    const groups: ConsoleHeaderSelectorItem[][] = []
+    const live = liveKitchens.value.filter((kitchen) =>
+      normalizeString(kitchen.id)
+    )
+
+    if (live.length) {
+      groups.push(live.map((kitchen) => selectorItem(kitchen, 'live')))
+    }
+
+    if (testKitchen.value && normalizeString(testKitchen.value.id)) {
+      groups.push([selectorItem(testKitchen.value, 'test')])
+    }
+
+    const demo = demoKitchens.value.filter((kitchen) =>
+      normalizeString(kitchen.id)
+    )
+    if (demo.length) {
+      groups.push(demo.map((kitchen) => selectorItem(kitchen, 'demo')))
+    }
+
+    return groups
   })
+  const header = computed<ConsoleHeaderData>(() => {
+    const kitchen = selectedKitchen.value
+    if (!kitchen) return null
+
+    return {
+      title: kitchenName(kitchen),
+      subtitle: normalizeString(kitchen.tagline) || undefined,
+      imageUrl: kitchenImage(kitchen),
+      selectorItems: selectorItems.value,
+    }
+  })
+  usePublishConsoleHeader('kitchen', header)
 
   return {
     liveKitchens,

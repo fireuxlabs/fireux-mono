@@ -104,7 +104,6 @@ composables/fireux/console/<entity>/
   core/
     useXConsole.ts
     useXConsoleTargets.ts
-    optional selected-target plumbing
   index/
     useXConsoleIndex.ts
   overview/

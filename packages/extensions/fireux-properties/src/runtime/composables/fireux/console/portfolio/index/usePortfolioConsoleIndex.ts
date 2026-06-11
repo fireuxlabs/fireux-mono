@@ -2,8 +2,8 @@ import { computed, type Ref } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { PortfolioCollectionFilter } from '../../firestore/portfolio/fetch/usePortfolioCollection'
-import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
+import type { PortfolioCollectionFilter } from '../../../firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioFetch } from '../../../firestore/portfolio/fetch/usePortfolioFetch'
 import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,

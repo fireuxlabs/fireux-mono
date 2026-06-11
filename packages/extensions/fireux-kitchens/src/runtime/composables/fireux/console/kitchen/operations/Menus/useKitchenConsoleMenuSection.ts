@@ -1,12 +1,12 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import type { Dish } from '../../../../../models/dish.model'
+import type { Dish } from '../../../../../../models/dish.model'
 import type {
   MenuItem,
   MenuItemPriceOption,
   MenuSection,
-} from '../../../../../models/menu.model'
-import { normalizeMenuItemPriceOptions } from '../../../../../models/menu.model'
+} from '../../../../../../models/menu.model'
+import { normalizeMenuItemPriceOptions } from '../../../../../../models/menu.model'
 import { useKitchenConsoleDishes } from '../Dishes/useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'

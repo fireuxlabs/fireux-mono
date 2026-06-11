@@ -2,9 +2,9 @@ import { computed, type Ref } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { SupplierCollectionFilter } from '../../firestore/supplier/fetch/useSupplierCollection'
-import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
-import { type SupplierSurface } from '../../firestore/supplier/utils/view/useSupplierInterface'
+import type { SupplierCollectionFilter } from '../../../firestore/supplier/fetch/useSupplierCollection'
+import { useSupplierFetch } from '../../../firestore/supplier/fetch/useSupplierFetch'
+import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import { useSupplierConsole } from '../core/useSupplierConsole'
 
 type UseSupplierConsoleIndexOptions = {

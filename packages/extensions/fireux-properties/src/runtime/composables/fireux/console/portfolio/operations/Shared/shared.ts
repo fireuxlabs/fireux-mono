@@ -1,5 +1,5 @@
 import { resolveConsoleEntityCollectionPath } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import { AppPortfolioStorage, PortfolioStorage } from '../../../../../models/portfolio.model'
+import { AppPortfolioStorage, PortfolioStorage } from '../../../../../../models/portfolio.model'
 
 export const ROOT_PORTFOLIO_COLLECTION_PATH = PortfolioStorage.rootCollection
 export const TEST_PORTFOLIO_COLLECTION_PATH = 'test-portfolios'

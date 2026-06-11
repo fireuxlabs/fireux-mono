@@ -1,6 +1,6 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import type { Recipe } from '../../../../../models/recipe.model'
+import type { Recipe } from '../../../../../../models/recipe.model'
 import { useKitchenConsoleRecipes } from './useKitchenConsoleRecipes'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

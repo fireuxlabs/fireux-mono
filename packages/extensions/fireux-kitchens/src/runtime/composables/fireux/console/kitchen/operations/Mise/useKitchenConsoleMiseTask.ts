@@ -1,7 +1,7 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
-import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
+import { KitchenStorage } from '../../../../../../models/kitchen.model'
+import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
 import { useKitchenConsoleMise } from './useKitchenConsoleMise'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

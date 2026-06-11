@@ -1,11 +1,11 @@
 import { computed } from 'vue'
 import { useKitchenMiseCollection } from './fetch/useKitchenMiseCollection'
 import { useKitchenMiseToggleDone } from './mutations/useKitchenMiseToggleDone'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../../../models/kitchen.model'
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
-} from '../../../../../models/kitchen-mise.model'
+} from '../../../../../../models/kitchen-mise.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

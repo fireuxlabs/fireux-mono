@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { Property } from '../../../../models/property.model'
-import type { PropertyCollectionFilter } from '../../firestore/property/fetch/usePropertyCollection'
+import type { Property } from '../../../../../models/property.model'
+import type { PropertyCollectionFilter } from '../../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 import type { Ref } from 'vue'
 

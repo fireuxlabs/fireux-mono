@@ -2,9 +2,9 @@ import { computed } from 'vue'
 import {
   getDemoSupplierCatalogueItems,
   getDemoSupplierItems,
-} from '../../../demo/supplier/scenarios'
-import { useSupplierCatalogueCollection } from '../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
-import { useSupplierItemCollection } from '../../../firestore/supplier/fetch/useSupplierItemCollection'
+} from '../../../../demo/supplier/scenarios'
+import { useSupplierCatalogueCollection } from '../../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
+import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

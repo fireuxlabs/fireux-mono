@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
-import { type SupplierSurface } from '../../firestore/supplier/utils/view/useSupplierInterface'
+import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import { useSupplierConsole } from '../core/useSupplierConsole'
 
 export function useSupplierConsoleOverview() {

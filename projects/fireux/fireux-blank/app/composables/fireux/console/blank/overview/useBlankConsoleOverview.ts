@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
-import type { Blank } from '../../../models/blank.model'
+import type { Blank } from '../../../../../models/blank.model'
 import { useBlankConsole } from '../core/useBlankConsole'
 
 export function useBlankConsoleOverview() {

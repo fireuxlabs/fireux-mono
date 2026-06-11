@@ -5,7 +5,7 @@ import {
   KitchenTeamMemberStorage,
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
-} from '../../../../../models/kitchen-team.model'
+} from '../../../../../../models/kitchen-team.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

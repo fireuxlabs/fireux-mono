@@ -4,8 +4,8 @@ import {
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useBlankCollection } from '../../firestore/blank/useBlank'
-import type { Blank } from '../../../../models/blank.model'
+import { useBlankCollection } from '../../../firestore/blank/useBlank'
+import type { Blank } from '../../../../../models/blank.model'
 
 type BlankConsoleMode = ConsoleMode
 

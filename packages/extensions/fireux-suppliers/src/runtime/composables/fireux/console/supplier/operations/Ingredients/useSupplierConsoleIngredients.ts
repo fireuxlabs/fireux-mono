@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
-import type { SupplierIngredientInterfaceItem } from '../../../firestore/supplier/utils/view/useSupplierIngredientInterface'
+import type { SupplierIngredientInterfaceItem } from '../../../../firestore/supplier/utils/view/useSupplierIngredientInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const titleFromId = (value: string) =>

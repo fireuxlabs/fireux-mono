@@ -17,15 +17,15 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import {
   usePortfolioCollection,
   type PortfolioCollectionFilter,
-} from '../../firestore/portfolio/fetch/usePortfolioCollection'
-import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
+} from '../../../firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioFetch } from '../../../firestore/portfolio/fetch/usePortfolioFetch'
 import {
   usePortfolioInterface,
   type PortfolioSurface,
-} from '../../firestore/portfolio/utils/view/usePortfolioInterface'
-import { getDemoPortfolios } from './Operations/demo-scenarios'
-import { TEST_PORTFOLIO_COLLECTION_PATH } from './Operations/Shared/shared'
-import { PortfolioStorage } from '../../../../models/portfolio.model'
+} from '../../../firestore/portfolio/utils/view/usePortfolioInterface'
+import { getDemoPortfolios } from '../operations/demo-scenarios'
+import { TEST_PORTFOLIO_COLLECTION_PATH } from '../operations/Shared/shared'
+import { PortfolioStorage } from '../../../../../models/portfolio.model'
 import type { Ref } from 'vue'
 
 type PortfolioConsoleMode = ConsoleMode

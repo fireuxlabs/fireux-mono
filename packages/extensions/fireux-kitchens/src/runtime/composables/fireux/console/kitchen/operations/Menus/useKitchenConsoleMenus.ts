@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { MenuStorage, type Menu } from '../../../../../models/menu.model'
+import { MenuStorage, type Menu } from '../../../../../../models/menu.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import { useMenuCollection } from '../../../../firestore/menu/fetch/useMenuCollection'

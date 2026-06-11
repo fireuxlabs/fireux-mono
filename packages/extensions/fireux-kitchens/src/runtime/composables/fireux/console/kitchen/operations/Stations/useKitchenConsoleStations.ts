@@ -3,7 +3,7 @@ import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/p
 import {
   KitchenStationStorage,
   type KitchenStation,
-} from '../../../../../models/kitchen-station.model'
+} from '../../../../../../models/kitchen-station.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

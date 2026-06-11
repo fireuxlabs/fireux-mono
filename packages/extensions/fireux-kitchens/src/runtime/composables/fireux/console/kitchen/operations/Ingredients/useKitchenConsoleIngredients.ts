@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { IngredientStorage } from '../../../../../models/ingredient.model'
+import { IngredientStorage } from '../../../../../../models/ingredient.model'
 import type { IngredientInterfaceItem } from '../../../../firestore/ingredient/utils/view/useIngredientInterface'
 import { useKitchenIngredients } from './fetch/useKitchenIngredients'
 import { useKitchenConsole } from '../../core/useKitchenConsole'

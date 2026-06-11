@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
-import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { type KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleOverview() {

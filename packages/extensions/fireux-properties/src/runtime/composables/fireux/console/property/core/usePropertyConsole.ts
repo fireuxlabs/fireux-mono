@@ -13,11 +13,11 @@ import {
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { PropertyStorage, type Property } from '../../../../models/property.model'
+import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
   usePropertyCollection,
   type PropertyCollectionFilter,
-} from '../../firestore/property/fetch/usePropertyCollection'
+} from '../../../firestore/property/fetch/usePropertyCollection'
 import type { Ref } from 'vue'
 
 type PropertyConsoleMode = ConsoleMode

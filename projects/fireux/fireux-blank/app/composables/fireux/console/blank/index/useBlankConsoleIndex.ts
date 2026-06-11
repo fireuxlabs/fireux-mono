@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useBlankConsole } from '../core/useBlankConsole'
-import type { Blank } from '../../../models/blank.model'
+import type { Blank } from '../../../../../models/blank.model'
 
 /**
  * Blank console main index seam.

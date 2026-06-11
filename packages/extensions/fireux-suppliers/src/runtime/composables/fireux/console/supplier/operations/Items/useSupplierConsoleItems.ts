@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
-import { getDemoSupplierItems } from '../../../demo/supplier/scenarios'
-import { useSupplierItemCollection } from '../../../firestore/supplier/fetch/useSupplierItemCollection'
-import type { SupplierItemSurface } from '../../../firestore/supplier/utils/view/useSupplierItemInterface'
+import { getDemoSupplierItems } from '../../../../demo/supplier/scenarios'
+import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
+import type { SupplierItemSurface } from '../../../../firestore/supplier/utils/view/useSupplierItemInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
-import type { Property } from '../../../../models/property.model'
+import type { Property } from '../../../../../models/property.model'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export function usePropertyConsoleOverview() {
