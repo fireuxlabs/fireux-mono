@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-4">
     <ConsoleBlankTargetsSelected
-      :selected-id="selectedId.value"
+      :selected-id="selectedId"
       @clear="clearSelectedBlank"
     />
 

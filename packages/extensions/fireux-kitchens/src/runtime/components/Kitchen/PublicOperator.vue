@@ -28,7 +28,7 @@ import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/co
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenSelection } from '../../composables/fireux/console/kitchen/useKitchenSelection'
+import { useKitchenConsoleTargets } from '../../composables/fireux/console/kitchen/useKitchenConsoleTargets'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
@@ -130,14 +130,14 @@ const manageLabel = computed(() =>
     ? 'Open console'
     : 'Edit kitchen'
 )
-const { setKitchenSelection } = useKitchenSelection()
+const { setKitchenConsoleTarget } = useKitchenConsoleTargets()
 
 async function selectConsoleKitchen(event: MouseEvent) {
   if (!hasConsoleAccess.value || !kitchenId.value) return
   if (isTenantConsoleHandoff.value) return
 
   event.preventDefault()
-  setKitchenSelection({
+  setKitchenConsoleTarget({
     kitchenId: kitchenId.value,
     mode: 'live',
   })

@@ -11,7 +11,7 @@ import {
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
 
 type RecipeCreateDraft = {
   name: string
@@ -88,7 +88,7 @@ export function useRecipeCreate(
   const { setDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenSelection()
+  const { selectedId } = useKitchenConsoleTargets()
   const { seedTranslations } = useTranslationSeed()
 
   const kitchenCollectionPath = computed(() =>

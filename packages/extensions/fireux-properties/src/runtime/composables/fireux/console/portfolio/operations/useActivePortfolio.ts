@@ -13,7 +13,7 @@ import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,
 } from '../usePortfolioConsole'
-import { usePortfolioSelection } from '../usePortfolioSelection'
+import { usePortfolioConsoleTargets } from '../usePortfolioConsoleTargets'
 
 export type ActivePortfolioRuntime = {
   id: ComputedRef<string>
@@ -31,7 +31,7 @@ export type ActivePortfolioRuntime = {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useActivePortfolio(): ActivePortfolioRuntime {
-  const selection = usePortfolioSelection()
+  const selection = usePortfolioConsoleTargets()
   const {
     selectedPortfolio,
     selectedMode,

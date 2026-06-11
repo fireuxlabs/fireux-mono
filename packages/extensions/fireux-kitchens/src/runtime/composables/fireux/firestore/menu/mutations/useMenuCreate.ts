@@ -6,7 +6,7 @@ import {
   MenuModel,
   type Menu,
 } from '../../../../../models/menu.model'
-import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
+import { useKitchenConsoleTargets } from '../../../console/kitchen/useKitchenConsoleTargets'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 export type MenuCreateInput = {
@@ -55,7 +55,7 @@ export function useMenuCreate(
 ) {
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenSelection()
+  const { selectedId } = useKitchenConsoleTargets()
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||

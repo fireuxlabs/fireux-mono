@@ -49,7 +49,7 @@ import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import { useSupplierSelection } from '../../../composables/fireux/console/supplier/useSupplierSelection'
+import { useSupplierConsoleTargets } from '../../../composables/fireux/console/supplier/useSupplierConsoleTargets'
 import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -66,7 +66,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { createSupplier, createSupplierConsole } = useSupplierCreate()
-const { setRuntimeSupplier } = useSupplierSelection()
+const { setSupplierConsoleTarget } = useSupplierConsoleTargets()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -86,7 +86,7 @@ const handleCreate = async () => {
   try {
     const result = await create()
     if (isConsoleMode.value) {
-      setRuntimeSupplier({ supplierId: result.id, mode: 'live' })
+      setSupplierConsoleTarget({ supplierId: result.id, mode: 'live' })
     }
     emit('created', result)
     const defaultReturnTo =

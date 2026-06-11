@@ -1,19 +1,19 @@
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
-type PropertySelectionInput = {
+type SupplierConsoleTargetInput = {
   selectedId?: string
-  propertyId?: string
+  supplierId?: string
   mode?: ConsoleMode
 }
 
-export function usePropertySelection() {
-  const selection = useConsoleSelection({ family: 'property' })
+export function useSupplierConsoleTargets() {
+  const selection = useConsoleSelection({ family: 'supplier' })
 
-  const setPropertySelection = (selectionPatch: PropertySelectionInput = {}) => {
+  const setSupplierConsoleTarget = (selectionPatch: SupplierConsoleTargetInput = {}) => {
     selection.setSelection({
       selectedId: selectionPatch.selectedId,
-      id: selectionPatch.propertyId,
+      id: selectionPatch.supplierId,
       mode: selectionPatch.mode,
     })
   }
@@ -21,7 +21,7 @@ export function usePropertySelection() {
   return {
     selectedId: selection.selectedId,
     mode: selection.mode,
-    setPropertySelection,
-    clearPropertySelection: selection.clearSelection,
+    setSupplierConsoleTarget,
+    clearSupplierConsoleTarget: selection.clearSelection,
   }
 }

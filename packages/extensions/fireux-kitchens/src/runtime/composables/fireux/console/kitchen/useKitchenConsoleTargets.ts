@@ -1,19 +1,19 @@
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
-type RuntimePortfolioSelectionInput = {
+type KitchenConsoleTargetInput = {
   selectedId?: string
-  portfolioId?: string
+  kitchenId?: string
   mode?: ConsoleMode
 }
 
-export function usePortfolioSelection() {
-  const selection = useConsoleSelection({ family: 'portfolio' })
+export function useKitchenConsoleTargets() {
+  const selection = useConsoleSelection({ family: 'kitchen' })
 
-  const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) => {
+  const setKitchenConsoleTarget = (selectionPatch: KitchenConsoleTargetInput = {}) => {
     selection.setSelection({
       selectedId: selectionPatch.selectedId,
-      id: selectionPatch.portfolioId,
+      id: selectionPatch.kitchenId,
       mode: selectionPatch.mode,
     })
   }
@@ -21,7 +21,7 @@ export function usePortfolioSelection() {
   return {
     selectedId: selection.selectedId,
     mode: selection.mode,
-    setRuntimePortfolio,
-    clearRuntimePortfolio: selection.clearSelection,
+    setKitchenConsoleTarget,
+    clearKitchenConsoleTarget: selection.clearSelection,
   }
 }

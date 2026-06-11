@@ -135,8 +135,9 @@ Examples:
 - `console/portfolio/operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
 - `console/project/operations` for selected Project management such as apps or ecosystem links
 
-Identity helpers live beside operations in `console/<family>/Identity`.
-Target helpers live beside operations in `console/<family>/Targets`.
+Identity helpers live as `console/<family>/useXConsoleIdentity.ts`.
+Target helpers live as `console/<family>/useXConsoleTargets.ts`.
+Composable console folders should not mirror UI folders except for `operations/`.
 
 Stored CRUD remains in the entity's Firestore stack or explicit child stack.
 Public route shaping remains in `public/`.
