@@ -88,6 +88,14 @@ const FIRESTORE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
   'utils',
 ])
 
+const CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
+  'core',
+  'identity',
+  'index',
+  'operations',
+  'overview',
+])
+
 const FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN = new Map([
   [
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles',
@@ -688,10 +696,10 @@ function checkConsoleOperationStackShape(repoRoot) {
     for (const entity of listChildDirectories(consoleRoot)) {
       const entityRoot = path.join(consoleRoot, entity)
       for (const child of listChildDirectories(entityRoot)) {
-        if (child === 'operations') continue
+        if (CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN.has(child)) continue
 
         violations.push(
-          `- Console entity root may only contain seam files and operations/: ${toRepoRelative(
+          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, and operations/: ${toRepoRelative(
             repoRoot,
             path.join(entityRoot, child)
           )}`
@@ -851,7 +859,7 @@ export async function run(ctx) {
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
       '- Keep usual Firestore entity stacks boring: root useX.ts plus fetch/, mutations/, seo/, utils/',
-      '- Put console entity seams under: composables/fireux/console/<entity>/',
+      '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity}/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
     ]
