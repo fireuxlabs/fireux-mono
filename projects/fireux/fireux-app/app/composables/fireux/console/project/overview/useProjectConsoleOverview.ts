@@ -6,11 +6,8 @@ import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleOverview() {
   const {
-    liveProjects,
-    demoProjects,
-    testProject,
+    liveProjects: targetProjects,
     selectedProject,
-    selectedMode,
     projectId,
     rootCollection,
     canWrite,
@@ -20,14 +17,10 @@ export function useProjectConsoleOverview() {
 
   const overview = useConsoleOverview<ProjectSurface>({
     selectedEntity: selectedProject,
-    selectedMode,
-    liveItems: liveProjects,
-    demoItems: demoProjects,
-    testItem: testProject,
+    targetItems: targetProjects,
     getId: (project) => normalizeString(project?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     projectId: projectId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -41,7 +34,6 @@ export function useProjectConsoleOverview() {
   return {
     ...overview,
     selectedProject,
-    selectedMode,
     projectId,
     rootCollection,
     canWrite,

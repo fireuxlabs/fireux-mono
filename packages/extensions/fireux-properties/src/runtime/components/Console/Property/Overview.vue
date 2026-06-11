@@ -12,7 +12,6 @@
         entity-label="Property"
         entity-plural-label="Properties"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

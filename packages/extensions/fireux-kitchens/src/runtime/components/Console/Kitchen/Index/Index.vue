@@ -3,24 +3,13 @@
     <ConsoleKitchenIndexSelected
       :kitchen="selection.kitchen"
       :kitchen-id="selection.kitchenId"
-      :mode="selection.mode"
       @clear="actions.clear"
     />
 
-    <ConsoleKitchenIndexLive
-      v-if="sections.live.show"
-      :collection="sections.live.collection"
-      @select="actions.selectLive"
-    />
-
-    <ConsoleKitchenIndexDemo
-      v-if="sections.demo.show"
-      :collection="sections.demo.collection"
-      @select="actions.selectDemo"
-    />
-    <ConsoleKitchenIndexTest
-      v-if="sections.test.show"
-      :init="sections.test.init"
+    <ConsoleKitchenIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      @select="actions.selectTarget"
     />
 
     <DevFireuxDebugPanel

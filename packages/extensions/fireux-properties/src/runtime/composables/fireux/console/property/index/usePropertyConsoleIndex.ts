@@ -1,7 +1,4 @@
 import { computed } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { Property } from '../../../../../models/property.model'
 import type { PropertyCollectionFilter } from '../../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 import type { Ref } from 'vue'
@@ -14,11 +11,8 @@ export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
   const {
-    liveProperties,
-    demoProperties,
-    testProperty,
+    liveProperties: targetProperties,
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,
@@ -28,39 +22,42 @@ export function usePropertyConsoleIndex(
   } = usePropertyConsole({
     filter: options.filter,
   })
-
-  const sourceProperties = computed(() => ({
-    live: liveProperties.value,
-    demo: demoProperties.value,
-    test: testProperty.value,
+  const selection = computed(() => ({
+    property: selectedProperty.value,
+    propertyId: propertyId.value,
+  }))
+  const sections = computed(() => ({
+    targets: {
+      show: true,
+      collection: targetProperties.value,
+    },
+  }))
+  const runtime = computed(() => ({
+    appId: activePropertyAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+  }))
+  const actions = {
+    selectTarget: (id: string) => {
+      selectProperty(String(id ?? '').trim(), 'live')
+    },
+    clear: clearSelectedProperty,
+  }
+  const debug = computed(() => ({
+    propertyId: propertyId.value,
+    activePropertyAppId: activePropertyAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedProperty: selectedProperty.value,
+    targetCount: targetProperties.value.length,
+    status: 'property console uses scaffold data until Firestore property fetch/create is wired',
   }))
 
-  const consoleIndex = useConsoleIndex<Property, Property, Property>({
-    entities: sourceProperties,
-    selectEntity: selectProperty,
-    getTestId: (property) => normalizeString(property.id),
-    debug: computed(() => ({
-      selectedMode: selectedMode.value,
-      propertyId: propertyId.value,
-      activePropertyAppId: activePropertyAppId.value,
-      rootCollection: rootCollection.value,
-      canWrite: canWrite.value,
-      selectedProperty: selectedProperty.value,
-      status: 'property console uses scaffold data until Firestore property fetch/create is wired',
-    })),
-  })
-  const debug = consoleIndex.debug
-
   return {
-    properties: consoleIndex.entities,
-    actions: consoleIndex.actions,
-    selectedProperty,
-    selectedMode,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
+    selection,
+    sections,
+    runtime,
+    actions,
     debug,
-    clearSelectedProperty,
   }
 }

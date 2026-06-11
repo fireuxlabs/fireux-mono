@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Supplier"
-      description="Choose a live or demo Supplier target to open selected Supplier console state."
+      description="Choose a Supplier target to open selected Supplier console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { SupplierSurface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = defineProps<{
   supplier?: SupplierSurface | null
   supplierId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const supplierName = computed(() =>
   String(props.supplier?.name || props.supplier?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Supplier' : 'Selected Supplier'
-)
+const selectedTitle = 'Selected Supplier'
 </script>

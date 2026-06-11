@@ -1,22 +1,16 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsoleProjectIndexSelected
-      :project="selectedProject"
-      :project-id="projectId"
-      :mode="selectedMode"
-      @clear="clearSelectedProject"
+      :project="selection.project"
+      :project-id="selection.projectId"
+      @clear="actions.clear"
     />
 
-    <ConsoleProjectIndexLive
-      :collection="projects.live"
-      @select="actions.selectLive"
+    <ConsoleProjectIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      @select="actions.selectTarget"
     />
-
-    <ConsoleProjectIndexDemo
-      :collection="projects.demo"
-      @select="actions.selectDemo"
-    />
-    <ConsoleProjectIndexTest :init="false" />
 
     <DevFireuxDebugPanel
       title="Project console debug"
@@ -31,12 +25,9 @@
 import { useProjectConsoleIndex } from '../../../../composables/fireux/console/project/index/useProjectConsoleIndex'
 
 const {
-  projects,
+  selection,
+  sections,
   actions,
-  selectedProject,
-  selectedMode,
-  projectId,
   debug,
-  clearSelectedProject,
 } = useProjectConsoleIndex()
 </script>

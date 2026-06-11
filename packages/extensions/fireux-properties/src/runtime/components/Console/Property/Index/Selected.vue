@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Property"
-      description="Choose a live or demo Property target to open selected Property console state."
+      description="Choose a Property target to open selected Property console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { Property } from '../../../../models/property.model'
 
 const props = defineProps<{
   property?: Property | null
   propertyId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const propertyName = computed(() =>
   String(props.property?.identity?.name || props.property?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Property' : 'Selected Property'
-)
+const selectedTitle = 'Selected Property'
 </script>

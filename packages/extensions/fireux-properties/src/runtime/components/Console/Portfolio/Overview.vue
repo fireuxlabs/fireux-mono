@@ -12,7 +12,6 @@
         entity-label="Portfolio"
         entity-plural-label="Portfolios"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

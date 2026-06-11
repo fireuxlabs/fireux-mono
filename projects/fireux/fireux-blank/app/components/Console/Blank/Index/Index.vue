@@ -6,11 +6,11 @@
       @clear="actions.clear"
     />
 
-    <ConsoleBlankIndexLive
-      v-if="sections.live.show"
-      :collection="sections.live.collection"
-      :pending="sections.live.pending"
-      @select="actions.selectLive"
+    <ConsoleBlankIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      :pending="sections.targets.pending"
+      @select="actions.selectTarget"
     />
 
     <DevFireuxDebugPanel

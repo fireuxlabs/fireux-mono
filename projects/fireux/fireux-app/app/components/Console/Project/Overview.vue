@@ -12,7 +12,6 @@
         entity-label="Project"
         entity-plural-label="Projects"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

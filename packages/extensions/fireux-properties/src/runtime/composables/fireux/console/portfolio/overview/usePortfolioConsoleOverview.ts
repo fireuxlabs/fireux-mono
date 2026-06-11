@@ -8,11 +8,8 @@ import {
 
 export function usePortfolioConsoleOverview() {
   const {
-    livePortfolios,
-    demoPortfolios,
-    testPortfolio,
+    livePortfolios: targetPortfolios,
     selectedPortfolio,
-    selectedMode,
     portfolioId,
     activePortfolioAppId,
     rootCollection,
@@ -22,14 +19,10 @@ export function usePortfolioConsoleOverview() {
 
   const overview = useConsoleOverview<PortfolioConsoleEntity>({
     selectedEntity: selectedPortfolio,
-    selectedMode,
-    liveItems: livePortfolios,
-    demoItems: demoPortfolios,
-    testItem: testPortfolio,
+    targetItems: targetPortfolios,
     getId: (portfolio) => normalizeString(portfolio?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     portfolioId: portfolioId.value,
     activePortfolioAppId: activePortfolioAppId.value,
     rootCollection: rootCollection.value,
@@ -44,7 +37,6 @@ export function usePortfolioConsoleOverview() {
   return {
     ...overview,
     selectedPortfolio,
-    selectedMode,
     portfolioId,
     activePortfolioAppId,
     rootCollection,

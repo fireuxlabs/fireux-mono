@@ -12,7 +12,6 @@
         entity-label="Blank"
         entity-plural-label="Blanks"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

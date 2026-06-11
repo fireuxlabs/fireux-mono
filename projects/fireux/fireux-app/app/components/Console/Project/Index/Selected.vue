@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Project"
-      description="Choose a live or demo Project target to open selected Project console state."
+      description="Choose a Project target to open selected Project console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 const props = defineProps<{
   project?: ProjectSurface | null
   projectId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const projectName = computed(() =>
   String(props.project?.name || props.project?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Project' : 'Selected Project'
-)
+const selectedTitle = 'Selected Project'
 </script>

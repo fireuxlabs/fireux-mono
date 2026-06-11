@@ -6,11 +6,8 @@ import { useSupplierConsole } from '../core/useSupplierConsole'
 
 export function useSupplierConsoleOverview() {
   const {
-    liveSuppliers,
-    demoSuppliers,
-    testSupplier,
+    liveSuppliers: targetSuppliers,
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,
@@ -21,14 +18,10 @@ export function useSupplierConsoleOverview() {
 
   const overview = useConsoleOverview<SupplierSurface>({
     selectedEntity: selectedSupplier,
-    selectedMode,
-    liveItems: liveSuppliers,
-    demoItems: demoSuppliers,
-    testItem: testSupplier,
+    targetItems: targetSuppliers,
     getId: (supplier) => normalizeString(supplier?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     supplierId: supplierId.value,
     activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,
@@ -43,7 +36,6 @@ export function useSupplierConsoleOverview() {
   return {
     ...overview,
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,

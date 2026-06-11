@@ -1,22 +1,16 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsoleSupplierIndexSelected
-      :supplier="selectedSupplier"
-      :supplier-id="supplierId"
-      :mode="selectedMode"
-      @clear="clearSelectedSupplier"
+      :supplier="selection.supplier"
+      :supplier-id="selection.supplierId"
+      @clear="actions.clear"
     />
 
-    <ConsoleSupplierIndexLive
-      :collection="suppliers.live"
-      @select="actions.selectLive"
+    <ConsoleSupplierIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      @select="actions.selectTarget"
     />
-
-    <ConsoleSupplierIndexDemo
-      :collection="suppliers.demo"
-      @select="actions.selectDemo"
-    />
-    <ConsoleSupplierIndexTest :init="false" />
 
     <DevFireuxDebugPanel
       title="Supplier console debug"
@@ -31,12 +25,9 @@
 import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/index/useSupplierConsoleIndex'
 
 const {
-  suppliers,
+  selection,
+  sections,
   actions,
-  selectedSupplier,
-  selectedMode,
-  supplierId,
   debug,
-  clearSelectedSupplier,
 } = useSupplierConsoleIndex()
 </script>

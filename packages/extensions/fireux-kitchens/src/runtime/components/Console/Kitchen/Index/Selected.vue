@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Kitchen"
-      description="Choose a live or demo Kitchen target to open selected Kitchen console state."
+      description="Choose a Kitchen target to open selected Kitchen console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null
   kitchenId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const kitchenName = computed(() =>
   String(props.kitchen?.name || props.kitchen?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Kitchen' : 'Selected Kitchen'
-)
+const selectedTitle = 'Selected Kitchen'
 </script>

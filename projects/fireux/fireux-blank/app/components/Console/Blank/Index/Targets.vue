@@ -1,13 +1,13 @@
 <template>
   <section class="space-y-2">
-    <pre>ConsoleBlankIndexLive</pre>
+    <pre>ConsoleBlankIndexTargets</pre>
 
     <BlankCollectionManager
       :collection="managerCollection"
       :pending="managerPending"
       :action-ids="consoleBlankIds"
-      v-model:filter-mode="liveMode"
-      :filter-options="liveModeOptions"
+      v-model:filter-mode="targetMode"
+      :filter-options="targetModeOptions"
       :show-filter-toggle="true"
       :title="managerTitle"
       :description="managerDescription"
@@ -17,7 +17,7 @@
     />
 
     <DevFireuxDebugPanel
-      title="Blank live user debug"
+      title="Blank target user debug"
       scope="console"
       :data="userDebug"
       :default-open="false"
@@ -31,7 +31,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useBlankDocsByIds } from '../../../../composables/fireux/firestore/blank/useBlank'
 import type { Blank } from '../../../../models/blank.model'
 
-type BlankLiveMode = 'console' | 'mine'
+type BlankTargetMode = 'console' | 'mine'
 
 const props = withDefaults(
   defineProps<{
@@ -48,8 +48,8 @@ const emit = defineEmits<{
 
 const text = (value: unknown) => String(value ?? '').trim()
 const user = useUser()
-const liveMode = ref<BlankLiveMode>('console')
-const liveModeOptions = [
+const targetMode = ref<BlankTargetMode>('console')
+const targetModeOptions = [
   { value: 'console' as const, label: 'Blank consoles' },
   { value: 'mine' as const, label: 'My blanks' },
 ]
@@ -67,16 +67,16 @@ const myBlankCollection = computed(() =>
   myBlanks.blanks.value
 )
 const managerCollection = computed(() =>
-  liveMode.value === 'mine' ? myBlankCollection.value : props.collection
+  targetMode.value === 'mine' ? myBlankCollection.value : props.collection
 )
 const managerPending = computed(() =>
-  liveMode.value === 'mine' ? myBlanks.pending.value : false
+  targetMode.value === 'mine' ? myBlanks.pending.value : false
 )
 const managerTitle = computed(() =>
-  liveMode.value === 'mine' ? 'My Blanks' : 'Choose Blank'
+  targetMode.value === 'mine' ? 'My Blanks' : 'Choose Blank'
 )
 const managerDescription = computed(() =>
-  liveMode.value === 'mine'
+  targetMode.value === 'mine'
     ? 'Blank targets from your personal Blank list. Only team targets can be selected.'
     : 'Select the Blank console target you want to work on.'
 )
@@ -96,7 +96,7 @@ const userDebug = computed(() => ({
       : null,
   },
   blankConsoleSource: {
-    liveMode: liveMode.value,
+    targetMode: targetMode.value,
     consoleBlankIds: consoleBlankIds.value,
     blankConsoleCount: consoleBlankIds.value.length,
     myBlankCount: myBlankCollection.value.length,

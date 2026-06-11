@@ -6,11 +6,8 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleOverview() {
   const {
-    liveKitchens,
-    demoKitchens,
-    testKitchen,
+    liveKitchens: targetKitchens,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     activeKitchenAppId,
     rootCollection,
@@ -21,14 +18,10 @@ export function useKitchenConsoleOverview() {
 
   const overview = useConsoleOverview<KitchenSurface>({
     selectedEntity: selectedKitchen,
-    selectedMode,
-    liveItems: liveKitchens,
-    demoItems: demoKitchens,
-    testItem: testKitchen,
+    targetItems: targetKitchens,
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     kitchenId: kitchenId.value,
     activeKitchenAppId: activeKitchenAppId.value,
     rootCollection: rootCollection.value,
@@ -43,7 +36,6 @@ export function useKitchenConsoleOverview() {
   return {
     ...overview,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     activeKitchenAppId,
     rootCollection,

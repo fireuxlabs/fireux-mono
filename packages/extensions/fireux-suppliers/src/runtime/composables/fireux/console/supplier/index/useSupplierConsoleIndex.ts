@@ -1,10 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { SupplierCollectionFilter } from '../../../firestore/supplier/fetch/useSupplierCollection'
-import { useSupplierFetch } from '../../../firestore/supplier/fetch/useSupplierFetch'
-import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import { useSupplierConsole } from '../core/useSupplierConsole'
 
 type UseSupplierConsoleIndexOptions = {
@@ -14,15 +9,9 @@ type UseSupplierConsoleIndexOptions = {
 export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
-  const { uid } = useAuth()
-  const userId = computed(() => normalizeString(uid.value))
-  const { supplier: testSupplierSource } =
-    useSupplierFetch(userId, { source: 'test' })
   const {
-    liveSuppliers,
-    demoSuppliers,
+    liveSuppliers: targetSuppliers,
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,
@@ -32,38 +21,41 @@ export function useSupplierConsoleIndex(
   } = useSupplierConsole({
     filter: options.filter,
   })
-
-  const sourceSuppliers = computed(() => ({
-    live: liveSuppliers.value,
-    demo: demoSuppliers.value,
-    test: testSupplierSource.value,
+  const selection = computed(() => ({
+    supplier: selectedSupplier.value,
+    supplierId: supplierId.value,
+  }))
+  const sections = computed(() => ({
+    targets: {
+      show: true,
+      collection: targetSuppliers.value,
+    },
+  }))
+  const runtime = computed(() => ({
+    appId: activeSupplierAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+  }))
+  const actions = {
+    selectTarget: (id: string) => {
+      selectSupplier(String(id ?? '').trim(), 'live')
+    },
+    clear: clearSelectedSupplier,
+  }
+  const debug = computed(() => ({
+    supplierId: supplierId.value,
+    activeSupplierAppId: activeSupplierAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedSupplier: selectedSupplier.value,
+    targetCount: targetSuppliers.value.length,
   }))
 
-  const consoleIndex = useConsoleIndex<SupplierSurface, SupplierSurface, SupplierSurface>({
-    entities: sourceSuppliers,
-    selectEntity: selectSupplier,
-    getTestId: (supplier) => normalizeString(supplier.id),
-    debug: computed(() => ({
-      selectedMode: selectedMode.value,
-      supplierId: supplierId.value,
-      activeSupplierAppId: activeSupplierAppId.value,
-      rootCollection: rootCollection.value,
-      canWrite: canWrite.value,
-      selectedSupplier: selectedSupplier.value,
-    })),
-  })
-  const debug = consoleIndex.debug
-
   return {
-    suppliers: consoleIndex.entities,
-    actions: consoleIndex.actions,
-    selectedSupplier,
-    selectedMode,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
+    selection,
+    sections,
+    runtime,
+    actions,
     debug,
-    clearSelectedSupplier,
   }
 }

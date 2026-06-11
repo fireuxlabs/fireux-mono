@@ -10,9 +10,8 @@ import { useBlankConsole } from '../core/useBlankConsole'
 export function useBlankConsoleIndex() {
   const blank = useBlankConsole()
   const {
-    liveBlanks,
+    liveBlanks: targetBlanks,
     selectedBlank,
-    selectedMode,
     blankId,
     rootCollection,
     canWrite,
@@ -21,13 +20,12 @@ export function useBlankConsoleIndex() {
   } = blank
   const selection = computed(() => ({
     blank: selectedBlank.value,
-    mode: selectedMode.value,
     blankId: blankId.value,
   }))
   const sections = computed(() => ({
-    live: {
+    targets: {
       show: true,
-      collection: liveBlanks.value,
+      collection: targetBlanks.value,
       pending: blank.pending.value,
     },
   }))
@@ -36,7 +34,7 @@ export function useBlankConsoleIndex() {
     canWrite: canWrite.value,
   }))
   const actions = {
-    selectLive: (id: string) => {
+    selectTarget: (id: string) => {
       selectBlank(String(id ?? '').trim(), 'live')
     },
     clear: clearSelectedBlank,
@@ -44,10 +42,8 @@ export function useBlankConsoleIndex() {
   const debug = computed(() => ({
     family: 'blank',
     blankId: blankId.value,
-    selectedMode: selectedMode.value,
     pending: blank.pending.value,
-    liveCount: liveBlanks.value.length,
-    hasLiveBlanks: blank.hasLiveBlanks.value,
+    targetCount: targetBlanks.value.length,
     rootCollection: rootCollection.value,
     appCollectionPath: blank.appCollectionPath.value,
   }))

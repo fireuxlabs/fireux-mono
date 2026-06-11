@@ -1,13 +1,6 @@
 import { computed, type Ref } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { PortfolioCollectionFilter } from '../../../firestore/portfolio/fetch/usePortfolioCollection'
-import { usePortfolioFetch } from '../../../firestore/portfolio/fetch/usePortfolioFetch'
-import {
-  usePortfolioConsole,
-  type PortfolioConsoleEntity,
-} from '../core/usePortfolioConsole'
+import { usePortfolioConsole } from '../core/usePortfolioConsole'
 
 type UsePortfolioConsoleIndexOptions = {
   filter?:
@@ -19,17 +12,9 @@ type UsePortfolioConsoleIndexOptions = {
 export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
-  const { uid } = useAuth()
-  const normalizedUid = computed(() => normalizeString(uid.value))
-  const { portfolio: testPortfolioSource } =
-    usePortfolioFetch(normalizedUid, {
-      collectionPath: 'test-portfolios',
-    })
   const {
-    livePortfolios,
-    demoPortfolios,
+    livePortfolios: targetPortfolios,
     selectedPortfolio,
-    selectedMode,
     portfolioId,
     activePortfolioAppId,
     rootCollection,
@@ -39,42 +24,41 @@ export function usePortfolioConsoleIndex(
   } = usePortfolioConsole({
     filter: options.filter,
   })
-
-  const sourcePortfolios = computed(() => ({
-    live: livePortfolios.value,
-    demo: demoPortfolios.value,
-    test: testPortfolioSource.value,
+  const selection = computed(() => ({
+    portfolio: selectedPortfolio.value,
+    portfolioId: portfolioId.value,
+  }))
+  const sections = computed(() => ({
+    targets: {
+      show: true,
+      collection: targetPortfolios.value,
+    },
+  }))
+  const runtime = computed(() => ({
+    appId: activePortfolioAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+  }))
+  const actions = {
+    selectTarget: (id: string) => {
+      selectPortfolio(String(id ?? '').trim(), 'live')
+    },
+    clear: clearSelectedPortfolio,
+  }
+  const debug = computed(() => ({
+    portfolioId: portfolioId.value,
+    activePortfolioAppId: activePortfolioAppId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedPortfolio: selectedPortfolio.value,
+    targetCount: targetPortfolios.value.length,
   }))
 
-  const consoleIndex = useConsoleIndex<
-    PortfolioConsoleEntity,
-    PortfolioConsoleEntity,
-    PortfolioConsoleEntity
-  >({
-    entities: sourcePortfolios,
-    selectEntity: selectPortfolio,
-    getTestId: (portfolio) => normalizeString(portfolio.id),
-    debug: computed(() => ({
-      selectedMode: selectedMode.value,
-      portfolioId: portfolioId.value,
-      activePortfolioAppId: activePortfolioAppId.value,
-      rootCollection: rootCollection.value,
-      canWrite: canWrite.value,
-      selectedPortfolio: selectedPortfolio.value,
-    })),
-  })
-  const debug = consoleIndex.debug
-
   return {
-    portfolios: consoleIndex.entities,
-    actions: consoleIndex.actions,
-    selectedPortfolio,
-    selectedMode,
-    portfolioId,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
+    selection,
+    sections,
+    runtime,
+    actions,
     debug,
-    clearSelectedPortfolio,
   }
 }

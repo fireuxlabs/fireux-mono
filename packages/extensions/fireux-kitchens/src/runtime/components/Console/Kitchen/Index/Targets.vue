@@ -1,14 +1,14 @@
 <template>
   <section class="space-y-2">
-    <pre>ConsoleKitchenIndexLive</pre>
+    <pre>ConsoleKitchenIndexTargets</pre>
 
     <KitchenCollectionManager
       :collection="managerCollection"
       :console-ids="kitchenConsoleUser.consoleKitchenIds"
       :action-ids="kitchenConsoleUser.consoleKitchenIds"
-      v-model:filter-mode="liveMode"
-      :filter-options="liveModeOptions"
-      :show-filter-toggle="liveModeOptions.length > 1"
+      v-model:filter-mode="targetMode"
+      :filter-options="targetModeOptions"
+      :show-filter-toggle="targetModeOptions.length > 1"
       :title="managerTitle"
       :description="managerDescription"
       :link="false"
@@ -19,7 +19,7 @@
     />
 
     <DevFireuxDebugPanel
-      title="Kitchen live user debug"
+      title="Kitchen target user debug"
       scope="console"
       :data="userDebug"
       :default-open="false"
@@ -35,7 +35,7 @@ import { useKitchenUserComputed } from '../../../../composables/fireux/console/k
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-type LiveMode = 'mine' | 'console'
+type TargetMode = 'mine' | 'console'
 
 const props = withDefaults(
   defineProps<{
@@ -52,7 +52,7 @@ const emit = defineEmits<{
 
 const policy = useConsoleIndexPolicy({ family: 'kitchen' })
 const user = useUser()
-const liveMode = ref<LiveMode>('console')
+const targetMode = ref<TargetMode>('console')
 const myKitchenIds = computed(() => user.coreUser.value?.myKitchens ?? [])
 const myKitchenCollection = useKitchenCollection({ ids: myKitchenIds })
 const scopeDebug = computed(() =>
@@ -62,7 +62,7 @@ const scopeDebug = computed(() =>
   }))
 )
 const { kitchenConsoleUser } = useKitchenUserComputed(scopeDebug)
-const liveModeOptions = computed(() =>
+const targetModeOptions = computed(() =>
   policy.value.appBound
     ? [{ value: 'console', label: 'Kitchen console' }]
     : [
@@ -71,20 +71,20 @@ const liveModeOptions = computed(() =>
       ]
 )
 watchEffect(() => {
-  if (policy.value.appBound) liveMode.value = 'console'
+  if (policy.value.appBound) targetMode.value = 'console'
 })
 const managerTitle = computed(() =>
-  liveMode.value === 'mine' ? 'My Kitchens' : 'Choose Kitchen'
+  targetMode.value === 'mine' ? 'My Kitchens' : 'Choose Kitchen'
 )
 const managerDescription = computed(() =>
-  liveMode.value === 'mine'
+  targetMode.value === 'mine'
     ? 'Kitchens from your personal kitchen list.'
     : policy.value.appBound
       ? 'Use the Kitchen console target linked to this app.'
       : 'Select the Kitchen console target you want to work on.'
 )
 const managerCollection = computed(() =>
-  liveMode.value === 'mine' ? myKitchenCollection.kitchens.value : props.collection
+  targetMode.value === 'mine' ? myKitchenCollection.kitchens.value : props.collection
 )
 function selectConsoleKitchen(id: string) {
   if (!kitchenConsoleUser.value.consoleKitchenIds.includes(id)) return
@@ -114,7 +114,7 @@ const userDebug = computed(() => ({
   useKitchenUserComputed: {
     ...kitchenConsoleUser.value,
     policy: policy.value,
-    liveMode: liveMode.value,
+    targetMode: targetMode.value,
     myKitchenRenderedCount: myKitchenCollection.kitchens.value.length,
     renderedCount: props.collection.length,
   },

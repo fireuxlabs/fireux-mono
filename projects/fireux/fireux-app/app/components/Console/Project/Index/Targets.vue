@@ -1,13 +1,13 @@
 <template>
   <section class="space-y-2">
-    <pre>ConsoleProjectIndexLive</pre>
+    <pre>ConsoleProjectIndexTargets</pre>
 
     <ProjectCollectionManager
       :collection="collection"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
-      v-model:filter-mode="liveMode"
-      :filter-options="liveModeOptions"
+      v-model:filter-mode="targetMode"
+      :filter-options="targetModeOptions"
       :show-filter-toggle="true"
       title="Choose Project"
       description="Select the Project console target you want to work on."
@@ -23,7 +23,7 @@
 import { computed, ref } from 'vue'
 import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
-type LiveMode = 'console' | 'mine'
+type TargetMode = 'console' | 'mine'
 
 const props = withDefaults(
   defineProps<{
@@ -38,8 +38,8 @@ const emit = defineEmits<{
   (event: 'select', id: string): void
 }>()
 
-const liveMode = ref<LiveMode>('console')
-const liveModeOptions = [
+const targetMode = ref<TargetMode>('console')
+const targetModeOptions = [
   { value: 'console' as const, label: 'Project consoles' },
   { value: 'mine' as const, label: 'My projects' },
 ]

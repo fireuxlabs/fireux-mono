@@ -24,7 +24,7 @@
     <UPageCard
       v-else
       title="No selected Portfolio"
-      description="Choose a live or demo Portfolio target to open selected Portfolio console state."
+      description="Choose a Portfolio target to open selected Portfolio console state."
       variant="subtle"
     />
   </section>
@@ -32,13 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import type { PortfolioConsoleEntity } from '../../../../composables/fireux/console/portfolio/core/usePortfolioConsole'
 
 const props = defineProps<{
   portfolio?: PortfolioConsoleEntity | null
   portfolioId?: string
-  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +46,5 @@ const emit = defineEmits<{
 const portfolioName = computed(() =>
   String(props.portfolio?.name || props.portfolio?.slug || '').trim()
 )
-const selectedTitle = computed(() =>
-  props.mode === 'demo' ? 'Selected Demo Portfolio' : 'Selected Portfolio'
-)
+const selectedTitle = 'Selected Portfolio'
 </script>

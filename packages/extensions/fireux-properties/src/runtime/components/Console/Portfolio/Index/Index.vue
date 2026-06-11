@@ -1,22 +1,16 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsolePortfolioIndexSelected
-      :portfolio="selectedPortfolio"
-      :portfolio-id="portfolioId"
-      :mode="selectedMode"
-      @clear="clearSelectedPortfolio"
+      :portfolio="selection.portfolio"
+      :portfolio-id="selection.portfolioId"
+      @clear="actions.clear"
     />
 
-    <ConsolePortfolioIndexLive
-      :collection="portfolios.live"
-      @select="actions.selectLive"
+    <ConsolePortfolioIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      @select="actions.selectTarget"
     />
-
-    <ConsolePortfolioIndexDemo
-      :collection="portfolios.demo"
-      @select="actions.selectDemo"
-    />
-    <ConsolePortfolioIndexTest :init="false" />
 
     <DevFireuxDebugPanel
       title="Portfolio console debug"
@@ -31,12 +25,9 @@
 import { usePortfolioConsoleIndex } from '../../../../composables/fireux/console/portfolio/index/usePortfolioConsoleIndex'
 
 const {
-  portfolios,
+  selection,
+  sections,
   actions,
-  selectedPortfolio,
-  selectedMode,
-  portfolioId,
   debug,
-  clearSelectedPortfolio,
 } = usePortfolioConsoleIndex()
 </script>

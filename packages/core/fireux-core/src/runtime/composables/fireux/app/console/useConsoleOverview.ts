@@ -1,17 +1,11 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import {
-  normalizeConsoleString,
-  type ConsoleMode,
-} from './useConsole'
+import { normalizeConsoleString } from './useConsole'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 
 type UseConsoleOverviewOptions<T> = {
   selectedEntity: MaybeRef<T | null | undefined>
-  selectedMode?: MaybeRef<ConsoleMode | null | undefined>
-  liveItems: MaybeRef<(T | null | undefined)[] | null | undefined>
-  demoItems?: MaybeRef<(T | null | undefined)[] | null | undefined>
-  testItem?: MaybeRef<T | null | undefined>
+  targetItems: MaybeRef<(T | null | undefined)[] | null | undefined>
   getId: (item: T) => string
 }
 
@@ -26,19 +20,12 @@ export function useConsoleOverview<T>(
     return {
       entity,
       id: entity ? normalizeConsoleString(options.getId(entity)) : '',
-      mode: (options.selectedMode ? unref(options.selectedMode) : 'live') ?? 'live',
       hasSelection: Boolean(entity),
     }
   })
 
   const multipleItems = computed<T[]>(() => {
-    const mode = focus.value.mode
-    const items =
-      mode === 'demo'
-        ? unref(options.demoItems)
-        : mode === 'test'
-          ? [unref(options.testItem)]
-          : unref(options.liveItems)
+    const items = unref(options.targetItems)
 
     return Array.isArray(items) ? items.filter(isPresent) : []
   })

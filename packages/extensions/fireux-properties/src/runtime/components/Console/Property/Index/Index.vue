@@ -1,22 +1,16 @@
 <template>
   <section class="console-surface space-y-4">
     <ConsolePropertyIndexSelected
-      :property="selectedProperty"
-      :property-id="propertyId"
-      :mode="selectedMode"
-      @clear="clearSelectedProperty"
+      :property="selection.property"
+      :property-id="selection.propertyId"
+      @clear="actions.clear"
     />
 
-    <ConsolePropertyIndexLive
-      :collection="properties.live"
-      @select="actions.selectLive"
+    <ConsolePropertyIndexTargets
+      v-if="sections.targets.show"
+      :collection="sections.targets.collection"
+      @select="actions.selectTarget"
     />
-
-    <ConsolePropertyIndexDemo
-      :collection="properties.demo"
-      @select="actions.selectDemo"
-    />
-    <ConsolePropertyIndexTest :init="false" />
 
     <DevFireuxDebugPanel
       title="Property console debug"
@@ -31,12 +25,9 @@
 import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/index/usePropertyConsoleIndex'
 
 const {
-  properties,
+  selection,
+  sections,
   actions,
-  selectedProperty,
-  selectedMode,
-  propertyId,
   debug,
-  clearSelectedProperty,
 } = usePropertyConsoleIndex()
 </script>

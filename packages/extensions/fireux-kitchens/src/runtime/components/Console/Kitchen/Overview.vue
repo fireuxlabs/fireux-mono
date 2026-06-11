@@ -12,7 +12,6 @@
         entity-label="Kitchen"
         entity-plural-label="Kitchens"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

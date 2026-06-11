@@ -6,11 +6,8 @@ import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export function usePropertyConsoleOverview() {
   const {
-    liveProperties,
-    demoProperties,
-    testProperty,
+    liveProperties: targetProperties,
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,
@@ -20,14 +17,10 @@ export function usePropertyConsoleOverview() {
 
   const overview = useConsoleOverview<Property>({
     selectedEntity: selectedProperty,
-    selectedMode,
-    liveItems: liveProperties,
-    demoItems: demoProperties,
-    testItem: testProperty,
+    targetItems: targetProperties,
     getId: (property) => normalizeString(property?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     propertyId: propertyId.value,
     activePropertyAppId: activePropertyAppId.value,
     rootCollection: rootCollection.value,
@@ -42,7 +35,6 @@ export function usePropertyConsoleOverview() {
   return {
     ...overview,
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,

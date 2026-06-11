@@ -12,7 +12,6 @@
         entity-label="Supplier"
         entity-plural-label="Suppliers"
         :multiple="multiple"
-        :mode="focus.mode"
         :cards="multipleCards"
       />
     </div>

@@ -55,7 +55,6 @@ const props = withDefaults(
     entityLabel: string
     entityPluralLabel: string
     multiple: ConsoleOverviewMultipleState
-    mode: string
     cards?: ConsoleTargetCardType[]
     showBadges?: boolean
   }>(),
@@ -65,21 +64,12 @@ const props = withDefaults(
   }
 )
 
-const entityLower = computed(() => props.entityLabel.toLowerCase())
 const entityPluralLower = computed(() => props.entityPluralLabel.toLowerCase())
 const multipleCountLabel = computed(() => String(props.multiple.count))
 const multipleDescription = computed(() =>
-  props.mode === 'demo'
-    ? `Demo ${entityPluralLower.value} available in the current console scope.`
-    : props.mode === 'test'
-      ? `Your personal test ${entityLower.value} available in this console.`
-      : `Live ${entityPluralLower.value} available in your current workspace scope.`
+  `Available ${entityPluralLower.value} in your current console scope.`
 )
 const emptyMultipleDescription = computed(() =>
-  props.mode === 'demo'
-    ? `No demo ${entityPluralLower.value} are currently in scope.`
-    : props.mode === 'test'
-      ? `No test ${entityLower.value} is currently in scope.`
-      : `No live ${entityPluralLower.value} are currently in scope.`
+  `No ${entityPluralLower.value} are currently in scope.`
 )
 </script>

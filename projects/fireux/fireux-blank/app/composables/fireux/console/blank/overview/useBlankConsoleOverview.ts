@@ -6,9 +6,8 @@ import { useBlankConsole } from '../core/useBlankConsole'
 
 export function useBlankConsoleOverview() {
   const {
-    liveBlanks,
+    liveBlanks: targetBlanks,
     selectedBlank,
-    selectedMode,
     blankId,
     rootCollection,
     canWrite,
@@ -17,12 +16,10 @@ export function useBlankConsoleOverview() {
 
   const overview = useConsoleOverview<Blank>({
     selectedEntity: selectedBlank,
-    selectedMode,
-    liveItems: liveBlanks,
+    targetItems: targetBlanks,
     getId: (blank) => normalizeString(blank?.id),
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     blankId: blankId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -36,7 +33,6 @@ export function useBlankConsoleOverview() {
   return {
     ...overview,
     selectedBlank,
-    selectedMode,
     blankId,
     rootCollection,
     canWrite,
