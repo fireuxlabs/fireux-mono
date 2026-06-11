@@ -3,6 +3,7 @@
     <ConsoleKitchenTargetsSelected
       :kitchen="selectedKitchen"
       :kitchen-id="kitchenId"
+      :mode="selectedMode"
       @clear="clearSelectedKitchen"
     />
 
@@ -11,7 +12,10 @@
       @select="actions.selectLive"
     />
 
-    <ConsoleKitchenTargetsDemo :show="false" />
+    <ConsoleKitchenTargetsDemo
+      :collection="kitchens.demo"
+      @select="actions.selectDemo"
+    />
     <ConsoleKitchenTargetsTest :init="false" />
 
     <DevJson
@@ -30,6 +34,7 @@ const {
   kitchens,
   actions,
   selectedKitchen,
+  selectedMode,
   kitchenId,
   debug,
   clearSelectedKitchen,

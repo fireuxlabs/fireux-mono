@@ -3,6 +3,7 @@
   v-if="link && to"
   :to="to"
   class="pill"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
 >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
@@ -31,6 +32,7 @@
 <div
   v-else
   class="pill"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
   @click="onClick"
 >
     <div class="flex min-w-0 items-start gap-2">
@@ -70,6 +72,7 @@ type PillProps = Pick<PropertyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle
   showBadges?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -83,9 +86,11 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return

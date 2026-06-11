@@ -60,19 +60,15 @@ export function useKitchenConsoleIndex(
 
       return normalizeString(result.id)
     },
+    debug: computed(() => ({
+      mode: selectedMode.value,
+      kitchenId: kitchenId.value,
+      rootCollection: rootCollection.value,
+      canWrite: canWrite.value,
+      selectedKitchen: selectedKitchen.value,
+    })),
   })
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedKitchen: selectedKitchen.value,
-    counts: {
-      live: consoleIndex.entities.value.live.length,
-      demo: consoleIndex.entities.value.demo.length,
-      test: consoleIndex.entities.value.test ? 1 : 0,
-    },
-  }))
+  const debug = consoleIndex.debug
 
   return {
     state: consoleIndex.state,

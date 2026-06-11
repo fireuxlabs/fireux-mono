@@ -3,6 +3,7 @@
     :is="link && props.to ? 'NuxtLink' : 'div'"
     :to="link && props.to ? props.to : undefined"
     class="block w-full"
+    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
     @click="onClick"
   >
     <div
@@ -47,6 +48,7 @@ type Props = Pick<
   showMeta?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -58,9 +60,11 @@ const props = withDefaults(defineProps<Props>(), {
   showMeta: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return

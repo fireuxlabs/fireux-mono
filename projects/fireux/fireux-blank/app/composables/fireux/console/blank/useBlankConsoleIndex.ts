@@ -1,6 +1,8 @@
 import { computed } from 'vue'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useBlankConsole } from './useBlankConsole'
 import { useBlankConsoleTargets } from './useBlankConsoleTargets'
+import type { Blank } from '../../../models/blank.model'
 
 /**
  * Blank console main index seam.
@@ -16,25 +18,31 @@ export function useBlankConsoleIndex() {
     setBlankConsoleTarget,
     clearBlankConsoleTarget,
   } = useBlankConsoleTargets()
-  const debug = computed(() => ({
-    family: 'blank',
-    selectedId: selectedId.value,
-    mode: mode.value,
-    pending: blank.pending.value,
-    liveCount: blank.liveTargets.value.length,
-    demoCount: blank.demoTargets.value.length,
-    hasLiveTargets: blank.hasLiveTargets.value,
-    rootCollectionPath: blank.rootCollectionPath,
-    appCollectionPath: blank.appCollectionPath.value,
+  const sourceBlanks = computed(() => ({
+    live: blank.liveTargets.value,
+    demo: blank.demoTargets.value,
+    test: null,
   }))
-  const actions = {
-    selectLive: (id: string) => {
-      setBlankConsoleTarget({ blankId: String(id ?? '').trim(), mode: 'live' })
+  const consoleIndex = useConsoleIndex<Blank, Blank, Blank>({
+    entities: sourceBlanks,
+    selectEntity: (id, targetMode = 'live') => {
+      setBlankConsoleTarget({
+        blankId: String(id ?? '').trim(),
+        mode: targetMode,
+      })
     },
-    selectDemo: (id: string) => {
-      setBlankConsoleTarget({ blankId: String(id ?? '').trim(), mode: 'demo' })
-    },
-  }
+    getTestId: (target) => String(target.id ?? '').trim(),
+    debug: computed(() => ({
+      family: 'blank',
+      selectedId: selectedId.value,
+      mode: mode.value,
+      pending: blank.pending.value,
+      hasLiveTargets: blank.hasLiveTargets.value,
+      rootCollectionPath: blank.rootCollectionPath,
+      appCollectionPath: blank.appCollectionPath.value,
+    })),
+  })
+  const debug = consoleIndex.debug
   const clearSelectedBlank = () => {
     clearBlankConsoleTarget()
   }
@@ -43,7 +51,7 @@ export function useBlankConsoleIndex() {
     blank,
     selectedId,
     mode,
-    actions,
+    actions: consoleIndex.actions,
     debug,
     clearSelectedBlank,
   }

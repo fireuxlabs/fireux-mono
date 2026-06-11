@@ -3,6 +3,7 @@
     <ConsoleProjectTargetsSelected
       :project="selectedProject"
       :project-id="projectId"
+      :mode="selectedMode"
       @clear="clearSelectedProject"
     />
 
@@ -11,8 +12,11 @@
       @select="actions.selectLive"
     />
 
-    <ConsoleProjectTargetsDemo />
-    <ConsoleProjectTargetsTest />
+    <ConsoleProjectTargetsDemo
+      :collection="projects.demo"
+      @select="actions.selectDemo"
+    />
+    <ConsoleProjectTargetsTest :init="false" />
 
     <DevJson
       title="Project console debug"
@@ -30,6 +34,7 @@ const {
   projects,
   actions,
   selectedProject,
+  selectedMode,
   projectId,
   debug,
   clearSelectedProject,

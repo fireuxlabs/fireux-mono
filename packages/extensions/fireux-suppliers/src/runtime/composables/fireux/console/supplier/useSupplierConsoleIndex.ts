@@ -62,20 +62,16 @@ export function useSupplierConsoleIndex(
 
       return normalizeString(result.id)
     },
+    debug: computed(() => ({
+      mode: selectedMode.value,
+      supplierId: supplierId.value,
+      activeSupplierAppId: activeSupplierAppId.value,
+      rootCollection: rootCollection.value,
+      canWrite: canWrite.value,
+      selectedSupplier: selectedSupplier.value,
+    })),
   })
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    supplierId: supplierId.value,
-    activeSupplierAppId: activeSupplierAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedSupplier: selectedSupplier.value,
-    counts: {
-      live: consoleIndex.entities.value.live.length,
-      demo: consoleIndex.entities.value.demo.length,
-      test: consoleIndex.entities.value.test ? 1 : 0,
-    },
-  }))
+  const debug = consoleIndex.debug
 
   return {
     state: consoleIndex.state,

@@ -9,6 +9,8 @@ type ConsoleIndexUserContext = {
   displayName: string
 }
 
+type ConsoleIndexDebug = Record<string, unknown>
+
 type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   entities: MaybeRef<{
     live: (TLive | null | undefined)[] | null | undefined
@@ -24,6 +26,7 @@ type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
     avatarSrc: string
     displayName: string
   }) => Promise<string | null | undefined>
+  debug?: MaybeRef<ConsoleIndexDebug | null | undefined>
 }
 
 export function useConsoleIndex<
@@ -66,6 +69,15 @@ export function useConsoleIndex<
     live: liveItems.value,
     demo: demoItems.value,
     test: testItem.value,
+  }))
+  const counts = computed(() => ({
+    live: liveItems.value.length,
+    demo: demoItems.value.length,
+    test: testItem.value ? 1 : 0,
+  }))
+  const debug = computed(() => ({
+    ...(options.debug ? unref(options.debug) ?? {} : {}),
+    counts: counts.value,
   }))
 
   const autoCreateTest = computed(
@@ -139,6 +151,8 @@ export function useConsoleIndex<
     state,
     user,
     entities,
+    counts,
+    debug,
     actions,
   }
 }

@@ -3,6 +3,7 @@
     <ConsoleSupplierTargetsSelected
       :supplier="selectedSupplier"
       :supplier-id="supplierId"
+      :mode="selectedMode"
       @clear="clearSelectedSupplier"
     />
 
@@ -11,8 +12,11 @@
       @select="actions.selectLive"
     />
 
-    <ConsoleSupplierTargetsDemo />
-    <ConsoleSupplierTargetsTest />
+    <ConsoleSupplierTargetsDemo
+      :collection="suppliers.demo"
+      @select="actions.selectDemo"
+    />
+    <ConsoleSupplierTargetsTest :init="false" />
 
     <DevJson
       title="Supplier console debug"
@@ -30,6 +34,7 @@ const {
   suppliers,
   actions,
   selectedSupplier,
+  selectedMode,
   supplierId,
   debug,
   clearSelectedSupplier,

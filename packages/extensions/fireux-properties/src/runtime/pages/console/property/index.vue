@@ -18,7 +18,7 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-property',
-    label: 'Properties',
+    label: 'Property',
     icon: 'i-lucide-house',
     position: 'bottom',
     requiresSelection: false,

@@ -17,7 +17,7 @@ definePageMeta({
   layout: 'console',
   nav: {
     key: 'console-project',
-    label: 'Projects',
+    label: 'Project',
     icon: 'i-lucide-briefcase-business',
     position: 'bottom',
     requiresSelection: false,

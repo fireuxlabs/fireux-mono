@@ -45,22 +45,17 @@ export function usePropertyConsoleIndex(
     autoCreateTest: true,
     testCreateKey: userId,
     createTestEntity: async () => userId.value || null,
+    debug: computed(() => ({
+      mode: selectedMode.value,
+      propertyId: propertyId.value,
+      activePropertyAppId: activePropertyAppId.value,
+      rootCollection: rootCollection.value,
+      canWrite: canWrite.value,
+      selectedProperty: selectedProperty.value,
+      status: 'property console uses scaffold data until Firestore property fetch/create is wired',
+    })),
   })
-
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    propertyId: propertyId.value,
-    activePropertyAppId: activePropertyAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedProperty: selectedProperty.value,
-    counts: {
-      live: consoleIndex.entities.value.live.length,
-      demo: consoleIndex.entities.value.demo.length,
-      test: consoleIndex.entities.value.test ? 1 : 0,
-    },
-    status: 'property console uses scaffold data until Firestore property fetch/create is wired',
-  }))
+  const debug = consoleIndex.debug
 
   return {
     state: consoleIndex.state,

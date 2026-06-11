@@ -3,6 +3,7 @@
     <ConsolePortfolioTargetsSelected
       :portfolio="selectedPortfolio"
       :portfolio-id="portfolioId"
+      :mode="selectedMode"
       @clear="clearSelectedPortfolio"
     />
 
@@ -11,8 +12,11 @@
       @select="actions.selectLive"
     />
 
-    <ConsolePortfolioTargetsDemo />
-    <ConsolePortfolioTargetsTest />
+    <ConsolePortfolioTargetsDemo
+      :collection="portfolios.demo"
+      @select="actions.selectDemo"
+    />
+    <ConsolePortfolioTargetsTest :init="false" />
 
     <DevJson
       title="Portfolio console debug"
@@ -30,6 +34,7 @@ const {
   portfolios,
   actions,
   selectedPortfolio,
+  selectedMode,
   portfolioId,
   debug,
   clearSelectedPortfolio,

@@ -64,19 +64,15 @@ export function useProjectConsoleIndex(
 
       return normalizeString(result.id)
     },
+    debug: computed(() => ({
+      mode: selectedMode.value,
+      projectId: projectId.value,
+      rootCollection: rootCollection.value,
+      canWrite: canWrite.value,
+      selectedProject: selectedProject.value,
+    })),
   })
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    projectId: projectId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedProject: selectedProject.value,
-    counts: {
-      live: consoleIndex.entities.value.live.length,
-      demo: consoleIndex.entities.value.demo.length,
-      test: consoleIndex.entities.value.test ? 1 : 0,
-    },
-  }))
+  const debug = consoleIndex.debug
 
   return {
     state: consoleIndex.state,

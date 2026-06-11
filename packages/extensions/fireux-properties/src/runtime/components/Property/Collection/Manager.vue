@@ -13,18 +13,13 @@
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UFieldGroup v-if="showFilterToggle" size="xs">
               <UButton
-                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                v-for="option in filterOptions"
+                :key="option.value"
+                :variant="filterMode === option.value ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setFilterMode('all')"
+                @click="setFilterMode(option.value)"
               >
-                All
-              </UButton>
-              <UButton
-                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode('mine')"
-              >
-                Mine
+                {{ option.label }}
               </UButton>
             </UFieldGroup>
 
@@ -67,7 +62,8 @@
         <PropertyCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-meta="true"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
@@ -77,7 +73,8 @@
         <PropertyCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-meta="true"
           @action="emit('select', card.id)"
         />
@@ -110,10 +107,19 @@ import PropertyCardsCell from '../Cards/Cell.vue'
 import PropertyCardsPill from '../Cards/Pill.vue'
 import PropertyCollectionList from './List.vue'
 
+type PropertyFilterMode = 'all' | 'mine' | 'console'
+type PropertyFilterOption = {
+  value: PropertyFilterMode
+  label: string
+}
+
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
-    filterMode?: 'all' | 'mine'
+    consoleIds?: string[]
+    actionIds?: string[]
+    filterMode?: PropertyFilterMode
+    filterOptions?: PropertyFilterOption[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -130,6 +136,10 @@ const props = withDefaults(
   }>(),
   {
     filterMode: 'all',
+    filterOptions: () => [
+      { value: 'all', label: 'All' },
+      { value: 'mine', label: 'Mine' },
+    ],
     title: 'Properties',
     description: 'Browse property records available to this runtime.',
     searchPlaceholder: 'Search properties...',
@@ -139,6 +149,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     link: true,
     action: false,
+    actionIds: () => [],
     showFilterToggle: false,
     showBadges: true,
     devJsonTitle: 'Properties (JSON)',
@@ -148,7 +159,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', propertyId: string): void
-  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:filterMode', value: PropertyFilterMode): void
 }>()
 
 const {
@@ -158,20 +169,30 @@ const {
 } = usePropertyInterface()
 
 const fetched = usePropertyCollection()
-const collection = computed(() =>
+const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.properties.value
 )
 const pending = computed(() =>
   Array.isArray(props.collection) ? false : fetched.pending.value
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Properties'))
 const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search properties...')
 )
-const filterMode = computed<'all' | 'mine'>(() =>
-  props.filterMode === 'mine' ? 'mine' : 'all'
+const filterMode = computed<PropertyFilterMode>(() =>
+  props.filterMode === 'mine' || props.filterMode === 'console'
+    ? props.filterMode
+    : 'all'
+)
+const filterOptions = computed<PropertyFilterOption[]>(() =>
+  Array.isArray(props.filterOptions) && props.filterOptions.length
+    ? props.filterOptions
+    : [
+        { value: 'all', label: 'All' },
+        { value: 'mine', label: 'Mine' },
+      ]
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -180,6 +201,34 @@ const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showBadges = computed(() => props.showBadges !== false)
+const consoleIdSet = computed(
+  () =>
+    new Set(
+      (props.consoleIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const actionIdSet = computed(
+  () =>
+    new Set(
+      (props.actionIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!actionEnabled.value) return false
+  const actionIds = props.actionIds ?? []
+  if (!actionIds.length) return true
+  return actionIdSet.value.has(String(cardId ?? '').trim())
+}
+const collection = computed<Property[]>(() =>
+  rawCollection.value.filter((property) => {
+    if (filterMode.value !== 'console') return true
+    return consoleIdSet.value.has(String(property.id ?? '').trim())
+  })
+)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
@@ -192,21 +241,26 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+type PropertyManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
+  canAct: boolean
+}
+
+const cardsFiltered = computed<PropertyManagerCard[]>(() =>
   visibleItems.value
     .map((property) => {
+      const canAct = cardCanAct(property.id)
+
       if (variant.value === 'cell') {
         const base = makeCard(property)
         const cell = makeCell(property)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, canAct }
       }
 
-      return makePill(property)
+      const pill = makePill(property)
+      return pill ? { ...pill, canAct } : null
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+    .filter((card): card is PropertyManagerCard => Boolean(card))
 )
 
 const countLabel = computed(() =>
@@ -221,7 +275,7 @@ const devJsonContext = computed(() =>
   String(props.devJsonContext || 'collection manager · properties').trim()
 )
 
-function setFilterMode(value: 'all' | 'mine') {
+function setFilterMode(value: PropertyFilterMode) {
   emit('update:filterMode', value)
 }
 </script>

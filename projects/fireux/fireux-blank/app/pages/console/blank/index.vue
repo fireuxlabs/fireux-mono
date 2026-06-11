@@ -15,7 +15,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
-  name: 'BlankConsoleIndexPage',
   nav: {
     key: 'console-blank',
     label: 'Blank',
