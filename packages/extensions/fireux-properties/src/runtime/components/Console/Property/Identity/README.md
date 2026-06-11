@@ -5,4 +5,4 @@ Updated: 2026-06-10
 
 Marker for the console identity spine.
 
-Property console identity UI should live here if this legacy-thin console surface remains active.
+Property console identity UI lives here when it depends on the selected Property console target.

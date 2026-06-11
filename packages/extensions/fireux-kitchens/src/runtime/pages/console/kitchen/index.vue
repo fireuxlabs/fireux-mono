@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchen />
+        <ConsoleKitchenIndex />
       </section>
     </template>
   </UDashboardPanel>

@@ -5,4 +5,4 @@ Updated: 2026-06-10
 
 Marker for the console operations spine.
 
-Property operation components should live in child folders here if this legacy-thin console surface remains active.
+Property operation components live in child folders here when they depend on the selected Property console target.

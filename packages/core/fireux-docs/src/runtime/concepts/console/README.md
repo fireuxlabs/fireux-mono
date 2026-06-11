@@ -229,9 +229,9 @@ The canonical route-file shape is:
 - The family folder name is singular even when the entry surface lists many targets.
 
 The canonical console spine shape is:
-- `pages/console/<family>/index.vue` renders the console dashboard panel and the single `<ConsoleX />` entry component.
-- `<ConsoleX />` is the target picker spine and renders the same vertical sections for every console family: selected, live, demo, test, then dev debug.
-- each section lives in `components/Console/X/Targets/*` so the family can own labels and domain-specific cards without owning a different spine.
+- `pages/console/<family>/index.vue` renders the console dashboard panel and the single `<ConsoleXIndex />` entry component.
+- `<ConsoleXIndex />` is the target picker spine and renders the same vertical sections for every console family: selected, live, demo, test, then dev debug.
+- each section lives in `components/Console/X/Index/*` so the family can own labels and domain-specific cards without owning a different spine.
 - `useXConsoleIndex()` composes family data and calls `useConsoleIndex()` from `fireux-core`.
 - `components/Console/X/Overview.vue` is the selected target spine and renders the same overview sections for every console family: focus, multiple, then dev debug.
 - `useXConsoleOverview()` composes family data and calls `useConsoleOverview()` from `fireux-core`.
