@@ -4,7 +4,8 @@
 
     <BlankCollectionManager
       :collection="managerCollection"
-      :pending="pending"
+      :pending="managerPending"
+      :action-ids="consoleBlankIds"
       v-model:filter-mode="liveMode"
       :filter-options="liveModeOptions"
       :show-filter-toggle="true"
@@ -12,7 +13,7 @@
       :description="managerDescription"
       :action="true"
       :show-badges="false"
-      @select="emit('select', $event)"
+      @select="selectBlank"
     />
 
     <DevJson
@@ -27,6 +28,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useBlankDocsByIds } from '../../../../composables/fireux/firestore/blank/useBlank'
 import type { Blank } from '../../../../models/blank.model'
 
 type BlankLiveMode = 'console' | 'mine'
@@ -58,21 +60,32 @@ const myBlankIds = computed(() =>
     .map(text)
     .filter(Boolean))
 )
-const myBlankIdSet = computed(() => new Set(myBlankIds.value))
+const myBlanks = useBlankDocsByIds(myBlankIds)
+const consoleBlankIds = computed(() =>
+  props.collection.map((blank) => text(blank.id)).filter(Boolean)
+)
+const consoleBlankIdSet = computed(() => new Set(consoleBlankIds.value))
 const myBlankCollection = computed(() =>
-  props.collection.filter((blank) => myBlankIdSet.value.has(text(blank.id)))
+  myBlanks.blanks.value
 )
 const managerCollection = computed(() =>
   liveMode.value === 'mine' ? myBlankCollection.value : props.collection
+)
+const managerPending = computed(() =>
+  liveMode.value === 'mine' ? myBlanks.pending.value : props.pending
 )
 const managerTitle = computed(() =>
   liveMode.value === 'mine' ? 'My Blanks' : 'Choose Blank'
 )
 const managerDescription = computed(() =>
   liveMode.value === 'mine'
-    ? 'Blank targets from your personal Blank list.'
-    : 'Select the Blank console target you want to work on.'
+    ? 'Blank targets from your personal Blank list. Only team targets can be selected.'
+    : 'Select a Blank console target you can operate.'
 )
+function selectBlank(id: string) {
+  if (!consoleBlankIdSet.value.has(text(id))) return
+  emit('select', id)
+}
 const userDebug = computed(() => ({
   useUser: {
     pending: user.pending.value,
@@ -86,7 +99,8 @@ const userDebug = computed(() => ({
   },
   blankConsoleSource: {
     liveMode: liveMode.value,
-    blankConsoleCount: props.collection.length,
+    consoleBlankIds: consoleBlankIds.value,
+    blankConsoleCount: consoleBlankIds.value.length,
     myBlankCount: myBlankCollection.value.length,
     renderedCount: managerCollection.value.length,
   },

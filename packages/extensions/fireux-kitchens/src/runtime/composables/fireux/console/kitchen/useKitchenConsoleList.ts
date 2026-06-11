@@ -37,7 +37,7 @@ const uniq = (values: unknown[]) =>
  * 1. Read the user's Kitchen index first: `users/{uid}.myKitchens`.
  * 2. Hydrate those exact root Kitchen docs.
  * 3. Read exact app-scoped Kitchen records only for those ids.
- * 4. Show only kitchens where the user is listed in the app-scoped team.
+ * 4. Show only kitchens where the user is listed in app-scoped operator/team authority.
  *
  * This avoids scanning every app scope or every root Kitchen in the browser.
  */

@@ -8,6 +8,7 @@ export function useBlankConsoleIdentity() {
   const selectedBlank = computed(
     () =>
       blank.liveTargets.value.find((target) => target.id === selectedId.value) ??
+      blank.demoTargets.value.find((target) => target.id === selectedId.value) ??
       null
   )
 

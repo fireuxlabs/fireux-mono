@@ -2,8 +2,9 @@ import {
   collection,
   doc,
 } from 'firebase/firestore'
-import { computed } from 'vue'
+import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -17,10 +18,13 @@ import {
 } from '../../../../models/blank.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const textList = (values: unknown[] | undefined) =>
+  Array.isArray(values) ? values.map(text).filter(Boolean) : []
 
 type CreateBlankInput = {
   name?: string
 }
+type BlankIdInput = string[] | Ref<string[]>
 
 export function blankAppCollectionPath(appId: string) {
   const resolvedAppId = text(appId)
@@ -31,11 +35,24 @@ export function blankAppCollectionPath(appId: string) {
 
 export function useBlankCollection() {
   const { appId } = useFireUXConfig()
+  const { coreUser, pending: userPending } = useUser()
   const { firestoreFetchCollection, firestoreLoadDocsByIds } = useFirestoreRead()
   const appCollectionPath = computed(() => blankAppCollectionPath(appId))
   const appBlanks = firestoreFetchCollection<AppBlank>(appCollectionPath)
+  const userId = computed(() => text(coreUser.value?.id))
+  const authorisedAppBlanks = computed(() =>
+    (appBlanks.value ?? []).filter((blank) => {
+      const operators = textList(blank.operator_ids)
+      const team = textList(blank.team_ids)
+
+      return Boolean(
+        userId.value &&
+          (operators.includes(userId.value) || team.includes(userId.value))
+      )
+    })
+  )
   const blankIds = computed(() =>
-    (appBlanks.value ?? [])
+    authorisedAppBlanks.value
       .map((blank) => text(blank.blank_id || blank.id))
       .filter(Boolean)
   )
@@ -46,7 +63,7 @@ export function useBlankCollection() {
   const blanks = computed<Blank[]>(() => {
     const overlaysById = new Map<string, AppBlank>()
 
-    for (const overlay of appBlanks.value ?? []) {
+    for (const overlay of authorisedAppBlanks.value) {
       const id = text(overlay.blank_id || overlay.id)
       if (id) overlaysById.set(id, overlay)
     }
@@ -65,7 +82,10 @@ export function useBlankCollection() {
     })
   })
   const pending = computed(
-    () => appBlanks.value === undefined || rootBlanks.pending.value
+    () =>
+      userPending.value ||
+      appBlanks.value === undefined ||
+      rootBlanks.pending.value
   )
 
   return {
@@ -73,6 +93,26 @@ export function useBlankCollection() {
     pending,
     rootCollectionPath: BlankStorage.rootCollection,
     appCollectionPath,
+  }
+}
+
+export function useBlankDocsByIds(ids: BlankIdInput) {
+  const { firestoreLoadDocsByIds } = useFirestoreRead()
+  const blankIds = computed(() => unref(ids).map(text).filter(Boolean))
+  const rootBlanks = firestoreLoadDocsByIds<Blank>({
+    collectionPath: BlankStorage.rootCollection,
+    ids: blankIds,
+  })
+  const blanks = computed<Blank[]>(() =>
+    (rootBlanks.docs.value ?? []).map((blank) => ({
+      ...blank,
+      id: text(blank.id),
+    }))
+  )
+
+  return {
+    blanks,
+    pending: rootBlanks.pending,
   }
 }
 

@@ -9,6 +9,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   PortfolioStorage,
   type Portfolio,
@@ -66,7 +67,7 @@ export function usePortfolioCollection(
   })
   const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(TEST_COLLECTION_PATH)
   const resolvedAppId = computed(() => normalizeString(appId))
-  const overlayQuery = computed<Query<AppPortfolioOverlay> | null>(() => {
+  const overlayOperatorQuery = computed<Query<AppPortfolioOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
@@ -76,8 +77,18 @@ export function usePortfolioCollection(
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppPortfolioOverlay>
   })
-  const overlaySource = firestoreQuery<AppPortfolioOverlay>(
-    overlayQuery,
+  const overlayTeamQuery = computed<Query<AppPortfolioOverlay> | null>(() => {
+    if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
+
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.overlayCollection),
+      where('team_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<AppPortfolioOverlay>
+  })
+  const overlayOperatorSource = firestoreQuery<AppPortfolioOverlay>(
+    overlayOperatorQuery,
     undefined,
     computed(() =>
       resolvedAppId.value
@@ -85,6 +96,28 @@ export function usePortfolioCollection(
         : ''
     )
   )
+  const overlayTeamSource = firestoreQuery<AppPortfolioOverlay>(
+    overlayTeamQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.overlayCollection}`
+        : ''
+    )
+  )
+  const overlaySource = computed<AppPortfolioOverlay[]>(() => {
+    const byId = new Map<string, AppPortfolioOverlay>()
+
+    for (const overlay of [
+      ...(overlayOperatorSource.value ?? []),
+      ...(overlayTeamSource.value ?? []),
+    ]) {
+      const id = resolvePortfolioId(overlay)
+      if (id) byId.set(id, { ...overlay, id })
+    }
+
+    return [...byId.values()]
+  })
   const resolvedFilter = computed<PortfolioCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
@@ -190,10 +223,7 @@ export function usePortfolioCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        const operatorIds = Array.isArray(portfolio?.operator_ids)
-          ? portfolio.operator_ids.map((value) => normalizeString(value))
-          : []
-        if (!operatorIds.includes(filterOperatorId.value)) return acc
+        if (!targetHasOperator(portfolio, filterOperatorId.value)) return acc
       }
 
       acc.push({
@@ -210,10 +240,12 @@ export function usePortfolioCollection(
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.value === undefined
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
+    if (!filterOperatorId.value) return false
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      overlaySource.value === undefined
+      overlayOperatorSource.value === undefined ||
+      overlayTeamSource.value === undefined
     )
   })
 

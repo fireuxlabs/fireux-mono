@@ -38,7 +38,8 @@
         v-for="card in cards"
         :key="card.id"
         :card="card"
-        :action="action"
+        :action="card.canAct"
+        :disabled="props.action && !card.canAct"
         :show-badges="showBadges"
         @action="emit('select', card.id)"
       />
@@ -61,6 +62,7 @@ const props = withDefaults(
   defineProps<{
     collection?: Blank[]
     pending?: boolean
+    actionIds?: string[]
     filterMode?: BlankFilterMode
     filterOptions?: BlankFilterOption[]
     title?: string
@@ -73,6 +75,7 @@ const props = withDefaults(
   {
     collection: () => [],
     pending: false,
+    actionIds: () => [],
     filterMode: 'all',
     filterOptions: () => [
       { value: 'all', label: 'All' },
@@ -109,8 +112,21 @@ const filterOptions = computed<BlankFilterOption[]>(() =>
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showCount = computed(() => props.showCount !== false)
 
-const cards = computed<ConsoleEntityIndexCard[]>(() => {
-  const mapped: ConsoleEntityIndexCard[] = []
+type BlankManagerCard = ConsoleEntityIndexCard & {
+  canAct: boolean
+}
+
+const actionIdSet = computed(
+  () => new Set(props.actionIds.map((id) => text(id)).filter(Boolean))
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!props.action) return false
+  if (!props.actionIds.length) return true
+  return actionIdSet.value.has(text(cardId))
+}
+
+const cards = computed<BlankManagerCard[]>(() => {
+  const mapped: BlankManagerCard[] = []
 
   for (const target of props.collection) {
     const id = text(target.id)
@@ -122,6 +138,7 @@ const cards = computed<ConsoleEntityIndexCard[]>(() => {
       subtitle: target.status,
       meta: id,
       badges: [target.status],
+      canAct: cardCanAct(id),
     })
   }
 

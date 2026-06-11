@@ -2,6 +2,7 @@
   <section class="space-y-4">
     <ConsoleBlankTargetsSelected
       :selected-id="selectedId"
+      :mode="mode"
       @clear="clearSelectedBlank"
     />
 
@@ -11,7 +12,10 @@
       @select="actions.selectLive"
     />
 
-    <ConsoleBlankTargetsDemo :show="false" />
+    <ConsoleBlankTargetsDemo
+      :collection="blank.demoTargets.value"
+      @select="actions.selectDemo"
+    />
     <ConsoleBlankTargetsTest :init="false" />
 
     <DevJson
@@ -26,6 +30,6 @@
 <script setup lang="ts">
 import { useBlankConsoleIndex } from '../../../composables/fireux/console/blank/useBlankConsoleIndex'
 
-const { blank, selectedId, debug, actions, clearSelectedBlank } =
+const { blank, selectedId, mode, debug, actions, clearSelectedBlank } =
   useBlankConsoleIndex()
 </script>

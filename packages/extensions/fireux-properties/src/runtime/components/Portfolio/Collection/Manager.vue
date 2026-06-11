@@ -64,7 +64,8 @@
         <PortfolioCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -73,7 +74,8 @@
         <PortfolioCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -116,6 +118,7 @@ const props = withDefaults(
   defineProps<{
     collection?: Portfolio[]
     consoleIds?: string[]
+    actionIds?: string[]
     filterMode?: PortfolioFilterMode
     filterOptions?: PortfolioFilterOption[]
     title?: string
@@ -142,6 +145,7 @@ const props = withDefaults(
     description: 'Browse portfolios available in this workspace.',
     link: true,
     action: false,
+    actionIds: () => [],
     showBadges: true,
     searchPlaceholder: 'Search portfolios…',
     showSearch: true,
@@ -205,6 +209,20 @@ const consoleIdSet = computed(
         .filter(Boolean)
     )
 )
+const actionIdSet = computed(
+  () =>
+    new Set(
+      (props.actionIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!actionEnabled.value) return false
+  const actionIds = props.actionIds ?? []
+  if (!actionIds.length) return true
+  return actionIdSet.value.has(String(cardId ?? '').trim())
+}
 const collection = computed<Portfolio[]>(() =>
   rawCollection.value
     .filter((portfolio): portfolio is Portfolio => Boolean(makeCard(portfolio)))
@@ -233,21 +251,26 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+type PortfolioManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
+  canAct: boolean
+}
+
+const cardsFiltered = computed<PortfolioManagerCard[]>(() =>
   visibleItems.value
     .map((portfolio) => {
+      const canAct = cardCanAct(portfolio.id)
+
       if (variant.value === 'cell') {
         const base = makeCard(portfolio)
         const cell = makeCell(portfolio)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, canAct }
       }
 
-      return makePill(portfolio)
+      const pill = makePill(portfolio)
+      return pill ? { ...pill, canAct } : null
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+    .filter((card): card is PortfolioManagerCard => Boolean(card))
 )
 
 const countLabel = computed(() =>

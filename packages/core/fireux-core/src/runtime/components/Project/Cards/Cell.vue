@@ -3,6 +3,7 @@
     v-if="link && to"
     :to="to"
     class="card card--cell"
+    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
   >
     <div class="card__media">
       <UAvatar
@@ -46,6 +47,7 @@
   <div
     v-else
     class="card card--cell"
+    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
     @click="onClick"
   >
     <div class="card__media">
@@ -103,6 +105,7 @@ type ProjectCellProps = {
   showBadges?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -116,9 +119,11 @@ const props = withDefaults(defineProps<ProjectCellProps>(), {
   showBadges: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return

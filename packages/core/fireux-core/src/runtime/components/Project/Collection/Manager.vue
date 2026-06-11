@@ -64,7 +64,8 @@
         <ProjectCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-subtitle="showSubtitle"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
@@ -74,7 +75,8 @@
         <ProjectCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-subtitle="showSubtitle"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
@@ -117,6 +119,7 @@ const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
     consoleIds?: string[]
+    actionIds?: string[]
     filterMode?: ProjectFilterMode
     filterOptions?: ProjectFilterOption[]
     title?: string
@@ -143,6 +146,7 @@ const props = withDefaults(
     title: 'Projects',
     link: true,
     action: false,
+    actionIds: () => [],
     showFilterToggle: false,
     showSubtitle: true,
     showBadges: true,
@@ -218,6 +222,20 @@ const consoleIdSet = computed(
         .filter(Boolean)
     )
 )
+const actionIdSet = computed(
+  () =>
+    new Set(
+      (props.actionIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!actionEnabled.value) return false
+  const actionIds = props.actionIds ?? []
+  if (!actionIds.length) return true
+  return actionIdSet.value.has(String(cardId ?? '').trim())
+}
 const collection = computed<ProjectSurface[]>(() =>
   rawCollection.value
     .filter((row): row is ProjectSurface => Boolean(makeCard(row)))
@@ -236,21 +254,26 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     }
   )
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+type ProjectManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
+  canAct: boolean
+}
+
+const cardsFiltered = computed<ProjectManagerCard[]>(() =>
   visibleItems.value
     .map((row) => {
+      const canAct = cardCanAct(row.id)
+
       if (variant.value === 'cell') {
         const base = makeCard(row)
         const cell = makeCell(row)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, canAct }
       }
 
-      return makePill(row)
+      const pill = makePill(row)
+      return pill ? { ...pill, canAct } : null
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+    .filter((card): card is ProjectManagerCard => Boolean(card))
 )
 
 const totalCount = computed(() => collection.value.length)

@@ -17,7 +17,8 @@ export const BlankStorage = {
  * Canon:
  * - root truth: blanks/{blankId}
  * - app console scope: apps/{appId}/blanks/{blankId}
- * - no demo mode, no test mode, no operations, no child records
+ * - demo targets are static, selectable, and read-only
+ * - no test mode, no operations, no child records
  */
 export type Blank = Partial<FireuxStamped> &
   FireuxAppScope & {

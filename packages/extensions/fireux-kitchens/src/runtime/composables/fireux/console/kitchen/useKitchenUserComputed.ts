@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 
 const normalize = (value: unknown) => String(value ?? '').trim()
 const uniq = (values: unknown[]) =>
@@ -7,6 +8,7 @@ const uniq = (values: unknown[]) =>
 
 type KitchenConsoleScope = {
   id?: string
+  operator_ids?: string[]
   team_ids?: string[]
 }
 
@@ -14,8 +16,8 @@ type KitchenConsoleScope = {
  * Kitchen console user relay.
  *
  * `myKitchens` is the user's personal Kitchen index.
- * `consoleKitchenIds` is the authorised console list after crossing that index
- * against Kitchen team membership.
+ * `consoleKitchenIds` is the console list after crossing that index
+ * against Kitchen operator/team authority.
  */
 export function useKitchenUserComputed(scopes = computed<KitchenConsoleScope[]>(() => [])) {
   const user = useUser()
@@ -34,7 +36,7 @@ export function useKitchenUserComputed(scopes = computed<KitchenConsoleScope[]>(
           return (
             id &&
             myKitchenIdSet.value.has(id) &&
-            uniq(scope.team_ids ?? []).includes(userId.value)
+            targetHasOperator(scope, userId.value)
           )
         })
         .map((scope) => scope.id)

@@ -11,6 +11,7 @@ import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 
 const PROJECT_COLLECTION_PATH = ProjectStorage.rootCollection
 const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
@@ -76,11 +77,38 @@ export function useProjectCollection(
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<ProjectSurface>
   })
+  const teamQuery = computed<Query<ProjectSurface> | null>(() => {
+    if (sourceMode.value !== 'live') return null
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(db, PROJECT_COLLECTION_PATH),
+      where('team_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<ProjectSurface>
+  })
   const operatorSource = firestoreQuery<ProjectSurface>(
     operatorQuery,
     undefined,
     PROJECT_COLLECTION_PATH
   )
+  const teamSource = firestoreQuery<ProjectSurface>(
+    teamQuery,
+    undefined,
+    PROJECT_COLLECTION_PATH
+  )
+  const operatorTeamSource = computed<ProjectSurface[]>(() => {
+    const byId = new Map<string, ProjectSurface>()
+
+    for (const project of [
+      ...(operatorSource.value ?? []),
+      ...(teamSource.value ?? []),
+    ]) {
+      const id = String(project?.id || '').trim()
+      if (id) byId.set(id, { ...project, id })
+    }
+
+    return [...byId.values()]
+  })
   const firestoreSource = computed(() => {
     if (sourceMode.value === 'demo') return null
 
@@ -89,13 +117,20 @@ export function useProjectCollection(
         return liveSource
       }
 
-      return operatorSource
+      return null
     }
 
     return testSource
   })
   const collectionItems = computed<ProjectSurface[]>(() => {
     if (sourceMode.value === 'demo') return demoProjects.value
+    if (
+      sourceMode.value === 'live' &&
+      hasOperatorFilter.value &&
+      filterOperatorId.value
+    ) {
+      return operatorTeamSource.value
+    }
     return firestoreSource.value?.value ?? []
   })
 
@@ -106,10 +141,7 @@ export function useProjectCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        const operatorIds = Array.isArray(project?.operator_ids)
-          ? project.operator_ids.map((value) => String(value ?? '').trim())
-          : []
-        if (!operatorIds.includes(filterOperatorId.value)) return acc
+        if (!targetHasOperator(project, filterOperatorId.value)) return acc
       }
 
       const item = surface({
@@ -126,6 +158,14 @@ export function useProjectCollection(
   const count = computed(() => projects.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
+    if (
+      sourceMode.value === 'live' &&
+      hasOperatorFilter.value &&
+      filterOperatorId.value
+    ) {
+      return operatorSource.value === undefined || teamSource.value === undefined
+    }
+    if (sourceMode.value === 'live' && hasOperatorFilter.value) return false
     return firestoreSource.value?.value === undefined
   })
 

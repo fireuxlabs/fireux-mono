@@ -12,14 +12,14 @@
     <KitchenCollectionManager
       :collection="managerCollection"
       :console-ids="kitchenConsoleUser.consoleKitchenIds"
-      :action-ids="myKitchenIds"
+      :action-ids="kitchenConsoleUser.consoleKitchenIds"
       v-model:filter-mode="liveMode"
       :filter-options="liveModeOptions"
       :show-filter-toggle="true"
       :title="managerTitle"
       :description="managerDescription"
       :link="false"
-      :action="liveMode === 'console'"
+      :action="true"
       :disabled="false"
       :show-badges="false"
       @select="selectConsoleKitchen"
@@ -76,8 +76,7 @@ const managerCollection = computed(() =>
   liveMode.value === 'mine' ? myKitchenCollection.kitchens.value : props.collection
 )
 function selectConsoleKitchen(id: string) {
-  if (liveMode.value !== 'console') return
-  if (!myKitchenIds.value.includes(id)) return
+  if (!kitchenConsoleUser.value.consoleKitchenIds.includes(id)) return
   emit('select', id)
 }
 const userDebug = computed(() => ({

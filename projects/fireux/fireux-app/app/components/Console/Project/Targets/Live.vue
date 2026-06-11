@@ -2,6 +2,7 @@
   <ProjectCollectionManager
     :collection="collection"
     :console-ids="consoleIds"
+    :action-ids="consoleIds"
     v-model:filter-mode="liveMode"
     :filter-options="liveModeOptions"
     :show-filter-toggle="true"
@@ -10,7 +11,7 @@
     :link="false"
     :action="true"
     :show-badges="false"
-    @select="emit('select', $event)"
+    @select="selectProject"
   />
 </template>
 
@@ -43,4 +44,10 @@ const consoleIds = computed(() =>
     .map((project) => String(project.id ?? '').trim())
     .filter(Boolean)
 )
+const consoleIdSet = computed(() => new Set(consoleIds.value))
+function selectProject(id: string) {
+  const projectId = String(id ?? '').trim()
+  if (!consoleIdSet.value.has(projectId)) return
+  emit('select', projectId)
+}
 </script>

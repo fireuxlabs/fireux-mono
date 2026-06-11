@@ -3,6 +3,7 @@
   v-if="link && to"
   :to="to"
   class="block w-full"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
 >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
@@ -42,6 +43,7 @@
 <div
   v-else
   class="block w-full"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
   @click="onClick"
 >
     <div
@@ -100,6 +102,7 @@ type Props = Pick<
   showTagline?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -113,9 +116,11 @@ const props = withDefaults(defineProps<Props>(), {
   showTagline: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return

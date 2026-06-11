@@ -64,7 +64,8 @@
         <SupplierCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -73,7 +74,8 @@
         <SupplierCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="actionEnabled"
+          :action="card.canAct"
+          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
@@ -113,6 +115,7 @@ const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
     consoleIds?: string[]
+    actionIds?: string[]
     filterMode?: SupplierFilterMode
     filterOptions?: SupplierFilterOption[]
     title?: string
@@ -139,6 +142,7 @@ const props = withDefaults(
     description: 'Browse supplier records available to this runtime.',
     link: true,
     action: false,
+    actionIds: () => [],
     showBadges: true,
     searchPlaceholder: 'Search suppliers…',
     showSearch: true,
@@ -218,6 +222,20 @@ const consoleIdSet = computed(
         .filter(Boolean)
     )
 )
+const actionIdSet = computed(
+  () =>
+    new Set(
+      (props.actionIds ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+)
+const cardCanAct = (cardId: unknown) => {
+  if (!actionEnabled.value) return false
+  const actionIds = props.actionIds ?? []
+  if (!actionIds.length) return true
+  return actionIdSet.value.has(String(cardId ?? '').trim())
+}
 const collection = computed<Supplier[]>(() =>
   rawCollection.value
     .filter((entry): entry is Supplier => Boolean(makeCard(entry as Supplier)))
@@ -235,21 +253,26 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+type SupplierManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
+  canAct: boolean
+}
+
+const cardsFiltered = computed<SupplierManagerCard[]>(() =>
   visibleItems.value
     .map((entry) => {
+      const canAct = cardCanAct(entry.id)
+
       if (variant.value === 'cell') {
         const base = makeCard(entry)
         const cell = makeCell(entry)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, canAct }
       }
 
-      return makePill(entry)
+      const pill = makePill(entry)
+      return pill ? { ...pill, canAct } : null
     })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+    .filter((card): card is SupplierManagerCard => Boolean(card))
 )
 
 const countLabel = computed(() =>

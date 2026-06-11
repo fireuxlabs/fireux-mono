@@ -1,17 +1,31 @@
 <template>
-  <section v-if="show" class="space-y-2">
+  <section class="space-y-2">
     <pre>ConsoleBlankTargetsDemo</pre>
 
-    <UPageCard
-      title="Demo target enabled"
-      description="Blank demo targets can render here."
-      variant="subtle"
+    <BlankCollectionManager
+      :collection="collection"
+      title="Demo Blanks"
+      description="Select a read-only Blank demo target to inspect the console shape."
+      :action="true"
+      :show-badges="true"
+      @select="emit('select', $event)"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  show?: boolean
+import type { Blank } from '../../../../models/blank.model'
+
+withDefaults(
+  defineProps<{
+    collection?: Blank[]
+  }>(),
+  {
+    collection: () => [],
+  }
+)
+
+const emit = defineEmits<{
+  (event: 'select', id: string): void
 }>()
 </script>

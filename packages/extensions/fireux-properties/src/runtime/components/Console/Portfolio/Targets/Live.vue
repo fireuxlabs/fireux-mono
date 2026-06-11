@@ -2,6 +2,7 @@
   <PortfolioCollectionManager
     :collection="collection"
     :console-ids="consoleIds"
+    :action-ids="consoleIds"
     v-model:filter-mode="liveMode"
     :filter-options="liveModeOptions"
     :show-filter-toggle="true"
@@ -10,7 +11,7 @@
     :link="false"
     :action="true"
     :show-badges="false"
-    @select="emit('select', $event)"
+    @select="selectPortfolio"
   />
 </template>
 
@@ -43,4 +44,10 @@ const consoleIds = computed(() =>
     .map((portfolio) => String(portfolio.id ?? '').trim())
     .filter(Boolean)
 )
+const consoleIdSet = computed(() => new Set(consoleIds.value))
+function selectPortfolio(id: string) {
+  const portfolioId = String(id ?? '').trim()
+  if (!consoleIdSet.value.has(portfolioId)) return
+  emit('select', portfolioId)
+}
 </script>

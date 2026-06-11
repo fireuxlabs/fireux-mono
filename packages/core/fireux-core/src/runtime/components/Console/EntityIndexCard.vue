@@ -1,8 +1,9 @@
 <template>
   <div
     class="pill"
-    :role="action ? 'button' : undefined"
-    :tabindex="action ? 0 : undefined"
+    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
+    :role="action && !disabled ? 'button' : undefined"
+    :tabindex="action && !disabled ? 0 : undefined"
     @click="emitAction"
     @keydown.enter.prevent="emitAction"
     @keydown.space.prevent="emitAction"
@@ -53,11 +54,13 @@ const props = withDefaults(
   defineProps<{
     card: ConsoleEntityIndexCard
     action?: boolean
+    disabled?: boolean
     showBadges?: boolean
     showSubtitle?: boolean
   }>(),
   {
     action: false,
+    disabled: false,
     showBadges: true,
     showSubtitle: true,
   }
@@ -68,6 +71,7 @@ const emit = defineEmits<{
 }>()
 
 function emitAction() {
+  if (props.disabled) return
   if (!props.action) return
   emit('action')
 }

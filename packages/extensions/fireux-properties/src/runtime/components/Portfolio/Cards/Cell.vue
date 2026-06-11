@@ -3,6 +3,7 @@
   v-if="link && to"
   :to="to"
   class="block w-full"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
 >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
@@ -47,6 +48,7 @@
 <div
   v-else
   class="block w-full"
+  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
   @click="onClick"
 >
     <div
@@ -104,6 +106,7 @@ type PortfolioCellProps = Pick<
   showBadges?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -117,6 +120,7 @@ const props = withDefaults(defineProps<PortfolioCellProps>(), {
   showBadges: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const badgeItems = computed(() => [...props.badges, props.status].filter(Boolean))
@@ -125,6 +129,7 @@ const meta = computed(() =>
 )
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return

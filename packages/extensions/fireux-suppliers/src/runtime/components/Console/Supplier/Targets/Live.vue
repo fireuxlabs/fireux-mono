@@ -2,6 +2,7 @@
   <SupplierCollectionManager
     :collection="collection"
     :console-ids="consoleIds"
+    :action-ids="consoleIds"
     v-model:filter-mode="liveMode"
     :filter-options="liveModeOptions"
     :show-filter-toggle="true"
@@ -10,7 +11,7 @@
     :link="false"
     :action="true"
     :show-badges="false"
-    @select="emit('select', $event)"
+    @select="selectSupplier"
   />
 </template>
 
@@ -43,4 +44,10 @@ const consoleIds = computed(() =>
     .map((supplier) => String(supplier.id ?? '').trim())
     .filter(Boolean)
 )
+const consoleIdSet = computed(() => new Set(consoleIds.value))
+function selectSupplier(id: string) {
+  const supplierId = String(id ?? '').trim()
+  if (!consoleIdSet.value.has(supplierId)) return
+  emit('select', supplierId)
+}
 </script>

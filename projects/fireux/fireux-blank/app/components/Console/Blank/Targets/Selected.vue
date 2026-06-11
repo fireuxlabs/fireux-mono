@@ -4,7 +4,7 @@
 
     <UPageCard
       v-if="selectedId"
-      title="Selected Blank"
+      :title="selectedTitle"
       :description="selectedId"
       variant="subtle"
     >
@@ -24,18 +24,26 @@
     <UPageCard
       v-else
       title="No selected Blank"
-      description="Choose a live Blank target to test selected-target console state."
+      description="Choose a live or demo Blank target to test selected-target console state."
       variant="subtle"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+
+const props = defineProps<{
   selectedId?: string
+  mode?: ConsoleMode
 }>()
 
 const emit = defineEmits<{
   (event: 'clear'): void
 }>()
+
+const selectedTitle = computed(() =>
+  props.mode === 'demo' ? 'Selected Demo Blank' : 'Selected Blank'
+)
 </script>

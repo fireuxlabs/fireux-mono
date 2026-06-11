@@ -22,6 +22,7 @@ export function useBlankConsoleIndex() {
     mode: mode.value,
     pending: blank.pending.value,
     liveCount: blank.liveTargets.value.length,
+    demoCount: blank.demoTargets.value.length,
     hasLiveTargets: blank.hasLiveTargets.value,
     rootCollectionPath: blank.rootCollectionPath,
     appCollectionPath: blank.appCollectionPath.value,
@@ -29,6 +30,9 @@ export function useBlankConsoleIndex() {
   const actions = {
     selectLive: (id: string) => {
       setBlankConsoleTarget({ blankId: String(id ?? '').trim(), mode: 'live' })
+    },
+    selectDemo: (id: string) => {
+      setBlankConsoleTarget({ blankId: String(id ?? '').trim(), mode: 'demo' })
     },
   }
   const clearSelectedBlank = () => {
@@ -38,6 +42,7 @@ export function useBlankConsoleIndex() {
   return {
     blank,
     selectedId,
+    mode,
     actions,
     debug,
     clearSelectedBlank,

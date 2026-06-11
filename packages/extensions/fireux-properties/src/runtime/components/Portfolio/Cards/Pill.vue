@@ -3,6 +3,7 @@
     :is="isLinkComponent ? 'NuxtLink' : 'button'"
     v-bind="rootProps"
     class="pill"
+    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
     @click="!isLinkComponent && onClick($event)"
   >
     <div class="flex min-w-0 items-start gap-2">
@@ -43,6 +44,7 @@ type PillProps = Pick<PortfolioCard.Card, 'to' | 'title' | 'subtitle'> & {
   showBadges?: boolean
   link?: boolean
   action?: boolean
+  disabled?: boolean
 }
 
 const emit = defineEmits<{
@@ -55,6 +57,7 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
+  disabled: false,
 })
 
 const isLinkComponent = computed(() => Boolean(props.link && props.to))
@@ -66,6 +69,7 @@ const rootProps = computed(() =>
 )
 
 const onClick = (event?: MouseEvent) => {
+  if (props.disabled) return
   if (props.action) {
     emit('action')
     return
