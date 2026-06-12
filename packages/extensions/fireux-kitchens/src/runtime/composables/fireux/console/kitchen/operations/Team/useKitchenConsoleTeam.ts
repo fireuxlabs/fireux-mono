@@ -18,6 +18,7 @@ export function useKitchenConsoleTeam() {
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -76,6 +77,7 @@ export function useKitchenConsoleTeam() {
     pendingJoinRequestsCount: pendingJoinRequests.value.length,
     pending: pending.value,
     joinRequestsPending: joinRequestsPending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -86,6 +88,7 @@ export function useKitchenConsoleTeam() {
     collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     teamMembers: consoleTeamMembers,
     joinRequests,

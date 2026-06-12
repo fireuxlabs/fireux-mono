@@ -29,6 +29,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -60,6 +61,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     dishes: consoleDishes,
     pending,
@@ -74,6 +76,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
       collectionPath: collectionPath.value,
       count: consoleDishes.value.length,
       pending: pending.value,
+      readOnly: readOnly.value,
       canWrite: canWrite.value,
     })),
   }

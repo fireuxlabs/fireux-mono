@@ -12,6 +12,7 @@ export function useKitchenConsoleDish() {
     rootCollection,
     databaseId,
     collectionPath,
+    readOnly,
     canWrite,
     dishes,
     pending,
@@ -39,6 +40,7 @@ export function useKitchenConsoleDish() {
     hasDish: Boolean(dish.value),
     menuUsageCount: menuUsage.value.length,
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -48,6 +50,7 @@ export function useKitchenConsoleDish() {
     rootCollection,
     databaseId,
     collectionPath,
+    readOnly,
     canWrite,
     dishes,
     pending,

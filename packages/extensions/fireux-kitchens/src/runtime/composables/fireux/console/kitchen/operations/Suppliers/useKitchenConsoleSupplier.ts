@@ -14,6 +14,7 @@ export function useKitchenConsoleSupplier() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     suppliers,
     pending,
@@ -64,6 +65,7 @@ export function useKitchenConsoleSupplier() {
     hasIntegratedCatalogue: hasIntegratedCatalogue.value,
     isEcosystemSupplier: isEcosystemSupplier.value,
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -72,6 +74,7 @@ export function useKitchenConsoleSupplier() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     suppliers,
     pending,

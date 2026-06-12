@@ -21,6 +21,7 @@ export function useKitchenConsoleRecipes() {
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -58,6 +59,7 @@ export function useKitchenConsoleRecipes() {
       0
     ),
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -68,6 +70,7 @@ export function useKitchenConsoleRecipes() {
     collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     recipes: consoleRecipes,
     dishes,

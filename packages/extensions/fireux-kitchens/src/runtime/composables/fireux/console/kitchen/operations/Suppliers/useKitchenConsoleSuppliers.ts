@@ -14,6 +14,7 @@ export function useKitchenConsoleSuppliers() {
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -42,6 +43,7 @@ export function useKitchenConsoleSuppliers() {
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -52,6 +54,7 @@ export function useKitchenConsoleSuppliers() {
     collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     suppliers: consoleSuppliers,
     count,

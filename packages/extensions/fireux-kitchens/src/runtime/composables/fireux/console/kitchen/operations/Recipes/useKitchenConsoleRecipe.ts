@@ -13,6 +13,7 @@ export function useKitchenConsoleRecipe() {
     rootCollection,
     collectionPath,
     databaseId,
+    readOnly,
     canWrite,
     recipes,
     pending,
@@ -39,6 +40,7 @@ export function useKitchenConsoleRecipe() {
     hasRecipe: Boolean(recipe.value),
     dishUsageCount: dishUsage.value.length,
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -48,6 +50,7 @@ export function useKitchenConsoleRecipe() {
     rootCollection,
     collectionPath,
     databaseId,
+    readOnly,
     canWrite,
     recipes,
     pending,

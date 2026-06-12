@@ -38,7 +38,7 @@ export function useKitchenConsoleReadPage<T>(
     pending: Boolean(unref(options.pending)),
   }))
 
-  const canWrite = computed(() => false)
+  const readOnly = computed(() => true)
 
   const debug = computed(() => ({
     focus: focus.value,
@@ -52,6 +52,6 @@ export function useKitchenConsoleReadPage<T>(
     focus,
     collection,
     debug,
-    canWrite,
+    readOnly,
   }
 }

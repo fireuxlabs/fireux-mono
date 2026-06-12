@@ -17,6 +17,7 @@ export function useKitchenConsoleMise() {
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -68,6 +69,7 @@ export function useKitchenConsoleMise() {
     collectionPath: collectionPath.value,
     count: consoleMiseTasks.value.length,
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
     canToggleMise: canToggleMise.value,
   }))
@@ -79,6 +81,7 @@ export function useKitchenConsoleMise() {
     collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     canToggleMise,
     miseTasks: consoleMiseTasks,

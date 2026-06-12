@@ -22,6 +22,7 @@ export function useKitchenConsoleOverview() {
     kitchenId: selection.kitchenId.value,
     activeKitchenAppId: runtime.appId.value,
     rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
@@ -36,6 +37,7 @@ export function useKitchenConsoleOverview() {
     kitchenId: selection.kitchenId,
     activeKitchenAppId: runtime.appId,
     rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
     canWrite: runtime.canWrite,
     clearSelectedKitchen: actions.clearSelectedKitchen,
     debug,

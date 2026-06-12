@@ -12,6 +12,7 @@ export function useKitchenConsoleMenus() {
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
+  const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -49,6 +50,7 @@ export function useKitchenConsoleMenus() {
     kitchenId,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
     clearSelectedKitchen: actions.clearSelectedKitchen,
     selectKitchen: actions.selectKitchen,
@@ -60,6 +62,7 @@ export function useKitchenConsoleMenus() {
       collectionPath: collectionPath.value,
       menusCount: consoleMenus.value.length,
       pending: pending.value,
+      readOnly: readOnly.value,
       canWrite: canWrite.value,
     })),
   }

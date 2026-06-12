@@ -1,4 +1,4 @@
-import { computed, isRef, watch, type Ref } from 'vue'
+import { computed, watch, type Ref } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
   useConsole,
@@ -8,10 +8,8 @@ import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/co
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  useKitchenConsoleList,
-  type KitchenConsoleListFilter,
-} from '../index/useKitchenConsoleList'
+import type { KitchenConsoleListFilter } from '../index/useKitchenConsoleList'
+import { useKitchenConsoleTargetSource } from '../index/useKitchenConsoleTargetSource'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
@@ -46,7 +44,7 @@ export function useKitchenConsole(
    * - stored console selection
    *
    * Process:
-   * - resolve which Kitchen targets this console should see
+   * - read the Kitchen target source policy
    * - connect those targets to the shared console selection cookie
    * - auto-select a single tenant target when there is no selection
    * - derive the selected Kitchen runtime path and write permission
@@ -62,26 +60,12 @@ export function useKitchenConsole(
   const { uid } = useAuth()
 
   const userId = computed(() => normalizeString(uid.value))
-  const targetFilter = computed<KitchenConsoleListFilter>(() => {
-    const explicitFilter = options.filter
-      ? isRef(options.filter)
-        ? options.filter.value ?? {}
-        : options.filter
-      : {}
-
-    if (explicitFilter.scopeAppId || !fireux.isTenant) return explicitFilter
-
-    return {
-      ...explicitFilter,
-      scopeAppId: appId,
-    }
-  })
-  const { kitchens: targetKitchens } = useKitchenConsoleList({
-    filter: targetFilter,
+  const targetSource = useKitchenConsoleTargetSource({
+    filter: options.filter,
   })
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
-      targetItems: targetKitchens,
+      targetItems: targetSource.targets,
       getId: (kitchen) => normalizeString(kitchen?.id),
     })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
@@ -97,8 +81,9 @@ export function useKitchenConsole(
   const rootCollection = computed(() =>
     resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
   )
+  const readOnly = computed(() => targetSource.readOnly.value)
   const canWrite = computed(() =>
-    targetHasOperator(selectedKitchen.value, userId.value)
+    !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
   )
   const clearSelectedKitchen = () => {
     clearSelection()
@@ -107,9 +92,15 @@ export function useKitchenConsole(
     selectEntity(kitchenId)
   }
   watch(
-    targetKitchens,
+    targetSource.targets,
     (kitchens) => {
-      if (selectedKitchen.value || kitchens.length !== 1) return
+      if (
+        selectedKitchen.value ||
+        !targetSource.autoSelectSingle.value ||
+        kitchens.length !== 1
+      ) {
+        return
+      }
 
       const onlyKitchenId = normalizeString(kitchens[0]?.id)
       if (onlyKitchenId) selectEntity(onlyKitchenId)
@@ -117,7 +108,15 @@ export function useKitchenConsole(
     { immediate: true }
   )
   const kitchens = {
-    targets: targetKitchens,
+    targets: targetSource.targets,
+    count: targetSource.count,
+    pending: targetSource.pending,
+    source: {
+      name: targetSource.sourceName,
+      label: targetSource.label,
+      readOnly: targetSource.readOnly,
+      autoSelectSingle: targetSource.autoSelectSingle,
+    },
   }
   const selection = {
     kitchen: selectedKitchen,
@@ -128,6 +127,7 @@ export function useKitchenConsole(
     appId: activeKitchenAppId,
     rootCollection,
     databaseId,
+    readOnly,
     canWrite,
   }
   const actions = {

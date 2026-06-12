@@ -18,8 +18,7 @@ const normalize = (value: unknown) => String(value ?? '').trim()
  * Console Kitchen read-many seam.
  *
  * Reads Kitchen console targets from the canonical Kitchen collection.
- * Console authority filtering will be added back deliberately after the simple
- * target spine is stable across all console families.
+ * Target source policy decides which of these records the console should show.
  */
 export function useKitchenConsoleList(options: UseKitchenConsoleListOptions = {}) {
   const resolvedFilter = computed<KitchenConsoleListFilter | undefined>(() => {

@@ -12,6 +12,7 @@ export function useKitchenConsoleIngredient() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     ingredients,
     pending,
@@ -40,6 +41,7 @@ export function useKitchenConsoleIngredient() {
     ingredientId: ingredientId.value,
     hasIngredient: Boolean(ingredient.value),
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
 
@@ -48,6 +50,7 @@ export function useKitchenConsoleIngredient() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     ingredients,
     pending,

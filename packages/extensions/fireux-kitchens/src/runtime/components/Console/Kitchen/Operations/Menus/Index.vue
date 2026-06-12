@@ -1,8 +1,16 @@
 <template>
   <section class="console-surface space-y-6">
     <template v-if="selectedKitchen">
-      <ConsoleKitchenOperationsMenusUpload />
-      <ConsoleKitchenOperationsMenusWrite />
+      <UAlert
+        v-if="readOnly"
+        color="neutral"
+        variant="soft"
+        title="Read only"
+        description="This kitchen can be inspected, but changes are disabled."
+      />
+
+      <ConsoleKitchenOperationsMenusUpload v-if="canWrite" />
+      <ConsoleKitchenOperationsMenusWrite v-if="canWrite" />
       <ConsoleKitchenOperationsMenusRead />
     </template>
 
@@ -17,8 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsole } from '../../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
-const { selection } = useKitchenConsole()
-const selectedKitchen = selection.kitchen
+const { selectedKitchen, readOnly, canWrite } = useKitchenConsoleMenus()
 </script>

@@ -12,6 +12,7 @@ export function useKitchenConsoleMiseTask() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     miseTasks,
     pending,
@@ -39,6 +40,7 @@ export function useKitchenConsoleMiseTask() {
     miseId: miseId.value,
     hasMiseTask: Boolean(task.value),
     pending: pending.value,
+    readOnly: readOnly.value,
     canWrite: canWrite.value,
     canEditMise: canEditMise.value,
   }))
@@ -48,6 +50,7 @@ export function useKitchenConsoleMiseTask() {
     kitchenId,
     rootCollection,
     collectionPath,
+    readOnly,
     canWrite,
     canEditMise,
     miseTasks,
