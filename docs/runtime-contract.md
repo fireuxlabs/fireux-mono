@@ -317,11 +317,14 @@ Updated: 2026-05-25
 ## Dev Runtime Authority Rule
 - This section is dev runtime authority and app correctness, not a Firestore security-rules implementation task.
 - console family entry must show console-access targets, not all documents in the backing collection.
-- Console-access targets means targets where the current user's uid is present in `team_ids` or `operator_ids`.
+- Tenant console-access targets come from configured target ids.
+- Global console-access targets come from explicit user target indexes or targets where the current user's uid is present in `team_ids` or `operator_ids`.
 - Operator authority means targets where the current user's uid is present in `operator_ids`.
 - Client-side filtering after a broad root collection read is not authority.
-- Console target reads must query access first, then fetch only exact accessible target docs.
+- Console target reads must resolve access first, then fetch only exact accessible target docs.
 - Canon target access sources are:
+  - configured tenant target ids
+  - explicit user target indexes such as `myKitchens`
   - `team_ids`
   - `operator_ids`
   - `join_requests` as optional workflow state

@@ -83,10 +83,11 @@ Target source canon:
 - operation code should not branch on source names
 
 Authority canon:
-- console target listing starts from the user's target index or app-scoped target rows, then reconciles against target access fields.
+- console target listing starts from one explicit family source, then resolves exact target docs.
+- tenant apps use configured target ids for the console family.
+- global apps use the signed-in user's target index, such as `myKitchens`.
 - `team_ids` lets a user see/select a target in that console.
 - `operator_ids` lets a user write/operate the selected target.
-- app-scoped console families query `apps/{appId}/{family}` with `team_ids` and `operator_ids`, then fetch only those root target docs.
 - project console access is root-level: query `projects` with `team_ids` and `operator_ids`.
 - broad root collection reads plus client-side filtering are not authority.
 - writes must re-check authority in mutations; Firestore rules must enforce the same model before shipping.

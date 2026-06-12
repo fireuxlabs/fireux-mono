@@ -1,23 +1,13 @@
 import { computed } from 'vue'
-import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
 import { useKitchenConsole } from '../core/useKitchenConsole'
-import type { Ref } from 'vue'
 
-type UseKitchenConsoleIndexOptions = {
-  filter?: KitchenConsoleListFilter | Ref<KitchenConsoleListFilter | null | undefined> | null
-}
-
-export function useKitchenConsoleIndex(
-  options: UseKitchenConsoleIndexOptions = {}
-) {
+export function useKitchenConsoleIndex() {
   const {
     kitchens,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
-  } = useKitchenConsole({
-    filter: options.filter,
-  })
+  } = useKitchenConsole()
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
@@ -60,8 +50,8 @@ export function useKitchenConsoleIndex(
       readOnly: kitchens.source.readOnly.value,
       canCreate: kitchens.source.canCreate.value,
       autoSelectSingle: kitchens.source.autoSelectSingle.value,
-      configuredTargetIds: kitchens.source.configuredTargetIds.value,
-      userKitchenIds: kitchens.source.userKitchenIds.value,
+      configKitchenIds: kitchens.source.configKitchenIds.value,
+      myKitchenIds: kitchens.source.myKitchenIds.value,
     },
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))

@@ -35,8 +35,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `slug_aliases` are not canon yet; future alias/redirect support needs an explicit SEO route decision.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
 - Kitchen console authority is user-based:
-  - the console target list reads the current user's Kitchen index, including app user `console_scopes` Kitchen entries and core user `myKitchens`
-  - an app may pin existing Kitchen targets with `consoleConfig.kitchen.targetIds`
+  - tenant apps read configured Kitchen targets from app `kitchen.config.ts`, currently wired through `consoleConfig.kitchen.targetIds`
+  - global apps read the current user's Kitchen index from `user.myKitchens`
+  - configured targets and Kitchen index entries let the user see/select listed Kitchen targets
   - `team_ids` lets a user see/select a Kitchen target in the console
   - `operator_ids` lets a user write/operate the selected Kitchen target
   - profile association alone does not grant console access

@@ -1,4 +1,4 @@
-import { computed, watch, type Ref } from 'vue'
+import { computed, watch } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
   useConsole,
@@ -8,18 +8,11 @@ import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/co
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { KitchenConsoleListFilter } from '../index/useKitchenConsoleList'
 import { useKitchenConsoleTargetSource } from '../index/useKitchenConsoleTargetSource'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type KitchenConsoleEntity = KitchenSurface
-type UseKitchenConsoleOptions = {
-  filter?:
-    | KitchenConsoleListFilter
-    | Ref<KitchenConsoleListFilter | null | undefined>
-    | null
-}
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -33,14 +26,11 @@ type UseKitchenConsoleOptions = {
  * This file adapts Kitchen root/app authority targets into the private /console/kitchen selected runtime.
  * It should not own Kitchen child operation records; those live under console/kitchen/operations.
  */
-export function useKitchenConsole(
-  options: UseKitchenConsoleOptions = {}
-) {
+export function useKitchenConsole() {
   /*
    * Input:
    * - runtime app config
    * - signed-in user
-   * - optional target filter
    * - stored console selection
    *
    * Process:
@@ -60,9 +50,7 @@ export function useKitchenConsole(
   const { uid } = useAuth()
 
   const userId = computed(() => normalizeString(uid.value))
-  const targetSource = useKitchenConsoleTargetSource({
-    filter: options.filter,
-  })
+  const targetSource = useKitchenConsoleTargetSource()
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
       targetItems: targetSource.targets,
@@ -118,8 +106,8 @@ export function useKitchenConsole(
       readOnly: targetSource.readOnly,
       canCreate: targetSource.canCreate,
       autoSelectSingle: targetSource.autoSelectSingle,
-      configuredTargetIds: targetSource.configuredTargetIds,
-      userKitchenIds: targetSource.userKitchenIds,
+      configKitchenIds: targetSource.configKitchenIds,
+      myKitchenIds: targetSource.myKitchenIds,
     },
   }
   const selection = {

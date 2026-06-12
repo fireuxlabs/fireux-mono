@@ -1,6 +1,12 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
+import kitchenConfig from './kitchen.config'
+
+const kitchenConsoleConfig = {
+  canCreate: kitchenConfig.canCreate,
+  targetIds: [...kitchenConfig.kitchens],
+}
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -13,10 +19,7 @@ const fireuxConfig = defineFireuxConfig({
   appLogoDark: '/img/app/logo-dark.png',
   consoles: ['kitchen'],
   consoleConfig: {
-    kitchen: {
-      canCreate: false,
-      targetIds: ['ChIJ08WSgYSjj0cRD6oE3RwUFk0'],
-    },
+    kitchen: kitchenConsoleConfig,
   },
   profiles: [],
   navHiddenKeys: ['kitchens', 'places'],

@@ -95,12 +95,13 @@ Current learned examples:
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
 - `/console/X/team` is the selected target team/membership surface.
-- By default, `/console/X` should show the current user's normal targets for that family.
-- Console visibility should start from an explicit user target index when the family needs fast personal selection, then reconcile those ids against target access fields.
+- By default, `/console/X` should show the normal targets for that family.
+- Tenant apps use configured target ids for that console family.
+- Global apps use the signed-in user's target index when the family needs fast personal selection, then fetch those exact target docs.
 - Demo/test/read-only target sources are allowed only as explicit target-source policy; operation children should consume `readOnly`/`canWrite` and stay ignorant to where the target came from.
-- Kitchen uses the current user's Kitchen index, including app membership `console_scopes` entries such as `kitchen:<kitchenId>` and core user `myKitchens`, to list console targets.
-- App config may pin console targets with `consoleConfig.<family>.targetIds`; pinned targets do not replace operator authority for writes.
+- Kitchen tenant apps use app `kitchen.config.ts`; Kitchen global apps use `user.myKitchens`.
 - Console target membership is canon-wide:
+  - configured tenant targets and explicit user target indexes, such as `myKitchens`, let the user see/select listed targets.
   - `team_ids` means the user may see/select the target in that console.
   - `operator_ids` means the user may write/operate the selected target.
   - mutation seams must check `operator_ids`; profile links and target indexes must not grant write authority by themselves.
