@@ -25,7 +25,7 @@ export function useKitchenConsoleRecipes() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { recipes, count: recipeCount, pending: recipesPending, collectionPath } =
+  const { recipes, pending: recipesPending, collectionPath } =
     useRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -69,7 +69,6 @@ export function useKitchenConsoleRecipes() {
     rootCollection,
     databaseId,
     canWrite,
-    liveCount: recipeCount,
     recipes: consoleRecipes,
     dishes,
     count,

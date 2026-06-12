@@ -35,8 +35,8 @@ export function useKitchenConsoleTeam() {
     }
   )
   const {
-    items: liveJoinRequests,
-    pending: liveJoinRequestsPending,
+    items: joinRequestItems,
+    pending: joinRequestItemsPending,
     collectionPath: joinRequestsPath,
   } = useKitchenChildCollection<KitchenTeamJoinRequest>(
     KitchenTeamJoinRequestStorage.collection,
@@ -56,14 +56,14 @@ export function useKitchenConsoleTeam() {
   })
   const consoleTeamMembers = computed(() => page.collection.value.items)
   const joinRequests = computed<KitchenTeamJoinRequest[]>(() =>
-    liveJoinRequests.value
+    joinRequestItems.value
   )
   const pendingJoinRequests = computed(() =>
     joinRequests.value.filter((request) => request.status === 'pending')
   )
   const pending = computed(() => page.collection.value.pending)
   const joinRequestsPending = computed(() =>
-    liveJoinRequestsPending.value
+    joinRequestItemsPending.value
   )
   const debug = computed(() => ({
     kitchenId: kitchenId.value,

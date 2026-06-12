@@ -43,9 +43,9 @@ const resolvePriority = (value: unknown): KitchenMisePriority => {
   return allowed.has(normalized) ? normalized : 'normal'
 }
 
-const toSafeNumber = (value: unknown, fallback = 0) => {
+const toSafeNumber = (value: unknown, defaultValue = 0) => {
   const n = Number(value)
-  return Number.isFinite(n) ? n : fallback
+  return Number.isFinite(n) ? n : defaultValue
 }
 
 const toStringArray = (value: unknown) =>

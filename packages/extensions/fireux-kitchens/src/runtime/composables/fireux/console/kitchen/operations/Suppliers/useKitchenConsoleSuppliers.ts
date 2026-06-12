@@ -18,7 +18,7 @@ export function useKitchenConsoleSuppliers() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { suppliers, count: supplierCount, pending: suppliersPending, collectionPath } =
+  const { suppliers, pending: suppliersPending, collectionPath } =
     useKitchenSupplierFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -53,7 +53,6 @@ export function useKitchenConsoleSuppliers() {
     rootCollection,
     databaseId,
     canWrite,
-    liveCount: supplierCount,
     suppliers: consoleSuppliers,
     count,
     pending,
