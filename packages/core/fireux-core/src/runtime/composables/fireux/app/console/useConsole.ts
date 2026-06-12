@@ -68,8 +68,13 @@ export function useConsole<TTarget = never>(
 
   if (options?.targetItems && options.getId) {
     watch(
-      [selectedId, targetItems, targetPending],
-      ([id, items, pending]) => {
+      () => ({
+        id: selectedId.value,
+        items: targetItems.value,
+        pending: targetPending.value,
+      }),
+      (state: { id: string; items: TTarget[]; pending: boolean }) => {
+        const { id, items, pending } = state
         if (!id || pending) return
         if (items.some((item) => getEntityId(item) === id)) return
         clearSelection()

@@ -6,6 +6,10 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import {
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -108,6 +112,22 @@ export function useKitchenConsole() {
   const canWrite = computed(() =>
     !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
   )
+  const header = computed<ConsoleHeaderData>(() => {
+    const kitchen = selectedKitchen.value as Record<string, unknown> | null
+    if (!kitchen) return null
+
+    return {
+      title: normalizeString(kitchen.name) || normalizeString(kitchen.id),
+      subtitle:
+        normalizeString(kitchen.short_address) ||
+        normalizeString(kitchen.formatted_address) ||
+        undefined,
+      imageUrl: normalizeString(kitchen.image_url) || undefined,
+    }
+  })
+
+  usePublishConsoleHeader('kitchen', header)
+
   const clearSelectedKitchen = () => {
     clearSelection()
   }

@@ -3,6 +3,10 @@ import {
   normalizeConsoleString as normalizeString,
   useConsole,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import {
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 import type { Blank } from '../../../../../models/blank.model'
 
@@ -35,6 +39,18 @@ export function useBlankConsole() {
   const hasTargets = computed(() => targetBlanks.value.length > 0)
   const readOnly = computed(() => true)
   const canWrite = computed(() => false)
+  const header = computed<ConsoleHeaderData>(() => {
+    const blank = selectedBlank.value
+    if (!blank) return null
+
+    return {
+      title: normalizeString(blank.name) || normalizeString(blank.id),
+      subtitle: normalizeString(blank.slug) || undefined,
+    }
+  })
+
+  usePublishConsoleHeader('blank', header)
+
   const selectBlank = (blankId: string) => {
     selectEntity(blankId)
   }

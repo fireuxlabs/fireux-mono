@@ -126,7 +126,7 @@ export function useBlankCreate() {
   const { updateDocument } = useFirestoreUpdate()
 
   async function createBlank(input: CreateBlankInput = {}) {
-    const uid = await requireUid()
+    const { uid } = await requireUid()
     const resolvedAppId = text(appId)
 
     if (!resolvedAppId) {
