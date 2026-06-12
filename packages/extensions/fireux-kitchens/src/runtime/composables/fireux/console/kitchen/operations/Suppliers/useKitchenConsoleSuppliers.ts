@@ -7,12 +7,14 @@ import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 
 export function useKitchenConsoleSuppliers() {
   const {
-    selectedKitchen,
-    kitchenId,
-    rootCollection,
-    databaseId,
-    canWrite,
+    selection,
+    runtime,
   } = useKitchenConsole()
+  const selectedKitchen = selection.kitchen
+  const kitchenId = selection.kitchenId
+  const rootCollection = runtime.rootCollection
+  const databaseId = runtime.databaseId
+  const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )

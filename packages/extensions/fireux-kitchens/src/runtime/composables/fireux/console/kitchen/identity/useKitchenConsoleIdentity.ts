@@ -6,12 +6,14 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleIdentity() {
   const {
-    selectedKitchen: selectedConsoleKitchen,
-    kitchenId,
-    rootCollection,
-    canWrite,
-    clearSelectedKitchen,
+    selection,
+    runtime,
+    actions,
   } = useKitchenConsole()
+  const selectedConsoleKitchen = selection.kitchen
+  const kitchenId = selection.kitchenId
+  const rootCollection = runtime.rootCollection
+  const canWrite = runtime.canWrite
   const { kitchen: selectedKitchenDoc } = useKitchenFetch(kitchenId, {
     collectionPath: KitchenStorage.rootCollection,
   })
@@ -59,7 +61,7 @@ export function useKitchenConsoleIdentity() {
     kitchenId,
     rootCollection,
     canWrite,
-    clearSelectedKitchen,
+    clearSelectedKitchen: actions.clearSelectedKitchen,
     name,
     tagline,
     currencyCode,

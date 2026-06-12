@@ -93,7 +93,8 @@ const props = withDefaults(defineProps<{
 const { createKitchen, createKitchenConsole } = useKitchenCreate()
 const { ensurePlaceExists } = usePlaceCreate()
 const { coreProfile, updateCoreProfile } = useChef()
-const { selectKitchen } = useKitchenConsole()
+const { actions } = useKitchenConsole()
+const { selectKitchen } = actions
 const db = useFirestore()
 const route = useRoute()
 const router = useRouter()
@@ -192,7 +193,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
     if (isConsoleMode.value) {
       await linkKitchenToChef(result.id)
-      selectKitchen(result.id, 'live')
+      selectKitchen(result.id)
       successResult.value = result
       if (route.path !== resolvedReturnTo.value) {
         await router.push(resolvedReturnTo.value)

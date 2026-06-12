@@ -6,26 +6,23 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleOverview() {
   const {
-    targetKitchens,
-    selectedKitchen,
-    kitchenId,
-    activeKitchenAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedKitchen,
+    kitchens,
+    selection,
+    runtime,
+    actions,
   } =
     useKitchenConsole()
 
   const overview = useConsoleOverview<KitchenSurface>({
-    selectedEntity: selectedKitchen,
-    targetItems: targetKitchens,
+    selectedEntity: selection.kitchen,
+    targetItems: kitchens.targets,
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    activeKitchenAppId: activeKitchenAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    kitchenId: selection.kitchenId.value,
+    activeKitchenAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -35,12 +32,12 @@ export function useKitchenConsoleOverview() {
 
   return {
     ...overview,
-    selectedKitchen,
-    kitchenId,
-    activeKitchenAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedKitchen,
+    selectedKitchen: selection.kitchen,
+    kitchenId: selection.kitchenId,
+    activeKitchenAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    canWrite: runtime.canWrite,
+    clearSelectedKitchen: actions.clearSelectedKitchen,
     debug,
   }
 }

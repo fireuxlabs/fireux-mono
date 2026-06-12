@@ -7,9 +7,12 @@ import { useMenuCreate } from '../../../../firestore/menu/mutations/useMenuCreat
 import { useMenuUpdate } from '../../../../firestore/menu/mutations/useMenuUpdate'
 
 export function useKitchenConsoleMenus() {
-  const consoleState = useKitchenConsole()
-  const { selectedKitchen, kitchenId, rootCollection, databaseId, canWrite } =
-    consoleState
+  const { selection, runtime, actions } = useKitchenConsole()
+  const selectedKitchen = selection.kitchen
+  const kitchenId = selection.kitchenId
+  const rootCollection = runtime.rootCollection
+  const databaseId = runtime.databaseId
+  const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -42,9 +45,14 @@ export function useKitchenConsoleMenus() {
     ...page,
     ...create,
     ...update,
-    ...consoleState,
-    collectionPath,
+    selectedKitchen,
+    kitchenId,
+    rootCollection,
+    databaseId,
     canWrite,
+    clearSelectedKitchen: actions.clearSelectedKitchen,
+    selectKitchen: actions.selectKitchen,
+    collectionPath,
     menus: consoleMenus,
     pending,
     debug: computed(() => ({

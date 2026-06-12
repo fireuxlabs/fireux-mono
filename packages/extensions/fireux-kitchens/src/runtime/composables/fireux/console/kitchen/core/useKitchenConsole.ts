@@ -1,4 +1,4 @@
-import { computed, isRef, type Ref } from 'vue'
+import { computed, isRef, watch, type Ref } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
   useConsole,
@@ -38,21 +38,52 @@ type UseKitchenConsoleOptions = {
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {
-  const { appId } = useFireUXConfig()
+  /*
+   * Input:
+   * - runtime app config
+   * - signed-in user
+   * - optional target filter
+   * - stored console selection
+   *
+   * Process:
+   * - resolve which Kitchen targets this console should see
+   * - connect those targets to the shared console selection cookie
+   * - auto-select a single tenant target when there is no selection
+   * - derive the selected Kitchen runtime path and write permission
+   *
+   * Output:
+   * - kitchens: target collection for the console index
+   * - selection: selected Kitchen state
+   * - runtime: selected Kitchen read/write context
+   * - actions: select/clear helpers
+   */
+  const fireux = useFireUXConfig()
+  const { appId } = fireux
   const { uid } = useAuth()
+
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<KitchenConsoleListFilter>(() => {
-    if (!options.filter) return {}
-    return isRef(options.filter) ? options.filter.value ?? {} : options.filter
+    const explicitFilter = options.filter
+      ? isRef(options.filter)
+        ? options.filter.value ?? {}
+        : options.filter
+      : {}
+
+    if (explicitFilter.scopeAppId || !fireux.isTenant) return explicitFilter
+
+    return {
+      ...explicitFilter,
+      scopeAppId: appId,
+    }
   })
   const { kitchens: targetKitchens } = useKitchenConsoleList({
     filter: targetFilter,
   })
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
-    targetItems: targetKitchens,
-    getId: (kitchen) => normalizeString(kitchen?.id),
-  })
+      targetItems: targetKitchens,
+      getId: (kitchen) => normalizeString(kitchen?.id),
+    })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
     () => selectedEntity.value
   )
@@ -75,16 +106,39 @@ export function useKitchenConsole(
   const selectKitchen = (kitchenId: string) => {
     selectEntity(kitchenId)
   }
-
-  return {
+  watch(
     targetKitchens,
-    selectedKitchen,
+    (kitchens) => {
+      if (selectedKitchen.value || kitchens.length !== 1) return
+
+      const onlyKitchenId = normalizeString(kitchens[0]?.id)
+      if (onlyKitchenId) selectEntity(onlyKitchenId)
+    },
+    { immediate: true }
+  )
+  const kitchens = {
+    targets: targetKitchens,
+  }
+  const selection = {
+    kitchen: selectedKitchen,
     kitchenId,
-    activeKitchenAppId,
+    hasSelection: computed(() => Boolean(kitchenId.value)),
+  }
+  const runtime = {
+    appId: activeKitchenAppId,
     rootCollection,
     databaseId,
     canWrite,
-    clearSelectedKitchen,
+  }
+  const actions = {
     selectKitchen,
+    clearSelectedKitchen,
+  }
+
+  return {
+    kitchens,
+    selection,
+    runtime,
+    actions,
   }
 }

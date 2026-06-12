@@ -19,5 +19,6 @@
 <script setup lang="ts">
 import { useKitchenConsole } from '../../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
 
-const { selectedKitchen } = useKitchenConsole()
+const { selection } = useKitchenConsole()
+const selectedKitchen = selection.kitchen
 </script>
