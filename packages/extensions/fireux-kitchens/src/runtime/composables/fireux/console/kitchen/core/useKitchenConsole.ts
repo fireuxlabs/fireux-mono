@@ -1,4 +1,4 @@
-import { computed, type Ref } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
   useConsole,
@@ -8,10 +8,12 @@ import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/co
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { KitchenConsoleListFilter } from '../index/useKitchenConsoleList'
+import {
+  useKitchenConsoleList,
+  type KitchenConsoleListFilter,
+} from '../index/useKitchenConsoleList'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleSources } from './useKitchenConsoleSources'
 
 type KitchenConsoleEntity = KitchenSurface
 type UseKitchenConsoleOptions = {
@@ -30,7 +32,7 @@ type UseKitchenConsoleOptions = {
  * Contract:
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * This file adapts Kitchen root/app authority sources into the private /console/kitchen selected runtime.
+ * This file adapts Kitchen root/app authority targets into the private /console/kitchen selected runtime.
  * It should not own Kitchen child operation records; those live under console/kitchen/operations.
  */
 export function useKitchenConsole(
@@ -39,7 +41,13 @@ export function useKitchenConsole(
   const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const { targetKitchens } = useKitchenConsoleSources({ filter: options.filter })
+  const targetFilter = computed<KitchenConsoleListFilter>(() => {
+    if (!options.filter) return {}
+    return isRef(options.filter) ? options.filter.value ?? {} : options.filter
+  })
+  const { kitchens: targetKitchens } = useKitchenConsoleList({
+    filter: targetFilter,
+  })
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
     targetItems: targetKitchens,
