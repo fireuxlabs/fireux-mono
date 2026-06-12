@@ -92,6 +92,26 @@ Current learned examples:
 - Runtime targets are the selected root entities inside those families.
 - Console workspaces are operational shells around runtime targets; the workspace itself is not a root entity.
 - Do not introduce an extra abstract `collection` layer when `family`, `target`, and `child records` already explain the model.
+
+## Package Ownership Hierarchy
+Core packages provide shared FireUX runtime foundations:
+- `fireux-core` owns the base app/runtime/config contract, shared runtime primitives, and cross-package shell behavior.
+- `fireux-docs` owns passive documentation surfaces and docs routes. It is not the `Document` entity package.
+- `fireux-translation` owns generic language catalogues, language normalization, and translation provider primitives. It must not know about kitchens, menus, documents, products, jobs, or other domain entities.
+
+Extension packages provide domain or product capability:
+- `fireux-documents` owns Portfolio-scoped document vault records and document links. It is about uploaded/business documents, not documentation pages.
+- `fireux-sproochli` owns multilingual info-page and translation-tool product surfaces. It may use core translation primitives, but it does not own generic language canon or Misebox/Kitchen/Menu truth.
+- `fireux-places` owns Place domain behavior and Google Places integration/config. Core app config must not own Google Places wiring.
+
+Ecosystem packages compose capabilities for a product family:
+- ecosystem packages may install and expose extensions
+- they do not redefine extension model truth
+- tenant apps consume selected ecosystem capability through app config and app-local content
+
+Ownership rule:
+- if a helper/config mentions a provider or domain package by name, it belongs to that package unless it is truly cross-package runtime plumbing.
+- core should stay boring: base app contract, runtime config, shared primitives, and no product/provider-specific branches.
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
 - `/console/X/team` is the selected target team/membership surface.

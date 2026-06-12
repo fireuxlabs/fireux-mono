@@ -1,10 +1,16 @@
 # fireux-sproochli Canon
 Authority: Tier1 (Package canon)
-Updated: 2026-06-07
+Updated: 2026-06-12
 
 ## 1) Purpose
 - Own reusable multilingual info-page primitives for QR-friendly FireUX pages.
 - Provide shared types and helpers for language normalization, RTL direction, localized text resolution, translation cache merging, and public info-page response shaping.
+
+## Package Hierarchy
+- `fireux-translation` owns generic translation primitives, language catalogues, and provider-neutral translation helpers.
+- `fireux-sproochli` owns Sproochli product/provider behavior: multilingual info pages, public language chrome, Sproochli provider requests, response shapes, and cache conventions.
+- Sproochli may consume core translation primitives, but it must not become the generic language catalogue for FireUX.
+- Domain packages and consuming apps own their domain truth. Sproochli may generate or display translated copy, but it does not own Kitchen, Menu, Dish, Place, Product, Blog, Job, or Document truth.
 
 ## 2) Canonical Terms
 - `InfoPage`: a multilingual public information page made of ordered sections and blocks.

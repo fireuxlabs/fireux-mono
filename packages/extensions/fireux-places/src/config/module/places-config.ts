@@ -15,7 +15,10 @@ export function configurePlaces(
     googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
   })
 
-  const key = process.env.GOOGLE_PLACES_API_KEY
+  const key =
+    process.env.GOOGLE_PLACES_API_KEY ||
+    process.env.NUXT_GOOGLE_PLACES_API_KEY ||
+    process.env.NUXT_PUBLIC_GOOGLE_PLACES_API_KEY
   if (!key) return
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (rc.public ||= {}) as Record<string, any>
