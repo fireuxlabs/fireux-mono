@@ -7,9 +7,17 @@
     <template #body>
       <section class="space-y-4">
         <ProjectCreateSystem
+          v-if="canCreate"
           mode="console"
           return-to="/console/project"
           cancel-to="/console/project"
+        />
+
+        <UPageCard
+          v-else
+          title="Project creation is not enabled here"
+          description="This app uses existing Project console targets."
+          variant="subtle"
         />
       </section>
     </template>
@@ -17,7 +25,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
 import ProjectCreateSystem from 'fireux-core/runtime/components/Project/Create/System.vue'
+
+const { canCreateTarget } = useConsoleConfig('project')
+const canCreate = computed(() => canCreateTarget())
 
 definePageMeta({
   layout: 'console',

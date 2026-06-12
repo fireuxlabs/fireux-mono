@@ -7,9 +7,17 @@
     <template #body>
       <section class="space-y-4">
         <PortfolioCreateSystem
+          v-if="canCreate"
           mode="console"
           return-to="/console/portfolio"
           cancel-to="/console/portfolio"
+        />
+
+        <UPageCard
+          v-else
+          title="Portfolio creation is not enabled here"
+          description="This app uses existing Portfolio console targets."
+          variant="subtle"
         />
       </section>
     </template>
@@ -17,6 +25,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
+
+const { canCreateTarget } = useConsoleConfig('portfolio')
+const canCreate = computed(() => canCreateTarget())
+
 definePageMeta({
   layout: 'console',
   nav: {

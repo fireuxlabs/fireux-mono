@@ -70,7 +70,7 @@ export function useProjectConsole(
     if (!project) return null
 
     return {
-      title: normalizeString(project.name),
+      title: normalizeString(project.name) || normalizeString(project.id),
       subtitle: normalizeString('slug' in project ? project.slug : '') || undefined,
       imageUrl: normalizeString(project.image_url) || undefined,
     }

@@ -7,9 +7,17 @@
     <template #body>
       <section class="space-y-4">
         <SupplierCreateSystem
+          v-if="canCreate"
           mode="console"
           return-to="/console/supplier"
           cancel-to="/console/supplier"
+        />
+
+        <UPageCard
+          v-else
+          title="Supplier creation is not enabled here"
+          description="This app uses existing Supplier console targets."
+          variant="subtle"
         />
       </section>
     </template>
@@ -17,6 +25,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
+
+const { canCreateTarget } = useConsoleConfig('supplier')
+const canCreate = computed(() => canCreateTarget())
+
 definePageMeta({
   layout: 'console',
   nav: {

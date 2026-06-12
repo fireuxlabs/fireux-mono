@@ -84,7 +84,11 @@ export function useSupplierConsole(
     if (!target) return null
 
     return {
-      title: normalizeString(target.supplier_organization_name),
+      title:
+        normalizeString(target.supplier_organization_name) ||
+        normalizeString(target.name) ||
+        normalizeString(target.display_name) ||
+        normalizeString(target.id),
       subtitle: normalizeString(target.tagline) || undefined,
       imageUrl: normalizeString(target.supplier_image) || undefined,
     }

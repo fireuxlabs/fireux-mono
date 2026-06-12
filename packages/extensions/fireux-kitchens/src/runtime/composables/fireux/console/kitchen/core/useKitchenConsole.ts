@@ -117,7 +117,10 @@ export function useKitchenConsole() {
     if (!kitchen) return null
 
     return {
-      title: normalizeString(kitchen.name) || normalizeString(kitchen.id),
+      title:
+        normalizeString(kitchen.name) ||
+        normalizeString(kitchen.display_name) ||
+        normalizeString(kitchen.id),
       subtitle:
         normalizeString(kitchen.short_address) ||
         normalizeString(kitchen.formatted_address) ||

@@ -7,7 +7,7 @@
       resizable
       class="bg-elevated/25"
     >
-      <template #header>
+      <template #header="{ collapsed }">
         <div class="px-2 py-2">
           <div v-if="hasSelection && header" class="px-1">
             <UDropdownMenu
@@ -19,44 +19,64 @@
               <UButton
                 color="neutral"
                 variant="ghost"
-                class="min-h-11 w-full justify-start px-1"
+                :square="collapsed ?? false"
+                :class="[
+                  'min-h-11 px-1',
+                  collapsed
+                    ? 'mx-auto justify-center'
+                    : 'w-full justify-start gap-2',
+                ]"
                 :ui="{ label: 'min-w-0 flex-1' }"
               >
                 <template #leading>
-                  <UAvatar :src="header.imageUrl || undefined" :alt="header.title" size="sm" />
+                  <UAvatar
+                    :src="header.imageUrl || undefined"
+                    :alt="header.title"
+                    icon="i-lucide-circle"
+                    size="sm"
+                  />
                 </template>
 
-                <span class="min-w-0 flex-1 text-left">
+                <span v-if="!collapsed" class="min-w-0 flex-1 text-left">
                   <span class="block truncate text-sm font-semibold text-highlighted">
                     {{ header.title }}
                   </span>
-                  <span v-if="header.subtitle" class="block truncate text-xs text-toned">
-                    {{ header.subtitle }}
-                  </span>
                 </span>
-
-                <template #trailing>
-                  <UIcon name="i-lucide-chevrons-up-down" class="size-4 shrink-0 text-muted" />
-                </template>
               </UButton>
             </UDropdownMenu>
 
-            <div v-else class="flex min-h-11 items-center gap-3">
-              <UAvatar :src="header.imageUrl || undefined" :alt="header.title" size="sm" />
+            <div
+              v-else
+              :class="[
+                'flex min-h-11 items-center',
+                collapsed ? 'justify-center' : 'gap-2',
+              ]"
+            >
+              <UAvatar
+                :src="header.imageUrl || undefined"
+                :alt="header.title"
+                icon="i-lucide-circle"
+                size="sm"
+              />
 
-              <div class="min-w-0">
+              <div v-if="!collapsed" class="min-w-0">
                 <div class="truncate text-sm font-semibold text-highlighted">
                   {{ header.title }}
-                </div>
-                <div v-if="header.subtitle" class="truncate text-xs text-toned">
-                  {{ header.subtitle }}
                 </div>
               </div>
             </div>
           </div>
 
           <div v-else class="flex min-h-11 items-center px-1">
-            <NuxtLink to="/" class="inline-flex" aria-label="Home">
+            <NuxtLink
+              v-if="collapsed"
+              to="/"
+              class="mx-auto inline-flex"
+              aria-label="Home"
+            >
+              <AppBrandLogo size="small" alt="FireUX" />
+            </NuxtLink>
+            <NuxtLink v-else to="/" class="inline-flex" aria-label="Home">
               <AppBrandWordmark size="card" alt="FireUX" />
             </NuxtLink>
           </div>
