@@ -4,6 +4,7 @@
 
     <PortfolioCollectionManager
       :collection="collection"
+      :pending="pending"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
       title="Choose Portfolio"
@@ -23,9 +24,11 @@ import type { Portfolio } from '../../../../models/portfolio.model'
 const props = withDefaults(
   defineProps<{
     collection?: Portfolio[]
+    pending?: boolean
   }>(),
   {
     collection: () => [],
+    pending: false,
   }
 )
 

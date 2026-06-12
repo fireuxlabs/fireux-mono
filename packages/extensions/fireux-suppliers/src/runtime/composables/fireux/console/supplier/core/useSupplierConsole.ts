@@ -51,7 +51,7 @@ export function useSupplierConsole(
       operatorId: userId.value,
     }
   })
-  const { suppliers: targetSuppliers } = useSupplierCollection({
+  const { suppliers: targetSuppliers, pending: targetsPending } = useSupplierCollection({
     filter: targetFilter,
   })
 
@@ -102,6 +102,7 @@ export function useSupplierConsole(
   const suppliers = {
     targets: targetSuppliers,
     count: computed(() => targetSuppliers.value.length),
+    pending: targetsPending,
   }
   const selection = {
     supplier: selectedSupplier,

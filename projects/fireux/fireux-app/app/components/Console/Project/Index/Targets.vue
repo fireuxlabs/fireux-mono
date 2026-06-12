@@ -4,6 +4,7 @@
 
     <ProjectCollectionManager
       :collection="collection"
+      :pending="pending"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
       title="Choose Project"
@@ -23,9 +24,11 @@ import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/fire
 const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
+    pending?: boolean
   }>(),
   {
     collection: () => [],
+    pending: false,
   }
 )
 

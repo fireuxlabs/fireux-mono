@@ -26,6 +26,7 @@ export function usePropertyConsoleIndex(
     targets: {
       show: true,
       collection: properties.targets.value,
+      pending: properties.pending.value,
     },
   }))
   const runtime = computed(() => ({

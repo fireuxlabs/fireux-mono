@@ -116,6 +116,7 @@ type PropertyFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
+    pending?: boolean
     consoleIds?: string[]
     actionIds?: string[]
     filterMode?: PropertyFilterMode
@@ -154,6 +155,7 @@ const props = withDefaults(
     showBadges: true,
     devJsonTitle: 'Properties (JSON)',
     devJsonContext: 'collection manager · properties',
+    pending: false,
   }
 )
 
@@ -173,7 +175,7 @@ const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.properties.value
 )
 const pending = computed(() =>
-  Array.isArray(props.collection) ? false : fetched.pending.value
+  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
 )
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Properties'))

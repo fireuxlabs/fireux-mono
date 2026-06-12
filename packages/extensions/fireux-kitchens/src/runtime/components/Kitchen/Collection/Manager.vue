@@ -117,6 +117,7 @@ type KitchenFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: KitchenCollectionItem[]
+    pending?: boolean
     consoleIds?: string[]
     actionIds?: string[]
     filterMode?: KitchenFilterMode
@@ -157,6 +158,7 @@ const props = withDefaults(
     showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
     devJsonContext: 'collection manager · kitchens · raw collection',
+    pending: false,
   }
 )
 
@@ -170,7 +172,7 @@ const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.kitchens.value
 )
 const pending = computed(() =>
-  Array.isArray(props.collection) ? false : fetched.pending.value
+  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
 )
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Kitchens'))

@@ -25,6 +25,7 @@ export function useSupplierConsoleIndex(
     targets: {
       show: true,
       collection: suppliers.targets.value,
+      pending: suppliers.pending.value,
     },
   }))
   const runtime = computed(() => ({

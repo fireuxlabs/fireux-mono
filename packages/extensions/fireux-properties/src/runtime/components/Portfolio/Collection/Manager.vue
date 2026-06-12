@@ -117,6 +117,7 @@ type PortfolioFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: Portfolio[]
+    pending?: boolean
     consoleIds?: string[]
     actionIds?: string[]
     filterMode?: PortfolioFilterMode
@@ -155,6 +156,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     devJsonTitle: 'Portfolios (JSON)',
     devJsonContext: 'collection manager · portfolios · raw collection',
+    pending: false,
   }
 )
 
@@ -173,7 +175,7 @@ const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.portfolios.value
 )
 const pending = computed(() =>
-  Array.isArray(props.collection) ? false : fetched.pending.value
+  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
 )
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Available Portfolios'))

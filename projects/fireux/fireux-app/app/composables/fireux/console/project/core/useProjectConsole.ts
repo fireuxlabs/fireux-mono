@@ -49,7 +49,7 @@ export function useProjectConsole(
       operatorId: userId.value,
     }
   })
-  const { projects: targetProjects } = useProjectCollection({
+  const { projects: targetProjects, pending: targetsPending } = useProjectCollection({
     filter: targetFilter,
   })
   const { selectedEntity, selectEntity, clearSelection } =
@@ -88,6 +88,7 @@ export function useProjectConsole(
   const projects = {
     targets: targetProjects,
     count: computed(() => targetProjects.value.length),
+    pending: targetsPending,
   }
   const selection = {
     project: selectedProject,

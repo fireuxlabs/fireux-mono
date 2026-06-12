@@ -28,6 +28,7 @@ export function usePortfolioConsoleIndex(
     targets: {
       show: true,
       collection: portfolios.targets.value,
+      pending: portfolios.pending.value,
     },
   }))
   const runtime = computed(() => ({

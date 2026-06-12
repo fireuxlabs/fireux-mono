@@ -61,7 +61,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       operatorId: normalizedUid.value,
     }
   })
-  const { portfolios: targetPortfolios } = usePortfolioCollection({
+  const { portfolios: targetPortfolios, pending: targetsPending } = usePortfolioCollection({
     filter: targetFilter,
   })
 
@@ -134,6 +134,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const portfolios = {
     targets: targetPortfolios,
     count: computed(() => targetPortfolios.value.length),
+    pending: targetsPending,
   }
   const selection = {
     portfolio: selectedPortfolio,

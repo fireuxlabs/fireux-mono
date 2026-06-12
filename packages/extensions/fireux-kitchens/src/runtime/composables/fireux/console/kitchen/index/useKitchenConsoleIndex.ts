@@ -21,6 +21,7 @@ export function useKitchenConsoleIndex() {
     targets: {
       show: !isTenantSingleTarget.value,
       collection: kitchens.targets.value,
+      pending: kitchens.pending.value,
     },
   }))
   const runtime = computed(() => ({

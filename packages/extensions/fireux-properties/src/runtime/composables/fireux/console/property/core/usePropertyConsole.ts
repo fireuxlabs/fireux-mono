@@ -48,7 +48,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       operatorId: userId.value,
     }
   })
-  const { properties: targetProperties } = usePropertyCollection({
+  const { properties: targetProperties, pending: targetsPending } = usePropertyCollection({
     shape: 'both',
     filter: targetFilter,
   })
@@ -102,6 +102,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const properties = {
     targets: targetProperties,
     count: computed(() => targetProperties.value.length),
+    pending: targetsPending,
   }
   const selection = {
     property: selectedProperty,

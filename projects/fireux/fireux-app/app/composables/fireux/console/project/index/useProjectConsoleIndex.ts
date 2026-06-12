@@ -25,6 +25,7 @@ export function useProjectConsoleIndex(
     targets: {
       show: true,
       collection: projects.targets.value,
+      pending: projects.pending.value,
     },
   }))
   const runtime = computed(() => ({

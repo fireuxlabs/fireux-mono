@@ -114,6 +114,7 @@ type SupplierFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
+    pending?: boolean
     consoleIds?: string[]
     actionIds?: string[]
     filterMode?: SupplierFilterMode
@@ -152,6 +153,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     devJsonTitle: 'Suppliers (JSON)',
     devJsonContext: 'collection manager · suppliers · raw collection',
+    pending: false,
   }
 )
 
@@ -165,7 +167,7 @@ const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.suppliers.value
 )
 const pending = computed(() =>
-  Array.isArray(props.collection) ? false : fetched.pending.value
+  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
 )
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Suppliers'))

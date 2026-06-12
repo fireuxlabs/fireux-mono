@@ -4,6 +4,7 @@
 
     <SupplierCollectionManager
       :collection="collection"
+      :pending="pending"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
       title="Choose Supplier"
@@ -23,9 +24,11 @@ import type { Supplier } from '../../../../models/supplier/Supplier.model'
 const props = withDefaults(
   defineProps<{
     collection?: Supplier[]
+    pending?: boolean
   }>(),
   {
     collection: () => [],
+    pending: false,
   }
 )
 

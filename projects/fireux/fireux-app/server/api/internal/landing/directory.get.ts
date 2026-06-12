@@ -59,7 +59,10 @@ function asStringArray(value: unknown) {
     : []
 }
 
-async function fetchCollection(db: Firestore, collectionPath: string) {
+async function fetchCollection(
+  db: Firestore,
+  collectionPath: string
+): Promise<RegistryDocument[]> {
   const snapshot = await db.collection(collectionPath).get()
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 }

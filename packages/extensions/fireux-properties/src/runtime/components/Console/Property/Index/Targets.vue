@@ -4,6 +4,7 @@
 
     <PropertyCollectionManager
       :collection="collection"
+      :pending="pending"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
       title="Choose Property"
@@ -23,9 +24,11 @@ import type { Property } from '../../../../models/property.model'
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
+    pending?: boolean
   }>(),
   {
     collection: () => [],
+    pending: false,
   }
 )
 

@@ -4,6 +4,7 @@
 
     <KitchenCollectionManager
       :collection="collection"
+      :pending="pending"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
       title="Choose Kitchen"
@@ -23,9 +24,11 @@ import type { KitchenSurface } from '../../../../composables/fireux/firestore/ki
 const props = withDefaults(
   defineProps<{
     collection?: KitchenSurface[]
+    pending?: boolean
   }>(),
   {
     collection: () => [],
+    pending: false,
   }
 )
 

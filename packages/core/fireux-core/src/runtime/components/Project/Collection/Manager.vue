@@ -118,6 +118,7 @@ type ProjectFilterOption = {
 const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
+    pending?: boolean
     consoleIds?: string[]
     actionIds?: string[]
     filterMode?: ProjectFilterMode
@@ -157,6 +158,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     devJsonTitle: 'Projects (JSON)',
     devJsonContext: 'collection manager · projects · raw collection',
+    pending: false,
   }
 )
 const emit = defineEmits<{
@@ -169,7 +171,7 @@ const rawCollection = computed(() =>
   Array.isArray(props.collection) ? props.collection : fetched.projects.value
 )
 const pending = computed(() =>
-  Array.isArray(props.collection) ? false : fetched.pending.value
+  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
 )
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Projects'))

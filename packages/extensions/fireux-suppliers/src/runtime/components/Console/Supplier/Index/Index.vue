@@ -9,6 +9,7 @@
     <ConsoleSupplierIndexTargets
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
+      :pending="sections.targets.pending"
       @select="actions.selectTarget"
     />
 
