@@ -71,25 +71,18 @@ Vocabulary at this layer:
 Do not add another business layer here.
 If a family often has one target versus many, that is cardinality, not a new console architecture.
 
-Meaning by mode:
-- `live`: show authorized operator targets for that family
-- `test`: show writable targets that prove the intended real shape
-- `demo`: show curated read-only targets for development, demos, and UX exploration
-
 The route answers:
 - which console family is active
-- which mode is active
-- which targets are available in that mode
+- which normal targets are available
 - which target should be entered next
 
-Mode source canon:
-- real/live is the source-of-truth target shape
-- test is the writable proving ground for that shape
-- demo is a read-only aid, not authority
-- demo data bends toward test/real shape; runtime code must not bend around stale demo data
-- demo/test/live targets should expose the same minimum console target shape for family entry, header, and overview
+Target source canon:
+- normal stored targets are the source-of-truth console shape
+- child operations receive selected id/path and read/write capability
+- future source adapters may choose different storage or read-only posture
+- operation code should not branch on source names
 
-Live authority canon:
+Authority canon:
 - `operator_ids` is the current console authority field.
 - app-scoped console families query `apps/{appId}/{family}` with `operator_ids array-contains uid`, then fetch only the authorized root target docs.
 - project console authority is root-level: query `projects` with `operator_ids array-contains uid`.
@@ -136,12 +129,12 @@ Examples:
 - `console/project/operations` for selected Project management such as apps or ecosystem links
 
 Identity helpers live as `console/<family>/identity/useXConsoleIdentity.ts`.
-Target helpers live as `console/<family>/core/useXConsoleTargets.ts`.
+Selection helpers live as `console/<family>/core/useXConsoleSelection.ts`.
 Composable console folders mirror the main surface seams: `core/`, `index/`, `overview/`, `identity/`, and `operations/`.
 
 Stored CRUD remains in the entity's Firestore stack or explicit child stack.
 Public route shaping remains in `public/`.
-Demo scenario data remains in `demo/`.
+Example or seed data stays outside selected console operations.
 
 ### 3) Public Family Surface
 
@@ -230,14 +223,14 @@ The canonical route-file shape is:
 
 The canonical console spine shape is:
 - `pages/console/<family>/index.vue` renders the console dashboard panel and the single `<ConsoleXIndex />` entry component.
-- `<ConsoleXIndex />` is the target picker spine and renders the same vertical sections for every console family: selected, live, demo, test, then dev debug.
+- `<ConsoleXIndex />` is the target picker spine and renders the same vertical sections for every console family: selected, targets, then dev debug.
 - each section lives in `components/Console/X/Index/*` so the family can own labels and domain-specific cards without owning a different spine.
 - `useXConsoleIndex()` lives in `console/<family>/index/`, composes family data, and calls `useConsoleIndex()` from `fireux-core`.
 - `components/Console/X/Overview.vue` is the selected target spine and renders the same overview sections for every console family: focus, multiple, then dev debug.
 - `useXConsoleOverview()` lives in `console/<family>/overview/`, composes family data, and calls `useConsoleOverview()` from `fireux-core`.
-- `useXConsole()` lives in `console/<family>/core/` and owns selected entity, selected mode, root/app scope, write permission, and console header state.
+- `useXConsole()` lives in `console/<family>/core/` and owns selected entity, root/app scope, write permission, and console header state.
 - `useXConsoleIdentity()` lives in `console/<family>/identity/` and owns selected target identity read/edit state.
-- `useXConsoleTargets()` lives in `console/<family>/core/` and owns selected/live/demo/test target state.
+- `useXConsoleSelection()` lives in `console/<family>/core/` and owns selected target id state.
 - core provides primitives, not a whole all-in-one console shell: `useConsole()`, `useConsoleIndex()`, `useConsoleOverview()`, `useConsoleSelection()`, console authority helpers, and `ConsoleTargetCard`.
 
 ## Public Identity Surface

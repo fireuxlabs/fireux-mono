@@ -10,7 +10,7 @@ import {
   type DishCreateInput,
 } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
+import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 
 type DishCreateDraft = {
   name: string
@@ -49,7 +49,7 @@ export function useDishCreate(
   const { setDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleTargets()
+  const { selectedId } = useKitchenConsoleSelection()
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||

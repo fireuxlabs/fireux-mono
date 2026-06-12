@@ -7,7 +7,7 @@ import {
   type DishUpdateInput,
 } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
+import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined
@@ -20,7 +20,7 @@ export function useDishUpdate(
 ) {
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleTargets()
+  const { selectedId } = useKitchenConsoleSelection()
 
   const kitchenCollectionPath = computed(() =>
     trim(unref(options.kitchenCollectionPath)) ||

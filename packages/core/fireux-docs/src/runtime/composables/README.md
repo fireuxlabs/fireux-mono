@@ -103,7 +103,7 @@ composables/fireux/firestore/<entity>/
 composables/fireux/console/<entity>/
   core/
     useXConsole.ts
-    useXConsoleTargets.ts
+    useXConsoleSelection.ts
   index/
     useXConsoleIndex.ts
   overview/
@@ -123,7 +123,7 @@ components/Console/<Entity>/
   Operations/
 ```
 
-`Index` assembles the console landing page and owns selected/live/demo/test sectioning. `Overview` summarizes the selected target. `Identity` reads or edits the selected entity itself. `Operations` contains child work for the selected console target. Component folders mirror visual sections; composable folders mirror behavioral seams. `operations/` is the shared delta bucket in both layers because operation children have their own structure. Use shared debug components directly instead of adding per-console `Debug.vue` wrappers.
+`Index` assembles the console landing page and owns selected/targets sectioning. `Overview` summarizes the selected target. `Identity` reads or edits the selected entity itself. `Operations` contains child work for the selected console target. Component folders mirror visual sections; composable folders mirror behavioral seams. `operations/` is the shared delta bucket in both layers because operation children have their own structure. Use shared debug components directly instead of adding per-console `Debug.vue` wrappers.
 
 5. Keep shared app/runtime composables under `fireux/app/`.
 
@@ -155,8 +155,8 @@ Important FireUX seams include:
   derived entity truth such as status/display booleans
 - `useXInterface`
   adapt read truth into UI surfaces
-- `useXConsoleTargets`
-  remember selected/live/demo/test console target state
+- `useXConsoleSelection`
+  remember selected console target id state
 - `useActiveX`
   resolve active target/runtime path
 - `useXConsole`

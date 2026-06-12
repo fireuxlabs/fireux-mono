@@ -1,14 +1,14 @@
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
-type PortfolioConsoleTargetInput = {
+type PortfolioConsoleSelectionInput = {
   selectedId?: string
   portfolioId?: string
 }
 
-export function usePortfolioConsoleTargets() {
+export function usePortfolioConsoleSelection() {
   const selection = useConsoleSelection({ family: 'portfolio' })
 
-  const setPortfolioConsoleTarget = (selectionPatch: PortfolioConsoleTargetInput = {}) => {
+  const setPortfolioConsoleSelection = (selectionPatch: PortfolioConsoleSelectionInput = {}) => {
     selection.setSelection({
       selectedId: selectionPatch.selectedId,
       id: selectionPatch.portfolioId,
@@ -17,7 +17,7 @@ export function usePortfolioConsoleTargets() {
 
   return {
     selectedId: selection.selectedId,
-    setPortfolioConsoleTarget,
-    clearPortfolioConsoleTarget: selection.clearSelection,
+    setPortfolioConsoleSelection,
+    clearPortfolioConsoleSelection: selection.clearSelection,
   }
 }

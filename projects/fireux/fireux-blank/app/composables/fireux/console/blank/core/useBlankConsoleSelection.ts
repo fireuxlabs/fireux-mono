@@ -1,15 +1,15 @@
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
-type BlankConsoleTargetInput = {
+type BlankConsoleSelectionInput = {
   selectedId?: string
   blankId?: string
 }
 
-export function useBlankConsoleTargets() {
+export function useBlankConsoleSelection() {
   const selection = useConsoleSelection({ family: 'blank' })
 
-  const setBlankConsoleTarget = (
-    selectionPatch: BlankConsoleTargetInput = {}
+  const setBlankConsoleSelection = (
+    selectionPatch: BlankConsoleSelectionInput = {}
   ) => {
     selection.setSelection({
       selectedId: selectionPatch.selectedId,
@@ -19,7 +19,7 @@ export function useBlankConsoleTargets() {
 
   return {
     selectedId: selection.selectedId,
-    setBlankConsoleTarget,
-    clearBlankConsoleTarget: selection.clearSelection,
+    setBlankConsoleSelection,
+    clearBlankConsoleSelection: selection.clearSelection,
   }
 }

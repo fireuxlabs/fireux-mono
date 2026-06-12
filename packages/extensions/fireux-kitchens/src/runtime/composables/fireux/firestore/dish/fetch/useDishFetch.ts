@@ -4,7 +4,7 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import { computed, unref, type Ref } from 'vue'
 import { DishStorage, normalizeDish, type Dish } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
+import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/${DishStorage.collection}`
@@ -20,7 +20,7 @@ export function useDishFetch(
 ) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleTargets()
+  const { selectedId } = useKitchenConsoleSelection()
 
   const resolvedDishId = computed(() => String(unref(dishId) || '').trim())
   const resolvedKitchenId = computed(() =>

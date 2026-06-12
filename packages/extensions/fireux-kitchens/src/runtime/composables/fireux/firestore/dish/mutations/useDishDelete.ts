@@ -3,7 +3,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, unref, type Ref } from 'vue'
 import { DishStorage } from '../../../../../models/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleTargets } from '../../../console/kitchen/core/useKitchenConsoleTargets'
+import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
 
@@ -15,7 +15,7 @@ export function useDishDelete(
 ) {
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleTargets()
+  const { selectedId } = useKitchenConsoleSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||

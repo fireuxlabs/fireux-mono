@@ -71,7 +71,7 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { usePortfolioConsoleTargets } from '../../../composables/fireux/console/portfolio/core/usePortfolioConsoleTargets'
+import { usePortfolioConsoleSelection } from '../../../composables/fireux/console/portfolio/core/usePortfolioConsoleSelection'
 import { usePortfolioCreate } from '../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{
@@ -90,7 +90,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { setPortfolioConsoleTarget } = usePortfolioConsoleTargets()
+const { setPortfolioConsoleSelection } = usePortfolioConsoleSelection()
 const { createPortfolio, createPortfolioConsole } = usePortfolioCreate()
 
 const name = ref('')
@@ -126,7 +126,7 @@ const submit = async () => {
     })
 
     if (props.mode === 'console') {
-      setPortfolioConsoleTarget({ portfolioId: result.id })
+      setPortfolioConsoleSelection({ portfolioId: result.id })
     }
     emit('created', result)
 

@@ -117,17 +117,13 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `composables/fireux/console/property/core/usePropertyConsole.ts`
   - `composables/fireux/console/property/index/usePropertyConsoleIndex.ts`
   - `composables/fireux/console/property/overview/usePropertyConsoleOverview.ts`
-  - `composables/fireux/console/property/core/usePropertyConsoleTargets.ts`
+  - `composables/fireux/console/property/core/usePropertyConsoleSelection.ts`
   - property operation helpers live under `composables/fireux/console/property/operations/**`
   - `Operations` is a selected Property code bucket, not a Firestore collection
 - `/console/portfolio` is the family entry page:
-  - `demo`: curated demo portfolios
-  - `test`: Firestore-backed test portfolios
-  - `live`: my real portfolios for this app
-- `test` canon is one personal portfolio per signed-in user:
-  - `test-portfolios/{uid}`
-  - ensured on entry to `/console/portfolio` in `test` mode
-  - not created during auth
+  - normal targets come from stored Portfolio records
+  - selected target state lives in the console selection seam
+  - child operations should not branch on source names
 - `my real portfolios` means portfolios the current user can operate through the app console record:
   - `apps/{appId}/portfolios/{portfolioId}`
   - `operator_ids` contains the user
