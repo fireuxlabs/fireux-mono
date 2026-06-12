@@ -1,5 +1,3 @@
-export type FireuxBrandRole = 'global' | 'tenant' | 'standalone'
-
 export type ResolvedFireuxBrandAssets = {
   logo: string
   logoLight: string
@@ -32,14 +30,6 @@ export const CORE_BRAND_DEFAULT_ASSETS = Object.freeze({
   wordmarkDark: '/img/core/brand/wordmark-dark.png',
 })
 
-type ResolveBrandAssetInput = {
-  role?: FireuxBrandRole | string | null
-  appLogo?: string | null
-  appLogoLight?: string | null
-  appLogoDark?: string | null
-  appThumbnail?: string | null
-}
-
 const IMAGE_FILENAME_RE = /^[A-Za-z0-9._-]+\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i
 
 export function normalizePublicImgAsset(
@@ -67,17 +57,6 @@ export function normalizePublicImgAsset(
   return defaultValue
 }
 
-export function resolveFireuxBrandAssets(
-  input: ResolveBrandAssetInput = {}
-): ResolvedFireuxBrandAssets {
-  const base = GLOBAL_BRAND_ASSETS
-  const logo = normalizePublicImgAsset(input.appLogo, base.logo)
-
-  return {
-    ...base,
-    logo,
-    logoLight: normalizePublicImgAsset(input.appLogoLight, logo),
-    logoDark: normalizePublicImgAsset(input.appLogoDark, logo),
-    thumbnail: normalizePublicImgAsset(input.appThumbnail, base.thumbnail),
-  }
+export function resolveFireuxBrandAssets(): ResolvedFireuxBrandAssets {
+  return { ...GLOBAL_BRAND_ASSETS }
 }

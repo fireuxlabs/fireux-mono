@@ -49,10 +49,10 @@
 import { computed } from 'vue'
 import { useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
-import { useFireuxBrandAssets } from '../composables/fireux/app/useFireuxBrandAssets'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 const fireux = useFireUXConfig()
-const brandAssets = useFireuxBrandAssets()
+const brandAssets = resolveFireuxBrandAssets()
 
 const appName = computed(() =>
   String(fireux.appName || fireux.appShortName || fireux.appId || 'App')
@@ -62,41 +62,41 @@ const assetItems = computed(() => [
   {
     key: 'logo',
     label: 'Logo',
-    src: brandAssets.value.logo,
+    src: brandAssets.logo,
   },
   {
     key: 'wordmark-light',
     label: 'Wordmark light',
-    src: brandAssets.value.wordmarkLight,
+    src: brandAssets.wordmarkLight,
     wide: true,
   },
   {
     key: 'wordmark-dark',
     label: 'Wordmark dark',
-    src: brandAssets.value.wordmarkDark,
+    src: brandAssets.wordmarkDark,
     wide: true,
   },
   {
     key: 'thumbnail',
     label: 'Thumbnail',
-    src: brandAssets.value.thumbnail,
+    src: brandAssets.thumbnail,
     wide: true,
   },
   {
     key: 'cover',
     label: 'Cover',
-    src: brandAssets.value.cover,
+    src: brandAssets.cover,
     wide: true,
   },
   {
     key: 'pwa-icon-192',
     label: 'PWA icon 192',
-    src: brandAssets.value.pwaIcon192,
+    src: brandAssets.pwaIcon192,
   },
   {
     key: 'pwa-icon-512',
     label: 'PWA icon 512',
-    src: brandAssets.value.pwaIcon512,
+    src: brandAssets.pwaIcon512,
   },
 ])
 

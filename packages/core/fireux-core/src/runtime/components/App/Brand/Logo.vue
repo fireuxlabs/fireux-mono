@@ -16,8 +16,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
-import { useFireuxBrandAssets } from '../../../composables/fireux/app/useFireuxBrandAssets'
-import { CORE_BRAND_DEFAULT_ASSETS } from '../../../../utils/brandAssets'
+import {
+  CORE_BRAND_DEFAULT_ASSETS,
+  resolveFireuxBrandAssets,
+} from '../../../../utils/brandAssets'
 
 type BrandSize = 'small' | 'medium' | 'large' | 'hero'
 
@@ -33,21 +35,21 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
   alt: 'App logo',
 })
-const brandAssets = useFireuxBrandAssets()
+const brandAssets = resolveFireuxBrandAssets()
 const resolvedMode = useResolvedColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')
 const explicitSrc = computed(() => {
   const raw = typeof props.src === 'string' ? props.src.trim() : ''
   return raw
 })
-const baseSrc = computed(() => explicitSrc.value || brandAssets.value.logo)
+const baseSrc = computed(() => explicitSrc.value || brandAssets.logo)
 const themedSrc = computed(() => {
   const raw = isDark.value ? props.lightSrc : props.darkSrc
   return typeof raw === 'string' ? raw.trim() : ''
 })
 const configuredThemedSrc = computed(() => {
   if (explicitSrc.value) return ''
-  return isDark.value ? brandAssets.value.logoLight : brandAssets.value.logoDark
+  return isDark.value ? brandAssets.logoLight : brandAssets.logoDark
 })
 const resolvedSrc = computed(() =>
   themedSrc.value || configuredThemedSrc.value || baseSrc.value

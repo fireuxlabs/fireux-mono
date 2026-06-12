@@ -35,14 +35,6 @@ export type FireuxAppConfig = {
   shortName: string
   /** Optional app-owned Firestore database id. Standalone apps should set this. */
   databaseId?: string
-  /** Optional app thumbnail path/URL (role-aware defaults apply when omitted). */
-  appThumbnail?: string
-  /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
-  appLogo?: string
-  /** Optional light logo path/URL for dark backgrounds. */
-  appLogoLight?: string
-  /** Optional dark logo path/URL for light backgrounds. */
-  appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Optional app-level design pack. Surface-specific packs belong in designPacks. */
@@ -378,13 +370,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const nuxt: NuxtConfig = {}
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(app.databaseId)
-  const brandAssets = resolveFireuxBrandAssets({
-    role: app.role,
-    appLogo: app.appLogo,
-    appLogoLight: app.appLogoLight,
-    appLogoDark: app.appLogoDark,
-    appThumbnail: app.appThumbnail,
-  })
+  const brandAssets = resolveFireuxBrandAssets()
 
   // Ensure responsive breakpoints behave correctly on mobile.
   // Without an explicit viewport meta tag, browsers may render using a
@@ -541,7 +527,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     themeColor: '#000000',
     backgroundColor: '#000000',
     lang: 'en',
-    role: app.role,
   })
 
   configNitroFirebase(nuxt, {

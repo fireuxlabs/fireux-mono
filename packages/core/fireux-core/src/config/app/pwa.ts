@@ -1,9 +1,6 @@
 // packages/core/fireux-core/src/config/pwa.ts
 import type { NuxtConfig } from '@nuxt/schema'
-import {
-  resolveFireuxBrandAssets,
-  type FireuxBrandRole,
-} from '../../utils/brandAssets'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 export type FireUXPwaConfig = {
   name: string
@@ -11,11 +8,10 @@ export type FireUXPwaConfig = {
   themeColor: string
   backgroundColor: string
   lang: string
-  role?: FireuxBrandRole
 }
 
 export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
-  const brandAssets = resolveFireuxBrandAssets({ role: c.role })
+  const brandAssets = resolveFireuxBrandAssets()
   ;(nuxt as any).pwa = {
     ...((nuxt as any).pwa || {}),
     registerType: 'autoUpdate',

@@ -167,9 +167,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app/useFireuxBrandAssets'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
+import { resolveFireuxBrandAssets } from '../../../utils/brandAssets'
 
 type RightPanelItem = {
   title: string
@@ -203,7 +203,7 @@ const appAlt = computed(() => {
   return props.appName.charAt(0).toUpperCase() + props.appName.slice(1)
 })
 
-const brandAssets = useFireuxBrandAssets()
+const brandAssets = resolveFireuxBrandAssets()
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
 const { keyEntityTags } = useKeyEntityTags()

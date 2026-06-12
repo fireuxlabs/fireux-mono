@@ -24,14 +24,7 @@ export default defineEventHandler((event) => {
     (typeof fireux.primaryColor === 'string' && fireux.primaryColor.trim()) ||
     (typeof pub.primaryColor === 'string' && pub.primaryColor.trim()) ||
     DEFAULT_THEME
-  const brandAssets = resolveFireuxBrandAssets({
-    role: typeof fireux.role === 'string' ? fireux.role : undefined,
-    appLogo: typeof fireux.appLogo === 'string' ? fireux.appLogo : undefined,
-    appThumbnail:
-      typeof fireux.appThumbnail === 'string'
-        ? fireux.appThumbnail
-        : undefined,
-  })
+  const brandAssets = resolveFireuxBrandAssets()
 
   setHeader(event, 'content-type', 'application/manifest+json')
 
