@@ -1,7 +1,7 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import kitchenConfig from './kitchen.config'
+import kitchenConfig from './app/config/kitchen.config'
 
 const kitchenConsoleConfig = {
   canCreate: kitchenConfig.canCreate,
