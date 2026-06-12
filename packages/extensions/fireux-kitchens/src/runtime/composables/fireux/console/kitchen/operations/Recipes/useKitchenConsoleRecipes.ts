@@ -15,7 +15,6 @@ export type KitchenRecipeDishUsage = {
 export function useKitchenConsoleRecipes() {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -24,7 +23,7 @@ export function useKitchenConsoleRecipes() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { recipes: liveRecipes, count: liveCount, pending: livePending, collectionPath } =
+  const { recipes, count: recipeCount, pending: recipesPending, collectionPath } =
     useRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -32,13 +31,12 @@ export function useKitchenConsoleRecipes() {
   const page = useKitchenConsoleReadPage<Recipe>({
     collectionName: RecipeStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveRecipes,
-    livePending,
+    items: recipes,
+    pending: recipesPending,
     collectionPath,
   })
-  const recipes = computed(() => page.collection.value.items)
+  const consoleRecipes = computed(() => page.collection.value.items)
   const dishes = computed(() => [])
   const count = computed(() => page.collection.value.count)
   const pending = computed(() => page.collection.value.pending)
@@ -46,7 +44,6 @@ export function useKitchenConsoleRecipes() {
   const getDishUsageForRecipe = (recipeId: string) =>
     dishUsageByRecipeId.value[normalizeString(recipeId)] || []
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
@@ -65,14 +62,13 @@ export function useKitchenConsoleRecipes() {
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
-    liveCount,
-    recipes,
+    liveCount: recipeCount,
+    recipes: consoleRecipes,
     dishes,
     count,
     pending,

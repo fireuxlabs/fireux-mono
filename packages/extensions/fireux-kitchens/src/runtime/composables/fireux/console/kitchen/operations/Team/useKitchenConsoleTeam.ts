@@ -12,7 +12,6 @@ import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 export function useKitchenConsoleTeam() {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -22,8 +21,8 @@ export function useKitchenConsoleTeam() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
-    items: liveTeamMembers,
-    pending: livePending,
+    items: teamMembers,
+    pending: teamPending,
     collectionPath,
   } = useKitchenChildCollection<KitchenTeamMember>(
     KitchenTeamMemberStorage.collection,
@@ -48,31 +47,29 @@ export function useKitchenConsoleTeam() {
   const page = useKitchenConsoleReadPage<KitchenTeamMember>({
     collectionName: KitchenTeamMemberStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveTeamMembers,
-    livePending,
+    items: teamMembers,
+    pending: teamPending,
     collectionPath,
   })
-  const teamMembers = computed(() => page.collection.value.items)
+  const consoleTeamMembers = computed(() => page.collection.value.items)
   const joinRequests = computed<KitchenTeamJoinRequest[]>(() =>
-    selectedMode.value === 'demo' ? [] : liveJoinRequests.value
+    liveJoinRequests.value
   )
   const pendingJoinRequests = computed(() =>
     joinRequests.value.filter((request) => request.status === 'pending')
   )
   const pending = computed(() => page.collection.value.pending)
   const joinRequestsPending = computed(() =>
-    selectedMode.value === 'demo' ? false : liveJoinRequestsPending.value
+    liveJoinRequestsPending.value
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     joinRequestsPath: joinRequestsPath.value,
-    count: teamMembers.value.length,
+    count: consoleTeamMembers.value.length,
     joinRequestsCount: joinRequests.value.length,
     pendingJoinRequestsCount: pendingJoinRequests.value.length,
     pending: pending.value,
@@ -83,13 +80,12 @@ export function useKitchenConsoleTeam() {
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
-    teamMembers,
+    teamMembers: consoleTeamMembers,
     joinRequests,
     pendingJoinRequests,
     pending,

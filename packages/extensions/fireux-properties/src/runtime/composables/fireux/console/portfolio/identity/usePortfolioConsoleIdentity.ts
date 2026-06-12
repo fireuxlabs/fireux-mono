@@ -5,7 +5,6 @@ import { usePortfolioConsole } from '../core/usePortfolioConsole'
 export function usePortfolioConsoleIdentity() {
   const {
     selectedPortfolio,
-    selectedMode,
     portfolioId,
     rootCollection,
     canWrite,
@@ -30,7 +29,6 @@ export function usePortfolioConsoleIdentity() {
     normalizeString(selectedPortfolio.value?.region_label)
   )
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     portfolioId: portfolioId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -46,7 +44,6 @@ export function usePortfolioConsoleIdentity() {
 
   return {
     selectedPortfolio,
-    selectedMode,
     portfolioId,
     rootCollection,
     canWrite,

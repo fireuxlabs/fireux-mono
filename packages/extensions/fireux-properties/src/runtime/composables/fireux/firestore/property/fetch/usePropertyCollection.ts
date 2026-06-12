@@ -7,15 +7,9 @@ import {
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
-import {
-  createTestPropertySimulation,
-  getDemoPropertySimulations,
-} from '../../../demo/property/demo-scenarios'
 
 type PropertyCollectionDoc = Partial<Property> & {
   id?: string
@@ -36,17 +30,12 @@ export type PropertyCollectionFilter = {
   operatorId?: PropertyCollectionFilterValue
   teamId?: PropertyCollectionFilterValue
 }
-export type PropertyCollectionSource = 'live' | 'demo' | 'test'
 export type PropertyCollectionShape = 'root' | 'overlay' | 'both'
 
 type UsePropertyCollectionOptions = {
   shape?:
     | PropertyCollectionShape
     | Ref<PropertyCollectionShape | null | undefined>
-    | null
-  source?:
-    | PropertyCollectionSource
-    | Ref<PropertyCollectionSource | null | undefined>
     | null
   filter?:
     | PropertyCollectionFilter
@@ -65,15 +54,9 @@ export function usePropertyCollection(
 ) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { uid } = useAuth()
-  const { currentUser, avatarSrc } = useUser()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
 
-  const sourceMode = computed<PropertyCollectionSource>(() => {
-    if (isRef(options.source)) return options.source.value ?? 'live'
-    return options.source ?? 'live'
-  })
   const resolvedFilter = computed<PropertyCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
@@ -107,7 +90,7 @@ export function usePropertyCollection(
     DEFAULT_COLLECTION_PATH
   )
   const overlayQuery = computed<Query<AppPropertyOverlay> | null>(() => {
-    if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
+    if (!resolvedAppId.value) return null
     if (resolvedShape.value === 'root') return null
     if (hasOperatorFilter.value && !filterOperatorId.value) return null
 
@@ -144,18 +127,7 @@ export function usePropertyCollection(
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedPropertyIds,
   })
-  const demoItems = computed<PropertyCollectionDoc[]>(() =>
-    getDemoPropertySimulations()
-  )
-  const testItem = computed<PropertyCollectionDoc | null>(() =>
-    createTestPropertySimulation(
-      normalizeString(uid.value),
-      normalizeString(currentUser.value?.display_name),
-      normalizeString(avatarSrc.value)
-    )
-  )
-
-  const liveItems = computed<PropertyCollectionDoc[]>(() => {
+  const targetItems = computed<PropertyCollectionDoc[]>(() => {
     if (resolvedShape.value === 'root') return liveRootSource.value ?? []
     if (resolvedShape.value === 'overlay') return overlaySource.value ?? []
     if (!hasOperatorFilter.value) return liveRootSource.value ?? []
@@ -211,11 +183,7 @@ export function usePropertyCollection(
     return merged
   })
 
-  const collectionItems = computed<PropertyCollectionDoc[]>(() => {
-    if (sourceMode.value === 'demo') return demoItems.value
-    if (sourceMode.value === 'test') return testItem.value ? [testItem.value] : []
-    return liveItems.value
-  })
+  const collectionItems = computed<PropertyCollectionDoc[]>(() => targetItems.value)
 
   const properties = computed<Property[]>(() =>
     collectionItems.value.reduce<Property[]>((acc, property) => {
@@ -240,8 +208,6 @@ export function usePropertyCollection(
   )
   const count = computed(() => properties.value.length)
   const pending = computed(() => {
-    if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return false
     if (resolvedShape.value === 'root') return liveRootSource.value === undefined
     if (resolvedShape.value === 'overlay') {
       return overlaySource.value === undefined

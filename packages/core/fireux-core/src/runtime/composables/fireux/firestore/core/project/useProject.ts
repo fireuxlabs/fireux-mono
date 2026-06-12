@@ -12,7 +12,6 @@ import { useProjectInterface } from './utils/view/useProjectInterface'
 export type { Project } from '../../../../../models/system/project.model'
 export type {
   ProjectCollectionFilter,
-  ProjectCollectionSource,
 } from './fetch/useProjectCollection'
 
 export {

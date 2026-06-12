@@ -126,7 +126,7 @@ const submit = async () => {
     })
 
     if (props.mode === 'console') {
-      setPortfolioConsoleTarget({ portfolioId: result.id, mode: 'live' })
+      setPortfolioConsoleTarget({ portfolioId: result.id })
     }
     emit('created', result)
 

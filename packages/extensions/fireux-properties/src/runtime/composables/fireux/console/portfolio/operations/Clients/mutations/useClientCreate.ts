@@ -24,10 +24,6 @@ export function useClientCreate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] portfolio id is required.')
     }
 
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-properties] demo runtime does not allow writes.')
-    }
-
     const displayName = normalizeString(input.display_name)
     if (!displayName) {
       throw new Error('[fireux-properties] client display_name is required.')

@@ -6,9 +6,6 @@
       :collection="collection"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
-      v-model:filter-mode="targetMode"
-      :filter-options="targetModeOptions"
-      :show-filter-toggle="true"
       title="Choose Property"
       description="Select the Property console target you want to work on."
       :link="false"
@@ -20,10 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Property } from '../../../../models/property.model'
-
-type TargetMode = 'console' | 'mine'
 
 const props = withDefaults(
   defineProps<{
@@ -38,11 +33,6 @@ const emit = defineEmits<{
   (event: 'select', id: string): void
 }>()
 
-const targetMode = ref<TargetMode>('console')
-const targetModeOptions = [
-  { value: 'console' as const, label: 'Property consoles' },
-  { value: 'mine' as const, label: 'My properties' },
-]
 const consoleIds = computed(() =>
   props.collection
     .map((property) => String(property.id ?? '').trim())

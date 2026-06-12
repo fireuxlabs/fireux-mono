@@ -8,7 +8,6 @@ export function useKitchenConsoleDish() {
   const route = useRoute()
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -32,7 +31,6 @@ export function useKitchenConsoleDish() {
   const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
 
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
@@ -46,7 +44,6 @@ export function useKitchenConsoleDish() {
 
   return {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,

@@ -8,7 +8,6 @@ import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 export function useKitchenConsoleSuppliers() {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -17,26 +16,24 @@ export function useKitchenConsoleSuppliers() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { suppliers: liveSuppliers, count: liveCount, pending: livePending, collectionPath } =
+  const { suppliers, count: supplierCount, pending: suppliersPending, collectionPath } =
     useKitchenSupplierFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
     })
-  const typedLiveSuppliers = computed<SupplierSurface[]>(() => liveSuppliers.value as SupplierSurface[])
+  const typedSuppliers = computed<SupplierSurface[]>(() => suppliers.value as SupplierSurface[])
   const page = useKitchenConsoleReadPage<SupplierSurface>({
     collectionName: SupplierStorage.rootCollection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: typedLiveSuppliers,
-    livePending,
+    items: typedSuppliers,
+    pending: suppliersPending,
     collectionPath,
   })
-  const suppliers = computed(() => page.collection.value.items)
+  const consoleSuppliers = computed(() => page.collection.value.items)
   const count = computed(() => page.collection.value.count)
   const pending = computed(() => page.collection.value.pending)
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
@@ -49,14 +46,13 @@ export function useKitchenConsoleSuppliers() {
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
-    liveCount,
-    suppliers,
+    liveCount: supplierCount,
+    suppliers: consoleSuppliers,
     count,
     pending,
     debug,

@@ -11,7 +11,6 @@ export type { Property }
 export type {
   PropertyCollectionFilter,
   PropertyCollectionShape,
-  PropertyCollectionSource,
 } from './fetch/usePropertyCollection'
 
 export {

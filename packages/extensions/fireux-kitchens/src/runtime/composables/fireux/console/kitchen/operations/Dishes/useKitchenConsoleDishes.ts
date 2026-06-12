@@ -23,7 +23,6 @@ export type KitchenDishMenuUsage = {
 export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolean } = {}) {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -32,7 +31,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { dishes: liveDishes, pending: livePending, collectionPath } =
+  const { dishes, pending: dishesPending, collectionPath } =
     useDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -40,13 +39,12 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   const page = useKitchenConsoleReadPage<Dish>({
     collectionName: DishStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveDishes,
-    livePending,
+    items: dishes,
+    pending: dishesPending,
     collectionPath,
   })
-  const dishes = computed(() => page.collection.value.items)
+  const consoleDishes = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const sections = computed<KitchenDishSection[]>(() => [])
   const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(
@@ -56,13 +54,12 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
-    dishes,
+    dishes: consoleDishes,
     pending,
     sections,
     menuFilters: sections,
@@ -71,10 +68,9 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     getMenuUsageForDish: (dishId: string) =>
       menuUsageByDishId.value[clean(dishId)] || [],
     debug: computed(() => ({
-      mode: selectedMode.value,
       kitchenId: kitchenId.value,
       collectionPath: collectionPath.value,
-      count: dishes.value.length,
+      count: consoleDishes.value.length,
       pending: pending.value,
       canWrite: canWrite.value,
     })),

@@ -1,8 +1,4 @@
-import {
-  normalizeConsoleString,
-  useConsole,
-  type ConsoleMode,
-} from './useConsole'
+import { normalizeConsoleString, useConsole } from './useConsole'
 
 type UseConsoleSelectionOptions = {
   family: string
@@ -11,12 +7,10 @@ type UseConsoleSelectionOptions = {
 type ConsoleSelectionPatch = {
   selectedId?: string
   id?: string
-  mode?: ConsoleMode
 }
 
 export function useConsoleSelection(options: UseConsoleSelectionOptions) {
-  const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole(options.family)
+  const { selectedId, selectEntity, clearSelection } = useConsole(options.family)
 
   const setSelection = (patch: ConsoleSelectionPatch = {}) => {
     const nextId =
@@ -24,13 +18,11 @@ export function useConsoleSelection(options: UseConsoleSelectionOptions) {
         ? normalizeConsoleString(patch.selectedId ?? patch.id)
         : selectedId.value
 
-    const nextMode = patch.mode ?? selectedMode.value
-    selectEntity(nextId, nextMode)
+    selectEntity(nextId)
   }
 
   return {
     selectedId,
-    mode: selectedMode,
     setSelection,
     clearSelection,
   }

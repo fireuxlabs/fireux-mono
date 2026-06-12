@@ -6,46 +6,42 @@ import {
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 import type { Blank } from '../../../../../models/blank.model'
 
-type BlankConsoleMode = 'live'
-
 /**
  * Blank console harness.
  *
  * Blank has a root-target create/list seam so the console lifecycle can be
- * tested without domain operations, child records, demo mode, or test mode.
+ * tested without domain operations or child records.
  */
 export function useBlankConsole() {
   const { blanks, pending, rootCollectionPath, appCollectionPath } =
     useBlankCollection()
-  const liveBlanks = computed(() => blanks.value)
+  const targetBlanks = computed(() => blanks.value)
   const {
     selectedEntity,
     selectEntity,
     clearSelection,
   } = useConsole<Blank>('blank', {
-    liveItems: liveBlanks,
+    targetItems: targetBlanks,
     getId: (target) => normalizeString(target?.id),
   })
   const selectedBlank = computed<Blank | null>(() => selectedEntity.value)
-  const selectedMode = computed<BlankConsoleMode>(() => 'live')
   const blankId = computed(() => normalizeString(selectedBlank.value?.id))
   const rootCollection = computed(() => rootCollectionPath)
-  const hasLiveBlanks = computed(() => liveBlanks.value.length > 0)
+  const hasTargets = computed(() => targetBlanks.value.length > 0)
   const canWrite = computed(() => false)
-  const selectBlank = (blankId: string, _mode: BlankConsoleMode = 'live') => {
-    selectEntity(blankId, 'live')
+  const selectBlank = (blankId: string) => {
+    selectEntity(blankId)
   }
   const clearSelectedBlank = () => {
     clearSelection()
   }
 
   return {
-    liveBlanks,
+    targetBlanks,
     selectedBlank,
-    selectedMode,
     blankId,
     rootCollection,
-    hasLiveBlanks,
+    hasTargets,
     pending,
     rootCollectionPath,
     appCollectionPath,

@@ -7,46 +7,41 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 export function useKitchenConsoleIdentity() {
   const {
     selectedKitchen: selectedConsoleKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     canWrite,
     clearSelectedKitchen,
   } = useKitchenConsole()
   const { kitchen: selectedKitchenDoc } = useKitchenFetch(kitchenId, {
-    source: selectedMode,
     collectionPath: KitchenStorage.rootCollection,
   })
   const selectedKitchen = computed(
     () => selectedKitchenDoc.value ?? selectedConsoleKitchen.value
   )
+  const kitchenRecord = computed(
+    () => selectedKitchen.value as Record<string, unknown> | null
+  )
 
   const name = computed(() =>
-    normalizeString(
-      (selectedKitchen.value as Record<string, unknown> | null)?.display_name ||
-        selectedKitchen.value?.name
-    )
+    normalizeString(kitchenRecord.value?.display_name || kitchenRecord.value?.name)
   )
   const tagline = computed(() =>
-    normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.tagline)
+    normalizeString(kitchenRecord.value?.tagline)
   )
   const currencyCode = computed(() =>
-    normalizeString(
-      (selectedKitchen.value as Record<string, unknown> | null)?.default_currency_code
-    ) || 'CHF'
+    normalizeString(kitchenRecord.value?.default_currency_code) || 'CHF'
   )
   const slug = computed(() =>
-    normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.slug)
+    normalizeString(kitchenRecord.value?.slug)
   )
   const placeId = computed(() =>
-    normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.place_id)
+    normalizeString(kitchenRecord.value?.place_id)
   )
   const address = computed(() => {
-    const kitchen = selectedKitchen.value as Record<string, unknown> | null
+    const kitchen = kitchenRecord.value
     return normalizeString(kitchen?.short_address || kitchen?.formatted_address)
   })
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -61,7 +56,6 @@ export function useKitchenConsoleIdentity() {
 
   return {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     canWrite,

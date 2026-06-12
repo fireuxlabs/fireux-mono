@@ -6,7 +6,7 @@ import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleOverview() {
   const {
-    liveProjects: targetProjects,
+    targetProjects,
     selectedProject,
     projectId,
     rootCollection,

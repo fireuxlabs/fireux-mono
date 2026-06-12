@@ -10,7 +10,7 @@ export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
   const {
-    liveSuppliers: targetSuppliers,
+    targetSuppliers,
     selectedSupplier,
     supplierId,
     activeSupplierAppId,
@@ -38,7 +38,7 @@ export function useSupplierConsoleIndex(
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectSupplier(String(id ?? '').trim(), 'live')
+      selectSupplier(String(id ?? '').trim())
     },
     clear: clearSelectedSupplier,
   }

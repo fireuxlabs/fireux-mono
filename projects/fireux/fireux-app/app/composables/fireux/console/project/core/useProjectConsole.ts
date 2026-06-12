@@ -1,9 +1,7 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleRootCollection,
   useConsole,
-  type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
@@ -15,11 +13,9 @@ import {
   useProjectCollection,
   type ProjectCollectionFilter,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import type { Ref } from 'vue'
 
-type ProjectConsoleMode = ConsoleMode
 type ProjectConsoleEntity = ProjectSurface
 
 type UseProjectConsoleOptions = {
@@ -43,7 +39,7 @@ export function useProjectConsole(
 ) {
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const liveFilter = computed<ProjectCollectionFilter>(() => {
+  const targetFilter = computed<ProjectCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
       : options.filter ?? {}
@@ -53,51 +49,24 @@ export function useProjectConsole(
       operatorId: userId.value,
     }
   })
-  const { projects: liveProjects } = useProjectCollection({
-    filter: liveFilter,
+  const { projects: targetProjects } = useProjectCollection({
+    filter: targetFilter,
   })
-  const { projects: demoProjects } = useProjectCollection({ source: 'demo' })
-  const { project: testProject } = useProjectFetch(userId, { source: 'test' })
-  const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
-    ProjectSurface,
-    ProjectSurface,
-    ProjectSurface
-  >('project', {
-    liveItems: liveProjects,
-    demoItems: demoProjects,
-    testItem: testProject,
+  const { selectedEntity, selectEntity, clearSelection } =
+    useConsole<ProjectSurface>('project', {
+    targetItems: targetProjects,
     getId: (project) => normalizeString(project?.id),
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
   const projectId = computed(() => normalizeString(selectedProject.value?.id))
-  const rootCollection = computed(() =>
-    resolveConsoleRootCollection('projects', selectedMode.value)
+  const rootCollection = computed(() => 'projects')
+  const canWrite = computed(() =>
+    targetHasOperator(selectedProject.value, userId.value)
   )
-  const canWrite = computed(() => {
-    if (selectedMode.value === 'demo') return false
-    if (selectedMode.value === 'test') return Boolean(userId.value && projectId.value === userId.value)
-    return targetHasOperator(selectedProject.value, userId.value)
-  })
 
   const header = computed<ConsoleHeaderData>(() => {
     const project = selectedProject.value
     if (!project) return null
-
-    if (selectedMode.value === 'demo') {
-      return {
-        title: normalizeString(project.name),
-        subtitle: normalizeString(project.description) || undefined,
-        imageUrl: normalizeString(project.image_url) || undefined,
-      }
-    }
-
-    if (selectedMode.value === 'test') {
-      return {
-        title: 'Test Project',
-        subtitle: normalizeString(project.description) || undefined,
-        imageUrl: normalizeString(project.image_url) || undefined,
-      }
-    }
 
     return {
       title: normalizeString(project.name),
@@ -112,16 +81,13 @@ export function useProjectConsole(
     clearSelection()
   }
 
-  const selectProject = (projectId: string, mode: ProjectConsoleMode = 'live') => {
-    selectEntity(projectId, mode)
+  const selectProject = (projectId: string) => {
+    selectEntity(projectId)
   }
 
   return {
-    liveProjects,
-    demoProjects,
-    testProject,
+    targetProjects,
     selectedProject,
-    selectedMode,
     projectId,
     rootCollection,
     canWrite,

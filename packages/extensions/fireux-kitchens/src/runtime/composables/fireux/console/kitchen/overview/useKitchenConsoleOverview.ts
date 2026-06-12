@@ -6,7 +6,7 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleOverview() {
   const {
-    liveKitchens: targetKitchens,
+    targetKitchens,
     selectedKitchen,
     kitchenId,
     activeKitchenAppId,

@@ -1,14 +1,9 @@
-import { computed } from 'vue'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import {
-  readRuntimeSimulationFirestoreDatabaseId,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   KitchenTeamMemberStorage,
   KitchenTeamMemberModel,
   type KitchenTeamMember,
 } from '../../../../../../../models/kitchen-team.model'
-import { KitchenStorage } from '../../../../../../../models/kitchen.model'
 
 type CreateKitchenTeamMemberInput = {
   kitchenId: string
@@ -34,19 +29,8 @@ const slugifyTeamMemberName = (value: string) =>
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-const requireSimulationDatabaseId = () => {
-  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
-  if (!databaseId) {
-    throw new Error(
-      'Missing firebase.simulationDatabaseId for kitchen test-mode team writes.'
-    )
-  }
-  return databaseId
-}
-
 export function useKitchenTeamMemberCreate() {
-  const databaseId = computed(() => requireSimulationDatabaseId())
-  const { setDocument } = useFirestoreCreate({ databaseId })
+  const { setDocument } = useFirestoreCreate()
 
   const createKitchenTeamMember = async (input: CreateKitchenTeamMemberInput) => {
     const kitchenId = normalizeString(input.kitchenId)
@@ -55,9 +39,7 @@ export function useKitchenTeamMemberCreate() {
     const memberId = slugifyTeamMemberName(name)
 
     if (!kitchenId) throw new Error('Kitchen id is required')
-    if (rootCollection !== KitchenStorage.rootCollection) {
-      throw new Error('Team member creates are only enabled for test kitchens.')
-    }
+    if (!rootCollection) throw new Error('Kitchen collection path is required')
     if (!name) throw new Error('Team member name is required')
     if (!memberId) throw new Error('Team member id could not be generated from name')
 

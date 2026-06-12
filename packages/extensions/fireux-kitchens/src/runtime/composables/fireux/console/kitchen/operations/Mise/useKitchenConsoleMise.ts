@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenMiseCollection } from './fetch/useKitchenMiseCollection'
 import { useKitchenMiseToggleDone } from './mutations/useKitchenMiseToggleDone'
-import { KitchenStorage } from '../../../../../../models/kitchen.model'
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
@@ -12,7 +11,6 @@ import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 export function useKitchenConsoleMise() {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -21,7 +19,7 @@ export function useKitchenConsoleMise() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { miseTasks: liveMiseTasks, pending: livePending, collectionPath } =
+  const { miseTasks, pending: misePending, collectionPath } =
     useKitchenMiseCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -29,20 +27,16 @@ export function useKitchenConsoleMise() {
   const page = useKitchenConsoleReadPage<KitchenMiseTask>({
     collectionName: KitchenMiseTaskStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveMiseTasks,
-    livePending,
+    items: miseTasks,
+    pending: misePending,
     collectionPath,
   })
   const { toggleKitchenMiseDone } = useKitchenMiseToggleDone()
-  const miseTasks = computed(() => page.collection.value.items)
+  const consoleMiseTasks = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const canToggleMise = computed(
-    () =>
-      canWrite.value &&
-      selectedMode.value === 'test' &&
-      rootCollection.value === KitchenStorage.rootCollection
+    () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
   )
   const isDone = (task: KitchenMiseTask) => {
     const source = task as Record<string, unknown>
@@ -66,12 +60,11 @@ export function useKitchenConsoleMise() {
     })
   }
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
-    count: miseTasks.value.length,
+    count: consoleMiseTasks.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
     canToggleMise: canToggleMise.value,
@@ -80,14 +73,13 @@ export function useKitchenConsoleMise() {
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
     canToggleMise,
-    miseTasks,
+    miseTasks: consoleMiseTasks,
     pending,
     toggleDone,
     debug,

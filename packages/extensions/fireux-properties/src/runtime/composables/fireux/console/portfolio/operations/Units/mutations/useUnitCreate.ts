@@ -24,10 +24,6 @@ export function useUnitCreate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] portfolio id is required.')
     }
 
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-properties] demo runtime does not allow writes.')
-    }
-
     const propertyId = normalizeString(input.property_id)
     const label = normalizeString(input.label)
     if (!propertyId) {

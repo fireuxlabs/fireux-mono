@@ -1,13 +1,8 @@
-import { computed } from 'vue'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import {
-  readRuntimeSimulationFirestoreDatabaseId,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
 } from '../../../../../../../models/kitchen-mise.model'
-import { KitchenStorage } from '../../../../../../../models/kitchen.model'
 
 type UpdateKitchenMiseInput = {
   kitchenId: string
@@ -22,19 +17,8 @@ type UpdateKitchenMiseInput = {
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const requireSimulationDatabaseId = () => {
-  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
-  if (!databaseId) {
-    throw new Error(
-      'Missing firebase.simulationDatabaseId for kitchen test-mode mise writes.'
-    )
-  }
-  return databaseId
-}
-
 export function useKitchenMiseUpdate() {
-  const databaseId = computed(() => requireSimulationDatabaseId())
-  const { updateDocument } = useFirestoreUpdate({ databaseId })
+  const { updateDocument } = useFirestoreUpdate()
 
   const updateKitchenMise = async (input: UpdateKitchenMiseInput) => {
     const kitchenId = normalizeString(input.kitchenId)
@@ -43,9 +27,7 @@ export function useKitchenMiseUpdate() {
 
     if (!kitchenId) throw new Error('Kitchen id is required')
     if (!taskId) throw new Error('Mise task id is required')
-    if (rootCollection !== KitchenStorage.rootCollection) {
-      throw new Error('Mise task edits are only enabled for test kitchens.')
-    }
+    if (!rootCollection) throw new Error('Kitchen collection path is required')
 
     const patch: Partial<KitchenMiseTask> & Record<string, unknown> = {
       title: normalizeString(input.patch.title),

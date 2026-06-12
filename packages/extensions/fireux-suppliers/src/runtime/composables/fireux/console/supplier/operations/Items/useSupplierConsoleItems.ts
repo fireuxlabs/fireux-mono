@@ -1,6 +1,5 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
-import { getDemoSupplierItems } from '../../../../demo/supplier/scenarios'
 import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
 import type { SupplierItemSurface } from '../../../../firestore/supplier/utils/view/useSupplierItemInterface'
 
@@ -9,7 +8,6 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useSupplierConsoleItems() {
   const {
     selectedSupplier,
-    selectedMode,
     supplierId,
     rootCollection,
     canWrite,
@@ -44,9 +42,7 @@ export function useSupplierConsoleItems() {
   })
 
   const supplierItems = computed<SupplierItemSurface[]>(() =>
-    selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierItems(supplierId.value)
-      : rootCollection.value
+    rootCollection.value
         ? supplierItemsFromStore.value
         : []
   )
@@ -54,28 +50,10 @@ export function useSupplierConsoleItems() {
     rootCollection.value ? supplierItemsPending.value : false
   )
 
-  const emptyTitle = computed(() => {
-    if (selectedMode.value === 'live') return 'No live supplier items yet'
-    if (selectedMode.value === 'test') return 'No test supplier items yet'
-    return 'No supplier items available'
-  })
+  const emptyTitle = computed(() => 'No supplier items yet')
 
   const emptyDescription = computed(() => {
-    if (selectedMode.value === 'live') {
-      return 'No supplier-owned item rows are available for this supplier yet.'
-    }
-
-    if (selectedMode.value === 'test') {
-      return 'This test supplier does not have any item rows yet.'
-    }
-
-    return 'No supplier items are available for the selected supplier.'
-  })
-
-  const modeLabel = computed(() => {
-    if (selectedMode.value === 'demo') return 'Demo'
-    if (selectedMode.value === 'test') return 'Test'
-    return 'Live'
+    return 'No supplier-owned item rows are available for this supplier yet.'
   })
 
   const itemsTitle = computed(() =>
@@ -84,7 +62,6 @@ export function useSupplierConsoleItems() {
 
   const itemsDescription = computed(() => {
     const parts = [
-      modeLabel.value,
       `state: ${state.value || 'missing'}`,
       `catalogue: ${catalogueState.value || 'missing'}`,
       `${linkedIngredientIds.value.length} linked ingredients`,
@@ -94,10 +71,9 @@ export function useSupplierConsoleItems() {
   })
 
   const devJsonContext = computed(
-    () => `console supplier · items · ${selectedMode.value}`
+    () => 'console supplier · items'
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
     supplierId: supplierId.value,
     supplierName: supplierLabel.value,
     supplierItemsCollectionPath: supplierItemsCollectionPath.value,
@@ -108,7 +84,6 @@ export function useSupplierConsoleItems() {
 
   return {
     selectedSupplier,
-    selectedMode,
     supplierId,
     supplierLabel,
     linkedIngredientIds,
@@ -120,7 +95,6 @@ export function useSupplierConsoleItems() {
     canWrite,
     emptyTitle,
     emptyDescription,
-    modeLabel,
     itemsTitle,
     itemsDescription,
     devJsonContext,

@@ -86,7 +86,7 @@ const handleCreate = async () => {
   try {
     const result = await create()
     if (isConsoleMode.value) {
-      setSupplierConsoleTarget({ supplierId: result.id, mode: 'live' })
+      setSupplierConsoleTarget({ supplierId: result.id })
     }
     emit('created', result)
     const defaultReturnTo =

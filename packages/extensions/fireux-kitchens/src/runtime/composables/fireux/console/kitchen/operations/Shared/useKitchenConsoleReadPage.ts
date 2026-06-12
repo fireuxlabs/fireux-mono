@@ -1,20 +1,14 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import {
-  getDemoKitchenCollection,
-  type DemoKitchenCollectionName,
-} from '../../../../demo/kitchen/scenarios'
 import type { KitchenSurface } from '../../../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 
 type UseKitchenConsoleReadPageOptions<T> = {
-  collectionName: DemoKitchenCollectionName
+  collectionName: string
   selectedKitchen: MaybeRef<KitchenSurface | null | undefined>
-  selectedMode: MaybeRef<ConsoleMode>
   kitchenId: MaybeRef<string>
-  liveItems: MaybeRef<T[] | null | undefined>
-  livePending: MaybeRef<boolean | null | undefined>
+  items: MaybeRef<T[] | null | undefined>
+  pending: MaybeRef<boolean | null | undefined>
   collectionPath?: MaybeRef<string | null | undefined>
 }
 
@@ -25,48 +19,30 @@ export function useKitchenConsoleReadPage<T>(
 ) {
   const focus = computed(() => {
     const entity = unref(options.selectedKitchen) ?? null
-    const mode = unref(options.selectedMode)
     const id = normalizeString(unref(options.kitchenId))
 
     return {
       entity,
       id,
-      mode,
-      modeLabel: mode === 'demo' ? 'Demo' : mode === 'test' ? 'Test' : 'Live',
       hasSelection: Boolean(entity),
       name: normalizeString(entity?.name),
     }
   })
 
-  const items = computed<T[]>(() => {
-    if (focus.value.mode === 'demo') {
-      return getDemoKitchenCollection<T>(
-        focus.value.id,
-        options.collectionName
-      )
-    }
-
-    return unref(options.liveItems) ?? []
-  })
+  const items = computed<T[]>(() => unref(options.items) ?? [])
 
   const collection = computed(() => ({
     items: items.value,
     count: items.value.length,
     hasItems: items.value.length > 0,
-    pending: focus.value.mode === 'demo'
-      ? false
-      : Boolean(unref(options.livePending)),
+    pending: Boolean(unref(options.pending)),
   }))
 
   const canWrite = computed(() => false)
 
   const debug = computed(() => ({
     focus: focus.value,
-    source: focus.value.mode === 'demo'
-      ? 'local-demo'
-      : focus.value.mode === 'test'
-        ? 'simulation-firestore'
-        : 'firestore',
+    source: 'firestore',
     collectionName: options.collectionName,
     collectionPath: normalizeString(unref(options.collectionPath)),
     count: collection.value.count,

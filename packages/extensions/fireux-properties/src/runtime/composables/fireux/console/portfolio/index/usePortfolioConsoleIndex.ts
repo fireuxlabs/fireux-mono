@@ -13,7 +13,7 @@ export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
   const {
-    livePortfolios: targetPortfolios,
+    targetPortfolios,
     selectedPortfolio,
     portfolioId,
     activePortfolioAppId,
@@ -41,7 +41,7 @@ export function usePortfolioConsoleIndex(
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectPortfolio(String(id ?? '').trim(), 'live')
+      selectPortfolio(String(id ?? '').trim())
     },
     clear: clearSelectedPortfolio,
   }

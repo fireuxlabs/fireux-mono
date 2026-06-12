@@ -4,7 +4,7 @@
       <div class="console-card-header">
         <div class="console-card-header__title">Edit mise task</div>
         <p class="console-card-header__description">
-          Record management for this test kitchen prep task.
+          Record management for this kitchen prep task.
         </p>
       </div>
     </template>

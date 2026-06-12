@@ -9,8 +9,8 @@
       v-else
       color="neutral"
       variant="soft"
-      title="Choose a writable live kitchen"
-      description="The Go QR menu source tool is available after selecting a live kitchen."
+      title="Choose a writable kitchen"
+      description="The Go QR menu source tool is available after selecting a writable kitchen."
     />
   </section>
 </template>
@@ -21,7 +21,6 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
 const {
-  selectedMode,
   kitchenId,
   activeKitchenAppId,
   selectedKitchen,
@@ -47,7 +46,6 @@ const toolQuery = computed(() =>
   }).toString()
 )
 const canUseTool = computed(() =>
-  selectedMode.value === 'live' &&
   canWrite.value &&
   Boolean(kitchenId.value && activeKitchenAppId.value && kitchenSlug.value && authToken.value)
 )

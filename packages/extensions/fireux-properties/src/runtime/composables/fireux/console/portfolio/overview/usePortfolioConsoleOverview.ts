@@ -8,7 +8,7 @@ import {
 
 export function usePortfolioConsoleOverview() {
   const {
-    livePortfolios: targetPortfolios,
+    targetPortfolios,
     selectedPortfolio,
     portfolioId,
     activePortfolioAppId,

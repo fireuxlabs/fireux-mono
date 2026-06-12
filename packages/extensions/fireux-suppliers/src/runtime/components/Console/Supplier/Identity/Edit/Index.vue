@@ -10,7 +10,7 @@
     <UPageCard
       v-else-if="!canWrite"
       title="Supplier identity is read-only"
-      description="This supplier cannot be edited in the current console mode."
+      description="This supplier cannot be edited from the current console."
       variant="subtle"
     />
 
@@ -67,7 +67,6 @@ import { useSupplierUpdate } from '../../../../../composables/fireux/firestore/s
 
 const {
   selectedSupplier,
-  selectedMode,
   supplierId,
   canWrite,
   name,
@@ -80,7 +79,7 @@ const {
   updateTagline,
   updateHeadline,
   updateSummary,
-} = useSupplierUpdate(null, { mode: selectedMode.value })
+} = useSupplierUpdate()
 const toast = useToastify()
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
@@ -102,28 +101,28 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 
 const handleName = async (value: string) =>
   wrap(
-    () => updateOrganizationName(value, { id: supplierId.value, mode: selectedMode.value }),
+    () => updateOrganizationName(value, { id: supplierId.value }),
     'Organization name updated',
     'Failed to update organization name'
   )
 
 const handleTagline = async (value: string) =>
   wrap(
-    () => updateTagline(value, { id: supplierId.value, mode: selectedMode.value }),
+    () => updateTagline(value, { id: supplierId.value }),
     'Tagline updated',
     'Failed to update tagline'
   )
 
 const handleHeadline = async (value: string) =>
   wrap(
-    () => updateHeadline(value, { id: supplierId.value, mode: selectedMode.value }),
+    () => updateHeadline(value, { id: supplierId.value }),
     'Headline updated',
     'Failed to update headline'
   )
 
 const handleSummary = async (value: string) =>
   wrap(
-    () => updateSummary(value, { id: supplierId.value, mode: selectedMode.value }),
+    () => updateSummary(value, { id: supplierId.value }),
     'Summary updated',
     'Failed to update summary'
   )

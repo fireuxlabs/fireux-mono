@@ -18,10 +18,6 @@
             <span class="console-summary-value">{{ selectedProjectName }}</span>
           </div>
           <div class="console-summary-field">
-            Mode:
-            <span class="console-summary-value">{{ selectedModeLabel }}</span>
-          </div>
-          <div class="console-summary-field">
             Primary App ID:
             <span class="console-summary-value">{{ appIdLabel }}</span>
           </div>
@@ -79,7 +75,6 @@ import { useProjectConsoleApps } from '../../../../../composables/fireux/console
 
 const {
   selectedProject,
-  selectedMode,
   appId,
   ecosystemId,
   apps,
@@ -91,9 +86,6 @@ const selectedProjectName = computed(() =>
   String(selectedProject.value?.name || '').trim() || 'Untitled'
 )
 const appIdLabel = computed(() => String(appId.value || '').trim() || 'Unset')
-const selectedModeLabel = computed(() =>
-  selectedMode.value === 'demo' ? 'Demo' : selectedMode.value === 'test' ? 'Test' : 'Live'
-)
 
 const ecosystemApps = computed(() => {
   const currentEcosystemId = String(ecosystemId.value || '').trim()

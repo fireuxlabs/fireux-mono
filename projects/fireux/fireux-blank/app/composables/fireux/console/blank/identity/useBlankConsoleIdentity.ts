@@ -5,7 +5,6 @@ import { useBlankConsole } from '../core/useBlankConsole'
 export function useBlankConsoleIdentity() {
   const {
     selectedBlank,
-    selectedMode,
     blankId,
     rootCollection,
     canWrite,
@@ -15,7 +14,6 @@ export function useBlankConsoleIdentity() {
   const name = computed(() => normalizeString(selectedBlank.value?.name))
   const slug = computed(() => normalizeString(selectedBlank.value?.slug))
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     blankId: blankId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -26,7 +24,6 @@ export function useBlankConsoleIdentity() {
 
   return {
     selectedBlank,
-    selectedMode,
     blankId,
     selectedId,
     rootCollection,

@@ -5,7 +5,7 @@
         <div class="console-card-header">
           <div class="console-card-header__title">Add team member</div>
           <p class="console-card-header__description">
-            Add a fake operational team member to this test kitchen. This does not use real users or grant console access.
+            Add an operational team member to this kitchen. This does not grant console access by itself.
           </p>
         </div>
       </template>
@@ -92,13 +92,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/operations/Team/useKitchenConsoleTeam'
 import { useKitchenTeamMemberCreate } from '../../../../../composables/fireux/console/kitchen/operations/Team/mutations/useKitchenTeamMemberCreate'
 import type { KitchenTeamJoinRequest } from '../../../../../models/kitchen-team.model'
 
 const {
-  selectedMode,
   kitchenId,
   rootCollection,
   canWrite,
@@ -113,10 +111,7 @@ const stationIdsText = ref('')
 const saving = ref(false)
 const message = ref('')
 const canCreateTeamMember = computed(
-  () =>
-    canWrite.value &&
-    selectedMode.value === 'test' &&
-    rootCollection.value === KitchenStorage.rootCollection
+  () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
 )
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationIds = computed(() =>

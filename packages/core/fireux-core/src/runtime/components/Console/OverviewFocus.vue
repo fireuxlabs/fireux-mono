@@ -18,10 +18,6 @@
 
       <div class="console-summary-grid">
         <div class="console-summary-field">
-          Mode:
-          <span class="console-summary-value">{{ focusModeLabel }}</span>
-        </div>
-        <div class="console-summary-field">
           {{ entityLabel }} ID:
           <span class="console-summary-value">{{ focus.id }}</span>
         </div>
@@ -44,7 +40,6 @@ import type { ConsoleTargetCard as ConsoleTargetCardType } from './types'
 
 type ConsoleOverviewFocusState = {
   id: string
-  mode: string
   hasSelection: boolean
 }
 
@@ -68,8 +63,5 @@ const props = withDefaults(
 )
 
 const entityLower = computed(() => props.entityLabel.toLowerCase())
-const focusModeLabel = computed(() =>
-  props.focus.mode === 'demo' ? 'Demo' : props.focus.mode === 'test' ? 'Test' : 'Live'
-)
 const multipleCountLabel = computed(() => String(props.multiple.count))
 </script>

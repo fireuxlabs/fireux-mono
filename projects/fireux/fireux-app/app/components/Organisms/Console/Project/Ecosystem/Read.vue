@@ -18,10 +18,6 @@
             <span class="console-summary-value">{{ selectedProjectName }}</span>
           </div>
           <div class="console-summary-field">
-            Mode:
-            <span class="console-summary-value">{{ selectedModeLabel }}</span>
-          </div>
-          <div class="console-summary-field">
             Ecosystem ID:
             <span class="console-summary-value">{{ ecosystemIdLabel }}</span>
           </div>
@@ -72,7 +68,6 @@ import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/co
 
 const {
   selectedProject,
-  selectedMode,
   ecosystemId,
   ecosystem,
   pending,
@@ -84,9 +79,6 @@ const selectedProjectName = computed(() =>
 )
 const ecosystemIdLabel = computed(() =>
   String(ecosystemId.value || '').trim() || 'Unset'
-)
-const selectedModeLabel = computed(() =>
-  selectedMode.value === 'demo' ? 'Demo' : selectedMode.value === 'test' ? 'Test' : 'Live'
 )
 
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {

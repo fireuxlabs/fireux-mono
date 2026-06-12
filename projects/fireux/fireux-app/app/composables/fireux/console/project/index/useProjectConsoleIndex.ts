@@ -10,7 +10,7 @@ export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
   const {
-    liveProjects: targetProjects,
+    targetProjects,
     selectProject,
     selectedProject,
     projectId,
@@ -36,7 +36,7 @@ export function useProjectConsoleIndex(
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectProject(String(id ?? '').trim(), 'live')
+      selectProject(String(id ?? '').trim())
     },
     clear: clearSelectedProject,
   }

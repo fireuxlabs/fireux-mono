@@ -5,7 +5,6 @@ import { useProjectConsole } from '../core/useProjectConsole'
 export function useProjectConsoleIdentity() {
   const {
     selectedProject,
-    selectedMode,
     projectId,
     rootCollection,
     canWrite,
@@ -18,7 +17,6 @@ export function useProjectConsoleIdentity() {
   )
   const imageUrl = computed(() => normalizeString(selectedProject.value?.image_url))
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     projectId: projectId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
@@ -30,7 +28,6 @@ export function useProjectConsoleIdentity() {
 
   return {
     selectedProject,
-    selectedMode,
     projectId,
     rootCollection,
     canWrite,

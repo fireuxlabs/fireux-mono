@@ -1,9 +1,7 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleRootCollection,
   useConsole,
-  type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
@@ -20,7 +18,6 @@ import {
 } from '../../../firestore/property/fetch/usePropertyCollection'
 import type { Ref } from 'vue'
 
-type PropertyConsoleMode = ConsoleMode
 type UsePropertyConsoleOptions = {
   filter?: PropertyCollectionFilter | Ref<PropertyCollectionFilter | null | undefined> | null
 }
@@ -41,7 +38,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const liveFilter = computed<PropertyCollectionFilter>(() => {
+  const targetFilter = computed<PropertyCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
       : options.filter ?? {}
@@ -51,43 +48,32 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       operatorId: userId.value,
     }
   })
-  const { properties: liveProperties } = usePropertyCollection({
+  const { properties: targetProperties } = usePropertyCollection({
     shape: 'both',
-    source: 'live',
-    filter: liveFilter,
+    filter: targetFilter,
   })
-  const { properties: demoProperties } = usePropertyCollection({ source: 'demo' })
-  const { properties: testProperties } = usePropertyCollection({ source: 'test' })
-  const testProperty = computed<Property | null>(() => testProperties.value[0] ?? null)
 
   const {
     selectedId,
-    selectedMode,
     selectedEntity,
     selectEntity,
     clearSelection,
-  } = useConsole<Property, Property, Property>('property', {
-    liveItems: liveProperties,
-    demoItems: demoProperties,
-    testItem: testProperty,
+  } = useConsole<Property>('property', {
+    targetItems: targetProperties,
     getId: (property) => normalizeString(property?.id),
   })
 
   const selectedProperty = computed<Property | null>(() => selectedEntity.value)
   const propertyId = computed(() => normalizeString(selectedId.value))
   const activePropertyAppId = computed(() =>
-    selectedMode.value === 'live'
-      ? resolveConsoleEntityAppId(selectedProperty.value, appId)
-      : ''
+    resolveConsoleEntityAppId(selectedProperty.value, appId)
   )
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection(PropertyStorage.rootCollection, selectedMode.value)
+    PropertyStorage.rootCollection
   )
-  const canWrite = computed(() => {
-    if (selectedMode.value === 'demo') return false
-    if (selectedMode.value === 'test') return Boolean(userId.value && propertyId.value === userId.value)
-    return targetHasOperator(selectedProperty.value, userId.value)
-  })
+  const canWrite = computed(() =>
+    targetHasOperator(selectedProperty.value, userId.value)
+  )
 
   const header = computed<ConsoleHeaderData>(() => {
     const property = selectedProperty.value
@@ -109,16 +95,13 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     clearSelection()
   }
 
-  const selectProperty = (propertyId: string, mode: PropertyConsoleMode = 'live') => {
-    selectEntity(propertyId, mode)
+  const selectProperty = (propertyId: string) => {
+    selectEntity(propertyId)
   }
 
   return {
-    liveProperties,
-    demoProperties,
-    testProperty,
+    targetProperties,
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,

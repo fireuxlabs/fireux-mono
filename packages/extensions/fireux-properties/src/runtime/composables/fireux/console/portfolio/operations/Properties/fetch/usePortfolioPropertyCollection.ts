@@ -17,7 +17,7 @@ export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortf
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isDemo.value) {
+      if (!nextPath) {
         sourceRef.value = null
         return
       }
@@ -27,9 +27,6 @@ export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortf
   )
 
   const collection = computed<Property[]>(() => {
-    if (runtimePortfolio.isDemo.value) {
-      return runtimePortfolio.scenario.value?.properties ?? []
-    }
     return sourceRef.value?.value ?? []
   })
 

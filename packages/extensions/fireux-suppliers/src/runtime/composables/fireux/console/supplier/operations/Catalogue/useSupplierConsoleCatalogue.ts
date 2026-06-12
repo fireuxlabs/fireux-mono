@@ -1,8 +1,4 @@
 import { computed } from 'vue'
-import {
-  getDemoSupplierCatalogueItems,
-  getDemoSupplierItems,
-} from '../../../../demo/supplier/scenarios'
 import { useSupplierCatalogueCollection } from '../../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
 import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
@@ -12,7 +8,6 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useSupplierConsoleCatalogue() {
   const {
     selectedSupplier,
-    selectedMode,
     supplierId,
     rootCollection,
     canWrite,
@@ -46,16 +41,8 @@ export function useSupplierConsoleCatalogue() {
     supplierCollectionPath: rootCollection,
   })
 
-  const supplierItems = computed(() =>
-    selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierItems(supplierId.value)
-      : supplierItemsFromStore.value
-  )
-  const rawCatalogues = computed(() =>
-    selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierCatalogueItems(supplierId.value)
-      : supplierCatalogues.value
-  )
+  const supplierItems = computed(() => supplierItemsFromStore.value)
+  const rawCatalogues = computed(() => supplierCatalogues.value)
   const catalogues = computed(() =>
     rawCatalogues.value.map((catalogue) => ({
       ...catalogue,
@@ -63,9 +50,7 @@ export function useSupplierConsoleCatalogue() {
     }))
   )
   const pending = computed(() =>
-    selectedMode.value === 'demo'
-      ? false
-      : supplierCataloguesPending.value || supplierItemsPending.value
+    supplierCataloguesPending.value || supplierItemsPending.value
   )
 
   const isIntegratedCatalogue = computed(
@@ -77,9 +62,7 @@ export function useSupplierConsoleCatalogue() {
 
   const emptyTitle = computed(() => {
     if (isPublicOnlySupplier.value) return 'Public supplier only'
-    if (selectedMode.value === 'live') return 'No live catalogue items yet'
-    if (selectedMode.value === 'test') return 'No test catalogue items yet'
-    return 'No catalogue items available'
+    return 'No catalogue items yet'
   })
 
   const emptyDescription = computed(() => {
@@ -87,21 +70,7 @@ export function useSupplierConsoleCatalogue() {
       return 'This supplier is linked as a useful public record, but it does not own an integrated supplier catalogue yet.'
     }
 
-    if (selectedMode.value === 'live') {
-      return 'No supplier catalogue grouping rows are available for this supplier yet.'
-    }
-
-    if (selectedMode.value === 'test') {
-      return 'This test supplier does not have any catalogue rows yet.'
-    }
-
-    return 'No catalogue items are available for the selected supplier.'
-  })
-
-  const modeLabel = computed(() => {
-    if (selectedMode.value === 'demo') return 'Demo'
-    if (selectedMode.value === 'test') return 'Test'
-    return 'Live'
+    return 'No supplier catalogue grouping rows are available for this supplier yet.'
   })
 
   const catalogueTitle = computed(() =>
@@ -110,7 +79,6 @@ export function useSupplierConsoleCatalogue() {
 
   const catalogueDescription = computed(() => {
     const parts = [
-      modeLabel.value,
       `state: ${state.value || 'missing'}`,
       `catalogue: ${catalogueState.value || 'missing'}`,
     ]
@@ -119,10 +87,9 @@ export function useSupplierConsoleCatalogue() {
   })
 
   const devJsonContext = computed(
-    () => `console supplier · catalogue · ${selectedMode.value}`
+    () => 'console supplier · catalogue'
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
     supplierId: supplierId.value,
     supplierName: supplierLabel.value,
     rootCollection: rootCollection.value,
@@ -137,7 +104,6 @@ export function useSupplierConsoleCatalogue() {
 
   return {
     selectedSupplier,
-    selectedMode,
     supplierId,
     supplierLabel,
     rootCollection,
@@ -151,7 +117,6 @@ export function useSupplierConsoleCatalogue() {
     isPublicOnlySupplier,
     emptyTitle,
     emptyDescription,
-    modeLabel,
     catalogueTitle,
     catalogueDescription,
     devJsonContext,

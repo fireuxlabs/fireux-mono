@@ -9,7 +9,6 @@ export function useKitchenConsoleRecipe() {
   const route = useRoute()
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,
@@ -33,7 +32,6 @@ export function useKitchenConsoleRecipe() {
   const dishUsage = computed(() => getDishUsageForRecipe(recipeId.value))
 
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     collectionPath: collectionPath.value,
@@ -46,7 +44,6 @@ export function useKitchenConsoleRecipe() {
 
   return {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,

@@ -2,21 +2,17 @@ import { computed, type Ref } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
   useConsole,
-  type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import {
-  readRuntimeFirestoreDatabaseId,
-  readRuntimeSimulationFirestoreDatabaseId,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { KitchenConsoleListFilter } from '../index/useKitchenConsoleList'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSources } from './useKitchenConsoleSources'
 
-type KitchenConsoleMode = ConsoleMode
 type KitchenConsoleEntity = KitchenSurface
 type UseKitchenConsoleOptions = {
   filter?:
@@ -40,19 +36,13 @@ type UseKitchenConsoleOptions = {
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {
-  const {
-    appId,
-    userId,
-    policy,
-    liveKitchens,
-    demoKitchens,
-    testKitchen,
-  } = useKitchenConsoleSources({ filter: options.filter })
-  const { selectedEntity, selectedMode, selectEntity, clearSelection } =
-    useConsole<KitchenSurface, KitchenSurface, KitchenSurface>('kitchen', {
-    liveItems: liveKitchens,
-    demoItems: demoKitchens,
-    testItem: testKitchen,
+  const { appId } = useFireUXConfig()
+  const { uid } = useAuth()
+  const userId = computed(() => normalizeString(uid.value))
+  const { targetKitchens } = useKitchenConsoleSources({ filter: options.filter })
+  const { selectedEntity, selectEntity, clearSelection } =
+    useConsole<KitchenSurface>('kitchen', {
+    targetItems: targetKitchens,
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
@@ -60,48 +50,27 @@ export function useKitchenConsole(
   )
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
   const activeKitchenAppId = computed(() =>
-    selectedMode.value === 'live'
-      ? resolveConsoleEntityAppId(selectedKitchen.value, appId)
-      : ''
+    resolveConsoleEntityAppId(selectedKitchen.value, appId)
   )
   const databaseId = computed(() =>
-    selectedMode.value === 'live'
-      ? readRuntimeFirestoreDatabaseId() || ''
-      : selectedMode.value === 'test'
-        ? readRuntimeSimulationFirestoreDatabaseId() || ''
-        : ''
+    readRuntimeFirestoreDatabaseId() || ''
   )
   const rootCollection = computed(() =>
-    selectedMode.value === 'demo'
-      ? ''
-      : selectedMode.value === 'test'
-        ? KitchenStorage.rootCollection
-        : resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
+    resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
   )
-  const canWrite = computed(() => {
-    if (selectedMode.value === 'demo') return false
-    if (selectedMode.value === 'test') {
-      return Boolean(userId.value && kitchenId.value === userId.value)
-    }
-    return targetHasOperator(selectedKitchen.value, userId.value)
-  })
+  const canWrite = computed(() =>
+    targetHasOperator(selectedKitchen.value, userId.value)
+  )
   const clearSelectedKitchen = () => {
     clearSelection()
   }
-  const selectKitchen = (
-    kitchenId: string,
-    mode: KitchenConsoleMode = 'live'
-  ) => {
-    selectEntity(kitchenId, mode)
+  const selectKitchen = (kitchenId: string) => {
+    selectEntity(kitchenId)
   }
 
   return {
-    liveKitchens,
-    demoKitchens,
-    testKitchen,
-    policy,
+    targetKitchens,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     activeKitchenAppId,
     rootCollection,

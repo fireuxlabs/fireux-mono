@@ -1,5 +1,4 @@
-import { computed, watch } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { computed } from 'vue'
 import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import type { Ref } from 'vue'
@@ -12,8 +11,7 @@ export function useKitchenConsoleIndex(
   options: UseKitchenConsoleIndexOptions = {}
 ) {
   const {
-    liveKitchens: targetKitchens,
-    policy,
+    targetKitchens,
     selectKitchen,
     selectedKitchen,
     kitchenId,
@@ -41,7 +39,7 @@ export function useKitchenConsoleIndex(
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectKitchen(String(id ?? '').trim(), 'live')
+      selectKitchen(String(id ?? '').trim())
     },
     clear: clearSelectedKitchen,
   }
@@ -50,24 +48,9 @@ export function useKitchenConsoleIndex(
     activeKitchenAppId: activeKitchenAppId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
-    policy: policy.value,
     selectedKitchen: selectedKitchen.value,
     targetCount: targetKitchens.value.length,
   }))
-  watch(
-    () => ({
-      enabled: policy.value.autoSelectSingleLive,
-      selectedId: kitchenId.value,
-      targets: targetKitchens.value,
-    }),
-    ({ enabled, selectedId, targets }) => {
-      if (!enabled || selectedId || targets.length !== 1) return
-
-      const id = normalizeString(targets[0]?.id)
-      if (id) selectKitchen(id, 'live')
-    },
-    { immediate: true }
-  )
 
   return {
     selection,

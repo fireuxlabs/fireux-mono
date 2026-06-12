@@ -1,9 +1,7 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleRootCollection,
   useConsole,
-  type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
@@ -17,12 +15,10 @@ import {
   useSupplierCollection,
   type SupplierCollectionFilter,
 } from '../../../firestore/supplier/fetch/useSupplierCollection'
-import { useSupplierFetch } from '../../../firestore/supplier/fetch/useSupplierFetch'
 import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import { SupplierStorage } from '../../../../../models/supplier/Supplier.model'
 import type { Ref } from 'vue'
 
-type SupplierConsoleMode = ConsoleMode
 type UseSupplierConsoleOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
 }
@@ -45,7 +41,7 @@ export function useSupplierConsole(
   const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const liveFilter = computed<SupplierCollectionFilter>(() => {
+  const targetFilter = computed<SupplierCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
       : options.filter ?? {}
@@ -55,27 +51,16 @@ export function useSupplierConsole(
       operatorId: userId.value,
     }
   })
-  const { suppliers: liveSuppliers } = useSupplierCollection({
-    filter: liveFilter,
+  const { suppliers: targetSuppliers } = useSupplierCollection({
+    filter: targetFilter,
   })
-  const { suppliers: allDemoSuppliers } = useSupplierCollection({ source: 'demo' })
-  const demoSuppliers = computed(() =>
-    allDemoSuppliers.value.filter(
-      (supplier) =>
-        normalizeString((supplier as SupplierSurface).app_scope_state) !== 'root_only'
-    )
-  )
-  const { supplier: testSupplier } = useSupplierFetch(userId, { source: 'test' })
 
   const {
-    selectedMode,
     selectedEntity,
     selectEntity,
     clearSelection,
-  } = useConsole<SupplierSurface, SupplierSurface, SupplierSurface>('supplier', {
-    liveItems: liveSuppliers,
-    demoItems: demoSuppliers,
-    testItem: testSupplier,
+  } = useConsole<SupplierSurface>('supplier', {
+    targetItems: targetSuppliers,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
   })
 
@@ -84,30 +69,18 @@ export function useSupplierConsole(
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
   const activeSupplierAppId = computed(() =>
-    selectedMode.value === 'live'
-      ? resolveConsoleEntityAppId(selectedSupplier.value, appId)
-      : ''
+    resolveConsoleEntityAppId(selectedSupplier.value, appId)
   )
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection(SupplierStorage.rootCollection, selectedMode.value)
+    SupplierStorage.rootCollection
   )
-  const canWrite = computed(() => {
-    if (selectedMode.value === 'demo') return false
-    if (selectedMode.value === 'test') return Boolean(userId.value && supplierId.value === userId.value)
-    return targetHasOperator(selectedSupplier.value, userId.value)
-  })
+  const canWrite = computed(() =>
+    targetHasOperator(selectedSupplier.value, userId.value)
+  )
 
   const header = computed<ConsoleHeaderData>(() => {
     const target = selectedSupplier.value as Record<string, unknown> | null
     if (!target) return null
-
-    if (selectedMode.value === 'test') {
-      return {
-        title: 'Test Supplier',
-        subtitle: normalizeString(target.tagline) || undefined,
-        imageUrl: normalizeString(target.supplier_image) || undefined,
-      }
-    }
 
     return {
       title: normalizeString(target.supplier_organization_name),
@@ -122,16 +95,13 @@ export function useSupplierConsole(
     clearSelection()
   }
 
-  const selectSupplier = (supplierId: string, mode: SupplierConsoleMode = 'live') => {
-    selectEntity(supplierId, mode)
+  const selectSupplier = (supplierId: string) => {
+    selectEntity(supplierId)
   }
 
   return {
-    liveSuppliers,
-    demoSuppliers,
-    testSupplier,
+    targetSuppliers,
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,

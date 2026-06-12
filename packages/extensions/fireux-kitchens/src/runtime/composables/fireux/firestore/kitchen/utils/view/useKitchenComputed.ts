@@ -4,9 +4,12 @@ import type { Kitchen } from '../../../../../../models/kitchen.model'
 export function useKitchenComputed(
   kitchen?: Ref<Partial<Kitchen> | null | undefined>
 ) {
+  const view = computed(
+    () => kitchen?.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
+  )
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
   const hasMissingName = computed(() =>
-    !String((kitchen?.value as any)?.display_name || kitchen?.value?.name || '').trim()
+    !String(view.value?.display_name || view.value?.name || '').trim()
   )
   const hasMissingSlug = computed(() =>
     !String(kitchen?.value?.slug || '').trim()
@@ -19,22 +22,22 @@ export function useKitchenComputed(
   )
   const displayName = computed(() =>
     String(
-      (kitchen?.value as any)?.display_name ||
-        kitchen?.value?.name ||
-        kitchen?.value?.short_name ||
+      view.value?.display_name ||
+        view.value?.name ||
+        view.value?.short_name ||
         kitchen?.value?.slug ||
         kitchen?.value?.id ||
         ''
     ).trim()
   )
   const displayImageUrl = computed(() =>
-    String((kitchen?.value as any)?.display_image_url || kitchen?.value?.image_url || '').trim()
+    String(view.value?.display_image_url || view.value?.image_url || '').trim()
   )
   const hasAddress = computed(() =>
     Boolean(
       String(
-        kitchen?.value?.short_address ||
-          kitchen?.value?.formatted_address ||
+        view.value?.short_address ||
+          view.value?.formatted_address ||
           ''
       ).trim()
     )

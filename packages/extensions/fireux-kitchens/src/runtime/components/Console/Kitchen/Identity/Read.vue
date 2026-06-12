@@ -40,9 +40,6 @@
               </div>
 
               <div class="flex flex-wrap gap-2">
-                <UBadge v-if="selectedMode" color="neutral" variant="subtle">
-                  {{ selectedMode }}
-                </UBadge>
                 <UBadge v-if="placeId" color="neutral" variant="subtle">
                   Place linked
                 </UBadge>
@@ -118,7 +115,6 @@ import { useKitchenConsoleIdentity } from '../../../../composables/fireux/consol
 
 const {
   selectedKitchen,
-  selectedMode,
   name,
   tagline,
   placeId,

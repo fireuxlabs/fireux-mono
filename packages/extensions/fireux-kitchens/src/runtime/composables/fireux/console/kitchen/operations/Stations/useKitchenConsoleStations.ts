@@ -10,7 +10,6 @@ import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 export function useKitchenConsoleStations() {
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     databaseId,
@@ -20,8 +19,8 @@ export function useKitchenConsoleStations() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
-    items: liveStations,
-    pending: livePending,
+    items: stations,
+    pending: stationsPending,
     collectionPath,
   } = useKitchenChildCollection<KitchenStation>(
     KitchenStationStorage.collection,
@@ -34,21 +33,19 @@ export function useKitchenConsoleStations() {
   const page = useKitchenConsoleReadPage<KitchenStation>({
     collectionName: KitchenStationStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveStations,
-    livePending,
+    items: stations,
+    pending: stationsPending,
     collectionPath,
   })
-  const stations = computed(() => page.collection.value.items)
+  const consoleStations = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
-    count: stations.value.length,
+    count: consoleStations.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
   }))
@@ -56,13 +53,12 @@ export function useKitchenConsoleStations() {
   return {
     ...page,
     selectedKitchen,
-    selectedMode,
     kitchenId,
     collectionPath,
     rootCollection,
     databaseId,
     canWrite,
-    stations,
+    stations: consoleStations,
     pending,
     debug,
   }

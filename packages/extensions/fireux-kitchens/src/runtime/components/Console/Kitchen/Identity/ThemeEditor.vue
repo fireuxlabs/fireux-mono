@@ -136,7 +136,7 @@
         color="neutral"
         variant="soft"
         title="Theme is read-only"
-        description="Select a writable live kitchen before editing menu display values."
+        description="Select a writable kitchen before editing menu display values."
       />
 
       <p v-else-if="saveState" class="text-xs text-dimmed">

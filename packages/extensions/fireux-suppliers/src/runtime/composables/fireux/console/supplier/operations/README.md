@@ -16,4 +16,4 @@ Use this layer for selected-Supplier work such as:
 
 Keep stored CRUD in `firestore/`.
 Keep guest-facing route shaping in `public/supplier/`.
-Keep demo scenario data in `demo/supplier/`.
+Keep example or seed data outside this selected-Supplier operations layer.

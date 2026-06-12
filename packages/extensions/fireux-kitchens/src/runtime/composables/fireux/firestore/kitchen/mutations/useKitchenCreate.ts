@@ -55,7 +55,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     KitchenStorage.rootCollection
 
   function createKitchenPayload(
-    id: string,
+    _id: string,
     input: KitchenCreateDraft
   ): Partial<Kitchen> {
     const place = input.place ?? {}

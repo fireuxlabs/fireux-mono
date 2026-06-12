@@ -43,7 +43,9 @@ export function useSupplierFetch(
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const keyRef = isRef(options.key)
     ? options.key
-    : computed<SupplierFetchKey>(() => options.key ?? 'id')
+    : computed<SupplierFetchKey>(() =>
+        typeof options.key === 'string' ? options.key : 'id'
+      )
   const sourceRef = isRef(options.source)
     ? options.source
     : computed<SupplierFetchSource>(() =>

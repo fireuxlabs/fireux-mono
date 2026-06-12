@@ -5,7 +5,6 @@ import { useSupplierConsole } from '../core/useSupplierConsole'
 export function useSupplierConsoleIdentity() {
   const {
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,
@@ -31,7 +30,6 @@ export function useSupplierConsoleIdentity() {
       : []
   )
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     supplierId: supplierId.value,
     activeSupplierAppId: activeSupplierAppId.value,
     rootCollection: rootCollection.value,
@@ -45,7 +43,6 @@ export function useSupplierConsoleIdentity() {
 
   return {
     selectedSupplier,
-    selectedMode,
     supplierId,
     activeSupplierAppId,
     rootCollection,

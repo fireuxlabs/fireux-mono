@@ -1,9 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import {
-  readRuntimeSimulationFirestoreDatabaseId,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { computed } from 'vue'
 import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
@@ -19,21 +15,9 @@ type ToggleKitchenMiseDoneInput = {
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenMiseTaskStorage.collection}`
-const requireSimulationDatabaseId = () => {
-  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
-  if (!databaseId) {
-    throw new Error(
-      'Missing firebase.simulationDatabaseId for kitchen test-mode mise writes.'
-    )
-  }
-  return databaseId
-}
 
 export function useKitchenMiseToggleDone() {
-  const databaseId = computed(
-    () => requireSimulationDatabaseId()
-  )
-  const { updateDocument } = useFirestoreUpdate({ databaseId })
+  const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
 
   const toggleKitchenMiseDone = async (input: ToggleKitchenMiseDoneInput) => {

@@ -19,4 +19,4 @@ Use this layer for selected-Portfolio work such as:
 
 Keep stored CRUD in `firestore/`.
 Keep guest-facing route shaping in `public/portfolio/`.
-Keep demo scenario data in `demo/portfolio/`.
+Keep example or seed data outside this selected-Portfolio operations layer.

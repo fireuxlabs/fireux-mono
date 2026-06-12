@@ -45,7 +45,7 @@ export function useKitchenPublicMenuScope() {
       ? {
           id: text(kitchen.value.id),
           slug: text(kitchen.value.slug),
-          name: text(kitchen.value.name),
+          name: text((kitchen.value as Record<string, unknown>).name),
         }
       : null,
     kitchenLookup: {

@@ -12,4 +12,4 @@ Use this layer for selected-Property work only when BuenoHost property console b
 
 Keep stored CRUD in `firestore/`.
 Keep guest-facing route shaping in `public/property/`.
-Keep demo scenario data in `demo/property/`.
+Keep example or seed data outside this selected-Property operations layer.

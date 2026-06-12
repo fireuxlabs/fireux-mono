@@ -6,7 +6,7 @@ import { useSupplierConsole } from '../core/useSupplierConsole'
 
 export function useSupplierConsoleOverview() {
   const {
-    liveSuppliers: targetSuppliers,
+    targetSuppliers,
     selectedSupplier,
     supplierId,
     activeSupplierAppId,

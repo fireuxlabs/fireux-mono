@@ -104,7 +104,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
           routeScope: kitchen.route_scope,
         })
       })
-      .filter((kitchen): kitchen is KitchenCollectionDoc => Boolean(kitchen))
+      .filter(Boolean) as KitchenCollectionDoc[]
   )
   const count = computed(() => kitchens.value.length)
   const pending = computed(() => {

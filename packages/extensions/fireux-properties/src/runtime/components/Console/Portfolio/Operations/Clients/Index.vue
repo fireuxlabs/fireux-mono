@@ -18,10 +18,6 @@
             <span class="console-summary-value">{{ portfolioName || 'Unset' }}</span>
           </div>
           <div class="console-summary-field">
-            Mode:
-            <span class="console-summary-value">{{ selectedMode }}</span>
-          </div>
-          <div class="console-summary-field">
             Source:
             <span class="console-summary-value">{{ collectionPath || 'Unavailable' }}</span>
           </div>
@@ -47,7 +43,6 @@ import {
 
 const runtimePortfolio = useActivePortfolio()
 const selectedPortfolio = runtimePortfolio.entity
-const selectedMode = runtimePortfolio.mode
 const portfolioId = runtimePortfolio.id
 const rootCollection = runtimePortfolio.rootCollection
 const canWrite = runtimePortfolio.canWrite
@@ -60,7 +55,6 @@ const collectionPath = usePortfolioConsoleChildPath(
   ClientStorage.collection
 )
 const debug = computed(() => ({
-  mode: selectedMode.value,
   portfolioId: portfolioId.value,
   consoleAppId: runtimePortfolio.consoleAppId.value,
   rootCollection: rootCollection.value,

@@ -4,7 +4,7 @@
       <div class="console-card-header">
         <div class="console-card-header__title">Add station</div>
         <p class="console-card-header__description">
-          Create a simple station for this test kitchen.
+          Create a simple station for this kitchen.
         </p>
       </div>
     </template>
@@ -37,12 +37,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/operations/Stations/useKitchenConsoleStations'
 import { useKitchenStationCreate } from '../../../../../composables/fireux/console/kitchen/operations/Stations/mutations/useKitchenStationCreate'
 
 const {
-  selectedMode,
   kitchenId,
   rootCollection,
   canWrite,
@@ -54,10 +52,7 @@ const name = ref('')
 const saving = ref(false)
 const message = ref('')
 const canCreateStation = computed(
-  () =>
-    canWrite.value &&
-    selectedMode.value === 'test' &&
-    rootCollection.value === KitchenStorage.rootCollection
+  () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
 )
 const nextSortOrder = computed(() => {
   const orders = stations.value

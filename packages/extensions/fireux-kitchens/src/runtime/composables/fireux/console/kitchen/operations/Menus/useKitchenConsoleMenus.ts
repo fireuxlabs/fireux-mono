@@ -8,12 +8,12 @@ import { useMenuUpdate } from '../../../../firestore/menu/mutations/useMenuUpdat
 
 export function useKitchenConsoleMenus() {
   const consoleState = useKitchenConsole()
-  const { selectedKitchen, selectedMode, kitchenId, rootCollection, databaseId, canWrite } =
+  const { selectedKitchen, kitchenId, rootCollection, databaseId, canWrite } =
     consoleState
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { menus: liveMenus, pending: livePending, collectionPath } =
+  const { menus, pending: menusPending, collectionPath } =
     useMenuCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
@@ -21,13 +21,12 @@ export function useKitchenConsoleMenus() {
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: MenuStorage.collection,
     selectedKitchen,
-    selectedMode,
     kitchenId,
-    liveItems: liveMenus,
-    livePending,
+    items: menus,
+    pending: menusPending,
     collectionPath,
   })
-  const menus = computed(() => page.collection.value.items)
+  const consoleMenus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const create = useMenuCreate({
     kitchenCollectionPath: rootCollection,
@@ -46,13 +45,12 @@ export function useKitchenConsoleMenus() {
     ...consoleState,
     collectionPath,
     canWrite,
-    menus,
+    menus: consoleMenus,
     pending,
     debug: computed(() => ({
-      mode: selectedMode.value,
       kitchenId: kitchenId.value,
       collectionPath: collectionPath.value,
-      menusCount: menus.value.length,
+      menusCount: consoleMenus.value.length,
       pending: pending.value,
       canWrite: canWrite.value,
     })),

@@ -10,7 +10,7 @@ import { useBlankConsole } from '../core/useBlankConsole'
 export function useBlankConsoleIndex() {
   const blank = useBlankConsole()
   const {
-    liveBlanks: targetBlanks,
+    targetBlanks,
     selectedBlank,
     blankId,
     rootCollection,
@@ -35,7 +35,7 @@ export function useBlankConsoleIndex() {
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectBlank(String(id ?? '').trim(), 'live')
+      selectBlank(String(id ?? '').trim())
     },
     clear: clearSelectedBlank,
   }

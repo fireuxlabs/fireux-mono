@@ -6,9 +6,6 @@
       :collection="collection"
       :console-ids="consoleIds"
       :action-ids="consoleIds"
-      v-model:filter-mode="targetMode"
-      :filter-options="targetModeOptions"
-      :show-filter-toggle="true"
       title="Choose Supplier"
       description="Select the Supplier console target you want to work on."
       :link="false"
@@ -20,10 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Supplier } from '../../../../models/supplier/Supplier.model'
-
-type TargetMode = 'console' | 'mine'
 
 const props = withDefaults(
   defineProps<{
@@ -38,11 +33,6 @@ const emit = defineEmits<{
   (event: 'select', id: string): void
 }>()
 
-const targetMode = ref<TargetMode>('console')
-const targetModeOptions = [
-  { value: 'console' as const, label: 'Supplier consoles' },
-  { value: 'mine' as const, label: 'My suppliers' },
-]
 const consoleIds = computed(() =>
   props.collection
     .map((supplier) => String(supplier.id ?? '').trim())

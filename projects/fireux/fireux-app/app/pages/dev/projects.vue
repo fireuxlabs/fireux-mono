@@ -17,10 +17,6 @@
             <span class="font-mono">{{ selectedId || 'unset' }}</span>
           </div>
           <div>
-            mode:
-            <span class="font-mono">{{ mode }}</span>
-          </div>
-          <div>
             project count:
             <span class="font-mono">{{ projects.length }}</span>
           </div>
@@ -125,7 +121,7 @@ definePageMeta({
 
 const projectModelRuntime = ProjectModelRuntime
 const { appId } = useFireUXConfig()
-const { selectedId, mode } = useProjectConsoleTargets()
+const { selectedId } = useProjectConsoleTargets()
 const resolvedAppId = computed(() => String(appId || '').trim())
 
 const { projects } = useProjectCollection()
@@ -191,7 +187,6 @@ const selectedProjectApp = computed(() => projectAppById.value.get(selectedProje
 const projectStorageJson = computed(() => ({
   appId: resolvedAppId.value || null,
   selectedId: selectedId.value || null,
-  mode: mode.value,
   selectedProjectId: selectedProjectId.value || null,
   paths: {
     rootProjectCollection: 'projects',

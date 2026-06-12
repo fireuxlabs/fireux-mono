@@ -24,21 +24,12 @@ export function usePropertyDocument(
 
   const liveDoc = computed(() => {
     const id = normalizedPropertyId.value
-    if (!propertiesPath.value || !id || runtimePortfolio.isDemo.value) return null
+    if (!propertiesPath.value || !id) return null
     return firestoreFetchDoc<Property>(propertiesPath.value, id)
   })
 
   const document = computed<Property | null>(() => {
     if (!normalizedPropertyId.value) return null
-
-    if (runtimePortfolio.isDemo.value) {
-      return (
-        runtimePortfolio.scenario.value?.properties.find(
-          (entry) => normalizeId(entry.id) === normalizedPropertyId.value
-        ) ?? null
-      )
-    }
-
     return liveDoc.value?.value ?? null
   })
 

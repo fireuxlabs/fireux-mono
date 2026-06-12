@@ -22,27 +22,28 @@ export function buildKitchenJsonLd(kitchen: Partial<Kitchen> | null | undefined)
 
 export function useKitchenSeo(kitchen: MaybeRefOrGetter<Partial<Kitchen> | null | undefined>) {
   const entry = computed(() => toValue(kitchen))
+  const view = computed(
+    () => entry.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
+  )
   const slug = computed(() => clean(entry.value?.slug))
   const isPublic = computed(() => Boolean(entry.value?.show === true && slug.value))
 
   return useSeo({
     title: computed(() => {
-      const kitchen = entry.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
-      return clean(kitchen?.display_name || kitchen?.name) || 'Kitchen'
+      return clean(view.value?.display_name || view.value?.name) || 'Kitchen'
     }),
     description: computed(() =>
       excerpt(
-        entry.value?.tagline ||
-          entry.value?.short_address ||
-          entry.value?.formatted_address ||
-          entry.value?.display_name ||
-          entry.value?.name ||
+        view.value?.tagline ||
+          view.value?.short_address ||
+          view.value?.formatted_address ||
+          view.value?.display_name ||
+          view.value?.name ||
           ''
       )
     ),
     image: computed(() => {
-      const kitchen = entry.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
-      return clean(kitchen?.display_image_url || kitchen?.image_url)
+      return clean(view.value?.display_image_url || view.value?.image_url)
     }),
     path: computed(() => (slug.value ? `/kitchens/${encodeURIComponent(slug.value)}` : '')),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),

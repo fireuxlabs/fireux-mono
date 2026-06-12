@@ -7,90 +7,12 @@ import {
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
 import type { Client } from '../../../../../../../models/client.model'
-import type {
-  DemoLease,
-  DemoPortfolioScenario,
-} from '../../demo-scenarios'
-
-const clientAvatarPlaceholder = (seed: string) =>
-  `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`fireux-client-${seed || 'placeholder'}`)}`
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const isArray = (value: unknown): value is unknown[] => Array.isArray(value)
 
 const uniqueStrings = (values: unknown[]) =>
   Array.from(new Set(values.map((value) => safeString(value)).filter(Boolean)))
-
-type DemoClientSeed = {
-  slug: string
-  legal_name: string
-  trading_name: string
-  entity_type: NonNullable<Client['entity_type']>
-  jurisdiction: string
-  website_url: string
-}
-
-const DEMO_CLIENT_SEEDS: DemoClientSeed[] = [
-  {
-    slug: 'rivergate-holdings',
-    legal_name: 'Rivergate Holdings Ltd',
-    trading_name: 'Rivergate',
-    entity_type: 'conglomerate',
-    jurisdiction: 'United Kingdom',
-    website_url: 'https://example.com/rivergate-holdings',
-  },
-  {
-    slug: 'alpine-property-group',
-    legal_name: 'Alpine Property Group AG',
-    trading_name: 'Alpine Property Group',
-    entity_type: 'company',
-    jurisdiction: 'Switzerland',
-    website_url: 'https://example.com/alpine-property-group',
-  },
-  {
-    slug: 'cedar-family-office',
-    legal_name: 'Cedar Family Office',
-    trading_name: 'Cedar Family Office',
-    entity_type: 'family_office',
-    jurisdiction: 'United Kingdom',
-    website_url: 'https://example.com/cedar-family-office',
-  },
-  {
-    slug: 'northshore-income-fund',
-    legal_name: 'Northshore Income Fund',
-    trading_name: 'Northshore Fund',
-    entity_type: 'fund',
-    jurisdiction: 'Jersey',
-    website_url: 'https://example.com/northshore-income-fund',
-  },
-  {
-    slug: 'stadt-bern-immobilien',
-    legal_name: 'Stadt Bern Immobilien',
-    trading_name: 'Stadt Bern Immobilien',
-    entity_type: 'public_body',
-    jurisdiction: 'Switzerland',
-    website_url: 'https://example.com/stadt-bern-immobilien',
-  },
-]
-
-const hashString = (value: string) => {
-  let hash = 0
-  const input = safeString(value)
-  for (let i = 0; i < input.length; i += 1) {
-    hash = (hash << 5) - hash + input.charCodeAt(i)
-    hash |= 0
-  }
-  return Math.abs(hash)
-}
-
-const pickDemoClientSeeds = (scenarioId: string, count: number) => {
-  const pool = DEMO_CLIENT_SEEDS
-  const requested = Math.max(1, Math.min(count, pool.length))
-  const start = hashString(scenarioId) % pool.length
-  return Array.from({ length: requested }).map(
-    (_, offset) => pool[(start + offset) % pool.length] as DemoClientSeed
-  )
-}
 
 const normalizeStatus = (value: unknown): Client['status'] => {
   const status = safeString(value).toLowerCase()
@@ -181,8 +103,7 @@ const normalizeClient = (value: Partial<Client>): Client => {
 
     avatar_url:
       safeString(value.avatar_url) ||
-      safeString(value.logo_url) ||
-      clientAvatarPlaceholder(id || displayName),
+      safeString(value.logo_url),
     logo_url: safeString(value.logo_url),
     email: safeString(value.email),
     phone: safeString(value.phone),
@@ -203,147 +124,6 @@ const normalizeClient = (value: Partial<Client>): Client => {
   }
 }
 
-const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
-  const portfolioId = safeString(scenario.id)
-  const portfolioName = safeString(scenario.portfolio?.name) || portfolioId
-  const properties = scenario.properties ?? []
-  const units = scenario.units ?? []
-  const tenants = scenario.tenants ?? []
-  const leases = scenario.leases ?? []
-  const currency =
-    safeString(scenario.financials?.currency) ||
-    safeString(scenario.transactions?.[0]?.currency) ||
-    'GBP'
-
-  if (!portfolioId || properties.length === 0) {
-    const fallbackName =
-      safeString(scenario.portfolio?.owner_label) || 'Portfolio Owner'
-    const slug =
-      safeString(fallbackName)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-') || 'portfolio-owner'
-    return [
-      normalizeClient({
-        id: `client-${portfolioId || 'unknown'}-${slug}`,
-        portfolio_id: portfolioId,
-        portfolio_ids: [portfolioId],
-        property_id: '',
-        property_ids: [],
-        property_label: portfolioName,
-        unit_id: '',
-        unit_ids: [],
-        lease_id: '',
-        lease_end_date: '',
-        display_name: fallbackName,
-        legal_name: fallbackName,
-        entity_kind: 'organization',
-        entity_type: 'company',
-        relationship_status: 'active',
-        status: 'active',
-        monthly_rent: 0,
-        currency,
-        avatar_url: clientAvatarPlaceholder(fallbackName),
-        notes: 'Read-only entity client.',
-        tags: ['demo', 'entity-client'],
-      }),
-    ]
-  }
-
-  const groupCount = properties.length >= 9 ? 3 : properties.length >= 4 ? 2 : 1
-  const seeds = pickDemoClientSeeds(portfolioId, groupCount)
-  const leaseById = new Map<string, DemoLease>(
-    leases
-      .map((lease) => [safeString(lease.id), lease] as const)
-      .filter(([id]) => Boolean(id))
-  )
-
-  const grouped = seeds.map((seed, index) => {
-    const ownedProperties = properties.filter(
-      (_, propertyIndex) => propertyIndex % seeds.length === index
-    )
-    const ownedPropertyIds = ownedProperties
-      .map((property) => safeString(property.id))
-      .filter(Boolean)
-    const ownedUnits = units.filter((unit) =>
-      ownedPropertyIds.includes(safeString(unit.property_id))
-    )
-    const ownedUnitIds = ownedUnits
-      .map((unit) => safeString(unit.id))
-      .filter(Boolean)
-    const ownedTenants = tenants.filter((tenant) =>
-      ownedPropertyIds.includes(safeString(tenant.property_id))
-    )
-
-    const monthlyRent = ownedTenants.reduce(
-      (sum, tenant) => sum + Number(tenant.monthly_rent || 0),
-      0
-    )
-
-    const hasArrears = ownedTenants.some(
-      (tenant) => safeString(tenant.status) === 'arrears'
-    )
-    const hasEnding = ownedTenants.some(
-      (tenant) => safeString(tenant.status) === 'ending'
-    )
-    const status: Client['status'] = hasArrears
-      ? 'arrears'
-      : hasEnding
-        ? 'ending'
-        : 'active'
-
-    const leaseCandidates = ownedTenants
-      .map((tenant) => {
-        const lease = leaseById.get(safeString(tenant.lease_id))
-        if (!lease) return null
-        return {
-          id: safeString(lease.id),
-          end_date: safeString(lease.end_date),
-        }
-      })
-      .filter(Boolean) as Array<{ id: string; end_date: string }>
-    leaseCandidates.sort((a, b) => a.end_date.localeCompare(b.end_date))
-    const earliestLease = leaseCandidates[0]
-
-    const propertyLabel =
-      ownedProperties.length <= 1
-        ? safeString(ownedProperties[0]?.identity?.name) || portfolioName
-        : `${ownedProperties.length} properties`
-
-    return normalizeClient({
-      id: `client-${portfolioId}-${seed.slug}`,
-      portfolio_id: portfolioId,
-      portfolio_ids: [portfolioId],
-      property_id: safeString(ownedPropertyIds[0]),
-      property_ids: ownedPropertyIds,
-      property_label: propertyLabel,
-      unit_id: '',
-      unit_ids: ownedUnitIds,
-      lease_id: earliestLease?.id || '',
-      lease_end_date: earliestLease?.end_date || '',
-      display_name: seed.trading_name,
-      legal_name: seed.legal_name,
-      trading_name: seed.trading_name,
-      entity_kind: 'organization',
-      entity_type: seed.entity_type,
-      jurisdiction: seed.jurisdiction,
-      relationship_status: 'active',
-      risk_level:
-        status === 'arrears' ? 'high' : status === 'ending' ? 'medium' : 'low',
-      status,
-      monthly_rent: roundToMoney(monthlyRent),
-      currency,
-      avatar_url: clientAvatarPlaceholder(seed.slug),
-      website_url: seed.website_url,
-      notes: `Read-only client entity assigned to ${propertyLabel}.`,
-      tags: ['demo', 'entity-client', portfolioId],
-    })
-  })
-
-  return grouped.filter((client) => Boolean(safeString(client.id)))
-}
-
-const roundToMoney = (value: number) => Math.round(Number(value || 0))
-
 export function usePortfolioClientCollection(
   runtimePortfolio = useActivePortfolio()
 ) {
@@ -359,7 +139,7 @@ export function usePortfolioClientCollection(
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isDemo.value) {
+      if (!nextPath) {
         sourceRef.value = null
         return
       }
@@ -369,20 +149,6 @@ export function usePortfolioClientCollection(
   )
 
   const collection = computed<Client[]>(() => {
-    if (runtimePortfolio.isDemo.value) {
-      const scenario = runtimePortfolio.scenario.value
-      if (!scenario) return []
-
-      const scenarioClients = (scenario as any).clients
-      if (Array.isArray(scenarioClients) && scenarioClients.length > 0) {
-        return scenarioClients.map((entry: Partial<Client>) =>
-          normalizeClient(entry)
-        )
-      }
-
-      return buildDemoClients(scenario)
-    }
-
     return (sourceRef.value?.value ?? []).map((entry) => normalizeClient(entry))
   })
   const { byId: client } = useCollectionById(collection)

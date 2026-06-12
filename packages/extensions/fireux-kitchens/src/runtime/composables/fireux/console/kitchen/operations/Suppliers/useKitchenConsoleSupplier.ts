@@ -11,7 +11,6 @@ export function useKitchenConsoleSupplier() {
   const route = useRoute()
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,
@@ -55,7 +54,6 @@ export function useKitchenConsoleSupplier() {
   )
 
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     collectionPath: collectionPath.value,
@@ -71,7 +69,6 @@ export function useKitchenConsoleSupplier() {
 
   return {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,

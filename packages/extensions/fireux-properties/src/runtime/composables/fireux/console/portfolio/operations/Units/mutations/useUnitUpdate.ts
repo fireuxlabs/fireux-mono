@@ -24,10 +24,6 @@ export function useUnitUpdate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] portfolio id is required.')
     }
 
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-properties] demo runtime does not allow writes.')
-    }
-
     const normalizedUnitId = normalizeString(unitId)
     if (!normalizedUnitId) {
       throw new Error('[fireux-properties] unitId is required.')

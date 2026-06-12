@@ -6,7 +6,7 @@ import { useBlankConsole } from '../core/useBlankConsole'
 
 export function useBlankConsoleOverview() {
   const {
-    liveBlanks: targetBlanks,
+    targetBlanks,
     selectedBlank,
     blankId,
     rootCollection,

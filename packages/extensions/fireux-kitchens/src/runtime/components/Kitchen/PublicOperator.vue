@@ -139,7 +139,6 @@ async function selectConsoleKitchen(event: MouseEvent) {
   event.preventDefault()
   setKitchenConsoleTarget({
     kitchenId: kitchenId.value,
-    mode: 'live',
   })
 
   await navigateTo(consolePath)

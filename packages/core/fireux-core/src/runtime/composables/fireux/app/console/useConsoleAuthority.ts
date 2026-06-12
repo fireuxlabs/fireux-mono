@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { AppStorage } from '../../../../models/core/app.model'
 import { useFirestore } from '../../firestore/vuefire'
-import { normalizeConsoleString as normalizeString, type ConsoleMode } from './useConsole'
+import { normalizeConsoleString as normalizeString } from './useConsole'
 
 export type ConsoleAuthorityFamily =
   | 'kitchens'
@@ -13,7 +13,6 @@ export type ConsoleAuthorityFamily =
 export type ConsoleAuthorityOperation = 'read' | 'write'
 
 export type AssertCanOperateTargetOptions = {
-  mode: ConsoleMode
   family: ConsoleAuthorityFamily
   targetId: string
   uid: string
@@ -50,7 +49,6 @@ export function useConsoleAuthority() {
   const db = useFirestore()
 
   async function assertCanOperateTarget({
-    mode,
     family,
     targetId,
     uid,
@@ -66,23 +64,6 @@ export function useConsoleAuthority() {
     }
     if (!normalizedTargetId) {
       throw new Error(`Console ${operation} denied: missing target id.`)
-    }
-
-    if (mode === 'demo' && operation === 'write') {
-      throw new Error('Console write denied: demo targets are read-only.')
-    }
-
-    if (mode === 'test') {
-      if (normalizedTargetId !== normalizedUid) {
-        throw new Error(
-          'Console write denied: test targets must belong to the current user.'
-        )
-      }
-      return
-    }
-
-    if (mode !== 'live') {
-      throw new Error(`Console ${operation} denied: unsupported mode "${mode}".`)
     }
 
     const targetRef = rootAuthorityFamilies.has(family)

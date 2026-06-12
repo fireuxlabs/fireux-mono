@@ -6,7 +6,7 @@ import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export function usePropertyConsoleOverview() {
   const {
-    liveProperties: targetProperties,
+    targetProperties,
     selectedProperty,
     propertyId,
     activePropertyAppId,

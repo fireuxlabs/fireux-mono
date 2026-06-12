@@ -20,10 +20,6 @@ export function useClientDelete(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] portfolio id is required.')
     }
 
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-properties] demo runtime does not allow writes.')
-    }
-
     const normalizedClientId = normalizeString(clientId)
     if (!normalizedClientId) {
       throw new Error('[fireux-properties] clientId is required.')

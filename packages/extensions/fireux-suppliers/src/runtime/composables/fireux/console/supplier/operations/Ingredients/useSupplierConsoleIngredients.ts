@@ -12,7 +12,6 @@ const titleFromId = (value: string) =>
 export function useSupplierConsoleIngredients() {
   const {
     selectedSupplier,
-    selectedMode,
     supplierId,
     canWrite,
   } = useSupplierConsole()
@@ -45,7 +44,6 @@ export function useSupplierConsoleIngredients() {
     `${ingredientItems.value.length} assigned ingredient${ingredientItems.value.length === 1 ? '' : 's'}`
   )
   const debug = computed(() => ({
-    mode: selectedMode.value,
     supplierId: supplierId.value,
     supplierName: supplierLabel.value,
     ingredientItemsCount: ingredientItems.value.length,
@@ -55,7 +53,6 @@ export function useSupplierConsoleIngredients() {
 
   return {
     selectedSupplier,
-    selectedMode,
     supplierId,
     supplierLabel,
     linkedIngredientIds,

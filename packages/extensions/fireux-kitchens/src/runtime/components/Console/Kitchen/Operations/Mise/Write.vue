@@ -4,7 +4,7 @@
       <div class="console-card-header">
         <div class="console-card-header__title">Prep Whiteboard</div>
         <p class="console-card-header__description">
-          Toggle prep tasks done or not done for the selected test kitchen.
+          Toggle prep tasks done or not done for the selected kitchen.
         </p>
       </div>
     </template>
@@ -68,7 +68,7 @@
       color="neutral"
       variant="soft"
       title="Prep whiteboard unavailable"
-      description="Switch to a writable test kitchen to toggle mise tasks."
+      description="Choose a writable kitchen to toggle mise tasks."
     />
   </UCard>
 </template>

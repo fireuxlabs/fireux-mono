@@ -22,4 +22,4 @@ Use this layer for selected-Kitchen work such as:
 
 Keep stored CRUD in `firestore/`.
 Keep guest-facing route shaping in `public/kitchen/`.
-Keep demo scenario data in `demo/kitchen/`.
+Keep example or seed data outside this selected-Kitchen operations layer.

@@ -5,7 +5,6 @@ import { usePropertyConsole } from '../core/usePropertyConsole'
 export function usePropertyConsoleIdentity() {
   const {
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,
@@ -27,7 +26,6 @@ export function usePropertyConsoleIdentity() {
   )
   const imageUrl = computed(() => normalizeString(identity.value?.image_url))
   const debug = computed(() => ({
-    selectedMode: selectedMode.value,
     propertyId: propertyId.value,
     activePropertyAppId: activePropertyAppId.value,
     rootCollection: rootCollection.value,
@@ -40,7 +38,6 @@ export function usePropertyConsoleIdentity() {
 
   return {
     selectedProperty,
-    selectedMode,
     propertyId,
     activePropertyAppId,
     rootCollection,

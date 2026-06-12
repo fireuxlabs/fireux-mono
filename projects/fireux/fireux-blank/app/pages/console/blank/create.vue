@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Create Blank"
-      description="Create a live Blank console target."
+      description="Create a Blank console target."
     >
       <template #links>
         <UButton
@@ -20,7 +20,7 @@
     <UPageBody class="pagebody">
       <UPageCard
         title="Blank target"
-        description="This creates the smallest live console target: root truth plus app console scope."
+        description="This creates the smallest console target: root truth plus app console scope."
         variant="subtle"
       >
         <form class="space-y-4" @submit.prevent="handleCreate">
@@ -102,7 +102,7 @@ async function handleCreate() {
 
   try {
     const result = await createBlank({ name: name.value })
-    selectBlank(result.id, 'live')
+    selectBlank(result.id)
     await navigateTo('/console/blank')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)
@@ -113,7 +113,7 @@ async function handleCreate() {
 
 useSeoMeta({
   title: 'Create Blank',
-  description: 'Create a live Blank console target.',
+  description: 'Create a Blank console target.',
   robots: 'noindex, nofollow',
 })
 </script>

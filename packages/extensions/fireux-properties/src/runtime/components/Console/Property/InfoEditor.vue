@@ -5,7 +5,7 @@
       color="neutral"
       variant="soft"
       title="Select a property"
-      description="Choose a live property, test property or simulation before editing this section."
+      description="Choose a property before editing this section."
     />
 
     <form v-else class="space-y-5" @submit.prevent="save">
@@ -252,17 +252,16 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
 
 const toast = useToastify()
 const {
-  selectedProperty,
-  selectedMode,
-  propertyId,
+  selection,
   debug: consoleDebug,
 } = usePropertyConsoleIndex()
+const selectedProperty = computed(() => selection.value.property)
+const propertyId = computed(() => selection.value.propertyId)
 const draft = ref(clonePage(pageDefaults[props.pageKey]))
 const savedMessage = ref('')
 
 const debug = computed(() => ({
   pageKey: props.pageKey,
-  selectedMode: selectedMode.value,
   propertyId: propertyId.value,
   selectedProperty: selectedProperty.value,
   draft: draft.value,

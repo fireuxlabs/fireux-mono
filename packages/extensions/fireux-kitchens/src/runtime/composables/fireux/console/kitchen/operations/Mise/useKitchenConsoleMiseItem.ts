@@ -9,7 +9,6 @@ export function useKitchenConsoleMiseItem() {
   const route = useRoute()
   const {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,
@@ -30,7 +29,6 @@ export function useKitchenConsoleMiseItem() {
   )
 
   const debug = computed(() => ({
-    mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     collectionPath: collectionPath.value,
@@ -42,7 +40,6 @@ export function useKitchenConsoleMiseItem() {
 
   return {
     selectedKitchen,
-    selectedMode,
     kitchenId,
     rootCollection,
     collectionPath,

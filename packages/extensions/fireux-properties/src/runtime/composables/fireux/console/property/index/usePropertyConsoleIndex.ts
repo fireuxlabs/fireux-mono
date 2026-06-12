@@ -11,7 +11,7 @@ export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
   const {
-    liveProperties: targetProperties,
+    targetProperties,
     selectedProperty,
     propertyId,
     activePropertyAppId,
@@ -39,7 +39,7 @@ export function usePropertyConsoleIndex(
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectProperty(String(id ?? '').trim(), 'live')
+      selectProperty(String(id ?? '').trim())
     },
     clear: clearSelectedProperty,
   }
