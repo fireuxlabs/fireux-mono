@@ -4,19 +4,20 @@ import { useBlankConsole } from '../core/useBlankConsole'
 
 export function useBlankConsoleIdentity() {
   const {
-    selectedBlank,
-    blankId,
-    rootCollection,
-    canWrite,
-    clearSelectedBlank,
+    selection,
+    runtime,
+    actions,
   } = useBlankConsole()
+  const selectedBlank = selection.blank
+  const blankId = selection.blankId
   const selectedId = computed(() => blankId.value)
   const name = computed(() => normalizeString(selectedBlank.value?.name))
   const slug = computed(() => normalizeString(selectedBlank.value?.slug))
   const debug = computed(() => ({
     blankId: blankId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     name: name.value,
     slug: slug.value,
     selectedBlank: selectedBlank.value,
@@ -26,9 +27,10 @@ export function useBlankConsoleIdentity() {
     selectedBlank,
     blankId,
     selectedId,
-    rootCollection,
-    canWrite,
-    clearSelectedBlank,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedBlank: actions.clearSelectedBlank,
     name,
     slug,
     debug,

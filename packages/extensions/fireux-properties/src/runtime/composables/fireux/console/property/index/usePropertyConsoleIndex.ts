@@ -11,45 +11,43 @@ export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
   const {
-    targetProperties,
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    selectProperty,
-    clearSelectedProperty,
+    properties,
+    selection: consoleSelection,
+    runtime: consoleRuntime,
+    actions: consoleActions,
   } = usePropertyConsole({
     filter: options.filter,
   })
   const selection = computed(() => ({
-    property: selectedProperty.value,
-    propertyId: propertyId.value,
+    property: consoleSelection.property.value,
+    propertyId: consoleSelection.propertyId.value,
   }))
   const sections = computed(() => ({
     targets: {
       show: true,
-      collection: targetProperties.value,
+      collection: properties.targets.value,
     },
   }))
   const runtime = computed(() => ({
-    appId: activePropertyAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    appId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectProperty(String(id ?? '').trim())
+      consoleActions.selectProperty(String(id ?? '').trim())
     },
-    clear: clearSelectedProperty,
+    clear: consoleActions.clearSelectedProperty,
   }
   const debug = computed(() => ({
-    propertyId: propertyId.value,
-    activePropertyAppId: activePropertyAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedProperty: selectedProperty.value,
-    targetCount: targetProperties.value.length,
+    propertyId: consoleSelection.propertyId.value,
+    activePropertyAppId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
+    selectedProperty: consoleSelection.property.value,
+    targetCount: properties.count.value,
     status: 'property console uses scaffold data until Firestore property fetch/create is wired',
   }))
 

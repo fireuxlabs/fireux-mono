@@ -11,29 +11,28 @@ const titleFromId = (value: string) =>
 
 export function useSupplierConsoleIngredients() {
   const {
-    selectedSupplier,
-    supplierId,
-    canWrite,
+    selection,
+    runtime,
   } = useSupplierConsole()
 
   const supplierLabel = computed(() =>
-    normalizeString(selectedSupplier.value?.supplier_organization_name)
+    normalizeString(selection.supplier.value?.supplier_organization_name)
   )
   const linkedIngredientIds = computed(() =>
-    Array.isArray(selectedSupplier.value?.linked_ingredient_ids)
-      ? selectedSupplier.value.linked_ingredient_ids
+    Array.isArray(selection.supplier.value?.linked_ingredient_ids)
+      ? selection.supplier.value.linked_ingredient_ids
           .map((value) => normalizeString(value))
           .filter(Boolean)
       : []
   )
   const ingredientItems = computed<SupplierIngredientInterfaceItem[]>(() =>
     linkedIngredientIds.value.map((ingredientId) => ({
-      id: `${supplierId.value}:${ingredientId}`,
-      supplier_id: supplierId.value,
+      id: `${selection.supplierId.value}:${ingredientId}`,
+      supplier_id: selection.supplierId.value,
       ingredient_id: ingredientId,
       label: titleFromId(ingredientId),
-      path: supplierId.value
-        ? `suppliers/${supplierId.value}/ingredients/${ingredientId}`
+      path: selection.supplierId.value
+        ? `suppliers/${selection.supplierId.value}/ingredients/${ingredientId}`
         : `suppliers/{supplierId}/ingredients/${ingredientId}`,
     }))
   )
@@ -44,22 +43,24 @@ export function useSupplierConsoleIngredients() {
     `${ingredientItems.value.length} assigned ingredient${ingredientItems.value.length === 1 ? '' : 's'}`
   )
   const debug = computed(() => ({
-    supplierId: supplierId.value,
+    supplierId: selection.supplierId.value,
     supplierName: supplierLabel.value,
     ingredientItemsCount: ingredientItems.value.length,
     ingredientIds: linkedIngredientIds.value,
-    canWrite: canWrite.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedSupplier,
-    supplierId,
+    selectedSupplier: selection.supplier,
+    supplierId: selection.supplierId,
     supplierLabel,
     linkedIngredientIds,
     ingredientItems,
     ingredientsTitle,
     ingredientsDescription,
-    canWrite,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
     debug,
   }
 }

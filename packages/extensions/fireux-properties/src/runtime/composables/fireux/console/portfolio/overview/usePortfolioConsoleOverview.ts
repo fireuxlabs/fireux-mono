@@ -8,25 +8,23 @@ import {
 
 export function usePortfolioConsoleOverview() {
   const {
-    targetPortfolios,
-    selectedPortfolio,
-    portfolioId,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedPortfolio,
+    portfolios,
+    selection,
+    runtime,
+    actions,
   } = usePortfolioConsole()
 
   const overview = useConsoleOverview<PortfolioConsoleEntity>({
-    selectedEntity: selectedPortfolio,
-    targetItems: targetPortfolios,
+    selectedEntity: selection.portfolio,
+    targetItems: portfolios.targets,
     getId: (portfolio) => normalizeString(portfolio?.id),
   })
   const debug = computed(() => ({
-    portfolioId: portfolioId.value,
-    activePortfolioAppId: activePortfolioAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    portfolioId: selection.portfolioId.value,
+    activePortfolioAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -36,12 +34,13 @@ export function usePortfolioConsoleOverview() {
 
   return {
     ...overview,
-    selectedPortfolio,
-    portfolioId,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedPortfolio,
+    selectedPortfolio: selection.portfolio,
+    portfolioId: selection.portfolioId,
+    activePortfolioAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedPortfolio: actions.clearSelectedPortfolio,
     debug,
   }
 }

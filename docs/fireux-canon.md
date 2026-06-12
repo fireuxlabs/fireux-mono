@@ -69,9 +69,9 @@ Current learned examples:
   - Operator operates a console/workspace.
   - Developer builds and checks the app.
 - Demo data:
-  - demo records follow live/test shape.
-  - demo mode is explicit.
-  - live collection reads must not silently become demo reads.
+  - demo targets are optional read-only target sources.
+  - demo data must not change the console child/operation architecture.
+  - normal target reads must not silently become demo reads.
 - Entity stacks:
   - start from the standard model, fetch, collection, interface, component, and page seams before adding new entity-specific structure.
 - Runtime components:
@@ -94,8 +94,9 @@ Current learned examples:
 - Do not introduce an extra abstract `collection` layer when `family`, `target`, and `child records` already explain the model.
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
-- In `live` mode, `/console/X` should show the current user's real targets for that family.
-- Live console visibility should start from an explicit user target index when the family needs fast personal selection.
+- By default, `/console/X` should show the current user's normal targets for that family.
+- Console visibility should start from an explicit user target index when the family needs fast personal selection.
+- Demo/test/read-only target sources are allowed only as explicit target-source policy; operation children should consume `readOnly`/`canWrite` and stay ignorant to where the target came from.
 - Kitchen uses app membership `console_scopes` entries such as `kitchen:<kitchenId>` as the current user's Kitchen index.
 - Scoped console records still carry relationship and authority detail through fields such as `operator_ids` and `team_ids`.
 - Canon docs override operational docs and tooling/history docs on conflict.
@@ -292,7 +293,7 @@ Current learned examples:
   - `useXPublish()` makes public/indexable publication explicit where the entity supports publishing.
   - `useXSeo()` owns public metadata and JSON-LD where the entity has public pages.
   - `useXDelete()` removes.
-  - `useXConsole()` selects and operates a workspace.
+  - `useXConsole()` adapts a family into the console spine: targets, selection, runtime, and actions.
   - dashboard/profile routes manage identity.
 - Entities should start from the standard FireUX stack before adding domain-specific seams:
   - `XModel`, `X`, `XCreateInput`, `XUpdateInput`

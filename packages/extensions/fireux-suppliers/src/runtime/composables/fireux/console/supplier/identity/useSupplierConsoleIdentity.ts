@@ -4,50 +4,49 @@ import { useSupplierConsole } from '../core/useSupplierConsole'
 
 export function useSupplierConsoleIdentity() {
   const {
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedSupplier,
+    selection,
+    runtime,
+    actions,
   } = useSupplierConsole()
 
   const name = computed(() =>
-    normalizeString(selectedSupplier.value?.supplier_organization_name)
+    normalizeString(selection.supplier.value?.supplier_organization_name)
   )
-  const tagline = computed(() => normalizeString((selectedSupplier.value as any)?.tagline))
-  const headline = computed(() => normalizeString(selectedSupplier.value?.supplier_headline))
-  const summary = computed(() => normalizeString(selectedSupplier.value?.summary))
-  const imageUrl = computed(() => normalizeString(selectedSupplier.value?.supplier_image))
+  const tagline = computed(() => normalizeString((selection.supplier.value as any)?.tagline))
+  const headline = computed(() => normalizeString(selection.supplier.value?.supplier_headline))
+  const summary = computed(() => normalizeString(selection.supplier.value?.summary))
+  const imageUrl = computed(() => normalizeString(selection.supplier.value?.supplier_image))
   const categories = computed(() =>
-    Array.isArray(selectedSupplier.value?.supplier_item_categories)
-      ? selectedSupplier.value?.supplier_item_categories
+    Array.isArray(selection.supplier.value?.supplier_item_categories)
+      ? selection.supplier.value?.supplier_item_categories
       : []
   )
   const deliveryAreas = computed(() =>
-    Array.isArray(selectedSupplier.value?.supplier_delivery_areas)
-      ? selectedSupplier.value?.supplier_delivery_areas
+    Array.isArray(selection.supplier.value?.supplier_delivery_areas)
+      ? selection.supplier.value?.supplier_delivery_areas
       : []
   )
   const debug = computed(() => ({
-    supplierId: supplierId.value,
-    activeSupplierAppId: activeSupplierAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    supplierId: selection.supplierId.value,
+    activeSupplierAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     name: name.value,
     tagline: tagline.value,
     headline: headline.value,
     summary: summary.value,
-    selectedSupplier: selectedSupplier.value,
+    selectedSupplier: selection.supplier.value,
   }))
 
   return {
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedSupplier,
+    selectedSupplier: selection.supplier,
+    supplierId: selection.supplierId,
+    activeSupplierAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedSupplier: actions.clearSelectedSupplier,
     name,
     tagline,
     headline,

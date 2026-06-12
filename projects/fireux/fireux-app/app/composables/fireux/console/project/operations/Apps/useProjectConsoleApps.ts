@@ -8,20 +8,18 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleApps() {
   const {
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
+    selection,
+    runtime,
   } = useProjectConsole()
   const ecosystemId = computed(() => {
-    const project = selectedProject.value
+    const project = selection.project.value
     return normalizeString(
       project && 'ecosystem_id' in project ? project.ecosystem_id : ''
     )
   })
 
   const appId = computed(() => {
-    const project = selectedProject.value
+    const project = selection.project.value
     if (!project) return ''
     return normalizeString('app_id' in project ? project.app_id : '')
   })
@@ -30,7 +28,7 @@ export function useProjectConsoleApps() {
   const { apps: appCollection } = useAppCollection()
   const apps = computed<App[]>(() => {
     const currentEcosystemId = ecosystemId.value
-    const currentProjectId = projectId.value
+    const currentProjectId = selection.projectId.value
     const primaryAppId = appId.value
     const seen = new Set<string>()
 
@@ -55,20 +53,22 @@ export function useProjectConsoleApps() {
       }) as App[]
   })
   const debug = computed(() => ({
-    projectId: projectId.value,
-    rootCollection: rootCollection.value,
+    projectId: selection.projectId.value,
+    rootCollection: runtime.rootCollection.value,
     appId: appId.value,
     ecosystemId: ecosystemId.value,
     appsCount: apps.value.length,
     pending: pending.value,
-    canWrite: canWrite.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
+    selectedProject: selection.project,
+    projectId: selection.projectId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
     appId,
     ecosystemId,
     app,

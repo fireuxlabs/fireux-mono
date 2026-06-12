@@ -10,42 +10,41 @@ export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
   const {
-    targetProjects,
-    selectProject,
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
+    projects,
+    selection: consoleSelection,
+    runtime: consoleRuntime,
+    actions: consoleActions,
   } = useProjectConsole({
     filter: options.filter,
   })
   const selection = computed(() => ({
-    project: selectedProject.value,
-    projectId: projectId.value,
+    project: consoleSelection.project.value,
+    projectId: consoleSelection.projectId.value,
   }))
   const sections = computed(() => ({
     targets: {
       show: true,
-      collection: targetProjects.value,
+      collection: projects.targets.value,
     },
   }))
   const runtime = computed(() => ({
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectProject(String(id ?? '').trim())
+      consoleActions.selectProject(String(id ?? '').trim())
     },
-    clear: clearSelectedProject,
+    clear: consoleActions.clearSelectedProject,
   }
   const debug = computed(() => ({
-    projectId: projectId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedProject: selectedProject.value,
-    targetCount: targetProjects.value.length,
+    projectId: consoleSelection.projectId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
+    selectedProject: consoleSelection.project.value,
+    targetCount: projects.count.value,
   }))
 
   return {

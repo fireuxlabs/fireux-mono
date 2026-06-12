@@ -6,26 +6,24 @@ import { useSupplierConsole } from '../core/useSupplierConsole'
 
 export function useSupplierConsoleOverview() {
   const {
-    targetSuppliers,
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedSupplier,
+    suppliers,
+    selection,
+    runtime,
+    actions,
   } =
     useSupplierConsole()
 
   const overview = useConsoleOverview<SupplierSurface>({
-    selectedEntity: selectedSupplier,
-    targetItems: targetSuppliers,
+    selectedEntity: selection.supplier,
+    targetItems: suppliers.targets,
     getId: (supplier) => normalizeString(supplier?.id),
   })
   const debug = computed(() => ({
-    supplierId: supplierId.value,
-    activeSupplierAppId: activeSupplierAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    supplierId: selection.supplierId.value,
+    activeSupplierAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -35,12 +33,13 @@ export function useSupplierConsoleOverview() {
 
   return {
     ...overview,
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedSupplier,
+    selectedSupplier: selection.supplier,
+    supplierId: selection.supplierId,
+    activeSupplierAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedSupplier: actions.clearSelectedSupplier,
     debug,
   }
 }

@@ -86,8 +86,9 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const rootCollection = computed(() =>
     PortfolioStorage.rootCollection
   )
+  const readOnly = computed(() => false)
   const canWrite = computed(() =>
-    targetHasOperator(selectedPortfolio.value, normalizedUid.value)
+    !readOnly.value && targetHasOperator(selectedPortfolio.value, normalizedUid.value)
   )
 
   const portfolio = computed(() => {
@@ -130,17 +131,32 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   ) => {
     selectEntity(portfolioId)
   }
+  const portfolios = {
+    targets: targetPortfolios,
+    count: computed(() => targetPortfolios.value.length),
+  }
+  const selection = {
+    portfolio: selectedPortfolio,
+    portfolioId,
+    portfolioCard: portfolio,
+    portfolioState,
+    hasSelection: computed(() => Boolean(portfolioId.value)),
+  }
+  const runtime = {
+    appId: activePortfolioAppId,
+    rootCollection,
+    readOnly,
+    canWrite,
+  }
+  const actions = {
+    selectPortfolio,
+    clearSelectedPortfolio,
+  }
 
   return {
-    targetPortfolios,
-    portfolioState,
-    portfolio,
-    selectedPortfolio,
-    portfolioId,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedPortfolio,
-    selectPortfolio,
+    portfolios,
+    selection,
+    runtime,
+    actions,
   }
 }

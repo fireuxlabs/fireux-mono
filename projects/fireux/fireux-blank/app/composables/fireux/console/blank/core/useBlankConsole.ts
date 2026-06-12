@@ -13,9 +13,14 @@ import type { Blank } from '../../../../../models/blank.model'
  * tested without domain operations or child records.
  */
 export function useBlankConsole() {
-  const { blanks, pending, rootCollectionPath, appCollectionPath } =
+  const {
+    blanks: blankRecords,
+    pending,
+    rootCollectionPath,
+    appCollectionPath,
+  } =
     useBlankCollection()
-  const targetBlanks = computed(() => blanks.value)
+  const targetBlanks = computed(() => blankRecords.value)
   const {
     selectedEntity,
     selectEntity,
@@ -28,6 +33,7 @@ export function useBlankConsole() {
   const blankId = computed(() => normalizeString(selectedBlank.value?.id))
   const rootCollection = computed(() => rootCollectionPath)
   const hasTargets = computed(() => targetBlanks.value.length > 0)
+  const readOnly = computed(() => true)
   const canWrite = computed(() => false)
   const selectBlank = (blankId: string) => {
     selectEntity(blankId)
@@ -36,17 +42,32 @@ export function useBlankConsole() {
     clearSelection()
   }
 
-  return {
-    targetBlanks,
-    selectedBlank,
-    blankId,
-    rootCollection,
-    hasTargets,
+  const blanks = {
+    targets: targetBlanks,
+    count: computed(() => targetBlanks.value.length),
     pending,
-    rootCollectionPath,
+    hasTargets,
+  }
+  const selection = {
+    blank: selectedBlank,
+    blankId,
+    hasSelection: computed(() => Boolean(blankId.value)),
+  }
+  const runtime = {
+    rootCollection,
     appCollectionPath,
+    readOnly,
     canWrite,
+  }
+  const actions = {
     selectBlank,
     clearSelectedBlank,
+  }
+
+  return {
+    blanks,
+    selection,
+    runtime,
+    actions,
   }
 }

@@ -13,45 +13,43 @@ export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
   const {
-    targetPortfolios,
-    selectedPortfolio,
-    portfolioId,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
-    selectPortfolio,
-    clearSelectedPortfolio,
+    portfolios,
+    selection: consoleSelection,
+    runtime: consoleRuntime,
+    actions: consoleActions,
   } = usePortfolioConsole({
     filter: options.filter,
   })
   const selection = computed(() => ({
-    portfolio: selectedPortfolio.value,
-    portfolioId: portfolioId.value,
+    portfolio: consoleSelection.portfolio.value,
+    portfolioId: consoleSelection.portfolioId.value,
   }))
   const sections = computed(() => ({
     targets: {
       show: true,
-      collection: targetPortfolios.value,
+      collection: portfolios.targets.value,
     },
   }))
   const runtime = computed(() => ({
-    appId: activePortfolioAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    appId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectPortfolio(String(id ?? '').trim())
+      consoleActions.selectPortfolio(String(id ?? '').trim())
     },
-    clear: clearSelectedPortfolio,
+    clear: consoleActions.clearSelectedPortfolio,
   }
   const debug = computed(() => ({
-    portfolioId: portfolioId.value,
-    activePortfolioAppId: activePortfolioAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedPortfolio: selectedPortfolio.value,
-    targetCount: targetPortfolios.value.length,
+    portfolioId: consoleSelection.portfolioId.value,
+    activePortfolioAppId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
+    selectedPortfolio: consoleSelection.portfolio.value,
+    targetCount: portfolios.count.value,
   }))
 
   return {

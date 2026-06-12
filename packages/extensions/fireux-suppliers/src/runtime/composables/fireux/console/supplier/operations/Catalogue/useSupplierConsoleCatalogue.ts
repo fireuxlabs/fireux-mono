@@ -7,38 +7,36 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierConsoleCatalogue() {
   const {
-    selectedSupplier,
-    supplierId,
-    rootCollection,
-    canWrite,
+    selection,
+    runtime,
   } = useSupplierConsole()
 
   const supplierLabel = computed(() =>
-    normalizeString(selectedSupplier.value?.supplier_organization_name)
+    normalizeString(selection.supplier.value?.supplier_organization_name)
   )
 
-  const state = computed(() => normalizeString(selectedSupplier.value?.state))
+  const state = computed(() => normalizeString(selection.supplier.value?.state))
   const catalogueState = computed(() =>
-    normalizeString(selectedSupplier.value?.catalogue_state)
+    normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierCataloguesEnabled = computed(() =>
-    Boolean(rootCollection.value && supplierId.value)
+    Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath: supplierCataloguesCollectionPath,
     supplierCatalogues,
     pending: supplierCataloguesPending,
-  } = useSupplierCatalogueCollection(supplierId, {
+  } = useSupplierCatalogueCollection(selection.supplierId, {
     enabled: supplierCataloguesEnabled,
-    supplierCollectionPath: rootCollection,
+    supplierCollectionPath: runtime.rootCollection,
   })
 
   const {
     supplierItems: supplierItemsFromStore,
     pending: supplierItemsPending,
-  } = useSupplierItemCollection(supplierId, {
+  } = useSupplierItemCollection(selection.supplierId, {
     enabled: supplierCataloguesEnabled,
-    supplierCollectionPath: rootCollection,
+    supplierCollectionPath: runtime.rootCollection,
   })
 
   const supplierItems = computed(() => supplierItemsFromStore.value)
@@ -90,29 +88,31 @@ export function useSupplierConsoleCatalogue() {
     () => 'console supplier · catalogue'
   )
   const debug = computed(() => ({
-    supplierId: supplierId.value,
+    supplierId: selection.supplierId.value,
     supplierName: supplierLabel.value,
-    rootCollection: rootCollection.value,
+    rootCollection: runtime.rootCollection.value,
     state: state.value,
     catalogueState: catalogueState.value,
     supplierCataloguesCollectionPath: supplierCataloguesCollectionPath.value,
     supplierItemsCount: supplierItems.value.length,
     catalogueItemsCount: catalogues.value.length,
     pending: pending.value,
-    canWrite: canWrite.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedSupplier,
-    supplierId,
+    selectedSupplier: selection.supplier,
+    supplierId: selection.supplierId,
     supplierLabel,
-    rootCollection,
+    rootCollection: runtime.rootCollection,
     state,
     catalogueState,
     supplierCataloguesCollectionPath,
     catalogues,
     pending,
-    canWrite,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
     isIntegratedCatalogue,
     isPublicOnlySupplier,
     emptyTitle,

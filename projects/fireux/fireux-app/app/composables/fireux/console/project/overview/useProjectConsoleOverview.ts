@@ -6,24 +6,23 @@ import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleOverview() {
   const {
-    targetProjects,
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
+    projects,
+    selection,
+    runtime,
+    actions,
   } =
     useProjectConsole()
 
   const overview = useConsoleOverview<ProjectSurface>({
-    selectedEntity: selectedProject,
-    targetItems: targetProjects,
+    selectedEntity: selection.project,
+    targetItems: projects.targets,
     getId: (project) => normalizeString(project?.id),
   })
   const debug = computed(() => ({
-    projectId: projectId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    projectId: selection.projectId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -33,11 +32,12 @@ export function useProjectConsoleOverview() {
 
   return {
     ...overview,
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
+    selectedProject: selection.project,
+    projectId: selection.projectId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedProject: actions.clearSelectedProject,
     debug,
   }
 }

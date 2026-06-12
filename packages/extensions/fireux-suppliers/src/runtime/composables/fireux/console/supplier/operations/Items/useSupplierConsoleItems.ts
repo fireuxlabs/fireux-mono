@@ -7,47 +7,45 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierConsoleItems() {
   const {
-    selectedSupplier,
-    supplierId,
-    rootCollection,
-    canWrite,
+    selection,
+    runtime,
   } = useSupplierConsole()
 
   const supplierLabel = computed(() =>
-    normalizeString(selectedSupplier.value?.supplier_organization_name)
+    normalizeString(selection.supplier.value?.supplier_organization_name)
   )
 
   const linkedIngredientIds = computed(() =>
-    Array.isArray(selectedSupplier.value?.linked_ingredient_ids)
-      ? selectedSupplier.value.linked_ingredient_ids
+    Array.isArray(selection.supplier.value?.linked_ingredient_ids)
+      ? selection.supplier.value.linked_ingredient_ids
           .map((value) => normalizeString(value))
           .filter(Boolean)
       : []
   )
 
-  const state = computed(() => normalizeString(selectedSupplier.value?.state))
+  const state = computed(() => normalizeString(selection.supplier.value?.state))
   const catalogueState = computed(() =>
-    normalizeString(selectedSupplier.value?.catalogue_state)
+    normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierItemsEnabled = computed(() =>
-    Boolean(rootCollection.value && supplierId.value)
+    Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath: supplierItemsCollectionPath,
     supplierItems: supplierItemsFromStore,
     pending: supplierItemsPending,
-  } = useSupplierItemCollection(supplierId, {
+  } = useSupplierItemCollection(selection.supplierId, {
     enabled: supplierItemsEnabled,
-    supplierCollectionPath: rootCollection,
+    supplierCollectionPath: runtime.rootCollection,
   })
 
   const supplierItems = computed<SupplierItemSurface[]>(() =>
-    rootCollection.value
+    runtime.rootCollection.value
         ? supplierItemsFromStore.value
         : []
   )
   const pending = computed(() =>
-    rootCollection.value ? supplierItemsPending.value : false
+    runtime.rootCollection.value ? supplierItemsPending.value : false
   )
 
   const emptyTitle = computed(() => 'No supplier items yet')
@@ -74,17 +72,18 @@ export function useSupplierConsoleItems() {
     () => 'console supplier · items'
   )
   const debug = computed(() => ({
-    supplierId: supplierId.value,
+    supplierId: selection.supplierId.value,
     supplierName: supplierLabel.value,
     supplierItemsCollectionPath: supplierItemsCollectionPath.value,
     supplierItemsCount: supplierItems.value.length,
     pending: pending.value,
-    canWrite: canWrite.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedSupplier,
-    supplierId,
+    selectedSupplier: selection.supplier,
+    supplierId: selection.supplierId,
     supplierLabel,
     linkedIngredientIds,
     state,
@@ -92,7 +91,8 @@ export function useSupplierConsoleItems() {
     supplierItemsCollectionPath,
     supplierItems,
     pending,
-    canWrite,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
     emptyTitle,
     emptyDescription,
     itemsTitle,

@@ -155,23 +155,22 @@ Recent repo truth:
   - the named ecosystem database is the operational database, including canonical `apps`
 - the generic console shell now lives in the runtime seam:
   - `packages/core/fireux-core/src/runtime/composables/fireux/app/console/**` is the shared console spine
-  - `useConsole()` owns selected target and `live` / `demo` / `test` mode state
+  - `useConsole()` owns selected target state
   - `useConsoleHeader()` owns selected-target header publication for the shared console layout
 - the generic console entry and overview seams now also live in the runtime seam:
   - `useConsoleIndex()` owns family entry / chooser composition
   - `useConsoleOverview()` owns selected-target overview grouping
-  - `useKitchenConsole()`, `useSupplierConsole()`, `useProjectConsole()`, and `usePortfolioConsole()` are domain adapters into the shared spine
+  - `useXConsole()` domain adapters expose the same grouped spine: targets, selection, runtime, and actions
 - `/api/fireux-console` helpers such as `fireuxConsoleProjectFacade.ts` and `fireux-console.ts` are endpoint payload plumbing, not the selected-target console runtime architecture
 - `docs/changelog/runtime/README.md` is historical and should not be treated as current console canon
 - main console page ownership is now explicit:
   - the shared console layout and generic runtime seam live in core
   - `Project` main console pages are app-owned
   - `Kitchen`, `Portfolio`, and `Supplier` main console pages are domain-owned
-- console-backed runtime now treats `live` and `demo` as runtime modes rather than separate console architectures
+- console-backed runtime now treats demo/test/read-only behaviour as explicit target-source policy rather than separate console architectures
 - `/console/X` is now the shared family entry seam:
-  - `demo` shows demo targets
-  - `test` shows test targets
-  - `live` shows the current user's real targets for that family
+  - normal target sources show the current user's real targets for that family
+  - optional demo/test sources must be explicit and should collapse to `readOnly`/`canWrite` for child operations
 - `/console/X/overview` is the selected-target workspace overview seam
 - the runtime model layer is now normalized around simple stored-shape contracts:
   - root, system, domain-root, and scoped families use `XModel`, `X`, `XCreateInput`, `XUpdateInput`

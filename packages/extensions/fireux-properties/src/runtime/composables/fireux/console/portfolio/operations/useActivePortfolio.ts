@@ -23,28 +23,26 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useActivePortfolio(): ActivePortfolioRuntime {
   const selection = usePortfolioConsoleSelection()
   const {
-    selectedPortfolio,
-    activePortfolioAppId,
-    rootCollection,
-    canWrite,
+    selection: consoleSelection,
+    runtime,
   } = usePortfolioConsole()
 
   const id = computed(
     () =>
-      normalizeString(selectedPortfolio.value?.id) || selection.selectedId.value
+      normalizeString(consoleSelection.portfolio.value?.id) || selection.selectedId.value
   )
   const collectionPath = computed(() => {
     if (!id.value) return ''
 
-    return resolvePortfolioConsoleCollectionPath(activePortfolioAppId.value)
+    return resolvePortfolioConsoleCollectionPath(runtime.appId.value)
   })
 
   return {
     id,
-    entity: selectedPortfolio,
-    rootCollection,
-    consoleAppId: activePortfolioAppId,
-    canWrite,
+    entity: consoleSelection.portfolio,
+    rootCollection: runtime.rootCollection,
+    consoleAppId: runtime.appId,
+    canWrite: runtime.canWrite,
     collectionPath,
   }
 }

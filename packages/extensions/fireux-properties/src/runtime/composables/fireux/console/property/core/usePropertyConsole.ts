@@ -71,8 +71,9 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const rootCollection = computed(() =>
     PropertyStorage.rootCollection
   )
+  const readOnly = computed(() => false)
   const canWrite = computed(() =>
-    targetHasOperator(selectedProperty.value, userId.value)
+    !readOnly.value && targetHasOperator(selectedProperty.value, userId.value)
   )
 
   const header = computed<ConsoleHeaderData>(() => {
@@ -98,15 +99,30 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const selectProperty = (propertyId: string) => {
     selectEntity(propertyId)
   }
+  const properties = {
+    targets: targetProperties,
+    count: computed(() => targetProperties.value.length),
+  }
+  const selection = {
+    property: selectedProperty,
+    propertyId,
+    hasSelection: computed(() => Boolean(propertyId.value)),
+  }
+  const runtime = {
+    appId: activePropertyAppId,
+    rootCollection,
+    readOnly,
+    canWrite,
+  }
+  const actions = {
+    selectProperty,
+    clearSelectedProperty,
+  }
 
   return {
-    targetProperties,
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedProperty,
-    selectProperty,
+    properties,
+    selection,
+    runtime,
+    actions,
   }
 }

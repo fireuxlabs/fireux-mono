@@ -60,8 +60,9 @@ export function useProjectConsole(
   const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
   const projectId = computed(() => normalizeString(selectedProject.value?.id))
   const rootCollection = computed(() => 'projects')
+  const readOnly = computed(() => false)
   const canWrite = computed(() =>
-    targetHasOperator(selectedProject.value, userId.value)
+    !readOnly.value && targetHasOperator(selectedProject.value, userId.value)
   )
 
   const header = computed<ConsoleHeaderData>(() => {
@@ -84,14 +85,29 @@ export function useProjectConsole(
   const selectProject = (projectId: string) => {
     selectEntity(projectId)
   }
+  const projects = {
+    targets: targetProjects,
+    count: computed(() => targetProjects.value.length),
+  }
+  const selection = {
+    project: selectedProject,
+    projectId,
+    hasSelection: computed(() => Boolean(projectId.value)),
+  }
+  const runtime = {
+    rootCollection,
+    readOnly,
+    canWrite,
+  }
+  const actions = {
+    selectProject,
+    clearSelectedProject,
+  }
 
   return {
-    targetProjects,
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
-    selectProject,
+    projects,
+    selection,
+    runtime,
+    actions,
   }
 }

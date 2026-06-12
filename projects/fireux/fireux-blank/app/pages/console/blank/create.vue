@@ -92,7 +92,7 @@ const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
 const { createBlank } = useBlankCreate()
-const { selectBlank } = useBlankConsole()
+const { actions } = useBlankConsole()
 
 async function handleCreate() {
   if (creating.value) return
@@ -102,7 +102,7 @@ async function handleCreate() {
 
   try {
     const result = await createBlank({ name: name.value })
-    selectBlank(result.id)
+    actions.selectBlank(result.id)
     await navigateTo('/console/blank')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)

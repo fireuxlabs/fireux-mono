@@ -6,23 +6,22 @@ import { useBlankConsole } from '../core/useBlankConsole'
 
 export function useBlankConsoleOverview() {
   const {
-    targetBlanks,
-    selectedBlank,
-    blankId,
-    rootCollection,
-    canWrite,
-    clearSelectedBlank,
+    blanks,
+    selection,
+    runtime,
+    actions,
   } = useBlankConsole()
 
   const overview = useConsoleOverview<Blank>({
-    selectedEntity: selectedBlank,
-    targetItems: targetBlanks,
+    selectedEntity: selection.blank,
+    targetItems: blanks.targets,
     getId: (blank) => normalizeString(blank?.id),
   })
   const debug = computed(() => ({
-    blankId: blankId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    blankId: selection.blankId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -32,11 +31,12 @@ export function useBlankConsoleOverview() {
 
   return {
     ...overview,
-    selectedBlank,
-    blankId,
-    rootCollection,
-    canWrite,
-    clearSelectedBlank,
+    selectedBlank: selection.blank,
+    blankId: selection.blankId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedBlank: actions.clearSelectedBlank,
     debug,
   }
 }

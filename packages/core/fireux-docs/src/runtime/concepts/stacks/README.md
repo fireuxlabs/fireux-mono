@@ -71,7 +71,7 @@ useXPublish    publishes public/indexable entities
 useXSeo        owns public metadata and JSON-LD for entity pages
 useXDelete     removes
 useXEnsure     bootstraps
-useXConsole    selects and operates a workspace
+useXConsole    adapts targets, selection, runtime, and actions into the console spine
 dashboard      manages identity/profile extensions
 ```
 

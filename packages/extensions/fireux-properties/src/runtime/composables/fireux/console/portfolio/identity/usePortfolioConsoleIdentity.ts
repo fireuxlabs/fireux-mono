@@ -4,34 +4,33 @@ import { usePortfolioConsole } from '../core/usePortfolioConsole'
 
 export function usePortfolioConsoleIdentity() {
   const {
-    selectedPortfolio,
-    portfolioId,
-    rootCollection,
-    canWrite,
-    clearSelectedPortfolio,
+    selection,
+    runtime,
+    actions,
   } = usePortfolioConsole()
 
-  const name = computed(() => normalizeString(selectedPortfolio.value?.name))
+  const name = computed(() => normalizeString(selection.portfolio.value?.name))
   const tagline = computed(() =>
-    normalizeString(selectedPortfolio.value?.tagline)
+    normalizeString(selection.portfolio.value?.tagline)
   )
   const imageUrl = computed(() =>
-    normalizeString(selectedPortfolio.value?.image_url)
+    normalizeString(selection.portfolio.value?.image_url)
   )
-  const notes = computed(() => normalizeString(selectedPortfolio.value?.notes))
+  const notes = computed(() => normalizeString(selection.portfolio.value?.notes))
   const ownerLabel = computed(() =>
-    normalizeString(selectedPortfolio.value?.owner_label)
+    normalizeString(selection.portfolio.value?.owner_label)
   )
   const strategyLabel = computed(() =>
-    normalizeString(selectedPortfolio.value?.strategy_label)
+    normalizeString(selection.portfolio.value?.strategy_label)
   )
   const regionLabel = computed(() =>
-    normalizeString(selectedPortfolio.value?.region_label)
+    normalizeString(selection.portfolio.value?.region_label)
   )
   const debug = computed(() => ({
-    portfolioId: portfolioId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    portfolioId: selection.portfolioId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     name: name.value,
     tagline: tagline.value,
     imageUrl: imageUrl.value,
@@ -39,15 +38,16 @@ export function usePortfolioConsoleIdentity() {
     ownerLabel: ownerLabel.value,
     strategyLabel: strategyLabel.value,
     regionLabel: regionLabel.value,
-    selectedPortfolio: selectedPortfolio.value,
+    selectedPortfolio: selection.portfolio.value,
   }))
 
   return {
-    selectedPortfolio,
-    portfolioId,
-    rootCollection,
-    canWrite,
-    clearSelectedPortfolio,
+    selectedPortfolio: selection.portfolio,
+    portfolioId: selection.portfolioId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedPortfolio: actions.clearSelectedPortfolio,
     name,
     tagline,
     imageUrl,

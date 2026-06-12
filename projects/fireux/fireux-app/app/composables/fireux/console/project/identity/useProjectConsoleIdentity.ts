@@ -4,34 +4,34 @@ import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleIdentity() {
   const {
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
+    selection,
+    runtime,
+    actions,
   } = useProjectConsole()
 
-  const name = computed(() => normalizeString(selectedProject.value?.name))
+  const name = computed(() => normalizeString(selection.project.value?.name))
   const description = computed(() =>
-    normalizeString(selectedProject.value?.description)
+    normalizeString(selection.project.value?.description)
   )
-  const imageUrl = computed(() => normalizeString(selectedProject.value?.image_url))
+  const imageUrl = computed(() => normalizeString(selection.project.value?.image_url))
   const debug = computed(() => ({
-    projectId: projectId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    projectId: selection.projectId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     name: name.value,
     description: description.value,
     imageUrl: imageUrl.value,
-    selectedProject: selectedProject.value,
+    selectedProject: selection.project.value,
   }))
 
   return {
-    selectedProject,
-    projectId,
-    rootCollection,
-    canWrite,
-    clearSelectedProject,
+    selectedProject: selection.project,
+    projectId: selection.projectId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedProject: actions.clearSelectedProject,
     name,
     description,
     imageUrl,

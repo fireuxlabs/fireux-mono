@@ -10,45 +10,43 @@ export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
   const {
-    targetSuppliers,
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    selectSupplier,
-    clearSelectedSupplier,
+    suppliers,
+    selection: consoleSelection,
+    runtime: consoleRuntime,
+    actions: consoleActions,
   } = useSupplierConsole({
     filter: options.filter,
   })
   const selection = computed(() => ({
-    supplier: selectedSupplier.value,
-    supplierId: supplierId.value,
+    supplier: consoleSelection.supplier.value,
+    supplierId: consoleSelection.supplierId.value,
   }))
   const sections = computed(() => ({
     targets: {
       show: true,
-      collection: targetSuppliers.value,
+      collection: suppliers.targets.value,
     },
   }))
   const runtime = computed(() => ({
-    appId: activeSupplierAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    appId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectSupplier(String(id ?? '').trim())
+      consoleActions.selectSupplier(String(id ?? '').trim())
     },
-    clear: clearSelectedSupplier,
+    clear: consoleActions.clearSelectedSupplier,
   }
   const debug = computed(() => ({
-    supplierId: supplierId.value,
-    activeSupplierAppId: activeSupplierAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
-    selectedSupplier: selectedSupplier.value,
-    targetCount: targetSuppliers.value.length,
+    supplierId: consoleSelection.supplierId.value,
+    activeSupplierAppId: consoleRuntime.appId.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
+    selectedSupplier: consoleSelection.supplier.value,
+    targetCount: suppliers.count.value,
   }))
 
   return {

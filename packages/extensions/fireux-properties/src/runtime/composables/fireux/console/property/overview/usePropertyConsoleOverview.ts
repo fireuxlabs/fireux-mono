@@ -6,25 +6,23 @@ import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export function usePropertyConsoleOverview() {
   const {
-    targetProperties,
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedProperty,
+    properties,
+    selection,
+    runtime,
+    actions,
   } = usePropertyConsole()
 
   const overview = useConsoleOverview<Property>({
-    selectedEntity: selectedProperty,
-    targetItems: targetProperties,
+    selectedEntity: selection.property,
+    targetItems: properties.targets,
     getId: (property) => normalizeString(property?.id),
   })
   const debug = computed(() => ({
-    propertyId: propertyId.value,
-    activePropertyAppId: activePropertyAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    propertyId: selection.propertyId.value,
+    activePropertyAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
@@ -34,12 +32,13 @@ export function usePropertyConsoleOverview() {
 
   return {
     ...overview,
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedProperty,
+    selectedProperty: selection.property,
+    propertyId: selection.propertyId,
+    activePropertyAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedProperty: actions.clearSelectedProperty,
     debug,
   }
 }

@@ -8,44 +8,42 @@ import { useBlankConsole } from '../core/useBlankConsole'
  * root target cards, create route, and dev debug only.
  */
 export function useBlankConsoleIndex() {
-  const blank = useBlankConsole()
   const {
-    targetBlanks,
-    selectedBlank,
-    blankId,
-    rootCollection,
-    canWrite,
-    selectBlank,
-    clearSelectedBlank,
-  } = blank
+    blanks,
+    selection: consoleSelection,
+    runtime: consoleRuntime,
+    actions: consoleActions,
+  } = useBlankConsole()
   const selection = computed(() => ({
-    blank: selectedBlank.value,
-    blankId: blankId.value,
+    blank: consoleSelection.blank.value,
+    blankId: consoleSelection.blankId.value,
   }))
   const sections = computed(() => ({
     targets: {
       show: true,
-      collection: targetBlanks.value,
-      pending: blank.pending.value,
+      collection: blanks.targets.value,
+      pending: blanks.pending.value,
     },
   }))
   const runtime = computed(() => ({
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    readOnly: consoleRuntime.readOnly.value,
+    canWrite: consoleRuntime.canWrite.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
-      selectBlank(String(id ?? '').trim())
+      consoleActions.selectBlank(String(id ?? '').trim())
     },
-    clear: clearSelectedBlank,
+    clear: consoleActions.clearSelectedBlank,
   }
   const debug = computed(() => ({
     family: 'blank',
-    blankId: blankId.value,
-    pending: blank.pending.value,
-    targetCount: targetBlanks.value.length,
-    rootCollection: rootCollection.value,
-    appCollectionPath: blank.appCollectionPath.value,
+    blankId: consoleSelection.blankId.value,
+    pending: blanks.pending.value,
+    targetCount: blanks.count.value,
+    rootCollection: consoleRuntime.rootCollection.value,
+    appCollectionPath: consoleRuntime.appCollectionPath.value,
+    readOnly: consoleRuntime.readOnly.value,
   }))
 
   return {

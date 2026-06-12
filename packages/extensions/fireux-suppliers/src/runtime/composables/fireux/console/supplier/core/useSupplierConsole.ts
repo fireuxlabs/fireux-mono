@@ -74,8 +74,9 @@ export function useSupplierConsole(
   const rootCollection = computed(() =>
     SupplierStorage.rootCollection
   )
+  const readOnly = computed(() => false)
   const canWrite = computed(() =>
-    targetHasOperator(selectedSupplier.value, userId.value)
+    !readOnly.value && targetHasOperator(selectedSupplier.value, userId.value)
   )
 
   const header = computed<ConsoleHeaderData>(() => {
@@ -98,15 +99,30 @@ export function useSupplierConsole(
   const selectSupplier = (supplierId: string) => {
     selectEntity(supplierId)
   }
+  const suppliers = {
+    targets: targetSuppliers,
+    count: computed(() => targetSuppliers.value.length),
+  }
+  const selection = {
+    supplier: selectedSupplier,
+    supplierId,
+    hasSelection: computed(() => Boolean(supplierId.value)),
+  }
+  const runtime = {
+    appId: activeSupplierAppId,
+    rootCollection,
+    readOnly,
+    canWrite,
+  }
+  const actions = {
+    selectSupplier,
+    clearSelectedSupplier,
+  }
 
   return {
-    targetSuppliers,
-    selectedSupplier,
-    supplierId,
-    activeSupplierAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedSupplier,
-    selectSupplier,
+    suppliers,
+    selection,
+    runtime,
+    actions,
   }
 }

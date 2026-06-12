@@ -4,17 +4,14 @@ import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export function usePropertyConsoleIdentity() {
   const {
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedProperty,
+    selection,
+    runtime,
+    actions,
   } = usePropertyConsole()
 
-  const identity = computed(() => selectedProperty.value?.identity)
+  const identity = computed(() => selection.property.value?.identity)
   const name = computed(() =>
-    normalizeString(identity.value?.name) || propertyId.value
+    normalizeString(identity.value?.name) || selection.propertyId.value
   )
   const address = computed(() =>
     [
@@ -26,23 +23,25 @@ export function usePropertyConsoleIdentity() {
   )
   const imageUrl = computed(() => normalizeString(identity.value?.image_url))
   const debug = computed(() => ({
-    propertyId: propertyId.value,
-    activePropertyAppId: activePropertyAppId.value,
-    rootCollection: rootCollection.value,
-    canWrite: canWrite.value,
+    propertyId: selection.propertyId.value,
+    activePropertyAppId: runtime.appId.value,
+    rootCollection: runtime.rootCollection.value,
+    readOnly: runtime.readOnly.value,
+    canWrite: runtime.canWrite.value,
     name: name.value,
     address: address.value,
     imageUrl: imageUrl.value,
-    selectedProperty: selectedProperty.value,
+    selectedProperty: selection.property.value,
   }))
 
   return {
-    selectedProperty,
-    propertyId,
-    activePropertyAppId,
-    rootCollection,
-    canWrite,
-    clearSelectedProperty,
+    selectedProperty: selection.property,
+    propertyId: selection.propertyId,
+    activePropertyAppId: runtime.appId,
+    rootCollection: runtime.rootCollection,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    clearSelectedProperty: actions.clearSelectedProperty,
     name,
     address,
     imageUrl,
