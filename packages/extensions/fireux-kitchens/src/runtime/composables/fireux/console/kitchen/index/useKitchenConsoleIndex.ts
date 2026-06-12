@@ -45,13 +45,11 @@ export function useKitchenConsoleIndex() {
     selectedKitchen: consoleSelection.kitchen.value,
     targetCount: kitchens.count.value,
     source: {
-      name: kitchens.source.name.value,
-      label: kitchens.source.label.value,
-      readOnly: kitchens.source.readOnly.value,
-      canCreate: kitchens.source.canCreate.value,
-      autoSelectSingle: kitchens.source.autoSelectSingle.value,
+      targetIds: kitchens.source.targetIds.value,
       configKitchenIds: kitchens.source.configKitchenIds.value,
       myKitchenIds: kitchens.source.myKitchenIds.value,
+      canCreate: kitchens.source.canCreate.value,
+      autoSelectSingle: kitchens.source.autoSelectSingle.value,
     },
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))

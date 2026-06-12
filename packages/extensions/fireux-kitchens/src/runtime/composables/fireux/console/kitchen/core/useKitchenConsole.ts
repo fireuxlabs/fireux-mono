@@ -4,15 +4,22 @@ import {
   useConsole,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenConsoleTargetSource } from '../index/useKitchenConsoleTargetSource'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type KitchenConsoleEntity = KitchenSurface
+
+const uniqueStrings = (values: unknown[]) =>
+  Array.from(
+    new Set(values.map((value) => normalizeString(value)).filter(Boolean))
+  )
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -34,8 +41,9 @@ export function useKitchenConsole() {
    * - stored console selection
    *
    * Process:
-   * - read the Kitchen target source policy
-   * - connect those targets to the shared console selection cookie
+   * - choose configured tenant kitchens or user.myKitchens
+   * - fetch those Kitchen targets
+   * - connect targets to the shared console selection cookie
    * - auto-select a single tenant target when there is no selection
    * - derive the selected Kitchen runtime path and write permission
    *
@@ -47,14 +55,36 @@ export function useKitchenConsole() {
    */
   const fireux = useFireUXConfig()
   const { appId } = fireux
+  const consoleConfig = useConsoleConfig('kitchen')
   const { uid } = useAuth()
+  const { coreUser, pending: userPending } = useUser()
 
   const userId = computed(() => normalizeString(uid.value))
-  const targetSource = useKitchenConsoleTargetSource()
+  const configKitchenIds = computed(() =>
+    uniqueStrings(consoleConfig.targetIds())
+  )
+  const myKitchenIds = computed(() =>
+    Array.isArray(coreUser.value?.myKitchens)
+      ? uniqueStrings(coreUser.value.myKitchens)
+      : []
+  )
+  const targetIds = computed(() =>
+    fireux.isTenant ? configKitchenIds.value : myKitchenIds.value
+  )
+  const targetCollection = useKitchenCollection({ ids: targetIds })
+  const targetKitchens = computed<KitchenSurface[]>(
+    () => targetCollection.kitchens.value
+  )
+  const targetCount = computed(() => targetKitchens.value.length)
+  const targetPending = computed(() =>
+    fireux.isTenant
+      ? targetCollection.pending.value
+      : Boolean(userPending.value || targetCollection.pending.value)
+  )
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
-      targetItems: targetSource.targets,
-      targetPending: targetSource.pending,
+      targetItems: targetKitchens,
+      targetPending,
       getId: (kitchen) => normalizeString(kitchen?.id),
     })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
@@ -70,7 +100,11 @@ export function useKitchenConsole() {
   const rootCollection = computed(() =>
     resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
   )
-  const readOnly = computed(() => targetSource.readOnly.value)
+  const readOnly = computed(() => false)
+  const canCreate = computed(() => consoleConfig.canCreateTarget())
+  const autoSelectSingle = computed(
+    () => fireux.isTenant && targetCount.value === 1
+  )
   const canWrite = computed(() =>
     !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
   )
@@ -81,11 +115,11 @@ export function useKitchenConsole() {
     selectEntity(kitchenId)
   }
   watch(
-    targetSource.targets,
+    targetKitchens,
     (kitchens) => {
       if (
         selectedKitchen.value ||
-        !targetSource.autoSelectSingle.value ||
+        !autoSelectSingle.value ||
         kitchens.length !== 1
       ) {
         return
@@ -97,17 +131,15 @@ export function useKitchenConsole() {
     { immediate: true }
   )
   const kitchens = {
-    targets: targetSource.targets,
-    count: targetSource.count,
-    pending: targetSource.pending,
+    targets: targetKitchens,
+    count: targetCount,
+    pending: targetPending,
     source: {
-      name: targetSource.sourceName,
-      label: targetSource.label,
-      readOnly: targetSource.readOnly,
-      canCreate: targetSource.canCreate,
-      autoSelectSingle: targetSource.autoSelectSingle,
-      configKitchenIds: targetSource.configKitchenIds,
-      myKitchenIds: targetSource.myKitchenIds,
+      targetIds,
+      configKitchenIds,
+      myKitchenIds,
+      canCreate,
+      autoSelectSingle,
     },
   }
   const selection = {
