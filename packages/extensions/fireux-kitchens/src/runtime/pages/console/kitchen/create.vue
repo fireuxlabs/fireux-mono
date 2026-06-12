@@ -7,9 +7,17 @@
     <template #body>
       <section class="space-y-4">
         <KitchenCreateSystem
+          v-if="canCreate"
           mode="console"
           return-to="/console/kitchen"
           cancel-to="/console/kitchen"
+        />
+
+        <UPageCard
+          v-else
+          title="Kitchen creation is not enabled here"
+          description="This app uses an existing Kitchen console target."
+          variant="subtle"
         />
       </section>
     </template>
@@ -17,7 +25,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
 import KitchenCreateSystem from '../../../components/Kitchen/Create/System.vue'
+
+const { canCreateTarget } = useConsoleConfig('kitchen')
+const canCreate = computed(() => canCreateTarget())
 
 definePageMeta({
   layout: 'console',

@@ -81,8 +81,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/property/local-guide`
   - `/console/property/updates`
 - `/console/property` and `/console/property/overview` follow the shared core console index/overview semantics.
-- `/console/property` live targets are authority-scoped through:
+- `/console/property` targets are access-scoped through:
   - `apps/{appId}/properties/{propertyId}`
+  - `team_ids` or `operator_ids` contains the user
+- Property mutations still require operator authority:
   - `operator_ids` contains the user
 - Public/unfiltered property lists read root `properties/{propertyId}` records and must not borrow Portfolio authority.
 - Property-owned child routes must be added only when their canon is explicit.
@@ -124,9 +126,13 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - normal targets come from stored Portfolio records
   - selected target state lives in the console selection seam
   - child operations should not branch on source names
-- `my real portfolios` means portfolios the current user can operate through the app console record:
+- `my real portfolios` means portfolios the current user can see/select through the app console record:
   - `apps/{appId}/portfolios/{portfolioId}`
+  - `team_ids` or `operator_ids` contains the user
+- Portfolio mutations still require operator authority:
   - `operator_ids` contains the user
+- `/console/portfolio/team` is the selected Portfolio team/membership surface.
+- `/console/property/team` is the selected Property team/membership surface.
 - Console selection is runtime-state based, not query-param selection.
 
 ## 6) Surfaces supported

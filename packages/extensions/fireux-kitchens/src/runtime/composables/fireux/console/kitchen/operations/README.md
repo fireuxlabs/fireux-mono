@@ -9,16 +9,17 @@ This directory owns composables for work an operator does inside a selected Kitc
 `operations` is a code bucket, not a Firestore collection, stored entity, or public route.
 
 Use this layer for selected-Kitchen work such as:
-- identity
 - dishes
 - menus
 - recipes
 - ingredients
 - mise
 - orders
-- team
 - stations
 - supplier links
+
+Identity lives in `console/kitchen/identity/`.
+Team lives in `console/kitchen/team/`.
 
 Keep stored CRUD in `firestore/`.
 Keep guest-facing route shaping in `public/kitchen/`.

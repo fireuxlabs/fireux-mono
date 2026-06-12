@@ -38,6 +38,7 @@ export function useKitchenConsoleIndex(
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
+    canCreate: kitchens.source.canCreate.value,
   }))
   const actions = {
     selectTarget: (id: string) => {
@@ -57,7 +58,10 @@ export function useKitchenConsoleIndex(
       name: kitchens.source.name.value,
       label: kitchens.source.label.value,
       readOnly: kitchens.source.readOnly.value,
+      canCreate: kitchens.source.canCreate.value,
       autoSelectSingle: kitchens.source.autoSelectSingle.value,
+      configuredTargetIds: kitchens.source.configuredTargetIds.value,
+      userKitchenIds: kitchens.source.userKitchenIds.value,
     },
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))

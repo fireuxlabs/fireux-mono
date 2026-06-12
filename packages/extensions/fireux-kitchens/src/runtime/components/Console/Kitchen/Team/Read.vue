@@ -15,8 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/operations/Team/useKitchenConsoleTeam'
-import TeamCollectionManager from '../../../../Team/Collection/Manager.vue'
+import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
+import TeamCollectionManager from '../../../Team/Collection/Manager.vue'
 
 const { teamMembers, debug } = useKitchenConsoleTeam()
 </script>

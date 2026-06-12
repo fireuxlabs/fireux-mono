@@ -12,6 +12,12 @@ const fireuxConfig = defineFireuxConfig({
   appLogoLight: '/img/app/logo-light.png',
   appLogoDark: '/img/app/logo-dark.png',
   consoles: ['kitchen'],
+  consoleConfig: {
+    kitchen: {
+      canCreate: false,
+      targetIds: ['ChIJ08WSgYSjj0cRD6oE3RwUFk0'],
+    },
+  },
   profiles: [],
   navHiddenKeys: ['kitchens', 'places'],
   modules: ['fireux-places', 'fireux-kitchens', 'fireux-sproochli'],

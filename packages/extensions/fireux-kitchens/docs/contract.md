@@ -35,9 +35,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `slug_aliases` are not canon yet; future alias/redirect support needs an explicit SEO route decision.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
 - Kitchen console authority is user-based:
-  - the console first reads the current app user's `console_scopes` Kitchen entries
-  - a user can operate a kitchen when their uid is in the scoped kitchen `operator_ids`
-  - `team_ids` can classify team membership and visibility, but mutations still need authority checks
+  - the console target list reads the current user's Kitchen index, including app user `console_scopes` Kitchen entries and core user `myKitchens`
+  - an app may pin existing Kitchen targets with `consoleConfig.kitchen.targetIds`
+  - `team_ids` lets a user see/select a Kitchen target in the console
+  - `operator_ids` lets a user write/operate the selected Kitchen target
   - profile association alone does not grant console access
 - `Chef` is a kitchen-domain profile extension of `User`, not a separate console owner.
 
@@ -198,8 +199,10 @@ Public menu copy packs:
   - `misebox-simulation/kitchens/{uid}`
   - ensured on entry to `/console/kitchen` in `test` mode
   - not created during auth
-- `my real kitchens` means kitchens the current user can operate through the app console record:
+- `my real kitchens` means kitchens the current user can see/select through the app console record:
   - `apps/{appId}/kitchens/{kitchenId}`
+  - `team_ids` or `operator_ids` contains the user
+- Kitchen mutations still require operator authority:
   - `operator_ids` contains the user
 - Chef linkage, workplace history, or profile association may support prerequisites or presentation, but they are not the console-access rule.
 

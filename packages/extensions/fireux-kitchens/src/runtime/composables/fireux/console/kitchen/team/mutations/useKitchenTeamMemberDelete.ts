@@ -2,11 +2,11 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { KitchenTeamMemberStorage } from '../../../../../../../models/kitchen-team.model'
+import { KitchenTeamMemberStorage } from '../../../../../../models/kitchen-team.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
+} from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenTeamMemberDelete(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

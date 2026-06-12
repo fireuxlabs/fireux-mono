@@ -3,8 +3,8 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
-} from '../../../../../../../models/kitchen-team.model'
-import { useKitchenChildCollection } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
+} from '../../../../../../models/kitchen-team.model'
+import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenTeamJoinRequestCollection(
   kitchenId: Ref<string> | string,

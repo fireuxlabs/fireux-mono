@@ -209,7 +209,7 @@ FireUX adds structure on top of ordinary composable usage:
 - publish surfaces should keep the same shape: pages call `useXPublish`, while `useXPublish` owns entity readiness rules and can delegate shared write mechanics to core `fireux/publishing/usePublish`
 - sitemap registration must use explicit publication truth such as `show === true` or `visibility === 'public'`; missing publication fields must not fall back to slug presence
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour
-- console-backed entity runtime seams live in explicit buckets under `fireux/console/<entity>/`: `core/`, `index/`, `overview/`, `identity/`, and `operations/`
+- console-backed entity runtime seams live in explicit buckets under `fireux/console/<entity>/`: `core/`, `index/`, `overview/`, `identity/`, `team/`, and `operations/`
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`
 - console operation stacks may have entity-specific child folders under `operations/`, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`

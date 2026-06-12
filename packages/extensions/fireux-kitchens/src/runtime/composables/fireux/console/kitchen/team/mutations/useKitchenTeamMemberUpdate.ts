@@ -6,11 +6,11 @@ import {
   KitchenTeamMemberStorage,
   type KitchenTeamMember,
   type KitchenTeamMemberUpdateInput,
-} from '../../../../../../../models/kitchen-team.model'
+} from '../../../../../../models/kitchen-team.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
+} from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenTeamMemberUpdate(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

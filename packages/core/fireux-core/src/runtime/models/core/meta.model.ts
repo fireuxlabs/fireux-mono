@@ -96,8 +96,8 @@ export type FireuxConsoleAccess = {
  * Canonical app-scoped support shape.
  *
  * Console entity rule:
- * - users operate console entities through `operator_ids`
- * - `team_ids` is transitional compatibility for older stored records and surfaces
+ * - users see/select console entities through `team_ids`
+ * - users write/operate console entities through `operator_ids`
  * - join requests remain optional workflow state
  * - profiles such as Chef are domain extensions, not the stored access principal
  */

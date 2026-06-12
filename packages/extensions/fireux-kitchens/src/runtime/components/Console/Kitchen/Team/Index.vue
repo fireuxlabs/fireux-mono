@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <ConsoleKitchenOperationsTeamRead />
+    <ConsoleKitchenTeamRead />
 
     <UAlert
       v-if="readOnly"
@@ -10,12 +10,12 @@
       description="This kitchen can be inspected, but changes are disabled."
     />
 
-    <ConsoleKitchenOperationsTeamWrite v-if="canWrite" />
+    <ConsoleKitchenTeamWrite v-if="canWrite" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/operations/Team/useKitchenConsoleTeam'
+import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 
 const { readOnly, canWrite } = useKitchenConsoleTeam()
 </script>

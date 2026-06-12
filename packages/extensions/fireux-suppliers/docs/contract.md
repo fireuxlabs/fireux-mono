@@ -59,9 +59,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `test-suppliers/{uid}`
   - ensured on entry to `/console/supplier` in `test` mode
   - not created during auth
-- `my real suppliers` means suppliers the current user can operate through the app console record:
+- `my real suppliers` means suppliers the current user can see/select through the app console record:
   - `apps/{appId}/suppliers/{supplierId}`
+  - `team_ids` or `operator_ids` contains the user
+- Supplier mutations still require operator authority:
   - `operator_ids` contains the user
+- `/console/supplier/team` is the selected Supplier team/membership surface.
 - Supplier relationship or operator linkage may inform onboarding or claiming, but it is not the access rule by itself.
 
 ## 6) Surfaces supported

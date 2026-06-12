@@ -10,7 +10,7 @@ import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 
 const PROJECT_COLLECTION_PATH = ProjectStorage.rootCollection
 
@@ -107,7 +107,7 @@ export function useProjectCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasOperator(project, filterOperatorId.value)) return acc
+        if (!targetHasConsoleAccess(project, filterOperatorId.value)) return acc
       }
 
       const item = surface({

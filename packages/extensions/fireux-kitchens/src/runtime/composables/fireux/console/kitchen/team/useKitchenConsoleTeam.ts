@@ -1,13 +1,13 @@
 import { computed } from 'vue'
-import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenTeamJoinRequestStorage,
   KitchenTeamMemberStorage,
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
-} from '../../../../../../models/kitchen-team.model'
-import { useKitchenConsole } from '../../core/useKitchenConsole'
-import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
+} from '../../../../../models/kitchen-team.model'
+import { useKitchenConsole } from '../core/useKitchenConsole'
+import { useKitchenConsoleReadPage } from '../operations/Shared/useKitchenConsoleReadPage'
 
 export function useKitchenConsoleTeam() {
   const {

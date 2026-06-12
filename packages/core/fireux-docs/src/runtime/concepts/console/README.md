@@ -1,7 +1,7 @@
 # Console Entry Concept
 
 Authority: Operational
-Updated: 2026-05-16
+Updated: 2026-06-12
 Scope: console-backed entry flow across `pages/`, `components/`, `composables/`, and `models`.
 
 Learn how FireUX console-backed families are entered, where family choice happens, and how public entry differs from console entry.
@@ -83,12 +83,14 @@ Target source canon:
 - operation code should not branch on source names
 
 Authority canon:
-- `operator_ids` is the current console authority field.
-- app-scoped console families query `apps/{appId}/{family}` with `operator_ids array-contains uid`, then fetch only the authorized root target docs.
-- project console authority is root-level: query `projects` with `operator_ids array-contains uid`.
+- console target listing starts from the user's target index or app-scoped target rows, then reconciles against target access fields.
+- `team_ids` lets a user see/select a target in that console.
+- `operator_ids` lets a user write/operate the selected target.
+- app-scoped console families query `apps/{appId}/{family}` with `team_ids` and `operator_ids`, then fetch only those root target docs.
+- project console access is root-level: query `projects` with `team_ids` and `operator_ids`.
 - broad root collection reads plus client-side filtering are not authority.
 - writes must re-check authority in mutations; Firestore rules must enforce the same model before shipping.
-- `team_ids` is transitional compatibility only.
+- profile links, public relationships, and personal target indexes do not grant write authority by themselves.
 
 ### 2b) Selected Target Overview
 
@@ -109,7 +111,22 @@ the core console spine. When comparing domain children across families, list
 them separately from domain-specific operation routes such as menus, info, team,
 orders, messages, or rooms.
 
-### 2c) Selected Target Operations
+### 2c) Selected Target Team
+
+`/console/X/team`
+
+This is the selected target membership surface.
+
+Meaning:
+- one target is already selected in runtime state
+- `team_ids` show who can see/select that target in the console
+- `operator_ids` show who can write/operate that target
+- domain families may add richer team member records here when needed
+
+This route is not a domain operation.
+It is part of the shared console spine, like `index`, `overview`, and `identity`.
+
+### 2d) Selected Target Operations
 
 `console/<family>/Operations` is a code bucket for selected workspace operations.
 
@@ -123,14 +140,15 @@ This is not a stored entity.
 This is not a public route layer.
 
 Examples:
-- `console/kitchen/operations` for selected Kitchen work such as menus, dishes, ingredients, team, orders, or stations
+- `console/kitchen/operations` for selected Kitchen work such as menus, dishes, ingredients, orders, or stations
 - `console/supplier/operations` for selected Supplier work such as items, catalogues, or ingredients
 - `console/portfolio/operations` for selected Portfolio work such as documents, tasks, compliance, clients, properties, or units
 - `console/project/operations` for selected Project management such as apps or ecosystem links
 
 Identity helpers live as `console/<family>/identity/useXConsoleIdentity.ts`.
+Team helpers live as `console/<family>/team/useXConsoleTeam.ts`.
 Selection helpers live as `console/<family>/core/useXConsoleSelection.ts`.
-Composable console folders mirror the main surface seams: `core/`, `index/`, `overview/`, `identity/`, and `operations/`.
+Composable console folders mirror the main surface seams: `core/`, `index/`, `overview/`, `identity/`, `team/`, and `operations/`.
 
 Stored CRUD remains in the entity's Firestore stack or explicit child stack.
 Public route shaping remains in `public/`.
@@ -190,6 +208,7 @@ The canonical shape is:
 - `/console` = choose family
 - `/console/X` = family entry and target selection seam
 - `/console/X/overview` = selected-target workspace overview
+- `/console/X/team` = selected-target team/membership surface
 - `/X` = public discovery plus the same chooser when useful
 - `/X/create` = public facade create
 - `/console/X/create` = console create
@@ -216,6 +235,7 @@ The canonical ownership rule is:
 The canonical route-file shape is:
 - `pages/console/<family>/index.vue` is the family entry surface.
 - `pages/console/<family>/overview.vue` is the selected target overview.
+- `pages/console/<family>/team.vue` is the selected target team/membership surface.
 - `pages/console/<family>/create.vue` is the create/setup entry when the family supports it.
 - Simple current or scaffold pages can stay as files directly under the family folder.
 - Complex operation pages use child folders with `index.vue` and detail routes, following the Kitchen pattern.

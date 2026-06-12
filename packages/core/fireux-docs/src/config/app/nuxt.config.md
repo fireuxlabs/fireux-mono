@@ -50,6 +50,7 @@ Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(...)`.
 - `contactEmail`: public support/contact email when needed.
 - `modules`: installed FireUX package capabilities.
 - `consoles`: console workspaces exposed by the app.
+- `consoleConfig`: optional per-console behavior, such as whether this app may create new console targets or pin existing targets.
 - `domains`: public/admin root domains the app consumes.
 - `profiles`: profile identities the app consumes.
 - `navHiddenKeys`: app-local public/dashboard nav suppressions.
@@ -61,6 +62,8 @@ Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(...)`.
 `modules` installs package capability.
 
 `consoles` exposes selected console workspaces.
+
+`consoleConfig` tunes exposed console workspaces. By default, tenant apps use existing console targets and do not show Create, while global and standalone apps may create targets unless disabled. Use `targetIds` when an app should open specific existing console targets.
 
 `domains` opts the app into root public/admin domain surfaces supplied by installed packages.
 

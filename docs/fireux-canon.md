@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-05
+Updated: 2026-06-12
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -94,11 +94,21 @@ Current learned examples:
 - Do not introduce an extra abstract `collection` layer when `family`, `target`, and `child records` already explain the model.
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
+- `/console/X/team` is the selected target team/membership surface.
 - By default, `/console/X` should show the current user's normal targets for that family.
-- Console visibility should start from an explicit user target index when the family needs fast personal selection.
+- Console visibility should start from an explicit user target index when the family needs fast personal selection, then reconcile those ids against target access fields.
 - Demo/test/read-only target sources are allowed only as explicit target-source policy; operation children should consume `readOnly`/`canWrite` and stay ignorant to where the target came from.
-- Kitchen uses app membership `console_scopes` entries such as `kitchen:<kitchenId>` as the current user's Kitchen index.
-- Scoped console records still carry relationship and authority detail through fields such as `operator_ids` and `team_ids`.
+- Kitchen uses the current user's Kitchen index, including app membership `console_scopes` entries such as `kitchen:<kitchenId>` and core user `myKitchens`, to list console targets.
+- App config may pin console targets with `consoleConfig.<family>.targetIds`; pinned targets do not replace operator authority for writes.
+- Console target membership is canon-wide:
+  - `team_ids` means the user may see/select the target in that console.
+  - `operator_ids` means the user may write/operate the selected target.
+  - mutation seams must check `operator_ids`; profile links and target indexes must not grant write authority by themselves.
+- Team is a core console seam, not a domain operation:
+  - route: `/console/<family>/team`
+  - components: `components/Console/<Family>/Team/**`
+  - composables: `composables/fireux/console/<family>/team/**`
+  - domain-specific team member records may extend this seam, but the seam exists for every console-backed family.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.

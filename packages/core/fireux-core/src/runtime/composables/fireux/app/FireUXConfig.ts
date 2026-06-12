@@ -2,6 +2,14 @@ import { useRuntimeConfig } from '#imports'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
+export type FireUXConsoleConfig = Record<
+  string,
+  {
+    canCreate?: boolean
+    targetIds?: string[]
+  }
+>
+
 export interface FireUXConfig {
   devMode: boolean
   role: FireUXRole
@@ -13,6 +21,7 @@ export interface FireUXConfig {
   siteUrl?: string
   modules: string[]
   consoles: string[]
+  consoleConfig: FireUXConsoleConfig
   domains: string[]
   profiles: string[]
   navHiddenKeys: string[]
@@ -70,6 +79,45 @@ function optRecord(src: AnyRecord, key: string): Record<string, unknown> | undef
   return v as Record<string, unknown>
 }
 
+function consoleConfig(src: AnyRecord): FireUXConsoleConfig {
+  const raw = optRecord(src, 'consoleConfig')
+  if (!raw) return {}
+
+  return Object.fromEntries(
+    Object.entries(raw)
+      .map(([key, value]) => {
+        if (!key.trim() || !value || typeof value !== 'object' || Array.isArray(value)) {
+          return null
+        }
+
+        const cfg = value as Record<string, unknown>
+        const targetIds = Array.isArray(cfg.targetIds)
+          ? cfg.targetIds
+              .map((targetId) => String(targetId ?? '').trim())
+              .filter(Boolean)
+          : []
+
+        return [
+          key.trim().toLowerCase(),
+          {
+            ...(typeof cfg.canCreate === 'boolean'
+              ? { canCreate: cfg.canCreate }
+              : {}),
+            ...(targetIds.length ? { targetIds } : {}),
+          },
+        ] as const
+      })
+      .filter(
+        (
+          entry
+        ): entry is readonly [
+          string,
+          { canCreate?: boolean; targetIds?: string[] },
+        ] => Boolean(entry)
+      )
+  )
+}
+
 function toStringArray(v: unknown): string[] {
   if (!Array.isArray(v)) return []
   return v
@@ -113,6 +161,7 @@ function buildConfig(): Readonly<FireUXConfig> {
 
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
+    consoleConfig: consoleConfig(fireux),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),

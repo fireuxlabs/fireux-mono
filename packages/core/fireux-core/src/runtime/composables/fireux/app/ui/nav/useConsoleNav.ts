@@ -6,6 +6,7 @@ import {
   consoleFamilyFromPath,
 } from '../../routing/consoleRoutes'
 import { useConsole } from '../../console/useConsole'
+import { useConsoleConfig } from '../../console/useConsoleConfig'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavPosition } from '../../nav.types'
 
@@ -25,6 +26,7 @@ export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
   const fireux = useFireUXConfig()
+  const consoleConfig = useConsoleConfig()
   const enabledFamilies = computed(
     () =>
       new Set(
@@ -51,6 +53,12 @@ export const useConsoleNav = () => {
     const itemFamily = consoleFamilyFromPath(path)
     if (!itemFamily) return false
     if (!enabledFamilies.value.has(itemFamily)) return false
+    if (
+      isConsoleCreatePath(path) &&
+      !consoleConfig.canCreateTarget(itemFamily)
+    ) {
+      return false
+    }
 
     const family = activeFamily.value
     if (!family) {

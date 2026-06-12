@@ -9,7 +9,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   SupplierStorage,
   type Supplier,
@@ -242,7 +242,7 @@ export function useSupplierCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasOperator(supplier, filterOperatorId.value)) return acc
+        if (!targetHasConsoleAccess(supplier, filterOperatorId.value)) return acc
       }
 
       acc.push({

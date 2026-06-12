@@ -6,11 +6,11 @@ import { unref, type Ref } from 'vue'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
-} from '../../../../../../../models/kitchen-team.model'
+} from '../../../../../../models/kitchen-team.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
+} from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

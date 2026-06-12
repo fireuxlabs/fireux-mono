@@ -9,6 +9,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
 
 type PropertyCollectionDoc = Partial<Property> & {
@@ -89,7 +90,7 @@ export function usePropertyCollection(
   const liveRootSource = firestoreFetchCollection<PropertyCollectionDoc>(
     DEFAULT_COLLECTION_PATH
   )
-  const overlayQuery = computed<Query<AppPropertyOverlay> | null>(() => {
+  const overlayOperatorQuery = computed<Query<AppPropertyOverlay> | null>(() => {
     if (!resolvedAppId.value) return null
     if (resolvedShape.value === 'root') return null
     if (hasOperatorFilter.value && !filterOperatorId.value) return null
@@ -100,17 +101,30 @@ export function usePropertyCollection(
       resolvedAppId.value,
       PropertyStorage.overlayCollection
     )
-    const q = hasOperatorFilter.value
+    return hasOperatorFilter.value
       ? fsq(
           baseCollection,
           where('operator_ids', 'array-contains', filterOperatorId.value)
         ) as Query<AppPropertyOverlay>
       : fsq(baseCollection) as Query<AppPropertyOverlay>
-
-    return q
   })
-  const overlaySource = firestoreQuery<AppPropertyOverlay>(
-    overlayQuery,
+  const overlayTeamQuery = computed<Query<AppPropertyOverlay> | null>(() => {
+    if (!resolvedAppId.value) return null
+    if (resolvedShape.value === 'root') return null
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(
+        db,
+        AppStorage.collection,
+        resolvedAppId.value,
+        PropertyStorage.overlayCollection
+      ),
+      where('team_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<AppPropertyOverlay>
+  })
+  const overlayOperatorSource = firestoreQuery<AppPropertyOverlay>(
+    overlayOperatorQuery,
     undefined,
     computed(() =>
       resolvedAppId.value
@@ -118,6 +132,28 @@ export function usePropertyCollection(
         : ''
     )
   )
+  const overlayTeamSource = firestoreQuery<AppPropertyOverlay>(
+    overlayTeamQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.overlayCollection}`
+        : ''
+    )
+  )
+  const overlaySource = computed<AppPropertyOverlay[]>(() => {
+    const byId = new Map<string, AppPropertyOverlay>()
+
+    for (const overlay of [
+      ...(overlayOperatorSource.value ?? []),
+      ...(overlayTeamSource.value ?? []),
+    ]) {
+      const id = resolvePropertyId(overlay)
+      if (id) byId.set(id, { ...overlay, id })
+    }
+
+    return [...byId.values()]
+  })
   const allowedPropertyIds = computed(() =>
     (overlaySource.value ?? [])
       .map((property) => resolvePropertyId(property))
@@ -192,10 +228,7 @@ export function usePropertyCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        const operatorIds = Array.isArray(property?.operator_ids)
-          ? property.operator_ids.map((value) => normalizeString(value))
-          : []
-        if (!operatorIds.includes(filterOperatorId.value)) return acc
+        if (!targetHasConsoleAccess(property, filterOperatorId.value)) return acc
       }
 
       acc.push({
@@ -210,13 +243,14 @@ export function usePropertyCollection(
   const pending = computed(() => {
     if (resolvedShape.value === 'root') return liveRootSource.value === undefined
     if (resolvedShape.value === 'overlay') {
-      return overlaySource.value === undefined
+      return overlayOperatorSource.value === undefined
     }
     if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      overlaySource.value === undefined
+      overlayOperatorSource.value === undefined ||
+      overlayTeamSource.value === undefined
     )
   })
 

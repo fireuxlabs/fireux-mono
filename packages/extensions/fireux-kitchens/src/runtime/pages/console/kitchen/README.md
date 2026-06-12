@@ -1,7 +1,7 @@
 # Console Kitchen Pages
 
 Authority: Operational
-Updated: 2026-05-13
+Updated: 2026-06-12
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/*`.
 
 This folder owns the kitchen console workspace.
@@ -13,6 +13,7 @@ This README only explains the Kitchen family delta.
 
 - `index.vue`
 - `overview.vue`
+- `team.vue`
 - `preview.vue`
 - `create.vue`
 - `menus.vue`
@@ -20,7 +21,6 @@ This README only explains the Kitchen family delta.
 - `orders.vue`
 - `ingredients.vue`
 - `mise.vue`
-- `team.vue`
 - and other kitchen-owned operational views
 
 ## Local Contract
@@ -29,6 +29,7 @@ This README only explains the Kitchen family delta.
 - apps must opt into kitchen visibility through `consoles`
 - `index.vue` is the family-specific chooser in console shell
 - `overview.vue` is the first selected-kitchen workspace page
+- `team.vue` is the selected-kitchen team/membership surface
 - `preview.vue` is the console-only customer surface preview for the selected kitchen
 - `create.vue` is the kitchen console create page
 - the rest of the routes are kitchen-owned operational delivery
@@ -40,7 +41,7 @@ Kitchen-specific delta:
 - console create creates the public kitchen first when missing
 - console create seeds user-based console authority; Chef profile links are optional relationship/display data
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`
-- app-scoped operation children include ingredients, mise, recipes, orders, team, stations, and suppliers
+- app-scoped operation children include ingredients, mise, recipes, orders, stations, and suppliers
 - public menu routes render app-scoped Kitchen menu and dish records
 - public menu translation must not depend on private working `mise`
 
@@ -49,6 +50,7 @@ It proves:
 - `/console` -> choose family
 - `/console/kitchen` -> choose kitchen instance by mode
 - `/console/kitchen/overview` -> selected kitchen workspace overview
+- `/console/kitchen/team` -> selected kitchen team/membership surface
 - `/kitchens` -> public discovery plus the same chooser
 - `/kitchens/create` -> public create
 - `/console/kitchen/create` -> console create

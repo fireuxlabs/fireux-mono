@@ -66,6 +66,7 @@ export function useKitchenConsole(
   const { selectedEntity, selectEntity, clearSelection } =
     useConsole<KitchenSurface>('kitchen', {
       targetItems: targetSource.targets,
+      targetPending: targetSource.pending,
       getId: (kitchen) => normalizeString(kitchen?.id),
     })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
@@ -115,7 +116,10 @@ export function useKitchenConsole(
       name: targetSource.sourceName,
       label: targetSource.label,
       readOnly: targetSource.readOnly,
+      canCreate: targetSource.canCreate,
       autoSelectSingle: targetSource.autoSelectSingle,
+      configuredTargetIds: targetSource.configuredTargetIds,
+      userKitchenIds: targetSource.userKitchenIds,
     },
   }
   const selection = {

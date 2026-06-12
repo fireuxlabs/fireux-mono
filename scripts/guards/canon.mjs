@@ -94,6 +94,7 @@ const CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
   'index',
   'operations',
   'overview',
+  'team',
 ])
 
 const FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN = new Map([
@@ -699,7 +700,7 @@ function checkConsoleOperationStackShape(repoRoot) {
         if (CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN.has(child)) continue
 
         violations.push(
-          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, and operations/: ${toRepoRelative(
+          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, team/, and operations/: ${toRepoRelative(
             repoRoot,
             path.join(entityRoot, child)
           )}`
