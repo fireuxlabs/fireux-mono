@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { KitchenConsoleListFilter } from './useKitchenConsoleList'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import type { Ref } from 'vue'
@@ -10,6 +11,7 @@ type UseKitchenConsoleIndexOptions = {
 export function useKitchenConsoleIndex(
   options: UseKitchenConsoleIndexOptions = {}
 ) {
+  const fireux = useFireUXConfig()
   const {
     kitchens,
     selection: consoleSelection,
@@ -22,9 +24,15 @@ export function useKitchenConsoleIndex(
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
   }))
+  const isTenantSingleTarget = computed(
+    () =>
+      fireux.isTenant &&
+      kitchens.targets.value.length === 1 &&
+      Boolean(consoleSelection.kitchen.value)
+  )
   const sections = computed(() => ({
     targets: {
-      show: true,
+      show: !isTenantSingleTarget.value,
       collection: kitchens.targets.value,
     },
   }))
@@ -46,6 +54,7 @@ export function useKitchenConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedKitchen: consoleSelection.kitchen.value,
     targetCount: kitchens.targets.value.length,
+    isTenantSingleTarget: isTenantSingleTarget.value,
   }))
 
   return {

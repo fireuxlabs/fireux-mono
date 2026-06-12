@@ -164,8 +164,18 @@ export function useKitchenInterface() {
     imageShade?: PlaceImageShade
     name: string
     formattedAddress: string
+    shortAddress?: string
     source?: PlaceSource
     prop?: string
+    website?: string
+    phone?: string
+    currencyCode?: string
+    menuAvailable?: boolean
+    details?: {
+      label: string
+      value?: string | number | null
+    }[]
+    mapUrl?: string
   }
 
   function surface<TKitchen extends object = Partial<Kitchen>>(
@@ -331,8 +341,35 @@ export function useKitchenInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
+      shortAddress: base.shortAddress,
       source: (target as any)?.source as PlaceSource | undefined,
-      prop: (target as any)?.brand_tagline,
+      prop: target.tagline || (target as any)?.brand_tagline,
+      website: safeString(target.website),
+      phone: safeString(target.phone),
+      currencyCode: safeString(target.default_currency_code),
+      menuAvailable: target.menu_available !== false,
+      mapUrl:
+        typeof target.lat === 'number' && typeof target.lng === 'number'
+          ? `https://www.google.com/maps/search/?api=1&query=${target.lat},${target.lng}`
+          : '',
+      details: [
+        {
+          label: 'Short address',
+          value: base.shortAddress,
+        },
+        {
+          label: 'Phone',
+          value: safeString(target.phone),
+        },
+        {
+          label: 'Website',
+          value: safeString(target.website),
+        },
+        {
+          label: 'Currency',
+          value: safeString(target.default_currency_code),
+        },
+      ].filter((item) => Boolean(safeString(item.value))),
     }
   }
 

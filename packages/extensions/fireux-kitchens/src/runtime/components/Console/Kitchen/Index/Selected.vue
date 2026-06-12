@@ -1,25 +1,16 @@
 <template>
   <section class="space-y-2">
-    <pre>ConsoleKitchenIndexSelected</pre>
+    <KitchenCardsPreview
+      v-if="previewModel"
+      v-bind="previewModel"
+    />
 
     <UPageCard
-      v-if="kitchenId"
-      :title="selectedTitle"
+      v-else-if="kitchenId"
+      title="Selected Kitchen"
       :description="kitchenName || kitchenId"
       variant="subtle"
-    >
-      <template #footer>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-x"
-          @click="emit('clear')"
-        >
-          Clear
-        </UButton>
-      </template>
-    </UPageCard>
+    />
 
     <UPageCard
       v-else
@@ -32,6 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
@@ -39,12 +31,10 @@ const props = defineProps<{
   kitchenId?: string
 }>()
 
-const emit = defineEmits<{
-  (event: 'clear'): void
-}>()
+const { preview } = useKitchenInterface()
 
 const kitchenName = computed(() =>
   String(props.kitchen?.name || props.kitchen?.slug || '').trim()
 )
-const selectedTitle = 'Selected Kitchen'
+const previewModel = computed(() => preview(props.kitchen))
 </script>

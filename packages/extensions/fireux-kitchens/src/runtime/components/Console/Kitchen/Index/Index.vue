@@ -3,7 +3,6 @@
     <ConsoleKitchenIndexSelected
       :kitchen="selection.kitchen"
       :kitchen-id="selection.kitchenId"
-      @clear="actions.clear"
     />
 
     <ConsoleKitchenIndexTargets
