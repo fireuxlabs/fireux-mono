@@ -1,5 +1,8 @@
 import { useCookie } from '#imports'
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
+import { useFireUXConfig } from '../FireUXConfig'
+
+export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
 
 type ConsoleState = {
   selectedId: string
@@ -27,7 +30,22 @@ export function useConsole<TTarget = never>(
   family: string,
   options?: UseConsoleOptions<TTarget>
 ) {
+  const fireux = useFireUXConfig()
   const normalizedFamily = normalizeFamily(family)
+  const appMode = computed<ConsoleAppMode>(() => {
+    if (fireux.isTenant) return 'tenant'
+    if (fireux.isStandalone) return 'standalone'
+    return 'global'
+  })
+  const appContext = {
+    appId: computed(() => fireux.appId),
+    ecosystem: computed(() => fireux.ecosystem),
+    role: computed(() => fireux.role),
+    mode: appMode,
+    isTenant: computed(() => appMode.value === 'tenant'),
+    isGlobal: computed(() => appMode.value === 'global'),
+    isStandalone: computed(() => appMode.value === 'standalone'),
+  }
   const state = useCookie<ConsoleState>(`fireux-console-${normalizedFamily}`, {
     default: defaultConsoleState,
     sameSite: 'lax',
@@ -85,6 +103,8 @@ export function useConsole<TTarget = never>(
   }
 
   return {
+    family: computed(() => normalizedFamily),
+    appContext,
     selectedId,
     selectedEntity,
     selectEntity,

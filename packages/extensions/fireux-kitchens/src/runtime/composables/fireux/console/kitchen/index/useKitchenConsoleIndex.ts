@@ -1,65 +1,79 @@
 import { computed } from 'vue'
+import {
+  useConsoleIndex,
+  useConsoleIndexSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleIndex() {
+  const { coreUser, pending: userPending } = useUser()
   const {
-    kitchens,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = useKitchenConsole()
+  const myKitchenIds = computed(() =>
+    Array.isArray(coreUser.value?.myKitchens) ? coreUser.value.myKitchens : []
+  )
+  const source = useConsoleIndexSource({
+    family: 'kitchen',
+    globalTargetIds: myKitchenIds,
+  })
+  const targetIds = source.targetIds
+  const targetCollection = useKitchenCollection({ ids: targetIds })
+  const targetKitchens = computed(() => targetCollection.kitchens.value)
+  const targetPending = computed(() =>
+    source.isTenant.value
+      ? targetCollection.pending.value
+      : Boolean(userPending.value || targetCollection.pending.value)
+  )
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
   }))
   const isTenantSingleTarget = computed(
     () =>
-      kitchens.source.autoSelectSingle.value &&
+      source.isSingleTenantTarget.value &&
       Boolean(consoleSelection.kitchen.value)
   )
-  const sections = computed(() => ({
-    targets: {
-      show: !isTenantSingleTarget.value,
-      collection: kitchens.targets.value,
-      pending: kitchens.pending.value,
-    },
-  }))
+  const autoSelectTargetId = computed(() =>
+    source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+  )
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
+    kitchenCollectionPath: consoleRuntime.kitchenCollectionPath.value,
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
-    canCreate: kitchens.source.canCreate.value,
+    canCreate: source.canCreate.value,
   }))
-  const actions = {
-    selectTarget: (id: string) => {
-      consoleActions.selectKitchen(String(id ?? '').trim())
-    },
-    clear: consoleActions.clearSelectedKitchen,
-  }
   const debug = computed(() => ({
     kitchenId: consoleSelection.kitchenId.value,
     activeKitchenAppId: consoleRuntime.appId.value,
+    kitchenCollectionPath: consoleRuntime.kitchenCollectionPath.value,
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
     selectedKitchen: consoleSelection.kitchen.value,
-    targetCount: kitchens.count.value,
-    source: {
-      targetIds: kitchens.source.targetIds.value,
-      configKitchenIds: kitchens.source.configKitchenIds.value,
-      myKitchenIds: kitchens.source.myKitchenIds.value,
-      canCreate: kitchens.source.canCreate.value,
-      autoSelectSingle: kitchens.source.autoSelectSingle.value,
-    },
+    targetCount: targetKitchens.value.length,
+    source: source.debug.value,
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))
 
-  return {
+  return useConsoleIndex({
     selection,
-    sections,
+    selectedId: computed(() => consoleSelection.kitchenId.value),
+    autoSelectTargetId,
     runtime,
-    actions,
+    targets: targetKitchens,
+    pending: targetPending,
+    showTargets: computed(() => !isTenantSingleTarget.value),
+    selectTarget: (id: string) => {
+      consoleActions.selectKitchen(String(id ?? '').trim())
+    },
+    clearSelection: consoleActions.clearSelectedKitchen,
     debug,
-  }
+  })
 }

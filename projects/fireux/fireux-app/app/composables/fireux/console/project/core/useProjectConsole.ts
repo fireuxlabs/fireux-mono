@@ -44,6 +44,8 @@ export function useProjectConsole(
       ? options.filter.value ?? {}
       : options.filter ?? {}
 
+    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+
     return {
       ...explicitFilter,
       operatorId: userId.value,

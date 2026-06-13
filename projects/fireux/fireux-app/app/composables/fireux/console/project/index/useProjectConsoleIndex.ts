@@ -1,4 +1,8 @@
-import { computed, type Ref } from 'vue'
+import { computed, unref, type Ref } from 'vue'
+import {
+  useConsoleIndex,
+  useConsoleIndexSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectConsole } from '../core/useProjectConsole'
 
@@ -9,36 +13,31 @@ type UseProjectConsoleIndexOptions = {
 export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
+  const source = useConsoleIndexSource({ family: 'project' })
+  const targetFilter = computed<ProjectCollectionFilter>(() => {
+    const explicit = options.filter ? unref(options.filter) ?? {} : {}
+
+    return source.isTenant.value
+      ? { ...explicit, ids: source.targetIds.value }
+      : explicit
+  })
   const {
     projects,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = useProjectConsole({
-    filter: options.filter,
+    filter: targetFilter,
   })
   const selection = computed(() => ({
     project: consoleSelection.project.value,
     projectId: consoleSelection.projectId.value,
-  }))
-  const sections = computed(() => ({
-    targets: {
-      show: true,
-      collection: projects.targets.value,
-      pending: projects.pending.value,
-    },
   }))
   const runtime = computed(() => ({
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
   }))
-  const actions = {
-    selectTarget: (id: string) => {
-      consoleActions.selectProject(String(id ?? '').trim())
-    },
-    clear: consoleActions.clearSelectedProject,
-  }
   const debug = computed(() => ({
     projectId: consoleSelection.projectId.value,
     rootCollection: consoleRuntime.rootCollection.value,
@@ -46,13 +45,22 @@ export function useProjectConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedProject: consoleSelection.project.value,
     targetCount: projects.count.value,
+    source: source.debug.value,
   }))
 
-  return {
+  return useConsoleIndex({
     selection,
-    sections,
+    selectedId: computed(() => consoleSelection.projectId.value),
+    autoSelectTargetId: computed(() =>
+      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+    ),
     runtime,
-    actions,
+    targets: projects.targets,
+    pending: projects.pending,
+    selectTarget: (id: string) => {
+      consoleActions.selectProject(String(id ?? '').trim())
+    },
+    clearSelection: consoleActions.clearSelectedProject,
     debug,
-  }
+  })
 }

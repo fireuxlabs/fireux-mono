@@ -13,15 +13,13 @@ import {
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type KitchenConsoleEntity = KitchenSurface
 
-const displayIdentityKeys = [
+const publicIdentityKeys = [
   'name',
   'display_name',
   'short_name',
@@ -38,40 +36,40 @@ const uniqueStrings = (values: unknown[]) =>
     new Set(values.map((value) => normalizeString(value)).filter(Boolean))
   )
 
-const mergeSelectedKitchen = (
-  target: KitchenConsoleEntity | null,
-  runtime: KitchenConsoleEntity | null
+const composeConsoleKitchen = (
+  publicKitchen: KitchenConsoleEntity | null,
+  scoped: KitchenConsoleEntity | null
 ): KitchenConsoleEntity | null => {
-  if (!target) return runtime
-  if (!runtime) return target
+  if (!publicKitchen) return scoped
+  if (!scoped) return publicKitchen
 
-  const merged = {
-    ...(target as Record<string, unknown>),
-    ...(runtime as Record<string, unknown>),
+  const composed = {
+    ...(publicKitchen as Record<string, unknown>),
+    ...(scoped as Record<string, unknown>),
   }
 
-  for (const key of displayIdentityKeys) {
-    if (normalizeString(merged[key])) continue
+  for (const key of publicIdentityKeys) {
+    if (normalizeString(composed[key])) continue
 
-    const targetValue = (target as Record<string, unknown>)[key]
-    if (normalizeString(targetValue)) merged[key] = targetValue
+    const publicValue = (publicKitchen as Record<string, unknown>)[key]
+    if (normalizeString(publicValue)) composed[key] = publicValue
   }
 
-  const targetImage =
-    normalizeString((target as Record<string, unknown>).display_image_url) ||
-    normalizeString((target as Record<string, unknown>).image_url)
+  const publicImage =
+    normalizeString((publicKitchen as Record<string, unknown>).display_image_url) ||
+    normalizeString((publicKitchen as Record<string, unknown>).image_url)
 
-  if (targetImage) {
-    if (!normalizeString(merged.display_image_url)) {
-      merged.display_image_url = targetImage
+  if (publicImage) {
+    if (!normalizeString(composed.display_image_url)) {
+      composed.display_image_url = publicImage
     }
 
-    if (!normalizeString(merged.image_url)) {
-      merged.image_url = targetImage
+    if (!normalizeString(composed.image_url)) {
+      composed.image_url = publicImage
     }
   }
 
-  return merged as KitchenConsoleEntity
+  return composed as KitchenConsoleEntity
 }
 
 /**
@@ -83,91 +81,67 @@ const mergeSelectedKitchen = (
  * Contract:
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * This file adapts Kitchen root/app authority targets into the private /console/kitchen selected runtime.
+ * This file adapts the selected public Kitchen into the selected /console/kitchen scope.
+ * Index pages own Kitchen target collection reads.
  * It should not own Kitchen child operation records; those live under console/kitchen/operations.
  */
 export function useKitchenConsole() {
   /*
    * Input:
    * - runtime app config
-   * - signed-in user
    * - stored console selection
    *
    * Process:
-   * - choose configured tenant kitchens or user.myKitchens
-   * - fetch those Kitchen targets
-   * - connect targets to the shared console selection cookie
-   * - auto-select a single tenant target when there is no selection
-   * - derive the selected Kitchen runtime path and write permission
+   * - keep the selected Kitchen id in the shared console cookie
+   * - read the selected public Kitchen
+   * - read the selected app-scoped Kitchen
+   * - compose one selected Kitchen view for console consumers
+   * - derive the selected Kitchen scope path and write permission
    *
    * Output:
-   * - kitchens: target collection for the console index
    * - selection: selected Kitchen state
-   * - runtime: selected Kitchen read/write context
+   * - runtime: selected Kitchen scope/read/write context
    * - actions: select/clear helpers
    */
   const fireux = useFireUXConfig()
   const { appId } = fireux
   const consoleConfig = useConsoleConfig('kitchen')
   const { uid } = useAuth()
-  const { coreUser, pending: userPending } = useUser()
 
   const userId = computed(() => normalizeString(uid.value))
   const configKitchenIds = computed(() =>
     uniqueStrings(consoleConfig.targetIds())
   )
-  const myKitchenIds = computed(() =>
-    Array.isArray(coreUser.value?.myKitchens)
-      ? uniqueStrings(coreUser.value.myKitchens)
-      : []
+  const { selectedId, selectEntity, clearSelection } =
+    useConsole<KitchenSurface>('kitchen')
+  const kitchenId = computed(() => normalizeString(selectedId.value))
+  const { kitchen: publicKitchen } = useKitchenFetch(kitchenId)
+  const selectedPublicKitchen = computed<KitchenConsoleEntity | null>(
+    () => publicKitchen.value as KitchenConsoleEntity | null
   )
-  const targetIds = computed(() =>
-    fireux.isTenant ? configKitchenIds.value : myKitchenIds.value
-  )
-  const targetCollection = useKitchenCollection({ ids: targetIds })
-  const targetKitchens = computed<KitchenSurface[]>(
-    () => targetCollection.kitchens.value
-  )
-  const targetCount = computed(() => targetKitchens.value.length)
-  const targetPending = computed(() =>
-    fireux.isTenant
-      ? targetCollection.pending.value
-      : Boolean(userPending.value || targetCollection.pending.value)
-  )
-  const { selectedEntity, selectEntity, clearSelection } =
-    useConsole<KitchenSurface>('kitchen', {
-      targetItems: targetKitchens,
-      targetPending,
-      getId: (kitchen) => normalizeString(kitchen?.id),
-    })
-  const selectedTargetKitchen = computed<KitchenConsoleEntity | null>(
-    () => selectedEntity.value
-  )
-  const kitchenId = computed(() => normalizeString(selectedTargetKitchen.value?.id))
-  const activeKitchenAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedTargetKitchen.value, appId)
+  const scopedAppId = computed(() =>
+    resolveConsoleEntityAppId(selectedPublicKitchen.value, appId)
   )
   const databaseId = computed(() =>
     readRuntimeFirestoreDatabaseId() || ''
   )
-  const rootCollection = computed(() =>
-    resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
+  const kitchenCollectionPath = computed(() =>
+    resolveKitchenScopeCollectionPath(scopedAppId.value)
   )
-  const { kitchen: runtimeKitchen } = useKitchenFetch(kitchenId, {
-    collectionPath: rootCollection,
+  const { kitchen: scopedKitchen } = useKitchenFetch(kitchenId, {
+    collectionPath: kitchenCollectionPath,
     hydrate: false,
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
     () =>
-      mergeSelectedKitchen(
-        selectedTargetKitchen.value,
-        runtimeKitchen.value as KitchenConsoleEntity | null
+      composeConsoleKitchen(
+        selectedPublicKitchen.value,
+        scopedKitchen.value as KitchenConsoleEntity | null
       )
   )
   const readOnly = computed(() => false)
-  const canCreate = computed(() => consoleConfig.canCreateTarget())
   const autoSelectSingle = computed(
-    () => fireux.isTenant && targetCount.value === 1
+    () => fireux.isTenant && configKitchenIds.value.length === 1
   )
   const canWrite = computed(() =>
     !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
@@ -201,41 +175,25 @@ export function useKitchenConsole() {
     selectEntity(kitchenId)
   }
   watch(
-    targetKitchens,
-    (kitchens) => {
-      if (
-        selectedTargetKitchen.value ||
-        !autoSelectSingle.value ||
-        kitchens.length !== 1
-      ) {
-        return
-      }
+    configKitchenIds,
+    (ids) => {
+      const onlyKitchenId = normalizeString(ids[0])
+      if (!autoSelectSingle.value || !onlyKitchenId) return
+      if (kitchenId.value === onlyKitchenId) return
 
-      const onlyKitchenId = normalizeString(kitchens[0]?.id)
-      if (onlyKitchenId) selectEntity(onlyKitchenId)
+      selectEntity(onlyKitchenId)
     },
     { immediate: true }
   )
-  const kitchens = {
-    targets: targetKitchens,
-    count: targetCount,
-    pending: targetPending,
-    source: {
-      targetIds,
-      configKitchenIds,
-      myKitchenIds,
-      canCreate,
-      autoSelectSingle,
-    },
-  }
   const selection = {
     kitchen: selectedKitchen,
     kitchenId,
     hasSelection: computed(() => Boolean(kitchenId.value)),
   }
   const runtime = {
-    appId: activeKitchenAppId,
-    rootCollection,
+    appId: scopedAppId,
+    kitchenCollectionPath,
+    rootCollection: kitchenCollectionPath,
     databaseId,
     readOnly,
     canWrite,
@@ -246,7 +204,6 @@ export function useKitchenConsole() {
   }
 
   return {
-    kitchens,
     selection,
     runtime,
     actions,

@@ -1,4 +1,8 @@
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
+import {
+  useConsoleIndex,
+  useConsoleIndexSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { PropertyCollectionFilter } from '../../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 import type { Ref } from 'vue'
@@ -10,24 +14,25 @@ type UsePropertyConsoleIndexOptions = {
 export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
+  const source = useConsoleIndexSource({ family: 'property' })
+  const targetFilter = computed<PropertyCollectionFilter>(() => {
+    const explicit = options.filter ? unref(options.filter) ?? {} : {}
+
+    return source.isTenant.value
+      ? { ...explicit, ids: source.targetIds.value }
+      : explicit
+  })
   const {
     properties,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = usePropertyConsole({
-    filter: options.filter,
+    filter: targetFilter,
   })
   const selection = computed(() => ({
     property: consoleSelection.property.value,
     propertyId: consoleSelection.propertyId.value,
-  }))
-  const sections = computed(() => ({
-    targets: {
-      show: true,
-      collection: properties.targets.value,
-      pending: properties.pending.value,
-    },
   }))
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
@@ -35,12 +40,6 @@ export function usePropertyConsoleIndex(
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
   }))
-  const actions = {
-    selectTarget: (id: string) => {
-      consoleActions.selectProperty(String(id ?? '').trim())
-    },
-    clear: consoleActions.clearSelectedProperty,
-  }
   const debug = computed(() => ({
     propertyId: consoleSelection.propertyId.value,
     activePropertyAppId: consoleRuntime.appId.value,
@@ -49,14 +48,23 @@ export function usePropertyConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedProperty: consoleSelection.property.value,
     targetCount: properties.count.value,
+    source: source.debug.value,
     status: 'property console uses scaffold data until Firestore property fetch/create is wired',
   }))
 
-  return {
+  return useConsoleIndex({
     selection,
-    sections,
+    selectedId: computed(() => consoleSelection.propertyId.value),
+    autoSelectTargetId: computed(() =>
+      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+    ),
     runtime,
-    actions,
+    targets: properties.targets,
+    pending: properties.pending,
+    selectTarget: (id: string) => {
+      consoleActions.selectProperty(String(id ?? '').trim())
+    },
+    clearSelection: consoleActions.clearSelectedProperty,
     debug,
-  }
+  })
 }

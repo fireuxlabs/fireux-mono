@@ -56,6 +56,8 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       ? (options.filter.value ?? {})
       : (options.filter ?? {})
 
+    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+
     return {
       ...explicitFilter,
       operatorId: normalizedUid.value,

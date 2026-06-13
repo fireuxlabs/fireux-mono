@@ -1,4 +1,8 @@
 import { computed } from 'vue'
+import {
+  useConsoleIndex,
+  useConsoleIndexSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useBlankConsole } from '../core/useBlankConsole'
 
 /**
@@ -8,6 +12,7 @@ import { useBlankConsole } from '../core/useBlankConsole'
  * root target cards, create route, and dev debug only.
  */
 export function useBlankConsoleIndex() {
+  const source = useConsoleIndexSource({ family: 'blank' })
   const {
     blanks,
     selection: consoleSelection,
@@ -18,24 +23,11 @@ export function useBlankConsoleIndex() {
     blank: consoleSelection.blank.value,
     blankId: consoleSelection.blankId.value,
   }))
-  const sections = computed(() => ({
-    targets: {
-      show: true,
-      collection: blanks.targets.value,
-      pending: blanks.pending.value,
-    },
-  }))
   const runtime = computed(() => ({
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
   }))
-  const actions = {
-    selectTarget: (id: string) => {
-      consoleActions.selectBlank(String(id ?? '').trim())
-    },
-    clear: consoleActions.clearSelectedBlank,
-  }
   const debug = computed(() => ({
     family: 'blank',
     blankId: consoleSelection.blankId.value,
@@ -44,13 +36,22 @@ export function useBlankConsoleIndex() {
     rootCollection: consoleRuntime.rootCollection.value,
     appCollectionPath: consoleRuntime.appCollectionPath.value,
     readOnly: consoleRuntime.readOnly.value,
+    source: source.debug.value,
   }))
 
-  return {
+  return useConsoleIndex({
     selection,
-    sections,
+    selectedId: computed(() => consoleSelection.blankId.value),
+    autoSelectTargetId: computed(() =>
+      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+    ),
     runtime,
-    actions,
+    targets: blanks.targets,
+    pending: blanks.pending,
+    selectTarget: (id: string) => {
+      consoleActions.selectBlank(String(id ?? '').trim())
+    },
+    clearSelection: consoleActions.clearSelectedBlank,
     debug,
-  }
+  })
 }

@@ -6,16 +6,18 @@ import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleOverview() {
   const {
-    kitchens,
     selection,
     runtime,
     actions,
   } =
     useKitchenConsole()
+  const selectedKitchenList = computed(() =>
+    selection.kitchen.value ? [selection.kitchen.value] : []
+  )
 
   const overview = useConsoleOverview<KitchenSurface>({
     selectedEntity: selection.kitchen,
-    targetItems: kitchens.targets,
+    targetItems: selectedKitchenList,
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const debug = computed(() => ({
