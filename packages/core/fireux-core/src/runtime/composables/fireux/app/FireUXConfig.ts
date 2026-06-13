@@ -2,14 +2,6 @@ import { useRuntimeConfig } from '#imports'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
-export type FireUXConsoleConfig = Record<
-  string,
-  {
-    canCreate?: boolean
-    targetIds?: string[]
-  }
->
-
 export interface FireUXConfig {
   devMode: boolean
   role: FireUXRole
@@ -21,16 +13,10 @@ export interface FireUXConfig {
   siteUrl?: string
   membership: 'open' | 'restricted'
   modules: string[]
-  consoles: string[]
-  consoleConfig: FireUXConsoleConfig
   domains: string[]
   profiles: string[]
   navHiddenKeys: string[]
 
-  appThumbnail?: string
-  appLogo?: string
-  appLogoLight?: string
-  appLogoDark?: string
   contactEmail?: string
   designPack?: Record<string, unknown>
   designPacks?: Record<string, Record<string, unknown>>
@@ -79,45 +65,6 @@ function optRecord(src: AnyRecord, key: string): Record<string, unknown> | undef
   const v = src[key]
   if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
   return v as Record<string, unknown>
-}
-
-function consoleConfig(src: AnyRecord): FireUXConsoleConfig {
-  const raw = optRecord(src, 'consoleConfig')
-  if (!raw) return {}
-
-  return Object.fromEntries(
-    Object.entries(raw)
-      .map(([key, value]) => {
-        if (!key.trim() || !value || typeof value !== 'object' || Array.isArray(value)) {
-          return null
-        }
-
-        const cfg = value as Record<string, unknown>
-        const targetIds = Array.isArray(cfg.targetIds)
-          ? cfg.targetIds
-              .map((targetId) => String(targetId ?? '').trim())
-              .filter(Boolean)
-          : []
-
-        return [
-          key.trim().toLowerCase(),
-          {
-            ...(typeof cfg.canCreate === 'boolean'
-              ? { canCreate: cfg.canCreate }
-              : {}),
-            ...(targetIds.length ? { targetIds } : {}),
-          },
-        ] as const
-      })
-      .filter(
-        (
-          entry
-        ): entry is readonly [
-          string,
-          { canCreate?: boolean; targetIds?: string[] },
-        ] => Boolean(entry)
-      )
-  )
 }
 
 function toStringArray(v: unknown): string[] {
@@ -170,16 +117,10 @@ function buildConfig(): Readonly<FireUXConfig> {
             : 'open',
 
     modules: toStringArray(fireux.modules),
-    consoles: toStringArray(fireux.consoles),
-    consoleConfig: consoleConfig(fireux),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
 
-    appThumbnail: optString(fireux, 'appThumbnail'),
-    appLogo: optString(fireux, 'appLogo'),
-    appLogoLight: optString(fireux, 'appLogoLight'),
-    appLogoDark: optString(fireux, 'appLogoDark'),
     contactEmail: optString(fireux, 'contactEmail'),
     designPack: optRecord(fireux, 'designPack'),
     designPacks: optRecord(fireux, 'designPacks') as

@@ -17,7 +17,7 @@ export function useProjectConsoleIndex(
   const targetFilter = computed<ProjectCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant.value
+    return source.isTenant
       ? { ...explicit, ids: source.targetIds.value }
       : explicit
   })
@@ -52,7 +52,7 @@ export function useProjectConsoleIndex(
     selection,
     selectedId: computed(() => consoleSelection.projectId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
     ),
     runtime,
     targets: projects.targets,

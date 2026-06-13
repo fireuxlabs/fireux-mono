@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { normalizeString } from '../../../../../../utils/slug/normalizeSlug'
+import { normalizeString } from '../../../../../../utils/string'
 import type { AppMediaSyncResponse } from './appMedia'
 
 export async function syncAppMediaToStorage(

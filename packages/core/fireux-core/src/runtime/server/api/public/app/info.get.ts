@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useAssets } from '../../../../composables/fireux/app/useAssets'
 import { AppStorage } from '../../../../models/core/app.model'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { normalizeSlug } from '../../../../utils/slug/normalizeSlug'
@@ -80,6 +81,7 @@ function normalizeStatus(value: unknown): 'draft' | 'active' | 'paused' | 'archi
 
 export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
+  const brandAssets = useAssets()
   const runtime = useRuntimeConfig()
   const appDoc = await getRuntimeFirestore()
     .collection(AppStorage.collection)
@@ -101,10 +103,11 @@ export default defineEventHandler(async (event: H3Event) => {
       ?.projectId
   )
   const logoUrl =
-    toAbsoluteUrl(media.logo_url, siteOrigin) || toAbsoluteUrl(cfg.appLogo, siteOrigin)
+    toAbsoluteUrl(media.logo_url, siteOrigin) ||
+    toAbsoluteUrl(brandAssets.logo, siteOrigin)
   const thumbnailUrl =
     toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
-    toAbsoluteUrl(cfg.appThumbnail, siteOrigin)
+    toAbsoluteUrl(brandAssets.thumbnail, siteOrigin)
   const ecosystemName =
     cfg.isGlobal && appSlug === ecosystemSlug
       ? cfg.appName

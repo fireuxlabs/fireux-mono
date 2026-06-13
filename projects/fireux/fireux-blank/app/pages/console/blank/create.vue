@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useBlankConsole } from '../../../composables/fireux/console/blank/core/useBlankConsole'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 

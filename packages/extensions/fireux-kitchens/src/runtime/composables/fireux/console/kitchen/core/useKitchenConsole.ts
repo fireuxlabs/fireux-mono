@@ -1,10 +1,8 @@
 import { computed, watch } from 'vue'
-import {
-  normalizeConsoleString as normalizeString,
-  useConsole,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   usePublishConsoleHeader,

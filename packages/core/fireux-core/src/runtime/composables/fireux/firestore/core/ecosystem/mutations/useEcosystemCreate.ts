@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import type { Firestore } from 'firebase/firestore'
 import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -29,6 +30,7 @@ export function useEcosystemCreate() {
 
   async function createEcosystem() {
     if (fireux.role !== 'global') return
+    const brandAssets = useAssets()
 
     const runtimeProjectId = normalizeString(
       runtime.public?.firebaseEcosystem?.firebase?.projectId
@@ -43,7 +45,7 @@ export function useEcosystemCreate() {
     const snap = await getDoc(ref)
 
     const name = normalizeString(fireux.appName || fireux.appShortName || ecosystemId)
-    const imageUrl = normalizeString(fireux.appLogo || fireux.appThumbnail)
+    const imageUrl = normalizeString(brandAssets.logo || brandAssets.thumbnail)
     const sourceUrl = normalizeString(fireux.siteUrl)
 
     if (!snap.exists()) {

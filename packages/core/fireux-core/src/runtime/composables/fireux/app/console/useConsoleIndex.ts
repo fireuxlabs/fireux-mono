@@ -1,15 +1,15 @@
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { normalizeConsoleString, useConsole } from './useConsole'
-import { useConsoleConfig } from './useConsoleConfig'
+import { normalizeString, uniqueStrings } from '../../../../utils/string'
+import { useConsole, useConsoleConfig } from './useConsole'
 
-type MaybeRef<T> = Ref<T> | ComputedRef<T>
+type ValueRef<T> = Ref<T> | ComputedRef<T>
 
 type ConsoleIndexDebug = Record<string, unknown>
 type ConsoleIndexSourceMode = 'tenant' | 'global' | 'standalone'
 
 type UseConsoleIndexSourceOptions = {
   family: string
-  globalTargetIds?: MaybeRef<unknown[] | null | undefined>
+  globalTargetIds?: ValueRef<unknown[] | null | undefined>
 }
 
 type UseConsoleIndexOptions<
@@ -17,59 +17,50 @@ type UseConsoleIndexOptions<
   TSelection extends Record<string, unknown>,
   TRuntime extends Record<string, unknown>,
 > = {
-  targets?: MaybeRef<(TTarget | null | undefined)[] | null | undefined>
-  pending?: MaybeRef<boolean | null | undefined>
-  showTargets?: MaybeRef<boolean | null | undefined>
-  selection?: MaybeRef<TSelection>
-  selectedId?: MaybeRef<string | null | undefined>
-  autoSelectTargetId?: MaybeRef<string | null | undefined>
-  runtime?: MaybeRef<TRuntime>
+  targets?: ValueRef<(TTarget | null | undefined)[] | null | undefined>
+  pending?: ValueRef<boolean | null | undefined>
+  showTargets?: ValueRef<boolean | null | undefined>
+  selection?: ValueRef<TSelection>
+  selectedId?: ValueRef<string | null | undefined>
+  autoSelectTargetId?: ValueRef<string | null | undefined>
+  runtime?: ValueRef<TRuntime>
   selectTarget: (id: string) => void
   clearSelection?: () => void
-  debug?: MaybeRef<ConsoleIndexDebug | null | undefined>
+  debug?: ValueRef<ConsoleIndexDebug | null | undefined>
 }
-
-const uniqueStrings = (values: unknown[]) =>
-  Array.from(
-    new Set(values.map((value) => normalizeConsoleString(value)).filter(Boolean))
-  )
 
 export function useConsoleIndexSource(
   options: UseConsoleIndexSourceOptions
 ) {
   const console = useConsole(options.family)
   const consoleConfig = useConsoleConfig(options.family)
-  const mode = computed<ConsoleIndexSourceMode>(() => console.appContext.mode.value)
-  const configTargetIds = computed(() =>
-    uniqueStrings(consoleConfig.targetIds())
-  )
+  const mode: ConsoleIndexSourceMode = console.appContext.mode
+  const configTargetIds = uniqueStrings(consoleConfig.targetIds())
   const globalTargetIds = computed(() =>
     uniqueStrings(options.globalTargetIds ? unref(options.globalTargetIds) ?? [] : [])
   )
   const targetIds = computed(() =>
-    mode.value === 'tenant' ? configTargetIds.value : globalTargetIds.value
+    mode === 'tenant' ? configTargetIds : globalTargetIds.value
   )
-  const canCreate = computed(() => consoleConfig.canCreateTarget())
-  const isTenant = computed(() => mode.value === 'tenant')
-  const isSingleTenantTarget = computed(
-    () => isTenant.value && configTargetIds.value.length === 1
-  )
+  const canCreate = consoleConfig.canCreateTarget()
+  const isTenant = mode === 'tenant'
+  const isSingleTenantTarget = isTenant && configTargetIds.length === 1
   const debug = computed(() => ({
-    family: normalizeConsoleString(options.family),
-    appMode: mode.value,
-    configTargetIds: configTargetIds.value,
+    family: normalizeString(options.family),
+    appMode: mode,
+    configTargetIds,
     globalTargetIds: globalTargetIds.value,
     targetIds: targetIds.value,
-    canCreate: canCreate.value,
-    isSingleTenantTarget: isSingleTenantTarget.value,
+    canCreate,
+    isSingleTenantTarget,
   }))
 
   return {
     appContext: console.appContext,
     mode,
     isTenant,
-    isGlobal: computed(() => mode.value === 'global'),
-    isStandalone: computed(() => mode.value === 'standalone'),
+    isGlobal: mode === 'global',
+    isStandalone: mode === 'standalone',
     configTargetIds,
     globalTargetIds,
     targetIds,
@@ -123,10 +114,10 @@ export function useConsoleIndex<
   watch(
     () => ({
       currentId: options.selectedId
-        ? normalizeConsoleString(unref(options.selectedId))
+        ? normalizeString(unref(options.selectedId))
         : '',
       targetId: options.autoSelectTargetId
-        ? normalizeConsoleString(unref(options.autoSelectTargetId))
+        ? normalizeString(unref(options.autoSelectTargetId))
         : '',
     }),
     (state: { currentId: string; targetId: string }) => {

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from './FireUXConfig'
-import { resolveFireuxBrandAssets } from '../../../../utils/brandAssets'
+import { useAssets } from './useAssets'
 
 function isCorePlaceholderPath(value: string | undefined) {
   return typeof value === 'string' && value.startsWith('/img/core/')
@@ -8,7 +8,7 @@ function isCorePlaceholderPath(value: string | undefined) {
 
 export function useTenantPlaceholderBranding() {
   const config = useFireUXConfig()
-  const brandAssets = resolveFireuxBrandAssets()
+  const brandAssets = useAssets()
 
   const isPlaceholderBranding = computed(() => {
     if (!config.isTenant) return false

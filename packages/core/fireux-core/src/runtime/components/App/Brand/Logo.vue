@@ -16,10 +16,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
-import {
-  CORE_BRAND_DEFAULT_ASSETS,
-  resolveFireuxBrandAssets,
-} from '../../../../utils/brandAssets'
+import { useAssets } from '../../../composables/fireux/app/useAssets'
+import { CORE_BRAND_DEFAULT_ASSETS } from '../../../../utils/brandAssets'
 
 type BrandSize = 'small' | 'medium' | 'large' | 'hero'
 
@@ -35,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
   alt: 'App logo',
 })
-const brandAssets = resolveFireuxBrandAssets()
+const brandAssets = useAssets()
 const resolvedMode = useResolvedColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')
 const explicitSrc = computed(() => {

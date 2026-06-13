@@ -17,7 +17,7 @@ export function useSupplierConsoleIndex(
   const targetFilter = computed<SupplierCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant.value
+    return source.isTenant
       ? { ...explicit, ids: source.targetIds.value }
       : explicit
   })
@@ -54,7 +54,7 @@ export function useSupplierConsoleIndex(
     selection,
     selectedId: computed(() => consoleSelection.supplierId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
     ),
     runtime,
     targets: suppliers.targets,

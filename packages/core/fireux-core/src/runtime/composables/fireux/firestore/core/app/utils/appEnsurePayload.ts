@@ -1,8 +1,9 @@
 import { deleteField } from 'firebase/firestore'
 import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import type { AppCreateInput } from '../../../../../../models/core/app.model'
-import { normalizeString } from '../../../../../../utils/slug/normalizeSlug'
+import { normalizeString } from '../../../../../../utils/string'
 
 type FireuxConfig = ReturnType<typeof useFireUXConfig>
 
@@ -48,6 +49,7 @@ function pruneEmptyBootstrapValue(value: unknown): unknown {
 }
 
 export function buildAppEnsureCreateInput(fireux: FireuxConfig): AppCreateInput {
+  const brandAssets = useAssets()
   const payload = pruneEmptyBootstrapValue({
     id: fireux.appId,
     project_id: normalizeString(fireux.ecosystem),
@@ -63,8 +65,8 @@ export function buildAppEnsureCreateInput(fireux: FireuxConfig): AppCreateInput 
       website: fireux.siteUrl,
     },
     media: {
-      thumbnail_url: fireux.appThumbnail,
-      logo_url: fireux.appLogo,
+      thumbnail_url: brandAssets.thumbnail,
+      logo_url: brandAssets.logo,
     },
     derived: {
       user_count: 0,
@@ -79,6 +81,7 @@ export function buildAppEnsureRepairPatch(
   fireux: FireuxConfig
 ) {
   const patch: Record<string, unknown> = {}
+  const brandAssets = useAssets()
   const runtimeProjectId = resolveRuntimeProjectId()
   const projectId = normalizeString(fireux.ecosystem)
   const databaseId = resolveRuntimeDatabaseId()
@@ -117,8 +120,8 @@ export function buildAppEnsureRepairPatch(
 
   const media = isPlainRecord(existing.media) ? existing.media : {}
   const mediaDefaults: Record<string, string> = {
-    thumbnail_url: normalizeString(fireux.appThumbnail),
-    logo_url: normalizeString(fireux.appLogo),
+    thumbnail_url: normalizeString(brandAssets.thumbnail),
+    logo_url: normalizeString(brandAssets.logo),
   }
 
   for (const [key, value] of Object.entries(mediaDefaults)) {

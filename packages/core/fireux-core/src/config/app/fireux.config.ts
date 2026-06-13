@@ -27,7 +27,6 @@ import {
 import { resolveSeoConfig } from './static-paths'
 import type { FireuxAppConfig } from './types'
 import { validateFireuxAppConfig } from './validate'
-import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -47,7 +46,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const nuxt: NuxtConfig = {}
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(app.databaseId)
-  const brandAssets = resolveFireuxBrandAssets()
 
   configureViewport(nuxt)
   configureNitroBaseline(nuxt)
@@ -82,10 +80,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       id: app.id,
       name: app.name,
       shortName: app.shortName,
-      appThumbnail: brandAssets.thumbnail,
-      appLogo: brandAssets.logo,
-      appLogoLight: brandAssets.logoLight,
-      appLogoDark: brandAssets.logoDark,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       ...(app.designPack ? { designPack: app.designPack } : {}),
       ...(app.designPacks ? { designPacks: app.designPacks } : {}),

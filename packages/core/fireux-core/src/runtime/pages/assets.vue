@@ -49,10 +49,10 @@
 import { computed } from 'vue'
 import { useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
-import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
+import { useAssets } from '../composables/fireux/app/useAssets'
 
 const fireux = useFireUXConfig()
-const brandAssets = resolveFireuxBrandAssets()
+const brandAssets = useAssets()
 
 const appName = computed(() =>
   String(fireux.appName || fireux.appShortName || fireux.appId || 'App')

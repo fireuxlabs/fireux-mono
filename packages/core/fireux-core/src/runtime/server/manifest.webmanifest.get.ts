@@ -1,6 +1,6 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
+import { useAssets } from '../composables/fireux/app/useAssets'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'
@@ -24,7 +24,7 @@ export default defineEventHandler((event) => {
     (typeof fireux.primaryColor === 'string' && fireux.primaryColor.trim()) ||
     (typeof pub.primaryColor === 'string' && pub.primaryColor.trim()) ||
     DEFAULT_THEME
-  const brandAssets = resolveFireuxBrandAssets()
+  const brandAssets = useAssets()
 
   setHeader(event, 'content-type', 'application/manifest+json')
 

@@ -1,10 +1,8 @@
-import type {
-  ConsoleFamily,
-} from '../console/console.types'
-
 // Routing owns stable path/key translation only. It does not decide which
 // routes appear in navigation, or whether the current user may access them.
 export const CONSOLE_ROOT = '/console'
+
+export type ConsoleFamily = string
 
 const CONSOLE_FAMILY_ALIASES: Record<string, string> = {
   project: 'project',

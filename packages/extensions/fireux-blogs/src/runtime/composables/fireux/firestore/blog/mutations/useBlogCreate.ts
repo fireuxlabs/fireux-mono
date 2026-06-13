@@ -2,7 +2,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   BlogPostStorage,

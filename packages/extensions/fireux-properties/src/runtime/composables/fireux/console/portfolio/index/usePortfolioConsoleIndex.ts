@@ -20,7 +20,7 @@ export function usePortfolioConsoleIndex(
   const targetFilter = computed<PortfolioCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant.value
+    return source.isTenant
       ? { ...explicit, ids: source.targetIds.value }
       : explicit
   })
@@ -57,7 +57,7 @@ export function usePortfolioConsoleIndex(
     selection,
     selectedId: computed(() => consoleSelection.portfolioId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
     ),
     runtime,
     targets: portfolios.targets,

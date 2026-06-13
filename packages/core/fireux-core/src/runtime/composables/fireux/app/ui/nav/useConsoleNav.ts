@@ -5,9 +5,11 @@ import {
   normalizeConsoleFamily,
   consoleFamilyFromPath,
 } from '../../routing/consoleRoutes'
-import { useConsole } from '../../console/useConsole'
-import { useConsoleConfig } from '../../console/useConsoleConfig'
-import { useFireUXConfig } from '../../FireUXConfig'
+import {
+  useConsole,
+  useConsoleConfig,
+  useConsoleFamilies,
+} from '../../console/useConsole'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {
@@ -25,12 +27,12 @@ function isConsoleCreatePath(path: string) {
 export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
-  const fireux = useFireUXConfig()
   const consoleConfig = useConsoleConfig()
+  const { families } = useConsoleFamilies()
   const enabledFamilies = computed(
     () =>
       new Set(
-        (fireux.consoles || [])
+        families
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )

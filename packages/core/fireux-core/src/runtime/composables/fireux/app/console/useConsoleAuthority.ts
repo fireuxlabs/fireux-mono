@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { AppStorage } from '../../../../models/core/app.model'
+import { normalizeString, uniqueStrings } from '../../../../utils/string'
 import { useFirestore } from '../../firestore/vuefire'
-import { normalizeConsoleString as normalizeString } from './useConsole'
 
 export type ConsoleAuthorityFamily =
   | 'kitchens'
@@ -23,11 +23,7 @@ export type AssertCanOperateTargetOptions = {
 const rootAuthorityFamilies = new Set<ConsoleAuthorityFamily>(['projects'])
 
 export function normalizeConsoleOperatorIds(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-
-  return Array.from(
-    new Set(value.map((item) => normalizeString(item)).filter(Boolean))
-  )
+  return uniqueStrings(value)
 }
 
 export function targetHasOperator(target: unknown, uid: string): boolean {

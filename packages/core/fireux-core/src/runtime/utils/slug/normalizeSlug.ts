@@ -1,9 +1,9 @@
+import { normalizeString } from '../string'
+
 export type NormalizeSlugOptions = {
   maxLength?: number
   stripLeadingAt?: boolean
 }
-
-export const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 function transliterateSlugString(value: string): string {
   return value

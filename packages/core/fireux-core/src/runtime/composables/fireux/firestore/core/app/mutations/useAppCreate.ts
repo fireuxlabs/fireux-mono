@@ -4,7 +4,8 @@ import {
   type AppCreateInput,
 } from 'fireux-core/runtime/models/core/app.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { normalizeSlug, normalizeString } from '../../../../../../utils/slug/normalizeSlug'
+import { normalizeString } from '../../../../../../utils/string'
+import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useFirestore } from '../../../vuefire'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'

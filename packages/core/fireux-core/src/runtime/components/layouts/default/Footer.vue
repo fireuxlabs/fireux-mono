@@ -28,8 +28,6 @@
             <AppBrandLogo
               size="small"
               :alt="`${appName} logo`"
-              :light-src="appLogoLightSrc"
-              :dark-src="appLogoDarkSrc"
             />
             <AppBrandWordmark
               size="medium"
@@ -86,8 +84,6 @@ const { contactEmail } = fireux
 const currentYear = new Date().getFullYear()
 const isTenant = fireux.isTenant
 const appName = String(fireux.appName || fireux.appShortName || fireux.appId).trim() || 'App'
-const appLogoLightSrc = fireux.appLogoLight
-const appLogoDarkSrc = fireux.appLogoDark
 const ecosystemSlug = String(fireux.ecosystem || '').trim().toLowerCase()
 const hasParentBrand =
   isTenant ||

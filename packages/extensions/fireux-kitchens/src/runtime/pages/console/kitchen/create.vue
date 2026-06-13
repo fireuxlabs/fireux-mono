@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleConfig'
+import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import KitchenCreateSystem from '../../../components/Kitchen/Create/System.vue'
 
 const { canCreateTarget } = useConsoleConfig('kitchen')

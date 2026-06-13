@@ -43,7 +43,7 @@ export function useBlankConsoleIndex() {
     selection,
     selectedId: computed(() => consoleSelection.blankId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
     ),
     runtime,
     targets: blanks.targets,

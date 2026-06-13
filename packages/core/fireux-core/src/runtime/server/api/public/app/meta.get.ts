@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useAssets } from '../../../../composables/fireux/app/useAssets'
 import { AppStorage } from '../../../../models/core/app.model'
 import type { FireuxMetaContent } from '../../../../models/system/meta-content.model'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
@@ -56,6 +57,7 @@ function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined 
 
 export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
+  const brandAssets = useAssets()
   const runtimeConfig = useRuntimeConfig()
   const meta = runtimeConfig.fireux?.meta
   const appDoc = await getRuntimeFirestore()
@@ -74,8 +76,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const socialImageUrl =
     toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
     toAbsoluteUrl(media.logo_url, siteOrigin) ||
-    toAbsoluteUrl(cfg.appThumbnail, siteOrigin) ||
-    toAbsoluteUrl(cfg.appLogo, siteOrigin)
+    toAbsoluteUrl(brandAssets.thumbnail, siteOrigin) ||
+    toAbsoluteUrl(brandAssets.logo, siteOrigin)
 
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',

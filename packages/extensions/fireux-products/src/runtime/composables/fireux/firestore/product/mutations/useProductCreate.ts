@@ -4,7 +4,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
   FirebaseProduct,

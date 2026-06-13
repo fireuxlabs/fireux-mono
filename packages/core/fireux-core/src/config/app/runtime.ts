@@ -9,14 +9,6 @@ export type RuntimeApp = {
   id: string
   name: string
   shortName: string
-  /** Optional app thumbnail path/URL (e.g. /img/app/thumbnail.png). */
-  appThumbnail?: string
-  /** Optional app logo path/URL (preferred over appThumbnail for listings). */
-  appLogo?: string
-  /** Optional light-mode logo path/URL for UI surfaces. */
-  appLogoLight?: string
-  /** Optional dark-mode logo path/URL for UI surfaces. */
-  appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Optional app-level design pack. Surface-specific packs belong in designPacks. */

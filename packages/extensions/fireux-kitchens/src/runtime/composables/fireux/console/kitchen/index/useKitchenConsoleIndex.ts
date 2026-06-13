@@ -25,7 +25,7 @@ export function useKitchenConsoleIndex() {
   const targetCollection = useKitchenCollection({ ids: targetIds })
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const targetPending = computed(() =>
-    source.isTenant.value
+    source.isTenant
       ? targetCollection.pending.value
       : Boolean(userPending.value || targetCollection.pending.value)
   )
@@ -35,11 +35,11 @@ export function useKitchenConsoleIndex() {
   }))
   const isTenantSingleTarget = computed(
     () =>
-      source.isSingleTenantTarget.value &&
+      source.isSingleTenantTarget &&
       Boolean(consoleSelection.kitchen.value)
   )
   const autoSelectTargetId = computed(() =>
-    source.isSingleTenantTarget.value ? source.targetIds.value[0] ?? '' : ''
+    source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
   )
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
@@ -47,7 +47,7 @@ export function useKitchenConsoleIndex() {
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
-    canCreate: source.canCreate.value,
+    canCreate: source.canCreate,
   }))
   const debug = computed(() => ({
     kitchenId: consoleSelection.kitchenId.value,

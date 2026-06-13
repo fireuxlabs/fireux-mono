@@ -1,8 +1,6 @@
 import { computed, isRef } from 'vue'
-import {
-  normalizeConsoleString as normalizeString,
-  useConsole,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   usePublishConsoleHeader,

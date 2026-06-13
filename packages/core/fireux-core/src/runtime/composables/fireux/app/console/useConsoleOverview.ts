@@ -1,11 +1,11 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import { normalizeConsoleString } from './useConsole'
+import { normalizeString } from '../../../../utils/string'
 
-type MaybeRef<T> = Ref<T> | ComputedRef<T>
+type ValueRef<T> = Ref<T> | ComputedRef<T>
 
 type UseConsoleOverviewOptions<T> = {
-  selectedEntity: MaybeRef<T | null | undefined>
-  targetItems: MaybeRef<(T | null | undefined)[] | null | undefined>
+  selectedEntity: ValueRef<T | null | undefined>
+  targetItems: ValueRef<(T | null | undefined)[] | null | undefined>
   getId: (item: T) => string
 }
 
@@ -19,7 +19,7 @@ export function useConsoleOverview<T>(
 
     return {
       entity,
-      id: entity ? normalizeConsoleString(options.getId(entity)) : '',
+      id: entity ? normalizeString(options.getId(entity)) : '',
       hasSelection: Boolean(entity),
     }
   })

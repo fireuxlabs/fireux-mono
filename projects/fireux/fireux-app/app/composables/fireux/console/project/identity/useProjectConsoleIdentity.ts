@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleIdentity() {

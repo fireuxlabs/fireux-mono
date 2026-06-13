@@ -1,6 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { normalizeString } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { ref } from 'vue'
 import { JobStorage, type JobCreateInput } from '../../../../../models/job.model'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'

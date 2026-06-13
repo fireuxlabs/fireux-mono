@@ -2,6 +2,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useRuntimeConfig } from '#imports'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 
@@ -12,6 +13,7 @@ export function useProjectBootstrapCreate() {
 
   async function createProjectDoc() {
     if (fireux.role !== 'global') return
+    const brandAssets = useAssets()
 
     const firebaseProjectId = String(
       runtime.public?.firebaseEcosystem?.firebase?.projectId || ''
@@ -36,7 +38,7 @@ export function useProjectBootstrapCreate() {
         name,
         slug: projectId,
         description: '',
-        image_url: String(fireux.appLogo || fireux.appThumbnail || '').trim(),
+        image_url: String(brandAssets.logo || brandAssets.thumbnail || '').trim(),
         status: 'active',
         source_url: sourceUrl,
         primary_project: true,

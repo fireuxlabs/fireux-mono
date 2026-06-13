@@ -1,12 +1,12 @@
 import { computed } from 'vue'
-import type { ConsoleFamily } from '../../console/console.types'
 import {
   CONSOLE_ROOT,
+  type ConsoleFamily,
   normalizeConsoleFamily,
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
 } from '../../routing/consoleRoutes'
-import { useFireUXConfig } from '../../FireUXConfig'
+import { useConsoleFamilies } from '../../console/useConsole'
 
 type ConsoleEntryFamily = {
   key: ConsoleFamily
@@ -21,11 +21,11 @@ export type ConsoleEntryAction = {
 }
 
 export function useConsoleEntryCta() {
-  const fireux = useFireUXConfig()
+  const { families } = useConsoleFamilies()
   const consoles = computed<ConsoleEntryFamily[]>(() =>
     Array.from(
       new Set(
-        (fireux.consoles || [])
+        families
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )
