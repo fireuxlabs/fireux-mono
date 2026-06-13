@@ -1,9 +1,10 @@
 <template>
-  <UPageCard
-    title="Operators"
-    :description="description"
-    variant="subtle"
-  >
+  <div class="space-y-3 rounded-lg bg-muted/30 p-3">
+    <div>
+      <div class="text-sm font-medium text-highlighted">Operators</div>
+      <p class="text-xs text-dimmed">{{ description }}</p>
+    </div>
+
     <div v-if="pending" class="text-sm text-dimmed">
       Loading operators...
     </div>
@@ -27,13 +28,7 @@
       description="This kitchen can be selected, but no operator users are listed on the selected kitchen yet."
     />
 
-    <DevFireuxDebugPanel
-      title="Kitchen operators"
-      scope="console"
-      :data="debug"
-      :default-open="false"
-    />
-  </UPageCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,23 +55,9 @@ const operatorCards = computed<UserCard.Card[]>(() =>
     .map((user) => pill(user))
     .filter((card): card is UserCard.Card => Boolean(card))
 )
-const missingOperatorIds = computed(() => {
-  const found = new Set(operatorCards.value.map((card) => card.id))
-  return operatorIds.value.filter((id) => !found.has(id))
-})
 const description = computed(() =>
   operatorIds.value.length
     ? 'Users listed in operator_ids can write and operate this selected kitchen.'
     : 'Operator access is stored on the selected kitchen.'
 )
-const debug = computed(() => ({
-  operatorIds: operatorIds.value,
-  visibleOperators: operatorCards.value.map((card) => ({
-    id: card.id,
-    displayName: card.displayName,
-    handle: card.handle,
-  })),
-  missingOperatorIds: missingOperatorIds.value,
-  pending: pending.value,
-}))
 </script>

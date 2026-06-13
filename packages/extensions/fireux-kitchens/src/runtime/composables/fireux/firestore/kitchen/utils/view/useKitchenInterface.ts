@@ -257,9 +257,9 @@ export function useKitchenInterface() {
 
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const displayName = safeString(target.display_name).trim()
+    const displayName = safeString(target.display_name || target.name).trim()
     const tagline = safeString(target.tagline).trim()
-    const imageUrl = safeString(target.display_image_url).trim()
+    const imageUrl = safeString(target.display_image_url || target.image_url).trim()
     const foodGallery = Array.isArray(target.food_gallery)
       ? target.food_gallery
           .map((image) => safeString(image).trim())

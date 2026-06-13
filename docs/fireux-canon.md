@@ -124,6 +124,7 @@ Ownership rule:
 - Kitchen tenant apps use app `kitchen.config.ts`; Kitchen global apps use `user.myKitchens`.
 - Console target membership is canon-wide:
   - configured tenant targets and explicit user target indexes, such as `myKitchens`, let the user see/select listed targets.
+  - console pages should read authority from the selected runtime target record, not from a public/root target preview when the target is app-scoped.
   - `team_ids` means the user may see/select the target in that console.
   - `operator_ids` means the user may write/operate the selected target.
   - mutation seams must check `operator_ids`; profile links and target indexes must not grant write authority by themselves.

@@ -7,7 +7,13 @@
         :focus="focus"
         :multiple="multiple"
         :card="focusCard"
-      />
+      >
+        <ConsoleKitchenOverviewMenus
+          :menus="menus"
+          :pending="menusPending"
+        />
+        <ConsoleKitchenOverviewOperators :operator-ids="operatorIds" />
+      </ConsoleOverviewFocus>
       <ConsoleOverviewMultiple
         entity-label="Kitchen"
         entity-plural-label="Kitchens"
@@ -16,16 +22,11 @@
       />
     </div>
 
-    <ConsoleKitchenOverviewOperators
-      class="mt-4"
-      :operator-ids="operatorIds"
-    />
-
     <div class="mt-4">
       <DevFireuxDebugPanel
         title="Kitchen overview"
         scope="console"
-        :data="debug"
+        :data="pageDebug"
         :default-open="false"
       />
     </div>
@@ -37,9 +38,16 @@ import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import { useKitchenConsoleOverview } from '../../../composables/fireux/console/kitchen/overview/useKitchenConsoleOverview'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { useMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 
-const { focus, multiple, debug } = useKitchenConsoleOverview()
+const { focus, multiple, debug, kitchenId, rootCollection } = useKitchenConsoleOverview()
 const { pill } = useKitchenInterface()
+const {
+  activeMenus: menus,
+  pending: menusPending,
+} = useMenuCollection(kitchenId, {
+  kitchenCollectionPath: rootCollection,
+})
 const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
 const operatorIds = computed(() =>
   Array.from(
@@ -50,6 +58,18 @@ const operatorIds = computed(() =>
     )
   )
 )
+const pageDebug = computed(() => ({
+  ...debug.value,
+  operators: {
+    ids: operatorIds.value,
+    count: operatorIds.value.length,
+  },
+  menus: {
+    count: menus.value.length,
+    names: menus.value.map((menu) => String(menu.name || menu.id || '').trim()).filter(Boolean),
+    pending: menusPending.value,
+  },
+}))
 const multipleCards = computed(() =>
   multiple.value.items
     .map((kitchen) => pill(kitchen) as ConsoleTargetCard | null)

@@ -26,6 +26,8 @@
           <span class="console-summary-value">{{ multipleCountLabel }}</span>
         </div>
       </div>
+
+      <slot />
     </div>
 
     <p v-else class="console-card-header__description">

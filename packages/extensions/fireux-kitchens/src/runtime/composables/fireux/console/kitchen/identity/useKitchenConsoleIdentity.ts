@@ -1,7 +1,5 @@
 import { computed } from 'vue'
 import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
-import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleIdentity() {
@@ -15,12 +13,7 @@ export function useKitchenConsoleIdentity() {
   const rootCollection = runtime.rootCollection
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const { kitchen: selectedKitchenDoc } = useKitchenFetch(kitchenId, {
-    collectionPath: KitchenStorage.rootCollection,
-  })
-  const selectedKitchen = computed(
-    () => selectedKitchenDoc.value ?? selectedConsoleKitchen.value
-  )
+  const selectedKitchen = computed(() => selectedConsoleKitchen.value)
   const kitchenRecord = computed(
     () => selectedKitchen.value as Record<string, unknown> | null
   )

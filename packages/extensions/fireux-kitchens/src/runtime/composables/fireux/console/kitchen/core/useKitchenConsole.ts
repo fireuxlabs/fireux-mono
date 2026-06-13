@@ -15,15 +15,64 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type KitchenConsoleEntity = KitchenSurface
 
+const displayIdentityKeys = [
+  'name',
+  'display_name',
+  'short_name',
+  'short_address',
+  'formatted_address',
+  'display_image_url',
+  'image_url',
+  'cover_image',
+  'brand_tagline',
+] as const
+
 const uniqueStrings = (values: unknown[]) =>
   Array.from(
     new Set(values.map((value) => normalizeString(value)).filter(Boolean))
   )
+
+const mergeSelectedKitchen = (
+  target: KitchenConsoleEntity | null,
+  runtime: KitchenConsoleEntity | null
+): KitchenConsoleEntity | null => {
+  if (!target) return runtime
+  if (!runtime) return target
+
+  const merged = {
+    ...(target as Record<string, unknown>),
+    ...(runtime as Record<string, unknown>),
+  }
+
+  for (const key of displayIdentityKeys) {
+    if (normalizeString(merged[key])) continue
+
+    const targetValue = (target as Record<string, unknown>)[key]
+    if (normalizeString(targetValue)) merged[key] = targetValue
+  }
+
+  const targetImage =
+    normalizeString((target as Record<string, unknown>).display_image_url) ||
+    normalizeString((target as Record<string, unknown>).image_url)
+
+  if (targetImage) {
+    if (!normalizeString(merged.display_image_url)) {
+      merged.display_image_url = targetImage
+    }
+
+    if (!normalizeString(merged.image_url)) {
+      merged.image_url = targetImage
+    }
+  }
+
+  return merged as KitchenConsoleEntity
+}
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -91,18 +140,29 @@ export function useKitchenConsole() {
       targetPending,
       getId: (kitchen) => normalizeString(kitchen?.id),
     })
-  const selectedKitchen = computed<KitchenConsoleEntity | null>(
+  const selectedTargetKitchen = computed<KitchenConsoleEntity | null>(
     () => selectedEntity.value
   )
-  const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
+  const kitchenId = computed(() => normalizeString(selectedTargetKitchen.value?.id))
   const activeKitchenAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedKitchen.value, appId)
+    resolveConsoleEntityAppId(selectedTargetKitchen.value, appId)
   )
   const databaseId = computed(() =>
     readRuntimeFirestoreDatabaseId() || ''
   )
   const rootCollection = computed(() =>
     resolveKitchenScopeCollectionPath(activeKitchenAppId.value)
+  )
+  const { kitchen: runtimeKitchen } = useKitchenFetch(kitchenId, {
+    collectionPath: rootCollection,
+    hydrate: false,
+  })
+  const selectedKitchen = computed<KitchenConsoleEntity | null>(
+    () =>
+      mergeSelectedKitchen(
+        selectedTargetKitchen.value,
+        runtimeKitchen.value as KitchenConsoleEntity | null
+      )
   )
   const readOnly = computed(() => false)
   const canCreate = computed(() => consoleConfig.canCreateTarget())
@@ -125,7 +185,10 @@ export function useKitchenConsole() {
         normalizeString(kitchen.short_address) ||
         normalizeString(kitchen.formatted_address) ||
         undefined,
-      imageUrl: normalizeString(kitchen.image_url) || undefined,
+      imageUrl:
+        normalizeString(kitchen.display_image_url) ||
+        normalizeString(kitchen.image_url) ||
+        undefined,
     }
   })
 
@@ -141,7 +204,7 @@ export function useKitchenConsole() {
     targetKitchens,
     (kitchens) => {
       if (
-        selectedKitchen.value ||
+        selectedTargetKitchen.value ||
         !autoSelectSingle.value ||
         kitchens.length !== 1
       ) {
