@@ -1,7 +1,6 @@
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
@@ -97,8 +96,6 @@ export function useKitchenConsole() {
    * - runtime: selected Kitchen scope/read/write context
    * - actions: select/clear helpers
   */
-  const fireux = useFireUXConfig()
-  const { appId } = fireux
   const consoleRoot = useConsole('kitchen')
   const { uid } = useAuth()
 
@@ -114,7 +111,7 @@ export function useKitchenConsole() {
     () => publicKitchen.value as KitchenConsoleEntity | null
   )
   const scopedAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedPublicKitchen.value, appId)
+    resolveConsoleEntityAppId(selectedPublicKitchen.value, consoleRoot.appId)
   )
   const databaseId = computed(() =>
     readRuntimeFirestoreDatabaseId() || ''
@@ -135,7 +132,7 @@ export function useKitchenConsole() {
   )
   const readOnly = computed(() => false)
   const autoSelectSingle = computed(
-    () => fireux.isTenant && configKitchenIds.value.length === 1
+    () => consoleRoot.isTenant && configKitchenIds.value.length === 1
   )
   const canWrite = computed(() =>
     !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)

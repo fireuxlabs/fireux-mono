@@ -12,13 +12,11 @@ type UsePropertyConsoleIndexOptions = {
 export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
-  const source = useConsoleTargets({ family: 'property' })
+  const consoleTargets = useConsoleTargets({ family: 'property' })
   const targetFilter = computed<PropertyCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant
-      ? { ...explicit, ids: source.targetIds.value }
-      : explicit
+    return consoleTargets.filter(explicit)
   })
   const {
     properties,
@@ -46,7 +44,7 @@ export function usePropertyConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedProperty: consoleSelection.property.value,
     targetCount: properties.count.value,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
     status: 'property console uses scaffold data until Firestore property fetch/create is wired',
   }))
 
@@ -54,7 +52,7 @@ export function usePropertyConsoleIndex(
     selection,
     selectedId: computed(() => consoleSelection.propertyId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
+      consoleTargets.singleTargetId.value
     ),
     runtime,
     targets: properties.targets,

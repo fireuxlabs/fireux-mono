@@ -1,7 +1,7 @@
 import { computed, isRef } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -29,7 +29,7 @@ type UsePropertyConsoleOptions = {
  * It should not become a Portfolio management seam or a public property info page helper.
  */
 export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
-  const { appId } = useFireUXConfig()
+  const consoleRoot = useConsole('property')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<PropertyCollectionFilter>(() => {
@@ -62,7 +62,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const selectedProperty = computed<Property | null>(() => selectedTarget.value)
   const propertyId = computed(() => normalizeString(selectedId.value))
   const activePropertyAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedProperty.value, appId)
+    resolveConsoleEntityAppId(selectedProperty.value, consoleRoot.appId)
   )
   const rootCollection = computed(() =>
     PropertyStorage.rootCollection

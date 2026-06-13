@@ -11,13 +11,11 @@ type UseSupplierConsoleIndexOptions = {
 export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
-  const source = useConsoleTargets({ family: 'supplier' })
+  const consoleTargets = useConsoleTargets({ family: 'supplier' })
   const targetFilter = computed<SupplierCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant
-      ? { ...explicit, ids: source.targetIds.value }
-      : explicit
+    return consoleTargets.filter(explicit)
   })
   const {
     suppliers,
@@ -45,14 +43,14 @@ export function useSupplierConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedSupplier: consoleSelection.supplier.value,
     targetCount: suppliers.count.value,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.supplierId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
+      consoleTargets.singleTargetId.value
     ),
     runtime,
     targets: suppliers.targets,

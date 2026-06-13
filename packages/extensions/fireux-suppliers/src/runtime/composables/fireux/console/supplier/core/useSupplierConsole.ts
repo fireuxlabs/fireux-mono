@@ -1,7 +1,7 @@
 import { computed, isRef } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -32,7 +32,7 @@ type UseSupplierConsoleOptions = {
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
-  const { appId } = useFireUXConfig()
+  const consoleRoot = useConsole('supplier')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<SupplierCollectionFilter>(() => {
@@ -65,7 +65,7 @@ export function useSupplierConsole(
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
   const activeSupplierAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedSupplier.value, appId)
+    resolveConsoleEntityAppId(selectedSupplier.value, consoleRoot.appId)
   )
   const rootCollection = computed(() =>
     SupplierStorage.rootCollection

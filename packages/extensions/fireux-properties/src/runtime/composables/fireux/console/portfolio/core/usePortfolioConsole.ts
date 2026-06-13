@@ -1,7 +1,7 @@
 import { computed, isRef } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -41,7 +41,7 @@ type UsePortfolioConsoleOptions = {
  * It should not own Portfolio child operation records; those live under console/portfolio/operations.
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
-  const { appId } = useFireUXConfig()
+  const consoleRoot = useConsole('portfolio')
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
   const { pill } = usePortfolioInterface()
@@ -77,7 +77,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   )
   const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
   const activePortfolioAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedPortfolio.value, appId)
+    resolveConsoleEntityAppId(selectedPortfolio.value, consoleRoot.appId)
   )
   const rootCollection = computed(() =>
     PortfolioStorage.rootCollection

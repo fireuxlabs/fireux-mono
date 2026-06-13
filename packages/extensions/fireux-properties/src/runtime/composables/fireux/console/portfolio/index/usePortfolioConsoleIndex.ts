@@ -14,13 +14,11 @@ type UsePortfolioConsoleIndexOptions = {
 export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
-  const source = useConsoleTargets({ family: 'portfolio' })
+  const consoleTargets = useConsoleTargets({ family: 'portfolio' })
   const targetFilter = computed<PortfolioCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant
-      ? { ...explicit, ids: source.targetIds.value }
-      : explicit
+    return consoleTargets.filter(explicit)
   })
   const {
     portfolios,
@@ -48,14 +46,14 @@ export function usePortfolioConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedPortfolio: consoleSelection.portfolio.value,
     targetCount: portfolios.count.value,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.portfolioId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
+      consoleTargets.singleTargetId.value
     ),
     runtime,
     targets: portfolios.targets,

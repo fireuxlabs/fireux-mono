@@ -9,6 +9,8 @@ type UseConsoleTargetsOptions = {
   globalTargetIds?: ValueRef<unknown[] | null | undefined>
 }
 
+type ConsoleTargetFilter = Record<string, unknown>
+
 export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const consoleRoot = useConsole(options.family)
   const mode: ConsoleAppMode = consoleRoot.mode
@@ -22,6 +24,11 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const canCreate = consoleRoot.canCreateTarget()
   const isTenant = mode === 'tenant'
   const isSingleTenantTarget = isTenant && configTargetIds.length === 1
+  const singleTargetId = computed(() =>
+    isSingleTenantTarget ? targetIds.value[0] ?? '' : ''
+  )
+  const filter = <TFilter extends ConsoleTargetFilter>(base: TFilter) =>
+    isTenant ? { ...base, ids: targetIds.value } : base
   const debug = computed(() => ({
     family: normalizeString(options.family),
     appMode: mode,
@@ -33,7 +40,6 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   }))
 
   return {
-    appContext: consoleRoot,
     console: consoleRoot,
     mode,
     isTenant,
@@ -44,6 +50,8 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     targetIds,
     canCreate,
     isSingleTenantTarget,
+    singleTargetId,
+    filter,
     debug,
   }
 }

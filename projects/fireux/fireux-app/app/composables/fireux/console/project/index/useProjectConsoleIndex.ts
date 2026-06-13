@@ -11,13 +11,11 @@ type UseProjectConsoleIndexOptions = {
 export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
-  const source = useConsoleTargets({ family: 'project' })
+  const consoleTargets = useConsoleTargets({ family: 'project' })
   const targetFilter = computed<ProjectCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 
-    return source.isTenant
-      ? { ...explicit, ids: source.targetIds.value }
-      : explicit
+    return consoleTargets.filter(explicit)
   })
   const {
     projects,
@@ -43,14 +41,14 @@ export function useProjectConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedProject: consoleSelection.project.value,
     targetCount: projects.count.value,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.projectId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
+      consoleTargets.singleTargetId.value
     ),
     runtime,
     targets: projects.targets,

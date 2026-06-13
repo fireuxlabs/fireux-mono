@@ -15,15 +15,15 @@ export function useKitchenConsoleIndex() {
   const myKitchenIds = computed(() =>
     Array.isArray(coreUser.value?.myKitchens) ? coreUser.value.myKitchens : []
   )
-  const source = useConsoleTargets({
+  const consoleTargets = useConsoleTargets({
     family: 'kitchen',
     globalTargetIds: myKitchenIds,
   })
-  const targetIds = source.targetIds
+  const targetIds = consoleTargets.targetIds
   const targetCollection = useKitchenCollection({ ids: targetIds })
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const targetPending = computed(() =>
-    source.isTenant
+    consoleTargets.isTenant
       ? targetCollection.pending.value
       : Boolean(userPending.value || targetCollection.pending.value)
   )
@@ -33,19 +33,17 @@ export function useKitchenConsoleIndex() {
   }))
   const isTenantSingleTarget = computed(
     () =>
-      source.isSingleTenantTarget &&
+      consoleTargets.isSingleTenantTarget &&
       Boolean(consoleSelection.kitchen.value)
   )
-  const autoSelectTargetId = computed(() =>
-    source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
-  )
+  const autoSelectTargetId = consoleTargets.singleTargetId
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
     kitchenCollectionPath: consoleRuntime.kitchenCollectionPath.value,
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
-    canCreate: source.canCreate,
+    canCreate: consoleTargets.canCreate,
   }))
   const debug = computed(() => ({
     kitchenId: consoleSelection.kitchenId.value,
@@ -56,7 +54,7 @@ export function useKitchenConsoleIndex() {
     canWrite: consoleRuntime.canWrite.value,
     selectedKitchen: consoleSelection.kitchen.value,
     targetCount: targetKitchens.value.length,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))
 

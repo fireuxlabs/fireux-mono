@@ -10,7 +10,7 @@ import { useBlankConsole } from '../core/useBlankConsole'
  * root target cards, create route, and dev debug only.
  */
 export function useBlankConsoleIndex() {
-  const source = useConsoleTargets({ family: 'blank' })
+  const consoleTargets = useConsoleTargets({ family: 'blank' })
   const {
     blanks,
     selection: consoleSelection,
@@ -34,14 +34,14 @@ export function useBlankConsoleIndex() {
     rootCollection: consoleRuntime.rootCollection.value,
     appCollectionPath: consoleRuntime.appCollectionPath.value,
     readOnly: consoleRuntime.readOnly.value,
-    source: source.debug.value,
+    source: consoleTargets.debug.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.blankId.value),
     autoSelectTargetId: computed(() =>
-      source.isSingleTenantTarget ? source.targetIds.value[0] ?? '' : ''
+      consoleTargets.singleTargetId.value
     ),
     runtime,
     targets: blanks.targets,
