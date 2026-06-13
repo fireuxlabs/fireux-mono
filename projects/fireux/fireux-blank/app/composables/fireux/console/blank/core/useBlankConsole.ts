@@ -1,10 +1,6 @@
 import { computed } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 import type { Blank } from '../../../../../models/blank.model'
 
@@ -24,33 +20,21 @@ export function useBlankConsole() {
     useBlankCollection()
   const targetBlanks = computed(() => blankRecords.value)
   const {
-    selectedEntity,
-    selectEntity,
+    selectedTarget,
+    selectTarget,
     clearSelection,
-  } = useConsole<Blank>('blank', {
+  } = useConsoleSelection<Blank>('blank', {
     targetItems: targetBlanks,
     getId: (target) => normalizeString(target?.id),
   })
-  const selectedBlank = computed<Blank | null>(() => selectedEntity.value)
+  const selectedBlank = computed<Blank | null>(() => selectedTarget.value)
   const blankId = computed(() => normalizeString(selectedBlank.value?.id))
   const rootCollection = computed(() => rootCollectionPath)
   const hasTargets = computed(() => targetBlanks.value.length > 0)
   const readOnly = computed(() => true)
   const canWrite = computed(() => false)
-  const header = computed<ConsoleHeaderData>(() => {
-    const blank = selectedBlank.value
-    if (!blank) return null
-
-    return {
-      title: normalizeString(blank.name) || normalizeString(blank.id),
-      subtitle: normalizeString(blank.slug) || undefined,
-    }
-  })
-
-  usePublishConsoleHeader('blank', header)
-
   const selectBlank = (blankId: string) => {
-    selectEntity(blankId)
+    selectTarget(blankId)
   }
   const clearSelectedBlank = () => {
     clearSelection()

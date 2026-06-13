@@ -1,11 +1,7 @@
 import { computed, isRef } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useProjectCollection,
@@ -52,12 +48,12 @@ export function useProjectConsole(
   const { projects: targetProjects, pending: targetsPending } = useProjectCollection({
     filter: targetFilter,
   })
-  const { selectedEntity, selectEntity, clearSelection } =
-    useConsole<ProjectSurface>('project', {
+  const { selectedTarget, selectTarget, clearSelection } =
+    useConsoleSelection<ProjectSurface>('project', {
     targetItems: targetProjects,
     getId: (project) => normalizeString(project?.id),
   })
-  const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
+  const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedTarget.value)
   const projectId = computed(() => normalizeString(selectedProject.value?.id))
   const rootCollection = computed(() => 'projects')
   const readOnly = computed(() => false)
@@ -65,25 +61,12 @@ export function useProjectConsole(
     !readOnly.value && targetHasOperator(selectedProject.value, userId.value)
   )
 
-  const header = computed<ConsoleHeaderData>(() => {
-    const project = selectedProject.value
-    if (!project) return null
-
-    return {
-      title: normalizeString(project.name) || normalizeString(project.id),
-      subtitle: normalizeString('slug' in project ? project.slug : '') || undefined,
-      imageUrl: normalizeString(project.image_url) || undefined,
-    }
-  })
-
-  usePublishConsoleHeader('project', header)
-
   const clearSelectedProject = () => {
     clearSelection()
   }
 
   const selectProject = (projectId: string) => {
-    selectEntity(projectId)
+    selectTarget(projectId)
   }
   const projects = {
     targets: targetProjects,

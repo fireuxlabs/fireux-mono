@@ -1,8 +1,6 @@
 import { computed } from 'vue'
-import {
-  useConsoleIndex,
-  useConsoleIndexSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenConsole } from '../core/useKitchenConsole'
@@ -17,7 +15,7 @@ export function useKitchenConsoleIndex() {
   const myKitchenIds = computed(() =>
     Array.isArray(coreUser.value?.myKitchens) ? coreUser.value.myKitchens : []
   )
-  const source = useConsoleIndexSource({
+  const source = useConsoleTargets({
     family: 'kitchen',
     globalTargetIds: myKitchenIds,
   })

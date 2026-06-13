@@ -1,13 +1,9 @@
 import { computed, isRef } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   usePortfolioCollection,
@@ -67,17 +63,17 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
 
   const {
     selectedId,
-    selectedEntity,
-    selectEntity,
+    selectedTarget,
+    selectTarget,
     clearSelection,
-  } = useConsole<PortfolioConsoleEntity>('portfolio', {
+  } = useConsoleSelection<PortfolioConsoleEntity>('portfolio', {
     targetItems: targetPortfolios,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
   })
 
   const selectedPortfolio = computed<PortfolioConsoleEntity | null>(
-    () => selectedEntity.value as PortfolioConsoleEntity | null
+    () => selectedTarget.value as PortfolioConsoleEntity | null
   )
   const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
   const activePortfolioAppId = computed(() =>
@@ -109,19 +105,6 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     entity: selectedPortfolio,
   }
 
-  const header = computed<ConsoleHeaderData>(() => {
-    const target = selectedPortfolio.value as Record<string, unknown> | null
-    if (!target) return null
-
-    return {
-      title: normalizeString(target.name) || normalizeString(target.id),
-      subtitle: normalizeString(target.tagline) || undefined,
-      imageUrl: normalizeString(target.image_url) || undefined,
-    }
-  })
-
-  usePublishConsoleHeader('portfolio', header)
-
   const clearSelectedPortfolio = () => {
     clearSelection()
   }
@@ -129,7 +112,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const selectPortfolio = (
     portfolioId: string,
   ) => {
-    selectEntity(portfolioId)
+    selectTarget(portfolioId)
   }
   const portfolios = {
     targets: targetPortfolios,

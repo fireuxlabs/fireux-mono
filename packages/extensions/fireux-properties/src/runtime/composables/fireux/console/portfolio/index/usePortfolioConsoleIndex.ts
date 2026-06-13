@@ -1,8 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
-import {
-  useConsoleIndex,
-  useConsoleIndexSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import type { PortfolioCollectionFilter } from '../../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioConsole } from '../core/usePortfolioConsole'
 
@@ -16,7 +14,7 @@ type UsePortfolioConsoleIndexOptions = {
 export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
-  const source = useConsoleIndexSource({ family: 'portfolio' })
+  const source = useConsoleTargets({ family: 'portfolio' })
   const targetFilter = computed<PortfolioCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 

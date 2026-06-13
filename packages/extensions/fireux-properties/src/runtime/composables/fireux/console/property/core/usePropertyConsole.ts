@@ -1,13 +1,9 @@
 import { computed, isRef } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
@@ -55,15 +51,15 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
 
   const {
     selectedId,
-    selectedEntity,
-    selectEntity,
+    selectedTarget,
+    selectTarget,
     clearSelection,
-  } = useConsole<Property>('property', {
+  } = useConsoleSelection<Property>('property', {
     targetItems: targetProperties,
     getId: (property) => normalizeString(property?.id),
   })
 
-  const selectedProperty = computed<Property | null>(() => selectedEntity.value)
+  const selectedProperty = computed<Property | null>(() => selectedTarget.value)
   const propertyId = computed(() => normalizeString(selectedId.value))
   const activePropertyAppId = computed(() =>
     resolveConsoleEntityAppId(selectedProperty.value, appId)
@@ -76,28 +72,12 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     !readOnly.value && targetHasOperator(selectedProperty.value, userId.value)
   )
 
-  const header = computed<ConsoleHeaderData>(() => {
-    const property = selectedProperty.value
-    if (!property) return null
-
-    return {
-      title: normalizeString(property.identity?.name) || normalizeString(property.id),
-      subtitle: [
-        property.identity?.city,
-        property.identity?.country,
-      ].map((part) => normalizeString(part)).filter(Boolean).join(', ') || undefined,
-      imageUrl: normalizeString(property.identity?.image_url) || undefined,
-    }
-  })
-
-  usePublishConsoleHeader('property', header)
-
   const clearSelectedProperty = () => {
     clearSelection()
   }
 
   const selectProperty = (propertyId: string) => {
-    selectEntity(propertyId)
+    selectTarget(propertyId)
   }
   const properties = {
     targets: targetProperties,

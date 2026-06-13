@@ -1,4 +1,5 @@
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 type SupplierConsoleSelectionInput = {
   selectedId?: string
@@ -6,18 +7,23 @@ type SupplierConsoleSelectionInput = {
 }
 
 export function useSupplierConsoleSelection() {
-  const selection = useConsoleSelection({ family: 'supplier' })
+  const { selectedId, selectTarget, clearSelection } =
+    useConsoleSelection('supplier')
 
   const setSupplierConsoleSelection = (selectionPatch: SupplierConsoleSelectionInput = {}) => {
-    selection.setSelection({
-      selectedId: selectionPatch.selectedId,
-      id: selectionPatch.supplierId,
-    })
+    const hasNextId =
+      selectionPatch.selectedId !== undefined ||
+      selectionPatch.supplierId !== undefined
+    const nextId = hasNextId
+      ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
+      : selectedId.value
+
+    selectTarget(nextId)
   }
 
   return {
-    selectedId: selection.selectedId,
+    selectedId,
     setSupplierConsoleSelection,
-    clearSupplierConsoleSelection: selection.clearSelection,
+    clearSupplierConsoleSelection: clearSelection,
   }
 }

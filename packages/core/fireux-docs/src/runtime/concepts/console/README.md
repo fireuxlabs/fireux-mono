@@ -246,13 +246,13 @@ The canonical console spine shape is:
 - `pages/console/<family>/index.vue` renders the console dashboard panel and the single `<ConsoleXIndex />` entry component.
 - `<ConsoleXIndex />` is the target picker spine and renders the same vertical sections for every console family: selected, targets, then dev debug.
 - each section lives in `components/Console/X/Index/*` so the family can own labels and domain-specific cards without owning a different spine.
-- `useXConsoleIndex()` lives in `console/<family>/index/`, composes family data, and calls `useConsoleIndex()` from `fireux-core`.
+- `useXConsoleIndex()` lives in `console/<family>/index/`, composes family data, calls `useConsoleTargets()` for target source, then calls `useConsoleIndex()` for the page spine.
 - `components/Console/X/Overview.vue` is the selected target spine and renders the same overview sections for every console family: focus, multiple, then dev debug.
 - `useXConsoleOverview()` lives in `console/<family>/overview/`, composes family data, and calls `useConsoleOverview()` from `fireux-core`.
-- `useXConsole()` lives in `console/<family>/core/` and owns selected entity, root/app scope, write permission, and console header state.
+- `useXConsole()` lives in `console/<family>/core/` and owns selected entity, root/app scope, and write permission.
 - `useXConsoleIdentity()` lives in `console/<family>/identity/` and owns selected target identity read/edit state.
-- `useXConsoleSelection()` lives in `console/<family>/core/` and owns selected target id state.
-- core provides primitives, not a whole all-in-one console shell: `useConsole()`, `useConsoleIndex()`, `useConsoleOverview()`, `useConsoleSelection()`, console authority helpers, and `ConsoleTargetCard`.
+- `useXConsoleSelection()` lives in `console/<family>/core/` only when the family needs a small explicit selected-id helper; it calls `useConsoleSelection()` directly.
+- core provides primitives, not a whole all-in-one console shell: `useConsole()`, `useConsoleSelection()`, `useConsoleTargets()`, `useConsoleIndex()`, `useConsoleOverview()`, `useConsoleTeam()`, `useConsoleAccess()`, and `ConsoleTargetCard`.
 
 ## Public Identity Surface
 

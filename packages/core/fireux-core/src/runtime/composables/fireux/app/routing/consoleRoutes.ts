@@ -55,7 +55,3 @@ export function toConsoleFamilyLabel(key: ConsoleFamily | string) {
 export function toConsoleSelectionStateKey(family: ConsoleFamily | string) {
   return `fireux_runtime_${normalizeConsoleFamily(family)}`
 }
-
-export function toConsoleHeaderStateKey(family: ConsoleFamily | string) {
-  return `${toConsoleSelectionStateKey(family)}_header`
-}

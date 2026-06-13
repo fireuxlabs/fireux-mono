@@ -1,16 +1,9 @@
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { normalizeString, uniqueStrings } from '../../../../utils/string'
-import { useConsole, useConsoleConfig } from './useConsole'
+import { normalizeString } from '../../../../utils/string'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 
 type ConsoleIndexDebug = Record<string, unknown>
-type ConsoleIndexSourceMode = 'tenant' | 'global' | 'standalone'
-
-type UseConsoleIndexSourceOptions = {
-  family: string
-  globalTargetIds?: ValueRef<unknown[] | null | undefined>
-}
 
 type UseConsoleIndexOptions<
   TTarget,
@@ -27,47 +20,6 @@ type UseConsoleIndexOptions<
   selectTarget: (id: string) => void
   clearSelection?: () => void
   debug?: ValueRef<ConsoleIndexDebug | null | undefined>
-}
-
-export function useConsoleIndexSource(
-  options: UseConsoleIndexSourceOptions
-) {
-  const console = useConsole(options.family)
-  const consoleConfig = useConsoleConfig(options.family)
-  const mode: ConsoleIndexSourceMode = console.appContext.mode
-  const configTargetIds = uniqueStrings(consoleConfig.targetIds())
-  const globalTargetIds = computed(() =>
-    uniqueStrings(options.globalTargetIds ? unref(options.globalTargetIds) ?? [] : [])
-  )
-  const targetIds = computed(() =>
-    mode === 'tenant' ? configTargetIds : globalTargetIds.value
-  )
-  const canCreate = consoleConfig.canCreateTarget()
-  const isTenant = mode === 'tenant'
-  const isSingleTenantTarget = isTenant && configTargetIds.length === 1
-  const debug = computed(() => ({
-    family: normalizeString(options.family),
-    appMode: mode,
-    configTargetIds,
-    globalTargetIds: globalTargetIds.value,
-    targetIds: targetIds.value,
-    canCreate,
-    isSingleTenantTarget,
-  }))
-
-  return {
-    appContext: console.appContext,
-    mode,
-    isTenant,
-    isGlobal: mode === 'global',
-    isStandalone: mode === 'standalone',
-    configTargetIds,
-    globalTargetIds,
-    targetIds,
-    canCreate,
-    isSingleTenantTarget,
-    debug,
-  }
 }
 
 export function useConsoleIndex<

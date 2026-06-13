@@ -26,10 +26,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import ProjectCreateSystem from 'fireux-core/runtime/components/Project/Create/System.vue'
 
-const { canCreateTarget } = useConsoleConfig('project')
+const { canCreateTarget } = useConsole('project')
 const canCreate = computed(() => canCreateTarget())
 
 definePageMeta({

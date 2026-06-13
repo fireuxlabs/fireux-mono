@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { normalizeConsoleOperatorIds } from './useConsoleAuthority'
+import { targetAccessIds, targetOperatorIds, targetTeamIds } from './useConsoleAccess'
 
 type UseConsoleTeamOptions = {
   target: Ref<unknown | null | undefined>
@@ -8,21 +8,14 @@ type UseConsoleTeamOptions = {
   canWrite?: Ref<boolean>
 }
 
-const targetField = (target: unknown, key: 'team_ids' | 'operator_ids') =>
-  (target as Record<string, unknown> | null | undefined)?.[key]
-
 export function useConsoleTeam(options: UseConsoleTeamOptions) {
   const teamIds = computed(() =>
-    normalizeConsoleOperatorIds(targetField(options.target.value, 'team_ids'))
+    targetTeamIds(options.target.value)
   )
   const operatorIds = computed(() =>
-    normalizeConsoleOperatorIds(
-      targetField(options.target.value, 'operator_ids')
-    )
+    targetOperatorIds(options.target.value)
   )
-  const accessIds = computed(() =>
-    Array.from(new Set([...teamIds.value, ...operatorIds.value]))
-  )
+  const accessIds = computed(() => targetAccessIds(options.target.value))
   const targetId = computed(() => String(options.targetId?.value ?? '').trim())
   const readOnly = computed(() => Boolean(options.readOnly?.value))
   const canWrite = computed(() => Boolean(options.canWrite?.value))

@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 
-const { canCreateTarget } = useConsoleConfig('supplier')
+const { canCreateTarget } = useConsole('supplier')
 const canCreate = computed(() => canCreateTarget())
 
 definePageMeta({

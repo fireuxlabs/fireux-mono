@@ -1,8 +1,6 @@
 import { computed, unref } from 'vue'
-import {
-  useConsoleIndex,
-  useConsoleIndexSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import type { PropertyCollectionFilter } from '../../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 import type { Ref } from 'vue'
@@ -14,7 +12,7 @@ type UsePropertyConsoleIndexOptions = {
 export function usePropertyConsoleIndex(
   options: UsePropertyConsoleIndexOptions = {}
 ) {
-  const source = useConsoleIndexSource({ family: 'property' })
+  const source = useConsoleTargets({ family: 'property' })
   const targetFilter = computed<PropertyCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 

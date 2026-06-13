@@ -1,13 +1,9 @@
 import { computed, isRef } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useSupplierCollection,
@@ -56,16 +52,16 @@ export function useSupplierConsole(
   })
 
   const {
-    selectedEntity,
-    selectEntity,
+    selectedTarget,
+    selectTarget,
     clearSelection,
-  } = useConsole<SupplierSurface>('supplier', {
+  } = useConsoleSelection<SupplierSurface>('supplier', {
     targetItems: targetSuppliers,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
   })
 
   const selectedSupplier = computed<SupplierSurface | null>(
-    () => selectedEntity.value as SupplierSurface | null
+    () => selectedTarget.value as SupplierSurface | null
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
   const activeSupplierAppId = computed(() =>
@@ -79,29 +75,12 @@ export function useSupplierConsole(
     !readOnly.value && targetHasOperator(selectedSupplier.value, userId.value)
   )
 
-  const header = computed<ConsoleHeaderData>(() => {
-    const target = selectedSupplier.value as Record<string, unknown> | null
-    if (!target) return null
-
-    return {
-      title:
-        normalizeString(target.supplier_organization_name) ||
-        normalizeString(target.name) ||
-        normalizeString(target.display_name) ||
-        normalizeString(target.id),
-      subtitle: normalizeString(target.tagline) || undefined,
-      imageUrl: normalizeString(target.supplier_image) || undefined,
-    }
-  })
-
-  usePublishConsoleHeader('supplier', header)
-
   const clearSelectedSupplier = () => {
     clearSelection()
   }
 
   const selectSupplier = (supplierId: string) => {
-    selectEntity(supplierId)
+    selectTarget(supplierId)
   }
   const suppliers = {
     targets: targetSuppliers,

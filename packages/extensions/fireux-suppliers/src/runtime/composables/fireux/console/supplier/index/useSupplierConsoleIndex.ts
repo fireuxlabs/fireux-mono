@@ -1,8 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
-import {
-  useConsoleIndex,
-  useConsoleIndexSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import type { SupplierCollectionFilter } from '../../../firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierConsole } from '../core/useSupplierConsole'
 
@@ -13,7 +11,7 @@ type UseSupplierConsoleIndexOptions = {
 export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
-  const source = useConsoleIndexSource({ family: 'supplier' })
+  const source = useConsoleTargets({ family: 'supplier' })
   const targetFilter = computed<SupplierCollectionFilter>(() => {
     const explicit = options.filter ? unref(options.filter) ?? {} : {}
 

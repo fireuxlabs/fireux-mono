@@ -5,11 +5,8 @@ import {
   normalizeConsoleFamily,
   consoleFamilyFromPath,
 } from '../../routing/consoleRoutes'
-import {
-  useConsole,
-  useConsoleConfig,
-  useConsoleFamilies,
-} from '../../console/useConsole'
+import { useConsole } from '../../console/useConsole'
+import { useConsoleSelection } from '../../console/useConsoleSelection'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {
@@ -27,12 +24,11 @@ function isConsoleCreatePath(path: string) {
 export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
-  const consoleConfig = useConsoleConfig()
-  const { families } = useConsoleFamilies()
+  const consoleRoot = useConsole()
   const enabledFamilies = computed(
     () =>
       new Set(
-        families
+        consoleRoot.families
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )
@@ -41,7 +37,7 @@ export const useConsoleNav = () => {
   const activeSelectionId = computed(() => {
     const family = activeFamily.value
     if (!family) return ''
-    return useConsole(family).selectedId.value
+    return useConsoleSelection(family).selectedId.value
   })
   const hasSelectedTarget = computed(() =>
     Boolean(String(activeSelectionId.value || '').trim())
@@ -57,7 +53,7 @@ export const useConsoleNav = () => {
     if (!enabledFamilies.value.has(itemFamily)) return false
     if (
       isConsoleCreatePath(path) &&
-      !consoleConfig.canCreateTarget(itemFamily)
+      !consoleRoot.canCreateTarget(itemFamily)
     ) {
       return false
     }

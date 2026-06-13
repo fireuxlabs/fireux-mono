@@ -1,13 +1,9 @@
 import { computed, watch } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useConsoleConfig } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
-import {
-  usePublishConsoleHeader,
-  type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -100,18 +96,18 @@ export function useKitchenConsole() {
    * - selection: selected Kitchen state
    * - runtime: selected Kitchen scope/read/write context
    * - actions: select/clear helpers
-   */
+  */
   const fireux = useFireUXConfig()
   const { appId } = fireux
-  const consoleConfig = useConsoleConfig('kitchen')
+  const consoleRoot = useConsole('kitchen')
   const { uid } = useAuth()
 
   const userId = computed(() => normalizeString(uid.value))
   const configKitchenIds = computed(() =>
-    uniqueStrings(consoleConfig.targetIds())
+    uniqueStrings(consoleRoot.targetIds())
   )
-  const { selectedId, selectEntity, clearSelection } =
-    useConsole<KitchenSurface>('kitchen')
+  const { selectedId, selectTarget, clearSelection } =
+    useConsoleSelection<KitchenSurface>('kitchen')
   const kitchenId = computed(() => normalizeString(selectedId.value))
   const { kitchen: publicKitchen } = useKitchenFetch(kitchenId)
   const selectedPublicKitchen = computed<KitchenConsoleEntity | null>(
@@ -144,33 +140,11 @@ export function useKitchenConsole() {
   const canWrite = computed(() =>
     !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
   )
-  const header = computed<ConsoleHeaderData>(() => {
-    const kitchen = selectedKitchen.value as Record<string, unknown> | null
-    if (!kitchen) return null
-
-    return {
-      title:
-        normalizeString(kitchen.name) ||
-        normalizeString(kitchen.display_name) ||
-        normalizeString(kitchen.id),
-      subtitle:
-        normalizeString(kitchen.short_address) ||
-        normalizeString(kitchen.formatted_address) ||
-        undefined,
-      imageUrl:
-        normalizeString(kitchen.display_image_url) ||
-        normalizeString(kitchen.image_url) ||
-        undefined,
-    }
-  })
-
-  usePublishConsoleHeader('kitchen', header)
-
   const clearSelectedKitchen = () => {
     clearSelection()
   }
   const selectKitchen = (kitchenId: string) => {
-    selectEntity(kitchenId)
+    selectTarget(kitchenId)
   }
   watch(
     configKitchenIds,
@@ -179,7 +153,7 @@ export function useKitchenConsole() {
       if (!autoSelectSingle.value || !onlyKitchenId) return
       if (kitchenId.value === onlyKitchenId) return
 
-      selectEntity(onlyKitchenId)
+      selectTarget(onlyKitchenId)
     },
     { immediate: true }
   )

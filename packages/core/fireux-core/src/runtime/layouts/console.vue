@@ -9,65 +9,7 @@
     >
       <template #header="{ collapsed }">
         <div class="px-2 py-2">
-          <div v-if="hasSelection && header" class="px-1">
-            <UDropdownMenu
-              v-if="hasHeaderSelector"
-              :items="header.selectorItems"
-              :content="{ align: 'start', collisionPadding: 12 }"
-              :ui="{ content: 'w-64' }"
-            >
-              <UButton
-                color="neutral"
-                variant="ghost"
-                :square="collapsed ?? false"
-                :class="[
-                  'min-h-11 px-1',
-                  collapsed
-                    ? 'mx-auto justify-center'
-                    : 'w-full justify-start gap-2',
-                ]"
-                :ui="{ label: 'min-w-0 flex-1' }"
-              >
-                <template #leading>
-                  <UAvatar
-                    :src="header.imageUrl || undefined"
-                    :alt="header.title"
-                    icon="i-lucide-circle"
-                    size="sm"
-                  />
-                </template>
-
-                <span v-if="!collapsed" class="min-w-0 flex-1 text-left">
-                  <span class="block truncate text-sm font-semibold text-highlighted">
-                    {{ header.title }}
-                  </span>
-                </span>
-              </UButton>
-            </UDropdownMenu>
-
-            <div
-              v-else
-              :class="[
-                'flex min-h-11 items-center',
-                collapsed ? 'justify-center' : 'gap-2',
-              ]"
-            >
-              <UAvatar
-                :src="header.imageUrl || undefined"
-                :alt="header.title"
-                icon="i-lucide-circle"
-                size="sm"
-              />
-
-              <div v-if="!collapsed" class="min-w-0">
-                <div class="truncate text-sm font-semibold text-highlighted">
-                  {{ header.title }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="flex min-h-11 items-center px-1">
+          <div class="flex min-h-11 items-center px-1">
             <NuxtLink
               v-if="collapsed"
               to="/"
@@ -190,11 +132,7 @@ import {
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
-import { useConsole } from '../composables/fireux/app/console/useConsole'
-import {
-  useConsoleHeaders,
-  type ConsoleHeaderData as HeaderData,
-} from '../composables/fireux/app/console/useConsoleHeader'
+import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
 
 defineOptions({ name: 'console' })
 
@@ -220,7 +158,7 @@ const familyPath = computed(() => family.value ? toConsoleFamilyPath(family.valu
 const activeSelectionId = computed(() => {
   const activeFamily = family.value
   if (!activeFamily) return ''
-  return useConsole(activeFamily).selectedId.value
+  return useConsoleSelection(activeFamily).selectedId.value
 })
 const requiresSelection = computed(() => {
   const nav = route.meta.nav as Record<string, unknown> | undefined
@@ -235,14 +173,4 @@ const selectionRequiredDescription = computed(() =>
 )
 const selectionRequiredActionLabel = computed(() => `Choose ${familyLabel.value}`)
 
-const consoleHeaders = useConsoleHeaders()
-
-const header = computed<HeaderData>(() => {
-  return consoleHeaders.value[normalizeString(family.value)] ?? null
-})
-
-const hasSelection = computed(() => Boolean(header.value))
-const hasHeaderSelector = computed(() =>
-  Boolean(header.value?.selectorItems?.some((group) => group.length))
-)
 </script>

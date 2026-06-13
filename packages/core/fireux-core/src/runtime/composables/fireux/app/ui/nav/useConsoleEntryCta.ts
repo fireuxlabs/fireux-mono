@@ -6,7 +6,7 @@ import {
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
 } from '../../routing/consoleRoutes'
-import { useConsoleFamilies } from '../../console/useConsole'
+import { useConsole } from '../../console/useConsole'
 
 type ConsoleEntryFamily = {
   key: ConsoleFamily
@@ -21,11 +21,11 @@ export type ConsoleEntryAction = {
 }
 
 export function useConsoleEntryCta() {
-  const { families } = useConsoleFamilies()
+  const consoleRoot = useConsole()
   const consoles = computed<ConsoleEntryFamily[]>(() =>
     Array.from(
       new Set(
-        families
+        consoleRoot.families
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )

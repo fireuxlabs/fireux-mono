@@ -155,8 +155,7 @@ Recent repo truth:
   - the named ecosystem database is the operational database, including canonical `apps`
 - the generic console shell now lives in the runtime seam:
   - `packages/core/fireux-core/src/runtime/composables/fireux/app/console/**` is the shared console spine
-  - `useConsole()` owns selected target state
-  - `useConsoleHeader()` owns selected-target header publication for the shared console layout
+  - `useConsoleSelection()` owns selected target state
 - the generic console entry and overview seams now also live in the runtime seam:
   - `useConsoleIndex()` owns family entry / chooser composition
   - `useConsoleOverview()` owns selected-target overview grouping

@@ -1,8 +1,6 @@
 import { computed } from 'vue'
-import {
-  useConsoleIndex,
-  useConsoleIndexSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useBlankConsole } from '../core/useBlankConsole'
 
 /**
@@ -12,7 +10,7 @@ import { useBlankConsole } from '../core/useBlankConsole'
  * root target cards, create route, and dev debug only.
  */
 export function useBlankConsoleIndex() {
-  const source = useConsoleIndexSource({ family: 'blank' })
+  const source = useConsoleTargets({ family: 'blank' })
   const {
     blanks,
     selection: consoleSelection,
