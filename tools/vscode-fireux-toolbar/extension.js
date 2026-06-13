@@ -780,6 +780,18 @@ function activate(context) {
       url: 'http://localhost:3013',
     },
     {
+      key: 'embed-harness',
+      name: 'Plain Jane',
+      icon: '$(browser)',
+      port: 3025,
+      commandId: 'fireuxToolbar.startPlainJane',
+      taskLabel: 'pnpm dev:embed-harness',
+      terminalName: 'Plain Jane (3025)',
+      pnpmCommand: 'pnpm dev:embed-harness',
+      tooltip: 'Start Plain Jane embed harness (port 3025)',
+      url: 'http://localhost:3025',
+    },
+    {
       key: 'fireux-blank',
       name: 'FireUX Blank',
       icon: '$(empty-window)',

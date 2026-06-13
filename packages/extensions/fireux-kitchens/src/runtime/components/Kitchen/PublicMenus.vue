@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { usePublicAppScopedSource } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import KitchenPublicMenuLink from './PublicMenuLink.vue'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -51,6 +52,12 @@ const props = defineProps<{
 
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
+const appScope = usePublicAppScopedSource(computed(() => props.kitchen))
+const kitchenCollectionPath = computed(() =>
+  appScope.sourceAppId.value
+    ? `apps/${appScope.sourceAppId.value}/kitchens`
+    : ''
+)
 const defaultChromeLabels = {
   menus: 'Menus',
   openMenus: 'Open menus',
@@ -59,7 +66,8 @@ const defaultChromeLabels = {
   openMenu: 'Open menu',
 }
 const { publishedMenus, pending: menusPending } = useMenuCollection(
-  kitchenId
+  kitchenId,
+  { kitchenCollectionPath }
 )
 
 const menusLoading = computed(() =>

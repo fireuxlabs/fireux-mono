@@ -1,4 +1,6 @@
 import { computed, unref, type MaybeRef } from 'vue'
+import { useFireUXConfig } from '../../app/FireUXConfig'
+import type { FireuxAppScopeState } from '../../../../models/core/meta.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
@@ -17,6 +19,48 @@ export type PublicScopedRecordsOptions<TEntity> = {
   recordKeyOf: (record: TEntity) => unknown
   isPublicRecord: (record: TEntity) => boolean
   pending?: MaybeRef<boolean>
+}
+
+export type PublicAppScopedTarget = {
+  app_scope_state?: unknown
+  app_scope_app_id?: unknown
+}
+
+export type PublicAppScopedSource = {
+  state: FireuxAppScopeState | ''
+  sourceAppId: string
+  hasTenantApp: boolean
+}
+
+export function resolvePublicAppScopedSource(
+  target?: PublicAppScopedTarget | null,
+  fallbackAppId?: unknown
+): PublicAppScopedSource {
+  const state = text(target?.app_scope_state) as FireuxAppScopeState | ''
+  const scopedAppId = text(target?.app_scope_app_id)
+  const sourceAppId = scopedAppId || text(fallbackAppId)
+
+  return {
+    state,
+    sourceAppId,
+    hasTenantApp: state === 'dedicated_app',
+  }
+}
+
+export function usePublicAppScopedSource(
+  target: MaybeRef<PublicAppScopedTarget | null | undefined>
+) {
+  const { appId } = useFireUXConfig()
+  const source = computed(() =>
+    resolvePublicAppScopedSource(unref(target), appId)
+  )
+
+  return {
+    source,
+    state: computed(() => source.value.state),
+    sourceAppId: computed(() => source.value.sourceAppId),
+    hasTenantApp: computed(() => source.value.hasTenantApp),
+  }
 }
 
 export function usePublicScope<TScope>(options: PublicScopeOptions<TScope>) {

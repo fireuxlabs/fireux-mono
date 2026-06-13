@@ -13,12 +13,19 @@ export function useKitchenPublicMenuDetail() {
   const state = useKitchenPublicMenuScope()
   const kitchenId = computed(() => text(state.kitchen.value?.id))
   const resolvedMenuId = computed(() => text(state.menu.value?.id))
-  const sectionState = useMenuSectionCollection(kitchenId, resolvedMenuId)
+  const collectionOptions = {
+    kitchenCollectionPath: state.kitchenCollectionPath,
+  }
+  const sectionState = useMenuSectionCollection(
+    kitchenId,
+    resolvedMenuId,
+    collectionOptions
+  )
   const itemState = useKitchenPublicMenuItems(
     sectionState.collectionPath,
     sectionState.sections
   )
-  const dishState = useDishCollection(kitchenId)
+  const dishState = useDishCollection(kitchenId, collectionOptions)
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     for (const dish of dishState.dishes.value) {
@@ -51,6 +58,7 @@ export function useKitchenPublicMenuDetail() {
     ...state.debug.value,
     detail: {
       kitchenId: kitchenId.value,
+      kitchenCollectionPath: state.kitchenCollectionPath.value,
       menuId: resolvedMenuId.value,
       maturity: maturity.menuMaturity.value,
       sectionsPath: sectionState.collectionPath.value,

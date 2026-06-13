@@ -7,7 +7,9 @@
         :focus="focus"
         :multiple="multiple"
         :card="focusCard"
-      />
+      >
+        <ConsoleAppScope :entity="focus.entity" />
+      </ConsoleOverviewFocus>
       <ConsoleOverviewMultiple
         entity-label="Property"
         entity-plural-label="Properties"

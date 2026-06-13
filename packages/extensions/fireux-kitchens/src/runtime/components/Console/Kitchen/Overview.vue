@@ -8,6 +8,7 @@
         :multiple="multiple"
         :card="focusCard"
       >
+        <ConsoleAppScope :entity="focus.entity" />
         <ConsoleKitchenOverviewMenus
           :menus="menus"
           :pending="menusPending"
@@ -49,6 +50,13 @@ const {
   kitchenCollectionPath: rootCollection,
 })
 const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
+const appScopeState = computed(() =>
+  String(focus.value.entity?.app_scope_state ?? '').trim()
+)
+const appScopeAppId = computed(() =>
+  String(focus.value.entity?.app_scope_app_id ?? '').trim()
+)
+const hasTenantApp = computed(() => appScopeState.value === 'dedicated_app')
 const operatorIds = computed(() =>
   Array.from(
     new Set(
@@ -60,6 +68,11 @@ const operatorIds = computed(() =>
 )
 const pageDebug = computed(() => ({
   ...debug.value,
+  appScope: {
+    state: appScopeState.value,
+    appId: appScopeAppId.value,
+    hasTenantApp: hasTenantApp.value,
+  },
   operators: {
     ids: operatorIds.value,
     count: operatorIds.value.length,

@@ -90,6 +90,7 @@
     "kill:sproochli": "node scripts/free-port.mjs 3011",
     "kill:buenohost": "node scripts/free-port.mjs 3012",
     "kill:go-qr": "node scripts/free-port.mjs 3013",
+    "kill:embed-harness": "node scripts/free-port.mjs 3025",
     "kill:fireux-blank": "node scripts/free-port.mjs 3015",
     "kill:yellow-velo": "node scripts/free-port.mjs 3014",
     "kill:granite": "node scripts/free-port.mjs 3007",

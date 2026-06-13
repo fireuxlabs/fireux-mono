@@ -9,8 +9,8 @@
       v-else
       color="neutral"
       variant="soft"
-      title="Choose a writable kitchen"
-      description="The Go QR menu source tool is available after selecting a writable kitchen."
+      :title="blockedTitle"
+      :description="blockedDescription"
     />
   </section>
 </template>
@@ -49,6 +49,37 @@ const canUseTool = computed(() =>
   canWrite.value &&
   Boolean(kitchenId.value && activeKitchenAppId.value && kitchenSlug.value && authToken.value)
 )
+const blockedTitle = computed(() => {
+  if (!canWrite.value) return 'Menu upload is read only'
+  if (!kitchenId.value) return 'Select a kitchen'
+  if (!activeKitchenAppId.value) return 'Missing app scope'
+  if (!kitchenSlug.value) return 'Kitchen slug required'
+  if (!authToken.value) return 'Signing in'
+  return 'Menu source unavailable'
+})
+const blockedDescription = computed(() => {
+  if (!canWrite.value) {
+    return 'Only kitchen operators can upload menu source documents.'
+  }
+
+  if (!kitchenId.value) {
+    return 'Choose a kitchen before uploading a menu source document.'
+  }
+
+  if (!activeKitchenAppId.value) {
+    return 'This selected kitchen needs an app scope before menu sources can be stored.'
+  }
+
+  if (!kitchenSlug.value) {
+    return 'The selected kitchen needs a public slug before menu preview links can be created.'
+  }
+
+  if (!authToken.value) {
+    return 'Waiting for your signed-in session before enabling upload.'
+  }
+
+  return 'The menu source upload tool is not available for this kitchen yet.'
+})
 const createEndpoint = computed(() =>
   `${appOrigin.value}/api/console/kitchen/menus/upload-source?${toolQuery.value}`
 )
@@ -58,10 +89,10 @@ const availabilityEndpoint = computed(() =>
 const tool = computed(() => ({
   authToken: authToken.value,
   copy: {
-    title: 'Menu source',
-    description: 'Upload a source menu PDF to this kitchen.',
-    ctaLabel: 'Upload source',
-    loadingLabel: 'Uploading source...',
+    title: 'Step 1: Upload menu source',
+    description: 'Upload the menu PDF as a source document for this kitchen.',
+    ctaLabel: 'Upload menu source',
+    loadingLabel: 'Uploading menu source...',
     openTargetLabel: 'Open menu',
   },
   upload: {

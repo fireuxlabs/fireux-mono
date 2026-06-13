@@ -11,6 +11,7 @@ export function useKitchenConsoleMenus() {
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
+  const activeKitchenAppId = runtime.appId
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
@@ -48,6 +49,7 @@ export function useKitchenConsoleMenus() {
     ...update,
     selectedKitchen,
     kitchenId,
+    activeKitchenAppId,
     rootCollection,
     databaseId,
     readOnly,
@@ -59,6 +61,7 @@ export function useKitchenConsoleMenus() {
     pending,
     debug: computed(() => ({
       kitchenId: kitchenId.value,
+      activeKitchenAppId: activeKitchenAppId.value,
       collectionPath: collectionPath.value,
       menusCount: consoleMenus.value.length,
       pending: pending.value,
