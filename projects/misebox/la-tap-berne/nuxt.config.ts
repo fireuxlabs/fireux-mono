@@ -14,6 +14,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',
+  membership: 'restricted',
   consoles: ['kitchen'],
   consoleConfig: {
     kitchen: kitchenConsoleConfig,

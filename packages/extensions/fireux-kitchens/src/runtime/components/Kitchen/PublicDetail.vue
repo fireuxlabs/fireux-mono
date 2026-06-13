@@ -29,6 +29,9 @@
           <!-- main -->
           <KitchenPublicMenus :kitchen="kitchen" />
 
+          <!-- app membership -->
+          <AppJoinSection />
+
           <!-- operator -->
           <KitchenPublicOperator :kitchen="kitchen" />
 

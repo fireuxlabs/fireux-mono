@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
 import {
   resolveClientAppAdmin,
+  resolveClientAppMember,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
 
@@ -9,6 +10,14 @@ const USER_WAIT_TIMEOUT_MS = 1500
 
 function isConsolePath(path: string) {
   return path === '/console' || path.startsWith('/console/')
+}
+
+function membershipMode(runtime: ReturnType<typeof useRuntimeConfig>) {
+  const fireux = (runtime.public?.fireux || {}) as Record<string, unknown>
+  const explicit = String(fireux.membership || '').trim()
+  if (explicit === 'open' || explicit === 'restricted') return explicit
+
+  return String(fireux.role || '').trim() === 'tenant' ? 'restricted' : 'open'
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -28,6 +37,24 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const runtime = useRuntimeConfig()
+  const appId = String(runtime.public?.fireux?.id || '').trim()
+  const databaseId = String(
+    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+  ).trim()
+
+  if (membershipMode(runtime) === 'restricted') {
+    const isMember = await resolveClientAppMember({
+      uid: auth.uid,
+      appId,
+      databaseId,
+      timeoutMs: USER_WAIT_TIMEOUT_MS,
+    })
+
+    if (!isMember) {
+      return navigateTo('/')
+    }
+  }
+
   const roles = Array.isArray(meta.roles) ? meta.roles : []
   const needsDeveloper = roles.includes('developer')
 
@@ -41,10 +68,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const needsAdmin = roles.includes('admin')
   if (!needsAdmin) return
 
-  const appId = String(runtime.public?.fireux?.id || '').trim()
-  const databaseId = String(
-    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
-  ).trim()
   const isAdmin = await resolveClientAppAdmin({
     uid: auth.uid,
     appId,

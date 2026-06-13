@@ -19,6 +19,7 @@ export interface FireUXConfig {
   appName: string
   appShortName: string
   siteUrl?: string
+  membership: 'open' | 'restricted'
   modules: string[]
   consoles: string[]
   consoleConfig: FireUXConsoleConfig
@@ -47,6 +48,7 @@ export interface FireUXConfig {
   isTenant: boolean
   isGlobal: boolean
   isStandalone: boolean
+  isMembershipRestricted: boolean
 }
 
 type AnyRecord = Record<string, unknown>
@@ -158,6 +160,14 @@ function buildConfig(): Readonly<FireUXConfig> {
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
     siteUrl: optString(fireux, 'siteUrl'),
+    membership:
+      optString(fireux, 'membership') === 'open'
+        ? 'open'
+        : optString(fireux, 'membership') === 'restricted'
+          ? 'restricted'
+          : role === 'tenant'
+            ? 'restricted'
+            : 'open',
 
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
@@ -188,6 +198,9 @@ function buildConfig(): Readonly<FireUXConfig> {
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
     isStandalone: role === 'standalone',
+    isMembershipRestricted:
+      optString(fireux, 'membership') === 'restricted' ||
+      (!optString(fireux, 'membership') && role === 'tenant'),
   }
 
   return Object.freeze(cfg)

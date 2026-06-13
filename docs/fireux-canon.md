@@ -129,7 +129,10 @@ Ownership rule:
   - route: `/console/<family>/team`
   - components: `components/Console/<Family>/Team/**`
   - composables: `composables/fireux/console/<family>/team/**`
+  - first section: Access from `team_ids`, `operator_ids`, and their unique union
+  - raw access ids belong in debug/inspection, not polished people UI
   - domain-specific team member records may extend this seam, but the seam exists for every console-backed family.
+  - Kitchen team member records are operational people records; they do not grant console write authority by themselves.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.
@@ -195,6 +198,13 @@ Ownership rule:
   - `developer`: Developer builds and checks the app
   - `control`: App Control changes where the app belongs
   - `system`: System maintains calculated/internal fields
+- Public app join requests live on the App root `join_requests` field and are approved by App Admin. They request app membership only; they do not grant console target access or operator authority.
+- App membership policy:
+  - `membership: 'open'` means sign-in may create the app-local `apps/{appId}/users/{uid}` membership overlay.
+  - `membership: 'restricted'` means sign-in creates only the core `users/{uid}` identity; app-local membership must be approved by App Admin.
+  - Tenant apps default to restricted membership. Global and standalone apps default to open membership.
+  - Restricted private routes such as dashboard and console require an app-local membership overlay.
+  - App membership still does not grant console write authority; console operation authority remains target `operator_ids`.
 - `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/create seam.
 - `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.

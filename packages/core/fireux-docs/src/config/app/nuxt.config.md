@@ -46,6 +46,7 @@ Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(...)`.
 - `name`: display name.
 - `shortName`: compact display name.
 - `role`: `global`, `tenant`, or `standalone`.
+- `membership`: optional `open` or `restricted` app membership policy.
 - `databaseId`: app-owned Firestore database for standalone apps.
 - `contactEmail`: public support/contact email when needed.
 - `modules`: installed FireUX package capabilities.
@@ -68,6 +69,8 @@ Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(...)`.
 `domains` opts the app into root public/admin domain surfaces supplied by installed packages.
 
 `profiles` opts the app into profile identity surfaces supplied by installed packages.
+
+`membership` controls ordinary sign-in membership. Tenant apps default to `restricted`, so sign-in creates core identity only and private dashboard/console routes require App Admin approval. Global and standalone apps default to `open`.
 
 These are not interchangeable. Installing a module must not automatically expose every route from that module.
 

@@ -6,6 +6,8 @@
       :team-ids="teamIds"
       :operator-ids="operatorIds"
       :access-ids="accessIds"
+      :read-only="readOnly"
+      :can-write="canWrite"
     />
 
     <DevFireuxDebugPanel
@@ -19,6 +21,6 @@
 <script setup lang="ts">
 import { usePortfolioConsoleTeam } from '../../../../composables/fireux/console/portfolio/team/usePortfolioConsoleTeam'
 
-const { portfolioId, teamIds, operatorIds, accessIds, debug } =
+const { portfolioId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
   usePortfolioConsoleTeam()
 </script>

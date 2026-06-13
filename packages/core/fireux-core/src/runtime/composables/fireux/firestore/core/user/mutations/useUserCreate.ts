@@ -39,7 +39,8 @@ export function useUserCreate() {
     id: string
   }> {
     const { uid, auth } = await requireUid()
-    const { appId } = useFireUXConfig()
+    const fireux = useFireUXConfig()
+    const { appId } = fireux
     const core = await createCoreUserDocument(uid, {
       displayName: toPublicDisplayNameSeed(
         auth.displayName,
@@ -54,7 +55,7 @@ export function useUserCreate() {
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
-    let shouldCreateMembership = true
+    let shouldCreateMembership = fireux.membership === 'open'
     let appExists = false
     try {
       const db = useFirestore()
@@ -91,8 +92,11 @@ export function useUserCreate() {
 
       // If we do need to create the overlay, preserve admin role only when
       // existing admin mirrors already say this user is an admin.
-      if (appExists && (coreAdminOf.includes(appId) || appAdminIds.includes(uid))) {
+      const isMirroredAdmin = coreAdminOf.includes(appId) || appAdminIds.includes(uid)
+
+      if (appExists && isMirroredAdmin) {
         membershipRole = 'admin'
+        shouldCreateMembership = true
       }
     } catch (error) {
       if (import.meta.dev) {

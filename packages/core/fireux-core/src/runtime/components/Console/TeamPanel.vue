@@ -1,6 +1,6 @@
 <template>
   <UPageCard
-    title="Team"
+    title="Access"
     :description="description"
     variant="subtle"
   >
@@ -13,7 +13,7 @@
           {{ teamIds.length }}
         </p>
         <p class="text-xs text-dimmed">
-          Can see/select
+          Can see and select
         </p>
       </div>
 
@@ -25,7 +25,7 @@
           {{ operatorIds.length }}
         </p>
         <p class="text-xs text-dimmed">
-          Can write/operate
+          Can write and operate
         </p>
       </div>
 
@@ -37,54 +37,23 @@
           {{ accessIds.length }}
         </p>
         <p class="text-xs text-dimmed">
-          Unique people
+          Unique access ids
         </p>
       </div>
     </div>
 
-    <div class="mt-4 space-y-3">
-      <div>
-        <p class="text-sm font-medium text-highlighted">
-          Team IDs
-        </p>
-        <div v-if="teamIds.length" class="mt-2 flex flex-wrap gap-2">
-          <UBadge
-            v-for="id in teamIds"
-            :key="id"
-            color="neutral"
-            variant="soft"
-          >
-            {{ id }}
-          </UBadge>
-        </div>
-        <p v-else class="mt-1 text-sm text-dimmed">
-          No team ids on this target yet.
-        </p>
-      </div>
-
-      <div>
-        <p class="text-sm font-medium text-highlighted">
-          Operator IDs
-        </p>
-        <div v-if="operatorIds.length" class="mt-2 flex flex-wrap gap-2">
-          <UBadge
-            v-for="id in operatorIds"
-            :key="id"
-            color="primary"
-            variant="soft"
-          >
-            {{ id }}
-          </UBadge>
-        </div>
-        <p v-else class="mt-1 text-sm text-dimmed">
-          No operator ids on this target yet.
-        </p>
-      </div>
-    </div>
+    <UAlert
+      class="mt-4"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-shield-check"
+      :title="accessTitle"
+      :description="accessDescription"
+    />
 
     <template #footer>
       <p class="text-xs text-dimmed">
-        Team ids allow console selection. Operator ids allow writes.
+        Team ids allow console selection. Operator ids allow writes. Raw ids stay in debug.
       </p>
     </template>
   </UPageCard>
@@ -99,12 +68,16 @@ const props = withDefaults(defineProps<{
   teamIds?: string[]
   operatorIds?: string[]
   accessIds?: string[]
+  readOnly?: boolean
+  canWrite?: boolean
 }>(), {
   entityLabel: 'Target',
   targetId: '',
   teamIds: () => [],
   operatorIds: () => [],
   accessIds: () => [],
+  readOnly: false,
+  canWrite: false,
 })
 
 const description = computed(() => {
@@ -112,6 +85,24 @@ const description = computed(() => {
     ? `${props.entityLabel} ${props.targetId}`
     : `Selected ${props.entityLabel.toLowerCase()}`
 
-  return `${target} team and operator membership.`
+  return `${target} access and operator membership.`
+})
+
+const accessTitle = computed(() => {
+  if (props.canWrite) return 'Write access enabled'
+  if (props.readOnly) return 'Read-only target'
+  return 'Write access disabled'
+})
+
+const accessDescription = computed(() => {
+  if (props.canWrite) {
+    return `${props.entityLabel} operators can update this selected target.`
+  }
+
+  if (props.readOnly) {
+    return `${props.entityLabel} can be inspected, but changes are disabled.`
+  }
+
+  return `${props.entityLabel} can be selected here, but this user cannot write to it.`
 })
 </script>

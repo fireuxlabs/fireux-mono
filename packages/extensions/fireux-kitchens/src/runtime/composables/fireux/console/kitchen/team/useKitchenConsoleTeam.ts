@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useConsoleTeam } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTeam'
 import { useKitchenChildCollection } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenTeamJoinRequestStorage,
@@ -20,6 +21,12 @@ export function useKitchenConsoleTeam() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const access = useConsoleTeam({
+    target: selectedKitchen,
+    targetId: kitchenId,
+    readOnly,
+    canWrite,
+  })
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -67,16 +74,19 @@ export function useKitchenConsoleTeam() {
     joinRequestItemsPending.value
   )
   const debug = computed(() => ({
+    access: access.debug.value,
+    people: {
+      collectionPath: collectionPath.value,
+      joinRequestsPath: joinRequestsPath.value,
+      count: consoleTeamMembers.value.length,
+      joinRequestsCount: joinRequests.value.length,
+      pendingJoinRequestsCount: pendingJoinRequests.value.length,
+      pending: pending.value,
+      joinRequestsPending: joinRequestsPending.value,
+    },
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
-    collectionPath: collectionPath.value,
-    joinRequestsPath: joinRequestsPath.value,
-    count: consoleTeamMembers.value.length,
-    joinRequestsCount: joinRequests.value.length,
-    pendingJoinRequestsCount: pendingJoinRequests.value.length,
-    pending: pending.value,
-    joinRequestsPending: joinRequestsPending.value,
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -85,6 +95,9 @@ export function useKitchenConsoleTeam() {
     ...page,
     selectedKitchen,
     kitchenId,
+    teamIds: access.teamIds,
+    operatorIds: access.operatorIds,
+    accessIds: access.accessIds,
     collectionPath,
     rootCollection,
     databaseId,

@@ -29,6 +29,7 @@ export type RuntimeApp = {
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
   role: RuntimeAppRole
+  membership?: 'open' | 'restricted'
   ecosystem: string
   modules: readonly string[]
   consoles: readonly string[]

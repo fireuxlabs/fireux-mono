@@ -1,5 +1,15 @@
 <template>
   <section class="console-surface space-y-6">
+    <ConsoleTeamPanel
+      entity-label="Kitchen"
+      :target-id="kitchenId"
+      :team-ids="teamIds"
+      :operator-ids="operatorIds"
+      :access-ids="accessIds"
+      :read-only="readOnly"
+      :can-write="canWrite"
+    />
+
     <ConsoleKitchenTeamRead />
 
     <UAlert
@@ -17,5 +27,12 @@
 <script setup lang="ts">
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 
-const { readOnly, canWrite } = useKitchenConsoleTeam()
+const {
+  kitchenId,
+  teamIds,
+  operatorIds,
+  accessIds,
+  readOnly,
+  canWrite,
+} = useKitchenConsoleTeam()
 </script>

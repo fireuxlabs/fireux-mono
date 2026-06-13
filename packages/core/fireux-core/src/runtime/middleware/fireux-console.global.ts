@@ -6,6 +6,7 @@ import {
 } from '../composables/fireux/app/routing/consoleRoutes'
 import {
   resolveClientAppAdmin,
+  resolveClientAppMember,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
 
@@ -18,6 +19,15 @@ function isConsolePath(path: string) {
 
 function isConsoleRootPath(path: string) {
   return path === '/console' || path === '/console/'
+}
+
+function membershipMode(fireuxRuntime: Record<string, unknown>) {
+  const explicit = String(fireuxRuntime.membership || '').trim()
+  if (explicit === 'open' || explicit === 'restricted') return explicit
+
+  return String(fireuxRuntime.role || '').trim() === 'tenant'
+    ? 'restricted'
+    : 'open'
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -67,6 +77,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!auth.isAuthenticated) {
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
+  }
+
+  if (membershipMode(fireuxRuntime()) === 'restricted') {
+    const isMember = await resolveClientAppMember({
+      uid: auth.uid,
+      appId: appId(),
+      databaseId: databaseId(),
+      timeoutMs: USER_WAIT_TIMEOUT_MS,
+    })
+
+    if (!isMember) {
+      return navigateTo('/')
+    }
   }
 
   const needsAdmin = Array.isArray(meta.roles) && meta.roles.includes('admin')

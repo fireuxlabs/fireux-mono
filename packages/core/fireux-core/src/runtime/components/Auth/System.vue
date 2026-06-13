@@ -38,7 +38,7 @@
 
             <div class="flex w-full flex-col gap-3">
               <UButton block color="primary" @click="goToDashboard">
-                Go to dashboard
+                {{ authenticatedPrimaryLabel }}
               </UButton>
               <UButton
                 block
@@ -120,11 +120,12 @@ const ecosystemBrandAlt = computed(() => `${ecosystemBrandLabel.value} ecosystem
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
-const { currentUser } = useUser()
+const { currentUser, appUser, pending: userPending } = useUser()
 const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )
+const isAppMember = computed(() => Boolean(appUser.value))
 const authIdentityLabel = computed(() =>
   String(authUser.value?.displayName || authUser.value?.email || authUser.value?.uid || 'unknown')
 )
@@ -139,14 +140,40 @@ function sanitizeRedirect(value: unknown): string | null {
 }
 
 const postAuthPath = computed(
-  () => sanitizeRedirect(route.query.redirect) ?? '/dashboard'
+  () => {
+    const target = sanitizeRedirect(route.query.redirect) ?? '/dashboard'
+
+    if (!config.isMembershipRestricted) return target
+    if (!isPrivateAppPath(target)) return target
+    if (isAppMember.value) return target
+
+    return '/'
+  }
+)
+const authenticatedPrimaryLabel = computed(() =>
+  config.isMembershipRestricted && !isAppMember.value
+    ? 'Back to app'
+    : 'Go to dashboard'
 )
 
+function isPrivateAppPath(path: string) {
+  return path === '/dashboard' || path.startsWith('/dashboard/') ||
+    path === '/console' || path.startsWith('/console/')
+}
+
 watch(
-  () => [route.path, hasAuthState.value, isAuthenticated.value, postAuthPath.value] as const,
-  async ([path, authReady, authenticated, target]) => {
+  () =>
+    [
+      route.path,
+      hasAuthState.value,
+      isAuthenticated.value,
+      postAuthPath.value,
+      userPending.value,
+    ] as const,
+  async ([path, authReady, authenticated, target, pendingUser]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
+    if (config.isMembershipRestricted && pendingUser) return
     await router.replace(target).catch(() => {})
   },
   { immediate: true }

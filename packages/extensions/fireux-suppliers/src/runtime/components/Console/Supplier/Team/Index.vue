@@ -6,6 +6,8 @@
       :team-ids="teamIds"
       :operator-ids="operatorIds"
       :access-ids="accessIds"
+      :read-only="readOnly"
+      :can-write="canWrite"
     />
 
     <DevFireuxDebugPanel
@@ -19,6 +21,6 @@
 <script setup lang="ts">
 import { useSupplierConsoleTeam } from '../../../../composables/fireux/console/supplier/team/useSupplierConsoleTeam'
 
-const { supplierId, teamIds, operatorIds, accessIds, debug } =
+const { supplierId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
   useSupplierConsoleTeam()
 </script>

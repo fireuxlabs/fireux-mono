@@ -6,6 +6,8 @@
       :team-ids="teamIds"
       :operator-ids="operatorIds"
       :access-ids="accessIds"
+      :read-only="readOnly"
+      :can-write="canWrite"
     />
 
     <DevFireuxDebugPanel
@@ -19,6 +21,6 @@
 <script setup lang="ts">
 import { useBlankConsoleTeam } from '../../../../composables/fireux/console/blank/team/useBlankConsoleTeam'
 
-const { blankId, teamIds, operatorIds, accessIds, debug } =
+const { blankId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
   useBlankConsoleTeam()
 </script>

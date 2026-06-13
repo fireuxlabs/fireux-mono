@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <TeamCollectionManager
       :collection="teamMembers"
-      title="Team"
-      description="Kitchen team members for the selected kitchen."
+      title="Kitchen members"
+      description="Operational people records for the selected kitchen."
     />
 
     <DevFireuxDebugPanel
