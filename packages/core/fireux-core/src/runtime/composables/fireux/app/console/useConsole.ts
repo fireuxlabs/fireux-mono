@@ -76,6 +76,7 @@ export function useConsole<TTarget = never>(
       (state: { id: string; items: TTarget[]; pending: boolean }) => {
         const { id, items, pending } = state
         if (!id || pending) return
+        if (!items.length) return
         if (items.some((item) => getEntityId(item) === id)) return
         clearSelection()
       },

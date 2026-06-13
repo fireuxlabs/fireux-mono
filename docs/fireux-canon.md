@@ -115,6 +115,8 @@ Ownership rule:
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
 - `/console/X/team` is the selected target team/membership surface.
+- Console target selection persists across refresh until the user explicitly clears it or a resolved non-empty target list proves the selected target is no longer available.
+- Transient empty target reads during auth/config/collection loading must not clear the selected console target.
 - By default, `/console/X` should show the normal targets for that family.
 - Tenant apps use configured target ids for that console family.
 - Global apps use the signed-in user's target index when the family needs fast personal selection, then fetch those exact target docs.

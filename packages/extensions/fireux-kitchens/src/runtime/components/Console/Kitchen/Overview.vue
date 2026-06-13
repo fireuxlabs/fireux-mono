@@ -16,6 +16,11 @@
       />
     </div>
 
+    <ConsoleKitchenOverviewOperators
+      class="mt-4"
+      :operator-ids="operatorIds"
+    />
+
     <div class="mt-4">
       <DevFireuxDebugPanel
         title="Kitchen overview"
@@ -36,6 +41,15 @@ import { useKitchenInterface } from '../../../composables/fireux/firestore/kitch
 const { focus, multiple, debug } = useKitchenConsoleOverview()
 const { pill } = useKitchenInterface()
 const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
+const operatorIds = computed(() =>
+  Array.from(
+    new Set(
+      ((focus.value.entity as { operator_ids?: unknown[] } | null)?.operator_ids ?? [])
+        .map((id) => String(id ?? '').trim())
+        .filter(Boolean)
+    )
+  )
+)
 const multipleCards = computed(() =>
   multiple.value.items
     .map((kitchen) => pill(kitchen) as ConsoleTargetCard | null)
