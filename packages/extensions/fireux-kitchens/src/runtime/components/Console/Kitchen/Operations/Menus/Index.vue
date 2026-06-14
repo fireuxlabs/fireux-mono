@@ -58,8 +58,15 @@
         </div>
       </UCard>
 
-      <ConsoleKitchenOperationsMenusUpload v-if="canWrite" />
+      <ConsoleKitchenOperationsMenusUpload />
       <ConsoleKitchenOperationsMenusRead />
+
+      <DevJson
+        title="Kitchen menu console debug"
+        context="Kitchen menu console · /console/kitchen/menus"
+        :data="debug"
+        :default-open="false"
+      />
     </template>
 
     <UAlert
@@ -75,5 +82,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
-const { selectedKitchen, readOnly, canWrite } = useKitchenConsoleMenus()
+const { selectedKitchen, readOnly, debug } = useKitchenConsoleMenus()
 </script>

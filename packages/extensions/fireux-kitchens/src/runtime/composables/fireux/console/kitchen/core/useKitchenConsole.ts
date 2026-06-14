@@ -2,10 +2,8 @@ import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
@@ -97,9 +95,7 @@ export function useKitchenConsole() {
    * - actions: select/clear helpers
   */
   const consoleRoot = useConsole('kitchen')
-  const { uid } = useAuth()
 
-  const userId = computed(() => normalizeString(uid.value))
   const configKitchenIds = computed(() =>
     uniqueStrings(consoleRoot.targetIds())
   )
@@ -135,7 +131,7 @@ export function useKitchenConsole() {
     () => consoleRoot.isTenant && configKitchenIds.value.length === 1
   )
   const canWrite = computed(() =>
-    !readOnly.value && targetHasOperator(selectedKitchen.value, userId.value)
+    !readOnly.value && Boolean(selectedKitchen.value)
   )
   const clearSelectedKitchen = () => {
     clearSelection()
