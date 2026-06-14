@@ -23,7 +23,7 @@ const CTA_CREATE_CORE: UserCta = {
   label: 'Create core user',
   to: '',
 }
-const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Join app', to: '' }
+const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Sync app membership', to: '' }
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {

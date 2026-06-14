@@ -55,7 +55,7 @@ export function useUserCreate() {
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
-    let shouldCreateMembership = fireux.membership === 'open'
+    let shouldCreateMembership = true
     let appExists = false
     try {
       const db = useFirestore()

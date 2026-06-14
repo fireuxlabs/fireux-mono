@@ -90,7 +90,7 @@ const title = computed(() => {
   if (isLoading.value) return 'Loading user'
   if (isSignIn.value) return 'Sign in to continue'
   if (requiresCore.value) return 'Create your core user'
-  if (requiresApp.value) return `Join ${appLabel.value}`
+  if (requiresApp.value) return `Sync ${appLabel.value} membership`
   return 'Update your profile'
 })
 
@@ -101,7 +101,7 @@ const description = computed(() => {
   if (requiresCore.value)
     return `Provision your ${ecosystemLabel.value} profile so apps can recognize you.`
   if (requiresApp.value)
-    return `Mirror your profile inside ${appLabel.value} to unlock tenant features.`
+    return `Create or repair your app member record inside ${appLabel.value}.`
   return 'Update your profile to keep your information in sync.'
 })
 

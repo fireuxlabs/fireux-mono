@@ -66,10 +66,10 @@ Updated: 2026-05-25
 - `modules` means the app installs shared package capability.
 - `consoles` means the app exposes selected console workspaces.
 - `profiles` means the app consumes those profile identities and their profile surfaces.
-- `membership` controls ordinary sign-in membership:
-  - `open` lets sign-in create the app-local membership overlay
-  - `restricted` requires App Admin approval before private dashboard/console routes are available
-  - tenant apps default to `restricted`; global and standalone apps default to `open`
+- Sign-in creates ordinary app membership:
+  - sign-in creates or repairs the core `users/{uid}` identity
+  - sign-in creates the app-local `apps/{appId}/users/{uid}` membership overlay when the app exists
+  - app membership does not grant admin authority or console operation authority
 - Core provides the base app contract for global ecosystem apps, ecosystem tenant apps, and standalone FireUX apps.
 - Ecosystems add domain capability.
 - Tenants consume selected ecosystem capability.
@@ -98,7 +98,7 @@ Updated: 2026-05-25
   - followers
 - Installing a module must not automatically expose every profile or console surface from that module.
 - Do not add a second app-facing page registry until a real repeated route family needs it. Prefer deriving visibility from `role`, `modules`, `consoles`, and `profiles`.
-- For restricted apps, public pages may let signed-in non-members request app membership, but private dashboard/console routes still require an approved `apps/{appId}/users/{uid}` overlay.
+- Public pages may let signed-in users request admin/operator involvement, but those requests do not grant console operation authority.
 
 ## App Initialization Contract
 - App initialization is resolved inside the active app's own runtime database.

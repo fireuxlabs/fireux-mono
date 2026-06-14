@@ -167,22 +167,38 @@ export function useAuth() {
 
   const creating = ref(false)
   const lastCreatedUid = ref<string | null>(null)
+  let createInFlight: Promise<void> | null = null
 
   const createOnce = async (nextUid: string | null) => {
     if (!import.meta.client) return
     if (!nextUid) return
     if (!isReady.value) return
-    if (creating.value) return
+    if (creating.value && createInFlight) {
+      await createInFlight
+      return
+    }
     if (lastCreatedUid.value === nextUid) return
     if (!userCreate) return
 
     creating.value = true
-    try {
+    createInFlight = (async () => {
       await userCreate.createUser()
       lastCreatedUid.value = nextUid
+    })()
+
+    try {
+      await createInFlight
     } finally {
+      createInFlight = null
       creating.value = false
     }
+  }
+
+  const ensureSignedInUser = async (user: User | null) => {
+    if (!user?.uid) return user
+    currentUser.value = user
+    await createOnce(user.uid)
+    return user
   }
 
   if (import.meta.client) {
@@ -205,11 +221,7 @@ export function useAuth() {
 
     googleRedirectResultInFlight = getRedirectResult(authInstance)
       .then((result) => {
-        const nextUser = result?.user ?? authInstance.currentUser ?? null
-        if (nextUser) {
-          currentUser.value = nextUser
-        }
-        return nextUser
+        return ensureSignedInUser(result?.user ?? authInstance.currentUser ?? null)
       })
       .catch(() => {
         return authInstance.currentUser ?? null
@@ -248,7 +260,7 @@ export function useAuth() {
 
       try {
         const result = await signInWithPopup(auth.value, provider)
-        return result?.user ?? null
+        return await ensureSignedInUser(result?.user ?? null)
       } catch (e) {
         const code =
           typeof e === 'object' && e !== null && 'code' in e
@@ -280,7 +292,7 @@ export function useAuth() {
     const result = await signInWithEmailAndPassword(auth.value, email, password).catch(
       () => null
     )
-    return result?.user ?? null
+    return await ensureSignedInUser(result?.user ?? null)
   }
 
   const signUpWithEmailPassword = async (email: string, password: string) => {
@@ -288,7 +300,7 @@ export function useAuth() {
     const result = await createUserWithEmailAndPassword(auth.value, email, password).catch(
       () => null
     )
-    return result?.user ?? null
+    return await ensureSignedInUser(result?.user ?? null)
   }
 
   const signInAnonymous = async () => {

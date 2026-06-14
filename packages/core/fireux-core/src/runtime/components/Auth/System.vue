@@ -103,6 +103,7 @@ const {
   signInWithGoogle,
   signInAnonymous,
   currentUser: authUser,
+  creating: creatingUser,
 } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
@@ -120,12 +121,11 @@ const ecosystemBrandAlt = computed(() => `${ecosystemBrandLabel.value} ecosystem
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
-const { currentUser, appUser, pending: userPending } = useUser()
+const { currentUser } = useUser()
 const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )
-const isAppMember = computed(() => Boolean(appUser.value))
 const authIdentityLabel = computed(() =>
   String(authUser.value?.displayName || authUser.value?.email || authUser.value?.uid || 'unknown')
 )
@@ -139,27 +139,8 @@ function sanitizeRedirect(value: unknown): string | null {
   return trimmed
 }
 
-const postAuthPath = computed(
-  () => {
-    const target = sanitizeRedirect(route.query.redirect) ?? '/dashboard'
-
-    if (!config.isMembershipRestricted) return target
-    if (!isPrivateAppPath(target)) return target
-    if (isAppMember.value) return target
-
-    return '/'
-  }
-)
-const authenticatedPrimaryLabel = computed(() =>
-  config.isMembershipRestricted && !isAppMember.value
-    ? 'Back to app'
-    : 'Go to dashboard'
-)
-
-function isPrivateAppPath(path: string) {
-  return path === '/dashboard' || path.startsWith('/dashboard/') ||
-    path === '/console' || path.startsWith('/console/')
-}
+const postAuthPath = computed(() => sanitizeRedirect(route.query.redirect) ?? '/dashboard')
+const authenticatedPrimaryLabel = 'Go to dashboard'
 
 watch(
   () =>
@@ -168,12 +149,12 @@ watch(
       hasAuthState.value,
       isAuthenticated.value,
       postAuthPath.value,
-      userPending.value,
+      creatingUser.value,
     ] as const,
-  async ([path, authReady, authenticated, target, pendingUser]) => {
+  async ([path, authReady, authenticated, target, creating]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
-    if (config.isMembershipRestricted && pendingUser) return
+    if (creating) return
     await router.replace(target).catch(() => {})
   },
   { immediate: true }

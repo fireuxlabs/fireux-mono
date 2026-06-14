@@ -89,7 +89,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       domain: envDomain,
       ...(siteUrl ? { siteUrl } : {}),
       role: app.role,
-      membership: app.membership ?? (app.role === 'tenant' ? 'restricted' : 'open'),
       ecosystem: app.ecosystem,
       modules: moduleNames,
       consoles: app.consoles || [],

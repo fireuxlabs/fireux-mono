@@ -17,8 +17,6 @@ export type FireuxAppConfig = {
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
   role: RuntimeAppRole
-  /** App membership policy. Restricted apps require an approved AppUser overlay. */
-  membership?: 'open' | 'restricted'
   /** Extra package capability or custom options for default modules. Product and Blog are baseline app modules. */
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]

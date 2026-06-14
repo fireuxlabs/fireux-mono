@@ -1,5 +1,9 @@
 import type { H3Event } from 'h3'
-import { defineToolProviderRegistry } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { getRequestHeader, getRequestURL } from 'h3'
+import {
+  defineToolProviderRegistry,
+  toolProviderResponse,
+} from 'fireux-core/runtime/server/utils/tool-provider.ts'
 import { docTool } from './tools/doc'
 import { textTool } from './tools/text'
 import { urlTool } from './tools/url'
@@ -18,6 +22,34 @@ export function goQrTool(id: GoQrToolId) {
   return registry.tool(id)
 }
 
+function requestOrigin(event: H3Event) {
+  const host = (
+    getRequestHeader(event, 'x-forwarded-host') ||
+    getRequestHeader(event, 'host') ||
+    ''
+  ).trim()
+  const proto = (
+    getRequestHeader(event, 'x-forwarded-proto') ||
+    getRequestURL(event).protocol.replace(':', '') ||
+    'https'
+  ).trim()
+
+  return host ? `${proto}://${host}` : getRequestURL(event).origin
+}
+
+function toolForRequest(event: H3Event, id: GoQrToolId): GoQrToolContract {
+  const tool = registry.tool(id)
+  if (id !== 'doc') return tool
+
+  return {
+    ...tool,
+    preview: {
+      ...docTool.preview,
+      base_url: `${requestOrigin(event)}/doc`,
+    },
+  }
+}
+
 export function goQrToolResponse(event: H3Event, id: GoQrToolId) {
-  return registry.toolResponse(event, id)
+  return toolProviderResponse(event, toolForRequest(event, id))
 }

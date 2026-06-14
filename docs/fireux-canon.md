@@ -201,13 +201,13 @@ Ownership rule:
   - `developer`: Developer builds and checks the app
   - `control`: App Control changes where the app belongs
   - `system`: System maintains calculated/internal fields
-- Public app join requests live on the App root `join_requests` field and are approved by App Admin. They request app membership only; they do not grant console target access or operator authority.
-- App membership policy:
-  - `membership: 'open'` means sign-in may create the app-local `apps/{appId}/users/{uid}` membership overlay.
-  - `membership: 'restricted'` means sign-in creates only the core `users/{uid}` identity; app-local membership must be approved by App Admin.
-  - Tenant apps default to restricted membership. Global and standalone apps default to open membership.
-  - Restricted private routes such as dashboard and console require an app-local membership overlay.
-  - App membership still does not grant console write authority; console operation authority remains target `operator_ids`.
+- Public app join requests live on the App root `join_requests` field and are approved by App Admin. They request elevated app/admin involvement only; they do not grant console target access or operator authority.
+- App membership:
+  - sign-in creates or repairs the core `users/{uid}` identity
+  - sign-in also creates the app-local `apps/{appId}/users/{uid}` membership overlay when the app exists
+  - app membership is the normal signed-in app relationship, not console authority
+  - app admin authority still comes from `apps/{appId}/users/{uid}.role == 'admin'`
+  - console operation authority still comes from selected target `operator_ids`
 - `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/create seam.
 - `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.

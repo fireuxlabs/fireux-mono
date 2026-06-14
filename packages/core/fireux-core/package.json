@@ -18,7 +18,7 @@
       "types": "./src/config/module/*.ts",
       "development": "./src/config/module/*.ts",
       "production": "./src/config/module/*.ts",
-      "default": "./dist/config/module/*.mjs"
+      "default": "./src/config/module/*.ts"
     },
     "./runtime/*": "./src/runtime/*",
 
