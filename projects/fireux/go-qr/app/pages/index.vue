@@ -11,10 +11,9 @@
       </header>
 
       <section class="mb-8">
-        <iframe
-          src="/tools/doc"
-          title="Go QR doc tool"
-          class="mx-auto h-[34rem] w-full max-w-xl border-0"
+        <GoQrProviderTools
+          tool="doc"
+          class="mx-auto w-full max-w-xl"
         />
       </section>
 
