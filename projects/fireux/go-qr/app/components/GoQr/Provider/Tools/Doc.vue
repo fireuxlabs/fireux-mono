@@ -96,9 +96,38 @@ type ToolResponse = {
   }
 }
 
+type DocToolConfig = {
+  copy?: {
+    title?: string
+    description?: string
+    ctaLabel?: string
+    loadingLabel?: string
+    openTargetLabel?: string
+  }
+  upload?: {
+    fileLabel?: string
+    accept?: string
+    hint?: string
+  }
+  slug?: {
+    label?: string
+    placeholder?: string
+    takenMessage?: string
+  }
+  preview?: {
+    baseUrl?: string
+    pathSuffix?: string
+  }
+  endpoints?: {
+    create?: string
+    availability?: string
+  }
+}
+
 const { data } = await useFetch<ToolResponse>('/api/tools/doc')
 
 const props = withDefaults(defineProps<{
+  tool?: DocToolConfig | null
   title?: string
   description?: string
   fileLabel?: string
@@ -115,6 +144,7 @@ const props = withDefaults(defineProps<{
   availabilityEndpoint?: string
   takenMessage?: string
 }>(), {
+  tool: null,
   title: '',
   description: '',
   fileLabel: 'Doc file',
@@ -148,9 +178,44 @@ const file = computed(() =>
     ? selectedFile.value[0] || null
     : selectedFile.value
 )
-const toolTitle = computed(() => props.title || data.value?.tool.title || 'Doc')
+const toolTitle = computed(() =>
+  props.tool?.copy?.title ||
+  props.title ||
+  data.value?.tool.title ||
+  'Doc'
+)
 const toolDescription = computed(() =>
-  props.description || data.value?.tool.description || ''
+  props.tool?.copy?.description ||
+  props.description ||
+  data.value?.tool.description ||
+  ''
+)
+const fileLabel = computed(() =>
+  props.tool?.upload?.fileLabel || props.fileLabel
+)
+const pathLabel = computed(() =>
+  props.tool?.slug?.label || props.pathLabel
+)
+const slugPlaceholder = computed(() =>
+  props.tool?.slug?.placeholder || props.slugPlaceholder
+)
+const accept = computed(() =>
+  props.tool?.upload?.accept || props.accept
+)
+const uploadHint = computed(() =>
+  props.tool?.upload?.hint || props.uploadHint
+)
+const ctaLabel = computed(() =>
+  props.tool?.copy?.ctaLabel || props.ctaLabel
+)
+const loadingLabel = computed(() =>
+  props.tool?.copy?.loadingLabel || props.loadingLabel
+)
+const openTargetLabel = computed(() =>
+  props.tool?.copy?.openTargetLabel || props.openTargetLabel
+)
+const takenMessage = computed(() =>
+  props.tool?.slug?.takenMessage || props.takenMessage
 )
 const normalizedSlug = computed(() =>
   slugInput.value
@@ -160,26 +225,40 @@ const normalizedSlug = computed(() =>
     .replace(/^-+|-+$/g, '')
 )
 const previewBaseUrl = computed(() =>
-  props.previewBaseUrl || data.value?.tool.preview?.base_url || 'https://go-qr.web.app/doc'
+  props.tool?.preview?.baseUrl ||
+  props.previewBaseUrl ||
+  data.value?.tool.preview?.base_url ||
+  'https://go-qr.web.app/doc'
 )
-const previewPathSuffix = computed(() =>
-  props.previewPathSuffix || data.value?.tool.preview?.path_suffix || '/qr'
-)
+const previewPathSuffix = computed(() => {
+  const configured = props.tool?.preview?.pathSuffix
+  if (configured !== undefined) return configured
+
+  return props.previewPathSuffix ||
+    data.value?.tool.preview?.path_suffix ||
+    '/qr'
+})
 const previewUrl = computed(() =>
-  `${previewBaseUrl.value}/${normalizedSlug.value || props.slugPlaceholder}${previewPathSuffix.value}`
+  `${previewBaseUrl.value}/${normalizedSlug.value || slugPlaceholder.value}${previewPathSuffix.value}`
 )
 const availabilityEndpoint = computed(() =>
-  props.availabilityEndpoint || data.value?.tool.endpoints?.availability || '/api/tools/doc/availability'
+  props.tool?.endpoints?.availability ||
+  props.availabilityEndpoint ||
+  data.value?.tool.endpoints?.availability ||
+  '/api/tools/doc/availability'
 )
 const createEndpoint = computed(() =>
-  props.createEndpoint || data.value?.tool.endpoints?.create || '/api/tools/doc/create'
+  props.tool?.endpoints?.create ||
+  props.createEndpoint ||
+  data.value?.tool.endpoints?.create ||
+  '/api/tools/doc/create'
 )
 const canUseSlug = computed(() =>
   Boolean(normalizedSlug.value && !slugTaken.value && !slugError.value)
 )
 const slugMessage = computed(() => {
   if (slugError.value) return slugError.value
-  if (slugTaken.value) return props.takenMessage
+  if (slugTaken.value) return takenMessage.value
   return normalizedSlug.value ? 'Path is available.' : ''
 })
 const canCreate = computed(() =>

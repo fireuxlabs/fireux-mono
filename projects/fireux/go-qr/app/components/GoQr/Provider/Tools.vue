@@ -1,22 +1,39 @@
 <template>
   <ProviderToolIframe
+    v-if="toolUrl"
     :src="toolUrl"
     :title="toolTitle"
     :provider-origin="providerBaseUrl"
     message-source="go-qr"
     class="w-full"
   />
+  <UAlert
+    v-else-if="toolError"
+    color="error"
+    variant="soft"
+    :title="toolTitle"
+    :description="toolError"
+  />
+  <UPageCard
+    v-else
+    variant="subtle"
+    class="w-full"
+  >
+    <p class="text-sm text-dimmed">Loading {{ toolTitle }}...</p>
+  </UPageCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   tool?: string
+  payload?: Record<string, unknown> | null
   providerBaseUrl?: string
   title?: string
 }>(), {
   tool: 'doc',
+  payload: null,
   providerBaseUrl: '',
   title: '',
 })
@@ -35,8 +52,45 @@ const providerBaseUrl = computed(() => {
 const toolTitle = computed(() =>
   props.title || `Go QR ${toolId.value} tool`
 )
+const toolPayload = computed(() => props.payload ?? {})
+const toolUrl = ref('')
+const toolError = ref('')
+let requestId = 0
 
-const toolUrl = computed(() =>
-  `${providerBaseUrl.value}/tools/${encodeURIComponent(toolId.value)}`
+watch(
+  () => ({
+    providerBaseUrl: providerBaseUrl.value,
+    toolId: toolId.value,
+    payload: JSON.stringify(toolPayload.value),
+  }),
+  async ({ providerBaseUrl, toolId }) => {
+    const currentRequestId = ++requestId
+    toolUrl.value = ''
+    toolError.value = ''
+
+    if (!import.meta.client || !providerBaseUrl || !toolId) return
+
+    try {
+      const response = await $fetch<{
+        path?: string
+        toolUrl?: string
+      }>(`${providerBaseUrl}/api/tools/${encodeURIComponent(toolId)}`, {
+        method: 'POST',
+        body: toolPayload.value,
+      })
+
+      if (currentRequestId !== requestId) return
+
+      toolUrl.value = response.toolUrl ||
+        new URL(response.path || `/tools/${toolId}`, providerBaseUrl).toString()
+    } catch (error) {
+      if (currentRequestId !== requestId) return
+
+      toolError.value = error instanceof Error
+        ? error.message
+        : 'The Go QR tool could not be loaded.'
+    }
+  },
+  { immediate: true }
 )
 </script>

@@ -7,17 +7,31 @@
     </div>
 
     <ProviderToolIframe
+      v-if="toolUrl"
       :src="toolUrl"
       :title="resolved.title"
       :provider-origin="providerBaseUrl"
       :auth-token="resolved.authToken"
       message-source="go-qr"
     />
+    <UAlert
+      v-else-if="toolError"
+      color="error"
+      variant="soft"
+      :title="resolved.title"
+      :description="toolError"
+    />
+    <UPageCard
+      v-else
+      variant="subtle"
+    >
+      <p class="text-sm text-dimmed">Loading {{ resolved.title }}...</p>
+    </UPageCard>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 type GoQrDocToolConfig = {
   authToken?: string
@@ -117,25 +131,70 @@ const resolved = computed(() => ({
   authToken: props.tool?.authToken || props.authToken,
 }))
 
-const toolUrl = computed(() => {
-  const query = new URLSearchParams({
+const toolPayload = computed(() => ({
+  copy: {
     title: resolved.value.title,
     description: resolved.value.description,
-    fileLabel: resolved.value.fileLabel,
-    pathLabel: resolved.value.pathLabel,
-    slugPlaceholder: resolved.value.slugPlaceholder,
-    previewBaseUrl: resolved.value.previewBaseUrl,
-    previewPathSuffix: resolved.value.previewPathSuffix,
-    createEndpoint: resolved.value.createEndpoint,
-    availabilityEndpoint: resolved.value.availabilityEndpoint,
-    accept: resolved.value.accept,
-    uploadHint: resolved.value.uploadHint,
     ctaLabel: resolved.value.ctaLabel,
     loadingLabel: resolved.value.loadingLabel,
     openTargetLabel: resolved.value.openTargetLabel,
+  },
+  upload: {
+    fileLabel: resolved.value.fileLabel,
+    accept: resolved.value.accept,
+    hint: resolved.value.uploadHint,
+  },
+  slug: {
+    label: resolved.value.pathLabel,
+    placeholder: resolved.value.slugPlaceholder,
     takenMessage: resolved.value.takenMessage,
-  })
+  },
+  preview: {
+    baseUrl: resolved.value.previewBaseUrl,
+    pathSuffix: resolved.value.previewPathSuffix,
+  },
+  endpoints: {
+    create: resolved.value.createEndpoint,
+    availability: resolved.value.availabilityEndpoint,
+  },
+}))
+const toolUrl = ref('')
+const toolError = ref('')
+let requestId = 0
 
-  return `${providerBaseUrl.value}/tools/doc?${query}`
-})
+watch(
+  () => ({
+    providerBaseUrl: providerBaseUrl.value,
+    payload: JSON.stringify(toolPayload.value),
+  }),
+  async ({ providerBaseUrl }) => {
+    const currentRequestId = ++requestId
+    toolUrl.value = ''
+    toolError.value = ''
+
+    if (!import.meta.client || !providerBaseUrl) return
+
+    try {
+      const response = await $fetch<{
+        path?: string
+        toolUrl?: string
+      }>(`${providerBaseUrl}/api/tools/doc`, {
+        method: 'POST',
+        body: toolPayload.value,
+      })
+
+      if (currentRequestId !== requestId) return
+
+      toolUrl.value = response.toolUrl ||
+        new URL(response.path || '/tools/doc', providerBaseUrl).toString()
+    } catch (error) {
+      if (currentRequestId !== requestId) return
+
+      toolError.value = error instanceof Error
+        ? error.message
+        : 'The Go QR doc tool could not be loaded.'
+    }
+  },
+  { immediate: true }
+)
 </script>

@@ -1,4 +1,7 @@
-import { getQuery } from 'h3'
+import {
+  defineEventHandler,
+  getQuery,
+} from 'h3'
 import {
   goQrDocRef,
   normalizeGoQrDocSlug,

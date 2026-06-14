@@ -1,6 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import { randomUUID } from 'node:crypto'
-import { createError, readMultipartFormData } from 'h3'
+import {
+  createError,
+  defineEventHandler,
+  readMultipartFormData,
+} from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
