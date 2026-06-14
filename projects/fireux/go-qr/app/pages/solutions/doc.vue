@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrProviderTools
+    <ProviderGoQrTools
       tool="doc"
       class="mx-auto w-full max-w-xl"
     />

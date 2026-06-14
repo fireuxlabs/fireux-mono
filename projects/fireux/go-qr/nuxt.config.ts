@@ -10,6 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Go QR',
   databaseId: 'go-qr',
   role: 'standalone',
+  modules: ['fireux-go-qr'],
   seo: {
     staticPaths: [
       '/pricing',

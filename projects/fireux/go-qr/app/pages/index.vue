@@ -11,7 +11,7 @@
       </header>
 
       <section class="mb-8">
-        <GoQrProviderTools
+        <ProviderGoQrTools
           tool="doc"
           class="mx-auto w-full max-w-xl"
         />
