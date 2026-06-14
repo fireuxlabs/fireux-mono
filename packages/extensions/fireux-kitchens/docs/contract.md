@@ -91,8 +91,9 @@ Menu composable stack canon:
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
 - Kitchen menu source uploads are app-scoped child records:
   - `apps/{appId}/kitchens/{kitchenId}/menu-uploads/{uploadId}`
-- Go QR owns document upload and QR doc pages.
-- Kitchen stores Go QR doc references in `menu-uploads` so later AI conversion can create reviewed `Dish`, `Menu`, section, and item records.
+- Go QR provides the document upload tool surface.
+- The consuming Kitchen app owns uploaded files and `menu-uploads` records.
+- Kitchen stores menu source upload records so later AI conversion can create reviewed `Dish`, `Menu`, section, and item records.
 - Uploading a menu source must not publish a Menu or create dishes automatically.
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
 - Root `menus/{menuId}` is not V1 Kitchen/Menu canon.

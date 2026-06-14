@@ -13,6 +13,7 @@
       <section class="mb-8">
         <ProviderGoQrTools
           tool="doc"
+          :payload="docTool"
           class="mx-auto w-full max-w-xl"
         />
       </section>
@@ -29,6 +30,13 @@
 </template>
 
 <script setup lang="ts">
+const docTool = {
+  endpoints: {
+    create: '/api/tools/doc/create',
+    availability: '/api/tools/doc/availability',
+  },
+}
+
 definePageMeta({
   layout: 'landing',
   nav: {

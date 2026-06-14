@@ -7,6 +7,7 @@ import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
   type GoQrDocToolConfig,
+  hasDocToolStorageEndpoints,
   normalizeDocToolConfig,
 } from '../../../utils/tools/doc'
 
@@ -30,6 +31,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const raw = snap.data() ?? {}
+  if (!hasDocToolStorageEndpoints(raw.config)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Doc tool config is missing consumer storage endpoints.',
+    })
+  }
+
   const config = normalizeDocToolConfig(raw.config) satisfies GoQrDocToolConfig
 
   return {

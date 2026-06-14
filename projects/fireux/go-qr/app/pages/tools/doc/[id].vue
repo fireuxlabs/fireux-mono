@@ -41,6 +41,7 @@ type DocToolConfig = {
   preview: {
     baseUrl: string
     pathSuffix: string
+    message: string
   }
   endpoints: {
     create: string

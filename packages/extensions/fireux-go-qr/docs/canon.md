@@ -31,6 +31,9 @@ References: `docs/fireux-canon.md`, `packages/core/fireux-docs/src/runtime/compo
 - FireUX consumers should pass one provider tool payload object.
 - Provider iframes may emit `tool-result` after a tool action succeeds.
   Consumers use that event to store their own product meaning.
+- Storage-bearing tools must receive explicit consumer endpoints.
+- Go QR may pass Go QR endpoints when Go QR dogfoods its own tools.
+- Non-Go QR consumers must pass their own endpoints; Go QR must not silently store their data.
 - Plain external consumers should use the HTTP API, not FireUX Vue components.
 
 ## Usage Modes

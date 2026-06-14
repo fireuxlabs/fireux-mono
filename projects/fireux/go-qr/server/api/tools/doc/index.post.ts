@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import {
+  createError,
   defineEventHandler,
   getRequestHeader,
   getRequestURL,
@@ -8,7 +9,10 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { normalizeDocToolConfig } from '../../../utils/tools/doc'
+import {
+  hasDocToolStorageEndpoints,
+  normalizeDocToolConfig,
+} from '../../../utils/tools/doc'
 
 const publicOrigin = (event: Parameters<typeof getRequestURL>[0]) => {
   const host = (
@@ -29,6 +33,13 @@ export default defineEventHandler(async (event) => {
   setToolProviderResponseHeaders(event)
 
   const body = await readBody(event).catch(() => ({}))
+  if (!hasDocToolStorageEndpoints(body)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Doc tool consumers must provide their own create and availability endpoints.',
+    })
+  }
+
   const config = normalizeDocToolConfig(body)
   const id = randomUUID()
   const path = `/tools/doc/${encodeURIComponent(id)}`

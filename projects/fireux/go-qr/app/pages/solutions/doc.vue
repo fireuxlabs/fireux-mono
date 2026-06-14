@@ -2,12 +2,20 @@
   <GoQrSolutionPage :solution="solution">
     <ProviderGoQrTools
       tool="doc"
+      :payload="tool"
       class="mx-auto w-full max-w-xl"
     />
   </GoQrSolutionPage>
 </template>
 
 <script setup lang="ts">
+const tool = {
+  endpoints: {
+    create: '/api/tools/doc/create',
+    availability: '/api/tools/doc/availability',
+  },
+}
+
 definePageMeta({
   layout: 'landing',
 })

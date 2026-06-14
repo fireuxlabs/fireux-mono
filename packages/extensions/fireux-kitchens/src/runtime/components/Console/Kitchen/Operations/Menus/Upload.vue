@@ -5,7 +5,7 @@
       tool="doc"
       :payload="tool"
       :auth-token="authToken"
-      @tool-result="recordMenuUpload"
+      @tool-result="handleMenuUploadResult"
     />
 
     <UAlert
@@ -29,13 +29,14 @@
       color="success"
       variant="soft"
       title="Menu upload saved"
-      :description="`Saved Go QR doc ${recordedUploadId} as a kitchen menu source.`"
+      :description="`Saved ${recordedUploadId} as a kitchen menu source in ${activeKitchenAppId}.`"
     />
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
@@ -44,6 +45,7 @@ const {
   activeKitchenAppId,
   selectedKitchen,
 } = useKitchenConsoleMenus()
+const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()
 const authToken = ref('')
 const recordedUploadId = ref('')
@@ -60,14 +62,29 @@ const uploadSourceEndpoint = computed(() =>
     kitchenId: kitchenId.value,
   }).toString()}`
 )
+const uploadSourceAvailabilityEndpoint = computed(() =>
+  `${appOrigin.value}/api/console/kitchen/menus/upload-source/availability?${new URLSearchParams({
+    appId: activeKitchenAppId.value,
+    kitchenId: kitchenId.value,
+  }).toString()}`
+)
 const defaultDocPath = computed(() =>
   kitchenSlug.value ? `${kitchenSlug.value}-menu-source` : ''
 )
 const canUseTool = computed(() =>
-  Boolean(activeKitchenAppId.value && kitchenId.value && defaultDocPath.value)
+  Boolean(
+    activeKitchenAppId.value &&
+    activeKitchenAppId.value === appId &&
+    kitchenId.value &&
+    defaultDocPath.value
+  )
 )
 const missingContextMessage = computed(() => {
   if (!activeKitchenAppId.value) return 'Select a kitchen app before uploading a menu source.'
+  if (activeKitchenAppId.value !== appId) {
+    return `This kitchen is owned by ${activeKitchenAppId.value}. Open that app to upload its menu source.`
+  }
+
   if (!kitchenId.value) return 'Select a kitchen before uploading a menu source.'
   if (!kitchenSlug.value) return 'This kitchen needs a public slug before uploading a menu source.'
 
@@ -83,10 +100,10 @@ const tool = computed(() => ({
   },
   copy: {
     title: 'Step 1: Upload menu source',
-    description: 'Upload the menu PDF with Go QR. Misebox will save it as this kitchen’s source document.',
-    ctaLabel: 'Upload with Go QR',
-    loadingLabel: 'Uploading with Go QR...',
-    openTargetLabel: 'Open Go QR doc',
+    description: 'Go QR provides the upload tool. The selected kitchen app stores the source document.',
+    ctaLabel: 'Save source document',
+    loadingLabel: 'Saving source document...',
+    openTargetLabel: 'Open stored file',
   },
   upload: {
     fileLabel: 'Menu document',
@@ -99,47 +116,30 @@ const tool = computed(() => ({
     initialValue: defaultDocPath.value,
     takenMessage: 'This menu source path is already taken.',
   },
+  preview: {
+    message: `Stored by ${activeKitchenAppId.value} as a kitchen menu source.`,
+  },
+  endpoints: {
+    create: uploadSourceEndpoint.value,
+    availability: uploadSourceAvailabilityEndpoint.value,
+  },
 }))
 
-async function recordMenuUpload(message: Record<string, unknown>) {
+function handleMenuUploadResult(message: Record<string, unknown>) {
   const result = message.result && typeof message.result === 'object'
     ? message.result as Record<string, unknown>
     : {}
-  const providerDocId = text(result.id || result.slug)
+  const uploadId = text(result.id || result.slug)
   recordedUploadId.value = ''
   recordError.value = ''
 
-  if (message.action !== 'created' || !providerDocId) return
+  if (message.action !== 'created' || !uploadId) return
   if (!canUseTool.value) {
     recordError.value = missingContextMessage.value
     return
   }
 
-  try {
-    const response = await $fetch<{ id?: string }>(uploadSourceEndpoint.value, {
-      method: 'POST',
-      headers: authToken.value
-        ? { authorization: `Bearer ${authToken.value}` }
-        : undefined,
-      body: {
-        appId: activeKitchenAppId.value,
-        kitchenId: kitchenId.value,
-        provider: 'go-qr',
-        tool: 'doc',
-        result,
-      },
-    })
-    const savedUploadId = text(response.id)
-    if (!savedUploadId) {
-      throw new Error('Kitchen menu upload did not return an upload id.')
-    }
-
-    recordedUploadId.value = savedUploadId
-  } catch (error) {
-    recordError.value = error instanceof Error
-      ? error.message
-      : 'Kitchen menu upload could not be saved.'
-  }
+  recordedUploadId.value = uploadId
 }
 
 watch(currentUser, async (user) => {

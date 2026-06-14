@@ -62,6 +62,7 @@
       class="flex flex-wrap gap-2"
     >
       <UButton
+        v-if="createdPath"
         :to="createdPath"
         target="_blank"
         icon="i-lucide-external-link"
@@ -69,6 +70,7 @@
         {{ openTargetLabel }}
       </UButton>
       <UButton
+        v-if="createdQrPath"
         :to="createdQrPath"
         target="_blank"
         icon="i-lucide-qr-code"
@@ -85,6 +87,8 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type ToolResponse = {
   tool: {
+    title?: string
+    description?: string
     endpoints?: {
       create: string
       availability: string
@@ -118,6 +122,7 @@ type DocToolConfig = {
   preview?: {
     baseUrl?: string
     pathSuffix?: string
+    message?: string
   }
   endpoints?: {
     create?: string
@@ -202,6 +207,9 @@ const previewBaseUrl = computed(() =>
   data.value?.tool.preview?.base_url ||
   'https://go-qr.web.app/doc'
 )
+const previewMessage = computed(() =>
+  props.tool?.preview?.message || ''
+)
 const previewPathSuffix = computed(() => {
   const configured = props.tool?.preview?.pathSuffix
   if (configured !== undefined) return configured
@@ -210,6 +218,7 @@ const previewPathSuffix = computed(() => {
     '/qr'
 })
 const previewUrl = computed(() => {
+  if (previewMessage.value) return previewMessage.value
   if (!normalizedSlug.value) return 'Enter a doc path to preview the QR URL.'
 
   return `${previewBaseUrl.value}/${normalizedSlug.value}${previewPathSuffix.value}`

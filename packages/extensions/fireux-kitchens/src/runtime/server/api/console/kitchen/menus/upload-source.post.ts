@@ -6,7 +6,6 @@ import {
   getHeader,
   getMethod,
   getQuery,
-  getRequestURL,
   readMultipartFormData,
   setResponseHeaders,
   setResponseStatus,
@@ -173,15 +172,14 @@ export default defineEventHandler(async (event) => {
 
   const now = FieldValue.serverTimestamp()
   const fileUrl = firebaseDownloadUrl(bucketName, objectPath, downloadToken)
-  const publicPath = `/console/kitchen/menus/uploads/${encodeURIComponent(uploadId)}`
-  const publicUrl = new URL(publicPath, getRequestURL(event).origin).toString()
   const upload = {
     id: uploadId,
     kitchen_id: kitchenId,
     app_id: appId,
     provider: 'go-qr',
     tool: 'doc',
-    storage_owner: 'consumer',
+    storage_owner: 'consumer-app',
+    storage_app_id: appId,
     file_url: fileUrl,
     file_name: fileName,
     file_type: storedFileType,
@@ -204,12 +202,13 @@ export default defineEventHandler(async (event) => {
     ok: true,
     id: uploadId,
     slug: uploadId,
-    path: publicPath,
+    path: '',
     qr_path: '',
-    url: publicUrl,
+    url: fileUrl,
     qr_url: '',
     file_name: fileName,
     file_type: storedFileType,
-    storage_owner: 'consumer',
+    storage_owner: 'consumer-app',
+    storage_app_id: appId,
   }
 })

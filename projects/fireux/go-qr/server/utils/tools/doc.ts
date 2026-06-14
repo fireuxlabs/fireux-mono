@@ -22,6 +22,7 @@ export type GoQrDocToolConfig = {
   preview: {
     baseUrl: string
     pathSuffix: string
+    message: string
   }
   endpoints: {
     create: string
@@ -67,6 +68,7 @@ const defaultDocToolConfig: GoQrDocToolConfig = {
   preview: {
     baseUrl: docTool.preview.base_url,
     pathSuffix: docTool.preview.path_suffix,
+    message: '',
   },
   endpoints: {
     create: docTool.endpoints.create,
@@ -114,10 +116,17 @@ export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
     preview: {
       baseUrl: text(preview.baseUrl, defaultDocToolConfig.preview.baseUrl),
       pathSuffix: text(preview.pathSuffix, defaultDocToolConfig.preview.pathSuffix),
+      message: text(preview.message, defaultDocToolConfig.preview.message),
     },
     endpoints: {
       create: text(endpoints.create, defaultDocToolConfig.endpoints.create),
       availability: text(endpoints.availability, defaultDocToolConfig.endpoints.availability),
     },
   }
+}
+
+export function hasDocToolStorageEndpoints(input: unknown) {
+  const endpoints = record(record(input).endpoints)
+
+  return Boolean(text(endpoints.create, '') && text(endpoints.availability, ''))
 }
