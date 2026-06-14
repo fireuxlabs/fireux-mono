@@ -35,6 +35,7 @@ type DocToolConfig = {
   slug: {
     label: string
     placeholder: string
+    initialValue: string
     takenMessage: string
   }
   preview: {

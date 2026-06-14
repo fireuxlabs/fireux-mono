@@ -112,6 +112,7 @@ type DocToolConfig = {
   slug?: {
     label?: string
     placeholder?: string
+    initialValue?: string
     takenMessage?: string
   }
   preview?: {
@@ -134,6 +135,7 @@ const props = withDefaults(defineProps<{
 
 const selectedFile = ref<File | File[] | null>(null)
 const slugInput = ref('')
+const appliedInitialSlug = ref('')
 const slugTaken = ref(false)
 const slugError = ref('')
 const isCreating = ref(false)
@@ -165,7 +167,10 @@ const pathLabel = computed(() =>
   props.tool?.slug?.label || 'Doc path'
 )
 const slugPlaceholder = computed(() =>
-  props.tool?.slug?.placeholder || 'my-doc'
+  props.tool?.slug?.placeholder || 'doc-path'
+)
+const slugInitialValue = computed(() =>
+  props.tool?.slug?.initialValue || ''
 )
 const accept = computed(() =>
   props.tool?.upload?.accept || 'application/pdf,image/*,.doc,.docx'
@@ -204,9 +209,11 @@ const previewPathSuffix = computed(() => {
   return data.value?.tool.preview?.path_suffix ||
     '/qr'
 })
-const previewUrl = computed(() =>
-  `${previewBaseUrl.value}/${normalizedSlug.value || slugPlaceholder.value}${previewPathSuffix.value}`
-)
+const previewUrl = computed(() => {
+  if (!normalizedSlug.value) return 'Enter a doc path to preview the QR URL.'
+
+  return `${previewBaseUrl.value}/${normalizedSlug.value}${previewPathSuffix.value}`
+})
 const availabilityEndpoint = computed(() =>
   props.tool?.endpoints?.availability ||
   data.value?.tool.endpoints?.availability ||
@@ -255,6 +262,14 @@ watch(slugInput, async () => {
     slugError.value = error instanceof Error ? error.message : 'Doc path is not valid.'
   }
 })
+
+watch(slugInitialValue, (value) => {
+  if (!value) return
+  if (slugInput.value && slugInput.value !== appliedInitialSlug.value) return
+
+  slugInput.value = value
+  appliedInitialSlug.value = value
+}, { immediate: true })
 
 onMounted(() => {
   window.addEventListener('message', handleToolAuthMessage)

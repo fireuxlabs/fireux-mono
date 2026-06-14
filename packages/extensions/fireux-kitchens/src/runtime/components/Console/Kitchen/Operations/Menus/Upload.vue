@@ -1,10 +1,19 @@
 <template>
   <section class="space-y-3">
     <ProviderGoQrTools
+      v-if="canUseTool"
       tool="doc"
       :payload="tool"
       :auth-token="authToken"
       @tool-result="recordMenuUpload"
+    />
+
+    <UAlert
+      v-else
+      color="warning"
+      variant="soft"
+      title="Menu source upload is not ready"
+      :description="missingContextMessage"
     />
 
     <UAlert
@@ -52,7 +61,18 @@ const uploadSourceEndpoint = computed(() =>
   }).toString()}`
 )
 const defaultDocPath = computed(() =>
-  [kitchenSlug.value, 'menu-source'].filter(Boolean).join('-') || 'menu-source'
+  kitchenSlug.value ? `${kitchenSlug.value}-menu-source` : ''
+)
+const canUseTool = computed(() =>
+  Boolean(activeKitchenAppId.value && kitchenId.value && defaultDocPath.value)
+)
+const missingContextMessage = computed(() => {
+  if (!activeKitchenAppId.value) return 'Select a kitchen app before uploading a menu source.'
+  if (!kitchenId.value) return 'Select a kitchen before uploading a menu source.'
+  if (!kitchenSlug.value) return 'This kitchen needs a public slug before uploading a menu source.'
+
+  return 'Menu source upload needs a selected kitchen before it can start.'
+}
 )
 const tool = computed(() => ({
   consumer: {
@@ -74,9 +94,10 @@ const tool = computed(() => ({
     hint: 'PDF. Max 10 MB.',
   },
   slug: {
-    label: 'Go QR doc path',
+    label: 'Menu source path',
     placeholder: defaultDocPath.value,
-    takenMessage: 'This Go QR doc path is already taken.',
+    initialValue: defaultDocPath.value,
+    takenMessage: 'This menu source path is already taken.',
   },
 }))
 
@@ -89,6 +110,10 @@ async function recordMenuUpload(message: Record<string, unknown>) {
   recordError.value = ''
 
   if (message.action !== 'created' || !providerDocId) return
+  if (!canUseTool.value) {
+    recordError.value = missingContextMessage.value
+    return
+  }
 
   try {
     const response = await $fetch<{ id?: string }>(uploadSourceEndpoint.value, {
@@ -104,8 +129,12 @@ async function recordMenuUpload(message: Record<string, unknown>) {
         result,
       },
     })
+    const savedUploadId = text(response.id)
+    if (!savedUploadId) {
+      throw new Error('Kitchen menu upload did not return an upload id.')
+    }
 
-    recordedUploadId.value = text(response.id) || providerDocId
+    recordedUploadId.value = savedUploadId
   } catch (error) {
     recordError.value = error instanceof Error
       ? error.message

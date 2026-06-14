@@ -16,6 +16,7 @@ export type GoQrDocToolConfig = {
   slug: {
     label: string
     placeholder: string
+    initialValue: string
     takenMessage: string
   }
   preview: {
@@ -59,7 +60,8 @@ const defaultDocToolConfig: GoQrDocToolConfig = {
   },
   slug: {
     label: 'Doc path',
-    placeholder: 'my-doc',
+    placeholder: 'doc-path',
+    initialValue: '',
     takenMessage: 'This doc path is already taken.',
   },
   preview: {
@@ -77,9 +79,9 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 
-const text = (value: unknown, fallback: string) => {
+const text = (value: unknown, defaultValue: string) => {
   const resolved = String(value ?? '').trim()
-  return resolved || fallback
+  return resolved || defaultValue
 }
 
 export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
@@ -106,6 +108,7 @@ export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
     slug: {
       label: text(slug.label, defaultDocToolConfig.slug.label),
       placeholder: text(slug.placeholder, defaultDocToolConfig.slug.placeholder),
+      initialValue: text(slug.initialValue, defaultDocToolConfig.slug.initialValue),
       takenMessage: text(slug.takenMessage, defaultDocToolConfig.slug.takenMessage),
     },
     preview: {

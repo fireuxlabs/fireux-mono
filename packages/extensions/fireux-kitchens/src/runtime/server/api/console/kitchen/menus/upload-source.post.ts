@@ -1,34 +1,47 @@
+import { useRuntimeConfig } from '#imports'
+import { randomUUID } from 'node:crypto'
 import {
   createError,
   defineEventHandler,
   getHeader,
   getMethod,
   getQuery,
-  readBody,
+  getRequestURL,
+  readMultipartFormData,
   setResponseHeaders,
   setResponseStatus,
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
+import { getStorage } from 'firebase-admin/storage'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 
 const menuUploadCollection = 'menu-uploads'
+const maxFileSizeMb = 10
+const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
+const allowedTypes = new Set(['application/pdf'])
 
 function text(value: unknown): string {
   return String(value ?? '').trim()
 }
 
-function record(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
+function fieldValue(parts: Awaited<ReturnType<typeof readMultipartFormData>>, name: string) {
+  const part = parts?.find((entry) => entry.name === name)
+  return part?.data ? part.data.toString('utf8').trim() : ''
 }
 
 function bearerToken(value: unknown) {
   return text(value).match(/^Bearer\s+(.+)$/i)?.[1] || ''
+}
+
+function normalizeBucketName(bucket?: string | null) {
+  const trimmed = text(bucket)
+  return trimmed.startsWith('gs://') ? trimmed.slice(5) : trimmed
 }
 
 function pathSegment(value: unknown, label: string) {
@@ -37,6 +50,16 @@ function pathSegment(value: unknown, label: string) {
     throw createError({ statusCode: 400, statusMessage: `${label} is required.` })
   }
   return segment
+}
+
+function safeFileName(value: unknown) {
+  return text(value || 'menu.pdf')
+    .replace(/[^\w.-]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'menu.pdf'
+}
+
+function firebaseDownloadUrl(bucketName: string, objectPath: string, token: string) {
+  return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectPath)}?alt=media&token=${encodeURIComponent(token)}`
 }
 
 function hasOperator(data: Record<string, unknown> | undefined, uid: string) {
@@ -67,24 +90,44 @@ export default defineEventHandler(async (event) => {
   const decoded = await getAuth(getAdminApp()).verifyIdToken(token)
   const uid = pathSegment(decoded.uid, 'User id')
   const query = getQuery(event)
-  const body = record(await readBody(event).catch(() => ({})))
-  const result = record(body.result)
-  const appId = pathSegment(body.appId || query.appId, 'App id')
-  const kitchenId = pathSegment(body.kitchenId || query.kitchenId, 'Kitchen id')
-  const provider = text(body.provider) || 'go-qr'
-  const tool = text(body.tool) || 'doc'
+  const parts = await readMultipartFormData(event)
+  const appId = pathSegment(fieldValue(parts, 'appId') || query.appId, 'App id')
+  const kitchenId = pathSegment(fieldValue(parts, 'kitchenId') || query.kitchenId, 'Kitchen id')
+  const uploadId = normalizeSlug(fieldValue(parts, 'slug'))
+  const validation = validatePublicSlug(uploadId, {
+    label: 'Menu source path',
+    reservedScope: 'entity',
+    reserved: ['create', 'edit', 'new', 'qr', 'sections'],
+  })
 
-  if (provider !== 'go-qr' || tool !== 'doc') {
+  if (!validation.isValid) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Only Go QR doc uploads are supported here.',
+      statusMessage: validation.message || 'Menu source path is not valid.',
     })
   }
 
-  const providerDocId = pathSegment(
-    result.id || result.slug || body.providerDocId,
-    'Provider doc id'
-  )
+  const filePart = parts?.find((part) => part.name === 'file' && part.filename)
+  if (!filePart?.data?.length) {
+    throw createError({ statusCode: 400, statusMessage: 'Menu source PDF is required.' })
+  }
+
+  if (filePart.data.byteLength > maxFileSizeBytes) {
+    throw createError({
+      statusCode: 413,
+      statusMessage: `Max file size is ${maxFileSizeMb} MB.`,
+    })
+  }
+
+  const fileType = text(filePart.type || 'application/octet-stream')
+  const fileName = safeFileName(filePart.filename)
+  if (!allowedTypes.has(fileType) && !fileName.toLowerCase().endsWith('.pdf')) {
+    throw createError({ statusCode: 415, statusMessage: 'Upload a PDF menu source file.' })
+  }
+  const storedFileType = fileName.toLowerCase().endsWith('.pdf')
+    ? 'application/pdf'
+    : fileType
+
   const db = getRuntimeFirestore()
   const kitchenPath = `${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
   const kitchenSnap = await db.doc(kitchenPath).get()
@@ -95,42 +138,78 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const now = FieldValue.serverTimestamp()
-  const uploadRef = db.doc(`${kitchenPath}/${menuUploadCollection}/${providerDocId}`)
+  const uploadRef = db.doc(`${kitchenPath}/${menuUploadCollection}/${uploadId}`)
   const uploadSnap = await uploadRef.get()
+  if (uploadSnap.exists) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This menu source path is already taken.',
+    })
+  }
+
+  const runtime = useRuntimeConfig()
+  const bucketName = normalizeBucketName(
+    runtime.public?.firebaseEcosystem?.firebase?.storageBucket
+  )
+  if (!bucketName) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Missing Firebase Storage bucket configuration.',
+    })
+  }
+
+  const downloadToken = randomUUID()
+  const objectPath = `${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}/${kitchenId}/${menuUploadCollection}/${uploadId}/source/${fileName}`
+  await getStorage(getAdminApp()).bucket(bucketName).file(objectPath).save(filePart.data, {
+    resumable: false,
+    metadata: {
+      contentType: storedFileType,
+      cacheControl: 'public, max-age=300',
+      metadata: {
+        firebaseStorageDownloadTokens: downloadToken,
+      },
+    },
+  })
+
+  const now = FieldValue.serverTimestamp()
+  const fileUrl = firebaseDownloadUrl(bucketName, objectPath, downloadToken)
+  const publicPath = `/console/kitchen/menus/uploads/${encodeURIComponent(uploadId)}`
+  const publicUrl = new URL(publicPath, getRequestURL(event).origin).toString()
   const upload = {
-    id: providerDocId,
+    id: uploadId,
     kitchen_id: kitchenId,
     app_id: appId,
     provider: 'go-qr',
     tool: 'doc',
-    provider_doc_id: providerDocId,
-    provider_slug: text(result.slug) || providerDocId,
-    provider_url: text(result.url),
-    provider_qr_url: text(result.qr_url),
-    provider_path: text(result.path),
-    provider_qr_path: text(result.qr_path),
-    source_file_name: text(result.file_name || body.sourceFileName),
-    source_file_type: text(result.file_type || body.sourceFileType),
+    storage_owner: 'consumer',
+    file_url: fileUrl,
+    file_name: fileName,
+    file_type: storedFileType,
+    storage_path: objectPath,
     status: 'uploaded',
-    ...(!uploadSnap.exists ? {
-      created: {
-        at: now,
-        by: uid,
-        app_id: appId,
-      },
-    } : {}),
+    created: {
+      at: now,
+      by: uid,
+      app_id: appId,
+    },
     updated: {
       at: now,
       by: uid,
     },
   }
 
-  await uploadRef.set(upload, { merge: true })
+  await uploadRef.create(upload)
 
   return {
     ok: true,
-    id: providerDocId,
-    upload,
+    id: uploadId,
+    slug: uploadId,
+    path: publicPath,
+    qr_path: '',
+    url: publicUrl,
+    qr_url: '',
+    file_name: fileName,
+    file_type: storedFileType,
+    storage_owner: 'consumer',
   }
 })
