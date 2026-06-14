@@ -1,6 +1,9 @@
 <template>
   <SolutionPage :solution="solution">
-    <ProviderGoQrDoc :tool="tool" />
+    <ProviderGoQrTools
+      tool="doc"
+      :payload="tool"
+    />
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />

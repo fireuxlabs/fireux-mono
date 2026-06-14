@@ -1,7 +1,7 @@
 # Tool Provider Canon
 
 Authority: Operational
-Updated: 2026-06-05
+Updated: 2026-06-14
 
 ## Meaning
 
@@ -17,6 +17,8 @@ and brand. Consumer apps own how and why they consume the provider.
 - Core `defineToolProviderRegistry()` owns shared registry mechanics.
 - Core `Provider/Tool/Iframe.vue` owns consumer-side iframe height handling.
 - Core `Provider/Tool/Frame.vue` owns the hosted provider card shell.
+- Core `useToolProviderTool()` owns the FireUX consumer-side API call that
+  creates a hosted tool config and returns the iframe URL.
 - Core `useToolProviderHeight()` owns hosted page height messages.
 - Core server `tool-provider` helpers own no-store JSON and CORS response
   headers for tool contract endpoints.
@@ -43,9 +45,14 @@ Consumer apps may embed hosted provider pages or call provider APIs.
 Consumer apps must not copy provider plumbing locally when the core provider
 seam can carry it.
 
+FireUX consumers should use a provider wrapper that calls the hosted provider
+API as an external consumer. Plain external consumers should call the provider
+API directly and iframe the returned tool URL.
+
 ## Short Version
 
-Core provides the tool-provider frame, iframe, height, and response plumbing.
+Core provides the tool-provider frame, iframe, API-call, height, and response
+plumbing.
 
 Provider apps provide the actual tools.
 

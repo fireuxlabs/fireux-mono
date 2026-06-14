@@ -4,7 +4,7 @@
     :src="toolUrl"
     :title="toolTitle"
     :provider-origin="providerBaseUrl"
-    message-source="go-qr"
+    :message-source="messageSource"
     class="w-full"
   />
   <UAlert
@@ -24,7 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
+import { useToolProviderTool } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderTool'
 
 const props = withDefaults(defineProps<{
   tool?: string
@@ -41,7 +42,7 @@ const props = withDefaults(defineProps<{
 const toolId = computed(() =>
   String(props.tool || 'doc').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-')
 )
-const providerBaseUrl = computed(() => {
+const requestedProviderBaseUrl = computed(() => {
   const configured = String(props.providerBaseUrl || '').trim().replace(/\/+$/, '')
   if (configured) return configured
 
@@ -49,48 +50,21 @@ const providerBaseUrl = computed(() => {
     ? window.location.origin
     : 'https://go-qr.web.app'
 })
-const toolTitle = computed(() =>
+const requestedToolTitle = computed(() =>
   props.title || `Go QR ${toolId.value} tool`
 )
 const toolPayload = computed(() => props.payload ?? {})
-const toolUrl = ref('')
-const toolError = ref('')
-let requestId = 0
-
-watch(
-  () => ({
-    providerBaseUrl: providerBaseUrl.value,
-    toolId: toolId.value,
-    payload: JSON.stringify(toolPayload.value),
-  }),
-  async ({ providerBaseUrl, toolId }) => {
-    const currentRequestId = ++requestId
-    toolUrl.value = ''
-    toolError.value = ''
-
-    if (!import.meta.client || !providerBaseUrl || !toolId) return
-
-    try {
-      const response = await $fetch<{
-        path?: string
-        toolUrl?: string
-      }>(`${providerBaseUrl}/api/tools/${encodeURIComponent(toolId)}`, {
-        method: 'POST',
-        body: toolPayload.value,
-      })
-
-      if (currentRequestId !== requestId) return
-
-      toolUrl.value = response.toolUrl ||
-        new URL(response.path || `/tools/${toolId}`, providerBaseUrl).toString()
-    } catch (error) {
-      if (currentRequestId !== requestId) return
-
-      toolError.value = error instanceof Error
-        ? error.message
-        : 'The Go QR tool could not be loaded.'
-    }
-  },
-  { immediate: true }
-)
+const {
+  providerBaseUrl,
+  title: toolTitle,
+  messageSource,
+  toolUrl,
+  toolError,
+} = useToolProviderTool({
+  providerBaseUrl: requestedProviderBaseUrl,
+  tool: toolId,
+  payload: toolPayload,
+  title: requestedToolTitle,
+  messageSource: 'go-qr',
+})
 </script>
