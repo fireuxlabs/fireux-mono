@@ -7,9 +7,4 @@ export default defineFireuxConfig({
   name: 'FireUX Tenant',
   shortName: 'Tenant',
   role: 'tenant',
-  consoles: [],
-  seo: {
-    siteUrl: 'https://tennant.web.app',
-  },
-  modules: [],
 })

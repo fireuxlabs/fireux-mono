@@ -1,6 +1,6 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { defineNuxtConfig } from 'nuxt/config'
+import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -13,7 +13,6 @@ const fireuxConfig = defineFireuxConfig({
   domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent'],
   seo: {
-    siteUrl: 'https://misebox.app',
     staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],
   },
   modules: [
@@ -25,13 +24,10 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-orders',
     'fireux-suppliers',
     ['fireux-jobs', { workplaces: ['kitchen', 'ship', 'truck'] }],
-    'fireux-products',
-    'fireux-blogs',
     'fireux-ai',
   ],
 })
 
-export default defineNuxtConfig({
-  ...fireuxConfig,
-  css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
+export default withFireuxNuxtConfig(fireuxConfig, {
+  css: ['@/assets/styles/main.css'],
 })

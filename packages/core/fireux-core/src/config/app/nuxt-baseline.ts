@@ -1,6 +1,7 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { withDefaultAppModules } from './modules'
 import type { FireuxAppConfig } from './types'
 
 export function configureViewport(nuxt: NuxtConfig) {
@@ -65,7 +66,7 @@ export function configureAppModules(
     'fireux-core',
     ...(app.role === 'global' ? ['fireux-ecosystem-controller'] : []),
     '@vite-pwa/nuxt',
-    ...(app.modules || []),
+    ...withDefaultAppModules(app.modules),
   ] as NonNullable<NuxtConfig['modules']>
 }
 

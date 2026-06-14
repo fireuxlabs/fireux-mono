@@ -23,6 +23,5 @@ export default defineFireuxConfig({
         ],
       },
     ],
-    'fireux-blogs',
   ],
 })

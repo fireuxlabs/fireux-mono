@@ -10,8 +10,5 @@ export default defineFireuxConfig({
   role: 'standalone',
   consoles: ['property'],
   domains: ['properties'],
-  seo: {
-    siteUrl: 'https://buenohost.web.app',
-  },
-  modules: ['fireux-properties', 'fireux-products', 'fireux-blogs'],
+  modules: ['fireux-properties'],
 })

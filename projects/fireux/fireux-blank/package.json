@@ -15,8 +15,10 @@
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "firebase-functions": "^6.3.2",
+    "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
+    "fireux-products": "workspace:*",
     "nuxt": "4.4.6",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

@@ -8,9 +8,5 @@ export default defineFireuxConfig({
   shortName: 'Sproochli',
   databaseId: 'sproochli',
   role: 'standalone',
-  consoles: [],
-  seo: {
-    siteUrl: 'https://sproochli.web.app',
-  },
-  modules: ['fireux-sproochli', 'fireux-products', 'fireux-blogs', 'fireux-ai'],
+  modules: ['fireux-sproochli', 'fireux-ai'],
 })

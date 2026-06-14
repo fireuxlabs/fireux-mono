@@ -52,8 +52,11 @@ const requestedProviderBaseUrl = computed(() => {
   const devConfigured = import.meta.dev
     ? text((runtimeConfig.public as any)?.goQrProviderBaseUrl).replace(/\/+$/, '')
     : ''
+  const deployedProvider = text(
+    (runtimeConfig.public as any)?.fireux?.siteUrl
+  ).replace(/\/+$/, '')
 
-  return devConfigured || 'https://go-qr.web.app'
+  return devConfigured || deployedProvider || 'https://go-qr.web.app'
 })
 const requestedToolTitle = computed(() =>
   text(props.title) || `Go QR ${toolId.value} tool`

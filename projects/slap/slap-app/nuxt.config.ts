@@ -8,7 +8,4 @@ export default defineFireuxConfig({
   shortName: 'Slap',
   role: 'global',
   databaseId: 'slap',
-  consoles: [],
-  domains: ['products', 'blogs'],
-  modules: ['fireux-products', 'fireux-blogs'],
 })

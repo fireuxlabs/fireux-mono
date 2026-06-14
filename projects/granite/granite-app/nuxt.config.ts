@@ -1,6 +1,7 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { defineNuxtConfig } from 'nuxt/config'
+import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
+import { graniteNuxtOverrides } from './app/config/vite.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'granite',
@@ -15,18 +16,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-compliance',
     'fireux-documents',
     'fireux-tasks',
-    'fireux-products',
-    'fireux-blogs',
   ],
 })
 
-export default defineNuxtConfig({
-  ...fireuxConfig,
-  vite: {
-    ...(fireuxConfig.vite || {}),
-    server: {
-      ...(fireuxConfig.vite?.server || {}),
-      allowedHosts: ['.ngrok-free.app'],
-    },
-  },
-})
+export default withFireuxNuxtConfig(fireuxConfig, graniteNuxtOverrides)

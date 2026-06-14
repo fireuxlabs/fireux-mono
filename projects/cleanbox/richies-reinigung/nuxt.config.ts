@@ -7,8 +7,4 @@ export default defineFireuxConfig({
   name: 'Richies',
   shortName: 'Richies',
   role: 'tenant',
-  consoles: [],
-  modules: [
-    // tenant stays lean
-  ],
 })

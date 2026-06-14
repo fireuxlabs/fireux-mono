@@ -10,11 +10,9 @@ export default defineFireuxConfig({
   role: 'standalone',
   consoles: ['blank'],
   seo: {
-    siteUrl: 'http://localhost:3015',
     noindexPaths: [
       '/console',
       '/console/**',
     ],
   },
-  modules: [],
 })

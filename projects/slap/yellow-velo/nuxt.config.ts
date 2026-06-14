@@ -8,9 +8,7 @@ export default defineFireuxConfig({
   shortName: 'Yellow Velo',
   databaseId: 'slap',
   role: 'tenant',
-  consoles: [],
   seo: {
-    siteUrl: 'https://yellowvelo.web.app',
     staticPaths: [
       '/',
       '/bikes',
@@ -25,5 +23,4 @@ export default defineFireuxConfig({
       '/admin/**',
     ],
   },
-  modules: ['fireux-products', 'fireux-blogs'],
 })

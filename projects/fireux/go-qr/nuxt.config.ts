@@ -1,6 +1,7 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { defineNuxtConfig } from 'nuxt/config'
+import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
+import { goQrNuxtOverrides } from './app/config/provider.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
@@ -9,9 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Go QR',
   databaseId: 'go-qr',
   role: 'standalone',
-  consoles: [],
   seo: {
-    siteUrl: 'https://go-qr.web.app',
     staticPaths: [
       '/pricing',
       '/terms',
@@ -25,19 +24,6 @@ const fireuxConfig = defineFireuxConfig({
       '/admin/**',
     ],
   },
-  modules: ['fireux-products', 'fireux-blogs'],
 })
 
-export default defineNuxtConfig({
-  ...fireuxConfig,
-  runtimeConfig: {
-    ...(fireuxConfig.runtimeConfig ?? {}),
-    public: {
-      ...((fireuxConfig.runtimeConfig as any)?.public ?? {}),
-      goQrProviderBaseUrl:
-        process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
-        process.env.GO_QR_PROVIDER_BASE_URL ||
-        '',
-    },
-  },
-})
+export default withFireuxNuxtConfig(fireuxConfig, goQrNuxtOverrides)

@@ -7,7 +7,6 @@ export default defineFireuxConfig({
   name: 'Cleanbox',
   shortName: 'Cleanbox',
   role: 'global',
-  consoles: [],
   domains: ['jobs'],
-  modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
+  modules: ['fireux-jobs'],
 })

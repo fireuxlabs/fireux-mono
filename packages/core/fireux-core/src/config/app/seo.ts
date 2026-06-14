@@ -4,6 +4,7 @@ type AnyRecord = Record<string, any>
 
 export type FireuxSeoConfig = {
   enabled?: boolean
+  /** Optional canonical override. Normal apps derive siteUrl from APP_DOMAIN. */
   siteUrl?: string
   defaultDescription?: string
 
@@ -107,7 +108,7 @@ const AUTO_EXCLUDED_SEGMENTS = new Set([
   'success',
 ])
 
-function normalizeSiteUrl(input?: string): string {
+export function normalizeSiteUrl(input?: string): string {
   const raw = String(input || '').trim()
   if (!raw) return ''
 
