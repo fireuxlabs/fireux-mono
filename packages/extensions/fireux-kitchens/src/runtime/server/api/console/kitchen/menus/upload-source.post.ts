@@ -21,6 +21,10 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { MenuStorage } from '../../../../../models/menu.model'
+import {
+  kitchenPublicMenuPath,
+  kitchenPublicMenuRouteMode,
+} from '../../../../../utils/kitchen-public-menu-route'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
@@ -28,6 +32,10 @@ const allowedTypes = new Set(['application/pdf'])
 
 function text(value: unknown): string {
   return String(value ?? '').trim()
+}
+
+function origin(value: unknown): string {
+  return text(value).replace(/\/+$/, '')
 }
 
 function fieldValue(parts: Awaited<ReturnType<typeof readMultipartFormData>>, name: string) {
@@ -144,6 +152,8 @@ export default defineEventHandler(async (event) => {
 
   const db = getRuntimeFirestore()
   const kitchenPath = `${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
+  const appSnap = await db.doc(`${AppStorage.collection}/${appId}`).get()
+  const appData = appSnap.data() ?? {}
   const kitchenSnap = await db.doc(kitchenPath).get()
   const kitchenData = kitchenSnap.data()
   if (!kitchenSnap.exists || !hasOperator(kitchenData, uid)) {
@@ -216,13 +226,33 @@ export default defineEventHandler(async (event) => {
     },
   }, { merge: true })
 
-  const publicPath = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
+  const appKitchenCount = (
+    await db
+      .collection(`${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}`)
+      .limit(2)
+      .get()
+  ).size
+  const publicPath = kitchenPublicMenuPath({
+    mode: kitchenPublicMenuRouteMode(appKitchenCount),
+    kitchenSlug,
+    menuId,
+  })
+  const appSocialLinks =
+    appData.social_links &&
+    typeof appData.social_links === 'object' &&
+    !Array.isArray(appData.social_links)
+      ? appData.social_links as Record<string, unknown>
+      : {}
+  const publicOrigin =
+    origin(appSocialLinks.website) ||
+    origin(appData.source_url) ||
+    origin(getRequestURL(event).origin)
 
   return {
     ok: true,
     id: menuId,
     path: publicPath,
-    url: `${getRequestURL(event).origin}${publicPath}`,
+    url: new URL(publicPath, publicOrigin).toString(),
     console_path: `/console/kitchen/menus/${encodeURIComponent(menuId)}`,
     doc_storage_path: objectPath,
   }

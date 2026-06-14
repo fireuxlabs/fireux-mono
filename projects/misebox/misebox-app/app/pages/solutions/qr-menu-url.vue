@@ -13,9 +13,7 @@ definePageMeta({
   layout: 'landing',
 })
 
-const goQrBaseUrl = import.meta.dev
-  ? 'http://localhost:3013'
-  : 'https://go-qr.web.app'
+const goQrBaseUrl = 'https://go-qr.web.app'
 
 const solution = {
   title: 'Menu URL QR',

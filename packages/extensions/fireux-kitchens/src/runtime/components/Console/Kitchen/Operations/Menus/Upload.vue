@@ -19,6 +19,7 @@
 import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
+import { useKitchenPublicMenuUrl } from '../../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuUrl'
 
 const {
   kitchenId,
@@ -34,11 +35,10 @@ const kitchenSlug = computed(() => text((selectedKitchen.value as any)?.slug))
 const appOrigin = computed(() =>
   import.meta.client ? window.location.origin : ''
 )
-const publicMenuPreviewBaseUrl = computed(() =>
-  kitchenSlug.value
-    ? `${appOrigin.value}/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
-    : `${appOrigin.value}/kitchens`
-)
+const publicMenuUrl = useKitchenPublicMenuUrl({
+  appId: activeKitchenAppId,
+  kitchenSlug,
+})
 const toolQuery = computed(() =>
   new URLSearchParams({
     appId: activeKitchenAppId.value,
@@ -106,7 +106,7 @@ const tool = computed(() => ({
     takenMessage: 'This menu id already exists for this kitchen.',
   },
   preview: {
-    baseUrl: publicMenuPreviewBaseUrl.value,
+    baseUrl: publicMenuUrl.menuIndexUrl.value,
     pathSuffix: '',
   },
   endpoints: {

@@ -83,7 +83,9 @@ Menu composable stack canon:
 - `Menu` is the Kitchen presentation record for menu surfaces.
 - `Menu` is scoped to Kitchen:
   - console facade: Kitchen operators create/edit/publish menus
-  - public facade: guests read published menus from `/kitchens/[slug]/menus/**`
+  - public facade: guests read published menus from the owning app route:
+    - `/menus/**` for a single-kitchen app
+    - `/kitchens/[slug]/menus/**` for a multi-kitchen or ecosystem directory app
 - Kitchen menus are app-scoped child records:
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
@@ -131,7 +133,10 @@ Ingredient composable stack canon:
   - `source`: a published Menu has a source document such as `doc_url`
   - `structured`: a published Menu has real section/item rows linked to Dish records
   - `orderable`: a structured Menu has `ordering_enabled`
-- The public route remains `/kitchens/{slug}/menus/{menuId}` across all maturity levels.
+- Public menu route shape follows the owning public app:
+  - single-kitchen app: `/menus/{menuId}`
+  - multi-kitchen or ecosystem directory app: `/kitchens/{slug}/menus/{menuId}`
+  - the console origin must not decide the guest URL; the selected kitchen's owning app decides it.
 - Do not store a `maturity` field; derive it from source fields, structured rows, and ordering fields.
 - Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
 - Menu owns presentation-only fields: name, description, status, service modes, sort order, section order, item order, and item price.
@@ -171,6 +176,8 @@ Public menu copy packs:
 ## 5) Routes (public vs internal; slug vs id)
 - Public slug-based pages currently include:
   - `/kitchens/[slug]`
+  - `/menus` for single-kitchen apps
+  - `/menus/[menuId]` for single-kitchen apps
   - `/kitchens/[slug]/menus`
   - `/kitchens/[slug]/menus/[menuId]`
   - `/kitchens/[slug]/operator`

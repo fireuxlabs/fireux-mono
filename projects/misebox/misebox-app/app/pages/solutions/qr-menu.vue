@@ -18,9 +18,7 @@ definePageMeta({
 const consumerBaseUrl = import.meta.dev
   ? 'http://localhost:3001'
   : 'https://misebox.app'
-const goQrBaseUrl = import.meta.dev
-  ? 'http://localhost:3013'
-  : 'https://go-qr.web.app'
+const goQrBaseUrl = 'https://go-qr.web.app'
 const tool = computed(() => ({
   copy: {
     title: 'QR menu',

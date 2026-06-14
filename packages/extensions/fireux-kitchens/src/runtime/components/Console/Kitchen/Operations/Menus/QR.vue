@@ -71,12 +71,11 @@
 <script setup lang="ts">
 import { create } from 'qrcode'
 import { computed, ref, watch } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
+import { useKitchenPublicMenuUrl } from '../../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuUrl'
 import ConsoleKitchenOperationsMenusCentreMark from './CentreMark.vue'
 
-const { selectedKitchen, menus } = useKitchenConsoleMenus()
-const fireuxConfig = useFireUXConfig()
+const { selectedKitchen, menus, activeKitchenAppId } = useKitchenConsoleMenus()
 const qrDataUrl = ref('')
 const qrArtworkDataUrl = ref('')
 
@@ -89,22 +88,19 @@ const kitchenName = computed(
 const kitchenLogo = computed(
   () => clean(kitchen.value?.display_image_url) || clean(kitchen.value?.image_url)
 )
-const canonicalOrigin = computed(() =>
-  clean(fireuxConfig.siteUrl) ||
-  (import.meta.client ? window.location.origin : '')
-)
+const publicMenuUrlResolver = useKitchenPublicMenuUrl({
+  appId: activeKitchenAppId,
+  kitchenSlug,
+})
 const publishedMenus = computed(() =>
   menus.value.filter((menu) => menu.status === 'published' && clean(menu.id))
 )
 const publicMenuPath = computed(() =>
-  kitchenSlug.value && publishedMenus.value.length
-    ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
-    : ''
+  publishedMenus.value.length ? publicMenuUrlResolver.menuIndexPath.value : ''
 )
-const publicMenuUrl = computed(() => {
-  if (!publicMenuPath.value || !canonicalOrigin.value) return publicMenuPath.value
-  return new URL(publicMenuPath.value, canonicalOrigin.value).toString()
-})
+const publicMenuUrl = computed(() =>
+  publishedMenus.value.length ? publicMenuUrlResolver.menuIndexUrl.value : ''
+)
 
 watch(
   publicMenuUrl,

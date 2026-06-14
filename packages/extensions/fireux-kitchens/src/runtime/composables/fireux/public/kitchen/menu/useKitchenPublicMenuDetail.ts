@@ -6,11 +6,15 @@ import { useMenuMaturity } from '../../../firestore/menu/utils/view/useMenuMatur
 import { useKitchenPublicMenuItems } from './useKitchenPublicMenuItems'
 import { useKitchenPublicMenuRows } from './useKitchenPublicMenuRows'
 import { useKitchenPublicMenuScope } from './useKitchenPublicMenuScope'
+import { useKitchenPublicSingleMenuScope } from './useKitchenPublicSingleMenuScope'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useKitchenPublicMenuDetail() {
-  const state = useKitchenPublicMenuScope()
+function useKitchenPublicMenuDetailFromScope(
+  state:
+    | ReturnType<typeof useKitchenPublicMenuScope>
+    | ReturnType<typeof useKitchenPublicSingleMenuScope>
+) {
   const kitchenId = computed(() => text(state.kitchen.value?.id))
   const resolvedMenuId = computed(() => text(state.menu.value?.id))
   const collectionOptions = {
@@ -82,4 +86,12 @@ export function useKitchenPublicMenuDetail() {
     detailPending,
     debug,
   }
+}
+
+export function useKitchenPublicMenuDetail() {
+  return useKitchenPublicMenuDetailFromScope(useKitchenPublicMenuScope())
+}
+
+export function useKitchenPublicSingleMenuDetail() {
+  return useKitchenPublicMenuDetailFromScope(useKitchenPublicSingleMenuScope())
 }

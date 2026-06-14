@@ -1,11 +1,19 @@
 <template>
-  <ProviderToolIframe
-    :src="toolUrl"
-    :title="resolved.title"
-    :provider-origin="providerBaseUrl"
-    :auth-token="resolved.authToken"
-    message-source="go-qr"
-  />
+  <section class="space-y-2">
+    <div v-if="isDev" class="flex justify-end">
+      <UBadge color="neutral" variant="soft" size="sm">
+        Go QR: {{ providerModeLabel }}
+      </UBadge>
+    </div>
+
+    <ProviderToolIframe
+      :src="toolUrl"
+      :title="resolved.title"
+      :provider-origin="providerBaseUrl"
+      :auth-token="resolved.authToken"
+      message-source="go-qr"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -58,6 +66,7 @@ const props = withDefaults(defineProps<{
   openTargetLabel?: string
   takenMessage?: string
   authToken?: string
+  providerBaseUrl?: string
 }>(), {
   tool: null,
   title: 'Doc',
@@ -76,11 +85,19 @@ const props = withDefaults(defineProps<{
   openTargetLabel: 'Open doc',
   takenMessage: 'This doc path is already taken.',
   authToken: '',
+  providerBaseUrl: 'https://go-qr.web.app',
 })
 
-const providerBaseUrl = import.meta.dev
-  ? 'http://localhost:3013'
-  : 'https://go-qr.web.app'
+const providerBaseUrl = computed(() =>
+  props.providerBaseUrl.replace(/\/+$/, '')
+)
+const isDev = import.meta.dev
+const providerModeLabel = computed(() =>
+  providerBaseUrl.value.includes('localhost') ||
+  providerBaseUrl.value.includes('127.0.0.1')
+    ? 'local dev'
+    : 'deployed'
+)
 const resolved = computed(() => ({
   title: props.tool?.copy?.title || props.title,
   description: props.tool?.copy?.description || props.description,
@@ -119,6 +136,6 @@ const toolUrl = computed(() => {
     takenMessage: resolved.value.takenMessage,
   })
 
-  return `${providerBaseUrl}/tools/doc?${query}`
+  return `${providerBaseUrl.value}/tools/doc?${query}`
 })
 </script>

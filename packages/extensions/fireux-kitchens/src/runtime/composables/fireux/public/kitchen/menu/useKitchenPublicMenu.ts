@@ -2,7 +2,10 @@ export {
   useKitchenPublicMenuScope,
   useKitchenPublicMenuScope as useKitchenPublicMenu,
 } from './useKitchenPublicMenuScope'
-export { useKitchenPublicMenuDetail } from './useKitchenPublicMenuDetail'
+export {
+  useKitchenPublicMenuDetail,
+  useKitchenPublicSingleMenuDetail,
+} from './useKitchenPublicMenuDetail'
 export type {
   KitchenPublicMenuItemRow,
   KitchenPublicMenuSectionRow,

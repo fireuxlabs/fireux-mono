@@ -125,13 +125,14 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   consoleFamilyFromPath,
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
+import { useConsole } from '../composables/fireux/app/console/useConsole'
 import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
 
 defineOptions({ name: 'console' })
@@ -141,6 +142,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 const open = ref(false)
 const isNotificationsSlideoverOpen = ref(false)
 const consoleNav = useConsoleNav()
+const consoleRoot = useConsole()
 const topNav = computed(() =>
   consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'top')
 )
@@ -160,10 +162,32 @@ const activeSelectionId = computed(() => {
   if (!activeFamily) return ''
   return useConsoleSelection(activeFamily).selectedId.value
 })
+const configuredTargetIds = computed(() =>
+  family.value ? consoleRoot.targetIds(family.value) : []
+)
 const requiresSelection = computed(() => {
   const nav = route.meta.nav as Record<string, unknown> | undefined
   return route.meta.requiresSelection === true || nav?.requiresSelection === true
 })
+watch(
+  () => ({
+    activeFamily: family.value,
+    selectedId: normalizeString(activeSelectionId.value),
+    requiresSelection: requiresSelection.value,
+    targetIds: configuredTargetIds.value,
+  }),
+  (state) => {
+    const onlyTargetId = normalizeString(state.targetIds[0])
+    if (!state.activeFamily) return
+    if (!state.requiresSelection) return
+    if (!consoleRoot.isTenant) return
+    if (state.selectedId) return
+    if (state.targetIds.length !== 1 || !onlyTargetId) return
+
+    useConsoleSelection(state.activeFamily).selectTarget(onlyTargetId)
+  },
+  { immediate: true }
+)
 const selectionBlocked = computed(() =>
   requiresSelection.value && !normalizeString(activeSelectionId.value)
 )
