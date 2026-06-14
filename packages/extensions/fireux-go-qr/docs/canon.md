@@ -23,6 +23,10 @@ References: `docs/fireux-canon.md`, `packages/core/fireux-docs/src/runtime/compo
   `POST /api/tools/doc`, then iframe the returned `/tools/{tool}/{id}` route.
 - Consumer apps must not import Go QR internal tool components directly.
 - Wrappers default to deployed Go QR (`https://go-qr.web.app`) even when the consuming app runs locally; local Go QR is opt-in by passing a local provider URL.
+- Deployed apps use deployed Go QR.
+- Local FireUX dev spins use deployed Go QR by default.
+- Local pipeline work may set `NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL`
+  to point a consuming app at local Go QR before shipping.
 - Wrappers do not create storage records and do not duplicate Go QR tool internals.
 - FireUX consumers should pass one provider tool payload object.
 - Plain external consumers should use the HTTP API, not FireUX Vue components.

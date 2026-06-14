@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -33,11 +34,17 @@ const props = withDefaults(defineProps<{
   urlPlaceholder: 'https://my-url.com/menu',
   ctaLabel: 'Create menu URL QR',
   qrCentreLabel: 'Food Menu',
-  providerBaseUrl: 'https://go-qr.web.app',
+  providerBaseUrl: '',
 })
 
+const runtimeConfig = useRuntimeConfig()
+const text = (value: unknown) => String(value ?? '').trim()
 const providerBaseUrl = computed(() =>
-  props.providerBaseUrl.replace(/\/+$/, '')
+  (
+    text(props.providerBaseUrl) ||
+    text((runtimeConfig.public as any)?.fireux?.goQr?.providerBaseUrl) ||
+    'https://go-qr.web.app'
+  ).replace(/\/+$/, '')
 )
 const isDev = import.meta.dev
 const providerModeLabel = computed(() =>

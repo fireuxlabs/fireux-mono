@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
 import { useToolProviderTool } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderTool'
 
@@ -39,19 +40,23 @@ const props = withDefaults(defineProps<{
   title: '',
 })
 
+const runtimeConfig = useRuntimeConfig()
+const text = (value: unknown) => String(value ?? '').trim()
 const toolId = computed(() =>
-  String(props.tool || 'doc').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-')
+  text(props.tool || 'doc').toLowerCase().replace(/[^a-z0-9-]+/g, '-')
 )
 const requestedProviderBaseUrl = computed(() => {
-  const configured = String(props.providerBaseUrl || '').trim().replace(/\/+$/, '')
+  const configured = text(props.providerBaseUrl).replace(/\/+$/, '')
   if (configured) return configured
 
-  return import.meta.client
-    ? window.location.origin
-    : 'https://go-qr.web.app'
+  const devConfigured = import.meta.dev
+    ? text((runtimeConfig.public as any)?.goQrProviderBaseUrl).replace(/\/+$/, '')
+    : ''
+
+  return devConfigured || 'https://go-qr.web.app'
 })
 const requestedToolTitle = computed(() =>
-  props.title || `Go QR ${toolId.value} tool`
+  text(props.title) || `Go QR ${toolId.value} tool`
 )
 const toolPayload = computed(() => props.payload ?? {})
 const {

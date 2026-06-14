@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
 import { useToolProviderTool } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderTool'
 
@@ -52,9 +53,10 @@ const props = withDefaults(defineProps<{
   payload: null,
   title: '',
   authToken: '',
-  providerBaseUrl: 'https://go-qr.web.app',
+  providerBaseUrl: '',
 })
 
+const runtimeConfig = useRuntimeConfig()
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -62,7 +64,11 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 const requestedProviderBaseUrl = computed(() =>
-  text(props.providerBaseUrl).replace(/\/+$/, '')
+  (
+    text(props.providerBaseUrl) ||
+    text((runtimeConfig.public as any)?.fireux?.goQr?.providerBaseUrl) ||
+    'https://go-qr.web.app'
+  ).replace(/\/+$/, '')
 )
 const toolId = computed(() =>
   text(props.tool || 'doc').toLowerCase().replace(/[^a-z0-9-]+/g, '-')

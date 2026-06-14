@@ -21,6 +21,7 @@
     "firebase": "11.10.0",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
+    "fireux-go-qr": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",

@@ -4,9 +4,11 @@ import { configureComponents } from './config/module/components-config'
 
 export type FireuxGoQrModuleOptions = {
   enabled?: boolean
+  providerBaseUrl?: string
 }
 
 function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
+  const isDev = Boolean((nuxt.options as any).dev)
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
@@ -18,6 +20,14 @@ function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
   fireux.goQr = {
     ...current,
     enabled: options.enabled ?? true,
+    providerBaseUrl:
+      options.providerBaseUrl ||
+      (isDev
+        ? process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
+          process.env.GO_QR_PROVIDER_BASE_URL
+        : '') ||
+      current.providerBaseUrl ||
+      'https://go-qr.web.app',
   }
 }
 
@@ -30,6 +40,7 @@ export default defineNuxtModule<FireuxGoQrModuleOptions>({
   },
   defaults: {
     enabled: true,
+    providerBaseUrl: '',
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)

@@ -42,6 +42,7 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/misebox-app',
     port: 3001,
     consoles: ['kitchen', 'supplier'],
+    toolProviders: ['go-qr'],
     componentSmokeRoutes: [
       '/console/kitchen',
       '/console/kitchen/identity',
@@ -179,6 +180,7 @@ export const APP_REGISTRY = {
     workspace: './projects/fireux/go-qr',
     port: 3013,
     consoles: [],
+    toolProviders: ['go-qr'],
     smokeRoutes: ['/'],
     launchOrder: 10,
   },

@@ -2,6 +2,7 @@
 // FILE: scripts/dev-app-with-smoke.mjs
 
 import { spawn, spawnSync } from 'node:child_process'
+import { createInterface } from 'node:readline/promises'
 import process from 'node:process'
 
 import { parseArgs } from './_lib/args.mjs'
@@ -9,7 +10,7 @@ import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
 import { runPrepareForApp, runRouteSmokeForApp, waitForAppReady } from './_lib/smoke.mjs'
 
 function usage() {
-  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--skip-prepare] [--skip-smoke]')
+  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--skip-prepare] [--skip-smoke] [--go-qr-provider deployed|local|url]')
   console.error(`Known apps: ${DEV_APP_KEYS.join(', ')}`)
 }
 
@@ -28,7 +29,7 @@ const skipSmoke = args['skip-smoke'] === true
 
 function collectPassthroughArgs(argv) {
   const passthrough = []
-  const handled = new Set(['app', 'skip-prepare', 'skip-smoke'])
+  const handled = new Set(['app', 'skip-prepare', 'skip-smoke', 'go-qr-provider'])
 
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
@@ -63,6 +64,50 @@ function collectPassthroughArgs(argv) {
 }
 
 const passthroughArgs = collectPassthroughArgs(rawArgs)
+const deployedGoQrProvider = 'https://go-qr.web.app'
+const localGoQrProvider = 'http://localhost:3013'
+
+function normalizeUrl(value) {
+  return String(value || '').trim().replace(/\/+$/, '')
+}
+
+function resolveGoQrProviderFlag(value) {
+  const raw = normalizeUrl(value)
+  if (!raw) return ''
+  if (raw === 'deployed') return deployedGoQrProvider
+  if (raw === 'local') return localGoQrProvider
+  return raw
+}
+
+async function chooseGoQrProvider(app) {
+  if (!app.toolProviders?.includes('go-qr')) return ''
+
+  const existing = normalizeUrl(
+    process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
+    process.env.GO_QR_PROVIDER_BASE_URL
+  )
+  if (existing) return existing
+
+  const fromFlag = resolveGoQrProviderFlag(args['go-qr-provider'])
+  if (fromFlag) return fromFlag
+  if (!process.stdin.isTTY) return deployedGoQrProvider
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  try {
+    console.log('\nGo QR provider API for this dev server:')
+    console.log(`  1. deployed (${deployedGoQrProvider})`)
+    console.log(`  2. local dev (${localGoQrProvider})`)
+
+    const answer = await rl.question('Choose 1 or 2 [1]: ')
+    return answer.trim() === '2' ? localGoQrProvider : deployedGoQrProvider
+  } finally {
+    rl.close()
+  }
+}
 
 const freePort = spawnSync('node', ['scripts/free-port.mjs', String(app.port)], {
   stdio: 'inherit',
@@ -73,10 +118,19 @@ if (!skipPrepare) {
   runPrepareForApp(app)
 }
 
+const devEnv = { ...process.env }
+const goQrProvider = await chooseGoQrProvider(app)
+
+if (goQrProvider) {
+  devEnv.GO_QR_PROVIDER_BASE_URL = goQrProvider
+  devEnv.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL = goQrProvider
+  console.log(`[dev] Go QR provider: ${goQrProvider}`)
+}
+
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
 const child = spawn('pnpm', ['--filter', app.filter, 'dev', ...passthroughArgs], {
   stdio: 'inherit',
-  env: process.env,
+  env: devEnv,
 })
 
 function shutdown(signal) {
