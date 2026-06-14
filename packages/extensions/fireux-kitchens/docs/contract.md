@@ -51,6 +51,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Global ingredients: `ingredients/{ingredientId}`
 - App-scoped operational kitchen children:
+  - `apps/{appId}/kitchens/{kitchenId}/menu-uploads/{uploadId}`
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
@@ -88,6 +89,11 @@ Menu composable stack canon:
     - `/kitchens/[slug]/menus/**` for a multi-kitchen or ecosystem directory app
 - Kitchen menus are app-scoped child records:
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+- Kitchen menu source uploads are app-scoped child records:
+  - `apps/{appId}/kitchens/{kitchenId}/menu-uploads/{uploadId}`
+- Go QR owns document upload and QR doc pages.
+- Kitchen stores Go QR doc references in `menu-uploads` so later AI conversion can create reviewed `Dish`, `Menu`, section, and item records.
+- Uploading a menu source must not publish a Menu or create dishes automatically.
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
 - Root `menus/{menuId}` is not V1 Kitchen/Menu canon.
 - App-local uploaded menu document routes such as `/menus/**` are a separate root upload/link tool and are not the Kitchen Menu entity.

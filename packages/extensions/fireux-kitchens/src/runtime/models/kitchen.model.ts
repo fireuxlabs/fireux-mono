@@ -40,6 +40,7 @@ export const KitchenStorage = {
   children: {
     dishes: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
     ingredients: 'apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
+    menuUploads: 'apps/{appId}/kitchens/{kitchenId}/menu-uploads/{uploadId}',
     menus: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
     mise: 'apps/{appId}/kitchens/{kitchenId}/mise/{taskId}',
     orders: 'apps/{appId}/kitchens/{kitchenId}/orders/{orderId}',

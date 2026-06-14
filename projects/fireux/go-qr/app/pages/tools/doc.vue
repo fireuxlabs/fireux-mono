@@ -3,32 +3,14 @@
     ref="toolRoot"
     class="bg-transparent text-default"
   >
-    <GoQrProviderToolsDoc
-      class="w-full"
-      :title="config.title"
-      :description="config.description"
-      :file-label="config.fileLabel"
-      :path-label="config.pathLabel"
-      :slug-placeholder="config.slugPlaceholder"
-      :preview-base-url="config.previewBaseUrl"
-      :preview-path-suffix="config.previewPathSuffix"
-      :accept="config.accept"
-      :upload-hint="config.uploadHint"
-      :cta-label="config.ctaLabel"
-      :loading-label="config.loadingLabel"
-      :open-target-label="config.openTargetLabel"
-      :create-endpoint="config.createEndpoint"
-      :availability-endpoint="config.availabilityEndpoint"
-      :taken-message="config.takenMessage"
-    />
+    <GoQrProviderToolsDoc class="w-full" />
   </main>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 
-const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
 
 definePageMeta({
@@ -40,27 +22,4 @@ useToolProviderHeight({
   root: toolRoot,
   tool: 'doc',
 })
-
-function queryString(key: string, defaultValue: string) {
-  const value = route.query[key]
-  return typeof value === 'string' && value.trim() ? value.trim() : defaultValue
-}
-
-const config = computed(() => ({
-  title: queryString('title', ''),
-  description: queryString('description', ''),
-  fileLabel: queryString('fileLabel', 'Doc file'),
-  pathLabel: queryString('pathLabel', 'Doc path'),
-  slugPlaceholder: queryString('slugPlaceholder', 'my-doc'),
-  previewBaseUrl: queryString('previewBaseUrl', ''),
-  previewPathSuffix: queryString('previewPathSuffix', ''),
-  accept: queryString('accept', 'application/pdf,image/*,.doc,.docx'),
-  uploadHint: queryString('uploadHint', 'PDF, image, DOC, or DOCX. Max 10 MB.'),
-  ctaLabel: queryString('ctaLabel', 'Create doc QR'),
-  loadingLabel: queryString('loadingLabel', 'Creating doc...'),
-  openTargetLabel: queryString('openTargetLabel', 'Open doc'),
-  createEndpoint: queryString('createEndpoint', ''),
-  availabilityEndpoint: queryString('availabilityEndpoint', ''),
-  takenMessage: queryString('takenMessage', 'This doc path is already taken.'),
-}))
 </script>

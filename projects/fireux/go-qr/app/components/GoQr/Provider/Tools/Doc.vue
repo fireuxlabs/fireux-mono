@@ -128,38 +128,8 @@ const { data } = await useFetch<ToolResponse>('/api/tools/doc')
 
 const props = withDefaults(defineProps<{
   tool?: DocToolConfig | null
-  title?: string
-  description?: string
-  fileLabel?: string
-  pathLabel?: string
-  slugPlaceholder?: string
-  previewBaseUrl?: string
-  previewPathSuffix?: string
-  accept?: string
-  uploadHint?: string
-  ctaLabel?: string
-  loadingLabel?: string
-  openTargetLabel?: string
-  createEndpoint?: string
-  availabilityEndpoint?: string
-  takenMessage?: string
 }>(), {
   tool: null,
-  title: '',
-  description: '',
-  fileLabel: 'Doc file',
-  pathLabel: 'Doc path',
-  slugPlaceholder: 'my-doc',
-  previewBaseUrl: '',
-  previewPathSuffix: '',
-  accept: 'application/pdf,image/*,.doc,.docx',
-  uploadHint: 'PDF, image, DOC, or DOCX. Max 10 MB.',
-  ctaLabel: 'Create doc QR',
-  loadingLabel: 'Creating doc...',
-  openTargetLabel: 'Open doc',
-  createEndpoint: '',
-  availabilityEndpoint: '',
-  takenMessage: 'This doc path is already taken.',
 })
 
 const selectedFile = ref<File | File[] | null>(null)
@@ -180,42 +150,40 @@ const file = computed(() =>
 )
 const toolTitle = computed(() =>
   props.tool?.copy?.title ||
-  props.title ||
   data.value?.tool.title ||
   'Doc'
 )
 const toolDescription = computed(() =>
   props.tool?.copy?.description ||
-  props.description ||
   data.value?.tool.description ||
   ''
 )
 const fileLabel = computed(() =>
-  props.tool?.upload?.fileLabel || props.fileLabel
+  props.tool?.upload?.fileLabel || 'Doc file'
 )
 const pathLabel = computed(() =>
-  props.tool?.slug?.label || props.pathLabel
+  props.tool?.slug?.label || 'Doc path'
 )
 const slugPlaceholder = computed(() =>
-  props.tool?.slug?.placeholder || props.slugPlaceholder
+  props.tool?.slug?.placeholder || 'my-doc'
 )
 const accept = computed(() =>
-  props.tool?.upload?.accept || props.accept
+  props.tool?.upload?.accept || 'application/pdf,image/*,.doc,.docx'
 )
 const uploadHint = computed(() =>
-  props.tool?.upload?.hint || props.uploadHint
+  props.tool?.upload?.hint || 'PDF, image, DOC, or DOCX. Max 10 MB.'
 )
 const ctaLabel = computed(() =>
-  props.tool?.copy?.ctaLabel || props.ctaLabel
+  props.tool?.copy?.ctaLabel || 'Create doc QR'
 )
 const loadingLabel = computed(() =>
-  props.tool?.copy?.loadingLabel || props.loadingLabel
+  props.tool?.copy?.loadingLabel || 'Creating doc...'
 )
 const openTargetLabel = computed(() =>
-  props.tool?.copy?.openTargetLabel || props.openTargetLabel
+  props.tool?.copy?.openTargetLabel || 'Open doc'
 )
 const takenMessage = computed(() =>
-  props.tool?.slug?.takenMessage || props.takenMessage
+  props.tool?.slug?.takenMessage || 'This doc path is already taken.'
 )
 const normalizedSlug = computed(() =>
   slugInput.value
@@ -226,7 +194,6 @@ const normalizedSlug = computed(() =>
 )
 const previewBaseUrl = computed(() =>
   props.tool?.preview?.baseUrl ||
-  props.previewBaseUrl ||
   data.value?.tool.preview?.base_url ||
   'https://go-qr.web.app/doc'
 )
@@ -234,8 +201,7 @@ const previewPathSuffix = computed(() => {
   const configured = props.tool?.preview?.pathSuffix
   if (configured !== undefined) return configured
 
-  return props.previewPathSuffix ||
-    data.value?.tool.preview?.path_suffix ||
+  return data.value?.tool.preview?.path_suffix ||
     '/qr'
 })
 const previewUrl = computed(() =>
@@ -243,13 +209,11 @@ const previewUrl = computed(() =>
 )
 const availabilityEndpoint = computed(() =>
   props.tool?.endpoints?.availability ||
-  props.availabilityEndpoint ||
   data.value?.tool.endpoints?.availability ||
   '/api/tools/doc/availability'
 )
 const createEndpoint = computed(() =>
   props.tool?.endpoints?.create ||
-  props.createEndpoint ||
   data.value?.tool.endpoints?.create ||
   '/api/tools/doc/create'
 )
@@ -358,10 +322,23 @@ async function createDoc() {
 
     createdPath.value = response.url || response.path || ''
     createdQrPath.value = response.qr_url || response.qr_path || ''
+    notifyToolResult(response)
   } catch (error) {
     createError.value = error instanceof Error ? error.message : 'Doc could not be created.'
   } finally {
     isCreating.value = false
   }
+}
+
+function notifyToolResult(result: Record<string, unknown>) {
+  if (!import.meta.client || window.parent === window) return
+
+  window.parent.postMessage({
+    source: 'go-qr',
+    tool: 'doc',
+    type: 'tool-result',
+    action: 'created',
+    result,
+  }, '*')
 }
 </script>

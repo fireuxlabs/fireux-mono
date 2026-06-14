@@ -166,5 +166,7 @@ export default defineEventHandler(async (event) => {
     qr_path: `/doc/${encodeURIComponent(slug)}/qr`,
     url: goQrDocUrl(slug),
     qr_url: goQrDocQrUrl(slug),
+    file_name: fileName,
+    file_type: fileType,
   }
 })

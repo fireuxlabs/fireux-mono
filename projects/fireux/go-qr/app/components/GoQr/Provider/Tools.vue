@@ -6,6 +6,7 @@
     :provider-origin="providerBaseUrl"
     :message-source="messageSource"
     class="w-full"
+    @tool-result="emit('tool-result', $event)"
   />
   <UAlert
     v-else-if="toolError"
@@ -39,6 +40,9 @@ const props = withDefaults(defineProps<{
   providerBaseUrl: '',
   title: '',
 })
+const emit = defineEmits<{
+  'tool-result': [message: Record<string, unknown>]
+}>()
 
 const runtimeConfig = useRuntimeConfig()
 const text = (value: unknown) => String(value ?? '').trim()

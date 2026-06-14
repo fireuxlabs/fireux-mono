@@ -29,6 +29,8 @@ References: `docs/fireux-canon.md`, `packages/core/fireux-docs/src/runtime/compo
   to point a consuming app at local Go QR before shipping.
 - Wrappers do not create storage records and do not duplicate Go QR tool internals.
 - FireUX consumers should pass one provider tool payload object.
+- Provider iframes may emit `tool-result` after a tool action succeeds.
+  Consumers use that event to store their own product meaning.
 - Plain external consumers should use the HTTP API, not FireUX Vue components.
 
 ## Usage Modes

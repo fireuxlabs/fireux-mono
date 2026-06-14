@@ -46,3 +46,14 @@ export type ToolProviderAuthMessage = {
   type: 'tool-auth'
   token: string
 }
+
+export type ToolProviderResultMessage<
+  ProviderId extends string = string,
+  ToolId extends string = string,
+> = {
+  source: ProviderId
+  tool: ToolId
+  type: 'tool-result'
+  action: string
+  result: Record<string, unknown>
+}

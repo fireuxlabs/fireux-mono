@@ -14,6 +14,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import type {
   ToolProviderAuthMessage,
   ToolProviderHeightRequestMessage,
+  ToolProviderResultMessage,
 } from '../../../types/tool-provider.types'
 
 const props = withDefaults(defineProps<{
@@ -28,6 +29,9 @@ const props = withDefaults(defineProps<{
   authToken: '',
   initialHeight: 280,
 })
+const emit = defineEmits<{
+  'tool-result': [message: ToolProviderResultMessage]
+}>()
 
 const expectedOrigin = computed(() => new URL(props.providerOrigin).origin)
 const toolFrame = ref<HTMLIFrameElement | null>(null)
@@ -49,6 +53,11 @@ function handleToolMessage(event: MessageEvent) {
   if (props.messageSource && event.data?.source !== props.messageSource) return
   if (event.data?.type === 'tool-auth-request') {
     sendToolAuth()
+    return
+  }
+
+  if (event.data?.type === 'tool-result') {
+    emit('tool-result', event.data as ToolProviderResultMessage)
     return
   }
 
