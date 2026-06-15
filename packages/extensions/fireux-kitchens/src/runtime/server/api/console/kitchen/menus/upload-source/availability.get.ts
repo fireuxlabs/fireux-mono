@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const id = normalizeSlug(query.id)
   const validation = validatePublicSlug(id, {
-    label: 'Menu source path',
+    label: 'Menu name',
     reservedScope: 'entity',
     reserved: ['create', 'edit', 'new', 'qr', 'sections'],
   })
@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
       is_valid: false,
       taken: false,
       available: false,
-      message: validation.message || 'Menu source path is not valid.',
+      message: validation.message || 'Menu name is not valid.',
     }
   }
 

@@ -14,7 +14,7 @@
           <div>
             <h2 class="text-base font-semibold text-highlighted">Menu flow</h2>
             <p class="text-sm text-dimmed">
-              Upload a menu source, convert it into dishes, then optionally enable Sproochli.
+              Upload a menu, convert it into dishes, then optionally enable Sproochli.
             </p>
           </div>
         </template>
@@ -25,10 +25,10 @@
               Step 1
             </div>
             <div class="mt-1 text-sm font-semibold text-highlighted">
-              Upload menu source
+              Upload menu
             </div>
             <p class="mt-1 text-sm text-dimmed">
-              Store the original menu PDF as the menu source document.
+              Store the menu PDF against this kitchen.
             </p>
           </div>
 
@@ -40,7 +40,7 @@
               Convert to dishes with AI
             </div>
             <p class="mt-1 text-sm text-dimmed">
-              Turn the source menu into Dish records, sections, and menu items for review.
+              Turn the uploaded menu into Dish records, sections, and menu items for review.
             </p>
           </div>
 

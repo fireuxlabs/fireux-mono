@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
   const kitchenId = pathSegment(fieldValue(parts, 'kitchenId') || query.kitchenId, 'Kitchen id')
   const uploadId = normalizeSlug(fieldValue(parts, 'slug'))
   const validation = validatePublicSlug(uploadId, {
-    label: 'Menu source path',
+    label: 'Menu name',
     reservedScope: 'entity',
     reserved: ['create', 'edit', 'new', 'qr', 'sections'],
   })
@@ -102,13 +102,13 @@ export default defineEventHandler(async (event) => {
   if (!validation.isValid) {
     throw createError({
       statusCode: 400,
-      statusMessage: validation.message || 'Menu source path is not valid.',
+      statusMessage: validation.message || 'Menu name is not valid.',
     })
   }
 
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)
   if (!filePart?.data?.length) {
-    throw createError({ statusCode: 400, statusMessage: 'Menu source PDF is required.' })
+    throw createError({ statusCode: 400, statusMessage: 'Menu PDF is required.' })
   }
 
   if (filePart.data.byteLength > maxFileSizeBytes) {
@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
   const fileType = text(filePart.type || 'application/octet-stream')
   const fileName = safeFileName(filePart.filename)
   if (!allowedTypes.has(fileType) && !fileName.toLowerCase().endsWith('.pdf')) {
-    throw createError({ statusCode: 415, statusMessage: 'Upload a PDF menu source file.' })
+    throw createError({ statusCode: 415, statusMessage: 'Upload a PDF menu file.' })
   }
   const storedFileType = fileName.toLowerCase().endsWith('.pdf')
     ? 'application/pdf'
@@ -142,7 +142,7 @@ export default defineEventHandler(async (event) => {
   if (uploadSnap.exists) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'This menu source path is already taken.',
+      statusMessage: 'This menu name is already taken.',
     })
   }
 

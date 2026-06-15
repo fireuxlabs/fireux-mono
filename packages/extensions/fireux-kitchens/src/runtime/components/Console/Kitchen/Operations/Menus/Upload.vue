@@ -10,7 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMenuUploadTool } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuUploadTool'
+import { useKitchenConsoleMenuUploadPayload } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuUploadPayload'
 
-const { canUseTool, payload, authToken } = useKitchenConsoleMenuUploadTool()
+const { canUseTool, payload, authToken } =
+  useKitchenConsoleMenuUploadPayload()
 </script>

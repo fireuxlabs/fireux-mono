@@ -6,7 +6,7 @@ import { useKitchenConsole } from '../../core/useKitchenConsole'
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
 
-export function useKitchenConsoleMenuUploadTool() {
+export function useKitchenConsoleMenuUploadPayload() {
   const { currentUser } = useAuth()
   const kitchenConsole = useKitchenConsole()
   const authToken = ref('')
@@ -18,9 +18,7 @@ export function useKitchenConsoleMenuUploadTool() {
         kitchenConsole.selection.kitchenId.value
     )
   )
-  const sourcePath = computed(() =>
-    kitchenSlug.value ? `${kitchenSlug.value}-menu-source` : ''
-  )
+  const menuPath = computed(() => 'main-menu')
   const currentOrigin = computed(() =>
     import.meta.client ? origin(window.location.origin) : ''
   )
@@ -46,13 +44,10 @@ export function useKitchenConsoleMenuUploadTool() {
     Boolean(
       kitchenConsole.runtime.appId.value &&
         kitchenConsole.selection.kitchenId.value &&
-        sourcePath.value &&
+        menuPath.value &&
         createEndpoint.value &&
         availabilityEndpoint.value
     )
-  )
-  const ownerAppLabel = computed(() =>
-    kitchenConsole.runtime.appId.value || 'the selected kitchen app'
   )
   const payload = computed(() => ({
     consumer: {
@@ -66,26 +61,26 @@ export function useKitchenConsoleMenuUploadTool() {
       },
     },
     copy: {
-      title: 'Step 1: Upload menu source',
+      title: 'Step 1: Upload menu',
       description:
-        'Upload the original menu PDF so the owning app can store it against this kitchen.',
-      ctaLabel: 'Upload menu source',
-      loadingLabel: 'Uploading menu source...',
-      openTargetLabel: 'Open uploaded menu source',
+        'Upload a PDF for this menu. You can turn it into dishes later.',
+      ctaLabel: 'Upload menu',
+      loadingLabel: 'Uploading menu...',
+      openTargetLabel: 'Open uploaded menu',
     },
     upload: {
-      fileLabel: 'Menu document',
-      accept: 'application/pdf,.pdf',
-      hint: 'Upload the original menu PDF.',
+      fileLabel: 'Menu file',
+      accept: 'application/pdf,image/*,.pdf,.jpg,.jpeg,.png,.webp',
+      hint: 'Upload a PDF or photo of the menu.',
     },
     slug: {
-      label: 'Menu source path',
-      placeholder: sourcePath.value,
-      initialValue: sourcePath.value,
-      takenMessage: 'This menu source path is already taken.',
+      label: 'Menu name',
+      placeholder: menuPath.value,
+      initialValue: menuPath.value,
+      takenMessage: 'This menu name is already taken.',
     },
     preview: {
-      message: `This source document will be stored by ${ownerAppLabel.value}. Dishes, menus, and translations come later.`,
+      message: 'Upload your menu document.',
     },
     endpoints: {
       create: createEndpoint.value,
