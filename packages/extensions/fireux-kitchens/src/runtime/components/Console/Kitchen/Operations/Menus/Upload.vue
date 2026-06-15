@@ -1,6 +1,7 @@
 <template>
   <section class="space-y-3">
     <ProviderGoQrTools
+      v-if="canUseTool"
       tool="doc"
       :payload="payload"
       :auth-token="authToken"
@@ -73,6 +74,15 @@ const availabilityEndpoint = computed(() =>
     ? `${endpointOrigin.value}/api/console/kitchen/menus/upload-source/availability?${endpointQuery.value}`
     : ''
 )
+const canUseTool = computed(() =>
+  Boolean(
+    activeKitchenAppId.value &&
+      kitchenId.value &&
+      sourcePath.value &&
+      createEndpoint.value &&
+      availabilityEndpoint.value
+  )
+)
 const storageAppLabel = computed(() =>
   activeKitchenAppId.value || 'the selected kitchen app'
 )
@@ -89,6 +99,8 @@ const payload = computed(() => ({
     },
   },
   copy: {
+    title: 'Step 1: Upload menu source',
+    description: 'Upload the original menu PDF so the owning app can store it against this kitchen.',
     ctaLabel: 'Upload menu source',
     loadingLabel: 'Uploading menu source...',
     openTargetLabel: 'Open uploaded menu source',
