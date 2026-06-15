@@ -32,12 +32,12 @@ export function useKitchenConsoleMenuUploadPayload() {
   })
   const createEndpoint = computed(() =>
     currentOrigin.value && endpointQuery.value
-      ? `${currentOrigin.value}/api/console/kitchen/menus/upload-source?${endpointQuery.value}`
+      ? `${currentOrigin.value}/api/console/kitchen/menus/upload?${endpointQuery.value}`
       : ''
   )
   const availabilityEndpoint = computed(() =>
     currentOrigin.value && endpointQuery.value
-      ? `${currentOrigin.value}/api/console/kitchen/menus/upload-source/availability?${endpointQuery.value}`
+      ? `${currentOrigin.value}/api/console/kitchen/menus/upload/availability?${endpointQuery.value}`
       : ''
   )
   const canUseTool = computed(() =>
