@@ -81,6 +81,16 @@ const solutionInfo: Record<string, GoQrSolutionInfo> = {
           path: '/api/tools/text',
           description: 'Read the Go QR text tool contract.',
         },
+        {
+          method: 'POST',
+          path: '/api/tools/text',
+          description: 'Create a configured Text tool iframe.',
+        },
+        {
+          method: 'GET',
+          path: '/api/tools/text/{id}',
+          description: 'Read a configured Text tool instance.',
+        },
       ],
     },
   },
@@ -122,6 +132,67 @@ const solutionInfo: Record<string, GoQrSolutionInfo> = {
           method: 'GET',
           path: '/api/tools/doc',
           description: 'Read the Go QR doc tool contract.',
+        },
+        {
+          method: 'POST',
+          path: '/api/tools/doc',
+          description: 'Create a configured Doc tool iframe.',
+        },
+        {
+          method: 'GET',
+          path: '/api/tools/doc/{id}',
+          description: 'Read a configured Doc tool instance.',
+        },
+      ],
+    },
+  },
+  url: {
+    instructions: [
+      {
+        title: 'Tool',
+        icon: 'i-lucide-link',
+        body: 'URL turns a public web address into a QR code.',
+      },
+      {
+        title: 'Contract',
+        icon: 'i-lucide-plug',
+        body: 'The tool uses the same configured provider iframe contract as the other Go QR tools.',
+      },
+      {
+        title: 'Consumer',
+        icon: 'i-lucide-box',
+        body: 'Apps can configure the labels and starting URL without owning Go QR internals.',
+      },
+    ],
+    integrations: {
+      body: 'URL is a Go QR primitive. Use it when the scan should open a public URL.',
+      links: [
+        {
+          label: 'Doc',
+          to: '/solutions/doc',
+        },
+        {
+          label: 'Text',
+          to: '/solutions/text',
+        },
+      ],
+    },
+    dev: {
+      endpoints: [
+        {
+          method: 'GET',
+          path: '/api/tools/url',
+          description: 'Read the Go QR URL tool contract.',
+        },
+        {
+          method: 'POST',
+          path: '/api/tools/url',
+          description: 'Create a configured URL tool iframe.',
+        },
+        {
+          method: 'GET',
+          path: '/api/tools/url/{id}',
+          description: 'Read a configured URL tool instance.',
         },
       ],
     },

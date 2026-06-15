@@ -85,21 +85,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-type ToolResponse = {
-  tool: {
-    title?: string
-    description?: string
-    endpoints?: {
-      create: string
-      availability: string
-    }
-    preview?: {
-      base_url: string
-      path_suffix: string
-    }
-  }
-}
-
 type DocToolConfig = {
   copy?: {
     title?: string
@@ -130,8 +115,6 @@ type DocToolConfig = {
   }
 }
 
-const { data } = await useFetch<ToolResponse>('/api/tools/doc')
-
 const props = withDefaults(defineProps<{
   tool?: DocToolConfig | null
 }>(), {
@@ -155,45 +138,42 @@ const file = computed(() =>
     ? selectedFile.value[0] || null
     : selectedFile.value
 )
+const configuredText = (value: unknown) => String(value ?? '').trim()
 const toolTitle = computed(() =>
-  props.tool?.copy?.title ||
-  data.value?.tool.title ||
-  'Doc'
+  configuredText(props.tool?.copy?.title)
 )
 const toolDescription = computed(() =>
-  props.tool?.copy?.description ||
-  data.value?.tool.description ||
-  ''
+  configuredText(props.tool?.copy?.description)
 )
 const fileLabel = computed(() =>
-  props.tool?.upload?.fileLabel || 'Doc file'
+  configuredText(props.tool?.upload?.fileLabel)
 )
 const pathLabel = computed(() =>
-  props.tool?.slug?.label || 'Doc path'
+  configuredText(props.tool?.slug?.label)
 )
 const slugPlaceholder = computed(() =>
-  props.tool?.slug?.placeholder || 'doc-path'
+  configuredText(props.tool?.slug?.placeholder)
 )
 const slugInitialValue = computed(() =>
-  props.tool?.slug?.initialValue || ''
+  configuredText(props.tool?.slug?.initialValue)
 )
 const accept = computed(() =>
-  props.tool?.upload?.accept || 'application/pdf,image/*,.doc,.docx'
+  configuredText(props.tool?.upload?.accept)
 )
 const uploadHint = computed(() =>
-  props.tool?.upload?.hint || 'PDF, image, DOC, or DOCX. Max 10 MB.'
+  configuredText(props.tool?.upload?.hint)
 )
 const ctaLabel = computed(() =>
-  props.tool?.copy?.ctaLabel || 'Create doc QR'
+  configuredText(props.tool?.copy?.ctaLabel)
 )
 const loadingLabel = computed(() =>
-  props.tool?.copy?.loadingLabel || 'Creating doc...'
+  configuredText(props.tool?.copy?.loadingLabel)
 )
 const openTargetLabel = computed(() =>
-  props.tool?.copy?.openTargetLabel || 'Open doc'
+  configuredText(props.tool?.copy?.openTargetLabel)
 )
 const takenMessage = computed(() =>
-  props.tool?.slug?.takenMessage || 'This doc path is already taken.'
+  configuredText(props.tool?.slug?.takenMessage)
 )
 const normalizedSlug = computed(() =>
   slugInput.value
@@ -203,35 +183,25 @@ const normalizedSlug = computed(() =>
     .replace(/^-+|-+$/g, '')
 )
 const previewBaseUrl = computed(() =>
-  props.tool?.preview?.baseUrl ||
-  data.value?.tool.preview?.base_url ||
-  'https://go-qr.web.app/doc'
+  configuredText(props.tool?.preview?.baseUrl)
 )
 const previewMessage = computed(() =>
-  props.tool?.preview?.message || ''
+  configuredText(props.tool?.preview?.message)
 )
-const previewPathSuffix = computed(() => {
-  const configured = props.tool?.preview?.pathSuffix
-  if (configured !== undefined) return configured
-
-  return data.value?.tool.preview?.path_suffix ||
-    '/qr'
-})
+const previewPathSuffix = computed(() =>
+  configuredText(props.tool?.preview?.pathSuffix)
+)
 const previewUrl = computed(() => {
   if (previewMessage.value) return previewMessage.value
-  if (!normalizedSlug.value) return 'Enter a doc path to preview the QR URL.'
+  if (!normalizedSlug.value || !previewBaseUrl.value) return ''
 
   return `${previewBaseUrl.value}/${normalizedSlug.value}${previewPathSuffix.value}`
 })
 const availabilityEndpoint = computed(() =>
-  props.tool?.endpoints?.availability ||
-  data.value?.tool.endpoints?.availability ||
-  '/api/tools/doc/availability'
+  configuredText(props.tool?.endpoints?.availability)
 )
 const createEndpoint = computed(() =>
-  props.tool?.endpoints?.create ||
-  data.value?.tool.endpoints?.create ||
-  '/api/tools/doc/create'
+  configuredText(props.tool?.endpoints?.create)
 )
 const canUseSlug = computed(() =>
   Boolean(normalizedSlug.value && !slugTaken.value && !slugError.value)
@@ -239,7 +209,7 @@ const canUseSlug = computed(() =>
 const slugMessage = computed(() => {
   if (slugError.value) return slugError.value
   if (slugTaken.value) return takenMessage.value
-  return normalizedSlug.value ? 'Path is available.' : ''
+  return ''
 })
 const canCreate = computed(() =>
   Boolean(file.value && canUseSlug.value && !isCreating.value)
@@ -266,9 +236,11 @@ watch(slugInput, async () => {
     })
 
     slugTaken.value = Boolean(response.taken)
-    slugError.value = response.is_valid === false ? response.message || 'Doc path is not valid.' : ''
+    slugError.value = response.is_valid === false
+      ? configuredText(response.message)
+      : ''
   } catch (error) {
-    slugError.value = error instanceof Error ? error.message : 'Doc path is not valid.'
+    slugError.value = error instanceof Error ? error.message : ''
   }
 })
 
@@ -348,7 +320,7 @@ async function createDoc() {
     createdQrPath.value = response.qr_url || response.qr_path || ''
     notifyToolResult(response)
   } catch (error) {
-    createError.value = error instanceof Error ? error.message : 'Doc could not be created.'
+    createError.value = error instanceof Error ? error.message : ''
   } finally {
     isCreating.value = false
   }

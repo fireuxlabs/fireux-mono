@@ -25,7 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
 import { useToolProviderTool } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderTool'
 
@@ -44,7 +43,6 @@ const emit = defineEmits<{
   'tool-result': [message: Record<string, unknown>]
 }>()
 
-const runtimeConfig = useRuntimeConfig()
 const text = (value: unknown) => String(value ?? '').trim()
 const toolId = computed(() =>
   text(props.tool || 'doc').toLowerCase().replace(/[^a-z0-9-]+/g, '-')
@@ -53,14 +51,7 @@ const requestedProviderBaseUrl = computed(() => {
   const configured = text(props.providerBaseUrl).replace(/\/+$/, '')
   if (configured) return configured
 
-  const devConfigured = import.meta.dev
-    ? text((runtimeConfig.public as any)?.goQrProviderBaseUrl).replace(/\/+$/, '')
-    : ''
-  const deployedProvider = text(
-    (runtimeConfig.public as any)?.fireux?.siteUrl
-  ).replace(/\/+$/, '')
-
-  return devConfigured || deployedProvider || 'https://go-qr.web.app'
+  return import.meta.client ? window.location.origin : ''
 })
 const requestedToolTitle = computed(() =>
   text(props.title) || `Go QR ${toolId.value} tool`

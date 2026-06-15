@@ -97,8 +97,8 @@ const solution = {
     endpoints: [
       {
         method: 'GET',
-        path: 'Go QR /tools/doc',
-        description: 'Embeds the Go QR doc tool with Misebox menu labels.',
+        path: 'Go QR /api/tools/doc',
+        description: 'Creates a configured Go QR doc tool with Misebox menu labels.',
       },
       {
         method: 'POST',

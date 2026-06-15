@@ -57,7 +57,7 @@
           :download="downloadName"
           icon="i-lucide-download"
         >
-          Download QR
+          {{ downloadLabel }}
         </UButton>
         <UButton
           :to="normalizedUrl"
@@ -66,7 +66,7 @@
           variant="soft"
           color="neutral"
         >
-          Open URL
+          {{ openTargetLabel }}
         </UButton>
       </div>
     </div>
@@ -74,50 +74,69 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { toDataURL } from 'qrcode'
 
-type ToolResponse = {
-  tool: {
-    title: string
-    description: string
+type UrlToolConfig = {
+  copy?: {
+    title?: string
+    description?: string
+    ctaLabel?: string
+    downloadLabel?: string
+    openTargetLabel?: string
+  }
+  url?: {
+    label?: string
+    placeholder?: string
+    initialValue?: string
+    invalidMessage?: string
+  }
+  qr?: {
+    centreLabel?: string
   }
 }
 
-const { data } = await useFetch<ToolResponse>('/api/tools/url')
-
 const props = withDefaults(defineProps<{
-  title?: string
-  description?: string
-  urlLabel?: string
-  urlPlaceholder?: string
-  ctaLabel?: string
-  qrCentreLabel?: string
+  tool?: UrlToolConfig | null
 }>(), {
-  title: '',
-  description: '',
-  urlLabel: 'URL',
-  urlPlaceholder: 'https://example.com',
-  ctaLabel: 'Create URL QR',
-  qrCentreLabel: '',
+  tool: null,
 })
 
 const urlInput = ref('')
 const qrDataUrl = ref('')
+const text = (value: unknown) => String(value ?? '').trim()
 
-const toolTitle = computed(() => props.title || data.value?.tool.title || 'URL')
+const toolTitle = computed(() => text(props.tool?.copy?.title))
 const toolDescription = computed(() =>
-  props.description || data.value?.tool.description || ''
+  text(props.tool?.copy?.description)
 )
+const urlLabel = computed(() => text(props.tool?.url?.label))
+const urlPlaceholder = computed(() => text(props.tool?.url?.placeholder))
+const ctaLabel = computed(() => text(props.tool?.copy?.ctaLabel))
+const downloadLabel = computed(() => text(props.tool?.copy?.downloadLabel))
+const openTargetLabel = computed(() =>
+  text(props.tool?.copy?.openTargetLabel)
+)
+const qrCentreLabel = computed(() => text(props.tool?.qr?.centreLabel))
 const normalizedUrl = computed(() => normalizeUrl(urlInput.value))
 const validUrl = computed(() => Boolean(normalizedUrl.value))
 const urlMessage = computed(() => {
   if (!urlInput.value.trim()) return ''
-  return validUrl.value ? normalizedUrl.value : 'Enter a valid public URL.'
+  return validUrl.value ? normalizedUrl.value : text(props.tool?.url?.invalidMessage)
 })
 const downloadName = computed(() => {
   const host = normalizedUrl.value ? new URL(normalizedUrl.value).hostname : 'url'
   return `go-qr-${host.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`
 })
+
+watch(
+  () => text(props.tool?.url?.initialValue),
+  (value) => {
+    if (urlInput.value || !value) return
+    urlInput.value = value
+  },
+  { immediate: true }
+)
 
 async function createQr() {
   if (!validUrl.value) return

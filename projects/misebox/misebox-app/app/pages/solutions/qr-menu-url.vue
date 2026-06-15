@@ -1,6 +1,9 @@
 <template>
   <SolutionPage :solution="solution">
-    <ProviderGoQrUrlTool />
+    <ProviderGoQrTools
+      tool="url"
+      :payload="tool"
+    />
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />
@@ -14,6 +17,24 @@ definePageMeta({
 })
 
 const goQrBaseUrl = 'https://go-qr.web.app'
+const tool = {
+  copy: {
+    title: 'Menu URL QR',
+    description: 'Paste an existing menu URL and get a printable QR menu.',
+    ctaLabel: 'Create menu URL QR',
+    downloadLabel: 'Download QR',
+    openTargetLabel: 'Open menu URL',
+  },
+  url: {
+    label: 'Menu URL',
+    placeholder: 'https://example.com/menu',
+    initialValue: '',
+    invalidMessage: 'Enter a valid public menu URL.',
+  },
+  qr: {
+    centreLabel: 'Menu',
+  },
+}
 
 const solution = {
   title: 'Menu URL QR',
@@ -62,8 +83,8 @@ const solution = {
     endpoints: [
       {
         method: 'GET',
-        path: 'Go QR /tools/url',
-        description: 'Embeds the Go QR URL tool with Misebox menu labels.',
+        path: 'Go QR /api/tools/url',
+        description: 'Creates a configured Go QR URL tool with Misebox menu labels.',
       },
     ],
   },

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 
 type DocToolConfig = {
@@ -51,11 +51,14 @@ type DocToolConfig = {
 
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
-const id = computed(() => String(route.params.id ?? '').trim())
-const { data } = await useFetch<{ config: DocToolConfig }>(() =>
-  `/api/tools/doc/${encodeURIComponent(id.value)}`
-)
-const toolConfig = computed(() => data.value?.config ?? null)
+const id = String(route.params.id ?? '').trim()
+const toolConfig = id
+  ? await $fetch<{ config: DocToolConfig }>(
+    `/api/tools/doc/${encodeURIComponent(id)}`
+  )
+    .then((response) => response.config)
+    .catch(() => null)
+  : null
 
 definePageMeta({
   layout: false,
