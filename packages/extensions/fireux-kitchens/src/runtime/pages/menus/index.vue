@@ -15,6 +15,7 @@
         <ProviderGoQrTools
           tool="doc"
           :payload="uploadTool"
+          :auth-token="authToken"
         />
       </UPageCard>
 
@@ -151,7 +152,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { computed, ref, watch } from 'vue'
 import { useKitchenPublicSingleMenuScope } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicSingleMenuScope'
 
 type WaitingMenuSummary = {
@@ -175,6 +177,8 @@ const {
   menuLink,
   debug,
 } = useKitchenPublicSingleMenuScope()
+const { currentUser } = useAuth()
+const authToken = ref('')
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Menus')
 )
@@ -223,4 +227,8 @@ const {
   () => $fetch<WaitingMenuSummary[]>('/api/menus')
 )
 const waitingMenus = computed(() => waitingData.value ?? [])
+
+watch(currentUser, async (user) => {
+  authToken.value = import.meta.client && user ? await user.getIdToken() : ''
+}, { immediate: true })
 </script>

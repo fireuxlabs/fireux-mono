@@ -43,5 +43,6 @@ export default defineEventHandler(async (event) => {
     }),
     doc_storage_path: readRecordString(data, 'doc_storage_path'),
     kitchen_id: readRecordString(data, 'kitchen_id'),
+    created_by: readRecordString(data, 'created_by'),
   }
 })

@@ -1,10 +1,13 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useRuntimeConfig } from '#imports'
+import { getAuth } from 'firebase-admin/auth'
 import {
   createError,
   defineEventHandler,
   getRequestURL,
   readMultipartFormData,
+  type H3Event,
 } from 'h3'
+import { bearerTokenFromEvent } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
@@ -18,6 +21,7 @@ import {
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
+import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 
 const maxFileSizeMb = 10
@@ -61,12 +65,29 @@ function menuNameFromSlug(slug: string) {
     .join(' ') || slug
 }
 
+function currentAppId() {
+  const runtime = useRuntimeConfig()
+  return String(runtime.public?.fireux?.id || '').trim() || 'unknown-app'
+}
+
+async function optionalUploadUser(event: H3Event) {
+  const token = bearerTokenFromEvent(event)
+  if (!token) return null
+
+  const decoded = await getAuth(getAdminApp()).verifyIdToken(token)
+  return {
+    uid: String(decoded.uid || '').trim(),
+  }
+}
+
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['POST'],
   })
 
-  const cfg = useFireUXConfig()
+  const appId = currentAppId()
+  const user = await optionalUploadUser(event)
+  const createdBy = user?.uid || 'anonymous'
   const parts = await readMultipartFormData(event)
   const slug = normalizeSlug(multipartField(parts, 'slug'))
   const validation = validatePublicSlug(slug, {
@@ -115,7 +136,8 @@ export default defineEventHandler(async (event) => {
     id: slug,
     slug,
     kitchen_id: '',
-    source_app_id: cfg.appId,
+    source_app_id: appId,
+    created_by: createdBy,
     name: menuNameFromSlug(slug),
     description: '',
     doc_url: saved.fileUrl,
@@ -126,8 +148,8 @@ export default defineEventHandler(async (event) => {
       contentType: file.contentType,
     }),
     doc_storage_path: objectPath,
-    created: serverAuditStamp({ by: 'anonymous', appId: cfg.appId }),
-    updated: serverAuditStamp({ by: 'anonymous', appId: cfg.appId }),
+    created: serverAuditStamp({ by: createdBy, appId }),
+    updated: serverAuditStamp({ by: createdBy, appId }),
   })
 
   const baseUrl = getRequestURL(event).origin
@@ -142,7 +164,7 @@ export default defineEventHandler(async (event) => {
     qr_path: qrPath,
     url: `${baseUrl}${path}`,
     qr_url: `${baseUrl}${qrPath}`,
-    storage_owner: cfg.appId,
+    storage_owner: appId,
     powered_by: {
       name: 'Go QR',
       url: 'https://go-qr.web.app',
