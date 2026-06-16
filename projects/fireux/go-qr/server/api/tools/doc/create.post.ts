@@ -3,7 +3,6 @@ import {
   defineEventHandler,
   readMultipartFormData,
 } from 'h3'
-import { FieldValue } from 'firebase-admin/firestore'
 import {
   multipartField,
   readUploadedMultipartFile,
@@ -12,6 +11,7 @@ import {
   runtimeStorageBucketName,
   saveStorageFileWithDownloadToken,
 } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import {
   goQrDocQrUrl,
   goQrDocRef,
@@ -82,7 +82,6 @@ export default defineEventHandler(async (event) => {
     contentType: file.contentType,
   })
 
-  const now = FieldValue.serverTimestamp()
   const title = titleFromSlug(slug)
 
   await docRef.create({
@@ -98,14 +97,8 @@ export default defineEventHandler(async (event) => {
     storage_path: objectPath,
     display_label: title,
     qr_centre_label: 'Q',
-    created: {
-      at: now,
-      by: 'anonymous',
-    },
-    updated: {
-      at: now,
-      by: 'anonymous',
-    },
+    created: serverAuditStamp({ by: 'anonymous' }),
+    updated: serverAuditStamp({ by: 'anonymous' }),
   })
 
   return {

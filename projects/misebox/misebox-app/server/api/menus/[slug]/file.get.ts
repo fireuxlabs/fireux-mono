@@ -4,6 +4,7 @@ import {
   downloadStorageFile,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 
 export default defineEventHandler(async (event) => {
   const slug = String(getRouterParam(event, 'slug') || '').trim()
@@ -27,9 +28,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = snap.data() || {}
-  const objectPath = String(data.doc_storage_path || '').trim()
-  const contentType = String(data.doc_type || 'application/octet-stream').trim()
-  const fileName = String(data.doc_name || `${slug}.pdf`).trim()
+  const objectPath = readRecordString(data, 'doc_storage_path')
+  const contentType =
+    readRecordString(data, 'doc_type') || 'application/octet-stream'
+  const fileName = readRecordString(data, 'doc_name') || `${slug}.pdf`
 
   if (!objectPath) {
     throw createError({

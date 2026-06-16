@@ -4,6 +4,10 @@ import { createError, getHeader, type H3Event } from 'h3'
 import { getFirestore } from 'firebase-admin/firestore'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import {
+  bearerToken,
+  bearerTokenFromEvent,
+} from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getProductsAdmin } from './getAdmin'
 
 function firstString(...values: unknown[]): string {
@@ -23,19 +27,13 @@ function safeEquals(value: string, expected: string): boolean {
 
 function serviceKeyFromRequest(event: H3Event): string {
   const authorization = firstString(getHeader(event, 'authorization'))
-  const bearer = authorization.match(/^Bearer\s+(.+)$/i)?.[1]
 
   return firstString(
     getHeader(event, 'x-fireux-products-service-key'),
     getHeader(event, 'x-fireux-products-internal-key'),
     getHeader(event, 'x-fireux-internal-key'),
-    bearer
+    bearerToken(authorization)
   )
-}
-
-function bearerTokenFromRequest(event: H3Event): string {
-  const authorization = firstString(getHeader(event, 'authorization'))
-  return firstString(authorization.match(/^Bearer\s+(.+)$/i)?.[1])
 }
 
 function configuredServiceKey(event: H3Event): string {
@@ -55,7 +53,7 @@ function configuredServiceKey(event: H3Event): string {
 }
 
 async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
-  const token = bearerTokenFromRequest(event)
+  const token = bearerTokenFromEvent(event)
   if (!token) return false
 
   try {

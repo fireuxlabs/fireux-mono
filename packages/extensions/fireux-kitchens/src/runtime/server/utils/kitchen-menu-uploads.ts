@@ -1,16 +1,16 @@
 import {
   createError,
-  getHeader,
   getQuery,
   readMultipartFormData,
   type H3Event,
 } from 'h3'
-import { getAuth } from 'firebase-admin/auth'
-import { FieldValue } from 'firebase-admin/firestore'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import {
   multipartField,
   readUploadedMultipartFile,
@@ -63,22 +63,7 @@ export function setKitchenMenuUploadCors(event: H3Event, method: 'GET' | 'POST')
 }
 
 export function text(value: unknown): string {
-  return String(value ?? '').trim()
-}
-
-function bearerToken(value: unknown) {
-  return text(value).match(/^Bearer\s+(.+)$/i)?.[1] || ''
-}
-
-function requirePathSegment(value: unknown, label: string) {
-  const segment = text(value)
-  if (!segment || segment.includes('/')) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `${label} is required.`,
-    })
-  }
-  return segment
+  return readString(value)
 }
 
 function menuNameValidation(uploadId: string) {
@@ -114,16 +99,8 @@ export async function requireKitchenMenuUploadUser(
   event: H3Event,
   message = 'Sign in before saving a menu upload.'
 ) {
-  const token = bearerToken(getHeader(event, 'authorization'))
-  if (!token) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: message,
-    })
-  }
-
-  const decoded = await getAuth(getAdminApp()).verifyIdToken(token)
-  return requirePathSegment(decoded.uid, 'User id')
+  const user = await requireFirebaseBearerUser(event, message)
+  return user.uid
 }
 
 export async function readKitchenMenuUploadRequest(
@@ -259,8 +236,6 @@ export function kitchenMenuUploadRecord(
   saved: SavedKitchenMenuUploadFile,
   uid: string
 ) {
-  const now = FieldValue.serverTimestamp()
-
   return {
     id: request.uploadId,
     kitchen_id: request.kitchenId,
@@ -274,15 +249,8 @@ export function kitchenMenuUploadRecord(
     file_type: request.file.contentType,
     storage_path: saved.objectPath,
     status: 'uploaded',
-    created: {
-      at: now,
-      by: uid,
-      app_id: request.appId,
-    },
-    updated: {
-      at: now,
-      by: uid,
-    },
+    created: serverAuditStamp({ by: uid, appId: request.appId }),
+    updated: serverAuditStamp({ by: uid }),
   }
 }
 

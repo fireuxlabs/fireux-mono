@@ -4,18 +4,18 @@ import {
   getRequestURL,
   readMultipartFormData,
 } from 'h3'
-import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   multipartField,
   readUploadedMultipartFile,
-  uploadFileExtension,
 } from 'fireux-core/runtime/server/utils/uploads/multipart.ts'
 import {
   runtimeStorageBucketName,
   saveStorageFileWithDownloadToken,
 } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 
@@ -52,17 +52,6 @@ const reservedSlugs = [
   'solutions',
   'terms',
 ]
-
-function menuDocumentKind(input: { fileName: string, fileType: string }) {
-  const extension = uploadFileExtension(input.fileName)
-  if (input.fileType.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(extension)) {
-    return 'photo'
-  }
-  if (input.fileType === 'application/pdf' || extension === '.pdf') {
-    return 'pdf'
-  }
-  return 'document'
-}
 
 function menuNameFromSlug(slug: string) {
   return slug
@@ -121,7 +110,6 @@ export default defineEventHandler(async (event) => {
     contentType: file.contentType,
   })
 
-  const now = FieldValue.serverTimestamp()
   await menuRef.set({
     id: slug,
     kitchen_id: '',
@@ -130,20 +118,13 @@ export default defineEventHandler(async (event) => {
     doc_url: saved.fileUrl,
     doc_name: file.fileName,
     doc_type: file.contentType,
-    doc_kind: menuDocumentKind({
+    doc_kind: documentKindFromFile({
       fileName: file.fileName,
-      fileType: file.contentType,
+      contentType: file.contentType,
     }),
     doc_storage_path: objectPath,
-    created: {
-      at: now,
-      by: 'anonymous',
-      app_id: APP_ID,
-    },
-    updated: {
-      at: now,
-      by: 'anonymous',
-    },
+    created: serverAuditStamp({ by: 'anonymous', appId: APP_ID }),
+    updated: serverAuditStamp({ by: 'anonymous' }),
   })
 
   const baseUrl = getRequestURL(event).origin

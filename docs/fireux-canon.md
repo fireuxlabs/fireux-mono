@@ -670,7 +670,7 @@ Pricing pages, help pages, about pages, and app-authored page copy are surfaces,
   - the source domain data passed into the provider tool
 - Embedded tools report height using the shared `tool-height` message shape from `fireux-core/runtime/types/tool-provider.types`.
 - Tool contracts use the shared `ToolProviderToolContract` type.
-- Core may own boring server plumbing used by multiple tool/consumer endpoints, such as CORS headers, multipart upload parsing, Firebase Storage writes, and public slug availability checks.
+- Core may own boring server plumbing used by multiple tool/consumer endpoints, such as CORS headers, bearer-token extraction, safe path-segment validation, record string reads, audit stamps, multipart upload parsing, document-kind classification, Firebase Storage writes, and public slug availability checks.
 - Product routes still own their domain meaning:
   - Go QR doc routes create Go QR docs.
   - App-local `/menus/**` routes create uploaded menu document links.
