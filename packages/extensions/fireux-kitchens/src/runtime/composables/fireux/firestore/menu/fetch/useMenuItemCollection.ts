@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { MenuItem } from '../../../../../models/menu-item.model'
+import type { MenuItem } from '../../../../../models/menu/menu-item.model'
 import { useKitchenChildCollection } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 type Options = {

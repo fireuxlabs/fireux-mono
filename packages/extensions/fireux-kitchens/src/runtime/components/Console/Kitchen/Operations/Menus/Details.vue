@@ -38,7 +38,7 @@
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import type { MenuUpdateInput } from '../../../../../models/menu.model'
+import type { MenuUpdateInput } from '../../../../../models/menu/menu.model'
 
 const {
   menu,

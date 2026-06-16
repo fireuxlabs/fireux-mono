@@ -6,7 +6,7 @@ import {
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { MenuStorage, type Menu } from '../../../../../models/menu.model'
+import { MenuStorage, type Menu } from '../../../../../models/menu/menu.model'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 export function useMenuFetch(

@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import type { MenuStatus } from '../../../../../models/menu.model'
+import type { MenuStatus } from '../../../../../models/menu/menu.model'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
 const { menus, pending, kitchenId, canWrite, publishMenu, archiveMenu } =

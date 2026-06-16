@@ -5,9 +5,9 @@ import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/fir
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/dish.model'
-import type { MenuItem } from '../../../../../models/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu-section.model'
-import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu.model'
+import type { MenuItem } from '../../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../../models/menu/menu-section.model'
+import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu/menu.model'
 import { resolveMenuMaturity } from '../utils/view/useMenuMaturity'
 import {
   menuItemsPath,

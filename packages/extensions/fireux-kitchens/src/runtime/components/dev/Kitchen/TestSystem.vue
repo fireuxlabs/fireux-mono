@@ -114,7 +114,7 @@ import {
 import { getDefaultDemoKitchen } from '../../../composables/fireux/demo/kitchen/scenarios'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { DishStorage } from '../../../models/dish.model'
-import { MenuStorage } from '../../../models/menu.model'
+import { MenuStorage } from '../../../models/menu/menu.model'
 import { RecipeStorage } from '../../../models/recipe.model'
 import type { Kitchen } from '../../../models/kitchen.model'
 import {

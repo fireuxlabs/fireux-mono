@@ -83,7 +83,7 @@ import { computed, ref } from 'vue'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { KitchenPublicMenuSectionRow } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
-import type { Menu } from '../../../../models/menu.model'
+import type { Menu } from '../../../../models/menu/menu.model'
 
 const props = defineProps<{
   kitchenName: string

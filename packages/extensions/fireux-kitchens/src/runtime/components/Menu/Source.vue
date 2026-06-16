@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Menu } from '../../models/menu.model'
+import type { Menu } from '../../models/menu/menu.model'
 
 defineProps<{
   kitchenName: string

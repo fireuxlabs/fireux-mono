@@ -49,7 +49,7 @@ import {
   getDemoKitchenCollection,
   getDemoKitchens,
 } from '../../../composables/fireux/demo/kitchen/scenarios'
-import type { Menu } from '../../../models/menu.model'
+import type { Menu } from '../../../models/menu/menu.model'
 
 definePageMeta({
   layout: 'default',

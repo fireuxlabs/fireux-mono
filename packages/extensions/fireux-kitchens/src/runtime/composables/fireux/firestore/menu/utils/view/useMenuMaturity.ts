@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Menu } from '../../../../../../models/menu.model'
+import type { Menu } from '../../../../../../models/menu/menu.model'
 
 export type MenuMaturity = 'source' | 'structured' | 'orderable'
 

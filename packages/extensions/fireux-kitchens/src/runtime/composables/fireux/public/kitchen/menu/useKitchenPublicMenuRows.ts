@@ -3,8 +3,8 @@ import type { Dish } from '../../../../../models/dish.model'
 import {
   normalizeMenuItemPriceOptions,
   type MenuItem,
-} from '../../../../../models/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu-section.model'
+} from '../../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../../models/menu/menu-section.model'
 import type { KitchenPublicMenuSectionRow } from './types'
 
 type MenuRowOptions = {

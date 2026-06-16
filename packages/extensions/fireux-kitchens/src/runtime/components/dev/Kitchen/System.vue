@@ -115,7 +115,7 @@ import {
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { DishStorage } from '../../../models/dish.model'
 import { IngredientStorage } from '../../../models/ingredient.model'
-import { MenuStorage } from '../../../models/menu.model'
+import { MenuStorage } from '../../../models/menu/menu.model'
 import { RecipeStorage } from '../../../models/recipe.model'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import {

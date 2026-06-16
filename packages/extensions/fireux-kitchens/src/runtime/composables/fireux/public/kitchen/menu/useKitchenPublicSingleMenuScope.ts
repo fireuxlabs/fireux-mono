@@ -4,7 +4,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenFetch } from '../../../firestore/kitchen/useKitchen'
 import { useMenuCollection } from '../../../firestore/menu/useMenu'
-import type { Menu } from '../../../../../models/menu.model'
+import type { Menu } from '../../../../../models/menu/menu.model'
 import { useKitchenPublicMenuUrl } from './useKitchenPublicMenuUrl'
 
 const text = (value: unknown) => String(value ?? '').trim()

@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Menu } from '../../../../../../models/menu.model'
+import type { Menu } from '../../../../../../models/menu/menu.model'
 
 export namespace MenuCard {
   export type Card = {

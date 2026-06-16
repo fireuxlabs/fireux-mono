@@ -5,8 +5,8 @@ import {
   normalizeMenuItemPriceOptions,
   type MenuItem,
   type MenuItemPriceOption,
-} from '../../../../../../models/menu-item.model'
-import type { MenuSection } from '../../../../../../models/menu-section.model'
+} from '../../../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../../../models/menu/menu-section.model'
 import { useKitchenConsoleDishes } from '../Dishes/useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'

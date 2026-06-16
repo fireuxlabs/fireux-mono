@@ -2,9 +2,9 @@ import {
   normalizeString,
   resolveKitchenChildCollectionPath,
 } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { MenuItemStorage } from '../../../../../models/menu-item.model'
-import { MenuSectionStorage } from '../../../../../models/menu-section.model'
-import { MenuStorage } from '../../../../../models/menu.model'
+import { MenuItemStorage } from '../../../../../models/menu/menu-item.model'
+import { MenuSectionStorage } from '../../../../../models/menu/menu-section.model'
+import { MenuStorage } from '../../../../../models/menu/menu.model'
 
 type MenuPathOptions = {
   kitchenCollectionPath?: string | null | undefined

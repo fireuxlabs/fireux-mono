@@ -5,7 +5,7 @@ import {
   MenuStorage,
   MenuModel,
   type Menu,
-} from '../../../../../models/menu.model'
+} from '../../../../../models/menu/menu.model'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
