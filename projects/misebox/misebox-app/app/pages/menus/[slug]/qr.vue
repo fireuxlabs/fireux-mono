@@ -42,7 +42,6 @@ import { toDataURL } from 'qrcode'
 type PublicMenu = {
   id: string
   name: string
-  qr_centre_label?: string
 }
 
 const route = useRoute()
@@ -69,7 +68,14 @@ if (!data.value) {
 }
 
 const menu = computed(() => data.value as PublicMenu)
-const qrCentreLabel = computed(() => menu.value.qr_centre_label || 'Food Menu')
+const titleCase = (value: string) =>
+  value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ')
+
+const qrCentreLabel = computed(() => titleCase(menu.value.name || slug))
 const publicUrl = computed(() => {
   const origin = import.meta.client ? window.location.origin : 'https://misebox.app'
   return `${origin}/menus/${encodeURIComponent(slug)}`
