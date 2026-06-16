@@ -1,9 +1,17 @@
 import {
   addComponentsDir,
   addImportsDir,
+  addServerHandler,
   type Resolver,
 } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
+
+export type FireuxServerHandler = Omit<
+  Parameters<typeof addServerHandler>[0],
+  'handler'
+> & {
+  handler: string
+}
 
 type ComponentsDirOptions = {
   pattern?: string
@@ -48,4 +56,16 @@ export function registerComposablesDir(resolver: Resolver) {
   if (!existsSync(dir)) return null
   addImportsDir(dir)
   return dir
+}
+
+export function registerServerHandlers(
+  resolver: Resolver,
+  handlers: readonly FireuxServerHandler[]
+) {
+  for (const handler of handlers) {
+    addServerHandler({
+      ...handler,
+      handler: resolver.resolve(handler.handler),
+    })
+  }
 }

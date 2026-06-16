@@ -1,32 +1,33 @@
-import { addServerHandler, type Resolver } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
+import {
+  registerServerHandlers,
+  type FireuxServerHandler,
+} from 'fireux-core/config/module/module-helpers'
+
+const serverHandlers = [
+  {
+    route: '/api/console/kitchen/menus/upload',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/menus/upload.post',
+  },
+  {
+    route: '/api/console/kitchen/menus/upload',
+    method: 'options',
+    handler: './runtime/server/api/console/kitchen/menus/upload.options',
+  },
+  {
+    route: '/api/console/kitchen/menus/upload/availability',
+    method: 'get',
+    handler: './runtime/server/api/console/kitchen/menus/upload/availability.get',
+  },
+  {
+    route: '/api/console/kitchen/menus/upload/availability',
+    method: 'options',
+    handler:
+      './runtime/server/api/console/kitchen/menus/upload/availability.options',
+  },
+] satisfies FireuxServerHandler[]
 
 export function configureServer(resolver: Resolver) {
-  addServerHandler({
-    route: '/api/console/kitchen/menus/upload-source',
-    method: 'post',
-    handler: resolver.resolve(
-      './runtime/server/api/console/kitchen/menus/upload-source.post'
-    ),
-  })
-  addServerHandler({
-    route: '/api/console/kitchen/menus/upload-source',
-    method: 'options',
-    handler: resolver.resolve(
-      './runtime/server/api/console/kitchen/menus/upload-source.options'
-    ),
-  })
-  addServerHandler({
-    route: '/api/console/kitchen/menus/upload-source/availability',
-    method: 'get',
-    handler: resolver.resolve(
-      './runtime/server/api/console/kitchen/menus/upload-source/availability.get'
-    ),
-  })
-  addServerHandler({
-    route: '/api/console/kitchen/menus/upload-source/availability',
-    method: 'options',
-    handler: resolver.resolve(
-      './runtime/server/api/console/kitchen/menus/upload-source/availability.options'
-    ),
-  })
+  registerServerHandlers(resolver, serverHandlers)
 }
