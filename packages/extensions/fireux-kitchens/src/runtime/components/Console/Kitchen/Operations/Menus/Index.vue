@@ -59,6 +59,7 @@
       </UCard>
 
       <ConsoleKitchenOperationsMenusUpload />
+      <ConsoleKitchenOperationsMenusSources />
       <ConsoleKitchenOperationsMenusRead />
 
       <DevJson

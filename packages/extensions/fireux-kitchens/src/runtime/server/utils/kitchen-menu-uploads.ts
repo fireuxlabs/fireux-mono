@@ -6,6 +6,7 @@ import {
 } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -20,8 +21,9 @@ import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/uti
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../models/kitchen.model'
+import { MenuSourceUploadStorage } from '../../models/menu/menu-source-upload.model'
 
-const menuUploadCollection = 'menu-uploads'
+const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10
 const allowedTypes = [
   'application/pdf',
@@ -247,6 +249,10 @@ export function kitchenMenuUploadRecord(
     file_url: saved.fileUrl,
     file_name: request.file.fileName,
     file_type: request.file.contentType,
+    file_kind: documentKindFromFile({
+      fileName: request.file.fileName,
+      contentType: request.file.contentType,
+    }),
     storage_path: saved.objectPath,
     status: 'uploaded',
     created: serverAuditStamp({ by: uid, appId: request.appId }),
