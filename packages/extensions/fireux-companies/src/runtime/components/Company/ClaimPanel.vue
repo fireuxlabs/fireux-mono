@@ -17,7 +17,7 @@
         <div class="fx-public-action__content">
           <div class="fx-public-action__copy">
             <h2 class="fx-public-action__title">
-              Is this your company?
+              Company Operations
             </h2>
             <p class="fx-public-action__description">
               {{ panelCopy }}

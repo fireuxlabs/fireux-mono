@@ -10,7 +10,7 @@
       </p>
 
       <template v-else>
-        <MenuOwner
+        <MenuPublicOperatorPanel
           :menu="menu"
           :menu-id="menuId"
         />

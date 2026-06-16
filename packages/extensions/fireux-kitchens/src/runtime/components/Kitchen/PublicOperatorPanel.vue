@@ -1,7 +1,7 @@
 <template>
   <EntityOperatorPanel
     entity-label="Kitchen"
-    title="Kitchen console"
+    title="Kitchen Operations"
     :description="panelDescription"
     :operator-label="operatorLabel"
     :operator-user-pill="operatorUserPill"

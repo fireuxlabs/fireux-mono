@@ -25,7 +25,7 @@
         <!-- main -->
 
         <!-- operator -->
-        <PortfolioPublicOperator />
+        <PortfolioPublicOperatorPanel :portfolio="portfolio" />
 
         <!-- dev -->
       </div>

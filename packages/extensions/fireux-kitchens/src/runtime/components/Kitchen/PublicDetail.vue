@@ -33,7 +33,7 @@
           <AppJoinSection />
 
           <!-- operator -->
-          <KitchenPublicOperator :kitchen="kitchen" />
+          <KitchenPublicOperatorPanel :kitchen="kitchen" />
 
           <!-- dev -->
           <DevJson

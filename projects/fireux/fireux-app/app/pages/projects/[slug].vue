@@ -25,7 +25,7 @@
         <!-- main -->
 
         <!-- operator -->
-        <ProjectPublicOperator />
+        <ProjectPublicOperatorPanel :project="project" />
 
         <!-- dev -->
       </div>

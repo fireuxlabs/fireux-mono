@@ -27,7 +27,7 @@
           />
 
           <!-- operator -->
-          <PlaceOperatorPanel
+          <PlacePublicOperatorPanel
             :place="place"
             :id="placeId"
             :locator="locator"

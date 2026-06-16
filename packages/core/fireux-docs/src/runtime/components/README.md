@@ -108,11 +108,11 @@ Read them like this:
 - `Design/PaletteStrip.vue`
   FireUX visual primitive for rendering named colour palettes; app or ecosystem assets own the actual colour values
 - `entity/OperatorPanel.vue`
-  Public detail CTA shell for a console-backed public entity. Domain wrappers such as `KitchenPublicOperator` decide the copy, badges, owner/operator hints, and links.
+  Public detail CTA shell for a console-backed public entity. Domain wrappers such as `KitchenPublicOperatorPanel` decide the copy, badges, owner/operator hints, and links.
 
 Public action panels follow the console spine pattern: reuse the job contract, helpers, and class names, not one all-purpose shell component.
 
-Each family should expose a domain public action spine such as `CompanyOperatorPanel` or `PlaceOperatorPanel`. Named child jobs own their markup so their sections stay readable:
+Each family should expose a domain public action spine such as `CompanyPublicOperatorPanel` or `PlacePublicOperatorPanel`. Named child jobs own their markup so their sections stay readable:
 
 - domain claim panels such as `CompanyClaimPanel` and `PlaceClaimPanel` use `claimed_by`
 - operator panels use console authority such as `operator_ids`

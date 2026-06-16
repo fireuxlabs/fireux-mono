@@ -118,7 +118,7 @@ const entityLowerLabel = computed(() =>
   String(props.entityLabel || 'record').trim().toLowerCase()
 )
 const panelTitle = computed(
-  () => props.title || `${props.entityLabel || 'Record'} console`
+  () => props.title || `${props.entityLabel || 'Record'} Operations`
 )
 const panelDescription = computed(
   () =>

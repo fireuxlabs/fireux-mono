@@ -92,6 +92,8 @@ Important FireUX rule:
 
 For dashboard profile-extension canon, see `runtime/concepts/dashboard-canon.md`.
 
+For public/runtime entity detail page shape, see `runtime/pages/detail/README.md`.
+
 ## FireUX Admin Surfaces
 
 Admin index pages that should appear in `/dashboard/admin` declare `adminSurface` route meta.

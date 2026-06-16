@@ -17,7 +17,7 @@
         <div class="fx-public-action__content">
           <div class="fx-public-action__copy">
             <h2 class="fx-public-action__title">
-              This is your quick menu
+              Menu Operations
             </h2>
             <p class="fx-public-action__description">
               You created this upload. You can keep the QR alive, improve the source,
@@ -94,22 +94,22 @@ const upgradePath = computed(
   () => `/menus/${encodeURIComponent(props.menuId)}/upgrade`
 )
 const actions = computed<PublicActionButton[]>(() => [
-    {
-      label: 'QR',
-      to: qrPath.value,
-      icon: 'i-lucide-qr-code',
-      color: 'neutral' as const,
-    },
-    {
-      label: 'Upgrade',
-      to: upgradePath.value,
-      icon: 'i-lucide-sparkles',
-      color: 'primary' as const,
-    },
-  ])
+  {
+    label: 'QR',
+    to: qrPath.value,
+    icon: 'i-lucide-qr-code',
+    color: 'neutral' as const,
+  },
+  {
+    label: 'Upgrade',
+    to: upgradePath.value,
+    icon: 'i-lucide-sparkles',
+    color: 'primary' as const,
+  },
+])
 const groups = computed<PublicActionGroup[]>(() =>
   visiblePublicActionGroups([{
-    label: 'Owner actions',
+    label: 'Operations',
     items: ['View QR', 'Replace source', 'Rename path', 'Upgrade later'],
     color: 'neutral' as const,
   }])

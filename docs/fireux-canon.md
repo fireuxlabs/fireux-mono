@@ -430,11 +430,11 @@ composables/fireux/firestore/<entity>/
 - FireUX does not use generic public `/operator` routes.
 - Do not use `/admin` as a public entity route word. Admin means app/platform administration; operator means access to operate a selected console target.
 - Public operator UI has two layers:
-  - public detail operator CTA: domain wrapper such as `KitchenPublicOperator`, usually rendered near the bottom of a public detail page
+  - public detail operator CTA: domain wrapper such as `KitchenPublicOperatorPanel`, usually rendered near the bottom of a public detail page
   - console access readout: selected console pages that display `team_ids`, `operator_ids`, and hydrated people where useful
 - Public action panels follow the console spine pattern:
   - reusable layer: job contract, helper functions, and shared `fx-public-action*` class names
-  - domain spine: `XOperatorPanel` owns the public action area for that record family
+  - domain spine: `XPublicOperatorPanel` owns the public action area for that record family and receives the current entity from the detail page
   - named child jobs: `XClaimPanel`, owner panels, and console/operator panels render their own readable sections
   - do not collapse claim/operator/owner into one all-purpose visual shell
 - Owner-only quick actions from `created_by` are owner panels, not operator authority. They may offer QR, upgrade, or edit-next actions, but they must not imply console write access.

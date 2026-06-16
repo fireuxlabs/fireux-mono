@@ -25,7 +25,7 @@
         <!-- main -->
 
         <!-- operator -->
-        <SupplierPublicOperator />
+        <SupplierPublicOperatorPanel :supplier="supplierRecord" />
 
         <!-- dev -->
         <DevJson
