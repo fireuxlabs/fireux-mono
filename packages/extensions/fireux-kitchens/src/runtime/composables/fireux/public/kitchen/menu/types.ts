@@ -2,8 +2,8 @@ import type { Dish } from '../../../../../models/dish.model'
 import type {
   MenuItem,
   MenuItemPriceOption,
-  MenuSection,
-} from '../../../../../models/menu.model'
+} from '../../../../../models/menu-item.model'
+import type { MenuSection } from '../../../../../models/menu-section.model'
 
 export type KitchenPublicMenuItemRow = {
   id: string

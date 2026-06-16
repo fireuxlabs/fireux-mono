@@ -12,23 +12,10 @@
         description="Use this for quick public menu sharing. Upload a finished menu document, give it a short path, then print or share its QR page."
         variant="subtle"
       >
-        <template #footer>
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              to="/solutions/qr-menu"
-              icon="i-lucide-upload"
-            >
-              Upload menu document
-            </UButton>
-            <UButton
-              to="/kitchens"
-              icon="i-lucide-chef-hat"
-              variant="ghost"
-            >
-              Kitchen menus
-            </UButton>
-          </div>
-        </template>
+        <ProviderGoQrTools
+          tool="doc"
+          :payload="tool"
+        />
       </UPageCard>
 
       <UploadedMenuCollectionManager
@@ -46,7 +33,17 @@
 import { useHead } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { UploadedMenuSummary } from '../../composables/menus/useUploadedMenuInterface'
+import { useQrMenuTool } from '../../composables/menus/useQrMenuTool'
+
+type UploadedMenuSummary = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  kind: string
+  path: string
+  qr_path: string
+}
 
 definePageMeta({
   layout: 'default',
@@ -59,6 +56,7 @@ definePageMeta({
 
 const pageTitle = 'QR menus'
 const { appName } = useFireUXConfig()
+const tool = useQrMenuTool()
 const { data, pending, error } = await useAsyncData(
   'misebox-uploaded-menus',
   () => $fetch<UploadedMenuSummary[]>('/api/menus')

@@ -1,10 +1,10 @@
 import { computed, type Ref } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
-import type {
-  MenuItem,
-  MenuSection,
-} from '../../../../../models/menu.model'
-import { normalizeMenuItemPriceOptions } from '../../../../../models/menu.model'
+import {
+  normalizeMenuItemPriceOptions,
+  type MenuItem,
+} from '../../../../../models/menu-item.model'
+import type { MenuSection } from '../../../../../models/menu-section.model'
 import type { KitchenPublicMenuSectionRow } from './types'
 
 type MenuRowOptions = {

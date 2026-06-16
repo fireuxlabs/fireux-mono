@@ -13,7 +13,17 @@
     </header>
 
     <section class="min-h-0 overflow-auto bg-white" aria-label="Menu document">
-      <ClientOnly v-if="isPdf">
+      <div
+        v-if="isPhoto"
+        class="flex min-h-[calc(100vh-4.75rem)] items-start justify-center bg-neutral-950 p-4"
+      >
+        <img
+          :src="displayUrl"
+          :alt="menu.name"
+          class="h-auto max-h-[calc(100vh-6rem)] w-auto max-w-full rounded-lg object-contain shadow-xl"
+        >
+      </div>
+      <ClientOnly v-else-if="isPdf">
         <MenuPdfViewer
           :url="fileUrl"
           :title="menu.name"
@@ -37,6 +47,7 @@ type PublicMenu = {
   name: string
   doc_url: string
   doc_type: string
+  kind: string
 }
 
 const route = useRoute()
@@ -61,7 +72,13 @@ if (!data.value?.doc_url) {
 }
 
 const menu = computed(() => data.value as PublicMenu)
-const isPdf = computed(() => menu.value.doc_type.includes('pdf'))
+const isPhoto = computed(() =>
+  menu.value.kind === 'photo' || menu.value.doc_type.startsWith('image/')
+)
+const isPdf = computed(() =>
+  !isPhoto.value &&
+  (menu.value.kind === 'pdf' || menu.value.doc_type.includes('pdf'))
+)
 const fileUrl = computed(() => `/api/menus/${encodeURIComponent(slug)}/file`)
 const displayUrl = computed(() => {
   return menu.value.doc_url

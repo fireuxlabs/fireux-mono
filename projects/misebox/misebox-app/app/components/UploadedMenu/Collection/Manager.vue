@@ -40,19 +40,13 @@
         variant="subtle"
       >
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h3 class="text-base font-semibold text-highlighted">
-                {{ card.title }}
-              </h3>
-              <p class="mt-1 text-sm text-dimmed">
-                {{ card.description }}
-              </p>
-            </div>
-
-            <UBadge v-if="card.status" color="primary" variant="soft">
-              {{ card.status }}
-            </UBadge>
+          <div class="min-w-0">
+            <h3 class="text-base font-semibold text-highlighted">
+              {{ card.title }}
+            </h3>
+            <p class="mt-1 text-sm text-dimmed">
+              {{ card.description }}
+            </p>
           </div>
         </template>
 
@@ -85,10 +79,45 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import {
-  useUploadedMenuInterface,
-  type UploadedMenuSummary,
-} from '../../../composables/menus/useUploadedMenuInterface'
+
+type UploadedMenuSummary = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  kind: string
+  path: string
+  qr_path: string
+}
+
+type UploadedMenuCard = {
+  id: string
+  to: string
+  qrTo: string
+  title: string
+  description: string
+  meta: string
+}
+
+const kindLabel = (kind: string) => {
+  if (kind === 'photo') return 'Photo menu'
+  if (kind === 'pdf') return 'PDF menu'
+  if (kind === 'document') return 'Document menu'
+  return 'Menu document'
+}
+
+const card = (menu: UploadedMenuSummary): UploadedMenuCard | null => {
+  if (!menu.id || !menu.path) return null
+
+  return {
+    id: menu.id,
+    to: menu.path,
+    qrTo: menu.qr_path,
+    title: menu.name,
+    description: menu.description || 'Uploaded menu document.',
+    meta: kindLabel(menu.kind),
+  }
+}
 
 const props = withDefaults(
   defineProps<{
@@ -107,15 +136,12 @@ const props = withDefaults(
   }
 )
 
-const { card } = useUploadedMenuInterface()
 const { devJsonData } = useDevCollectionJson(computed(() => props.collection))
 
 const cards = computed(() =>
   props.collection
     .map((menu) => card(menu))
-    .filter((entry): entry is NonNullable<ReturnType<typeof card>> =>
-      Boolean(entry)
-    )
+    .filter((entry): entry is UploadedMenuCard => Boolean(entry))
 )
 const title = computed(() => String(props.title || 'QR menu documents'))
 const description = computed(() => String(props.description || '').trim())

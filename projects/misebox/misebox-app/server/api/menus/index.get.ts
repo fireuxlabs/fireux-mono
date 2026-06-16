@@ -6,9 +6,7 @@ type UploadedMenuSummary = {
   slug: string
   name: string
   description: string
-  status: string
-  doc_name: string
-  doc_type: string
+  kind: string
   path: string
   qr_path: string
 }
@@ -16,6 +14,24 @@ type UploadedMenuSummary = {
 const readString = (data: Record<string, unknown>, key: string) => {
   const value = data[key]
   return typeof value === 'string' ? value.trim() : ''
+}
+
+const documentKind = (input: {
+  fileName: string
+  fileType: string
+  storedKind: string
+}) => {
+  if (['photo', 'pdf', 'document'].includes(input.storedKind)) {
+    return input.storedKind
+  }
+
+  const extension = input.fileName.toLowerCase().match(/\.[a-z0-9]+$/)?.[0] || ''
+  const fileType = input.fileType.toLowerCase()
+  if (fileType.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(extension)) {
+    return 'photo'
+  }
+  if (fileType === 'application/pdf' || extension === '.pdf') return 'pdf'
+  return 'document'
 }
 
 const menuName = (slug: string, name: string) => {
@@ -32,7 +48,6 @@ const menuSlug = (data: Record<string, unknown>, docId: string) => {
 export default defineEventHandler(async () => {
   const snap = await getRuntimeFirestore()
     .collection('menus')
-    .where('status', '==', 'published')
     .limit(100)
     .get()
 
@@ -40,15 +55,19 @@ export default defineEventHandler(async () => {
     const data = doc.data()
     const slug = menuSlug(data, doc.id)
     const encodedSlug = encodeURIComponent(slug)
+    const docName = readString(data, 'doc_name')
+    const docType = readString(data, 'doc_type')
 
     return {
       id: doc.id,
       slug,
       name: menuName(slug, readString(data, 'name')),
       description: readString(data, 'description'),
-      status: readString(data, 'status'),
-      doc_name: readString(data, 'doc_name'),
-      doc_type: readString(data, 'doc_type'),
+      kind: documentKind({
+        fileName: docName,
+        fileType: docType,
+        storedKind: readString(data, 'doc_kind'),
+      }),
       path: `/menus/${encodedSlug}`,
       qr_path: `/menus/${encodedSlug}/qr`,
     }

@@ -21,6 +21,9 @@ const allowedFileTypes = new Set([
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
 ])
 const reservedSlugs = [
   'about',
@@ -58,7 +61,22 @@ function isAllowedFile(input: { fileName: string, fileType: string }) {
   return allowedFileTypes.has(input.fileType) ||
     extension === '.pdf' ||
     extension === '.doc' ||
-    extension === '.docx'
+    extension === '.docx' ||
+    extension === '.jpg' ||
+    extension === '.jpeg' ||
+    extension === '.png' ||
+    extension === '.webp'
+}
+
+function menuDocumentKind(input: { fileName: string, fileType: string }) {
+  const extension = input.fileName.toLowerCase().match(/\.[a-z0-9]+$/)?.[0] || ''
+  if (input.fileType.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(extension)) {
+    return 'photo'
+  }
+  if (input.fileType === 'application/pdf' || extension === '.pdf') {
+    return 'pdf'
+  }
+  return 'document'
 }
 
 function firebaseDownloadUrl(bucketName: string, objectPath: string, token: string) {
@@ -115,7 +133,7 @@ export default defineEventHandler(async (event) => {
   if (!isAllowedFile({ fileName, fileType })) {
     throw createError({
       statusCode: 415,
-      statusMessage: 'Upload a PDF, DOC, or DOCX menu file.',
+      statusMessage: 'Upload a photo, PDF, DOC, or DOCX menu file.',
     })
   }
 
@@ -160,11 +178,11 @@ export default defineEventHandler(async (event) => {
     kitchen_id: '',
     name: menuNameFromSlug(slug),
     description: '',
-    status: 'published',
     qr_centre_label: 'Food Menu',
     doc_url: docUrl,
     doc_name: fileName,
     doc_type: fileType,
+    doc_kind: menuDocumentKind({ fileName, fileType }),
     doc_storage_path: objectPath,
     created: {
       at: now,

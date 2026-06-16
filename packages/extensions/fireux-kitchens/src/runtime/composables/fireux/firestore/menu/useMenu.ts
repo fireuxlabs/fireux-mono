@@ -7,6 +7,8 @@ import { useMenuUpdate } from './mutations/useMenuUpdate'
 import { useMenuDelete } from './mutations/useMenuDelete'
 
 export type { Menu } from '../../../../models/menu.model'
+export type { MenuItem, MenuItemPriceOption } from '../../../../models/menu-item.model'
+export type { MenuSection } from '../../../../models/menu-section.model'
 export { useMenuCollection } from './fetch/useMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
 export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'

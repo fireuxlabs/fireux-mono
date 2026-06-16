@@ -12,43 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useQrMenuTool } from '../../composables/menus/useQrMenuTool'
 
 definePageMeta({
   layout: 'landing',
 })
 
-const consumerBaseUrl = import.meta.dev
-  ? 'http://localhost:3001'
-  : 'https://misebox.app'
 const goQrBaseUrl = 'https://go-qr.web.app'
-const tool = computed(() => ({
-  copy: {
-    title: 'QR menu',
-    description: 'Upload a menu, choose a short path, and get a QR menu.',
-    ctaLabel: 'Create QR menu',
-    loadingLabel: 'Creating QR menu...',
-    openTargetLabel: 'Open menu',
-  },
-  upload: {
-    fileLabel: 'Menu file',
-    accept: 'application/pdf,.doc,.docx',
-    hint: 'PDF, DOC, or DOCX. Max 10 MB.',
-  },
-  slug: {
-    label: 'Menu path',
-    placeholder: 'my-menu',
-    takenMessage: 'This menu path is already taken.',
-  },
-  preview: {
-    baseUrl: `${consumerBaseUrl}/menus`,
-    pathSuffix: '/qr',
-  },
-  endpoints: {
-    create: `${consumerBaseUrl}/api/menus/create`,
-    availability: `${consumerBaseUrl}/api/menus/availability`,
-  },
-}))
+const tool = useQrMenuTool()
 
 const solution = {
   title: 'QR menu',

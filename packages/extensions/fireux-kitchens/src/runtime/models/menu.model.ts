@@ -10,8 +10,8 @@ import type { OrderServiceMode } from 'fireux-orders/runtime/models/order.model'
  * app-scoped either way. Public menu routes render published Kitchen Menu
  * records; they do not create root Menu truth.
  *
- * Dish describes food. Menu presents selected dishes. MenuItem is a
- * placement/link to a Dish, not a second food entity.
+ * Dish describes food. Menu presents selected dishes. MenuSection and MenuItem
+ * live in their own child model files.
  *
  * Canon paths:
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}
@@ -31,50 +31,7 @@ export const MenuStorage = {
   },
 } as const
 
-export const MenuSectionStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
-  collection: 'sections',
-  parent: 'menu',
-  idParam: 'sectionId',
-} as const
-
-export const MenuItemStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
-  collection: 'items',
-  parent: 'menu-section',
-  idParam: 'itemId',
-} as const
-
 export type MenuStatus = 'draft' | 'published' | 'archived'
-export type MenuChildStatus = 'active' | 'archived'
-export type MenuItemPriceOption = {
-  quantity: number
-  unit: string
-  price: number
-}
-
-const cleanText = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown) =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-
-export function normalizeMenuItemPriceOptions(value: unknown): MenuItemPriceOption[] {
-  if (!Array.isArray(value)) return []
-
-  return value
-    .map((option) => {
-      const data = record(option)
-      return {
-        quantity: Number(data.quantity || 0),
-        unit: cleanText(data.unit),
-        price: Number(data.price || 0),
-      }
-    })
-    .filter((option) => option.quantity > 0 && option.price > 0)
-}
 
 export type MenuDocument = {
   url: string
@@ -112,54 +69,13 @@ export const MenuModel = {
   },
 } as const
 
-export const MenuSectionModel = {
-  id: '' as string,
-  kitchen_id: '' as string,
-  menu_id: '' as string,
-  label: '' as string,
-  description: '' as string,
-  status: 'active' as MenuChildStatus,
-  sort_order: 0 as number,
-  created: MenuModel.created,
-  updated: MenuModel.updated,
-} as const
-
-export const MenuItemModel = {
-  id: '' as string,
-  kitchen_id: '' as string,
-  menu_id: '' as string,
-  section_id: '' as string,
-  // Placement link: Dish owns food truth; MenuItem only positions it on a menu.
-  dish_id: '' as string,
-  // Current override fields. Keep lightweight; do not duplicate Dish copy here.
-  price: 0 as number,
-  price_options: [] as MenuItemPriceOption[],
-  status: 'active' as MenuChildStatus,
-  sort_order: 0 as number,
-  created: MenuModel.created,
-  updated: MenuModel.updated,
-} as const
-
 type MutableModel<T> = {
   -readonly [K in keyof T]: T[K]
 }
 
 export type Menu = MutableModel<typeof MenuModel>
-export type MenuSection = MutableModel<typeof MenuSectionModel>
-export type MenuItem = MutableModel<typeof MenuItemModel>
 
 export type MenuCreateInput = Omit<Menu, 'created' | 'updated'>
 export type MenuUpdateInput = Partial<
   Omit<Menu, 'id' | 'created' | 'updated' | 'kitchen_id'>
->
-export type MenuSectionCreateInput = Omit<MenuSection, 'created' | 'updated'>
-export type MenuSectionUpdateInput = Partial<
-  Omit<MenuSection, 'id' | 'created' | 'updated' | 'kitchen_id' | 'menu_id'>
->
-export type MenuItemCreateInput = Omit<MenuItem, 'created' | 'updated'>
-export type MenuItemUpdateInput = Partial<
-  Omit<
-    MenuItem,
-    'id' | 'created' | 'updated' | 'kitchen_id' | 'menu_id' | 'section_id'
-  >
 >
