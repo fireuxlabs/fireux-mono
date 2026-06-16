@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-04
+Updated: 2026-06-16
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -98,6 +98,10 @@ Menu composable stack canon:
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
 - Root `menus/{menuId}` is not V1 Kitchen/Menu canon.
 - App-local uploaded menu document routes such as `/menus/**` are a separate root upload/link tool and are not the Kitchen Menu entity.
+- App-local root menu document routes may preserve printed QR entry URLs after a restaurant upgrades into a Kitchen Menu:
+  - `migrated: false` means `/menus/{menuId}` renders the uploaded root menu document.
+  - `migrated: true` means `/menus/{menuId}` resolves `kitchen_menu.app_id`, `kitchen_menu.kitchen_id`, and `kitchen_menu.menu_id`.
+  - The root record owns the stable QR entry URL only; the referenced Kitchen Menu owns restaurant menu truth.
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
 - Public Kitchen menu pages are route consumers of Kitchen `Menu`; they must not create a second Menu family or a special public Menu composable.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.

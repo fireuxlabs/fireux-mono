@@ -41,6 +41,7 @@ type UploadedMenuSummary = {
   name: string
   description: string
   kind: string
+  migrated: boolean
   path: string
   qr_path: string
 }

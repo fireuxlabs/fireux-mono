@@ -7,13 +7,39 @@ type UploadedMenuSummary = {
   name: string
   description: string
   kind: string
+  migrated: boolean
+  kitchen_menu: KitchenMenuTarget | null
   path: string
   qr_path: string
+}
+
+type KitchenMenuTarget = {
+  app_id: string
+  kitchen_id: string
+  menu_id: string
 }
 
 const readString = (data: Record<string, unknown>, key: string) => {
   const value = data[key]
   return typeof value === 'string' ? value.trim() : ''
+}
+
+const readKitchenMenuTarget = (data: Record<string, unknown>): KitchenMenuTarget | null => {
+  const target = data.kitchen_menu
+  if (!target || typeof target !== 'object' || Array.isArray(target)) return null
+
+  const record = target as Record<string, unknown>
+  const appId = readString(record, 'app_id')
+  const kitchenId = readString(record, 'kitchen_id')
+  const menuId = readString(record, 'menu_id')
+
+  return appId && kitchenId && menuId
+    ? {
+        app_id: appId,
+        kitchen_id: kitchenId,
+        menu_id: menuId,
+      }
+    : null
 }
 
 const documentKind = (input: {
@@ -68,6 +94,8 @@ export default defineEventHandler(async () => {
         fileType: docType,
         storedKind: readString(data, 'doc_kind'),
       }),
+      migrated: data.migrated === true,
+      kitchen_menu: readKitchenMenuTarget(data),
       path: `/menus/${encodedSlug}`,
       qr_path: `/menus/${encodedSlug}/qr`,
     }
