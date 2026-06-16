@@ -79,7 +79,6 @@ The main repo-wide component seams are:
 - `Provider/Tool/Iframe.vue`
 - `Provider/Tool/Frame.vue`
 - `Design/PaletteStrip.vue`
-- `entity/OperatorPanel.vue`
 
 Read them like this:
 
@@ -107,9 +106,6 @@ Read them like this:
   FireUX hosted-provider card shell for provider apps such as Go QR, Sproochli, and Misebox
 - `Design/PaletteStrip.vue`
   FireUX visual primitive for rendering named colour palettes; app or ecosystem assets own the actual colour values
-- `entity/OperatorPanel.vue`
-  Public detail CTA shell for a console-backed public entity. Domain wrappers such as `KitchenPublicOperatorPanel` decide the copy, badges, owner/operator hints, and links.
-
 Public action panels follow the console spine pattern: reuse the job contract, helpers, and class names, not one all-purpose shell component.
 
 Each family should expose a domain public action spine such as `CompanyPublicOperatorPanel` or `PlacePublicOperatorPanel`. Named child jobs own their markup so their sections stay readable:

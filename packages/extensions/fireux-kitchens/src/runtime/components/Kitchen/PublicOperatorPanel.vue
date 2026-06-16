@@ -1,18 +1,77 @@
 <template>
-  <EntityOperatorPanel
-    entity-label="Kitchen"
-    title="Kitchen Operations"
-    :description="panelDescription"
-    :operator-label="operatorLabel"
-    :operator-user-pill="operatorUserPill"
-    :can-edit="canEdit"
-    :is-admin-edit="isAdminEdit"
-    :edit-to="editTo"
-    :manage-label="manageLabel"
-    :aligned="aligned"
-    :not-aligned="notAligned"
-    @manage="selectConsoleKitchen"
-  />
+  <UCard class="fx-card fx-card--public-action">
+    <div class="fx-public-action">
+      <div class="fx-public-action__badges">
+        <UBadge color="primary" variant="soft">
+          Operator
+        </UBadge>
+      </div>
+
+      <div class="fx-public-action__body">
+        <UAvatar
+          icon="i-lucide-key-round"
+          size="md"
+          class="fx-public-action__avatar"
+        />
+
+        <div class="fx-public-action__content">
+          <div class="fx-public-action__copy">
+            <h2 class="fx-public-action__title">
+              Kitchen Operations
+            </h2>
+            <p class="fx-public-action__description">
+              {{ panelDescription }}
+            </p>
+          </div>
+
+          <div v-if="operatorUserPill" class="fx-public-action__subject">
+            <span class="fx-public-action__label">{{ operatorLabel }}</span>
+            <UserCardsPill
+              v-bind="operatorUserPill"
+              :show-badges="false"
+              :link="Boolean(operatorUserPill.to)"
+              class="block"
+            />
+          </div>
+
+          <div v-if="manageAction" class="fx-public-action__actions">
+            <UButton
+              size="xs"
+              :color="manageAction.color"
+              variant="soft"
+              :icon="manageAction.icon"
+              :to="manageAction.to"
+              @click="manageAction.onClick"
+            >
+              {{ manageAction.label }}
+            </UButton>
+          </div>
+
+          <div v-if="groups.length" class="fx-public-action__groups">
+            <div
+              v-for="group in groups"
+              :key="group.label"
+              class="fx-public-action__group"
+            >
+              <p class="fx-public-action__label">
+                {{ group.label }}
+              </p>
+              <div class="fx-public-action__chips">
+                <UBadge
+                  v-for="item in group.items"
+                  :key="item"
+                  :color="group.color"
+                  variant="soft"
+                >
+                  {{ item }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +89,11 @@ import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/useK
 import { resolveKitchenScopeCollectionPath } from '../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
 import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import {
+  visiblePublicActionGroups,
+  type PublicActionButton,
+  type PublicActionGroup,
+} from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null
@@ -129,6 +193,33 @@ const manageLabel = computed(() =>
     : hasConsoleAccess.value
     ? 'Open console'
     : 'Edit kitchen'
+)
+const manageAction = computed<PublicActionButton | null>(() =>
+  canEdit.value && editTo.value
+    ? {
+        label: isAdminEdit.value ? 'Admin Edit' : manageLabel.value,
+        to: editTo.value,
+        icon: isAdminEdit.value
+          ? 'i-lucide-shield-check'
+          : 'i-lucide-pencil',
+        color: isAdminEdit.value ? 'warning' as const : 'neutral' as const,
+        onClick: selectConsoleKitchen,
+      }
+    : null
+)
+const groups = computed<PublicActionGroup[]>(() =>
+  visiblePublicActionGroups([
+    {
+      label: 'Aligned',
+      items: aligned,
+      color: 'primary' as const,
+    },
+    {
+      label: 'Not aligned yet',
+      items: notAligned,
+      color: 'neutral' as const,
+    },
+  ])
 )
 const { setKitchenConsoleSelection } = useKitchenConsoleSelection()
 
