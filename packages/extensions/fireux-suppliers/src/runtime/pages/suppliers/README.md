@@ -13,14 +13,12 @@ This README only explains the supplier delta.
 
 - `index.vue`
 - `[slug].vue`
-- `[slug]/operator.vue`
 - `create.vue`
 - `learn-more.vue`
 
 ## Local Contract
 
 - `index.vue`, `[slug].vue`, and `learn-more.vue` are public supplier pages
-- `[slug]/operator.vue` is the public-to-private operator bridge
 - `create.vue` is the public root-create page for `Supplier`
 - `console/supplier/create.vue` is the operational console create page
 

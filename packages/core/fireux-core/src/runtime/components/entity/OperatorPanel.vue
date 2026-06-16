@@ -1,12 +1,6 @@
 <template>
   <UCard class="border-primary/30 bg-primary/5 ring-1 ring-primary/20">
     <div class="space-y-4">
-      <div class="flex flex-wrap gap-2">
-        <UBadge color="primary" variant="soft">
-          Identity
-        </UBadge>
-      </div>
-
       <div class="space-y-2">
         <div class="flex items-start gap-3">
           <UAvatar

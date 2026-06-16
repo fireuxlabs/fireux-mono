@@ -143,13 +143,13 @@ should handle each field on the same root `apps/{appId}` record:
 
 ## Public Entity Route Add-Ons
 
-Shared entity routes should stay simple first: plural collection at `/xs`, public detail at `/xs/:publicKey`, and public operator bridge at `/xs/:publicKey/operator`.
+Shared entity routes should stay simple first: plural collection at `/xs` and public detail at `/xs/:publicKey`.
 
 Console entity routes use singular family roots, such as `/console/property` and `/console/property/overview`.
 
 App-specific public experiences can add a named child route when the experience is real domain behaviour rather than a generic detail page. For example, BuenoHost uses `/properties/:slug/info` for public property information instead of overloading the property detail page.
 
-Do not use `/admin` as a public entity operation route. Public target-operation bridges use `/operator`; app/platform administration uses admin language only inside actual admin surfaces.
+Do not use `/admin` as a public entity operation route. App/platform administration uses admin language only inside actual admin surfaces. Public detail pages may include operator CTAs. FireUX does not use generic public `/operator` routes.
 
 When a child experience has a home plus sections, keep that distinction in runtime helpers rather than page-local filters. Prefer helpers like `getXHome()` and `getXSections()` so layouts, detail pages, QR targets, and smoke routes consume the same shape.
 

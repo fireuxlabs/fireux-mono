@@ -60,7 +60,7 @@ The common page stack for opt-in domains is:
 | Admin curation | `/dashboard/admin/<domain>` | Yes | Comma-separated featured/pinned slug field only for now. |
 | Create | `/<domain>/create` | Optional | Only when self-service or public root creation is supported. |
 | Edit | `/<domain>/:slug/edit` or equivalent | Optional | Shape depends on edit ownership. |
-| Operator | `/<domain>/:slug/operator` | Optional | Entry into operational/private work. |
+| Operator CTA | Public detail section | Optional | Entry cue for relevant console/private work. |
 | Learn more | `/<domain>/learn-more` | Optional | Marketing/help, not core stack. |
 | Console | `/console/<family>` | Optional | Only for console-managed domains. |
 

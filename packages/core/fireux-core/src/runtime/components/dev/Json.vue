@@ -18,8 +18,9 @@
           <div class="jsonpanel-eyebrow">FireUX dev JSON</div>
           <h2 class="jsonpanel-title">{{ title }}</h2>
           <p class="jsonpanel-context">{{ context }}</p>
+          <p v-if="parent" class="jsonpanel-context">{{ parent }}</p>
           <p class="jsonpanel-meta">
-            {{ dataKindLabel }} · {{ dataSizeLabel }}
+            {{ routeLabel }} · {{ dataKindLabel }} · {{ dataSizeLabel }}
           </p>
         </div>
         <div class="jsonpanel-actions">
@@ -69,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 import { useDevDebugData } from '../../composables/dev/useDevDebugData'
@@ -77,21 +79,50 @@ defineOptions({ name: 'Json' })
 
 // TODO: Enforce strong, descriptive context strings for all DevJson usages.
 interface JsonPanelProps {
-  data: unknown
+  data?: unknown
+  objects?: unknown
+  derived?: unknown
   context: string
   title?: string
+  parent?: string
+  open?: boolean
   defaultOpen?: boolean
   hideWhenEmpty?: boolean
 }
 
 const props = withDefaults(defineProps<JsonPanelProps>(), {
   title: 'JSON',
+  parent: '',
+  open: undefined,
   defaultOpen: false,
   hideWhenEmpty: true,
 })
 
-const expanded = ref(props.defaultOpen)
-const panelVisible = ref(props.defaultOpen)
+const route = useRoute()
+const routeDebug = computed(() => ({
+  path: route.path,
+  name: route.name ? String(route.name) : '',
+  params: route.params,
+  query: route.query,
+}))
+const routeLabel = computed(() => route.path || 'route unavailable')
+const startsOpen = computed(() => props.open ?? props.defaultOpen)
+const structuredData = computed(() => {
+  const hasStructuredData =
+    props.objects !== undefined ||
+    props.derived !== undefined
+
+  if (!hasStructuredData) return props.data
+
+  return {
+    route: routeDebug.value,
+    parent: props.parent || undefined,
+    objects: props.objects,
+    derived: props.derived,
+  }
+})
+const expanded = ref(startsOpen.value)
+const panelVisible = ref(startsOpen.value)
 const {
   isEmpty,
   dataKindLabel,
@@ -99,7 +130,7 @@ const {
   objectPreviewEntries,
   showObjectPreview,
   jsonString,
-} = useDevDebugData(computed(() => props.data), {
+} = useDevDebugData(structuredData, {
   stringifyErrorMessage: '[Json] Unable to stringify data',
 })
 

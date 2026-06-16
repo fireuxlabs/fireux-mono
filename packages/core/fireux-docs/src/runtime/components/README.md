@@ -1,7 +1,7 @@
 # Components Directory
 
 Authority: Operational
-Updated: 2026-05-25
+Updated: 2026-06-16
 Scope: `packages/*/fireux-*/src/runtime/components` and child directories under `components/*`.
 
 This page documents FireUX rules for `runtime/components/`.
@@ -35,6 +35,34 @@ That means:
 - behavior-heavy UI surfaces belong in `components/`
 - fetch and mutation logic should not be invented inside components unless that is the explicit canon
 
+## Fireuxify Component Rule
+
+Fireuxified pages compose components; fireuxified components carry reusable UI responsibility.
+
+Components should usually receive:
+
+- a domain object
+- an interface/card model
+- a small number of meaningful control props
+- slots for route-owned actions when needed
+
+Components should usually avoid requiring:
+
+- several tiny derived props from the page
+- page-local formatting decisions
+- route-specific duplication of the same display surface
+
+Example:
+
+```vue
+<MenuDocument
+  :menu="waitingMenu"
+  :menu-id="menuId"
+/>
+```
+
+`MenuDocument` may derive title, display URL, file URL, and photo/PDF/document rendering from the menu object. The route page should not have to compute those just to render a document surface.
+
 ## FireUX Canon Seams
 
 The main repo-wide component seams are:
@@ -44,12 +72,14 @@ The main repo-wide component seams are:
 - `**/Main.vue`
 - `**/Featured.vue`
 - `**/Cards/*.vue`
+- family-owned document/source/public surfaces such as `Menu/Document.vue`, `Menu/Source.vue`, and `Menu/Public.vue`
 - `public/SimplePage.vue`
 - `public/PricingPage.vue`
 - `public/PartnerPricingPage.vue`
 - `Provider/Tool/Iframe.vue`
 - `Provider/Tool/Frame.vue`
 - `Design/PaletteStrip.vue`
+- `entity/OperatorPanel.vue`
 
 Read them like this:
 
@@ -63,6 +93,8 @@ Read them like this:
   Optional entity-owned highlighted subset that must not replace the full collection manager
 - `Cards/*`
   FireUX presentational entity surfaces such as `pill`, `cell`, `preview`, and `profile`
+- family-owned document/source/public surfaces
+  FireUX domain surfaces that render one family-specific mode, such as quick menu documents, source menus, or published public menus
 - `public/SimplePage.vue`
   FireUX shell for simple public pages such as help, terms, privacy, and support
 - `public/PricingPage.vue`
@@ -75,6 +107,10 @@ Read them like this:
   FireUX hosted-provider card shell for provider apps such as Go QR, Sproochli, and Misebox
 - `Design/PaletteStrip.vue`
   FireUX visual primitive for rendering named colour palettes; app or ecosystem assets own the actual colour values
+- `entity/OperatorPanel.vue`
+  Public detail CTA shell for a console-backed public entity. Domain wrappers such as `KitchenPublicOperator` decide the copy, badges, owner/operator hints, and links.
+
+Owner panels are separate from operator authority. A quick uploaded menu can show owner actions from `created_by`, but that does not make the user a console operator.
 
 `EntityIndexCta` uses management-path families:
 

@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-06-16
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 This page documents FireUX rules for `runtime/pages/`.
@@ -31,6 +31,49 @@ That means a page should usually answer:
 - who is the audience
 - is this public, console, dashboard, admin, docs, or dev
 - which lower seam does this page hand off to
+
+## Fireuxify
+
+To **fireuxify** a page is to make it a thin route composer.
+
+The page should keep:
+
+- route params
+- route meta
+- audience and ownership decision
+- high-level loading/unavailable state
+- calls into the owning composable seam
+- composition of package-owned components
+
+The page should not keep:
+
+- heavy presentational markup
+- repeated card/display logic
+- many tiny derived props solely for child components
+- domain UI that belongs under `runtime/components/<Family>/**`
+
+Prefer this:
+
+```vue
+<MenuDocument
+  :menu="waitingMenu"
+  :menu-id="menuId"
+/>
+```
+
+Over this:
+
+```vue
+<MenuDocument
+  :title="waitingMenu.name"
+  :display-url="displayUrl"
+  :file-url="fileUrl"
+  :is-photo="isPhoto"
+  :is-pdf="isPdf"
+/>
+```
+
+The component can derive display details from the domain object. If the derivation becomes shared business truth, move it into the entity-owned interface/composable seam.
 
 ## FireUX Route Families
 
@@ -83,6 +126,14 @@ Read console-backed families like this:
   selected-target workspace
 
 Mode such as `live`, `demo`, and `test` is a FireUX runtime concern, not a reason to invent a second page architecture.
+
+Console families should follow the console cannon spine:
+
+- `/console/X` chooses or resolves the active target
+- `/console/X/overview` shows selected-target overview
+- `/console/X/team` shows selected-target access/team
+- domain pages should mirror the shared route shape before adding deltas
+- domain deltas belong in named components/composables, not in one-off route structure
 
 ## FireUX Docs Override
 

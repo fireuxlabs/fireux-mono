@@ -488,7 +488,7 @@ Show a kitchen, menu, location, team identity, and hiring context.
 
 Current state: Misebox has public kitchen routes and public menu routes backed by kitchen records.
 
-Roadmap: make restaurant profiles useful for guests, professionals, suppliers, and operators: concept, location, menu, jobs, team, and public-to-private operator bridge.
+Roadmap: make restaurant profiles useful for guests, professionals, suppliers, and operators: concept, location, menu, jobs, team, and operator CTA.
 
 Use this when the kitchen needs a public identity that is connected to operations, not just marketing copy.
 
@@ -497,7 +497,7 @@ Use this when the kitchen needs a public identity that is connected to operation
 1. Create or claim the kitchen record.
 2. Add place identity, slug, image, short address, and concept copy.
 3. Publish menus and link them from the profile.
-4. Show jobs, supplier context, or operator bridge where appropriate.
+4. Show jobs, supplier context, or operator CTA where appropriate.
 5. Keep public identity connected to the kitchen console.
 
 ### Business case
@@ -510,14 +510,14 @@ A restaurant profile is valuable when it is connected to operational truth: menu
 - Place/location data.
 - Kitchen image and concept copy.
 - Menu links.
-- Jobs and operator bridge where appropriate.
+- Jobs and operator CTA where appropriate.
 
 ### Checklist
 
 - [x] Confirm public kitchen slug route.
 - [ ] Confirm place and location display.
 - [ ] Add menu links to profile.
-- [ ] Add jobs and operator bridge where useful.
+- [ ] Add jobs and operator CTA where useful.
 
 ## restaurant-operations-software
 

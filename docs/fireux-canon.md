@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-12
+Updated: 2026-06-16
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -78,6 +78,12 @@ Current learned examples:
   - package-provided UI lives under `runtime/components/**`.
   - component names follow Nuxt path-based names from that directory.
   - do not add taxonomy folders or one-off aliases just to alter generated component names.
+- FireUX implementation patterns:
+  - `console cannon spine` means console families share the same page, component, and composable skeleton before adding domain deltas.
+  - `fireuxify` means a route page becomes a thin composer: it owns route delivery, audience, and high-level state, then hands domain UI and derived display logic to package-owned components.
+  - fireuxified pages pass meaningful objects or interface models into components instead of many fiddly derived props.
+  - fireuxified components may derive local display decisions such as title, icon, document kind, QR path, and visual state from the object they receive.
+  - pages should not grow heavy scripts just to feed presentation crumbs into components.
 - Tool providers:
   - Core owns reusable provider plumbing: contract types, hosted frame, consumer iframe, height messages, and standard tool response headers.
   - Provider apps own tool behavior and brand. Go QR hosts QR tools. Sproochli hosts translation tools.
@@ -420,8 +426,13 @@ composables/fireux/firestore/<entity>/
 
 - Shared public entity roots use plural collection/detail routes first, such as `/properties` and `/properties/:publicKey`.
 - Console entity routes use singular family routes, such as `/console/property` and `/console/property/overview`.
-- Public entity operation bridges use `/operator`, such as `/properties/:publicKey/operator`.
-- Do not use `/admin` as a public entity route word. Admin means app/platform administration; operator means access to operate this public target.
+- Public detail pages may render an operator CTA near the bottom of the page.
+- FireUX does not use generic public `/operator` routes.
+- Do not use `/admin` as a public entity route word. Admin means app/platform administration; operator means access to operate a selected console target.
+- Public operator UI has two layers:
+  - public detail operator CTA: domain wrapper such as `KitchenPublicOperator`, usually rendered near the bottom of a public detail page
+  - console access readout: selected console pages that display `team_ids`, `operator_ids`, and hydrated people where useful
+- Owner-only quick actions from `created_by` are owner panels, not operator authority. They may offer QR, upgrade, or edit-next actions, but they must not imply console write access.
 - App-specific public experiences sit under an explicit child noun, such as `/properties/:slug/info`.
 - Child pages use stable semantic ids, such as `/properties/:slug/info/:infoId`.
 - Current public key canon:
@@ -480,6 +491,23 @@ components/Console/<Entity>/
 ```
 
 `Index` chooses the target. `Targets` contains target-picker sections. `Identity` owns reading and editing the selected entity's own identity/config. `Operations` owns selected-workspace child work. Console-specific debug wrapper files are not canon; use the shared dev/debug component directly where useful.
+
+This is the **console cannon spine pattern**:
+
+- console page routes should be nearly identical across families, with only family labels, icons, visibility, and the root console component changing
+- root console components should compose the same named sections, such as `Index`, `Overview`, `Team`, `Create`, `Identity`, and `Operations`
+- domain adapters such as `useKitchenConsole()` or `useSupplierConsole()` plug the target family into shared console seams
+- domain deltas belong in named child components, operations, or adapters, not in one-off page structure
+- selected target children should consume simple runtime facts such as selected target, `readOnly`, and `canWrite`; they should not care whether the target came from tenant config, user target index, demo, or test
+
+The matching public-page pattern is **fireuxify**:
+
+- pages use FireUX shells such as `UPage`, `UPageHeader`, `UPageBody`, `UPageCard`, shared public shells, or family-specific page components
+- pages pass domain objects or interface models into family components
+- family components own reusable display surfaces such as `Cards/Pill.vue`, `Cards/Cell.vue`, `Cards/Preview.vue`, `Cards/Profile.vue`, `Collection/Manager.vue`, `Document.vue`, `Source.vue`, or `Public.vue`
+- component props should express domain meaning, not route-page implementation crumbs
+- if a page starts passing five or more small derived display props into a component, move that derivation into the component or an entity-owned interface/helper
+- debug data should separate raw `objects` from `derived` page decisions when both are useful
 
 ### Entity CTA Family Matrix
 
