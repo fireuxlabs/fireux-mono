@@ -30,8 +30,8 @@
             :model="companyProfile"
           />
 
-          <!-- claim -->
-          <CompanyPublicClaim :company="company" :id="docId" />
+          <!-- operator -->
+          <CompanyOperatorPanel :company="company" :id="docId" />
           <DevJson
             :title="'Company (Doc)'"
             context="Company detail page · companies/[id] · hydrated company doc"

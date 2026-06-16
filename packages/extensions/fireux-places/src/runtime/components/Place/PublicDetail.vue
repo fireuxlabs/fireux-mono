@@ -26,8 +26,8 @@
             :model="placeProfile"
           />
 
-          <!-- claim -->
-          <PlacePublicClaim
+          <!-- operator -->
+          <PlaceOperatorPanel
             :place="place"
             :id="placeId"
             :locator="locator"

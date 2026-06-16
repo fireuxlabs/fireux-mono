@@ -432,6 +432,11 @@ composables/fireux/firestore/<entity>/
 - Public operator UI has two layers:
   - public detail operator CTA: domain wrapper such as `KitchenPublicOperator`, usually rendered near the bottom of a public detail page
   - console access readout: selected console pages that display `team_ids`, `operator_ids`, and hydrated people where useful
+- Public action panels follow the console spine pattern:
+  - reusable layer: job contract, helper functions, and shared `fx-public-action*` class names
+  - domain spine: `XOperatorPanel` owns the public action area for that record family
+  - named child jobs: `XClaimPanel`, owner panels, and console/operator panels render their own readable sections
+  - do not collapse claim/operator/owner into one all-purpose visual shell
 - Owner-only quick actions from `created_by` are owner panels, not operator authority. They may offer QR, upgrade, or edit-next actions, but they must not imply console write access.
 - App-specific public experiences sit under an explicit child noun, such as `/properties/:slug/info`.
 - Child pages use stable semantic ids, such as `/properties/:slug/info/:infoId`.

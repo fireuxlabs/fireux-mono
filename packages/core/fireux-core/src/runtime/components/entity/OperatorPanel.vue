@@ -1,29 +1,31 @@
 <template>
-  <UCard class="border-primary/30 bg-primary/5 ring-1 ring-primary/20">
-    <div class="space-y-4">
-      <div class="space-y-2">
-        <div class="flex items-start gap-3">
-          <UAvatar
-            icon="i-lucide-key-round"
-            size="md"
-            class="bg-primary/10 text-primary"
-          />
+  <UCard class="fx-card fx-card--public-action">
+    <div class="fx-public-action">
+      <div class="fx-public-action__badges">
+        <UBadge color="primary" variant="soft">
+          Operator
+        </UBadge>
+      </div>
 
-          <div class="min-w-0 space-y-2">
-            <h2 class="text-xl font-semibold">
+      <div class="fx-public-action__body">
+        <UAvatar
+          icon="i-lucide-key-round"
+          size="md"
+          class="fx-public-action__avatar"
+        />
+
+        <div class="fx-public-action__content">
+          <div class="fx-public-action__copy">
+            <h2 class="fx-public-action__title">
               {{ panelTitle }}
             </h2>
-            <p class="text-sm leading-6 text-muted">
+            <p class="fx-public-action__description">
               {{ panelDescription }}
             </p>
           </div>
-        </div>
 
-        <div v-if="operatorUserPill" class="space-y-2">
-          <span class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-            {{ operatorLabel }}
-          </span>
-          <div class="fx-operator-user">
+          <div v-if="operatorUserPill" class="fx-public-action__subject">
+            <span class="fx-public-action__label">{{ operatorLabel }}</span>
             <UserCardsPill
               v-bind="operatorUserPill"
               :show-badges="false"
@@ -31,56 +33,40 @@
               class="block"
             />
           </div>
-        </div>
 
-        <div v-if="showManageAction" class="flex flex-wrap gap-2">
-          <UButton
-            :class="{ 'fx-admin-edit-button': isAdminEdit }"
-            size="xs"
-            :color="isAdminEdit ? 'warning' : 'neutral'"
-            variant="soft"
-            :icon="isAdminEdit ? 'i-lucide-shield-check' : 'i-lucide-pencil'"
-            :to="editTo"
-            @click="emit('manage', $event)"
-          >
-            {{ isAdminEdit ? adminManageLabel : manageLabel }}
-          </UButton>
-        </div>
-      </div>
-
-      <div
-        v-if="aligned.length || notAligned.length"
-        class="grid gap-3 sm:grid-cols-2"
-      >
-        <div v-if="aligned.length" class="space-y-2">
-          <p class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-            Aligned
-          </p>
-          <div class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="badge in aligned"
-              :key="badge"
-              color="primary"
+          <div v-if="manageAction" class="fx-public-action__actions">
+            <UButton
+              size="xs"
+              :color="manageAction.color"
               variant="soft"
+              :icon="manageAction.icon"
+              :to="manageAction.to"
+              @click="manageAction.onClick"
             >
-              {{ badge }}
-            </UBadge>
+              {{ manageAction.label }}
+            </UButton>
           </div>
-        </div>
 
-        <div v-if="notAligned.length" class="space-y-2">
-          <p class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-            Not aligned yet
-          </p>
-          <div class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="badge in notAligned"
-              :key="badge"
-              color="neutral"
-              variant="soft"
+          <div v-if="groups.length" class="fx-public-action__groups">
+            <div
+              v-for="group in groups"
+              :key="group.label"
+              class="fx-public-action__group"
             >
-              {{ badge }}
-            </UBadge>
+              <p class="fx-public-action__label">
+                {{ group.label }}
+              </p>
+              <div class="fx-public-action__chips">
+                <UBadge
+                  v-for="item in group.items"
+                  :key="item"
+                  :color="group.color || 'neutral'"
+                  variant="soft"
+                >
+                  {{ item }}
+                </UBadge>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -91,6 +77,11 @@
 <script setup lang="ts">
 import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { computed } from 'vue'
+import {
+  visiblePublicActionGroups,
+  type PublicActionButton,
+  type PublicActionGroup,
+} from '../../composables/fireux/app/ui/usePublicActionPanel'
 
 const props = withDefaults(
   defineProps<{
@@ -141,18 +132,32 @@ const showManageAction = computed(() => props.canEdit && Boolean(editTo.value))
 const isAdminEdit = computed(() => Boolean(props.isAdminEdit))
 const manageLabel = computed(() => props.manageLabel || 'Edit details')
 const adminManageLabel = computed(() => props.adminManageLabel || 'Admin Edit')
+
+const manageAction = computed<PublicActionButton | null>(() =>
+  showManageAction.value
+    ? {
+        label: isAdminEdit.value ? adminManageLabel.value : manageLabel.value,
+        to: editTo.value,
+        icon: isAdminEdit.value
+          ? 'i-lucide-shield-check'
+          : 'i-lucide-pencil',
+        color: isAdminEdit.value ? 'warning' as const : 'neutral' as const,
+        onClick: (event: MouseEvent) => emit('manage', event),
+      }
+    : null
+)
+const groups = computed<PublicActionGroup[]>(() =>
+  visiblePublicActionGroups([
+    {
+      label: 'Aligned',
+      items: props.aligned,
+      color: 'primary' as const,
+    },
+    {
+      label: 'Not aligned yet',
+      items: props.notAligned,
+      color: 'neutral' as const,
+    },
+  ])
+)
 </script>
-
-<style scoped>
-.fx-operator-user {
-  display: block;
-  max-width: 100%;
-  width: min(100%, 260px);
-}
-
-.fx-admin-edit-button {
-  border-color: var(--fx-debug-yellow-border);
-  background: var(--fx-debug-yellow-bg);
-  color: var(--fx-fireux-yellow-muted);
-}
-</style>

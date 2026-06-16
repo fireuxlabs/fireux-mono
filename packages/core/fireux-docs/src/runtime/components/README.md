@@ -110,6 +110,16 @@ Read them like this:
 - `entity/OperatorPanel.vue`
   Public detail CTA shell for a console-backed public entity. Domain wrappers such as `KitchenPublicOperator` decide the copy, badges, owner/operator hints, and links.
 
+Public action panels follow the console spine pattern: reuse the job contract, helpers, and class names, not one all-purpose shell component.
+
+Each family should expose a domain public action spine such as `CompanyOperatorPanel` or `PlaceOperatorPanel`. Named child jobs own their markup so their sections stay readable:
+
+- domain claim panels such as `CompanyClaimPanel` and `PlaceClaimPanel` use `claimed_by`
+- operator panels use console authority such as `operator_ids`
+- owner panels use creator truth such as `created_by`
+
+Shared helpers live in `usePublicActionPanel.ts`. Shared presentation language uses `fx-public-action*` class names from the core card stylesheet.
+
 Owner panels are separate from operator authority. A quick uploaded menu can show owner actions from `created_by`, but that does not make the user a console operator.
 
 `EntityIndexCta` uses management-path families:

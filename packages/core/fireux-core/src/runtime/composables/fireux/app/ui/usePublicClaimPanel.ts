@@ -24,7 +24,7 @@ function readString(source: StringSource) {
   return String(value ?? '').trim()
 }
 
-export function useEntityClaimPanel(options: ClaimPanelOptions) {
+export function usePublicClaimPanel(options: ClaimPanelOptions) {
   const recordId = computed(() => readString(options.id))
   const claimedBy = computed(() => readString(options.claimedBy))
   const isClaimed = computed(() => Boolean(claimedBy.value))
