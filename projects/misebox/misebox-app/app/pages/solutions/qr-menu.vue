@@ -1,9 +1,20 @@
 <template>
   <SolutionPage :solution="solution">
-    <ProviderGoQrTools
-      tool="doc"
-      :payload="tool"
-    />
+    <UPageCard
+      title="Upload from a kitchen"
+      description="Menus belong to kitchens in Misebox. Select a kitchen, then upload the source document from the kitchen menu console."
+      variant="subtle"
+    >
+      <template #footer>
+        <UButton
+          to="/console/kitchen/menus"
+          icon="i-lucide-utensils"
+        >
+          Open Kitchen Menus
+        </UButton>
+      </template>
+    </UPageCard>
+
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />
@@ -12,37 +23,34 @@
 </template>
 
 <script setup lang="ts">
-import { useQrMenuTool } from '../../composables/menus/useQrMenuTool'
-
 definePageMeta({
   layout: 'landing',
 })
 
 const goQrBaseUrl = 'https://go-qr.web.app'
-const tool = useQrMenuTool()
 
 const solution = {
   title: 'QR menu',
-  description: 'Upload a menu, choose a short path, and get a QR menu.',
+  description: 'Upload a kitchen menu source, then publish a QR menu.',
   instructions: [
     {
-      title: 'Upload menu',
+      title: 'Select kitchen',
+      icon: 'i-lucide-utensils',
+      body: 'Choose the kitchen that owns the menu.',
+    },
+    {
+      title: 'Upload source',
       icon: 'i-lucide-file-up',
-      body: 'Upload a finished PDF, DOC, or DOCX menu.',
+      body: 'Upload the original menu PDF or image against that kitchen.',
     },
     {
-      title: 'Choose path',
-      icon: 'i-lucide-route',
-      body: 'Choose a short Misebox menu path that can be printed as a QR.',
-    },
-    {
-      title: 'Publish',
+      title: 'Publish QR',
       icon: 'i-lucide-qr-code',
-      body: 'Misebox stores the menu while Go QR provides the tool surface.',
+      body: 'Use the kitchen menu route for the public QR destination.',
     },
   ],
   integrations: {
-    body: 'This is the Misebox packaging of the Go QR doc primitive.',
+    body: 'Go QR provides the upload tool. Misebox stores menu meaning on the selected kitchen.',
     items: [
       {
         name: 'Go QR',
@@ -55,7 +63,7 @@ const solution = {
       {
         name: 'Misebox',
         icon: 'i-lucide-utensils',
-        body: 'Owns the menu route, storage, allergen copy, and hospitality meaning.',
+        body: 'Owns the kitchen, menu upload record, public route, and hospitality meaning.',
       },
     ],
   },
@@ -73,8 +81,8 @@ const solution = {
       },
       {
         method: 'POST',
-        path: '/api/menus/create',
-        description: 'Creates the Misebox-owned root menu document and file.',
+        path: '/api/console/kitchen/menus/upload',
+        description: 'Stores the selected kitchen menu source document.',
       },
     ],
   },
@@ -82,9 +90,9 @@ const solution = {
     title: 'QR menu',
     ogTitle: 'QR menu',
     twitterTitle: 'QR menu',
-    description: 'Upload a menu, choose a short path, and get a QR menu.',
-    ogDescription: 'Upload a menu, choose a short path, and get a QR menu.',
-    twitterDescription: 'Upload a menu, choose a short path, and get a QR menu.',
+    description: 'Upload a kitchen menu source, then publish a QR menu.',
+    ogDescription: 'Upload a kitchen menu source, then publish a QR menu.',
+    twitterDescription: 'Upload a kitchen menu source, then publish a QR menu.',
   },
 }
 
