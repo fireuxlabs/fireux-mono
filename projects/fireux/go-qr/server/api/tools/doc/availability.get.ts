@@ -2,32 +2,25 @@ import {
   defineEventHandler,
   getQuery,
 } from 'h3'
+import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import {
   goQrDocRef,
-  normalizeGoQrDocSlug,
-  validateGoQrDocSlug,
+  reservedGoQrDocSlugs,
 } from '../../../utils/goQrDocs'
 
 export default defineEventHandler(async (event) => {
-  const slug = normalizeGoQrDocSlug(getQuery(event).id)
-  const validation = validateGoQrDocSlug(slug)
-
-  if (!validation.isValid) {
-    return {
-      id: slug,
-      is_valid: false,
-      taken: false,
-      available: false,
-      message: validation.message || 'Doc path is not valid.',
-    }
-  }
-
-  const snap = await goQrDocRef(slug).get()
+  const result = await checkPublicSlugAvailability(getQuery(event).id, {
+    label: 'Doc path',
+    reservedScope: 'root',
+    reserved: reservedGoQrDocSlugs,
+    exists: async (slug) => (await goQrDocRef(slug).get()).exists,
+  })
 
   return {
-    id: slug,
-    is_valid: true,
-    taken: snap.exists,
-    available: !snap.exists,
+    id: result.slug,
+    is_valid: result.isValid,
+    taken: result.taken,
+    available: result.available,
+    message: result.message,
   }
 })

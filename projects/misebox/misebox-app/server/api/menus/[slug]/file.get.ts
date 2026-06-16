@@ -1,13 +1,9 @@
-import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import { getStorage } from 'firebase-admin/storage'
-import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-
-function normalizeBucketName(bucket?: string | null) {
-  const trimmed = String(bucket || '').trim()
-  return trimmed.startsWith('gs://') ? trimmed.slice(5) : trimmed
-}
+import {
+  downloadStorageFile,
+  runtimeStorageBucketName,
+} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
 
 export default defineEventHandler(async (event) => {
   const slug = String(getRouterParam(event, 'slug') || '').trim()
@@ -42,21 +38,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const runtime = useRuntimeConfig()
-  const bucketName = normalizeBucketName(
-    runtime.public?.firebaseEcosystem?.firebase?.storageBucket
-  )
-  if (!bucketName) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Missing Misebox Firebase Storage bucket configuration.',
-    })
-  }
-
-  const [buffer] = await getStorage(getAdminApp())
-    .bucket(bucketName)
-    .file(objectPath)
-    .download()
+  const saved = await downloadStorageFile({
+    bucketName: runtimeStorageBucketName(
+      'Missing Misebox Firebase Storage bucket configuration.'
+    ),
+    objectPath,
+  })
 
   setResponseHeaders(event, {
     'Content-Type': contentType,
@@ -64,5 +51,5 @@ export default defineEventHandler(async (event) => {
     'Cache-Control': 'public, max-age=300',
   })
 
-  return buffer
+  return saved.buffer
 })

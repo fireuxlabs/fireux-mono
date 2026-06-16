@@ -176,6 +176,10 @@ Recent repo truth:
   - identity overlays use `AppXModel` and `AppX`
   - console overlays use `ConsoleXModel` and `ConsoleX`
 - hydrated or combined read shapes now belong in fetch, runtime, and interface seams rather than in model files
+- shared server upload mechanics now live in core runtime utils:
+  - `server/utils/http/**` owns plain HTTP response helpers such as CORS headers
+  - `server/utils/uploads/**` owns multipart file parsing and Firebase Storage mechanics
+  - product/domain endpoints still own their stored records, URLs, authority, and public meaning
 
 ## utils Directory
 

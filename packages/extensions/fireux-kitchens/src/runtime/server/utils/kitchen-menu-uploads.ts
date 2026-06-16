@@ -1,32 +1,34 @@
-import { useRuntimeConfig } from '#imports'
-import { randomUUID } from 'node:crypto'
 import {
   createError,
   getHeader,
   getQuery,
   readMultipartFormData,
-  setResponseHeaders,
   type H3Event,
 } from 'h3'
 import { getAuth } from 'firebase-admin/auth'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getStorage } from 'firebase-admin/storage'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import {
+  multipartField,
+  readUploadedMultipartFile,
+  type MultipartParts,
+} from 'fireux-core/runtime/server/utils/uploads/multipart.ts'
+import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../models/kitchen.model'
 
 const menuUploadCollection = 'menu-uploads'
 const maxFileSizeMb = 10
-const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
-const allowedTypes = new Set([
+const allowedTypes = [
   'application/pdf',
   'image/jpeg',
   'image/png',
   'image/webp',
-])
+]
 const extensionTypes: Record<string, string> = {
   '.pdf': 'application/pdf',
   '.jpg': 'image/jpeg',
@@ -34,8 +36,6 @@ const extensionTypes: Record<string, string> = {
   '.png': 'image/png',
   '.webp': 'image/webp',
 }
-
-type FormParts = Awaited<ReturnType<typeof readMultipartFormData>>
 
 export type KitchenMenuUploadFile = {
   data: Buffer
@@ -56,20 +56,14 @@ export type SavedKitchenMenuUploadFile = {
 }
 
 export function setKitchenMenuUploadCors(event: H3Event, method: 'GET' | 'POST') {
-  setResponseHeaders(event, {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': `${method}, OPTIONS`,
-    'Access-Control-Allow-Headers': 'content-type,authorization',
+  setCorsHeaders(event, {
+    methods: [method],
+    headers: ['content-type', 'authorization'],
   })
 }
 
 export function text(value: unknown): string {
   return String(value ?? '').trim()
-}
-
-function fieldValue(parts: FormParts, name: string) {
-  const part = parts?.find((entry) => entry.name === name)
-  return part?.data ? part.data.toString('utf8').trim() : ''
 }
 
 function bearerToken(value: unknown) {
@@ -105,55 +99,15 @@ function requireMenuName(uploadId: string) {
   }
 }
 
-function safeFileName(value: unknown) {
-  return (
-    text(value || 'menu-file')
-      .replace(/[^\w.-]+/g, '-')
-      .replace(/^-+|-+$/g, '') || 'menu-file'
-  )
-}
-
-function fileExtension(value: string) {
-  return value.toLowerCase().match(/\.[^.]+$/)?.[0] ?? ''
-}
-
-function menuFileType(fileName: string, uploadedType: string) {
-  if (allowedTypes.has(uploadedType)) return uploadedType
-  return extensionTypes[fileExtension(fileName)] || ''
-}
-
-function readMenuFile(parts: FormParts): KitchenMenuUploadFile {
-  const part = parts?.find((entry) => entry.name === 'file' && entry.filename)
-  if (!part?.data?.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Menu file is required.',
-    })
-  }
-
-  if (part.data.byteLength > maxFileSizeBytes) {
-    throw createError({
-      statusCode: 413,
-      statusMessage: `Max file size is ${maxFileSizeMb} MB.`,
-    })
-  }
-
-  const fileName = safeFileName(part.filename)
-  const uploadedType = text(part.type || 'application/octet-stream')
-  const contentType = menuFileType(fileName, uploadedType)
-
-  if (!contentType) {
-    throw createError({
-      statusCode: 415,
-      statusMessage: 'Upload a PDF or image menu file.',
-    })
-  }
-
-  return {
-    data: part.data,
-    fileName,
-    contentType,
-  }
+function readMenuFile(parts: MultipartParts): KitchenMenuUploadFile {
+  return readUploadedMultipartFile(parts, {
+    label: 'Menu file',
+    defaultFileName: 'menu-file',
+    maxFileSizeMb,
+    allowedTypes,
+    extensionTypes,
+    invalidTypeMessage: 'Upload a PDF or image menu file.',
+  })
 }
 
 export async function requireKitchenMenuUploadUser(
@@ -179,7 +133,7 @@ export async function readKitchenMenuUploadRequest(
   const parts = await readMultipartFormData(event)
   const appId = requirePathSegment(query.appId, 'App id')
   const kitchenId = requirePathSegment(query.kitchenId, 'Kitchen id')
-  const uploadId = normalizeSlug(fieldValue(parts, 'slug'))
+  const uploadId = normalizeSlug(multipartField(parts, 'slug'))
   const file = readMenuFile(parts)
 
   requireMenuName(uploadId)
@@ -284,48 +238,18 @@ export async function assertKitchenMenuUploadAvailable(
   }
 }
 
-function storageBucketName() {
-  const runtime = useRuntimeConfig()
-  const bucket = text(runtime.public?.firebaseEcosystem?.firebase?.storageBucket)
-  const bucketName = bucket.startsWith('gs://') ? bucket.slice(5) : bucket
-
-  if (!bucketName) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Missing Firebase Storage bucket configuration.',
-    })
-  }
-
-  return bucketName
-}
-
-function firebaseDownloadUrl(bucketName: string, objectPath: string, token: string) {
-  return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectPath)}?alt=media&token=${encodeURIComponent(token)}`
-}
-
 export async function saveKitchenMenuUploadFile(
   request: KitchenMenuUploadRequest
 ): Promise<SavedKitchenMenuUploadFile> {
-  const bucketName = storageBucketName()
-  const downloadToken = randomUUID()
   const objectPath = `${kitchenMenuUploadKitchenPath(request.appId, request.kitchenId)}/${menuUploadCollection}/${request.uploadId}/source/${request.file.fileName}`
-
-  await getStorage(getAdminApp())
-    .bucket(bucketName)
-    .file(objectPath)
-    .save(request.file.data, {
-      resumable: false,
-      metadata: {
-        contentType: request.file.contentType,
-        cacheControl: 'public, max-age=300',
-        metadata: {
-          firebaseStorageDownloadTokens: downloadToken,
-        },
-      },
-    })
+  const saved = await saveStorageFileWithDownloadToken({
+    objectPath,
+    data: request.file.data,
+    contentType: request.file.contentType,
+  })
 
   return {
-    fileUrl: firebaseDownloadUrl(bucketName, objectPath, downloadToken),
+    fileUrl: saved.fileUrl,
     objectPath,
   }
 }

@@ -1,10 +1,9 @@
-import { defineEventHandler, setResponseHeaders, setResponseStatus } from 'h3'
+import { defineEventHandler, setResponseStatus } from 'h3'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 
 export default defineEventHandler((event) => {
-  setResponseHeaders(event, {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'content-type',
+  setCorsHeaders(event, {
+    methods: ['POST'],
   })
   setResponseStatus(event, 204)
   return null
