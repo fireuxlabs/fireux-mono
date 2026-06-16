@@ -220,7 +220,7 @@ Current role:
 
 Used by:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/[menuId].vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/[menuId]/index.vue`
 
 ## Similarity Groups
 

@@ -98,13 +98,12 @@
         <p class="text-sm text-dimmed">Loading menus...</p>
       </UPageCard>
 
-      <UAlert
+      <p
         v-if="!pending && !kitchen"
-        color="neutral"
-        variant="soft"
-        title="Menu unavailable"
-        description="This app does not have a single public kitchen menu surface."
-      />
+        class="text-sm text-dimmed"
+      >
+        Menu unavailable.
+      </p>
 
       <template v-if="!pending && kitchen && menus.length">
         <UPageCard
@@ -133,21 +132,13 @@
         </UPageCard>
       </template>
 
-      <UAlert
+      <p
         v-if="!pending && kitchen && !menus.length"
-        color="neutral"
-        variant="soft"
-        title="No published menus"
-        description="This kitchen has not published a menu yet."
-      />
+        class="text-sm text-dimmed"
+      >
+        No published menus.
+      </p>
     </div>
-
-    <DevJson
-      title="Kitchen menus index debug"
-      context="Kitchen menu index · /menus"
-      :data="debug"
-      :default-open="false"
-    />
   </main>
 </template>
 
@@ -175,7 +166,6 @@ const {
   menus,
   pending,
   menuLink,
-  debug,
 } = useKitchenPublicSingleMenuScope()
 const { currentUser } = useAuth()
 const authToken = ref('')

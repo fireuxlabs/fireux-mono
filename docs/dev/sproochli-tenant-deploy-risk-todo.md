@@ -75,7 +75,7 @@ Rules to enforce:
 | `packages/ecosystem/fireux-misebox/src/config/module/pages-config.ts` | Registers shared pages into consuming apps. |
 | `packages/ecosystem/fireux-misebox/src/config/module/runtime-config.ts` | Currently provides Sproochli-ish public menu defaults. |
 | `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/index.vue` | Kitchen public route imports Sproochli UI/helpers. |
-| `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/[menuId].vue` | Kitchen public route imports Sproochli helpers. |
+| `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/[menuId]/index.vue` | Kitchen public route imports Sproochli helpers. |
 | `packages/extensions/fireux-kitchens/src/runtime/components/Menu/Public.vue` | Shared public menu component imports Sproochli trigger/types. |
 | `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/PublicMenus.vue` | Kitchen card/list imports Sproochli helpers. |
 | `packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/public-menu/prepare-language.post.ts` | Server route calls Sproochli provider. |

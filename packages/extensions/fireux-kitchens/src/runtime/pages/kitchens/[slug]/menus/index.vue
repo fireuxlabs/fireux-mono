@@ -17,13 +17,12 @@
         <p class="text-sm text-dimmed">Loading menus...</p>
       </UPageCard>
 
-      <UAlert
+      <p
         v-if="!pending && !kitchen"
-        color="neutral"
-        variant="soft"
-        title="Kitchen unavailable"
-        description="This kitchen could not be found."
-      />
+        class="text-sm text-dimmed"
+      >
+        Kitchen unavailable.
+      </p>
 
       <template v-if="!pending && kitchen && menus.length">
         <UPageCard
@@ -52,22 +51,13 @@
         </UPageCard>
       </template>
 
-      <UAlert
+      <p
         v-if="!pending && kitchen && !menus.length"
-        color="neutral"
-        variant="soft"
-        title="No published menus"
-        description="This kitchen has not published a menu yet."
-      />
+        class="text-sm text-dimmed"
+      >
+        No published menus.
+      </p>
     </div>
-
-    <DevJson
-      title="Kitchen public menu debug"
-      context="Kitchen menu index · /kitchens/[slug]/menus"
-      :data="pageDebug"
-      :default-open="true"
-      :hide-when-empty="false"
-    />
   </main>
 </template>
 
@@ -81,55 +71,8 @@ const {
   menus,
   pending,
   menuLink,
-  debug,
 } = useKitchenPublicMenu()
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )
-const storedKitchenMenuStyleEnabled = computed(
-  () => String((kitchen.value as any)?.app_scope_state ?? '').trim() !== 'dedicated_app'
-)
-const kitchenStyle = computed(() => {
-  const style = storedKitchenMenuStyleEnabled.value &&
-    kitchen.value &&
-    typeof (kitchen.value as any).menu_style === 'object'
-    ? (kitchen.value as any).menu_style
-    : {}
-
-  return {
-    backgroundColorLight: String(style.background_color_light ?? ''),
-    backgroundColorDark: String(style.background_color_dark ?? ''),
-    fontColorLight: String(style.font_color_light ?? ''),
-    fontColorDark: String(style.font_color_dark ?? ''),
-    titleColorLight: String(style.title_color_light ?? ''),
-    titleColorDark: String(style.title_color_dark ?? ''),
-    titleFontSource: String(style.title_font_source ?? ''),
-    titleFontFamily: String(style.title_font_family ?? ''),
-    fontSource: String(style.font_source ?? ''),
-    fontFamily: String(style.font_family ?? ''),
-  }
-})
-const pageDebug = computed(() => ({
-  route: debug.value.route,
-  rendered: {
-    hasKitchen: Boolean(kitchen.value),
-    kitchenId: kitchen.value?.id ?? '',
-    kitchenName: kitchenName.value,
-    kitchenStyle: kitchenStyle.value,
-    styleSource: storedKitchenMenuStyleEnabled.value ? 'kitchen.menu_style' : 'tenant-app',
-    pending: pending.value,
-    menusCount: menus.value.length,
-    menuLinks: menus.value.map((menu) => ({
-      id: menu.id,
-      name: menu.name,
-      status: menu.status,
-      to: menuLink(menu.id),
-    })),
-  },
-  source: {
-    kitchenLookup: debug.value.kitchenLookup,
-    menuLookup: debug.value.menuLookup,
-    pending: debug.value.pending,
-  },
-}))
 </script>

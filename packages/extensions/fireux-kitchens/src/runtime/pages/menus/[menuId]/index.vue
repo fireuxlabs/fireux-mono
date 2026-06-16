@@ -14,24 +14,12 @@
           :menu="menu"
           :menu-id="menuId"
         />
-
-        <DevJson
-          title="Menu object"
-          context="Kitchen waiting menu · /menus/[menuId]"
-          parent="Menu detail page"
-          :objects="debugObjects"
-          :derived="debugDerived"
-          :open="true"
-        />
       </template>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { computed } from 'vue'
-
 type WaitingMenu = {
   id: string
   slug: string
@@ -52,7 +40,6 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { uid } = useAuth()
 const menuId = String(route.params.menuId || '').trim()
 const { data: menu, pending } = await useAsyncData(
   `kitchen-waiting-menu-${menuId}`,
@@ -60,21 +47,4 @@ const { data: menu, pending } = await useAsyncData(
     $fetch<WaitingMenu>(`/api/menus/${encodeURIComponent(menuId)}`)
       .catch(() => null)
 )
-const text = (value: unknown) => String(value ?? '').trim()
-const isOwnMenu = computed(() =>
-  Boolean(uid.value && text(menu.value?.created_by) === uid.value)
-)
-const debugObjects = computed(() => ({
-  menu: menu.value,
-  currentUser: {
-    id: uid.value,
-  },
-}))
-const debugDerived = computed(() => ({
-  owner: {
-    isOwnMenu: isOwnMenu.value,
-    createdBy: text(menu.value?.created_by),
-    currentUserId: uid.value,
-  },
-}))
 </script>

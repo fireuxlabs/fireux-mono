@@ -4,23 +4,12 @@
       <p class="text-sm text-dimmed">Loading menu...</p>
     </UPageCard>
 
-    <UAlert
-      v-else-if="!kitchen || !menu"
-      class="mx-auto mt-8 max-w-3xl"
-      color="neutral"
-      variant="soft"
-      title="Menu unavailable"
-      description="This menu is missing, unpublished, or no longer available."
-    />
-
-    <UAlert
-      v-else-if="!hasSource && !hasStructuredItems"
-      class="mx-auto mt-8 max-w-3xl"
-      color="neutral"
-      variant="soft"
-      title="Menu unavailable"
-      description="This menu has no public source or structured items yet."
-    />
+    <p
+      v-else-if="!kitchen || !menu || (!hasSource && !hasStructuredItems)"
+      class="mx-auto mt-8 max-w-3xl text-sm text-dimmed"
+    >
+      Menu unavailable.
+    </p>
 
     <MenuSource
       v-else-if="maturity === 'source'"
@@ -60,14 +49,6 @@
         />
       </template>
     </MenuPublic>
-
-    <DevJson
-      class="mx-auto my-8 max-w-3xl"
-      title="Kitchen public menu detail debug"
-      context="Kitchen menu detail · /kitchens/[slug]/menus/[menuId]"
-      :data="pageDebug"
-      :default-open="false"
-    />
   </div>
 </template>
 
@@ -93,7 +74,6 @@ const {
   hasStructuredItems,
   isOrderable,
   maturity,
-  debug,
 } = useKitchenPublicMenuDetail()
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -119,36 +99,4 @@ const kitchenStyle = computed<Partial<PageStyle>>(() => {
   return style && typeof style === 'object' ? style : {}
 })
 const publicMenuPageStyle = computed(() => kitchenStyle.value)
-
-const pageDebug = computed(() => ({
-  ...debug.value,
-  style: {
-    note: 'Parent-app kitchens may use kitchen.menu_style. Dedicated tenant apps use their app/runtime styling.',
-    source: storedKitchenMenuStyleEnabled.value ? 'kitchen.menu_style' : 'tenant-app',
-    storedKitchenMenuStyleEnabled: storedKitchenMenuStyleEnabled.value,
-    kitchenStyle: {
-      backgroundColorLight: text(kitchenStyle.value.background_color_light),
-      backgroundColorDark: text(kitchenStyle.value.background_color_dark),
-      fontColorLight: text(kitchenStyle.value.font_color_light),
-      fontColorDark: text(kitchenStyle.value.font_color_dark),
-      titleColorLight: text(kitchenStyle.value.title_color_light),
-      titleColorDark: text(kitchenStyle.value.title_color_dark),
-      titleFontSource: text(kitchenStyle.value.title_font_source),
-      titleFontFamily: text(kitchenStyle.value.title_font_family),
-      fontSource: text(kitchenStyle.value.font_source),
-      fontFamily: text(kitchenStyle.value.font_family),
-    },
-    currency: {
-      code: text(kitchen.value?.default_currency_code) || 'CHF',
-      format: currencyFormat.value,
-      show: showCurrency.value,
-    },
-    maturity: {
-      hasSource: hasSource.value,
-      hasStructuredItems: hasStructuredItems.value,
-      isOrderable: isOrderable.value,
-      maturity: maturity.value,
-    },
-  },
-}))
 </script>
