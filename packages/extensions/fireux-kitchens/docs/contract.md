@@ -144,6 +144,7 @@ Ingredient composable stack canon:
   - single-kitchen app: `/menus/{menuId}`
   - multi-kitchen or ecosystem directory app: `/kitchens/{slug}/menus/{menuId}`
   - the console origin must not decide the guest URL; the selected kitchen's owning app decides it.
+- The kitchen package only registers root `/menus/**` pages when app config pins one kitchen target; global/directory apps keep root `/menus/**` available for app-local uploaded menu tools.
 - Do not store a `maturity` field; derive it from source fields, structured rows, and ordering fields.
 - Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
 - Menu owns presentation-only fields: name, description, status, service modes, sort order, section order, item order, and item price.
