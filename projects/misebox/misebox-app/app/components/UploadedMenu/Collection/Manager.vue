@@ -86,7 +86,6 @@ type UploadedMenuSummary = {
   name: string
   description: string
   kind: string
-  migrated: boolean
   path: string
   qr_path: string
 }
@@ -100,10 +99,7 @@ type UploadedMenuCard = {
   meta: string
 }
 
-const kindLabel = (menu: UploadedMenuSummary) => {
-  if (menu.migrated) return 'Kitchen Menu'
-
-  const kind = menu.kind
+const kindLabel = (kind: string) => {
   if (kind === 'photo') return 'Photo menu'
   if (kind === 'pdf') return 'PDF menu'
   if (kind === 'document') return 'Document menu'
@@ -118,12 +114,8 @@ const card = (menu: UploadedMenuSummary): UploadedMenuCard | null => {
     to: menu.path,
     qrTo: menu.qr_path,
     title: menu.name,
-    description: menu.description || (
-      menu.migrated
-        ? 'Stable QR entry for a Kitchen Menu.'
-        : 'Uploaded menu document.'
-    ),
-    meta: kindLabel(menu),
+    description: menu.description || 'Uploaded menu document.',
+    meta: kindLabel(menu.kind),
   }
 }
 

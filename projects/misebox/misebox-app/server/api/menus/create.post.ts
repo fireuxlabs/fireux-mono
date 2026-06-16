@@ -178,8 +178,6 @@ export default defineEventHandler(async (event) => {
     kitchen_id: '',
     name: menuNameFromSlug(slug),
     description: '',
-    migrated: false,
-    kitchen_menu: null,
     doc_url: docUrl,
     doc_name: fileName,
     doc_type: fileType,

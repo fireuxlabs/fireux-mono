@@ -30,14 +30,22 @@ function globToRegex(pattern: string) {
 
 export function filterPagesByGlob(nuxt: Nuxt, patterns: string[]) {
   const matchers = patterns.map((pattern) => globToRegex(pattern))
-  nuxt.hook('pages:extend', (pages: any[]) => {
+  const filterPages = (pages: any[]) => {
     for (let i = pages.length - 1; i >= 0; i -= 1) {
       const page = pages[i]
       const file = typeof page?.file === 'string' ? page.file : ''
-      if (!file) continue
-      if (matchers.some((matcher) => matcher.test(file))) {
+
+      if (Array.isArray(page?.children)) {
+        filterPages(page.children)
+      }
+
+      if (file && matchers.some((matcher) => matcher.test(file))) {
         pages.splice(i, 1)
       }
     }
+  }
+
+  nuxt.hook('pages:extend', (pages: any[]) => {
+    filterPages(pages)
   })
 }

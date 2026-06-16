@@ -12,38 +12,7 @@
       </div>
     </header>
 
-    <section
-      v-if="isBridge"
-      class="grid min-h-0 place-items-center bg-neutral-50 p-6"
-      aria-label="Migrated menu"
-    >
-      <UPageCard
-        class="w-full max-w-xl"
-        :title="menu.name"
-        description="This QR menu now points to a Kitchen Menu."
-        variant="subtle"
-      >
-        <div class="flex flex-wrap gap-2">
-          <UButton
-            v-if="menu.canonical_url"
-            :to="menu.canonical_url"
-            target="_blank"
-            icon="i-lucide-external-link"
-          >
-            Open Kitchen Menu
-          </UButton>
-          <UButton
-            v-else-if="menu.canonical_path"
-            :to="menu.canonical_path"
-            icon="i-lucide-arrow-right"
-          >
-            Open Kitchen Menu
-          </UButton>
-        </div>
-      </UPageCard>
-    </section>
-
-    <section v-else class="min-h-0 overflow-auto bg-white" aria-label="Menu document">
+    <section class="min-h-0 overflow-auto bg-white" aria-label="Menu document">
       <div
         v-if="isPhoto"
         class="flex min-h-[calc(100vh-4.75rem)] items-start justify-center bg-neutral-950 p-4"
@@ -76,9 +45,6 @@ import { createError } from '#imports'
 type PublicMenu = {
   id: string
   name: string
-  migrated: boolean
-  canonical_path: string
-  canonical_url: string
   doc_url: string
   doc_type: string
   kind: string
@@ -98,10 +64,7 @@ const { data } = await useAsyncData(
   () => $fetch<PublicMenu>(`/api/menus/${encodeURIComponent(slug)}`)
 )
 
-if (
-  !data.value?.doc_url &&
-  (!data.value?.migrated || !data.value?.canonical_path)
-) {
+if (!data.value?.doc_url) {
   throw createError({
     statusCode: 404,
     statusMessage: 'Menu not found.',
@@ -109,8 +72,6 @@ if (
 }
 
 const menu = computed(() => data.value as PublicMenu)
-const hasDocument = computed(() => Boolean(menu.value.doc_url))
-const isBridge = computed(() => menu.value.migrated && !hasDocument.value)
 const isPhoto = computed(() =>
   menu.value.kind === 'photo' || menu.value.doc_type.startsWith('image/')
 )
@@ -118,11 +79,7 @@ const isPdf = computed(() =>
   !isPhoto.value &&
   (menu.value.kind === 'pdf' || menu.value.doc_type.includes('pdf'))
 )
-const fileUrl = computed(() =>
-  menu.value.migrated
-    ? menu.value.doc_url
-    : `/api/menus/${encodeURIComponent(slug)}/file`
-)
+const fileUrl = computed(() => `/api/menus/${encodeURIComponent(slug)}/file`)
 const displayUrl = computed(() => {
   return menu.value.doc_url
 })
