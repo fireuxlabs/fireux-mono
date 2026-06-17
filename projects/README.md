@@ -1,6 +1,7 @@
 # FireUX Projects
 
 Authority: Wayfinding only
+README role: Map only; not canon.
 Updated: 2026-06-17
 
 Projects are app workspaces.

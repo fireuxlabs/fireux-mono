@@ -1,6 +1,7 @@
 # FireUX Tools
 
 Authority: Wayfinding only
+README role: Map only; not canon.
 Updated: 2026-06-17
 
 Tools support development, checks, migrations, and inspection.

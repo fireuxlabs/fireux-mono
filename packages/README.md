@@ -1,6 +1,7 @@
 # FireUX Packages
 
 Authority: Wayfinding only
+README role: Map only; not canon.
 Updated: 2026-06-17
 
 Package hierarchy:

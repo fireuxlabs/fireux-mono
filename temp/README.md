@@ -1,6 +1,7 @@
 # FireUX Temp
 
 Authority: Scratch only
+README role: Map only; not canon.
 Updated: 2026-06-17
 
 `temp/` is for temporary scripts, audits, exports, and scratch files.

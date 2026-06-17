@@ -1,6 +1,7 @@
 # FireUX Docs
 
 Authority: Wayfinding only
+README role: Map only; not canon.
 Updated: 2026-06-17
 
 This README maps documentation. It is not canon.
