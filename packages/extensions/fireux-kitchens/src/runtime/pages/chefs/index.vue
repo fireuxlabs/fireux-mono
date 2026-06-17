@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <ChefCTA />
-      <ChefCollectionManager :collection="collection" />
+      <ChefCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -13,8 +13,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 
 definePageMeta({
   tag: 'chefs',
@@ -40,11 +38,5 @@ const pageDescription =
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { coreChefs, appChefs } = useChefFetch()
-const collection = computed(() => [
-  ...(appChefs?.value ?? []),
-  ...(coreChefs.value ?? []),
-])
 
 </script>

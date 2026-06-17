@@ -8,10 +8,9 @@
         description="Browse published articles for this runtime. Editorial authoring remains in the admin blog workspace."
         family="admin-managed"
         source="blogs collection"
-        :count-label="`${collection.length} post${collection.length === 1 ? '' : 's'}`"
         :actions="actions"
       />
-      <BlogCollectionManager :collection="collection" />
+      <BlogCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -19,7 +18,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useBlogCollection } from '../../composables/fireux/firestore/blog/fetch/useBlogCollection'
 
 const { appName } = useFireUXConfig()
 
@@ -43,8 +41,6 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { collection } = useBlogCollection()
 
 const actions = [
   {

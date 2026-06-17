@@ -73,6 +73,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import type { BlogPost } from '../../../models/blogPost.model'
+import { useBlogCollection } from '../../../composables/fireux/firestore/blog/fetch/useBlogCollection'
 import { useBlogInterface } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 const props = withDefaults(
@@ -99,7 +100,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useBlogCollection()
+const collection = computed<BlogPost[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.collection.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>

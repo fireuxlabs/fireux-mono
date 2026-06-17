@@ -5,14 +5,7 @@
 
     <UPageBody class="pagebody">
       <UserCTA />
-      <UserCollectionManager :collection="collection" />
-
-      <DevJson
-        title="Users (dev)"
-        context="Users index · firestore collection"
-        :data="collection"
-        :default-open="false"
-      />
+      <UserCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -21,7 +14,6 @@
 import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 
 definePageMeta({
   nav: {
@@ -41,11 +33,9 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
-const { users } = useUserCollection()
 
 const pageTitle = 'Users'
 const pageDescription = 'Browse users available to this runtime.'
-const collection = computed(() => users.value ?? [])
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

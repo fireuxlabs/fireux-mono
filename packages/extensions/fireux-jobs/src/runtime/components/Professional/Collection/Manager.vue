@@ -77,6 +77,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { Professional } from '../../../models/profiles/Professional/Professional.model'
 import ProfessionalCardsCell from '../Cards/Cell.vue'
@@ -109,7 +110,15 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useProfessionalFetch()
+const collection = computed<ProfessionalEntry[]>(() =>
+  Array.isArray(props.collection)
+    ? props.collection
+    : [
+        ...(fetched.appProfessionals.value ?? []),
+        ...(fetched.coreProfessionals.value ?? []),
+      ]
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))
 const description = computed(() =>

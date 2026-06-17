@@ -73,6 +73,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import type { Job } from '../../../models/job.model'
+import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const props = withDefaults(
@@ -99,7 +100,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useJobCollection()
+const collection = computed<Job[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.appJobs.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
 const description = computed(() =>

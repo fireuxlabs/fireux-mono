@@ -73,6 +73,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../../models/profiles/Agent/Agent.model'
 
@@ -102,7 +103,12 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useAgentFetch()
+const collection = computed<AgentEntry[]>(() =>
+  Array.isArray(props.collection)
+    ? props.collection
+    : [...(fetched.appAgents.value ?? []), ...(fetched.coreAgents.value ?? [])]
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))
 const description = computed(() =>

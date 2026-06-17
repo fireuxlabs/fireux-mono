@@ -73,6 +73,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
+import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 
 const props = withDefaults(
@@ -99,7 +100,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useCompanyFetch()
+const collection = computed<CompanyHydrated[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.companies.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>

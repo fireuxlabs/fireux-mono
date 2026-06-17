@@ -75,6 +75,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useIngredientCollection } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,
@@ -119,7 +120,12 @@ const {
   cell: makeCell,
 } = useIngredientInterface()
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useIngredientCollection()
+const collection = computed<IngredientInterfaceItem[]>(() =>
+  Array.isArray(props.collection)
+    ? props.collection
+    : fetched.ingredients.value
+)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
   baseRoute: computed(() => props.baseRoute),

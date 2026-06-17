@@ -3,8 +3,8 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <CompanyCTA :count="collection.length" />
-      <CompanyCollectionManager :collection="collection" />
+      <CompanyCTA />
+      <CompanyCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -12,8 +12,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 
 definePageMeta({
   layout: 'default',
@@ -37,8 +35,5 @@ const pageDescription =
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { companies } = useCompanyFetch()
-const collection = computed(() => companies.value ?? [])
 
 </script>

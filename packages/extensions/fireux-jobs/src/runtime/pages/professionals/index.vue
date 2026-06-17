@@ -6,7 +6,7 @@
     <UPageBody class="pagebody">
       <ProfessionalCTA />
       <ClientOnly>
-        <ProfessionalCollectionManager :collection="collection" />
+        <ProfessionalCollectionManager />
       </ClientOnly>
     </UPageBody>
   </UPage>
@@ -15,8 +15,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useProfessionalFetch } from '../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 
 definePageMeta({
   tag: 'professionals',
@@ -43,11 +41,5 @@ const pageDescription =
   'View your profile and browse professionals.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { coreProfessionals, appProfessionals } = useProfessionalFetch()
-const collection = computed(() => [
-  ...(appProfessionals?.value ?? []),
-  ...(coreProfessionals.value ?? []),
-])
 
 </script>

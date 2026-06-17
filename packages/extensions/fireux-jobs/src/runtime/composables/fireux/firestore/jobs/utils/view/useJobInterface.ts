@@ -2,10 +2,7 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import { JobStorage, type Job } from '../../../../../../models/job.model'
 
 export type JobView = Job & {
-  workplace?: {
-    short_address?: string
-    image_url?: string
-  } | null
+  workplace?: unknown | null
 }
 
 export namespace JobCard {

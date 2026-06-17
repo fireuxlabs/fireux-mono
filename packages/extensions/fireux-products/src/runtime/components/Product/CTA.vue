@@ -4,18 +4,13 @@
     description="Browse canonical product records for this runtime. Publishing and merchandising actions stay in the admin product workspace."
     family="admin-managed"
     source="products collection"
-    :count-label="`${count} product${count === 1 ? '' : 's'}`"
     :actions="actions"
   />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useProductPermissions } from '../../composables/useProductPermissions';
-
-const props = withDefaults(defineProps<{ count?: number }>(), {
-  count: 0,
-})
+import { computed } from 'vue'
+import { useProductPermissions } from '../../composables/useProductPermissions'
 
 const { canManageProducts } = useProductPermissions()
 
@@ -40,6 +35,4 @@ const actions = computed(() => {
 
   return items
 })
-
-const count = props.count
 </script>

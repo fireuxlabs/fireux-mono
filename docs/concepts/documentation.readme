@@ -1,0 +1,38 @@
+Documentation file map
+Updated: 2026-06-17
+Ref: e52d9a3d0
+Role: map, not canon
+
+Purpose:
+Name what each documentation file shape means so agents do not treat every
+text file as equal authority.
+
+Vertical links:
+- Parent: ../../AGENTS.md
+- Child: fireux-mono.readme
+- Child: spine.readme
+
+Horizontal links:
+- entities.readme
+- pages.readme
+- collection-manager.readme
+
+File shapes:
+- `AGENTS.md`: operating instructions for AI agents in this repo. Highest doc-level instruction surface, but code and guards still win on implementation truth.
+- `README.md`: guard-required package/root placeholder or landing map. Do not put canon here unless the user explicitly starts a README rebuild pass.
+- `docs/concepts/*.readme`: small concept maps for humans and agents. These explain current working context and link related concepts. They are not eternal canon.
+- Other `.md`: avoid by default. Use only when a tool/convention requires Markdown, or the user explicitly asks for a formal Markdown document.
+
+Working rule:
+- Use `.readme` for FireUX concept maps.
+- Use `README.md` only where guard/package conventions require it.
+- Use `.md` only for agent/tool conventions such as `AGENTS.md` or explicit formal docs.
+- Do not recreate broad historical Markdown docs unless asked.
+
+Authority rule:
+- Code, guards, and tests are implementation truth.
+- Concept maps are navigation and current working language.
+- README placeholders are not truth.
+
+Open questions:
+- A future FireUX Docs app may render these maps. Do not design that app from this file yet.

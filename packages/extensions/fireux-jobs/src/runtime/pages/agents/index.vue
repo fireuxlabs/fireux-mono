@@ -4,7 +4,7 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <AgentCTA />
-      <AgentCollectionManager :collection="collection" />
+      <AgentCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -12,8 +12,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 
 definePageMeta({
   tag: 'agents',
@@ -40,11 +38,5 @@ const pageDescription =
   'View your profile and browse agents.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
-const { coreAgents, appAgents } = useAgentFetch()
-const collection = computed(() => [
-  ...(appAgents?.value ?? []),
-  ...(coreAgents.value ?? []),
-])
 
 </script>

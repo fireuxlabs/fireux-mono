@@ -13,11 +13,19 @@ Markdown now consists only of `AGENTS.md` plus guard-required `README.md` placeh
 
 Concept `.readme` files are allowed as small maps. They explain local working context; they do not define system truth unless the code and guards agree. Each concept map should carry an `Updated` date and `Ref` git short hash.
 
+Documentation file rule:
+
+- `AGENTS.md`: agent operating instructions.
+- `README.md`: guard/package placeholder or landing map; not canon by default.
+- `docs/concepts/*.readme`: current concept maps; map, not canon.
+- Other `.md`: avoid unless a tool/convention requires it or the user asks.
+
 ## Concept Cascade
 
 Use the smallest relevant concept map before broad repo scanning:
 
 - FireUX Mono repo: `docs/concepts/fireux-mono.readme`
+- Documentation files: `docs/concepts/documentation.readme`
 - FireUX platform shape: `docs/concepts/fireux.readme`
 - Spine/canon working method: `docs/concepts/spine.readme`
 - Nuxt 4 and Vue 3: `docs/concepts/nuxt4.readme`

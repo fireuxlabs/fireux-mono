@@ -73,6 +73,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { Chef } from '../../../models/profiles/Chef/Chef.model'
 
@@ -102,7 +103,12 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useChefFetch()
+const collection = computed<ChefEntry[]>(() =>
+  Array.isArray(props.collection)
+    ? props.collection
+    : [...(fetched.appChefs.value ?? []), ...(fetched.coreChefs.value ?? [])]
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))
 const description = computed(() =>

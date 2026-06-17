@@ -73,6 +73,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 import type { FirebaseProduct } from '../../../models/product.model'
 
@@ -100,7 +101,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useProductCollection()
+const collection = computed<FirebaseProduct[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.products.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
 const description = computed(() =>

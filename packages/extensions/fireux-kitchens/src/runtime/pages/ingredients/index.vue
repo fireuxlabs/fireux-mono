@@ -16,7 +16,6 @@
     <UPageBody class="pagebody">
       <IngredientCTA :can-create="isAdmin" />
       <IngredientCollectionManager
-        :collection="ingredients"
         title="Ingredients"
         description="Browse canonical ingredient records shared across kitchens in this runtime."
       />
@@ -28,7 +27,6 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useIngredientCollection } from '../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 
 definePageMeta({
   layout: 'default',
@@ -48,7 +46,6 @@ definePageMeta({
 })
 
 const { isAdmin } = useUser()
-const { ingredients } = useIngredientCollection()
 
 const pageTitle = 'Ingredients'
 const pageDescription =

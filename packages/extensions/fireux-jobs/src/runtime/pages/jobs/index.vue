@@ -5,7 +5,7 @@
     <UPageBody class="pagebody">
       <JobCTA />
       <ClientOnly>
-        <JobCollectionManager :collection="collection" />
+        <JobCollectionManager />
       </ClientOnly>
     </UPageBody>
   </UPage>
@@ -14,8 +14,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 
 const { appName } = useFireUXConfig()
 
@@ -41,6 +39,4 @@ definePageMeta({
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { appJobs } = useJobCollection()
-const collection = computed(() => appJobs.value ?? [])
 </script>

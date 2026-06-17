@@ -4,16 +4,11 @@
     description="Browse company records derived from places, then use the company creation flow when a claimed place is ready for a company layer."
     family="domain-managed"
     source="companies collection"
-    :count-label="`${count} compan${count === 1 ? 'y' : 'ies'}`"
     :actions="actions"
   />
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ count?: number }>(), {
-  count: 0,
-})
-
 const actions = [
   {
     label: 'Create',
@@ -34,6 +29,4 @@ const actions = [
     icon: 'i-lucide-book-open',
   },
 ] as const
-
-const count = props.count
 </script>
