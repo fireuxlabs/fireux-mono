@@ -139,8 +139,8 @@ const resolveKitchenPath = (target: {
   const slug = safeString(target.slug)
   if (!slug) return ''
 
-  if (target.route_scope === 'demo') {
-    return `/demo/kitchens/${encodeURIComponent(slug)}`
+  if (target.route_scope === 'demo' || target.route_scope === 'test') {
+    return ''
   }
 
   return `/kitchens/${encodeURIComponent(slug)}`

@@ -1,15 +1,21 @@
 <template>
-  <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
+  <UPage>
     <UPageHeader
       class="pageheader"
-      :title="kitchenName"
-      :description="pageDescription"
+      :title="pageTitle"
+      description="Upload or browse public menu doorways."
     />
 
-    <div v-if="!kitchen && !pending" class="space-y-4">
+    <UPageBody class="pagebody">
+      <EntityIndexCta
+        family="utility-managed"
+        cta="Upload a menu document, keep a stable QR path, and move it into a kitchen when it is ready."
+        :count-label="countLabel"
+      />
+
       <UPageCard
-        title="Upload menu"
-        description="Upload a menu while it is waiting for a kitchen. The menu can be attached to a kitchen later without changing the public path."
+        title="Upload Menu"
+        description="Create a public menu doorway first. Kitchen, dishes, and translations can come later."
         variant="subtle"
       >
         <ProviderGoQrTools
@@ -19,164 +25,43 @@
         />
       </UPageCard>
 
-      <UPageCard variant="subtle">
-        <template #header>
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 class="text-lg font-semibold text-highlighted">
-                Waiting menus
-              </h2>
-              <p class="text-sm text-dimmed">
-                Menu documents uploaded before they are attached to a kitchen.
-              </p>
-            </div>
-            <UBadge variant="soft">
-              {{ waitingMenus.length }} menus
-            </UBadge>
-          </div>
-        </template>
-
-        <UPageCard
-          v-if="waitingPending"
-          title="Loading menus"
-          description="Checking uploaded menu documents."
-          variant="subtle"
-        />
-
-        <UPageCard
-          v-else-if="waitingError"
-          title="Menus unavailable"
-          description="The waiting menu list could not be loaded."
-          variant="subtle"
-        />
-
-        <UPageCard
-          v-else-if="!waitingMenus.length"
-          title="No waiting menus"
-          description="Uploaded menus will appear here."
-          variant="subtle"
-        />
-
-        <div v-else class="grid gap-3 sm:grid-cols-2">
-          <UPageCard
-            v-for="menu in waitingMenus"
-            :key="menu.id"
-            variant="subtle"
-          >
-            <template #header>
-              <div class="min-w-0">
-                <h3 class="text-base font-semibold text-highlighted">
-                  {{ menu.name }}
-                </h3>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ menu.description || 'Uploaded menu document.' }}
-                </p>
-              </div>
-            </template>
-
-            <p class="text-xs text-dimmed">
-              {{ menu.kind || 'menu' }}
-            </p>
-
-            <template #footer>
-              <div class="flex flex-wrap gap-2">
-                <UButton size="xs" :to="menu.path">
-                  Open menu
-                </UButton>
-                <UButton size="xs" variant="ghost" :to="menu.qr_path">
-                  QR
-                </UButton>
-              </div>
-            </template>
-          </UPageCard>
-        </div>
-      </UPageCard>
-    </div>
-
-    <div v-else class="space-y-3">
-      <UPageCard v-if="pending" variant="subtle">
-        <p class="text-sm text-dimmed">Loading menus...</p>
-      </UPageCard>
-
-      <p
-        v-if="!pending && !kitchen"
-        class="text-sm text-dimmed"
-      >
-        Menu unavailable.
-      </p>
-
-      <template v-if="!pending && kitchen && menus.length">
-        <UPageCard
-          v-for="menu in menus"
-          :key="menu.id"
-          variant="subtle"
-        >
-          <div class="flex flex-wrap items-start justify-between gap-4">
-            <div class="min-w-0 space-y-1">
-              <h2 class="text-lg font-semibold text-highlighted">
-                {{ menu.name }}
-              </h2>
-              <p v-if="menu.description" class="text-sm text-dimmed">
-                {{ menu.description }}
-              </p>
-            </div>
-
-            <UButton
-              :to="menuLink(menu.id)"
-              icon="i-lucide-arrow-right"
-              trailing
-            >
-              Open
-            </UButton>
-          </div>
-        </UPageCard>
-      </template>
-
-      <p
-        v-if="!pending && kitchen && !menus.length"
-        class="text-sm text-dimmed"
-      >
-        No published menus.
-      </p>
-    </div>
-  </main>
+      <MenuCollectionManager
+        :collection="publicMenus"
+        title="Uploaded Menus"
+        description="Browse menu doorways that can stay simple or grow into kitchen menus."
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
-import { useKitchenPublicSingleMenuScope } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicSingleMenuScope'
-
-type WaitingMenuSummary = {
-  id: string
-  name: string
-  description: string
-  kind: string
-  path: string
-  qr_path: string
-}
+import type { PublicMenu } from '../../composables/fireux/public/menu/usePublicMenuFetch'
 
 definePageMeta({
-  layout: 'public-menu',
-  name: 'KitchenPublicSingleMenusIndexPage',
+  tag: 'menus',
+  nav: {
+    key: 'menus',
+    label: 'Menus',
+    icon: 'i-lucide-book-open-check',
+    order: 56,
+    desktop: false,
+    mobile: false,
+    layouts: ['default'],
+  },
+  layout: 'default',
+  name: 'MenusIndexPage',
+  title: 'Menus',
+  description: 'Upload or browse public menu doorways.',
 })
 
-const {
-  kitchen,
-  menus,
-  pending,
-  menuLink,
-} = useKitchenPublicSingleMenuScope()
+const pageTitle = 'Menus'
+const { appName } = useFireUXConfig()
 const { currentUser } = useAuth()
 const authToken = ref('')
-const kitchenName = computed(
-  () => String(kitchen.value?.display_name || kitchen.value?.name || 'Menus')
-)
-const pageDescription = computed(() =>
-  kitchen.value
-    ? 'Published menus.'
-    : 'Upload or browse menus waiting for a kitchen.'
-)
 const consumerOrigin = computed(() =>
   import.meta.client ? window.location.origin : ''
 )
@@ -210,15 +95,16 @@ const uploadTool = computed(() => ({
 }))
 const {
   data: waitingData,
-  pending: waitingPending,
-  error: waitingError,
 } = await useAsyncData(
-  'kitchen-waiting-menus',
-  () => $fetch<WaitingMenuSummary[]>('/api/menus')
+  'public-menus',
+  () => $fetch<PublicMenu[]>('/api/menus')
 )
-const waitingMenus = computed(() => waitingData.value ?? [])
+const publicMenus = computed(() => waitingData.value ?? [])
+const countLabel = computed(() => `${publicMenus.value.length} menus`)
 
 watch(currentUser, async (user) => {
   authToken.value = import.meta.client && user ? await user.getIdToken() : ''
 }, { immediate: true })
+
+useHead({ title: `${appName} | ${pageTitle}` })
 </script>

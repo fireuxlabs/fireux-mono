@@ -1,105 +1,63 @@
 <template>
-  <main class="source-menu">
-    <section class="source-menu__page">
-      <slot name="breadcrumbs" />
+  <MenuPublicShell :page-style="pageStyle">
+    <slot name="breadcrumbs" />
 
-      <header class="source-menu__header">
-        <p v-if="kitchenName" class="source-menu__kitchen">
-          {{ kitchenName }}
-        </p>
-        <h1>{{ menu.name }}</h1>
-        <p v-if="menu.description" class="source-menu__description">
-          {{ menu.description }}
-        </p>
-      </header>
+    <MenuPublicHeader
+      :kitchen-name="kitchenName || ''"
+      :name="menu.name"
+      :description="menu.description"
+    />
 
-      <MenuAllergenNotice />
+    <MenuAllergenNotice class="source-menu__notice" />
 
-      <section class="source-menu__document" aria-label="Menu source document">
-        <iframe
-          v-if="sourceUrl"
-          :src="sourceUrl"
-          :title="menu.name || 'Menu source'"
-          class="source-menu__frame"
-        />
-        <UAlert
-          v-else
-          color="neutral"
-          variant="soft"
-          title="Menu source unavailable"
-          description="This menu source is missing."
-        />
-      </section>
-    </section>
-  </main>
+    <MenuDocument
+      v-if="sourceUrl"
+      :menu="menu"
+      :menu-id="menuId"
+      :source-url="sourceUrl"
+      :file-url="sourceUrl"
+    />
+
+    <p v-else class="source-menu__empty">
+      Menu source unavailable.
+    </p>
+
+    <slot name="operator" />
+  </MenuPublicShell>
 </template>
 
 <script setup lang="ts">
-import type { Menu } from '../../models/menu/menu.model'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import { computed } from 'vue'
 
-defineProps<{
-  kitchenName: string
-  menu: Menu
+type MenuSourceModel = {
+  id?: string
+  name: string
+  description?: string
+  doc_url?: string
+  doc_type?: string
+  kind?: string
+}
+
+const props = defineProps<{
+  kitchenName?: string
+  menu: MenuSourceModel
   sourceUrl: string
+  pageStyle?: Partial<PageStyle> | null
 }>()
+
+const text = (value: unknown) => String(value ?? '').trim()
+const menuId = computed(() => text(props.menu.id))
 </script>
 
 <style scoped>
-.source-menu {
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--ui-bg);
-  color: var(--ui-text);
+.source-menu__notice {
+  margin-bottom: 1.25rem;
 }
 
-.source-menu__page {
-  display: grid;
-  gap: 1.25rem;
-  width: min(100%, 72rem);
-  margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2rem);
-}
-
-.source-menu__header {
-  text-align: center;
-}
-
-.source-menu__kitchen,
-.source-menu__description {
-  color: var(--ui-text-muted);
-}
-
-.source-menu__kitchen {
-  margin: 0 0 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.source-menu__header h1 {
+.source-menu__empty {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 3rem);
-  line-height: 1.15;
-}
-
-.source-menu__description {
-  margin: 0.75rem auto 0;
-  max-width: 42rem;
-  line-height: 1.55;
-}
-
-.source-menu__document {
-  min-height: 60vh;
-  overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--radius-lg);
-  background: white;
-}
-
-.source-menu__frame {
-  display: block;
-  width: 100%;
-  min-height: 72vh;
-  border: 0;
+  color: var(--menu-muted);
+  text-align: center;
 }
 </style>

@@ -41,13 +41,15 @@ type MenuDocumentSource = {
 const props = defineProps<{
   menu: MenuDocumentSource
   menuId: string
+  sourceUrl?: string
+  fileUrl?: string
 }>()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const menuTitle = computed(() => text(props.menu.name) || 'Menu')
-const displayUrl = computed(() => text(props.menu.doc_url))
+const displayUrl = computed(() => text(props.sourceUrl) || text(props.menu.doc_url))
 const fileUrl = computed(
-  () => `/api/menus/${encodeURIComponent(props.menuId)}/file`
+  () => text(props.fileUrl) || `/api/menus/${encodeURIComponent(props.menuId)}/file`
 )
 const isPhoto = computed(() =>
   props.menu.kind === 'photo' ||

@@ -72,12 +72,14 @@
 import { computed } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { useMenuInterface } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
-import type { Menu } from '../../../models/menu/menu.model'
+import {
+  useMenuInterface,
+  type MenuInterfaceSource,
+} from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
 const props = withDefaults(
   defineProps<{
-    collection?: Menu[]
+    collection?: MenuInterfaceSource[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -108,8 +110,8 @@ const {
 const collection = computed(() =>
   [...(props.collection ?? [])].sort(
     (a, b) =>
-      Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
-      String(a.name).localeCompare(String(b.name))
+      Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
+      String(a.name ?? '').localeCompare(String(b.name ?? ''))
   )
 )
 
@@ -121,7 +123,7 @@ const showSearchInput = computed(
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<Menu, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<MenuInterfaceSource, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (menu) => makeCard(menu),
     initialVariant: props.initialVariant,
