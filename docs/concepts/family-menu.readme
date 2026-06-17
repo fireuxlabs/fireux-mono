@@ -24,6 +24,13 @@ Current concepts:
 - Tenant menu: tenant apps may expose simpler routes like `/menus/main`.
 - Directory menu: global apps may expose `/kitchens/<slug>/menus/<menuId>`.
 
+Entity checkpoint:
+- Menu is marked `to-confirm` in code.
+- MenuSection is a record under Menu.
+- MenuItem is a record under MenuSection and points to Dish when structured.
+- MenuSourceUpload is a record under Kitchen.
+- Root `/menus/<id>` currently behaves as a public doorway/upload record, not settled root Menu truth.
+
 Maturity states:
 - `photo`: uploaded photo source.
 - `document`: uploaded PDF/document source.
@@ -45,4 +52,4 @@ Kitchen needed:
 
 Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.
-- Menu item and menu section may be shapes rather than full entities; avoid creating new entity stacks until the model is settled.
+- Decide whether public doorway remains a record shape or makes Menu a true `both` entity.

@@ -25,6 +25,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - pnpm workspace/scripts: `docs/concepts/pnpm.readme`
 - Runtime package spine: `docs/concepts/runtime-package.readme`
 - App config spine: `docs/concepts/app-config.readme`
+- Entities: `docs/concepts/entities.readme`
 - Pages spine: `docs/concepts/pages.readme`
 - Components spine: `docs/concepts/components.readme`
 - Composables spine: `docs/concepts/composables.readme`
@@ -52,6 +53,8 @@ Before editing any entity, console, route family, model, collection manager, pub
 3. Name the shared shape.
 4. Name the accepted delta.
 5. Then patch the smallest useful slice.
+
+When a new concept appears, discuss its entity-ness before giving it full entity ceremony. Start as `to-confirm` unless it clearly has independent identity, lifecycle, route, collection stack, console/public surface, or cross-parent references. Use `docs/concepts/entities.readme` as the checkpoint.
 
 If a tiny behavior requires a broad diff, stop and report the missing seam. Do not patch around misunderstanding.
 
@@ -205,6 +208,11 @@ Index component pattern:
 The current mirror examples are Blank, Kitchen, Supplier, Portfolio, and Property. Blank is the smallest reference; Kitchen/Supplier show domain target fetching.
 
 ## Firestore Entity Spine
+
+FireUX defines entities. Firestore is one storage/access family for those
+entities. Use `docs/concepts/entities.readme` and
+`packages/core/fireux-core/src/runtime/models/core/entity.model.ts` when
+deciding whether a thing is an entity, record, shape, primitive, or bucket.
 
 Firestore entity composables belong under:
 

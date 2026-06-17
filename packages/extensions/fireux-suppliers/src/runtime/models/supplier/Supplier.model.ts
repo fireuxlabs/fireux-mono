@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
   FireuxAppOverlay,
   FireuxStamped,
@@ -55,6 +56,17 @@ export const SupplierStorage = {
     items: 'suppliers/{supplierId}/items/{supplierItemId}',
   },
 } as const
+
+export const SupplierEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Supplier',
+  family: ['supplier', 'console-entity'],
+  storage: 'both',
+  status: 'confirmed',
+  console: true,
+  root: SupplierStorage.root,
+  scoped: SupplierStorage.overlay,
+})
 
 export const AppSupplierStorage = {
   shape: 'scoped',

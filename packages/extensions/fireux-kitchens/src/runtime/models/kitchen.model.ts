@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
 import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
@@ -49,6 +50,17 @@ export const KitchenStorage = {
     team: 'apps/{appId}/kitchens/{kitchenId}/team/{memberId}',
   },
 } as const
+
+export const KitchenEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Kitchen',
+  family: ['kitchen', 'console-entity'],
+  storage: 'both',
+  status: 'confirmed',
+  console: true,
+  root: KitchenStorage.root,
+  scoped: KitchenStorage.scope,
+})
 
 export const KitchenModel = {
   id: '',

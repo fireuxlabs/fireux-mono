@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -14,6 +15,20 @@ export const MenuSectionStorage = {
   parent: 'menu',
   idParam: 'sectionId',
 } as const
+
+export const MenuSectionRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'MenuSection',
+  family: 'menu',
+  storage: 'scoped',
+  status: 'confirmed',
+  parent: 'Menu',
+  scoped: MenuSectionStorage.path,
+  notes: [
+    'MenuSection groups MenuItems for presentation.',
+    'It is not standalone food truth and is deleted or copied with its Menu.',
+  ],
+})
 
 export type MenuSectionStatus = 'active' | 'archived'
 

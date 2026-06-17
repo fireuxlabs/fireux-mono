@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
   FireuxAppOverlay,
   FireuxStamped,
@@ -50,6 +51,17 @@ export const PortfolioStorage = {
     units: 'apps/{appId}/portfolios/{portfolioId}/units/{unitId}',
   },
 } as const
+
+export const PortfolioEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Portfolio',
+  family: ['portfolio', 'console-entity'],
+  storage: 'both',
+  status: 'confirmed',
+  console: true,
+  root: PortfolioStorage.root,
+  scoped: PortfolioStorage.overlay,
+})
 
 export const AppPortfolioStorage = {
   shape: 'scoped',

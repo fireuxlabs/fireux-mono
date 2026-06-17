@@ -1,0 +1,96 @@
+Entities map
+Updated: 2026-06-17
+Ref: 89b8485e4
+Role: map, not canon
+
+Purpose:
+Map the FireUX meaning of entity markers.
+
+Vertical links:
+- Parent: fireux.readme
+- Child: firestore-entity.readme
+- Child: family-console-entity.readme
+- Child: family-menu.readme
+
+Horizontal links:
+- console.readme
+- app-config.readme
+- pages.readme
+
+Type source:
+- `packages/core/fireux-core/src/runtime/models/core/entity.model.ts`
+
+Working language:
+- FireUX defines entities.
+- Firestore is one storage/access family for an entity.
+- A thing can have a model or an id without being a FireUX entity.
+- Entity-ness is discussed while a concept is being designed; do not set a new thing in stone just because it has a file, route, or collection.
+
+Kinds:
+- `entity`: domain thing FireUX tracks as a first-class concept over time.
+- `record`: stored support record owned by an entity.
+- `shape`: embedded or transport shape.
+- `primitive`: reusable low-level value type.
+- `bucket`: organizational folder, not domain truth.
+
+Thinking aid:
+- Entity is class-like: identity matters over time, fields can change, references point to the same thing, and lifecycle/authority/public surfaces may belong to it.
+- Shape or record is struct-like: value/context matters more than independent identity, and it is usually replaced, copied, or deleted with its parent.
+- This is only an analogy. Do not import class inheritance thinking into the model system.
+
+Entity-ness checkpoint:
+- What is the concept called in plain human language?
+- Does it still mean something if its parent is deleted?
+- Does it need its own lifecycle, permissions, public route, console surface, or collection stack?
+- Is it referenced by multiple parents?
+- Is it a wrapper around another entity, or the thing itself?
+- Can it start as a `record` or `shape` until the lifecycle proves it needs promotion?
+
+Storage scopes:
+- `root`: standalone/root public or system entity.
+- `scoped`: lives under a parent entity/app.
+- `both`: has root identity plus scoped/app-operational state.
+- `none`: no stored entity shape.
+- `to-confirm`: not settled yet.
+
+First confirmed markers:
+- App: entity, root, core/system.
+- Ecosystem: entity, root, system.
+- Project: entity, both, console-entity.
+- Kitchen: entity, both, console-entity.
+- Supplier: entity, both, console-entity.
+- Portfolio: entity, both, console-entity.
+
+First to-confirm marker:
+- Menu: entity candidate, storage to-confirm, because quick public uploads and kitchen-owned menus currently overlap.
+
+Confirmed support records:
+- MenuSection: record under Menu.
+- MenuItem: record under MenuSection.
+- MenuSourceUpload: record under Kitchen.
+
+Confirmed means:
+- Confirmed for the current implementation.
+- Not eternal.
+- If the product concept changes, discuss the entity-ness again before moving files or adding ceremony.
+
+To-confirm examples:
+- Dish, likely Kitchen-scoped.
+- Recipe, likely Kitchen-scoped today but may grow public/root later.
+- Ingredient, likely root plus local usage wrappers.
+- Product, likely root plus supplier/kitchen wrappers.
+
+Not entity by default:
+- Kitchen team join request.
+- Document link.
+
+Rule of thumb:
+If deleting the parent makes the thing meaningless, start as a record or shape.
+Promote it to entity only when it needs its own identity, route, collection stack,
+console/public surface, or cross-parent lifecycle.
+
+Default process:
+- New concept starts as `to-confirm`.
+- Discuss entity-ness before creating a full model/composable/page/console family.
+- Prefer the smallest useful shape first.
+- Promote later when repeated behavior proves the concept deserves entity status.

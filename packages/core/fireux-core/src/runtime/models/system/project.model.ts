@@ -1,4 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import { defineFireuxEntity } from '../core/entity.model'
 import type {
   FireuxAppOverlay,
   FireuxStamped,
@@ -51,6 +52,17 @@ export const ProjectStorage = {
   overlayCollection: 'projects',
   idParam: 'projectId',
 } as const
+
+export const ProjectEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Project',
+  family: ['system', 'console-entity'],
+  storage: 'both',
+  status: 'confirmed',
+  console: true,
+  root: ProjectStorage.root,
+  scoped: ProjectStorage.overlay,
+})
 
 export const AppProjectStorage = {
   shape: 'scoped',

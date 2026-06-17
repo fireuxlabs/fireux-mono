@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -14,6 +15,20 @@ export const MenuItemStorage = {
   parent: 'menu-section',
   idParam: 'itemId',
 } as const
+
+export const MenuItemRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'MenuItem',
+  family: 'menu',
+  storage: 'scoped',
+  status: 'confirmed',
+  parent: 'MenuSection',
+  scoped: MenuItemStorage.path,
+  notes: [
+    'MenuItem places a Dish in a MenuSection.',
+    'Dish owns food truth; MenuItem owns placement, order, and price overrides.',
+  ],
+})
 
 export type MenuItemStatus = 'active' | 'archived'
 

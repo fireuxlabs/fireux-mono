@@ -4,9 +4,10 @@ Ref: 37fb262f0
 Role: map, not canon
 
 Purpose:
-Map the stored entity composable shape.
+Map the stored access/composable shape for FireUX entities.
 
 Vertical links:
+- Parent: entities.readme
 - Parent: composables.readme
 - Child: family-console-entity.readme
 - Child: family-menu.readme
@@ -22,7 +23,7 @@ Allowed entity stack:
 - `seo`
 - `utils`
 
-Examples:
+Example Firestore stack names, not automatic entity proof:
 - `kitchen`
 - `supplier`
 - `product`

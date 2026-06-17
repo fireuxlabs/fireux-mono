@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -9,6 +10,20 @@ export const MenuSourceUploadStorage = {
   parent: 'kitchen',
   idParam: 'uploadId',
 } as const
+
+export const MenuSourceUploadRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'MenuSourceUpload',
+  family: 'menu',
+  storage: 'scoped',
+  status: 'confirmed',
+  parent: 'Kitchen',
+  scoped: MenuSourceUploadStorage.path,
+  notes: [
+    'MenuSourceUpload stores the raw uploaded source for a Kitchen.',
+    'It can produce or update a Menu later, but it is not the Menu entity.',
+  ],
+})
 
 export type MenuSourceUploadStatus =
   | 'uploaded'

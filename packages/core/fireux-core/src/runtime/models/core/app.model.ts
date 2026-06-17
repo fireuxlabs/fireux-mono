@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import { defineFireuxEntity } from './entity.model'
 import type { FireuxStamped } from './meta.model'
 import type {
   AppDerived,
@@ -36,6 +37,18 @@ export const AppStorage = {
   collection: 'apps',
   idParam: 'appId',
 } as const
+
+export const AppEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'App',
+  family: ['core', 'system'],
+  storage: 'root',
+  status: 'confirmed',
+  root: AppStorage.path,
+  notes: [
+    'App can be the active runtime self and is still a FireUX entity.',
+  ],
+})
 
 type WidenLiteral<T> =
   T extends string ? string

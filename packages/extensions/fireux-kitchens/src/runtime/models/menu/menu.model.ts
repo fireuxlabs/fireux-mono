@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { OrderServiceMode } from 'fireux-orders/runtime/models/order.model'
@@ -30,6 +31,20 @@ export const MenuStorage = {
     items: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   },
 } as const
+
+export const MenuEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Menu',
+  family: ['menu', 'kitchen'],
+  storage: 'to-confirm',
+  status: 'to-confirm',
+  scoped: MenuStorage.path,
+  notes: [
+    'Kitchen Menu is scoped to a Kitchen.',
+    'Root /menus records currently act as public doorway/upload records.',
+    'Confirm whether Menu becomes both, or whether public doorway remains a separate record shape.',
+  ],
+})
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 

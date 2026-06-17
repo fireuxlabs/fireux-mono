@@ -1,4 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import { defineFireuxEntity } from '../core/entity.model'
 import type { FireuxStamped } from '../core/meta.model'
 
 export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
@@ -38,6 +39,15 @@ export const EcosystemStorage = {
   collection: 'ecosystems',
   idParam: 'ecosystemId',
 } as const
+
+export const EcosystemEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Ecosystem',
+  family: 'system',
+  storage: 'root',
+  status: 'confirmed',
+  root: EcosystemStorage.path,
+})
 
 export const EcosystemModel = {
   id: '',
