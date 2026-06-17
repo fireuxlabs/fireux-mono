@@ -1,6 +1,6 @@
 Entities map
 Updated: 2026-06-17
-Ref: 89b8485e4
+Ref: dece0dcde
 Role: map, not canon
 
 Purpose:
@@ -52,6 +52,42 @@ Storage scopes:
 - `both`: has root identity plus scoped/app-operational state.
 - `none`: no stored entity shape.
 - `to-confirm`: not settled yet.
+
+Route/index families:
+- Root index entity: has or deserves a public/root index route like `/<entities>`.
+- Scoped entity/record: only makes sense under a parent route or console context.
+- A root index entity may still have scoped operational records, but its public index should start from the root/public collection doorway.
+- A scoped entity/record should not be forced into root index ceremony just to reuse a collection manager.
+
+Root index entity examples:
+- App: `/apps`.
+- Ecosystem: `/ecosystems`.
+- Project: `/projects`.
+- User: `/users`.
+- Kitchen: `/kitchens`.
+- Menu: `/menus`, currently to-confirm because it bridges quick uploads and kitchen-owned menus.
+- Ingredient: `/ingredients`.
+- Recipe: `/recipes`, exact root/scoped split still to-confirm.
+- Chef: `/chefs`.
+- Supplier: `/suppliers`.
+- Portfolio: `/portfolios`.
+- Property: `/properties`.
+- Place: `/places`.
+- Blog: `/blog`.
+- Company: `/companies`.
+- Job: `/jobs`.
+- Agent: `/agents`.
+- Professional: `/professionals`.
+- Product: `/products`.
+
+Scoped-only examples:
+- Dish: kitchen-scoped today.
+- Station: kitchen-scoped today.
+- Order: kitchen-scoped today.
+- Team: console/access/member scoped today.
+- Task: portfolio-scoped today.
+- MenuSection/MenuItem: records under Menu.
+- MenuSourceUpload: support record under Kitchen.
 
 First confirmed markers:
 - App: entity, root, core/system.

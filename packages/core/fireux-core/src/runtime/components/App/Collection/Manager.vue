@@ -112,6 +112,7 @@ import {
   useAppInterface,
   type AppCard,
 } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import type { AppModel } from '../../../models/core/app.model'
 
@@ -157,7 +158,12 @@ const emit = defineEmits<{
   (event: 'toggle-selection', value: string): void
 }>()
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useAppCollection()
+const collection = computed<AppModel[]>(() =>
+  Array.isArray(props.collection)
+    ? props.collection
+    : (fetched.apps.value as AppModel[])
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Apps'))
 const description = computed(() =>

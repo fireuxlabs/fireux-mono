@@ -73,6 +73,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import { useEcosystemCollection } from '../../../composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
@@ -91,7 +92,6 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    collection: () => [],
     title: 'Ecosystems',
     description: 'Browse ecosystems available in this workspace.',
     link: false,
@@ -103,7 +103,10 @@ const props = withDefaults(
   }
 )
 
-const rawCollection = computed(() => props.collection ?? [])
+const fetched = useEcosystemCollection()
+const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.ecosystems.value
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Ecosystems'))
 const description = computed(() => String(props.description || '').trim())

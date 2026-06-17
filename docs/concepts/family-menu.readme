@@ -1,6 +1,6 @@
 Menu family map
 Updated: 2026-06-17
-Ref: 37fb262f0
+Ref: dece0dcde
 Role: map, not canon
 
 Purpose:
@@ -58,7 +58,8 @@ Page composition note:
 - Root `/menus` uses a dedicated Menu CTA, not `EntityIndexCta`.
 - The Menu CTA owns the Go QR upload tool because the tool is the product action, not generic index chrome.
 - Root `/menus` lets `MenuCollectionManager` read the public menu collection by default.
-- Kitchen-scoped callers may still pass an explicit collection into `MenuCollectionManager`.
+- Kitchen-scoped menu pages should use kitchen/menu scoped surfaces, not `MenuCollectionManager` with passed scoped rows.
+- Smaller display pieces such as Menu cards/lists may still be shared underneath.
 
 Kitchen needed:
 - Attach menu to a kitchen.

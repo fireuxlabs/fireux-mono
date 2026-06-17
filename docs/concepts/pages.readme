@@ -1,6 +1,6 @@
 Pages spine map
 Updated: 2026-06-17
-Ref: 37fb262f0
+Ref: dece0dcde
 Role: map, not canon
 
 Purpose:
@@ -32,7 +32,9 @@ Common route families:
 - Dashboard/admin/dev surfaces where packages expose them.
 
 Index page notes:
-- Public entity indexes should use collection-manager style where applicable.
+- Public/root entity indexes should use `XCollectionManager`.
+- `XCollectionManager` should fetch the root/public entity collection itself.
+- Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Console indexes render `ConsoleXIndex`.
 - Dev/demo pages should live under `/dev`, not ad hoc `/demo`.
 

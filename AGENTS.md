@@ -28,6 +28,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Entities: `docs/concepts/entities.readme`
 - Pages spine: `docs/concepts/pages.readme`
 - Components spine: `docs/concepts/components.readme`
+- Collection managers: `docs/concepts/collection-manager.readme`
 - Composables spine: `docs/concepts/composables.readme`
 - Firestore entity spine: `docs/concepts/firestore-entity.readme`
 - Console spine: `docs/concepts/console.readme`

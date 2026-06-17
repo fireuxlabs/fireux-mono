@@ -1,0 +1,105 @@
+Collection manager map
+Updated: 2026-06-17
+Ref: dece0dcde
+Role: map, not canon
+
+Purpose:
+Compare all `*/Collection/Manager.vue` files by hydration class.
+
+Vertical links:
+- Parent: components.readme
+- Parent: entities.readme
+- Child: family-public-index.readme
+- Child: firestore-entity.readme
+
+Horizontal links:
+- composables.readme
+- family-menu.readme
+- family-console-entity.readme
+
+Working language:
+- Collection manager: visual/list/search/card manager for a collection family.
+- Root index manager: collection manager for a public/root entity index route.
+- Default source: collection manager fetches its own root/public collection.
+- Hydration: extra reads or API enrichment that add linked truth to a record.
+- Interface: `useXInterface()` maps fetched/hydrated records into cards.
+
+Important split:
+- Hydration class answers: does this collection need linked truth from elsewhere?
+- Source mode answers: is this a root index manager, a scoped surface, or a custom-derived surface?
+- These are different axes. A root index manager can require hydration or not require hydration.
+
+Source modes:
+- Root index manager: fetches its own public/root entity collection.
+- Scoped surface: parent/context-specific surface fetches scoped rows; do not reuse root collection manager as the scoped renderer.
+- Custom-derived: renders a shaped collection rather than a boring root entity list.
+
+Override status:
+- Existing managers may still accept a `collection` prop during migration.
+- Do not copy that as the target pattern for scoped surfaces.
+- The target pattern is: `XCollectionManager` belongs to `/xs`; scoped pages use named scoped surfaces and may reuse smaller `XCollectionList`/`XCards*` pieces.
+
+Current source-mode snapshot:
+- Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`.
+- Provided-only today: `Blog`, `Company`, `Agent`, `Job`, `Professional`, `Chef`, `Dish`, `Ingredient`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Product`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`.
+- Custom-derived: `Blank`, `Orders`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
+
+Hydration directions:
+- Up: scoped/local record reads a higher/root entity.
+- Down: public/root doorway reads scoped child detail.
+- Side: record reads sibling/root references.
+- Overlay: root record combines with app-scoped operational state.
+
+Working rule:
+- Root/public entity collection managers fetch a default public/root collection.
+- Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
+- Hydration should usually live in `useXCollection()`, a public API endpoint, or a dedicated fetch seam.
+- The Vue manager should avoid manual per-row document reads when a composable/API can return a hydrated surface.
+
+Class A: requires hydration or enrichment
+
+| Manager | Hydration source | Direction | Current note |
+| --- | --- | --- | --- |
+| `Kitchen` | Place by `place_id` | Up | Implemented in `useKitchenCollection()`. |
+| `Menu` | User creator, Kitchen, owner App, scoped Kitchen Menu | Side, up, down | Implemented through public menu API/default collection. |
+| `Project` | App/Ecosystem/runtime project surface | Side/overlay | Default collection exists; exact enrichment to confirm. |
+| `Supplier` | App-scoped supplier overlay; future Company link | Overlay/side | Default collection exists. |
+| `Portfolio` | App-scoped portfolio overlay | Overlay | Default collection exists. |
+| `Property` | App-scoped property overlay | Overlay | Default collection exists. |
+| `Chef` | User identity/profile surface | Up/side | Collection-only today; hydration source to confirm. |
+| `Agent` | User identity/profile surface | Up/side | Collection-only today; hydration source to confirm. |
+| `Professional` | User identity/profile surface | Up/side | Collection-only today; hydration source to confirm. |
+| `Dish` | Ingredient/Product/Menu placement references | Side/down | Collection-only today; hydration source to confirm. |
+| `Recipe` | Ingredient/Dish references | Side | Collection-only today; hydration source to confirm. |
+| `Team` | User records for member labels | Side | Collection-only today. |
+| `Orders` | User/Menu/Dish/Kitchen references | Side | Custom manager today. |
+| `Supplier.Item` | Product root record | Side | Collection-only today. |
+| `Supplier.Ingredient` | Ingredient root record | Side | Collection-only today. |
+| `Supplier.Catalogue` | Supplier items/products summary | Down/side | Collection-only today. |
+| `Console.Portfolio.Operations.Clients` | Portfolio/client/property references | Side | Collection-only today; hydration source to confirm. |
+| `Console.Kitchen.Operations.Mise` | Station/team/dish references | Side | Collection-only today; hydration source to confirm. |
+
+Class B: does not require hydration in the collection manager
+
+| Manager | Hydration source | Direction | Current note |
+| --- | --- | --- | --- |
+| `App` | None in manager | Self | Root index manager fetches apps. |
+| `Ecosystem` | None in manager | Self | Root index manager fetches ecosystems. |
+| `User` | None in manager | Self | Root index manager fetches users. |
+| `Blog` | None in manager | Self | Collection-only today. |
+| `Company` | None in manager | Self | Collection-only today. |
+| `Job` | None in manager | Self | Collection-only today. |
+| `Place` | None in manager | Self | Default-fetch exists; Place is often the hydration source for others. |
+| `Product` | None in manager | Self | Collection-only today; often a hydration source for supplier/kitchen items. |
+| `Ingredient` | None in root manager | Self | Collection-only today; often a hydration source for local usage records. |
+| `Recipe` in `fireux-misebox` | None in manager | Self | Collection-only ecosystem copy; needs future dedupe decision. |
+| `Kitchen.Supplier` | Caller-provided supplier entries | Self/side | Collection-only local kitchen surface. |
+| `Station` | None in manager | Self | Collection-only today. |
+| `Blank` | None in manager | Self | Intentional minimal mirror. |
+
+Open questions:
+- Should `Blog`, `Company`, `Job`, `Product`, and `Ingredient` move to root index manager self-fetch?
+- Which hydration is too expensive for client-side collection reads?
+- Which hydrated labels should be denormalized onto public/root documents instead?
+- Should expensive hydration happen through server APIs rather than Firestore client collection managers?
+- Does “hydration” need separate names for up, down, side, and overlay reads?

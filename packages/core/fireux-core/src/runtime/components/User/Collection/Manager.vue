@@ -72,6 +72,7 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
+import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import type { User } from '../../../models/core/user.model'
@@ -100,7 +101,10 @@ const props = withDefaults(
   }
 )
 
-const collection = computed(() => props.collection ?? [])
+const fetched = useUserCollection()
+const collection = computed<User[]>(() =>
+  Array.isArray(props.collection) ? props.collection : fetched.users.value
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Users'))
 const description = computed(() =>
