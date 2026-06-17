@@ -51,6 +51,14 @@ const defaultViewLabel = (kind: string) => {
   return 'View document'
 }
 
+const readMenuSourceKind = (data: Record<string, unknown>) =>
+  readRecordString(data, 'source_kind') ||
+  readRecordString(data, 'kind')
+
+const readMenuDocumentKind = (data: Record<string, unknown>) =>
+  readRecordString(data, 'doc_kind') ||
+  readRecordString(data, 'kind')
+
 function appPublicOrigin(appData: Record<string, unknown>) {
   const links = appData.social_links
   const socialLinks = links && typeof links === 'object' && !Array.isArray(links)
@@ -130,12 +138,12 @@ export function publicMenuFromData(
   const path = scope.path || readRecordString(data, 'path') || publicMenuPath(slug)
   const docName = readRecordString(data, 'doc_name')
   const docType = readRecordString(data, 'doc_type')
-  const sourceKind = readRecordString(data, 'source_kind')
+  const sourceKind = readMenuSourceKind(data)
   const kind = publicMenuKind({
     sourceKind,
     docName,
     docType,
-    storedKind: readRecordString(data, 'doc_kind'),
+    storedKind: readMenuDocumentKind(data),
   })
 
   return {

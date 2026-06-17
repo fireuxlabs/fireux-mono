@@ -37,11 +37,28 @@ Maturity states:
 - `kitchen-menu`: linked to a kitchen-owned menu.
 - `menu`: processed structured menu in the system.
 
+Public normalized kinds:
+- `photo`: public doorway renders an image source.
+- `pdf`: public doorway renders a PDF source.
+- `document`: public doorway renders a generic document source.
+- `menu`: public doorway resolves to a structured Kitchen Menu.
+
+Stored kind notes:
+- Quick uploads may store `doc_kind`.
+- Linked kitchen menus may store `source_kind` or older `kind`.
+- Public APIs should normalize these into the public kinds above.
+
 No kitchen needed:
 - Upload a quick menu source.
 - Show a photo/PDF.
 - Generate or show a QR doorway.
 - Invite owner to upgrade.
+
+Page composition note:
+- Root `/menus` uses a dedicated Menu CTA, not `EntityIndexCta`.
+- The Menu CTA owns the Go QR upload tool because the tool is the product action, not generic index chrome.
+- Root `/menus` lets `MenuCollectionManager` read the public menu collection by default.
+- Kitchen-scoped callers may still pass an explicit collection into `MenuCollectionManager`.
 
 Kitchen needed:
 - Attach menu to a kitchen.

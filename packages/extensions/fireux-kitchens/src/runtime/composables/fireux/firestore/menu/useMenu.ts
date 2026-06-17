@@ -11,6 +11,7 @@ export type { MenuItem, MenuItemPriceOption } from '../../../../models/menu/menu
 export type { MenuSection } from '../../../../models/menu/menu-section.model'
 export { useMenuCollection } from './fetch/useMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
+export { usePublicMenuCollection } from '../../public/menu/usePublicMenuCollection'
 export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'
 export { useMenuItemCollection } from './fetch/useMenuItemCollection'
 export { useMenuCreate } from './mutations/useMenuCreate'

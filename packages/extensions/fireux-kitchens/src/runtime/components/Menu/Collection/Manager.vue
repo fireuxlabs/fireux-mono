@@ -76,6 +76,7 @@ import {
   useMenuInterface,
   type MenuInterfaceSource,
 } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
+import { usePublicMenuCollection } from '../../../composables/fireux/public/menu/usePublicMenuCollection'
 
 const props = withDefaults(
   defineProps<{
@@ -106,9 +107,10 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useMenuInterface()
+const publicMenus = usePublicMenuCollection()
 
 const collection = computed(() =>
-  [...(props.collection ?? [])].sort(
+  [...(props.collection ?? publicMenus.menus.value)].sort(
     (a, b) =>
       Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
       String(a.name ?? '').localeCompare(String(b.name ?? ''))
