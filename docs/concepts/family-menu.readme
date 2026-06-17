@@ -1,0 +1,48 @@
+Menu family map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Map menu concepts without conflating quick uploaded menus and kitchen-owned structured menus.
+
+Vertical links:
+- Parent: family-public-index.readme
+- Parent: family-public-detail.readme
+- Parent: server-api.readme
+- Parent: tool-provider.readme
+
+Horizontal links:
+- firestore-entity.readme
+- console.readme
+- family-tenant-global.readme
+
+Current concepts:
+- Root quick menu: starts at `/menus`, can be just a photo or PDF upload.
+- Kitchen menu: belongs to a selected kitchen/console and may become structured.
+- Public menu doorway: `/menus/<id>` should remain a stable public URL when possible.
+- Tenant menu: tenant apps may expose simpler routes like `/menus/main`.
+- Directory menu: global apps may expose `/kitchens/<slug>/menus/<menuId>`.
+
+Maturity states:
+- `photo`: uploaded photo source.
+- `document`: uploaded PDF/document source.
+- `kitchen-menu`: linked to a kitchen-owned menu.
+- `menu`: processed structured menu in the system.
+
+No kitchen needed:
+- Upload a quick menu source.
+- Show a photo/PDF.
+- Generate or show a QR doorway.
+- Invite owner to upgrade.
+
+Kitchen needed:
+- Attach menu to a kitchen.
+- Convert into dishes/sections/items.
+- Manage kitchen menu operations.
+- Enable Sproochli/translation later.
+- Route through tenant/global kitchen ownership.
+
+Open questions:
+- Exact migration behavior from root quick menu to kitchen menu needs a clear rule.
+- Menu item and menu section may be shapes rather than full entities; avoid creating new entity stacks until the model is settled.

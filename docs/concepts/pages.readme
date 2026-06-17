@@ -1,0 +1,45 @@
+Pages spine map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Map how route pages should be built and where consensus is still forming.
+
+Vertical links:
+- Parent: nuxt4.readme
+- Child: family-public-index.readme
+- Child: family-public-detail.readme
+- Child: family-console-entity.readme
+- Child: family-menu.readme
+
+Horizontal links:
+- components.readme
+- composables.readme
+- debug.readme
+
+Current convention:
+- Page owns route shell, metadata, layout, and high-level composition.
+- Page should delegate domain display to named components.
+- Page should use composables for data and state.
+- Page should not become a heavy script that calculates many tiny display props.
+
+Common route families:
+- Public index: `/xs`.
+- Public detail: `/xs/[id-or-slug]`.
+- Console index: `/console/x`.
+- Console child operation: `/console/x/<operation>`.
+- Dashboard/admin/dev surfaces where packages expose them.
+
+Index page notes:
+- Public entity indexes should use collection-manager style where applicable.
+- Console indexes render `ConsoleXIndex`.
+- Dev/demo pages should live under `/dev`, not ad hoc `/demo`.
+
+Detail page notes:
+- Preferred emerging order: header, profile, main, operator/actions, dev debug.
+- This is not fully settled across every entity yet.
+
+Open questions:
+- Exact public detail spine still needs alignment across all entities.
+- Menu public routes are actively evolving and should be handled carefully.

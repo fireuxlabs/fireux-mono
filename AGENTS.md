@@ -1,6 +1,7 @@
 # AGENTS.md
 
 Purpose: operating instructions for AI agents working in `fireux-mono`.
+See: `docs/concepts/fireux-mono.readme`
 
 Effective: 2026-06-17
 
@@ -8,7 +9,35 @@ Effective: 2026-06-17
 
 Markdown documentation was intentionally culled. Do not treat deleted docs, recovered docs, old chat notes, or old README content as authority.
 
-At the time this file was rebuilt, the repo had no markdown files except this `AGENTS.md`. Guard still expects package `README.md` shape markers, but those placeholders must not be restored unless the user asks for that rebuild.
+Markdown now consists only of `AGENTS.md` plus guard-required `README.md` placeholders. Do not expand those README placeholders unless the user asks for that rebuild.
+
+Concept `.readme` files are allowed as small maps. They explain local working context; they do not define system truth unless the code and guards agree. Each concept map should carry an `Updated` date and `Ref` git short hash.
+
+## Concept Cascade
+
+Use the smallest relevant concept map before broad repo scanning:
+
+- FireUX Mono repo: `docs/concepts/fireux-mono.readme`
+- FireUX platform shape: `docs/concepts/fireux.readme`
+- Spine/canon working method: `docs/concepts/spine.readme`
+- Nuxt 4 and Vue 3: `docs/concepts/nuxt4.readme`
+- Nuxt UI: `docs/concepts/nuxt-ui.readme`
+- pnpm workspace/scripts: `docs/concepts/pnpm.readme`
+- Runtime package spine: `docs/concepts/runtime-package.readme`
+- App config spine: `docs/concepts/app-config.readme`
+- Pages spine: `docs/concepts/pages.readme`
+- Components spine: `docs/concepts/components.readme`
+- Composables spine: `docs/concepts/composables.readme`
+- Firestore entity spine: `docs/concepts/firestore-entity.readme`
+- Console spine: `docs/concepts/console.readme`
+- Server API spine: `docs/concepts/server-api.readme`
+- Debug surfaces: `docs/concepts/debug.readme`
+- Tool providers: `docs/concepts/tool-provider.readme`
+- Console entity family: `docs/concepts/family-console-entity.readme`
+- Public index family: `docs/concepts/family-public-index.readme`
+- Public detail family: `docs/concepts/family-public-detail.readme`
+- Menu family: `docs/concepts/family-menu.readme`
+- Tenant/global family: `docs/concepts/family-tenant-global.readme`
 
 ## Prime Directive
 
@@ -28,10 +57,10 @@ If a tiny behavior requires a broad diff, stop and report the missing seam. Do n
 
 ## Tech Stack
 
-- Monorepo: FireUX Mono.
-- Package manager: `pnpm`.
-- App framework: Nuxt 4 and Vue 3.
-- UI: Nuxt UI / Nuxt UI Pro conventions.
+- Monorepo: FireUX Mono. See `docs/concepts/fireux-mono.readme`.
+- Package manager: `pnpm`. See `docs/concepts/pnpm.readme`.
+- App framework: Nuxt 4 and Vue 3. See `docs/concepts/nuxt4.readme`.
+- UI: Nuxt UI / Nuxt UI Pro conventions. See `docs/concepts/nuxt-ui.readme`.
 - Language: TypeScript.
 - Runtime/server: Nitro, h3, Firebase, VueFire, Firebase Admin where needed.
 - Styling: Nuxt UI plus existing app/package CSS; Tailwind 4 is present.
@@ -42,6 +71,7 @@ Do not introduce React, another UI kit, another router, or another package manag
 ## FireUX Shape
 
 FireUX is a modular Nuxt platform.
+See: `docs/concepts/fireux.readme`
 
 - `packages/core/*`: shared primitives, runtime foundations, config helpers, module helpers, shared components/composables/models/pages/server utilities.
 - `packages/ecosystem/*`: ecosystem packages with identity/config/public assets/Firebase binding.
@@ -98,6 +128,7 @@ Project app shape is controlled by `scripts/guards/projects.mjs`.
 ## Runtime Package Spine
 
 Most packages follow this runtime shape:
+See: `docs/concepts/spine.readme`
 
 - `src/module.ts`
 - `src/config/module/*`
@@ -246,7 +277,7 @@ Useful commands:
 - `pnpm --dir <package-or-app> exec tsc --noEmit`
 - `pnpm --dir <app> exec nuxi typecheck`
 
-Current caveat: after the markdown cull, `pnpm guard` will fail until required README placeholders are restored or the guards are intentionally updated.
+Current caveat: guard-required README placeholders are intentionally blank TODO files after the documentation reset.
 
 ## Communication
 

@@ -1,0 +1,39 @@
+Public detail family map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
+
+Vertical links:
+- Parent: pages.readme
+- Child: family-menu.readme
+
+Horizontal links:
+- components.readme
+- composables.readme
+- debug.readme
+
+Emerging shared order:
+- Header.
+- Profile or identity card.
+- Main public content.
+- Operator/actions surface when relevant.
+- Dev debug.
+
+Similar:
+- Resolves one public object or public projection.
+- Shows useful public content first.
+- Keeps operator/private actions separate from main public content.
+- Uses named domain components.
+
+Different:
+- Kitchen detail can show public menus.
+- Supplier detail should use slug and company-style identity.
+- Portfolio detail is likely private-light and public-light.
+- Menu detail can be a photo/PDF quick menu or a structured kitchen menu.
+
+Open questions:
+- Exact operator/action panel spine is not fully settled.
+- Detail pages should be aligned opportunistically when touched, not in a massive sweep.

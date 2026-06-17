@@ -1,0 +1,50 @@
+Spine concept map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Explain how we use "canon" without getting trapped in exception soup.
+
+Preferred word:
+- Use "spine" when possible.
+- Spine means shared shape proven by code, guards, and nearest siblings.
+- Domain deltas are allowed only after the shared spine is visible.
+
+Vertical links:
+- Parent: ../../AGENTS.md
+- Child: runtime-package.readme
+- Child: pages.readme
+- Child: components.readme
+- Child: composables.readme
+- Child: console.readme
+- Child: firestore-entity.readme
+
+Horizontal links:
+- family-console-entity.readme
+- family-public-index.readme
+- family-public-detail.readme
+- family-menu.readme
+- family-tenant-global.readme
+
+Before editing:
+1. Name the family.
+2. Name the nearest sibling.
+3. Name the shared shape.
+4. Name the accepted delta.
+5. Patch the smallest useful slice.
+
+Stop signals:
+- A tiny behavior needs many unrelated files.
+- A helper name hides confusion instead of naming a real seam.
+- A new layer duplicates an existing core seam.
+- A local project app starts owning shared domain behavior.
+
+Useful current spines:
+- Console: `core`, `index`, `overview`, `identity`, `team`, `operations`.
+- Firestore entity: root entity folder plus `fetch`, `mutations`, `seo`, `utils`.
+- Runtime package: `src/module.ts`, `src/config/module/*`, `src/runtime/*`.
+- Domain UI: `X/Cards`, `X/Collection`, `X/Create`, `X/Edit`, `Console/X/*`.
+
+Open questions:
+- Whether "canon" remains the right word. "Spine" is clearer and less ceremonial.

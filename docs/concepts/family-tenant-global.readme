@@ -1,0 +1,43 @@
+Tenant/global family map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Map the recurring difference between global ecosystem apps and tenant apps.
+
+Vertical links:
+- Parent: app-config.readme
+- Parent: console.readme
+
+Horizontal links:
+- family-console-entity.readme
+- family-menu.readme
+- tool-provider.readme
+
+Global app:
+- Example: Misebox.
+- Can expose multiple domains/consoles.
+- Can let a user select from multiple authorized targets.
+- Can create new targets when config allows.
+
+Tenant app:
+- Example: La Tap Berne.
+- Usually exists for one business/target or a small configured set.
+- Uses `role: tenant`.
+- Uses `consoleConfig.<family>.targetIds`.
+- Often sets create behavior off for pinned single-target workflows.
+
+Similar:
+- Both should operate the same target with the same package-owned domain logic.
+- Both should use shared console target resolution.
+- Both should store data in the owning app/scope determined by the selected target.
+
+Different:
+- Tenant app can auto-select a single configured target.
+- Global app needs user/permission-aware target lists.
+- Public URLs may differ: tenant root routes can be shorter than global directory routes.
+
+Open questions:
+- Data migration from global app scope to tenant app scope needs a deliberate workflow.
+- Tenant public menu URL rules need to stay separate from provider tool preview URLs.

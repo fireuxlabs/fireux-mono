@@ -1,0 +1,33 @@
+pnpm concept map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Explain workspace/package command context.
+
+Vertical links:
+- Parent: fireux-mono.readme
+
+Horizontal links:
+- runtime-package.readme
+- app-config.readme
+
+Workspace:
+- The repo uses pnpm workspaces.
+- Root package manager is `pnpm@10.12.1`.
+- Workspaces include packages, projects, tools, and test packages.
+
+Common commands:
+- `pnpm guard`
+- `pnpm gitsave`
+- `pnpm --dir <package-or-app> exec tsc --noEmit`
+- `pnpm --dir <app> exec nuxi typecheck`
+- `pnpm dev:misebox`
+- `pnpm dev:go-qr`
+- `pnpm dev:la-tap-berne`
+
+Working rule:
+- Use focused checks while iterating.
+- Run broad checks when package shape, guard-covered structure, or shared runtime seams change.
+- Do not repeatedly run expensive checks after every tiny exploratory edit unless the user asks.

@@ -1,0 +1,59 @@
+Firestore entity spine map
+Updated: 2026-06-17
+Ref: 37fb262f0
+Role: map, not canon
+
+Purpose:
+Map the stored entity composable shape.
+
+Vertical links:
+- Parent: composables.readme
+- Child: family-console-entity.readme
+- Child: family-menu.readme
+
+Horizontal links:
+- console.readme
+- server-api.readme
+
+Allowed entity stack:
+- `composables/fireux/firestore/<entity>`
+- `fetch`
+- `mutations`
+- `seo`
+- `utils`
+
+Examples:
+- `kitchen`
+- `supplier`
+- `product`
+- `place`
+- `company`
+- `blog`
+- `property`
+- `portfolio`
+- `ingredient`
+- `recipe`
+- `dish`
+- `menu`
+- `translation`
+- `job`
+- `task`
+
+Similarities:
+- Stored entity stacks should be boring and predictable.
+- Fetch and collection concerns belong in `fetch`.
+- Writes belong in `mutations`.
+- UI mapping belongs in `utils/view` when present.
+
+Differences:
+- Some entities are root/public.
+- Some entities are scoped to a console or parent.
+- Some entities are both, but that must be explicit in the model and route behavior.
+
+Do not:
+- Put console operation folders inside Firestore stacks.
+- Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
+- Create fake compatibility branches without an explicit user request.
+
+Open questions:
+- Menu needs continued cleanup because root menus and kitchen menus currently overlap conceptually.
