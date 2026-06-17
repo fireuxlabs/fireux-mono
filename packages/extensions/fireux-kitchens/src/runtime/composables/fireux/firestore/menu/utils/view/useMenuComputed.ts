@@ -1,7 +1,6 @@
 import { computed, type Ref } from 'vue'
 import type { Menu } from '../../../../../../models/menu/menu.model'
 import { useMenuInterface } from './useMenuInterface'
-import { useMenuMaturity } from './useMenuMaturity'
 
 export function useMenuComputed(
   menu: Ref<Menu | null | undefined>,
@@ -19,6 +18,5 @@ export function useMenuComputed(
     isPending,
     menuCard,
     menuSearchText,
-    ...useMenuMaturity(menu, computed(() => 0)),
   }
 }

@@ -1,5 +1,7 @@
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { UserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import {
   kitchenPublicMenuPath,
   kitchenPublicMenuRouteMode,
@@ -15,6 +17,7 @@ type PublicMenuScope = {
   viewTo?: string
   path?: string
   qrPath?: string
+  createdByLabel?: string
 }
 
 const menuSlug = (data: Record<string, unknown>, docId: string) =>
@@ -55,6 +58,40 @@ function appPublicOrigin(appData: Record<string, unknown>) {
     : {}
 
   return origin(socialLinks.website) || origin(appData.source_url)
+}
+
+const uniqueText = (values: unknown[]) =>
+  Array.from(new Set(values.map((value) => text(value)).filter(Boolean)))
+
+const userDisplayLabel = (data: Record<string, unknown>) =>
+  readRecordString(data, 'display_name') ||
+  readRecordString(data, 'displayName') ||
+  readRecordString(data, 'handle')
+
+export async function readPublicMenuCreatorLabels(createdByIds: string[]) {
+  const ids = uniqueText(createdByIds)
+  if (!ids.length) return new Map<string, string>()
+
+  const db = getRuntimeIdentityFirestore()
+  const entries = await Promise.all(
+    ids.map(async (id) => {
+      const snap = await db.collection(UserStorage.rootCollection).doc(id).get()
+      const label = snap.exists ? userDisplayLabel(snap.data() || {}) : ''
+
+      return [id, label || 'User'] as const
+    })
+  )
+
+  return new Map(entries)
+}
+
+export function publicMenuCreatorLabel(
+  createdBy: string,
+  creatorLabels: Map<string, string>
+) {
+  if (!createdBy) return 'Guest'
+
+  return creatorLabels.get(createdBy) || 'User'
 }
 
 export function publicMenuOwnerAppView(options: {
@@ -118,6 +155,8 @@ export function publicMenuFromData(
     kitchen_app_id: scope.kitchenAppId ?? readRecordString(data, 'kitchen_app_id'),
     kitchen_menu_id: scope.kitchenMenuId ?? readRecordString(data, 'kitchen_menu_id'),
     created_by: readRecordString(data, 'created_by'),
+    created_by_label:
+      scope.createdByLabel ?? readRecordString(data, 'created_by_label'),
     path,
     qr_path: scope.qrPath || readRecordString(data, 'qr_path') || `${path}/qr`,
     view_label: scope.viewLabel || defaultViewLabel(kind),

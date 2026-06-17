@@ -8,7 +8,6 @@ import { DishStorage } from '../../../../../models/dish.model'
 import type { MenuItem } from '../../../../../models/menu/menu-item.model'
 import type { MenuSection } from '../../../../../models/menu/menu-section.model'
 import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu/menu.model'
-import { resolveMenuMaturity } from '../utils/view/useMenuMaturity'
 import {
   menuItemsPath,
   menuPath,
@@ -60,13 +59,10 @@ export function useMenuUpdate(
 
   async function assertMenuCanPublish(kitchenId: string, menuId: string) {
     const menuSnap = await getDoc(doc(resolveDb(), collectionPath(kitchenId), clean(menuId)))
-    const menuMaturity = resolveMenuMaturity({
-      menu: menuSnap.exists()
-        ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
-        : null,
-      structuredItemsCount: 0,
-    })
-    if (menuMaturity.hasSource) return
+    const menu = menuSnap.exists()
+      ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
+      : null
+    if (clean(menu?.doc_url)) return
 
     const sectionsPath = menuSectionsPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),

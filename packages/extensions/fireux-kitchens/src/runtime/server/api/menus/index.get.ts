@@ -3,8 +3,10 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
+  publicMenuCreatorLabel,
   publicMenuFromData,
   publicMenuOwnerAppView,
+  readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
 const kitchenDisplayName = (data: Record<string, unknown>) =>
@@ -67,6 +69,9 @@ export default defineEventHandler(async () => {
     })
   )
   const ownerApps = new Map(ownerAppEntries)
+  const creatorLabels = await readPublicMenuCreatorLabels(
+    snap.docs.map((doc) => readRecordString(doc.data(), 'created_by'))
+  )
 
   const menus = snap.docs.flatMap((doc) => {
     const data = doc.data()
@@ -80,6 +85,12 @@ export default defineEventHandler(async () => {
 
     return [publicMenuFromData(doc.id, data, {
       kitchenName: kitchenNames.get(kitchenId) || '',
+      createdByLabel: kitchenId
+        ? ''
+        : publicMenuCreatorLabel(
+            readRecordString(data, 'created_by'),
+            creatorLabels
+          ),
       ...publicMenuOwnerAppView({
         ownerAppId: kitchenAppId,
         currentAppId: appId,

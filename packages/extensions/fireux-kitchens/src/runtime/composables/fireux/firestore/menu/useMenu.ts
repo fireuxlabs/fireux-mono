@@ -26,12 +26,6 @@ export {
 } from './utils/paths'
 export { useMenuComputed } from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
-export {
-  resolveMenuMaturity,
-  useMenuMaturity,
-  type MenuMaturity,
-  type MenuMaturityState,
-} from './utils/view/useMenuMaturity'
 
 type UseMenuOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

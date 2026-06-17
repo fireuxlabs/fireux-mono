@@ -17,6 +17,7 @@ export type PublicMenu = {
   kitchen_app_id: string
   kitchen_menu_id: string
   created_by: string
+  created_by_label: string
   path: string
   qr_path: string
   view_label: string

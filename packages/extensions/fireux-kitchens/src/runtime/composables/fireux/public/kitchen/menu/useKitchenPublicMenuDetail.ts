@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
 import { useDishCollection } from '../../../firestore/dish/fetch/useDishCollection'
 import { useMenuSectionCollection } from '../../../firestore/menu/fetch/useMenuSectionCollection'
-import { useMenuMaturity } from '../../../firestore/menu/utils/view/useMenuMaturity'
 import { useKitchenPublicMenuItems } from './useKitchenPublicMenuItems'
 import { useKitchenPublicMenuRows } from './useKitchenPublicMenuRows'
 import { useKitchenPublicMenuScope } from './useKitchenPublicMenuScope'
@@ -57,14 +56,12 @@ function useKitchenPublicMenuDetailFromScope(
       0
     )
   )
-  const maturity = useMenuMaturity(state.menu, structuredItemsCount)
   const debug = computed(() => ({
     ...state.debug.value,
     detail: {
       kitchenId: kitchenId.value,
       kitchenCollectionPath: state.kitchenCollectionPath.value,
       menuId: resolvedMenuId.value,
-      maturity: maturity.menuMaturity.value,
       sectionsPath: sectionState.collectionPath.value,
       dishesPath: dishState.collectionPath.value,
       sectionsCount: sectionState.sections.value.length,
@@ -82,7 +79,6 @@ function useKitchenPublicMenuDetailFromScope(
     items: itemState.items,
     dishes: dishState.dishes,
     sectionRows: rows.sectionRows,
-    ...maturity,
     detailPending,
     debug,
   }

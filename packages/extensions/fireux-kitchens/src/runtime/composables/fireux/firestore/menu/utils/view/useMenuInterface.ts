@@ -9,6 +9,7 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   qr_path?: string
   kind?: string
   kitchen_name?: string
+  created_by_label?: string
   view_label?: string
   view_to?: string
 }
@@ -85,6 +86,7 @@ export function useMenuInterface() {
     const name = safeString(menu.name).trim()
     const description = safeString(menu.description).trim()
     const kitchenName = safeString(menu.kitchen_name).trim()
+    const createdByLabel = safeString(menu.created_by_label).trim()
     const status = safeString(menu.status).trim()
     const kind = safeString(menu.kind).trim()
     const meta = status && status !== 'published' ? status : ''
@@ -100,7 +102,7 @@ export function useMenuInterface() {
       to,
       imageUrl: '',
       title: name,
-      subtitle: kitchenName || description,
+      subtitle: kitchenName || createdByLabel || description,
       meta,
       status,
       badges: [],

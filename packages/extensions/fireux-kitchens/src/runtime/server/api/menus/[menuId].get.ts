@@ -8,8 +8,10 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
+  publicMenuCreatorLabel,
   publicMenuFromData,
   publicMenuOwnerAppView,
+  readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -137,7 +139,12 @@ async function readPublicMenuSurface(menuId: string) {
     })
   }
 
-  return publicMenuFromData(menuId, data)
+  const createdBy = readRecordString(data, 'created_by')
+  const creatorLabels = await readPublicMenuCreatorLabels([createdBy])
+
+  return publicMenuFromData(menuId, data, {
+    createdByLabel: publicMenuCreatorLabel(createdBy, creatorLabels),
+  })
 }
 
 export default defineEventHandler(async (event) => {
