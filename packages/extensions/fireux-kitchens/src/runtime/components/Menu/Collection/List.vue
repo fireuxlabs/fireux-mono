@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface';
+import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
 withDefaults(
   defineProps<{

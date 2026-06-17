@@ -28,10 +28,12 @@
             </div>
           </div>
 
-        </div>
-
-        <div v-if="showMeta && meta" class="truncate text-xs text-dimmed">
-          <span>{{ meta }}</span>
+          <span
+            v-if="actionLabel"
+            class="inline-flex shrink-0 items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
+          >
+            {{ actionLabel }}
+          </span>
         </div>
 
         <div v-if="showTagline && description" class="truncate text-xs text-dimmed">
@@ -70,10 +72,12 @@
             </div>
           </div>
 
-        </div>
-
-        <div v-if="showMeta && meta" class="truncate text-xs text-dimmed">
-          <span>{{ meta }}</span>
+          <span
+            v-if="actionLabel"
+            class="inline-flex shrink-0 items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
+          >
+            {{ actionLabel }}
+          </span>
         </div>
 
         <div v-if="showTagline && description" class="truncate text-xs text-dimmed">
@@ -93,13 +97,12 @@ type Props = Pick<
   | 'to'
   | 'title'
   | 'subtitle'
-  | 'meta'
   | 'active'
+  | 'actionLabel'
   | 'description'
   | 'imageUrl'
 > & {
   showSubtitle?: boolean
-  showMeta?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -107,7 +110,6 @@ type Props = Pick<
 
 const props = withDefaults(defineProps<Props>(), {
   showSubtitle: true,
-  showMeta: true,
   showTagline: true,
   link: false,
   action: false,

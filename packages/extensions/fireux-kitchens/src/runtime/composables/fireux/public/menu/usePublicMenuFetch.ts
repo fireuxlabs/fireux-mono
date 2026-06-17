@@ -19,6 +19,8 @@ export type PublicMenu = {
   created_by: string
   path: string
   qr_path: string
+  view_label: string
+  view_to: string
 }
 
 type UsePublicMenuFetchOptions = {

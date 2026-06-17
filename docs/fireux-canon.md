@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-16
+Updated: 2026-06-17
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -12,6 +12,25 @@ Updated: 2026-06-16
 - When a new repeated pattern is discovered, update this canon and the relevant runtime/extension docs in the same change or before the pattern is reused.
 - When a local implementation reveals something that should be shared, fold it into the owning family instead of copying it app by app.
 - The goal is deliberate repetition: the same concept should look and behave the same across apps, packages, and entities unless the domain has a real reason to differ.
+
+## Anti-Spaghetti Change Rule
+- Architecture beats patching. If the model is unclear, stop at the seam and describe the intended inputs, process, outputs, and failure states before editing.
+- A small product behavior that needs a large scattered diff is a canon smell. Find the missing shared seam, spine, or interface before continuing.
+- Do not stack fixes on top of a misunderstood implementation. Strip back to the smallest honest shape, then rebuild with the family pattern visible.
+- New files must name real concepts: model, fetch, collection, interface, card, collection manager, page, console spine, operation, or documented provider seam. Do not create files only to bury messy code.
+- Tests and checks should follow the seam being changed. Use focused checks during iteration, then broader guards when the shape is stable.
+
+## Family Alignment Gate
+- Family work starts from the settled family contract, not from fresh invention.
+- Before editing an entity family, console family, route family, page family, model family, collection manager family, provider tool, or public/detail surface, identify:
+  - family name
+  - reference sibling
+  - required matching seams
+  - allowed domain deltas
+  - files that should remain ignorant of the delta
+- If those five points cannot be named, the next task is discovery or documentation, not implementation.
+- Once a family pattern is settled, later changes must verify against it rather than re-derive it from scattered files.
+- If implementation reveals repeated drift, update the family contract first or in the same change. Do not keep asking every consumer to remember the rule locally.
 
 ## Canon Enforcement Contract
 - FireUX canon is not a suggestion layer. If a shape is declared as current canon, the repo must contain enough working structure for a developer or user to find and exercise it.

@@ -1,5 +1,6 @@
 <template>
   <UPage>
+    <!-- Index cannon: docs/index-cannon.readme · family: Public doorway/onboarding -->
     <UPageHeader
       class="pageheader"
       :title="pageTitle"

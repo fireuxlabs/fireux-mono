@@ -9,6 +9,8 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   qr_path?: string
   kind?: string
   kitchen_name?: string
+  view_label?: string
+  view_to?: string
 }
 
 export namespace MenuCard {
@@ -25,6 +27,7 @@ export namespace MenuCard {
     name: string
     description: string
     active: boolean
+    actionLabel: string
     itemCount: number
     isActiveNow: boolean
     windowLabel: string
@@ -53,6 +56,7 @@ export function useMenuInterface() {
     | 'subtitle'
     | 'meta'
     | 'active'
+    | 'actionLabel'
     | 'description'
     | 'isActiveNow'
   >
@@ -67,6 +71,14 @@ export function useMenuInterface() {
     details: Array<{ label: string; value: string | number }>
   }
 
+  function defaultActionLabel(kind: string) {
+    if (kind === 'menu') return 'View menu'
+    if (kind === 'photo') return 'View photo'
+    if (kind === 'pdf') return 'View PDF'
+
+    return 'View document'
+  }
+
   function map(menu: MenuInterfaceSource): MenuCard.Card {
     const id = safeString(menu.id).trim()
     const slug = safeString(menu.slug).trim() || id
@@ -75,11 +87,13 @@ export function useMenuInterface() {
     const kitchenName = safeString(menu.kitchen_name).trim()
     const status = safeString(menu.status).trim()
     const kind = safeString(menu.kind).trim()
-    const meta = status && status !== 'published' ? status : kind
+    const meta = status && status !== 'published' ? status : ''
     const to =
+      safeString(menu.view_to).trim() ||
       safeString(menu.path).trim() ||
       (slug ? `/menus/${encodeURIComponent(slug)}` : '')
-    const badges = Array.from(new Set([kind].filter(Boolean)))
+    const actionLabel =
+      safeString(menu.view_label).trim() || defaultActionLabel(kind)
 
     return {
       id,
@@ -89,11 +103,12 @@ export function useMenuInterface() {
       subtitle: kitchenName || description,
       meta,
       status,
-      badges,
+      badges: [],
       summary: description,
       name,
       description,
       active: true,
+      actionLabel,
       itemCount: 0,
       isActiveNow: true,
       windowLabel: '',
@@ -136,6 +151,7 @@ export function useMenuInterface() {
       subtitle: base.subtitle,
       meta: base.meta,
       active: base.active,
+      actionLabel: base.actionLabel,
       description: '',
       isActiveNow: base.isActiveNow,
     }

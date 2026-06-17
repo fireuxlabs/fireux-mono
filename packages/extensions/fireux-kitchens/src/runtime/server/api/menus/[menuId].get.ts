@@ -7,7 +7,10 @@ import {
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { publicMenuFromData } from '../../utils/public-menus.ts'
+import {
+  publicMenuFromData,
+  publicMenuOwnerAppView,
+} from '../../utils/public-menus.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -91,11 +94,13 @@ async function readPublicMenuSurface(menuId: string) {
   const kitchenMenuId = readRecordString(data, 'kitchen_menu_id')
 
   if (kitchenAppId && kitchenId && kitchenMenuId) {
-    const [menuSnap, kitchenSnap] = await Promise.all([
+    const [menuSnap, kitchenSnap, appSnap, kitchenCountSnap] = await Promise.all([
       db
         .doc(`apps/${kitchenAppId}/kitchens/${kitchenId}/menus/${kitchenMenuId}`)
         .get(),
       db.collection('kitchens').doc(kitchenId).get(),
+      db.collection('apps').doc(kitchenAppId).get(),
+      db.collection(`apps/${kitchenAppId}/kitchens`).count().get(),
     ])
 
     if (!menuSnap.exists) {
@@ -121,6 +126,14 @@ async function readPublicMenuSurface(menuId: string) {
       kitchenMenuId,
       path: `/menus/${encodeURIComponent(menuId)}`,
       qrPath: `/menus/${encodeURIComponent(menuId)}/qr`,
+      ...publicMenuOwnerAppView({
+        ownerAppId: kitchenAppId,
+        currentAppId: currentAppId(),
+        ownerAppData: appSnap.exists ? appSnap.data() || {} : {},
+        ownerAppKitchenCount: Number(kitchenCountSnap.data().count || 0),
+        kitchenSlug: readRecordString(data, 'kitchen_slug'),
+        menuId: kitchenMenuId,
+      }),
     })
   }
 

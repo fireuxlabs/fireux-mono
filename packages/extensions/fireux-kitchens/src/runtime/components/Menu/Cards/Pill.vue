@@ -21,11 +21,12 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
-            {{ badge }}
-          </UBadge>
-        </div>
+        <span
+          v-if="actionLabel"
+          class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
+        >
+          {{ actionLabel }}
+        </span>
       </div>
     </div>
   </NuxtLink>
@@ -52,11 +53,12 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
-            {{ badge }}
-          </UBadge>
-        </div>
+        <span
+          v-if="actionLabel"
+          class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
+        >
+          {{ actionLabel }}
+        </span>
       </div>
     </div>
   </div>
@@ -67,10 +69,11 @@ import { navigateTo } from '#imports'
 
 import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
-type PillProps = Pick<MenuCard.Card, 'to' | 'title' | 'subtitle' | 'imageUrl'> & {
+type PillProps = Pick<
+  MenuCard.Card,
+  'to' | 'title' | 'subtitle' | 'imageUrl' | 'actionLabel'
+> & {
   showSubtitle?: boolean
-  badges?: string[]
-  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -81,8 +84,6 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
-  badges: () => [],
-  showBadges: true,
   link: false,
   action: false,
 })
