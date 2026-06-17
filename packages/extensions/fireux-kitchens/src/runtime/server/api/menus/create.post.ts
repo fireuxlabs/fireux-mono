@@ -140,6 +140,7 @@ export default defineEventHandler(async (event) => {
     created_by: createdBy,
     name: menuNameFromSlug(slug),
     description: '',
+    status: 'published',
     doc_url: saved.fileUrl,
     doc_name: file.fileName,
     doc_type: file.contentType,

@@ -4,6 +4,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 type PublicMenuScope = {
   kitchenId?: string
   kitchenSlug?: string
+  kitchenName?: string
   kitchenAppId?: string
   kitchenMenuId?: string
   path?: string
@@ -42,6 +43,7 @@ export function publicMenuFromData(
     doc_storage_path: readRecordString(data, 'doc_storage_path'),
     kitchen_id: scope.kitchenId ?? readRecordString(data, 'kitchen_id'),
     kitchen_slug: scope.kitchenSlug ?? readRecordString(data, 'kitchen_slug'),
+    kitchen_name: scope.kitchenName ?? readRecordString(data, 'kitchen_name'),
     kitchen_app_id: scope.kitchenAppId ?? readRecordString(data, 'kitchen_app_id'),
     kitchen_menu_id: scope.kitchenMenuId ?? readRecordString(data, 'kitchen_menu_id'),
     created_by: readRecordString(data, 'created_by'),

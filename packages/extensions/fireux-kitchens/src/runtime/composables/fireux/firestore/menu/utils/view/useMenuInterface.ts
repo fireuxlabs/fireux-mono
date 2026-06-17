@@ -8,6 +8,7 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   path?: string
   qr_path?: string
   kind?: string
+  kitchen_name?: string
 }
 
 export namespace MenuCard {
@@ -71,30 +72,30 @@ export function useMenuInterface() {
     const slug = safeString(menu.slug).trim() || id
     const name = safeString(menu.name).trim()
     const description = safeString(menu.description).trim()
+    const kitchenName = safeString(menu.kitchen_name).trim()
     const status = safeString(menu.status).trim()
     const kind = safeString(menu.kind).trim()
-    const meta = status || kind || 'menu'
+    const meta = status && status !== 'published' ? status : kind
     const to =
       safeString(menu.path).trim() ||
       (slug ? `/menus/${encodeURIComponent(slug)}` : '')
-    const badges = Array.from(new Set([kind, status].filter(Boolean)))
-    const isAvailable = status ? status === 'published' : Boolean(id)
+    const badges = Array.from(new Set([kind].filter(Boolean)))
 
     return {
       id,
       to,
       imageUrl: '',
       title: name,
-      subtitle: description,
+      subtitle: kitchenName || description,
       meta,
-      status: meta,
+      status,
       badges,
       summary: description,
       name,
       description,
-      active: isAvailable,
+      active: true,
       itemCount: 0,
-      isActiveNow: isAvailable,
+      isActiveNow: true,
       windowLabel: '',
       sortOrder: Number(menu.sort_order ?? 0),
     }

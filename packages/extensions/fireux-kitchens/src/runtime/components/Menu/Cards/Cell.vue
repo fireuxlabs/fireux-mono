@@ -8,17 +8,11 @@
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
       <div class="shrink-0">
-        <UChip
-          :color="isActiveNow ? 'success' : 'error'"
-          position="top-left"
-          inset
-        >
-          <UAvatar
-            :src="imageUrl"
-            icon="i-lucide-book-open-check"
-            size="md"
-          />
-        </UChip>
+        <UAvatar
+          :src="imageUrl"
+          icon="i-lucide-book-open-check"
+          size="md"
+        />
       </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">
@@ -56,17 +50,11 @@
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
       <div class="shrink-0">
-        <UChip
-          :color="isActiveNow ? 'success' : 'error'"
-          position="top-left"
-          inset
-        >
-          <UAvatar
-            :src="imageUrl"
-            icon="i-lucide-book-open-check"
-            size="md"
-          />
-        </UChip>
+        <UAvatar
+          :src="imageUrl"
+          icon="i-lucide-book-open-check"
+          size="md"
+        />
       </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">
@@ -109,7 +97,6 @@ type Props = Pick<
   | 'active'
   | 'description'
   | 'imageUrl'
-  | 'isActiveNow'
 > & {
   showSubtitle?: boolean
   showMeta?: boolean

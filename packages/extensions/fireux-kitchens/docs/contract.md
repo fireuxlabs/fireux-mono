@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-06-16
+Updated: 2026-06-17
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -96,12 +96,13 @@ Menu composable stack canon:
 - Kitchen stores menu source upload records so later AI conversion can create reviewed `Dish`, `Menu`, section, and item records.
 - Uploading a menu source must not publish a Menu or create dishes automatically.
 - A Kitchen can start in the Misebox app and later move into its own app, but its Menu records remain app-scoped.
-- Root `menus/{menuId}` is not V1 Kitchen/Menu canon.
-- App-local uploaded menu document routes such as `/menus/**` are a separate root upload/link tool and are not the Kitchen Menu entity.
-- App-local root menu document routes are intentionally kitchen-ignorant in V1:
-  - `/menus/{menuId}` renders the uploaded root menu document.
-  - it must not resolve, mutate, or bridge to Kitchen Menu records.
-  - future upgrade/migration flows need an explicit product seam outside the quick QR document primitive.
+- Root `menus/{menuId}` is a public doorway/projection surface, not Kitchen Menu storage truth:
+  - quick uploaded menus may store their source document directly at `menus/{menuId}`
+  - kitchen-backed public menu doorway records point to the scoped Kitchen Menu with `kitchen_app_id`, `kitchen_id`, and `kitchen_menu_id`
+  - `/menus/{menuId}` may resolve through that pointer to render the current published Kitchen Menu
+  - `/menus/**` must not mutate Kitchen Menu truth directly
+  - if the scoped Kitchen Menu is unpublished, archived, or missing, the root doorway shows unavailable instead of inventing menu content
+- Public root menu slugs must be globally unique. For kitchen-backed menu doorways, prefer `{kitchenSlug}-{menuSlug}` such as `la-tapberne-main`.
 - Published menu routes render eligible menu records; `public` is route/publication terminology, not a Firestore storage-location family.
 - Public Kitchen menu pages are route consumers of Kitchen `Menu`; they must not create a second Menu family or a special public Menu composable.
 - `firestore/menu/useMenu.ts` is the singular Menu family entry seam.
@@ -148,7 +149,7 @@ Ingredient composable stack canon:
   - single-kitchen app: `/menus/{menuId}`
   - multi-kitchen or ecosystem directory app: `/kitchens/{slug}/menus/{menuId}`
   - the console origin must not decide the guest URL; the selected kitchen's owning app decides it.
-- The kitchen package only registers root `/menus/**` pages when app config pins one kitchen target; global/directory apps keep root `/menus/**` available for app-local uploaded menu tools.
+- `/menus/**` is also the public menu doorway index for root uploads and kitchen-backed public menu projections.
 - Do not store a `maturity` field; derive it from source fields, structured rows, and ordering fields.
 - Menu items require a valid `dish_id`; published menu routes read dish name and description from `Dish`.
 - Menu owns presentation-only fields: name, description, status, service modes, sort order, section order, item order, and item price.

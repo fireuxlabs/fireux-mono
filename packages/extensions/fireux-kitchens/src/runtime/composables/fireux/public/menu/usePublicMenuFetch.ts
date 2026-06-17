@@ -13,6 +13,7 @@ export type PublicMenu = {
   doc_storage_path: string
   kitchen_id: string
   kitchen_slug: string
+  kitchen_name: string
   kitchen_app_id: string
   kitchen_menu_id: string
   created_by: string

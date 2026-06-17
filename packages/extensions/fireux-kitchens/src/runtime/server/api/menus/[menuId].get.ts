@@ -21,6 +21,11 @@ const resolveSourceAppId = (
   fallbackAppId: string
 ) => readRecordString(kitchenData, 'app_scope_app_id') || fallbackAppId
 
+const kitchenDisplayName = (data: Record<string, unknown>) =>
+  readRecordString(data, 'display_name') ||
+  readRecordString(data, 'name') ||
+  readRecordString(data, 'short_name')
+
 async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
   const db = getRuntimeFirestore()
   const rootKitchenSnap = await db
@@ -62,10 +67,64 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
   return publicMenuFromData(menuId, data, {
     kitchenId: kitchenDoc.id,
     kitchenSlug,
+    kitchenName: kitchenDisplayName(kitchenData),
     kitchenAppId,
     kitchenMenuId: menuId,
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
   })
+}
+
+async function readPublicMenuSurface(menuId: string) {
+  const db = getRuntimeFirestore()
+  const snap = await db.collection('menus').doc(menuId).get()
+
+  if (!snap.exists) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Menu not found.',
+    })
+  }
+
+  const data = snap.data() || {}
+  const kitchenAppId = readRecordString(data, 'kitchen_app_id')
+  const kitchenId = readRecordString(data, 'kitchen_id')
+  const kitchenMenuId = readRecordString(data, 'kitchen_menu_id')
+
+  if (kitchenAppId && kitchenId && kitchenMenuId) {
+    const [menuSnap, kitchenSnap] = await Promise.all([
+      db
+        .doc(`apps/${kitchenAppId}/kitchens/${kitchenId}/menus/${kitchenMenuId}`)
+        .get(),
+      db.collection('kitchens').doc(kitchenId).get(),
+    ])
+
+    if (!menuSnap.exists) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Menu not found.',
+      })
+    }
+
+    const menuData = menuSnap.data() || {}
+    if (readRecordString(menuData, 'status') !== 'published') {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Menu not found.',
+      })
+    }
+
+    return publicMenuFromData(menuId, menuData, {
+      kitchenId,
+      kitchenSlug: readRecordString(data, 'kitchen_slug'),
+      kitchenName: kitchenSnap.exists ? kitchenDisplayName(kitchenSnap.data() || {}) : '',
+      kitchenAppId,
+      kitchenMenuId,
+      path: `/menus/${encodeURIComponent(menuId)}`,
+      qrPath: `/menus/${encodeURIComponent(menuId)}/qr`,
+    })
+  }
+
+  return publicMenuFromData(menuId, data)
 }
 
 export default defineEventHandler(async (event) => {
@@ -82,18 +141,5 @@ export default defineEventHandler(async (event) => {
     return readKitchenPublicMenu(menuId, kitchenSlug)
   }
 
-  const snap = await getRuntimeFirestore()
-    .collection('menus')
-    .doc(menuId)
-    .get()
-
-  if (!snap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const data = snap.data() || {}
-  return publicMenuFromData(menuId, data)
+  return readPublicMenuSurface(menuId)
 })

@@ -6,18 +6,12 @@
   >
     <div class="flex min-w-0 items-start gap-2">
       <div class="shrink-0">
-        <UChip
-          :color="isActiveNow ? 'success' : 'error'"
-          position="top-left"
-          inset
-        >
-          <UAvatar
-            :src="imageUrl || undefined"
-            :alt="title || ''"
-            size="sm"
-            icon="i-lucide-book-open-check"
-          />
-        </UChip>
+        <UAvatar
+          :src="imageUrl || undefined"
+          :alt="title || ''"
+          size="sm"
+          icon="i-lucide-book-open-check"
+        />
       </div>
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -43,18 +37,12 @@
   >
     <div class="flex min-w-0 items-start gap-2">
       <div class="shrink-0">
-        <UChip
-          :color="isActiveNow ? 'success' : 'error'"
-          position="top-left"
-          inset
-        >
-          <UAvatar
-            :src="imageUrl || undefined"
-            :alt="title || ''"
-            size="sm"
-            icon="i-lucide-book-open-check"
-          />
-        </UChip>
+        <UAvatar
+          :src="imageUrl || undefined"
+          :alt="title || ''"
+          size="sm"
+          icon="i-lucide-book-open-check"
+        />
       </div>
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -79,7 +67,7 @@ import { navigateTo } from '#imports'
 
 import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
-type PillProps = Pick<MenuCard.Card, 'to' | 'title' | 'subtitle' | 'imageUrl' | 'isActiveNow'> & {
+type PillProps = Pick<MenuCard.Card, 'to' | 'title' | 'subtitle' | 'imageUrl'> & {
   showSubtitle?: boolean
   badges?: string[]
   showBadges?: boolean
