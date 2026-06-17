@@ -13,19 +13,19 @@ Preferred word:
 
 Vertical links:
 - Parent: ../../AGENTS.md
-- Child: runtime-package.readme
-- Child: pages.readme
-- Child: components.readme
-- Child: composables.readme
-- Child: console.readme
-- Child: firestore-entity.readme
+- Child: runtime-package.md
+- Child: pages.md
+- Child: components.md
+- Child: composables.md
+- Child: console.md
+- Child: firestore-entity.md
 
 Horizontal links:
-- family-console-entity.readme
-- family-public-index.readme
-- family-public-detail.readme
-- family-menu.readme
-- family-tenant-global.readme
+- family-console-entity.md
+- family-public-index.md
+- family-public-detail.md
+- family-menu.md
+- family-tenant-global.md
 
 Before editing:
 1. Name the family.

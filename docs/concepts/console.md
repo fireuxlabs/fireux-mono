@@ -7,15 +7,15 @@ Purpose:
 Map the shared console system and domain adapters.
 
 Vertical links:
-- Parent: app-config.readme
-- Child: family-console-entity.readme
-- Child: family-tenant-global.readme
+- Parent: app-config.md
+- Child: family-console-entity.md
+- Child: family-tenant-global.md
 
 Horizontal links:
-- composables.readme
-- components.readme
-- pages.readme
-- debug.readme
+- composables.md
+- components.md
+- pages.md
+- debug.md
 
 Shared core:
 - `useConsole`

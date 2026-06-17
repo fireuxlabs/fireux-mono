@@ -7,15 +7,15 @@ Purpose:
 Compare all `*/Collection/Manager.vue` files by hydration class.
 
 Vertical links:
-- Parent: components.readme
-- Parent: entities.readme
-- Child: family-public-index.readme
-- Child: firestore-entity.readme
+- Parent: components.md
+- Parent: entities.md
+- Child: family-public-index.md
+- Child: firestore-entity.md
 
 Horizontal links:
-- composables.readme
-- family-menu.readme
-- family-console-entity.readme
+- composables.md
+- family-menu.md
+- family-console-entity.md
 
 Working language:
 - Collection manager: visual/list/search/card manager for a collection family.

@@ -14,16 +14,16 @@ Scope:
 
 Vertical links:
 - Parent: ../../AGENTS.md
-- Child: fireux.readme
-- Child: pnpm.readme
-- Child: runtime-package.readme
-- Child: app-config.readme
+- Child: fireux.md
+- Child: pnpm.md
+- Child: runtime-package.md
+- Child: app-config.md
 
 Horizontal links:
-- spine.readme
-- pages.readme
-- components.readme
-- composables.readme
+- spine.md
+- pages.md
+- components.md
+- composables.md
 
 Current shape:
 - `packages/core/*`: shared foundations.

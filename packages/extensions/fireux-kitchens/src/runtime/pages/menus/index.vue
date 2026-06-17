@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <!-- Index cannon: docs/index-cannon.readme · family: Public doorway/onboarding -->
+    <!-- Index map: docs/concepts/family-public-index.md · family: Menu public index -->
     <UPageHeader
       class="pageheader"
       :title="pageTitle"

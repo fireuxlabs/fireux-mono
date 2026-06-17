@@ -8,15 +8,15 @@ Explain the app framework context for agents.
 
 Vertical links:
 - Parent: AGENTS.md
-- Child: pages.readme
-- Child: components.readme
-- Child: composables.readme
-- Child: server-api.readme
+- Child: pages.md
+- Child: components.md
+- Child: composables.md
+- Child: server-api.md
 
 Horizontal links:
-- nuxt-ui.readme
-- runtime-package.readme
-- app-config.readme
+- nuxt-ui.md
+- runtime-package.md
+- app-config.md
 
 Framework:
 - FireUX apps are Nuxt 4 apps.

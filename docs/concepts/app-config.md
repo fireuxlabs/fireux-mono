@@ -7,13 +7,13 @@ Purpose:
 Map how FireUX project apps declare identity, modules, domains, consoles, and app mode.
 
 Vertical links:
-- Parent: fireux.readme
-- Child: family-tenant-global.readme
-- Child: console.readme
+- Parent: fireux.md
+- Child: family-tenant-global.md
+- Child: console.md
 
 Horizontal links:
-- runtime-package.readme
-- pnpm.readme
+- runtime-package.md
+- pnpm.md
 
 Core files:
 - `fireux-core/config/app/fireux.config`

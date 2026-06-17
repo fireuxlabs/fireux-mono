@@ -8,12 +8,12 @@ Explain the UI library context for agents.
 
 Vertical links:
 - Parent: AGENTS.md
-- Child: components.readme
-- Child: pages.readme
+- Child: components.md
+- Child: pages.md
 
 Horizontal links:
-- nuxt4.readme
-- debug.readme
+- nuxt4.md
+- debug.md
 
 UI stack:
 - FireUX uses Nuxt UI / Nuxt UI Pro style components.

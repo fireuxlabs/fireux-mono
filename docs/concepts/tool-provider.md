@@ -7,12 +7,12 @@ Purpose:
 Map provider/consumer boundaries for Go QR and future tool providers.
 
 Vertical links:
-- Parent: server-api.readme
-- Child: family-menu.readme
+- Parent: server-api.md
+- Child: family-menu.md
 
 Horizontal links:
-- app-config.readme
-- family-tenant-global.readme
+- app-config.md
+- family-tenant-global.md
 
 Provider principle:
 - A provider owns the reusable tool behavior.

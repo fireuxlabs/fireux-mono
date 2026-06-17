@@ -7,15 +7,15 @@ Purpose:
 Map where reusable runtime logic belongs.
 
 Vertical links:
-- Parent: nuxt4.readme
-- Child: firestore-entity.readme
-- Child: console.readme
-- Child: server-api.readme
+- Parent: nuxt4.md
+- Child: firestore-entity.md
+- Child: console.md
+- Child: server-api.md
 
 Horizontal links:
-- pages.readme
-- components.readme
-- runtime-package.readme
+- pages.md
+- components.md
+- runtime-package.md
 
 Core principle:
 Composables should name a real seam. Do not create a composable just to hide a messy file.

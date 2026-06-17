@@ -7,12 +7,12 @@ Purpose:
 Map how debug information should appear without becoming page noise.
 
 Vertical links:
-- Parent: components.readme
-- Child: pages.readme
+- Parent: components.md
+- Child: pages.md
 
 Horizontal links:
-- console.readme
-- nuxt-ui.readme
+- console.md
+- nuxt-ui.md
 
 Current pattern:
 - Use the shared FireUX debug component where available.

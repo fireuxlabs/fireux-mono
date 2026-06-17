@@ -13,16 +13,16 @@ Scope:
 - Project app consumers.
 
 Vertical links:
-- Parent: fireux-mono.readme
-- Child: runtime-package.readme
-- Child: app-config.readme
-- Child: console.readme
-- Child: firestore-entity.readme
+- Parent: fireux-mono.md
+- Child: runtime-package.md
+- Child: app-config.md
+- Child: console.md
+- Child: firestore-entity.md
 
 Horizontal links:
-- nuxt4.readme
-- nuxt-ui.readme
-- spine.readme
+- nuxt4.md
+- nuxt-ui.md
+- spine.md
 
 Current shape:
 - FireUX is a modular Nuxt platform.

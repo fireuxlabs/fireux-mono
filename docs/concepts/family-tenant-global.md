@@ -7,13 +7,13 @@ Purpose:
 Map the recurring difference between global ecosystem apps and tenant apps.
 
 Vertical links:
-- Parent: app-config.readme
-- Parent: console.readme
+- Parent: app-config.md
+- Parent: console.md
 
 Horizontal links:
-- family-console-entity.readme
-- family-menu.readme
-- tool-provider.readme
+- family-console-entity.md
+- family-menu.md
+- tool-provider.md
 
 Global app:
 - Example: Misebox.

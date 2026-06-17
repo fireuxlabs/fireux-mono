@@ -7,11 +7,11 @@ Purpose:
 Explain workspace/package command context.
 
 Vertical links:
-- Parent: fireux-mono.readme
+- Parent: fireux-mono.md
 
 Horizontal links:
-- runtime-package.readme
-- app-config.readme
+- runtime-package.md
+- app-config.md
 
 Workspace:
 - The repo uses pnpm workspaces.

@@ -7,14 +7,14 @@ Purpose:
 Map the stored access/composable shape for FireUX entities.
 
 Vertical links:
-- Parent: entities.readme
-- Parent: composables.readme
-- Child: family-console-entity.readme
-- Child: family-menu.readme
+- Parent: entities.md
+- Parent: composables.md
+- Child: family-console-entity.md
+- Child: family-menu.md
 
 Horizontal links:
-- console.readme
-- server-api.readme
+- console.md
+- server-api.md
 
 Allowed entity stack:
 - `composables/fireux/firestore/<entity>`

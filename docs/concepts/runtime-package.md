@@ -7,16 +7,16 @@ Purpose:
 Map how FireUX packages expose runtime surfaces to Nuxt apps.
 
 Vertical links:
-- Parent: fireux.readme
-- Child: components.readme
-- Child: composables.readme
-- Child: pages.readme
-- Child: server-api.readme
+- Parent: fireux.md
+- Child: components.md
+- Child: composables.md
+- Child: pages.md
+- Child: server-api.md
 
 Horizontal links:
-- pnpm.readme
-- app-config.readme
-- spine.readme
+- pnpm.md
+- app-config.md
+- spine.md
 
 Common shape:
 - `src/module.ts`

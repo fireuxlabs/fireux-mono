@@ -9,24 +9,24 @@ text file as equal authority.
 
 Vertical links:
 - Parent: ../../AGENTS.md
-- Child: fireux-mono.readme
-- Child: spine.readme
+- Child: fireux-mono.md
+- Child: spine.md
 
 Horizontal links:
-- entities.readme
-- pages.readme
-- collection-manager.readme
+- entities.md
+- pages.md
+- collection-manager.md
 
 File shapes:
 - `AGENTS.md`: operating instructions for AI agents in this repo. Highest doc-level instruction surface, but code and guards still win on implementation truth.
 - `README.md`: guard-required package/root placeholder or landing map. Do not put canon here unless the user explicitly starts a README rebuild pass.
-- `docs/concepts/*.readme`: small concept maps for humans and agents. These explain current working context and link related concepts. They are not eternal canon.
+- `docs/concepts/*.md`: small concept maps for humans and agents. These explain current working context and link related concepts. They are not eternal canon.
 - Other `.md`: avoid by default. Use only when a tool/convention requires Markdown, or the user explicitly asks for a formal Markdown document.
 
 Working rule:
-- Use `.readme` for FireUX concept maps.
+- Use `.md` for FireUX concept maps.
 - Use `README.md` only where guard/package conventions require it.
-- Use `.md` only for agent/tool conventions such as `AGENTS.md` or explicit formal docs.
+- Use other `.md` files only for agent/tool conventions such as `AGENTS.md` or explicit formal docs.
 - Do not recreate broad historical Markdown docs unless asked.
 
 Authority rule:

@@ -7,14 +7,14 @@ Purpose:
 Map similarities and differences across console-capable entities.
 
 Vertical links:
-- Parent: console.readme
-- Child: family-tenant-global.readme
+- Parent: console.md
+- Child: family-tenant-global.md
 
 Horizontal links:
-- pages.readme
-- components.readme
-- composables.readme
-- firestore-entity.readme
+- pages.md
+- components.md
+- composables.md
+- firestore-entity.md
 
 Current family members:
 - Blank

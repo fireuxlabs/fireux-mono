@@ -7,15 +7,15 @@ Purpose:
 Map the FireUX meaning of entity markers.
 
 Vertical links:
-- Parent: fireux.readme
-- Child: firestore-entity.readme
-- Child: family-console-entity.readme
-- Child: family-menu.readme
+- Parent: fireux.md
+- Child: firestore-entity.md
+- Child: family-console-entity.md
+- Child: family-menu.md
 
 Horizontal links:
-- console.readme
-- app-config.readme
-- pages.readme
+- console.md
+- app-config.md
+- pages.md
 
 Type source:
 - `packages/core/fireux-core/src/runtime/models/core/entity.model.ts`

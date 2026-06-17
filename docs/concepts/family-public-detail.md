@@ -7,13 +7,13 @@ Purpose:
 Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
 
 Vertical links:
-- Parent: pages.readme
-- Child: family-menu.readme
+- Parent: pages.md
+- Child: family-menu.md
 
 Horizontal links:
-- components.readme
-- composables.readme
-- debug.readme
+- components.md
+- composables.md
+- debug.md
 
 Emerging shared order:
 - Header.

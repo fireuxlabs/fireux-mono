@@ -7,15 +7,15 @@ Purpose:
 Map menu concepts without conflating quick uploaded menus and kitchen-owned structured menus.
 
 Vertical links:
-- Parent: family-public-index.readme
-- Parent: family-public-detail.readme
-- Parent: server-api.readme
-- Parent: tool-provider.readme
+- Parent: family-public-index.md
+- Parent: family-public-detail.md
+- Parent: server-api.md
+- Parent: tool-provider.md
 
 Horizontal links:
-- firestore-entity.readme
-- console.readme
-- family-tenant-global.readme
+- firestore-entity.md
+- console.md
+- family-tenant-global.md
 
 Current concepts:
 - Root quick menu: starts at `/menus`, can be just a photo or PDF upload.

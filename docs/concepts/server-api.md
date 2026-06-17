@@ -7,13 +7,13 @@ Purpose:
 Map server API boundaries and avoid duplicate provider/consumer jobs.
 
 Vertical links:
-- Parent: nuxt4.readme
-- Child: tool-provider.readme
-- Child: family-menu.readme
+- Parent: nuxt4.md
+- Child: tool-provider.md
+- Child: family-menu.md
 
 Horizontal links:
-- firestore-entity.readme
-- composables.readme
+- firestore-entity.md
+- composables.md
 
 Current server surfaces:
 - Package APIs live under `src/runtime/server/api`.

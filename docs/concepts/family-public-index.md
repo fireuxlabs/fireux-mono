@@ -7,13 +7,13 @@ Purpose:
 Map public index pages such as `/kitchens`, `/suppliers`, `/menus`, and similar browse surfaces.
 
 Vertical links:
-- Parent: pages.readme
-- Child: family-public-detail.readme
-- Child: family-menu.readme
+- Parent: pages.md
+- Child: family-public-detail.md
+- Child: family-menu.md
 
 Horizontal links:
-- components.readme
-- composables.readme
+- components.md
+- composables.md
 
 Similar:
 - Shows a public/runtime browse surface.

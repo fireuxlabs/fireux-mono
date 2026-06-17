@@ -7,15 +7,15 @@ Purpose:
 Map component folder and naming conventions.
 
 Vertical links:
-- Parent: nuxt-ui.readme
-- Child: family-console-entity.readme
-- Child: family-public-index.readme
-- Child: family-public-detail.readme
+- Parent: nuxt-ui.md
+- Child: family-console-entity.md
+- Child: family-public-index.md
+- Child: family-public-detail.md
 
 Horizontal links:
-- pages.readme
-- composables.readme
-- debug.readme
+- pages.md
+- composables.md
+- debug.md
 
 Package components:
 - Package UI belongs under `src/runtime/components`.

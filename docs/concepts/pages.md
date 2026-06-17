@@ -7,16 +7,16 @@ Purpose:
 Map how route pages should be built and where consensus is still forming.
 
 Vertical links:
-- Parent: nuxt4.readme
-- Child: family-public-index.readme
-- Child: family-public-detail.readme
-- Child: family-console-entity.readme
-- Child: family-menu.readme
+- Parent: nuxt4.md
+- Child: family-public-index.md
+- Child: family-public-detail.md
+- Child: family-console-entity.md
+- Child: family-menu.md
 
 Horizontal links:
-- components.readme
-- composables.readme
-- debug.readme
+- components.md
+- composables.md
+- debug.md
 
 Current convention:
 - Page owns route shell, metadata, layout, and high-level composition.
