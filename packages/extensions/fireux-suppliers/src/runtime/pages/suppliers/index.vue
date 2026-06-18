@@ -6,6 +6,7 @@
     />
 
     <UPageBody>
+      <!-- Console CTA family: actions live in SupplierCTA; browse lives in SupplierCollectionManager. -->
       <SupplierCTA />
 
       <SupplierCollectionManager />

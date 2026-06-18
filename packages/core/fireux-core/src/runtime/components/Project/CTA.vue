@@ -1,8 +1,7 @@
 <template>
-  <EntityIndexCta
+  <ConsoleCta
     title="Projects"
     description="Create a project or open the console to organise apps and ecosystems."
-    family="console"
     :actions="actions"
   />
 </template>

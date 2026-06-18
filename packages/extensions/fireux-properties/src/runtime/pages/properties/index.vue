@@ -6,6 +6,7 @@
     />
 
     <UPageBody>
+      <!-- Console CTA family: actions live in PropertyCTA; browse lives in PropertyCollectionManager. -->
       <PropertyCTA />
 
       <PropertyCollectionManager />

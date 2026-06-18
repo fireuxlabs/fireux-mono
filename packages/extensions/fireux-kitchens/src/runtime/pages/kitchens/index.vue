@@ -6,6 +6,7 @@
     />
 
     <UPageBody>
+      <!-- Console CTA family: actions live in KitchenCTA; browse lives in KitchenCollectionManager. -->
       <KitchenCTA />
 
       <KitchenCollectionManager />

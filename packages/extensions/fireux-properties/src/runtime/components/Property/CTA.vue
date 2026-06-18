@@ -1,8 +1,7 @@
 <template>
-  <EntityIndexCta
+  <ConsoleCta
     title="Properties"
     description="Create a property or open the console to manage units, stays, and content."
-    family="console"
     :actions="actions"
   />
 </template>

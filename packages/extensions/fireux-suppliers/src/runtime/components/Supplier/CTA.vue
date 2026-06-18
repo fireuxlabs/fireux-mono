@@ -1,8 +1,7 @@
 <template>
-  <EntityIndexCta
+  <ConsoleCta
     title="Suppliers"
     description="Find suppliers and manage catalogue items, ingredients, and sourcing work."
-    family="console"
     :count-label="countLabel"
     :actions="actions"
   />

@@ -1,8 +1,7 @@
 <template>
-  <EntityIndexCta
+  <ConsoleCta
     title="Portfolios"
     description="Create a portfolio or open the console to manage properties, clients, documents, and tasks."
-    family="console"
     :count-label="countLabel"
     :actions="actions"
   />

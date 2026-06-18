@@ -6,6 +6,7 @@
     />
 
     <UPageBody>
+      <!-- Console CTA family: actions live in ProjectCTA; browse lives in ProjectCollectionManager. -->
       <ProjectCTA />
 
       <ProjectCollectionManager />

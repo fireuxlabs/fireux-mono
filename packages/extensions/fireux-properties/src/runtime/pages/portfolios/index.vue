@@ -6,6 +6,7 @@
     />
 
     <UPageBody>
+      <!-- Console CTA family: actions live in PortfolioCTA; browse lives in PortfolioCollectionManager. -->
       <PortfolioCTA />
 
       <PortfolioCollectionManager />

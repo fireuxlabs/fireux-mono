@@ -1,8 +1,7 @@
 <template>
-  <EntityIndexCta
+  <ConsoleCta
     title="Kitchens"
     description="Find kitchens, open their console, and manage menus, dishes, recipes, ingredients, team, and suppliers."
-    family="console"
     :count-label="countLabel"
     :actions="actions"
   />
