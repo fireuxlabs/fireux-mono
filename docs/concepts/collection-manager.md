@@ -61,15 +61,16 @@ Root Hydrated Collection Manager members:
 - `Chef`, `Agent`, and `Professional` extend Root Simple Collection Manager with User/profile hydration.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
-Override status:
-- Existing managers may still accept a `collection` prop during migration.
-- Do not copy that as the target pattern for scoped surfaces.
-- The target pattern is: `XCollectionManager` belongs to `/xs`; scoped pages use named scoped surfaces and may reuse smaller `XCollectionList`/`XCards*` pieces.
+Source contract:
+- `XCollectionManager` belongs to `/xs` root/public browse surfaces.
+- Consumers mount `XCollectionManager` directly with no source params.
+- The manager fetches its own public/root collection and may hydrate internally.
+- Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
 Current source-mode snapshot:
 - Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Agent`, `Professional`, `Chef`.
-- Provided-only/scoped today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`.
-- Custom-derived: `Blank`, `Orders`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
+- Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
+- Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
 Hydration directions:
 - Up: scoped/local record reads a higher/root entity.
@@ -82,6 +83,11 @@ Working rule:
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
 - Hydration should usually live in `useXCollection()`, a public API endpoint, or a dedicated fetch seam.
 - The Vue manager should avoid manual per-row document reads when a composable/API can return a hydrated surface.
+
+Guard-backed lock:
+- `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
+- Do not add exceptions just to make a local feature pass.
+- If a scoped page wants a passed collection, stop and name the missing scoped surface.
 
 Root Simple Collection Managers
 

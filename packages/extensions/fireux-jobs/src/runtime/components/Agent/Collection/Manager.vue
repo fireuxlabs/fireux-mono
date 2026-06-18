@@ -81,7 +81,6 @@ type AgentEntry = Agent & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{
-    collection?: AgentEntry[]
     title?: string
     description?: string
     link?: boolean
@@ -105,9 +104,7 @@ const props = withDefaults(
 
 const fetched = useAgentFetch()
 const collection = computed<AgentEntry[]>(() =>
-  Array.isArray(props.collection)
-    ? props.collection
-    : [...(fetched.appAgents.value ?? []), ...(fetched.coreAgents.value ?? [])]
+  [...(fetched.appAgents.value ?? []), ...(fetched.coreAgents.value ?? [])]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))

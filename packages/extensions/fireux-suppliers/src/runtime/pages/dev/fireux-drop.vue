@@ -60,10 +60,12 @@
               </template>
             </UCard>
 
-            <SupplierCollectionManager
-              :collection="filteredSuppliers"
-              :dev-json-title="'Root Suppliers (JSON)'"
-              :dev-json-context="'dev suppliers · root collection'"
+            <DevJson
+              title="Root Suppliers (JSON)"
+              context="dev suppliers · filtered root collection"
+              :data="filteredSuppliers"
+              :default-open="false"
+              :hide-when-empty="false"
             />
           </div>
         </UCard>

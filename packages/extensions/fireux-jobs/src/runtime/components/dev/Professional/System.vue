@@ -17,8 +17,7 @@
               Professionals collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse professionals resolved for this runtime and filter by model
-              drift.
+              Inspect model drift separately from the public professionals collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="professionalsDriftKind"
@@ -34,9 +33,7 @@
       </template>
 
       <div class="space-y-6">
-        <ProfessionalCollectionManager
-          :collection="filteredProfessionals"
-        />
+        <ProfessionalCollectionManager />
 
         <div v-if="professionalPreviewCards.length" class="space-y-3">
           <p
@@ -76,7 +73,6 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useProfessionalCollection } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalCollection'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { ProfessionalModel as ProfessionalModelRuntime } from '../../../models/profiles/Professional/Professional.model'
@@ -89,20 +85,11 @@ const professionalModelRuntime = {
 }
 
 const { coreProfessionals, appProfessionals } = useProfessionalFetch()
-const {
-  coreProfessionals: rawCoreProfessionals,
-  appProfessionals: rawAppProfessionals,
-} = useProfessionalCollection()
 const { pill: makeProfessionalCard } = useProfessionalInterface()
 
 const professionalsCollection = computed(() => [
   ...(appProfessionals?.value ?? []),
   ...(coreProfessionals.value ?? []),
-])
-
-const rawProfessionalsCollection = computed(() => [
-  ...(rawAppProfessionals?.value ?? []),
-  ...(rawCoreProfessionals.value ?? []),
 ])
 
 const {

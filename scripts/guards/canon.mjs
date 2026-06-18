@@ -148,6 +148,8 @@ const KNOWN_ENTITY_AUTHORING_RUNTIME_SLICES_BY_ENTITY = new Map([
 const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
+const COLLECTION_MANAGER_PROP_RE = /\bcollection\??\s*:/g
+
 function isDirectory(p) {
   try {
     return statSync(p).isDirectory()
@@ -405,6 +407,37 @@ function checkForbiddenKitchenBucketNames(repoRoot) {
     }
 
     violations.push(...scanKitchenBucketTerms(repoRoot, target))
+  }
+
+  return violations
+}
+
+function checkCollectionManagerContract(repoRoot) {
+  const violations = []
+  const sourceRoots = [
+    path.join(repoRoot, 'packages'),
+    path.join(repoRoot, 'projects'),
+  ].filter((p) => existsSync(p))
+
+  for (const root of sourceRoots) {
+    for (const file of walkFiles(root, new Set(['.vue']))) {
+      const normalized = toRepoRelative(repoRoot, file).split(path.sep).join('/')
+      if (!normalized.endsWith('/Collection/Manager.vue')) continue
+
+      let raw = ''
+      try {
+        raw = readFileSync(file, 'utf8')
+      } catch {
+        continue
+      }
+
+      if (!COLLECTION_MANAGER_PROP_RE.test(raw)) continue
+      COLLECTION_MANAGER_PROP_RE.lastIndex = 0
+
+      violations.push(
+        `- Collection manager must fetch its own public/root collection, not accept a collection prop: ${normalized}`
+      )
+    }
   }
 
   return violations
@@ -778,6 +811,7 @@ export async function run(ctx) {
   violations.push(...checkProductsFirestoreStackShape(repoRoot))
   violations.push(...checkForbiddenEntityConsoleAppBuckets(repoRoot))
   violations.push(...checkConsoleOperationStackShape(repoRoot))
+  violations.push(...checkCollectionManagerContract(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
   // 2) Content checks (imports/markers)
@@ -863,6 +897,7 @@ export async function run(ctx) {
       '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity}/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
+      '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
     ]
 
     throw new Error(lines.join('\n'))

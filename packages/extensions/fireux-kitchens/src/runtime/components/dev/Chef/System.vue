@@ -17,7 +17,7 @@
               Chefs collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse chefs resolved for this runtime and filter by model drift.
+              Inspect model drift separately from the public chefs collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="driftKind"
@@ -37,9 +37,7 @@
       </UCard>
 
       <div v-else class="space-y-6">
-        <ChefCollectionManager
-          :collection="filteredCollection"
-        />
+        <ChefCollectionManager />
 
         <div v-if="chefPreviewCards.length" class="space-y-3">
           <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">

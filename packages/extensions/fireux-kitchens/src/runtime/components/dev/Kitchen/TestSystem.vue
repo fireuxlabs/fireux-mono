@@ -94,7 +94,19 @@
         </div>
       </template>
 
-      <KitchenCollectionManager :collection="filteredKitchensResolved" />
+      <div class="space-y-3">
+        <UBadge variant="soft">
+          Showing: {{ filteredKitchensResolved.length }}
+        </UBadge>
+
+        <DevJson
+          title="Test Kitchens (JSON)"
+          context="dev kitchens · filtered test kitchens"
+          :data="filteredKitchensResolved"
+          :default-open="false"
+          :hide-when-empty="false"
+        />
+      </div>
     </UCard>
   </section>
 </template>

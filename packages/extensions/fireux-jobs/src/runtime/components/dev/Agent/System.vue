@@ -17,7 +17,7 @@
               Agents collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse agents resolved for this runtime and filter by model drift.
+              Inspect model drift separately from the public agents collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="agentsDriftKind"
@@ -33,7 +33,7 @@
       </template>
 
       <div class="space-y-6">
-        <AgentCollectionManager :collection="filteredAgents" />
+        <AgentCollectionManager />
 
         <div v-if="agentPreviewCards.length" class="space-y-3">
           <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
@@ -83,11 +83,6 @@ const { coreAgents: rawCoreAgents, appAgents: rawAppAgents } = useAgentCollectio
 const { pill: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
-  ...(rawAppAgents?.value ?? []),
-  ...(rawCoreAgents.value ?? []),
-])
-
-const rawAgentsCollection = computed(() => [
   ...(rawAppAgents?.value ?? []),
   ...(rawCoreAgents.value ?? []),
 ])

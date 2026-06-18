@@ -78,7 +78,6 @@ import { useBlogInterface } from '../../../composables/fireux/firestore/blog/uti
 
 const props = withDefaults(
   defineProps<{
-    collection?: BlogPost[]
     title?: string
     description?: string
     link?: boolean
@@ -101,9 +100,7 @@ const props = withDefaults(
 )
 
 const fetched = useBlogCollection()
-const collection = computed<BlogPost[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.collection.value
-)
+const collection = computed<BlogPost[]>(() => fetched.collection.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>

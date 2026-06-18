@@ -81,7 +81,6 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    collection?: EcosystemInterfaceInput[]
     title?: string
     description?: string
     link?: boolean
@@ -104,9 +103,7 @@ const props = withDefaults(
 )
 
 const fetched = useEcosystemCollection()
-const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.ecosystems.value
-)
+const rawCollection = computed<EcosystemInterfaceInput[]>(() => fetched.ecosystems.value)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Ecosystems'))
 const description = computed(() => String(props.description || '').trim())

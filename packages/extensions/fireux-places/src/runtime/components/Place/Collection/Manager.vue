@@ -102,7 +102,6 @@ import type { BasePlace } from '../../../models/place.model'
 
 const props = withDefaults(
   defineProps<{
-    collection?: BasePlace[]
     title?: string
     description?: string
     link?: boolean
@@ -127,9 +126,7 @@ const props = withDefaults(
 )
 
 const fetched = usePlaceCollection()
-const collection = computed(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.collection.value
-)
+const collection = computed(() => fetched.collection.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(() =>

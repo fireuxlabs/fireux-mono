@@ -78,7 +78,6 @@ import { useCompanyInterface } from '../../../composables/fireux/firestore/compa
 
 const props = withDefaults(
   defineProps<{
-    collection?: CompanyHydrated[]
     title?: string
     description?: string
     link?: boolean
@@ -101,9 +100,7 @@ const props = withDefaults(
 )
 
 const fetched = useCompanyFetch()
-const collection = computed<CompanyHydrated[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.companies.value
-)
+const collection = computed<CompanyHydrated[]>(() => fetched.companies.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>

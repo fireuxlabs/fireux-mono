@@ -30,7 +30,13 @@
         </div>
       </template>
 
-      <IngredientCollectionManager :collection="filteredCollection" />
+      <DevJson
+        title="Ingredients (JSON)"
+        context="dev ingredients · filtered collection"
+        :data="filteredCollection"
+        :default-open="false"
+        :hide-when-empty="false"
+      />
     </UCard>
   </section>
 </template>
@@ -44,7 +50,6 @@ import {
   IngredientModel as IngredientModelRuntime,
   type Ingredient as IngredientType,
 } from '../../../models/ingredient.model'
-import IngredientCollectionManager from '../../Ingredient/Collection/Manager.vue'
 
 defineOptions({ name: 'DevIngredientSystem' })
 

@@ -28,12 +28,7 @@
         :model="projectModelRuntime"
       />
 
-      <ProjectCollectionManager
-        :collection="projects"
-        :description="'Root projects collection. Use the storage inspector below for root and overlay truth.'"
-        :dev-json-title="'Root Projects (JSON)'"
-        :dev-json-context="'dev projects · root collection'"
-      />
+      <ProjectCollectionManager />
 
       <UCard>
         <template #header>

@@ -88,7 +88,6 @@ type ProfessionalEntry = Professional & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{
-    collection?: ProfessionalEntry[]
     title?: string
     description?: string
     link?: boolean
@@ -112,12 +111,10 @@ const props = withDefaults(
 
 const fetched = useProfessionalFetch()
 const collection = computed<ProfessionalEntry[]>(() =>
-  Array.isArray(props.collection)
-    ? props.collection
-    : [
-        ...(fetched.appProfessionals.value ?? []),
-        ...(fetched.coreProfessionals.value ?? []),
-      ]
+  [
+    ...(fetched.appProfessionals.value ?? []),
+    ...(fetched.coreProfessionals.value ?? []),
+  ]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))

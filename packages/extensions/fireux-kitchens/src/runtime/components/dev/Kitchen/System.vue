@@ -32,12 +32,19 @@
         </div>
       </template>
 
-      <KitchenCollectionManager
-        :collection="filteredKitchensResolved"
-        :description="'Hydrated public kitchens for this runtime. Use the storage inspector below for root, place, overlay, and child-scope truth.'"
-        :dev-json-title="'Hydrated Kitchens (JSON)'"
-        :dev-json-context="'dev kitchens · hydrated public kitchens'"
-      />
+      <div class="space-y-3">
+        <UBadge variant="soft">
+          Showing: {{ filteredKitchensResolved.length }}
+        </UBadge>
+
+        <DevJson
+          title="Hydrated Kitchens (JSON)"
+          context="dev kitchens · filtered hydrated kitchens"
+          :data="filteredKitchensResolved"
+          :default-open="false"
+          :hide-when-empty="false"
+        />
+      </div>
     </UCard>
 
     <UCard>

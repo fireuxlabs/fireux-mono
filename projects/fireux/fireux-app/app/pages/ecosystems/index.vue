@@ -8,11 +8,7 @@
     <UPageBody>
       <EcosystemCTA />
 
-      <EcosystemCollectionManager
-        title="Ecosystems"
-        description="Browse FireUX ecosystems and the apps they bring together."
-        link
-      />
+      <EcosystemCollectionManager />
     </UPageBody>
   </UPage>
 </template>

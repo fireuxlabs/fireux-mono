@@ -80,7 +80,6 @@ import { usePublicMenuCollection } from '../../../composables/fireux/public/menu
 
 const props = withDefaults(
   defineProps<{
-    collection?: MenuInterfaceSource[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -110,7 +109,7 @@ const {
 const publicMenus = usePublicMenuCollection()
 
 const collection = computed(() =>
-  [...(props.collection ?? publicMenus.menus.value)].sort(
+  [...publicMenus.menus.value].sort(
     (a, b) =>
       Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
       String(a.name ?? '').localeCompare(String(b.name ?? ''))

@@ -79,7 +79,6 @@ import type { User } from '../../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{
-    collection?: User[]
     title?: string
     description?: string
     link?: boolean
@@ -102,9 +101,7 @@ const props = withDefaults(
 )
 
 const fetched = useUserCollection()
-const collection = computed<User[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.users.value
-)
+const collection = computed<User[]>(() => fetched.users.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Users'))
 const description = computed(() =>

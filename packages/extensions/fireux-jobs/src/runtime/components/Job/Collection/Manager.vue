@@ -78,7 +78,6 @@ import { useJobInterface } from '../../../composables/fireux/firestore/jobs/util
 
 const props = withDefaults(
   defineProps<{
-    collection?: Job[]
     title?: string
     description?: string
     link?: boolean
@@ -101,9 +100,7 @@ const props = withDefaults(
 )
 
 const fetched = useJobCollection()
-const collection = computed<Job[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.appJobs.value
-)
+const collection = computed<Job[]>(() => fetched.appJobs.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
 const description = computed(() =>

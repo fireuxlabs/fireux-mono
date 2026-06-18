@@ -20,17 +20,59 @@
       />
     </UCard>
 
-    <SupplierCollectionManager
-      :collection="suppliers"
-      title="Suppliers"
-      description="Browse supplier records for the developer-selected source."
-      :link="false"
-      :action="true"
-      :show-badges="true"
-      dev-json-title="Suppliers (JSON)"
-      dev-json-context="dev suppliers · selected source"
-      @select="selectSupplier"
-    />
+    <UCard>
+      <template #header>
+        <div class="space-y-2">
+          <div class="text-sm font-semibold">Suppliers</div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Developer-selected supplier source. This is a scoped dev list, not the public supplier collection manager.
+          </p>
+        </div>
+      </template>
+
+      <div
+        v-if="suppliers.length"
+        class="grid gap-2 md:grid-cols-2 xl:grid-cols-3"
+      >
+        <button
+          v-for="supplier in suppliers"
+          :key="getSupplierId(supplier)"
+          type="button"
+          class="rounded-lg border border-default bg-elevated/30 p-3 text-left text-sm transition hover:bg-elevated"
+          :class="{
+            'ring-2 ring-primary': getSupplierId(supplier) === selectedSupplierId,
+          }"
+          @click="selectSupplier(getSupplierId(supplier))"
+        >
+          <div class="font-semibold text-highlighted">
+            {{ getSupplierLabel(supplier) }}
+          </div>
+          <div class="mt-1 font-mono text-xs text-dimmed">
+            {{ getSupplierId(supplier) }}
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <UBadge variant="soft" color="neutral">
+              {{ supplier.state || 'missing state' }}
+            </UBadge>
+            <UBadge variant="soft" color="neutral">
+              {{ supplier.catalogue_state || 'missing catalogue' }}
+            </UBadge>
+          </div>
+        </button>
+      </div>
+
+      <p v-else class="text-sm text-dimmed">
+        No suppliers found for this source.
+      </p>
+
+      <DevJson
+        title="Suppliers (JSON)"
+        context="dev suppliers · selected source"
+        :data="suppliers"
+        :default-open="false"
+        :hide-when-empty="false"
+      />
+    </UCard>
 
     <UCard>
       <template #header>

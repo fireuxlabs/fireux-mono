@@ -83,7 +83,6 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    collection?: IngredientInterfaceItem[]
     title?: string
     description?: string
     link?: boolean
@@ -121,11 +120,7 @@ const {
 } = useIngredientInterface()
 
 const fetched = useIngredientCollection()
-const collection = computed<IngredientInterfaceItem[]>(() =>
-  Array.isArray(props.collection)
-    ? props.collection
-    : fetched.ingredients.value
-)
+const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
   baseRoute: computed(() => props.baseRoute),

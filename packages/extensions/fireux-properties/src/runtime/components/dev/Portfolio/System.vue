@@ -24,13 +24,7 @@
       />
     </UCard>
 
-    <PortfolioCollectionManager
-      :collection="portfolios"
-      :link="false"
-      :description="'Root portfolio collection. Use the storage inspector below for root, overlay, and scoped-child truth.'"
-      :dev-json-title="'Root Portfolios (JSON)'"
-      :dev-json-context="'dev portfolios · root collection'"
-    />
+    <PortfolioCollectionManager />
 
     <UCard>
       <template #header>

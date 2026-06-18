@@ -61,7 +61,7 @@
                     Companies collection
                   </p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Filter companies by model drift (extra fields) before browsing records.
+                    Inspect model drift separately from the public companies collection manager.
                   </p>
                   <DevDriftToolbar
                     :drift-kind="companiesDriftKind"
@@ -76,7 +76,7 @@
               </template>
             </UCard>
 
-            <CompanyCollectionManager :collection="filteredCompaniesResolved" />
+            <CompanyCollectionManager />
           </div>
         </UCard>
       </div>
@@ -140,12 +140,6 @@ const hydratedById = computed(() => {
   }
   return map
 })
-
-const filteredCompaniesResolved = computed(() =>
-  filteredCompanies.value
-    .map((company) => hydratedById.value.get(String(company.id)))
-    .filter(Boolean) as CompanyHydrated[]
-)
 
 const filteredCompaniesDriftPayload = computed(() =>
   filteredCompanies.value.map((company) => {

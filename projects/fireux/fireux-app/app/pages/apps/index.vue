@@ -10,10 +10,7 @@
       <AppCTA />
       <AppCollectionMine />
 
-      <AppCollectionManager
-        title="Apps"
-        description="Browse published FireUX apps."
-      />
+      <AppCollectionManager />
     </UPageBody>
   </UPage>
 </template>

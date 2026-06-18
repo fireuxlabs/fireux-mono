@@ -11,18 +11,6 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup v-if="showFilterToggle" size="xs">
-              <UButton
-                v-for="option in filterOptions"
-                :key="option.value"
-                :variant="filterMode === option.value ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode(option.value)"
-              >
-                {{ option.label }}
-              </UButton>
-            </UFieldGroup>
-
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -64,21 +52,15 @@
         <KitchenCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="card.canAct"
-          :disabled="disabled || !card.canAct"
           :show-badges="showBadges"
-          @action="emit('select', card.id)"
         />
       </template>
       <template #cell="{ card }">
         <KitchenCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="card.canAct"
-          :disabled="disabled || !card.canAct"
           :show-source="showBadges"
           :show-badges="showBadges"
-          @action="emit('select', card.id)"
         />
       </template>
     </KitchenCollectionList>
@@ -108,20 +90,9 @@ import type { KitchenSurface } from '../../../composables/fireux/firestore/kitch
 import type { Kitchen } from '../../../models/kitchen.model'
 
 type KitchenCollectionItem = Kitchen | KitchenSurface
-type KitchenFilterMode = 'all' | 'mine' | 'console' | 'team' | 'operator'
-type KitchenFilterOption = {
-  value: KitchenFilterMode
-  label: string
-}
 
 const props = withDefaults(
   defineProps<{
-    collection?: KitchenCollectionItem[]
-    pending?: boolean
-    consoleIds?: string[]
-    actionIds?: string[]
-    filterMode?: KitchenFilterMode
-    filterOptions?: KitchenFilterOption[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -130,20 +101,11 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
-    action?: boolean
-    disabled?: boolean
-    showFilterToggle?: boolean
     showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
-    filterMode: 'all',
-    filterOptions: () => [
-      { value: 'all', label: 'All' },
-      { value: 'team', label: 'Team' },
-      { value: 'operator', label: 'Operator' },
-    ],
     title: 'Kitchens',
     description: 'Browse kitchen records available to this runtime.',
     searchPlaceholder: 'Search kitchens…',
@@ -152,28 +114,15 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     link: true,
-    action: false,
-    disabled: false,
-    showFilterToggle: false,
     showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
     devJsonContext: 'collection manager · kitchens · raw collection',
-    pending: false,
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', kitchenId: string): void
-  (event: 'update:filterMode', value: KitchenFilterMode): void
-}>()
-
 const fetched = useKitchenCollection()
-const rawCollection = computed(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.kitchens.value
-)
-const pending = computed(() =>
-  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
-)
+const rawCollection = computed(() => fetched.kitchens.value)
+const pending = computed(() => fetched.pending.value)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
@@ -181,32 +130,12 @@ const description = computed(() =>
     props.description || 'Browse kitchen records available to this runtime.'
   ).trim()
 )
-const filterMode = computed<KitchenFilterMode>(() =>
-  props.filterMode === 'mine' ||
-  props.filterMode === 'console' ||
-  props.filterMode === 'team' ||
-  props.filterMode === 'operator'
-    ? props.filterMode
-    : 'all'
-)
-const filterOptions = computed<KitchenFilterOption[]>(() =>
-  Array.isArray(props.filterOptions) && props.filterOptions.length
-    ? props.filterOptions
-    : [
-        { value: 'all', label: 'All' },
-        { value: 'team', label: 'Team' },
-        { value: 'operator', label: 'Operator' },
-      ]
-)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search kitchens…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const actionEnabled = computed(() => props.action === true)
-const disabled = computed(() => props.disabled === true)
-const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(() => props.showBadges !== false)
 const devJsonTitle = computed(() =>
@@ -223,35 +152,9 @@ const {
   cell: makeCell,
 } = useKitchenInterface()
 
-const consoleIdSet = computed(
-  () =>
-    new Set(
-      (props.consoleIds ?? [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    )
-)
-const actionIdSet = computed(
-  () =>
-    new Set(
-      (props.actionIds ?? [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    )
-)
-const cardCanAct = (cardId: unknown) => {
-  if (!actionEnabled.value) return false
-  const actionIds = props.actionIds ?? []
-  if (!actionIds.length) return true
-  return actionIdSet.value.has(String(cardId ?? '').trim())
-}
 const collection = computed<KitchenCollectionItem[]>(() =>
   rawCollection.value
     .filter((row): row is KitchenCollectionItem => Boolean(makeCard(row)))
-    .filter((row) => {
-      if (filterMode.value !== 'console') return true
-      return consoleIdSet.value.has(String(row.id ?? '').trim())
-    })
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
@@ -264,26 +167,21 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-type KitchenManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
-  canAct: boolean
-}
-
-const cardsFiltered = computed<KitchenManagerCard[]>(() =>
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
   visibleItems.value
     .map((kitchen) => {
-      const canAct = cardCanAct(kitchen.id)
-
       if (variant.value === 'cell') {
         const base = makeCard(kitchen)
         const cell = makeCell(kitchen)
         if (!base || !cell) return null
-        return { ...base, ...cell, canAct }
+        return { ...base, ...cell }
       }
 
-      const pill = makePill(kitchen)
-      return pill ? { ...pill, canAct } : null
+      return makePill(kitchen)
     })
-    .filter((card): card is KitchenManagerCard => Boolean(card))
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
 )
 
 const totalCount = computed(() => collection.value.length)
@@ -296,7 +194,4 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
-function setFilterMode(value: KitchenFilterMode) {
-  emit('update:filterMode', value)
-}
 </script>

@@ -45,7 +45,7 @@
                     Blogs collection
                   </p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Filter blog posts by model drift (extra fields) before browsing records.
+                    Inspect model drift separately from the public blog collection manager.
                   </p>
                   <DevDriftToolbar
                     :drift-kind="blogsDriftKind"
@@ -60,7 +60,7 @@
               </template>
             </UCard>
 
-            <BlogCollectionManager :collection="filteredBlogs" />
+            <BlogCollectionManager />
           </div>
         </UCard>
       </div>

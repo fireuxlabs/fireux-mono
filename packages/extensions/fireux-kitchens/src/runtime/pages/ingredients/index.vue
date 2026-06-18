@@ -4,10 +4,7 @@
 
     <UPageBody>
       <IngredientCTA />
-      <IngredientCollectionManager
-        title="Ingredients"
-        description="Browse ingredients kitchens can use in recipes, menus, and stock."
-      />
+      <IngredientCollectionManager />
     </UPageBody>
   </UPage>
 </template>

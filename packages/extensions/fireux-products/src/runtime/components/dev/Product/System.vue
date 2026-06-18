@@ -18,7 +18,7 @@
               Products collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse products resolved for this runtime and filter by model drift.
+              Inspect model drift separately from the public products collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="driftKind"
@@ -33,7 +33,7 @@
         </div>
       </template>
 
-      <ProductCollectionManager :collection="filteredCollection" />
+      <ProductCollectionManager />
     </UCard>
   </section>
 </template>

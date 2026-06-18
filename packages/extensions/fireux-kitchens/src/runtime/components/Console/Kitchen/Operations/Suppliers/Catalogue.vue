@@ -10,16 +10,38 @@
       Back to supplier
     </UButton>
 
-    <SupplierCatalogueCollectionManager
-      v-if="hasIntegratedCatalogue"
-      :collection="catalogues"
-      :pending="pending"
-      :title="title"
-      :description="description"
-      empty-title="No supplier catalogue"
-      empty-description="No supplier-owned catalogue rows are available yet."
-      dev-context="console kitchen supplier catalogue"
-    />
+    <UPageCard v-if="hasIntegratedCatalogue">
+      <template #header>
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h2 class="text-base font-semibold text-highlighted">
+              {{ title }}
+            </h2>
+            <p class="text-sm text-dimmed">
+              {{ description }}
+            </p>
+          </div>
+
+          <UBadge color="neutral" variant="soft">
+            {{ cards.length }}
+          </UBadge>
+        </div>
+      </template>
+
+      <div v-if="pending" class="text-sm text-dimmed">
+        Loading supplier catalogue...
+      </div>
+      <div v-else-if="cards.length" class="space-y-4">
+        <SupplierCatalogueCardsPill
+          v-for="card in cards"
+          :key="card.id"
+          v-bind="card"
+        />
+      </div>
+      <p v-else class="text-sm text-dimmed">
+        No supplier-owned catalogue rows are available yet.
+      </p>
+    </UPageCard>
 
     <UAlert
       v-else
@@ -44,7 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import SupplierCatalogueCollectionManager from 'fireux-suppliers/runtime/components/Supplier/Catalogue/Collection/Manager.vue'
+import { computed } from 'vue'
+import { useSupplierCatalogueInterface } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueInterface'
 import { useKitchenConsoleSupplierCatalogue } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplierCatalogue'
 
 const {
@@ -56,4 +79,13 @@ const {
   description,
   procurementPath,
 } = useKitchenConsoleSupplierCatalogue()
+const { pill } = useSupplierCatalogueInterface()
+
+const cards = computed(() =>
+  catalogues.value
+    .map((catalogue) => pill(catalogue))
+    .filter((card): card is NonNullable<ReturnType<typeof pill>> =>
+      Boolean(card)
+    )
+)
 </script>

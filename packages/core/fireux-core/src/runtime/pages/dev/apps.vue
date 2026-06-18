@@ -31,7 +31,7 @@
               Apps collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter apps by model drift (missing + extra fields) before browsing records.
+              Inspect model drift separately from the public apps collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="appsDriftKind"
@@ -47,7 +47,7 @@
         </template>
       </UCard>
 
-      <AppCollectionManager :collection="filteredApps" />
+      <AppCollectionManager />
     </UPageBody>
   </UPage>
 </template>

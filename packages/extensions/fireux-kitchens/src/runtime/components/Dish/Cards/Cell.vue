@@ -96,12 +96,22 @@ type Props = Pick<
   showMeta?: boolean
   showTagline?: boolean
   link?: boolean
+  action?: boolean
 }
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
 
 const props = withDefaults(defineProps<Props>(), {
   showSubtitle: true,
   showMeta: true,
   showTagline: true,
   link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

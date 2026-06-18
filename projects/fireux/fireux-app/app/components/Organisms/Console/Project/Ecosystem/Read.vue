@@ -31,13 +31,18 @@
       </p>
     </UCard>
 
-    <EcosystemCollectionManager
-      v-else-if="ecosystemCollection.length"
-      :collection="ecosystemCollection"
-      title="Project Ecosystem"
-      description="Ecosystem record linked to the selected project."
-      :link="false"
-    />
+    <UCard v-else-if="ecosystemCard">
+      <template #header>
+        <div class="console-card-header">
+          <div class="console-card-header__title">Project Ecosystem</div>
+        </div>
+      </template>
+
+      <EcosystemCardsCell
+        v-bind="ecosystemCard"
+        :link="false"
+      />
+    </UCard>
 
     <UCard v-else-if="!ecosystemId">
       <p class="console-card-header__description">
@@ -64,6 +69,7 @@ import { computed } from 'vue'
 import type {
   EcosystemInterfaceInput,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/console/project/operations/Ecosystem/useProjectConsoleEcosystem'
 
 const {
@@ -95,4 +101,6 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
     },
   ]
 })
+const { cell } = useEcosystemInterface()
+const ecosystemCard = computed(() => cell(ecosystemCollection.value[0]))
 </script>

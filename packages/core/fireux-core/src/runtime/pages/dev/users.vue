@@ -73,7 +73,7 @@
               Users collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter users by model drift (extra fields) before browsing records.
+              Inspect model drift separately from the public users collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="usersDriftKind"
@@ -88,7 +88,7 @@
         </template>
       </UCard>
 
-      <UserCollectionManager :collection="filteredUsers" />
+      <UserCollectionManager />
     </UPageBody>
   </UPage>
 </template>

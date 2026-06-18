@@ -11,18 +11,6 @@
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup v-if="showFilterToggle" size="xs">
-              <UButton
-                v-for="option in filterOptions"
-                :key="option.value"
-                :variant="filterMode === option.value ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setFilterMode(option.value)"
-              >
-                {{ option.label }}
-              </UButton>
-            </UFieldGroup>
-
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -64,20 +52,14 @@
         <SupplierCardsPill
           v-bind="card"
           :link="linkEnabled"
-          :action="card.canAct"
-          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
-          @action="emit('select', card.id)"
         />
       </template>
       <template #cell="{ card }">
         <SupplierCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :action="card.canAct"
-          :disabled="actionEnabled && !card.canAct"
           :show-badges="showBadges"
-          @action="emit('select', card.id)"
         />
       </template>
     </SupplierCollectionList>
@@ -105,70 +87,38 @@ import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/useSupplier'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-type SupplierFilterMode = 'all' | 'mine' | 'console'
-type SupplierFilterOption = {
-  value: SupplierFilterMode
-  label: string
-}
-
 const props = withDefaults(
   defineProps<{
-    collection?: Supplier[]
-    pending?: boolean
-    consoleIds?: string[]
-    actionIds?: string[]
-    filterMode?: SupplierFilterMode
-    filterOptions?: SupplierFilterOption[]
     title?: string
     description?: string
     link?: boolean
-    action?: boolean
     showBadges?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
-    showFilterToggle?: boolean
     initialVariant?: 'pill' | 'cell'
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
-    filterMode: 'all',
-    filterOptions: () => [
-      { value: 'all', label: 'All' },
-      { value: 'mine', label: 'Mine' },
-    ],
     title: 'Suppliers',
     description: 'Browse supplier records available to this runtime.',
     link: true,
-    action: false,
-    actionIds: () => [],
     showBadges: true,
     searchPlaceholder: 'Search suppliers…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    showFilterToggle: false,
     initialVariant: 'pill',
     devJsonTitle: 'Suppliers (JSON)',
     devJsonContext: 'collection manager · suppliers · raw collection',
-    pending: false,
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', supplierId: string): void
-  (event: 'update:filterMode', value: SupplierFilterMode): void
-}>()
-
 const fetched = useSupplierCollection()
-const rawCollection = computed(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.suppliers.value
-)
-const pending = computed(() =>
-  props.pending || (Array.isArray(props.collection) ? false : fetched.pending.value)
-)
+const rawCollection = computed(() => fetched.suppliers.value)
+const pending = computed(() => fetched.pending.value)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Suppliers'))
 const description = computed(() =>
@@ -176,28 +126,13 @@ const description = computed(() =>
     props.description || 'Browse supplier records available to this runtime.'
   )
 )
-const filterMode = computed<SupplierFilterMode>(() =>
-  props.filterMode === 'mine' || props.filterMode === 'console'
-    ? props.filterMode
-    : 'all'
-)
-const filterOptions = computed<SupplierFilterOption[]>(() =>
-  Array.isArray(props.filterOptions) && props.filterOptions.length
-    ? props.filterOptions
-    : [
-        { value: 'all', label: 'All' },
-        { value: 'mine', label: 'Mine' },
-      ]
-)
 const linkEnabled = computed(() => props.link !== false)
-const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search suppliers…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
-const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
@@ -216,35 +151,9 @@ const {
   cell: makeCell,
 } = useSupplierInterface()
 
-const consoleIdSet = computed(
-  () =>
-    new Set(
-      (props.consoleIds ?? [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    )
-)
-const actionIdSet = computed(
-  () =>
-    new Set(
-      (props.actionIds ?? [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    )
-)
-const cardCanAct = (cardId: unknown) => {
-  if (!actionEnabled.value) return false
-  const actionIds = props.actionIds ?? []
-  if (!actionIds.length) return true
-  return actionIdSet.value.has(String(cardId ?? '').trim())
-}
 const collection = computed<Supplier[]>(() =>
   rawCollection.value
     .filter((entry): entry is Supplier => Boolean(makeCard(entry as Supplier)))
-    .filter((entry) => {
-      if (filterMode.value !== 'console') return true
-      return consoleIdSet.value.has(String(entry.id ?? '').trim())
-    })
 )
 const totalCount = computed(() => collection.value.length)
 
@@ -255,26 +164,21 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-type SupplierManagerCard = NonNullable<ReturnType<typeof makeCard>> & {
-  canAct: boolean
-}
-
-const cardsFiltered = computed<SupplierManagerCard[]>(() =>
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
   visibleItems.value
     .map((entry) => {
-      const canAct = cardCanAct(entry.id)
-
       if (variant.value === 'cell') {
         const base = makeCard(entry)
         const cell = makeCell(entry)
         if (!base || !cell) return null
-        return { ...base, ...cell, canAct }
+        return { ...base, ...cell }
       }
 
-      const pill = makePill(entry)
-      return pill ? { ...pill, canAct } : null
+      return makePill(entry)
     })
-    .filter((card): card is SupplierManagerCard => Boolean(card))
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
 )
 
 const countLabel = computed(() =>
@@ -283,7 +187,4 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
-function setFilterMode(value: SupplierFilterMode) {
-  emit('update:filterMode', value)
-}
 </script>

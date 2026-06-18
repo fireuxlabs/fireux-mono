@@ -79,7 +79,6 @@ import type { FirebaseProduct } from '../../../models/product.model'
 
 const props = withDefaults(
   defineProps<{
-    collection?: FirebaseProduct[]
     title?: string
     description?: string
     link?: boolean
@@ -102,9 +101,7 @@ const props = withDefaults(
 )
 
 const fetched = useProductCollection()
-const collection = computed<FirebaseProduct[]>(() =>
-  Array.isArray(props.collection) ? props.collection : fetched.products.value
-)
+const collection = computed<FirebaseProduct[]>(() => fetched.products.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
 const description = computed(() =>

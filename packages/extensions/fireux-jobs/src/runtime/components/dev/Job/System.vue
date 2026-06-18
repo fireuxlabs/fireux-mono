@@ -17,7 +17,7 @@
               Jobs collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse jobs resolved for this runtime and filter by model drift.
+              Inspect model drift separately from the public jobs collection manager.
             </p>
             <DevDriftToolbar
               :drift-kind="jobsDriftKind"
@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <JobCollectionManager :collection="filteredJobs" />
+      <JobCollectionManager />
     </UCard>
   </section>
 </template>

@@ -81,7 +81,6 @@ type ChefEntry = Chef & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{
-    collection?: ChefEntry[]
     title?: string
     description?: string
     link?: boolean
@@ -105,9 +104,7 @@ const props = withDefaults(
 
 const fetched = useChefFetch()
 const collection = computed<ChefEntry[]>(() =>
-  Array.isArray(props.collection)
-    ? props.collection
-    : [...(fetched.appChefs.value ?? []), ...(fetched.coreChefs.value ?? [])]
+  [...(fetched.appChefs.value ?? []), ...(fetched.coreChefs.value ?? [])]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))

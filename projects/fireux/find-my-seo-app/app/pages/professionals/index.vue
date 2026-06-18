@@ -6,12 +6,29 @@
     />
 
     <UPageBody class="space-y-6">
-      <ProfessionalCollectionManager
-        :collection="filteredCollection"
-        title="Professionals"
-        description="Browse SEO professionals using the shared professional collection surface."
-        initial-variant="cell"
-      />
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2>Professionals</h2>
+              <p>Browse SEO professionals by sector fit, availability, and trust signals.</p>
+            </div>
+
+            <UBadge variant="soft">{{ professionalCards.length }}</UBadge>
+          </div>
+        </template>
+
+        <div v-if="professionalCards.length" class="space-y-3">
+          <ProfessionalCardsCell
+            v-for="card in professionalCards"
+            :key="card.id"
+            v-bind="card"
+            link
+          />
+        </div>
+
+        <p v-else class="text-sm text-dimmed">No professionals found.</p>
+      </UCard>
 
       <UAlert
         v-if="activeSector"
@@ -26,9 +43,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import ProfessionalCollectionManager from 'fireux-jobs/runtime/components/Professional/Collection/Manager.vue'
+import {
+  useProfessionalInterface,
+  type ProfessionalCard,
+} from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { appMeta } from '../../meta'
 import { demoSeoProfessionalCollection } from '../../../../../../demo/find-my-seo.demo'
+
+const { cell: professionalCell } = useProfessionalInterface()
 
 definePageMeta({
   nav: {
@@ -66,5 +88,10 @@ const filteredCollection = computed(() =>
 
       return left.user.display_name.localeCompare(right.user.display_name)
     })
+)
+const professionalCards = computed<ProfessionalCard.Card[]>(() =>
+  filteredCollection.value
+    .map((entry) => professionalCell(entry as any, entry.user))
+    .filter((card): card is ProfessionalCard.Card => Boolean(card))
 )
 </script>

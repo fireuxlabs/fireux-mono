@@ -32,7 +32,13 @@
         </div>
       </template>
 
-      <PlaceCollectionManager :collection="filteredCollection" />
+      <DevJson
+        title="Places (JSON)"
+        context="dev places · filtered collection"
+        :data="filteredCollection"
+        :default-open="false"
+        :hide-when-empty="false"
+      />
     </UCard>
   </section>
 </template>
