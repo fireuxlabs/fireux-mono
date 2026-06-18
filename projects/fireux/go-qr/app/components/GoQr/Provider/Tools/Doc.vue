@@ -131,6 +131,7 @@ const createError = ref('')
 const createdPath = ref('')
 const createdQrPath = ref('')
 const authToken = ref('')
+const parentOrigin = ref('')
 let authRequestResolve: ((token: string) => void) | null = null
 
 const file = computed(() =>
@@ -253,6 +254,7 @@ watch(slugInitialValue, (value) => {
 }, { immediate: true })
 
 onMounted(() => {
+  parentOrigin.value = resolveParentOrigin()
   window.addEventListener('message', handleToolAuthMessage)
 })
 
@@ -263,6 +265,7 @@ onBeforeUnmount(() => {
 function handleToolAuthMessage(event: MessageEvent) {
   if (event.source !== window.parent) return
   if (event.data?.source !== 'fireux-tool-iframe') return
+  if (event.origin) parentOrigin.value = event.origin
   if (event.data?.type !== 'tool-auth') return
 
   const token = typeof event.data.token === 'string' ? event.data.token : ''
@@ -274,6 +277,8 @@ function handleToolAuthMessage(event: MessageEvent) {
 function requestToolAuth() {
   if (!import.meta.client || window.parent === window) return Promise.resolve(authToken.value)
   if (authToken.value) return Promise.resolve(authToken.value)
+  const targetOrigin = parentOrigin.value || resolveParentOrigin()
+  if (!targetOrigin) return Promise.resolve(authToken.value)
 
   return new Promise<string>((resolve) => {
     authRequestResolve = resolve
@@ -281,7 +286,7 @@ function requestToolAuth() {
       source: 'go-qr',
       tool: 'doc',
       type: 'tool-auth-request',
-    }, '*')
+    }, targetOrigin)
 
     window.setTimeout(() => {
       if (!authRequestResolve) return
@@ -328,6 +333,8 @@ async function createDoc() {
 
 function notifyToolResult(result: Record<string, unknown>) {
   if (!import.meta.client || window.parent === window) return
+  const targetOrigin = parentOrigin.value || resolveParentOrigin()
+  if (!targetOrigin) return
 
   window.parent.postMessage({
     source: 'go-qr',
@@ -335,6 +342,16 @@ function notifyToolResult(result: Record<string, unknown>) {
     type: 'tool-result',
     action: 'created',
     result,
-  }, '*')
+  }, targetOrigin)
+}
+
+function resolveParentOrigin() {
+  if (!import.meta.client) return ''
+
+  try {
+    return document.referrer ? new URL(document.referrer).origin : ''
+  } catch {
+    return ''
+  }
 }
 </script>

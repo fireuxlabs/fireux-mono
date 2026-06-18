@@ -1,9 +1,7 @@
 import {
   arrayRemove,
   arrayUnion,
-  collection,
   doc,
-  getCountFromServer,
   getDoc,
   increment,
   serverTimestamp,
@@ -157,7 +155,6 @@ export async function createUserAppMembership(
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUsersRef = collection(appDb, AppStorage.collection, appId, AppUserStorage.collection)
   const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
   const appRef = doc(appDb, AppStorage.collection, appId)
   const userRef = doc(identityDb, UserStorage.rootCollection, uid)
@@ -185,25 +182,6 @@ export async function createUserAppMembership(
   const existingCount = Number(appData?.derived?.user_count)
   const countLooksBroken =
     !Number.isFinite(existingCount) || existingCount < (created ? 0 : 1)
-  let repairedUserCount: number | null = null
-
-  if (countLooksBroken) {
-    try {
-      repairedUserCount = Math.max(
-        (await getCountFromServer(appUsersRef)).data().count,
-        created ? 0 : 1
-      )
-    } catch (error) {
-      repairedUserCount = created ? 0 : 1
-      if (import.meta.dev) {
-        console.warn('[createUserAppMembership] failed to repair user count exactly', {
-          appId,
-          uid,
-          error,
-        })
-      }
-    }
-  }
   const batch = writeBatch(appDb)
 
   // 1) Canonical membership overlay
@@ -268,10 +246,9 @@ export async function createUserAppMembership(
   }
 
   if (created) {
-    appPatch['derived.user_count'] =
-      repairedUserCount === null ? increment(1) : repairedUserCount + 1
-  } else if (repairedUserCount !== null) {
-    appPatch['derived.user_count'] = repairedUserCount
+    appPatch['derived.user_count'] = countLooksBroken ? 1 : increment(1)
+  } else if (countLooksBroken) {
+    appPatch['derived.user_count'] = 1
   }
 
   // Keep all admin mirrors in sync with the app-scoped role.

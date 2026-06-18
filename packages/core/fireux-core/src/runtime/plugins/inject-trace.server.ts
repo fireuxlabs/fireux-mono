@@ -10,12 +10,12 @@ import { defineNuxtPlugin } from '#imports'
 export default defineNuxtPlugin(() => {
   if (process.env.NODE_ENV === 'production') return
 
-  console.info('[InjectTrace:server] running')
-
   const g = globalThis as unknown as {
     __INJECT_TRACE_SERVER_PATCHED__?: boolean
   }
   if (g.__INJECT_TRACE_SERVER_PATCHED__) return
+
+  console.info('[InjectTrace:server] running')
 
   const origWarn = console.warn.bind(console)
   const origError = console.error.bind(console)
