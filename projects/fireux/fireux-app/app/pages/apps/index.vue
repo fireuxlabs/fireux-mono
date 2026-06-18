@@ -6,7 +6,9 @@
     />
 
     <UPageBody>
+      <!-- Core/platform CTA family: AppCTA starts app onboarding; My apps and browse live in collection sheets. -->
       <AppCTA />
+      <AppCollectionMine />
 
       <AppCollectionManager
         title="Apps"

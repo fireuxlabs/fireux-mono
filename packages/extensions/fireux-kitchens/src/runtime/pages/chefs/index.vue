@@ -34,7 +34,7 @@ definePageMeta({
 
 const pageTitle = 'Chefs'
 const pageDescription =
-  'Browse chef profiles, or create yours from your user profile.'
+  'Find chefs, or create your profile.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

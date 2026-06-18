@@ -36,7 +36,7 @@ const runtime = useRuntimeConfig()
 
 const pageTitle = 'Users'
 const pageDescription =
-  'Create your user profile, then choose the profile types you want to grow into.'
+  'Find people, or create your account.'
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

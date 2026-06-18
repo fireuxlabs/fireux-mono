@@ -2,7 +2,9 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
+      <!-- Core/platform CTA family: AppCTA starts app onboarding; My apps and browse live in collection sheets. -->
       <AppCTA />
+      <AppCollectionMine />
       <AppCollectionManager />
     </UPageBody>
   </UPage>
@@ -32,7 +34,7 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Apps'
-const pageDescription = 'Browse apps for the current ecosystem.'
+const pageDescription = 'Find apps in this ecosystem, or start your app.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

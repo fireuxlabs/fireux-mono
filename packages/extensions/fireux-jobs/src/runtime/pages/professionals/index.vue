@@ -36,7 +36,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Professionals'
 const pageDescription =
-  'Browse professional profiles, or create yours from your user profile.'
+  'Find professionals, or create your profile.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>
