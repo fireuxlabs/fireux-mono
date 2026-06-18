@@ -48,11 +48,15 @@
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { KitchenPublicMenuSectionRow } from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
-import type { Menu } from '../../models/menu/menu.model'
+
+type MenuPublicModel = {
+  name: string
+  description?: string
+}
 
 defineProps<{
   kitchenName: string
-  menu: Menu
+  menu: MenuPublicModel
   sections: KitchenPublicMenuSectionRow[]
   pageStyle?: Partial<PageStyle> | null
   currencyCode?: string

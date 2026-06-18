@@ -135,11 +135,9 @@ export default defineEventHandler(async (event) => {
   await menuRef.set({
     id: slug,
     slug,
-    kitchen_id: '',
     source_app_id: appId,
     created_by: createdBy,
     name: menuNameFromSlug(slug),
-    description: '',
     status: 'published',
     doc_url: saved.fileUrl,
     doc_name: file.fileName,

@@ -1,13 +1,13 @@
 <template>
-  <UPageCard variant="subtle">
+  <div class="menu-document">
     <div
       v-if="isPhoto"
-      class="flex min-h-[calc(100vh-16rem)] items-start justify-center rounded-2xl border border-default bg-[var(--ui-bg)] p-3 sm:p-5"
+      class="menu-document__photo"
     >
       <img
         :src="displayUrl"
         :alt="menuTitle"
-        class="h-auto max-h-[calc(100vh-18rem)] w-auto max-w-full rounded-xl object-contain shadow-lg"
+        class="menu-document__image"
       >
     </div>
 
@@ -22,9 +22,9 @@
       v-else
       :src="displayUrl"
       :title="menuTitle"
-      class="h-[calc(100vh-16rem)] w-full rounded-2xl border border-default bg-[var(--ui-bg)]"
+      class="menu-document__frame"
     />
-  </UPageCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,3 +60,31 @@ const isPdf = computed(() =>
   (props.menu.kind === 'pdf' || text(props.menu.doc_type).includes('pdf'))
 )
 </script>
+
+<style scoped>
+.menu-document {
+  width: 100%;
+}
+
+.menu-document__photo {
+  display: flex;
+  justify-content: center;
+}
+
+.menu-document__image {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 18rem);
+  border-radius: 0.875rem;
+  object-fit: contain;
+  box-shadow: 0 1.25rem 3rem rgb(15 23 42 / 0.18);
+}
+
+.menu-document__frame {
+  width: 100%;
+  height: calc(100vh - 16rem);
+  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
+  border-radius: 1rem;
+  background: var(--menu-bg);
+}
+</style>

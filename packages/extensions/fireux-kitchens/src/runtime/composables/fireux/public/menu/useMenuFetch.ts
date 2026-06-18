@@ -24,13 +24,13 @@ export type PublicMenu = {
   view_to: string
 }
 
-type UsePublicMenuFetchOptions = {
+type UseMenuFetchOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
 
-export function usePublicMenuFetch(
+export function useMenuFetch(
   menuId: MaybeRefOrGetter<string>,
-  options: UsePublicMenuFetchOptions = {}
+  options: UseMenuFetchOptions = {}
 ) {
   const id = computed(() => String(toValue(menuId) || '').trim())
   const kitchenSlug = computed(() =>

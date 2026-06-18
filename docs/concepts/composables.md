@@ -11,6 +11,7 @@ Vertical links:
 - Child: firestore-entity.md
 - Child: console.md
 - Child: server-api.md
+- Child: create.md
 
 Horizontal links:
 - pages.md
@@ -27,6 +28,9 @@ Common buckets:
 - `composables/fireux/app/*` for app-level shared runtime concerns.
 
 Naming notes:
+- `useXCreate`: create an entity/record through a client runtime seam when the
+  work is mostly Firestore data. See create.md before using it for upload or
+  provider transactions.
 - `useXFetch`: fetch one entity or route-selected entity.
 - `useXCollection`: fetch a list/collection.
 - `useXInterface`: map entity data into UI-ready surfaces.

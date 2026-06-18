@@ -31,7 +31,7 @@ Entity checkpoint:
 - MenuSourceUpload is a record under Kitchen.
 - Root `/menus/<id>` currently behaves as a public doorway/upload record, not settled root Menu truth.
 
-Maturity states:
+Public menu kinds:
 - `photo`: uploaded photo source.
 - `document`: uploaded PDF/document source.
 - `kitchen-menu`: linked to a kitchen-owned menu.

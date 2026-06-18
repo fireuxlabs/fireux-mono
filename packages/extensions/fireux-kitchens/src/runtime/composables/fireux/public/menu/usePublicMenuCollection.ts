@@ -1,6 +1,6 @@
 import { useAsyncData } from '#imports'
 import { computed } from 'vue'
-import type { PublicMenu } from './usePublicMenuFetch'
+import type { PublicMenu } from './useMenuFetch'
 
 export function usePublicMenuCollection() {
   const state = useAsyncData(

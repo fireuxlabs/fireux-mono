@@ -75,6 +75,9 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
     kitchenName: kitchenDisplayName(kitchenData),
     kitchenAppId,
     kitchenMenuId: menuId,
+    sourceKind:
+      readRecordString(data, 'source_kind') ||
+      (readRecordString(data, 'doc_url') ? '' : 'kitchen-menu'),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
   })
 }
@@ -126,6 +129,10 @@ async function readPublicMenuSurface(menuId: string) {
       kitchenName: kitchenSnap.exists ? kitchenDisplayName(kitchenSnap.data() || {}) : '',
       kitchenAppId,
       kitchenMenuId,
+      sourceKind:
+        readRecordString(data, 'source_kind') ||
+        readRecordString(data, 'kind') ||
+        readRecordString(menuData, 'source_kind'),
       path: `/menus/${encodeURIComponent(menuId)}`,
       qrPath: `/menus/${encodeURIComponent(menuId)}/qr`,
       ...publicMenuOwnerAppView({

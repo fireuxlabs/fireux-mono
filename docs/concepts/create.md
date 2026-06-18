@@ -1,0 +1,231 @@
+Create spine map
+Updated: 2026-06-18
+Ref: 9da1b5534
+Role: map, not canon
+
+Purpose:
+Map the current FireUX create families so agents do not confuse normal entity
+creation with upload transactions, console onboarding, provider provisioning, or
+ensure/upsert flows.
+
+Vertical links:
+- Parent: spine.md
+- Child: firestore-entity.md
+- Child: console.md
+- Child: server-api.md
+
+Horizontal links:
+- composables.md
+- components.md
+- pages.md
+- tool-provider.md
+- collection-manager.md
+
+Core question:
+When adding or changing a create flow, first ask what is being created and
+where the irreversible work happens.
+
+Families:
+- Client entity create
+- Draft-state create
+- Console target create
+- Server transaction create
+- Provider/provision create
+- Ensure/upsert create
+
+Client entity create:
+Use a `useXCreate` composable when the create is mostly a Firestore entity
+write from an app/runtime surface.
+
+Current examples:
+- `useMenuCreate`
+- `useKitchenCreate`
+- `useSupplierCreate`
+- `usePortfolioCreate`
+- `useProductCreate`
+- `useProfileCreate`
+
+Typical shape:
+- Component/page gathers input.
+- Domain create composable validates and shapes payload.
+- Domain create composable calls `useFirestoreCreate` or `useFirestoreManager`.
+- Firestore write creates the record.
+
+Use this when:
+- The caller already has the needed app/user/context.
+- The work is mostly Firestore data.
+- No multipart file, external secret, webhook, payment session, or admin-only
+  transaction is required.
+
+Do not use this when:
+- The create needs server-only credentials.
+- The create uploads files.
+- The create calls external providers with secrets.
+- The create must atomically combine file storage plus Firestore writes.
+
+Draft-state create:
+Use a local/staged draft state when the create UI has enough fields, preview,
+draft persistence, or multi-part input that the user should shape the object
+before the final create/publish action.
+
+Current examples:
+- Product create
+- Blog post create
+
+Typical shape:
+- `XCreateSystem` or create page owns the submit/clear flow.
+- `useXDraftState` stores local create state.
+- Write and preview components read/write the same staged state.
+- `useXCreateSubmit` converts staged state into a final create call.
+- Final submit calls `useXCreate`, publish, or provider/provision seams.
+
+Use this when:
+- The create form is multi-section or has a preview.
+- The user may pause, clear, or revise before submitting.
+- The final record should not exist until the user commits.
+- Create and publish are separate concepts.
+
+Do not use this when:
+- The create is a tiny one-step Firestore write.
+- The local staged object would become more complex than the final record.
+- The flow really needs server transaction create because files/secrets are
+  involved.
+
+Console target create:
+Use a domain `useXCreate` plus `useConsoleCreate` when the entity is a console
+target that may create both a root record and an app-scoped console record.
+
+Current examples:
+- `useKitchenCreate`
+- `useSupplierCreate`
+- `usePortfolioCreate`
+- `useProjectCreate`
+
+Typical shape:
+- Public or console create page mounts `XCreateSystem`.
+- `XCreateSystem` calls `useXCreate`.
+- `useXCreate` creates or reuses the root target.
+- `useConsoleCreate` creates the app console scope when needed.
+
+Notes:
+- These are usually idempotent because users may select/create the same real
+  target more than once.
+- Existing target IDs are normal for place-backed or app-backed entities.
+- Generated IDs are normal for user-created targets without a natural ID.
+
+Server transaction create:
+Use a `server/api/**.post.ts` endpoint when create is a transaction that belongs
+on the server.
+
+Current examples:
+- `POST /api/menus/create`
+- `POST /api/console/kitchen/menus/upload`
+- Go QR `POST /api/tools/doc/create`
+
+Typical shape:
+- Component passes tool payload or form data.
+- Server endpoint reads and validates request.
+- Server endpoint performs server-only work.
+- Server endpoint writes the resulting record.
+- Server endpoint returns route/output URLs.
+
+Use this when:
+- Multipart upload is involved.
+- Firebase Storage write is involved.
+- Download token or storage URL creation is involved.
+- Admin SDK or server credentials are involved.
+- A single user action must create files and records together.
+
+Menu example:
+- `MenuCTA` uses `ProviderGoQrTools`.
+- The tool posts to `/api/menus/create`.
+- `/api/menus/create` stores the source file and creates a root public menu
+  doorway record.
+- This should not be replaced by `useMenuCreate`, because `useMenuCreate`
+  creates kitchen-scoped menu entity records, not upload transactions.
+
+Provider/provision create:
+Use a server endpoint or domain composable when the create provisions an
+external system or requires provider state.
+
+Current examples:
+- Stripe product/session endpoints.
+- Product create flows that prepare Stripe-backed product/price data.
+- Place create flows that may hydrate from Google Places and image storage.
+
+Typical shape:
+- Validate local input.
+- Call provider/provision step.
+- Store local representation.
+- Return provider/local IDs needed by the caller.
+
+Use this when:
+- A third-party provider owns part of the created thing.
+- Secret keys or provider credentials are required.
+- A provider object and Firestore mirror must stay related.
+
+Ensure/upsert create:
+Use an ensure/upsert create when the user intent is “make sure this exists,” not
+“always create a new record.”
+
+Current examples:
+- Place create/ensure.
+- Test target create.
+- Console target root create with known IDs.
+- User/app membership create.
+
+Typical shape:
+- Normalize the natural ID.
+- Read existing record.
+- Return `{ created: false }` if it already exists.
+- Otherwise create the minimum valid record.
+
+Use this when:
+- The target has a natural external ID.
+- Re-running create should not duplicate records.
+- The flow is onboarding, migration, or reconciliation.
+
+Current create plan primitive:
+`createStrategy.ts` currently exposes:
+- `family`: `idempotent` or `with_provision`
+- `transport`: `client` or `server`
+- `location`: `root`, `scoped`, or `overlay`
+- `id`: `generated` or `known`
+- `steps`: `single` or `multi`
+
+This is emerging, not complete. Treat existing `CreatePlan` exports as useful
+markers, not a complete registry.
+
+Decision checklist:
+- Is this just a Firestore entity record? Use `useXCreate`.
+- Is this a rich authoring form with preview or draft persistence? Use a
+  draft-state create seam, then submit into `useXCreate` or publish.
+- Does it create a root target plus console scope? Use `useXCreate` with
+  `useConsoleCreate`.
+- Does it upload a file or need server credentials? Use `server/api/**.post.ts`.
+- Does it call Stripe, Google, Go QR, Sproochli, or another provider? Use a
+  provider/provision create seam.
+- Can the same real thing already exist? Make it idempotent/ensure-style.
+- Are optional fields empty? Do not write them. Omit them and let read DTOs
+  normalize display shape if needed.
+
+Naming notes:
+- `useXCreate`: domain create composable for entity/console create.
+- `useXDraftState`: local/staged authoring state before final persistence.
+- `useXCreateSubmit`: converts staged authoring state into final create/publish
+  work.
+- `XCreateSystem`: component surface that owns create UI flow.
+- `server/api/<thing>/create.post.ts`: acceptable for server transaction create,
+  but prefer a more specific route if it avoids ambiguity, such as
+  `upload.post.ts`, `checkout-session.post.ts`, or `source.post.ts`.
+- `create.post.ts` should not hide broad domain logic; keep it as input/process/
+  output transaction code with helpers when needed.
+
+Open questions:
+- Should `createStrategy.ts` become a stronger registry or stay a lightweight
+  marker?
+- Should primitive root menu doorway records remain `menus/{id}`, or become a
+  separate record family from kitchen-scoped Menu?
+- Should all `useXCreate` composables omit empty optional fields by default?
+- Product create currently uses older `useCreateProductState` naming. Prefer
+  `useProductDraftState` when that surface is next touched.

@@ -13,6 +13,7 @@ type PublicMenuScope = {
   kitchenName?: string
   kitchenAppId?: string
   kitchenMenuId?: string
+  sourceKind?: string
   viewLabel?: string
   viewTo?: string
   path?: string
@@ -138,7 +139,7 @@ export function publicMenuFromData(
   const path = scope.path || readRecordString(data, 'path') || publicMenuPath(slug)
   const docName = readRecordString(data, 'doc_name')
   const docType = readRecordString(data, 'doc_type')
-  const sourceKind = readMenuSourceKind(data)
+  const sourceKind = scope.sourceKind ?? readMenuSourceKind(data)
   const kind = publicMenuKind({
     sourceKind,
     docName,

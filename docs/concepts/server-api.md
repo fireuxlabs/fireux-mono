@@ -10,6 +10,7 @@ Vertical links:
 - Parent: nuxt4.md
 - Child: tool-provider.md
 - Child: family-menu.md
+- Child: create.md
 
 Horizontal links:
 - firestore-entity.md
@@ -28,6 +29,9 @@ Working notes:
 - Use endpoint files with clear HTTP suffixes where present, e.g. `.get.ts`, `.post.ts`, `.options.ts`.
 - Keep upload/storage endpoints small and explicit.
 - Shared server primitives can live in package `server/utils` when used by multiple endpoints.
+- Server create endpoints are valid when the create is a transaction that needs
+  multipart upload, storage, provider credentials, or admin/server-only work.
+  See create.md.
 
 Open questions:
 - Menu upload endpoints are still young and should be simplified around clear input/process/output.
