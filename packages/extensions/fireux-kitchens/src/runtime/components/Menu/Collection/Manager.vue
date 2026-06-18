@@ -90,8 +90,8 @@ const props = withDefaults(
     link?: boolean
   }>(),
   {
-    title: 'Menus',
-    description: 'Browse menus.',
+    title: 'Public menus',
+    description: 'Open menu links that are live today.',
     searchPlaceholder: 'Search menus...',
     showSearch: true,
     showVariantToggle: true,

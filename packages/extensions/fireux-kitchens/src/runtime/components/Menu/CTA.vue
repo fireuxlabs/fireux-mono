@@ -1,12 +1,12 @@
 <template>
   <UPageCard
-    title="Upload a menu"
-    description="Add a photo, PDF, or document. We'll make a QR link you can share straight away."
+    title="Start with a menu QR"
+    description="Use a light menu link today. When you are ready to manage menus, ordering, and more, create a Kitchen Console."
     variant="subtle"
   >
     <div class="space-y-4">
       <div class="flex flex-wrap items-center gap-2">
-        <UBadge color="neutral" variant="soft">
+        <UBadge v-if="countLabel" color="neutral" variant="soft">
           {{ countLabel }}
         </UBadge>
         <UBadge color="primary" variant="soft">
@@ -14,11 +14,45 @@
         </UBadge>
       </div>
 
-      <ProviderGoQrTools
-        tool="doc"
-        :payload="uploadTool"
-        :auth-token="authToken"
-      />
+      <AppToolFoldaway
+        title="Option 1: Upload a menu file"
+        description="No kitchen needed. Add a photo, PDF, or document and get a public menu link."
+        provider="Go QR"
+        open
+      >
+        <ProviderGoQrTools
+          tool="doc"
+          :payload="uploadTool"
+          :auth-token="authToken"
+        />
+      </AppToolFoldaway>
+
+      <AppToolFoldaway
+        title="Option 2: Use an existing menu URL"
+        description="No kitchen needed. Paste a menu link that already exists online and create a printable QR code."
+        provider="Go QR"
+      >
+        <div class="space-y-3">
+          <p class="text-sm text-muted">
+            Input: public menu URL. Output: printable QR code for that URL.
+          </p>
+          <UButton
+            to="/solutions/qr-menu-url"
+            icon="i-lucide-link"
+            variant="soft"
+          >
+            Open URL QR tool
+          </UButton>
+        </div>
+      </AppToolFoldaway>
+
+      <AppToolFoldaway
+        title="Option 3: Create a Kitchen Console"
+        description="Manage all your menus, customer ordering, and more."
+        provider="Misebox"
+      >
+        <KitchenCTA />
+      </AppToolFoldaway>
     </div>
   </UPageCard>
 </template>
@@ -30,7 +64,7 @@ import { computed, ref, watch } from 'vue'
 withDefaults(defineProps<{
   countLabel?: string
 }>(), {
-  countLabel: '0 menus',
+  countLabel: '',
 })
 
 const { currentUser } = useAuth()

@@ -1,20 +1,6 @@
 <template>
   <SolutionPage :solution="solution">
-    <UPageCard
-      title="Upload from a kitchen"
-      description="Menus belong to kitchens in Misebox. Select a kitchen, then upload the source document from the kitchen menu console."
-      variant="subtle"
-    >
-      <template #footer>
-        <UButton
-          to="/console/kitchen/menus"
-          icon="i-lucide-utensils"
-        >
-          Open Kitchen Menus
-        </UButton>
-      </template>
-    </UPageCard>
-
+    <MenuCTA count-label="No kitchen needed" />
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />
@@ -31,31 +17,31 @@ const goQrBaseUrl = 'https://go-qr.web.app'
 
 const solution = {
   title: 'QR menu',
-  description: 'Upload a kitchen menu source, then publish a QR menu.',
+  description: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
   instructions: [
     {
-      title: 'Select kitchen',
-      icon: 'i-lucide-utensils',
-      body: 'Choose the kitchen that owns the menu.',
-    },
-    {
-      title: 'Upload source',
+      title: 'Upload menu',
       icon: 'i-lucide-file-up',
-      body: 'Upload the original menu PDF or image against that kitchen.',
+      body: 'Start with a photo, PDF, DOC, or DOCX. No kitchen setup is needed.',
     },
     {
-      title: 'Publish QR',
+      title: 'Choose link',
+      icon: 'i-lucide-link',
+      body: 'Pick the public menu path people will scan, such as /menus/lunch-menu.',
+    },
+    {
+      title: 'Share QR',
       icon: 'i-lucide-qr-code',
-      body: 'Use the kitchen menu route for the public QR destination.',
+      body: 'Print or share the QR. The public menu route can improve later without changing the idea.',
     },
   ],
   integrations: {
-    body: 'Go QR provides the upload tool. Misebox stores menu meaning on the selected kitchen.',
+    body: 'Go QR provides the upload tool. Misebox stores the public menu doorway and source file.',
     items: [
       {
         name: 'Go QR',
         icon: 'i-lucide-qr-code',
-        body: 'Provides the generic doc-to-QR upload tool.',
+        body: 'Provides the generic document-to-QR tool surface.',
         cta: 'Open primitive',
         to: `${goQrBaseUrl}/solutions/doc`,
         external: true,
@@ -63,26 +49,32 @@ const solution = {
       {
         name: 'Misebox',
         icon: 'i-lucide-utensils',
-        body: 'Owns the kitchen, menu upload record, public route, and hospitality meaning.',
+        body: 'Stores the menu upload under /menus first, then can upgrade it into a kitchen menu later.',
       },
     ],
   },
   upgrades: [
-    'Replace uploaded menus without changing the table QR.',
-    'Move from a document menu into kitchen-managed dishes and sections.',
-    'Add translations through Sproochli after onboarding.',
+    'Replace the uploaded source without changing the printed QR route.',
+    'Process the menu into dishes and sections when you are ready.',
+    'Move the menu into a kitchen console later.',
+    'Add translations through Sproochli after the menu is structured.',
   ],
   dev: {
     endpoints: [
       {
         method: 'GET',
         path: 'Go QR /api/tools/doc',
-        description: 'Creates a configured Go QR doc tool with Misebox menu labels.',
+        description: 'Loads the generic Go QR document upload tool.',
       },
       {
         method: 'POST',
-        path: '/api/console/kitchen/menus/upload',
-        description: 'Stores the selected kitchen menu source document.',
+        path: '/api/menus/create',
+        description: 'Stores the root public menu upload and source file.',
+      },
+      {
+        method: 'GET',
+        path: '/api/menus/availability',
+        description: 'Checks whether the chosen public menu path is available.',
       },
     ],
   },
@@ -90,9 +82,9 @@ const solution = {
     title: 'QR menu',
     ogTitle: 'QR menu',
     twitterTitle: 'QR menu',
-    description: 'Upload a kitchen menu source, then publish a QR menu.',
-    ogDescription: 'Upload a kitchen menu source, then publish a QR menu.',
-    twitterDescription: 'Upload a kitchen menu source, then publish a QR menu.',
+    description: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
+    ogDescription: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
+    twitterDescription: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
   },
 }
 

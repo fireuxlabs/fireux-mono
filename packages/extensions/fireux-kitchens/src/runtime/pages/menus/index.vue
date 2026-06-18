@@ -3,7 +3,7 @@
     <!-- Index map: docs/concepts/family-public-index.md · family: Menu public index -->
     <UPageHeader
       :title="pageTitle"
-      description="Upload a menu, create a QR code, and improve it when you're ready."
+      description="Start with a simple menu QR, then grow into a Kitchen Console when you're ready."
     />
     <UPageBody>
       <MenuCTA />
@@ -30,7 +30,7 @@ definePageMeta({
   layout: 'default',
   name: 'MenusIndexPage',
   title: 'Menus',
-  description: "Upload a menu, create a QR code, and improve it when you're ready.",
+  description: "Start with a simple menu QR, then grow into a Kitchen Console when you're ready.",
 })
 
 const pageTitle = 'Menus'

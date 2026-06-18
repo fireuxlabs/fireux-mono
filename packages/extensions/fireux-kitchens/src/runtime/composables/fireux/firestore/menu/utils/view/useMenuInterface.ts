@@ -72,14 +72,6 @@ export function useMenuInterface() {
     details: Array<{ label: string; value: string | number }>
   }
 
-  function defaultActionLabel(kind: string) {
-    if (kind === 'menu') return 'View menu'
-    if (kind === 'photo') return 'View photo'
-    if (kind === 'pdf') return 'View PDF'
-
-    return 'View document'
-  }
-
   function map(menu: MenuInterfaceSource): MenuCard.Card {
     const id = safeString(menu.id).trim()
     const slug = safeString(menu.slug).trim() || id
@@ -88,14 +80,9 @@ export function useMenuInterface() {
     const kitchenName = safeString(menu.kitchen_name).trim()
     const createdByLabel = safeString(menu.created_by_label).trim()
     const status = safeString(menu.status).trim()
-    const kind = safeString(menu.kind).trim()
     const meta = status && status !== 'published' ? status : ''
-    const to =
-      safeString(menu.view_to).trim() ||
-      safeString(menu.path).trim() ||
-      (slug ? `/menus/${encodeURIComponent(slug)}` : '')
-    const actionLabel =
-      safeString(menu.view_label).trim() || defaultActionLabel(kind)
+    const routeId = id || slug
+    const to = routeId ? `/menus/${encodeURIComponent(routeId)}` : ''
 
     return {
       id,
@@ -110,7 +97,7 @@ export function useMenuInterface() {
       name,
       description,
       active: true,
-      actionLabel,
+      actionLabel: '',
       itemCount: 0,
       isActiveNow: true,
       windowLabel: '',
