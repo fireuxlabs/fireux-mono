@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse canonical place records for this runtime."
+      description="Browse saved venues and locations."
     />
 
     <UPageBody>

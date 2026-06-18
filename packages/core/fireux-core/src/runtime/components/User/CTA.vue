@@ -1,4 +1,3 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/User/CTA.vue -->
 <template>
   <UPageCTA
     data-entity-cta-family="profile-managed"

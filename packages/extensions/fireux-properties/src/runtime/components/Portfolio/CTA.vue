@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Portfolios index"
-    description="Portfolios are console workspaces. Select a portfolio, then manage properties, clients, finance, incidents, and documents in the portfolio console."
+    title="Portfolios"
+    description="Create a portfolio or open the console to manage properties, clients, documents, and tasks."
     family="console"
-    source="portfolios collection"
     :count-label="countLabel"
     :actions="actions"
   />

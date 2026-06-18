@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Products index"
-    description="Browse canonical product records for this runtime. Publishing and merchandising actions stay in the admin product workspace."
+    title="Products"
+    description="Browse products, modules, and add-ons available for this app."
     family="admin-managed"
-    source="products collection"
     :actions="actions"
   />
 </template>

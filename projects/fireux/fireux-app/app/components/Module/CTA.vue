@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Modules index"
-    description="Modules are reusable FireUX capabilities that apps and ecosystems compose."
+    title="Modules"
+    description="Browse reusable FireUX features you can add to apps and ecosystems."
     family="console"
-    source="products collection"
     :actions="actions"
   />
 </template>

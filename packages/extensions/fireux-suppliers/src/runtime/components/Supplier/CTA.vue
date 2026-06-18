@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Suppliers index"
-    description="Suppliers are console workspaces. Select a supplier, then manage catalogue items and supplier operations in the supplier console."
+    title="Suppliers"
+    description="Find suppliers and manage catalogue items, ingredients, and sourcing work."
     family="console"
-    source="suppliers collection"
     :count-label="countLabel"
     :actions="actions"
   />

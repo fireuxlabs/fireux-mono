@@ -10,7 +10,7 @@
 
       <AppCollectionManager
         title="Apps"
-        description="Browse the full published app collection."
+        description="Browse published FireUX apps."
       />
     </UPageBody>
   </UPage>

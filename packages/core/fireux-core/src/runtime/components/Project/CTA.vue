@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Projects index"
-    description="Create or open a project console to organise apps, ecosystems, and operator access."
+    title="Projects"
+    description="Create a project or open the console to organise apps and ecosystems."
     family="console"
-    source="projects collection"
     :actions="actions"
   />
 </template>

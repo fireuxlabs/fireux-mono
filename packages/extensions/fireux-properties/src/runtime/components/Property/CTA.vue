@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Properties index"
-    description="Create or open a property console to manage units, stays, and property content."
+    title="Properties"
+    description="Create a property or open the console to manage units, stays, and content."
     family="console"
-    source="properties collection"
     :actions="actions"
   />
 </template>

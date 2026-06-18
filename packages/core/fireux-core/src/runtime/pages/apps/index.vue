@@ -24,7 +24,7 @@ definePageMeta({
   },
   tenant: 'global',
   title: 'Apps',
-  description: 'Canonical app index for the current ecosystem.',
+  description: 'Browse apps for the current ecosystem.',
   layout: 'default',
   name: 'AppsIndexPage',
 })
@@ -32,7 +32,7 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Apps'
-const pageDescription = 'Canonical app index for the current ecosystem.'
+const pageDescription = 'Browse apps for the current ecosystem.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

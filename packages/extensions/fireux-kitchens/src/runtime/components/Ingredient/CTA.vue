@@ -2,8 +2,8 @@
   <UPageCTA
     class="cta"
     data-entity-cta-family="console-managed"
-    title="Ingredient registry"
-    description="Create and curate the global ingredient records that kitchen runtimes attach to operational inventory."
+    title="Ingredients"
+    description="Browse ingredients that kitchens can use in recipes, menus, and stock."
     variant="naked"
   >
     <template #default>

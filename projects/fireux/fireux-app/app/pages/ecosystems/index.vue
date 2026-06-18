@@ -10,7 +10,7 @@
 
       <EcosystemCollectionManager
         title="Ecosystems"
-        description="Browse the full published ecosystem collection."
+        description="Browse FireUX ecosystems and the apps they bring together."
         link
       />
     </UPageBody>

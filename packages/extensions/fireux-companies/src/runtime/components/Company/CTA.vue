@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Companies index"
-    description="Browse company records derived from places, then use the company creation flow when a claimed place is ready for a company layer."
+    title="Companies"
+    description="Browse companies and create one when a place is ready for a public business profile."
     family="domain-managed"
-    source="companies collection"
     :actions="actions"
   />
 </template>

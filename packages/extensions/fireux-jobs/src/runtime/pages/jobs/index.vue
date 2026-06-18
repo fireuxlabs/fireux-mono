@@ -15,12 +15,12 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Jobs'
-const pageDescription = 'Canonical job index for the current runtime.'
+const pageDescription = 'Browse open roles and post opportunities.'
 
 definePageMeta({
   layout: 'default',
   title: 'Jobs',
-  description: 'Canonical job index for the current runtime.',
+  description: 'Browse open roles and post opportunities.',
   tag: 'jobs',
   nav: {
     key: 'jobs',

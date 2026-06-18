@@ -31,7 +31,7 @@ definePageMeta({
 
 const pageTitle = 'Companies'
 const pageDescription =
-  'Canonical company index for the current runtime.'
+  'Browse companies and public business profiles.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

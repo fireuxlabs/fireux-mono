@@ -1,14 +1,14 @@
 <template>
   <UPageCTA
     data-entity-cta-family="console"
-    title="Ecosystem collection"
-    description="This index reads root Ecosystem identity records. Project/App tools manage that same stored truth."
+    title="Ecosystems"
+    description="Explore FireUX ecosystems and the apps they bring together."
     orientation="horizontal"
   >
     <template #links>
       <div class="grid gap-3 sm:grid-cols-3">
         <section class="space-y-2">
-          <p class="text-sm font-semibold">Collection index</p>
+          <p class="text-sm font-semibold">Ecosystems</p>
           <UButton
             block
             color="primary"
@@ -16,7 +16,7 @@
             icon="i-lucide-orbit"
             to="/ecosystems"
           >
-            Open collection
+            Browse ecosystems
           </UButton>
         </section>
 

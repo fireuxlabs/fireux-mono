@@ -15,12 +15,12 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Blog'
-const pageDescription = 'Canonical blog index for the current runtime.'
+const pageDescription = 'Read updates, releases, and stories.'
 
 definePageMeta({
   layout: 'default',
   title: 'Blog',
-  description: 'Canonical blog index for the current runtime.',
+  description: 'Read updates, releases, and stories.',
   nav: {
     key: 'blog',
     label: 'Blog',

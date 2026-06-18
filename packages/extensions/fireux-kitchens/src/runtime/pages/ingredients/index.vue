@@ -6,7 +6,7 @@
       <IngredientCTA />
       <IngredientCollectionManager
         title="Ingredients"
-        description="Browse canonical ingredient records shared across kitchens in this runtime."
+        description="Browse ingredients kitchens can use in recipes, menus, and stock."
       />
     </UPageBody>
   </UPage>
@@ -35,7 +35,7 @@ definePageMeta({
 
 const pageTitle = 'Ingredients'
 const pageDescription =
-  'Canonical ingredient index for the current runtime.'
+  'Browse ingredients kitchens can use in recipes, menus, and stock.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

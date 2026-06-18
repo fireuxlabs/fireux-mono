@@ -1,9 +1,8 @@
 <template>
   <EntityIndexCta
-    title="Kitchens index"
-    description="Kitchens are console workspaces. Select a kitchen, then manage menus, dishes, recipes, ingredients, mise, team, and suppliers in the kitchen console."
+    title="Kitchens"
+    description="Find kitchens, open their console, and manage menus, dishes, recipes, ingredients, team, and suppliers."
     family="console"
-    source="kitchens collection"
     :count-label="countLabel"
     :actions="actions"
   />

@@ -1,6 +1,6 @@
 Public detail family map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-18
+Ref: 0e96f74fe
 Role: map, not canon
 
 Purpose:
@@ -37,3 +37,16 @@ Different:
 Open questions:
 - Exact operator/action panel spine is not fully settled.
 - Detail pages should be aligned opportunistically when touched, not in a massive sweep.
+- Route identity still needs a dedicated pass: choose `id`, `slug`, or both per
+  entity family by comparing siblings before changing routes.
+
+Route identity to-confirm:
+- Kitchen: public detail currently uses slug.
+- Menu: public detail currently uses menu id/slug-like key; root quick menus and
+  kitchen menus are still being reconciled.
+- Supplier: should likely use slug for public company-style identity, but confirm
+  against existing data and console needs.
+- Project: currently slug-shaped in public detail; confirm app/ecosystem
+  enrichment before widening.
+- Portfolio and Property: private-light/public-light identity needs confirmation
+  before moving from id to slug or both.

@@ -17,12 +17,12 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Products'
 const pageDescription =
-  'Canonical product index for the current runtime.'
+  'Browse products, modules, and add-ons available for this app.'
 
 definePageMeta({
   layout: 'default',
   title: 'Products',
-  description: 'Canonical product index for the current runtime.',
+  description: 'Browse products, modules, and add-ons.',
   nav: {
     key: 'products',
     label: 'Products',

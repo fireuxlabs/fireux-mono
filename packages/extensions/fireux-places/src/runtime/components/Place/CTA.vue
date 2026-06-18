@@ -1,10 +1,9 @@
-<!-- FILE: packages/extensions/fireux-places/src/runtime/components/Place/CTA.vue -->
 <template>
   <UPageCTA
     class="cta"
     data-entity-cta-family="domain-managed"
     title="Create a place"
-    description="Create a place from Google if it is not in our database."
+    description="Search for a venue or location and save it as a place."
     variant="naked"
   >
     <!-- section consumer -->

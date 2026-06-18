@@ -34,7 +34,7 @@ const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
 
 const pageTitle = 'Users'
-const pageDescription = 'Browse users available to this runtime.'
+const pageDescription = 'Browse people and profiles.'
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {
