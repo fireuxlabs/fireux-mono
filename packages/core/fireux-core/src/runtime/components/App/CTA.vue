@@ -1,8 +1,8 @@
 <template>
   <UPageCTA
     data-entity-cta-family="platform-app"
-    title="Apps"
-    description="Find apps in this ecosystem, or start your app."
+    :title="title"
+    :description="description"
     orientation="horizontal"
   >
     <template #links>
@@ -13,7 +13,7 @@
           icon="i-lucide-rocket"
           to="/get-started"
         >
-          Start your app
+          {{ primaryLabel }}
         </UButton>
         <UButton
           color="neutral"
@@ -27,3 +27,20 @@
     </template>
   </UPageCTA>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useMyApps } from '../../composables/fireux/firestore/core/app/utils/useMyApps'
+
+const { hasApps } = useMyApps()
+
+const title = computed(() => (hasApps.value ? 'My apps' : 'Apps'))
+const description = computed(() =>
+  hasApps.value
+    ? 'Manage your apps, or start another app in this ecosystem.'
+    : 'Find apps in this ecosystem, or start your app.'
+)
+const primaryLabel = computed(() =>
+  hasApps.value ? 'Add another app' : 'Start your app'
+)
+</script>

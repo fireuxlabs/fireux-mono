@@ -32,21 +32,49 @@
     </UCard>
 
     <template v-else-if="hasApps">
-      <AppCollectionManager
-        v-if="ecosystemApps.length"
-        :collection="ecosystemApps"
-        title="Ecosystem Apps"
-        description="Apps that belong to the selected project ecosystem."
-        :link="false"
-      />
+      <UCard v-if="ecosystemAppCards.length">
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2>Ecosystem Apps</h2>
+              <p>Apps that belong to the selected project ecosystem.</p>
+            </div>
 
-      <AppCollectionManager
-        v-if="projectApps.length"
-        :collection="projectApps"
-        title="Project Apps Outside Ecosystem"
-        description="Apps that belong to the project but not to the selected ecosystem."
-        :link="false"
-      />
+            <UBadge variant="soft">{{ ecosystemAppCards.length }}</UBadge>
+          </div>
+        </template>
+
+        <div class="space-y-3">
+          <AppCardsCell
+            v-for="card in ecosystemAppCards"
+            :key="card.id"
+            v-bind="card"
+            :link="false"
+          />
+        </div>
+      </UCard>
+
+      <UCard v-if="projectAppCards.length">
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2>Project Apps Outside Ecosystem</h2>
+              <p>Apps that belong to the project but not to the selected ecosystem.</p>
+            </div>
+
+            <UBadge variant="soft">{{ projectAppCards.length }}</UBadge>
+          </div>
+        </template>
+
+        <div class="space-y-3">
+          <AppCardsCell
+            v-for="card in projectAppCards"
+            :key="card.id"
+            v-bind="card"
+            :link="false"
+          />
+        </div>
+      </UCard>
     </template>
 
     <UCard v-else-if="!appId">
@@ -71,6 +99,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import {
+  useAppInterface,
+  type AppCard,
+} from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/Apps/useProjectConsoleApps'
 
 const {
@@ -81,6 +113,7 @@ const {
   pending,
   debug,
 } = useProjectConsoleApps()
+const { cell: appCell } = useAppInterface()
 
 const selectedProjectName = computed(() =>
   String(selectedProject.value?.name || '').trim() || 'Untitled'
@@ -101,4 +134,10 @@ const projectApps = computed(() => {
   return apps.value.filter((app) => !ecosystemAppIds.has(app.id))
 })
 const hasApps = computed(() => ecosystemApps.value.length > 0 || projectApps.value.length > 0)
+const toAppCards = (items: typeof apps.value) =>
+  items
+    .map((app) => appCell(app))
+    .filter((card): card is AppCard.Card => Boolean(card))
+const ecosystemAppCards = computed(() => toAppCards(ecosystemApps.value))
+const projectAppCards = computed(() => toAppCards(projectApps.value))
 </script>

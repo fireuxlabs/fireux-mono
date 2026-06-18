@@ -6,7 +6,7 @@
     />
 
     <UPageBody>
-      <!-- Core/platform CTA family: AppCTA starts app onboarding; My apps and browse live in collection sheets. -->
+      <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
       <AppCTA />
       <AppCollectionMine />
 
