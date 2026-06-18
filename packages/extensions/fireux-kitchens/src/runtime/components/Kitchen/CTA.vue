@@ -4,15 +4,15 @@
     description="Kitchens are console workspaces. Select a kitchen, then manage menus, dishes, recipes, ingredients, mise, team, and suppliers in the kitchen console."
     family="console"
     source="kitchens collection"
-    :count-label="`${count} kitchen${count === 1 ? '' : 's'}`"
+    :count-label="countLabel"
     :actions="actions"
   />
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ count?: number }>(), {
-  count: 0,
-})
+import { computed } from 'vue'
+
+const props = defineProps<{ count?: number }>()
 
 const actions = [
   {
@@ -35,5 +35,8 @@ const actions = [
   },
 ] as const
 
-const count = props.count
+const countLabel = computed(() => {
+  if (typeof props.count !== 'number') return undefined
+  return `${props.count} kitchen${props.count === 1 ? '' : 's'}`
+})
 </script>

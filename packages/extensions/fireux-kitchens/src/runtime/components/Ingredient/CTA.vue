@@ -9,7 +9,7 @@
     <template #default>
       <div class="space-y-3">
         <UAlert
-          v-if="!props.canCreate"
+          v-if="!isAdmin"
           color="neutral"
           title="Admin action"
           description="Only admins can add ingredients."
@@ -32,12 +32,7 @@
   </UPageCTA>
 </template>
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    canCreate?: boolean
-  }>(),
-  {
-    canCreate: false,
-  }
-)
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+
+const { isAdmin } = useUser()
 </script>

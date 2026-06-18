@@ -1,8 +1,7 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody">
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
       <AgentCTA />
       <AgentCollectionManager />
     </UPageBody>

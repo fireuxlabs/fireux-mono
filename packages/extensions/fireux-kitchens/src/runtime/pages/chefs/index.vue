@@ -1,9 +1,8 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
+    <UPageBody>
       <ChefCTA />
       <ChefCollectionManager />
     </UPageBody>

@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse properties available in this app."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="console"
-        cta="Create or open a property console to manage units, stays, and property content."
-      />
+    <UPageBody>
+      <PropertyCTA />
 
       <PropertyCollectionManager />
     </UPageBody>

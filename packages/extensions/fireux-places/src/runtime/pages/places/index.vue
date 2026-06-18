@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse canonical place records for this runtime."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="domain-managed"
-        cta="Create or open a place record when a venue or location needs canonical location truth."
-      />
+    <UPageBody>
+      <PlaceCTA />
 
       <PlaceCollectionManager />
     </UPageBody>

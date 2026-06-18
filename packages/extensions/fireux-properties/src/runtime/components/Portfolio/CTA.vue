@@ -4,15 +4,15 @@
     description="Portfolios are console workspaces. Select a portfolio, then manage properties, clients, finance, incidents, and documents in the portfolio console."
     family="console"
     source="portfolios collection"
-    :count-label="`${count} portfolio${count === 1 ? '' : 's'}`"
+    :count-label="countLabel"
     :actions="actions"
   />
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ count?: number }>(), {
-  count: 0,
-})
+import { computed } from 'vue'
+
+const props = defineProps<{ count?: number }>()
 
 const actions = [
   {
@@ -35,5 +35,8 @@ const actions = [
   },
 ] as const
 
-const count = props.count
+const countLabel = computed(() => {
+  if (typeof props.count !== 'number') return undefined
+  return `${props.count} portfolio${props.count === 1 ? '' : 's'}`
+})
 </script>

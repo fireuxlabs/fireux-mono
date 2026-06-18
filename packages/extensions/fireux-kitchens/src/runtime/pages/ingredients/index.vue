@@ -1,20 +1,9 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
-      <template #ctas>
-        <UButton
-          size="xs"
-          variant="ghost"
-          icon="i-lucide-arrow-left"
-          to="/kitchens"
-        >
-          Back to kitchens
-        </UButton>
-      </template>
-    </UPageHeader>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
-      <IngredientCTA :can-create="isAdmin" />
+    <UPageBody>
+      <IngredientCTA />
       <IngredientCollectionManager
         title="Ingredients"
         description="Browse canonical ingredient records shared across kitchens in this runtime."
@@ -26,7 +15,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'default',
@@ -44,8 +32,6 @@ definePageMeta({
   },
   name: 'IngredientsIndexPage',
 })
-
-const { isAdmin } = useUser()
 
 const pageTitle = 'Ingredients'
 const pageDescription =

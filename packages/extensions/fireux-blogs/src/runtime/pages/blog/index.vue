@@ -1,15 +1,8 @@
-<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        title="Blog index"
-        description="Browse published articles for this runtime. Editorial authoring remains in the admin blog workspace."
-        family="admin-managed"
-        source="blogs collection"
-        :actions="actions"
-      />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <BlogCTA />
       <BlogCollectionManager />
     </UPageBody>
   </UPage>
@@ -42,18 +35,4 @@ definePageMeta({
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const actions = [
-  {
-    label: 'Create',
-    cta: 'Write post',
-    to: '/admin/blogs/create',
-    icon: 'i-lucide-plus',
-  },
-  {
-    label: 'Related',
-    cta: 'Browse products',
-    to: '/products',
-    icon: 'i-lucide-box',
-  },
-] as const
 </script>

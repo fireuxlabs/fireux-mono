@@ -2,14 +2,11 @@
   <UPage>
     <!-- Index map: docs/concepts/family-public-index.md · family: Menu public index -->
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
-      description="Upload or browse public menu doorways."
+      description="Upload a menu, create a QR code, and improve it when you're ready."
     />
-
-    <UPageBody class="pagebody">
+    <UPageBody>
       <MenuCTA />
-
       <MenuCollectionManager />
     </UPageBody>
   </UPage>
@@ -33,7 +30,7 @@ definePageMeta({
   layout: 'default',
   name: 'MenusIndexPage',
   title: 'Menus',
-  description: 'Upload or browse public menu doorways.',
+  description: "Upload a menu, create a QR code, and improve it when you're ready.",
 })
 
 const pageTitle = 'Menus'

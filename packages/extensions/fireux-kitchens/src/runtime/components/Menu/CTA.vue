@@ -1,7 +1,7 @@
 <template>
   <UPageCard
-    title="Upload Menu"
-    description="Create a public menu doorway first. Kitchen, dishes, and translations can come later."
+    title="Upload a menu"
+    description="Add a photo, PDF, or document. We'll make a QR link you can share straight away."
     variant="subtle"
   >
     <div class="space-y-4">
@@ -40,10 +40,10 @@ const consumerOrigin = computed(() =>
 )
 const uploadTool = computed(() => ({
   copy: {
-    title: 'Upload menu',
-    description: 'Upload a menu document before it is attached to a kitchen.',
-    ctaLabel: 'Create menu',
-    loadingLabel: 'Creating menu...',
+    title: 'Upload a menu',
+    description: 'Add your menu file and choose the link people will scan.',
+    ctaLabel: 'Upload menu',
+    loadingLabel: 'Uploading menu...',
     openTargetLabel: 'Open menu',
   },
   upload: {
@@ -52,14 +52,14 @@ const uploadTool = computed(() => ({
     hint: 'Photo, PDF, DOC, or DOCX. Max 10 MB.',
   },
   slug: {
-    label: 'Menu path',
-    placeholder: 'my-menu',
-    takenMessage: 'This menu path is already taken.',
+    label: 'Menu link',
+    placeholder: 'lunch-menu',
+    takenMessage: 'That menu link is already taken.',
   },
   preview: {
     baseUrl: `${consumerOrigin.value}/menus`,
     pathSuffix: '/qr',
-    message: 'This menu will wait here until it is attached to a kitchen.',
+    message: 'Your QR code will open this menu.',
   },
   endpoints: {
     create: `${consumerOrigin.value}/api/menus/create`,

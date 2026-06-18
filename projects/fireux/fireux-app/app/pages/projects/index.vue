@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse FireUX projects that can be managed in this app."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="console"
-        cta="Create or open a project console to organise apps, ecosystems, and operator access."
-      />
+    <UPageBody>
+      <ProjectCTA />
 
       <ProjectCollectionManager />
     </UPageBody>

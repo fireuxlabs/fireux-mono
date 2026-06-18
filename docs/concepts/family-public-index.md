@@ -1,5 +1,5 @@
 Public index family map
-Updated: 2026-06-17
+Updated: 2026-06-18
 Ref: 37fb262f0
 Role: map, not canon
 
@@ -20,21 +20,33 @@ Similar:
 - Should not be a console.
 - Should not be a dev probe.
 - Should use domain collection components where possible.
+- Should use domain CTA components such as `XCTA`, not generic CTA primitives in the page.
 - Should keep route/meta shell light.
 
 Known pattern:
 - `UPage`
 - `UPageHeader`
 - `UPageBody`
-- one CTA or intro component when useful
+- one domain CTA or intro component when useful, named `XCTA`
 - one collection manager or equivalent list component
 - dev debug only when actively needed
+
+Lasagne rule:
+- Repeat the page spine.
+- Reuse the domain components.
+- Keep data cooking below the page.
+- Shared primitives may live inside domain components.
+- Avoid generic config blobs in the page.
 
 Differences:
 - Console-capable entity indexes may link users toward console flows.
 - Root menu index may include upload/tool behavior because quick menus can start without a kitchen.
 - Some domain indexes are hidden from nav or app-specific.
 
+CTA rule:
+- Public index pages should render `XCTA`, not configure `EntityIndexCta` directly.
+- `EntityIndexCta` may exist as an internal primitive inside `XCTA`.
+- Domain logic and copy belong in `XCTA`, not in the page.
+
 Open questions:
-- Exact CTA naming and behavior still needs final alignment across all public indexes.
 - Menu index is still evolving from quick-upload into a cleaner public browse/upload surface.

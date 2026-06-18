@@ -1,9 +1,8 @@
-<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
+    <UPageBody>
       <ProductCTA />
       <ProductCollectionManager />
     </UPageBody>

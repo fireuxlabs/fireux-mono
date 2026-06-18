@@ -1,9 +1,8 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/users/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
+    <UPageBody>
       <UserCTA />
       <UserCollectionManager />
     </UPageBody>

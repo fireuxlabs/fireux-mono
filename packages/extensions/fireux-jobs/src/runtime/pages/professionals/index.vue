@@ -1,13 +1,10 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
+    <UPageBody>
       <ProfessionalCTA />
-      <ClientOnly>
-        <ProfessionalCollectionManager />
-      </ClientOnly>
+      <ProfessionalCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -41,5 +38,4 @@ const pageDescription =
   'View your profile and browse professionals.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
 </script>

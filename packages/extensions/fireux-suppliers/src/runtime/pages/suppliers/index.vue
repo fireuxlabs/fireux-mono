@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse suppliers that support sourcing for this app."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="console"
-        cta="Create or open a supplier console to manage catalogue items and ingredient supply."
-      />
+    <UPageBody>
+      <SupplierCTA />
 
       <SupplierCollectionManager />
     </UPageBody>

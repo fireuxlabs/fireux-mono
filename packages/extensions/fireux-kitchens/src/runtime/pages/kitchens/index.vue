@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse kitchens that can be operated in this app."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="console"
-        cta="Create or open a kitchen console to manage dishes, menus, and daily kitchen work."
-      />
+    <UPageBody>
+      <KitchenCTA />
 
       <KitchenCollectionManager />
     </UPageBody>

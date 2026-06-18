@@ -1,8 +1,8 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
+    <UPageBody>
       <CompanyCTA />
       <CompanyCollectionManager />
     </UPageBody>

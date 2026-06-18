@@ -1,16 +1,12 @@
 <template>
   <UPage>
     <UPageHeader
-      class="pageheader"
       :title="pageTitle"
       description="Browse portfolios that can be operated in this app."
     />
 
-    <UPageBody class="pagebody">
-      <EntityIndexCta
-        family="console"
-        cta="Create or open a portfolio console to manage clients, properties, documents, and tasks."
-      />
+    <UPageBody>
+      <PortfolioCTA />
 
       <PortfolioCollectionManager />
     </UPageBody>
