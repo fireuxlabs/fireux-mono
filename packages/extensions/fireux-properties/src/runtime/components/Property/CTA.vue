@@ -1,7 +1,7 @@
 <template>
   <ConsoleCta
     title="Properties"
-    description="Create a property or open the console to manage units, stays, and content."
+    description="Manage your property identity, units, stays, content, team access, and guest operations."
     :actions="actions"
   />
 </template>

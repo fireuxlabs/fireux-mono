@@ -1,7 +1,7 @@
 <template>
   <ConsoleCta
     title="Kitchens"
-    description="Find kitchens, open their console, and manage menus, dishes, recipes, ingredients, team, and suppliers."
+    description="Manage your kitchen identity, menus, dishes, recipes, ingredients, mise, orders, team, stations, and suppliers."
     :count-label="countLabel"
     :actions="actions"
   />

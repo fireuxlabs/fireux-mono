@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse suppliers that support sourcing for this app."
+      description="Find and join suppliers, or create your own Supplier Console."
     />
 
     <UPageBody>
@@ -32,7 +32,7 @@ definePageMeta({
   layout: 'default',
   name: 'SuppliersIndexPage',
   title: 'Suppliers',
-  description: 'Browse supplier records.',
+  description: 'Find and join suppliers, or create your own Supplier Console.',
 })
 
 const pageTitle = 'Suppliers'

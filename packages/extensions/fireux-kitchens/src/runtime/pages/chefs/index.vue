@@ -3,6 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
+      <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCTA />
       <ChefCollectionManager />
     </UPageBody>
@@ -21,8 +22,8 @@ definePageMeta({
     label: 'Chefs',
     icon: 'i-lucide-egg-fried',
     order: 40,
-     desktop: false,
-     mobile: false,
+    desktop: false,
+    mobile: false,
     layouts: ['default'],
   },
   title: 'Chefs',
@@ -33,7 +34,7 @@ definePageMeta({
 
 const pageTitle = 'Chefs'
 const pageDescription =
-  'View your profile and browse chefs.'
+  'Browse chef profiles, or create yours from your user profile.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

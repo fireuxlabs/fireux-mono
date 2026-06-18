@@ -1,6 +1,12 @@
 <template>
+  <!--
+    TODO: Complete console onboarding.
+    Pause here before adding more console flow/chrome. Next CTA work should step
+    back into the other CTA families, then revisit this family with a full
+    public-to-PWA-console onboarding pass.
+  -->
   <UPageCTA
-    :title="`Turn ${title.toLowerCase()} into a working console.`"
+    :title="`Create your ${singularTitle} Console.`"
     :description="description"
     orientation="horizontal"
   >
@@ -21,12 +27,6 @@
 
     <template #default>
       <div class="flex flex-wrap gap-2">
-        <UBadge color="primary" variant="soft" icon="i-lucide-panels-top-left">
-          Public profile to app workspace
-        </UBadge>
-        <UBadge color="neutral" variant="soft">
-          App-like, no app store
-        </UBadge>
         <UBadge v-if="countLabel" color="neutral" variant="soft">
           {{ countLabel }}
         </UBadge>
@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 type ConsoleCtaAction = {
   label: string
   cta: string
@@ -43,12 +45,21 @@ type ConsoleCtaAction = {
   icon?: string
 }
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   title: string
   description: string
   countLabel?: string
   actions?: ConsoleCtaAction[]
 }>(), {
   actions: () => [],
+})
+
+const singularTitle = computed(() => {
+  const value = props.title.trim()
+  return value.endsWith('ies')
+    ? `${value.slice(0, -3)}y`
+    : value.endsWith('s')
+      ? value.slice(0, -1)
+      : value
 })
 </script>

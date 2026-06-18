@@ -2,6 +2,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
+      <!-- Profile CTA family: Agent is a profile layer attached to a User. -->
       <AgentCTA />
       <AgentCollectionManager />
     </UPageBody>
@@ -34,7 +35,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Agents'
 const pageDescription =
-  'View your profile and browse agents.'
+  'Browse agent profiles, or create yours from your user profile.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

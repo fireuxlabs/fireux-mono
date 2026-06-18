@@ -1,7 +1,7 @@
 <template>
   <ConsoleCta
     title="Suppliers"
-    description="Find suppliers and manage catalogue items, ingredients, and sourcing work."
+    description="Manage your supplier identity, catalogue, items, ingredients, team access, and sourcing work."
     :count-label="countLabel"
     :actions="actions"
   />

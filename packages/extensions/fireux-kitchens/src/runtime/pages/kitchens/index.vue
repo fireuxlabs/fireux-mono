@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse kitchens that can be operated in this app."
+      description="Find and join kitchens, or create your own Kitchen Console."
     />
 
     <UPageBody>
@@ -32,7 +32,7 @@ definePageMeta({
   layout: 'default',
   name: 'KitchensIndexPage',
   title: 'Kitchens',
-  description: 'Browse kitchens.',
+  description: 'Find and join kitchens, or create your own Kitchen Console.',
 })
 
 const pageTitle = 'Kitchens'

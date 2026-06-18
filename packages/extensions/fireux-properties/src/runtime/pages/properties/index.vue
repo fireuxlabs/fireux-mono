@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse properties available in this app."
+      description="Find and join properties, or create your own Property Console."
     />
 
     <UPageBody>
@@ -37,7 +37,7 @@ definePageMeta({
   layout: 'default',
   name: 'PropertiesIndexPage',
   title: 'Properties',
-  description: 'Browse properties.',
+  description: 'Find and join properties, or create your own Property Console.',
 })
 
 const pageTitle = 'Properties'

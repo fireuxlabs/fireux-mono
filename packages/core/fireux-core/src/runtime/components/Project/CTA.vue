@@ -1,7 +1,7 @@
 <template>
   <ConsoleCta
     title="Projects"
-    description="Create a project or open the console to organise apps and ecosystems."
+    description="Manage your project apps, ecosystem links, identity, team access, and setup."
     :actions="actions"
   />
 </template>

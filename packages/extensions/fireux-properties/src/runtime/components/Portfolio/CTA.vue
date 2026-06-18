@@ -1,7 +1,7 @@
 <template>
   <ConsoleCta
     title="Portfolios"
-    description="Create a portfolio or open the console to manage properties, clients, documents, and tasks."
+    description="Manage your portfolio identity, properties, clients, units, documents, tasks, and team access."
     :count-label="countLabel"
     :actions="actions"
   />

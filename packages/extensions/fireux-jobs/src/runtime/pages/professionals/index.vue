@@ -3,6 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
+      <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
       <ProfessionalCTA />
       <ProfessionalCollectionManager />
     </UPageBody>
@@ -35,7 +36,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Professionals'
 const pageDescription =
-  'View your profile and browse professionals.'
+  'Browse professional profiles, or create yours from your user profile.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

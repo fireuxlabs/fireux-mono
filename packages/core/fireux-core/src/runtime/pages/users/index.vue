@@ -3,6 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
+      <!-- Profile CTA family: User is the base identity before Chef, Agent, or Professional layers. -->
       <UserCTA />
       <UserCollectionManager />
     </UPageBody>
@@ -34,7 +35,8 @@ const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
 
 const pageTitle = 'Users'
-const pageDescription = 'Browse people and profiles.'
+const pageDescription =
+  'Create your user profile, then choose the profile types you want to grow into.'
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

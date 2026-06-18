@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse FireUX projects that can be managed in this app."
+      description="Find and join projects, or create your own Project Console."
     />
 
     <UPageBody>
@@ -32,7 +32,7 @@ definePageMeta({
   layout: 'default',
   name: 'ProjectsIndexPage',
   title: 'Projects',
-  description: 'Browse projects.',
+  description: 'Find and join projects, or create your own Project Console.',
 })
 
 const pageTitle = 'Projects'

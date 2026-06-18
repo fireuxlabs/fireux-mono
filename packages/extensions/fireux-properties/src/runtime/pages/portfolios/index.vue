@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Browse portfolios that can be operated in this app."
+      description="Find and join portfolios, or create your own Portfolio Console."
     />
 
     <UPageBody>
@@ -35,7 +35,7 @@ definePageMeta({
   layout: 'default',
   name: 'PortfoliosIndexPage',
   title: 'Portfolios',
-  description: 'Browse portfolios.',
+  description: 'Find and join portfolios, or create your own Portfolio Console.',
 })
 
 const pageTitle = 'Portfolios'
