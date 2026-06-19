@@ -3,12 +3,14 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
-  publicMenuCreatorLabel,
-  publicMenuFromData,
-  publicMenuOwnerAppView,
-  publicMenuSourceFromData,
-  readPublicMenuCreatorLabels,
-} from '../../utils/public-menus.ts'
+  menuSurfaceFromData,
+  menuSourceFromData,
+} from '../../utils/menu-surface.ts'
+import {
+  menuCreatorLabel,
+  readMenuCreatorLabels,
+} from '../../utils/menu-creators.ts'
+import { menuOwnerAppView } from '../../utils/menu-owner-app.ts'
 
 const kitchenDisplayName = (data: Record<string, unknown>) =>
   readRecordString(data, 'display_name') ||
@@ -31,7 +33,7 @@ export default defineEventHandler(async () => {
   const kitchenIds = Array.from(
     new Set(
       snap.docs
-        .map((doc) => publicMenuSourceFromData(doc.data()).kitchen_id || '')
+        .map((doc) => menuSourceFromData(doc.data()).kitchen_id || '')
         .filter(Boolean)
     )
   )
@@ -49,7 +51,7 @@ export default defineEventHandler(async () => {
   const ownerAppIds = Array.from(
     new Set(
       snap.docs
-        .map((doc) => publicMenuSourceFromData(doc.data()).app_id || '')
+        .map((doc) => menuSourceFromData(doc.data()).app_id || '')
         .filter(Boolean)
     )
   )
@@ -70,14 +72,14 @@ export default defineEventHandler(async () => {
     })
   )
   const ownerApps = new Map(ownerAppEntries)
-  const creatorLabels = await readPublicMenuCreatorLabels(
+  const creatorLabels = await readMenuCreatorLabels(
     snap.docs.map((doc) => readRecordString(doc.data(), 'created_by'))
   )
 
   const menus = snap.docs.flatMap((doc) => {
     const data = doc.data()
     const status = readRecordString(data, 'status')
-    const source = publicMenuSourceFromData(data)
+    const source = menuSourceFromData(data)
     const kitchenId = source.kitchen_id || ''
     const kitchenAppId = source.app_id || ''
     const kitchenMenuId = source.menu_id || ''
@@ -85,15 +87,15 @@ export default defineEventHandler(async () => {
 
     if (status !== 'published') return []
 
-    return [publicMenuFromData(doc.id, data, {
+    return [menuSurfaceFromData(doc.id, data, {
       kitchenName: kitchenNames.get(kitchenId) || '',
       createdByLabel: kitchenId
         ? ''
-        : publicMenuCreatorLabel(
+        : menuCreatorLabel(
             readRecordString(data, 'created_by'),
             creatorLabels
           ),
-      ...publicMenuOwnerAppView({
+      ...menuOwnerAppView({
         ownerAppId: kitchenAppId,
         currentAppId: appId,
         ownerAppData: ownerApp?.app || {},

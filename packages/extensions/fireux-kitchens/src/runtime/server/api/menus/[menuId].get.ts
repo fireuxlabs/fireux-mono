@@ -8,129 +8,55 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
-  publicMenuCreatorLabel,
-  publicMenuFromData,
-  publicMenuOwnerAppView,
-  publicMenuPayloadFromApi,
-  publicMenuSourceFromData,
-  readPublicMenuCreatorLabels,
-} from '../../utils/public-menus.ts'
+  menuSurfaceFromData,
+  menuSourceFromData,
+} from '../../utils/menu-surface.ts'
+import {
+  menuCreatorLabel,
+  readMenuCreatorLabels,
+} from '../../utils/menu-creators.ts'
+import {
+  menuOwnerAppApiTo,
+  readMenuOwnerAppView,
+} from '../../utils/menu-owner-app.ts'
+import { menuSourcePayloadFromApi } from '../../utils/menu-source-payload.ts'
+import {
+  kitchenDisplayName,
+  readMenuKitchenBySlug,
+  readRootMenuKitchenScope,
+  resolveSourceAppId,
+} from '../../utils/menu-kitchen-scope.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
-
-type RootMenuKitchenScope = {
-  kitchenId?: string
-  kitchenSlug?: string
-  kitchenName?: string
-  kitchenAppId?: string
-  kitchenMenuId?: string
-  createdByLabel?: string
-}
 
 const currentAppId = () => {
   const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
   return text(fireux.id)
 }
 
-const resolveSourceAppId = (
-  kitchenData: Record<string, unknown>,
-  fallbackAppId: string
-) => readRecordString(kitchenData, 'app_scope_app_id') || fallbackAppId
-
-const kitchenDisplayName = (data: Record<string, unknown>) =>
-  readRecordString(data, 'display_name') ||
-  readRecordString(data, 'name') ||
-  readRecordString(data, 'short_name')
-
-const apiTo = (view: unknown) =>
-  view && typeof view === 'object' && 'apiTo' in view
-    ? text((view as Record<string, unknown>).apiTo)
-    : ''
-
-async function readOwnerAppView(options: {
-  ownerAppId: string
-  kitchenSlug: string
-  menuId: string
-}) {
-  if (!options.ownerAppId || !options.kitchenSlug || !options.menuId) {
-    return {}
-  }
-
+async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   const db = getRuntimeFirestore()
-  const [appSnap, kitchenCountSnap] = await Promise.all([
-    db.collection('apps').doc(options.ownerAppId).get(),
-    db.collection(`apps/${options.ownerAppId}/kitchens`).count().get(),
-  ])
+  const kitchen = await readMenuKitchenBySlug(kitchenSlug)
 
-  return publicMenuOwnerAppView({
-    ownerAppId: options.ownerAppId,
-    currentAppId: currentAppId(),
-    ownerAppData: appSnap.exists ? appSnap.data() || {} : {},
-    ownerAppKitchenCount: Number(kitchenCountSnap.data().count || 0),
-    kitchenSlug: options.kitchenSlug,
-    menuId: options.menuId,
-  })
-}
-
-async function readRootMenuKitchenScope(
-  data: Record<string, unknown>
-): Promise<RootMenuKitchenScope> {
-  const source = publicMenuSourceFromData(data)
-  const kitchenId = source.kitchen_id || ''
-  const kitchenSlug = source.kitchen_slug || ''
-  if (!kitchenId && !kitchenSlug) return {}
-
-  const db = getRuntimeFirestore()
-  const snap = kitchenId
-    ? await db.collection('kitchens').doc(kitchenId).get()
-    : (await db
-        .collection('kitchens')
-        .where('slug', '==', kitchenSlug.toLowerCase())
-        .limit(1)
-        .get()).docs[0]
-
-  const kitchenData = snap?.exists ? snap.data() || {} : {}
-  const resolvedKitchenId = snap?.exists ? snap.id : kitchenId
-  const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
-
-  return {
-    kitchenId: resolvedKitchenId,
-    kitchenSlug: resolvedKitchenSlug,
-    kitchenName: kitchenDisplayName(kitchenData),
-    kitchenAppId:
-      source.app_id ||
-      resolveSourceAppId(kitchenData, currentAppId()),
-    kitchenMenuId: source.menu_id || '',
-    createdByLabel: '',
-  }
-}
-
-async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
-  const db = getRuntimeFirestore()
-  const rootKitchenSnap = await db
-    .collection('kitchens')
-    .where('slug', '==', kitchenSlug.toLowerCase())
-    .limit(1)
-    .get()
-  const kitchenDoc = rootKitchenSnap.docs[0]
-
-  if (!kitchenDoc) {
+  if (!kitchen) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Kitchen not found.',
     })
   }
 
-  const kitchenData = kitchenDoc.data() || {}
-  const kitchenAppId = resolveSourceAppId(kitchenData, currentAppId())
-  const ownerAppView = await readOwnerAppView({
+  const kitchenAppId = resolveSourceAppId(kitchen.data, currentAppId())
+  const ownerAppView = await readMenuOwnerAppView({
     ownerAppId: kitchenAppId,
+    currentAppId: currentAppId(),
     kitchenSlug,
     menuId,
   })
-  const ownerPayload = await publicMenuPayloadFromApi(apiTo(ownerAppView))
+  const ownerPayload = await menuSourcePayloadFromApi(
+    menuOwnerAppApiTo(ownerAppView)
+  )
   const menuSnap = await db
-    .collection(`apps/${kitchenAppId}/kitchens/${kitchenDoc.id}/menus`)
+    .collection(`apps/${kitchenAppId}/kitchens/${kitchen.id}/menus`)
     .doc(menuId)
     .get()
 
@@ -149,10 +75,10 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
     })
   }
 
-  return publicMenuFromData(menuId, data, {
-    kitchenId: kitchenDoc.id,
+  return menuSurfaceFromData(menuId, data, {
+    kitchenId: kitchen.id,
     kitchenSlug,
-    kitchenName: kitchenDisplayName(kitchenData),
+    kitchenName: kitchenDisplayName(kitchen.data),
     kitchenAppId,
     kitchenMenuId: menuId,
     sourceKind:
@@ -164,7 +90,7 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
   })
 }
 
-async function readPublicMenuSurface(menuId: string) {
+async function readMenuSurface(menuId: string) {
   const db = getRuntimeFirestore()
   const snap = await db.collection('menus').doc(menuId).get()
 
@@ -177,23 +103,26 @@ async function readPublicMenuSurface(menuId: string) {
 
   const data = snap.data() || {}
   const createdBy = readRecordString(data, 'created_by')
-  const creatorLabels = await readPublicMenuCreatorLabels([createdBy])
-  const kitchenScope = await readRootMenuKitchenScope(data)
-  const source = publicMenuSourceFromData(data, kitchenScope)
-  const ownerAppView = await readOwnerAppView({
+  const creatorLabels = await readMenuCreatorLabels([createdBy])
+  const kitchenScope = await readRootMenuKitchenScope(data, currentAppId())
+  const source = menuSourceFromData(data, kitchenScope)
+  const ownerAppView = await readMenuOwnerAppView({
     ownerAppId: source.app_id || '',
+    currentAppId: currentAppId(),
     kitchenSlug: source.kitchen_slug || '',
     menuId: source.menu_id || menuId,
   })
-  const ownerPayload = await publicMenuPayloadFromApi(apiTo(ownerAppView))
+  const ownerPayload = await menuSourcePayloadFromApi(
+    menuOwnerAppApiTo(ownerAppView)
+  )
 
-  return publicMenuFromData(menuId, data, {
+  return menuSurfaceFromData(menuId, data, {
     ...kitchenScope,
     ...ownerAppView,
     ...ownerPayload,
     createdByLabel:
       kitchenScope.createdByLabel ??
-      publicMenuCreatorLabel(createdBy, creatorLabels),
+      menuCreatorLabel(createdBy, creatorLabels),
   })
 }
 
@@ -208,8 +137,8 @@ export default defineEventHandler(async (event) => {
   }
 
   if (kitchenSlug) {
-    return readKitchenPublicMenu(menuId, kitchenSlug)
+    return readKitchenMenu(menuId, kitchenSlug)
   }
 
-  return readPublicMenuSurface(menuId)
+  return readMenuSurface(menuId)
 })
