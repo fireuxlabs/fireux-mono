@@ -1,39 +1,14 @@
 <template>
-  <MenuPublic
-    v-if="publicMenu && menuContent.isStructured && !menuContent.pending"
-    :kitchen-name="menuOwnerLabel"
-    :menu="publicMenu"
-    :sections="menuContent.sectionRows"
-  />
+  <UPage v-if="publicMenu">
+    <UPageHeader
+      :title="publicMenu.name || 'Menu doorway'"
+      description="This public menu doorway shows the root record before any source or kitchen menu rendering is added."
+    />
 
-  <UPage v-else-if="publicMenu && menuContent.isStructured">
     <UPageBody>
-      <p class="text-sm text-dimmed">
-        Loading menu...
-      </p>
+      <pre class="overflow-auto rounded-xl border border-default bg-muted p-4 text-xs">{{ menuJson }}</pre>
     </UPageBody>
   </UPage>
-
-  <MenuSource
-    v-else-if="publicMenu"
-    :menu="publicMenu"
-    :kitchen-name="menuOwnerLabel"
-    :source-url="sourceUrl"
-  >
-    <template #operator>
-      <MenuPublicOperatorPanel
-        :menu="publicMenu"
-        :menu-id="menuId"
-      />
-
-      <DevJson
-        title="Menu debug"
-        context="Public menu · /menus/[menuId]"
-        :data="debug"
-        :default-open="false"
-      />
-    </template>
-  </MenuSource>
 
   <UPage v-else>
     <UPageBody>
@@ -47,7 +22,6 @@
 <script setup lang="ts">
 import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
-import { useMenuContent } from '../../../composables/fireux/public/menu/useMenuContent'
 import { useMenuFetch } from '../../../composables/fireux/public/menu/useMenuFetch'
 
 definePageMeta({
@@ -58,32 +32,7 @@ definePageMeta({
 const route = useRoute()
 const menuId = computed(() => String(route.params.menuId || '').trim())
 const { menu: publicMenu } = useMenuFetch(menuId)
-const menuContent = useMenuContent(publicMenu)
-const text = (value: unknown) => String(value ?? '').trim()
-const sourceUrl = computed(() => text(publicMenu.value?.doc_url))
-const menuOwnerLabel = computed(
-  () =>
-    text(publicMenu.value?.kitchen_name) ||
-    text(publicMenu.value?.created_by_label)
-)
-const debug = computed(() => ({
-  object: publicMenu.value,
-  derived: {
-    menuId: menuId.value,
-    sourceUrl: sourceUrl.value,
-    ownerLabel: menuOwnerLabel.value,
-    isPhoto:
-      publicMenu.value?.kind === 'photo' ||
-      text(publicMenu.value?.doc_type).startsWith('image/'),
-    isPdf:
-      publicMenu.value?.kind === 'pdf' ||
-      text(publicMenu.value?.doc_type).includes('pdf'),
-    isStructured: menuContent.isStructured.value,
-    contentCounts: menuContent.counts.value,
-    qrPath: publicMenu.value?.qr_path,
-    viewTo: publicMenu.value?.view_to,
-  },
-}))
+const menuJson = computed(() => JSON.stringify(publicMenu.value, null, 2))
 
 useSeoMeta({
   title: computed(() => publicMenu.value?.name || 'Menu'),

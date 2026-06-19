@@ -10,7 +10,6 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   publicMenuCreatorLabel,
   publicMenuFromData,
-  publicMenuOwnerAppView,
   readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
@@ -94,58 +93,6 @@ async function readPublicMenuSurface(menuId: string) {
   }
 
   const data = snap.data() || {}
-  const kitchenAppId = readRecordString(data, 'kitchen_app_id')
-  const kitchenId = readRecordString(data, 'kitchen_id')
-  const kitchenMenuId = readRecordString(data, 'kitchen_menu_id')
-
-  if (kitchenAppId && kitchenId && kitchenMenuId) {
-    const [menuSnap, kitchenSnap, appSnap, kitchenCountSnap] = await Promise.all([
-      db
-        .doc(`apps/${kitchenAppId}/kitchens/${kitchenId}/menus/${kitchenMenuId}`)
-        .get(),
-      db.collection('kitchens').doc(kitchenId).get(),
-      db.collection('apps').doc(kitchenAppId).get(),
-      db.collection(`apps/${kitchenAppId}/kitchens`).count().get(),
-    ])
-
-    if (!menuSnap.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Menu not found.',
-      })
-    }
-
-    const menuData = menuSnap.data() || {}
-    if (readRecordString(menuData, 'status') !== 'published') {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Menu not found.',
-      })
-    }
-
-    return publicMenuFromData(menuId, menuData, {
-      kitchenId,
-      kitchenSlug: readRecordString(data, 'kitchen_slug'),
-      kitchenName: kitchenSnap.exists ? kitchenDisplayName(kitchenSnap.data() || {}) : '',
-      kitchenAppId,
-      kitchenMenuId,
-      sourceKind:
-        readRecordString(data, 'source_kind') ||
-        readRecordString(data, 'kind') ||
-        readRecordString(menuData, 'source_kind'),
-      path: `/menus/${encodeURIComponent(menuId)}`,
-      qrPath: `/menus/${encodeURIComponent(menuId)}/qr`,
-      ...publicMenuOwnerAppView({
-        ownerAppId: kitchenAppId,
-        currentAppId: currentAppId(),
-        ownerAppData: appSnap.exists ? appSnap.data() || {} : {},
-        ownerAppKitchenCount: Number(kitchenCountSnap.data().count || 0),
-        kitchenSlug: readRecordString(data, 'kitchen_slug'),
-        menuId: kitchenMenuId,
-      }),
-    })
-  }
-
   const createdBy = readRecordString(data, 'created_by')
   const creatorLabels = await readPublicMenuCreatorLabels([createdBy])
 
