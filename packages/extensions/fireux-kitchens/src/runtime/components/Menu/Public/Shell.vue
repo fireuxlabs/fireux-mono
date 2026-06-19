@@ -65,6 +65,8 @@ const menuStyleVars = computed(() => {
   const fontDark = color(style.font_color_dark)
   const titleLight = color(style.title_color_light)
   const titleDark = color(style.title_color_dark)
+  const primary = color(style.primary_color)
+  const secondary = color(style.secondary_color)
 
   if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
   if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
@@ -72,6 +74,8 @@ const menuStyleVars = computed(() => {
   if (fontLight) vars['--menu-text-light'] = fontLight
   if (titleLight) vars['--menu-title-light'] = titleLight
   if (titleDark) vars['--menu-title-dark'] = titleDark
+  if (primary) vars['--menu-primary'] = primary
+  if (secondary) vars['--menu-secondary'] = secondary
   vars['--menu-font'] = resolvedFont.value.cssFamily
   vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
 
@@ -102,6 +106,7 @@ onUnmounted(() => {
   --menu-text-dark: #f8fafc;
   --menu-title-light: var(--menu-text-light);
   --menu-title-dark: var(--menu-text-dark);
+  --menu-primary: var(--menu-title-light);
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);

@@ -33,12 +33,10 @@
           <UIcon name="i-ph-x" />
         </button>
 
-        <p class="menu-reveal__eyebrow">
-          La Tap Berne
-        </p>
-        <h1>Comida Casera</h1>
-
-        <LaTapBerneMenu />
+        <Menu
+          menu-id="main"
+          kitchen-slug="la-tapberne"
+        />
       </section>
     </Transition>
   </div>
