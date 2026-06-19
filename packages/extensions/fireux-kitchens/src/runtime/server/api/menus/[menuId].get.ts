@@ -11,6 +11,8 @@ import {
   publicMenuCreatorLabel,
   publicMenuFromData,
   publicMenuOwnerAppView,
+  publicMenuPayloadFromApi,
+  publicMenuSourceFromData,
   readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
@@ -40,6 +42,11 @@ const kitchenDisplayName = (data: Record<string, unknown>) =>
   readRecordString(data, 'name') ||
   readRecordString(data, 'short_name')
 
+const apiTo = (view: unknown) =>
+  view && typeof view === 'object' && 'apiTo' in view
+    ? text((view as Record<string, unknown>).apiTo)
+    : ''
+
 async function readOwnerAppView(options: {
   ownerAppId: string
   kitchenSlug: string
@@ -68,8 +75,9 @@ async function readOwnerAppView(options: {
 async function readRootMenuKitchenScope(
   data: Record<string, unknown>
 ): Promise<RootMenuKitchenScope> {
-  const kitchenId = readRecordString(data, 'kitchen_id')
-  const kitchenSlug = readRecordString(data, 'kitchen_slug')
+  const source = publicMenuSourceFromData(data)
+  const kitchenId = source.kitchen_id || ''
+  const kitchenSlug = source.kitchen_slug || ''
   if (!kitchenId && !kitchenSlug) return {}
 
   const db = getRuntimeFirestore()
@@ -90,9 +98,9 @@ async function readRootMenuKitchenScope(
     kitchenSlug: resolvedKitchenSlug,
     kitchenName: kitchenDisplayName(kitchenData),
     kitchenAppId:
-      readRecordString(data, 'kitchen_app_id') ||
+      source.app_id ||
       resolveSourceAppId(kitchenData, currentAppId()),
-    kitchenMenuId: readRecordString(data, 'kitchen_menu_id'),
+    kitchenMenuId: source.menu_id || '',
     createdByLabel: '',
   }
 }
@@ -120,6 +128,7 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
     kitchenSlug,
     menuId,
   })
+  const ownerPayload = await publicMenuPayloadFromApi(apiTo(ownerAppView))
   const menuSnap = await db
     .collection(`apps/${kitchenAppId}/kitchens/${kitchenDoc.id}/menus`)
     .doc(menuId)
@@ -151,6 +160,7 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
       (readRecordString(data, 'doc_url') ? '' : 'kitchen-menu'),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     ...ownerAppView,
+    ...ownerPayload,
   })
 }
 
@@ -169,15 +179,18 @@ async function readPublicMenuSurface(menuId: string) {
   const createdBy = readRecordString(data, 'created_by')
   const creatorLabels = await readPublicMenuCreatorLabels([createdBy])
   const kitchenScope = await readRootMenuKitchenScope(data)
+  const source = publicMenuSourceFromData(data, kitchenScope)
   const ownerAppView = await readOwnerAppView({
-    ownerAppId: kitchenScope.kitchenAppId || readRecordString(data, 'kitchen_app_id'),
-    kitchenSlug: kitchenScope.kitchenSlug || readRecordString(data, 'kitchen_slug'),
-    menuId: kitchenScope.kitchenMenuId || readRecordString(data, 'kitchen_menu_id') || menuId,
+    ownerAppId: source.app_id || '',
+    kitchenSlug: source.kitchen_slug || '',
+    menuId: source.menu_id || menuId,
   })
+  const ownerPayload = await publicMenuPayloadFromApi(apiTo(ownerAppView))
 
   return publicMenuFromData(menuId, data, {
     ...kitchenScope,
     ...ownerAppView,
+    ...ownerPayload,
     createdByLabel:
       kitchenScope.createdByLabel ??
       publicMenuCreatorLabel(createdBy, creatorLabels),

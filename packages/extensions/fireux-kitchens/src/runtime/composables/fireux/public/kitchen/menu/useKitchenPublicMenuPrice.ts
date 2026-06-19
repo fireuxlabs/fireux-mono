@@ -33,6 +33,8 @@ export const formatKitchenPublicMenuItemPrice = (
   item: KitchenPublicMenuItemRow,
   options: MenuItemPriceOptions
 ) => {
+  if (item.priceLabel) return item.priceLabel
+
   if (item.priceOptions.length) {
     return item.priceOptions
       .map((option) => {

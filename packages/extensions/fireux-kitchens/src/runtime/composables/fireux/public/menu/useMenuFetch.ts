@@ -1,23 +1,33 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAsyncData } from '#imports'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { KitchenPublicMenuSectionRow } from '../kitchen/menu/useKitchenPublicMenu'
 
 export type PublicMenu = {
   id: string
   slug: string
   name: string
-  description: string
-  doc_url: string
-  doc_name: string
-  doc_type: string
-  kind: string
-  doc_storage_path: string
-  kitchen_id: string
-  kitchen_slug: string
-  kitchen_name: string
-  kitchen_app_id: string
-  kitchen_menu_id: string
-  created_by: string
-  created_by_label: string
+  description?: string
+  status?: string
+  kind: 'doc' | 'menu'
+  file_kind?: 'photo' | 'pdf' | 'document'
+  file?: {
+    url?: string
+    name?: string
+    type?: string
+    storage_path?: string
+  }
+  source?: {
+    app_id?: string
+    kitchen_id?: string
+    kitchen_slug?: string
+    kitchen_name?: string
+    menu_id?: string
+  }
+  page_style?: Partial<PageStyle>
+  sections?: KitchenPublicMenuSectionRow[]
+  created_by?: string
+  created_by_label?: string
   path: string
   qr_path: string
   view_label: string

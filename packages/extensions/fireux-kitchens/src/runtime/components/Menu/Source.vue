@@ -34,6 +34,11 @@ type MenuSourceModel = {
   id?: string
   name: string
   description?: string
+  file?: {
+    url?: string
+    type?: string
+  }
+  file_kind?: string
   doc_url?: string
   doc_type?: string
   kind?: string

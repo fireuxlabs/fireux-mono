@@ -8,7 +8,14 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   path?: string
   qr_path?: string
   kind?: string
-  kitchen_name?: string
+  file_kind?: string
+  source?: {
+    app_id?: string
+    kitchen_id?: string
+    kitchen_slug?: string
+    kitchen_name?: string
+    menu_id?: string
+  }
   created_by_label?: string
   view_label?: string
   view_to?: string
@@ -77,7 +84,7 @@ export function useMenuInterface() {
     const slug = safeString(menu.slug).trim() || id
     const name = safeString(menu.name).trim()
     const description = safeString(menu.description).trim()
-    const kitchenName = safeString(menu.kitchen_name).trim()
+    const kitchenName = safeString(menu.source?.kitchen_name).trim()
     const createdByLabel = safeString(menu.created_by_label).trim()
     const status = safeString(menu.status).trim()
     const meta = status && status !== 'published' ? status : ''

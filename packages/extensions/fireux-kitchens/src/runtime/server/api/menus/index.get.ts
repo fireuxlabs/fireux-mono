@@ -6,6 +6,7 @@ import {
   publicMenuCreatorLabel,
   publicMenuFromData,
   publicMenuOwnerAppView,
+  publicMenuSourceFromData,
   readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
@@ -30,7 +31,7 @@ export default defineEventHandler(async () => {
   const kitchenIds = Array.from(
     new Set(
       snap.docs
-        .map((doc) => readRecordString(doc.data(), 'kitchen_id'))
+        .map((doc) => publicMenuSourceFromData(doc.data()).kitchen_id || '')
         .filter(Boolean)
     )
   )
@@ -48,7 +49,7 @@ export default defineEventHandler(async () => {
   const ownerAppIds = Array.from(
     new Set(
       snap.docs
-        .map((doc) => readRecordString(doc.data(), 'kitchen_app_id'))
+        .map((doc) => publicMenuSourceFromData(doc.data()).app_id || '')
         .filter(Boolean)
     )
   )
@@ -76,9 +77,10 @@ export default defineEventHandler(async () => {
   const menus = snap.docs.flatMap((doc) => {
     const data = doc.data()
     const status = readRecordString(data, 'status')
-    const kitchenId = readRecordString(data, 'kitchen_id')
-    const kitchenAppId = readRecordString(data, 'kitchen_app_id')
-    const kitchenMenuId = readRecordString(data, 'kitchen_menu_id')
+    const source = publicMenuSourceFromData(data)
+    const kitchenId = source.kitchen_id || ''
+    const kitchenAppId = source.app_id || ''
+    const kitchenMenuId = source.menu_id || ''
     const ownerApp = ownerApps.get(kitchenAppId)
 
     if (status !== 'published') return []
@@ -96,7 +98,7 @@ export default defineEventHandler(async () => {
         currentAppId: appId,
         ownerAppData: ownerApp?.app || {},
         ownerAppKitchenCount: ownerApp?.kitchenCount || 0,
-        kitchenSlug: readRecordString(data, 'kitchen_slug'),
+        kitchenSlug: source.kitchen_slug || '',
         menuId: kitchenMenuId || doc.id,
       }),
     })]

@@ -32,21 +32,23 @@ Entity checkpoint:
 - Root `/menus/<id>` currently behaves as a public doorway/upload record, not settled root Menu truth.
 
 Public menu kinds:
-- `photo`: uploaded photo source.
-- `document`: uploaded PDF/document source.
-- `kitchen-menu`: linked to a kitchen-owned menu.
-- `menu`: processed structured menu in the system.
+- `doc`: uploaded public file doorway.
+- `menu`: structured menu doorway.
 
-Public normalized kinds:
+Public doc file kinds:
 - `photo`: public doorway renders an image source.
 - `pdf`: public doorway renders a PDF source.
 - `document`: public doorway renders a generic document source.
-- `menu`: public doorway resolves to a structured Kitchen Menu.
+
+Public source pointer:
+- Structured menu doorways use `source.app_id`, `source.kitchen_id`, and
+  `source.menu_id` to locate the source of truth.
 
 Stored kind notes:
-- Quick uploads may store `doc_kind`.
-- Linked kitchen menus may store `source_kind` or older `kind`.
-- Public APIs should normalize these into the public kinds above.
+- New quick uploads store `kind: doc`, `file_kind`, and `file`.
+- Structured menu doorways should store `kind: menu` and `source`.
+- Public APIs may still read older flat `doc_*` and `kitchen_*` fields, but
+  should emit the cleaner public contract.
 
 No kitchen needed:
 - Upload a quick menu source.

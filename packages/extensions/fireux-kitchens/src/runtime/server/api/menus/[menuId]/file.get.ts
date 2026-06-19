@@ -4,7 +4,10 @@ import {
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import {
+  readRecord,
+  readRecordString,
+} from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
   downloadStorageFile,
@@ -33,10 +36,21 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = snap.data() || {}
-  const objectPath = readRecordString(data, 'doc_storage_path')
+  const file = readRecord(data.file)
+  const objectPath =
+    readRecordString(file, 'storage_path') ||
+    readRecordString(data, 'file_storage_path') ||
+    readRecordString(data, 'doc_storage_path')
   const contentType =
-    readRecordString(data, 'doc_type') || 'application/octet-stream'
-  const fileName = readRecordString(data, 'doc_name') || `${menuId}.pdf`
+    readRecordString(file, 'type') ||
+    readRecordString(data, 'file_type') ||
+    readRecordString(data, 'doc_type') ||
+    'application/octet-stream'
+  const fileName =
+    readRecordString(file, 'name') ||
+    readRecordString(data, 'file_name') ||
+    readRecordString(data, 'doc_name') ||
+    `${menuId}.pdf`
 
   if (!objectPath) {
     throw createError({

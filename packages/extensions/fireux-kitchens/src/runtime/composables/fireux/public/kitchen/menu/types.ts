@@ -12,6 +12,7 @@ export type KitchenPublicMenuItemRow = {
   name: string
   description: string
   price: number
+  priceLabel?: string
   priceOptions: MenuItemPriceOption[]
 }
 

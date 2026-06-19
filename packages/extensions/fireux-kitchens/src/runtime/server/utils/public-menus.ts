@@ -1,6 +1,10 @@
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import {
+  readRecord,
+  readRecordString,
+} from 'fireux-core/runtime/server/utils/records/read.ts'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { UserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import {
   kitchenPublicMenuPath,
@@ -19,6 +23,23 @@ type PublicMenuScope = {
   path?: string
   qrPath?: string
   createdByLabel?: string
+  page_style?: Record<string, unknown>
+  sections?: unknown[]
+}
+
+type PublicMenuFile = {
+  url?: string
+  name?: string
+  type?: string
+  storage_path?: string
+}
+
+type PublicMenuSource = {
+  app_id?: string
+  kitchen_id?: string
+  kitchen_slug?: string
+  kitchen_name?: string
+  menu_id?: string
 }
 
 const menuSlug = (data: Record<string, unknown>, docId: string) =>
@@ -29,14 +50,11 @@ const publicMenuPath = (slug: string) => `/menus/${encodeURIComponent(slug)}`
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
 
-const publicMenuKind = (options: {
-  sourceKind: string
+const publicMenuFileKind = (options: {
   docName: string
   docType: string
   storedKind: string
 }) => {
-  if (options.sourceKind === 'kitchen-menu') return 'menu'
-
   return documentKindFromFile({
     fileName: options.docName,
     contentType: options.docType,
@@ -46,10 +64,9 @@ const publicMenuKind = (options: {
 
 const defaultViewLabel = (kind: string) => {
   if (kind === 'menu') return 'View menu'
-  if (kind === 'photo') return 'View photo'
-  if (kind === 'pdf') return 'View PDF'
+  if (kind === 'doc') return 'View file'
 
-  return 'View document'
+  return 'View menu'
 }
 
 const readMenuSourceKind = (data: Record<string, unknown>) =>
@@ -57,8 +74,66 @@ const readMenuSourceKind = (data: Record<string, unknown>) =>
   readRecordString(data, 'kind')
 
 const readMenuDocumentKind = (data: Record<string, unknown>) =>
+  readRecordString(data, 'file_kind') ||
   readRecordString(data, 'doc_kind') ||
   readRecordString(data, 'kind')
+
+const readMenuFile = (data: Record<string, unknown>): PublicMenuFile => {
+  const file = readRecord(data.file)
+
+  return {
+    url: readRecordString(file, 'url') || readRecordString(data, 'file_url') || readRecordString(data, 'doc_url'),
+    name: readRecordString(file, 'name') || readRecordString(data, 'file_name') || readRecordString(data, 'doc_name'),
+    type: readRecordString(file, 'type') || readRecordString(data, 'file_type') || readRecordString(data, 'doc_type'),
+    storage_path:
+      readRecordString(file, 'storage_path') ||
+      readRecordString(data, 'file_storage_path') ||
+      readRecordString(data, 'doc_storage_path'),
+  }
+}
+
+const hasFile = (file: PublicMenuFile) =>
+  Boolean(file.url || file.name || file.type || file.storage_path)
+
+const compactFile = (file: PublicMenuFile) =>
+  Object.fromEntries(
+    Object.entries(file).filter(([, value]) => Boolean(text(value)))
+  ) as PublicMenuFile
+
+const compactSource = (source: PublicMenuSource) =>
+  Object.fromEntries(
+    Object.entries(source).filter(([, value]) => Boolean(text(value)))
+  ) as PublicMenuSource
+
+export function publicMenuSourceFromData(
+  data: Record<string, unknown>,
+  scope: PublicMenuScope = {}
+) {
+  const source = readRecord(data.source)
+
+  return compactSource({
+    app_id:
+      scope.kitchenAppId ||
+      readRecordString(source, 'app_id') ||
+      readRecordString(data, 'kitchen_app_id'),
+    kitchen_id:
+      scope.kitchenId ||
+      readRecordString(source, 'kitchen_id') ||
+      readRecordString(data, 'kitchen_id'),
+    kitchen_slug:
+      scope.kitchenSlug ||
+      readRecordString(source, 'kitchen_slug') ||
+      readRecordString(data, 'kitchen_slug'),
+    kitchen_name:
+      scope.kitchenName ||
+      readRecordString(source, 'kitchen_name') ||
+      readRecordString(data, 'kitchen_name'),
+    menu_id:
+      scope.kitchenMenuId ||
+      readRecordString(source, 'menu_id') ||
+      readRecordString(data, 'kitchen_menu_id'),
+  })
+}
 
 function appPublicOrigin(appData: Record<string, unknown>) {
   const links = appData.social_links
@@ -127,6 +202,95 @@ export function publicMenuOwnerAppView(options: {
   return {
     viewLabel: 'View app',
     viewTo: new URL(path, publicOrigin).toString(),
+    apiTo: new URL(`/api/menus/${encodeURIComponent(options.menuId)}`, publicOrigin).toString(),
+  }
+}
+
+const valueText = (value: unknown) => String(value ?? '').trim()
+
+const fallbackId = (
+  value: unknown,
+  fallback: string
+) => normalizeSlug(valueText(value)) || fallback
+
+const priceNumber = (value: unknown) => {
+  const match = valueText(value).replace(',', '.').match(/\d+(\.\d+)?/)
+  const parsed = Number(match?.[0] || 0)
+
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+const publicMenuPayloadSections = (payload: Record<string, unknown>) => {
+  const sections = Array.isArray(payload.sections) ? payload.sections : []
+
+  return sections.map((section, sectionIndex) => {
+    const sectionRecord = readRecord(section)
+    const label = valueText(sectionRecord.label || sectionRecord.name)
+    const sectionId = fallbackId(
+      sectionRecord.id || label,
+      `section-${sectionIndex + 1}`
+    )
+    const items = Array.isArray(sectionRecord.items) ? sectionRecord.items : []
+
+    return {
+      id: sectionId,
+      section: {
+        id: sectionId,
+        label,
+        description: valueText(sectionRecord.description),
+      },
+      label,
+      description: valueText(sectionRecord.description),
+      items: items.map((item, itemIndex) => {
+        const itemRecord = readRecord(item)
+        const name = valueText(itemRecord.name)
+        const itemId = fallbackId(
+          itemRecord.id || name,
+          `${sectionId}-item-${itemIndex + 1}`
+        )
+        const priceLabel = valueText(itemRecord.price_label || itemRecord.price)
+
+        return {
+          id: itemId,
+          item: {
+            id: itemId,
+            name,
+            description: valueText(itemRecord.description),
+          },
+          dish: null,
+          name,
+          description: valueText(itemRecord.description),
+          price: priceNumber(itemRecord.price),
+          ...(priceLabel ? { priceLabel } : {}),
+          priceOptions: [],
+        }
+      }),
+    }
+  })
+}
+
+export async function publicMenuPayloadFromApi(apiTo: string) {
+  if (!apiTo) return {}
+
+  try {
+    const response = await fetch(apiTo, {
+      headers: {
+        accept: 'application/json',
+      },
+    })
+
+    if (!response.ok) return {}
+
+    const payload = readRecord(await response.json())
+    const pageStyle = readRecord(payload.page_style)
+    const sections = publicMenuPayloadSections(payload)
+
+    return {
+      ...(Object.keys(pageStyle).length ? { page_style: pageStyle } : {}),
+      ...(sections.length ? { sections } : {}),
+    }
+  } catch {
+    return {}
   }
 }
 
@@ -137,38 +301,46 @@ export function publicMenuFromData(
 ) {
   const slug = menuSlug(data, menuId)
   const path = scope.path || readRecordString(data, 'path') || publicMenuPath(slug)
-  const docName = readRecordString(data, 'doc_name')
-  const docType = readRecordString(data, 'doc_type')
+  const file = readMenuFile(data)
   const sourceKind = scope.sourceKind ?? readMenuSourceKind(data)
-  const kind = publicMenuKind({
-    sourceKind,
-    docName,
-    docType,
+  const kind = sourceKind === 'kitchen-menu' || sourceKind === 'menu'
+    ? 'menu'
+    : 'doc'
+  const fileKind = publicMenuFileKind({
+    docName: file.name || '',
+    docType: file.type || '',
     storedKind: readMenuDocumentKind(data),
   })
-
-  return {
+  const source = publicMenuSourceFromData(data, scope)
+  const createdBy = readRecordString(data, 'created_by')
+  const createdByLabel =
+    scope.createdByLabel ?? readRecordString(data, 'created_by_label')
+  const description = readRecordString(data, 'description')
+  const status = readRecordString(data, 'status')
+  const pageStyle = readRecord(scope.page_style)
+  const result = {
     id: menuId,
     slug,
     name: readRecordString(data, 'name') || slug,
-    description: readRecordString(data, 'description'),
-    status: readRecordString(data, 'status'),
-    doc_url: readRecordString(data, 'doc_url'),
-    doc_name: docName,
-    doc_type: docType,
-    kind,
-    doc_storage_path: readRecordString(data, 'doc_storage_path'),
-    kitchen_id: scope.kitchenId ?? readRecordString(data, 'kitchen_id'),
-    kitchen_slug: scope.kitchenSlug ?? readRecordString(data, 'kitchen_slug'),
-    kitchen_name: scope.kitchenName ?? readRecordString(data, 'kitchen_name'),
-    kitchen_app_id: scope.kitchenAppId ?? readRecordString(data, 'kitchen_app_id'),
-    kitchen_menu_id: scope.kitchenMenuId ?? readRecordString(data, 'kitchen_menu_id'),
-    created_by: readRecordString(data, 'created_by'),
-    created_by_label:
-      scope.createdByLabel ?? readRecordString(data, 'created_by_label'),
     path,
     qr_path: scope.qrPath || readRecordString(data, 'qr_path') || `${path}/qr`,
+    kind,
     view_label: scope.viewLabel || defaultViewLabel(kind),
     view_to: scope.viewTo || path,
+    ...(description ? { description } : {}),
+    ...(status ? { status } : {}),
+    ...(kind === 'doc' ? { file_kind: fileKind } : {}),
+    ...(kind === 'doc' && hasFile(file) ? { file: compactFile(file) } : {}),
+    ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),
+    ...(kind === 'menu' && Array.isArray(scope.sections) && scope.sections.length
+      ? { sections: scope.sections }
+      : {}),
+    ...(kind === 'menu' && Object.keys(pageStyle).length
+      ? { page_style: pageStyle }
+      : {}),
+    ...(createdBy ? { created_by: createdBy } : {}),
+    ...(createdByLabel ? { created_by_label: createdByLabel } : {}),
   }
+
+  return result
 }

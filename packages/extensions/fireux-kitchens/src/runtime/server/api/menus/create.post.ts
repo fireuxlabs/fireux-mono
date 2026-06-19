@@ -135,18 +135,21 @@ export default defineEventHandler(async (event) => {
   await menuRef.set({
     id: slug,
     slug,
+    kind: 'doc',
+    file_kind: documentKindFromFile({
+      fileName: file.fileName,
+      contentType: file.contentType,
+    }),
     source_app_id: appId,
     created_by: createdBy,
     name: menuNameFromSlug(slug),
     status: 'published',
-    doc_url: saved.fileUrl,
-    doc_name: file.fileName,
-    doc_type: file.contentType,
-    doc_kind: documentKindFromFile({
-      fileName: file.fileName,
-      contentType: file.contentType,
-    }),
-    doc_storage_path: objectPath,
+    file: {
+      url: saved.fileUrl,
+      name: file.fileName,
+      type: file.contentType,
+      storage_path: objectPath,
+    },
     created: serverAuditStamp({ by: createdBy, appId }),
     updated: serverAuditStamp({ by: createdBy, appId }),
   })
