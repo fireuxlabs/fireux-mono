@@ -14,12 +14,14 @@ Vertical links:
 - Child: family-menu.md
 
 Horizontal links:
+- layouts.md
 - components.md
 - composables.md
 - debug.md
 
 Current convention:
 - Page owns route shell, metadata, layout, and high-level composition.
+- Layout owns shared chrome; see `layouts.md` before changing layout behavior.
 - Page should delegate domain display to named components.
 - Page should use composables for data and state.
 - Page should not become a heavy script that calculates many tiny display props.

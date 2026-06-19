@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'misebox-tenant',
+  layout: 'latap-default',
 })
 
 useSeoMeta({

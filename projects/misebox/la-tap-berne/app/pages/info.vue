@@ -46,7 +46,7 @@ const websiteLabel = computed(() =>
 )
 
 definePageMeta({
-  layout: 'misebox-tenant',
+  layout: 'latap-default',
 })
 
 useSeoMeta({

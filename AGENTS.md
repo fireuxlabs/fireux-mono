@@ -30,6 +30,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Spine/canon working method: `docs/concepts/spine.md`
 - Nuxt 4 and Vue 3: `docs/concepts/nuxt4.md`
 - Nuxt UI: `docs/concepts/nuxt-ui.md`
+- Layouts spine: `docs/concepts/layouts.md`
 - pnpm workspace/scripts: `docs/concepts/pnpm.md`
 - Runtime package spine: `docs/concepts/runtime-package.md`
 - App config spine: `docs/concepts/app-config.md`

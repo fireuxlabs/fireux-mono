@@ -19,7 +19,6 @@
       <slot />
     </article>
 
-    <LaTapBerneMiniMenu />
   </section>
 </template>
 

@@ -22,10 +22,6 @@
       </div>
     </Transition>
 
-    <Transition name="content-fade">
-      <LaTapBerneMiniMenu v-if="!isOpen" />
-    </Transition>
-
     <Transition name="menu-pop">
       <section v-if="isOpen" class="menu-reveal__panel" aria-label="La Tap Berne menu">
         <button

@@ -6,13 +6,12 @@
     <h1>Comida Casera</h1>
 
     <LaTapBerneMenu />
-    <LaTapBerneMiniMenu />
   </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'misebox-tenant',
+  layout: 'latap-default',
 })
 
 useSeoMeta({

@@ -1,10 +1,10 @@
 <template>
-  <nav class="latap-mini-menu" aria-label="Venue shortcuts">
+  <nav class="latap-nav" aria-label="Venue shortcuts">
     <NuxtLink
-      v-for="item in miniMenuItems"
+      v-for="item in navItems"
       :key="item.to"
-      class="latap-mini-menu__button"
-      :class="{ 'latap-mini-menu__button--active': isActive(item.to) }"
+      class="latap-nav__button"
+      :class="{ 'latap-nav__button--active': isActive(item.to) }"
       :to="item.to"
       :aria-label="item.label"
     >
@@ -18,7 +18,7 @@ import { useRoute } from '#imports'
 
 const route = useRoute()
 
-const miniMenuItems = [
+const navItems = [
   { label: 'Home', icon: 'i-ph-house', to: '/home' },
   { label: 'Location', icon: 'i-ph-map-pin', to: '/location' },
   { label: 'Menu', icon: 'i-ph-fork-knife', to: '/' },
@@ -31,7 +31,7 @@ const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
 </script>
 
 <style scoped>
-.latap-mini-menu {
+.latap-nav {
   position: fixed;
   inset-inline: 0;
   bottom: clamp(5.5rem, 10vw, 7.5rem);
@@ -42,7 +42,7 @@ const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
   pointer-events: auto;
 }
 
-.latap-mini-menu__button {
+.latap-nav__button {
   display: grid;
   width: 3.1rem;
   height: 3.1rem;
@@ -62,24 +62,24 @@ const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
     transform 180ms ease;
 }
 
-.latap-mini-menu__button:hover,
-.latap-mini-menu__button--active {
+.latap-nav__button:hover,
+.latap-nav__button--active {
   border-color: color-mix(in srgb, var(--brand-canvas) 80%, transparent);
   background: color-mix(in srgb, var(--brand-ink) 26%, transparent);
   transform: translateY(-2px);
 }
 
-.latap-mini-menu__button :deep(.iconify) {
+.latap-nav__button :deep(.iconify) {
   width: 1.3rem;
   height: 1.3rem;
 }
 
 @media (max-width: 720px) {
-  .latap-mini-menu {
+  .latap-nav {
     bottom: clamp(5.75rem, 18vw, 7rem);
   }
 
-  .latap-mini-menu__button {
+  .latap-nav__button {
     width: 2.85rem;
     height: 2.85rem;
   }

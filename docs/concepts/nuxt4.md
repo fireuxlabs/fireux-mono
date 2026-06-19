@@ -8,6 +8,7 @@ Explain the app framework context for agents.
 
 Vertical links:
 - Parent: AGENTS.md
+- Child: layouts.md
 - Child: pages.md
 - Child: components.md
 - Child: composables.md
@@ -25,6 +26,8 @@ Framework:
 - Nuxt modules register package runtime surfaces.
 
 Common Nuxt surfaces:
+- App shell: usually owns `<NuxtLayout><NuxtPage /></NuxtLayout>`.
+- Layouts: see `layouts.md`; FireUX runtime layouts currently render `<NuxtPage />`.
 - App pages: `app/pages`.
 - App components: `app/components`.
 - App composables: `app/composables`.
