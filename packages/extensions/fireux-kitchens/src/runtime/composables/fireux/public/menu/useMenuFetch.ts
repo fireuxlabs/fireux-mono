@@ -36,7 +36,9 @@ export function useMenuFetch(
   const kitchenSlug = computed(() =>
     String(toValue(options.kitchenSlug) || '').trim()
   )
-  const key = computed(() => `public-menu-${id.value || 'none'}`)
+  const key = computed(
+    () => `public-menu-${kitchenSlug.value || 'root'}-${id.value || 'none'}`
+  )
   const endpoint = computed(() => {
     if (!id.value) return ''
 

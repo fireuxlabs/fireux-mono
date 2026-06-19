@@ -25,6 +25,8 @@ Current convention:
 - Page should delegate domain display to named components.
 - Page should use composables for data and state.
 - Page should not become a heavy script that calculates many tiny display props.
+- Use `useRouteParam('<key>')` for normalized route params instead of repeating
+  `String(route.params.x || '').trim()`.
 
 Common route families:
 - Public index: `/xs`.

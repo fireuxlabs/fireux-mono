@@ -45,9 +45,8 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue'
 import { useMiseboxTenantChrome } from 'fireux-misebox/runtime/composables/fireux/app/useMiseboxTenantChrome'
-
+import { onBeforeUnmount, ref } from 'vue'
 const { setChromeHidden } = useMiseboxTenantChrome()
 const isOpen = ref(false)
 

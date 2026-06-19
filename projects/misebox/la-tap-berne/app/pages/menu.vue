@@ -1,22 +1,22 @@
 <template>
-  <section class="latap-menu-page">
-    <p class="latap-menu-page__eyebrow">
-      La Tap Berne
-    </p>
-    <h1>Comida Casera</h1>
+  <Menu
+    menu-id="main"
+    kitchen-slug="la-tapberne"
+  >
+    <section class="latap-menu-page">
+      <p class="latap-menu-page__eyebrow">
+        La Tap Berne
+      </p>
+      <h1>Comida Casera</h1>
 
-    <LaTapBerneMenu />
-  </section>
+      <LaTapBerneMenu />
+    </section>
+  </Menu>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
   layout: 'latap-default',
-})
-
-useSeoMeta({
-  title: 'La Tap Berne | Menu',
-  description: 'Comida Casera menu for La Tap Berne.',
 })
 </script>
 
