@@ -37,6 +37,7 @@ type DocToolConfig = {
     placeholder: string
     initialValue: string
     takenMessage: string
+    locked: boolean
   }
   preview: {
     baseUrl: string

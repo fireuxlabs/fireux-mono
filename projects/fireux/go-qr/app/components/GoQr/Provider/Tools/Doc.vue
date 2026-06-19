@@ -25,6 +25,7 @@
         <UInput
           v-model="slugInput"
           :placeholder="slugPlaceholder"
+          :disabled="slugLocked"
           class="w-full"
         />
         <p class="mt-1 break-all text-xs text-muted">
@@ -103,6 +104,7 @@ type DocToolConfig = {
     placeholder?: string
     initialValue?: string
     takenMessage?: string
+    locked?: boolean
   }
   preview?: {
     baseUrl?: string
@@ -157,6 +159,9 @@ const slugPlaceholder = computed(() =>
 )
 const slugInitialValue = computed(() =>
   configuredText(props.tool?.slug?.initialValue)
+)
+const slugLocked = computed(() =>
+  Boolean(props.tool?.slug?.locked)
 )
 const accept = computed(() =>
   configuredText(props.tool?.upload?.accept)

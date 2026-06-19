@@ -10,8 +10,23 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue'
 import { useKitchenConsoleMenuUploadPayload } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuUploadPayload'
 
+const props = defineProps<{
+  uploadId?: string
+  lockSlug?: boolean
+  title?: string
+  description?: string
+  ctaLabel?: string
+}>()
+
 const { canUseTool, payload, authToken } =
-  useKitchenConsoleMenuUploadPayload()
+  useKitchenConsoleMenuUploadPayload({
+    uploadId: toRef(props, 'uploadId'),
+    lockSlug: toRef(props, 'lockSlug'),
+    title: toRef(props, 'title'),
+    description: toRef(props, 'description'),
+    ctaLabel: toRef(props, 'ctaLabel'),
+  })
 </script>

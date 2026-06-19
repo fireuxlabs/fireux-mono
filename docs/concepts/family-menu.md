@@ -44,6 +44,13 @@ Public source pointer:
 - Structured menu doorways use `source.app_id`, `source.kitchen_id`, and
   `source.menu_id` to locate the source of truth.
 
+Language/source note:
+- Original menus should usually be treated as `default`, not assigned a
+  single source language too early.
+- Real restaurant menus often mix languages, brand words, dish names, and
+  local phrasing.
+- Sproochli/translation can split or infer language-specific fields later.
+
 Stored kind notes:
 - New quick uploads store `kind: doc`, `file_kind`, and `file`.
 - Structured menu doorways should store `kind: menu` and `source`.

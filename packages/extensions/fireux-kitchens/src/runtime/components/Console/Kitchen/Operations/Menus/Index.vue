@@ -9,63 +9,30 @@
         description="This kitchen can be inspected, but changes are disabled."
       />
 
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="text-base font-semibold text-highlighted">Menu flow</h2>
-            <p class="text-sm text-dimmed">
-              Upload a menu, convert it into dishes, then optionally enable Sproochli.
-            </p>
-          </div>
-        </template>
-
-        <div class="grid gap-3 lg:grid-cols-3">
-          <div class="rounded-lg bg-muted/40 p-3">
-            <div class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-              Step 1
-            </div>
-            <div class="mt-1 text-sm font-semibold text-highlighted">
-              Upload menu
-            </div>
-            <p class="mt-1 text-sm text-dimmed">
-              Store the menu PDF against this kitchen.
-            </p>
-          </div>
-
-          <div class="rounded-lg bg-muted/40 p-3">
-            <div class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-              Step 2
-            </div>
-            <div class="mt-1 text-sm font-semibold text-highlighted">
-              Convert to dishes with AI
-            </div>
-            <p class="mt-1 text-sm text-dimmed">
-              Turn the uploaded menu into Dish records, sections, and menu items for review.
-            </p>
-          </div>
-
-          <div class="rounded-lg bg-muted/40 p-3">
-            <div class="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-              Step 3
-            </div>
-            <div class="mt-1 text-sm font-semibold text-highlighted">
-              Optional Sproochli
-            </div>
-            <p class="mt-1 text-sm text-dimmed">
-              Enable language tools after the menu has real reviewed content.
-            </p>
-          </div>
+      <section class="space-y-3">
+        <div>
+          <h2 class="text-base font-semibold text-highlighted">Create</h2>
+          <p class="text-sm text-dimmed">
+            Upload a menu source for this kitchen.
+          </p>
         </div>
-      </UCard>
+        <ConsoleKitchenOperationsMenusUpload />
+      </section>
 
-      <ConsoleKitchenOperationsMenusUpload />
-      <ConsoleKitchenOperationsMenusSources />
-      <ConsoleKitchenOperationsMenusRead />
+      <section class="space-y-3">
+        <div>
+          <h2 class="text-base font-semibold text-highlighted">View</h2>
+          <p class="text-sm text-dimmed">
+            Review menus linked to this kitchen.
+          </p>
+        </div>
+        <ConsoleKitchenOperationsMenusRead />
+      </section>
 
       <DevJson
-        title="Kitchen menu console debug"
+        title="Kitchen menus debug"
         context="Kitchen menu console · /console/kitchen/menus"
-        :data="debug"
+        :data="menusDebug"
         :default-open="false"
       />
     </template>
@@ -81,7 +48,51 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
-const { selectedKitchen, readOnly, debug } = useKitchenConsoleMenus()
+const {
+  selectedKitchen,
+  kitchenId,
+  activeKitchenAppId,
+  collectionPath,
+  menus,
+  rawMenus,
+  pending,
+  readOnly,
+  canWrite,
+} = useKitchenConsoleMenus()
+
+const text = (value: unknown) => String(value ?? '').trim()
+const menuDebugRow = (menu: Record<string, unknown>) => {
+  const menuKitchenId = text(menu.kitchen_id)
+
+  return {
+    id: text(menu.id),
+    name: text(menu.name),
+    status: text(menu.status),
+    kitchenId: menuKitchenId,
+    belongsToSelectedKitchen: menuKitchenId === kitchenId.value,
+  }
+}
+const rawArchivedMenus = computed(() =>
+  rawMenus.value.filter((menu) => menu.status === 'archived')
+)
+const menusDebug = computed(() => ({
+  objects: {
+    menus: menus.value.map(menuDebugRow),
+    archivedMenus: rawArchivedMenus.value.map(menuDebugRow),
+  },
+  derived: {
+    kitchenId: kitchenId.value,
+    activeKitchenAppId: activeKitchenAppId.value,
+    collectionPath: collectionPath.value,
+    menusCount: menus.value.length,
+    rawMenusCount: rawMenus.value.length,
+    archivedMenusCount: rawArchivedMenus.value.length,
+    pending: pending.value,
+    readOnly: readOnly.value,
+    canWrite: canWrite.value,
+  },
+}))
 </script>

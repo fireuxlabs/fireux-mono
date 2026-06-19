@@ -32,7 +32,12 @@ export function useKitchenConsoleMenus() {
       ? kitchenConsole.selection.kitchenId.value
       : ''
   )
-  const { menus, pending: menusPending, collectionPath } =
+  const {
+    menus: rawMenus,
+    activeMenus,
+    pending: menusPending,
+    collectionPath,
+  } =
     useMenuCollection(fetchKitchenId, {
       kitchenCollectionPath: kitchenConsole.runtime.rootCollection,
       databaseId: kitchenConsole.runtime.databaseId,
@@ -67,7 +72,8 @@ export function useKitchenConsoleMenus() {
     readOnly: kitchenConsole.runtime.readOnly,
     canWrite: kitchenConsole.runtime.canWrite,
     collectionPath,
-    menus,
+    menus: activeMenus,
+    rawMenus,
     pending: menusPending,
     menuSources,
     menuSourcesPending: sourceUploads.pending,
@@ -80,7 +86,8 @@ export function useKitchenConsoleMenus() {
       kitchenId: kitchenConsole.selection.kitchenId.value,
       activeKitchenAppId: kitchenConsole.runtime.appId.value,
       collectionPath: collectionPath.value,
-      menusCount: menus.value.length,
+      menusCount: activeMenus.value.length,
+      rawMenusCount: rawMenus.value.length,
       menuSourcesCollectionPath: sourceUploads.collectionPath.value,
       menuSourcesCount: menuSources.value.length,
       pending: menusPending.value,

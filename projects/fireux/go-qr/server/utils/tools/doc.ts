@@ -18,6 +18,7 @@ export type GoQrDocToolConfig = {
     placeholder: string
     initialValue: string
     takenMessage: string
+    locked: boolean
   }
   preview: {
     baseUrl: string
@@ -76,6 +77,7 @@ export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
       placeholder: text(slug.placeholder),
       initialValue: text(slug.initialValue),
       takenMessage: text(slug.takenMessage),
+      locked: Boolean(slug.locked),
     },
     preview: {
       baseUrl: text(preview.baseUrl),

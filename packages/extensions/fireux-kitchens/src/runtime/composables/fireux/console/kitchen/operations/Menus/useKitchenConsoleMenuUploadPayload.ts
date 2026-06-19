@@ -1,12 +1,28 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 
+type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
+
+type UseKitchenConsoleMenuUploadPayloadOptions = {
+  uploadId?: MaybeRef<string | null | undefined>
+  lockSlug?: MaybeRef<boolean | null | undefined>
+  title?: MaybeRef<string | null | undefined>
+  description?: MaybeRef<string | null | undefined>
+  ctaLabel?: MaybeRef<string | null | undefined>
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
+const optionText = (value: MaybeRef<string | null | undefined> | undefined) =>
+  text(value === undefined ? '' : unref(value))
+const optionBool = (value: MaybeRef<boolean | null | undefined> | undefined) =>
+  Boolean(value === undefined ? false : unref(value))
 
-export function useKitchenConsoleMenuUploadPayload() {
+export function useKitchenConsoleMenuUploadPayload(
+  options: UseKitchenConsoleMenuUploadPayloadOptions = {}
+) {
   const { currentUser } = useAuth()
   const kitchenConsole = useKitchenConsole()
   const authToken = ref('')
@@ -18,7 +34,9 @@ export function useKitchenConsoleMenuUploadPayload() {
         kitchenConsole.selection.kitchenId.value
     )
   )
-  const menuPath = computed(() => 'main-menu')
+  const menuPath = computed(() =>
+    normalizeSlug(optionText(options.uploadId) || 'main-menu')
+  )
   const currentOrigin = computed(() =>
     import.meta.client ? origin(window.location.origin) : ''
   )
@@ -61,10 +79,11 @@ export function useKitchenConsoleMenuUploadPayload() {
       },
     },
     copy: {
-      title: 'Step 1: Upload menu',
+      title: optionText(options.title) || 'Step 1: Upload menu',
       description:
+        optionText(options.description) ||
         'Upload a PDF for this menu. You can turn it into dishes later.',
-      ctaLabel: 'Upload menu',
+      ctaLabel: optionText(options.ctaLabel) || 'Upload menu',
       loadingLabel: 'Uploading menu...',
       openTargetLabel: 'Open uploaded menu',
     },
@@ -78,6 +97,7 @@ export function useKitchenConsoleMenuUploadPayload() {
       placeholder: menuPath.value,
       initialValue: menuPath.value,
       takenMessage: 'This menu name is already taken.',
+      locked: optionBool(options.lockSlug),
     },
     preview: {
       message: 'Upload your menu document.',

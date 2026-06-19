@@ -2,6 +2,24 @@
   <section class="console-surface space-y-6">
     <UBreadcrumb :items="breadcrumbItems" />
     <ConsoleKitchenOperationsMenusDetails />
+    <UCard v-if="menu">
+      <template #header>
+        <div>
+          <h2 class="text-base font-semibold text-highlighted">Source document</h2>
+          <p class="text-sm text-dimmed">
+            Attach the original PDF or photo before comparing AI output to the current menu.
+          </p>
+        </div>
+      </template>
+
+      <ConsoleKitchenOperationsMenusUpload
+        :upload-id="menuId"
+        :lock-slug="true"
+        title="Upload source document"
+        description="Upload the original source so later AI passes can flag differences against this menu."
+        cta-label="Upload source"
+      />
+    </UCard>
     <ConsoleKitchenOperationsMenusSectionsRead />
     <ConsoleKitchenOperationsMenusSectionsCreate />
     <ConsoleKitchenOperationsMenusPublish />
