@@ -3,91 +3,74 @@
     :menu="menu"
     :pending="pending"
     :error="error"
-    :menu-json="menuJson"
+    :render-menu="renderMenu"
   >
-    <MenuPublic
-      v-if="menu && structuredSections.length"
-      :kitchen-name="menu.source?.kitchen_name || ''"
-      :menu="menu"
-      :sections="structuredSections"
-      :page-style="menu.page_style"
-    />
+    <section>
+      <p v-if="pending">
+        Loading menu...
+      </p>
 
-    <UPage v-else-if="menu">
-      <UPageHeader
-        :title="menu.name || 'Menu'"
-        :description="pageDescription"
-      />
+      <p v-else-if="error">
+        Menu unavailable.
+      </p>
 
-      <UPageBody>
-        <UPageCard>
-          <div class="space-y-4">
-            <div class="space-y-1">
-              <p class="text-sm font-medium text-highlighted">
-                {{ surfaceTitle }}
-              </p>
-              <p class="text-sm text-dimmed">
-                {{ surfaceDescription }}
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                v-if="primaryActionTo"
-                :to="primaryActionTo"
-                icon="i-lucide-arrow-up-right"
-              >
-                {{ primaryActionLabel }}
-              </UButton>
-
-              <UButton
-                v-if="menu.qr_path"
-                :to="menu.qr_path"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-qr-code"
-              >
-                QR
-              </UButton>
-            </div>
-          </div>
-        </UPageCard>
-      </UPageBody>
-    </UPage>
-
-    <UPage v-else>
-      <UPageBody>
-        <p class="text-sm text-dimmed">
-          Menu unavailable.
+      <article v-else-if="renderMenu">
+        <p v-if="renderMenu.kitchenName">
+          {{ renderMenu.kitchenName }}
         </p>
-      </UPageBody>
-    </UPage>
+        <h1>{{ renderMenu.name }}</h1>
+        <p v-if="renderMenu.description">
+          {{ renderMenu.description }}
+        </p>
+
+        <section
+          v-for="section in renderMenu.sections"
+          :key="section.id"
+        >
+          <h2>{{ section.label }}</h2>
+
+          <article
+            v-for="item in section.items"
+            :key="item.id"
+          >
+            <h3>{{ item.name }}</h3>
+            <p v-if="item.description">
+              {{ item.description }}
+            </p>
+            <p v-if="item.priceLabel">
+              {{ item.priceLabel }}
+            </p>
+          </article>
+        </section>
+      </article>
+
+      <p v-else>
+        Menu unavailable.
+      </p>
+
+      <details>
+        <summary>Menu debug</summary>
+        <pre>{{ debug }}</pre>
+      </details>
+    </section>
   </slot>
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
-import {
-  useMenuFetch,
-  type PublicMenu,
-} from '../composables/fireux/public/menu/useMenuFetch'
+import { useMenuFetch } from '../composables/fireux/public/menu/useMenuFetch'
 
 const props = defineProps<{
   menuId: string
   kitchenSlug?: string
 }>()
 
-defineSlots<{
-  default?: (props: {
-    menu: PublicMenu | null
-    pending: boolean
-    error: unknown
-    menuJson: string
-  }) => unknown
-}>()
-
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
 const menuId = computed(() => text(props.menuId))
 const kitchenSlug = computed(() => text(props.kitchenSlug))
 const {
@@ -95,67 +78,66 @@ const {
   pending,
   error,
 } = useMenuFetch(menuId, { kitchenSlug })
-const menuJson = computed(() => JSON.stringify(menu.value, null, 2))
-const structuredSections = computed(() =>
-  Array.isArray(menu.value?.sections) ? menu.value.sections : []
-)
-const hasTenantApp = computed(() =>
-  Boolean(
-    menu.value?.source?.app_id &&
-      menu.value.view_to &&
-      menu.value.view_to !== menu.value.path
-  )
-)
-const pageDescription = computed(() => {
-  if (!menu.value) return 'Open this menu.'
-  if (structuredSections.value.length) return menu.value.description || 'Open this menu.'
-  if (hasTenantApp.value) {
-    return menu.value.source?.kitchen_name
-      ? `${menu.value.source.kitchen_name} has its own app for this menu.`
-      : 'This menu has its own app.'
-  }
-  if (menu.value.kind === 'doc' && menu.value.file_kind === 'photo') {
-    return 'A quick menu uploaded as a photo.'
-  }
-  if (menu.value.kind === 'doc' && menu.value.file_kind === 'pdf') {
-    return 'A quick menu uploaded as a PDF.'
-  }
 
-  return menu.value.description || 'Open this menu.'
-})
-const surfaceTitle = computed(() => {
-  if (hasTenantApp.value) return 'Menu source available'
-  if (menu.value?.kind === 'menu') return 'Menu'
-  if (menu.value?.file_kind === 'photo') return 'Uploaded photo'
-  if (menu.value?.file_kind === 'pdf') return 'Uploaded PDF'
+const itemName = (item: Record<string, unknown>) =>
+  text(item.name) || text(record(item.item).name)
 
-  return 'Uploaded document'
-})
-const surfaceDescription = computed(() => {
-  if (!menu.value) return ''
-  if (structuredSections.value.length) {
-    return 'This menu is rendered from the structured source provided by its app.'
+const itemDescription = (item: Record<string, unknown>) =>
+  text(item.description) || text(record(item.item).description)
+
+const itemPriceLabel = (item: Record<string, unknown>) =>
+  text(item.priceLabel) ||
+  text(item.price_label) ||
+  text(item.price)
+
+const renderMenu = computed(() => {
+  const source = menu.value
+  if (!source) return null
+
+  return {
+    id: source.id,
+    name: text(source.name) || 'Menu',
+    description: text(source.description),
+    kitchenName:
+      text(source.source?.kitchen_name) ||
+      text(record(source.kitchen).name),
+    sections: list(source.sections).map((section, sectionIndex) => {
+      const sectionRecord = record(section)
+      const nestedSection = record(sectionRecord.section)
+      const label =
+        text(sectionRecord.label) ||
+        text(nestedSection.label) ||
+        `Section ${sectionIndex + 1}`
+
+      return {
+        id: text(sectionRecord.id) || text(nestedSection.id) || label,
+        label,
+        items: list(sectionRecord.items).map((item, itemIndex) => {
+          const itemRecord = record(item)
+          const name = itemName(itemRecord) || `Item ${itemIndex + 1}`
+
+          return {
+            id: text(itemRecord.id) || name,
+            name,
+            description: itemDescription(itemRecord),
+            priceLabel: itemPriceLabel(itemRecord),
+          }
+        }),
+      }
+    }),
   }
-  if (hasTenantApp.value) {
-    return 'This page keeps the public menu link stable. The app source can provide structured sections when available.'
-  }
-  if (menu.value.kind === 'menu') {
-    return 'This menu can grow into structured dishes, ordering, translations, and kitchen console tools.'
-  }
-
-  return 'This lightweight menu keeps the file online and gives it a stable QR-ready page.'
 })
-const primaryActionTo = computed(() => menu.value?.view_to || '')
-const primaryActionLabel = computed(() => {
-  if (hasTenantApp.value) return 'Open app menu'
-
-  return menu.value?.view_label || 'Open menu'
-})
-
-useSeoMeta({
-  title: computed(() => menu.value?.name || 'Menu'),
-  description: computed(
-    () => menu.value?.description || 'Open this menu.'
-  ),
-})
+const debug = computed(() => ({
+  props,
+  derived: {
+    menuId: menuId.value,
+    kitchenSlug: kitchenSlug.value,
+    pending: pending.value,
+    hasError: Boolean(error.value),
+    hasMenu: Boolean(menu.value),
+    sectionsCount: renderMenu.value?.sections.length || 0,
+  },
+  menu: menu.value,
+  renderMenu: renderMenu.value,
+}))
 </script>
