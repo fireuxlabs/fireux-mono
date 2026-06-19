@@ -10,7 +10,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 
 definePageMeta({
   layout: 'public-menu',
-  name: 'KitchenPublicMenusDetailPage',
+  name: 'KitchenMenuPage',
 })
 
 const menuId = useRouteParam('menuId')
