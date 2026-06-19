@@ -8,11 +8,42 @@
     <UPage v-if="menu">
       <UPageHeader
         :title="menu.name || 'Menu'"
-        description="This menu record is the first surface before source, structured dishes, or tenant chrome are added."
+        :description="pageDescription"
       />
 
       <UPageBody>
-        <pre class="overflow-auto rounded-xl border border-default bg-muted p-4 text-xs">{{ menuJson }}</pre>
+        <UPageCard>
+          <div class="space-y-4">
+            <div class="space-y-1">
+              <p class="text-sm font-medium text-highlighted">
+                {{ surfaceTitle }}
+              </p>
+              <p class="text-sm text-dimmed">
+                {{ surfaceDescription }}
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-if="primaryActionTo"
+                :to="primaryActionTo"
+                icon="i-lucide-arrow-up-right"
+              >
+                {{ primaryActionLabel }}
+              </UButton>
+
+              <UButton
+                v-if="menu.qr_path"
+                :to="menu.qr_path"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-qr-code"
+              >
+                QR
+              </UButton>
+            </div>
+          </div>
+        </UPageCard>
       </UPageBody>
     </UPage>
 
@@ -57,6 +88,50 @@ const {
   error,
 } = useMenuFetch(menuId, { kitchenSlug })
 const menuJson = computed(() => JSON.stringify(menu.value, null, 2))
+const hasTenantApp = computed(() =>
+  Boolean(
+    menu.value?.kitchen_app_id &&
+      menu.value.view_to &&
+      menu.value.view_to !== menu.value.path
+  )
+)
+const pageDescription = computed(() => {
+  if (!menu.value) return 'Open this menu.'
+  if (hasTenantApp.value) {
+    return menu.value.kitchen_name
+      ? `${menu.value.kitchen_name} has its own app for this menu.`
+      : 'This menu has its own app.'
+  }
+  if (menu.value.kind === 'photo') return 'A quick menu uploaded as a photo.'
+  if (menu.value.kind === 'pdf') return 'A quick menu uploaded as a PDF.'
+
+  return menu.value.description || 'Open this menu.'
+})
+const surfaceTitle = computed(() => {
+  if (hasTenantApp.value) return 'Best viewed in the app'
+  if (menu.value?.kind === 'menu') return 'Menu'
+  if (menu.value?.kind === 'photo') return 'Uploaded photo'
+  if (menu.value?.kind === 'pdf') return 'Uploaded PDF'
+
+  return 'Uploaded document'
+})
+const surfaceDescription = computed(() => {
+  if (!menu.value) return ''
+  if (hasTenantApp.value) {
+    return 'This page keeps the public menu link stable, then points visitors to the richer app version.'
+  }
+  if (menu.value.kind === 'menu') {
+    return 'This menu can grow into structured dishes, ordering, translations, and kitchen console tools.'
+  }
+
+  return 'This lightweight menu keeps the file online and gives it a stable QR-ready page.'
+})
+const primaryActionTo = computed(() => menu.value?.view_to || '')
+const primaryActionLabel = computed(() => {
+  if (hasTenantApp.value) return 'Open app menu'
+
+  return menu.value?.view_label || 'Open menu'
+})
 
 useSeoMeta({
   title: computed(() => menu.value?.name || 'Menu'),

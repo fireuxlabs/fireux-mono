@@ -2,8 +2,12 @@
   <Menu
     menu-id="main"
     kitchen-slug="la-tapberne"
+    v-slot="{ menu, pending }"
   >
-    <LaTapBerneMenu />
+    <LaTapBerneMenu
+      :menu="menu"
+      :pending="pending"
+    />
   </Menu>
 </template>
 

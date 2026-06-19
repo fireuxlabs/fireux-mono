@@ -5,7 +5,25 @@
     </p>
     <h1>Comida Casera</h1>
 
-    <div class="latap-menu" aria-label="Menu sections">
+    <p
+      v-if="pending"
+      class="latap-menu-page__state"
+    >
+      Loading menu...
+    </p>
+
+    <p
+      v-else-if="!menuSections.length"
+      class="latap-menu-page__state"
+    >
+      Menu unavailable.
+    </p>
+
+    <div
+      v-else
+      class="latap-menu"
+      aria-label="Menu sections"
+    >
       <section
         v-for="section in menuSections"
         :key="section.label"
@@ -34,9 +52,21 @@
 </template>
 
 <script setup lang="ts">
-import { laTapBerneMenuSections } from '../../menu'
+import { computed } from 'vue'
+import type { LaTapBerneMenuSection } from '../../menu'
 
-const menuSections = laTapBerneMenuSections
+type LaTapBerneMenuApi = {
+  sections?: LaTapBerneMenuSection[]
+}
+
+const props = defineProps<{
+  menu?: LaTapBerneMenuApi | null
+  pending?: boolean
+}>()
+
+const menuSections = computed(() =>
+  Array.isArray(props.menu?.sections) ? props.menu.sections : []
+)
 </script>
 
 <style scoped>
@@ -64,6 +94,13 @@ const menuSections = laTapBerneMenuSections
   font-weight: 900;
   letter-spacing: -0.08em;
   line-height: 0.86;
+}
+
+.latap-menu-page__state {
+  margin: 0;
+  color: color-mix(in srgb, var(--brand-ink) 72%, transparent);
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .latap-menu {

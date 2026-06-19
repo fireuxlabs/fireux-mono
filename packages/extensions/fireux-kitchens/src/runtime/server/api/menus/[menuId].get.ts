@@ -10,10 +10,20 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   publicMenuCreatorLabel,
   publicMenuFromData,
+  publicMenuOwnerAppView,
   readPublicMenuCreatorLabels,
 } from '../../utils/public-menus.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
+
+type RootMenuKitchenScope = {
+  kitchenId?: string
+  kitchenSlug?: string
+  kitchenName?: string
+  kitchenAppId?: string
+  kitchenMenuId?: string
+  createdByLabel?: string
+}
 
 const currentAppId = () => {
   const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
@@ -29,6 +39,63 @@ const kitchenDisplayName = (data: Record<string, unknown>) =>
   readRecordString(data, 'display_name') ||
   readRecordString(data, 'name') ||
   readRecordString(data, 'short_name')
+
+async function readOwnerAppView(options: {
+  ownerAppId: string
+  kitchenSlug: string
+  menuId: string
+}) {
+  if (!options.ownerAppId || !options.kitchenSlug || !options.menuId) {
+    return {}
+  }
+
+  const db = getRuntimeFirestore()
+  const [appSnap, kitchenCountSnap] = await Promise.all([
+    db.collection('apps').doc(options.ownerAppId).get(),
+    db.collection(`apps/${options.ownerAppId}/kitchens`).count().get(),
+  ])
+
+  return publicMenuOwnerAppView({
+    ownerAppId: options.ownerAppId,
+    currentAppId: currentAppId(),
+    ownerAppData: appSnap.exists ? appSnap.data() || {} : {},
+    ownerAppKitchenCount: Number(kitchenCountSnap.data().count || 0),
+    kitchenSlug: options.kitchenSlug,
+    menuId: options.menuId,
+  })
+}
+
+async function readRootMenuKitchenScope(
+  data: Record<string, unknown>
+): Promise<RootMenuKitchenScope> {
+  const kitchenId = readRecordString(data, 'kitchen_id')
+  const kitchenSlug = readRecordString(data, 'kitchen_slug')
+  if (!kitchenId && !kitchenSlug) return {}
+
+  const db = getRuntimeFirestore()
+  const snap = kitchenId
+    ? await db.collection('kitchens').doc(kitchenId).get()
+    : (await db
+        .collection('kitchens')
+        .where('slug', '==', kitchenSlug.toLowerCase())
+        .limit(1)
+        .get()).docs[0]
+
+  const kitchenData = snap?.exists ? snap.data() || {} : {}
+  const resolvedKitchenId = snap?.exists ? snap.id : kitchenId
+  const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
+
+  return {
+    kitchenId: resolvedKitchenId,
+    kitchenSlug: resolvedKitchenSlug,
+    kitchenName: kitchenDisplayName(kitchenData),
+    kitchenAppId:
+      readRecordString(data, 'kitchen_app_id') ||
+      resolveSourceAppId(kitchenData, currentAppId()),
+    kitchenMenuId: readRecordString(data, 'kitchen_menu_id'),
+    createdByLabel: '',
+  }
+}
 
 async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
   const db = getRuntimeFirestore()
@@ -48,6 +115,11 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
 
   const kitchenData = kitchenDoc.data() || {}
   const kitchenAppId = resolveSourceAppId(kitchenData, currentAppId())
+  const ownerAppView = await readOwnerAppView({
+    ownerAppId: kitchenAppId,
+    kitchenSlug,
+    menuId,
+  })
   const menuSnap = await db
     .collection(`apps/${kitchenAppId}/kitchens/${kitchenDoc.id}/menus`)
     .doc(menuId)
@@ -78,6 +150,7 @@ async function readKitchenPublicMenu(menuId: string, kitchenSlug: string) {
       readRecordString(data, 'source_kind') ||
       (readRecordString(data, 'doc_url') ? '' : 'kitchen-menu'),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
+    ...ownerAppView,
   })
 }
 
@@ -95,9 +168,19 @@ async function readPublicMenuSurface(menuId: string) {
   const data = snap.data() || {}
   const createdBy = readRecordString(data, 'created_by')
   const creatorLabels = await readPublicMenuCreatorLabels([createdBy])
+  const kitchenScope = await readRootMenuKitchenScope(data)
+  const ownerAppView = await readOwnerAppView({
+    ownerAppId: kitchenScope.kitchenAppId || readRecordString(data, 'kitchen_app_id'),
+    kitchenSlug: kitchenScope.kitchenSlug || readRecordString(data, 'kitchen_slug'),
+    menuId: kitchenScope.kitchenMenuId || readRecordString(data, 'kitchen_menu_id') || menuId,
+  })
 
   return publicMenuFromData(menuId, data, {
-    createdByLabel: publicMenuCreatorLabel(createdBy, creatorLabels),
+    ...kitchenScope,
+    ...ownerAppView,
+    createdByLabel:
+      kitchenScope.createdByLabel ??
+      publicMenuCreatorLabel(createdBy, creatorLabels),
   })
 }
 
