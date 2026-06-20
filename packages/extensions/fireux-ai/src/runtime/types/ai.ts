@@ -21,6 +21,7 @@ export interface FireuxAiRequest {
   task: FireuxAiTask
   input: unknown
   model?: string
+  timeoutMs?: number
   outputSchema?: unknown
   outputJsonSchema?: Record<string, unknown>
   locale?: string

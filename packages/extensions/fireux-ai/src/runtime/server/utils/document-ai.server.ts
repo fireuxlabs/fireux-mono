@@ -50,6 +50,7 @@ type FireuxAiDocumentExtractionOptions<TPart, TData> = {
   event: H3Event
   appId: string
   model?: string
+  fileTimeoutMs?: number
   files: FireuxAiDocumentSourceFile[]
   taskId: string
   logScope?: string
@@ -96,6 +97,7 @@ export async function runFireuxAiDocumentExtraction<TPart, TData>(
       appId: options.appId,
       task: 'extract_structured_data',
       model: options.model,
+      timeoutMs: options.fileTimeoutMs,
       ...options.buildRequest(file),
     })
 

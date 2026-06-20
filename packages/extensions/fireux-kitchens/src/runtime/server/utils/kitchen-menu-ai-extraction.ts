@@ -27,8 +27,15 @@ export type MenuAiExtractionResult = {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
+const numberValue = (value: unknown) => {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+
 const MENU_PHOTO_EXTRACTION_MODEL =
   text(process.env.FIREUX_AI_MENU_EXTRACTION_MODEL) || 'gpt-5.5'
+const MENU_PHOTO_EXTRACTION_TIMEOUT_MS =
+  numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
 
 const MENU_EXTRACTION_JSON_SCHEMA = {
   type: 'object',
@@ -205,6 +212,7 @@ export async function extractMenuWithAi(
     event,
     appId: input.appId,
     model: MENU_PHOTO_EXTRACTION_MODEL,
+    fileTimeoutMs: MENU_PHOTO_EXTRACTION_TIMEOUT_MS,
     files: input.sourceFiles,
     taskId: input.menuId,
     logScope: 'kitchen-menu-process',

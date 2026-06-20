@@ -40,6 +40,19 @@ function firstString(...values: unknown[]): string | undefined {
   return undefined
 }
 
+function numberValue(value: unknown) {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+
+function requestTimeoutMs(request: FireuxAiRequest) {
+  const requested = numberValue(request.timeoutMs)
+  const configured = numberValue(process.env.FIREUX_AI_TIMEOUT_MS)
+  const value = requested || configured || 120_000
+
+  return Math.min(Math.max(value, 5_000), 300_000)
+}
+
 function isProvider(value: unknown): value is FireuxAiProvider {
   return value === 'openai' || value === 'google' || value === 'anthropic'
 }
@@ -193,28 +206,50 @@ async function callOpenAiText(
 ): Promise<FireuxAiResponse<string>> {
   const model = firstString(request.model, config.model) || 'gpt-4o-mini'
   const textFormat = openAiTextFormat(request)
-  const response = await fetch('https://api.openai.com/v1/responses', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  const timeoutMs = requestTimeoutMs(request)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  let response: Response
+
+  try {
+    response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        ...(textFormat ? { text: { format: textFormat } } : {}),
+        input: [
+          {
+            role: 'system',
+            content:
+              'You are a FireUX server-side AI adapter. Complete the requested whitelisted task. Return only the requested result. When JSON is requested, return a single valid JSON object and no prose.',
+          },
+          {
+            role: 'user',
+            content: buildOpenAiUserContent(request),
+          },
+        ],
+      }),
+    })
+  } catch (error) {
+    return {
+      ok: false,
+      task: request.task,
+      reason: controller.signal.aborted
+        ? `OpenAI request timed out after ${Math.round(timeoutMs / 1000)} seconds.`
+        : error instanceof Error
+          ? error.message
+          : 'OpenAI request failed.',
+      provider: config.provider,
       model,
-      ...(textFormat ? { text: { format: textFormat } } : {}),
-      input: [
-        {
-          role: 'system',
-          content:
-            'You are a FireUX server-side AI adapter. Complete the requested whitelisted task. Return only the requested result. When JSON is requested, return a single valid JSON object and no prose.',
-        },
-        {
-          role: 'user',
-          content: buildOpenAiUserContent(request),
-        },
-      ],
-    }),
-  })
+    }
+  } finally {
+    clearTimeout(timeout)
+  }
 
   const payload = (await response.json().catch(() => null)) as any
   if (!response.ok) {

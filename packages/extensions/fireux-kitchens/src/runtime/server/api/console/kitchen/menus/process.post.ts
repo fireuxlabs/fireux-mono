@@ -121,6 +121,14 @@ export default defineEventHandler(async (event: H3Event) => {
           extracted_items: 0,
         },
       }
+  const fileFlags = extraction.files
+    .filter((file) => file.status === 'failed')
+    .map((file) => ({
+      code: 'ai-file-extraction-failed',
+      level: 'warning' as const,
+      message: `${file.file_name || file.id} was not processed: ${file.reason || 'AI extraction failed for this file.'}`,
+      item: file.file_name || file.id,
+    }))
   const flags = [
     ...baselineFlags,
     ...(!extraction.ok
@@ -141,6 +149,7 @@ export default defineEventHandler(async (event: H3Event) => {
           },
         ]
       : []),
+    ...fileFlags,
     ...extractedComparison.flags,
   ]
 
