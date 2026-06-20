@@ -1,7 +1,5 @@
 <template>
-  <section class="space-y-2">
-    <pre>ConsoleKitchenIndexTargets</pre>
-
+  <section>
     <UCard>
       <template #header>
         <div class="collection-manager__header">
@@ -14,7 +12,7 @@
         </div>
       </template>
 
-      <p v-if="pending" class="text-sm text-dimmed">Loading kitchens...</p>
+      <p v-if="showLoading" class="text-sm text-dimmed">Loading kitchens...</p>
 
       <div v-else-if="cards.length" class="space-y-3">
         <KitchenCardsCell
@@ -29,7 +27,7 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else-if="isMounted" class="text-sm text-dimmed">
         No Kitchen targets found.
       </p>
     </UCard>
@@ -37,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -56,6 +54,7 @@ const emit = defineEmits<{
   (event: 'select', id: string): void
 }>()
 
+const isMounted = ref(false)
 const consoleIds = computed(() =>
   props.collection
     .map((kitchen) => String(kitchen.id ?? '').trim())
@@ -70,6 +69,11 @@ const cards = computed(() =>
       Boolean(card)
     )
 )
+const showLoading = computed(() => props.pending || !isMounted.value)
+
+onMounted(() => {
+  isMounted.value = true
+})
 
 function selectKitchen(id: string) {
   const kitchenId = String(id ?? '').trim()

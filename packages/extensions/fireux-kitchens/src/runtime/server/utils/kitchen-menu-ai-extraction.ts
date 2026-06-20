@@ -38,9 +38,9 @@ const numberValue = (value: unknown) => {
   return Number.isFinite(number) ? number : 0
 }
 
-const MENU_PHOTO_EXTRACTION_MODEL =
+const MENU_SOURCE_EXTRACTION_MODEL =
   text(process.env.FIREUX_AI_MENU_EXTRACTION_MODEL) || 'gpt-5.5'
-const MENU_PHOTO_EXTRACTION_TIMEOUT_MS =
+const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
 
 const normalizeKey = (value: unknown) =>
@@ -93,32 +93,59 @@ function mergeSections(sections: ExtractedMenuSection[]) {
   return Array.from(byLabel.values())
 }
 
-function buildMenuPhotoExtractionRequest(
+const fileExtension = (value: unknown) => {
+  const name = text(value).toLowerCase()
+  const index = name.lastIndexOf('.')
+  return index >= 0 ? name.slice(index + 1) : ''
+}
+
+const isPdfFile = (file: FireuxAiDocumentSourceFile) =>
+  text(file.file_kind).toLowerCase() === 'pdf' ||
+  text(file.file_type).toLowerCase() === 'application/pdf' ||
+  fileExtension(file.file_name) === 'pdf'
+
+function buildMenuSourceExtractionRequest(
   input: {
     menuId: string
     file: FireuxAiDocumentSourceFile
   }
 ) {
+  const fileIsPdf = isPdfFile(input.file)
+  const sourceLabel = fileIsPdf ? 'PDF' : 'photo or image'
+
   return {
     input: {
-      images: [
-        {
-          id: input.file.id,
-          file_name: input.file.file_name,
-          url: input.file.file_url,
-          detail: 'high',
-        },
-      ],
-      imageDetail: 'high',
+      ...(fileIsPdf
+        ? {
+            files: [
+              {
+                id: input.file.id,
+                file_name: input.file.file_name,
+                file_url: input.file.file_url,
+                mime_type: input.file.file_type,
+              },
+            ],
+          }
+        : {
+            images: [
+              {
+                id: input.file.id,
+                file_name: input.file.file_name,
+                url: input.file.file_url,
+                detail: 'high',
+              },
+            ],
+            imageDetail: 'high',
+          }),
       instruction:
-        `Classify this uploaded restaurant menu photo, then extract only the visible menu dishes from this one image. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has multiple sizes or variants, put them in price_options and keep the lowest displayed price in price. Do not invent dishes, sections, or prices.`,
+        `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has multiple sizes or variants, put them in price_options and keep the lowest displayed price in price. Do not invent dishes, sections, or prices.`,
     },
     context: {
       domain: 'restaurant_menu',
       menuId: input.menuId,
       sourceFileId: input.file.id,
       sourceFileName: input.file.file_name,
-      sourceKind: 'menu_source_phone_photo',
+      sourceKind: fileIsPdf ? 'menu_source_pdf' : 'menu_source_image',
       currency: 'CHF',
       languagePolicy:
         'Treat the original menu as default mixed-language copy, not one source language.',
@@ -163,12 +190,12 @@ export async function extractMenuWithAi(
   >({
     event,
     appId: input.appId,
-    model: MENU_PHOTO_EXTRACTION_MODEL,
-    fileTimeoutMs: MENU_PHOTO_EXTRACTION_TIMEOUT_MS,
+    model: MENU_SOURCE_EXTRACTION_MODEL,
+    fileTimeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
     files: input.sourceFiles,
     taskId: input.menuId,
     logScope: 'kitchen-menu-process',
-    buildRequest: (file) => buildMenuPhotoExtractionRequest({
+    buildRequest: (file) => buildMenuSourceExtractionRequest({
       menuId: input.menuId,
       file,
     }),
@@ -202,8 +229,8 @@ export async function extractMenuWithAi(
   const normalized = await normalizeMenuExtractionWithAi(event, {
     appId: input.appId,
     menuId: input.menuId,
-    model: MENU_PHOTO_EXTRACTION_MODEL,
-    timeoutMs: MENU_PHOTO_EXTRACTION_TIMEOUT_MS,
+    model: MENU_SOURCE_EXTRACTION_MODEL,
+    timeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
     sections,
   })
 

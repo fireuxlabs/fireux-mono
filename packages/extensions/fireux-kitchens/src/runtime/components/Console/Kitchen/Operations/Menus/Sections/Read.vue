@@ -4,8 +4,8 @@
       v-if="!menu"
       color="neutral"
       variant="soft"
-      :title="sectionsPending ? 'Loading menu' : 'Menu not found'"
-      description="Choose an existing menu from the Menus page."
+      :title="emptyTitle"
+      :description="emptyDescription"
     />
 
     <UCard v-else>
@@ -54,7 +54,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 
-const { menu, menuId, sections, sectionsPending } = useKitchenConsoleMenu()
+const { menu, source, menuId, sections, sectionsPending } = useKitchenConsoleMenu()
+
+const emptyTitle = computed(() => {
+  if (sectionsPending.value) return 'Loading menu'
+  if (source.value) return 'Menu draft not confirmed'
+
+  return 'Menu not found'
+})
+const emptyDescription = computed(() =>
+  source.value
+    ? 'Process the uploaded source, then confirm the AI draft to create menu sections and dishes.'
+    : 'Choose an existing menu from the Menus page.'
+)
 </script>

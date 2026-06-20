@@ -153,10 +153,40 @@ function imagesFromInput(input: unknown) {
     })
 }
 
+function filesFromInput(input: unknown) {
+  const data = record(input)
+  const files = [
+    ...(Array.isArray(data.fileUrls)
+      ? data.fileUrls.map((url) => ({ url, fileUrl: undefined }))
+      : []),
+    ...(Array.isArray(data.files)
+      ? data.files.map((file) => {
+          const row = record(file)
+          return {
+            url: row.url,
+            fileUrl: row.file_url,
+          }
+        })
+      : []),
+  ]
+  const seen = new Set<string>()
+
+  return files
+    .map((file) => ({
+      url: firstString(file.url, file.fileUrl) || '',
+    }))
+    .filter((file) => {
+      if (!file.url || seen.has(file.url)) return false
+      seen.add(file.url)
+      return true
+    })
+}
+
 function buildOpenAiUserContent(request: FireuxAiRequest) {
   const text = buildTextPrompt(request)
   const images = imagesFromInput(request.input)
-  if (!images.length) return text
+  const files = filesFromInput(request.input)
+  if (!images.length && !files.length) return text
 
   return [
     {
@@ -167,6 +197,10 @@ function buildOpenAiUserContent(request: FireuxAiRequest) {
       type: 'input_image',
       image_url: image.url,
       detail: image.detail,
+    })),
+    ...files.map((file) => ({
+      type: 'input_file',
+      file_url: file.url,
     })),
   ]
 }

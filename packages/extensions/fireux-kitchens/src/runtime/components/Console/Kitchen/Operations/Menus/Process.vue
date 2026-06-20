@@ -12,22 +12,12 @@
         </div>
         <div class="flex flex-wrap gap-2">
           <UButton
-            color="neutral"
-            variant="soft"
-            :loading="pendingMode === 'test'"
-            :disabled="!canProcess"
-            icon="i-lucide-scan-eye"
-            @click="processSource('test')"
-          >
-            Test first photo
-          </UButton>
-          <UButton
             :loading="pendingMode === 'full'"
             :disabled="!canProcess"
             icon="i-lucide-scan-text"
             @click="processSource('full')"
           >
-            Run all photos
+            Convert to dishes with AI
           </UButton>
         </div>
       </div>
@@ -44,8 +34,8 @@
         v-else
         class="text-sm text-dimmed"
       >
-        This reads the uploaded source and returns a cleaned draft for review.
-        It does not create menu, section, or dish records yet.
+        This reads the uploaded menu document and returns a cleaned dish draft
+        for review. It does not create menu, section, or dish records yet.
       </p>
 
       <p
@@ -79,7 +69,7 @@
         <UCard v-if="fileResults.length">
           <template #header>
             <h3 class="text-sm font-semibold text-highlighted">
-              Uploaded photos
+              Uploaded document
             </h3>
           </template>
 
@@ -156,6 +146,18 @@
             />
           </UCard>
         </div>
+
+        <ConsoleKitchenOperationsMenusConfirm
+          :menu="menu"
+          :source="source"
+          :result="result"
+          :sections="confirmSections"
+          :app-id="activeKitchenAppId"
+          :kitchen-id="kitchenId"
+          :menu-id="menuId"
+          :auth-token="authToken"
+          :blocked="Boolean(pendingMode)"
+        />
       </div>
 
       <DevJson
@@ -204,15 +206,15 @@ const priceText = (value: unknown) => {
 const processDescription = computed(() =>
   menu.value
     ? 'Dry-run extraction for this menu source. Existing menu records are only used for comparison.'
-    : 'Dry-run extraction from this uploaded source. No menu records are changed.'
+    : 'Convert this uploaded menu document into a dish draft. No menu records are changed.'
 )
 const statusMessage = computed(() => {
   if (pendingMode.value === 'test') {
-    return 'Testing the first uploaded photo. If it is a cover, AI should classify it as no visible menu items.'
+    return 'Testing the uploaded menu document.'
   }
 
   if (pendingMode.value === 'full') {
-    return 'Running all uploaded photos. This may take a few minutes; terminal logs show per-photo progress.'
+    return 'Converting the uploaded menu document into dishes. This may take a few minutes.'
   }
 
   return ''
@@ -230,7 +232,7 @@ const canProcess = computed(() =>
 const counts = computed(() => record(record(result.value?.comparison).counts))
 const stats = computed(() => [
   {
-    label: 'Source photos',
+    label: 'Source files',
     value: numberText(counts.value.source_files),
   },
   {
@@ -272,14 +274,25 @@ const toSections = (value: unknown) =>
 const currentSections = computed(() =>
   toSections(record(result.value?.current).sections)
 )
+const rawExtractedSections = computed(() =>
+  records(record(result.value?.extracted).sections)
+)
+const rawNormalizedSections = computed(() =>
+  records(record(result.value?.normalized).sections)
+)
 const extractedSections = computed(() =>
-  toSections(record(result.value?.extracted).sections)
+  toSections(rawExtractedSections.value)
 )
 const normalizedSections = computed(() =>
-  toSections(record(result.value?.normalized).sections)
+  toSections(rawNormalizedSections.value)
 )
 const draftSections = computed(() =>
   normalizedSections.value.length ? normalizedSections.value : extractedSections.value
+)
+const confirmSections = computed(() =>
+  rawNormalizedSections.value.length
+    ? rawNormalizedSections.value
+    : rawExtractedSections.value
 )
 
 watch(

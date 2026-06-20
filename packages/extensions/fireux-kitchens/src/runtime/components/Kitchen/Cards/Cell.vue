@@ -118,7 +118,8 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade' | 'badges'> & {
+type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'> & {
+  badges?: KitchenCard.Card['badges']
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
@@ -136,6 +137,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<Props>(), {
   imageUrl: '',
+  badges: () => [],
   prop: '',
   showSubtitle: true,
   showSource: false,

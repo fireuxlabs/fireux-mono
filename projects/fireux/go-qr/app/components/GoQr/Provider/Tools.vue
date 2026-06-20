@@ -4,6 +4,7 @@
     :src="toolUrl"
     :title="toolTitle"
     :provider-origin="providerBaseUrl"
+    :auth-token="resolvedAuthToken"
     :message-source="messageSource"
     class="w-full"
     @tool-result="emit('tool-result', $event)"
@@ -33,11 +34,13 @@ const props = withDefaults(defineProps<{
   payload?: Record<string, unknown> | null
   providerBaseUrl?: string
   title?: string
+  authToken?: string
 }>(), {
   tool: 'doc',
   payload: null,
   providerBaseUrl: '',
   title: '',
+  authToken: '',
 })
 const emit = defineEmits<{
   'tool-result': [message: Record<string, unknown>]
@@ -57,9 +60,11 @@ const requestedToolTitle = computed(() =>
   text(props.title) || `Go QR ${toolId.value} tool`
 )
 const toolPayload = computed(() => props.payload ?? {})
+const requestedAuthToken = computed(() => text(props.authToken))
 const {
   providerBaseUrl,
   title: toolTitle,
+  authToken: resolvedAuthToken,
   messageSource,
   toolUrl,
   toolError,
@@ -68,6 +73,7 @@ const {
   tool: toolId,
   payload: toolPayload,
   title: requestedToolTitle,
+  authToken: requestedAuthToken,
   messageSource: 'go-qr',
 })
 </script>
