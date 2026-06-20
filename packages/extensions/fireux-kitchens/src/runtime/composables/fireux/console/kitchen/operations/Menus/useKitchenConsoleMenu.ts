@@ -17,9 +17,13 @@ export function useKitchenConsoleMenu() {
   const menu = computed<Menu | null>(
     () => state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
   )
+  const source = computed(
+    () => state.menuSources.value.find((item) => clean(item.id) === menuId.value) ?? null
+  )
+  const sectionMenuId = computed(() => menu.value ? menuId.value : '')
   const sectionState = useMenuSectionCollection(
     state.kitchenId,
-    menuId,
+    sectionMenuId,
     {
       kitchenCollectionPath: state.rootCollection,
       databaseId: state.databaseId,
@@ -35,6 +39,7 @@ export function useKitchenConsoleMenu() {
     ...sectionMutations,
     menuId,
     menu,
+    source,
     sections: sectionState.sections,
     sectionsPending: sectionState.pending,
     sectionsCollectionPath: sectionState.collectionPath,
@@ -42,6 +47,7 @@ export function useKitchenConsoleMenu() {
       ...state.debug.value,
       menuId: menuId.value,
       hasMenu: Boolean(menu.value),
+      hasSource: Boolean(source.value),
       sectionsCount: sectionState.sections.value.length,
     })),
   }

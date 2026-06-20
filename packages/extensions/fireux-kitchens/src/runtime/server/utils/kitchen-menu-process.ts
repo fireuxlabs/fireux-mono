@@ -1,4 +1,3 @@
-import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 
 export type MenuProcessFlag = {
@@ -163,10 +162,10 @@ export async function readCurrentMenuShape(
   const menuSnap = await menuRef.get()
 
   if (!menuSnap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
+    return {
+      menu: menuRow({ status: 'missing' }, menuId),
+      sections: [],
+    }
   }
 
   const dishesSnap = await db.collection(`${basePath}/dishes`).get()

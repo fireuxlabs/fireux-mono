@@ -3,13 +3,15 @@
     <template #header>
       <div>
         <h2 class="text-base font-semibold text-highlighted">Create menu</h2>
-        <p class="text-sm text-dimmed">Start with a draft, then add sections and dishes.</p>
+        <p class="text-sm text-dimmed">
+          Start with a clean draft menu, then upload sources and compare AI output.
+        </p>
       </div>
     </template>
 
     <div class="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
       <UFormField label="Name">
-        <UInput v-model="name" placeholder="Lunch menu" :disabled="saving || !canWrite" />
+        <UInput v-model="name" placeholder="main-copy" :disabled="saving || !canWrite" />
       </UFormField>
 
       <UFormField label="Description">
@@ -56,6 +58,7 @@ async function create() {
   try {
     const created = await createMenu({
       kitchenId: kitchenId.value,
+      id: name.value,
       name: name.value,
       description: description.value,
     })

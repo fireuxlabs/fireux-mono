@@ -1,5 +1,5 @@
 <template>
-  <UCard v-if="menu">
+  <UCard v-if="menu || source">
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -7,7 +7,7 @@
             Compare source with AI
           </h2>
           <p class="text-sm text-dimmed">
-            Dry-run extraction against the current published menu.
+            {{ processDescription }}
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -169,10 +169,10 @@ import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console
 
 const {
   menu,
+  source,
   menuId,
   kitchenId,
   activeKitchenAppId,
-  menuSources,
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
 const authToken = ref('')
@@ -194,8 +194,10 @@ const priceText = (value: unknown) => {
   const number = Number(value)
   return Number.isFinite(number) && number > 0 ? `CHF ${number}` : ''
 }
-const source = computed(
-  () => menuSources.value.find((item) => text(item.id) === menuId.value) ?? null
+const processDescription = computed(() =>
+  menu.value
+    ? 'Dry-run extraction against the current published menu.'
+    : 'Dry-run extraction from this uploaded source. No menu records are changed.'
 )
 const statusMessage = computed(() => {
   if (pendingMode.value === 'test') {

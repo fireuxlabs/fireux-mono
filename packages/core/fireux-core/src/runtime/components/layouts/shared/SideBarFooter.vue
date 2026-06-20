@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
@@ -51,9 +51,15 @@ const fireux = useFireUXConfig()
 const { isAuthenticated, signOutUser } = useAuth()
 const { currentUser, pill: userInterface, isLoading } = useUser()
 
+const mounted = ref(false)
 const signOutLoading = ref(false)
 
+onMounted(() => {
+  mounted.value = true
+})
+
 const pillUser = computed((): UserCard.Card | undefined => {
+  if (!mounted.value) return undefined
   if (isLoading.value) return undefined
   const user = currentUser.value
   if (!user) return undefined
@@ -96,7 +102,7 @@ const actionItems = computed(() => {
     },
   ]
 
-  if (isAuthenticated.value) {
+  if (mounted.value && isAuthenticated.value) {
     items.push({
       label: 'Sign out',
       icon: 'i-lucide-log-out',

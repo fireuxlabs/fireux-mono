@@ -21,7 +21,7 @@
         cta-label="Upload source"
       />
     </UCard>
-    <UCard v-if="menu">
+    <UCard v-if="menu || source">
       <template #header>
         <div>
           <h2 class="text-base font-semibold text-highlighted">Storage check</h2>
@@ -118,19 +118,16 @@ type StorageCheckItem = {
 
 const {
   menu,
+  source,
   menuId,
   kitchenId,
   activeKitchenAppId,
-  menuSources,
 } = useKitchenConsoleMenu()
 const storage = useFirebaseStorage()
 const storageCheckItems = ref<StorageCheckItem[]>([])
 const storageCheckPending = ref(false)
 const storageCheckError = ref('')
 const text = (value: unknown) => String(value ?? '').trim()
-const source = computed(
-  () => menuSources.value.find((item) => text(item.id) === menuId.value) ?? null
-)
 const sourceRecordFiles = computed(() =>
   Array.isArray(source.value?.files) && source.value.files.length
     ? source.value.files

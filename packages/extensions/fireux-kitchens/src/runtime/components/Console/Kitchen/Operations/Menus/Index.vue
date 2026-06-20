@@ -13,9 +13,10 @@
         <div>
           <h2 class="text-base font-semibold text-highlighted">Create</h2>
           <p class="text-sm text-dimmed">
-            Upload a menu source for this kitchen.
+            Create a menu, then upload source photos or PDFs for AI review.
           </p>
         </div>
+        <ConsoleKitchenOperationsMenusWrite />
         <ConsoleKitchenOperationsMenusUpload />
       </section>
 
@@ -26,6 +27,7 @@
             Review menus linked to this kitchen.
           </p>
         </div>
+        <ConsoleKitchenOperationsMenusSources />
         <ConsoleKitchenOperationsMenusRead />
       </section>
 
@@ -58,6 +60,7 @@ const {
   collectionPath,
   menus,
   rawMenus,
+  menuSources,
   pending,
   readOnly,
   canWrite,
@@ -78,10 +81,18 @@ const menuDebugRow = (menu: Record<string, unknown>) => {
 const rawArchivedMenus = computed(() =>
   rawMenus.value.filter((menu) => menu.status === 'archived')
 )
+const sourceDebugRow = (source: Record<string, unknown>) => ({
+  id: text(source.id),
+  status: text(source.status),
+  fileKind: text(source.file_kind),
+  fileName: text(source.file_name),
+  hasMatchingMenu: menus.value.some((menu) => text(menu.id) === text(source.id)),
+})
 const menusDebug = computed(() => ({
   objects: {
     menus: menus.value.map(menuDebugRow),
     archivedMenus: rawArchivedMenus.value.map(menuDebugRow),
+    sources: menuSources.value.map(sourceDebugRow),
   },
   derived: {
     kitchenId: kitchenId.value,
@@ -90,6 +101,7 @@ const menusDebug = computed(() => ({
     menusCount: menus.value.length,
     rawMenusCount: rawMenus.value.length,
     archivedMenusCount: rawArchivedMenus.value.length,
+    sourcesCount: menuSources.value.length,
     pending: pending.value,
     readOnly: readOnly.value,
     canWrite: canWrite.value,

@@ -1,6 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { computed, unref, type Ref } from 'vue'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   MenuStorage,
   MenuModel,
@@ -11,6 +12,7 @@ import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/use
 
 export type MenuCreateInput = {
   kitchenId?: string
+  id?: string
   name: string
   description?: string
   status?: Menu['status']
@@ -53,7 +55,9 @@ export function useMenuCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const { createDocument, createDocumentWithId } = useFirestoreCreate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
 
@@ -69,15 +73,26 @@ export function useMenuCreate(
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
+    const menuId = normalizeSlug(input.id || name)
+    const collectionPath =
+      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`
 
     if (!name) throw new Error('Menu name is required')
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    const id = await createDocument<Partial<Menu>>(
-      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`,
-      buildMenuPayload({ ...input, kitchenId }, name),
-      { app: true, creator: true }
-    )
+    const payload = buildMenuPayload({ ...input, kitchenId }, name)
+    const id = menuId
+      ? await createDocumentWithId<Partial<Menu>>(
+          collectionPath,
+          menuId,
+          payload,
+          { app: true, creator: true }
+        )
+      : await createDocument<Partial<Menu>>(
+          collectionPath,
+          payload,
+          { app: true, creator: true }
+        )
 
     return { created: true, id }
   }

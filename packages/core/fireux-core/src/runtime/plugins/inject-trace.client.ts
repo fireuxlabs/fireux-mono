@@ -9,6 +9,7 @@ import type { ComponentPublicInstance } from 'vue'
  */
 export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
   if (process.env.NODE_ENV === 'production') return
+  if (process.env.FIREUX_INJECT_TRACE !== '1') return
 
   // Minimal startup marker (kept concise to avoid client noise)
   console.info(

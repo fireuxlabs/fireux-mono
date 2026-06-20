@@ -1,0 +1,795 @@
+{
+  "id": "main-copy-2026-06-20T17-29-37-571Z",
+  "mode": "workspace-ai-dry-run",
+  "status": "complete",
+  "app_id": "la-tap-berne",
+  "kitchen_id": "ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+  "menu_id": "main-copy",
+  "upload_id": "main-copy",
+  "created_at": "2026-06-20T17:31:34.606Z",
+  "created_by": "workspace:process-kitchen-menu-extraction",
+  "source": {
+    "id": "main-copy",
+    "status": "uploaded",
+    "file_kind": "photo",
+    "files_total_count": 6,
+    "files_count": 6,
+    "files": [
+      {
+        "id": "1",
+        "file_name": "IMG_9006-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/1-IMG_9006-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F1-IMG_9006-2-3.jpeg?alt=media&token=d3421044-48a8-4b8e-9785-14df46c19f55",
+        "sort_order": 0
+      },
+      {
+        "id": "2",
+        "file_name": "IMG_9007-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/2-IMG_9007-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F2-IMG_9007-2-3.jpeg?alt=media&token=afda65e0-dec6-4b82-b9ba-b7be57966ec2",
+        "sort_order": 1
+      },
+      {
+        "id": "3",
+        "file_name": "IMG_9008-3-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/3-IMG_9008-3-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F3-IMG_9008-3-3.jpeg?alt=media&token=736eaa97-3240-422e-a771-847b0bd0cfbd",
+        "sort_order": 2
+      },
+      {
+        "id": "4",
+        "file_name": "IMG_9009-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/4-IMG_9009-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F4-IMG_9009-2-3.jpeg?alt=media&token=0a20892a-b9f8-4343-8fe3-943387b48272",
+        "sort_order": 3
+      },
+      {
+        "id": "5",
+        "file_name": "IMG_9010-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/5-IMG_9010-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F5-IMG_9010-2-3.jpeg?alt=media&token=c18b1915-9b9c-4bc7-acd9-1dd46bd9ecc5",
+        "sort_order": 4
+      },
+      {
+        "id": "6",
+        "file_name": "IMG_9011-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/6-IMG_9011-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F6-IMG_9011-2-3.jpeg?alt=media&token=ab502b7a-7bbd-443e-9ddf-0aa3f072a6dd",
+        "sort_order": 5
+      }
+    ]
+  },
+  "current": {
+    "menu": {
+      "id": "main-copy",
+      "name": "",
+      "description": "",
+      "status": "missing",
+      "kitchen_id": ""
+    },
+    "sections": []
+  },
+  "extracted": {
+    "status": "complete",
+    "provider": "openai",
+    "model": "gpt-5.5-2026-04-23",
+    "files": [
+      {
+        "id": "1",
+        "file_name": "IMG_9006-2-3.jpeg",
+        "status": "empty",
+        "reason": "no visible menu items",
+        "sections_count": 0,
+        "items_count": 0
+      },
+      {
+        "id": "2",
+        "file_name": "IMG_9007-2-3.jpeg",
+        "status": "complete",
+        "sections_count": 1,
+        "items_count": 9
+      },
+      {
+        "id": "3",
+        "file_name": "IMG_9008-3-3.jpeg",
+        "status": "complete",
+        "sections_count": 4,
+        "items_count": 9
+      },
+      {
+        "id": "4",
+        "file_name": "IMG_9009-2-3.jpeg",
+        "status": "complete",
+        "sections_count": 3,
+        "items_count": 6
+      },
+      {
+        "id": "5",
+        "file_name": "IMG_9010-2-3.jpeg",
+        "status": "complete",
+        "sections_count": 1,
+        "items_count": 7
+      },
+      {
+        "id": "6",
+        "file_name": "IMG_9011-2-3.jpeg",
+        "status": "complete",
+        "sections_count": 1,
+        "items_count": 3
+      }
+    ],
+    "sections": [
+      {
+        "label": "PATATAS",
+        "items": [
+          {
+            "name": "AIOLI",
+            "description": "Knoblauch Mayonnaise\nGarlic mayonnaise",
+            "price": 9.5,
+            "price_options": [],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "BRAVAS",
+            "description": "Scharfe Sauce\nSpicy sauce",
+            "price": 9.5,
+            "price_options": [],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "TORTILLA DE PATATA",
+            "description": "Die spanische Kartoffel Omelette.\nThe Spanish Potato Omelette.\nØ24cm",
+            "price": 9.5,
+            "price_options": [
+              {
+                "label": "Kl.",
+                "price": 9.5
+              },
+              {
+                "label": "Med.",
+                "price": 16
+              },
+              {
+                "label": "Gr.",
+                "price": 25
+              }
+            ],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "GEBRATENE PIMIENTOS DE PADRÓN",
+            "description": "mit Meersalz Flocken.\nFried Padrón Peppers with Sea Salt Flakes.",
+            "price": 9,
+            "price_options": [],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "PORTOBELLO AL AJILLO",
+            "description": "Portobello-Pilze in Knoblauch Chili Öl.\nPortobello mushrooms in garlic chili oil.",
+            "price": 16,
+            "price_options": [],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "PANIERTE CAMEMBERT",
+            "description": "und Tomatenmarmelade\nand tomato jam",
+            "price": 16,
+            "price_options": [],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "BUFFALO-SCHWEIN RIBS",
+            "description": "mit Scharfe Sauce\nBuffalo Spicy Pork Ribs",
+            "price": 23,
+            "price_options": [
+              {
+                "label": "BUFFALO-SCHWEIN RIBS",
+                "price": 23
+              },
+              {
+                "label": "Mit Pommes",
+                "price": 27
+              }
+            ],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "\"THE FAMOUS\" SCHWEINBAUCH ALBARIÑO TERYAKI",
+            "description": "Wakame salad, Cipollotte und Sesam\nTeriyaki-Glazed Pork Belly, Wakame salad, spring onions and sesame",
+            "price": 21,
+            "price_options": [
+              {
+                "label": "\"THE FAMOUS\" SCHWEINBAUCH ALBARIÑO TERYAKI",
+                "price": 21
+              },
+              {
+                "label": "Mit Pommes",
+                "price": 25
+              }
+            ],
+            "source_file_ids": [
+              "2"
+            ]
+          },
+          {
+            "name": "CRISPY CHICKEN FINGERS",
+            "description": "5 Selbstgemachte Knusprige Poulet Fingers dazu Scharfe Pickles, Guacamole und Aioli sauce.\n5 Homemade Crispy Chicken Fingers with spicy pickles, guacamole and aioli sauce.",
+            "price": 21,
+            "price_options": [
+              {
+                "label": "CRISPY CHICKEN FINGERS",
+                "price": 21
+              },
+              {
+                "label": "Mit Pommes",
+                "price": 25
+              }
+            ],
+            "source_file_ids": [
+              "2"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "",
+        "items": [
+          {
+            "name": "TABLA IBÉRICA",
+            "description": "Iberische Kalte Platte mit Serrano, Lomo, Chorizo, Salchichón und Manchego Käse. Iberian charcuterie board and Manchego cheese.",
+            "price": 25,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "... EIN BISSCHEN \"MEER\"",
+        "items": [
+          {
+            "name": "BLACK TIGER AL AJILLO",
+            "description": "Garnelen in Knoblauch Chili Öl. Shrimps in garlic chili oil.",
+            "price": 18,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          },
+          {
+            "name": "CALAMARES KNUSPERLI",
+            "description": "mit Aioli und Gegrillte Zitrone. Beer-Battered calamari with aioli and grilled lemon.",
+            "price": 18,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          },
+          {
+            "name": "PULPO A LA GALLEGA",
+            "description": "Tintenfisch nach Galizischer Art mit olivenöl, Geräucherter Paprika Pulver und Kartoffeln \"cachelos\". Galician-style octopus with olive oil, smoked paprika and \"cachelos\" potatoes.",
+            "price": 25,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          },
+          {
+            "name": "GEGRILLIERTER PULPO",
+            "description": "Chimichurri und Hummus Pikant. Chimichurri and Hummus Spicy",
+            "price": 25,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "KROKETTEN",
+        "items": [
+          {
+            "name": "JAMÓN",
+            "description": "Serrano Schinken. Serrano ham.",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          },
+          {
+            "name": "TRÜFFEL",
+            "description": "Champignons und Trüffel Öl. Mushrooms and truffle oil.",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "SALATS",
+        "items": [
+          {
+            "name": "GEMISCHTER SALAT",
+            "description": "Mit La Tapberne Salatsauce. Mix salad with La Tapberne salad dressing.",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          },
+          {
+            "name": "BLOODY MARY BURRATA",
+            "description": "Tomaten, Sellerie, roten Zwiebeln und Bloody Mary Sauce. Tomatoes, celery, red onions, and Bloody Mary sauce.",
+            "price": 19,
+            "price_options": [],
+            "source_file_ids": [
+              "3"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "",
+        "items": [
+          {
+            "name": "TAPBERNE NÜSSLER SALAT",
+            "description": "Schweinebauch, Ei, Geröstetes Brot und Sauce. Pork Belly, egg, toasted bread and Dressing.",
+            "price": 21,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          },
+          {
+            "name": "CAESAR CRISPY POULET SALAT",
+            "description": "Speck, Manchego Käse und Caesar Dressing. Lettuce, bacon, chicken, Manchego cheese and Caesar dressing.",
+            "price": 21,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "HAUPTGERICHTE",
+        "items": [
+          {
+            "name": "ZORZA SCHWEIN/POULET",
+            "description": "Mariniertes streifen auf Pommes allumettes und geröstete Paprika. Marinated pork or chicken strips on Shoestring Fries and roasted pepper. + Manchego 2.5, + Spiegeleier 2.5",
+            "price": 27,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          },
+          {
+            "name": "HUEVOS ROTOS CON CECINA",
+            "description": "Cecina Schinken, 2 Spiegeleier und Rustico Frites. Cecina ham, 2 fried eggs and Rustico fries. + Manchego 2.5, + Trüffelöl 2.5",
+            "price": 24,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          },
+          {
+            "name": "FISH AND CHIPS",
+            "description": "Im Bierteig knusprig ausgebackenen Eglifilets in frische Tartarsauce, hausgemacht pickles und Pommes. Crispy Perch fillets in beer-batter, fresh tartar sauce, homemade pickles and fries.",
+            "price": 27,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "CHEF'S SPECIAL",
+        "items": [
+          {
+            "name": "EL CACHOPO",
+            "description": "Rinds Asturischen \"Cordon Bleu\" selbstgemachte, gefüllt mit Cecina und Manchego Käse, begleitet mit unsere patatas und Pimientos de Padron. Asturian Beef \"Cordon Bleu\", filled with Cecina and Manchego cheese, accompanied with our patatas and Pimientos de Padrón.",
+            "price": 38,
+            "price_options": [],
+            "source_file_ids": [
+              "4"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "\"ONLYHANDS\"",
+        "items": [
+          {
+            "name": "PICANHA SMASHBURGER",
+            "description": "Zwei selbstgemacht Rinds Hüftdeckel patties, doppeltem Käse, Romesco Sauce, Nüsslisalat, Röstzwiebeln, Brioche Brot dazu Rustico Frites. Two homemade beef rump patties, double cheese, Romesco sauce, lamb's lettuce, fried onion, brioche bread and rustic fries.",
+            "price": 28,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "THE VEGI SMASHBURGER",
+            "description": "",
+            "price": 25,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "LA TAPBERNE FRANCESINHA PULLED BEEF SANDWICH",
+            "description": "Toastbrot, Pulled Beef, Cecina, Käse überbacken, Spiegelei und \"Francesinha\" sauce, dazu Pommes. Toast bread, pulled beef, cecina ham, baked cheese, fried egg and sauce, with fries.",
+            "price": 28,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "HOT DOG",
+            "description": "Zwei Käsesorten, Tomatenmarmelade, Senf, rote Zwiebel Pickles und Schweinebauch Chips \"Torreznos\" dazu Pommes. Two types of cheese, tomato jam, mustard, red onion pickles and pork belly chips \"Torreznos\" served with Fries.",
+            "price": 18,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "HOT DOG VEGI",
+            "description": "",
+            "price": 18,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "EGLI SANDWICH",
+            "description": "Einfach und Lecker Egli Knusperli auf einem Ciabatta Bröt mit Tartarsauce und Salat. Simple and delicious Crunchy Perch on a ciabatta bread with tartar sauce and salad.",
+            "price": 17,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          },
+          {
+            "name": "SERRANO SANDWICH",
+            "description": "Mit Jamón Serrano, Burrata, Tomate und Ciabatta Bröt. With Jamón Serrano, burrata, tomato and ciabatta bread.",
+            "price": 16,
+            "price_options": [],
+            "source_file_ids": [
+              "5"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "ÖPPIS SÜSSI! something sweet!",
+        "items": [
+          {
+            "name": "CHURRO BITES",
+            "description": "Kleine Churrosnacks mit Zimtzucker und Schokoladensauce. Small churro snacks with cinnamon sugar and chocolate sauce.",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "6"
+            ]
+          },
+          {
+            "name": "CHEESECAKE",
+            "description": "Kalt und mit hausgemachter Konfitüre. Cold and with homemade jam.",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "6"
+            ]
+          },
+          {
+            "name": "HAPPY TARTA DE SANTIAGO",
+            "description": "Der spanische Mandelkuchen mit Rahm-Rum-Rosinen-Eis The Spanish almond cake with cream, rum and raisin ice cream",
+            "price": 10,
+            "price_options": [],
+            "source_file_ids": [
+              "6"
+            ]
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "no visible menu items"
+    ]
+  },
+  "comparison": {
+    "can_compare": false,
+    "flags": [
+      {
+        "code": "source-files-ready",
+        "level": "info",
+        "message": "6 source file(s) ready for extraction."
+      },
+      {
+        "code": "menu-baseline",
+        "level": "warning",
+        "message": "Current menu status is missing."
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "AIOLI was found by AI but is not in the current menu.",
+        "item": "AIOLI",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "BRAVAS was found by AI but is not in the current menu.",
+        "item": "BRAVAS",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "TORTILLA DE PATATA was found by AI but is not in the current menu.",
+        "item": "TORTILLA DE PATATA",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "GEBRATENE PIMIENTOS DE PADRÓN was found by AI but is not in the current menu.",
+        "item": "GEBRATENE PIMIENTOS DE PADRÓN",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "PORTOBELLO AL AJILLO was found by AI but is not in the current menu.",
+        "item": "PORTOBELLO AL AJILLO",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "PANIERTE CAMEMBERT was found by AI but is not in the current menu.",
+        "item": "PANIERTE CAMEMBERT",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "BUFFALO-SCHWEIN RIBS was found by AI but is not in the current menu.",
+        "item": "BUFFALO-SCHWEIN RIBS",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "\"THE FAMOUS\" SCHWEINBAUCH ALBARIÑO TERYAKI was found by AI but is not in the current menu.",
+        "item": "\"THE FAMOUS\" SCHWEINBAUCH ALBARIÑO TERYAKI",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "CRISPY CHICKEN FINGERS was found by AI but is not in the current menu.",
+        "item": "CRISPY CHICKEN FINGERS",
+        "section": "PATATAS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "TABLA IBÉRICA was found by AI but is not in the current menu.",
+        "item": "TABLA IBÉRICA",
+        "section": ""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "BLACK TIGER AL AJILLO was found by AI but is not in the current menu.",
+        "item": "BLACK TIGER AL AJILLO",
+        "section": "... EIN BISSCHEN \"MEER\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "CALAMARES KNUSPERLI was found by AI but is not in the current menu.",
+        "item": "CALAMARES KNUSPERLI",
+        "section": "... EIN BISSCHEN \"MEER\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "PULPO A LA GALLEGA was found by AI but is not in the current menu.",
+        "item": "PULPO A LA GALLEGA",
+        "section": "... EIN BISSCHEN \"MEER\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "GEGRILLIERTER PULPO was found by AI but is not in the current menu.",
+        "item": "GEGRILLIERTER PULPO",
+        "section": "... EIN BISSCHEN \"MEER\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "JAMÓN was found by AI but is not in the current menu.",
+        "item": "JAMÓN",
+        "section": "KROKETTEN"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "TRÜFFEL was found by AI but is not in the current menu.",
+        "item": "TRÜFFEL",
+        "section": "KROKETTEN"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "GEMISCHTER SALAT was found by AI but is not in the current menu.",
+        "item": "GEMISCHTER SALAT",
+        "section": "SALATS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "BLOODY MARY BURRATA was found by AI but is not in the current menu.",
+        "item": "BLOODY MARY BURRATA",
+        "section": "SALATS"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "TAPBERNE NÜSSLER SALAT was found by AI but is not in the current menu.",
+        "item": "TAPBERNE NÜSSLER SALAT",
+        "section": ""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "CAESAR CRISPY POULET SALAT was found by AI but is not in the current menu.",
+        "item": "CAESAR CRISPY POULET SALAT",
+        "section": ""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "ZORZA SCHWEIN/POULET was found by AI but is not in the current menu.",
+        "item": "ZORZA SCHWEIN/POULET",
+        "section": "HAUPTGERICHTE"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "HUEVOS ROTOS CON CECINA was found by AI but is not in the current menu.",
+        "item": "HUEVOS ROTOS CON CECINA",
+        "section": "HAUPTGERICHTE"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "FISH AND CHIPS was found by AI but is not in the current menu.",
+        "item": "FISH AND CHIPS",
+        "section": "HAUPTGERICHTE"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "EL CACHOPO was found by AI but is not in the current menu.",
+        "item": "EL CACHOPO",
+        "section": "CHEF'S SPECIAL"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "PICANHA SMASHBURGER was found by AI but is not in the current menu.",
+        "item": "PICANHA SMASHBURGER",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "THE VEGI SMASHBURGER was found by AI but is not in the current menu.",
+        "item": "THE VEGI SMASHBURGER",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "LA TAPBERNE FRANCESINHA PULLED BEEF SANDWICH was found by AI but is not in the current menu.",
+        "item": "LA TAPBERNE FRANCESINHA PULLED BEEF SANDWICH",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "HOT DOG was found by AI but is not in the current menu.",
+        "item": "HOT DOG",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "HOT DOG VEGI was found by AI but is not in the current menu.",
+        "item": "HOT DOG VEGI",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "EGLI SANDWICH was found by AI but is not in the current menu.",
+        "item": "EGLI SANDWICH",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "SERRANO SANDWICH was found by AI but is not in the current menu.",
+        "item": "SERRANO SANDWICH",
+        "section": "\"ONLYHANDS\""
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "CHURRO BITES was found by AI but is not in the current menu.",
+        "item": "CHURRO BITES",
+        "section": "ÖPPIS SÜSSI! something sweet!"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "CHEESECAKE was found by AI but is not in the current menu.",
+        "item": "CHEESECAKE",
+        "section": "ÖPPIS SÜSSI! something sweet!"
+      },
+      {
+        "code": "new-in-extraction",
+        "level": "info",
+        "message": "HAPPY TARTA DE SANTIAGO was found by AI but is not in the current menu.",
+        "item": "HAPPY TARTA DE SANTIAGO",
+        "section": "ÖPPIS SÜSSI! something sweet!"
+      }
+    ],
+    "counts": {
+      "source_files": 6,
+      "current_sections": 0,
+      "current_items": 0,
+      "extracted_sections": 10,
+      "extracted_items": 34
+    }
+  }
+}

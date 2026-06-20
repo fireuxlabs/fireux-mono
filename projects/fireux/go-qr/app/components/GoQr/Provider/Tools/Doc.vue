@@ -4,83 +4,96 @@
     :description="toolDescription"
     endpoint="/api/tools/doc"
   >
-    <form
-      class="space-y-4"
-      @submit.prevent="createDoc"
-    >
-      <UFormField :label="fileLabel">
-        <UFileUpload
-          v-model="selectedFile"
-          :accept="accept"
-          :multiple="allowMultipleFiles"
-          variant="area"
-          size="xl"
-          class="w-full"
-        />
-        <p class="mt-1 text-xs text-muted">
-          {{ uploadHint }}
-        </p>
-      </UFormField>
+    <ClientOnly>
+      <form
+        class="space-y-4"
+        @submit.prevent="createDoc"
+      >
+        <UFormField :label="fileLabel">
+          <UFileUpload
+            v-model="selectedFile"
+            :accept="accept"
+            :multiple="allowMultipleFiles"
+            variant="area"
+            size="xl"
+            class="w-full"
+          />
+          <p class="mt-1 text-xs text-muted">
+            {{ uploadHint }}
+          </p>
+        </UFormField>
 
-      <UFormField :label="pathLabel">
-        <UInput
-          v-model="slugInput"
-          :placeholder="slugPlaceholder"
-          :disabled="slugLocked"
-          class="w-full"
-        />
-        <p class="mt-1 break-all text-xs text-muted">
-          {{ previewUrl }}
-        </p>
-        <p
-          v-if="slugMessage"
-          class="mt-1 text-xs"
-          :class="canUseSlug ? 'text-muted' : 'text-error'"
+        <UFormField :label="pathLabel">
+          <UInput
+            v-model="slugInput"
+            :placeholder="slugPlaceholder"
+            :disabled="slugLocked"
+            class="w-full"
+          />
+          <p class="mt-1 break-all text-xs text-muted">
+            {{ previewUrl }}
+          </p>
+          <p
+            v-if="slugMessage"
+            class="mt-1 text-xs"
+            :class="canUseSlug ? 'text-muted' : 'text-error'"
+          >
+            {{ slugMessage }}
+          </p>
+        </UFormField>
+
+        <UButton
+          type="submit"
+          icon="i-lucide-qr-code"
+          block
+          :disabled="!canCreate"
+          :loading="isCreating"
         >
-          {{ slugMessage }}
+          {{ isCreating ? loadingLabel : ctaLabel }}
+        </UButton>
+
+        <p
+          v-if="createError"
+          class="text-xs text-error"
+        >
+          {{ createError }}
         </p>
-      </UFormField>
+      </form>
 
-      <UButton
-        type="submit"
-        icon="i-lucide-qr-code"
-        block
-        :disabled="!canCreate"
-        :loading="isCreating"
-      >
-        {{ isCreating ? loadingLabel : ctaLabel }}
-      </UButton>
-
-      <p
-        v-if="createError"
-        class="text-xs text-error"
-      >
-        {{ createError }}
-      </p>
-    </form>
-
-    <div
-      v-if="createdPath"
-      class="flex flex-wrap gap-2"
-    >
-      <UButton
+      <div
         v-if="createdPath"
-        :to="createdPath"
-        target="_blank"
-        icon="i-lucide-external-link"
+        class="flex flex-wrap gap-2"
       >
-        {{ openTargetLabel }}
-      </UButton>
-      <UButton
-        v-if="createdQrPath"
-        :to="createdQrPath"
-        target="_blank"
-        icon="i-lucide-qr-code"
-        variant="soft"
-      >
-        Open QR
-      </UButton>
-    </div>
+        <UButton
+          v-if="createdPath"
+          :to="createdPath"
+          target="_blank"
+          icon="i-lucide-external-link"
+        >
+          {{ openTargetLabel }}
+        </UButton>
+        <UButton
+          v-if="createdQrPath"
+          :to="createdQrPath"
+          target="_blank"
+          icon="i-lucide-qr-code"
+          variant="soft"
+        >
+          Open QR
+        </UButton>
+      </div>
+
+      <template #fallback>
+        <UCard
+          variant="subtle"
+          class="rounded-[var(--radius-lg)]"
+        >
+          <p class="text-sm text-dimmed">
+            Loading menu upload...
+          </p>
+        </UCard>
+      </template>
+    </ClientOnly>
   </GoQrProviderFrame>
 </template>
 

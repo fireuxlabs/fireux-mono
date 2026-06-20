@@ -40,14 +40,25 @@
             </p>
           </div>
 
-          <UButton
-            size="sm"
-            variant="soft"
-            icon="i-lucide-file-search"
-            :to="`/console/kitchen/menus/uploads/${encodeURIComponent(source.id)}`"
-          >
-            Open
-          </UButton>
+          <div class="flex flex-wrap justify-end gap-2">
+            <UButton
+              size="sm"
+              variant="soft"
+              icon="i-lucide-scan-text"
+              :to="`/console/kitchen/menus/${encodeURIComponent(source.id)}`"
+            >
+              Process with AI
+            </UButton>
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-file-search"
+              :to="`/console/kitchen/menus/uploads/${encodeURIComponent(source.id)}`"
+            >
+              Open source
+            </UButton>
+          </div>
         </div>
       </article>
     </div>

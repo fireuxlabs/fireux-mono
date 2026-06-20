@@ -9,6 +9,7 @@ import { defineNuxtPlugin } from '#imports'
  */
 export default defineNuxtPlugin(() => {
   if (process.env.NODE_ENV === 'production') return
+  if (process.env.FIREUX_INJECT_TRACE !== '1') return
 
   const g = globalThis as unknown as {
     __INJECT_TRACE_SERVER_PATCHED__?: boolean

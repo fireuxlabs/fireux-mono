@@ -1,0 +1,85 @@
+{
+  "id": "main-copy-2026-06-20T17-12-21-225Z",
+  "mode": "workspace-ai-dry-run",
+  "status": "empty",
+  "app_id": "la-tap-berne",
+  "kitchen_id": "ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+  "menu_id": "main-copy",
+  "upload_id": "main-copy",
+  "created_at": "2026-06-20T17:12:28.324Z",
+  "created_by": "workspace:process-kitchen-menu-extraction",
+  "source": {
+    "id": "main-copy",
+    "status": "uploaded",
+    "file_kind": "photo",
+    "files_total_count": 6,
+    "files_count": 1,
+    "files": [
+      {
+        "id": "1",
+        "file_name": "IMG_9006-2-3.jpeg",
+        "file_type": "image/jpeg",
+        "file_kind": "photo",
+        "storage_path": "apps/la-tap-berne/kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menu-uploads/main-copy/source/1-IMG_9006-2-3.jpeg",
+        "file_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fla-tap-berne%2Fkitchens%2FChIJ08WSgYSjj0cRD6oE3RwUFk0%2Fmenu-uploads%2Fmain-copy%2Fsource%2F1-IMG_9006-2-3.jpeg?alt=media&token=d3421044-48a8-4b8e-9785-14df46c19f55",
+        "sort_order": 0
+      }
+    ]
+  },
+  "current": {
+    "menu": {
+      "id": "main-copy",
+      "name": "",
+      "description": "",
+      "status": "missing",
+      "kitchen_id": ""
+    },
+    "sections": []
+  },
+  "extracted": {
+    "status": "empty",
+    "provider": "openai",
+    "model": "gpt-4o-mini-2024-07-18",
+    "files": [
+      {
+        "id": "1",
+        "file_name": "IMG_9006-2-3.jpeg",
+        "status": "empty",
+        "reason": "no visible menu items",
+        "sections_count": 0,
+        "items_count": 0
+      }
+    ],
+    "sections": [],
+    "notes": [
+      "no visible menu items"
+    ]
+  },
+  "comparison": {
+    "can_compare": false,
+    "flags": [
+      {
+        "code": "source-files-ready",
+        "level": "info",
+        "message": "1 source file(s) ready for extraction."
+      },
+      {
+        "code": "menu-baseline",
+        "level": "warning",
+        "message": "Current menu status is missing."
+      },
+      {
+        "code": "ai-extraction-empty",
+        "level": "warning",
+        "message": "AI extraction returned no sections."
+      }
+    ],
+    "counts": {
+      "source_files": 1,
+      "current_sections": 0,
+      "current_items": 0,
+      "extracted_sections": 0,
+      "extracted_items": 0
+    }
+  }
+}

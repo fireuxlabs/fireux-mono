@@ -41,18 +41,26 @@ function guardFirestorePromise(
   binding: { promise?: Ref<Promise<unknown>> },
   context: string
 ) {
-  const promise = binding.promise?.value
-  if (!promise || typeof promise.catch !== 'function') return
+  const handled = new WeakSet<Promise<unknown>>()
+  const guard = (promise: Promise<unknown> | undefined) => {
+    if (!promise || typeof promise.catch !== 'function') return
+    if (handled.has(promise)) return
+    handled.add(promise)
 
-  promise.catch((error) => {
-    if (import.meta.dev) {
-      if (isOfflineFirestoreError(error)) {
-        console.warn(`[useFirestoreRead] offline read ignored (${context})`, error)
-        return
+    promise.catch((error) => {
+      if (import.meta.dev) {
+        if (isOfflineFirestoreError(error)) {
+          console.warn(`[useFirestoreRead] offline read ignored (${context})`, error)
+          return
+        }
+        console.error(`[useFirestoreRead] read failed (${context})`, error)
       }
-      console.error(`[useFirestoreRead] read failed (${context})`, error)
-    }
-  })
+    })
+  }
+
+  if (!binding.promise) return
+
+  watch(binding.promise, guard, { immediate: true })
 }
 
 /**

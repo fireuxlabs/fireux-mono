@@ -1,4 +1,11 @@
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+} from 'firebase/firestore'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../app/FireUXConfig'
 import { useRequireUser } from '../../firebase/useRequireUser'
@@ -67,6 +74,27 @@ export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
   }
 
   // Known-id create. Entity create seams own slug/id validation before calling this primitive.
+  async function createDocumentWithId<T>(
+    collectionPath: string,
+    id: string,
+    data: T,
+    opts: StampOpts = {}
+  ): Promise<string> {
+    const ref = doc(resolveDb(), collectionPath, id)
+    const existing = await getDoc(ref)
+    if (existing.exists()) {
+      throw new Error(`Document already exists: ${id}`)
+    }
+
+    // Canon: never persist id field; Firestore doc id is source of truth.
+    const next = { ...(data as any) } as Record<string, unknown>
+    if ('id' in next) delete next.id
+    const stamped = await stampDoc(next as T, opts)
+    await setDoc(ref, stamped as any)
+    return id
+  }
+
+  // Known-id upsert. Use only when replacement is intended.
   async function setDocument<T>(collectionPath: string, id: string, data: T, opts: StampOpts = {}): Promise<void> {
     const ref = doc(resolveDb(), collectionPath, id)
     // Canon: never persist id field; Firestore doc id is source of truth.
@@ -76,5 +104,5 @@ export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
     await setDoc(ref, stamped as any)
   }
 
-  return { createDocument, setDocument }
+  return { createDocument, createDocumentWithId, setDocument }
 }

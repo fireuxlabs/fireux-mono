@@ -5,12 +5,12 @@
     :title="title"
     class="block w-full overflow-hidden rounded-[var(--radius-lg)]"
     :style="{ height: `${toolHeight}px` }"
-    @load="requestToolHeight"
+    @load="onToolFrameLoad"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
   ToolProviderAuthMessage,
   ToolProviderHeightRequestMessage,
@@ -36,16 +36,27 @@ const emit = defineEmits<{
 const expectedOrigin = computed(() => new URL(props.providerOrigin).origin)
 const toolFrame = ref<HTMLIFrameElement | null>(null)
 const toolHeight = ref(props.initialHeight)
+const toolLoaded = ref(false)
 
-onMounted(async () => {
+onMounted(() => {
   window.addEventListener('message', handleToolMessage)
-  await nextTick()
-  requestToolHeight()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('message', handleToolMessage)
 })
+
+watch(
+  () => props.src,
+  () => {
+    toolLoaded.value = false
+  }
+)
+
+function onToolFrameLoad() {
+  toolLoaded.value = true
+  requestToolHeight()
+}
 
 function handleToolMessage(event: MessageEvent) {
   if (event.origin !== expectedOrigin.value) return
@@ -68,21 +79,35 @@ function handleToolMessage(event: MessageEvent) {
 }
 
 function sendToolAuth() {
+  if (!toolLoaded.value) return
+
   const message = {
     source: 'fireux-tool-iframe',
     type: 'tool-auth',
     token: props.authToken || '',
   } satisfies ToolProviderAuthMessage
 
-  toolFrame.value?.contentWindow?.postMessage(message, expectedOrigin.value)
+  postToTool(message)
 }
 
 function requestToolHeight() {
+  if (!toolLoaded.value) return
+
   const message = {
     source: 'fireux-tool-iframe',
     type: 'tool-height-request',
   } satisfies ToolProviderHeightRequestMessage
 
-  toolFrame.value?.contentWindow?.postMessage(message, expectedOrigin.value)
+  postToTool(message)
+}
+
+function postToTool(
+  message: ToolProviderAuthMessage | ToolProviderHeightRequestMessage
+) {
+  try {
+    toolFrame.value?.contentWindow?.postMessage(message, expectedOrigin.value)
+  } catch {
+    // The iframe can briefly be about:blank while the provider route loads.
+  }
 }
 </script>
