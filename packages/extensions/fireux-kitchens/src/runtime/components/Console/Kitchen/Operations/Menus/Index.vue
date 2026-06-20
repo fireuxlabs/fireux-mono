@@ -13,21 +13,21 @@
         <div>
           <h2 class="text-base font-semibold text-highlighted">Create</h2>
           <p class="text-sm text-dimmed">
-            Create a menu, then upload source photos or PDFs for AI review.
+            Upload a source, process it with AI, then review the draft before
+            creating dishes.
           </p>
         </div>
-        <ConsoleKitchenOperationsMenusWrite />
-        <ConsoleKitchenOperationsMenusUpload />
+        <ConsoleKitchenOperationsMenusCreate />
+        <ConsoleKitchenOperationsMenusSources />
       </section>
 
       <section class="space-y-3">
         <div>
           <h2 class="text-base font-semibold text-highlighted">View</h2>
           <p class="text-sm text-dimmed">
-            Review menus linked to this kitchen.
+            Open existing kitchen menus that already have menu records.
           </p>
         </div>
-        <ConsoleKitchenOperationsMenusSources />
         <ConsoleKitchenOperationsMenusRead />
       </section>
 
@@ -86,6 +86,7 @@ const sourceDebugRow = (source: Record<string, unknown>) => ({
   status: text(source.status),
   fileKind: text(source.file_kind),
   fileName: text(source.file_name),
+  filesCount: Number(source.files_count) || 0,
   hasMatchingMenu: menus.value.some((menu) => text(menu.id) === text(source.id)),
 })
 const menusDebug = computed(() => ({

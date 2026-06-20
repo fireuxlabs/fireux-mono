@@ -117,16 +117,31 @@ const extractedStatus = extraction.ok
     ? 'complete'
     : 'empty'
   : 'failed'
+const normalization = extraction.normalized ||
+  (extractedStatus === 'complete' && !fromRunPath
+    ? await normalizeExtractedMenuWithOpenAi({
+      appId,
+      menuId,
+      model,
+      sections: extractedSections,
+    })
+    : skippedNormalization('No normalization was run for this comparison.'))
+const normalizedSections = normalization.status === 'complete'
+  ? normalizeExtractedSections(normalization)
+  : []
+const draftSections = normalizedSections.length
+  ? normalizedSections
+  : extractedSections
 const itemCount = current.sections.reduce(
   (count, section) => count + section.items.length,
   0
 )
 const extractedComparison = extractedStatus === 'complete'
-  ? compareExtractedToCurrent(current, extractedSections)
+  ? compareExtractedToCurrent(current, draftSections)
   : {
       flags: [],
       counts: {
-        extracted_sections: extractedSections.length,
+        extracted_sections: draftSections.length,
         extracted_items: 0,
       },
     }
@@ -167,6 +182,15 @@ const flags = [
       message: `${file.file_name || file.id} was not processed: ${file.reason || 'AI extraction failed for this file.'}`,
       item: file.file_name || file.id,
     })),
+  ...(normalization.status === 'failed'
+    ? [
+        {
+          code: 'ai-normalization-failed',
+          level: 'warning',
+          message: normalization.reason || 'AI normalization failed; comparing raw extraction.',
+        },
+      ]
+    : []),
   ...extractedComparison.flags,
 ]
 const run = {
@@ -199,13 +223,27 @@ const run = {
       ? record(extraction.data).notes.map(text).filter(Boolean)
       : [],
   },
+  normalized: {
+    status: normalization.status,
+    provider: normalization.provider,
+    model: normalization.model,
+    reason: normalization.reason,
+    sections: normalizedSections,
+    notes: normalization.notes || [],
+    changes: normalization.changes || [],
+  },
   comparison: {
     can_compare: extractedStatus === 'complete' && current.menu.status !== 'missing',
+    source: normalizedSections.length ? 'normalized' : 'extracted',
     flags,
     counts: {
       source_files: files.length,
       current_sections: current.sections.length,
       current_items: itemCount,
+      raw_extracted_sections: extractedSections.length,
+      raw_extracted_items: flatExtractedItems(extractedSections).length,
+      normalized_sections: normalizedSections.length,
+      normalized_items: flatExtractedItems(normalizedSections).length,
       ...extractedComparison.counts,
     },
   },
@@ -691,6 +729,7 @@ async function extractionFromLocalRun(path) {
   const parsed = JSON.parse(await readFile(path, 'utf8'))
   const run = record(parsed.run || parsed)
   const extracted = record(run.extracted)
+  const normalized = record(run.normalized)
   const status = text(extracted.status)
 
   return {
@@ -704,6 +743,105 @@ async function extractionFromLocalRun(path) {
       notes: Array.isArray(extracted.notes)
         ? extracted.notes.map(text).filter(Boolean)
         : [],
+    },
+    normalized: text(normalized.status)
+      ? {
+          status: text(normalized.status),
+          reason: text(normalized.reason),
+          provider: text(normalized.provider),
+          model: text(normalized.model),
+          sections: Array.isArray(normalized.sections)
+            ? normalized.sections
+            : [],
+          notes: Array.isArray(normalized.notes)
+            ? normalized.notes.map(text).filter(Boolean)
+            : [],
+          changes: Array.isArray(normalized.changes)
+            ? normalized.changes
+            : [],
+        }
+      : undefined,
+  }
+}
+
+function skippedNormalization(reason) {
+  return {
+    status: 'skipped',
+    reason,
+    sections: [],
+    notes: [],
+    changes: [],
+  }
+}
+
+async function normalizeExtractedMenuWithOpenAi(input) {
+  const response = await callOpenAiJson(buildMenuNormalizationRequest(input))
+
+  if (!response.ok) {
+    return {
+      status: 'failed',
+      reason: response.reason || 'AI normalization failed.',
+      provider: response.provider,
+      model: response.model,
+      sections: [],
+      notes: [],
+      changes: [],
+    }
+  }
+
+  const normalizedSections = normalizeExtractedSections(response.data)
+
+  return {
+    status: normalizedSections.length ? 'complete' : 'empty',
+    provider: response.provider,
+    model: response.model,
+    sections: normalizedSections,
+    notes: Array.isArray(record(response.data).notes)
+      ? record(response.data).notes.map(text).filter(Boolean)
+      : [],
+    changes: Array.isArray(record(response.data).changes)
+      ? record(response.data).changes
+      : [],
+  }
+}
+
+function buildMenuNormalizationRequest(input) {
+  return {
+    model: input.model,
+    input: [
+      {
+        role: 'system',
+        content:
+          'You are a FireUX server-side AI adapter. Complete the requested whitelisted task. Return only the requested result. When JSON is requested, return a single valid JSON object and no prose.',
+      },
+      {
+        role: 'user',
+        content: JSON.stringify({
+          task: 'normalize_structured_data',
+          input: {
+            sections: input.sections,
+            instruction:
+              'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, descriptions, and source_file_ids. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
+          },
+          context: {
+            domain: 'restaurant_menu',
+            menuId: input.menuId,
+            sourceKind: 'raw_menu_photo_extraction',
+            currency: 'CHF',
+            languagePolicy:
+              'Treat the original menu as default mixed-language copy, not one source language.',
+          },
+          outputJsonSchema: menuNormalizationJsonSchema(),
+        }),
+      },
+    ],
+    text: {
+      format: {
+        type: 'json_schema',
+        name: 'fireux_ai_result',
+        schema: menuNormalizationJsonSchema(),
+        strict: false,
+      },
     },
   }
 }
@@ -822,6 +960,30 @@ function menuExtractionJsonSchema() {
       },
     },
     required: ['sections', 'notes'],
+  }
+}
+
+function menuNormalizationJsonSchema() {
+  const schema = menuExtractionJsonSchema()
+
+  return {
+    ...schema,
+    properties: {
+      ...schema.properties,
+      changes: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            from: { type: 'string' },
+            to: { type: 'string' },
+            reason: { type: 'string' },
+          },
+          required: ['from', 'to', 'reason'],
+        },
+      },
+    },
+    required: ['sections', 'notes', 'changes'],
   }
 }
 

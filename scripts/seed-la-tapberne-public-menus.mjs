@@ -359,7 +359,7 @@ const SECTIONS = [
 ]
 
 const MENU = {
-  id: 'default',
+  id: 'main',
   name: 'Comida Casera',
   names: {
     de: 'Hausgemachte Küche',
@@ -783,7 +783,7 @@ async function main() {
     reset,
     routes: [
       '/kitchens/la-tapberne/menus',
-      '/kitchens/la-tapberne/menus/default',
+      '/kitchens/la-tapberne/menus/main',
     ],
     paths: {
       kitchen: kitchenRef.path,

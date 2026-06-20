@@ -31,6 +31,9 @@ type ProcessMenuBody = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const countExtractedItems = (
+  sections: ReturnType<typeof normalizeExtractedSections>
+) => sections.reduce((count, section) => count + section.items.length, 0)
 
 export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenMenuUploadUser(
@@ -107,17 +110,23 @@ export default defineEventHandler(async (event: H3Event) => {
   const extractedSections = extraction.ok
     ? normalizeExtractedSections(extractionData)
     : []
+  const normalizedSections = extraction.normalized?.status === 'complete'
+    ? extraction.normalized.sections
+    : []
+  const draftSections = normalizedSections.length
+    ? normalizedSections
+    : extractedSections
   const extractedStatus = extraction.ok
     ? extractedSections.length
       ? 'complete'
       : 'empty'
     : 'failed'
   const extractedComparison = extractedStatus === 'complete'
-    ? compareExtractedToCurrent(current, extractedSections)
+    ? compareExtractedToCurrent(current, draftSections)
     : {
         flags: [] as MenuProcessFlag[],
         counts: {
-          extracted_sections: extractedSections.length,
+          extracted_sections: draftSections.length,
           extracted_items: 0,
         },
       }
@@ -150,6 +159,16 @@ export default defineEventHandler(async (event: H3Event) => {
         ]
       : []),
     ...fileFlags,
+    ...(extraction.normalized?.status === 'failed'
+      ? [
+          {
+            code: 'ai-normalization-failed',
+            level: 'warning' as const,
+            message: extraction.normalized.reason ||
+              'AI normalization failed; comparing raw extraction.',
+          },
+        ]
+      : []),
     ...extractedComparison.flags,
   ]
 
@@ -176,13 +195,27 @@ export default defineEventHandler(async (event: H3Event) => {
       sections: extractedSections,
       notes: Array.isArray(extractionData?.notes) ? extractionData.notes : [],
     },
+    normalized: {
+      status: extraction.normalized?.status || 'skipped',
+      provider: extraction.normalized?.provider,
+      model: extraction.normalized?.model,
+      reason: extraction.normalized?.reason,
+      sections: normalizedSections,
+      notes: extraction.normalized?.notes || [],
+      changes: extraction.normalized?.changes || [],
+    },
     comparison: {
       can_compare: extractedStatus === 'complete',
+      source: normalizedSections.length ? 'normalized' : 'extracted',
       flags,
       counts: {
         source_files: files.length,
         current_sections: current.sections.length,
         current_items: itemCount,
+        raw_extracted_sections: extractedSections.length,
+        raw_extracted_items: countExtractedItems(extractedSections),
+        normalized_sections: normalizedSections.length,
+        normalized_items: countExtractedItems(normalizedSections),
         ...extractedComparison.counts,
       },
     },

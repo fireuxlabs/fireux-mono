@@ -4,7 +4,7 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 class="text-base font-semibold text-highlighted">
-            Compare source with AI
+            Process source with AI
           </h2>
           <p class="text-sm text-dimmed">
             {{ processDescription }}
@@ -44,9 +44,8 @@
         v-else
         class="text-sm text-dimmed"
       >
-        This reads the uploaded source and current menu, then returns a JSON
-        comparison payload. It does not overwrite dishes, sections, or menu
-        items.
+        This reads the uploaded source and returns a cleaned draft for review.
+        It does not create menu, section, or dish records yet.
       </p>
 
       <p
@@ -122,30 +121,38 @@
           </ul>
         </UCard>
 
-        <div class="grid gap-4 xl:grid-cols-2">
-          <UCard>
+        <div
+          class="grid gap-4"
+          :class="{ 'xl:grid-cols-2': currentSections.length }"
+        >
+          <UCard v-if="currentSections.length">
             <template #header>
               <h3 class="text-sm font-semibold text-highlighted">
-                Current published menu
+                Existing menu
               </h3>
             </template>
 
             <ConsoleKitchenOperationsMenusProcessSections
               :sections="currentSections"
-              empty-label="No current sections found."
+              empty-label="No existing sections found."
             />
           </UCard>
 
           <UCard>
             <template #header>
-              <h3 class="text-sm font-semibold text-highlighted">
-                AI extracted menu
-              </h3>
+              <div class="space-y-1">
+                <h3 class="text-sm font-semibold text-highlighted">
+                  Normalized menu draft
+                </h3>
+                <p class="text-sm text-dimmed">
+                  The raw read has been cleaned into reviewable menu sections.
+                </p>
+              </div>
             </template>
 
             <ConsoleKitchenOperationsMenusProcessSections
-              :sections="extractedSections"
-              empty-label="No AI sections returned."
+              :sections="draftSections"
+              empty-label="No draft sections returned."
             />
           </UCard>
         </div>
@@ -196,7 +203,7 @@ const priceText = (value: unknown) => {
 }
 const processDescription = computed(() =>
   menu.value
-    ? 'Dry-run extraction against the current published menu.'
+    ? 'Dry-run extraction for this menu source. Existing menu records are only used for comparison.'
     : 'Dry-run extraction from this uploaded source. No menu records are changed.'
 )
 const statusMessage = computed(() => {
@@ -227,12 +234,12 @@ const stats = computed(() => [
     value: numberText(counts.value.source_files),
   },
   {
-    label: 'Current items',
-    value: numberText(counts.value.current_items),
+    label: 'Raw items',
+    value: numberText(counts.value.raw_extracted_items ?? counts.value.extracted_items),
   },
   {
-    label: 'AI items',
-    value: numberText(counts.value.extracted_items),
+    label: 'Draft items',
+    value: numberText(counts.value.normalized_items ?? counts.value.extracted_items),
   },
   {
     label: 'Review flags',
@@ -267,6 +274,12 @@ const currentSections = computed(() =>
 )
 const extractedSections = computed(() =>
   toSections(record(result.value?.extracted).sections)
+)
+const normalizedSections = computed(() =>
+  toSections(record(result.value?.normalized).sections)
+)
+const draftSections = computed(() =>
+  normalizedSections.value.length ? normalizedSections.value : extractedSections.value
 )
 
 watch(

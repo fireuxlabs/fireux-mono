@@ -4,6 +4,11 @@ import {
   type FireuxAiDocumentFileResult,
   type FireuxAiDocumentSourceFile,
 } from 'fireux-ai/runtime/server/utils/document-ai.server.ts'
+import { MENU_EXTRACTION_JSON_SCHEMA } from './kitchen-menu-ai-schema'
+import {
+  normalizeMenuExtractionWithAi,
+  type MenuAiNormalizationResult,
+} from './kitchen-menu-ai-normalization'
 import {
   fileRows,
   normalizeExtractedSections,
@@ -23,6 +28,7 @@ export type MenuAiExtractionResult = {
   provider?: string
   model?: string
   files: FireuxAiDocumentFileResult[]
+  normalized?: MenuAiNormalizationResult
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -36,60 +42,6 @@ const MENU_PHOTO_EXTRACTION_MODEL =
   text(process.env.FIREUX_AI_MENU_EXTRACTION_MODEL) || 'gpt-5.5'
 const MENU_PHOTO_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
-
-const MENU_EXTRACTION_JSON_SCHEMA = {
-  type: 'object',
-  properties: {
-    sections: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          label: { type: 'string' },
-          items: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                description: { type: 'string' },
-                price: { type: 'number' },
-                price_options: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      label: { type: 'string' },
-                      price: { type: 'number' },
-                    },
-                    required: ['label', 'price'],
-                  },
-                },
-                source_file_ids: {
-                  type: 'array',
-                  items: { type: 'string' },
-                },
-              },
-              required: [
-                'name',
-                'description',
-                'price',
-                'price_options',
-                'source_file_ids',
-              ],
-            },
-          },
-        },
-        required: ['label', 'items'],
-      },
-    },
-    notes: {
-      type: 'array',
-      items: { type: 'string' },
-    },
-  },
-  required: ['sections', 'notes'],
-} as const
 
 const normalizeKey = (value: unknown) =>
   text(value)
@@ -205,7 +157,7 @@ export async function extractMenuWithAi(
     sourceFiles: ReturnType<typeof fileRows>
   }
 ): Promise<MenuAiExtractionResult> {
-  return await runFireuxAiDocumentExtraction<
+  const extraction = await runFireuxAiDocumentExtraction<
     ExtractedMenuSection[],
     ExtractedMenu
   >({
@@ -243,4 +195,20 @@ export async function extractMenuWithAi(
       notes: notes.length ? notes : ['no visible menu items'],
     }),
   })
+
+  if (!extraction.ok) return extraction
+
+  const sections = normalizeExtractedSections(extraction.data)
+  const normalized = await normalizeMenuExtractionWithAi(event, {
+    appId: input.appId,
+    menuId: input.menuId,
+    model: MENU_PHOTO_EXTRACTION_MODEL,
+    timeoutMs: MENU_PHOTO_EXTRACTION_TIMEOUT_MS,
+    sections,
+  })
+
+  return {
+    ...extraction,
+    normalized,
+  }
 }

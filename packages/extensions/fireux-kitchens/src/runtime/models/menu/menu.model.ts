@@ -14,6 +14,10 @@ import type { OrderServiceMode } from 'fireux-orders/runtime/models/order.model'
  * Dish describes food. Menu presents selected dishes. MenuSection and MenuItem
  * live in their own child model files.
  *
+ * Use `main` for a Kitchen's primary/default menu id. `default` is reserved
+ * for language/settings vocabulary, not menu document names. User-facing menu
+ * names such as "Comida Casera" live in `name`, not in the document id.
+ *
  * Canon paths:
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}

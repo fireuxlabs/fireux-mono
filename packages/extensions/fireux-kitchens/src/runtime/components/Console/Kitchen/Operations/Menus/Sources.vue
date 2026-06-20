@@ -3,9 +3,9 @@
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">Menu sources</h2>
+          <h2 class="text-base font-semibold text-highlighted">Creation queue</h2>
           <p class="text-sm text-dimmed">
-            Uploaded PDFs and photos for this kitchen. Structured menus come after review.
+            Uploaded menu sources waiting for AI processing and review.
           </p>
         </div>
         <UBadge color="neutral" variant="soft">{{ menuSources.length }}</UBadge>
@@ -36,7 +36,7 @@
               </UBadge>
             </div>
             <p class="mt-1 truncate text-sm text-dimmed">
-              {{ source.file_name || 'Menu source file' }}
+              {{ sourceFileLabel(source) }}
             </p>
           </div>
 
@@ -67,8 +67,8 @@
       v-else
       color="neutral"
       variant="soft"
-      title="No menu sources yet"
-      description="Upload a PDF or photo to start the kitchen menu pipeline."
+      title="No sources waiting"
+      description="Upload a menu source to start the creation flow."
     />
   </UCard>
 </template>
@@ -81,6 +81,22 @@ import type {
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
 const { menuSources, menuSourcesPending } = useKitchenConsoleMenus()
+
+const text = (value: unknown) => String(value ?? '').trim()
+const fileCount = (source: { files_count?: number; files?: unknown[] }) => {
+  const count = Number(source.files_count)
+  if (Number.isFinite(count) && count > 0) return count
+  return Array.isArray(source.files) ? source.files.length : 0
+}
+const sourceFileLabel = (source: {
+  file_name?: string
+  files_count?: number
+  files?: unknown[]
+}) => {
+  const count = fileCount(source)
+  if (count > 1) return `${count} source files`
+  return text(source.file_name) || 'Menu source file'
+}
 
 const statusColor = (status: MenuSourceUploadStatus) => {
   if (status === 'published') return 'success'
