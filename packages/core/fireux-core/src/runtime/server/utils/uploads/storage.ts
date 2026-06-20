@@ -24,6 +24,8 @@ export type DownloadStorageFileOptions = {
   bucketName?: string
 }
 
+export type DeleteStorageFileOptions = DownloadStorageFileOptions
+
 export function normalizeStorageBucketName(bucket?: string | null) {
   const trimmed = String(bucket || '').trim()
   return trimmed.startsWith('gs://') ? trimmed.slice(5) : trimmed
@@ -98,6 +100,21 @@ export async function downloadStorageFile(
 
   return {
     buffer,
+    bucketName,
+    objectPath: options.objectPath,
+  }
+}
+
+export async function deleteStorageFileIfExists(
+  options: DeleteStorageFileOptions
+) {
+  const bucketName = options.bucketName || runtimeStorageBucketName()
+  await getStorage(getAdminApp())
+    .bucket(bucketName)
+    .file(options.objectPath)
+    .delete({ ignoreNotFound: true })
+
+  return {
     bucketName,
     objectPath: options.objectPath,
   }

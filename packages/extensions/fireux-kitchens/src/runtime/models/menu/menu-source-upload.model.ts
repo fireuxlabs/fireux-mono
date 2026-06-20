@@ -47,6 +47,16 @@ export const MenuSourceUploadModel = {
   file_type: '' as string,
   file_kind: 'document' as MenuSourceUploadKind,
   storage_path: '' as string,
+  files: [] as {
+    id: string
+    file_url: string
+    file_name: string
+    file_type: string
+    file_kind: MenuSourceUploadKind
+    storage_path: string
+    sort_order: number
+  }[],
+  files_count: 0 as number,
   status: 'uploaded' as MenuSourceUploadStatus,
   created: {
     at: {} as FirebaseTimestamp,

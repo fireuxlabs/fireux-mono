@@ -12,6 +12,7 @@ export type GoQrDocToolConfig = {
     fileLabel: string
     accept: string
     hint: string
+    multiple: boolean
   }
   slug: {
     label: string
@@ -50,6 +51,7 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 const text = (value: unknown) => String(value ?? '').trim()
+const boolDefaultTrue = (value: unknown) => value !== false
 
 export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
   const source = record(input)
@@ -71,6 +73,7 @@ export function normalizeDocToolConfig(input: unknown): GoQrDocToolConfig {
       fileLabel: text(upload.fileLabel),
       accept: text(upload.accept),
       hint: text(upload.hint),
+      multiple: boolDefaultTrue(upload.multiple),
     },
     slug: {
       label: text(slug.label),

@@ -24,6 +24,7 @@
     "pnpm": ">=10"
   },
   "dependencies": {
+    "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-translation": "workspace:*",
     "fireux-orders": "workspace:*",

@@ -8,6 +8,7 @@ type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 type UseKitchenConsoleMenuUploadPayloadOptions = {
   uploadId?: MaybeRef<string | null | undefined>
   lockSlug?: MaybeRef<boolean | null | undefined>
+  replaceExisting?: MaybeRef<boolean | null | undefined>
   title?: MaybeRef<string | null | undefined>
   description?: MaybeRef<string | null | undefined>
   ctaLabel?: MaybeRef<string | null | undefined>
@@ -43,10 +44,13 @@ export function useKitchenConsoleMenuUploadPayload(
   const endpointQuery = computed(() => {
     if (!kitchenConsole.runtime.appId.value || !kitchenConsole.selection.kitchenId.value) return ''
 
-    return new URLSearchParams({
+    const query = new URLSearchParams({
       appId: kitchenConsole.runtime.appId.value,
       kitchenId: kitchenConsole.selection.kitchenId.value,
-    }).toString()
+    })
+    if (optionBool(options.replaceExisting)) query.set('replace', '1')
+
+    return query.toString()
   })
   const createEndpoint = computed(() =>
     currentOrigin.value && endpointQuery.value

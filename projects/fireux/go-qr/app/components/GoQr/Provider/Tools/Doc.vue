@@ -12,6 +12,7 @@
         <UFileUpload
           v-model="selectedFile"
           :accept="accept"
+          :multiple="allowMultipleFiles"
           variant="area"
           size="xl"
           class="w-full"
@@ -98,6 +99,7 @@ type DocToolConfig = {
     fileLabel?: string
     accept?: string
     hint?: string
+    multiple?: boolean
   }
   slug?: {
     label?: string
@@ -136,10 +138,12 @@ const authToken = ref('')
 const parentOrigin = ref('')
 let authRequestResolve: ((token: string) => void) | null = null
 
-const file = computed(() =>
+const files = computed(() =>
   Array.isArray(selectedFile.value)
-    ? selectedFile.value[0] || null
+    ? selectedFile.value.filter(Boolean)
     : selectedFile.value
+      ? [selectedFile.value]
+      : []
 )
 const configuredText = (value: unknown) => String(value ?? '').trim()
 const toolTitle = computed(() =>
@@ -165,6 +169,9 @@ const slugLocked = computed(() =>
 )
 const accept = computed(() =>
   configuredText(props.tool?.upload?.accept)
+)
+const allowMultipleFiles = computed(() =>
+  props.tool?.upload?.multiple !== false
 )
 const uploadHint = computed(() =>
   configuredText(props.tool?.upload?.hint)
@@ -218,7 +225,7 @@ const slugMessage = computed(() => {
   return ''
 })
 const canCreate = computed(() =>
-  Boolean(file.value && canUseSlug.value && !isCreating.value)
+  Boolean(files.value.length && canUseSlug.value && !isCreating.value)
 )
 
 watch(slugInput, async () => {
@@ -302,7 +309,7 @@ function requestToolAuth() {
 }
 
 async function createDoc() {
-  if (!canCreate.value || !file.value) return
+  if (!canCreate.value || !files.value.length) return
 
   isCreating.value = true
   createError.value = ''
@@ -312,7 +319,9 @@ async function createDoc() {
   try {
     const form = new FormData()
     form.append('slug', normalizedSlug.value)
-    form.append('file', file.value)
+    for (const selected of files.value) {
+      form.append('file', selected)
+    }
     const token = await requestToolAuth()
 
     const response = await $fetch<{

@@ -14,7 +14,7 @@ import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import {
   multipartField,
-  readUploadedMultipartFile,
+  readUploadedMultipartFiles,
   type MultipartParts,
 } from 'fireux-core/runtime/server/utils/uploads/multipart.ts'
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
@@ -49,12 +49,15 @@ export type KitchenMenuUploadRequest = {
   appId: string
   kitchenId: string
   uploadId: string
-  file: KitchenMenuUploadFile
+  replaceExisting: boolean
+  files: KitchenMenuUploadFile[]
 }
 
 export type SavedKitchenMenuUploadFile = {
   fileUrl: string
   objectPath: string
+  fileName: string
+  contentType: string
 }
 
 export function setKitchenMenuUploadCors(event: H3Event, method: 'GET' | 'POST') {
@@ -86,8 +89,8 @@ function requireMenuName(uploadId: string) {
   }
 }
 
-function readMenuFile(parts: MultipartParts): KitchenMenuUploadFile {
-  return readUploadedMultipartFile(parts, {
+function readMenuFiles(parts: MultipartParts): KitchenMenuUploadFile[] {
+  return readUploadedMultipartFiles(parts, {
     label: 'Menu file',
     defaultFileName: 'menu-file',
     maxFileSizeMb,
@@ -113,7 +116,7 @@ export async function readKitchenMenuUploadRequest(
   const appId = requirePathSegment(query.appId, 'App id')
   const kitchenId = requirePathSegment(query.kitchenId, 'Kitchen id')
   const uploadId = normalizeSlug(multipartField(parts, 'slug'))
-  const file = readMenuFile(parts)
+  const files = readMenuFiles(parts)
 
   requireMenuName(uploadId)
 
@@ -121,7 +124,8 @@ export async function readKitchenMenuUploadRequest(
     appId,
     kitchenId,
     uploadId,
-    file,
+    replaceExisting: text(query.replace) === '1' || text(query.replace) === 'true',
+    files,
   }
 }
 
@@ -148,6 +152,7 @@ export function readKitchenMenuUploadAvailabilityRequest(event: H3Event) {
     appId: requirePathSegment(query.appId, 'App id'),
     kitchenId: requirePathSegment(query.kitchenId, 'Kitchen id'),
     uploadId,
+    replaceExisting: text(query.replace) === '1' || text(query.replace) === 'true',
   }
 }
 
@@ -217,27 +222,44 @@ export async function assertKitchenMenuUploadAvailable(
   }
 }
 
-export async function saveKitchenMenuUploadFile(
+export async function saveKitchenMenuUploadFiles(
   request: KitchenMenuUploadRequest
-): Promise<SavedKitchenMenuUploadFile> {
-  const objectPath = `${kitchenMenuUploadKitchenPath(request.appId, request.kitchenId)}/${menuUploadCollection}/${request.uploadId}/source/${request.file.fileName}`
-  const saved = await saveStorageFileWithDownloadToken({
-    objectPath,
-    data: request.file.data,
-    contentType: request.file.contentType,
-  })
+): Promise<SavedKitchenMenuUploadFile[]> {
+  return Promise.all(
+    request.files.map(async (file, index) => {
+      const objectPath = `${kitchenMenuUploadKitchenPath(request.appId, request.kitchenId)}/${menuUploadCollection}/${request.uploadId}/source/${index + 1}-${file.fileName}`
+      const saved = await saveStorageFileWithDownloadToken({
+        objectPath,
+        data: file.data,
+        contentType: file.contentType,
+      })
 
-  return {
-    fileUrl: saved.fileUrl,
-    objectPath,
-  }
+      return {
+        fileUrl: saved.fileUrl,
+        objectPath,
+        fileName: file.fileName,
+        contentType: file.contentType,
+      }
+    })
+  )
 }
 
 export function kitchenMenuUploadRecord(
   request: KitchenMenuUploadRequest,
-  saved: SavedKitchenMenuUploadFile,
+  savedFiles: SavedKitchenMenuUploadFile[],
   uid: string
 ) {
+  const primaryFile = savedFiles[0]
+  const fileKinds = savedFiles.map((file) =>
+    documentKindFromFile({
+      fileName: file.fileName,
+      contentType: file.contentType,
+    })
+  )
+  const singleKind = Array.from(new Set(fileKinds)).length === 1
+    ? fileKinds[0]
+    : 'document'
+
   return {
     id: request.uploadId,
     kitchen_id: request.kitchenId,
@@ -246,14 +268,24 @@ export function kitchenMenuUploadRecord(
     tool: 'doc',
     storage_owner: 'consumer-app',
     storage_app_id: request.appId,
-    file_url: saved.fileUrl,
-    file_name: request.file.fileName,
-    file_type: request.file.contentType,
-    file_kind: documentKindFromFile({
-      fileName: request.file.fileName,
-      contentType: request.file.contentType,
-    }),
-    storage_path: saved.objectPath,
+    file_url: primaryFile?.fileUrl ?? '',
+    file_name: primaryFile?.fileName ?? '',
+    file_type: primaryFile?.contentType ?? '',
+    file_kind: singleKind,
+    storage_path: primaryFile?.objectPath ?? '',
+    files: savedFiles.map((file, index) => ({
+      id: String(index + 1),
+      file_url: file.fileUrl,
+      file_name: file.fileName,
+      file_type: file.contentType,
+      file_kind: documentKindFromFile({
+        fileName: file.fileName,
+        contentType: file.contentType,
+      }),
+      storage_path: file.objectPath,
+      sort_order: index,
+    })),
+    files_count: savedFiles.length,
     status: 'uploaded',
     created: serverAuditStamp({ by: uid, appId: request.appId }),
     updated: serverAuditStamp({ by: uid }),
@@ -262,18 +294,27 @@ export function kitchenMenuUploadRecord(
 
 export function kitchenMenuUploadResponse(
   request: KitchenMenuUploadRequest,
-  saved: SavedKitchenMenuUploadFile
+  savedFiles: SavedKitchenMenuUploadFile[]
 ) {
+  const primaryFile = savedFiles[0]
+
   return {
     ok: true,
     id: request.uploadId,
     slug: request.uploadId,
     path: '',
     qr_path: '',
-    url: saved.fileUrl,
+    url: primaryFile?.fileUrl ?? '',
     qr_url: '',
-    file_name: request.file.fileName,
-    file_type: request.file.contentType,
+    file_name: primaryFile?.fileName ?? '',
+    file_type: primaryFile?.contentType ?? '',
+    files: savedFiles.map((file) => ({
+      url: file.fileUrl,
+      file_name: file.fileName,
+      file_type: file.contentType,
+      storage_path: file.objectPath,
+    })),
+    files_count: savedFiles.length,
     storage_owner: 'consumer-app',
     storage_app_id: request.appId,
   }

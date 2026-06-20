@@ -31,6 +31,7 @@ type DocToolConfig = {
     fileLabel: string
     accept: string
     hint: string
+    multiple: boolean
   }
   slug: {
     label: string

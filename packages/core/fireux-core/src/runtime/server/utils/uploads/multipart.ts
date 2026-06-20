@@ -100,3 +100,61 @@ export function readUploadedMultipartFile(
     contentType,
   }
 }
+
+export function readUploadedMultipartFiles(
+  parts: MultipartParts,
+  options: UploadedMultipartFileOptions
+): UploadedMultipartFile[] {
+  const fieldName = options.fieldName ?? 'file'
+  const fileParts = parts?.filter((entry) => entry.name === fieldName && entry.filename) ?? []
+
+  if (!fileParts.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `${options.label} is required.`,
+    })
+  }
+
+  const maxFileSizeBytes = options.maxFileSizeMb * 1024 * 1024
+
+  return fileParts.map((part, index) => {
+    if (!part.data?.length) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `${options.label} ${index + 1} is empty.`,
+      })
+    }
+
+    if (part.data.byteLength > maxFileSizeBytes) {
+      throw createError({
+        statusCode: 413,
+        statusMessage: `Max file size is ${options.maxFileSizeMb} MB per file.`,
+      })
+    }
+
+    const fileName = safeUploadFileName(
+      part.filename,
+      index ? `${options.defaultFileName}-${index + 1}` : options.defaultFileName
+    )
+    const contentType = resolveUploadContentType({
+      fileName,
+      uploadedType: text(part.type || 'application/octet-stream'),
+      allowedTypes: options.allowedTypes,
+      extensionTypes: options.extensionTypes,
+      allowImageTypes: options.allowImageTypes,
+    })
+
+    if (!contentType) {
+      throw createError({
+        statusCode: 415,
+        statusMessage: options.invalidTypeMessage,
+      })
+    }
+
+    return {
+      data: part.data,
+      fileName,
+      contentType,
+    }
+  })
+}

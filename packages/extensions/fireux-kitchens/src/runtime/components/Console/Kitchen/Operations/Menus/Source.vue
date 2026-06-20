@@ -39,6 +39,10 @@
             <dd class="font-medium text-highlighted">{{ source.file_type || 'Unknown' }}</dd>
           </div>
           <div>
+            <dt class="text-dimmed">Files</dt>
+            <dd class="font-medium text-highlighted">{{ sourceFiles.length }}</dd>
+          </div>
+          <div>
             <dt class="text-dimmed">Storage owner</dt>
             <dd class="font-medium text-highlighted">
               {{ source.storage_app_id || source.app_id || 'Selected app' }}
@@ -88,6 +92,25 @@
           title="Source file unavailable"
           description="This upload record does not have a file URL."
         />
+
+        <div
+          v-if="sourceFiles.length > 1"
+          class="mt-4 grid gap-2"
+        >
+          <UButton
+            v-for="file in sourceFiles"
+            :key="file.storage_path || file.file_url"
+            :to="file.file_url"
+            target="_blank"
+            rel="noopener"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-file-image"
+            class="justify-start"
+          >
+            {{ file.file_name || 'Menu source file' }}
+          </UButton>
+        </div>
       </UCard>
     </template>
 
@@ -120,6 +143,19 @@ const uploadId = computed(() => {
 })
 const source = computed(
   () => menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
+)
+const sourceFiles = computed(() =>
+  Array.isArray(source.value?.files) && source.value.files.length
+    ? source.value.files
+    : source.value?.file_url
+      ? [
+          {
+            file_url: source.value.file_url,
+            file_name: source.value.file_name,
+            storage_path: source.value.storage_path,
+          },
+        ]
+      : []
 )
 const isPhoto = computed(() => source.value?.file_kind === 'photo')
 const breadcrumbItems = computed(() => [

@@ -26,6 +26,11 @@ const serverHandlers = [
     handler:
       './runtime/server/api/console/kitchen/menus/upload/availability.options',
   },
+  {
+    route: '/api/console/kitchen/menus/process',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/menus/process.post',
+  },
 ] satisfies FireuxServerHandler[]
 
 export function configureServer(resolver: Resolver) {

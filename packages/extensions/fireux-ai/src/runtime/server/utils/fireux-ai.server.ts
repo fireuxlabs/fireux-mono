@@ -78,7 +78,7 @@ function disabledResponse<T>(
     disabled: true,
     reason,
     provider: config.provider,
-    model: config.model,
+    model: firstString(request.model, config.model),
   }
 }
 
@@ -90,16 +90,109 @@ function buildTextPrompt(request: FireuxAiRequest): string {
       input: request.input,
       context: request.context,
       outputSchema: request.outputSchema,
+      outputJsonSchema: request.outputJsonSchema,
     },
     null,
     2
   )
 }
 
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+}
+
+function imageDetail(value: unknown): 'low' | 'high' | 'auto' {
+  return value === 'low' || value === 'high' || value === 'auto'
+    ? value
+    : 'auto'
+}
+
+function imagesFromInput(input: unknown) {
+  const data = record(input)
+  const defaultDetail = imageDetail(data.imageDetail)
+  const images = [
+    ...(Array.isArray(data.imageUrls)
+      ? data.imageUrls.map((url) => ({ url, detail: defaultDetail }))
+      : []),
+    ...(Array.isArray(data.images)
+      ? data.images.map((image) => {
+          const row = record(image)
+          return {
+            url: row.url,
+            detail: imageDetail(row.detail || defaultDetail),
+          }
+        })
+      : []),
+  ]
+  const seen = new Set<string>()
+
+  return images
+    .map((image) => ({
+      url: firstString(image.url) || '',
+      detail: image.detail,
+    }))
+    .filter((image) => {
+      if (!image.url || seen.has(image.url)) return false
+      seen.add(image.url)
+      return true
+    })
+}
+
+function buildOpenAiUserContent(request: FireuxAiRequest) {
+  const text = buildTextPrompt(request)
+  const images = imagesFromInput(request.input)
+  if (!images.length) return text
+
+  return [
+    {
+      type: 'input_text',
+      text,
+    },
+    ...images.map((image) => ({
+      type: 'input_image',
+      image_url: image.url,
+      detail: image.detail,
+    })),
+  ]
+}
+
+function openAiTextFormat(request: FireuxAiRequest) {
+  if (request.outputJsonSchema) {
+    return {
+      type: 'json_schema',
+      name: 'fireux_ai_result',
+      schema: request.outputJsonSchema,
+      strict: false,
+    }
+  }
+
+  return request.outputSchema ? { type: 'json_object' } : undefined
+}
+
+function textFromOpenAiPayload(payload: any) {
+  const directText = firstString(payload?.output_text)
+  if (directText) return directText
+
+  const output = Array.isArray(payload?.output) ? payload.output : []
+  for (const item of output) {
+    const content = Array.isArray(item?.content) ? item.content : []
+    for (const part of content) {
+      const text = firstString(part?.text, part?.content)
+      if (text) return text
+    }
+  }
+
+  return ''
+}
+
 async function callOpenAiText(
   request: FireuxAiRequest,
   config: FireuxAiConfig
 ): Promise<FireuxAiResponse<string>> {
+  const model = firstString(request.model, config.model) || 'gpt-4o-mini'
+  const textFormat = openAiTextFormat(request)
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: {
@@ -107,16 +200,17 @@ async function callOpenAiText(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: config.model || 'gpt-4o-mini',
+      model,
+      ...(textFormat ? { text: { format: textFormat } } : {}),
       input: [
         {
           role: 'system',
           content:
-            'You are a FireUX server-side AI adapter. Complete the requested whitelisted task. Return only the requested result.',
+            'You are a FireUX server-side AI adapter. Complete the requested whitelisted task. Return only the requested result. When JSON is requested, return a single valid JSON object and no prose.',
         },
         {
           role: 'user',
-          content: buildTextPrompt(request),
+          content: buildOpenAiUserContent(request),
         },
       ],
     }),
@@ -131,14 +225,11 @@ async function callOpenAiText(
         payload?.error?.message ||
         `OpenAI request failed with status ${response.status}`,
       provider: config.provider,
-      model: config.model,
+      model,
     }
   }
 
-  const text =
-    firstString(payload?.output_text) ||
-    firstString(payload?.output?.[0]?.content?.[0]?.text) ||
-    ''
+  const text = textFromOpenAiPayload(payload)
 
   return {
     ok: true,
@@ -146,7 +237,7 @@ async function callOpenAiText(
     data: text,
     text,
     provider: config.provider,
-    model: config.model,
+    model,
     usage: payload?.usage,
   }
 }
@@ -182,6 +273,40 @@ async function logUsage(
     ok: response.ok,
     reason: response.reason,
   })
+}
+
+function jsonCandidatesFromText(value: string) {
+  const stripped = value
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim()
+  const candidates = [stripped]
+  const firstObject = stripped.indexOf('{')
+  const lastObject = stripped.lastIndexOf('}')
+  const firstArray = stripped.indexOf('[')
+  const lastArray = stripped.lastIndexOf(']')
+
+  if (firstObject >= 0 && lastObject > firstObject) {
+    candidates.push(stripped.slice(firstObject, lastObject + 1))
+  }
+  if (firstArray >= 0 && lastArray > firstArray) {
+    candidates.push(stripped.slice(firstArray, lastArray + 1))
+  }
+
+  return Array.from(new Set(candidates.filter(Boolean)))
+}
+
+function parseJsonFromText<T>(value: string): T {
+  for (const candidate of jsonCandidatesFromText(value)) {
+    try {
+      return JSON.parse(candidate) as T
+    } catch {
+      // Some providers wrap valid JSON in prose. Try the next candidate.
+    }
+  }
+
+  throw new Error('AI provider returned text that was not valid JSON.')
 }
 
 export function useFireuxAi(
@@ -223,11 +348,12 @@ export function useFireuxAi(
   ): Promise<FireuxAiResponse<T>> {
     const response = await generateText(request)
     if (!response.ok) return response as FireuxAiResponse<T>
+    const text = String(response.text || '').trim()
 
     try {
       return {
         ...response,
-        data: JSON.parse(response.text || '') as T,
+        data: parseJsonFromText<T>(text),
       }
     } catch {
       return {

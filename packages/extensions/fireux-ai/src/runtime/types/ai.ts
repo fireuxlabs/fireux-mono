@@ -20,7 +20,9 @@ export interface FireuxAiRequest {
   appId: string
   task: FireuxAiTask
   input: unknown
+  model?: string
   outputSchema?: unknown
+  outputJsonSchema?: Record<string, unknown>
   locale?: string
   context?: Record<string, unknown>
 }

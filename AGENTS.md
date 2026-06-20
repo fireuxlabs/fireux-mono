@@ -44,6 +44,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Server API spine: `docs/concepts/server-api.md`
 - Debug surfaces: `docs/concepts/debug.md`
 - Tool providers: `docs/concepts/tool-provider.md`
+- AI document processing: `docs/concepts/ai-document-processing.md`
 - Console entity family: `docs/concepts/family-console-entity.md`
 - Public index family: `docs/concepts/family-public-index.md`
 - Public detail family: `docs/concepts/family-public-detail.md`

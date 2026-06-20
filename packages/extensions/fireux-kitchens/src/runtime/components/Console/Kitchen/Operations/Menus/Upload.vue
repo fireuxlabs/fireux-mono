@@ -16,6 +16,7 @@ import { useKitchenConsoleMenuUploadPayload } from '../../../../../composables/f
 const props = defineProps<{
   uploadId?: string
   lockSlug?: boolean
+  replaceExisting?: boolean
   title?: string
   description?: string
   ctaLabel?: string
@@ -25,6 +26,7 @@ const { canUseTool, payload, authToken } =
   useKitchenConsoleMenuUploadPayload({
     uploadId: toRef(props, 'uploadId'),
     lockSlug: toRef(props, 'lockSlug'),
+    replaceExisting: toRef(props, 'replaceExisting'),
     title: toRef(props, 'title'),
     description: toRef(props, 'description'),
     ctaLabel: toRef(props, 'ctaLabel'),

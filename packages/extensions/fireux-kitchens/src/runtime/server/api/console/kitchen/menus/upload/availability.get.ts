@@ -28,7 +28,9 @@ export default defineEventHandler(async (event: H3Event) => {
   return {
     id: request.uploadId,
     is_valid: true,
-    taken,
-    available: !taken,
+    taken: request.replaceExisting ? false : taken,
+    existing: taken,
+    available: request.replaceExisting ? true : !taken,
+    mode: request.replaceExisting ? 'replace' : 'create',
   }
 })
