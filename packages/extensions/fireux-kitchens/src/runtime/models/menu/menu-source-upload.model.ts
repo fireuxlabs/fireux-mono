@@ -32,7 +32,7 @@ export type MenuSourceUploadStatus =
   | 'published'
   | 'archived'
 
-export type MenuSourceUploadKind = 'photo' | 'pdf' | 'document'
+export type MenuSourceUploadKind = 'photo' | 'pdf' | 'document' | 'url'
 
 export const MenuSourceUploadModel = {
   id: '' as string,
@@ -46,6 +46,8 @@ export const MenuSourceUploadModel = {
   file_name: '' as string,
   file_type: '' as string,
   file_kind: 'document' as MenuSourceUploadKind,
+  source_url: '' as string,
+  source_provider: '' as string,
   storage_path: '' as string,
   files: [] as {
     id: string

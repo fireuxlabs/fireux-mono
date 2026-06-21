@@ -9,6 +9,7 @@ export type FireuxAiDocumentSourceFile = {
   file_type?: string
   file_kind?: string
   sort_order?: number
+  text_excerpt?: string
 }
 
 export type FireuxAiDocumentFileStatus = 'complete' | 'empty' | 'failed'

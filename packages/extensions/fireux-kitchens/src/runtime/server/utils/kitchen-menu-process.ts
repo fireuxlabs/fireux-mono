@@ -333,20 +333,20 @@ export function compareExtractedToCurrent(
 
   for (const item of matched.missing) {
     addFlag(flags, 'missing-in-extraction', 'warning',
-      `${item.name} exists in the current menu but was not found by AI.`,
+      `${item.name} exists in the current menu but was not found in the draft.`,
       item.name, item.section)
   }
 
   for (const item of matched.added) {
     addFlag(flags, 'new-in-extraction', 'info',
-      `${item.name} was found by AI but is not in the current menu.`,
+      `${item.name} was found in the draft but is not in the current menu.`,
       item.name, item.section)
   }
 
   for (const { current, extracted, exact } of matched.pairs) {
     if (!exact && current.name !== extracted.name) {
       addFlag(flags, 'name-changed', 'info',
-        `${current.name} appears as ${extracted.name} in the AI draft.`,
+        `${current.name} appears as ${extracted.name} in the draft.`,
         extracted.name, extracted.section)
     }
 
@@ -361,14 +361,14 @@ export function compareExtractedToCurrent(
     if (!item.price_options.length) continue
 
     addFlag(flags, 'variants-found', 'info',
-      `${item.name} has ${item.price_options.length} variant option(s) in the AI draft.`,
+      `${item.name} has ${item.price_options.length} variant option(s) in the draft.`,
       item.name, item.section)
 
     const current = matched.pairs.find((pair) => pair.extracted === item)?.current
     if (!current || current.price_options.length >= item.price_options.length) continue
 
     addFlag(flags, 'variants-need-review', 'warning',
-      `${item.name} has ${item.price_options.length} AI option(s), but the current menu has ${current.price_options.length}.`,
+      `${item.name} has ${item.price_options.length} draft option(s), but the current menu has ${current.price_options.length}.`,
       item.name, item.section)
   }
 
@@ -376,7 +376,7 @@ export function compareExtractedToCurrent(
     if (!item.price_options.length) continue
 
     addFlag(flags, 'variants-missing-in-extraction', 'warning',
-      `${item.name} has current menu variants, but AI did not extract variants.`,
+      `${item.name} has current menu variants, but the draft did not include variants.`,
       item.name, item.section)
   }
 

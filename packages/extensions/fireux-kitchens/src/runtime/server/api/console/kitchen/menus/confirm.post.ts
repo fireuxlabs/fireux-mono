@@ -37,7 +37,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if (!body?.confirmDishes) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Confirm before creating dishes from this AI draft.',
+      statusMessage: 'Confirm before creating dishes from this menu draft.',
     })
   }
 
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if (!sections.length || !countItems(sections)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Confirm needs at least one dish in the AI draft.',
+      statusMessage: 'Confirm needs at least one dish in the menu draft.',
     })
   }
 
@@ -96,6 +96,6 @@ export default defineEventHandler(async (event: H3Event) => {
     menuId,
     uploadId,
     write,
-    message: 'AI draft confirmed. Dishes, sections, and menu items were created.',
+    message: 'Menu draft confirmed. Dishes, sections, and menu items were created.',
   }
 })

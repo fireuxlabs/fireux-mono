@@ -10,11 +10,11 @@ import {
   type MenuAiNormalizationResult,
 } from './kitchen-menu-ai-normalization'
 import {
-  fileRows,
   normalizeExtractedSections,
   record,
   type ExtractedMenuSection,
 } from './kitchen-menu-process'
+import { resolveKitchenMenuUrlContent } from './kitchen-menu-url-content'
 
 type ExtractedMenu = {
   sections?: unknown[]
@@ -51,6 +51,8 @@ const MENU_SOURCE_IMAGE_DETAIL = (
 ) as 'low' | 'high' | 'auto'
 const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
+const MENU_SOURCE_URL_TEXT_LIMIT =
+  numberValue(process.env.FIREUX_AI_MENU_URL_TEXT_LIMIT) || 80_000
 
 const normalizeKey = (value: unknown) =>
   text(value)
@@ -113,12 +115,70 @@ const isPdfFile = (file: FireuxAiDocumentSourceFile) =>
   text(file.file_type).toLowerCase() === 'application/pdf' ||
   fileExtension(file.file_name) === 'pdf'
 
+const isUrlFile = (file: FireuxAiDocumentSourceFile) =>
+  text(file.file_kind).toLowerCase() === 'url'
+
+async function withUrlText(file: FireuxAiDocumentSourceFile) {
+  if (!isUrlFile(file)) return file
+
+  const resolved = await resolveKitchenMenuUrlContent(file.file_url)
+
+  return {
+    ...file,
+    text_excerpt: resolved.text.slice(0, MENU_SOURCE_URL_TEXT_LIMIT),
+  }
+}
+
 function buildMenuSourceExtractionRequest(
   input: {
     menuId: string
     file: FireuxAiDocumentSourceFile
   }
 ) {
+  if (isUrlFile(input.file)) {
+    return {
+      input: {
+        source_url: input.file.file_url,
+        page_text: input.file.text_excerpt,
+        instruction:
+          `Classify this fetched restaurant menu or ordering URL, then extract only menu dishes that are present in the supplied page_text. page_text may be cleaned HTML text or resolved provider menu JSON. Use source_file_ids ["${input.file.id}"] for every item. If page_text is only a shell, booking widget, empty page, or does not contain visible menu items, return {"sections":[],"notes":["no visible menu items in fetched URL content"]}. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has multiple sizes or variants, put them in price_options and keep the lowest displayed price in price. Treat provider modifier_groups/add-ons as add-ons, not standalone dishes. Do not invent dishes, sections, prices, or provider data not present in page_text.`,
+      },
+      context: {
+        domain: 'restaurant_menu',
+        menuId: input.menuId,
+        sourceFileId: input.file.id,
+        sourceFileName: input.file.file_name,
+        sourceKind: 'menu_source_url',
+        currency: 'CHF',
+        languagePolicy:
+          'Treat the original menu as default mixed-language copy, not one source language.',
+      },
+      outputJsonSchema: MENU_EXTRACTION_JSON_SCHEMA,
+      outputSchema: {
+        sections: [
+          {
+            label: 'Section label',
+            items: [
+              {
+                name: 'Dish name',
+                description: 'Short description or empty string',
+                price: 0,
+                price_options: [
+                  {
+                    label: 'Variant label',
+                    price: 0,
+                  },
+                ],
+                source_file_ids: [input.file.id],
+              },
+            ],
+          },
+        ],
+        notes: ['Extraction notes'],
+      },
+    }
+  }
+
   const fileIsPdf = isPdfFile(input.file)
   const sourceLabel = fileIsPdf ? 'PDF' : 'photo or image'
 
@@ -190,7 +250,7 @@ export async function extractMenuWithAi(
   input: {
     appId: string
     menuId: string
-    sourceFiles: ReturnType<typeof fileRows>
+    sourceFiles: FireuxAiDocumentSourceFile[]
     model?: string
     normalizationModel?: string
   }
@@ -198,6 +258,7 @@ export async function extractMenuWithAi(
   const model = text(input.model) || MENU_SOURCE_EXTRACTION_MODEL
   const normalizationModel =
     text(input.normalizationModel) || MENU_SOURCE_NORMALIZATION_MODEL
+  const sourceFiles = await Promise.all(input.sourceFiles.map(withUrlText))
   const extraction = await runFireuxAiDocumentExtraction<
     ExtractedMenuSection[],
     ExtractedMenu
@@ -206,7 +267,7 @@ export async function extractMenuWithAi(
     appId: input.appId,
     model,
     fileTimeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
-    files: input.sourceFiles,
+    files: sourceFiles,
     taskId: input.menuId,
     logScope: 'kitchen-menu-process',
     buildRequest: (file) => buildMenuSourceExtractionRequest({

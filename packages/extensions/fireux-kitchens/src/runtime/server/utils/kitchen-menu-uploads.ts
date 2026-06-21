@@ -79,7 +79,7 @@ function menuNameValidation(uploadId: string) {
   })
 }
 
-function requireMenuName(uploadId: string) {
+export function requireMenuName(uploadId: string) {
   const validation = menuNameValidation(uploadId)
   if (!validation.isValid) {
     throw createError({
@@ -242,6 +242,27 @@ export async function saveKitchenMenuUploadFiles(
       }
     })
   )
+}
+
+export function storagePathsFromMenuUpload(value: unknown) {
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+  const paths = new Set<string>()
+  const primary = text(source.storage_path)
+  if (primary) paths.add(primary)
+
+  if (Array.isArray(source.files)) {
+    for (const file of source.files) {
+      const row = file && typeof file === 'object' && !Array.isArray(file)
+        ? file as Record<string, unknown>
+        : {}
+      const path = text(row.storage_path)
+      if (path) paths.add(path)
+    }
+  }
+
+  return Array.from(paths)
 }
 
 export function kitchenMenuUploadRecord(

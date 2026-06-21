@@ -6,9 +6,9 @@
           Create menu from a source
         </h2>
         <p class="text-sm text-dimmed">
-          Upload menu photos or a PDF. The console will extract a raw read,
-          clean it into a menu draft, then hold it for review before any dishes
-          are created.
+          Start from menu photos, a PDF, or an existing ordering URL. The
+          console keeps the source first, then turns it into dishes after
+          processing and review.
         </p>
       </div>
     </template>
@@ -34,6 +34,8 @@
         description="Use a clear menu name, such as main, lunch, or drinks. Multiple photos are fine."
         cta-label="Upload menu source"
       />
+
+      <ConsoleKitchenOperationsMenusSourceUrl />
     </div>
   </UCard>
 </template>
@@ -41,9 +43,9 @@
 <script setup lang="ts">
 const steps = [
   {
-    title: '1. Upload',
+    title: '1. Add source',
     description:
-      'Add photos or a PDF of the menu. This creates a source upload only.',
+      'Add photos, a PDF, or a live menu URL. This creates a source record only.',
   },
   {
     title: '2. Process',

@@ -24,8 +24,7 @@
         v-else
         class="text-sm text-dimmed"
       >
-        This reads the uploaded menu document and saves a structured menu draft
-        with sections, dishes, items, prices, and variants.
+        {{ sourceDescription }}
       </p>
 
       <UCollapsible v-if="source" :default-open="true">
@@ -221,6 +220,9 @@ const processDescription = computed(() =>
   menu.value
     ? 'Convert the upload and save a review draft. Published menus are not overwritten automatically.'
     : 'Convert this upload into a new draft menu.'
+)
+const sourceDescription = computed(() =>
+  'This reads the saved menu source and saves a structured menu draft with sections, dishes, items, prices, and variants.'
 )
 const statusMessage = computed(() => {
   if (pendingMode.value === 'standard') {

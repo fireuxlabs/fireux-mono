@@ -7,12 +7,12 @@ import { writeKitchenMenuAiUsage } from '../../../../utils/kitchen-menu-ai-usage
 import { MENU_SOURCE_EXTRACTION_PROMPT_VERSION, extractMenuWithAi, type MenuAiExtractionResult } from '../../../../utils/kitchen-menu-ai-extraction'
 import {
   compareExtractedToCurrent,
-  fileRows,
   normalizeExtractedSections,
   readCurrentMenuShape,
   record,
   type MenuProcessFlag,
 } from '../../../../utils/kitchen-menu-process'
+import { sourceRows } from '../../../../utils/kitchen-menu-source-rows'
 import { assertKitchenMenuUploadAccess, kitchenMenuUploadKitchenPath, kitchenMenuUploadPath, requireKitchenMenuUploadUser } from '../../../../utils/kitchen-menu-uploads'
 
 type ProcessMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'quality', string>> & {
@@ -25,7 +25,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 const countExtractedItems = (
   sections: ReturnType<typeof normalizeExtractedSections>
 ) => sections.reduce((count, section) => count + section.items.length, 0)
-const sourceFileSignature = (files: ReturnType<typeof fileRows>) =>
+const sourceFileSignature = (files: ReturnType<typeof sourceRows>) =>
   files.map((file) => ({
     id: text(file.id),
     name: text(file.file_name),
@@ -34,7 +34,7 @@ const sourceFileSignature = (files: ReturnType<typeof fileRows>) =>
     path: text(file.storage_path),
   }))
 const cacheKeyFor = (input: {
-  files: ReturnType<typeof fileRows>
+  files: ReturnType<typeof sourceRows>
   model: string
   normalizationModel: string
   quality: string
@@ -67,13 +67,6 @@ export default defineEventHandler(async (event: H3Event) => {
 
   await assertKitchenMenuUploadAccess(appId, kitchenId, uid)
 
-  if (!body?.confirmBilling) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Confirm kitchen AI billing before processing this menu.',
-    })
-  }
-
   const db = getRuntimeFirestore()
   const sourceSnap = await db
     .doc(kitchenMenuUploadPath(appId, kitchenId, uploadId))
@@ -87,7 +80,17 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const source = record({ ...(sourceSnap.data() || {}), id: sourceSnap.id })
-  const sourceFiles = fileRows(source)
+  const kitchenPath = kitchenMenuUploadKitchenPath(appId, kitchenId)
+  const sourceIsUrl = Boolean(text(source.source_url) || text(source.file_kind) === 'url')
+
+  if (!body?.confirmBilling) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Confirm kitchen AI billing before processing this menu.',
+    })
+  }
+
+  const sourceFiles = sourceRows(source)
   const files = sourceFiles.slice(
     0,
     Number.isFinite(Number(body?.limit)) ? Number(body?.limit) : undefined
@@ -106,7 +109,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const cachedDraftSections = body?.force ? [] : cachedSections(source, cacheKey)
   const cacheHit = cachedDraftSections.length > 0
   const current = await readCurrentMenuShape(
-    kitchenMenuUploadKitchenPath(appId, kitchenId),
+    kitchenPath,
     menuId
   )
   const itemCount = current.sections.reduce(
@@ -221,7 +224,9 @@ export default defineEventHandler(async (event: H3Event) => {
           {
             code: 'ai-extraction-empty',
             level: 'warning' as const,
-            message: 'AI extraction returned no sections.',
+            message: sourceIsUrl
+              ? 'AI found no menu items in the fetched URL content. This page may load its menu through a widget or popup.'
+              : 'AI extraction returned no sections.',
           },
         ]
       : []),
@@ -287,7 +292,6 @@ export default defineEventHandler(async (event: H3Event) => {
     : 'AI processing finished, but no review draft was saved.'
 
   const stamp = serverAuditStamp({ by: uid, appId })
-  const kitchenPath = kitchenMenuUploadKitchenPath(appId, kitchenId)
   const billing = await writeKitchenMenuAiUsage({
     sourceRef: sourceSnap.ref,
     kitchenPath,

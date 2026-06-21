@@ -35,10 +35,11 @@
       </p>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevJson
       title="Kitchen dishes"
-      scope="console"
-      :data="debug"
+      context="Kitchen dishes console · /console/kitchen/dishes"
+      :data="dishDebug"
+      :default-open="false"
     />
   </div>
 </template>
@@ -71,4 +72,18 @@ const visibleCards = computed(() => {
       .some((value) => text(value).includes(query))
   )
 })
+const dishDebug = computed(() => ({
+  objects: {
+    dishes: dishes.value.map((dish) => ({
+      id: dish.id,
+      name: dish.name,
+      hasDescription: Boolean(String(dish.description || '').trim()),
+    })),
+  },
+  derived: {
+    ...debug.value,
+    visibleCount: visibleCards.value.length,
+    search: search.value,
+  },
+}))
 </script>

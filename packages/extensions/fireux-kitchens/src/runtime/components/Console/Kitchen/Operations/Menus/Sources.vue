@@ -28,8 +28,8 @@
               <h3 class="truncate text-sm font-semibold text-highlighted">
                 {{ source.id }}
               </h3>
-              <UBadge :color="kindColor(source.file_kind)" variant="soft">
-                {{ source.file_kind || 'document' }}
+              <UBadge :color="kindColor(sourceKind(source))" variant="soft">
+                {{ sourceKind(source) }}
               </UBadge>
               <UBadge :color="statusColor(source.status)" variant="soft">
                 {{ source.status }}
@@ -47,7 +47,7 @@
               icon="i-lucide-scan-text"
               :to="`/console/kitchen/menus/${encodeURIComponent(source.id)}`"
             >
-              Process with AI
+              {{ processLabel(source) }}
             </UButton>
             <UButton
               size="sm"
@@ -92,11 +92,29 @@ const sourceFileLabel = (source: {
   file_name?: string
   files_count?: number
   files?: unknown[]
+  source_url?: string
 }) => {
+  if (text(source.source_url)) return text(source.source_url)
+
   const count = fileCount(source)
   if (count > 1) return `${count} source files`
   return text(source.file_name) || 'Menu source file'
 }
+
+const sourceKind = (source: {
+  file_kind?: MenuSourceUploadKind
+  source_url?: string
+}): MenuSourceUploadKind => {
+  if (text(source.source_url)) return 'url'
+
+  const kind = text(source.file_kind) as MenuSourceUploadKind
+  return kind || 'document'
+}
+
+const processLabel = (source: {
+  file_kind?: MenuSourceUploadKind
+  source_url?: string
+}) => sourceKind(source) === 'url' ? 'Process URL with AI' : 'Process with AI'
 
 const statusColor = (status: MenuSourceUploadStatus) => {
   if (status === 'published') return 'success'
@@ -106,5 +124,11 @@ const statusColor = (status: MenuSourceUploadStatus) => {
 }
 
 const kindColor = (kind: MenuSourceUploadKind) =>
-  kind === 'photo' ? 'primary' : kind === 'pdf' ? 'success' : 'neutral'
+  kind === 'photo'
+    ? 'primary'
+    : kind === 'pdf'
+      ? 'success'
+      : kind === 'url'
+        ? 'info'
+        : 'neutral'
 </script>

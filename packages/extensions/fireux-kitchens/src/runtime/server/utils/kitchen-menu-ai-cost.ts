@@ -70,15 +70,28 @@ const isPdf = (file: MenuAiCostFile) => {
   return kind === 'pdf' || type === 'application/pdf' || name.endsWith('.pdf')
 }
 
+const isUrl = (file: MenuAiCostFile) =>
+  text(file.file_kind).toLowerCase() === 'url' ||
+    /^https?:\/\//i.test(text(file.file_name || file.storage_path))
+
 export function menuAiModelPlan(
   files: MenuAiCostFile[],
   quality: MenuAiQuality
 ) {
   const hasPhoto = files.some(isPhoto)
-  const fileProfile = hasPhoto ? 'photo' : files.every(isPdf) ? 'pdf' : 'document'
+  const hasUrl = files.some(isUrl)
+  const fileProfile = hasPhoto
+    ? 'photo'
+    : hasUrl
+      ? 'url'
+      : files.every(isPdf)
+        ? 'pdf'
+        : 'document'
   const extractionModel = quality === 'strong'
     ? text(process.env.FIREUX_AI_MENU_EXTRACTION_STRONG_MODEL) || 'gpt-5.5'
-    : hasPhoto
+    : hasUrl
+      ? text(process.env.FIREUX_AI_MENU_URL_EXTRACTION_MODEL) || 'gpt-5.4-nano'
+      : hasPhoto
       ? text(process.env.FIREUX_AI_MENU_PHOTO_EXTRACTION_MODEL) || 'gpt-5.4-mini'
       : text(process.env.FIREUX_AI_MENU_PDF_EXTRACTION_MODEL) || 'gpt-5.4-nano'
   const normalizationModel =
@@ -93,6 +106,13 @@ export function menuAiModelPlan(
 }
 
 function estimatedTokens(file: MenuAiCostFile) {
+  if (isUrl(file)) {
+    return {
+      input: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_INPUT_TOKENS) || 30_000,
+      output: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_OUTPUT_TOKENS) || 3_000,
+    }
+  }
+
   if (isPhoto(file)) {
     return {
       input: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_PHOTO_INPUT_TOKENS) || 25_000,

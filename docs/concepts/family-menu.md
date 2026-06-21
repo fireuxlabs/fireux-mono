@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-17
-Ref: dece0dcde
+Updated: 2026-06-21
+Ref: 09c76080e
 Role: map, not canon
 
 Purpose:
@@ -39,6 +39,12 @@ Public doc file kinds:
 - `photo`: public doorway renders an image source.
 - `pdf`: public doorway renders a PDF source.
 - `document`: public doorway renders a generic document source.
+- `url`: kitchen source record points to an existing menu or ordering URL.
+
+Kitchen source inputs:
+- File source: PDF/photo upload, processed by AI document extraction.
+- URL source: existing menu/ordering URL, fetched as page text and processed
+  through the same AI extraction/review/confirm pipeline.
 
 Public source pointer:
 - Structured menu doorways use `source.app_id`, `source.kitchen_id`, and

@@ -10,7 +10,7 @@ import {
   estimateMenuAiCost,
   type MenuAiQuality,
 } from '../../../../utils/kitchen-menu-ai-cost'
-import { fileRows } from '../../../../utils/kitchen-menu-process'
+import { sourceRows } from '../../../../utils/kitchen-menu-source-rows'
 import {
   assertKitchenMenuUploadAccess,
   kitchenMenuUploadPath,
@@ -23,6 +23,11 @@ type ProcessEstimateBody = {
   menuId?: string
   uploadId?: string
 }
+
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenMenuUploadUser(
@@ -48,7 +53,8 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const files = fileRows(sourceSnap.data() || {})
+  const source = record(sourceSnap.data())
+  const files = sourceRows(source)
   const estimate = (quality: MenuAiQuality) =>
     estimateMenuAiCost({ files, quality })
 
@@ -68,4 +74,3 @@ export default defineEventHandler(async (event: H3Event) => {
     },
   }
 })
-

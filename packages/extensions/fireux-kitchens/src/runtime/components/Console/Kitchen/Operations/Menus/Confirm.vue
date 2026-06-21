@@ -3,7 +3,7 @@
     <template #header>
       <div class="space-y-1">
         <h3 class="text-sm font-semibold text-highlighted">
-          Create dishes from AI draft
+          Create dishes from menu draft
         </h3>
         <p class="text-sm text-dimmed">
           Review the draft above, then confirm to create or replace the menu
@@ -105,7 +105,7 @@ const canConfirm = computed(() =>
 )
 const message = computed(() =>
   text(confirmResult.value?.message) ||
-    (alreadyApplied.value ? 'This AI draft has already been applied.' : '')
+    (alreadyApplied.value ? 'This menu draft has already been applied.' : '')
 )
 
 async function confirmDraft() {
@@ -114,7 +114,7 @@ async function confirmDraft() {
 
   if (!canConfirm.value) {
     error.value = alreadyApplied.value
-      ? 'This AI draft has already been applied.'
+      ? 'This menu draft has already been applied.'
       : 'Process a source into a dish draft before confirming.'
     return
   }

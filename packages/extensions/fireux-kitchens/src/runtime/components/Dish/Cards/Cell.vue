@@ -27,16 +27,6 @@
               {{ subtitle }}
             </div>
           </div>
-
-          <UBadge
-            v-if="showMeta && meta"
-            color="neutral"
-            variant="soft"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ meta }}
-          </UBadge>
         </div>
 
         <p
@@ -53,7 +43,7 @@
             v-if="link && to"
             class="inline-flex items-center gap-1 font-medium text-primary"
           >
-            Edit dish
+            Open dish
             <UIcon
               name="i-lucide-arrow-right"
               class="size-3 transition group-hover:translate-x-0.5"
@@ -75,7 +65,6 @@ type Props = Pick<
   'id' | 'to' | 'title' | 'subtitle' | 'imageUrl' | 'description' | 'meta'
 > & {
   showSubtitle?: boolean
-  showMeta?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -86,8 +75,7 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  showSubtitle: true,
-  showMeta: true,
+  showSubtitle: false,
   showTagline: true,
   link: false,
   action: false,

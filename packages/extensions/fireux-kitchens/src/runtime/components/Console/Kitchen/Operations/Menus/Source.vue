@@ -19,12 +19,12 @@
                 {{ source.id }}
               </h2>
               <p class="text-sm text-dimmed">
-                {{ source.file_name || 'Menu source file' }}
+                {{ source.source_url || source.file_name || 'Menu source' }}
               </p>
             </div>
             <div class="flex flex-wrap gap-2">
               <UBadge :color="kindColor" variant="soft">
-                {{ source.file_kind || 'document' }}
+                {{ sourceKind }}
               </UBadge>
               <UBadge :color="statusColor" variant="soft">
                 {{ source.status }}
@@ -35,8 +35,8 @@
 
         <dl class="grid gap-3 text-sm md:grid-cols-2">
           <div>
-            <dt class="text-dimmed">File type</dt>
-            <dd class="font-medium text-highlighted">{{ source.file_type || 'Unknown' }}</dd>
+            <dt class="text-dimmed">Source type</dt>
+            <dd class="font-medium text-highlighted">{{ sourceKind }}</dd>
           </div>
           <div>
             <dt class="text-dimmed">Files</dt>
@@ -48,6 +48,10 @@
               {{ source.storage_app_id || source.app_id || 'Selected app' }}
             </dd>
           </div>
+          <div v-if="source.source_provider">
+            <dt class="text-dimmed">Provider</dt>
+            <dd class="font-medium text-highlighted">{{ source.source_provider }}</dd>
+          </div>
         </dl>
       </UCard>
 
@@ -57,24 +61,31 @@
             <div>
               <h2 class="text-base font-semibold text-highlighted">Source file</h2>
               <p class="text-sm text-dimmed">
-                Review the uploaded document before turning it into a structured menu.
+                Review the saved source before turning it into a structured menu.
               </p>
             </div>
             <UButton
-              v-if="source.file_url"
-              :to="source.file_url"
+              v-if="sourceLink"
+              :to="sourceLink"
               target="_blank"
               rel="noopener"
               icon="i-lucide-external-link"
               variant="soft"
             >
-              Open file
+              Open source
             </UButton>
           </div>
         </template>
 
+        <UAlert
+          v-if="source.source_url"
+          color="info"
+          variant="soft"
+          title="Menu URL source"
+          description="This source is a live menu or ordering URL. AI processing will read the fetched page content and map visible menu data into a review draft."
+        />
         <img
-          v-if="isPhoto && source.file_url"
+          v-else-if="isPhoto && source.file_url"
           :src="source.file_url"
           :alt="source.file_name || source.id"
           class="max-h-[70vh] w-full rounded-lg object-contain"
@@ -144,6 +155,10 @@ const uploadId = computed(() => {
 const source = computed(
   () => menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
 )
+const sourceKind = computed<MenuSourceUploadKind>(() => {
+  if (source.value?.source_url) return 'url'
+  return source.value?.file_kind || 'document'
+})
 const sourceFiles = computed(() =>
   Array.isArray(source.value?.files) && source.value.files.length
     ? source.value.files
@@ -158,6 +173,9 @@ const sourceFiles = computed(() =>
       : []
 )
 const isPhoto = computed(() => source.value?.file_kind === 'photo')
+const sourceLink = computed(() =>
+  text(source.value?.source_url) || text(source.value?.file_url)
+)
 const breadcrumbItems = computed(() => [
   {
     label: 'Menus',
@@ -182,9 +200,10 @@ const statusColor = computed(() => {
   return 'warning'
 })
 const kindColor = computed(() => {
-  const kind = source.value?.file_kind as MenuSourceUploadKind | undefined
+  const kind = sourceKind.value
   if (kind === 'photo') return 'primary'
   if (kind === 'pdf') return 'success'
+  if (kind === 'url') return 'info'
   return 'neutral'
 })
 const debug = computed(() => ({
