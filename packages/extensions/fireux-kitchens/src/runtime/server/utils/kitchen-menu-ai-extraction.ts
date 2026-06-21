@@ -38,8 +38,17 @@ const numberValue = (value: unknown) => {
   return Number.isFinite(number) ? number : 0
 }
 
-const MENU_SOURCE_EXTRACTION_MODEL =
-  text(process.env.FIREUX_AI_MENU_EXTRACTION_MODEL) || 'gpt-5.5'
+export const MENU_SOURCE_EXTRACTION_PROMPT_VERSION = 'menu-source-v2'
+export const MENU_SOURCE_EXTRACTION_MODEL =
+  text(process.env.FIREUX_AI_MENU_EXTRACTION_MODEL) || 'gpt-5.4-mini'
+export const MENU_SOURCE_EXTRACTION_STRONG_MODEL =
+  text(process.env.FIREUX_AI_MENU_EXTRACTION_STRONG_MODEL) || 'gpt-5.5'
+export const MENU_SOURCE_NORMALIZATION_MODEL =
+  text(process.env.FIREUX_AI_MENU_NORMALIZATION_MODEL) ||
+    'gpt-5.4-nano'
+const MENU_SOURCE_IMAGE_DETAIL = (
+  text(process.env.FIREUX_AI_MENU_IMAGE_DETAIL) || 'auto'
+) as 'low' | 'high' | 'auto'
 const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
 
@@ -132,13 +141,13 @@ function buildMenuSourceExtractionRequest(
                 id: input.file.id,
                 file_name: input.file.file_name,
                 url: input.file.file_url,
-                detail: 'high',
+                detail: MENU_SOURCE_IMAGE_DETAIL,
               },
             ],
-            imageDetail: 'high',
+            imageDetail: MENU_SOURCE_IMAGE_DETAIL,
           }),
       instruction:
-        `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has multiple sizes or variants, put them in price_options and keep the lowest displayed price in price. Do not invent dishes, sections, or prices.`,
+        `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has multiple sizes or variants, put them in price_options and keep the lowest displayed price in price. Preserve variants such as 3Stk/4Stk/5Stk, 300gr/400gr, or named kids pasta choices as labelled price_options. Do not invent dishes, sections, or prices.`,
     },
     context: {
       domain: 'restaurant_menu',
@@ -182,15 +191,20 @@ export async function extractMenuWithAi(
     appId: string
     menuId: string
     sourceFiles: ReturnType<typeof fileRows>
+    model?: string
+    normalizationModel?: string
   }
 ): Promise<MenuAiExtractionResult> {
+  const model = text(input.model) || MENU_SOURCE_EXTRACTION_MODEL
+  const normalizationModel =
+    text(input.normalizationModel) || MENU_SOURCE_NORMALIZATION_MODEL
   const extraction = await runFireuxAiDocumentExtraction<
     ExtractedMenuSection[],
     ExtractedMenu
   >({
     event,
     appId: input.appId,
-    model: MENU_SOURCE_EXTRACTION_MODEL,
+    model,
     fileTimeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
     files: input.sourceFiles,
     taskId: input.menuId,
@@ -229,7 +243,7 @@ export async function extractMenuWithAi(
   const normalized = await normalizeMenuExtractionWithAi(event, {
     appId: input.appId,
     menuId: input.menuId,
-    model: MENU_SOURCE_EXTRACTION_MODEL,
+    model: normalizationModel,
     timeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
     sections,
   })

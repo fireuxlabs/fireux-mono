@@ -31,7 +31,7 @@ const DEFAULT_KITCHEN_SLUG = 'la-tapberne'
 const DEFAULT_MENU_ID = 'main-copy'
 const DEFAULT_MODEL =
   process.env.FIREUX_AI_MENU_EXTRACTION_MODEL ||
-  'gpt-5.5'
+  'gpt-4.1-mini'
 
 const args = parseArgs(process.argv.slice(2))
 const appId = text(args.app || DEFAULT_APP_ID)

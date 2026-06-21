@@ -1,57 +1,58 @@
 <template>
-  <div
-    v-if="result"
-    class="flex flex-wrap items-center gap-3"
-  >
-    <UButton
-      v-if="!menu"
-      :loading="pending"
-      :disabled="!canConfirm"
-      icon="i-lucide-check-circle-2"
-      @click="confirmDraft"
-    >
-      Confirm draft and create menu
-    </UButton>
+  <UCard v-if="show">
+    <template #header>
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-highlighted">
+          Create dishes from AI draft
+        </h3>
+        <p class="text-sm text-dimmed">
+          Review the draft above, then confirm to create or replace the menu
+          dishes, sections, and menu items.
+        </p>
+      </div>
+    </template>
 
-    <p
-      v-if="menu"
-      class="text-sm text-dimmed"
-    >
-      This menu already exists. Updating existing menus needs a separate review
-      flow.
-    </p>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="space-y-1">
+        <p class="text-sm text-highlighted">
+          {{ sectionsCount }} section(s), {{ itemsCount }} dish item(s)
+        </p>
+        <p class="text-sm text-dimmed">
+          Existing published menus keep their published status after confirm.
+        </p>
+      </div>
 
-    <p
-      v-if="message"
-      class="text-sm text-success"
-    >
+      <UButton
+        icon="i-lucide-check-circle-2"
+        :loading="pending"
+        :disabled="!canConfirm"
+        @click="confirmDraft"
+      >
+        Confirm and create dishes
+      </UButton>
+    </div>
+
+    <p v-if="message" class="mt-3 text-sm text-success">
       {{ message }}
     </p>
-
-    <p
-      v-if="error"
-      class="text-sm text-error"
-    >
+    <p v-if="error" class="mt-3 text-sm text-error">
       {{ error }}
     </p>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
-  menu?: unknown | null
   source?: unknown | null
   result?: Record<string, unknown> | null
-  sections: Record<string, unknown>[]
   appId: string
   kitchenId: string
   menuId: string
   authToken: string
   blocked?: boolean
 }>()
-
 const emit = defineEmits<{
   confirmed: [payload: Record<string, unknown>]
 }>()
@@ -60,28 +61,61 @@ const pending = ref(false)
 const error = ref('')
 const confirmResult = ref<Record<string, unknown> | null>(null)
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+const records = (value: unknown) =>
+  Array.isArray(value) ? value.map(record) : []
+const sourceDraft = computed(() => record(record(props.source).ai_draft))
+const resultDraft = computed(() => {
+  const normalized = records(record(props.result?.normalized).sections)
+  return normalized.length
+    ? normalized
+    : records(record(props.result?.extracted).sections)
+})
+const draftSections = computed(() => {
+  const sections = records(sourceDraft.value.sections)
+  return sections.length ? sections : resultDraft.value
+})
+const sectionsCount = computed(() => draftSections.value.length)
+const itemsCount = computed(() =>
+  draftSections.value.reduce(
+    (count, section) => count + records(section.items).length,
+    0
+  )
+)
+const alreadyApplied = computed(() =>
+  Boolean(Object.keys(record(sourceDraft.value.applied)).length)
+)
+const show = computed(() =>
+  Boolean(props.source && (itemsCount.value || props.result))
+)
 const canConfirm = computed(() =>
   Boolean(
-    props.result &&
-      !props.menu &&
-      props.sections.length &&
-      props.source &&
+    itemsCount.value &&
       text(props.appId) &&
       text(props.kitchenId) &&
       text(props.menuId) &&
       text(props.authToken) &&
+      !alreadyApplied.value &&
       !props.blocked &&
       !pending.value
   )
 )
-const message = computed(() => text(confirmResult.value?.message))
+const message = computed(() =>
+  text(confirmResult.value?.message) ||
+    (alreadyApplied.value ? 'This AI draft has already been applied.' : '')
+)
 
 async function confirmDraft() {
   error.value = ''
   confirmResult.value = null
 
   if (!canConfirm.value) {
-    error.value = 'Process a source into a dish draft before confirming.'
+    error.value = alreadyApplied.value
+      ? 'This AI draft has already been applied.'
+      : 'Process a source into a dish draft before confirming.'
     return
   }
 
@@ -99,7 +133,7 @@ async function confirmDraft() {
         kitchenId: props.kitchenId,
         menuId: props.menuId,
         uploadId: props.menuId,
-        sections: props.sections,
+        confirmDishes: true,
       }),
     })
     const payload = await response.json().catch(() => null)

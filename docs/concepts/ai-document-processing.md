@@ -1,6 +1,6 @@
 AI document processing map
-Updated: 2026-06-20
-Ref: c450d3312
+Updated: 2026-06-21
+Ref: 03d4d55bd
 Role: map, not canon
 
 Purpose:
@@ -30,7 +30,9 @@ Current spine:
 - Each file returns `complete`, `empty`, or `failed`.
 - Domain adapter normalizes provider JSON into domain objects.
 - Domain adapter compares against existing records when useful.
-- Writes require a later explicit approval/apply step.
+- Confirmed runs may write draft/review records, but must not silently
+  overwrite published truth.
+- Confirmed runs may record billable usage against the owning domain.
 
 Provider-owned:
 - API provider config.
@@ -53,7 +55,9 @@ Menu example:
 - Kitchen owns `menu-uploads` and current menu/dish records.
 - `fireux-ai` processes uploaded menu photos.
 - Kitchen normalizes sections/items and compares against current dishes.
-- Processing is dry-run until an operator approves writes.
+- Processing estimates cost first, then writes draft/review data after
+  operator confirmation.
+- Kitchen records AI usage for later billing/invoicing.
 
 Future examples:
 - Professional profile CV: Professional owns the upload and profile fields;
@@ -64,7 +68,8 @@ Future examples:
 Working notes:
 - Do not skip cover pages or pre-filter meaning by filename/order. The AI
   should classify valid but empty/non-content pages as `empty`.
-- Do not write extracted data in the same step as extraction.
+- Do not overwrite published records in the same step as extraction.
+- Show a cost estimate before confirmed processing.
 - Keep provider output visible enough for debugging, but avoid storing giant
   raw model text by default.
 - Start with image-backed documents; PDF page rendering/extraction can be a

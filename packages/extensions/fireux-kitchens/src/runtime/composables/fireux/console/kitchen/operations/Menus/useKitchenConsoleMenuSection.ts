@@ -9,6 +9,7 @@ import {
 import type { MenuSection } from '../../../../../../models/menu/menu-section.model'
 import { useKitchenConsoleDishes } from '../Dishes/useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
+import { useDish } from '../../../../firestore/dish/useDish'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../firestore/menu/mutations/useMenuItemMutations'
 
@@ -54,6 +55,10 @@ export function useKitchenConsoleMenuSection() {
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
+  const dishMutations = useDish({
+    kitchenCollectionPath: menuState.rootCollection,
+    databaseId: menuState.databaseId,
+  })
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     dishState.dishes.value.forEach((dish) => {
@@ -80,6 +85,7 @@ export function useKitchenConsoleMenuSection() {
   return {
     ...menuState,
     ...itemMutations,
+    updateDish: dishMutations.updateDish,
     sectionId,
     section,
     items: itemState.items,

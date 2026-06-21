@@ -18,6 +18,7 @@ export type MenuAiNormalizationResult = {
   reason?: string
   provider?: string
   model?: string
+  usage?: Record<string, unknown>
   sections: ExtractedMenuSection[]
   notes: string[]
   changes: unknown[]
@@ -48,7 +49,7 @@ function buildMenuNormalizationRequest(
     input: {
       sections: input.sections,
       instruction:
-        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, descriptions, and source_file_ids. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
+        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, descriptions, and source_file_ids. Preserve labelled variants such as pieces, grams, sizes, and named choices in price_options. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
     },
     context: {
       domain: 'restaurant_menu',
@@ -123,6 +124,7 @@ export async function normalizeMenuExtractionWithAi(
       reason: response.reason || 'AI normalization failed.',
       provider: response.provider,
       model: response.model,
+      usage: response.usage,
       sections: [],
       notes: [],
       changes: [],
@@ -136,6 +138,7 @@ export async function normalizeMenuExtractionWithAi(
     status: sections.length ? 'complete' : 'empty',
     provider: response.provider,
     model: response.model,
+    usage: response.usage,
     sections,
     notes: notesFrom(response.data),
     changes: Array.isArray(changes) ? changes : [],

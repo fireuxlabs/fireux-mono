@@ -35,15 +35,24 @@
           :key="row.id"
           class="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-default bg-default p-3"
         >
-          <div>
+          <div class="min-w-0 flex-1">
             <h3 class="text-sm font-semibold text-highlighted">{{ row.label }}</h3>
             <p v-if="row.dish?.description" class="text-sm text-dimmed">
               {{ row.dish.description }}
             </p>
             <p class="text-xs text-dimmed">Dish: {{ row.dishId }}</p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <UBadge color="neutral" variant="soft">{{ formatItemPrice(row) }}</UBadge>
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-pencil"
+              :to="`/console/kitchen/dishes/${encodeURIComponent(row.dishId)}`"
+            >
+              Full dish
+            </UButton>
             <UButton
               size="sm"
               color="error"
@@ -53,6 +62,88 @@
               @click="archive(row.id)"
             />
           </div>
+
+          <UCollapsible class="w-full">
+            <UButton
+              block
+              color="neutral"
+              variant="soft"
+              size="sm"
+              trailing-icon="i-lucide-chevron-down"
+            >
+              Edit item
+            </UButton>
+
+            <template #content>
+              <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
+                <div class="grid gap-4 md:grid-cols-2">
+                  <MoleculesFormsFirestoreSimpleField
+                    label="Dish name"
+                    :firebase-value="row.label"
+                    placeholder="Dish name"
+                    :maxlength="160"
+                    :disabled="!canWrite"
+                    disabled-message="This menu is read-only."
+                    :validation-function="validateDishName"
+                    :update-function="(value) => saveDishName(row, value)"
+                  />
+
+                  <MoleculesFormsFirestoreSimpleField
+                    label="Menu price"
+                    type="number"
+                    :firebase-value="row.price"
+                    placeholder="0"
+                    :disabled="!canWrite"
+                    disabled-message="This menu is read-only."
+                    :update-function="(value) => saveItemPrice(row, value)"
+                  />
+                </div>
+
+                <MoleculesFormsFirestoreSimpleField
+                  label="Dish description"
+                  type="textarea"
+                  :rows="3"
+                  :firebase-value="row.dish?.description || ''"
+                  placeholder="Dish description"
+                  :maxlength="800"
+                  :disabled="!canWrite"
+                  disabled-message="This menu is read-only."
+                  :update-function="(value) => saveDishDescription(row, value)"
+                />
+
+                <div v-if="row.priceOptions.length" class="grid gap-3">
+                  <p class="text-sm font-medium text-highlighted">
+                    Variant prices
+                  </p>
+
+                  <div
+                    v-for="(option, optionIndex) in row.priceOptions"
+                    :key="`${row.id}-${optionIndex}`"
+                    class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-2"
+                  >
+                    <MoleculesFormsFirestoreSimpleField
+                      label="Option label"
+                      :firebase-value="option.label"
+                      placeholder="Option label"
+                      :disabled="!canWrite"
+                      disabled-message="This menu is read-only."
+                      :update-function="(value) => saveOptionLabel(row, optionIndex, value)"
+                    />
+
+                    <MoleculesFormsFirestoreSimpleField
+                      label="Option price"
+                      type="number"
+                      :firebase-value="option.price"
+                      placeholder="0"
+                      :disabled="!canWrite"
+                      disabled-message="This menu is read-only."
+                      :update-function="(value) => saveOptionPrice(row, optionIndex, value)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </template>
+          </UCollapsible>
         </article>
       </div>
 
@@ -79,14 +170,22 @@ const {
   pending,
   canWrite,
   archiveItem,
+  updateItem,
+  updateDish,
 } = useKitchenConsoleMenuSection()
 const toast = useToastify()
+const text = (value: unknown) => String(value ?? '').trim()
+const money = (value: unknown) => {
+  const number = Number(value)
+  return Number.isFinite(number) ? Math.max(0, number) : 0
+}
 
 const formatPrice = (price: number) =>
   price
     ? new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'CHF' }).format(price)
     : ''
-const formatOptionUnit = (quantity: number, unit: string) => {
+const formatOptionUnit = (label: string, quantity: number, unit: string) => {
+  if (label) return label
   if (unit === 'gram') return `${quantity} g`
   if (unit === 'piece') return `${quantity} pc`
 
@@ -99,7 +198,7 @@ const formatItemPrice = (row: MenuSectionItemRow) => {
         const price = formatPrice(option.price)
         if (!price) return ''
 
-        return [formatOptionUnit(option.quantity, option.unit), price]
+        return [formatOptionUnit(option.label, option.quantity, option.unit), price]
           .filter(Boolean)
           .join(' ')
       })
@@ -109,6 +208,51 @@ const formatItemPrice = (row: MenuSectionItemRow) => {
 
   return formatPrice(row.price) || 'No price'
 }
+const validateDishName = (value: string) => ({
+  isValid: Boolean(text(value)),
+  message: text(value) ? '' : 'Dish name is required.',
+})
+
+async function saveItemPatch(
+  row: MenuSectionItemRow,
+  patch: Record<string, unknown>,
+  title: string
+) {
+  await updateItem(kitchenId.value, menuId.value, sectionId.value, row.id, patch)
+  toast.add({ title, color: 'success', icon: 'i-lucide-check' })
+}
+
+async function saveDishPatch(
+  row: MenuSectionItemRow,
+  patch: Record<string, unknown>,
+  title: string
+) {
+  await updateDish(row.dishId, patch, { kitchenId: kitchenId.value })
+  toast.add({ title, color: 'success', icon: 'i-lucide-check' })
+}
+
+const saveDishName = (row: MenuSectionItemRow, value: string) =>
+  saveDishPatch(row, { name: text(value) }, 'Dish name saved')
+
+const saveDishDescription = (row: MenuSectionItemRow, value: string) =>
+  saveDishPatch(row, { description: text(value) }, 'Dish description saved')
+
+const saveItemPrice = (row: MenuSectionItemRow, value: string) =>
+  saveItemPatch(row, { price: money(value) }, 'Menu price saved')
+
+const saveOptionLabel = (row: MenuSectionItemRow, index: number, value: string) =>
+  saveItemPatch(row, {
+    price_options: row.priceOptions.map((option, optionIndex) =>
+      optionIndex === index ? { ...option, label: text(value) } : option
+    ),
+  }, 'Variant label saved')
+
+const saveOptionPrice = (row: MenuSectionItemRow, index: number, value: string) =>
+  saveItemPatch(row, {
+    price_options: row.priceOptions.map((option, optionIndex) =>
+      optionIndex === index ? { ...option, price: money(value) } : option
+    ),
+  }, 'Variant price saved')
 
 async function archive(itemId: string) {
   try {

@@ -33,12 +33,25 @@ export const MenuItemRecord = defineFireuxEntity({
 export type MenuItemStatus = 'active' | 'archived'
 
 export type MenuItemPriceOption = {
+  label: string
   quantity: number
   unit: string
   price: number
 }
 
 const cleanText = (value: unknown) => String(value ?? '').trim()
+const cleanNumber = (value: unknown) => {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+const quantityFromLabel = (label: string) => {
+  const match = label.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZäöüÄÖÜ]+)?/)
+
+  return {
+    quantity: match ? cleanNumber(match[1]?.replace(',', '.')) : 0,
+    unit: cleanText(match?.[2]),
+  }
+}
 const record = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -50,13 +63,19 @@ export function normalizeMenuItemPriceOptions(value: unknown): MenuItemPriceOpti
   return value
     .map((option) => {
       const data = record(option)
+      const label = cleanText(data.label)
+      const parsed = quantityFromLabel(label)
+      const quantity = cleanNumber(data.quantity) || parsed.quantity
+      const unit = cleanText(data.unit) || parsed.unit
+
       return {
-        quantity: Number(data.quantity || 0),
-        unit: cleanText(data.unit),
-        price: Number(data.price || 0),
+        label: label || [quantity || '', unit].filter(Boolean).join(' '),
+        quantity,
+        unit,
+        price: cleanNumber(data.price),
       }
     })
-    .filter((option) => option.quantity > 0 && option.price > 0)
+    .filter((option) => option.label && option.price > 0)
 }
 
 export const MenuItemModel = {

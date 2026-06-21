@@ -20,6 +20,7 @@ import {
   readMenuOwnerAppView,
 } from '../../utils/menu-owner-app.ts'
 import { menuSourcePayloadFromApi } from '../../utils/menu-source-payload.ts'
+import { readKitchenMenuPublicRows } from '../../utils/kitchen-menu-public-rows.ts'
 import {
   kitchenDisplayName,
   readMenuKitchenBySlug,
@@ -74,6 +75,11 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
       statusMessage: 'Menu not found.',
     })
   }
+  const sections = await readKitchenMenuPublicRows(db, {
+    appId: kitchenAppId,
+    kitchenId: kitchen.id,
+    menuId,
+  })
 
   return menuSurfaceFromData(menuId, data, {
     kitchenId: kitchen.id,
@@ -85,6 +91,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
       readRecordString(data, 'source_kind') ||
       (readRecordString(data, 'doc_url') ? '' : 'kitchen-menu'),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
+    sections,
     ...ownerAppView,
     ...ownerPayload,
   })
@@ -115,11 +122,20 @@ async function readMenuSurface(menuId: string) {
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
+  const sourceSections =
+    source.app_id && source.kitchen_id && source.menu_id
+      ? await readKitchenMenuPublicRows(db, {
+          appId: source.app_id,
+          kitchenId: source.kitchen_id,
+          menuId: source.menu_id,
+        })
+      : []
 
   return menuSurfaceFromData(menuId, data, {
     ...kitchenScope,
     ...ownerAppView,
     ...ownerPayload,
+    sections: sourceSections,
     createdByLabel:
       kitchenScope.createdByLabel ??
       menuCreatorLabel(createdBy, creatorLabels),

@@ -21,6 +21,7 @@ export type FireuxAiDocumentFileResult = {
   text_excerpt?: string
   sections_count: number
   items_count: number
+  usage?: Record<string, unknown>
 }
 
 export type FireuxAiDocumentExtractionResult<TData> = {
@@ -121,6 +122,7 @@ export async function runFireuxAiDocumentExtraction<TPart, TData>(
         text_excerpt: excerpt(response.text),
         sections_count: 0,
         items_count: 0,
+        usage: response.usage,
       })
       continue
     }
@@ -138,6 +140,7 @@ export async function runFireuxAiDocumentExtraction<TPart, TData>(
       reason: result.reason,
       sections_count: result.sections_count || 0,
       items_count: result.items_count || 0,
+      usage: response.usage,
     })
 
     console.info(

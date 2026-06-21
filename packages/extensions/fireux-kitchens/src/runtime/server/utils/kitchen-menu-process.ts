@@ -1,4 +1,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import {
+  normalizeMenuItemPriceOptions,
+} from '../../models/menu/menu-item.model'
 
 export type MenuProcessFlag = {
   code: string
@@ -89,7 +92,7 @@ const itemRow = (
   name: text(dish?.name),
   description: text(dish?.description),
   price: numberValue(item.price),
-  price_options: Array.isArray(item.price_options) ? item.price_options : [],
+  price_options: normalizeMenuItemPriceOptions(item.price_options),
   status: text(item.status),
   sort_order: numberValue(item.sort_order),
 })
@@ -108,6 +111,90 @@ const normalizeKey = (value: unknown) =>
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
+
+const wordSet = (value: string) => new Set(
+  normalizeKey(value).split(/\s+/g).filter((word) => word.length > 2)
+)
+
+const overlapScore = (left: string, right: string) => {
+  const leftWords = wordSet(left)
+  const rightWords = wordSet(right)
+  if (!leftWords.size || !rightWords.size) return 0
+
+  let overlap = 0
+  for (const word of leftWords) if (rightWords.has(word)) overlap += 1
+  return (overlap * 2) / (leftWords.size + rightWords.size)
+}
+
+const sameSection = (left: string, right: string) =>
+  normalizeKey(left) === normalizeKey(right)
+
+const similarEnough = (
+  current: ReturnType<typeof flatCurrentItems>[number],
+  extracted: ReturnType<typeof flatExtractedItems>[number]
+) => {
+  const score = overlapScore(current.name, extracted.name)
+  const samePrice = Boolean(
+    current.price &&
+      extracted.price &&
+      Math.abs(current.price - extracted.price) < 0.05
+  )
+
+  return sameSection(current.section, extracted.section) &&
+    (score >= 0.55 || (samePrice && score >= 0.25))
+}
+
+const pairItems = (
+  currentItems: ReturnType<typeof flatCurrentItems>,
+  extractedItems: ReturnType<typeof flatExtractedItems>
+) => {
+  const pairs: Array<{
+    current: ReturnType<typeof flatCurrentItems>[number]
+    extracted: ReturnType<typeof flatExtractedItems>[number]
+    exact: boolean
+  }> = []
+  const usedCurrent = new Set<number>()
+  const usedExtracted = new Set<number>()
+  const addPair = (currentIndex: number, extractedIndex: number, exact: boolean) => {
+    pairs.push({
+      current: currentItems[currentIndex],
+      extracted: extractedItems[extractedIndex],
+      exact,
+    })
+    usedCurrent.add(currentIndex)
+    usedExtracted.add(extractedIndex)
+  }
+
+  currentItems.forEach((current, currentIndex) => {
+    const extractedIndex = extractedItems.findIndex(
+      (extracted, index) =>
+        !usedExtracted.has(index) &&
+        current.key &&
+        current.key === extracted.key
+    )
+
+    if (extractedIndex < 0) return
+    addPair(currentIndex, extractedIndex, true)
+  })
+
+  currentItems.forEach((current, currentIndex) => {
+    if (usedCurrent.has(currentIndex)) return
+
+    const extractedIndex = extractedItems.findIndex(
+      (extracted, index) =>
+        !usedExtracted.has(index) && similarEnough(current, extracted)
+    )
+
+    if (extractedIndex < 0) return
+    addPair(currentIndex, extractedIndex, false)
+  })
+
+  return {
+    pairs,
+    missing: currentItems.filter((_, index) => !usedCurrent.has(index)),
+    added: extractedItems.filter((_, index) => !usedExtracted.has(index)),
+  }
+}
 
 const money = (value: unknown) => {
   if (typeof value === 'number' && Number.isFinite(value)) return value
@@ -140,7 +227,7 @@ export function normalizeExtractedSections(
               description: text(row.description),
               price: money(row.price),
               price_options: Array.isArray(row.price_options)
-                ? row.price_options
+                ? normalizeMenuItemPriceOptions(row.price_options)
                 : [],
               source_file_ids: Array.isArray(row.source_file_ids)
                 ? row.source_file_ids.map(text).filter(Boolean)
@@ -209,6 +296,7 @@ function flatCurrentItems(current: Awaited<ReturnType<typeof readCurrentMenuShap
       section: section.label,
       name: item.name,
       price: item.price,
+      price_options: normalizeMenuItemPriceOptions(item.price_options),
     }))
   )
 }
@@ -220,9 +308,19 @@ function flatExtractedItems(sections: ExtractedMenuSection[]) {
       section: section.label,
       name: item.name,
       price: item.price,
+      price_options: normalizeMenuItemPriceOptions(item.price_options),
     }))
   )
 }
+
+const priceOptionsCount = (
+  items: ReturnType<typeof flatCurrentItems> | ReturnType<typeof flatExtractedItems>
+) => items.reduce((count, item) => count + item.price_options.length, 0)
+
+const addFlag = (
+  flags: MenuProcessFlag[], code: string, level: MenuProcessFlag['level'],
+  message: string, item: string, section: string
+) => flags.push({ code, level, message, item, section })
 
 export function compareExtractedToCurrent(
   current: Awaited<ReturnType<typeof readCurrentMenuShape>>,
@@ -231,43 +329,55 @@ export function compareExtractedToCurrent(
   const flags: MenuProcessFlag[] = []
   const currentItems = flatCurrentItems(current)
   const extractedItems = flatExtractedItems(extractedSections)
-  const currentByKey = new Map(currentItems.map((item) => [item.key, item]))
-  const extractedByKey = new Map(extractedItems.map((item) => [item.key, item]))
+  const matched = pairItems(currentItems, extractedItems)
 
-  for (const item of currentItems) {
-    if (!item.key || extractedByKey.has(item.key)) continue
-    flags.push({
-      code: 'missing-in-extraction',
-      level: 'warning',
-      message: `${item.name} exists in the current menu but was not found by AI.`,
-      item: item.name,
-      section: item.section,
-    })
+  for (const item of matched.missing) {
+    addFlag(flags, 'missing-in-extraction', 'warning',
+      `${item.name} exists in the current menu but was not found by AI.`,
+      item.name, item.section)
+  }
+
+  for (const item of matched.added) {
+    addFlag(flags, 'new-in-extraction', 'info',
+      `${item.name} was found by AI but is not in the current menu.`,
+      item.name, item.section)
+  }
+
+  for (const { current, extracted, exact } of matched.pairs) {
+    if (!exact && current.name !== extracted.name) {
+      addFlag(flags, 'name-changed', 'info',
+        `${current.name} appears as ${extracted.name} in the AI draft.`,
+        extracted.name, extracted.section)
+    }
+
+    if (current.price && extracted.price && Math.abs(current.price - extracted.price) >= 0.05) {
+      addFlag(flags, 'price-diff', 'warning',
+        `${current.name} price differs: current ${current.price}, AI ${extracted.price}.`,
+        current.name, current.section)
+    }
   }
 
   for (const item of extractedItems) {
-    if (!item.key || currentByKey.has(item.key)) continue
-    flags.push({
-      code: 'new-in-extraction',
-      level: 'info',
-      message: `${item.name} was found by AI but is not in the current menu.`,
-      item: item.name,
-      section: item.section,
-    })
+    if (!item.price_options.length) continue
+
+    addFlag(flags, 'variants-found', 'info',
+      `${item.name} has ${item.price_options.length} variant option(s) in the AI draft.`,
+      item.name, item.section)
+
+    const current = matched.pairs.find((pair) => pair.extracted === item)?.current
+    if (!current || current.price_options.length >= item.price_options.length) continue
+
+    addFlag(flags, 'variants-need-review', 'warning',
+      `${item.name} has ${item.price_options.length} AI option(s), but the current menu has ${current.price_options.length}.`,
+      item.name, item.section)
   }
 
-  for (const item of currentItems) {
-    const extracted = extractedByKey.get(item.key)
-    if (!extracted || !item.price || !extracted.price) continue
-    if (Math.abs(item.price - extracted.price) < 0.05) continue
+  for (const item of matched.missing) {
+    if (!item.price_options.length) continue
 
-    flags.push({
-      code: 'price-diff',
-      level: 'warning',
-      message: `${item.name} price differs: current ${item.price}, AI ${extracted.price}.`,
-      item: item.name,
-      section: item.section,
-    })
+    addFlag(flags, 'variants-missing-in-extraction', 'warning',
+      `${item.name} has current menu variants, but AI did not extract variants.`,
+      item.name, item.section)
   }
 
   return {
@@ -275,6 +385,8 @@ export function compareExtractedToCurrent(
     counts: {
       extracted_sections: extractedSections.length,
       extracted_items: extractedItems.length,
+      current_price_options: priceOptionsCount(currentItems),
+      extracted_price_options: priceOptionsCount(extractedItems),
     },
   }
 }

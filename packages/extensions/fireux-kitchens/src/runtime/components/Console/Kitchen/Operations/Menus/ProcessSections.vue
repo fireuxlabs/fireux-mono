@@ -34,6 +34,20 @@
               >
                 {{ item.description }}
               </p>
+              <div
+                v-if="item.priceOptions.length"
+                class="flex flex-wrap gap-1 pt-1"
+              >
+                <UBadge
+                  v-for="option in item.priceOptions"
+                  :key="`${item.name}-${option.label}-${option.price}`"
+                  color="neutral"
+                  variant="soft"
+                  size="xs"
+                >
+                  {{ option.label }} · {{ option.price }}
+                </UBadge>
+              </div>
             </div>
             <p
               v-if="item.price"
@@ -56,6 +70,10 @@ defineProps<{
       name: string
       description: string
       price: string
+      priceOptions: {
+        label: string
+        price: string
+      }[]
     }[]
   }[]
   emptyLabel: string

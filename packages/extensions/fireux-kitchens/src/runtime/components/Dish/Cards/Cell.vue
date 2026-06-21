@@ -1,96 +1,78 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
-    <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
+  <component
+    :is="rootComponent"
+    v-bind="rootAttrs"
+    class="group block w-full rounded-2xl border border-default bg-default p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:bg-elevated hover:shadow-md"
+    @click="onClick"
+  >
+    <div class="flex items-start gap-3">
       <UAvatar
         :src="imageUrl || undefined"
+        :alt="title"
         icon="i-lucide-utensils"
-        size="md"
-        class="shrink-0"
+        size="lg"
+        class="shrink-0 ring-1 ring-default"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
+      <div class="min-w-0 flex-1 space-y-2">
+        <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-
+            <div class="truncate text-base font-semibold text-highlighted">
+              {{ title || 'Untitled dish' }}
+            </div>
             <div
               v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
+              class="truncate text-xs text-muted"
             >
               {{ subtitle }}
             </div>
           </div>
+
+          <UBadge
+            v-if="showMeta && meta"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            class="shrink-0"
+          >
+            {{ meta }}
+          </UBadge>
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
+        <p
+          v-if="showTagline"
+          class="line-clamp-2 min-h-9 text-sm leading-5 text-dimmed"
+          :class="{ italic: !description }"
+        >
+          {{ description || 'No description yet.' }}
+        </p>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="description">{{ description }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
-      </div>
-    </div>
-</NuxtLink>
-
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
-    <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
-      <UAvatar
-        :src="imageUrl || undefined"
-        icon="i-lucide-utensils"
-        size="md"
-        class="shrink-0"
-      />
-
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
-            >
-              {{ subtitle }}
-            </div>
-          </div>
-        </div>
-
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
-
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="description">{{ description }}</span>
-          <span v-else class="italic">missing</span>
+        <div class="flex items-center justify-between gap-3 pt-1 text-xs text-muted">
+          <span class="truncate font-mono">{{ id }}</span>
+          <span
+            v-if="link && to"
+            class="inline-flex items-center gap-1 font-medium text-primary"
+          >
+            Edit dish
+            <UIcon
+              name="i-lucide-arrow-right"
+              class="size-3 transition group-hover:translate-x-0.5"
+            />
+          </span>
         </div>
       </div>
     </div>
-</div>
+  </component>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 
 import type { DishCard } from '../../../composables/fireux/firestore/dish/useDish'
 
 type Props = Pick<
   DishCard.Card,
-  'to' | 'title' | 'subtitle' | 'imageUrl' | 'description' | 'meta'
+  'id' | 'to' | 'title' | 'subtitle' | 'imageUrl' | 'description' | 'meta'
 > & {
   showSubtitle?: boolean
   showMeta?: boolean
@@ -110,6 +92,13 @@ const props = withDefaults(defineProps<Props>(), {
   link: false,
   action: false,
 })
+
+const rootComponent = computed(() => props.link && props.to ? 'NuxtLink' : 'button')
+const rootAttrs = computed(() =>
+  props.link && props.to
+    ? { to: props.to }
+    : { type: 'button' }
+)
 
 const onClick = () => {
   if (props.action) emit('action')

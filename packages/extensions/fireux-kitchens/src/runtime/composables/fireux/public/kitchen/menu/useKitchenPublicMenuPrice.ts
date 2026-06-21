@@ -18,9 +18,11 @@ const formatPrice = (price: number, options: MenuItemPriceOptions) =>
   })
 
 const formatOptionUnit = (
+  label: string,
   quantity: number,
   unit: string
 ) => {
+  if (label) return label
   if (unit === 'gram') return `${quantity} g`
   if (unit === 'piece') {
     return `${quantity} pc`
@@ -42,7 +44,7 @@ export const formatKitchenPublicMenuItemPrice = (
         if (!price) return ''
 
         return [
-          formatOptionUnit(option.quantity, option.unit),
+          formatOptionUnit(option.label, option.quantity, option.unit),
           price,
         ].filter(Boolean).join(' ')
       })

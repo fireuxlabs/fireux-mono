@@ -4,21 +4,11 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 class="text-base font-semibold text-highlighted">
-            Process source with AI
+            Convert menu with AI
           </h2>
           <p class="text-sm text-dimmed">
             {{ processDescription }}
           </p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <UButton
-            :loading="pendingMode === 'full'"
-            :disabled="!canProcess"
-            icon="i-lucide-scan-text"
-            @click="processSource('full')"
-          >
-            Convert to dishes with AI
-          </UButton>
         </div>
       </div>
     </template>
@@ -34,28 +24,35 @@
         v-else
         class="text-sm text-dimmed"
       >
-        This reads the uploaded menu document and returns a cleaned dish draft
-        for review. It does not create menu, section, or dish records yet.
+        This reads the uploaded menu document and saves a structured menu draft
+        with sections, dishes, items, prices, and variants.
       </p>
 
-      <p
-        v-if="statusMessage"
-        class="text-sm text-dimmed"
-      >
-        {{ statusMessage }}
-      </p>
+      <UCollapsible v-if="source" :default-open="true">
+        <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+          Process source
+        </UButton>
 
-      <p
-        v-if="error"
-        class="text-sm text-error"
-      >
-        {{ error }}
-      </p>
+        <template #content>
+          <div class="mt-3 space-y-3">
+            <ConsoleKitchenOperationsMenusProcessCost
+              :can-process="canProcess"
+              :pending-mode="pendingMode"
+              @select="processSource"
+            />
 
-      <div
-        v-if="result"
-        class="space-y-4"
-      >
+            <p v-if="statusMessage" class="text-sm text-dimmed">
+              {{ statusMessage }}
+            </p>
+
+            <p v-if="error" class="text-sm text-error">
+              {{ error }}
+            </p>
+          </div>
+        </template>
+      </UCollapsible>
+
+      <div v-if="result" class="space-y-4">
         <div class="grid gap-3 md:grid-cols-4">
           <UPageCard
             v-for="stat in stats"
@@ -66,98 +63,112 @@
           />
         </div>
 
-        <UCard v-if="fileResults.length">
-          <template #header>
-            <h3 class="text-sm font-semibold text-highlighted">
-              Uploaded document
-            </h3>
-          </template>
+        <UCollapsible v-if="fileResults.length || writeMessage">
+          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+            Uploaded document
+          </UButton>
 
-          <div class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="file in fileResults"
-              :key="file.id"
-              :color="file.status === 'failed' ? 'error' : file.status === 'empty' ? 'neutral' : 'success'"
-              variant="soft"
-            >
-              {{ file.file_name }} · {{ file.status }}
-            </UBadge>
-          </div>
-        </UCard>
-
-        <UCard v-if="flags.length">
-          <template #header>
-            <h3 class="text-sm font-semibold text-highlighted">
-              Review flags
-            </h3>
-          </template>
-
-          <ul class="space-y-2">
-            <li
-              v-for="flag in flags"
-              :key="`${flag.code}-${flag.message}`"
-              class="rounded-lg border border-default p-3 text-sm"
-            >
-              <div class="flex flex-wrap items-center gap-2">
+          <template #content>
+            <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
+              <div v-if="fileResults.length" class="flex flex-wrap gap-2">
                 <UBadge
-                  :color="flag.level === 'error' ? 'error' : flag.level === 'warning' ? 'warning' : 'info'"
+                  v-for="file in fileResults"
+                  :key="file.id"
+                  :color="file.status === 'failed' ? 'error' : file.status === 'empty' ? 'neutral' : 'success'"
                   variant="soft"
                 >
-                  {{ flag.code }}
+                  {{ file.file_name }} · {{ file.status }}
                 </UBadge>
-                <span class="text-highlighted">{{ flag.message }}</span>
               </div>
-            </li>
-          </ul>
-        </UCard>
 
-        <div
-          class="grid gap-4"
-          :class="{ 'xl:grid-cols-2': currentSections.length }"
-        >
-          <UCard v-if="currentSections.length">
-            <template #header>
-              <h3 class="text-sm font-semibold text-highlighted">
-                Existing menu
-              </h3>
+              <p v-if="writeMessage" class="text-sm text-dimmed">
+                {{ writeMessage }}
+              </p>
+            </div>
+          </template>
+        </UCollapsible>
+
+        <UCollapsible v-if="flags.length" :default-open="true">
+          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+            Review flags
+          </UButton>
+
+          <template #content>
+            <ul class="mt-3 space-y-2">
+              <li
+                v-for="flag in flags"
+                :key="`${flag.code}-${flag.message}`"
+                class="rounded-lg border border-default p-3 text-sm"
+              >
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge
+                    :color="flag.level === 'error' ? 'error' : flag.level === 'warning' ? 'warning' : 'info'"
+                    variant="soft"
+                  >
+                    {{ flag.code }}
+                  </UBadge>
+                  <span class="text-highlighted">{{ flag.message }}</span>
+                </div>
+              </li>
+            </ul>
+          </template>
+        </UCollapsible>
+
+        <div class="grid gap-4" :class="{ 'xl:grid-cols-2': currentSections.length }">
+          <UCollapsible v-if="currentSections.length">
+            <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+              Existing menu
+            </UButton>
+
+            <template #content>
+              <div class="mt-3 rounded-lg border border-default p-3">
+                <ConsoleKitchenOperationsMenusProcessSections
+                  :sections="currentSections"
+                  empty-label="No existing sections found."
+                />
+              </div>
             </template>
+          </UCollapsible>
 
-            <ConsoleKitchenOperationsMenusProcessSections
-              :sections="currentSections"
-              empty-label="No existing sections found."
-            />
-          </UCard>
+          <UCollapsible :default-open="true">
+            <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+              Normalized menu draft
+            </UButton>
 
-          <UCard>
-            <template #header>
-              <div class="space-y-1">
-                <h3 class="text-sm font-semibold text-highlighted">
-                  Normalized menu draft
-                </h3>
+            <template #content>
+              <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
                 <p class="text-sm text-dimmed">
                   The raw read has been cleaned into reviewable menu sections.
                 </p>
+
+                <ConsoleKitchenOperationsMenusProcessSections
+                  :sections="draftSections"
+                  empty-label="No draft sections returned."
+                />
               </div>
             </template>
-
-            <ConsoleKitchenOperationsMenusProcessSections
-              :sections="draftSections"
-              empty-label="No draft sections returned."
-            />
-          </UCard>
+          </UCollapsible>
         </div>
 
-        <ConsoleKitchenOperationsMenusConfirm
-          :menu="menu"
-          :source="source"
-          :result="result"
-          :sections="confirmSections"
-          :app-id="activeKitchenAppId"
-          :kitchen-id="kitchenId"
-          :menu-id="menuId"
-          :auth-token="authToken"
-          :blocked="Boolean(pendingMode)"
-        />
+        <UCollapsible :default-open="true">
+          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
+            Confirm dishes
+          </UButton>
+
+          <template #content>
+            <div class="mt-3">
+              <ConsoleKitchenOperationsMenusConfirm
+                :source="source"
+                :result="result"
+                :app-id="activeKitchenAppId"
+                :kitchen-id="kitchenId"
+                :menu-id="menuId"
+                :auth-token="authToken"
+                :blocked="Boolean(pendingMode)"
+              />
+            </div>
+          </template>
+        </UCollapsible>
       </div>
 
       <DevJson
@@ -185,7 +196,7 @@ const {
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
 const authToken = ref('')
-const pendingMode = ref<'test' | 'full' | ''>('')
+const pendingMode = ref<'standard' | 'strong' | ''>('')
 const error = ref('')
 const result = ref<Record<string, unknown> | null>(null)
 const text = (value: unknown) => String(value ?? '').trim()
@@ -203,18 +214,21 @@ const priceText = (value: unknown) => {
   const number = Number(value)
   return Number.isFinite(number) && number > 0 ? `CHF ${number}` : ''
 }
+const optionLabel = (option: Record<string, unknown>) =>
+  text(option.label) ||
+    [text(option.quantity), text(option.unit)].filter(Boolean).join(' ')
 const processDescription = computed(() =>
   menu.value
-    ? 'Dry-run extraction for this menu source. Existing menu records are only used for comparison.'
-    : 'Convert this uploaded menu document into a dish draft. No menu records are changed.'
+    ? 'Convert the upload and save a review draft. Published menus are not overwritten automatically.'
+    : 'Convert this upload into a new draft menu.'
 )
 const statusMessage = computed(() => {
-  if (pendingMode.value === 'test') {
-    return 'Testing the uploaded menu document.'
+  if (pendingMode.value === 'standard') {
+    return 'Converting and saving the uploaded menu. This may take a few minutes.'
   }
 
-  if (pendingMode.value === 'full') {
-    return 'Converting the uploaded menu document into dishes. This may take a few minutes.'
+  if (pendingMode.value === 'strong') {
+    return 'Rerunning with the stronger model. This costs more than the standard pass.'
   }
 
   return ''
@@ -244,8 +258,20 @@ const stats = computed(() => [
     value: numberText(counts.value.normalized_items ?? counts.value.extracted_items),
   },
   {
+    label: 'Draft variants',
+    value: numberText(counts.value.extracted_price_options),
+  },
+  {
     label: 'Review flags',
     value: String(flags.value.length),
+  },
+  {
+    label: 'Menu write',
+    value: text(record(result.value?.write).action) || 'Pending',
+  },
+  {
+    label: 'AI calls',
+    value: numberText(record(result.value?.cost).planned_ai_calls),
   },
 ])
 const fileResults = computed(() =>
@@ -262,6 +288,10 @@ const flags = computed(() =>
     message: text(flag.message),
   }))
 )
+const writeMessage = computed(() =>
+  text(result.value?.message) ||
+    text(record(result.value?.write).action)
+)
 const toSections = (value: unknown) =>
   records(value).map((section) => ({
     label: text(section.label),
@@ -269,6 +299,12 @@ const toSections = (value: unknown) =>
       name: text(item.name),
       description: text(item.description),
       price: priceText(item.price),
+      priceOptions: records(item.price_options)
+        .map((option) => ({
+          label: optionLabel(option),
+          price: priceText(option.price),
+        }))
+        .filter((option) => option.label && option.price),
     })),
   }))
 const currentSections = computed(() =>
@@ -289,12 +325,6 @@ const normalizedSections = computed(() =>
 const draftSections = computed(() =>
   normalizedSections.value.length ? normalizedSections.value : extractedSections.value
 )
-const confirmSections = computed(() =>
-  rawNormalizedSections.value.length
-    ? rawNormalizedSections.value
-    : rawExtractedSections.value
-)
-
 watch(
   currentUser,
   async (user) => {
@@ -303,7 +333,7 @@ watch(
   { immediate: true }
 )
 
-async function processSource(mode: 'test' | 'full') {
+async function processSource(mode: 'standard' | 'strong') {
   error.value = ''
   result.value = null
 
@@ -326,7 +356,9 @@ async function processSource(mode: 'test' | 'full') {
         kitchenId: kitchenId.value,
         menuId: menuId.value,
         uploadId: menuId.value,
-        limit: mode === 'test' ? 1 : undefined,
+        quality: mode,
+        force: mode === 'strong',
+        confirmBilling: true,
       }),
     })
     const payload = await response.json().catch(() => null)
