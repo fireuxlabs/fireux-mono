@@ -224,6 +224,7 @@ const processDescription = computed(() =>
 const sourceDescription = computed(() =>
   'This reads the saved menu source and saves a structured menu draft with sections, dishes, items, prices, and variants.'
 )
+const uploadId = computed(() => text(record(source.value).id) || text(menuId.value))
 const statusMessage = computed(() => {
   if (pendingMode.value === 'standard') {
     return 'Converting and saving the uploaded menu. This may take a few minutes.'
@@ -357,7 +358,7 @@ async function processSource(mode: 'standard' | 'strong') {
         appId: activeKitchenAppId.value,
         kitchenId: kitchenId.value,
         menuId: menuId.value,
-        uploadId: menuId.value,
+        uploadId: uploadId.value,
         quality: mode,
         force: mode === 'strong',
         confirmBilling: true,

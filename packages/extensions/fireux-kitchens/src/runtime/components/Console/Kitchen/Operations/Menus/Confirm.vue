@@ -68,6 +68,7 @@ const record = (value: unknown): Record<string, unknown> =>
 const records = (value: unknown) =>
   Array.isArray(value) ? value.map(record) : []
 const sourceDraft = computed(() => record(record(props.source).ai_draft))
+const uploadId = computed(() => text(record(props.source).id) || text(props.menuId))
 const resultDraft = computed(() => {
   const normalized = records(record(props.result?.normalized).sections)
   return normalized.length
@@ -132,7 +133,7 @@ async function confirmDraft() {
         appId: props.appId,
         kitchenId: props.kitchenId,
         menuId: props.menuId,
-        uploadId: props.menuId,
+        uploadId: uploadId.value,
         confirmDishes: true,
       }),
     })
