@@ -24,6 +24,10 @@ import {
 type CreateMenuOrderBody = {
   itemId?: string
   quantity?: number
+  items?: Array<{
+    itemId?: string
+    quantity?: number
+  }>
   order_type?: string
   requested_for?: string
 }
@@ -88,6 +92,20 @@ const fireStateForOrderType = (
   if (orderType === 'pre_order') return 'held'
   if (orderType === 'dine_in') return 'fired'
   return 'ready_to_fire'
+}
+const quantity = (value: unknown) =>
+  Math.max(1, Number(value || 1) || 1)
+const readRequestedItems = (body: CreateMenuOrderBody | null) => {
+  const items = Array.isArray(body?.items)
+    ? body.items
+    : [{ itemId: body?.itemId, quantity: body?.quantity }]
+
+  return items
+    .map((item) => ({
+      itemId: text(item.itemId),
+      quantity: quantity(item.quantity),
+    }))
+    .filter((item) => item.itemId)
 }
 const readMenuDoc = async (
   appId: string,
@@ -178,15 +196,14 @@ export default defineEventHandler(async (event) => {
   const menuId = text(getRouterParam(event, 'menuId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   const body = (await readBody(event)) as CreateMenuOrderBody | null
-  const itemId = text(body?.itemId)
-  const quantity = Math.max(1, Number(body?.quantity || 1) || 1)
+  const requestedItems = readRequestedItems(body)
   if (!menuId) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Menu path is required.',
     })
   }
-  if (!itemId) {
+  if (!requestedItems.length) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Menu item is required.',
@@ -209,13 +226,32 @@ export default defineEventHandler(async (event) => {
     kitchenId: context.kitchenId,
     menuId: context.menuId,
   })
-  const item = rows
-    .flatMap((section) => section.items)
-    .find((row) => row.id === itemId)
-  if (!item?.dish_id) {
+  const rowsById = new Map(
+    rows.flatMap((section) =>
+      section.items.map((item) => [item.id, item])
+    )
+  )
+  const orderItems = requestedItems.map((requestedItem, index) => {
+    const item = rowsById.get(requestedItem.itemId)
+    if (!item?.dish_id) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Menu item not found.',
+      })
+    }
+
+    return {
+      id: `item-${index + 1}`,
+      dish_id: item.dish_id,
+      label: item.name,
+      quantity: requestedItem.quantity,
+      checked: false,
+    }
+  })
+  if (!orderItems.length) {
     throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu item not found.',
+      statusCode: 400,
+      statusMessage: 'Menu item is required.',
     })
   }
 
@@ -234,15 +270,7 @@ export default defineEventHandler(async (event) => {
     requested_for: requestedFor,
     fire_state: fireState,
     channel: 'menu',
-    items: [
-      {
-        id: 'item-1',
-        dish_id: item.dish_id,
-        label: item.name,
-        quantity,
-        checked: false,
-      },
-    ],
+    items: orderItems,
     created_at: now,
     updated_at: now,
     created: {

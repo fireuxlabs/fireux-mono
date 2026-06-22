@@ -7,6 +7,8 @@ import {
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import { getDemoKitchenCollection } from '../../../../demo/kitchen/scenarios'
+import { useKitchenOrderDelete } from './mutations/useKitchenOrderDelete'
+import { useKitchenOrderStage } from './mutations/useKitchenOrderStage'
 
 export function useKitchenConsoleOrders() {
   const {
@@ -32,6 +34,14 @@ export function useKitchenConsoleOrders() {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })
+  const { trashKitchenOrder } = useKitchenOrderDelete({
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
+  const { stageKitchenOrder } = useKitchenOrderStage({
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
   const page = useKitchenConsoleReadPage<KitchenOrder>({
     collectionName: KitchenOrderStorage.collection,
     selectedKitchen,
@@ -53,26 +63,93 @@ export function useKitchenConsoleOrders() {
       ? `demo/kitchens/${kitchenId.value}/orders`
       : ordersPath.value
   )
-  const ticketOrders = computed(() =>
-    [...consoleOrders.value].sort((a, b) => {
-      const aTime = getRailTime(a)
-      const bTime = getRailTime(b)
-      if (aTime !== bTime) return aTime - bTime
-      return String(a.order_number || a.id).localeCompare(
-        String(b.order_number || b.id)
-      )
-    })
+  const visibleOrders = computed(() =>
+    consoleOrders.value.filter((order) => getOrderStatus(order) !== 'trashed')
   )
+  const queueOrders = computed(() =>
+    sortOrders(
+      visibleOrders.value.filter((order) =>
+        !isArchivedOrder(order) && !isPassOrder(order)
+      )
+    )
+  )
+  const passOrders = computed(() =>
+    sortOrders(visibleOrders.value.filter(isPassOrder))
+  )
+  const archiveOrders = computed(() =>
+    sortOrders(visibleOrders.value.filter(isArchivedOrder))
+  )
+  const ticketOrders = computed(() =>
+    sortOrders(visibleOrders.value)
+  )
+  const debugOrder = (order: KitchenOrder) => ({
+    id: order.id,
+    orderNumber: order.order_number || '',
+    status: order.status || '',
+    orderType: order.order_type || getServiceMode(order) || '',
+    fireState: order.fire_state || '',
+    requestedFor: orderValue(order, [
+      'requested_for',
+      'pickup_at',
+      'pickup_time',
+      'collection_at',
+      'due_at',
+    ]) || '',
+    items: Array.isArray(order.items)
+      ? order.items.map((item) => ({
+          id: item.id,
+          dishId: item.dish_id,
+          label: item.label,
+          quantity: item.quantity,
+          checked: item.checked,
+        }))
+      : [],
+  })
+  const debugOrders = computed(() => ({
+    queue: queueOrders.value.map(debugOrder),
+    pass: passOrders.value.map(debugOrder),
+    archive: archiveOrders.value.map(debugOrder),
+  }))
+  const debugCount = (match: (order: KitchenOrder) => boolean) =>
+    consoleOrders.value.filter(match).length
+  const moveOrderToStage = async (
+    stage: 'queue' | 'pass' | 'archive',
+    orderId: string
+  ) => {
+    if (readOnly.value || !canWrite.value) return
+    await stageKitchenOrder(kitchenId.value, orderId, stage)
+  }
+  const queueOrder = (orderId: string) => moveOrderToStage('queue', orderId)
+  const passOrder = (orderId: string) => moveOrderToStage('pass', orderId)
+  const archiveOrder = (orderId: string) =>
+    moveOrderToStage('archive', orderId)
+  const trashOrder = async (orderId: string) => {
+    if (readOnly.value || !canWrite.value) return
+    await trashKitchenOrder(kitchenId.value, orderId)
+  }
   const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    source: runtime.source.value,
-    rootCollection: rootCollection.value,
-    databaseId: databaseId.value,
-    collectionPath: orderBoardPath.value,
-    count: consoleOrders.value.length,
-    pending: pending.value,
-    readOnly: readOnly.value,
-    canWrite: canWrite.value,
+    objects: {
+      orders: debugOrders.value,
+    },
+    derived: {
+      kitchenId: kitchenId.value,
+      source: runtime.source.value,
+      rootCollection: rootCollection.value,
+      databaseId: databaseId.value,
+      collectionPath: orderBoardPath.value,
+      ordersCount: visibleOrders.value.length,
+      rawOrdersCount: consoleOrders.value.length,
+      queueCount: queueOrders.value.length,
+      passCount: passOrders.value.length,
+      archiveCount: archiveOrders.value.length,
+      openCount: debugCount((order) => order.status === 'open'),
+      preOrderCount: debugCount((order) => order.order_type === 'pre_order'),
+      heldCount: debugCount((order) => order.fire_state === 'held'),
+      trashedCount: debugCount((order) => order.status === 'trashed'),
+      pending: pending.value,
+      readOnly: readOnly.value,
+      canWrite: canWrite.value,
+    },
   }))
 
   return {
@@ -86,7 +163,14 @@ export function useKitchenConsoleOrders() {
     canWrite,
     orders: consoleOrders,
     ticketOrders,
+    queueOrders,
+    passOrders,
+    archiveOrders,
     pending,
+    queueOrder,
+    passOrder,
+    archiveOrder,
+    trashOrder,
     debug,
   }
 }
@@ -166,6 +250,29 @@ const getServiceMode = (order: KitchenOrder) => {
   if (['delivery', 'deliver'].includes(value)) return 'delivery'
   return value
 }
+
+const getOrderStatus = (order: KitchenOrder) =>
+  String(order.status || '').trim().toLowerCase()
+
+const getFireState = (order: KitchenOrder) =>
+  String(order.fire_state || '').trim().toLowerCase()
+
+const isArchivedOrder = (order: KitchenOrder) =>
+  ['archived', 'closed'].includes(getOrderStatus(order))
+
+const isPassOrder = (order: KitchenOrder) =>
+  ['on_pass', 'pass'].includes(getOrderStatus(order)) ||
+  getFireState(order) === 'ready_to_fire'
+
+const sortOrders = (orders: KitchenOrder[]) =>
+  [...orders].sort((a, b) => {
+    const aTime = getRailTime(a)
+    const bTime = getRailTime(b)
+    if (aTime !== bTime) return aTime - bTime
+    return String(a.order_number || a.id).localeCompare(
+      String(b.order_number || b.id)
+    )
+  })
 
 const getRailTime = (order: KitchenOrder) => {
   const createdMs = getCreatedMs(order)

@@ -51,6 +51,7 @@ export const MenuEntity = defineFireuxEntity({
 })
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
+export type MenuPublicView = 'classic' | 'order'
 
 export type MenuDocument = {
   url: string
@@ -77,6 +78,7 @@ export const MenuModel = {
   doc_storage_path: '' as string,
   ordering_enabled: false as boolean,
   ordering_modes: [] as KitchenOrderType[],
+  public_views: [] as MenuPublicView[],
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],

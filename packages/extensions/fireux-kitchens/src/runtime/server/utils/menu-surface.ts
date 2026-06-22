@@ -35,6 +35,8 @@ type MenuSurfaceSource = {
   menu_id?: string
 }
 
+const menuPublicViews = ['classic', 'order'] as const
+
 const menuSlug = (data: Record<string, unknown>, docId: string) =>
   readRecordString(data, 'slug') || docId
 
@@ -98,6 +100,22 @@ const compactSource = (source: MenuSurfaceSource) =>
     Object.entries(source).filter(([, value]) => Boolean(text(value)))
   ) as MenuSurfaceSource
 
+const readMenuPublicViews = (
+  data: Record<string, unknown>,
+  orderingEnabled: boolean
+) => {
+  const configured = list(data.public_views)
+    .map(text)
+    .filter((view): view is (typeof menuPublicViews)[number] =>
+      menuPublicViews.includes(view as (typeof menuPublicViews)[number])
+    )
+
+  const fallback = orderingEnabled ? [...menuPublicViews] : ['classic']
+  const views = configured.length ? configured : fallback
+
+  return views.filter((view) => view === 'classic' || orderingEnabled)
+}
+
 export function menuSourceFromData(
   data: Record<string, unknown>,
   scope: MenuSurfaceScope = {}
@@ -157,6 +175,7 @@ export function menuSurfaceFromData(
     : list(data.service_modes).map(text).filter(Boolean)
   const orderingEnabled =
     data.ordering_enabled === true || orderingModes.length > 0
+  const publicViews = readMenuPublicViews(data, orderingEnabled)
   const result = {
     id: menuId,
     slug,
@@ -170,6 +189,7 @@ export function menuSurfaceFromData(
     ...(status ? { status } : {}),
     ...(orderingEnabled ? { ordering_enabled: true } : {}),
     ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
+    ...(publicViews.length ? { public_views: publicViews } : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasFile(file) ? { file: compactFile(file) } : {}),
     ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),

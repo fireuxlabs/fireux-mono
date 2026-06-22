@@ -13,11 +13,14 @@
     "show": false
   },
   "menu": {
-    "id": "delivery-ordering",
+    "id": "delivery",
     "name": "Bären Ordering Menu",
     "description": "Special ordering menu for delivery and collection.",
     "source_language": "de",
+    "ordering_enabled": true,
+    "ordering_modes": ["delivery", "collection"],
     "service_modes": ["delivery", "collection"],
+    "public_views": ["order"],
     "promotions": [
       "15% Rabatt auf Ihre 1. Bestellung",
       "Gratis Dessertpizza bei einer Bestellung von über 80.-- Fr."

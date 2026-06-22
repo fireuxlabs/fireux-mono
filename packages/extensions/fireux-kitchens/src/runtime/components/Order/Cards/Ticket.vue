@@ -3,20 +3,65 @@
     class="w-[18rem] max-w-full shrink-0 self-start overflow-hidden rounded-lg border border-default bg-default shadow-sm"
   >
     <div class="divide-y divide-default">
-      <div class="flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted">
+      <div
+        :class="[
+          'flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted',
+          canTouchHeader && 'cursor-pointer hover:bg-muted/40',
+        ]"
+        :role="canTouchHeader ? 'button' : undefined"
+        :tabindex="canTouchHeader ? 0 : undefined"
+        :aria-label="headerActionLabel || undefined"
+        @click="touchHeader"
+        @keydown.enter.prevent="touchHeader"
+        @keydown.space.prevent="touchHeader"
+      >
         <span class="flex min-w-0 items-center gap-2">
           <UIcon :name="headerIcon" class="size-4 shrink-0" />
           <span class="truncate">{{ headerLabel }}</span>
         </span>
-        <span
-          v-if="statusLabel"
-          class="shrink-0 text-xs font-medium text-dimmed"
-        >
-          {{ statusLabel }}
+        <span class="flex shrink-0 items-center gap-2">
+          <button
+            v-if="canTouchStatus"
+            class="rounded px-1.5 py-0.5 text-xs font-medium text-dimmed hover:bg-muted hover:text-highlighted"
+            type="button"
+            :aria-label="statusActionAriaLabel || statusActionLabel"
+            @click.stop="touchStatus"
+          >
+            {{ statusActionLabel }}
+          </button>
+
+          <span
+            v-else-if="statusLabel"
+            class="text-xs font-medium text-dimmed"
+          >
+            {{ statusLabel }}
+          </span>
+
+          <UButton
+            v-if="trashMode"
+            size="xs"
+            color="error"
+            variant="ghost"
+            icon="i-lucide-trash-2"
+            :disabled="!orderId"
+            aria-label="Move order to trash"
+            @click.stop="trashOrder"
+          />
         </span>
       </div>
 
-      <div class="space-y-1 p-4">
+      <div
+        :class="[
+          'space-y-1 p-4',
+          canTouchBody && 'cursor-pointer hover:bg-muted/40',
+        ]"
+        :role="canTouchBody ? 'button' : undefined"
+        :tabindex="canTouchBody ? 0 : undefined"
+        :aria-label="bodyActionLabel || undefined"
+        @click="touchBody"
+        @keydown.enter.prevent="touchBody"
+        @keydown.space.prevent="touchBody"
+      >
         <div
           v-for="line in lines"
           :key="line.id"
@@ -42,8 +87,28 @@
 import { computed } from 'vue'
 import type { KitchenOrder } from '../../../models/order.model'
 
-const props = defineProps<{
-  order: KitchenOrder
+const props = withDefaults(
+  defineProps<{
+    order: KitchenOrder
+    trashMode?: boolean
+    headerActionLabel?: string
+    bodyActionLabel?: string
+    statusActionLabel?: string
+    statusActionAriaLabel?: string
+  }>(),
+  {
+    trashMode: false,
+    headerActionLabel: '',
+    bodyActionLabel: '',
+    statusActionLabel: '',
+    statusActionAriaLabel: '',
+  }
+)
+const emit = defineEmits<{
+  (event: 'trash', id: string): void
+  (event: 'touch-header', id: string): void
+  (event: 'touch-body', id: string): void
+  (event: 'touch-status', id: string): void
 }>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -179,6 +244,16 @@ const orderLabel = computed(() => {
   const number = normalizeString(props.order.order_number)
   return number ? `Order #${number}` : normalizeString(props.order.id) || 'Order'
 })
+const orderId = computed(() => normalizeString(props.order.id))
+const canTouchHeader = computed(() =>
+  Boolean(orderId.value && props.headerActionLabel)
+)
+const canTouchBody = computed(() =>
+  Boolean(orderId.value && props.bodyActionLabel)
+)
+const canTouchStatus = computed(() =>
+  Boolean(orderId.value && props.statusActionLabel)
+)
 const lines = computed(() =>
   Array.isArray(props.order.items)
     ? props.order.items.map((item) => ({
@@ -188,4 +263,24 @@ const lines = computed(() =>
       }))
     : []
 )
+
+function trashOrder() {
+  if (!orderId.value) return
+  emit('trash', orderId.value)
+}
+
+function touchHeader() {
+  if (!canTouchHeader.value) return
+  emit('touch-header', orderId.value)
+}
+
+function touchBody() {
+  if (!canTouchBody.value) return
+  emit('touch-body', orderId.value)
+}
+
+function touchStatus() {
+  if (!canTouchStatus.value) return
+  emit('touch-status', orderId.value)
+}
 </script>

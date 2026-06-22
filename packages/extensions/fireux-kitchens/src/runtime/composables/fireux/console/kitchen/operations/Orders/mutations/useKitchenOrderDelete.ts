@@ -1,8 +1,13 @@
+import { serverTimestamp } from 'firebase/firestore'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { KitchenOrderStorage } from '../../../../../../../models/order.model'
+import {
+  KitchenOrderStorage,
+  type KitchenOrder,
+} from '../../../../../../../models/order.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
@@ -13,23 +18,44 @@ export function useKitchenOrderDelete(options: {
   databaseId?: string | Ref<string | null | undefined>
 } = {}) {
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
 
-  async function deleteKitchenOrder(kitchenId: string, orderId: string) {
+  function ordersCollectionPath(kitchenId: string) {
     const resolvedKitchenId = normalizeString(kitchenId)
-    const resolvedOrderId = normalizeString(orderId)
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
-    if (!resolvedOrderId) throw new Error('Order id is required')
 
-    const collectionPath = resolveKitchenChildCollectionPath({
+    return resolveKitchenChildCollectionPath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
       kitchenId: resolvedKitchenId,
       collectionName: KitchenOrderStorage.collection,
       appId,
     })
-
-    await deleteDocument(collectionPath, resolvedOrderId)
   }
 
-  return { deleteKitchenOrder }
+  async function trashKitchenOrder(kitchenId: string, orderId: string) {
+    const resolvedOrderId = normalizeString(orderId)
+    if (!resolvedOrderId) throw new Error('Order id is required')
+
+    await updateDocument<KitchenOrder>(
+      ordersCollectionPath(kitchenId),
+      resolvedOrderId,
+      {
+        status: 'trashed',
+        updated_at: serverTimestamp() as any,
+      }
+    )
+  }
+
+  async function deleteKitchenOrder(kitchenId: string, orderId: string) {
+    const resolvedOrderId = normalizeString(orderId)
+    if (!resolvedOrderId) throw new Error('Order id is required')
+
+    await deleteDocument(ordersCollectionPath(kitchenId), resolvedOrderId)
+  }
+
+  return {
+    deleteKitchenOrder,
+    trashKitchenOrder,
+  }
 }

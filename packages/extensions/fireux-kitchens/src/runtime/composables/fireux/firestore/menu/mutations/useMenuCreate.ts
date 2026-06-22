@@ -22,6 +22,7 @@ export type MenuCreateInput = {
   doc_storage_path?: string
   ordering_enabled?: boolean
   ordering_modes?: Menu['ordering_modes']
+  public_views?: Menu['public_views']
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -44,6 +45,7 @@ function buildMenuPayload(
     doc_storage_path: normalizeString(input.doc_storage_path),
     ordering_enabled: input.ordering_enabled === true,
     ordering_modes: Array.isArray(input.ordering_modes) ? input.ordering_modes : [],
+    public_views: Array.isArray(input.public_views) ? input.public_views : [],
   }
 }
 

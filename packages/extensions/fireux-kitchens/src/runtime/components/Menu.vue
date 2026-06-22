@@ -15,7 +15,10 @@
           Menu unavailable.
         </p>
 
-        <article v-else-if="renderMenu" class="menu">
+        <article
+          v-else-if="renderMenu"
+          :class="['menu', { 'menu--order': isOrderMode }]"
+        >
           <header class="menu__header">
             <p v-if="renderMenu.kitchenName" class="menu__eyebrow">
               {{ renderMenu.kitchenName }}
@@ -24,50 +27,39 @@
             <p v-if="renderMenu.description" class="menu__description">
               {{ renderMenu.description }}
             </p>
+
+            <MenuPublicModeToggle
+              v-if="viewModes.length > 1"
+              v-model="viewMode"
+              :options="viewModes"
+            />
           </header>
 
-          <div class="menu__sections">
-            <section
-              v-for="section in renderMenu.sections"
-              :key="section.id"
-              class="menu__section"
-            >
-              <h2>{{ section.label }}</h2>
+          <MenuPublicSectionNav
+            v-if="isOrderMode && renderMenu.sections.length > 1"
+            :sections="renderMenu.sections"
+          />
 
-              <article
-                v-for="item in section.items"
-                :key="item.id"
-                class="menu__item"
-              >
-                <div class="menu__item-copy">
-                  <h3>{{ item.name }}</h3>
-                  <p v-if="item.description">
-                    {{ item.description }}
-                  </p>
-                </div>
+          <MenuPublicOrderNotice
+            v-if="isOrderMode && orderNotice"
+            :message="orderNotice"
+          />
 
-                <div
-                  v-if="item.priceLabel || canQuickOrder"
-                  class="menu__item-actions"
-                >
-                  <p v-if="item.priceLabel" class="menu__price">
-                    {{ item.priceLabel }}
-                  </p>
+          <MenuPublicManifestSections
+            :sections="renderMenu.sections"
+            :order-mode="isOrderMode"
+            :quantities="orderQuantities"
+            @add="addToOrder"
+            @remove="removeFromOrder"
+          />
 
-                  <UButton
-                    v-if="canQuickOrder"
-                    size="xs"
-                    color="neutral"
-                    variant="soft"
-                    :loading="creatingItemId === item.id"
-                    @click="createMenuOrder(item)"
-                  >
-                    Order
-                  </UButton>
-                </div>
-              </article>
-            </section>
-          </div>
+          <MenuPublicOrderBasket
+            v-if="isOrderMode && basketQuantity"
+            :quantity="basketQuantity"
+            :pending="creatingItemId === 'order'"
+            @clear="clearOrder"
+            @place="placeOrder"
+          />
 
           <p
             v-if="orderMessage || orderError"
@@ -93,14 +85,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { KitchenOrderType } from '../models/order.model'
+import type { MenuPublicView } from '../models/menu/menu.model'
 import { useMenuManifest } from '../composables/fireux/public/menu/useMenuManifest'
 import { useMenuOrderCreate } from '../composables/fireux/public/menu/useMenuOrderCreate'
 
 type RenderMenuItem = {
   id: string
   name: string
+}
+
+type OrderDraftItem = RenderMenuItem & {
+  quantity: number
 }
 
 const props = defineProps<{
@@ -117,14 +114,50 @@ const {
   renderMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
+const orderingModes = computed<KitchenOrderType[]>(() =>
+  renderMenu.value?.orderingModes || []
+)
 const defaultOrderType = computed<KitchenOrderType>(() => {
-  const modes = renderMenu.value?.orderingModes || []
-  if (modes.includes('dine_in')) return 'dine_in'
+  if (orderingModes.value.includes('dine_in')) return 'dine_in'
 
-  return modes[0] || 'dine_in'
+  return orderingModes.value[0] || 'dine_in'
 })
-const canQuickOrder = computed(() =>
-  Boolean(renderMenu.value?.orderingEnabled && defaultOrderType.value === 'dine_in')
+const canOrder = computed(() =>
+  Boolean(renderMenu.value?.orderingEnabled && orderingModes.value.length)
+)
+const viewModes = computed<MenuPublicView[]>(() => {
+  const configured = renderMenu.value?.publicViews || []
+  const fallback: MenuPublicView[] = canOrder.value
+    ? ['classic', 'order']
+    : ['classic']
+  const modes = configured.length ? configured : fallback
+  const supported = modes.filter((mode) => mode === 'classic' || canOrder.value)
+
+  return supported.length ? supported : ['classic']
+})
+const viewMode = ref<MenuPublicView>('classic')
+const isOrderMode = computed(() =>
+  canOrder.value &&
+    viewModes.value.includes('order') &&
+    viewMode.value === 'order'
+)
+const orderNotice = computed(() => {
+  if (defaultOrderType.value !== 'pre_order') return ''
+
+  return 'For normal service, please order at the bar or at your table. This menu is for pre-orders only.'
+})
+const orderDraft = ref<Record<string, OrderDraftItem>>({})
+const basketItems = computed<OrderDraftItem[]>(() =>
+  Object.values(orderDraft.value)
+)
+const basketQuantity = computed(() =>
+  basketItems.value.reduce((total, item) => total + item.quantity, 0)
+)
+const orderQuantities = computed(() =>
+  basketItems.value.reduce<Record<string, number>>((map, item) => {
+    map[item.id] = item.quantity
+    return map
+  }, {})
 )
 const {
   creatingItemId,
@@ -133,11 +166,60 @@ const {
   createOrder,
 } = useMenuOrderCreate(menuId, { kitchenSlug })
 
-function createMenuOrder(item: RenderMenuItem) {
-  if (!canQuickOrder.value) return
-  createOrder(item, {
+watch(
+  viewModes,
+  (modes) => {
+    if (!modes.includes(viewMode.value)) {
+      viewMode.value = modes[0] || 'classic'
+    }
+  },
+  { immediate: true }
+)
+
+function addToOrder(item: RenderMenuItem) {
+  if (!canOrder.value) return
+  const current = orderDraft.value[item.id]
+  orderDraft.value = {
+    ...orderDraft.value,
+    [item.id]: {
+      id: item.id,
+      name: item.name,
+      quantity: (current?.quantity || 0) + 1,
+    },
+  }
+}
+
+function removeFromOrder(item: RenderMenuItem) {
+  const current = orderDraft.value[item.id]
+  if (!current) return
+
+  const next = { ...orderDraft.value }
+  if (current.quantity <= 1) {
+    delete next[item.id]
+  } else {
+    next[item.id] = {
+      ...current,
+      quantity: current.quantity - 1,
+    }
+  }
+  orderDraft.value = next
+}
+
+function clearOrder() {
+  orderDraft.value = {}
+}
+
+async function placeOrder() {
+  if (!canOrder.value || !basketItems.value.length) return
+
+  const created = await createOrder({
+    items: basketItems.value.map((item) => ({
+      itemId: item.id,
+      quantity: item.quantity,
+    })),
     order_type: defaultOrderType.value,
   })
+  if (created) clearOrder()
 }
 </script>
 
@@ -152,11 +234,7 @@ function createMenuOrder(item: RenderMenuItem) {
 }
 
 .menu,
-.menu__header,
-.menu__sections,
-.menu__section,
-.menu__item-copy,
-.menu__item-actions {
+.menu__header {
   display: grid;
 }
 
@@ -197,103 +275,11 @@ function createMenuOrder(item: RenderMenuItem) {
   font-weight: 700;
 }
 
-.menu__sections {
-  gap: 2rem;
-  width: min(88rem, 100%);
-  margin: 0 auto;
-  text-align: left;
-}
-
-.menu__section {
-  gap: 0.7rem;
-  align-content: start;
-}
-
-.menu__section h2 {
-  display: grid;
-  grid-template-columns: auto minmax(2rem, 1fr);
-  gap: 0.75rem;
-  align-items: center;
-  margin: 0;
-  color: var(--menu-title);
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-  font-weight: 900;
-  letter-spacing: 0.18em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.menu__section h2::after {
-  content: "";
-  display: block;
-  height: 2px;
-  background: color-mix(in srgb, var(--menu-title) 38%, transparent);
-}
-
-.menu__item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: start;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
-}
-
-.menu__item:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.menu__item-copy {
-  gap: 0.2rem;
-}
-
-.menu__item-actions {
-  gap: 0.45rem;
-  justify-items: end;
-}
-
-.menu__item h3,
-.menu__item p {
-  margin: 0;
-}
-
-.menu__item h3 {
-  font-size: 1.1rem;
-  font-weight: 850;
-  letter-spacing: -0.03em;
-}
-
-.menu__item-copy p {
-  color: var(--menu-muted);
-  font-size: 0.9rem;
-  line-height: 1.35;
-}
-
-.menu__price {
-  font-size: 0.95rem;
-  font-weight: 850;
-  white-space: nowrap;
-}
-
 .menu-order-state {
   justify-self: center;
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.95rem;
   font-weight: 800;
-}
-
-@media (min-width: 920px) {
-  .menu__sections {
-    display: block;
-    column-count: 2;
-    column-gap: clamp(2rem, 4vw, 4rem);
-  }
-
-  .menu__section {
-    break-inside: avoid;
-    margin-bottom: 2rem;
-  }
 }
 </style>

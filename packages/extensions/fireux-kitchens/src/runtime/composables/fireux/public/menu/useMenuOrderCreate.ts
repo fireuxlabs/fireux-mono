@@ -9,14 +9,14 @@ import type {
   KitchenOrderType,
 } from '../../../../models/order.model'
 
-type MenuOrderItemInput = {
-  id: string
-  name?: string
+type MenuOrderLineInput = {
+  itemId: string
+  quantity: number
 }
 
 type CreateMenuOrderInput = {
+  items: MenuOrderLineInput[]
   order_type?: KitchenOrderType
-  quantity?: number
   requested_for?: string
 }
 
@@ -52,14 +52,16 @@ export function useMenuOrderCreate(
   const message = ref('')
   const error = ref('')
 
-  const createOrder = async (
-    item: MenuOrderItemInput,
-    input: CreateMenuOrderInput = {}
-  ) => {
-    const itemId = text(item.id)
-    if (!endpoint.value || !itemId) return null
+  const createOrder = async (input: CreateMenuOrderInput) => {
+    const items = input.items
+      .map((item) => ({
+        itemId: text(item.itemId),
+        quantity: Math.max(1, Number(item.quantity || 1) || 1),
+      }))
+      .filter((item) => item.itemId)
+    if (!endpoint.value || !items.length) return null
 
-    creatingItemId.value = itemId
+    creatingItemId.value = 'order'
     message.value = ''
     error.value = ''
 
@@ -67,8 +69,7 @@ export function useMenuOrderCreate(
       const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
         method: 'POST',
         body: {
-          itemId,
-          quantity: input.quantity || 1,
+          items,
           order_type: input.order_type,
           requested_for: input.requested_for,
         },

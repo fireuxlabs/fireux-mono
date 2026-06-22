@@ -1,5 +1,6 @@
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useMenuFetch } from './useMenuFetch'
+import type { MenuPublicView } from '../../../../models/menu/menu.model'
 
 type MenuManifestOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
@@ -11,6 +12,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
+const menuViews = ['classic', 'order'] as const
 
 const itemName = (item: Record<string, unknown>) =>
   text(item.name) || text(record(item.item).name)
@@ -22,6 +24,13 @@ const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.priceLabel) ||
   text(item.price_label) ||
   text(item.price)
+
+const publicViews = (value: unknown): MenuPublicView[] =>
+  list(value)
+    .map(text)
+    .filter((view): view is MenuPublicView =>
+      menuViews.includes(view as MenuPublicView)
+    )
 
 export function useMenuManifest(
   menuId: MaybeRefOrGetter<string>,
@@ -45,6 +54,7 @@ export function useMenuManifest(
       orderingModes: Array.isArray(source.ordering_modes)
         ? source.ordering_modes
         : [],
+      publicViews: publicViews(source.public_views),
       pageStyle: source.page_style,
       sections: list(source.sections).map((section, sectionIndex) => {
         const sectionRecord = record(section)
