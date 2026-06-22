@@ -44,7 +44,6 @@ export function useKitchenConsoleIndex() {
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
     canCreate: consoleTargets.canCreate,
-    devTargetIds: consoleTargets.configDevTargetIds,
   }))
   const debug = computed(() => ({
     kitchenId: consoleSelection.kitchenId.value,

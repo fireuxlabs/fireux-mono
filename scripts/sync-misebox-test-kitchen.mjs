@@ -13,7 +13,7 @@ const ROOT_COLLECTION = 'kitchens'
 const DEFAULT_SERVICE_ACCOUNT =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_SCENARIO_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/utils/kitchen-demo-scenarios/index.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/demo/kitchen/scenarios/index.ts'
 
 const args = parseArgs(process.argv.slice(2))
 const serviceAccountPath = String(args['service-account'] || DEFAULT_SERVICE_ACCOUNT).trim()

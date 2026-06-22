@@ -8,7 +8,6 @@
     <ConsoleKitchenIndexTargets
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
-      :demo-target-ids="runtime.devTargetIds"
       :pending="sections.targets.pending"
       @select="actions.selectTarget"
     />

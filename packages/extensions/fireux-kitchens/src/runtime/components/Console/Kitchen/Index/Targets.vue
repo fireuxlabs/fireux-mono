@@ -8,14 +8,7 @@
       <ConsoleKitchenIndexTargetSection
         title="Your kitchens"
         description="Kitchens linked to your current user profile."
-        :collection="standardKitchens"
-        @select="selectKitchen"
-      />
-
-      <ConsoleKitchenIndexTargetSection
-        title="Demo kitchens"
-        description="Local test targets for building console flows."
-        :collection="demoKitchens"
+        :collection="collection"
         @select="selectKitchen"
       />
     </template>
@@ -33,12 +26,10 @@ import type { KitchenSurface } from '../../../../composables/fireux/firestore/ki
 const props = withDefaults(
   defineProps<{
     collection?: KitchenSurface[]
-    demoTargetIds?: string[]
     pending?: boolean
   }>(),
   {
     collection: () => [],
-    demoTargetIds: () => [],
     pending: false,
   }
 )
@@ -54,24 +45,7 @@ const consoleIds = computed(() =>
     .filter(Boolean)
 )
 const consoleIdSet = computed(() => new Set(consoleIds.value))
-const demoIdSet = computed(() =>
-  new Set(
-    props.demoTargetIds
-      .map((id) => String(id ?? '').trim())
-      .filter(Boolean)
-  )
-)
 const targetCount = computed(() => props.collection.length)
-const demoKitchens = computed(() =>
-  props.collection.filter((kitchen) =>
-    demoIdSet.value.has(String(kitchen.id ?? '').trim())
-  )
-)
-const standardKitchens = computed(() =>
-  props.collection.filter(
-    (kitchen) => !demoIdSet.value.has(String(kitchen.id ?? '').trim())
-  )
-)
 const showLoading = computed(() => props.pending || !isMounted.value)
 
 onMounted(() => {
