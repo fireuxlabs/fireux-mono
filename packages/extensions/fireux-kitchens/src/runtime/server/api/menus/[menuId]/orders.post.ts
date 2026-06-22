@@ -67,11 +67,7 @@ const orderNumber = () => {
   return `${y}${m}${d}-${hh}${mm}`
 }
 const readOrderingModes = (data: Record<string, unknown>) => {
-  const values = list(data.ordering_modes).length
-    ? list(data.ordering_modes)
-    : list(data.service_modes)
-
-  return values.map(text).filter((mode): mode is KitchenOrderType =>
+  return list(data.ordering_modes).map(text).filter((mode): mode is KitchenOrderType =>
     orderTypes.has(mode as KitchenOrderType)
   )
 }

@@ -35,8 +35,6 @@ type MenuSourceModel = {
     type?: string
   }
   file_kind?: string
-  doc_url?: string
-  doc_type?: string
   kind?: string
 }
 

@@ -37,20 +37,10 @@ export default defineEventHandler(async (event) => {
 
   const data = snap.data() || {}
   const file = readRecord(data.file)
-  const objectPath =
-    readRecordString(file, 'storage_path') ||
-    readRecordString(data, 'file_storage_path') ||
-    readRecordString(data, 'doc_storage_path')
+  const objectPath = readRecordString(file, 'storage_path')
   const contentType =
-    readRecordString(file, 'type') ||
-    readRecordString(data, 'file_type') ||
-    readRecordString(data, 'doc_type') ||
-    'application/octet-stream'
-  const fileName =
-    readRecordString(file, 'name') ||
-    readRecordString(data, 'file_name') ||
-    readRecordString(data, 'doc_name') ||
-    `${menuId}.pdf`
+    readRecordString(file, 'type') || 'application/octet-stream'
+  const fileName = readRecordString(file, 'name') || `${menuId}.pdf`
 
   if (!objectPath) {
     throw createError({

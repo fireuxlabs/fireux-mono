@@ -38,8 +38,6 @@ type MenuDocumentSource = {
     type?: string
   }
   file_kind?: string
-  doc_url?: string
-  doc_type?: string
   kind?: string
 }
 
@@ -53,7 +51,7 @@ const props = defineProps<{
 const text = (value: unknown) => String(value ?? '').trim()
 const menuTitle = computed(() => text(props.menu.name) || 'Menu')
 const displayUrl = computed(
-  () => text(props.sourceUrl) || text(props.menu.file?.url) || text(props.menu.doc_url)
+  () => text(props.sourceUrl) || text(props.menu.file?.url)
 )
 const fileUrl = computed(
   () => text(props.fileUrl) || `/api/menus/${encodeURIComponent(props.menuId)}/file`
@@ -61,13 +59,13 @@ const fileUrl = computed(
 const isPhoto = computed(() =>
   props.menu.file_kind === 'photo' ||
   props.menu.kind === 'photo' ||
-  text(props.menu.file?.type || props.menu.doc_type).startsWith('image/')
+  text(props.menu.file?.type).startsWith('image/')
 )
 const isPdf = computed(() =>
   !isPhoto.value &&
   (props.menu.file_kind === 'pdf' ||
     props.menu.kind === 'pdf' ||
-    text(props.menu.file?.type || props.menu.doc_type).includes('pdf'))
+    text(props.menu.file?.type).includes('pdf'))
 )
 </script>
 

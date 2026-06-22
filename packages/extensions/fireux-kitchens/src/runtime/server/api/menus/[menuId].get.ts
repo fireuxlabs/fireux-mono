@@ -88,9 +88,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     kitchenName: kitchenDisplayName(kitchen.data),
     kitchenAppId,
     kitchenMenuId: menuId,
-    sourceKind:
-      readRecordString(data, 'source_kind') ||
-      (readRecordString(data, 'doc_url') ? '' : 'kitchen-menu'),
+    sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
     ...ownerAppView,
