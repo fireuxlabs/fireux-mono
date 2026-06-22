@@ -22,24 +22,24 @@
             {{ menu.description }}
           </p>
 
-          <MenuPublicModeToggle
+          <MenuStructuredViewToggle
             v-if="viewModes.length > 1"
             v-model="viewMode"
             :options="viewModes"
           />
         </header>
 
-        <MenuPublicSectionNav
+        <MenuStructuredSectionNav
           v-if="isOrderMode && menu.sections.length > 1"
           :sections="menu.sections"
         />
 
-        <MenuPublicOrderNotice
+        <MenuOrderNotice
           v-if="isOrderMode && orderNotice"
           :message="orderNotice"
         />
 
-        <MenuPublicManifestSections
+        <MenuStructuredSections
           :sections="menu.sections"
           :order-mode="isOrderMode"
           :quantities="orderQuantities"
@@ -47,7 +47,7 @@
           @remove="removeFromOrder"
         />
 
-        <MenuPublicOrderBasket
+        <MenuOrderBasket
           v-if="isOrderMode && basketQuantity"
           :quantity="basketQuantity"
           :pending="creatingItemId === 'order'"
@@ -74,12 +74,8 @@
 <script setup lang="ts">
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
-import { useMenuPublicView } from '../../composables/fireux/public/menu/useMenuPublicView'
-import type { useMenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
-
-type MenuManifest = NonNullable<
-  ReturnType<typeof useMenuManifest>['renderMenu']['value']
->
+import { useMenuView } from '../../composables/fireux/public/menu/useMenuView'
+import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
 
 const props = defineProps<{
   menu: MenuManifest | null
@@ -97,7 +93,7 @@ const {
   viewMode,
   isOrderMode,
   orderNotice,
-} = useMenuPublicView(source)
+} = useMenuView(source)
 const {
   quantity: basketQuantity,
   quantities: orderQuantities,

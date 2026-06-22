@@ -53,7 +53,7 @@
         variant="preview"
         :color-mode="previewMode"
       >
-        <MenuPublicHeader
+        <MenuHeader
           :kitchen-name="kitchenName"
           :name="previewMenu.name"
           :description="previewMenu.description"
@@ -69,7 +69,7 @@
           description="This menu has no public sections yet."
         />
 
-        <MenuPublicSections
+        <MenuPreviewSections
           v-else
           :sections="previewSections"
           :currency-code="placeCurrencyCode"

@@ -1,6 +1,6 @@
 <template>
   <MenuThemeSurface :page-style="pageStyle">
-    <MenuPublicHeader
+    <MenuHeader
       :kitchen-name="kitchenName || ''"
       :name="menu.name"
       :description="menu.description"

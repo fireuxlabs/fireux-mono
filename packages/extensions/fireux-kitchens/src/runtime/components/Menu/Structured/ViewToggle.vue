@@ -20,12 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuPublicView } from '../../../models/menu/menu.model'
+import type { MenuView } from '../../../models/menu/menu.model'
 
 withDefaults(
   defineProps<{
-    modelValue: MenuPublicView
-    options?: MenuPublicView[]
+    modelValue: MenuView
+    options?: MenuView[]
   }>(),
   {
     options: () => ['browse', 'order'],
@@ -33,7 +33,7 @@ withDefaults(
 )
 
 defineEmits<{
-  (event: 'update:modelValue', value: MenuPublicView): void
+  (event: 'update:modelValue', value: MenuView): void
 }>()
 </script>
 

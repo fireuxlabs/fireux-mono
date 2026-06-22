@@ -1,6 +1,6 @@
 <template>
   <div class="menu-sections">
-    <MenuPublicSection
+    <MenuPreviewSection
       v-for="section in sections"
       :key="section.id"
       :section="section"

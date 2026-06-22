@@ -100,7 +100,7 @@ const compactSource = (source: MenuSurfaceSource) =>
     Object.entries(source).filter(([, value]) => Boolean(text(value)))
   ) as MenuSurfaceSource
 
-const readMenuPublicViews = (
+const readMenuViews = (
   data: Record<string, unknown>,
   orderingEnabled: boolean
 ) => {
@@ -181,8 +181,8 @@ export function menuSurfaceFromData(
     : list(data.service_modes).map(text).filter(Boolean)
   const orderingEnabled =
     data.ordering_enabled === true || orderingModes.length > 0
-  const publicViews = kind === 'menu'
-    ? readMenuPublicViews(data, orderingEnabled)
+  const menuViews = kind === 'menu'
+    ? readMenuViews(data, orderingEnabled)
     : []
   const result = {
     id: menuId,
@@ -197,7 +197,7 @@ export function menuSurfaceFromData(
     ...(status ? { status } : {}),
     ...(orderingEnabled ? { ordering_enabled: true } : {}),
     ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
-    ...(kind === 'menu' && publicViews.length ? { public_views: publicViews } : {}),
+    ...(kind === 'menu' && menuViews.length ? { public_views: menuViews } : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasFile(file) ? { file: compactFile(file) } : {}),
     ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),

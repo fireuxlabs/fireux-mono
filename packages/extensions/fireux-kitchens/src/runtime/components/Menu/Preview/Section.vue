@@ -8,7 +8,7 @@
     </header>
 
     <div v-if="section.items.length" class="menu-items">
-      <MenuPublicItem
+      <MenuPreviewItem
         v-for="item in section.items"
         :key="item.id"
         :item="item"

@@ -5,19 +5,19 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import type { MenuPublicView } from '../../../../models/menu/menu.model'
+import type { MenuView } from '../../../../models/menu/menu.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
 
-type MenuPublicViewSource = {
+type MenuViewSource = {
   orderingEnabled?: boolean
   orderingModes?: KitchenOrderType[]
-  publicViews?: MenuPublicView[]
+  views?: MenuView[]
 } | null | undefined
 
 const supportedViews = ['browse', 'order'] as const
 
-export function useMenuPublicView(
-  source: MaybeRefOrGetter<MenuPublicViewSource>
+export function useMenuView(
+  source: MaybeRefOrGetter<MenuViewSource>
 ) {
   const orderingModes = computed<KitchenOrderType[]>(() => {
     const menu = toValue(source)
@@ -34,10 +34,10 @@ export function useMenuPublicView(
 
     return Boolean(menu?.orderingEnabled && orderingModes.value.length)
   })
-  const viewModes = computed<MenuPublicView[]>(() => {
+  const viewModes = computed<MenuView[]>(() => {
     const menu = toValue(source)
-    const configured = Array.isArray(menu?.publicViews) ? menu.publicViews : []
-    const fallback: MenuPublicView[] = canOrder.value
+    const configured = Array.isArray(menu?.views) ? menu.views : []
+    const fallback: MenuView[] = canOrder.value
       ? ['browse', 'order']
       : ['browse']
     const modes = configured.length ? configured : fallback
@@ -50,7 +50,7 @@ export function useMenuPublicView(
 
     return available.length ? available : ['browse']
   })
-  const viewMode = ref<MenuPublicView>('browse')
+  const viewMode = ref<MenuView>('browse')
   const isOrderMode = computed(() =>
     canOrder.value &&
       viewModes.value.includes('order') &&

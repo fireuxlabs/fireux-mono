@@ -1,9 +1,37 @@
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useMenuFetch } from './useMenuFetch'
-import type { MenuPublicView } from '../../../../models/menu/menu.model'
+import type { MenuView } from '../../../../models/menu/menu.model'
+import type { KitchenOrderType } from '../../../../models/order.model'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 
 type MenuManifestOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+}
+
+export type MenuManifestItem = {
+  id: string
+  dishId: string
+  name: string
+  description: string
+  priceLabel: string
+}
+
+export type MenuManifestSection = {
+  id: string
+  label: string
+  items: MenuManifestItem[]
+}
+
+export type MenuManifest = {
+  id: string
+  name: string
+  description: string
+  kitchenName: string
+  orderingEnabled: boolean
+  orderingModes: KitchenOrderType[]
+  views: MenuView[]
+  pageStyle?: Partial<PageStyle>
+  sections: MenuManifestSection[]
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -25,11 +53,11 @@ const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.price_label) ||
   text(item.price)
 
-const publicViews = (value: unknown): MenuPublicView[] =>
+const menuViewList = (value: unknown): MenuView[] =>
   list(value)
     .map(menuPublicView)
-    .filter((view): view is MenuPublicView =>
-      menuViews.includes(view as MenuPublicView)
+    .filter((view): view is MenuView =>
+      menuViews.includes(view as MenuView)
     )
 
 const menuPublicView = (value: unknown) => {
@@ -43,7 +71,7 @@ export function useMenuManifest(
   options: MenuManifestOptions = {}
 ) {
   const fetch = useMenuFetch(menuId, options)
-  const renderMenu = computed(() => {
+  const renderMenu = computed<MenuManifest | null>(() => {
     const source = fetch.menu.value
     if (!source) return null
 
@@ -60,7 +88,7 @@ export function useMenuManifest(
       orderingModes: Array.isArray(source.ordering_modes)
         ? source.ordering_modes
         : [],
-      publicViews: publicViews(source.public_views),
+      views: menuViewList(source.public_views),
       pageStyle: source.page_style,
       sections: list(source.sections).map((section, sectionIndex) => {
         const sectionRecord = record(section)
