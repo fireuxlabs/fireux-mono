@@ -1,18 +1,27 @@
 import { computed, isRef, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { readRuntimeSimulationFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
+import type { KitchenFetchSource } from './useKitchenFetch'
 
 type KitchenCollectionDoc = KitchenSurface
 
 type UseKitchenCollectionOptions = {
   hydrate?: boolean | Ref<boolean>
   ids?: string[] | Ref<string[] | null | undefined>
+  source?: KitchenFetchSource | Ref<KitchenFetchSource>
 }
 
 const normalize = (value: unknown) => String(value ?? '').trim()
+const normalizeSource = (value: unknown): KitchenFetchSource => {
+  const source = normalize(value)
+  if (source === 'demo' || source === 'test') return source
+  return 'live'
+}
 
 /**
  * Public root Kitchen collection seam.
@@ -22,7 +31,16 @@ const normalize = (value: unknown) => String(value ?? '').trim()
  */
 export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) {
   const { surface } = useKitchenInterface()
-  const { firestoreFetchCollection, firestoreLoadDocsByIds } = useFirestoreRead()
+  const liveRead = useFirestoreRead()
+  const sourceRef = computed<KitchenFetchSource>(() =>
+    normalizeSource(isRef(options.source) ? options.source.value : options.source)
+  )
+  const simulationDatabaseId = computed(() =>
+    sourceRef.value === 'test'
+      ? readRuntimeSimulationFirestoreDatabaseId() || ''
+      : ''
+  )
+  const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const shouldHydrate = computed(() =>
     isRef(options.hydrate)
       ? options.hydrate.value !== false
@@ -38,19 +56,65 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   })
   const idList = computed(() => Array.from(idSet.value))
   const rootCollectionPath = computed(() =>
-    hasIdFilter.value ? '' : KitchenStorage.rootCollection
+    sourceRef.value === 'live' && !hasIdFilter.value
+      ? KitchenStorage.rootCollection
+      : ''
   )
-  const rootSource = firestoreFetchCollection<KitchenCollectionDoc>(
+  const testCollectionPath = computed(() =>
+    sourceRef.value === 'test' &&
+      !hasIdFilter.value &&
+      simulationDatabaseId.value
+      ? KitchenStorage.rootCollection
+      : ''
+  )
+  const rootSource = liveRead.firestoreFetchCollection<KitchenCollectionDoc>(
     rootCollectionPath
   )
-  const exactRootSource = firestoreLoadDocsByIds<KitchenCollectionDoc>({
-    collectionPath: KitchenStorage.rootCollection,
+  const exactRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
+    collectionPath: computed(() =>
+      sourceRef.value === 'live' && hasIdFilter.value
+        ? KitchenStorage.rootCollection
+        : ''
+    ),
     ids: idList,
   })
+  const testSource = simulationRead.firestoreFetchCollection<KitchenCollectionDoc>(
+    testCollectionPath
+  )
+  const exactTestSource = simulationRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
+    collectionPath: computed(() =>
+      sourceRef.value === 'test' &&
+        hasIdFilter.value &&
+        simulationDatabaseId.value
+        ? KitchenStorage.rootCollection
+        : ''
+    ),
+    ids: idList,
+  })
+  const demoDocs = computed<KitchenCollectionDoc[]>(() =>
+    getDemoKitchens().map((kitchen) => ({
+      id: kitchen.id,
+      place_id: kitchen.id,
+      name: kitchen.name,
+      display_name: kitchen.name,
+      tagline: kitchen.label,
+      short_name: kitchen.label,
+      image_url: kitchen.image_url,
+      display_image_url: kitchen.image_url,
+      route_scope: 'demo',
+      is_test_kitchen: false,
+    }))
+  )
   const rootDocs = computed<KitchenCollectionDoc[]>(() =>
-    hasIdFilter.value
-      ? exactRootSource.docs.value ?? []
-      : rootSource.value ?? []
+    sourceRef.value === 'demo'
+      ? demoDocs.value
+      : sourceRef.value === 'test'
+        ? hasIdFilter.value
+          ? exactTestSource.docs.value ?? []
+          : testSource.value ?? []
+        : hasIdFilter.value
+          ? exactRootSource.docs.value ?? []
+          : rootSource.value ?? []
   )
   const placeIds = computed(() =>
     Array.from(
@@ -62,19 +126,23 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     )
   )
   const placeCollectionPath = computed(() =>
-    shouldHydrate.value && !hasIdFilter.value ? PlaceStorage.collection : ''
+    shouldHydrate.value && sourceRef.value === 'live' && !hasIdFilter.value
+      ? PlaceStorage.collection
+      : ''
   )
-  const placeSource = firestoreFetchCollection<Place>(placeCollectionPath)
-  const exactPlaceSource = firestoreLoadDocsByIds<Place>({
+  const placeSource = liveRead.firestoreFetchCollection<Place>(placeCollectionPath)
+  const exactPlaceSource = liveRead.firestoreLoadDocsByIds<Place>({
     collectionPath: PlaceStorage.collection,
     ids: computed(() =>
-      shouldHydrate.value && hasIdFilter.value ? placeIds.value : []
+      shouldHydrate.value && sourceRef.value === 'live' && hasIdFilter.value
+        ? placeIds.value
+        : []
     ),
   })
   const placesById = computed(() => {
     const map = new Map<string, Place>()
 
-    if (!shouldHydrate.value) return map
+    if (!shouldHydrate.value || sourceRef.value !== 'live') return map
 
     const places = hasIdFilter.value
       ? exactPlaceSource.docs.value ?? []
@@ -101,17 +169,27 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
             ...kitchen,
             id,
           },
-          routeScope: kitchen.route_scope,
+          routeScope:
+            sourceRef.value === 'demo' || sourceRef.value === 'test'
+              ? sourceRef.value
+              : kitchen.route_scope,
         })
       })
       .filter(Boolean) as KitchenCollectionDoc[]
   )
   const count = computed(() => kitchens.value.length)
   const pending = computed(() => {
+    if (sourceRef.value === 'demo') return false
+    if (sourceRef.value === 'test' && !simulationDatabaseId.value) return false
+
     const rootPending = hasIdFilter.value
-      ? exactRootSource.pending.value
-      : rootSource.value === undefined
-    const placePending = shouldHydrate.value
+      ? sourceRef.value === 'test'
+        ? exactTestSource.pending.value
+        : exactRootSource.pending.value
+      : sourceRef.value === 'test'
+        ? testSource.value === undefined
+        : rootSource.value === undefined
+    const placePending = shouldHydrate.value && sourceRef.value === 'live'
       ? hasIdFilter.value
         ? exactPlaceSource.pending.value
         : placeSource.value === undefined

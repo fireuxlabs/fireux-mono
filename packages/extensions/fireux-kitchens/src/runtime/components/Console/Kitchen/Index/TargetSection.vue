@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { KitchenFetchSource } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -38,14 +39,16 @@ const props = withDefaults(
     title: string
     description: string
     collection?: KitchenSurface[]
+    source?: KitchenFetchSource
   }>(),
   {
     collection: () => [],
+    source: 'live',
   }
 )
 
 const emit = defineEmits<{
-  (event: 'select', id: string): void
+  (event: 'select', id: string, source: KitchenFetchSource): void
 }>()
 
 const { cell } = useKitchenInterface()
@@ -63,6 +66,6 @@ const cardIdSet = computed(() =>
 function selectKitchen(id: string) {
   const kitchenId = String(id ?? '').trim()
   if (!cardIdSet.value.has(kitchenId)) return
-  emit('select', kitchenId)
+  emit('select', kitchenId, props.source)
 }
 </script>

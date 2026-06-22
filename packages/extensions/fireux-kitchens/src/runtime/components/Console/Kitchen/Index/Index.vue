@@ -8,7 +8,9 @@
     <ConsoleKitchenIndexTargets
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
+      :demo-collection="sections.demoTargets.collection"
       :pending="sections.targets.pending"
+      :demo-pending="sections.demoTargets.pending"
       @select="actions.selectTarget"
     />
 
