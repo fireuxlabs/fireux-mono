@@ -9,7 +9,7 @@
               Menu Preview
             </p>
             <p class="text-xs text-dimmed">
-              Uses the current menu theme preview surface.
+              Uses the current menu preview surface.
             </p>
             <p v-if="previewMenuLabel" class="text-xs text-dimmed">
               Previewing {{ previewMenuLabel }}
@@ -48,17 +48,35 @@
     </template>
 
     <div class="space-y-4">
-      <MenuThemePreview
-        :kitchen-name="kitchenName"
-        :menu="previewMenu"
-        :sections="previewSections"
+      <MenuThemeSurface
         :page-style="pageStyle"
-        :currency-code="placeCurrencyCode"
-        :currency-format="menuCurrencyFormat"
-        :show-currency="menuShowCurrency"
-        :color-mode="previewMode"
         variant="preview"
-      />
+        :color-mode="previewMode"
+      >
+        <MenuPublicHeader
+          :kitchen-name="kitchenName"
+          :name="previewMenu.name"
+          :description="previewMenu.description"
+        />
+
+        <MenuAllergenNotice class="menu-allergen-notice" />
+
+        <UAlert
+          v-if="!previewSections.length"
+          color="neutral"
+          variant="soft"
+          title="Menu unavailable"
+          description="This menu has no public sections yet."
+        />
+
+        <MenuPublicSections
+          v-else
+          :sections="previewSections"
+          :currency-code="placeCurrencyCode"
+          :currency-format="menuCurrencyFormat"
+          :show-currency="menuShowCurrency"
+        />
+      </MenuThemeSurface>
 
       <UCollapsible>
         <UButton
@@ -181,3 +199,9 @@ const snapshot = computed(() => ({
 
 const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 </script>
+
+<style scoped>
+.menu-allergen-notice {
+  margin-bottom: 2.5rem;
+}
+</style>

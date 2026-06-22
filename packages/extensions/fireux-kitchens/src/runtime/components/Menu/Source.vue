@@ -1,7 +1,5 @@
 <template>
-  <MenuPublicShell :page-style="pageStyle">
-    <slot name="breadcrumbs" />
-
+  <MenuThemeSurface :page-style="pageStyle">
     <MenuPublicHeader
       :kitchen-name="kitchenName || ''"
       :name="menu.name"
@@ -21,9 +19,7 @@
     <p v-else class="source-menu__empty">
       Menu source unavailable.
     </p>
-
-    <slot name="operator" />
-  </MenuPublicShell>
+  </MenuThemeSurface>
 </template>
 
 <script setup lang="ts">

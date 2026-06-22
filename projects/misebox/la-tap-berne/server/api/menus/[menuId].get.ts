@@ -3,7 +3,7 @@ import {
   defineEventHandler,
   getRouterParam,
 } from 'h3'
-import { laTapBerneMenuSections } from '../../../app/menu'
+import { laTapBerneMenuSections } from '../../data/menu'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

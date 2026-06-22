@@ -1,46 +1,15 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
-    class="pill"
-  >
-    <div class="flex min-w-0 items-start gap-2">
-      <div class="shrink-0">
-        <UAvatar
-          :src="imageUrl || undefined"
-          :alt="title || ''"
-          size="sm"
-          icon="i-lucide-book-open-check"
-        />
-      </div>
-
-      <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
-        </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
-          {{ subtitle }}
-        </p>
-        <span
-          v-if="actionLabel"
-          class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
-        >
-          {{ actionLabel }}
-        </span>
-      </div>
-    </div>
-  </NuxtLink>
-
-  <div
-    v-else
+  <component
+    :is="rootComponent"
+    v-bind="rootAttrs"
     class="pill"
     @click="onClick"
   >
     <div class="flex min-w-0 items-start gap-2">
       <div class="shrink-0">
         <UAvatar
-          :src="imageUrl || undefined"
-          :alt="title || ''"
+          :src="card.imageUrl || undefined"
+          :alt="card.title || ''"
           size="sm"
           icon="i-lucide-book-open-check"
         />
@@ -48,31 +17,37 @@
 
       <div class="min-w-0 flex-1 space-y-1">
         <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
+          {{ card.title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
-          {{ subtitle }}
+        <p
+          v-if="showSubtitle && card.subtitle"
+          class="truncate text-xs text-toned"
+        >
+          {{ card.subtitle }}
         </p>
         <span
-          v-if="actionLabel"
+          v-if="card.actionLabel"
           class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
         >
-          {{ actionLabel }}
+          {{ card.actionLabel }}
         </span>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { computed } from 'vue'
 
 import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
-type PillProps = Pick<
+type MenuPillCard = Pick<
   MenuCard.Card,
   'to' | 'title' | 'subtitle' | 'imageUrl' | 'actionLabel'
-> & {
+>
+
+type PillProps = {
+  card: MenuPillCard
   showSubtitle?: boolean
   link?: boolean
   action?: boolean
@@ -88,15 +63,18 @@ const props = withDefaults(defineProps<PillProps>(), {
   action: false,
 })
 
-const onClick = (event?: MouseEvent) => {
+const rootComponent = computed(() =>
+  props.link && props.card.to ? 'NuxtLink' : 'button'
+)
+const rootAttrs = computed(() =>
+  props.link && props.card.to
+    ? { to: props.card.to }
+    : { type: 'button' }
+)
+
+const onClick = () => {
   if (props.action) {
     emit('action')
-    return
   }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
 }
 </script>

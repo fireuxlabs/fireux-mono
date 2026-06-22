@@ -17,7 +17,7 @@ import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import {
   resolveKitchenPublicMenuFont,
   resolveKitchenPublicMenuTitleFont,
-} from '../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
+} from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
 
 const props = defineProps<{
   pageStyle?: Partial<PageStyle> | null

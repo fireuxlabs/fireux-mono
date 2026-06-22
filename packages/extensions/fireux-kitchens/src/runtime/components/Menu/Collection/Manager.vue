@@ -47,11 +47,11 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <MenuCardsPill v-bind="card" :link="props.link" />
+        <MenuCardsPill :card="card" :link="props.link" />
       </template>
 
       <template #cell="{ card }">
-        <MenuCardsCell v-bind="card" :link="props.link" />
+        <MenuCardsCell :card="card" :link="props.link" />
       </template>
     </MenuCollectionList>
 

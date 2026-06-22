@@ -1,3 +1,4 @@
+mayke a pass does this seem clean and organised?
 <template>
   <div class="menu-reveal">
     <Transition name="accent-wash">
