@@ -41,6 +41,7 @@ const menuSlug = (data: Record<string, unknown>, docId: string) =>
 const menuPath = (slug: string) => `/menus/${encodeURIComponent(slug)}`
 
 const text = (value: unknown) => String(value ?? '').trim()
+const list = (value: unknown) => Array.isArray(value) ? value : []
 
 const menuFileKind = (options: {
   docName: string
@@ -151,6 +152,11 @@ export function menuSurfaceFromData(
   const description = readRecordString(data, 'description')
   const status = readRecordString(data, 'status')
   const pageStyle = readRecord(scope.page_style)
+  const orderingModes = list(data.ordering_modes).length
+    ? list(data.ordering_modes).map(text).filter(Boolean)
+    : list(data.service_modes).map(text).filter(Boolean)
+  const orderingEnabled =
+    data.ordering_enabled === true || orderingModes.length > 0
   const result = {
     id: menuId,
     slug,
@@ -162,6 +168,8 @@ export function menuSurfaceFromData(
     view_to: scope.viewTo || path,
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
+    ...(orderingEnabled ? { ordering_enabled: true } : {}),
+    ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasFile(file) ? { file: compactFile(file) } : {}),
     ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),

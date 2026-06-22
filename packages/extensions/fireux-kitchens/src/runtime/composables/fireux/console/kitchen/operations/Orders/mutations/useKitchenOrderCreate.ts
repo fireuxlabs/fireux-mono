@@ -5,7 +5,9 @@ import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitc
 import {
   KitchenOrderStorage,
   type KitchenOrder,
+  type KitchenOrderFireState,
   type KitchenOrderItem,
+  type KitchenOrderType,
 } from '../../../../../../../models/order.model'
 
 type CreateKitchenOrderInput = {
@@ -13,6 +15,9 @@ type CreateKitchenOrderInput = {
   dish_id: string
   label: string
   quantity?: number
+  order_type?: KitchenOrderType
+  requested_for?: string
+  fire_state?: KitchenOrderFireState
   channel?: string
   kitchenCollectionPath?: string
   app_id?: string
@@ -36,6 +41,24 @@ const makeOrderNumber = () => {
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const normalizeOrderType = (value: unknown): KitchenOrderType => {
+  const type = normalizeString(value)
+  if (
+    type === 'collection' ||
+    type === 'delivery' ||
+    type === 'pre_order' ||
+    type === 'room_service'
+  ) {
+    return type
+  }
+
+  return 'dine_in'
+}
+const normalizeFireState = (value: unknown): KitchenOrderFireState => {
+  const state = normalizeString(value)
+  if (state === 'ready_to_fire' || state === 'held') return state
+  return 'fired'
+}
 
 export function useKitchenOrderCreate() {
   const { setDocument } = useFirestoreCreate()
@@ -49,6 +72,8 @@ export function useKitchenOrderCreate() {
       normalizeString(input.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
 
     const orderId = makeOrderId()
+    const orderType = normalizeOrderType(input.order_type || input.channel)
+    const fireState = normalizeFireState(input.fire_state)
 
     const item: KitchenOrderItem = {
       id: `item-1`,
@@ -64,12 +89,15 @@ export function useKitchenOrderCreate() {
 
       order_number: makeOrderNumber(),
       status: 'open',
-      channel: normalizeString(input.channel || 'menu'),
+      order_type: orderType,
+      requested_for: normalizeString(input.requested_for) as any,
+      fire_state: fireState,
 
       items: [item],
 
       app_id: (input.app_id || appId || '') as any,
       creator_id: (input.creator_id || '') as any,
+      channel: orderType,
       created_at: serverTimestamp() as any,
       updated_at: serverTimestamp() as any,
       created: {

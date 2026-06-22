@@ -238,7 +238,7 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Burgers Menu',
         description: 'Core burger menu for Deanos.',
         active: true,
-        service_modes: ['dine_in', 'collection'],
+        service_modes: ['dine_in'],
         sort_order: 1,
         sections: [
           {
@@ -303,7 +303,7 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Lil Dinos Menu',
         description: 'Kids burger menu in mini buns.',
         active: true,
-        service_modes: ['dine_in', 'collection'],
+        service_modes: ['dine_in'],
         sort_order: 2,
         sections: [
           {
@@ -338,7 +338,7 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Extras Menu',
         description: 'Add-ons for burgers and fries.',
         active: true,
-        service_modes: ['dine_in', 'collection'],
+        service_modes: ['dine_in'],
         sort_order: 3,
         sections: [
           {
@@ -380,7 +380,7 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Fries Menu',
         description: 'Skin-on fries and loaded fries.',
         active: true,
-        service_modes: ['dine_in', 'collection'],
+        service_modes: ['dine_in'],
         sort_order: 4,
         sections: [
           {
@@ -429,7 +429,7 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Dips Menu',
         description: 'House dips and extras for burgers and fries.',
         active: true,
-        service_modes: ['dine_in', 'collection'],
+        service_modes: ['dine_in'],
         sort_order: 5,
         sections: [
           {
@@ -1249,7 +1249,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1042',
         status: 'open',
-        channel: 'Collection · due in 9 min',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'deanos-classic',
@@ -1296,7 +1297,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1043',
         status: 'open',
-        channel: 'Eat in · new',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'hot-honey-chicken-extra-hot-honey',
@@ -1328,7 +1330,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1044',
         status: 'open',
-        channel: 'Collection · due in 6 min',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'lil-dinos-beef-plain',
@@ -1361,7 +1364,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1045',
         status: 'firing',
-        channel: 'Eat in · firing',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'mock-duck-bao',
@@ -1401,7 +1405,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1046',
         status: 'open',
-        channel: 'Collection · due in 12 min',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'hot-honey-chicken',
@@ -1441,7 +1446,8 @@ const scenarios: DemoKitchenScenario[] = [
         kitchen_id: 'deanos',
         order_number: '1047',
         status: 'open',
-        channel: 'Eat in · new',
+        order_type: 'dine_in',
+        fire_state: 'fired',
         items: [
           {
             id: 'deanos-classic',

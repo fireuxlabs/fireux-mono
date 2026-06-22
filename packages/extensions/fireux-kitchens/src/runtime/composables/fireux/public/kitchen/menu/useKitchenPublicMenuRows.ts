@@ -45,6 +45,7 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
           const dish = options.dishesById.value.get(dishId) ?? null
           return {
             id: text(item.id),
+            dish_id: dishId,
             item,
             dish,
             name: text(dish?.name) || dishId,

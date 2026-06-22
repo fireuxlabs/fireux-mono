@@ -1,11 +1,6 @@
 <template>
   <div
-    class="w-[18rem] max-w-full shrink-0 self-start overflow-hidden rounded-lg bg-default shadow-sm"
-    :class="
-      next
-        ? 'border-2 border-primary ring-2 ring-primary/20'
-        : 'border border-default'
-    "
+    class="w-[18rem] max-w-full shrink-0 self-start overflow-hidden rounded-lg border border-default bg-default shadow-sm"
   >
     <div class="divide-y divide-default">
       <div class="flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted">
@@ -13,15 +8,12 @@
           <UIcon :name="headerIcon" class="size-4 shrink-0" />
           <span class="truncate">{{ headerLabel }}</span>
         </span>
-        <UBadge
-          v-if="next"
-          color="primary"
-          variant="soft"
-          size="xs"
-          class="shrink-0"
+        <span
+          v-if="statusLabel"
+          class="shrink-0 text-xs font-medium text-dimmed"
         >
-          Next
-        </UBadge>
+          {{ statusLabel }}
+        </span>
       </div>
 
       <div class="space-y-1 p-4">
@@ -50,15 +42,9 @@
 import { computed } from 'vue'
 import type { KitchenOrder } from '../../../models/order.model'
 
-const props = withDefaults(
-  defineProps<{
-    order: KitchenOrder
-    next?: boolean
-  }>(),
-  {
-    next: false,
-  }
-)
+const props = defineProps<{
+  order: KitchenOrder
+}>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const timestampMs = (value: unknown, baseMs = 0) => {
@@ -108,10 +94,10 @@ const placedMs = computed(
 const pickupMs = computed(() =>
   timestampMs(
     orderValue([
+      'requested_for',
       'pickup_at',
       'pickup_time',
       'collection_at',
-      'requested_for',
       'due_at',
     ]),
     placedMs.value
@@ -120,11 +106,11 @@ const pickupMs = computed(() =>
 const serviceMode = computed(() => {
   const value = normalizeString(
     orderValue([
+      'order_type',
       'service_mode',
       'serviceMode',
       'fulfilment_type',
       'fulfillment_type',
-      'order_type',
       'channel',
     ])
   ).toLowerCase()
@@ -142,6 +128,13 @@ const serviceMode = computed(() => {
   ) {
     return 'delivery'
   }
+  if (
+    ['eat_in', 'eat-in', 'dine_in', 'dine-in', 'table'].includes(value) ||
+    value.includes('eat in') ||
+    value.includes('dine')
+  ) {
+    return 'eat_in'
+  }
   return value
 })
 const headerIcon = computed(() =>
@@ -149,22 +142,38 @@ const headerIcon = computed(() =>
     ? 'i-lucide-shopping-bag'
     : serviceMode.value === 'delivery'
       ? 'i-lucide-bike'
-      : 'i-lucide-clock'
+      : serviceMode.value === 'eat_in'
+        ? 'i-lucide-utensils'
+        : 'i-lucide-clock'
 )
 const headerLabel = computed(() => {
   if (serviceMode.value === 'collection') {
     return pickupMs.value
       ? `Pick up ${formatTime(pickupMs.value)}`
-      : normalizeString(orderValue(['channel'])) || 'Pick up'
+      : 'Collection'
   }
 
   if (serviceMode.value === 'delivery') {
     return pickupMs.value
       ? `Deliver ${formatTime(pickupMs.value)}`
-      : normalizeString(orderValue(['channel'])) || 'Delivery'
+      : 'Delivery'
+  }
+
+  if (serviceMode.value === 'eat_in') {
+    return 'Eat in'
   }
 
   return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'
+})
+const statusLabel = computed(() => {
+  const fireState = normalizeString((props.order as any).fire_state)
+  if (fireState === 'held') return 'held'
+  if (fireState === 'ready_to_fire') return 'ready'
+
+  const status = normalizeString(props.order.status)
+  if (!status || status === 'open') return ''
+
+  return status.replace(/[_-]+/g, ' ')
 })
 const orderLabel = computed(() => {
   const number = normalizeString(props.order.order_number)

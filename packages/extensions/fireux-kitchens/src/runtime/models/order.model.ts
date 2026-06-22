@@ -30,17 +30,32 @@ export type KitchenOrderItem = {
   checked: boolean
 }
 
+export type KitchenOrderType =
+  | 'dine_in'
+  | 'collection'
+  | 'delivery'
+  | 'pre_order'
+  | 'room_service'
+
+export type KitchenOrderFireState =
+  | 'ready_to_fire'
+  | 'held'
+  | 'fired'
+
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
   order_number: '' as string,
   status: 'open' as string,
-  channel: '' as string,
+  order_type: 'dine_in' as KitchenOrderType,
+  requested_for: '' as string | FirebaseTimestamp,
+  fire_state: 'fired' as KitchenOrderFireState,
 
   items: [] as KitchenOrderItem[],
 
   // Legacy transitional fields still read/written by existing surfaces.
+  channel: '' as string,
   app_id: '' as string,
   creator_id: '' as string,
   created_at: {} as FirebaseTimestamp,

@@ -41,6 +41,10 @@ export function useMenuManifest(
       kitchenName:
         text(source.source?.kitchen_name) ||
         text(record(sourceRecord.kitchen).name),
+      orderingEnabled: source.ordering_enabled === true,
+      orderingModes: Array.isArray(source.ordering_modes)
+        ? source.ordering_modes
+        : [],
       pageStyle: source.page_style,
       sections: list(source.sections).map((section, sectionIndex) => {
         const sectionRecord = record(section)
@@ -59,6 +63,7 @@ export function useMenuManifest(
 
             return {
               id: text(itemRecord.id) || name,
+              dishId: text(itemRecord.dish_id),
               name,
               description: itemDescription(itemRecord),
               priceLabel: itemPriceLabel(itemRecord),

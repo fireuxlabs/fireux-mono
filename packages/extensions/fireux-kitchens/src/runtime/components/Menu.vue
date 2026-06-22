@@ -45,12 +45,37 @@
                     {{ item.description }}
                   </p>
                 </div>
-                <p v-if="item.priceLabel" class="menu__price">
-                  {{ item.priceLabel }}
-                </p>
+
+                <div
+                  v-if="item.priceLabel || canQuickOrder"
+                  class="menu__item-actions"
+                >
+                  <p v-if="item.priceLabel" class="menu__price">
+                    {{ item.priceLabel }}
+                  </p>
+
+                  <UButton
+                    v-if="canQuickOrder"
+                    size="xs"
+                    color="neutral"
+                    variant="soft"
+                    :loading="creatingItemId === item.id"
+                    @click="createMenuOrder(item)"
+                  >
+                    Order
+                  </UButton>
+                </div>
               </article>
             </section>
           </div>
+
+          <p
+            v-if="orderMessage || orderError"
+            class="menu-order-state"
+            aria-live="polite"
+          >
+            {{ orderMessage || orderError }}
+          </p>
         </article>
 
         <p v-else class="menu-state">
@@ -69,7 +94,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { KitchenOrderType } from '../models/order.model'
 import { useMenuManifest } from '../composables/fireux/public/menu/useMenuManifest'
+import { useMenuOrderCreate } from '../composables/fireux/public/menu/useMenuOrderCreate'
+
+type RenderMenuItem = {
+  id: string
+  name: string
+}
 
 const props = defineProps<{
   menuId: string
@@ -85,6 +117,28 @@ const {
   renderMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
+const defaultOrderType = computed<KitchenOrderType>(() => {
+  const modes = renderMenu.value?.orderingModes || []
+  if (modes.includes('dine_in')) return 'dine_in'
+
+  return modes[0] || 'dine_in'
+})
+const canQuickOrder = computed(() =>
+  Boolean(renderMenu.value?.orderingEnabled && defaultOrderType.value === 'dine_in')
+)
+const {
+  creatingItemId,
+  message: orderMessage,
+  error: orderError,
+  createOrder,
+} = useMenuOrderCreate(menuId, { kitchenSlug })
+
+function createMenuOrder(item: RenderMenuItem) {
+  if (!canQuickOrder.value) return
+  createOrder(item, {
+    order_type: defaultOrderType.value,
+  })
+}
 </script>
 
 <style scoped>
@@ -101,7 +155,8 @@ const {
 .menu__header,
 .menu__sections,
 .menu__section,
-.menu__item-copy {
+.menu__item-copy,
+.menu__item-actions {
   display: grid;
 }
 
@@ -193,6 +248,11 @@ const {
   gap: 0.2rem;
 }
 
+.menu__item-actions {
+  gap: 0.45rem;
+  justify-items: end;
+}
+
 .menu__item h3,
 .menu__item p {
   margin: 0;
@@ -214,6 +274,14 @@ const {
   font-size: 0.95rem;
   font-weight: 850;
   white-space: nowrap;
+}
+
+.menu-order-state {
+  justify-self: center;
+  margin: 0;
+  color: var(--menu-muted);
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 @media (min-width: 920px) {

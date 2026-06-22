@@ -63,13 +63,6 @@ export function useKitchenConsoleOrders() {
       )
     })
   )
-  const isNextTicket = (index: number) => {
-    if (!ticketOrders.value.length) return false
-
-    return ticketRailNextPosition === 'left'
-      ? index === 0
-      : index === ticketOrders.value.length - 1
-  }
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
     source: runtime.source.value,
@@ -93,15 +86,12 @@ export function useKitchenConsoleOrders() {
     canWrite,
     orders: consoleOrders,
     ticketOrders,
-    isNextTicket,
     pending,
     debug,
   }
 }
 
 const defaultTargetMinutes = 15
-// TODO: move this to /console/kitchen/orders/settings when ticket rail settings exist.
-const ticketRailNextPosition: 'left' | 'right' = 'left'
 
 const timestampMs = (value: unknown, baseMs = 0) => {
   if (value instanceof Date) return value.getTime()
@@ -146,10 +136,10 @@ const getPickupMs = (order: KitchenOrder) => {
   const createdMs = getCreatedMs(order)
   return timestampMs(
     orderValue(order, [
+      'requested_for',
       'pickup_at',
       'pickup_time',
       'collection_at',
-      'requested_for',
       'due_at',
     ]),
     createdMs
@@ -159,11 +149,11 @@ const getPickupMs = (order: KitchenOrder) => {
 const getServiceMode = (order: KitchenOrder) => {
   const value = String(
     orderValue(order, [
+      'order_type',
       'service_mode',
       'serviceMode',
       'fulfilment_type',
       'fulfillment_type',
-      'order_type',
       'channel',
     ]) ?? ''
   )
