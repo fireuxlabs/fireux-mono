@@ -4,9 +4,9 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { writeKitchenMenuDraft } from '../../../../utils/kitchen-menu-draft-write'
 import {
-  normalizeExtractedSections,
-  record,
-} from '../../../../utils/kitchen-menu-process'
+  countKitchenMenuDraftItems,
+  normalizeKitchenMenuDraftSections,
+} from '../../../../utils/kitchen-menu-draft-sections'
 import {
   assertKitchenMenuUploadAccess,
   kitchenMenuUploadKitchenPath,
@@ -18,8 +18,10 @@ type ConfirmMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'upload
   confirmDishes?: boolean
 }
 
-const countItems = (sections: ReturnType<typeof normalizeExtractedSections>) =>
-  sections.reduce((count, section) => count + section.items.length, 0)
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenMenuUploadUser(
@@ -54,9 +56,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const source = record(sourceSnap.data() || {})
   const aiDraft = record(source.ai_draft)
-  const sections = normalizeExtractedSections({ sections: aiDraft.sections })
+  const sections = normalizeKitchenMenuDraftSections({ sections: aiDraft.sections })
 
-  if (!sections.length || !countItems(sections)) {
+  if (!sections.length || !countKitchenMenuDraftItems(sections)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Confirm needs at least one dish in the menu draft.',

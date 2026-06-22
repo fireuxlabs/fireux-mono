@@ -1,51 +1,44 @@
 <template>
-  <section>
-    <UCard>
-      <template #header>
-        <div class="collection-manager__header">
-          <div class="collection-manager__title">
-            <h2>Choose Kitchen</h2>
-            <p>Select the Kitchen console target you want to work on.</p>
-          </div>
+  <section class="space-y-4">
+    <p v-if="showLoading" class="text-sm text-dimmed">
+      Loading kitchens...
+    </p>
 
-          <UBadge variant="soft">{{ cards.length }}</UBadge>
-        </div>
-      </template>
+    <template v-else-if="targetCount">
+      <ConsoleKitchenIndexTargetSection
+        title="Your kitchens"
+        description="Kitchens linked to your current user profile."
+        :collection="standardKitchens"
+        @select="selectKitchen"
+      />
 
-      <p v-if="showLoading" class="text-sm text-dimmed">Loading kitchens...</p>
+      <ConsoleKitchenIndexTargetSection
+        title="Demo kitchens"
+        description="Local test targets for building console flows."
+        :collection="demoKitchens"
+        @select="selectKitchen"
+      />
+    </template>
 
-      <div v-else-if="cards.length" class="space-y-3">
-        <KitchenCardsCell
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="false"
-          action
-          :show-source="false"
-          :show-badges="false"
-          @action="selectKitchen(card.id)"
-        />
-      </div>
-
-      <p v-else-if="isMounted" class="text-sm text-dimmed">
-        No Kitchen targets found.
-      </p>
-    </UCard>
+    <p v-else-if="isMounted" class="text-sm text-dimmed">
+      No Kitchen targets found.
+    </p>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = withDefaults(
   defineProps<{
     collection?: KitchenSurface[]
+    demoTargetIds?: string[]
     pending?: boolean
   }>(),
   {
     collection: () => [],
+    demoTargetIds: () => [],
     pending: false,
   }
 )
@@ -61,13 +54,23 @@ const consoleIds = computed(() =>
     .filter(Boolean)
 )
 const consoleIdSet = computed(() => new Set(consoleIds.value))
-const { cell } = useKitchenInterface()
-const cards = computed(() =>
-  props.collection
-    .map((kitchen) => cell(kitchen))
-    .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
-      Boolean(card)
-    )
+const demoIdSet = computed(() =>
+  new Set(
+    props.demoTargetIds
+      .map((id) => String(id ?? '').trim())
+      .filter(Boolean)
+  )
+)
+const targetCount = computed(() => props.collection.length)
+const demoKitchens = computed(() =>
+  props.collection.filter((kitchen) =>
+    demoIdSet.value.has(String(kitchen.id ?? '').trim())
+  )
+)
+const standardKitchens = computed(() =>
+  props.collection.filter(
+    (kitchen) => !demoIdSet.value.has(String(kitchen.id ?? '').trim())
+  )
 )
 const showLoading = computed(() => props.pending || !isMounted.value)
 

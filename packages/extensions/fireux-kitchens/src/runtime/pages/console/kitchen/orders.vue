@@ -12,7 +12,8 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenOperationsOrders />
+        <ConsoleKitchenIndex />
+        <ConsoleKitchenOperationsOrders v-if="hasKitchenSelection" />
       </section>
     </template>
   </UDashboardPanel>
@@ -20,6 +21,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
 const formatTime = (value: number) =>
   new Date(value).toLocaleTimeString([], {
@@ -41,6 +43,10 @@ onUnmounted(() => {
 })
 
 const clockLabel = computed(() => formatTime(nowMs.value))
+const kitchenSelection = useConsoleSelection('kitchen')
+const hasKitchenSelection = computed(() =>
+  Boolean(String(kitchenSelection.selectedId.value || '').trim())
+)
 
 definePageMeta({
   layout: 'console',
@@ -50,7 +56,7 @@ definePageMeta({
     label: 'Orders',
     icon: 'i-lucide-receipt-text',
     position: 'top',
-    requiresSelection: true,
+    requiresSelection: false,
     order: 7,
     desktop: true,
     mobile: true,

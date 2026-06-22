@@ -15,12 +15,18 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const consoleRoot = useConsole(options.family)
   const mode: ConsoleAppMode = consoleRoot.mode
   const configTargetIds = uniqueStrings(consoleRoot.targetIds())
+  const configDevTargetIds = uniqueStrings(consoleRoot.devTargetIds())
   const globalTargetIds = computed(() =>
     uniqueStrings(options.globalTargetIds ? unref(options.globalTargetIds) : [])
   )
-  const targetIds = computed(() =>
-    mode === 'tenant' ? configTargetIds : globalTargetIds.value
-  )
+  const targetIds = computed(() => {
+    if (mode === 'tenant') return configTargetIds
+
+    return uniqueStrings([
+      ...globalTargetIds.value,
+      ...configDevTargetIds,
+    ])
+  })
   const canCreate = consoleRoot.canCreateTarget()
   const isTenant = mode === 'tenant'
   const isSingleTenantTarget = isTenant && configTargetIds.length === 1
@@ -33,6 +39,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     family: normalizeString(options.family),
     appMode: mode,
     configTargetIds,
+    configDevTargetIds,
     globalTargetIds: globalTargetIds.value,
     targetIds: targetIds.value,
     canCreate,
@@ -46,6 +53,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     isGlobal: mode === 'global',
     isStandalone: mode === 'standalone',
     configTargetIds,
+    configDevTargetIds,
     globalTargetIds,
     targetIds,
     canCreate,

@@ -24,7 +24,10 @@ export type RuntimeApp = {
   ecosystem: string
   modules: readonly string[]
   consoles: readonly string[]
-  consoleConfig?: Record<string, { canCreate?: boolean; targetIds?: string[] }>
+  consoleConfig?: Record<
+    string,
+    { canCreate?: boolean; targetIds?: string[]; devTargetIds?: string[] }
+  >
   domains: readonly string[]
   profiles: readonly string[]
   navHiddenKeys?: readonly string[]

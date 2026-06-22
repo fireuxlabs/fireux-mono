@@ -10,10 +10,9 @@ import {
   type MenuAiNormalizationResult,
 } from './kitchen-menu-ai-normalization'
 import {
-  normalizeExtractedSections,
-  record,
-  type ExtractedMenuSection,
-} from './kitchen-menu-process'
+  normalizeKitchenMenuDraftSections,
+  type KitchenMenuDraftSection,
+} from './kitchen-menu-draft-sections'
 import { resolveKitchenMenuUrlContent } from './kitchen-menu-url-content'
 
 type ExtractedMenu = {
@@ -32,6 +31,10 @@ export type MenuAiExtractionResult = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 const numberValue = (value: unknown) => {
   const number = Number(value)
@@ -67,11 +70,11 @@ const notesFrom = (value: unknown) => {
   return Array.isArray(notes) ? notes.map(text).filter(Boolean) : []
 }
 
-const countItems = (sections: ExtractedMenuSection[]) =>
+const countItems = (sections: KitchenMenuDraftSection[]) =>
   sections.reduce((count, section) => count + section.items.length, 0)
 
 function annotateSections(
-  sections: ExtractedMenuSection[],
+  sections: KitchenMenuDraftSection[],
   fileId: string
 ) {
   return sections.map((section) => ({
@@ -83,8 +86,8 @@ function annotateSections(
   }))
 }
 
-function mergeSections(sections: ExtractedMenuSection[]) {
-  const byLabel = new Map<string, ExtractedMenuSection>()
+function mergeSections(sections: KitchenMenuDraftSection[]) {
+  const byLabel = new Map<string, KitchenMenuDraftSection>()
 
   for (const section of sections) {
     const key = normalizeKey(section.label) || `section-${byLabel.size + 1}`
@@ -260,7 +263,7 @@ export async function extractMenuWithAi(
     text(input.normalizationModel) || MENU_SOURCE_NORMALIZATION_MODEL
   const sourceFiles = await Promise.all(input.sourceFiles.map(withUrlText))
   const extraction = await runFireuxAiDocumentExtraction<
-    ExtractedMenuSection[],
+    KitchenMenuDraftSection[],
     ExtractedMenu
   >({
     event,
@@ -269,14 +272,14 @@ export async function extractMenuWithAi(
     fileTimeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
     files: sourceFiles,
     taskId: input.menuId,
-    logScope: 'kitchen-menu-process',
+    logScope: 'kitchen-menu-ai-extraction',
     buildRequest: (file) => buildMenuSourceExtractionRequest({
       menuId: input.menuId,
       file,
     }),
     readResult: (data, file) => {
       const sections = annotateSections(
-        normalizeExtractedSections(data),
+        normalizeKitchenMenuDraftSections(data),
         file.id
       )
       const fileNotes = notesFrom(data)
@@ -300,7 +303,7 @@ export async function extractMenuWithAi(
 
   if (!extraction.ok) return extraction
 
-  const sections = normalizeExtractedSections(extraction.data)
+  const sections = normalizeKitchenMenuDraftSections(extraction.data)
   const normalized = await normalizeMenuExtractionWithAi(event, {
     appId: input.appId,
     menuId: input.menuId,

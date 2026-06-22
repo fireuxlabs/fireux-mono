@@ -21,7 +21,10 @@ export type FireuxAppConfig = {
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
   /** Optional per-console app behavior, e.g. whether this app may create or pin console targets. */
-  consoleConfig?: Record<string, { canCreate?: boolean; targetIds?: string[] }>
+  consoleConfig?: Record<
+    string,
+    { canCreate?: boolean; targetIds?: string[]; devTargetIds?: string[] }
+  >
   /** Optional public/admin root domains this app consumes. */
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */

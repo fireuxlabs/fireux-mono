@@ -6,6 +6,7 @@ export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
 export type ConsoleFamilyConfig = {
   canCreate?: boolean
   targetIds?: string[]
+  devTargetIds?: string[]
 }
 export type ConsoleConfig = Record<string, ConsoleFamilyConfig>
 
@@ -40,6 +41,7 @@ function readConsoleConfig(): ConsoleConfig {
         if (!key || !Object.keys(cfg).length) return null
 
         const targetIds = uniqueStrings(cfg.targetIds)
+        const devTargetIds = uniqueStrings(cfg.devTargetIds)
 
         return [
           key,
@@ -48,6 +50,7 @@ function readConsoleConfig(): ConsoleConfig {
               ? { canCreate: cfg.canCreate }
               : {}),
             ...(targetIds.length ? { targetIds } : {}),
+            ...(devTargetIds.length ? { devTargetIds } : {}),
           },
         ] as const
       })
@@ -84,6 +87,10 @@ export function useConsole(family = '') {
     const cfg = configFor(targetFamily)
     return uniqueStrings(cfg?.targetIds)
   }
+  const devTargetIds = (targetFamily = family) => {
+    const cfg = configFor(targetFamily)
+    return import.meta.dev ? uniqueStrings(cfg?.devTargetIds) : []
+  }
 
   return {
     appId: fireux.appId,
@@ -98,5 +105,6 @@ export function useConsole(family = '') {
     configFor,
     canCreateTarget,
     targetIds,
+    devTargetIds,
   }
 }

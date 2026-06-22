@@ -8,9 +8,9 @@ import { MenuSectionModel } from '../../models/menu/menu-section.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import type { normalizeExtractedSections } from './kitchen-menu-process'
+import type { normalizeKitchenMenuDraftSections } from './kitchen-menu-draft-sections'
 
-type DraftSections = ReturnType<typeof normalizeExtractedSections>
+type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>

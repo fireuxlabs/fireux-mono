@@ -1,10 +1,9 @@
 import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server.ts'
 import {
-  normalizeExtractedSections,
-  record,
-  type ExtractedMenuSection,
-} from './kitchen-menu-process'
+  normalizeKitchenMenuDraftSections,
+  type KitchenMenuDraftSection,
+} from './kitchen-menu-draft-sections'
 import { MENU_NORMALIZATION_JSON_SCHEMA } from './kitchen-menu-ai-schema'
 
 type NormalizedMenu = {
@@ -19,10 +18,15 @@ export type MenuAiNormalizationResult = {
   provider?: string
   model?: string
   usage?: Record<string, unknown>
-  sections: ExtractedMenuSection[]
+  sections: KitchenMenuDraftSection[]
   notes: string[]
   changes: unknown[]
 }
+
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 const notesFrom = (value: unknown) => {
   const notes = record(value).notes
@@ -42,7 +46,7 @@ const skippedNormalization = (reason: string): MenuAiNormalizationResult => ({
 function buildMenuNormalizationRequest(
   input: {
     menuId: string
-    sections: ExtractedMenuSection[]
+    sections: KitchenMenuDraftSection[]
   }
 ) {
   return {
@@ -99,7 +103,7 @@ export async function normalizeMenuExtractionWithAi(
     menuId: string
     model: string
     timeoutMs: number
-    sections: ExtractedMenuSection[]
+    sections: KitchenMenuDraftSection[]
   }
 ): Promise<MenuAiNormalizationResult> {
   if (!input.sections.length) {
@@ -131,7 +135,7 @@ export async function normalizeMenuExtractionWithAi(
     }
   }
 
-  const sections = normalizeExtractedSections(response.data)
+  const sections = normalizeKitchenMenuDraftSections(response.data)
   const changes = record(response.data).changes
 
   return {

@@ -8,6 +8,7 @@
     <ConsoleKitchenIndexTargets
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
+      :demo-target-ids="runtime.devTargetIds"
       :pending="sections.targets.pending"
       @select="actions.selectTarget"
     />
@@ -27,6 +28,7 @@ import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/k
 const {
   selection,
   sections,
+  runtime,
   actions,
   debug,
 } = useKitchenConsoleIndex()
