@@ -1,12 +1,11 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
-    <div
-      class="flex w-full items-center gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
+    v-if="link && to"
+    :to="to"
+    class="card card--cell kitchen-card-cell"
+    :class="cardClass"
+  >
+    <div class="card__media">
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
@@ -15,55 +14,60 @@
         :class="avatarShadeClass"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
+      <div class="card__content card__stack">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ name }}</div>
+            <div class="card__title">{{ name }}</div>
 
-            <div v-if="showSubtitle && resolvedAddress" class="flex items-center gap-1 truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && resolvedAddress"
+              class="card__subtitle inline-flex max-w-full items-center gap-1"
+            >
               <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
               <span class="truncate">{{ resolvedAddress }}</span>
             </div>
           </div>
 
-          <UBadge
-            v-if="showSource && sourceLabel"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
+          <div
+            v-if="(showSource && sourceLabel) || visibleBadges.length"
+            class="card__badges"
           >
-            {{ sourceLabel }}
-          </UBadge>
-          <UBadge
-            v-for="badge in visibleBadges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ badge }}
-          </UBadge>
+            <UBadge
+              v-if="showSource && sourceLabel"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ sourceLabel }}
+            </UBadge>
+            <UBadge
+              v-for="badge in visibleBadges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showTagline && prop" class="card__tagline">
+          {{ prop }}
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  :class="{ 'opacity-60 cursor-not-allowed': disabled }"
-  @click="onClick"
->
-    <div
-      class="flex w-full items-center gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
+  <div
+    v-else
+    class="card card--cell kitchen-card-cell"
+    :class="cardClass"
+    @click="onClick"
+  >
+    <div class="card__media">
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
@@ -72,45 +76,52 @@
         :class="avatarShadeClass"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
+      <div class="card__content card__stack">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ name }}</div>
+            <div class="card__title">{{ name }}</div>
 
-            <div v-if="showSubtitle && resolvedAddress" class="flex items-center gap-1 truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && resolvedAddress"
+              class="card__subtitle inline-flex max-w-full items-center gap-1"
+            >
               <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
               <span class="truncate">{{ resolvedAddress }}</span>
             </div>
           </div>
 
-          <UBadge
-            v-if="showSource && sourceLabel"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
+          <div
+            v-if="(showSource && sourceLabel) || visibleBadges.length"
+            class="card__badges"
           >
-            {{ sourceLabel }}
-          </UBadge>
-          <UBadge
-            v-for="badge in visibleBadges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ badge }}
-          </UBadge>
+            <UBadge
+              v-if="showSource && sourceLabel"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ sourceLabel }}
+            </UBadge>
+            <UBadge
+              v-for="badge in visibleBadges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showTagline && prop" class="card__tagline">
+          {{ prop }}
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -129,6 +140,7 @@ type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 
   link?: boolean
   action?: boolean
   disabled?: boolean
+  selected?: boolean
 }
 
 const emit = defineEmits<{
@@ -146,6 +158,7 @@ const props = withDefaults(defineProps<Props>(), {
   link: false,
   action: false,
   disabled: false,
+  selected: false,
 })
 
 const resolvedAddress = computed(() => props.formattedAddress || '')
@@ -172,6 +185,11 @@ const sourceLabel = computed(() =>
 const visibleBadges = computed(() =>
   props.showBadges === false ? [] : props.badges ?? []
 )
+const cardClass = computed(() => ({
+  'cursor-pointer': props.action || (props.link && props.to),
+  'cursor-not-allowed opacity-60': props.disabled,
+  'kitchen-card-cell--selected': props.selected,
+}))
 
 const onClick = (event?: MouseEvent) => {
   if (props.disabled) return
@@ -187,3 +205,23 @@ const onClick = (event?: MouseEvent) => {
   navigateTo(props.to)
 }
 </script>
+
+<style scoped>
+.kitchen-card-cell--selected {
+  border-color: color-mix(in srgb, var(--ui-primary) 52%, var(--ui-border));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ui-primary) 14%, transparent),
+      color-mix(in srgb, var(--ui-primary) 4%, transparent)
+    ),
+    var(--ui-bg);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ui-primary) 20%, transparent),
+    0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.kitchen-card-cell--selected:hover {
+  border-color: color-mix(in srgb, var(--ui-primary) 66%, var(--ui-border));
+}
+</style>

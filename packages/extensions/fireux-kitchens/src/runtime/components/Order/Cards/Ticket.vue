@@ -83,10 +83,11 @@ const timestampMs = (value: unknown, baseMs = 0) => {
   return Number.isFinite(parsed) ? parsed : 0
 }
 const formatTime = (value: number) =>
-  new Date(value).toLocaleTimeString([], {
+  new Intl.DateTimeFormat('en-GB', {
     hour: '2-digit',
     minute: '2-digit',
-  })
+    hour12: false,
+  }).format(new Date(value))
 
 const orderValue = (keys: string[]) => {
   const source = props.order as Record<string, unknown>
@@ -128,8 +129,19 @@ const serviceMode = computed(() => {
     ])
   ).toLowerCase()
 
-  if (['collection', 'collect', 'pickup', 'pick_up'].includes(value)) return 'collection'
-  if (['delivery', 'deliver'].includes(value)) return 'delivery'
+  if (
+    ['collection', 'collect', 'pickup', 'pick_up'].includes(value) ||
+    value.includes('collection') ||
+    value.includes('pickup')
+  ) {
+    return 'collection'
+  }
+  if (
+    ['delivery', 'deliver'].includes(value) ||
+    value.includes('delivery')
+  ) {
+    return 'delivery'
+  }
   return value
 })
 const headerIcon = computed(() =>
@@ -143,7 +155,13 @@ const headerLabel = computed(() => {
   if (serviceMode.value === 'collection') {
     return pickupMs.value
       ? `Pick up ${formatTime(pickupMs.value)}`
-      : 'Pick up time unset'
+      : normalizeString(orderValue(['channel'])) || 'Pick up'
+  }
+
+  if (serviceMode.value === 'delivery') {
+    return pickupMs.value
+      ? `Deliver ${formatTime(pickupMs.value)}`
+      : normalizeString(orderValue(['channel'])) || 'Delivery'
   }
 
   return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'

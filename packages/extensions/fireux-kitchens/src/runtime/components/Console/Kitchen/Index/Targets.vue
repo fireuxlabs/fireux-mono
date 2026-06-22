@@ -10,14 +10,18 @@
         description="Live kitchens linked to your current user profile."
         source="live"
         :collection="collection"
+        :selected-id="selectedId"
+        :selected-source="selectedSource"
         @select="selectKitchen"
       />
 
       <ConsoleKitchenIndexTargetSection
         title="Demo kitchens"
-        description="Local demo scenarios for building console flows."
+        description="Explore with our read-only kitchens."
         source="demo"
         :collection="demoCollection"
+        :selected-id="selectedId"
+        :selected-source="selectedSource"
         @select="selectKitchen"
       />
     </template>
@@ -39,12 +43,16 @@ const props = withDefaults(
     demoCollection?: KitchenSurface[]
     pending?: boolean
     demoPending?: boolean
+    selectedId?: string
+    selectedSource?: KitchenFetchSource
   }>(),
   {
     collection: () => [],
     demoCollection: () => [],
     pending: false,
     demoPending: false,
+    selectedId: '',
+    selectedSource: 'live',
   }
 )
 

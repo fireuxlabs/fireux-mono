@@ -3,19 +3,20 @@
     <KitchenCardsPreview
       v-if="previewModel"
       v-bind="previewModel"
+      :show-badges="false"
     />
 
     <UPageCard
       v-else-if="kitchenId"
-      title="Selected Kitchen"
+      title="Selected kitchen"
       :description="kitchenName || kitchenId"
       variant="subtle"
     />
 
     <UPageCard
       v-else
-      title="No selected Kitchen"
-      description="Choose a Kitchen target to open selected Kitchen console state."
+      title="No selected kitchen"
+      description="Choose a kitchen target to open selected kitchen console state."
       variant="subtle"
     />
   </section>

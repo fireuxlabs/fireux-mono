@@ -95,12 +95,16 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     getDemoKitchens().map((kitchen) => ({
       id: kitchen.id,
       place_id: kitchen.id,
+      slug: kitchen.slug,
       name: kitchen.name,
       display_name: kitchen.name,
       tagline: kitchen.label,
-      short_name: kitchen.label,
+      short_name: kitchen.short_name || kitchen.label,
+      short_address: kitchen.short_address,
+      formatted_address: kitchen.formatted_address,
       image_url: kitchen.image_url,
       display_image_url: kitchen.image_url,
+      source: kitchen.source,
       route_scope: 'demo',
       is_test_kitchen: false,
     }))

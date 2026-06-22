@@ -14,7 +14,7 @@
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 space-y-1">
               <p class="text-xs font-medium uppercase tracking-[0.16em] text-toned">
-                Kitchen
+                {{ eyebrow }}
               </p>
 
               <h2 class="truncate text-xl font-semibold text-highlighted">
@@ -111,6 +111,7 @@ type Props = {
   phone?: string
   currencyCode?: string
   menuAvailable?: boolean
+  eyebrow?: string
   showBadges?: boolean
   showBody?: boolean
   details?: KitchenPreviewDetail[]
@@ -118,6 +119,7 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  eyebrow: 'Kitchen',
   showBadges: true,
   showBody: true,
   menuAvailable: true,

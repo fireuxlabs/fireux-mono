@@ -13,7 +13,10 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDemoKitchen } from '../../../demo/kitchen/scenarios'
+import {
+  getDemoKitchen,
+  getDemoKitchenPlace,
+} from '../../../demo/kitchen/scenarios'
 import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
@@ -121,16 +124,21 @@ export function useKitchenFetch(
     if (sourceRef.value === 'demo') {
       const scenario = getDemoKitchen(docId)
       if (!scenario) return undefined
+      const place = getDemoKitchenPlace(docId)
 
       return {
         id: scenario.id,
         place_id: scenario.id,
+        slug: place?.slug ?? scenario.id,
         name: scenario.name,
         display_name: scenario.name,
-        short_name: scenario.label,
+        short_name: place?.short_name ?? scenario.label,
+        short_address: place?.short_address ?? '',
+        formatted_address: place?.formatted_address ?? '',
         tagline: scenario.label,
         image_url: scenario.image_url,
         display_image_url: scenario.image_url,
+        source: place?.source ?? 'fireux',
         route_scope: 'demo',
       } as KitchenFetchDoc
     }

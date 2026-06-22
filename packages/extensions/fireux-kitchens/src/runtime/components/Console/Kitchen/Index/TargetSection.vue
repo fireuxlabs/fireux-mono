@@ -22,6 +22,7 @@
         action
         :show-source="false"
         :show-badges="false"
+        :selected="isSelected(card.id)"
         @action="selectKitchen(card.id)"
       />
     </div>
@@ -40,10 +41,14 @@ const props = withDefaults(
     description: string
     collection?: KitchenSurface[]
     source?: KitchenFetchSource
+    selectedId?: string
+    selectedSource?: KitchenFetchSource
   }>(),
   {
     collection: () => [],
     source: 'live',
+    selectedId: '',
+    selectedSource: 'live',
   }
 )
 
@@ -62,10 +67,18 @@ const cards = computed(() =>
 const cardIdSet = computed(() =>
   new Set(cards.value.map((card) => card.id).filter(Boolean))
 )
+const selectedId = computed(() => String(props.selectedId ?? '').trim())
 
 function selectKitchen(id: string) {
   const kitchenId = String(id ?? '').trim()
   if (!cardIdSet.value.has(kitchenId)) return
   emit('select', kitchenId, props.source)
+}
+
+function isSelected(id: string) {
+  return (
+    selectedId.value === String(id ?? '').trim() &&
+    props.selectedSource === props.source
+  )
 }
 </script>

@@ -6,6 +6,7 @@ import {
 } from '../../../../../../models/order.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
+import { getDemoKitchenCollection } from '../../../../demo/kitchen/scenarios'
 
 export function useKitchenConsoleOrders() {
   const {
@@ -21,6 +22,11 @@ export function useKitchenConsoleOrders() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
+  const demoOrders = computed(() =>
+    runtime.source.value === 'demo' && kitchenId.value
+      ? getDemoKitchenCollection<KitchenOrder>(kitchenId.value, 'orders')
+      : []
+  )
   const { orders, pending: ordersPending, ordersPath } =
     useKitchenOrdersFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
@@ -34,8 +40,19 @@ export function useKitchenConsoleOrders() {
     pending: ordersPending,
     collectionPath: ordersPath,
   })
-  const consoleOrders = computed(() => page.collection.value.items)
-  const pending = computed(() => page.collection.value.pending)
+  const consoleOrders = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoOrders.value
+      : page.collection.value.items
+  )
+  const pending = computed(() =>
+    runtime.source.value === 'demo' ? false : page.collection.value.pending
+  )
+  const orderBoardPath = computed(() =>
+    runtime.source.value === 'demo'
+      ? `demo/kitchens/${kitchenId.value}/orders`
+      : ordersPath.value
+  )
   const ticketOrders = computed(() =>
     [...consoleOrders.value].sort((a, b) => {
       const aTime = getRailTime(a)
@@ -55,9 +72,10 @@ export function useKitchenConsoleOrders() {
   }
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
+    source: runtime.source.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
-    collectionPath: ordersPath.value,
+    collectionPath: orderBoardPath.value,
     count: consoleOrders.value.length,
     pending: pending.value,
     readOnly: readOnly.value,
@@ -68,7 +86,7 @@ export function useKitchenConsoleOrders() {
     ...page,
     selectedKitchen,
     kitchenId,
-    collectionPath: ordersPath,
+    collectionPath: orderBoardPath,
     rootCollection,
     databaseId,
     readOnly,

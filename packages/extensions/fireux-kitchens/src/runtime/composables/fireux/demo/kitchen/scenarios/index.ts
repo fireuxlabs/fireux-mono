@@ -2,7 +2,21 @@ export type DemoKitchenListItem = {
   id: string
   name: string
   label: string
+  slug?: string
+  short_name?: string
+  short_address?: string
+  formatted_address?: string
+  source?: 'fireux'
   image_url?: string
+}
+
+export type DemoKitchenPlace = {
+  id: string
+  slug: string
+  short_name: string
+  short_address: string
+  formatted_address: string
+  source: 'fireux'
 }
 
 export type DemoKitchenCollectionName =
@@ -36,6 +50,17 @@ const butcherImage =
   'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80'
 const chickenImage =
   'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80'
+
+const demoKitchenPlaces: Record<string, DemoKitchenPlace> = {
+  deanos: {
+    id: 'deanos',
+    slug: 'deanos',
+    short_name: 'Deanos',
+    short_address: 'Demo Market, One World',
+    formatted_address: '1 Burger Lane, 1000 Demo Market, One World',
+    source: 'fireux',
+  },
+}
 
 const cityButchersCatalogue = [
   {
@@ -1888,13 +1913,30 @@ export const getDemoKitchen = (kitchenId?: string): DemoKitchenScenario | null =
   return scenarios.find((scenario) => scenario.id === id) ?? null
 }
 
+export const getDemoKitchenPlace = (
+  kitchenId?: string
+): DemoKitchenPlace | null => {
+  const id = normalize(kitchenId)
+  if (!id) return null
+  return demoKitchenPlaces[id] ?? null
+}
+
 export const getDemoKitchens = (): DemoKitchenListItem[] =>
-  scenarios.map((scenario) => ({
-    id: scenario.id,
-    name: scenario.name,
-    label: scenario.label,
-    image_url: scenario.image_url,
-  }))
+  scenarios.map((scenario) => {
+    const place = getDemoKitchenPlace(scenario.id)
+
+    return {
+      id: scenario.id,
+      name: scenario.name,
+      label: scenario.label,
+      slug: place?.slug ?? scenario.id,
+      short_name: place?.short_name ?? scenario.label,
+      short_address: place?.short_address ?? '',
+      formatted_address: place?.formatted_address ?? '',
+      source: place?.source ?? 'fireux',
+      image_url: scenario.image_url,
+    }
+  })
 
 export const getDemoKitchenCollection = <T = Record<string, unknown>>(
   kitchenId: string,
@@ -1908,6 +1950,7 @@ export const getDemoKitchenCollection = <T = Record<string, unknown>>(
 
 export const getDefaultDemoKitchen = () => {
   const scenario = scenarios[0]
+  const place = getDemoKitchenPlace(scenario.id)
 
   return {
     kitchen: {
@@ -1916,6 +1959,10 @@ export const getDefaultDemoKitchen = () => {
       label: scenario.label,
       image_url: scenario.image_url,
       place_id: scenario.id,
+      source: 'fireux',
+      slug: place?.slug ?? scenario.id,
+      short_address: place?.short_address ?? '',
+      formatted_address: place?.formatted_address ?? '',
       is_test_kitchen: false,
       created: { at: {} },
       updated: { at: {} },

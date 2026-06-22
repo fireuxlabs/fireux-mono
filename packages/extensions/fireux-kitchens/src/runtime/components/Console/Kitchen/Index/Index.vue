@@ -11,6 +11,8 @@
       :demo-collection="sections.demoTargets.collection"
       :pending="sections.targets.pending"
       :demo-pending="sections.demoTargets.pending"
+      :selected-id="selection.kitchenId"
+      :selected-source="selection.kitchenSource"
       @select="actions.selectTarget"
     />
 
