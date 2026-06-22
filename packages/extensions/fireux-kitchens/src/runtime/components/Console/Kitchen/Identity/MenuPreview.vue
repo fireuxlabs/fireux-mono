@@ -9,7 +9,7 @@
               Menu Preview
             </p>
             <p class="text-xs text-dimmed">
-              Uses the current public menu component.
+              Uses the current menu theme preview surface.
             </p>
             <p v-if="previewMenuLabel" class="text-xs text-dimmed">
               Previewing {{ previewMenuLabel }}
@@ -48,7 +48,7 @@
     </template>
 
     <div class="space-y-4">
-      <MenuPublic
+      <MenuThemePreview
         :kitchen-name="kitchenName"
         :menu="previewMenu"
         :sections="previewSections"

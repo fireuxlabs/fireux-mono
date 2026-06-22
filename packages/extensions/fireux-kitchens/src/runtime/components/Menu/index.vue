@@ -5,7 +5,15 @@
     :error="error"
     :render-menu="renderMenu"
   >
-    <MenuPublicShell :page-style="renderMenu?.pageStyle">
+    <MenuSource
+      v-if="isSourceMenu && menu"
+      :kitchen-name="menu.source?.kitchen_name"
+      :menu="menu"
+      :source-url="sourceUrl"
+      :page-style="menu.page_style"
+    />
+
+    <MenuPublicShell v-else :page-style="renderMenu?.pageStyle">
       <section class="menu-surface">
         <p v-if="pending" class="menu-state">
           Loading menu...
@@ -85,20 +93,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import type { KitchenOrderType } from '../models/order.model'
-import type { MenuPublicView } from '../models/menu/menu.model'
-import { useMenuManifest } from '../composables/fireux/public/menu/useMenuManifest'
-import { useMenuOrderCreate } from '../composables/fireux/public/menu/useMenuOrderCreate'
-
-type RenderMenuItem = {
-  id: string
-  name: string
-}
-
-type OrderDraftItem = RenderMenuItem & {
-  quantity: number
-}
+import { computed } from 'vue'
+import { useMenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
+import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
+import { useMenuPublicView } from '../../composables/fireux/public/menu/useMenuPublicView'
 
 const props = defineProps<{
   menuId: string
@@ -114,113 +112,32 @@ const {
   renderMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
-const orderingModes = computed<KitchenOrderType[]>(() =>
-  renderMenu.value?.orderingModes || []
-)
-const defaultOrderType = computed<KitchenOrderType>(() => {
-  if (orderingModes.value.includes('dine_in')) return 'dine_in'
+const isSourceMenu = computed(() => menu.value?.kind === 'doc')
+const sourceUrl = computed(() => menu.value?.file?.url || '')
 
-  return orderingModes.value[0] || 'dine_in'
-})
-const canOrder = computed(() =>
-  Boolean(renderMenu.value?.orderingEnabled && orderingModes.value.length)
-)
-const viewModes = computed<MenuPublicView[]>(() => {
-  const configured = renderMenu.value?.publicViews || []
-  const fallback: MenuPublicView[] = canOrder.value
-    ? ['browse', 'order']
-    : ['browse']
-  const modes = configured.length ? configured : fallback
-  const supported = modes.filter((mode) => mode === 'browse' || canOrder.value)
-
-  return supported.length ? supported : ['browse']
-})
-const viewMode = ref<MenuPublicView>('browse')
-const isOrderMode = computed(() =>
-  canOrder.value &&
-    viewModes.value.includes('order') &&
-    viewMode.value === 'order'
-)
-const orderNotice = computed(() => {
-  if (defaultOrderType.value !== 'pre_order') return ''
-
-  return 'For normal service, please order at the bar or at your table. This menu is for pre-orders only.'
-})
-const orderDraft = ref<Record<string, OrderDraftItem>>({})
-const basketItems = computed<OrderDraftItem[]>(() =>
-  Object.values(orderDraft.value)
-)
-const basketQuantity = computed(() =>
-  basketItems.value.reduce((total, item) => total + item.quantity, 0)
-)
-const orderQuantities = computed(() =>
-  basketItems.value.reduce<Record<string, number>>((map, item) => {
-    map[item.id] = item.quantity
-    return map
-  }, {})
-)
 const {
+  defaultOrderType,
+  canOrder,
+  viewModes,
+  viewMode,
+  isOrderMode,
+  orderNotice,
+} = useMenuPublicView(renderMenu)
+const {
+  quantity: basketQuantity,
+  quantities: orderQuantities,
   creatingItemId,
   message: orderMessage,
   error: orderError,
-  createOrder,
-} = useMenuOrderCreate(menuId, { kitchenSlug })
-
-watch(
-  viewModes,
-  (modes) => {
-    if (!modes.includes(viewMode.value)) {
-      viewMode.value = modes[0] || 'browse'
-    }
-  },
-  { immediate: true }
-)
-
-function addToOrder(item: RenderMenuItem) {
-  if (!canOrder.value) return
-  const current = orderDraft.value[item.id]
-  orderDraft.value = {
-    ...orderDraft.value,
-    [item.id]: {
-      id: item.id,
-      name: item.name,
-      quantity: (current?.quantity || 0) + 1,
-    },
-  }
-}
-
-function removeFromOrder(item: RenderMenuItem) {
-  const current = orderDraft.value[item.id]
-  if (!current) return
-
-  const next = { ...orderDraft.value }
-  if (current.quantity <= 1) {
-    delete next[item.id]
-  } else {
-    next[item.id] = {
-      ...current,
-      quantity: current.quantity - 1,
-    }
-  }
-  orderDraft.value = next
-}
-
-function clearOrder() {
-  orderDraft.value = {}
-}
-
-async function placeOrder() {
-  if (!canOrder.value || !basketItems.value.length) return
-
-  const created = await createOrder({
-    items: basketItems.value.map((item) => ({
-      itemId: item.id,
-      quantity: item.quantity,
-    })),
-    order_type: defaultOrderType.value,
-  })
-  if (created) clearOrder()
-}
+  add: addToOrder,
+  remove: removeFromOrder,
+  clear: clearOrder,
+  place: placeOrder,
+} = useMenuOrderDraft(menuId, {
+  kitchenSlug,
+  canOrder,
+  orderType: defaultOrderType,
+})
 </script>
 
 <style scoped>
