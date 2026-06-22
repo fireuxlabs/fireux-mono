@@ -128,14 +128,14 @@ const canOrder = computed(() =>
 const viewModes = computed<MenuPublicView[]>(() => {
   const configured = renderMenu.value?.publicViews || []
   const fallback: MenuPublicView[] = canOrder.value
-    ? ['classic', 'order']
-    : ['classic']
+    ? ['browse', 'order']
+    : ['browse']
   const modes = configured.length ? configured : fallback
-  const supported = modes.filter((mode) => mode === 'classic' || canOrder.value)
+  const supported = modes.filter((mode) => mode === 'browse' || canOrder.value)
 
-  return supported.length ? supported : ['classic']
+  return supported.length ? supported : ['browse']
 })
-const viewMode = ref<MenuPublicView>('classic')
+const viewMode = ref<MenuPublicView>('browse')
 const isOrderMode = computed(() =>
   canOrder.value &&
     viewModes.value.includes('order') &&
@@ -170,7 +170,7 @@ watch(
   viewModes,
   (modes) => {
     if (!modes.includes(viewMode.value)) {
-      viewMode.value = modes[0] || 'classic'
+      viewMode.value = modes[0] || 'browse'
     }
   },
   { immediate: true }

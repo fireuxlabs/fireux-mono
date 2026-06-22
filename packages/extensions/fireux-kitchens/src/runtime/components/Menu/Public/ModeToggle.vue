@@ -1,12 +1,12 @@
 <template>
   <div v-if="options.length > 1" class="menu-mode">
     <button
-      v-if="options.includes('classic')"
+      v-if="options.includes('browse')"
       type="button"
-      :class="['menu-mode__button', { 'is-active': modelValue === 'classic' }]"
-      @click="$emit('update:modelValue', 'classic')"
+      :class="['menu-mode__button', { 'is-active': modelValue === 'browse' }]"
+      @click="$emit('update:modelValue', 'browse')"
     >
-      Classic
+      Browse
     </button>
     <button
       v-if="options.includes('order')"
@@ -28,7 +28,7 @@ withDefaults(
     options?: MenuPublicView[]
   }>(),
   {
-    options: () => ['classic', 'order'],
+    options: () => ['browse', 'order'],
   }
 )
 

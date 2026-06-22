@@ -51,7 +51,7 @@ export const MenuEntity = defineFireuxEntity({
 })
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
-export type MenuPublicView = 'classic' | 'order'
+export type MenuPublicView = 'browse' | 'order'
 
 export type MenuDocument = {
   url: string

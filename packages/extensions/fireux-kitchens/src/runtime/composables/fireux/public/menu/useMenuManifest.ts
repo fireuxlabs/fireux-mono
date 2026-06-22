@@ -12,7 +12,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
-const menuViews = ['classic', 'order'] as const
+const menuViews = ['browse', 'order'] as const
 
 const itemName = (item: Record<string, unknown>) =>
   text(item.name) || text(record(item.item).name)
@@ -27,10 +27,16 @@ const itemPriceLabel = (item: Record<string, unknown>) =>
 
 const publicViews = (value: unknown): MenuPublicView[] =>
   list(value)
-    .map(text)
+    .map(menuPublicView)
     .filter((view): view is MenuPublicView =>
       menuViews.includes(view as MenuPublicView)
     )
+
+const menuPublicView = (value: unknown) => {
+  const view = text(value)
+  if (view === 'classic' || view === 'read') return 'browse'
+  return view
+}
 
 export function useMenuManifest(
   menuId: MaybeRefOrGetter<string>,

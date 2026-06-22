@@ -35,7 +35,7 @@ type MenuSurfaceSource = {
   menu_id?: string
 }
 
-const menuPublicViews = ['classic', 'order'] as const
+const menuPublicViews = ['browse', 'order'] as const
 
 const menuSlug = (data: Record<string, unknown>, docId: string) =>
   readRecordString(data, 'slug') || docId
@@ -105,15 +105,21 @@ const readMenuPublicViews = (
   orderingEnabled: boolean
 ) => {
   const configured = list(data.public_views)
-    .map(text)
+    .map(menuPublicView)
     .filter((view): view is (typeof menuPublicViews)[number] =>
       menuPublicViews.includes(view as (typeof menuPublicViews)[number])
     )
 
-  const fallback = orderingEnabled ? [...menuPublicViews] : ['classic']
+  const fallback = orderingEnabled ? [...menuPublicViews] : ['browse']
   const views = configured.length ? configured : fallback
 
-  return views.filter((view) => view === 'classic' || orderingEnabled)
+  return views.filter((view) => view === 'browse' || orderingEnabled)
+}
+
+const menuPublicView = (value: unknown) => {
+  const view = text(value)
+  if (view === 'classic' || view === 'read') return 'browse'
+  return view
 }
 
 export function menuSourceFromData(
@@ -175,7 +181,9 @@ export function menuSurfaceFromData(
     : list(data.service_modes).map(text).filter(Boolean)
   const orderingEnabled =
     data.ordering_enabled === true || orderingModes.length > 0
-  const publicViews = readMenuPublicViews(data, orderingEnabled)
+  const publicViews = kind === 'menu'
+    ? readMenuPublicViews(data, orderingEnabled)
+    : []
   const result = {
     id: menuId,
     slug,
@@ -189,7 +197,7 @@ export function menuSurfaceFromData(
     ...(status ? { status } : {}),
     ...(orderingEnabled ? { ordering_enabled: true } : {}),
     ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
-    ...(publicViews.length ? { public_views: publicViews } : {}),
+    ...(kind === 'menu' && publicViews.length ? { public_views: publicViews } : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasFile(file) ? { file: compactFile(file) } : {}),
     ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),
