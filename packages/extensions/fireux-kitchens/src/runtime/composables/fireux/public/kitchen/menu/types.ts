@@ -7,8 +7,8 @@ import type { MenuSection } from '../../../../../models/menu/menu-section.model'
 
 export type KitchenPublicMenuItemRow = {
   id: string
-  item: MenuItem
-  dish: Dish | null
+  item?: MenuItem
+  dish?: Dish | null
   name: string
   description: string
   price: number
@@ -18,7 +18,7 @@ export type KitchenPublicMenuItemRow = {
 
 export type KitchenPublicMenuSectionRow = {
   id: string
-  section: MenuSection
+  section?: MenuSection
   label: string
   description: string
   items: KitchenPublicMenuItemRow[]

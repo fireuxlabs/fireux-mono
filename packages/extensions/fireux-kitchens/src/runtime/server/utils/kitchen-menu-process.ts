@@ -97,7 +97,7 @@ const itemRow = (
   sort_order: numberValue(item.sort_order),
 })
 
-const sortByOrderThenLabel = <T extends { sort_order: number }>(
+const sortByOrder = <T extends { sort_order: number }>(
   left: T,
   right: T
 ) => left.sort_order - right.sort_order
@@ -274,7 +274,7 @@ export async function readCurrentMenuShape(
           )
         })
         .filter(active)
-        .sort(sortByOrderThenLabel)
+        .sort(sortByOrder)
 
       return {
         ...section,
@@ -285,7 +285,7 @@ export async function readCurrentMenuShape(
 
   return {
     menu: menuRow(menuSnap.data() || {}, menuSnap.id),
-    sections: sections.filter(active).sort(sortByOrderThenLabel),
+    sections: sections.filter(active).sort(sortByOrder),
   }
 }
 

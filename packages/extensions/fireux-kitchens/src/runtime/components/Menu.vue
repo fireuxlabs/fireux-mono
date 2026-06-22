@@ -57,10 +57,11 @@
           Menu unavailable.
         </p>
 
-        <details class="menu-debug">
-          <summary>Menu debug</summary>
-          <pre>{{ debug }}</pre>
-        </details>
+        <DevJson
+          title="Menu debug"
+          context="Menu surface · Menu.vue"
+          :data="debug"
+        />
       </section>
     </MenuPublicShell>
   </slot>
@@ -154,12 +155,24 @@ const {
 }
 
 .menu__section h2 {
+  display: grid;
+  grid-template-columns: auto minmax(2rem, 1fr);
+  gap: 0.75rem;
+  align-items: center;
   margin: 0;
-  color: var(--menu-primary);
-  font-size: 0.85rem;
+  color: var(--menu-title);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
   font-weight: 900;
   letter-spacing: 0.18em;
+  line-height: 1.2;
   text-transform: uppercase;
+}
+
+.menu__section h2::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: color-mix(in srgb, var(--menu-title) 38%, transparent);
 }
 
 .menu__item {
@@ -201,22 +214,6 @@ const {
   font-size: 0.95rem;
   font-weight: 850;
   white-space: nowrap;
-}
-
-.menu-debug {
-  width: min(88rem, 100%);
-  margin: 0 auto;
-  text-align: left;
-}
-
-.menu-debug pre {
-  overflow: auto;
-  padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
-  border-radius: 0.75rem;
-  font-size: 0.8rem;
-  line-height: 1.45;
-  white-space: pre-wrap;
 }
 
 @media (min-width: 920px) {

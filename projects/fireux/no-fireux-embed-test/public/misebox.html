@@ -67,6 +67,27 @@
         padding: 0.75rem 1rem;
       }
 
+      .menu-popup-test {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 1.25rem;
+        background: #fffaf0;
+        padding: 1rem;
+      }
+
+      .menu-popup-test button {
+        width: fit-content;
+        border: 1px solid #c9b895;
+        border-radius: 999px;
+        background: #1d1d1f;
+        color: #fffaf0;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+      }
+
       .source-preview {
         margin-top: 1rem;
       }
@@ -99,6 +120,27 @@
         This page compares the deployed Misebox provider with the local provider
         when the Plain Jane harness is opened locally.
       </p>
+
+      <section class="menu-popup-test">
+        <h2>Bären menu popup</h2>
+        <p>
+          This is the plain-site shape: the host page owns the button and popup,
+          while Misebox provides the public menu API.
+        </p>
+        <p>
+          Local API:
+          <code>http://localhost:3001/api/menus/delivery?kitchenSlug=baeren-ringgenberg</code>
+        </p>
+        <button id="baeren-local-menu-button" type="button">
+          Open Bären menu popup
+        </button>
+        <p id="baeren-local-menu-status" class="notice" hidden></p>
+        <div
+          id="baeren-local-menu-popup"
+          hidden
+          aria-hidden="true"
+        ></div>
+      </section>
 
       <div class="embed-grid">
         <section class="embed-card">
@@ -151,6 +193,13 @@
         messageSource: 'misebox',
         tool: 'ordering',
         startCommand: 'pnpm dev:misebox'
+      })
+
+      connectMiseboxMenuPopup({
+        buttonSelector: '#baeren-local-menu-button',
+        mountSelector: '#baeren-local-menu-popup',
+        statusSelector: '#baeren-local-menu-status',
+        apiUrl: 'http://localhost:3001/api/menus/delivery?kitchenSlug=baeren-ringgenberg'
       })
     </script>
   </body>

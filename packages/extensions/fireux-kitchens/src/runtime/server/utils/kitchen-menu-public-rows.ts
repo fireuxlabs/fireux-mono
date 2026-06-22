@@ -56,8 +56,6 @@ export async function readKitchenMenuPublicRows(
 
             return {
               id: text(item.id),
-              item,
-              dish,
               name: readRecordString(dish || {}, 'name') || dishId,
               description: readRecordString(dish || {}, 'description'),
               price: numberValue(item.price),
@@ -67,7 +65,6 @@ export async function readKitchenMenuPublicRows(
 
         return {
           id: sectionId,
-          section,
           label: readRecordString(section, 'label'),
           description: readRecordString(section, 'description'),
           items,

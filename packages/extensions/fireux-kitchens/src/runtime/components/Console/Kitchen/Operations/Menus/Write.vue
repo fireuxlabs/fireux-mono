@@ -10,8 +10,12 @@
     </template>
 
     <div class="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-      <UFormField label="Name">
-        <UInput v-model="name" placeholder="main-copy" :disabled="saving || !canWrite" />
+      <UFormField label="Menu name">
+        <UInput
+          v-model="name"
+          placeholder="main, delivery, drinks"
+          :disabled="saving || !canWrite"
+        />
       </UFormField>
 
       <UFormField label="Description">

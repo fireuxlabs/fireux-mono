@@ -7,6 +7,7 @@ import {
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   menuSurfaceFromData,
   menuSourceFromData,
@@ -143,6 +144,10 @@ async function readMenuSurface(menuId: string) {
 }
 
 export default defineEventHandler(async (event) => {
+  setCorsHeaders(event, {
+    methods: ['GET'],
+  })
+
   const menuId = text(getRouterParam(event, 'menuId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   if (!menuId) {

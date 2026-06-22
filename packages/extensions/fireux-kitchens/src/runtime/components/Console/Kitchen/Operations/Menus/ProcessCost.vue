@@ -159,6 +159,7 @@ const sourceLabel = computed(() =>
   text(standard.value.file_profile) || 'menu source'
 )
 const isPhotoSource = computed(() => sourceLabel.value === 'photo')
+const uploadId = computed(() => text(record(source.value).id) || text(menuId.value))
 const canSelect = computed(() =>
   Boolean(props.canProcess && estimate.value && !pending.value)
 )
@@ -199,7 +200,7 @@ async function refreshEstimate() {
         appId: activeKitchenAppId.value,
         kitchenId: kitchenId.value,
         menuId: menuId.value,
-        uploadId: menuId.value,
+        uploadId: uploadId.value,
       }),
     })
     const payload = await response.json().catch(() => null)
