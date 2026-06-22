@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Misebox Menu Gateway</title>
+    <style>
+      :root {
+        color: #1d1d1f;
+        background: #f5f2ea;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        display: grid;
+        gap: 1.5rem;
+        min-height: 100svh;
+        padding: clamp(1rem, 5vw, 4rem);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      p {
+        max-width: 58rem;
+        color: #5a5246;
+        line-height: 1.7;
+      }
+
+      code {
+        overflow-wrap: anywhere;
+        border-radius: 999px;
+        background: #eee3cf;
+        padding: 0.15rem 0.45rem;
+      }
+
+      .gateway-card {
+        border: 1px solid #d8ceb9;
+        border-radius: 1.25rem;
+        background: #fffaf0;
+        padding: clamp(1.25rem, 4vw, 2.5rem);
+      }
+
+      .preset-grid,
+      .form-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      @media (min-width: 820px) {
+        .preset-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .form-grid {
+          grid-template-columns: 1.3fr 0.8fr 0.8fr;
+        }
+      }
+
+      .preset,
+      label {
+        display: grid;
+        gap: 0.4rem;
+      }
+
+      .preset {
+        border: 1px solid #d8ceb9;
+        border-radius: 1rem;
+        background: #f8eedb;
+        padding: 1rem;
+      }
+
+      .preset strong,
+      label span {
+        color: #1d1d1f;
+        font-weight: 800;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid #c9b895;
+        border-radius: 0.75rem;
+        background: #fffdf8;
+        color: #1d1d1f;
+        padding: 0.8rem 0.9rem;
+        font: inherit;
+      }
+
+      button {
+        width: fit-content;
+        border: 1px solid #c9b895;
+        border-radius: 999px;
+        background: #1d1d1f;
+        color: #fffaf0;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+      }
+
+      button.secondary {
+        background: #f8eedb;
+        color: #1d1d1f;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .notice {
+        border-radius: 0.75rem;
+        background: #eee3cf;
+        padding: 0.75rem 1rem;
+      }
+
+      [hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">Back to harness</a></p>
+
+      <section class="gateway-card">
+        <p><code>plain-site menu gateway</code></p>
+        <h1>Misebox Menu Gateway</h1>
+        <p>
+          This page has no FireUX runtime. It acts like a normal restaurant
+          website: choose a provider/menu config, then open a popup rendered
+          from the public Misebox menu API.
+        </p>
+      </section>
+
+      <section class="gateway-card">
+        <h2>Presets</h2>
+        <div class="preset-grid">
+          <article class="preset">
+            <strong>A. Hotel Bären Ringgenberg</strong>
+            <span>Misebox provides a structured menu for an external site.</span>
+            <button
+              class="secondary"
+              type="button"
+              data-menu-preset
+              data-provider-origin="https://misebox-78f9c.web.app"
+              data-menu-id="delivery"
+              data-kitchen-slug="baeren-ringgenberg"
+            >
+              Use deployed Bären
+            </button>
+            <button
+              class="secondary"
+              type="button"
+              data-menu-preset
+              data-provider-port="3001"
+              data-menu-id="delivery"
+              data-kitchen-slug="baeren-ringgenberg"
+            >
+              Use local Bären
+            </button>
+          </article>
+
+          <article class="preset">
+            <strong>B. La Tap Berne</strong>
+            <span>Misebox consumes the tenant-owned menu doorway.</span>
+            <button
+              class="secondary"
+              type="button"
+              data-menu-preset
+              data-provider-origin="https://misebox-78f9c.web.app"
+              data-menu-id="main"
+              data-kitchen-slug="la-tapberne"
+            >
+              Use deployed La Tap
+            </button>
+            <button
+              class="secondary"
+              type="button"
+              data-menu-preset
+              data-provider-port="3001"
+              data-menu-id="main"
+              data-kitchen-slug="la-tapberne"
+            >
+              Use local La Tap
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <section class="gateway-card">
+        <h2>C. Configurable gateway</h2>
+        <div class="form-grid">
+          <label>
+            <span>Provider origin</span>
+            <input id="gateway-provider-origin" value="https://misebox-78f9c.web.app">
+          </label>
+
+          <label>
+            <span>Menu id</span>
+            <input id="gateway-menu-id" value="delivery">
+          </label>
+
+          <label>
+            <span>Kitchen slug</span>
+            <input id="gateway-kitchen-slug" value="baeren-ringgenberg">
+          </label>
+        </div>
+
+        <p>API URL: <code id="gateway-api-url">Waiting for config...</code></p>
+
+        <div class="actions">
+          <button id="gateway-open-menu" type="button">
+            Open menu popup
+          </button>
+          <p id="gateway-status" class="notice" hidden></p>
+        </div>
+
+        <div
+          id="gateway-menu-popup"
+          hidden
+          aria-hidden="true"
+        ></div>
+      </section>
+    </main>
+
+    <script src="/embed.js"></script>
+    <script>
+      var providerOriginInput = document.querySelector('#gateway-provider-origin')
+      var menuIdInput = document.querySelector('#gateway-menu-id')
+      var kitchenSlugInput = document.querySelector('#gateway-kitchen-slug')
+      var apiUrlOutput = document.querySelector('#gateway-api-url')
+
+      function clean(value) {
+        return String(value || '').trim()
+      }
+
+      function currentApiUrl() {
+        var origin = clean(providerOriginInput.value).replace(/\/+$/, '')
+        var menuId = clean(menuIdInput.value)
+        var kitchenSlug = clean(kitchenSlugInput.value)
+        var query = kitchenSlug
+          ? '?kitchenSlug=' + encodeURIComponent(kitchenSlug)
+          : ''
+
+        if (!origin || !menuId) return ''
+
+        return origin + '/api/menus/' + encodeURIComponent(menuId) + query
+      }
+
+      function updateApiUrl() {
+        apiUrlOutput.textContent = currentApiUrl() || 'Provider origin and menu id are required.'
+      }
+
+      function applyPreset(button) {
+        var port = clean(button.getAttribute('data-provider-port'))
+        providerOriginInput.value = port
+          ? localProviderOrigin(port)
+          : button.getAttribute('data-provider-origin') || ''
+        menuIdInput.value = button.getAttribute('data-menu-id') || ''
+        kitchenSlugInput.value = button.getAttribute('data-kitchen-slug') || ''
+        updateApiUrl()
+      }
+
+      Array.prototype.slice.call(document.querySelectorAll('[data-menu-preset]'))
+        .forEach(function (button) {
+          button.addEventListener('click', function () {
+            applyPreset(button)
+          })
+        })
+
+      ;[providerOriginInput, menuIdInput, kitchenSlugInput].forEach(function (input) {
+        input.addEventListener('input', updateApiUrl)
+      })
+
+      connectMiseboxMenuPopup({
+        buttonSelector: '#gateway-open-menu',
+        mountSelector: '#gateway-menu-popup',
+        statusSelector: '#gateway-status',
+        apiUrl: currentApiUrl
+      })
+
+      updateApiUrl()
+    </script>
+  </body>
+</html>

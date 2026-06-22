@@ -37,6 +37,10 @@ function isLocalHarness() {
   return ['localhost', '127.0.0.1', '[::1]', '::1'].indexOf(window.location.hostname) >= 0
 }
 
+function localProviderOrigin(port) {
+  return window.location.protocol + '//' + window.location.hostname + ':' + String(port || '').trim()
+}
+
 function connectLocalProviderIframe(options) {
   var frame = document.querySelector(options.selector)
   var source = document.querySelector(options.sourceSelector)
@@ -180,7 +184,14 @@ function connectMiseboxMenuPopup(options) {
   var state = {
     loaded: false,
     loading: false,
-    menu: null
+    menu: null,
+    apiUrl: ''
+  }
+
+  function apiUrl() {
+    return typeof options.apiUrl === 'function'
+      ? text(options.apiUrl())
+      : text(options.apiUrl)
   }
 
   function setStatus(message) {
@@ -250,7 +261,14 @@ function connectMiseboxMenuPopup(options) {
   }
 
   function loadMenu() {
-    if (state.loaded) {
+    var url = apiUrl()
+
+    if (!url) {
+      setStatus('Menu API URL is missing.')
+      return
+    }
+
+    if (state.loaded && state.apiUrl === url) {
       renderMenu(state.menu)
       openPopup()
       return
@@ -258,12 +276,13 @@ function connectMiseboxMenuPopup(options) {
 
     if (state.loading) return
     state.loading = true
+    state.apiUrl = url
     button.disabled = true
     setStatus('Loading menu from Misebox...')
     renderLoading()
     openPopup()
 
-    window.fetch(options.apiUrl, {
+    window.fetch(url, {
       headers: {
         Accept: 'application/json'
       }
