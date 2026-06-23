@@ -1,24 +1,17 @@
 <template>
-  <MenuSource
-    v-if="surface === 'source' && sourceMenu"
-    :kitchen-name="sourceMenu.source?.kitchen_name"
-    :menu="sourceMenu"
-    :source-url="sourceUrl"
-    :page-style="sourceMenu.page_style"
-  />
+  <MenuAllergenNotice />
 
-  <MenuStructured
-    v-else-if="surface === 'structured'"
-    :menu="structuredMenu"
-    :menu-id="menuId"
-    :kitchen-slug="kitchenSlug"
-    :pending="pending"
-    :error="error"
+  <MenuDocument
+    v-if="renderKind === 'document' && documentMenu"
+    :kitchen-name="documentMenu.source?.kitchen_name"
+    :menu="documentMenu"
+    :document-url="documentUrl"
+    :page-style="documentMenu.page_style"
   />
 
   <MenuStructured
     v-else
-    :menu="null"
+    :menu="structuredMenuForRender"
     :menu-id="menuId"
     :kitchen-slug="kitchenSlug"
     :pending="pending"
@@ -27,7 +20,7 @@
 
   <DevJson
     title="Menu debug"
-    context="Menu surface · Menu.vue"
+    context="Menu · Menu.vue"
     :data="debug"
   />
 </template>
@@ -43,14 +36,17 @@ const props = defineProps<{
 
 const menuId = computed(() => props.menuId)
 const kitchenSlug = computed(() => props.kitchenSlug)
-// Public detail spine: docs/concepts/family-public-detail.md and docs/concepts/family-menu.md. Route pages stay tiny; this entry chooses source vs structured from the manifest.
+// Public detail spine: docs/concepts/family-public-detail.md and docs/concepts/family-menu.md. Route pages stay tiny; this entry chooses document vs structured from the manifest.
 const {
   pending,
   error,
-  surface,
-  sourceMenu,
+  renderKind,
+  documentMenu,
   structuredMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
-const sourceUrl = computed(() => sourceMenu.value?.file?.url || '')
+const documentUrl = computed(() => documentMenu.value?.file?.url || '')
+const structuredMenuForRender = computed(() =>
+  renderKind.value === 'structured' ? structuredMenu.value : null
+)
 </script>

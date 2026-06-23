@@ -1,4 +1,3 @@
-mayke a pass does this seem clean and organised?
 <template>
   <div class="menu-reveal">
     <Transition name="accent-wash">
@@ -24,7 +23,11 @@ mayke a pass does this seem clean and organised?
     </Transition>
 
     <Transition name="menu-pop">
-      <section v-if="isOpen" class="menu-reveal__panel" aria-label="La Tap Berne menu">
+      <section
+        v-if="isOpen"
+        class="menu-reveal__panel"
+        aria-label="La Tap Berne menu"
+      >
         <button
           class="menu-reveal__close"
           type="button"
@@ -34,6 +37,7 @@ mayke a pass does this seem clean and organised?
           <UIcon name="i-ph-x" />
         </button>
 
+        <!-- Tenant menu spine: this overlay owns chrome; the shared Menu component owns menu manifestation. -->
         <Menu
           menu-id="main"
           kitchen-slug="la-tapberne"
@@ -46,6 +50,7 @@ mayke a pass does this seem clean and organised?
 <script setup lang="ts">
 import { useMiseboxTenantChrome } from 'fireux-misebox/runtime/composables/fireux/app/useMiseboxTenantChrome'
 import { onBeforeUnmount, ref } from 'vue'
+
 const { setChromeHidden } = useMiseboxTenantChrome()
 const isOpen = ref(false)
 

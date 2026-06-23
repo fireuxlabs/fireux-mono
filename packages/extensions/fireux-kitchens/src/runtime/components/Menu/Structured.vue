@@ -1,6 +1,6 @@
 <template>
-  <MenuThemeSurface :page-style="menu?.presentation.pageStyle">
-    <section class="menu-surface">
+  <MenuTheme :page-style="menu?.presentation.pageStyle">
+    <section class="menu-page">
       <p v-if="pending" class="menu-state">
         Loading menu...
       </p>
@@ -68,7 +68,7 @@
         Menu unavailable.
       </p>
     </section>
-  </MenuThemeSurface>
+  </MenuTheme>
 </template>
 
 <script setup lang="ts">
@@ -113,7 +113,7 @@ const {
 </script>
 
 <style scoped>
-.menu-surface {
+.menu-page {
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
   min-height: 100svh;

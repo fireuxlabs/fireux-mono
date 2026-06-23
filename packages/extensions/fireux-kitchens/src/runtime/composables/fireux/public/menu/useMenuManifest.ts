@@ -23,7 +23,7 @@ export type MenuManifestSection = {
   items: MenuManifestItem[]
 }
 
-export type MenuManifestSurface = 'source' | 'structured' | 'unavailable'
+export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
 
 export type MenuManifestContent = {
   id: string
@@ -44,7 +44,6 @@ export type MenuManifestPresentation = {
 }
 
 export type MenuManifest = {
-  surface: 'structured'
   content: MenuManifestContent
   behaviour: MenuManifestBehaviour
   presentation: MenuManifestPresentation
@@ -113,7 +112,6 @@ const structuredMenuManifest = (source: PublicMenu): MenuManifest => {
   const sourceRecord = record(source)
 
   return {
-    surface: 'structured',
     content: {
       id: source.id,
       name: text(source.name) || 'Menu',
@@ -141,16 +139,16 @@ export function useMenuManifest(
   options: MenuManifestOptions = {}
 ) {
   const fetch = useMenuFetch(menuId, options)
-  const surface = computed<MenuManifestSurface>(() => {
+  const renderKind = computed<MenuRenderKind>(() => {
     if (!fetch.menu.value) return 'unavailable'
-    return fetch.menu.value.kind === 'doc' ? 'source' : 'structured'
+    return fetch.menu.value.kind === 'doc' ? 'document' : 'structured'
   })
-  const sourceMenu = computed(() =>
-    surface.value === 'source' ? fetch.menu.value : null
+  const documentMenu = computed(() =>
+    renderKind.value === 'document' ? fetch.menu.value : null
   )
   const structuredMenu = computed<MenuManifest | null>(() => {
     const source = fetch.menu.value
-    if (!source || surface.value !== 'structured') return null
+    if (!source || renderKind.value !== 'structured') return null
 
     return structuredMenuManifest(source)
   })
@@ -163,18 +161,18 @@ export function useMenuManifest(
       hasMenu: Boolean(fetch.menu.value),
     },
     derived: {
-      surface: surface.value,
+      renderKind: renderKind.value,
       sectionsCount: structuredMenu.value?.content.sections.length || 0,
     },
     menu: fetch.menu.value,
-    sourceMenu: sourceMenu.value,
+    documentMenu: documentMenu.value,
     structuredMenu: structuredMenu.value,
   }))
 
   return {
     ...fetch,
-    surface,
-    sourceMenu,
+    renderKind,
+    documentMenu,
     structuredMenu,
     debug,
   }

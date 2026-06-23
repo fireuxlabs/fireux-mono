@@ -1,38 +1,33 @@
 <template>
-  <div class="menu-document">
-    <div
-      v-if="isPhoto"
-      class="menu-document__photo"
-    >
-      <img
-        :src="displayUrl"
-        :alt="menuTitle"
-        class="menu-document__image"
-      >
-    </div>
-
-    <ClientOnly v-else-if="isPdf">
-      <MenuPdfViewer
-        :url="fileUrl"
-        :title="menuTitle"
-      />
-    </ClientOnly>
-
-    <iframe
-      v-else
-      :src="displayUrl"
-      :title="menuTitle"
-      class="menu-document__frame"
+  <MenuTheme :page-style="pageStyle">
+    <MenuHeader
+      :kitchen-name="kitchenName || ''"
+      :name="menu.name"
+      :description="menu.description"
     />
-  </div>
+
+    <MenuDocumentViewer
+      v-if="documentUrl"
+      :menu="menu"
+      :menu-id="menuId"
+      :document-url="documentUrl"
+      :file-url="documentUrl"
+    />
+
+    <p v-else class="document-menu__empty">
+      Menu document unavailable.
+    </p>
+  </MenuTheme>
 </template>
 
 <script setup lang="ts">
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { computed } from 'vue'
 
-type MenuDocumentSource = {
+type MenuDocumentModel = {
   id?: string
-  name?: string
+  name: string
+  description?: string
   file?: {
     url?: string
     type?: string
@@ -42,57 +37,20 @@ type MenuDocumentSource = {
 }
 
 const props = defineProps<{
-  menu: MenuDocumentSource
-  menuId: string
-  sourceUrl?: string
-  fileUrl?: string
+  kitchenName?: string
+  menu: MenuDocumentModel
+  documentUrl: string
+  pageStyle?: Partial<PageStyle> | null
 }>()
 
 const text = (value: unknown) => String(value ?? '').trim()
-const menuTitle = computed(() => text(props.menu.name) || 'Menu')
-const displayUrl = computed(
-  () => text(props.sourceUrl) || text(props.menu.file?.url)
-)
-const fileUrl = computed(
-  () => text(props.fileUrl) || `/api/menus/${encodeURIComponent(props.menuId)}/file`
-)
-const isPhoto = computed(() =>
-  props.menu.file_kind === 'photo' ||
-  props.menu.kind === 'photo' ||
-  text(props.menu.file?.type).startsWith('image/')
-)
-const isPdf = computed(() =>
-  !isPhoto.value &&
-  (props.menu.file_kind === 'pdf' ||
-    props.menu.kind === 'pdf' ||
-    text(props.menu.file?.type).includes('pdf'))
-)
+const menuId = computed(() => text(props.menu.id))
 </script>
 
 <style scoped>
-.menu-document {
-  width: 100%;
-}
-
-.menu-document__photo {
-  display: flex;
-  justify-content: center;
-}
-
-.menu-document__image {
-  width: auto;
-  max-width: 100%;
-  max-height: calc(100vh - 18rem);
-  border-radius: 0.875rem;
-  object-fit: contain;
-  box-shadow: 0 1.25rem 3rem rgb(15 23 42 / 0.18);
-}
-
-.menu-document__frame {
-  width: 100%;
-  height: calc(100vh - 16rem);
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 1rem;
-  background: var(--menu-bg);
+.document-menu__empty {
+  margin: 0;
+  color: var(--menu-muted);
+  text-align: center;
 }
 </style>
