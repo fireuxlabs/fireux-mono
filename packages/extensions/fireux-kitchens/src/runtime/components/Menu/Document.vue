@@ -1,27 +1,24 @@
 <template>
-  <MenuTheme :page-style="pageStyle">
-    <MenuHeader
-      :kitchen-name="kitchenName || ''"
-      :name="menu.name"
-      :description="menu.description"
-    />
+  <MenuHeader
+    :kitchen-name="kitchenName || ''"
+    :name="menu.name"
+    :description="menu.description"
+  />
 
-    <MenuDocumentViewer
-      v-if="documentUrl"
-      :menu="menu"
-      :menu-id="menuId"
-      :document-url="documentUrl"
-      :file-url="documentUrl"
-    />
+  <MenuDocumentViewer
+    v-if="documentUrl"
+    :menu="menu"
+    :menu-id="menuId"
+    :document-url="documentUrl"
+    :file-url="documentUrl"
+  />
 
-    <p v-else class="document-menu__empty">
-      Menu document unavailable.
-    </p>
-  </MenuTheme>
+  <p v-else class="document-menu__empty">
+    Menu document unavailable.
+  </p>
 </template>
 
 <script setup lang="ts">
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { computed } from 'vue'
 
 type MenuDocumentModel = {
@@ -40,7 +37,6 @@ const props = defineProps<{
   kitchenName?: string
   menu: MenuDocumentModel
   documentUrl: string
-  pageStyle?: Partial<PageStyle> | null
 }>()
 
 const text = (value: unknown) => String(value ?? '').trim()

@@ -2,6 +2,7 @@ import {
   computed,
   ref,
   toValue,
+  watch,
   type MaybeRefOrGetter,
 } from 'vue'
 import type { KitchenOrderType } from '../../../../models/order.model'
@@ -20,14 +21,22 @@ type MenuOrderDraftOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
   canOrder?: MaybeRefOrGetter<boolean>
   orderType?: MaybeRefOrGetter<KitchenOrderType>
+  storageKey?: MaybeRefOrGetter<string | null | undefined>
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+
+  const item = value as Partial<MenuOrderDraftItem>
+  return Boolean(text(item.id) && text(item.name) && Number(item.quantity) > 0)
+}
 
 export function useMenuOrderDraft(
   menuId: MaybeRefOrGetter<string>,
   options: MenuOrderDraftOptions = {}
 ) {
+  const key = computed(() => text(toValue(options.storageKey)))
   const canOrder = computed(() => toValue(options.canOrder) === true)
   const orderType = computed<KitchenOrderType>(() =>
     toValue(options.orderType) || 'dine_in'
@@ -53,6 +62,43 @@ export function useMenuOrderDraft(
   } = useMenuOrderCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
   })
+
+  watch(
+    key,
+    (nextKey) => {
+      if (!import.meta.client || !nextKey) return
+
+      try {
+        const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
+
+        draft.value = Object.values(parsed)
+          .filter(isDraftItem)
+          .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
+            map[item.id] = {
+              id: text(item.id),
+              name: text(item.name),
+              quantity: Number(item.quantity),
+            }
+            return map
+          }, {})
+      } catch {
+        draft.value = {}
+      }
+    },
+    { immediate: true }
+  )
+
+  watch(draft, (nextDraft) => {
+    if (!import.meta.client || !key.value) return
+
+    if (!Object.keys(nextDraft).length) {
+      window.localStorage.removeItem(key.value)
+      return
+    }
+
+    window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
+  }, { deep: true })
 
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return

@@ -1,78 +1,59 @@
 <template>
-  <MenuTheme :page-style="menu?.presentation.pageStyle">
-    <section class="menu-page">
-      <p v-if="pending" class="menu-state">
-        Loading menu...
-      </p>
+  <section class="structured-menu">
+    <p v-if="pending" class="menu-state">
+      Loading menu...
+    </p>
 
-      <p v-else-if="error" class="menu-state">
-        Menu unavailable.
-      </p>
+    <p v-else-if="error" class="menu-state">
+      Menu unavailable.
+    </p>
 
-      <article
-        v-else-if="menu"
-        :class="['menu', { 'menu--order': isOrderMode }]"
+    <article v-else-if="menu" class="menu">
+      <MenuStructuredHeader
+        v-model="viewMode"
+        :menu="menu"
+        :view-modes="viewModes"
+      />
+
+      <MenuStructuredSectionNav
+        v-if="isOrderMode && menu.content.sections.length > 1"
+        :sections="menu.content.sections"
+      />
+
+      <MenuStructuredSections
+        :sections="menu.content.sections"
+        :order-mode="isOrderMode"
+        :quantities="orderQuantities"
+        @add="addToOrder"
+        @remove="removeFromOrder"
+      />
+
+      <MenuOrderBasket
+        v-if="isOrderMode && basketQuantity"
+        :quantity="basketQuantity"
+        :items="orderItems"
+        :pending="creatingItemId === 'order'"
+        @clear="clearOrder"
+        @place="placeOrder"
+      />
+
+      <p
+        v-if="orderMessage || orderError"
+        class="menu-order-state"
+        aria-live="polite"
       >
-        <header class="menu__header">
-          <p v-if="menu.presentation.kitchenName" class="menu__eyebrow">
-            {{ menu.presentation.kitchenName }}
-          </p>
-          <h1>{{ menu.content.name }}</h1>
-          <p v-if="menu.content.description" class="menu__description">
-            {{ menu.content.description }}
-          </p>
-
-          <MenuStructuredViewToggle
-            v-if="viewModes.length > 1"
-            v-model="viewMode"
-            :options="viewModes"
-          />
-        </header>
-
-        <MenuStructuredSectionNav
-          v-if="isOrderMode && menu.content.sections.length > 1"
-          :sections="menu.content.sections"
-        />
-
-        <MenuOrderNotice
-          v-if="isOrderMode && orderNotice"
-          :message="orderNotice"
-        />
-
-        <MenuStructuredSections
-          :sections="menu.content.sections"
-          :order-mode="isOrderMode"
-          :quantities="orderQuantities"
-          @add="addToOrder"
-          @remove="removeFromOrder"
-        />
-
-        <MenuOrderBasket
-          v-if="isOrderMode && basketQuantity"
-          :quantity="basketQuantity"
-          :pending="creatingItemId === 'order'"
-          @clear="clearOrder"
-          @place="placeOrder"
-        />
-
-        <p
-          v-if="orderMessage || orderError"
-          class="menu-order-state"
-          aria-live="polite"
-        >
-          {{ orderMessage || orderError }}
-        </p>
-      </article>
-
-      <p v-else class="menu-state">
-        Menu unavailable.
+        {{ orderMessage || orderError }}
       </p>
-    </section>
-  </MenuTheme>
+    </article>
+
+    <p v-else class="menu-state">
+      Menu unavailable.
+    </p>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, type MaybeRefOrGetter } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
 import { useMenuView } from '../../composables/fireux/public/menu/useMenuView'
 import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
@@ -86,6 +67,13 @@ const props = defineProps<{
 }>()
 
 // Public menu detail spine: docs/concepts/family-menu.md. Structured menus split into content, behaviour, and presentation before ordering/fulfilment build on top.
+const text = (value: unknown) => String(value ?? '').trim()
+const menuStorageScope = computed(() => {
+  const kitchenSlug = text(toValue(props.kitchenSlug))
+  const menuId = text(toValue(props.menuId))
+
+  return kitchenSlug ? `${kitchenSlug}:${menuId}` : menuId
+})
 const behaviour = computed(() => props.menu?.behaviour)
 const {
   defaultOrderType,
@@ -93,9 +81,12 @@ const {
   viewModes,
   viewMode,
   isOrderMode,
-  orderNotice,
-} = useMenuView(behaviour)
+} = useMenuView(
+  behaviour,
+  computed(() => `fireux:menu:${menuStorageScope.value}:view`)
+)
 const {
+  items: orderItems,
   quantity: basketQuantity,
   quantities: orderQuantities,
   creatingItemId,
@@ -109,54 +100,23 @@ const {
   kitchenSlug: props.kitchenSlug,
   canOrder,
   orderType: defaultOrderType,
+  storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
 })
 </script>
 
 <style scoped>
-.menu-page {
+.structured-menu {
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
-  min-height: 100svh;
-  padding: clamp(4.5rem, 8vw, 7rem) clamp(1.5rem, 5vw, 5rem) clamp(5rem, 8vw, 7rem);
   color: var(--menu-text);
   text-align: center;
 }
 
-.menu,
-.menu__header {
-  display: grid;
-}
-
 .menu {
+  display: grid;
   gap: clamp(2rem, 4vw, 3rem);
 }
 
-.menu__header {
-  gap: 0.75rem;
-  justify-items: center;
-}
-
-.menu__eyebrow {
-  margin: 0;
-  color: var(--menu-primary);
-  font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.menu__header h1 {
-  max-width: 11ch;
-  margin: 0;
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-  font-size: clamp(3.5rem, 9vw, 7rem);
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  line-height: 0.86;
-}
-
-.menu__description,
 .menu-state {
   margin: 0;
   color: var(--menu-muted);

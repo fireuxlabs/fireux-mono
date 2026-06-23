@@ -1,22 +1,23 @@
 <template>
-  <MenuAllergenNotice />
+  <MenuTheme :page-style="pageStyle">
+    <MenuAllergenNotice class="menu-notice" />
 
-  <MenuDocument
-    v-if="renderKind === 'document' && documentMenu"
-    :kitchen-name="documentMenu.source?.kitchen_name"
-    :menu="documentMenu"
-    :document-url="documentUrl"
-    :page-style="documentMenu.page_style"
-  />
+    <MenuDocument
+      v-if="renderKind === 'document' && documentMenu"
+      :kitchen-name="documentMenu.source?.kitchen_name"
+      :menu="documentMenu"
+      :document-url="documentUrl"
+    />
 
-  <MenuStructured
-    v-else
-    :menu="structuredMenuForRender"
-    :menu-id="menuId"
-    :kitchen-slug="kitchenSlug"
-    :pending="pending"
-    :error="error"
-  />
+    <MenuStructured
+      v-else
+      :menu="structuredMenuForRender"
+      :menu-id="menuId"
+      :kitchen-slug="kitchenSlug"
+      :pending="pending"
+      :error="error"
+    />
+  </MenuTheme>
 
   <DevJson
     title="Menu debug"
@@ -49,4 +50,15 @@ const documentUrl = computed(() => documentMenu.value?.file?.url || '')
 const structuredMenuForRender = computed(() =>
   renderKind.value === 'structured' ? structuredMenu.value : null
 )
+const pageStyle = computed(() =>
+  documentMenu.value?.page_style ||
+  structuredMenu.value?.presentation.pageStyle ||
+  null
+)
 </script>
+
+<style scoped>
+.menu-notice {
+  margin-bottom: 1.5rem;
+}
+</style>

@@ -19,8 +19,10 @@ const uniqueMenuViews = (views: MenuView[]) =>
   views.filter((mode, index, modes) => modes.indexOf(mode) === index)
 
 export function useMenuView(
-  source: MaybeRefOrGetter<MenuViewSource>
+  source: MaybeRefOrGetter<MenuViewSource>,
+  storageKey?: MaybeRefOrGetter<string | null | undefined>
 ) {
+  const key = computed(() => String(toValue(storageKey) || '').trim())
   const orderingModes = computed<KitchenOrderType[]>(() => {
     const menu = toValue(source)
 
@@ -54,6 +56,7 @@ export function useMenuView(
     return uniqueMenuViews(available)
   })
   const viewMode = ref<MenuView>('browse')
+  const storedViewMode = ref<MenuView | ''>('')
   const isOrderMode = computed(() =>
     canOrder.value &&
       viewModes.value.includes('order') &&
@@ -68,12 +71,40 @@ export function useMenuView(
   watch(
     viewModes,
     (modes) => {
+      if (storedViewMode.value && modes.includes(storedViewMode.value)) {
+        viewMode.value = storedViewMode.value
+        return
+      }
+
       if (!modes.includes(viewMode.value)) {
         viewMode.value = modes[0] || 'browse'
       }
     },
     { immediate: true }
   )
+
+  watch(
+    key,
+    (nextKey) => {
+      if (!import.meta.client || !nextKey) return
+
+      const stored = window.localStorage.getItem(nextKey)
+      const storedMode = supportedViews.includes(stored as typeof supportedViews[number])
+        ? stored as MenuView
+        : ''
+      storedViewMode.value = storedMode
+
+      if (storedMode && viewModes.value.includes(storedMode)) {
+        viewMode.value = storedMode
+      }
+    },
+    { immediate: true }
+  )
+
+  watch(viewMode, (mode) => {
+    if (!import.meta.client || !key.value) return
+    window.localStorage.setItem(key.value, mode)
+  })
 
   return {
     orderingModes,

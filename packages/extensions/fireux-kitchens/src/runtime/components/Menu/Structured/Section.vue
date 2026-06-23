@@ -1,5 +1,5 @@
 <template>
-  <section :class="['manifest-section', { 'manifest-section--order': orderMode }]">
+  <section class="menu-section">
     <h2>{{ section.label }}</h2>
 
     <MenuStructuredItem
@@ -33,13 +33,13 @@ defineEmits<{
 </script>
 
 <style scoped>
-.manifest-section {
+.menu-section {
   display: grid;
   gap: 0.7rem;
   align-content: start;
 }
 
-.manifest-section h2 {
+.menu-section h2 {
   display: grid;
   grid-template-columns: auto minmax(2rem, 1fr);
   gap: 0.75rem;
@@ -53,30 +53,17 @@ defineEmits<{
   text-transform: uppercase;
 }
 
-.manifest-section h2::after {
+.menu-section h2::after {
   content: "";
   display: block;
   height: 2px;
   background: color-mix(in srgb, var(--menu-title) 38%, transparent);
 }
 
-.manifest-section--order {
-  gap: 0.45rem;
-}
-
-.manifest-section--order h2 {
-  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-  letter-spacing: 0.14em;
-}
-
 @media (min-width: 920px) {
-  .manifest-section {
+  .menu-section {
     break-inside: avoid;
     margin-bottom: 2rem;
-  }
-
-  .manifest-section--order {
-    margin-bottom: 0;
   }
 }
 </style>

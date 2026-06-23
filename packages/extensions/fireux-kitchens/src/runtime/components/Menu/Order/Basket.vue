@@ -1,8 +1,30 @@
 <template>
   <footer class="menu-basket" aria-live="polite">
-    <div class="menu-basket__copy">
-      <p>{{ quantity }} item{{ quantity === 1 ? '' : 's' }}</p>
-      <span>Ready to send to the kitchen.</span>
+    <button
+      type="button"
+      class="menu-basket__summary"
+      :aria-expanded="isOpen"
+      @click="isOpen = !isOpen"
+    >
+      <span class="menu-basket__copy">
+        <strong>{{ quantity }} item{{ quantity === 1 ? '' : 's' }}</strong>
+        <span>Ready to send to the kitchen.</span>
+      </span>
+      <UIcon
+        :name="isOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
+        class="size-4"
+      />
+    </button>
+
+    <div v-if="isOpen" class="menu-basket__items">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="menu-basket__item"
+      >
+        <span>{{ item.quantity }}x</span>
+        <p>{{ item.name }}</p>
+      </div>
     </div>
 
     <div class="menu-basket__actions">
@@ -26,25 +48,40 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { ref } from 'vue'
+
+type MenuBasketItem = {
+  id: string
+  name: string
   quantity: number
-  pending?: boolean
-}>()
+}
+
+withDefaults(
+  defineProps<{
+    quantity: number
+    items?: MenuBasketItem[]
+    pending?: boolean
+  }>(),
+  {
+    items: () => [],
+  }
+)
 
 defineEmits<{
   (event: 'clear'): void
   (event: 'place'): void
 }>()
+
+const isOpen = ref(false)
 </script>
 
 <style scoped>
 .menu-basket {
   position: sticky;
   bottom: 1rem;
-  display: flex;
+  display: grid;
   gap: 1rem;
   align-items: center;
-  justify-content: space-between;
   width: min(44rem, calc(100% - 1rem));
   margin: 0 auto;
   padding: 0.85rem;
@@ -55,8 +92,23 @@ defineEmits<{
   backdrop-filter: blur(20px);
 }
 
+.menu-basket__summary {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
 .menu-basket__copy,
-.menu-basket__actions {
+.menu-basket__actions,
+.menu-basket__items {
   display: grid;
 }
 
@@ -65,12 +117,11 @@ defineEmits<{
   text-align: left;
 }
 
-.menu-basket__copy p,
 .menu-basket__copy span {
   margin: 0;
 }
 
-.menu-basket__copy p {
+.menu-basket__copy strong {
   color: var(--menu-title);
   font-weight: 900;
 }
@@ -84,16 +135,36 @@ defineEmits<{
 .menu-basket__actions {
   grid-auto-flow: column;
   gap: 0.45rem;
+  justify-content: end;
+}
+
+.menu-basket__items {
+  gap: 0.45rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+}
+
+.menu-basket__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: start;
+  color: var(--menu-title);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.menu-basket__item p {
+  margin: 0;
+  color: var(--menu-muted);
+  font-weight: 700;
 }
 
 @media (max-width: 640px) {
-  .menu-basket {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .menu-basket__actions {
     grid-auto-flow: row;
+    justify-content: stretch;
   }
 }
 </style>
