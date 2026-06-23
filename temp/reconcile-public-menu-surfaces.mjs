@@ -12,6 +12,7 @@ const ACTOR = 'system:reconcile-public-menu-surfaces'
 const text = (value) => String(value ?? '').trim()
 const write = process.argv.includes('--write')
 const existingOnly = process.argv.includes('--existing-only')
+const missingOnly = process.argv.includes('--missing-only')
 const slugArgIndex = process.argv.indexOf('--slug')
 const onlySlug = slugArgIndex === -1 ? '' : text(process.argv[slugArgIndex + 1])
 
@@ -171,6 +172,7 @@ for (const candidate of candidates) {
   const ref = db.collection('menus').doc(candidate.publicSlug)
   const exists = existingRootIds.has(candidate.publicSlug)
   if (existingOnly && !exists) continue
+  if (missingOnly && exists) continue
 
   const record = surfaceRecord(candidate)
 
@@ -205,6 +207,7 @@ console.log(JSON.stringify({
   databaseId: DATABASE_ID,
   write,
   existingOnly,
+  missingOnly,
   onlySlug,
   count: rows.length,
   rows,

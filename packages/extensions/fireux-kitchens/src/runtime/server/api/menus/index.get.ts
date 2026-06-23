@@ -9,6 +9,10 @@ import {
   readMenuCreatorLabels,
 } from '../../utils/menu-creators.ts'
 import { menuOwnerAppView } from '../../utils/menu-owner-app.ts'
+import {
+  menuSurfaceDataWithSourceBehaviour,
+  readMenuSourceData,
+} from '../../utils/menu-source-behaviour.ts'
 
 const kitchenDisplayName = (data: Record<string, unknown>) =>
   readRecordString(data, 'display_name') ||
@@ -74,7 +78,7 @@ export default defineEventHandler(async () => {
     snap.docs.map((doc) => readRecordString(doc.data(), 'created_by'))
   )
 
-  const menus = snap.docs.flatMap((doc) => {
+  const menuRows = await Promise.all(snap.docs.map(async (doc) => {
     const data = doc.data()
     const status = readRecordString(data, 'status')
     const source = menuSourceFromData(data)
@@ -83,9 +87,10 @@ export default defineEventHandler(async () => {
     const kitchenMenuId = source.menu_id || ''
     const ownerApp = ownerApps.get(kitchenAppId)
 
-    if (status !== 'published') return []
+    if (status !== 'published') return null
+    const sourceData = await readMenuSourceData(source)
 
-    return [menuSurfaceFromData(doc.id, data, {
+    return menuSurfaceFromData(doc.id, menuSurfaceDataWithSourceBehaviour(data, sourceData), {
       kitchenName: kitchenNames.get(kitchenId) || '',
       createdByLabel: kitchenId
         ? ''
@@ -101,8 +106,9 @@ export default defineEventHandler(async () => {
         kitchenSlug: source.kitchen_slug || '',
         menuId: kitchenMenuId || doc.id,
       }),
-    })]
-  })
+    })
+  }))
+  const menus = menuRows.filter((menu) => Boolean(menu))
 
   return menus.sort((a, b) => a.name.localeCompare(b.name))
 })

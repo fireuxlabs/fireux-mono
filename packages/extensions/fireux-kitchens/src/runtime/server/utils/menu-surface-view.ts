@@ -23,10 +23,9 @@ export const readMenuViews = (
       menuViews.includes(view as MenuSurfaceView)
     )
   const extras = configured.filter((view) => view !== 'browse')
-  const orderViews: MenuSurfaceView[] = orderingEnabled
+  const views: MenuSurfaceView[] = orderingEnabled
     ? extras.length ? extras : ['order']
     : []
-  const views: MenuSurfaceView[] = ['browse', ...orderViews]
 
   return views.filter((view, index, views) =>
     views.indexOf(view) === index
