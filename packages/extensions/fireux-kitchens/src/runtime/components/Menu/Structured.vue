@@ -1,5 +1,5 @@
 <template>
-  <MenuThemeSurface :page-style="menu?.pageStyle">
+  <MenuThemeSurface :page-style="menu?.presentation.pageStyle">
     <section class="menu-surface">
       <p v-if="pending" class="menu-state">
         Loading menu...
@@ -14,12 +14,12 @@
         :class="['menu', { 'menu--order': isOrderMode }]"
       >
         <header class="menu__header">
-          <p v-if="menu.kitchenName" class="menu__eyebrow">
-            {{ menu.kitchenName }}
+          <p v-if="menu.presentation.kitchenName" class="menu__eyebrow">
+            {{ menu.presentation.kitchenName }}
           </p>
-          <h1>{{ menu.name }}</h1>
-          <p v-if="menu.description" class="menu__description">
-            {{ menu.description }}
+          <h1>{{ menu.content.name }}</h1>
+          <p v-if="menu.content.description" class="menu__description">
+            {{ menu.content.description }}
           </p>
 
           <MenuStructuredViewToggle
@@ -30,8 +30,8 @@
         </header>
 
         <MenuStructuredSectionNav
-          v-if="isOrderMode && menu.sections.length > 1"
-          :sections="menu.sections"
+          v-if="isOrderMode && menu.content.sections.length > 1"
+          :sections="menu.content.sections"
         />
 
         <MenuOrderNotice
@@ -40,7 +40,7 @@
         />
 
         <MenuStructuredSections
-          :sections="menu.sections"
+          :sections="menu.content.sections"
           :order-mode="isOrderMode"
           :quantities="orderQuantities"
           @add="addToOrder"
@@ -85,7 +85,8 @@ const props = defineProps<{
   error?: unknown
 }>()
 
-const source = computed(() => props.menu)
+// Public menu detail spine: docs/concepts/family-menu.md. Structured menus split into content, behaviour, and presentation before ordering/fulfilment build on top.
+const behaviour = computed(() => props.menu?.behaviour)
 const {
   defaultOrderType,
   canOrder,
@@ -93,7 +94,7 @@ const {
   viewMode,
   isOrderMode,
   orderNotice,
-} = useMenuView(source)
+} = useMenuView(behaviour)
 const {
   quantity: basketQuantity,
   quantities: orderQuantities,

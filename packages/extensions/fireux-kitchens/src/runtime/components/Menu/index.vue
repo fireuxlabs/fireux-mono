@@ -1,15 +1,24 @@
 <template>
   <MenuSource
-    v-if="isSourceMenu && menu"
-    :kitchen-name="menu.source?.kitchen_name"
-    :menu="menu"
+    v-if="surface === 'source' && sourceMenu"
+    :kitchen-name="sourceMenu.source?.kitchen_name"
+    :menu="sourceMenu"
     :source-url="sourceUrl"
-    :page-style="menu.page_style"
+    :page-style="sourceMenu.page_style"
+  />
+
+  <MenuStructured
+    v-else-if="surface === 'structured'"
+    :menu="structuredMenu"
+    :menu-id="menuId"
+    :kitchen-slug="kitchenSlug"
+    :pending="pending"
+    :error="error"
   />
 
   <MenuStructured
     v-else
-    :menu="renderMenu"
+    :menu="null"
     :menu-id="menuId"
     :kitchen-slug="kitchenSlug"
     :pending="pending"
@@ -34,13 +43,14 @@ const props = defineProps<{
 
 const menuId = computed(() => props.menuId)
 const kitchenSlug = computed(() => props.kitchenSlug)
+// Public detail spine: docs/concepts/family-public-detail.md and docs/concepts/family-menu.md. Route pages stay tiny; this entry chooses source vs structured from the manifest.
 const {
-  menu,
   pending,
   error,
-  renderMenu,
+  surface,
+  sourceMenu,
+  structuredMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
-const isSourceMenu = computed(() => menu.value?.kind === 'doc')
-const sourceUrl = computed(() => menu.value?.file?.url || '')
+const sourceUrl = computed(() => sourceMenu.value?.file?.url || '')
 </script>

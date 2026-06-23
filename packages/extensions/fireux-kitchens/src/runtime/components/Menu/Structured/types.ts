@@ -1,12 +1,8 @@
-export type MenuStructuredItem = {
-  id: string
-  name: string
-  description?: string
-  priceLabel?: string
-}
+import type {
+  MenuManifestItem,
+  MenuManifestSection,
+} from '../../../composables/fireux/public/menu/useMenuManifest'
 
-export type MenuStructuredSection = {
-  id: string
-  label: string
-  items: MenuStructuredItem[]
-}
+// Structured menu component spine: item/section display types come from useMenuManifest so detail rendering stays aligned with the manifest contract.
+export type MenuStructuredItem = MenuManifestItem
+export type MenuStructuredSection = MenuManifestSection
