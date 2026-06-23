@@ -17,8 +17,6 @@ import {
 } from './menu-surface-types.ts'
 import { readMenuViews } from './menu-surface-view.ts'
 
-export { menuSourceFromData } from './menu-surface-source.ts'
-
 const menuSlug = (data: Record<string, unknown>, docId: string) =>
   readRecordString(data, 'slug') || docId
 

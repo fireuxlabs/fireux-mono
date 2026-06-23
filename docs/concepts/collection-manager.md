@@ -1,6 +1,6 @@
 Collection manager map
-Updated: 2026-06-17
-Ref: e52d9a3d0
+Updated: 2026-06-22
+Ref: 8e7d03962
 Role: map, not canon
 
 Purpose:
@@ -66,6 +66,13 @@ Source contract:
 - Consumers mount `XCollectionManager` directly with no source params.
 - The manager fetches its own public/root collection and may hydrate internally.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
+
+Card handoff contract:
+- `XCollectionManager` maps records through `useXInterface()`.
+- `XCollectionManager` computes `linkEnabled = computed(() => props.link !== false)`.
+- `XCollectionManager` passes cards into `XCardsPill` and `XCardsCell` with `v-bind="card"` plus `:link="linkEnabled"`.
+- `XCardsPill` and `XCardsCell` receive direct card fields, not a wrapped `card` prop.
+- `XCardsPill` and `XCardsCell` render real `<NuxtLink>` branches when `link && to`; action-only usage is the local delta.
 
 Current source-mode snapshot:
 - Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Agent`, `Professional`, `Chef`.

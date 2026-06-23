@@ -1,6 +1,6 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { menuSourceFromData } from './menu-surface.ts'
+import { menuSourceFromData } from './menu-surface-source.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string

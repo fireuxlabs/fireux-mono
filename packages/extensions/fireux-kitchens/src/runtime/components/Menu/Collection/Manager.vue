@@ -46,12 +46,13 @@
       :cards="cardsFiltered"
       :variant="variant"
     >
+      <!-- Collection manager spine: docs/concepts/collection-manager.md. Keep aligned with App/Collection/Manager.vue and Kitchen/Collection/Manager.vue. -->
       <template #pill="{ card }">
-        <MenuCardsPill :card="card" :link="props.link" />
+        <MenuCardsPill v-bind="card" :link="linkEnabled" />
       </template>
 
       <template #cell="{ card }">
-        <MenuCardsCell :card="card" :link="props.link" />
+        <MenuCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </MenuCollectionList>
 
@@ -107,6 +108,8 @@ const {
   cell: makeCell,
 } = useMenuInterface()
 const publicMenus = usePublicMenuCollection()
+// Card handoff spine: pass v-bind="card" plus linkEnabled, matching sibling collection managers.
+const linkEnabled = computed(() => props.link !== false)
 
 const collection = computed(() =>
   [...publicMenus.menus.value].sort(

@@ -2,10 +2,8 @@ import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import {
-  menuSurfaceFromData,
-  menuSourceFromData,
-} from '../../utils/menu-surface.ts'
+import { menuSurfaceFromData } from '../../utils/menu-surface.ts'
+import { menuSourceFromData } from '../../utils/menu-surface-source.ts'
 import {
   menuCreatorLabel,
   readMenuCreatorLabels,
