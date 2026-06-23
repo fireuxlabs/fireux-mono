@@ -15,6 +15,8 @@ type MenuViewSource = {
 } | null | undefined
 
 const supportedViews = ['browse', 'order'] as const
+const uniqueMenuViews = (views: MenuView[]) =>
+  views.filter((mode, index, modes) => modes.indexOf(mode) === index)
 
 export function useMenuView(
   source: MaybeRefOrGetter<MenuViewSource>
@@ -36,19 +38,20 @@ export function useMenuView(
   })
   const viewModes = computed<MenuView[]>(() => {
     const menu = toValue(source)
-    const configured = Array.isArray(menu?.views) ? menu.views : []
-    const fallback: MenuView[] = canOrder.value
-      ? ['browse', 'order']
-      : ['browse']
-    const modes = configured.length ? configured : fallback
-    const supported = modes.filter((mode) =>
-      supportedViews.includes(mode as typeof supportedViews[number])
-    )
-    const available = supported.filter((mode) =>
-      mode === 'browse' || canOrder.value
-    )
+    // Public menu view spine: docs/concepts/family-menu.md. Browse is the base view; configured views only add supported extras.
+    const configured: MenuView[] = Array.isArray(menu?.views)
+      ? menu.views.filter((mode): mode is MenuView =>
+          supportedViews.includes(mode as typeof supportedViews[number])
+        )
+      : []
+    const supportedExtras = configured.filter((mode) => mode !== 'browse')
+    const defaultExtras: MenuView[] = ['order']
+    const available: MenuView[] = ['browse']
+    if (canOrder.value) {
+      available.push(...(supportedExtras.length ? supportedExtras : defaultExtras))
+    }
 
-    return available.length ? available : ['browse']
+    return uniqueMenuViews(available)
   })
   const viewMode = ref<MenuView>('browse')
   const isOrderMode = computed(() =>

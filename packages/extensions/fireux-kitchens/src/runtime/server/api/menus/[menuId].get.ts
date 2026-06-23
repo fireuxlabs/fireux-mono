@@ -34,6 +34,34 @@ const currentAppId = () => {
   return text(fireux.id)
 }
 
+async function readSourceMenuData(source: ReturnType<typeof menuSourceFromData>) {
+  if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
+
+  const snap = await getRuntimeFirestore()
+    .collection(`apps/${source.app_id}/kitchens/${source.kitchen_id}/menus`)
+    .doc(source.menu_id)
+    .get()
+  if (!snap.exists) return {}
+
+  const data = snap.data() || {}
+  return readRecordString(data, 'status') === 'published' ? data : {}
+}
+
+const sourceBehaviourData = (
+  doorwayData: Record<string, unknown>,
+  sourceData: Record<string, unknown>
+) => {
+  if (!Object.keys(sourceData).length) return doorwayData
+
+  // Public menu doorway spine: docs/concepts/family-menu.md. Root doorways keep stable paths, but structured menu behaviour belongs to the source menu.
+  return {
+    ...doorwayData,
+    ordering_enabled: sourceData.ordering_enabled,
+    ordering_modes: sourceData.ordering_modes,
+    public_views: sourceData.public_views,
+  }
+}
+
 async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   const db = getRuntimeFirestore()
   const kitchen = await readMenuKitchenBySlug(kitchenSlug)
@@ -119,6 +147,7 @@ async function readMenuSurface(menuId: string) {
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
+  const sourceData = await readSourceMenuData(source)
   const sourceSections =
     source.app_id && source.kitchen_id && source.menu_id
       ? await readKitchenMenuPublicRows(db, {
@@ -128,7 +157,7 @@ async function readMenuSurface(menuId: string) {
         })
       : []
 
-  return menuSurfaceFromData(menuId, data, {
+  return menuSurfaceFromData(menuId, sourceBehaviourData(data, sourceData), {
     ...kitchenScope,
     ...ownerAppView,
     ...ownerPayload,

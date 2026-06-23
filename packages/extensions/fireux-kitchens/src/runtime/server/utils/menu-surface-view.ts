@@ -4,6 +4,7 @@ import {
 } from './menu-surface-types.ts'
 
 const menuViews = ['browse', 'order'] as const
+type MenuSurfaceView = typeof menuViews[number]
 
 const menuView = (value: unknown) => {
   const view = menuSurfaceText(value)
@@ -15,14 +16,19 @@ export const readMenuViews = (
   data: Record<string, unknown>,
   orderingEnabled: boolean
 ) => {
+  // Public menu view spine: docs/concepts/family-menu.md. Browse is implicit for every structured menu; stored views only add extra modes such as order.
   const configured = menuSurfaceList(data.public_views)
     .map(menuView)
-    .filter((view): view is (typeof menuViews)[number] =>
-      menuViews.includes(view as (typeof menuViews)[number])
+    .filter((view): view is MenuSurfaceView =>
+      menuViews.includes(view as MenuSurfaceView)
     )
+  const extras = configured.filter((view) => view !== 'browse')
+  const orderViews: MenuSurfaceView[] = orderingEnabled
+    ? extras.length ? extras : ['order']
+    : []
+  const views: MenuSurfaceView[] = ['browse', ...orderViews]
 
-  const fallback = orderingEnabled ? [...menuViews] : ['browse']
-  const views = configured.length ? configured : fallback
-
-  return views.filter((view) => view === 'browse' || orderingEnabled)
+  return views.filter((view, index, views) =>
+    views.indexOf(view) === index
+  )
 }

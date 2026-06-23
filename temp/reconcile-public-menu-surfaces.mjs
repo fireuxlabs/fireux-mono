@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { cert, initializeApp } from 'firebase-admin/app'
-import { getFirestore, Timestamp } from 'firebase-admin/firestore'
+import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 
 const PROJECT_ID = 'misebox-78f9c'
@@ -9,7 +9,11 @@ const DATABASE_ID = 'misebox'
 const SERVICE_ACCOUNT =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const ACTOR = 'system:reconcile-public-menu-surfaces'
+const text = (value) => String(value ?? '').trim()
 const write = process.argv.includes('--write')
+const existingOnly = process.argv.includes('--existing-only')
+const slugArgIndex = process.argv.indexOf('--slug')
+const onlySlug = slugArgIndex === -1 ? '' : text(process.argv[slugArgIndex + 1])
 
 const raw = await readFile(SERVICE_ACCOUNT, 'utf8')
 const app = initializeApp({
@@ -18,7 +22,6 @@ const app = initializeApp({
 })
 const db = getFirestore(app, DATABASE_ID)
 
-const text = (value) => String(value ?? '').trim()
 const isArchived = (data) => text(data.status).toLowerCase() === 'archived'
 const slugPart = (value) =>
   text(value)
@@ -36,24 +39,32 @@ function surfaceRecord(source) {
   const menu = source.menuData
   const now = Timestamp.now()
 
+  // Public menu doorway spine: docs/concepts/family-menu.md. Structured root menu records point to their source through `source`, not duplicated flat kitchen fields.
   return {
     id: source.publicSlug,
     slug: source.publicSlug,
     name: text(menu.name) || source.publicSlug,
     description: text(menu.description),
     status: text(menu.status),
-    kitchen_id: source.kitchenId,
-    kitchen_slug: source.kitchenSlug,
-    kitchen_app_id: source.appId,
-    kitchen_menu_id: source.menuId,
+    source: {
+      app_id: source.appId,
+      kitchen_id: source.kitchenId,
+      kitchen_slug: source.kitchenSlug,
+      kitchen_name: text(source.kitchenData?.display_name || source.kitchenData?.name),
+      menu_id: source.menuId,
+    },
     source_kind: 'kitchen-menu',
     source_path: source.sourcePath,
     path: `/menus/${source.publicSlug}`,
     qr_path: `/menus/${source.publicSlug}/qr`,
-    doc_url: text(menu.doc_url),
-    doc_name: text(menu.doc_name),
-    doc_type: text(menu.doc_type),
-    doc_storage_path: text(menu.doc_storage_path),
+    kitchen_id: FieldValue.delete(),
+    kitchen_slug: FieldValue.delete(),
+    kitchen_app_id: FieldValue.delete(),
+    kitchen_menu_id: FieldValue.delete(),
+    doc_url: FieldValue.delete(),
+    doc_name: FieldValue.delete(),
+    doc_type: FieldValue.delete(),
+    doc_storage_path: FieldValue.delete(),
     updated: {
       at: now,
       by: ACTOR,
@@ -88,6 +99,7 @@ async function appKitchenCandidates(rootKitchenById) {
           appId: appDoc.id,
           kitchenId: kitchenDoc.id,
           kitchenSlug,
+          kitchenData: kitchen,
           menuId: menuDoc.id,
           menuData,
           sourcePath: menuDoc.ref.path,
@@ -120,6 +132,7 @@ async function rootKitchenCandidates(rootKitchenDocs, appKeys) {
         appId: text(kitchen.app_scope_app_id || kitchen.app_id),
         kitchenId: kitchenDoc.id,
         kitchenSlug,
+        kitchenData: kitchen,
         menuId: menuDoc.id,
         menuData,
         sourcePath: menuDoc.ref.path,
@@ -153,8 +166,12 @@ const existingRootIds = new Set(existingRootMenus.docs.map((doc) => doc.id))
 const rows = []
 
 for (const candidate of candidates) {
+  if (onlySlug && candidate.publicSlug !== onlySlug) continue
+
   const ref = db.collection('menus').doc(candidate.publicSlug)
   const exists = existingRootIds.has(candidate.publicSlug)
+  if (existingOnly && !exists) continue
+
   const record = surfaceRecord(candidate)
 
   rows.push({
@@ -187,6 +204,8 @@ console.log(JSON.stringify({
   projectId: PROJECT_ID,
   databaseId: DATABASE_ID,
   write,
+  existingOnly,
+  onlySlug,
   count: rows.length,
   rows,
 }, null, 2))

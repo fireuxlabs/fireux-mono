@@ -78,6 +78,7 @@ export const MenuModel = {
   doc_storage_path: '' as string,
   ordering_enabled: false as boolean,
   ordering_modes: [] as KitchenOrderType[],
+  // Browse is implicit for structured menus; use public_views for extra modes such as order.
   public_views: [] as MenuView[],
   created: {
     at: {} as FirebaseTimestamp,
