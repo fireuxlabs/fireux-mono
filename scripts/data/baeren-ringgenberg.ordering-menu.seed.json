@@ -15,7 +15,7 @@
   "menu": {
     "id": "delivery",
     "name": "Bären Ordering Menu",
-    "description": "Special ordering menu for delivery and collection.",
+    "description": "Pizza, snacks, drinks and delivery ordering.",
     "source_language": "de",
     "ordering_enabled": true,
     "ordering_modes": ["delivery", "collection"],

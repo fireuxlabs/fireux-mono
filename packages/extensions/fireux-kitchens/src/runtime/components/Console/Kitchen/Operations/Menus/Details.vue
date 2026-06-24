@@ -1,9 +1,15 @@
 <template>
   <UCard v-if="menu">
     <template #header>
-      <div>
-        <h2 class="text-base font-semibold text-highlighted">Menu details</h2>
-        <p class="text-sm text-dimmed">Edit the original menu name and optional description.</p>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="text-base font-semibold text-highlighted">Menu details</h2>
+          <p class="text-sm text-dimmed">Edit the menu name and guest-facing description.</p>
+        </div>
+
+        <UBadge :color="statusColor" variant="soft">
+          {{ menu.status }}
+        </UBadge>
       </div>
     </template>
 
@@ -20,11 +26,11 @@
       />
 
       <MoleculesFormsFirestoreSimpleField
-        label="Original description"
+        label="Menu description"
         type="textarea"
         :rows="3"
         :firebase-value="menuDescription"
-        placeholder="Optional"
+        placeholder="Short guest-facing description"
         :maxlength="500"
         :disabled="!canWrite"
         disabled-message="This menu is read-only."
@@ -51,6 +57,13 @@ const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => normalizeString(menu.value?.name))
 const menuDescription = computed(() => normalizeString(menu.value?.description))
+const statusColor = computed(() =>
+  menu.value?.status === 'published'
+    ? 'success'
+    : menu.value?.status === 'archived'
+      ? 'neutral'
+      : 'warning'
+)
 
 const validateMenuName = (value: string) => {
   const next = normalizeString(value)

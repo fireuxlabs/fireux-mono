@@ -8,6 +8,9 @@
             <p class="text-sm font-medium text-highlighted">
               Menu Preview
             </p>
+            <p v-if="previewMenu?.name" class="text-xs text-dimmed">
+              {{ previewMenu.name }}
+            </p>
           </div>
         </div>
 
@@ -106,7 +109,6 @@ const props = defineProps<{
   kitchenName: string
   menu?: Menu | null
   sections?: MenuManifestSection[]
-  previewDescription?: string
   pageStyle: Partial<PageStyle>
   publicMenuUrl?: string
 }>()
@@ -126,9 +128,7 @@ const previewModes = [
 ]
 
 const text = (value: unknown) => String(value ?? '').trim()
-const previewDescription = computed(() =>
-  text(props.menu?.description) || text(props.previewDescription)
-)
+const previewDescription = computed(() => text(props.menu?.description))
 const previewMenu = computed(() => props.menu ?? null)
 const previewSections = computed(() =>
   props.sections?.length ? props.sections : []

@@ -43,7 +43,6 @@
           :kitchen-name="kitchenName"
           :menu="previewMenu"
           :sections="previewSections"
-          :preview-description="previewDescription"
           :page-style="draftPageStyle"
           :public-menu-url="publicMenuUrl"
         />
@@ -129,12 +128,6 @@ const fallbackPreviewMenu = computed(() =>
 const previewMenu = computed(() =>
   previewMenus.value.find((menu) => normalizeString(menu.id) === selectedPreviewMenuId.value) ??
   fallbackPreviewMenu.value
-)
-const previewDescription = computed(() =>
-  normalizeString(previewMenu.value?.description) ||
-  normalizeString(kitchen.value?.description) ||
-  normalizeString(kitchen.value?.tagline) ||
-  normalizeString(kitchen.value?.brand_tagline)
 )
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
 const previewManifest = useMenuManifest(previewMenuId, { kitchenSlug })

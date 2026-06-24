@@ -1,17 +1,15 @@
 <template>
-  <UCard v-if="menu || source">
-    <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 class="text-base font-semibold text-highlighted">
-            Convert menu with AI
-          </h2>
-          <p class="text-sm text-dimmed">
-            {{ processDescription }}
-          </p>
-        </div>
+  <section v-if="menu || source" class="space-y-4">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-highlighted">
+          Convert menu with AI
+        </h3>
+        <p class="text-sm text-dimmed">
+          {{ processDescription }}
+        </p>
       </div>
-    </template>
+    </div>
 
     <div class="space-y-4">
       <p
@@ -178,7 +176,7 @@
         :default-open="false"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
