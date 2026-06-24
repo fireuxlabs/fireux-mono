@@ -43,10 +43,8 @@
           :kitchen-name="kitchenName"
           :menu="previewMenu"
           :sections="previewSections"
+          :preview-description="previewDescription"
           :page-style="draftPageStyle"
-          :place-currency-code="placeCurrencyCode"
-          :menu-currency-format="menuCurrencyFormat"
-          :menu-show-currency="menuShowCurrency"
           :public-menu-url="publicMenuUrl"
         />
       </div>
@@ -58,17 +56,12 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import type { Dish } from '../../../../models/dish.model'
-import { useDishCollection } from '../../../../composables/fireux/firestore/dish/fetch/useDishCollection'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
-import { useMenuSectionCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuSectionCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
-import { useKitchenPublicMenuItems } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuItems'
-import { useKitchenPublicMenuRows } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuRows'
+import { useMenuManifest } from '../../../../composables/fireux/public/menu/useMenuManifest'
 import {
   resolveKitchenPublicMenuFont,
   resolveKitchenPublicMenuTitleFont,
@@ -77,10 +70,15 @@ import {
 const {
   selectedKitchen,
   kitchenId,
+  rootCollection,
+  databaseId,
   canWrite,
 } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate()
-const { publishedMenus } = useMenuCollection(kitchenId)
+const { publishedMenus } = useMenuCollection(kitchenId, {
+  kitchenCollectionPath: rootCollection,
+  databaseId,
+})
 const toast = useToastify()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
@@ -136,28 +134,30 @@ const previewMenu = computed(() =>
   previewMenus.value.find((menu) => normalizeString(menu.id) === selectedPreviewMenuId.value) ??
   fallbackPreviewMenu.value
 )
-const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
-const previewSectionState = useMenuSectionCollection(kitchenId, previewMenuId)
-const previewItemState = useKitchenPublicMenuItems(
-  previewSectionState.collectionPath,
-  previewSectionState.sections
+const previewDescription = computed(() =>
+  normalizeString(previewMenu.value?.description) ||
+  normalizeString(kitchen.value?.description) ||
+  normalizeString(kitchen.value?.tagline) ||
+  normalizeString(kitchen.value?.brand_tagline)
 )
-const previewDishState = useDishCollection(kitchenId)
-const previewDishesById = computed(() => {
-  const map = new Map<string, Dish>()
-  for (const dish of previewDishState.dishes.value) {
-    const id = normalizeString(dish.id)
-    if (id) map.set(id, dish)
-  }
-  return map
+const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
+const previewManifest = useMenuManifest(previewMenuId, { kitchenSlug })
+const previewSections = computed(() => {
+  // Console preview dogfoods the public menu manifest, then crops to the first useful section/item.
+  const sections = previewManifest.structuredMenu.value?.content.sections ?? []
+  const firstSection =
+    sections.find((section) => section.items.length > 0) ??
+    sections[0]
+
+  if (!firstSection) return []
+
+  return [
+    {
+      ...firstSection,
+      items: firstSection.items.slice(0, 1),
+    },
+  ]
 })
-const previewRows = useKitchenPublicMenuRows({
-  sections: previewSectionState.sections,
-  items: previewItemState.items,
-  dishesById: previewDishesById,
-  textFor: () => '',
-})
-const previewSections = computed(() => previewRows.sectionRows.value)
 const publicMenuUrl = computed(() => {
   if (!kitchenSlug.value) return ''
 
@@ -173,14 +173,6 @@ const saving = ref(false)
 const saveState = ref('')
 const pendingPersistStyle = ref<PageStyle | null>(null)
 let saveTimer: ReturnType<typeof setTimeout> | undefined
-const placeCurrencyCode = computed(() =>
-  normalizeString(kitchen.value?.default_currency_code) || 'CHF'
-)
-const menuCurrencyFormat = computed(
-  () =>
-    (normalizeString(kitchen.value?.menu_currency_format) || 'dash') as CurrencyDisplayFormat
-)
-const menuShowCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 watch(
   previewMenus,
   (menus) => {

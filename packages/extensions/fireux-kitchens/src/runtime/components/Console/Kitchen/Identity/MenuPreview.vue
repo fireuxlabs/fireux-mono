@@ -54,28 +54,33 @@
         variant="preview"
         :color-mode="previewMode"
       >
-        <MenuHeader
-          :kitchen-name="kitchenName"
-          :name="previewMenu.name"
-          :description="previewMenu.description"
-        />
+        <template v-if="previewMenu">
+          <MenuStructuredHeading
+            :kitchen-name="kitchenName"
+            :name="previewMenu.name"
+            :description="previewDescription"
+          />
 
-        <MenuAllergenNotice class="menu-allergen-notice" />
+          <UAlert
+            v-if="!previewSections.length"
+            color="neutral"
+            variant="soft"
+            title="Menu preview unavailable"
+            description="This menu has no public sections yet."
+          />
+
+          <MenuPreviewSections
+            v-else
+            :sections="previewSections"
+          />
+        </template>
 
         <UAlert
-          v-if="!previewSections.length"
+          v-else
           color="neutral"
           variant="soft"
-          title="Menu unavailable"
-          description="This menu has no public sections yet."
-        />
-
-        <MenuPreviewSections
-          v-else
-          :sections="previewSections"
-          :currency-code="placeCurrencyCode"
-          :currency-format="menuCurrencyFormat"
-          :show-currency="menuShowCurrency"
+          title="No menu selected"
+          description="Publish a menu before previewing menu display."
         />
       </MenuTheme>
 
@@ -99,19 +104,16 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { KitchenPublicMenuSectionRow } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import type { MenuManifestSection } from '../../../../composables/fireux/public/menu/useMenuManifest'
 import type { Menu } from '../../../../models/menu/menu.model'
 
 const props = defineProps<{
   kitchenName: string
   menu?: Menu | null
-  sections?: KitchenPublicMenuSectionRow[]
+  sections?: MenuManifestSection[]
+  previewDescription?: string
   pageStyle: Partial<PageStyle>
-  placeCurrencyCode: string
-  menuCurrencyFormat: CurrencyDisplayFormat
-  menuShowCurrency: boolean
   publicMenuUrl?: string
 }>()
 
@@ -134,48 +136,21 @@ const previewModes = [
   },
 ]
 
-const sampleMenu = computed(() => ({
-  id: 'theme-preview',
-  kitchen_id: '',
-  name: `${props.kitchenName || 'Kitchen'} Menu`,
-  description: 'A short menu preview for color and contrast.',
-  status: 'published',
-} as Menu))
-const sampleSections = computed<KitchenPublicMenuSectionRow[]>(() => [
-  {
-    id: 'small-plates',
-    section: {} as KitchenPublicMenuSectionRow['section'],
-    label: 'Small Plates',
-    description: '',
-    items: [
-      {
-        id: 'tomato-bruschetta',
-        item: {} as KitchenPublicMenuSectionRow['items'][number]['item'],
-        dish: null,
-        name: 'Tomato Bruschetta',
-        description: 'Toasted bread, tomato, basil, and olive oil.',
-        price: 12,
-      },
-      {
-        id: 'house-pasta',
-        item: {} as KitchenPublicMenuSectionRow['items'][number]['item'],
-        dish: null,
-        name: 'House Pasta',
-        description: 'Fresh pasta with a slow tomato sauce.',
-        price: 24,
-      },
-    ],
-  },
-])
-const previewMenu = computed(() => props.menu ?? sampleMenu.value)
-const previewMenuLabel = computed(() => previewMenu.value.name || previewMenu.value.id)
+const text = (value: unknown) => String(value ?? '').trim()
+const previewDescription = computed(() =>
+  text(props.menu?.description) || text(props.previewDescription)
+)
+const previewMenu = computed(() => props.menu ?? null)
+const previewMenuLabel = computed(() =>
+  previewMenu.value ? previewMenu.value.name || previewMenu.value.id : ''
+)
 const previewSections = computed(() =>
-  props.sections?.length ? props.sections : sampleSections.value
+  props.sections?.length ? props.sections : []
 )
 
 const snapshot = computed(() => ({
   kitchenName: props.kitchenName,
-  menuId: previewMenu.value.id,
+  menuId: previewMenu.value?.id || '',
   previewMode: previewMode.value,
   menuStyle: {
     backgroundColorLight: props.pageStyle.background_color_light ?? '',
@@ -191,20 +166,7 @@ const snapshot = computed(() => ({
     fontSource: props.pageStyle.font_source ?? '',
     fontFamily: props.pageStyle.font_family ?? '',
   },
-  place: {
-    defaultCurrencyCode: props.placeCurrencyCode,
-  },
-  menuCurrency: {
-    format: props.menuCurrencyFormat,
-    show: props.menuShowCurrency,
-  },
 }))
 
 const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 </script>
-
-<style scoped>
-.menu-allergen-notice {
-  margin-bottom: 2.5rem;
-}
-</style>
