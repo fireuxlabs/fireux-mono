@@ -28,21 +28,22 @@
     </div>
 
     <div class="menu-basket__actions">
-      <UButton
-        size="sm"
-        color="neutral"
-        variant="ghost"
+      <button
+        type="button"
+        class="menu-basket__button menu-basket__button--ghost"
+        :disabled="pending"
         @click="$emit('clear')"
       >
         Clear
-      </UButton>
-      <UButton
-        size="sm"
-        :loading="pending"
+      </button>
+      <button
+        type="button"
+        class="menu-basket__button menu-basket__button--primary"
+        :disabled="pending"
         @click="$emit('place')"
       >
-        Place order
-      </UButton>
+        {{ pending ? 'Sending...' : 'Place order' }}
+      </button>
     </div>
   </footer>
 </template>
@@ -136,6 +137,39 @@ const isOpen = ref(false)
   grid-auto-flow: column;
   gap: 0.45rem;
   justify-content: end;
+}
+
+.menu-basket__button {
+  appearance: none;
+  min-height: 2.25rem;
+  padding: 0.48rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.menu-basket__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.menu-basket__button--ghost {
+  border-color: color-mix(in srgb, var(--menu-primary) 28%, transparent);
+  background: color-mix(in srgb, var(--menu-primary) 6%, transparent);
+  color: var(--menu-primary);
+}
+
+.menu-basket__button--primary {
+  background: var(--menu-primary);
+  color: var(--menu-bg);
 }
 
 .menu-basket__items {

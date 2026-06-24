@@ -11,10 +11,7 @@
     "id": "luna-semantic-menu",
     "name": "Luna Piccante Menu",
     "description": "",
-    "active": true,
-    "service_modes": [
-      "dine_in"
-    ]
+    "active": true
   },
   "ingredients": [
     {

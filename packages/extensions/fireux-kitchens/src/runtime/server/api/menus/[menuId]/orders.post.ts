@@ -20,6 +20,10 @@ import {
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from '../../../utils/menu-kitchen-scope.ts'
+import {
+  isMenuOrderingEnabled,
+  readMenuOrderingConfig,
+} from '../../../utils/menu-ordering.ts'
 
 type CreateMenuOrderBody = {
   itemId?: string
@@ -47,7 +51,6 @@ const orderTypes = new Set<KitchenOrderType>([
   'room_service',
 ])
 const text = (value: unknown) => String(value ?? '').trim()
-const list = (value: unknown) => Array.isArray(value) ? value : []
 const currentAppId = () => {
   const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
   return text(fireux.id)
@@ -65,11 +68,6 @@ const orderNumber = () => {
   const hh = String(now.getHours()).padStart(2, '0')
   const mm = String(now.getMinutes()).padStart(2, '0')
   return `${y}${m}${d}-${hh}${mm}`
-}
-const readOrderingModes = (data: Record<string, unknown>) => {
-  return list(data.ordering_modes).map(text).filter((mode): mode is KitchenOrderType =>
-    orderTypes.has(mode as KitchenOrderType)
-  )
 }
 const normalizeOrderType = (
   value: unknown,
@@ -207,8 +205,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readContext(menuId, kitchenSlug)
-  const allowedModes = readOrderingModes(context.menuData)
-  if (context.menuData.ordering_enabled !== true && !allowedModes.length) {
+  const ordering = readMenuOrderingConfig(context.menuData)
+  const allowedModes = ordering.modes.map((mode) => mode.type)
+  if (!isMenuOrderingEnabled(ordering)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'This menu is not accepting orders yet.',

@@ -388,7 +388,6 @@ function buildMenuPayload(seed, kitchenId, snap) {
       description: '',
       photo_url: '',
     },
-    service_modes: Array.isArray(seed.menu.service_modes) ? seed.menu.service_modes : [],
     ingredient_ids: (Array.isArray(seed.ingredients) ? seed.ingredients : []).map((ingredient) => ingredient.id),
     recipe_ids: (Array.isArray(seed.recipes) ? seed.recipes : []).map((recipe) => recipe.id),
     mise_ids: (Array.isArray(seed.mise) ? seed.mise : []).map((mise) => mise.id),

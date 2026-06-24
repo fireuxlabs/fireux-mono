@@ -20,6 +20,11 @@
         :sections="menu.content.sections"
       />
 
+      <MenuOrderNotice
+        v-if="isOrderMode && orderNotice"
+        :message="orderNotice"
+      />
+
       <MenuStructuredSections
         :sections="menu.content.sections"
         :order-mode="isOrderMode"
@@ -81,6 +86,7 @@ const {
   viewModes,
   viewMode,
   isOrderMode,
+  orderNotice,
 } = useMenuViewMode(
   behaviour,
   computed(() => `fireux:menu:${menuStorageScope.value}:view`)

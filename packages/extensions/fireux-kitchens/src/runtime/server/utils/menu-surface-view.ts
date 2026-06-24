@@ -16,16 +16,17 @@ export const readMenuViews = (
   data: Record<string, unknown>,
   orderingEnabled: boolean
 ) => {
-  // Public menu view spine: docs/concepts/family-menu.md. Browse is implicit for every structured menu; stored views only add extra modes such as order.
+  // Public menu view spine: docs/concepts/family-menu.md. Empty means browse-only; stored views are exact allowed public modes.
   const configured = menuSurfaceList(data.public_views)
     .map(menuView)
     .filter((view): view is MenuSurfaceView =>
       menuViews.includes(view as MenuSurfaceView)
     )
-  const extras = configured.filter((view) => view !== 'browse')
-  const views: MenuSurfaceView[] = orderingEnabled
-    ? extras.length ? extras : ['order']
-    : []
+  const views: MenuSurfaceView[] = configured.length
+    ? configured
+    : orderingEnabled
+      ? ['browse', 'order']
+      : []
 
   return views.filter((view, index, views) =>
     views.indexOf(view) === index

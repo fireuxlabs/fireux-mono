@@ -1,6 +1,10 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { readMenuPageStyle } from './menu-page-style.ts'
 import {
+  isMenuOrderingEnabled,
+  readMenuOrderingConfig,
+} from './menu-ordering.ts'
+import {
   compactMenuFile,
   hasMenuFile,
   menuFileKind,
@@ -9,7 +13,6 @@ import {
 } from './menu-surface-file.ts'
 import { menuSourceFromData } from './menu-surface-source.ts'
 import {
-  menuSurfaceList,
   type MenuSurfaceKind,
   type MenuSurfaceScope,
 } from './menu-surface-types.ts'
@@ -54,16 +57,8 @@ export function menuSurfaceFromData(
   const description = readRecordString(data, 'description')
   const status = readRecordString(data, 'status')
   const pageStyle = readMenuPageStyle(scope.page_style)
-  const orderingModes = menuSurfaceList(data.ordering_modes)
-    .map(String)
-    .map((value) => value.trim())
-    .filter(Boolean)
-  const serviceModes = menuSurfaceList(data.service_modes)
-    .map(String)
-    .map((value) => value.trim())
-    .filter(Boolean)
-  const orderingEnabled =
-    data.ordering_enabled === true || orderingModes.length > 0
+  const ordering = readMenuOrderingConfig(data)
+  const orderingEnabled = isMenuOrderingEnabled(ordering)
   const menuViews = kind === 'menu'
     ? readMenuViews(data, orderingEnabled)
     : []
@@ -78,9 +73,7 @@ export function menuSurfaceFromData(
     view_to: scope.viewTo || path,
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
-    ...(serviceModes.length ? { service_modes: serviceModes } : {}),
-    ...(orderingEnabled ? { ordering_enabled: true } : {}),
-    ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
+    ...(ordering.modes.length ? { ordering } : {}),
     ...(kind === 'menu' && menuViews.length ? { public_views: menuViews } : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),

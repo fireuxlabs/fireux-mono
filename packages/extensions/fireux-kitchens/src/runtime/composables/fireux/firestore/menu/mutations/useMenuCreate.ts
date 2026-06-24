@@ -20,8 +20,7 @@ export type MenuCreateInput = {
   doc_name?: string
   doc_type?: string
   doc_storage_path?: string
-  ordering_enabled?: boolean
-  ordering_modes?: Menu['ordering_modes']
+  ordering?: Menu['ordering']
   public_views?: Menu['public_views']
 }
 
@@ -43,8 +42,15 @@ function buildMenuPayload(
     doc_name: normalizeString(input.doc_name),
     doc_type: normalizeString(input.doc_type),
     doc_storage_path: normalizeString(input.doc_storage_path),
-    ordering_enabled: input.ordering_enabled === true,
-    ordering_modes: Array.isArray(input.ordering_modes) ? input.ordering_modes : [],
+    ordering: input.ordering
+      ? {
+          enabled: input.ordering.enabled === true,
+          modes: Array.isArray(input.ordering.modes) ? input.ordering.modes : [],
+        }
+      : {
+          enabled: false,
+          modes: [],
+        },
     public_views: Array.isArray(input.public_views) ? input.public_views : [],
   }
 }

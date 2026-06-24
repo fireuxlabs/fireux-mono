@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-21
-Ref: 09c76080e
+Updated: 2026-06-24
+Ref: d3492e130
 Role: map, not canon
 
 Purpose:
@@ -11,6 +11,7 @@ Vertical links:
 - Parent: family-public-detail.md
 - Parent: server-api.md
 - Parent: tool-provider.md
+- Child: menu-ordering.md
 
 Horizontal links:
 - firestore-entity.md
@@ -82,6 +83,10 @@ Kitchen needed:
 - Manage kitchen menu operations.
 - Enable Sproochli/translation later.
 - Route through tenant/global kitchen ownership.
+
+Ordering note:
+- Menu ordering is mapped separately in `menu-ordering.md`.
+- Keep `public_views` as the public display mode and `ordering` as the order policy.
 
 Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.

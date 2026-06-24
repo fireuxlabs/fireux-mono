@@ -52,14 +52,25 @@ export const MenuEntity = defineFireuxEntity({
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuView = 'browse' | 'order'
-export type MenuServiceMode = KitchenOrderType
+
+export type MenuOrderingModeConfig = {
+  type: KitchenOrderType
+  service_mode?: KitchenOrderType
+  notice_hours?: number
+}
+
+export type MenuOrderingConfig = {
+  enabled: boolean
+  modes: MenuOrderingModeConfig[]
+}
 
 export type MenuServiceProfile = {
   views: MenuView[]
-  serviceModes: MenuServiceMode[]
+  ordering: MenuOrderingConfig
   orderingEnabled: boolean
   orderingModes: KitchenOrderType[]
   defaultOrderType: KitchenOrderType
+  defaultOrderingMode?: MenuOrderingModeConfig
 }
 
 export type MenuDocument = {
@@ -85,11 +96,12 @@ export const MenuModel = {
   doc_name: '' as string,
   doc_type: '' as string,
   doc_storage_path: '' as string,
-  // Service modes describe how this menu can be served; ordering_modes describe what the public order flow may create.
-  service_modes: [] as MenuServiceMode[],
-  ordering_enabled: false as boolean,
-  ordering_modes: [] as KitchenOrderType[],
-  // Browse is implicit for structured menus; use public_views for extra modes such as order.
+  // Menu ordering policy belongs in one object; public_views only controls whether the order tab is visible.
+  ordering: {
+    enabled: false,
+    modes: [] as MenuOrderingModeConfig[],
+  } as MenuOrderingConfig,
+  // Omit public_views for browse-only menus; set it when a menu needs an exact public view set.
   public_views: [] as MenuView[],
   created: {
     at: {} as FirebaseTimestamp,

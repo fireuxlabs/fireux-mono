@@ -17,9 +17,13 @@
     "name": "Bären Ordering Menu",
     "description": "Pizza, snacks, drinks and delivery ordering.",
     "source_language": "de",
-    "ordering_enabled": true,
-    "ordering_modes": ["delivery", "collection"],
-    "service_modes": ["delivery", "collection"],
+    "ordering": {
+      "enabled": true,
+      "modes": [
+        { "type": "delivery" },
+        { "type": "collection" }
+      ]
+    },
     "public_views": ["order"],
     "promotions": [
       "15% Rabatt auf Ihre 1. Bestellung",

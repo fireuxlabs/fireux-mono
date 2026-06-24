@@ -51,7 +51,7 @@
         variant="preview"
         :color-mode="previewMode"
       >
-        <template v-if="previewMenu">
+        <section v-if="previewMenu" class="menu-preview-surface">
           <MenuStructuredHeading
             :kitchen-name="kitchenName"
             :name="previewMenu.name"
@@ -66,11 +66,11 @@
             description="This menu has no public sections yet."
           />
 
-          <MenuPreviewSections
+          <MenuStructuredSections
             v-else
             :sections="previewSections"
           />
-        </template>
+        </section>
 
         <UAlert
           v-else
@@ -156,3 +156,21 @@ const snapshot = computed(() => ({
 
 const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 </script>
+
+<style scoped>
+.menu-preview-surface {
+  /* Console preview spine: keep the page layout compact, but preserve public menu breathing room inside the preview itself. */
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  color: var(--menu-text);
+  text-align: center;
+}
+
+.menu-preview-surface :deep(.menu-sections.menu-sections) {
+  /* The preview crops to one section/item, so it should not inherit the public two-column menu layout. */
+  display: grid;
+  width: 100%;
+  column-count: initial;
+  column-gap: 0;
+}
+</style>

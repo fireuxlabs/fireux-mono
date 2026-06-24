@@ -49,6 +49,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Public index family: `docs/concepts/family-public-index.md`
 - Public detail family: `docs/concepts/family-public-detail.md`
 - Menu family: `docs/concepts/family-menu.md`
+- Menu ordering: `docs/concepts/menu-ordering.md`
 - Tenant/global family: `docs/concepts/family-tenant-global.md`
 
 ## Prime Directive

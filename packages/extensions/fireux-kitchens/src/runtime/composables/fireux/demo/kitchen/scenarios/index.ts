@@ -238,7 +238,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Burgers Menu',
         description: 'Core burger menu for Deanos.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 1,
         sections: [
           {
@@ -303,7 +302,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Lil Dinos Menu',
         description: 'Kids burger menu in mini buns.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 2,
         sections: [
           {
@@ -338,7 +336,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Extras Menu',
         description: 'Add-ons for burgers and fries.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 3,
         sections: [
           {
@@ -380,7 +377,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Fries Menu',
         description: 'Skin-on fries and loaded fries.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 4,
         sections: [
           {
@@ -429,7 +425,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Dips Menu',
         description: 'House dips and extras for burgers and fries.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 5,
         sections: [
           {
@@ -1519,7 +1514,6 @@ const scenarios: DemoKitchenScenario[] = [
         name: 'Dinner Service',
         description: 'Short neighbourhood dinner menu.',
         active: true,
-        service_modes: ['dine_in'],
         sort_order: 1,
         sections: [
           {

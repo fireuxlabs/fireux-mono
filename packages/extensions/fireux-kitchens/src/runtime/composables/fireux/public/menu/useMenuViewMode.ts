@@ -4,12 +4,16 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import type { MenuView } from '../../../../models/menu/menu.model'
+import type {
+  MenuOrderingModeConfig,
+  MenuView,
+} from '../../../../models/menu/menu.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
 
 type MenuViewSource = {
   orderingEnabled?: boolean
   orderingModes?: KitchenOrderType[]
+  defaultOrderingMode?: MenuOrderingModeConfig
   views?: MenuView[]
 } | null | undefined
 
@@ -31,6 +35,11 @@ export function useMenuViewMode(
 
     return orderingModes.value[0] || 'dine_in'
   })
+  const defaultOrderingMode = computed(() => {
+    const menu = toValue(source)
+
+    return menu?.defaultOrderingMode
+  })
   const canOrder = computed(() => {
     const menu = toValue(source)
 
@@ -46,29 +55,25 @@ export function useMenuViewMode(
       : []
   })
   const viewModes = computed<MenuView[]>(() => {
-    // Public menu view spine: docs/concepts/family-menu.md. Browse is the base view; configured views only add supported extras.
-    const supportedExtras = configuredViews.value.filter((mode) => mode !== 'browse')
-    const defaultExtras: MenuView[] = ['order']
-    const available: MenuView[] = ['browse']
-    if (canOrder.value) {
-      available.push(...(supportedExtras.length ? supportedExtras : defaultExtras))
-    }
+    // Public menu view spine: docs/concepts/family-menu.md. Configured views are exact; empty falls back to browse plus order when available.
+    const configured = configuredViews.value.filter((mode) =>
+      mode === 'browse' || canOrder.value
+    )
+    const available: MenuView[] = configured.length
+      ? configured
+      : canOrder.value
+        ? ['browse', 'order']
+        : ['browse']
 
     return uniqueMenuViews(available)
   })
   const preferredViewMode = computed<MenuView>(() => {
     const modes = viewModes.value
+    const configuredPreferred = configuredViews.value.find((mode) =>
+      modes.includes(mode)
+    )
 
-    if (
-      canOrder.value &&
-      configuredViews.value.includes('order') &&
-      !configuredViews.value.includes('browse') &&
-      modes.includes('order')
-    ) {
-      return 'order'
-    }
-
-    return modes[0] || 'browse'
+    return configuredPreferred || modes[0] || 'browse'
   })
   const { selected: viewMode } = useStoredChoice<MenuView>({
     key: storageKey,
@@ -81,7 +86,11 @@ export function useMenuViewMode(
       viewMode.value === 'order'
   )
   const orderNotice = computed(() => {
+    const noticeHours = defaultOrderingMode.value?.notice_hours
     if (defaultOrderType.value !== 'pre_order') return ''
+    if (noticeHours) {
+      return `Pre-orders need at least ${noticeHours} hours notice. For normal service, please order at the bar or at your table.`
+    }
 
     return 'For normal service, please order at the bar or at your table. This menu is for pre-orders only.'
   })
@@ -89,6 +98,7 @@ export function useMenuViewMode(
   return {
     orderingModes,
     defaultOrderType,
+    defaultOrderingMode,
     canOrder,
     viewModes,
     viewMode,

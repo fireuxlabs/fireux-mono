@@ -93,6 +93,8 @@ function canonicalMenuPayload(menuSnap, kitchenId) {
     descriptions: FieldValue.delete(),
     note: FieldValue.delete(),
     notes: FieldValue.delete(),
+    ordering_enabled: FieldValue.delete(),
+    ordering_modes: FieldValue.delete(),
     primary_language: FieldValue.delete(),
     public_menu_design: FieldValue.delete(),
     sections: FieldValue.delete(),
