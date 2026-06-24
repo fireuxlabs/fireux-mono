@@ -15,6 +15,8 @@ const colors = {
   primary: '#171717',
   accent: '#9A6500',
   accentRgb: '154 101 0',
+  accentDark: '#CFA85A',
+  accentDarkRgb: '207 168 90',
   darkCanvas: '#171717',
   darkInk: '#F7F1E6',
 } as const
@@ -47,6 +49,7 @@ const palette: TenantPaletteToken[] = [
 ]
 
 const cssVariables = `
+/* La Tap theme spine: app chrome, local molecules, and emitted menu style share these tokens. */
 :root {
   --brand-canvas: ${colors.canvas};
   --brand-canvas-rgb: ${colors.canvasRgb};
@@ -55,6 +58,24 @@ const cssVariables = `
   --brand-primary: ${colors.primary};
   --brand-accent: ${colors.accent};
   --brand-accent-rgb: ${colors.accentRgb};
+  --brand-accent-display: ${colors.accent};
+  --brand-accent-display-rgb: ${colors.accentRgb};
+  --latap-app-bg: #ff00cc;
+  --latap-page-fg: var(--brand-ink);
+  --latap-page-copy-fg: color-mix(in srgb, var(--latap-page-fg) 78%, transparent);
+  --latap-page-wash: #ff00cc;
+  --latap-landing-wash-rgb: var(--brand-ink-rgb);
+}
+
+:root.dark,
+.dark {
+  --brand-accent-display: ${colors.accentDark};
+  --brand-accent-display-rgb: ${colors.accentDarkRgb};
+  --latap-app-bg: #ffff00;
+  --latap-page-fg: var(--brand-canvas);
+  --latap-page-copy-fg: color-mix(in srgb, var(--latap-page-fg) 88%, transparent);
+  --latap-page-wash: #ffff00;
+  --latap-landing-wash-rgb: var(--brand-accent-display-rgb);
 }
 `
 

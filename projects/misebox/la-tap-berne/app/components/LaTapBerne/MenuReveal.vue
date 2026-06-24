@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: color-mix(in srgb, var(--brand-accent) 87%, transparent);
+  background: color-mix(in srgb, var(--brand-accent-display) 87%, transparent);
 }
 
 .menu-reveal__content {

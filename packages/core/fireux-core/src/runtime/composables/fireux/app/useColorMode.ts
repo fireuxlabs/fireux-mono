@@ -6,10 +6,24 @@ export type FireUXResolvedColorMode = 'light' | 'dark'
 let clientSetupDone = false
 let resolvedObserverSetupDone = false
 
+const COLOR_MODE_STORAGE_KEY = 'nuxt-color-mode'
+const LEGACY_COLOR_MODE_STORAGE_KEY = 'fireux:color-mode'
+
 function readStoredMode(): FireUXColorMode | null {
   try {
-    const raw = localStorage.getItem('fireux:color-mode')
+    const raw = localStorage.getItem(COLOR_MODE_STORAGE_KEY)
+    const legacyRaw = localStorage.getItem(LEGACY_COLOR_MODE_STORAGE_KEY)
+    if (
+      (legacyRaw === 'light' || legacyRaw === 'dark') &&
+      (!raw || raw === 'system')
+    ) {
+      return legacyRaw
+    }
+
     if (raw === 'system' || raw === 'light' || raw === 'dark') return raw
+    if (legacyRaw === 'system' || legacyRaw === 'light' || legacyRaw === 'dark') {
+      return legacyRaw
+    }
     return null
   } catch {
     return null
@@ -18,7 +32,9 @@ function readStoredMode(): FireUXColorMode | null {
 
 function writeStoredMode(mode: FireUXColorMode) {
   try {
-    localStorage.setItem('fireux:color-mode', mode)
+    // Nuxt UI's inline colour-mode script reads this key before hydration.
+    localStorage.setItem(COLOR_MODE_STORAGE_KEY, mode)
+    localStorage.setItem(LEGACY_COLOR_MODE_STORAGE_KEY, mode)
   } catch {
     // ignore
   }
@@ -42,7 +58,8 @@ function applyMode(mode: FireUXColorMode, resolvedState?: { value: FireUXResolve
 
   const resolved = resolveMode(mode)
   if (resolvedState) resolvedState.value = resolved
-  document.documentElement.classList.toggle('dark', resolved === 'dark')
+  document.documentElement.classList.remove('light', 'dark')
+  document.documentElement.classList.add(resolved)
 }
 
 export function useResolvedColorMode() {

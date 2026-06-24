@@ -1,14 +1,16 @@
 <template>
   <LaTapBernePageSurface
     title="Find us."
-    subtitle="Hauptstrasse 49, 3800 Matten bei Interlaken, Switzerland."
+    :subtitle="address"
   >
     <div class="latap-page-map">
       <iframe
         title="Map to La Tap Berne"
-        src="https://www.google.com/maps?q=La%20Tapberne%20Hauptstrasse%2049%203800%20Matten%20bei%20Interlaken&output=embed"
+        :src="googleEmbedUrl"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
+        credentialless
       />
     </div>
 
@@ -16,6 +18,9 @@
 </template>
 
 <script setup lang="ts">
+const address = 'Hauptstrasse 49, 3800 Matten bei Interlaken, Switzerland.'
+const googleEmbedUrl = 'https://www.google.com/maps?q=La%20Tapberne%20Hauptstrasse%2049%203800%20Matten%20bei%20Interlaken&output=embed'
+
 definePageMeta({
   layout: 'latap-default',
 })

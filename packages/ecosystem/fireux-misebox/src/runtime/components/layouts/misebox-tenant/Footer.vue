@@ -1,5 +1,9 @@
 <template>
-  <footer v-if="!chromeHidden" class="misebox-tenant-footer">
+  <footer
+    v-if="!chromeHidden"
+    class="misebox-tenant-footer"
+    :class="{ 'misebox-tenant-footer--open': open }"
+  >
     <button
       :id="triggerId"
       type="button"
@@ -12,8 +16,8 @@
     >
       <span>Powered by</span>
       <AppBrandWordmark
-        light-src="/img/ecosystem/wordmark-light.svg"
-        dark-src="/img/ecosystem/wordmark-dark.svg"
+        light-src="/img/ecosystem/wordmark-light.png"
+        dark-src="/img/ecosystem/wordmark-dark.png"
         alt="Misebox"
         size="small"
         class="misebox-tenant-footer__wordmark"
@@ -57,6 +61,8 @@
             <UButton
               :to="tenantConsoleTo"
               size="sm"
+              color="neutral"
+              variant="soft"
               icon="i-ph-chef-hat"
             >
               Operator console
@@ -101,7 +107,13 @@ watch(chromeHidden, (hidden) => {
   pointer-events: none;
 }
 
+.misebox-tenant-footer--open {
+  z-index: 40;
+}
+
 .misebox-tenant-footer__powered {
+  position: relative;
+  z-index: 1;
   border: 0;
   display: inline-flex;
   flex-direction: column;
@@ -132,14 +144,16 @@ watch(chromeHidden, (hidden) => {
 }
 
 :global(.misebox-tenant-footer__wordmark) {
-  height: 1.05rem;
-  filter: drop-shadow(0 0.2rem 1.4rem rgb(42 14 7 / 60%));
+  height: 1.25rem;
+  max-width: none;
+  filter: none;
 }
 
 .misebox-tenant-footer__panel {
   position: absolute;
   bottom: 100%;
   left: 50%;
+  z-index: 2;
   margin-bottom: 0.75rem;
   pointer-events: auto;
   transform: translateX(-50%);

@@ -28,8 +28,8 @@ useSeoMeta({
   isolation: isolate;
   min-height: 100svh;
   overflow: hidden;
-  background: var(--brand-ink);
-  --landing-wash-rgb: var(--brand-accent-rgb, 154 101 0);
+  background: var(--latap-app-bg, var(--brand-ink));
+  --landing-wash-rgb: var(--latap-landing-wash-rgb, var(--brand-accent-display-rgb, 154 101 0));
 }
 
 .landing-cover,

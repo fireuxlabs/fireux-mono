@@ -40,7 +40,7 @@ withDefaults(defineProps<{
   position: relative;
   min-height: 100svh;
   overflow: hidden;
-  color: var(--brand-canvas);
+  color: var(--latap-page-fg, var(--brand-canvas));
 }
 
 .latap-page__cover,
@@ -50,6 +50,7 @@ withDefaults(defineProps<{
 }
 
 .latap-page__cover {
+  z-index: 0;
   display: block;
   width: 100%;
   height: 100svh;
@@ -58,19 +59,13 @@ withDefaults(defineProps<{
 }
 
 .latap-page__wash {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--brand-ink) 68%, transparent),
-      color-mix(in srgb, var(--brand-ink) 34%, transparent) 38%,
-      color-mix(in srgb, var(--brand-ink) 70%, transparent)
-    ),
-    color-mix(in srgb, var(--brand-primary) 24%, transparent);
+  z-index: 1;
+  background: var(--latap-page-wash, rgb(154 101 0 / 50%));
 }
 
 .latap-page__panel {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   gap: clamp(0.9rem, 2vw, 1.25rem);
   width: min(42rem, calc(100% - 2rem));
@@ -102,7 +97,7 @@ withDefaults(defineProps<{
 }
 
 .latap-page__subtitle {
-  color: color-mix(in srgb, var(--brand-canvas) 84%, transparent);
+  color: var(--latap-page-copy-fg, color-mix(in srgb, var(--brand-canvas) 84%, transparent));
   font-size: clamp(1rem, 2vw, 1.2rem);
   line-height: 1.55;
 }

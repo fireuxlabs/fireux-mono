@@ -4,13 +4,9 @@
     :subtitle="pageSubtitle"
   >
     <div class="latap-page-copy">
-      <p v-if="pending">Loading venue information...</p>
-      <p v-else-if="!place">Venue information is not available right now.</p>
-      <template v-else>
-        <p>{{ formattedAddress }}</p>
-        <p v-if="phone">Call {{ phone }}</p>
-        <p v-if="website">{{ websiteLabel }}</p>
-      </template>
+      <p>{{ formattedAddress }}</p>
+      <p v-if="phone">Call {{ phone }}</p>
+      <p v-if="website">{{ websiteLabel }}</p>
     </div>
 
     <a
@@ -21,8 +17,8 @@
       aria-label="Find La Tap Berne on Misebox"
     >
       <AppBrandWordmark
-        light-src="/img/ecosystem/wordmark-light.svg"
-        dark-src="/img/ecosystem/wordmark-dark.svg"
+        light-src="/img/ecosystem/wordmark-light.png"
+        dark-src="/img/ecosystem/wordmark-dark.png"
         alt="Misebox"
         size="small"
         class="latap-info-misebox__wordmark"
@@ -36,7 +32,7 @@ import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
 
 const placeId = 'ChIJ08WSgYSjj0cRD6oE3RwUFk0'
-const { place, pending } = usePlaceFetch(placeId)
+const { place } = usePlaceFetch(placeId)
 
 const text = (value: unknown) => String(value ?? '').trim()
 const phone = computed(() => text(place.value?.phone))
@@ -68,7 +64,7 @@ useSeoMeta({
   align-items: center;
   justify-self: center;
   margin-top: 0.25rem;
-  color: var(--brand-canvas);
+  color: var(--latap-page-fg, var(--brand-canvas));
   font-size: 0.7rem;
   font-weight: 850;
   letter-spacing: 0.16em;
@@ -87,6 +83,7 @@ useSeoMeta({
 
 :global(.latap-info-misebox__wordmark) {
   height: 1.35rem;
-  filter: drop-shadow(0 0.2rem 1rem color-mix(in srgb, var(--brand-ink) 50%, transparent));
+  max-width: none;
+  filter: none;
 }
 </style>

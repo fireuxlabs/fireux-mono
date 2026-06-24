@@ -124,6 +124,7 @@ import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
@@ -131,6 +132,8 @@ import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 const isDev = import.meta.dev
 const router = useRouter()
 const fireuxConfig = useFireUXConfig()
+// App shell owns global colour-mode activation; components should only consume resolved mode.
+useColorMode()
 const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
 const copiedNotes = ref(false)
 const canCopyNotes = computed(() => supportsInlineNotes.value && notesVisible.value)

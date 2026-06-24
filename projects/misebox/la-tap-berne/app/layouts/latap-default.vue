@@ -25,7 +25,7 @@ const { chromeHidden } = useMiseboxTenantChrome()
   isolation: isolate;
   min-height: 100svh;
   overflow: hidden;
-  background: var(--brand-ink, #1f1a14);
+  background: var(--latap-app-bg, var(--brand-ink, #1f1a14));
 }
 
 .latap-default-layout__body {

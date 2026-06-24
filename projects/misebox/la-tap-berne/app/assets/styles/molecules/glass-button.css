@@ -12,7 +12,8 @@
     --latap-glass-inset-hover: rgb(255 255 255 / 14%);
   }
 
-  :root.dark {
+  :root.dark,
+  .dark {
     --latap-glass-bg-rgb: var(--brand-canvas-rgb);
     --latap-glass-bg-alpha: 86%;
     --latap-glass-bg-hover-alpha: 94%;
