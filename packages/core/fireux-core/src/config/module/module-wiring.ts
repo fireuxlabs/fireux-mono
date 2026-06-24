@@ -19,7 +19,7 @@ export interface FireuxModuleSteps {
   models?: FireuxResolverStep
   pages?: FireuxResolverNuxtStep
   assets?: FireuxResolverNuxtStep
-  server?: FireuxResolverStep
+  server?: FireuxResolverOptionalNuxtStep
 }
 
 export function configureFireuxModule(
@@ -35,7 +35,7 @@ export function configureFireuxModule(
   steps.models?.(resolver)
   steps.pages?.(resolver, nuxt)
   steps.assets?.(resolver, nuxt)
-  steps.server?.(resolver)
+  steps.server?.(resolver, nuxt)
 
   const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (runtimeConfig.public ||= {}) as Record<string, any>
