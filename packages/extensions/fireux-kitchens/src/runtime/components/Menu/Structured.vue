@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
-import { useMenuView } from '../../composables/fireux/public/menu/useMenuView'
+import { useMenuViewMode } from '../../composables/fireux/public/menu/useMenuViewMode'
 import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
 
 const props = defineProps<{
@@ -81,7 +81,7 @@ const {
   viewModes,
   viewMode,
   isOrderMode,
-} = useMenuView(
+} = useMenuViewMode(
   behaviour,
   computed(() => `fireux:menu:${menuStorageScope.value}:view`)
 )

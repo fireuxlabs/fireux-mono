@@ -1,10 +1,9 @@
 import {
   computed,
-  ref,
   toValue,
-  watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import type { MenuView } from '../../../../models/menu/menu.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
 
@@ -18,11 +17,10 @@ const supportedViews = ['browse', 'order'] as const
 const uniqueMenuViews = (views: MenuView[]) =>
   views.filter((mode, index, modes) => modes.indexOf(mode) === index)
 
-export function useMenuView(
+export function useMenuViewMode(
   source: MaybeRefOrGetter<MenuViewSource>,
   storageKey?: MaybeRefOrGetter<string | null | undefined>
 ) {
-  const key = computed(() => String(toValue(storageKey) || '').trim())
   const orderingModes = computed<KitchenOrderType[]>(() => {
     const menu = toValue(source)
 
@@ -58,10 +56,6 @@ export function useMenuView(
 
     return uniqueMenuViews(available)
   })
-  const viewMode = ref<MenuView>('browse')
-  const storedViewMode = ref<MenuView | ''>('')
-  const storageReady = ref(!import.meta.client)
-  const initialViewResolved = ref(false)
   const preferredViewMode = computed<MenuView>(() => {
     const modes = viewModes.value
 
@@ -76,6 +70,11 @@ export function useMenuView(
 
     return modes[0] || 'browse'
   })
+  const { selected: viewMode } = useStoredChoice<MenuView>({
+    key: storageKey,
+    choices: viewModes,
+    fallback: preferredViewMode,
+  })
   const isOrderMode = computed(() =>
     canOrder.value &&
       viewModes.value.includes('order') &&
@@ -85,50 +84,6 @@ export function useMenuView(
     if (defaultOrderType.value !== 'pre_order') return ''
 
     return 'For normal service, please order at the bar or at your table. This menu is for pre-orders only.'
-  })
-
-  watch(
-    [viewModes, storedViewMode, preferredViewMode, storageReady],
-    ([modes, stored]) => {
-      if (!storageReady.value) return
-
-      if (!initialViewResolved.value) {
-        viewMode.value = stored && modes.includes(stored)
-          ? stored
-          : preferredViewMode.value
-        initialViewResolved.value = true
-        return
-      }
-
-      if (!modes.includes(viewMode.value)) {
-        viewMode.value = stored && modes.includes(stored)
-          ? stored
-          : preferredViewMode.value
-      }
-    },
-    { immediate: true }
-  )
-
-  watch(
-    key,
-    (nextKey) => {
-      if (!import.meta.client || !nextKey) return
-
-      const stored = window.localStorage.getItem(nextKey)
-      const storedMode = supportedViews.includes(stored as typeof supportedViews[number])
-        ? stored as MenuView
-        : ''
-      storedViewMode.value = storedMode
-      initialViewResolved.value = false
-      storageReady.value = true
-    },
-    { immediate: true }
-  )
-
-  watch(viewMode, (mode) => {
-    if (!import.meta.client || !key.value) return
-    storedViewMode.value = mode
-    window.localStorage.setItem(key.value, mode)
   })
 
   return {
