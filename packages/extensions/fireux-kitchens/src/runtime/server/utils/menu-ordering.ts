@@ -1,6 +1,6 @@
 import type {
   MenuOrderingConfig,
-  MenuOrderingModeConfig,
+  MenuOrderTypeConfig,
 } from '../../models/menu/menu.model.ts'
 import type { KitchenOrderType } from '../../models/order.model.ts'
 import { menuSurfaceList, menuSurfaceText } from './menu-surface-types.ts'
@@ -33,62 +33,47 @@ const noticeHours = (value: unknown) => {
   return Number.isFinite(hours) && hours > 0 ? hours : undefined
 }
 
-const orderingMode = (value: unknown): MenuOrderingModeConfig | null => {
-  const mode = record(value)
-  const type = orderType(mode.type)
-  const serviceMode = orderType(mode.service_mode)
-  const notice = noticeHours(mode.notice_hours)
+const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
+  const row = record(value)
+  const type = orderType(row.type)
+  const notice = noticeHours(row.notice_hours)
+  const message = menuSurfaceText(row.message)
 
   if (!type) return null
 
   return {
     type,
-    ...(serviceMode ? { service_mode: serviceMode } : {}),
     ...(notice ? { notice_hours: notice } : {}),
+    ...(message ? { message } : {}),
   }
 }
 
-const legacyOrderTypes = (value: unknown) =>
-  unique(
-    menuSurfaceList(value)
-      .map(orderType)
-      .filter((type): type is KitchenOrderType => Boolean(type))
-  )
-
-// Menu ordering spine: docs/concepts/family-menu.md. Public views are display; this object is the order creation policy.
+// Menu ordering spine: docs/concepts/family-menu.md. Public views are display; order_types are the order creation policy.
 export function readMenuOrderingConfig(
   data: Record<string, unknown>
 ): MenuOrderingConfig {
   const ordering = record(data.ordering)
-  const modes = menuSurfaceList(ordering.modes)
-    .map(orderingMode)
-    .filter((mode): mode is MenuOrderingModeConfig => Boolean(mode))
+  const orderTypes = menuSurfaceList(ordering.order_types)
+    .map(orderingType)
+    .filter((type): type is MenuOrderTypeConfig => Boolean(type))
 
-  if (modes.length) {
+  if (orderTypes.length) {
     return {
       enabled: ordering.enabled === true,
-      modes,
+      order_types: orderTypes,
     }
   }
 
-  const legacyOrderingModes = legacyOrderTypes(data.ordering_modes)
-  const legacyServiceModes = legacyOrderTypes(data.service_modes)
-  const legacyModes = legacyOrderingModes.length
-    ? legacyOrderingModes
-    : data.ordering_enabled === true
-      ? legacyServiceModes
-      : []
-
   return {
-    enabled: data.ordering_enabled === true && legacyModes.length > 0,
-    modes: legacyModes.map((type) => ({ type })),
+    enabled: false,
+    order_types: [],
   }
 }
 
 export function isMenuOrderingEnabled(ordering: MenuOrderingConfig) {
-  return ordering.enabled && ordering.modes.length > 0
+  return ordering.enabled && ordering.order_types.length > 0
 }
 
-export function readMenuOrderingModes(data: Record<string, unknown>) {
-  return unique(readMenuOrderingConfig(data).modes.map((mode) => mode.type))
+export function readMenuOrderTypes(data: Record<string, unknown>) {
+  return unique(readMenuOrderingConfig(data).order_types.map((type) => type.type))
 }

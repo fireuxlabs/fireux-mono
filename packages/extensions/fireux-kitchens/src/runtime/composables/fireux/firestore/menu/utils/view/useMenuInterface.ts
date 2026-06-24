@@ -17,8 +17,6 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
     menu_id?: string
   }
   created_by_label?: string
-  view_label?: string
-  view_to?: string
 }
 
 export namespace MenuCard {

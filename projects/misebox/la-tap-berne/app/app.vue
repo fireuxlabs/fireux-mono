@@ -4,5 +4,15 @@
 </template>
 
 <script setup lang="ts">
-// No local logic; all behavior lives in core shell
+import { useHead } from '#imports'
+import { laTapBerneTheme } from './config/theme.config'
+
+useHead({
+  style: [
+    {
+      key: 'latap-theme',
+      children: laTapBerneTheme.cssVariables,
+    },
+  ],
+})
 </script>

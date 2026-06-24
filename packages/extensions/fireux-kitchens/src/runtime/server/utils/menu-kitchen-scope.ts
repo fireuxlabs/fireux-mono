@@ -41,12 +41,19 @@ export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
   appData: Record<string, unknown> = {}
 ) {
-  // Public menu identity spine: app-scoped kitchen identity wins, root kitchen stays the public-directory fallback.
+  const isTenantOwned =
+    readRecordString(rootData, 'app_scope_state') === 'dedicated_app' &&
+    Boolean(readRecordString(rootData, 'app_scope_app_id'))
+
+  // Public menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
   return {
     name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
     page_style: resolveMenuPageStyle(
       { source: 'app-kitchen', style: appData.menu_style },
-      { source: 'root-kitchen', style: rootData.menu_style }
+      {
+        source: 'root-kitchen',
+        style: isTenantOwned ? {} : rootData.menu_style,
+      }
     ),
   }
 }

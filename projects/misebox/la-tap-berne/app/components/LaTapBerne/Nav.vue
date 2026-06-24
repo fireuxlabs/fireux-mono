@@ -53,7 +53,7 @@ const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
   color: var(--brand-canvas);
   cursor: pointer;
   place-items: center;
-  box-shadow: 0 0.85rem 2rem rgb(42 14 7 / 22%);
+  box-shadow: 0 0.85rem 2rem color-mix(in srgb, var(--brand-ink) 22%, transparent);
   text-decoration: none;
   backdrop-filter: blur(16px);
   transition:

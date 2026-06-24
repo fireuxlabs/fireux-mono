@@ -31,6 +31,9 @@ function buildMenuPayload(
   name: string
 ): Partial<Menu> {
   const kitchenId = normalizeString(input.kitchenId)
+  const orderTypes = Array.isArray(input.ordering?.order_types)
+    ? input.ordering.order_types
+    : []
 
   return {
     ...MenuModel,
@@ -45,11 +48,11 @@ function buildMenuPayload(
     ordering: input.ordering
       ? {
           enabled: input.ordering.enabled === true,
-          modes: Array.isArray(input.ordering.modes) ? input.ordering.modes : [],
+          order_types: orderTypes,
         }
       : {
           enabled: false,
-          modes: [],
+          order_types: [],
         },
     public_views: Array.isArray(input.public_views) ? input.public_views : [],
   }

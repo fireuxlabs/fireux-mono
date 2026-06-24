@@ -1,39 +1,47 @@
 <template>
   <div v-if="options.length > 1" class="menu-mode">
-    <button
-      v-if="options.includes('browse')"
-      type="button"
-      :class="['menu-mode__button', { 'is-active': modelValue === 'browse' }]"
-      @click="$emit('update:modelValue', 'browse')"
+    <template
+      v-for="option in options"
+      :key="option.value"
     >
-      Browse
-    </button>
-    <button
-      v-if="options.includes('order')"
-      type="button"
-      :class="['menu-mode__button', { 'is-active': modelValue === 'order' }]"
-      @click="$emit('update:modelValue', 'order')"
-    >
-      Order
-    </button>
+      <NuxtLink
+        v-if="option.to"
+        :to="option.to"
+        class="menu-mode__button"
+      >
+        {{ option.label }}
+      </NuxtLink>
+
+      <button
+        v-else
+        type="button"
+        :class="['menu-mode__button', { 'is-active': modelValue === option.value }]"
+        @click="$emit('update:modelValue', option.value)"
+      >
+        {{ option.label }}
+      </button>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MenuView } from '../../../models/menu/menu.model'
+import type {
+  MenuChoiceOption,
+  MenuChoiceValue,
+} from '../../../composables/fireux/public/menu/useMenuViewMode'
 
 withDefaults(
   defineProps<{
-    modelValue: MenuView
-    options?: MenuView[]
+    modelValue: MenuChoiceValue
+    options?: MenuChoiceOption[]
   }>(),
   {
-    options: () => ['browse', 'order'],
+    options: () => [],
   }
 )
 
 defineEmits<{
-  (event: 'update:modelValue', value: MenuView): void
+  (event: 'update:modelValue', value: MenuChoiceValue): void
 }>()
 </script>
 

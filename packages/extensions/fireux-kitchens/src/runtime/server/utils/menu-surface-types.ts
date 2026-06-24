@@ -5,12 +5,11 @@ export type MenuSurfaceScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   sourceKind?: string
-  viewLabel?: string
-  viewTo?: string
   path?: string
   qrPath?: string
   createdByLabel?: string
   page_style?: Record<string, unknown>
+  public_choices?: unknown[]
   sections?: unknown[]
 }
 

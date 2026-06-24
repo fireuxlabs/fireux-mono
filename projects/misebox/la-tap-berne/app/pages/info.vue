@@ -83,6 +83,6 @@ useSeoMeta({
   display: block;
   width: auto;
   height: 1.35rem;
-  filter: drop-shadow(0 0.2rem 1rem rgb(42 14 7 / 50%));
+  filter: drop-shadow(0 0.2rem 1rem color-mix(in srgb, var(--brand-ink) 50%, transparent));
 }
 </style>

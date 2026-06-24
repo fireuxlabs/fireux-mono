@@ -10,9 +10,9 @@
 
     <article v-else-if="menu" class="menu">
       <MenuStructuredHeader
-        v-model="viewMode"
+        v-model="selectedChoice"
         :menu="menu"
-        :view-modes="viewModes"
+        :choices="choiceOptions"
       />
 
       <MenuStructuredSectionNav
@@ -81,10 +81,10 @@ const menuStorageScope = computed(() => {
 })
 const behaviour = computed(() => props.menu?.behaviour)
 const {
-  defaultOrderType,
+  choiceOptions,
+  selectedChoice,
+  selectedOrderType,
   canOrder,
-  viewModes,
-  viewMode,
   isOrderMode,
   orderNotice,
 } = useMenuViewMode(
@@ -105,7 +105,7 @@ const {
 } = useMenuOrderDraft(props.menuId, {
   kitchenSlug: props.kitchenSlug,
   canOrder,
-  orderType: defaultOrderType,
+  orderType: selectedOrderType,
   storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
 })
 </script>

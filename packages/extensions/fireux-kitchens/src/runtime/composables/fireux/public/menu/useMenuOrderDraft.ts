@@ -65,7 +65,7 @@ export function useMenuOrderDraft(
 
   watch(
     key,
-    (nextKey) => {
+    (nextKey: string) => {
       if (!import.meta.client || !nextKey) return
 
       try {
@@ -89,7 +89,7 @@ export function useMenuOrderDraft(
     { immediate: true }
   )
 
-  watch(draft, (nextDraft) => {
+  watch(draft, (nextDraft: Record<string, MenuOrderDraftItem>) => {
     if (!import.meta.client || !key.value) return
 
     if (!Object.keys(nextDraft).length) {
@@ -99,6 +99,10 @@ export function useMenuOrderDraft(
 
     window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
   }, { deep: true })
+
+  watch(orderType, () => {
+    clear()
+  })
 
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return

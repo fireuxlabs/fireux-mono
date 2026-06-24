@@ -6,27 +6,30 @@
       :description="menu.content.description"
     />
 
-    <MenuStructuredViewToggle
-      v-if="viewModes.length > 1"
+    <MenuStructuredChoiceToggle
+      v-if="choices.length > 1"
       :model-value="modelValue"
-      :options="viewModes"
+      :options="choices"
       @update:model-value="$emit('update:modelValue', $event)"
     />
   </header>
 </template>
 
 <script setup lang="ts">
+import type {
+  MenuChoiceOption,
+  MenuChoiceValue,
+} from '../../../composables/fireux/public/menu/useMenuViewMode'
 import type { MenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
-import type { MenuView } from '../../../models/menu/menu.model'
 
 defineProps<{
   menu: MenuManifest
-  modelValue: MenuView
-  viewModes: MenuView[]
+  modelValue: MenuChoiceValue
+  choices: MenuChoiceOption[]
 }>()
 
 defineEmits<{
-  (event: 'update:modelValue', value: MenuView): void
+  (event: 'update:modelValue', value: MenuChoiceValue): void
 }>()
 </script>
 

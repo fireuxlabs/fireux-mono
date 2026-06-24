@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
@@ -248,15 +248,27 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
 
 const { consoleActions: consoleCtas } = useConsoleEntryCta()
 const auth = import.meta.client ? useAuth() : null
+const isMounted = ref(false)
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
+const canPersonalizeAuthCta = computed(() =>
+  isMounted.value && isAuthenticated.value
+)
 
 const longButtonLabelResolved = computed(
-  () => props.rightPanelLongButtonLabel || (isAuthenticated.value ? 'Go to dashboard' : 'Sign up')
+  () =>
+    props.rightPanelLongButtonLabel ||
+    (canPersonalizeAuthCta.value ? 'Go to dashboard' : 'Sign up')
 )
 
 const longButtonToResolved = computed(
-  () => props.rightPanelLongButtonTo || (isAuthenticated.value ? '/dashboard' : '/auth')
+  () =>
+    props.rightPanelLongButtonTo ||
+    (canPersonalizeAuthCta.value ? '/dashboard' : '/auth')
 )
+
+onMounted(() => {
+  isMounted.value = true
+})
 </script>
 
 <style scoped>

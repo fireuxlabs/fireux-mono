@@ -24,6 +24,7 @@ import {
   readMenuSourceData,
 } from '../../utils/menu-source-behaviour.ts'
 import { readKitchenMenuPublicRows } from '../../utils/kitchen-menu-public-rows.ts'
+import { readKitchenMenuPublicChoices } from '../../utils/menu-public-choices.ts'
 import {
   menuKitchenIdentity,
   readAppMenuKitchenData,
@@ -88,11 +89,19 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
       statusMessage: 'Menu not found.',
     })
   }
-  const sections = await readKitchenMenuPublicRows(db, {
-    appId: kitchenAppId,
-    kitchenId: kitchen.id,
-    menuId,
-  })
+  const [sections, publicChoices] = await Promise.all([
+    readKitchenMenuPublicRows(db, {
+      appId: kitchenAppId,
+      kitchenId: kitchen.id,
+      menuId,
+    }),
+    readKitchenMenuPublicChoices(db, {
+      appId: kitchenAppId,
+      kitchenId: kitchen.id,
+      kitchenSlug,
+      currentMenuId: menuId,
+    }),
+  ])
 
   return menuSurfaceFromData(menuId, data, {
     kitchenId: kitchen.id,
@@ -107,6 +116,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     ),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
+    public_choices: publicChoices,
     ...ownerAppView,
     ...ownerMenuPayload,
   })
@@ -142,14 +152,22 @@ async function readMenuSurface(menuId: string) {
     ...ownerMenuPayload
   } = ownerPayload as Record<string, unknown>
   const sourceData = await readMenuSourceData(source)
-  const sourceSections =
-    source.app_id && source.kitchen_id && source.menu_id
-      ? await readKitchenMenuPublicRows(db, {
-          appId: source.app_id,
-          kitchenId: source.kitchen_id,
-          menuId: source.menu_id,
-        })
-      : []
+  const [sourceSections, publicChoices] =
+    source.app_id && source.kitchen_id && source.menu_id && source.kitchen_slug
+      ? await Promise.all([
+          readKitchenMenuPublicRows(db, {
+            appId: source.app_id,
+            kitchenId: source.kitchen_id,
+            menuId: source.menu_id,
+          }),
+          readKitchenMenuPublicChoices(db, {
+            appId: source.app_id,
+            kitchenId: source.kitchen_id,
+            kitchenSlug: source.kitchen_slug,
+            currentMenuId: source.menu_id,
+          }),
+        ])
+      : [[], []]
 
   return menuSurfaceFromData(menuId, menuSurfaceDataWithSourceBehaviour(data, sourceData), {
     ...kitchenScope,
@@ -160,6 +178,7 @@ async function readMenuSurface(menuId: string) {
     ...ownerAppView,
     ...ownerMenuPayload,
     sections: sourceSections,
+    public_choices: publicChoices,
     createdByLabel:
       kitchenScope.createdByLabel ??
       menuCreatorLabel(createdBy, creatorLabels),

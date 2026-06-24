@@ -3,6 +3,7 @@ import { useAsyncData } from '#imports'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type {
   MenuOrderingConfig,
+  MenuPublicChoice,
   MenuView,
 } from '../../../../models/menu/menu.model'
 import type { KitchenPublicMenuSectionRow } from '../kitchen/menu/useKitchenPublicMenu'
@@ -30,14 +31,13 @@ export type PublicMenu = {
   }
   ordering?: MenuOrderingConfig
   public_views?: MenuView[]
+  public_choices?: MenuPublicChoice[]
   page_style?: Partial<PageStyle>
   sections?: KitchenPublicMenuSectionRow[]
   created_by?: string
   created_by_label?: string
   path: string
   qr_path: string
-  view_label: string
-  view_to: string
 }
 
 type UseMenuFetchOptions = {

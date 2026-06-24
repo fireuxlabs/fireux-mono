@@ -206,7 +206,7 @@ export default defineEventHandler(async (event) => {
 
   const context = await readContext(menuId, kitchenSlug)
   const ordering = readMenuOrderingConfig(context.menuData)
-  const allowedModes = ordering.modes.map((mode) => mode.type)
+  const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   if (!isMenuOrderingEnabled(ordering)) {
     throw createError({
       statusCode: 400,
@@ -214,7 +214,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const orderType = normalizeOrderType(body?.order_type, allowedModes)
+  const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const requestedFor = text(body?.requested_for)
   const rows = await readKitchenMenuPublicRows(getRuntimeFirestore(), {
     appId: context.appId,

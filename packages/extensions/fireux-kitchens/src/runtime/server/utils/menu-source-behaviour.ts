@@ -22,9 +22,12 @@ export function menuSurfaceDataWithSourceBehaviour(
   if (!Object.keys(sourceData).length) return doorwayData
 
   // Public menu doorway spine: docs/concepts/family-menu.md. Root doorways keep stable paths; source menus own structured behaviour.
+  const ordering = sourceData.ordering ?? doorwayData.ordering
+  const publicViews = sourceData.public_views ?? doorwayData.public_views
+
   return {
     ...doorwayData,
-    ordering: sourceData.ordering,
-    public_views: sourceData.public_views,
+    ...(ordering ? { ordering } : {}),
+    ...(publicViews ? { public_views: publicViews } : {}),
   }
 }

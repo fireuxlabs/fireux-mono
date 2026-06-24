@@ -30,31 +30,37 @@ Current ordering shape:
 ```ts
 ordering: {
   enabled: true,
-  modes: [
+  order_types: [
     {
       type: 'pre_order',
-      service_mode: 'dine_in',
-      notice_hours: 24
+      notice_hours: 24,
+      message: 'Pre-orders need at least 24 hours notice.'
     }
   ]
 }
 ```
 
 Efficient matrix:
-- `type`: the customer order promise.
-- `service_mode`: how the kitchen treats or fulfils that promise.
-- Optional policy fields: constraints on that mode, only added when needed.
+- `type`: the customer order type.
+- Optional policy fields: constraints on that order type, only added when needed.
 
 Why this is efficient:
-- It avoids a giant enum for every combination.
+- It avoids a premature second axis.
 - It keeps browse/order UI separate from operational order types.
 - It lets Bären, La Tap, Luna, and future kitchens share one shape.
 - It lets the order system grow by adding small policy fields, not new one-off surfaces.
 
+Public choice rail:
+- The public menu endpoint may emit `public_choices`.
+- `public_choices` are derived from all published sibling menus for the same Kitchen.
+- Local choices switch the current menu between browse/order behaviour.
+- Linked choices route to another published sibling menu.
+- Owner copy for a mode belongs on the order type `message`; renderer fallbacks should stay boring.
+
 Current examples:
 - Luna: no `ordering`, so the menu is browse-only.
-- Bären: `public_views: ['order']`, `ordering.modes: [{ type: 'delivery' }, { type: 'collection' }]`.
-- La Tap: `public_views: ['browse', 'order']`, `ordering.modes: [{ type: 'pre_order', service_mode: 'dine_in', notice_hours: 24 }]`.
+- Bären: `public_views: ['order']`, `ordering.order_types: [{ type: 'delivery' }, { type: 'collection' }]`.
+- La Tap: `public_views: ['browse', 'order']`, `ordering.order_types: [{ type: 'pre_order', notice_hours: 24 }]`.
 
 Likely future `type` values:
 - `dine_in`: order for normal in-venue service.
@@ -82,6 +88,7 @@ Naming notes:
 - Prefer `delivery` when the order travels to the customer.
 - Prefer `pre_order` when lead time matters more than handoff.
 - Avoid storing `service_modes` as a separate top-level list unless a future proven need appears.
+- Avoid `ordering.modes`; delivery, collection, dine-in, pre-order, and room service are order types.
 
 Guardrails:
 - Do not add a new mode just because one restaurant words the service differently.

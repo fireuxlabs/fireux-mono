@@ -40,8 +40,6 @@ export function menuOwnerAppView(options: {
   if (!publicOrigin || !path) return {}
 
   return {
-    viewLabel: 'View app',
-    viewTo: new URL(path, publicOrigin).toString(),
     apiTo: new URL(`/api/menus/${encodeURIComponent(options.menuId)}`, publicOrigin).toString(),
   }
 }

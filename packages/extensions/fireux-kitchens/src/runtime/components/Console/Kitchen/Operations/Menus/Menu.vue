@@ -2,6 +2,7 @@
   <section class="console-surface space-y-6">
     <UBreadcrumb :items="breadcrumbItems" />
     <ConsoleKitchenOperationsMenusDetails />
+    <ConsoleKitchenOperationsMenusOrdering />
     <UCard v-if="menu || source">
       <template #header>
         <div class="space-y-1">

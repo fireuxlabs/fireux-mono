@@ -177,7 +177,7 @@ function buildMenuPayload(seed, kitchenId, snap) {
     source_language: menu.source_language || seed.kitchen.primary_language || 'de',
     ordering: menu.ordering || {
       enabled: false,
-      modes: [],
+      order_types: [],
     },
     status: 'published',
     public_views: Array.isArray(menu.public_views) ? menu.public_views : [],

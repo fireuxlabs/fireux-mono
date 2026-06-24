@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
   border-radius: 0.95rem;
   background: color-mix(in srgb, var(--brand-ink) 18%, transparent);
   color: var(--brand-canvas);
-  box-shadow: 0 1rem 2.8rem rgb(42 14 7 / 28%);
+  box-shadow: 0 1rem 2.8rem color-mix(in srgb, var(--brand-ink) 28%, transparent);
   transform: translateZ(0);
   backdrop-filter: blur(16px);
   transition:
@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
 :global(.menu-reveal__button:hover) {
   border-color: color-mix(in srgb, var(--brand-canvas) 84%, transparent);
   background: color-mix(in srgb, var(--brand-ink) 26%, transparent);
-  box-shadow: 0 1.3rem 3rem rgb(42 14 7 / 34%);
+  box-shadow: 0 1.3rem 3rem color-mix(in srgb, var(--brand-ink) 34%, transparent);
   transform: translateY(-2px);
 }
 
@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
   color: var(--brand-ink);
   cursor: pointer;
   place-items: center;
-  filter: drop-shadow(0 0.45rem 0.9rem rgb(42 14 7 / 22%));
+  filter: drop-shadow(0 0.45rem 0.9rem color-mix(in srgb, var(--brand-ink) 22%, transparent));
   transition:
     opacity 160ms ease,
     transform 160ms ease;

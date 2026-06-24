@@ -23,13 +23,6 @@ const menuSlug = (data: Record<string, unknown>, docId: string) =>
 
 const menuPath = (slug: string) => `/menus/${encodeURIComponent(slug)}`
 
-const defaultViewLabel = (kind: MenuSurfaceKind) => {
-  if (kind === 'menu') return 'View menu'
-  if (kind === 'doc') return 'View file'
-
-  return 'View menu'
-}
-
 const readMenuSourceKind = (data: Record<string, unknown>) =>
   readRecordString(data, 'source_kind') ||
   readRecordString(data, 'kind')
@@ -69,12 +62,13 @@ export function menuSurfaceFromData(
     path,
     qr_path: scope.qrPath || readRecordString(data, 'qr_path') || `${path}/qr`,
     kind,
-    view_label: scope.viewLabel || defaultViewLabel(kind),
-    view_to: scope.viewTo || path,
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
-    ...(ordering.modes.length ? { ordering } : {}),
+    ...(ordering.order_types.length ? { ordering } : {}),
     ...(kind === 'menu' && menuViews.length ? { public_views: menuViews } : {}),
+    ...(kind === 'menu' && Array.isArray(scope.public_choices) && scope.public_choices.length
+      ? { public_choices: scope.public_choices }
+      : {}),
     ...(kind === 'doc' ? { file_kind: fileKind } : {}),
     ...(kind === 'doc' && hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),
     ...(kind === 'menu' && Object.keys(source).length ? { source } : {}),

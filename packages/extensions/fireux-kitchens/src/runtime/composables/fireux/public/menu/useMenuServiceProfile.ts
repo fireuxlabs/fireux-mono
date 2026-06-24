@@ -1,6 +1,7 @@
 import type {
   MenuOrderingConfig,
-  MenuOrderingModeConfig,
+  MenuOrderTypeConfig,
+  MenuPublicChoice,
   MenuServiceProfile,
   MenuView,
 } from '../../../../models/menu/menu.model'
@@ -8,10 +9,8 @@ import type { KitchenOrderType } from '../../../../models/order.model'
 
 type MenuServiceProfileSource = {
   ordering?: unknown
-  ordering_enabled?: boolean
-  ordering_modes?: unknown[]
+  public_choices?: unknown[]
   public_views?: unknown[]
-  service_modes?: unknown[]
   views?: unknown[]
 } | null | undefined
 
@@ -48,23 +47,14 @@ const menuViewList = (value: unknown): MenuView[] =>
       )
   )
 
-const orderTypeList = (value: unknown): KitchenOrderType[] =>
-  unique(
-    list(value)
-      .map(text)
-      .filter((mode): mode is KitchenOrderType =>
-        orderTypes.includes(mode as KitchenOrderType)
-      )
-  )
-
 const orderType = (value: unknown): KitchenOrderType | null => {
   const mode = text(value) as KitchenOrderType
 
   return orderTypes.includes(mode) ? mode : null
 }
 
-const defaultOrderType = (modes: KitchenOrderType[]) =>
-  modes.includes('dine_in') ? 'dine_in' : modes[0] || 'dine_in'
+const defaultOrderType = (types: KitchenOrderType[]) =>
+  types.includes('dine_in') ? 'dine_in' : types[0] || 'dine_in'
 
 const noticeHours = (value: unknown) => {
   const hours = Number(value)
@@ -72,64 +62,92 @@ const noticeHours = (value: unknown) => {
   return Number.isFinite(hours) && hours > 0 ? hours : undefined
 }
 
-const orderingMode = (value: unknown): MenuOrderingModeConfig | null => {
+const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
   const row = record(value)
   const type = orderType(row.type)
-  const serviceMode = orderType(row.service_mode)
   const notice = noticeHours(row.notice_hours)
+  const message = text(row.message)
 
   if (!type) return null
 
   return {
     type,
-    ...(serviceMode ? { service_mode: serviceMode } : {}),
     ...(notice ? { notice_hours: notice } : {}),
+    ...(message ? { message } : {}),
   }
 }
 
 const orderingConfig = (source: MenuServiceProfileSource): MenuOrderingConfig => {
   const ordering = record(source?.ordering)
-  const configuredModes = list(ordering.modes)
-    .map(orderingMode)
-    .filter((mode): mode is MenuOrderingModeConfig => Boolean(mode))
+  const configuredOrderTypes = list(ordering.order_types)
+    .map(orderingType)
+    .filter((type): type is MenuOrderTypeConfig => Boolean(type))
 
-  if (configuredModes.length) {
+  if (configuredOrderTypes.length) {
     return {
       enabled: ordering.enabled === true,
-      modes: configuredModes,
+      order_types: configuredOrderTypes,
     }
   }
 
-  const legacyServiceModes = orderTypeList(source?.service_modes)
-  const legacyOrderingModes = orderTypeList(source?.ordering_modes)
-  const legacyModes = legacyOrderingModes.length
-    ? legacyOrderingModes
-    : source?.ordering_enabled === true
-      ? legacyServiceModes
-      : []
-
   return {
-    enabled: source?.ordering_enabled === true && legacyModes.length > 0,
-    modes: legacyModes.map((type) => ({ type })),
+    enabled: false,
+    order_types: [],
   }
 }
+
+const publicChoice = (value: unknown): MenuPublicChoice | null => {
+  const row = record(value)
+  const choiceValue = text(row.value)
+  const label = text(row.label)
+  const view = menuView(row.view)
+  const menuId = text(row.menu_id)
+  const to = text(row.to)
+  const type = orderType(row.order_type)
+  const message = text(row.message)
+
+  if (
+    !choiceValue ||
+    !label ||
+    !menuId ||
+    !menuViews.includes(view as MenuView)
+  ) {
+    return null
+  }
+
+  return {
+    value: choiceValue,
+    label,
+    view: view as MenuView,
+    menu_id: menuId,
+    ...(to ? { to } : {}),
+    ...(type ? { order_type: type } : {}),
+    ...(message ? { message } : {}),
+  }
+}
+
+const publicChoices = (value: unknown): MenuPublicChoice[] =>
+  list(value)
+    .map(publicChoice)
+    .filter((choice): choice is MenuPublicChoice => Boolean(choice))
 
 // Menu service profile spine: docs/concepts/family-menu.md. Keep menu service capability separate from whether ordering is enabled today.
 export function resolveMenuServiceProfile(
   source: MenuServiceProfileSource
 ): MenuServiceProfile {
   const ordering = orderingConfig(source)
-  const orderingModes = unique(ordering.modes.map((mode) => mode.type))
-  const defaultType = defaultOrderType(orderingModes)
+  const orderTypes = unique(ordering.order_types.map((type) => type.type))
+  const defaultType = defaultOrderType(orderTypes)
 
   return {
     views: menuViewList(source?.public_views ?? source?.views),
     ordering,
-    orderingEnabled: ordering.enabled && orderingModes.length > 0,
-    orderingModes,
+    orderingEnabled: ordering.enabled && orderTypes.length > 0,
+    orderTypes,
     defaultOrderType: defaultType,
-    defaultOrderingMode:
-      ordering.modes.find((mode) => mode.type === defaultType) ||
-      ordering.modes[0],
+    defaultOrderTypeConfig:
+      ordering.order_types.find((type) => type.type === defaultType) ||
+      ordering.order_types[0],
+    publicChoices: publicChoices(source?.public_choices),
   }
 }
