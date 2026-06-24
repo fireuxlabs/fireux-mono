@@ -21,19 +21,6 @@
 }
 
 @layer components {
-  .latap-page-copy {
-    display: grid;
-    gap: 0.8rem;
-    margin: 0 auto;
-    color: var(--latap-page-copy-fg, color-mix(in srgb, var(--brand-canvas) 86%, transparent));
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-
-  .latap-page-copy p {
-    margin: 0;
-  }
-
   .latap-page-actions {
     display: flex;
     flex-wrap: wrap;

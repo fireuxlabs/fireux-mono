@@ -1,26 +1,35 @@
 <template>
-  <LaTapBernePageSurface
-    title="Spanish plates in Matten bei Interlaken."
-    subtitle="La Tap Berne is a relaxed pub for tapas, Comida Casera, and easy drinks just off the Interlaken rhythm."
-  >
-    <div class="latap-page-copy">
-      <p>
-        Come for Iberian small plates, tortilla, bravas, pimientos, ribs,
-        and the kind of food that turns a quick drink into something more.
-      </p>
-    </div>
-
-  </LaTapBernePageSurface>
+  <LaTapBernePage>
+    <LaTapBerneHero
+      :title="pageTitle"
+      :subtitle="pageSubtitle"
+    >
+      <LaTapBerneCopy>
+        <p
+          v-for="copy in page.copy"
+          :key="copy"
+        >
+          {{ copy }}
+        </p>
+      </LaTapBerneCopy>
+    </LaTapBerneHero>
+  </LaTapBernePage>
 </template>
 
 <script setup lang="ts">
+import { laTapBerneContent } from '../config/content.config'
+
+// Tenant content page spine: docs/concepts/family-tenant-global.md
+const page = laTapBerneContent.pages.home
+const pageTitle = page.title
+const pageSubtitle = page.subtitle
+
 definePageMeta({
   layout: 'latap-default',
 })
 
 useSeoMeta({
-  title: 'La Tap Berne | Home',
-  description:
-    'Spanish-style plates, tapas, drinks, and terrace moments at La Tap Berne in Matten bei Interlaken.',
+  title: page.seoTitle,
+  description: page.seoDescription,
 })
 </script>

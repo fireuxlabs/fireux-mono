@@ -1,6 +1,6 @@
 Tenant/global family map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-24
+Ref: db6ab1842
 Role: map, not canon
 
 Purpose:
@@ -38,6 +38,21 @@ Different:
 - Global app needs user/permission-aware target lists.
 - Public URLs may differ: tenant root routes can be shorter than global directory routes.
 
+Tenant page composition:
+- Reference-in-progress: `projects/misebox/la-tap-berne/app`.
+- A tenant page should compose visible layers explicitly instead of hiding all chrome in one large wrapper.
+- Current La Tap page shape: `LaTapBernePage` frame plus shared backdrop, `LaTapBerneHero` title/intro/content stack, then page-specific content.
+- `Page` should stay boring: page frame, shared always-on backdrop, minimum structure, page variant only when the frame itself differs, no hidden domain copy.
+- `Backdrop` owns image and wash decisions.
+- `Hero` owns title, eyebrow, subtitle, and the page body slot.
+- Route pages should read like a small composition recipe: page, hero, content.
+- Shared tenant pass-ins should live in app-local config or assets, not repeated across pages/components.
+- Content route pages should not carry one-off scoped style blocks; styled content belongs in small tenant components beside the markup it styles.
+- Landing route pages should still avoid frame CSS; use a page variant and pass only the unique landing child.
+- Tenant-specific naming is allowed while the pattern is proving itself. Do not prematurely extract generic `TenantPage` components before another tenant confirms the shape.
+- Existing tenants are not assumed migrated. When touching a tenant, compare against La Tap, then decide whether the same page composition applies or whether the tenant has a legitimate delta.
+
 Open questions:
 - Data migration from global app scope to tenant app scope needs a deliberate workflow.
 - Tenant public menu URL rules need to stay separate from provider tool preview URLs.
+- Shared tenant page primitives may be extracted only after at least two tenants use the same layer shape cleanly.
