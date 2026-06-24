@@ -1,7 +1,7 @@
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useMenuFetch, type PublicMenu } from './useMenuFetch'
-import type { MenuView } from '../../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../../models/order.model'
+import { resolveMenuServiceProfile } from './useMenuServiceProfile'
+import type { MenuServiceProfile } from '../../../../models/menu/menu.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 
 type MenuManifestOptions = {
@@ -32,11 +32,7 @@ export type MenuManifestContent = {
   sections: MenuManifestSection[]
 }
 
-export type MenuManifestBehaviour = {
-  orderingEnabled: boolean
-  orderingModes: KitchenOrderType[]
-  views: MenuView[]
-}
+export type MenuManifestBehaviour = MenuServiceProfile
 
 export type MenuManifestPresentation = {
   kitchenName: string
@@ -55,8 +51,6 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
-const menuViews = ['browse', 'order'] as const
-
 const itemName = (item: Record<string, unknown>) =>
   text(item.name) || text(record(item.item).name)
 
@@ -67,19 +61,6 @@ const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.priceLabel) ||
   text(item.price_label) ||
   text(item.price)
-
-const menuViewList = (value: unknown): MenuView[] =>
-  list(value)
-    .map(menuPublicView)
-    .filter((view): view is MenuView =>
-      menuViews.includes(view as MenuView)
-    )
-
-const menuPublicView = (value: unknown) => {
-  const view = text(value)
-  if (view === 'classic' || view === 'read') return 'browse'
-  return view
-}
 
 const menuSections = (source: PublicMenu): MenuManifestSection[] =>
   list(source.sections).map((section, sectionIndex) => {
@@ -118,13 +99,7 @@ const structuredMenuManifest = (source: PublicMenu): MenuManifest => {
       description: text(source.description),
       sections: menuSections(source),
     },
-    behaviour: {
-      orderingEnabled: source.ordering_enabled === true,
-      orderingModes: Array.isArray(source.ordering_modes)
-        ? source.ordering_modes
-        : [],
-      views: menuViewList(source.public_views),
-    },
+    behaviour: resolveMenuServiceProfile(source),
     presentation: {
       kitchenName:
         text(source.source?.kitchen_name) ||

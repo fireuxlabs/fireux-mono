@@ -24,6 +24,7 @@ export function menuSurfaceDataWithSourceBehaviour(
   // Public menu doorway spine: docs/concepts/family-menu.md. Root doorways keep stable paths; source menus own structured behaviour.
   return {
     ...doorwayData,
+    service_modes: sourceData.service_modes,
     ordering_enabled: sourceData.ordering_enabled,
     ordering_modes: sourceData.ordering_modes,
     public_views: sourceData.public_views,

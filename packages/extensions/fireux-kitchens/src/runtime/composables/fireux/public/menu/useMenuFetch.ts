@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAsyncData } from '#imports'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
-import type { MenuView } from '../../../../models/menu/menu.model'
+import type { MenuServiceMode, MenuView } from '../../../../models/menu/menu.model'
 import type { KitchenPublicMenuSectionRow } from '../kitchen/menu/useKitchenPublicMenu'
 
 export type PublicMenu = {
@@ -26,6 +26,7 @@ export type PublicMenu = {
     kitchen_name?: string
     menu_id?: string
   }
+  service_modes?: MenuServiceMode[]
   ordering_enabled?: boolean
   ordering_modes?: KitchenOrderType[]
   public_views?: MenuView[]

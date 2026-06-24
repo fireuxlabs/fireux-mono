@@ -52,6 +52,15 @@ export const MenuEntity = defineFireuxEntity({
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuView = 'browse' | 'order'
+export type MenuServiceMode = KitchenOrderType
+
+export type MenuServiceProfile = {
+  views: MenuView[]
+  serviceModes: MenuServiceMode[]
+  orderingEnabled: boolean
+  orderingModes: KitchenOrderType[]
+  defaultOrderType: KitchenOrderType
+}
 
 export type MenuDocument = {
   url: string
@@ -76,6 +85,8 @@ export const MenuModel = {
   doc_name: '' as string,
   doc_type: '' as string,
   doc_storage_path: '' as string,
+  // Service modes describe how this menu can be served; ordering_modes describe what the public order flow may create.
+  service_modes: [] as MenuServiceMode[],
   ordering_enabled: false as boolean,
   ordering_modes: [] as KitchenOrderType[],
   // Browse is implicit for structured menus; use public_views for extra modes such as order.

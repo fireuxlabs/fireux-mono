@@ -58,6 +58,10 @@ export function menuSurfaceFromData(
     .map(String)
     .map((value) => value.trim())
     .filter(Boolean)
+  const serviceModes = menuSurfaceList(data.service_modes)
+    .map(String)
+    .map((value) => value.trim())
+    .filter(Boolean)
   const orderingEnabled =
     data.ordering_enabled === true || orderingModes.length > 0
   const menuViews = kind === 'menu'
@@ -74,6 +78,7 @@ export function menuSurfaceFromData(
     view_to: scope.viewTo || path,
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
+    ...(serviceModes.length ? { service_modes: serviceModes } : {}),
     ...(orderingEnabled ? { ordering_enabled: true } : {}),
     ...(orderingModes.length ? { ordering_modes: orderingModes } : {}),
     ...(kind === 'menu' && menuViews.length ? { public_views: menuViews } : {}),
