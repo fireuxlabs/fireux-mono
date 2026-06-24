@@ -1,29 +1,41 @@
 <template>
   <footer v-if="!chromeHidden" class="misebox-tenant-footer">
-    <UPopover
-      v-model:open="open"
-      :popper="{ placement: 'top' }"
+    <button
+      :id="triggerId"
+      type="button"
+      class="misebox-tenant-footer__powered"
+      aria-haspopup="dialog"
+      :aria-expanded="open"
+      :aria-controls="panelId"
+      aria-label="Open Misebox links"
+      @click="toggleOpen"
     >
-      <button
-        type="button"
-        class="misebox-tenant-footer__powered"
-        aria-label="Open Misebox links"
-      >
-        <span>Powered by</span>
-        <img
-          src="/img/ecosystem/wordmark-light.svg"
-          alt="Misebox"
-          class="misebox-tenant-footer__wordmark"
-        >
-      </button>
+      <span>Powered by</span>
+      <AppBrandWordmark
+        light-src="/img/ecosystem/wordmark-light.svg"
+        dark-src="/img/ecosystem/wordmark-dark.svg"
+        alt="Misebox"
+        size="small"
+        class="misebox-tenant-footer__wordmark"
+      />
+    </button>
 
-      <template #content>
-        <UCard class="misebox-tenant-footer__callout">
+    <Transition name="misebox-tenant-footer-pop">
+      <div
+        v-if="open"
+        :id="panelId"
+        class="misebox-tenant-footer__panel"
+        role="dialog"
+        :aria-labelledby="titleId"
+      >
+        <UCard
+          class="misebox-tenant-footer__callout"
+        >
           <div class="misebox-tenant-footer__callout-copy">
             <p class="misebox-tenant-footer__callout-eyebrow">
               Misebox
             </p>
-            <h2>Venue tools and operator access.</h2>
+            <h2 :id="titleId">Venue tools and operator access.</h2>
             <p>
               Guests can visit Misebox. Head chefs and team members can sign in
               to the operator console.
@@ -51,19 +63,30 @@
             </UButton>
           </div>
         </UCard>
-      </template>
-    </UPopover>
+      </div>
+    </Transition>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
 const miseboxHomeUrl = 'https://misebox.app'
 const tenantConsoleTo = `/auth?redirect=${encodeURIComponent('/console/kitchen')}`
+const panelId = 'misebox-tenant-footer-panel'
+const titleId = 'misebox-tenant-footer-title'
+const triggerId = 'misebox-tenant-footer-trigger'
 const open = ref(false)
 const { chromeHidden } = useMiseboxTenantChrome()
+
+const toggleOpen = () => {
+  open.value = !open.value
+}
+
+watch(chromeHidden, (hidden) => {
+  if (hidden) open.value = false
+})
 </script>
 
 <style scoped>
@@ -108,11 +131,18 @@ const { chromeHidden } = useMiseboxTenantChrome()
   transform: translateY(-1px);
 }
 
-.misebox-tenant-footer__wordmark {
-  display: block;
-  width: auto;
+:global(.misebox-tenant-footer__wordmark) {
   height: 1.05rem;
   filter: drop-shadow(0 0.2rem 1.4rem rgb(42 14 7 / 60%));
+}
+
+.misebox-tenant-footer__panel {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 0.75rem;
+  pointer-events: auto;
+  transform: translateX(-50%);
 }
 
 .misebox-tenant-footer__callout {
@@ -155,5 +185,18 @@ const { chromeHidden } = useMiseboxTenantChrome()
   flex-wrap: wrap;
   gap: 0.5rem;
   padding-top: 1rem;
+}
+
+.misebox-tenant-footer-pop-enter-active,
+.misebox-tenant-footer-pop-leave-active {
+  transition:
+    opacity 160ms ease,
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.misebox-tenant-footer-pop-enter-from,
+.misebox-tenant-footer-pop-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0.35rem) scale(0.98);
 }
 </style>

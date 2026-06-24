@@ -40,44 +40,57 @@
     padding-top: 0.4rem;
   }
 
-  .latap-page-map {
-    overflow: hidden;
-    width: min(38rem, 100%);
-    aspect-ratio: 16 / 10;
-    margin: 0.25rem auto 0;
-    border: 1px solid color-mix(in srgb, var(--brand-canvas) 38%, transparent);
-    border-radius: 1.25rem;
-    box-shadow: 0 1rem 3rem color-mix(in srgb, var(--brand-ink) 32%, transparent);
+  .latap-glass-button {
+    position: relative;
+    border: 1px solid rgb(var(--brand-ink-rgb) / 18%) !important;
+    background: rgb(var(--brand-ink-rgb) / 18%);
+    color: var(--brand-canvas) !important;
+    box-shadow:
+      0 0.85rem 2rem rgb(var(--brand-ink-rgb) / 22%),
+      inset 0 0 0 1px rgb(255 255 255 / 10%);
+    backdrop-filter: blur(16px);
+    transition:
+      background 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
   }
 
-  .latap-page-map iframe {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
+  .latap-glass-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(var(--brand-canvas-rgb) / 92%);
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 16%),
+      0 0.85rem 2rem rgb(var(--brand-ink-rgb) / 22%);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
   }
 
-  .latap-page-gallery {
-    display: grid;
-    gap: 0.9rem;
-    width: min(36rem, 100%);
-    margin: 0 auto;
+  .latap-glass-button:hover,
+  .latap-glass-button--active {
+    border-color: rgb(var(--brand-ink-rgb) / 24%) !important;
+    background: rgb(var(--brand-ink-rgb) / 26%);
+    box-shadow:
+      0 0.85rem 2rem rgb(var(--brand-ink-rgb) / 26%),
+      inset 0 0 0 1px rgb(255 255 255 / 14%);
+    transform: translateY(-2px);
   }
 
-  .latap-page-gallery img {
-    display: block;
-    width: 100%;
-    border-radius: 1.25rem;
-    box-shadow: 0 1rem 3rem color-mix(in srgb, var(--brand-ink) 32%, transparent);
+  .latap-glass-button:hover::before,
+  .latap-glass-button--active::before {
+    border-color: rgb(255 255 255 / 100%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 24%),
+      0 0.85rem 2rem rgb(var(--brand-ink-rgb) / 26%);
   }
 
   @media (max-width: 720px) {
     .latap-page-actions {
       justify-content: flex-start;
-    }
-
-    .latap-page-map {
-      aspect-ratio: 4 / 3;
     }
   }
 }

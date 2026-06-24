@@ -20,7 +20,13 @@
       rel="noopener"
       aria-label="Find La Tap Berne on Misebox"
     >
-      <img src="/img/ecosystem/wordmark-light.svg" alt="Misebox">
+      <AppBrandWordmark
+        light-src="/img/ecosystem/wordmark-light.svg"
+        dark-src="/img/ecosystem/wordmark-dark.svg"
+        alt="Misebox"
+        size="small"
+        class="latap-info-misebox__wordmark"
+      />
     </a>
   </LaTapBernePageSurface>
 </template>
@@ -79,9 +85,7 @@ useSeoMeta({
   transform: translateY(-1px);
 }
 
-.latap-info-misebox img {
-  display: block;
-  width: auto;
+:global(.latap-info-misebox__wordmark) {
   height: 1.35rem;
   filter: drop-shadow(0 0.2rem 1rem color-mix(in srgb, var(--brand-ink) 50%, transparent));
 }

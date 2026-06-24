@@ -3,8 +3,8 @@
     <NuxtLink
       v-for="item in navItems"
       :key="item.to"
-      class="latap-nav__button"
-      :class="{ 'latap-nav__button--active': isActive(item.to) }"
+      class="latap-nav__button latap-glass-button"
+      :class="{ 'latap-glass-button--active': isActive(item.to) }"
       :to="item.to"
       :aria-label="item.label"
     >
@@ -47,26 +47,10 @@ const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
   width: 3.1rem;
   height: 3.1rem;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--brand-canvas) 58%, transparent);
   border-radius: 1rem;
-  background: color-mix(in srgb, var(--brand-ink) 18%, transparent);
-  color: var(--brand-canvas);
   cursor: pointer;
   place-items: center;
-  box-shadow: 0 0.85rem 2rem color-mix(in srgb, var(--brand-ink) 22%, transparent);
   text-decoration: none;
-  backdrop-filter: blur(16px);
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
-}
-
-.latap-nav__button:hover,
-.latap-nav__button--active {
-  border-color: color-mix(in srgb, var(--brand-canvas) 80%, transparent);
-  background: color-mix(in srgb, var(--brand-ink) 26%, transparent);
-  transform: translateY(-2px);
 }
 
 .latap-nav__button :deep(.iconify) {

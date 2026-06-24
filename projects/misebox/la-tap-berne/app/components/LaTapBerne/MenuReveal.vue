@@ -6,19 +6,17 @@
 
     <Transition name="content-fade">
       <div v-if="!isOpen" class="menu-reveal__content">
-        <UButton
-          class="menu-reveal__button"
-          size="xl"
-          color="neutral"
-          variant="ghost"
-          icon="i-ph-fork-knife"
+        <button
+          class="menu-reveal__button latap-glass-button"
+          type="button"
           @click="openMenu"
         >
+          <UIcon name="i-ph-fork-knife" />
           <span class="menu-reveal__button-copy">
             <span>View menu</span>
             <small>Comida Casera</small>
           </span>
-        </UButton>
+        </button>
       </div>
     </Transition>
 
@@ -37,7 +35,7 @@
           <UIcon name="i-ph-x" />
         </button>
 
-        <!-- Tenant menu spine: this overlay owns chrome; the shared Menu component owns menu manifestation. -->
+        <!-- TODO: Revisit popup feel; older landing used a lighter tenant-local menu renderer. -->
         <Menu menu-id="main" />
       </section>
     </Transition>
@@ -92,30 +90,16 @@ onBeforeUnmount(() => {
   transform: translateY(-50%);
 }
 
-:global(.menu-reveal__button) {
+.menu-reveal__button {
+  display: flex;
+  align-items: center;
   justify-content: flex-start;
   min-height: 4.25rem;
   gap: 0.8rem;
   padding: 0.85rem 1rem;
-  border: 1px solid color-mix(in srgb, var(--brand-canvas) 68%, transparent);
   border-radius: 0.95rem;
-  background: color-mix(in srgb, var(--brand-ink) 18%, transparent);
-  color: var(--brand-canvas);
-  box-shadow: 0 1rem 2.8rem color-mix(in srgb, var(--brand-ink) 28%, transparent);
+  cursor: pointer;
   transform: translateZ(0);
-  backdrop-filter: blur(16px);
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-}
-
-:global(.menu-reveal__button:hover) {
-  border-color: color-mix(in srgb, var(--brand-canvas) 84%, transparent);
-  background: color-mix(in srgb, var(--brand-ink) 26%, transparent);
-  box-shadow: 0 1.3rem 3rem color-mix(in srgb, var(--brand-ink) 34%, transparent);
-  transform: translateY(-2px);
 }
 
 .menu-reveal__button-copy {
@@ -143,7 +127,7 @@ onBeforeUnmount(() => {
   opacity: 0.84;
 }
 
-:global(.menu-reveal__button .iconify) {
+.menu-reveal__button :deep(.iconify) {
   width: 1.25rem;
   height: 1.25rem;
   flex: 0 0 auto;
@@ -191,23 +175,6 @@ onBeforeUnmount(() => {
 .menu-reveal__close :deep(.iconify) {
   width: 2.1rem;
   height: 2.1rem;
-}
-
-.menu-reveal__eyebrow {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.menu-reveal__panel h1 {
-  max-width: none;
-  margin: 0 auto;
-  font-size: clamp(3.5rem, 9vw, 7rem);
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  line-height: 0.86;
 }
 
 @media (max-width: 720px) {
