@@ -7,7 +7,7 @@
     <Transition name="content-fade">
       <div v-if="!isOpen" class="menu-reveal__content">
         <button
-          class="menu-reveal__button latap-glass-button"
+          class="menu-reveal__button latap-glass"
           type="button"
           @click="openMenu"
         >
@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: color-mix(in srgb, var(--brand-accent-display) 87%, transparent);
+  background: color-mix(in srgb, var(--brand-accent-display) 20%, transparent);
 }
 
 .menu-reveal__content {
@@ -92,14 +92,19 @@ onBeforeUnmount(() => {
 
 .menu-reveal__button {
   display: flex;
+  min-height: 4.25rem;
   align-items: center;
   justify-content: flex-start;
-  min-height: 4.25rem;
   gap: 0.8rem;
   padding: 0.85rem 1rem;
   border-radius: 0.95rem;
   cursor: pointer;
-  transform: translateZ(0);
+}
+
+.menu-reveal__button :deep(.iconify) {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
 }
 
 .menu-reveal__button-copy {
@@ -127,12 +132,6 @@ onBeforeUnmount(() => {
   opacity: 0.84;
 }
 
-.menu-reveal__button :deep(.iconify) {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: 0 0 auto;
-}
-
 .menu-reveal__panel {
   position: absolute;
   inset: 0;
@@ -147,6 +146,19 @@ onBeforeUnmount(() => {
   overflow: auto;
 }
 
+.menu-reveal__panel :deep(.public-menu) {
+  min-height: auto;
+  background-color: color-mix(in srgb, var(--menu-bg) 80%, transparent);
+}
+
+.menu-reveal__panel :deep(.public-menu:not(.public-menu--preview)::before) {
+  background-color: transparent;
+}
+
+.menu-reveal__panel :deep(.menu-page) {
+  background-color: color-mix(in srgb, var(--menu-bg) 80%, transparent);
+}
+
 .menu-reveal__close {
   position: fixed;
   top: clamp(1rem, 3vw, 2rem);
@@ -157,19 +169,31 @@ onBeforeUnmount(() => {
   height: 3.25rem;
   padding: 0;
   border: 0;
-  background: transparent;
-  color: var(--brand-ink);
+  border-radius: 999px;
+  background: var(--brand-canvas, #f2e8d8);
+  color: var(--brand-ink, #171717);
   cursor: pointer;
   place-items: center;
-  filter: drop-shadow(0 0.45rem 0.9rem color-mix(in srgb, var(--brand-ink) 22%, transparent));
+  box-shadow: 0 0.5rem 1.25rem rgb(var(--brand-ink-rgb, 23 23 23) / 18%);
   transition:
+    background 160ms ease,
     opacity 160ms ease,
     transform 160ms ease;
 }
 
 .menu-reveal__close:hover {
-  opacity: 0.72;
+  background: color-mix(in srgb, var(--brand-canvas, #f2e8d8) 88%, white);
   transform: scale(1.04);
+}
+
+:global(:root.dark) .menu-reveal__close {
+  background: var(--brand-ink, #171717);
+  color: var(--brand-canvas, #f2e8d8);
+  box-shadow: 0 0.5rem 1.25rem rgb(0 0 0 / 28%);
+}
+
+:global(:root.dark) .menu-reveal__close:hover {
+  background: color-mix(in srgb, var(--brand-ink, #171717) 88%, black);
 }
 
 .menu-reveal__close :deep(.iconify) {

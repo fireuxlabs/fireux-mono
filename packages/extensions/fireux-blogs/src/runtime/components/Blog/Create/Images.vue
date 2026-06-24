@@ -250,11 +250,10 @@ defineExpose({
   margin-bottom: var(--space-2);
 }
 
-@media (prefers-color-scheme: dark) {
-  .error-item {
-    background: var(--color-red-950);
-    border-color: var(--color-red-800);
-    color: var(--color-red-300);
-  }
+/* Color mode spine: docs/concepts/color-mode.md */
+:global(:root.dark) .error-item {
+  background: var(--color-red-950);
+  border-color: var(--color-red-800);
+  color: var(--color-red-300);
 }
 </style>

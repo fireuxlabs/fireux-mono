@@ -1,4 +1,4 @@
-@import './molecules/glass-button.css';
+@import './molecules/la-tap-glass.css';
 
 @layer base {
   :root {

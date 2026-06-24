@@ -3,8 +3,7 @@
     <NuxtLink
       v-for="item in navItems"
       :key="item.to"
-      class="latap-nav__button latap-glass-button"
-      :class="{ 'latap-glass-button--active': isActive(item.to) }"
+      class="latap-nav__button latap-glass"
       :to="item.to"
       :aria-label="item.label"
     >
@@ -14,10 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
-
-const route = useRoute()
-
 const navItems = [
   { label: 'Home', icon: 'i-ph-house', to: '/home' },
   { label: 'Location', icon: 'i-ph-map-pin', to: '/location' },
@@ -25,9 +20,6 @@ const navItems = [
   { label: 'Gallery', icon: 'i-ph-camera', to: '/gallery' },
   { label: 'Information', icon: 'i-ph-info', to: '/info' },
 ] as const
-
-const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/'
-const isActive = (to: string) => normalizePath(route.path) === normalizePath(to)
 </script>
 
 <style scoped>

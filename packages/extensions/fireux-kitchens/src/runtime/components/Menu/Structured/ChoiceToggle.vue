@@ -8,6 +8,7 @@
         v-if="option.to"
         :to="option.to"
         class="menu-mode__button"
+        :aria-label="option.label"
       >
         {{ option.label }}
       </NuxtLink>
@@ -16,6 +17,7 @@
         v-else
         type="button"
         :class="['menu-mode__button', { 'is-active': modelValue === option.value }]"
+        :aria-pressed="modelValue === option.value"
         @click="$emit('update:modelValue', option.value)"
       >
         {{ option.label }}
@@ -47,29 +49,54 @@ defineEmits<{
 
 <style scoped>
 .menu-mode {
-  display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-primary) 8%, transparent);
+  display: inline-grid;
+  grid-auto-columns: minmax(7rem, 1fr);
+  grid-auto-flow: column;
+  gap: 0.3rem;
+  width: min(100%, 32rem);
+  padding: 0.32rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--menu-bg) 88%, var(--menu-text));
 }
 
 .menu-mode__button {
   appearance: none;
-  padding: 0.48rem 0.9rem;
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.58rem 0.95rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0.88rem;
   background: transparent;
-  color: var(--menu-muted);
+  color: var(--menu-text);
   cursor: pointer;
   font: inherit;
   font-size: 0.82rem;
   font-weight: 850;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.menu-mode__button:hover {
+  background: color-mix(in srgb, var(--menu-text) 8%, transparent);
 }
 
 .menu-mode__button.is-active {
-  background: var(--menu-primary);
+  background: var(--menu-text);
   color: var(--menu-bg);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 520px) {
+  .menu-mode {
+    grid-auto-columns: 1fr;
+    width: 100%;
+  }
 }
 </style>

@@ -67,8 +67,7 @@ const cssVariables = `
   --latap-landing-wash-rgb: var(--brand-ink-rgb);
 }
 
-:root.dark,
-.dark {
+:root.dark {
   --brand-accent-display: ${colors.accentDark};
   --brand-accent-display-rgb: ${colors.accentDarkRgb};
   --latap-app-bg: #ffff00;
@@ -86,7 +85,8 @@ const menuPageStyle = {
   font_color_dark: colors.darkInk,
   title_color_light: colors.ink,
   title_color_dark: colors.darkInk,
-  primary_color: colors.primary,
+  // PageStyle has one primary token for both modes; use the gold accent so menu prices/controls stay visible on dark canvas.
+  primary_color: colors.accentDark,
   secondary_color: colors.accent,
 } satisfies Partial<PageStyle>
 

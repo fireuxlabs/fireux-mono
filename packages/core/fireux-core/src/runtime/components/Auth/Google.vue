@@ -6,12 +6,13 @@
 
 <script setup lang="ts">
 import { computed, useRouter } from '#imports'
-import { useColorMode } from '../../composables/fireux/app/useColorMode'
+import { useResolvedColorMode } from '../../composables/fireux/app/useColorMode'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()
-const isDark = computed(() => useColorMode().value === 'dark')
+const resolvedMode = useResolvedColorMode()
+const isDark = computed(() => resolvedMode.value === 'dark')
 
 const logoSrc = computed(() =>
   isDark.value

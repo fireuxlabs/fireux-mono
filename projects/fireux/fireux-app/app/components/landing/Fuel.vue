@@ -22,12 +22,11 @@
 </template>
 
 <script setup lang="ts">
-import { useNuxtApp } from 'nuxt/app'
 import { computed } from 'vue'
+import { useResolvedColorMode } from 'fireux-core/runtime/composables/fireux/app/useColorMode'
 
-const nuxtApp = useNuxtApp()
-const colorMode = nuxtApp.$colorMode as { value: string } | undefined
-const isDark = computed(() => colorMode?.value === 'dark')
+const resolvedMode = useResolvedColorMode()
+const isDark = computed(() => resolvedMode.value === 'dark')
 
 const logos = {
   nuxt: {

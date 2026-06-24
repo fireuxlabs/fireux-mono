@@ -73,7 +73,8 @@
 	--z-tooltip: 1100;
 }
 
-.dark {
+/* Color mode spine: docs/concepts/color-mode.md. FireUX applies mode on <html>. */
+:root.dark {
 	--fx-fireux-yellow-muted: #fbbf24;
 	--fx-debug-ink: #f9fafb;
 	--fx-debug-ink-muted: #d1d5db;

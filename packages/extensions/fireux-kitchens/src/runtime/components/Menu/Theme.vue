@@ -78,7 +78,7 @@ const menuStyleVars = computed(() => {
   if (fontLight) vars['--menu-text-light'] = fontLight
   if (titleLight) vars['--menu-title-light'] = titleLight
   if (titleDark) vars['--menu-title-dark'] = titleDark
-  if (primary) vars['--menu-primary'] = primary
+  if (primary) vars['--menu-primary-source'] = primary
   if (secondary) vars['--menu-secondary'] = secondary
   vars['--menu-font'] = resolvedFont.value.cssFamily
   vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
@@ -111,7 +111,8 @@ onUnmounted(() => {
   --menu-text-dark: #f8fafc;
   --menu-title-light: var(--menu-text-light);
   --menu-title-dark: var(--menu-text-dark);
-  --menu-primary: #0f766e;
+  --menu-primary-source: #0f766e;
+  --menu-primary: var(--menu-primary-source);
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);
@@ -153,12 +154,15 @@ onUnmounted(() => {
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);
+  --menu-primary: var(--menu-primary-source);
 }
 
 .public-menu--dark {
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
   --menu-title: var(--menu-title-dark);
+  /* Menu theme spine: primary_color is a single portable token, so dark mode derives a readable runtime accent from it. */
+  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
 }
 
 .public-menu--preview .menu-page {

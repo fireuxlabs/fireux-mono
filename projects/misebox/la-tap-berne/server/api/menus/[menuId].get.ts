@@ -35,6 +35,19 @@ export default defineEventHandler((event) => {
     },
     path: '/menu',
     api_path: '/api/menus/main',
+    // Tenant menu API spine: emit the same service profile that Misebox public menus consume.
+    ordering: {
+      enabled: true,
+      order_types: [
+        {
+          type: 'pre_order',
+          notice_hours: 24,
+          message:
+            'Pre-orders need at least 24 hours notice. For normal service, please order at the bar or at your table.',
+        },
+      ],
+    },
+    public_views: ['browse', 'order'],
     page_style: laTapBerneMenuTheme,
     sections: laTapBerneMenuSections,
   }

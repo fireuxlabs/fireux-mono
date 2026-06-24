@@ -1,0 +1,51 @@
+@layer base {
+  :root {
+    /* Light mode: warm light glass with dark ink. */
+    --latap-glass-bg: rgb(var(--brand-canvas-rgb, 242 232 216) / 72%);
+    --latap-glass-bg-hover: rgb(var(--brand-canvas-rgb, 242 232 216) / 86%);
+    --latap-glass-fg: var(--brand-ink, #171717);
+    --latap-glass-border: rgb(var(--brand-ink-rgb, 23 23 23) / 34%);
+    --latap-glass-border-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 52%);
+    --latap-glass-shadow: rgb(var(--brand-ink-rgb, 23 23 23) / 18%);
+    --latap-glass-shadow-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 24%);
+  }
+
+  :root.dark {
+    /* Dark mode: smoked glass with warm light ink. */
+    --latap-glass-bg: rgb(var(--brand-ink-rgb, 23 23 23) / 34%);
+    --latap-glass-bg-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 46%);
+    --latap-glass-fg: var(--brand-canvas, #f2e8d8);
+    --latap-glass-border: rgb(var(--brand-canvas-rgb, 242 232 216) / 42%);
+    --latap-glass-border-hover: rgb(var(--brand-canvas-rgb, 242 232 216) / 66%);
+    --latap-glass-shadow: rgb(0 0 0 / 32%);
+    --latap-glass-shadow-hover: rgb(0 0 0 / 42%);
+  }
+}
+
+@layer components {
+  .latap-glass {
+    /* La Tap Glass molecule: one light/dark surface shared by landing CTA and nav icons. */
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid var(--latap-glass-border) !important;
+    background: var(--latap-glass-bg);
+    color: var(--latap-glass-fg) !important;
+    box-shadow: 0 0.85rem 2rem var(--latap-glass-shadow);
+    backdrop-filter: blur(16px);
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .latap-glass:hover,
+  .latap-glass.router-link-active,
+  .latap-glass[aria-current='page'] {
+    border-color: var(--latap-glass-border-hover) !important;
+    background: var(--latap-glass-bg-hover);
+    box-shadow: 0 0.85rem 2rem var(--latap-glass-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
