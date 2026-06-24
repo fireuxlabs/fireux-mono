@@ -80,7 +80,7 @@ export const KitchenModel = {
   // Kitchen/menu presentation. Place owns default currency code.
   menu_currency_format: 'dash' as CurrencyDisplayFormat,
   menu_show_currency: true,
-  menu_style: undefined as PageStyle | undefined,
+  menu_style: undefined as Partial<PageStyle> | undefined,
   menu_available: true,
 
   created: {

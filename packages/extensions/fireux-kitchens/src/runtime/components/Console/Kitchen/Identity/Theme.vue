@@ -63,9 +63,11 @@ import { useMenuCollection } from '../../../../composables/fireux/firestore/menu
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useMenuManifest } from '../../../../composables/fireux/public/menu/useMenuManifest'
 import {
-  resolveKitchenPublicMenuFont,
-  resolveKitchenPublicMenuTitleFont,
-} from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
+  compactMenuPageStyle,
+  resolveMenuPageStyle,
+  resolveMenuFont,
+  resolveMenuTitleFont,
+} from '../../../../composables/fireux/public/menu/useMenuTheme'
 
 const {
   selectedKitchen,
@@ -84,33 +86,27 @@ const toast = useToastify()
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 // Console theme spine: docs/concepts/console.md. This edits portable menu tokens, not tenant app chrome.
-const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
+const normalizePageStyle = (style?: Partial<PageStyle> | null): Partial<PageStyle> => {
+  const resolved = resolveMenuPageStyle(style)
   const fontSource = normalizeString(style?.font_source) === 'google' ? 'google' : 'system'
   const titleFontSource =
     normalizeString(style?.title_font_source) === 'google' ? 'google' : 'system'
   const hasTitleFont = Boolean(
     normalizeString(style?.title_font_source) || normalizeString(style?.title_font_family)
   )
-  const font = resolveKitchenPublicMenuFont({
+  const font = resolveMenuFont({
     font_source: fontSource,
     font_family: normalizeString(style?.font_family),
   })
   const titleFont = hasTitleFont
-    ? resolveKitchenPublicMenuTitleFont({
+    ? resolveMenuTitleFont({
         title_font_source: titleFontSource,
         title_font_family: normalizeString(style?.title_font_family),
       })
     : font
 
   return {
-    background_color_light: normalizeString(style?.background_color_light),
-    background_color_dark: normalizeString(style?.background_color_dark),
-    font_color_light: normalizeString(style?.font_color_light),
-    font_color_dark: normalizeString(style?.font_color_dark),
-    title_color_light: normalizeString(style?.title_color_light),
-    title_color_dark: normalizeString(style?.title_color_dark),
-    primary_color: normalizeString(style?.primary_color),
-    secondary_color: normalizeString(style?.secondary_color),
+    ...resolved,
     title_font_source: titleFont.source,
     title_font_family: titleFont.family,
     font_source: font.source,
@@ -168,10 +164,10 @@ const publicMenuUrl = computed(() => {
 })
 const pageStyle = computed(() => (kitchen.value?.menu_style ?? {}) as Partial<PageStyle>)
 const storedPageStyle = computed(() => normalizePageStyle(pageStyle.value))
-const draftPageStyle = ref<PageStyle>(normalizePageStyle())
+const draftPageStyle = ref<Partial<PageStyle>>(normalizePageStyle())
 const saving = ref(false)
 const saveState = ref('')
-const pendingPersistStyle = ref<PageStyle | null>(null)
+const pendingPersistStyle = ref<Partial<PageStyle> | null>(null)
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 watch(
   previewMenus,
@@ -199,7 +195,7 @@ watch(
   }
 )
 
-function setDraftPageStyle(style: PageStyle) {
+function setDraftPageStyle(style: Partial<PageStyle>) {
   const normalized = normalizePageStyle(style)
   draftPageStyle.value = normalized
   queueThemeSave(normalized)
@@ -209,7 +205,7 @@ function selectPreviewMenu(menuId: string) {
   selectedPreviewMenuId.value = normalizeString(menuId)
 }
 
-function queueThemeSave(style: PageStyle) {
+function queueThemeSave(style: Partial<PageStyle>) {
   if (!canWrite.value) return
 
   if (saveTimer) clearTimeout(saveTimer)
@@ -219,7 +215,7 @@ function queueThemeSave(style: PageStyle) {
   }, 450)
 }
 
-async function flushThemeSave(style: PageStyle) {
+async function flushThemeSave(style: Partial<PageStyle>) {
   pendingPersistStyle.value = normalizePageStyle(style)
   if (saving.value) return
   saving.value = true
@@ -227,6 +223,7 @@ async function flushThemeSave(style: PageStyle) {
   try {
     while (pendingPersistStyle.value) {
       const nextStyle = pendingPersistStyle.value
+      const compactStyle = compactMenuPageStyle(nextStyle)
       const id = normalizeString(kitchenId.value)
       pendingPersistStyle.value = null
 
@@ -242,7 +239,7 @@ async function flushThemeSave(style: PageStyle) {
 
       saveState.value = 'Saving...'
       await updateKitchen(id, {
-        menu_style: nextStyle,
+        menu_style: compactStyle,
       })
     }
 

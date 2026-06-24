@@ -8,12 +8,6 @@
             <p class="text-sm font-medium text-highlighted">
               Menu Preview
             </p>
-            <p class="text-xs text-dimmed">
-              Uses the current menu preview.
-            </p>
-            <p v-if="previewMenuLabel" class="text-xs text-dimmed">
-              Previewing {{ previewMenuLabel }}
-            </p>
           </div>
         </div>
 
@@ -117,13 +111,8 @@ const props = defineProps<{
   publicMenuUrl?: string
 }>()
 
-const previewMode = ref<'system' | 'light' | 'dark'>('system')
+const previewMode = ref<'light' | 'dark'>('light')
 const previewModes = [
-  {
-    label: 'System',
-    value: 'system' as const,
-    icon: 'i-lucide-monitor',
-  },
   {
     label: 'Light',
     value: 'light' as const,
@@ -141,9 +130,6 @@ const previewDescription = computed(() =>
   text(props.menu?.description) || text(props.previewDescription)
 )
 const previewMenu = computed(() => props.menu ?? null)
-const previewMenuLabel = computed(() =>
-  previewMenu.value ? previewMenu.value.name || previewMenu.value.id : ''
-)
 const previewSections = computed(() =>
   props.sections?.length ? props.sections : []
 )

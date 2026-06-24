@@ -15,9 +15,10 @@ import { useHead } from '#imports'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import {
-  resolveKitchenPublicMenuFont,
-  resolveKitchenPublicMenuTitleFont,
-} from '../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuTheme'
+  resolveMenuPageStyle,
+  resolveMenuFont,
+  resolveMenuTitleFont,
+} from '../../composables/fireux/public/menu/useMenuTheme'
 
 const props = defineProps<{
   pageStyle?: Partial<PageStyle> | null
@@ -38,8 +39,11 @@ const menuClasses = computed(() => ({
   'public-menu--light': activeColorMode.value === 'light',
   'public-menu--dark': activeColorMode.value === 'dark',
 }))
-const resolvedFont = computed(() => resolveKitchenPublicMenuFont(props.pageStyle))
-const resolvedTitleFont = computed(() => resolveKitchenPublicMenuTitleFont(props.pageStyle))
+const resolvedPageStyle = computed(() =>
+  resolveMenuPageStyle(props.pageStyle)
+)
+const resolvedFont = computed(() => resolveMenuFont(resolvedPageStyle.value))
+const resolvedTitleFont = computed(() => resolveMenuTitleFont(resolvedPageStyle.value))
 const stylesheetLinks = computed(() => {
   const urls = [
     resolvedFont.value.stylesheetUrl,
@@ -57,7 +61,7 @@ useHead(computed(() => ({
 })))
 
 const menuStyleVars = computed(() => {
-  const style = props.pageStyle ?? {}
+  const style = resolvedPageStyle.value
   const vars: Record<string, string> = {}
   const backgroundLight = color(style.background_color_light)
   const backgroundDark = color(style.background_color_dark)
@@ -100,19 +104,20 @@ onUnmounted(() => {
 
 <style scoped>
 .public-menu {
-  --menu-bg-light: #ffffff;
-  --menu-bg-dark: #111827;
-  --menu-text-light: #111827;
+  /* Runtime defaults come from useMenuTheme; these CSS values are safety fallbacks. */
+  --menu-bg-light: #f8fafc;
+  --menu-bg-dark: #0f172a;
+  --menu-text-light: #0f172a;
   --menu-text-dark: #f8fafc;
   --menu-title-light: var(--menu-text-light);
   --menu-title-dark: var(--menu-text-dark);
-  --menu-primary: var(--menu-title-light);
+  --menu-primary: #0f766e;
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);
   --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
   --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
-  --menu-secondary: var(--menu-muted);
+  --menu-secondary: #64748b;
   --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-title-font: var(--menu-font);
   --menu-page-padding-block: clamp(1.5rem, 4vw, 3rem);
