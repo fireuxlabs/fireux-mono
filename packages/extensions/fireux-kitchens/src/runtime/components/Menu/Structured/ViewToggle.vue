@@ -42,9 +42,9 @@ defineEmits<{
   display: inline-flex;
   gap: 0.25rem;
   padding: 0.25rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-text) 8%, transparent);
+  background: color-mix(in srgb, var(--menu-primary) 8%, transparent);
 }
 
 .menu-mode__button {
@@ -61,7 +61,7 @@ defineEmits<{
 }
 
 .menu-mode__button.is-active {
-  background: var(--menu-title);
+  background: var(--menu-primary);
   color: var(--menu-bg);
 }
 </style>

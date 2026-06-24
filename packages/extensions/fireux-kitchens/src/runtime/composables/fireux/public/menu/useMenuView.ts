@@ -38,15 +38,18 @@ export function useMenuView(
 
     return Boolean(menu?.orderingEnabled && orderingModes.value.length)
   })
-  const viewModes = computed<MenuView[]>(() => {
+  const configuredViews = computed<MenuView[]>(() => {
     const menu = toValue(source)
-    // Public menu view spine: docs/concepts/family-menu.md. Browse is the base view; configured views only add supported extras.
-    const configured: MenuView[] = Array.isArray(menu?.views)
+
+    return Array.isArray(menu?.views)
       ? menu.views.filter((mode): mode is MenuView =>
           supportedViews.includes(mode as typeof supportedViews[number])
         )
       : []
-    const supportedExtras = configured.filter((mode) => mode !== 'browse')
+  })
+  const viewModes = computed<MenuView[]>(() => {
+    // Public menu view spine: docs/concepts/family-menu.md. Browse is the base view; configured views only add supported extras.
+    const supportedExtras = configuredViews.value.filter((mode) => mode !== 'browse')
     const defaultExtras: MenuView[] = ['order']
     const available: MenuView[] = ['browse']
     if (canOrder.value) {
@@ -57,6 +60,22 @@ export function useMenuView(
   })
   const viewMode = ref<MenuView>('browse')
   const storedViewMode = ref<MenuView | ''>('')
+  const storageReady = ref(!import.meta.client)
+  const initialViewResolved = ref(false)
+  const preferredViewMode = computed<MenuView>(() => {
+    const modes = viewModes.value
+
+    if (
+      canOrder.value &&
+      configuredViews.value.includes('order') &&
+      !configuredViews.value.includes('browse') &&
+      modes.includes('order')
+    ) {
+      return 'order'
+    }
+
+    return modes[0] || 'browse'
+  })
   const isOrderMode = computed(() =>
     canOrder.value &&
       viewModes.value.includes('order') &&
@@ -69,15 +88,22 @@ export function useMenuView(
   })
 
   watch(
-    viewModes,
-    (modes) => {
-      if (storedViewMode.value && modes.includes(storedViewMode.value)) {
-        viewMode.value = storedViewMode.value
+    [viewModes, storedViewMode, preferredViewMode, storageReady],
+    ([modes, stored]) => {
+      if (!storageReady.value) return
+
+      if (!initialViewResolved.value) {
+        viewMode.value = stored && modes.includes(stored)
+          ? stored
+          : preferredViewMode.value
+        initialViewResolved.value = true
         return
       }
 
       if (!modes.includes(viewMode.value)) {
-        viewMode.value = modes[0] || 'browse'
+        viewMode.value = stored && modes.includes(stored)
+          ? stored
+          : preferredViewMode.value
       }
     },
     { immediate: true }
@@ -93,16 +119,15 @@ export function useMenuView(
         ? stored as MenuView
         : ''
       storedViewMode.value = storedMode
-
-      if (storedMode && viewModes.value.includes(storedMode)) {
-        viewMode.value = storedMode
-      }
+      initialViewResolved.value = false
+      storageReady.value = true
     },
     { immediate: true }
   )
 
   watch(viewMode, (mode) => {
     if (!import.meta.client || !key.value) return
+    storedViewMode.value = mode
     window.localStorage.setItem(key.value, mode)
   })
 

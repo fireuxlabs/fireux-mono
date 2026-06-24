@@ -13,6 +13,7 @@ import {
   menuSurfaceDataWithSourceBehaviour,
   readMenuSourceData,
 } from '../../utils/menu-source-behaviour.ts'
+import { readMenuPageStyle } from '../../utils/menu-page-style.ts'
 
 const kitchenDisplayName = (data: Record<string, unknown>) =>
   readRecordString(data, 'display_name') ||
@@ -42,14 +43,18 @@ export default defineEventHandler(async () => {
   const kitchenEntries = await Promise.all(
     kitchenIds.map(async (kitchenId) => {
       const kitchenSnap = await db.collection('kitchens').doc(kitchenId).get()
+      const kitchenData = kitchenSnap.exists ? kitchenSnap.data() || {} : {}
 
       return [
         kitchenId,
-        kitchenSnap.exists ? kitchenDisplayName(kitchenSnap.data() || {}) : '',
+        {
+          name: kitchenSnap.exists ? kitchenDisplayName(kitchenData) : '',
+          page_style: readMenuPageStyle(kitchenData.menu_style),
+        },
       ] as const
     })
   )
-  const kitchenNames = new Map(kitchenEntries)
+  const kitchens = new Map(kitchenEntries)
   const ownerAppIds = Array.from(
     new Set(
       snap.docs
@@ -91,7 +96,8 @@ export default defineEventHandler(async () => {
     const sourceData = await readMenuSourceData(source)
 
     return menuSurfaceFromData(doc.id, menuSurfaceDataWithSourceBehaviour(data, sourceData), {
-      kitchenName: kitchenNames.get(kitchenId) || '',
+      kitchenName: kitchens.get(kitchenId)?.name || '',
+      page_style: kitchens.get(kitchenId)?.page_style,
       createdByLabel: kitchenId
         ? ''
         : menuCreatorLabel(

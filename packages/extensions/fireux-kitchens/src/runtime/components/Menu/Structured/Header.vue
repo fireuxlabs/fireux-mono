@@ -61,7 +61,7 @@ defineEmits<{
 
 .menu-header__description {
   margin: 0;
-  color: var(--menu-muted);
+  color: var(--menu-secondary);
   font-size: 0.95rem;
   font-weight: 700;
 }

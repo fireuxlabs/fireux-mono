@@ -100,6 +100,7 @@ defineEmits<{
   font-size: 1.1rem;
   font-weight: 850;
   letter-spacing: -0.03em;
+  color: var(--menu-title);
 }
 
 .menu-item__copy p {
@@ -109,13 +110,13 @@ defineEmits<{
 }
 
 .menu-item__price {
+  color: var(--menu-primary);
   font-size: 0.95rem;
   font-weight: 850;
   white-space: nowrap;
 }
 
 .menu-item__price--inline {
-  color: var(--menu-title);
   white-space: normal;
 }
 
@@ -127,7 +128,7 @@ defineEmits<{
 
 .menu-quantity span {
   min-width: 1.5rem;
-  color: var(--menu-title);
+  color: var(--menu-primary);
   font-size: 0.9rem;
   font-weight: 900;
   text-align: center;

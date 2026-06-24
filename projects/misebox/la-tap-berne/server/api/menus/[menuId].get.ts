@@ -4,6 +4,7 @@ import {
   getRouterParam,
 } from 'h3'
 import { laTapBerneMenuSections } from '../../data/menu'
+import { laTapBerneMenuTheme } from '../../data/menu-theme'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -34,16 +35,7 @@ export default defineEventHandler((event) => {
     },
     path: '/menu',
     api_path: '/api/menus/main',
-    page_style: {
-      background_color_light: '#F4E8D2',
-      background_color_dark: '#171717',
-      font_color_light: '#1F1A14',
-      font_color_dark: '#F7F1E6',
-      title_color_light: '#1F1A14',
-      title_color_dark: '#F7F1E6',
-      primary_color: '#F0C84D',
-      secondary_color: '#67C96F',
-    },
+    page_style: laTapBerneMenuTheme,
     sections: laTapBerneMenuSections,
   }
 })

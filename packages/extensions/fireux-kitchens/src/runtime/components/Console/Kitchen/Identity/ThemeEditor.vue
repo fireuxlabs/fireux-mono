@@ -160,7 +160,6 @@ import {
 type ColorStyleKey = Exclude<
   keyof PageStyle,
   'title_font_source' | 'title_font_family' | 'font_source' | 'font_family'
-  | 'primary_color' | 'secondary_color'
 >
 
 const props = defineProps<{
@@ -198,9 +197,18 @@ const colorGroups: { title: string, description: string, fields: ColorField[] }[
       { key: 'title_color_dark', label: 'Title', placeholder: '#fbbf24' },
     ],
   },
+  {
+    title: 'Menu accents',
+    description: 'Portable accent colors for menu labels, actions, and tenant-flavoured details.',
+    fields: [
+      { key: 'primary_color', label: 'Primary accent', placeholder: '#9c2c18' },
+      { key: 'secondary_color', label: 'Secondary accent', placeholder: '#e99f5e' },
+    ],
+  },
 ]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+// Theme editor spine: keep fields aligned with PageStyle and MenuTheme; tenant chrome stays outside this console editor.
 const normalizeStyle = (style: Partial<PageStyle>): PageStyle => {
   const fontSource = normalizeString(style.font_source) === 'google' ? 'google' : 'system'
   const titleFontSource =
@@ -226,8 +234,8 @@ const normalizeStyle = (style: Partial<PageStyle>): PageStyle => {
     font_color_dark: normalizeString(style.font_color_dark),
     title_color_light: normalizeString(style.title_color_light),
     title_color_dark: normalizeString(style.title_color_dark),
-    primary_color: '',
-    secondary_color: '',
+    primary_color: normalizeString(style.primary_color),
+    secondary_color: normalizeString(style.secondary_color),
     title_font_source: titleFont.source,
     title_font_family: titleFont.family,
     font_source: font.source,

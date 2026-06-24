@@ -40,12 +40,13 @@ defineEmits<{
 }
 
 .menu-section h2 {
+  /* Menu theme spine: section labels are the clearest shared place to express kitchen/tenant accent tokens. */
   display: grid;
   grid-template-columns: auto minmax(2rem, 1fr);
   gap: 0.75rem;
   align-items: center;
   margin: 0;
-  color: var(--menu-title);
+  color: var(--menu-primary);
   font-size: clamp(1.05rem, 1.6vw, 1.25rem);
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -57,7 +58,7 @@ defineEmits<{
   content: "";
   display: block;
   height: 2px;
-  background: color-mix(in srgb, var(--menu-title) 38%, transparent);
+  background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);
 }
 
 @media (min-width: 920px) {

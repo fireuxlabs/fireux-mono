@@ -1,7 +1,5 @@
-import {
-  readRecord,
-  readRecordString,
-} from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readMenuPageStyle } from './menu-page-style.ts'
 import {
   compactMenuFile,
   hasMenuFile,
@@ -55,7 +53,7 @@ export function menuSurfaceFromData(
     scope.createdByLabel ?? readRecordString(data, 'created_by_label')
   const description = readRecordString(data, 'description')
   const status = readRecordString(data, 'status')
-  const pageStyle = readRecord(scope.page_style)
+  const pageStyle = readMenuPageStyle(scope.page_style)
   const orderingModes = menuSurfaceList(data.ordering_modes)
     .map(String)
     .map((value) => value.trim())

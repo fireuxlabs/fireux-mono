@@ -85,6 +85,7 @@ const toast = useToastify()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+// Console theme spine: docs/concepts/console.md. Kitchen identity owns portable menu tokens; tenant chrome stays app-local.
 const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
   const fontSource = normalizeString(style?.font_source) === 'google' ? 'google' : 'system'
   const titleFontSource =
@@ -110,8 +111,8 @@ const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
     font_color_dark: normalizeString(style?.font_color_dark),
     title_color_light: normalizeString(style?.title_color_light),
     title_color_dark: normalizeString(style?.title_color_dark),
-    primary_color: '',
-    secondary_color: '',
+    primary_color: normalizeString(style?.primary_color),
+    secondary_color: normalizeString(style?.secondary_color),
     title_font_source: titleFont.source,
     title_font_family: titleFont.family,
     font_source: font.source,

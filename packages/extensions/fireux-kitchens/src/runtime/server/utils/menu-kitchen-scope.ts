@@ -1,6 +1,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { menuSourceFromData } from './menu-surface-source.ts'
+import { readMenuPageStyle } from './menu-page-style.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -9,6 +10,7 @@ export type MenuKitchenScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   createdByLabel?: string
+  page_style?: Record<string, unknown>
 }
 
 export const kitchenDisplayName = (data: Record<string, unknown>) =>
@@ -20,6 +22,37 @@ export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>,
   fallbackAppId: string
 ) => readRecordString(kitchenData, 'app_scope_app_id') || fallbackAppId
+
+const hasValues = (value: Record<string, unknown>) =>
+  Object.keys(value).length > 0
+
+export async function readAppMenuKitchenData(
+  appId: string,
+  kitchenId: string
+) {
+  if (!appId || !kitchenId) return {}
+
+  const snap = await getRuntimeFirestore()
+    .collection(`apps/${appId}/kitchens`)
+    .doc(kitchenId)
+    .get()
+
+  return snap.exists ? snap.data() || {} : {}
+}
+
+export function menuKitchenIdentity(
+  rootData: Record<string, unknown>,
+  appData: Record<string, unknown> = {}
+) {
+  const appPageStyle = readMenuPageStyle(appData.menu_style)
+  const rootPageStyle = readMenuPageStyle(rootData.menu_style)
+
+  // Public menu identity spine: app-scoped kitchen identity wins, root kitchen stays the public-directory fallback.
+  return {
+    name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
+    page_style: hasValues(appPageStyle) ? appPageStyle : rootPageStyle,
+  }
+}
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
   const snap = await getRuntimeFirestore()
@@ -58,15 +91,22 @@ export async function readRootMenuKitchenScope(
   const kitchenData = snap?.exists ? snap.data() || {} : {}
   const resolvedKitchenId = snap?.exists ? snap.id : kitchenId
   const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
+  const kitchenAppId =
+    source.app_id ||
+    resolveSourceAppId(kitchenData, currentAppId)
+  const appKitchenData = await readAppMenuKitchenData(
+    kitchenAppId,
+    resolvedKitchenId
+  )
+  const identity = menuKitchenIdentity(kitchenData, appKitchenData)
 
   return {
     kitchenId: resolvedKitchenId,
     kitchenSlug: resolvedKitchenSlug,
-    kitchenName: kitchenDisplayName(kitchenData),
-    kitchenAppId:
-      source.app_id ||
-      resolveSourceAppId(kitchenData, currentAppId),
+    kitchenName: identity.name,
+    kitchenAppId,
     kitchenMenuId: source.menu_id || '',
     createdByLabel: '',
+    page_style: identity.page_style,
   }
 }

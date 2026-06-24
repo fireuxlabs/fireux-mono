@@ -22,8 +22,10 @@ const REVIEWED_STYLES = [
       background_color_dark: '#171717',
       font_color_light: '#1F1A14',
       font_color_dark: '#F7F1E6',
-      primary_color: '#F0C84D',
-      secondary_color: '#67C96F',
+      title_color_light: '#1F1A14',
+      title_color_dark: '#F7F1E6',
+      primary_color: '#9C2C18',
+      secondary_color: '#E99F5E',
     },
   },
   {

@@ -9,7 +9,7 @@
               Menu Preview
             </p>
             <p class="text-xs text-dimmed">
-              Uses the current menu preview surface.
+              Uses the current menu preview.
             </p>
             <p v-if="previewMenuLabel" class="text-xs text-dimmed">
               Previewing {{ previewMenuLabel }}
@@ -48,7 +48,8 @@
     </template>
 
     <div class="space-y-4">
-      <MenuThemeSurface
+      <!-- Menu preview spine: mirror Menu/index.vue so this edits the same tokens public menus consume. -->
+      <MenuTheme
         :page-style="pageStyle"
         variant="preview"
         :color-mode="previewMode"
@@ -76,7 +77,7 @@
           :currency-format="menuCurrencyFormat"
           :show-currency="menuShowCurrency"
         />
-      </MenuThemeSurface>
+      </MenuTheme>
 
       <UCollapsible>
         <UButton
@@ -183,6 +184,8 @@ const snapshot = computed(() => ({
     fontColorDark: props.pageStyle.font_color_dark ?? '',
     titleColorLight: props.pageStyle.title_color_light ?? '',
     titleColorDark: props.pageStyle.title_color_dark ?? '',
+    primaryColor: props.pageStyle.primary_color ?? '',
+    secondaryColor: props.pageStyle.secondary_color ?? '',
     titleFontSource: props.pageStyle.title_font_source ?? '',
     titleFontFamily: props.pageStyle.title_font_family ?? '',
     fontSource: props.pageStyle.font_source ?? '',

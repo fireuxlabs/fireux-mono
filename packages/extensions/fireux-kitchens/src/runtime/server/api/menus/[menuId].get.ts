@@ -25,7 +25,8 @@ import {
 } from '../../utils/menu-source-behaviour.ts'
 import { readKitchenMenuPublicRows } from '../../utils/kitchen-menu-public-rows.ts'
 import {
-  kitchenDisplayName,
+  menuKitchenIdentity,
+  readAppMenuKitchenData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
   resolveSourceAppId,
@@ -50,15 +51,19 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   }
 
   const kitchenAppId = resolveSourceAppId(kitchen.data, currentAppId())
-  const ownerAppView = await readMenuOwnerAppView({
-    ownerAppId: kitchenAppId,
-    currentAppId: currentAppId(),
-    kitchenSlug,
-    menuId,
-  })
+  const [appKitchenData, ownerAppView] = await Promise.all([
+    readAppMenuKitchenData(kitchenAppId, kitchen.id),
+    readMenuOwnerAppView({
+      ownerAppId: kitchenAppId,
+      currentAppId: currentAppId(),
+      kitchenSlug,
+      menuId,
+    }),
+  ])
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
+  const identity = menuKitchenIdentity(kitchen.data, appKitchenData)
   const menuSnap = await db
     .collection(`apps/${kitchenAppId}/kitchens/${kitchen.id}/menus`)
     .doc(menuId)
@@ -87,10 +92,11 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   return menuSurfaceFromData(menuId, data, {
     kitchenId: kitchen.id,
     kitchenSlug,
-    kitchenName: kitchenDisplayName(kitchen.data),
+    kitchenName: identity.name,
     kitchenAppId,
     kitchenMenuId: menuId,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
+    page_style: identity.page_style,
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
     ...ownerAppView,

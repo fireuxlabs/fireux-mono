@@ -35,7 +35,7 @@ const sectionDomId = (id: string) =>
   margin: 0 auto;
   padding: 0.45rem;
   overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 20%, transparent);
   border-radius: 999px;
   background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
   backdrop-filter: blur(18px);
@@ -45,7 +45,7 @@ const sectionDomId = (id: string) =>
   flex: 0 0 auto;
   padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  color: var(--menu-title);
+  color: var(--menu-primary);
   font-size: 0.78rem;
   font-weight: 850;
   text-decoration: none;

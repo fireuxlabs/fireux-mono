@@ -3,6 +3,7 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { readMenuPageStyle } from './menu-page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -80,7 +81,7 @@ export async function menuSourcePayloadFromApi(apiTo: string) {
     if (!response.ok) return {}
 
     const payload = readRecord(await response.json())
-    const pageStyle = readRecord(payload.page_style)
+    const pageStyle = readMenuPageStyle(payload.page_style)
     const sections = payloadSections(payload)
 
     return {
