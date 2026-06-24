@@ -1,6 +1,11 @@
-import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
+import {
+  createError,
+  defineEventHandler,
+  readBody,
+  type H3Event,
+} from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { processKitchenMenuAiReview } from '../../../../utils/kitchen-menu-ai-review'
+import { processKitchenMenuAiReview } from '../../../../ai/kitchen-menu-ai-review'
 import {
   assertKitchenMenuUploadAccess,
   requireKitchenMenuUploadUser,

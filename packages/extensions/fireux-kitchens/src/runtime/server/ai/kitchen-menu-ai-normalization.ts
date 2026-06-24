@@ -3,7 +3,7 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server.ts'
 import {
   normalizeKitchenMenuDraftSections,
   type KitchenMenuDraftSection,
-} from './kitchen-menu-draft-sections'
+} from '../utils/kitchen-menu-draft-sections'
 import { MENU_NORMALIZATION_JSON_SCHEMA } from './kitchen-menu-ai-schema'
 
 type NormalizedMenu = {

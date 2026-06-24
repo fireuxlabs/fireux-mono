@@ -17,17 +17,17 @@ import {
   kitchenMenuBaselineFlags,
   compareKitchenMenuDraftToCurrent,
   type KitchenMenuProcessFlag,
-} from './kitchen-menu-draft-comparison'
+} from '../utils/kitchen-menu-draft-comparison'
 import {
   countKitchenMenuDraftItems,
   normalizeKitchenMenuDraftSections,
-} from './kitchen-menu-draft-sections'
-import { readKitchenMenuCurrentShape } from './kitchen-menu-current'
-import { sourceRows } from './kitchen-menu-source-rows'
+} from '../utils/kitchen-menu-draft-sections'
+import { readKitchenMenuCurrentShape } from '../utils/kitchen-menu-current'
+import { sourceRows } from '../utils/kitchen-menu-source-rows'
 import {
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
-} from './kitchen-menu-uploads'
+} from '../utils/kitchen-menu-uploads'
 
 export type ProcessKitchenMenuAiReviewInput = {
   event: H3Event

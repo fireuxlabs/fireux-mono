@@ -38,10 +38,7 @@
         </button>
 
         <!-- Tenant menu spine: this overlay owns chrome; the shared Menu component owns menu manifestation. -->
-        <Menu
-          menu-id="main"
-          kitchen-slug="la-tapberne"
-        />
+        <Menu menu-id="main" />
       </section>
     </Transition>
   </div>

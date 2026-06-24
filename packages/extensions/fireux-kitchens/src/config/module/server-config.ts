@@ -31,9 +31,15 @@ const baseServerHandlers = [
 
 const aiServerHandlers = [
   {
+    route: '/api/console/kitchen/menus/process-estimate',
+    method: 'post',
+    handler:
+      './runtime/server/handlers/console/kitchen/menus/process-estimate.post',
+  },
+  {
     route: '/api/console/kitchen/menus/process',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/menus/process.post',
+    handler: './runtime/server/handlers/console/kitchen/menus/process.post',
   },
 ] satisfies FireuxServerHandler[]
 

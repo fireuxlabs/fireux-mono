@@ -12,8 +12,8 @@ import {
 import {
   normalizeKitchenMenuDraftSections,
   type KitchenMenuDraftSection,
-} from './kitchen-menu-draft-sections'
-import { resolveKitchenMenuUrlContent } from './kitchen-menu-url-content'
+} from '../utils/kitchen-menu-draft-sections'
+import { resolveKitchenMenuUrlContent } from '../utils/kitchen-menu-url-content'
 
 type ExtractedMenu = {
   sections?: unknown[]

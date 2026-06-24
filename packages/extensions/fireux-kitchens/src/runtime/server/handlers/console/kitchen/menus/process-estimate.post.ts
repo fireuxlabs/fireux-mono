@@ -9,7 +9,7 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts
 import {
   estimateMenuAiCost,
   type MenuAiQuality,
-} from '../../../../utils/kitchen-menu-ai-cost'
+} from '../../../../ai/kitchen-menu-ai-cost'
 import { sourceRows } from '../../../../utils/kitchen-menu-source-rows'
 import {
   assertKitchenMenuUploadAccess,

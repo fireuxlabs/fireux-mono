@@ -1,8 +1,5 @@
 <template>
-  <Menu
-    menu-id="main"
-    kitchen-slug="la-tapberne"
-  />
+  <Menu menu-id="main" />
 </template>
 
 <script setup lang="ts">
