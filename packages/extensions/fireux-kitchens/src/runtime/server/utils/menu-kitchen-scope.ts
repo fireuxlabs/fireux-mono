@@ -1,7 +1,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { menuSourceFromData } from './menu-surface-source.ts'
-import { readMenuPageStyle } from './menu-page-style.ts'
+import { resolveMenuPageStyle } from './menu-page-style.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -23,9 +23,6 @@ export const resolveSourceAppId = (
   fallbackAppId: string
 ) => readRecordString(kitchenData, 'app_scope_app_id') || fallbackAppId
 
-const hasValues = (value: Record<string, unknown>) =>
-  Object.keys(value).length > 0
-
 export async function readAppMenuKitchenData(
   appId: string,
   kitchenId: string
@@ -44,13 +41,13 @@ export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
   appData: Record<string, unknown> = {}
 ) {
-  const appPageStyle = readMenuPageStyle(appData.menu_style)
-  const rootPageStyle = readMenuPageStyle(rootData.menu_style)
-
   // Public menu identity spine: app-scoped kitchen identity wins, root kitchen stays the public-directory fallback.
   return {
     name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
-    page_style: hasValues(appPageStyle) ? appPageStyle : rootPageStyle,
+    page_style: resolveMenuPageStyle(
+      { source: 'app-kitchen', style: appData.menu_style },
+      { source: 'root-kitchen', style: rootData.menu_style }
+    ),
   }
 }
 

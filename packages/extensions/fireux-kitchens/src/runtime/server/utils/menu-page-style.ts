@@ -28,3 +28,23 @@ export function readMenuPageStyle(value: unknown): Partial<PageStyle> {
 
   return Object.fromEntries(entries) as Partial<PageStyle>
 }
+
+type MenuPageStyleLayer = {
+  source: 'tenant-owner-api' | 'app-kitchen' | 'root-kitchen' | 'menu'
+  style: unknown
+}
+
+const hasMenuPageStyle = (style: Partial<PageStyle>) =>
+  Object.keys(style).length > 0
+
+// Menu theme source order lives here so renderers receive one boring page_style object.
+export function resolveMenuPageStyle(
+  ...layers: MenuPageStyleLayer[]
+): Partial<PageStyle> {
+  for (const layer of layers) {
+    const style = readMenuPageStyle(layer.style)
+    if (hasMenuPageStyle(style)) return style
+  }
+
+  return {}
+}

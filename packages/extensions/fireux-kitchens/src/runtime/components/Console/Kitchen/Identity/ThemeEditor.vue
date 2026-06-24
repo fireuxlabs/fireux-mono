@@ -5,10 +5,10 @@
         <UIcon name="i-lucide-palette" class="mt-1 size-5 shrink-0 text-muted" />
         <div class="space-y-1">
           <div class="text-base font-semibold text-highlighted">
-            Menu Style
+            Menu Theme
           </div>
           <p class="text-sm text-dimmed">
-            Choose the basic tokens used by this kitchen's public menus.
+            Choose the portable tokens used by this kitchen's public food menus.
           </p>
         </div>
       </div>
@@ -208,7 +208,7 @@ const colorGroups: { title: string, description: string, fields: ColorField[] }[
 ]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-// Theme editor spine: keep fields aligned with PageStyle and MenuTheme; tenant chrome stays outside this console editor.
+// Theme editor spine: keep fields aligned with PageStyle and MenuTheme; full tenant app chrome stays outside this editor.
 const normalizeStyle = (style: Partial<PageStyle>): PageStyle => {
   const fontSource = normalizeString(style.font_source) === 'google' ? 'google' : 'system'
   const titleFontSource =

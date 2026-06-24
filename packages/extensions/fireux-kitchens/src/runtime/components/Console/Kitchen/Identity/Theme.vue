@@ -9,7 +9,7 @@
               Menu Display
             </h2>
             <p class="text-sm text-dimmed">
-              Stored menu display values for this kitchen.
+              Portable food-menu styling for this kitchen. Tenant app chrome stays app-owned.
             </p>
 
             <div v-if="previewMenus.length" class="mt-3 flex flex-wrap items-center gap-2">
@@ -85,7 +85,7 @@ const toast = useToastify()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-// Console theme spine: docs/concepts/console.md. Kitchen identity owns portable menu tokens; tenant chrome stays app-local.
+// Console theme spine: docs/concepts/console.md. This edits portable menu tokens, not tenant app chrome.
 const normalizePageStyle = (style?: Partial<PageStyle> | null): PageStyle => {
   const fontSource = normalizeString(style?.font_source) === 'google' ? 'google' : 'system'
   const titleFontSource =

@@ -31,6 +31,7 @@ import {
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from '../../utils/menu-kitchen-scope.ts'
+import { resolveMenuPageStyle } from '../../utils/menu-page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -63,6 +64,10 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
+  const {
+    page_style: ownerPageStyle,
+    ...ownerMenuPayload
+  } = ownerPayload as Record<string, unknown>
   const identity = menuKitchenIdentity(kitchen.data, appKitchenData)
   const menuSnap = await db
     .collection(`apps/${kitchenAppId}/kitchens/${kitchen.id}/menus`)
@@ -96,11 +101,14 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     kitchenAppId,
     kitchenMenuId: menuId,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
-    page_style: identity.page_style,
+    page_style: resolveMenuPageStyle(
+      { source: 'tenant-owner-api', style: ownerPageStyle },
+      { source: 'app-kitchen', style: identity.page_style }
+    ),
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
     ...ownerAppView,
-    ...ownerPayload,
+    ...ownerMenuPayload,
   })
 }
 
@@ -129,6 +137,10 @@ async function readMenuSurface(menuId: string) {
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
+  const {
+    page_style: ownerPageStyle,
+    ...ownerMenuPayload
+  } = ownerPayload as Record<string, unknown>
   const sourceData = await readMenuSourceData(source)
   const sourceSections =
     source.app_id && source.kitchen_id && source.menu_id
@@ -141,8 +153,12 @@ async function readMenuSurface(menuId: string) {
 
   return menuSurfaceFromData(menuId, menuSurfaceDataWithSourceBehaviour(data, sourceData), {
     ...kitchenScope,
+    page_style: resolveMenuPageStyle(
+      { source: 'tenant-owner-api', style: ownerPageStyle },
+      { source: 'app-kitchen', style: kitchenScope.page_style }
+    ),
     ...ownerAppView,
-    ...ownerPayload,
+    ...ownerMenuPayload,
     sections: sourceSections,
     createdByLabel:
       kitchenScope.createdByLabel ??
