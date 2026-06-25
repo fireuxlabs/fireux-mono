@@ -5,7 +5,6 @@
 // FILE: scripts/dev-app-with-smoke.mjs
 
 import { spawn, spawnSync } from 'node:child_process'
-import { createInterface } from 'node:readline/promises'
 import process from 'node:process'
 
 import { parseArgs } from './_lib/args.mjs'
@@ -98,23 +97,10 @@ async function chooseGoQrProvider(app) {
 
   const fromFlag = resolveGoQrProviderFlag(args['go-qr-provider'])
   if (fromFlag) return fromFlag
-  if (!process.stdin.isTTY) return deployedGoQrProvider
 
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  })
-
-  try {
-    console.log('\nGo QR provider API for this dev server:')
-    console.log(`  1. deployed (${deployedGoQrProvider})`)
-    console.log(`  2. local dev (${localGoQrProvider})`)
-
-    const answer = await rl.question('Choose 1 or 2 [1]: ')
-    return answer.trim() === '2' ? localGoQrProvider : deployedGoQrProvider
-  } finally {
-    rl.close()
-  }
+  // Local Go QR is the least surprising dev default. Pass
+  // `--go-qr-provider deployed` when testing the hosted provider.
+  return localGoQrProvider
 }
 
 const freePort = spawnSync('node', ['scripts/free-port.mjs', String(app.port)], {
