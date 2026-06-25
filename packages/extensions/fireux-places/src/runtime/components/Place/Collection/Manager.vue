@@ -224,9 +224,9 @@ function formatConsoleFamilyLabel(value: string) {
 
 watch(
   entityFamilyFilters,
-  (nextFilters) => {
+  (nextFilters: Array<{ id: string }>) => {
     if (activeEntityFamily.value === 'all') return
-    if (nextFilters.some((filter) => filter.id === activeEntityFamily.value)) return
+    if (nextFilters.some((filter: { id: string }) => filter.id === activeEntityFamily.value)) return
     activeEntityFamily.value = 'all'
   },
   { immediate: true }

@@ -183,7 +183,7 @@ export function useKitchenConsole() {
   }
   watch(
     configKitchenIds,
-    (ids) => {
+    (ids: string[]) => {
       const onlyKitchenId = normalizeString(ids[0])
       if (!autoSelectSingle.value || !onlyKitchenId) return
       if (kitchenId.value === onlyKitchenId) return
@@ -194,7 +194,7 @@ export function useKitchenConsole() {
   )
   watch(
     kitchenId,
-    (id) => {
+    (id: string) => {
       if (id) return
       sourceState.value = 'live'
     },

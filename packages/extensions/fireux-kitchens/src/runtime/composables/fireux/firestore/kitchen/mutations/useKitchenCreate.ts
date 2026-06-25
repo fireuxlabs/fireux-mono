@@ -127,7 +127,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           operator_ids: uid.value ? [normalizeString(uid.value)] : [],
           team_ids: uid.value ? [normalizeString(uid.value)] : [],
           join_requests: [],
-        }) as AppKitchen,
+        }) as unknown as AppKitchen,
     })
   }
 

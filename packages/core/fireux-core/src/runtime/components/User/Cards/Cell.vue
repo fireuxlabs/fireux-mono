@@ -92,7 +92,7 @@ import { navigateTo } from '#imports'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-type Props = Pick<
+type Props = Partial<Pick<
   UserCard.Card,
   | 'to'
   | 'avatarUrl'
@@ -103,7 +103,7 @@ type Props = Pick<
   | 'summary'
   | 'profiles'
   | 'appsLabel'
-> & {
+>> & {
   /** Optional override for the tagline line. */
   taglineOverride?: string
   showSubtitle?: boolean
@@ -120,6 +120,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<Props>(),
   {
+    to: '',
     avatarUrl: '',
     displayName: '',
     handle: '',

@@ -74,7 +74,7 @@ const message = ref('')
 
 watch(
   () => props.task,
-  (task) => {
+  (task: KitchenMiseTask) => {
     const source = task as Record<string, unknown>
     title.value = normalizeString(task.title)
     description.value = normalizeString(task.description)

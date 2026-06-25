@@ -55,7 +55,7 @@
               </p>
             </div>
 
-            <UPricingPlans :plans="group.plans" />
+            <UPricingPlans :plans="[...group.plans]" />
           </div>
         </UContainer>
       </section>

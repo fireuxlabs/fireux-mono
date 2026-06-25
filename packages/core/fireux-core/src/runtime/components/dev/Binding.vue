@@ -110,7 +110,7 @@ const toggleCheckAll = () => {
   checkAll.value = !checkAll.value
 }
 
-watch(showCheckAll, (enabled) => {
+watch(showCheckAll, (enabled: boolean) => {
   if (!enabled) checkAll.value = false
 })
 
@@ -180,8 +180,8 @@ const loadBinding = async () => {
       collection(appDb, AppStorage.collection, appId, AppUserStorage.collection)
     )
     const users = snap.docs.map((docSnap) => ({
-      id: docSnap.id,
       ...(docSnap.data() as AppUser),
+      id: docSnap.id,
     }))
 
     appUsersByApp.set(appId, users)

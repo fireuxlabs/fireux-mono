@@ -30,7 +30,7 @@ export const useCardViewToggle = (
 
   watch(
     () => Boolean(asPredicate(hasData)()),
-    (present) => {
+    (present: boolean) => {
       if (!present) view.value = 'preview'
     }
   )

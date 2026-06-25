@@ -15,7 +15,12 @@ type Toastify = {
   success: ToastCaller
   error: ToastCaller
   warn: ToastCaller
-  add: (options: { title?: string; description?: string; color?: string }) => void
+  add: (options: {
+    title?: string
+    description?: string
+    color?: string
+    icon?: string
+  }) => void
   withToast: <T extends unknown[]>(
     fn: (...args: T) => Promise<unknown>,
     messages: { ok: string; fail: string }
@@ -82,12 +87,14 @@ function buildCustomToastOptions(options: {
   title?: string
   description?: string
   color?: string
+  icon?: string
 }) {
   const message = options.description || options.title || ''
   return {
     title: options.title,
     description: options.description,
     color: options.color,
+    icon: options.icon,
     timeout: TOAST_TIMEOUT,
     actions: message
       ? [

@@ -114,7 +114,9 @@ export default defineEventHandler(async () => {
       }),
     })
   }))
-  const menus = menuRows.filter((menu) => Boolean(menu))
+  const menus = menuRows.filter(
+    (menu): menu is Exclude<(typeof menuRows)[number], null> => Boolean(menu)
+  )
 
   return menus.sort((a, b) => a.name.localeCompare(b.name))
 })

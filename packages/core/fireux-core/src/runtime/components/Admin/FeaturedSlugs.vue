@@ -86,7 +86,7 @@ const isDirty = computed(() => slugs.value.join('\n') !== savedSlugs.value.join(
 
 watch(
   savedSlugs,
-  (next) => {
+  (next: string[]) => {
     if (isDirty.value) return
     draft.value = next.join(', ')
   },

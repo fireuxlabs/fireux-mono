@@ -68,10 +68,10 @@ import { navigateTo } from '#imports'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy';
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
-type PillProps = Pick<
+type PillProps = Partial<Pick<
   UserCard.Card,
   'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
-> & {
+>> & {
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -83,7 +83,12 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  to: '',
+  avatarUrl: '',
+  displayName: '',
+  handle: '',
   badges: () => [],
+  profiles: () => [],
   showSubtitle: true,
   showBadges: true,
   link: false,

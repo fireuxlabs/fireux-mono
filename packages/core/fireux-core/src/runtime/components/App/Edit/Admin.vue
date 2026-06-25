@@ -173,10 +173,12 @@ const fallbackUserCard = (options: {
     id,
     to: id ? `/users/${id}` : '',
 
+    imageUrl: '',
     avatarUrl: '',
     secondaryAvatarUrl: '',
     displayName,
     title: '',
+    subtitle: '',
     summary: '',
 
     handle: handle ? `@${handle}` : '',

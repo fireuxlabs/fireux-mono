@@ -65,7 +65,7 @@ export function attachDevCollectionMeta<T extends Record<string, unknown>>(
   return value
 }
 
-export function useDevCollectionJson<T extends Record<string, unknown>>(
+export function useDevCollectionJson<T extends object>(
   itemsRef: MaybeRefOrGetter<T[]>,
   collectionPathRef?: MaybeRefOrGetter<string | null | undefined>
 ) {

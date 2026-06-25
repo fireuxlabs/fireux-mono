@@ -18,6 +18,9 @@ export type KitchenDishMenuUsage = {
   menuId: string
   sectionId: string
   itemId: string
+  menuName?: string
+  sectionLabel?: string
+  active?: boolean
 }
 
 export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolean } = {}) {

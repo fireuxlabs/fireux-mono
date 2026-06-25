@@ -15,7 +15,7 @@
         :address="resolveAddress(cell)"
         :image-url="resolveImageUrl(cell)"
         :image-shade="cell.imageShade"
-        :source="cell.source"
+        :source="cell.source || 'fireux'"
         @select="onSelect(cell)"
       />
     </template>
@@ -64,7 +64,7 @@ const logoById = ref<Record<string, string>>({})
 
 watch(
   cells,
-  (next) => {
+  (next: PlaceCard.Card[]) => {
     if (!Array.isArray(next)) return
     const activeIds = new Set<string>()
     for (const card of next) {
@@ -92,7 +92,7 @@ watch(
     const nextLogoById: Record<string, string> = {}
     for (const [id, url] of Object.entries(logoById.value)) {
       if (!activeIds.has(id)) continue
-      nextLogoById[id] = url
+      nextLogoById[id] = String(url)
     }
     logoById.value = nextLogoById
   },
@@ -127,6 +127,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     image_url: resolveImageUrl(card),
     image_shade: (card.imageShade as PlaceImageShade) ?? 'none',
     claimed_by: (card.claimedBy as string) ?? '',
+    slug: String((card as any).slug || ''),
     source: (card.source as PlaceSource) ?? 'fireux',
   }
 }

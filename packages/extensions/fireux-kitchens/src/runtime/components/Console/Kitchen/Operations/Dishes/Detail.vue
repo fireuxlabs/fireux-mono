@@ -231,9 +231,9 @@ const isDirty = computed(() => buildSignature() !== originalSignature.value)
 const placementRows = computed(() =>
   menuUsage.value.map((placement) => ({
     id: `${placement.menuId}:${placement.sectionId}:${placement.itemId}`,
-    menuName: placement.menuName,
-    sectionLabel: placement.sectionLabel,
-    active: placement.active,
+    menuName: normalizeString(placement.menuName) || placement.menuId,
+    sectionLabel: normalizeString(placement.sectionLabel) || placement.sectionId,
+    active: placement.active !== false,
     to: `/console/kitchen/menus/${encodeURIComponent(
       placement.menuId
     )}/${encodeURIComponent(placement.sectionId)}`,
@@ -254,7 +254,7 @@ const resetForm = (source: Dish | null) => {
   originalSignature.value = buildSignature()
 }
 
-watch(dish, (next) => resetForm(next), { immediate: true })
+watch(dish, (next: Dish | null) => resetForm(next), { immediate: true })
 
 const saveDish = async () => {
   if (!canWrite.value || !dish.value || saving.value) return

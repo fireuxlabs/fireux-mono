@@ -90,7 +90,7 @@ const toggleOpen = () => {
   open.value = !open.value
 }
 
-watch(chromeHidden, (hidden) => {
+watch(chromeHidden, (hidden: boolean) => {
   if (hidden) open.value = false
 })
 </script>

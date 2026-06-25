@@ -27,7 +27,13 @@ export function useKitchenPublicMenuItems(
       sectionCollectionPath: sectionCollectionPath.value,
       sectionIds: sections.value.map((section) => text(section.id)),
     }),
-    async ({ sectionCollectionPath, sectionIds }) => {
+    async ({
+      sectionCollectionPath,
+      sectionIds,
+    }: {
+      sectionCollectionPath: string
+      sectionIds: string[]
+    }) => {
       const currentRequestId = ++requestId
       const ids = sectionIds.filter(Boolean)
 
@@ -41,7 +47,7 @@ export function useKitchenPublicMenuItems(
 
       try {
         const snapshots = await Promise.all(
-          ids.map((sectionId) =>
+          ids.map((sectionId: string) =>
             getDocs(
               collection(resolveDb(), `${sectionCollectionPath}/${sectionId}/items`)
             )
@@ -53,7 +59,7 @@ export function useKitchenPublicMenuItems(
         items.value = sortItems(
           snapshots
             .flatMap((snapshot) =>
-              snapshot.docs.map((doc) => ({
+              snapshot.docs.map((doc: { id: string; data: () => unknown }) => ({
                 ...(doc.data() as MenuItem),
                 id: doc.id,
               }))

@@ -112,7 +112,7 @@ const isDirty = computed(
 
 watch(
   savedSlugs,
-  (next) => {
+  (next: string[]) => {
     if (isDirty.value) return
     draftSlugs.value = [...next]
   },

@@ -10,6 +10,7 @@ const onlyBuiltDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'bett
 const deployOverrides = {
   '@types/node': '22.18.1',
   'form-data': '2.5.5',
+  qs: '6.14.1',
   'side-channel': '1.1.0',
   tinyexec: '1.1.2',
   'which-typed-array': '1.1.19',

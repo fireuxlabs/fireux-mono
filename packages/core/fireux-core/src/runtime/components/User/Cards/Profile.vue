@@ -106,15 +106,15 @@ import { useAppInterface } from '../../../composables/fireux/firestore/core/app/
 import { formatFirestoreTimestamp } from '../../../utils/formatTimestamp'
 
 type Props = {
-  avatarUrl: string
-  displayName: string
-  handle: string
-  badges: string[]
-  title: string
-  summary: string
-  bio: string
-  profiles: string[]
-  appsLabel: string
+  avatarUrl?: string
+  displayName?: string
+  handle?: string
+  badges?: string[]
+  title?: string
+  summary?: string
+  bio?: string
+  profiles?: string[]
+  appsLabel?: string
 
   user?: {
     id?: string
@@ -136,10 +136,15 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  avatarUrl: '',
+  displayName: '',
+  handle: '',
   badges: () => [],
   title: '',
   summary: '',
+  bio: '',
   profiles: () => [],
+  appsLabel: '',
   showSubtitle: true,
   showBadges: true,
   showDescription: true,

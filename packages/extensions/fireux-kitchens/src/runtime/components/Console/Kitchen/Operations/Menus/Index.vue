@@ -79,7 +79,7 @@ const menuDebugRow = (menu: Record<string, unknown>) => {
   }
 }
 const rawArchivedMenus = computed(() =>
-  rawMenus.value.filter((menu) => menu.status === 'archived')
+  (rawMenus.value ?? []).filter((menu) => menu.status === 'archived')
 )
 const sourceDebugRow = (source: Record<string, unknown>) => ({
   id: text(source.id),
@@ -100,7 +100,7 @@ const menusDebug = computed(() => ({
     activeKitchenAppId: activeKitchenAppId.value,
     collectionPath: collectionPath.value,
     menusCount: menus.value.length,
-    rawMenusCount: rawMenus.value.length,
+    rawMenusCount: (rawMenus.value ?? []).length,
     archivedMenusCount: rawArchivedMenus.value.length,
     sourcesCount: menuSources.value.length,
     pending: pending.value,

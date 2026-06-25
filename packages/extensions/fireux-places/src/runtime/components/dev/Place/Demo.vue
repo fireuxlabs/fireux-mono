@@ -122,7 +122,7 @@ onMounted(() => {
   emit('ready', demoPlaceStored.value)
 })
 
-watch(demoPlaceStored, (next) => {
+watch(demoPlaceStored, (next: Place) => {
   emit('ready', next)
 })
 </script>

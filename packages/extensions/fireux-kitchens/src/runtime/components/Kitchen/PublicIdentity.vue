@@ -27,10 +27,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Kitchen } from '../../models/kitchen.model'
+import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
-  kitchen: Partial<Kitchen> | null
+  kitchen: KitchenSurface | null
 }>()
 
 const clean = (value: unknown) => String(value ?? '').trim()

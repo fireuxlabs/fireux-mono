@@ -26,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Kitchen } from '../../../../../models/kitchen.model'
+import type { KitchenSurface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 defineProps<{
-  kitchen: Partial<Kitchen> | null | undefined
+  kitchen: KitchenSurface | null | undefined
 }>()
 </script>

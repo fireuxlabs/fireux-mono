@@ -11,7 +11,6 @@
       :items="accordionSteps"
       :default-value="accordionSteps[0]?.value"
       collapsible
-      :ui="{ color: 'primary' }"
     >
       <template #leading="{ item, index }">
         <UButton

@@ -176,7 +176,12 @@ watch(
     requiresSelection: requiresSelection.value,
     targetIds: configuredTargetIds.value,
   }),
-  (state) => {
+  (state: {
+    activeFamily: string
+    selectedId: string
+    requiresSelection: boolean
+    targetIds: string[]
+  }) => {
     const onlyTargetId = normalizeString(state.targetIds[0])
     if (!state.activeFamily) return
     if (!state.requiresSelection) return

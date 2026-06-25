@@ -101,7 +101,7 @@ const uploadTool = computed(() => ({
   },
 }))
 
-watch(currentUser, async (user) => {
+watch(currentUser, async (user: { getIdToken: () => Promise<string> } | null) => {
   authToken.value = import.meta.client && user ? await user.getIdToken() : ''
 }, { immediate: true })
 </script>

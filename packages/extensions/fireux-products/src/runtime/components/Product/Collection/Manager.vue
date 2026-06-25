@@ -101,7 +101,7 @@ const props = withDefaults(
 )
 
 const fetched = useProductCollection()
-const collection = computed<FirebaseProduct[]>(() => fetched.products.value)
+const collection = computed<FirebaseProduct[]>(() => fetched.products.value ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
 const description = computed(() =>

@@ -114,12 +114,12 @@ const canCreateTeamMember = computed(
   () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
 )
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const stationIds = computed(() =>
+const stationIds = computed<string[]>(() =>
   Array.from(
     new Set(
       stationIdsText.value
         .split(',')
-        .map((value) => normalizeString(value))
+        .map((value: unknown) => normalizeString(value))
         .filter(Boolean)
     )
   )

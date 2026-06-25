@@ -68,10 +68,10 @@ import type { PlaceImageShade } from '../../../models/place.model'
 
 defineOptions({ inheritAttrs: false })
 
-type PillProps = Pick<
+type PillProps = Partial<Pick<
   PlaceCard.Card,
   'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges' | 'shortName'
-> & {
+>> & {
   imageShade?: PlaceImageShade
   showSubtitle?: boolean
   showBadges?: boolean
@@ -84,6 +84,12 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  to: '',
+  imageUrl: '',
+  title: '',
+  subtitle: '',
+  badges: () => [],
+  shortName: '',
   showSubtitle: true,
   showBadges: true,
   link: false,

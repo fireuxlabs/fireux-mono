@@ -36,13 +36,21 @@
 </template>
 
 <script setup lang="ts">
+import * as nuxtImports from '#imports'
 import { computed, provide } from 'vue'
 
 defineOptions({ name: 'docs' })
 
 const { data: navigationRaw } = await useAsyncData(
   'fireux-docs-navigation',
-  () => queryCollectionNavigation('fireuxDocs' as never)
+  async () => {
+    const queryNavigation = (nuxtImports as Record<string, unknown>)
+      .queryCollectionNavigation
+
+    if (typeof queryNavigation !== 'function') return []
+
+    return queryNavigation('fireuxDocs' as never)
+  }
 )
 
 function withDocsBase(items: any[] = []): any[] {

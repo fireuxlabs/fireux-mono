@@ -15,10 +15,10 @@ import {
   usePlaceFetch,
   usePlaceInterface,
 } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
-import type { Kitchen } from '../../models/kitchen.model'
+import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
-  kitchen: Kitchen | null
+  kitchen: KitchenSurface | null
 }>()
 
 const placeId = computed(() =>

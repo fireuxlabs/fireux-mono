@@ -20,7 +20,7 @@ type Props = {
   label?: string
 
   variant?: 'soft' | 'subtle' | 'solid' | 'outline'
-  color?: string
+  color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
   title?: string

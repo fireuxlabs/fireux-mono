@@ -47,11 +47,11 @@
 <script setup lang="ts">
 import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
 
-type Props = Pick<
+type Props = Partial<Pick<
   ChefCard.Card,
   'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges' | 'summary'
-> & {
-  specialtiesCsv: string
+>> & {
+  specialtiesCsv?: string
 
   prop?: string
   showSubtitle?: boolean
@@ -60,7 +60,13 @@ type Props = Pick<
 }
 
 withDefaults(defineProps<Props>(), {
+  avatarUrl: '',
+  secondaryAvatarUrl: '',
+  displayName: '',
+  title: '',
   badges: () => [],
+  summary: '',
+  specialtiesCsv: '',
   showSubtitle: true,
   showBadges: true,
   showBody: true,

@@ -38,6 +38,7 @@ import {
   useUserInterface,
   type UserCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 
 const props = defineProps<{
   operatorIds?: string[]
@@ -51,8 +52,8 @@ const { users, pending } = useUserCollection()
 const { pill } = useUserInterface()
 const operatorCards = computed<UserCard.Card[]>(() =>
   operatorIds.value
-    .map((id) => users.value.find((user) => normalize(user.id) === id) ?? null)
-    .map((user) => pill(user))
+    .map((id) => users.value.find((user: User) => normalize(user.id) === id) ?? null)
+    .map((user: User | null) => pill(user))
     .filter((card): card is UserCard.Card => Boolean(card))
 )
 const description = computed(() =>

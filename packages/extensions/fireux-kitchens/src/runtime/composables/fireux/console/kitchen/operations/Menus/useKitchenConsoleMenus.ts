@@ -87,7 +87,7 @@ export function useKitchenConsoleMenus() {
       activeKitchenAppId: kitchenConsole.runtime.appId.value,
       collectionPath: collectionPath.value,
       menusCount: activeMenus.value.length,
-      rawMenusCount: rawMenus.value.length,
+      rawMenusCount: (rawMenus.value ?? []).length,
       menuSourcesCollectionPath: sourceUploads.collectionPath.value,
       menuSourcesCount: menuSources.value.length,
       pending: menusPending.value,

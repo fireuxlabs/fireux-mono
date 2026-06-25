@@ -167,7 +167,7 @@ const resetForm = (source: Recipe | null) => {
   originalSignature.value = buildSignature()
 }
 
-watch(recipe, (next) => resetForm(next), { immediate: true })
+watch(recipe, (next: Recipe | null) => resetForm(next), { immediate: true })
 
 const saveRecipe = async () => {
   if (!canWrite.value || !recipe.value || saving.value) return

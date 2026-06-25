@@ -331,7 +331,7 @@ function updateMenuFont(id: string) {
   }))
 }
 
-function colorInputValue(value: string) {
+function colorInputValue(value: unknown) {
   const color = normalizeString(value)
   return /^#[0-9a-f]{6}$/i.test(color) ? color : '#ffffff'
 }

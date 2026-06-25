@@ -197,6 +197,17 @@
       }
     },
     {
+      "name": "Bangin Coffee dev (3016)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:bangin-coffee",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 16
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -360,6 +371,17 @@
         "group": "Dev Servers",
         "order": 115
       }
+    },
+    {
+      "name": "Kill Bangin Coffee dev (3016)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:bangin-coffee",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 116
+      }
     }
   ],
   "compounds": [
@@ -398,7 +420,8 @@
         "Yellow Velo dev (3014)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)",
-        "FireUX Blank dev (3015)"
+        "FireUX Blank dev (3015)",
+        "Bangin Coffee dev (3016)"
       ]
     }
   ]

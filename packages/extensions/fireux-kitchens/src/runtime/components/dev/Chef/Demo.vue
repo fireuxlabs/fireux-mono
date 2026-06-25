@@ -71,12 +71,12 @@ const selectedId = ref('')
 
 watch(
   surfaceChefs,
-  (next) => {
+  (next: ChefSurface[]) => {
     if (!next.length) {
       selectedId.value = ''
       return
     }
-    if (!selectedId.value || !next.some((item) => String(item.chef.id) === selectedId.value)) {
+    if (!selectedId.value || !next.some((item: ChefSurface) => String(item.chef.id) === selectedId.value)) {
       selectedId.value = String(next[0]?.chef.id ?? '')
     }
   },

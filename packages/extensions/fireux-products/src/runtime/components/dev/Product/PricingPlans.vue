@@ -86,8 +86,8 @@ const plans = computed(() =>
       button: {
         label: ctaLabel,
         to: product.id ? `/products/${product.id}` : undefined,
-        color: highlight ? 'primary' : 'neutral',
-        variant: highlight ? 'solid' : 'outline',
+        color: highlight ? 'primary' as const : 'neutral' as const,
+        variant: highlight ? 'solid' as const : 'outline' as const,
       },
     }
   })

@@ -25,7 +25,7 @@ export function useAppJoinRequest() {
   const userId = computed(() => text(uid.value))
   const joinRequests = computed(() =>
     Array.isArray(app.value?.join_requests)
-      ? app.value.join_requests.map((id) => text(id)).filter(Boolean)
+      ? app.value.join_requests.map((id: unknown) => text(id)).filter(Boolean)
       : []
   )
   const isAppMember = computed(() => Boolean(appUser.value))

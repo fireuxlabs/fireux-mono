@@ -85,10 +85,10 @@ import { navigateTo } from '#imports'
 
 import type { MiseEnPlaceCard } from '../../../../../../composables/fireux/console/kitchen/operations/Mise/utils/view/useMiseEnPlaceInterface'
 
-type Props = Pick<
+type Props = Partial<Pick<
   MiseEnPlaceCard.Card,
   'to' | 'name' | 'subtitle' | 'icon' | 'imageUrl' | 'description'
-> & {
+>> & {
   prop?: string
   showSubtitle?: boolean
   showTagline?: boolean
@@ -101,6 +101,11 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  to: '',
+  name: '',
+  subtitle: '',
+  imageUrl: '',
+  description: '',
   prop: '',
   showSubtitle: true,
   icon: 'i-lucide-list-checks',

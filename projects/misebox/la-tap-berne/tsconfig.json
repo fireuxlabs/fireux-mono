@@ -15,6 +15,12 @@
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "fireux-blogs": ["../../../packages/extensions/fireux-blogs/src/module.ts"],
+      "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
+      "fireux-blogs/runtime/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
+      "fireux-go-qr": ["../../../packages/extensions/fireux-go-qr/src/module.ts"],
+      "fireux-go-qr/*": ["../../../packages/extensions/fireux-go-qr/src/*"],
+      "fireux-go-qr/runtime/*": ["../../../packages/extensions/fireux-go-qr/src/runtime/*"],
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-jobs/runtime/*": ["../../../packages/extensions/fireux-jobs/src/runtime/*"],
@@ -30,6 +36,12 @@
       "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "fireux-places/runtime/*": ["../../../packages/extensions/fireux-places/src/runtime/*"],
+      "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
+      "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
+      "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
+      "fireux-sproochli": ["../../../packages/extensions/fireux-sproochli/src/module.ts"],
+      "fireux-sproochli/*": ["../../../packages/extensions/fireux-sproochli/src/*"],
+      "fireux-sproochli/runtime/*": ["../../../packages/extensions/fireux-sproochli/src/runtime/*"],
       "fireux-suppliers": ["../../../packages/extensions/fireux-suppliers/src/module.ts"],
       "fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/*"],
       "fireux-suppliers/runtime/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"]
@@ -39,6 +51,7 @@
   "include": ["./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
   "exclude": [
     "node_modules",
+    "../../../demo/**",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
   ]
 }

@@ -34,7 +34,7 @@
 							<UButton
 								v-if="canClaim"
 								size="xs"
-								color="amber"
+								color="warning"
 								variant="soft"
 								:disabled="isClaiming"
 								:loading="isClaiming"

@@ -65,6 +65,7 @@ import type {
     PlaceSource,
     PlaceUpsertInput,
 } from '../../../models/place.model'
+import { PlaceModel } from '../../../models/place.model'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(
@@ -145,15 +146,15 @@ function handleSelectPlace(place: BasePlace) {
 }
 
 if (import.meta.dev && props.type === 'kitchen') {
-  watch(query, (value) => {
+  watch(query, (value: string) => {
     console.log('[kitchens][search] query', { query: value })
   })
 
-  watch(isSearching, (value) => {
+  watch(isSearching, (value: boolean) => {
     console.log('[kitchens][search] status', { isSearching: value })
   })
 
-  watch(results, (value) => {
+  watch(results, (value: BasePlace[]) => {
     console.log('[kitchens][search] results', {
       count: Array.isArray(value) ? value.length : 0,
       ids: Array.isArray(value) ? value.map((row) => row.id) : [],
@@ -189,6 +190,7 @@ function toDraft(
   }
 
   return {
+    ...PlaceModel,
     id: placeId,
     source: selectedSource.value,
     name,
@@ -197,8 +199,6 @@ function toDraft(
     short_address: String((place as any)?.short_address ?? ''),
     lat: Number((place as any)?.lat ?? 0),
     lng: Number((place as any)?.lng ?? 0),
-
-    // ✅ required by PlaceUpsertInput
     image_shade: toShade((place as any)?.image_shade),
 
     image_url: resolvedLogo,

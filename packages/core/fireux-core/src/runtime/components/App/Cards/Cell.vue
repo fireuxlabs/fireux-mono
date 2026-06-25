@@ -96,7 +96,7 @@ import type { AppCard } from '../../../composables/fireux/firestore/core/app/uti
 
 defineOptions({ inheritAttrs: false })
 
-type Props = Omit<
+type Props = Partial<Omit<
   Pick<
     AppCard.Card,
     | 'to'
@@ -108,7 +108,7 @@ type Props = Omit<
     | 'userCount'
   >,
   'userCount'
-> & {
+>> & {
   userCount?: number | null
 
   showBadges?: boolean
@@ -123,6 +123,9 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  to: '',
+  thumbnailUrl: '',
+  displayName: '',
   badges: () => [],
   tagline: '',
   avatarText: '',

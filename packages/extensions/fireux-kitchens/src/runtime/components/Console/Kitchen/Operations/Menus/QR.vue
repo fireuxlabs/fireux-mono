@@ -104,7 +104,7 @@ const publicMenuUrl = computed(() =>
 
 watch(
   publicMenuUrl,
-  async (url) => {
+  async (url: string) => {
     if (!import.meta.client || !url) {
       qrDataUrl.value = ''
       return
@@ -116,7 +116,7 @@ watch(
 
 watch(
   [qrDataUrl, kitchenLogo, kitchenName],
-  async ([qrUrl, logoUrl, label]) => {
+  async ([qrUrl, logoUrl, label]: [string, string, string]) => {
     if (!import.meta.client || !qrUrl) {
       qrArtworkDataUrl.value = ''
       return

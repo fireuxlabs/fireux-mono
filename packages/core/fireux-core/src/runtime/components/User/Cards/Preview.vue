@@ -46,16 +46,16 @@
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 
 type Props = {
-  avatarUrl: string
-  displayName: string
-  handle: string
-  badges: string[]
-  title: string
-  summary: string
-  bio: string
-  profiles: string[]
+  avatarUrl?: string
+  displayName?: string
+  handle?: string
+  badges?: string[]
+  title?: string
+  summary?: string
+  bio?: string
+  profiles?: string[]
 
-  appsLabel: string
+  appsLabel?: string
 
   /** Optional override for the primary bio line. */
   bioOverride?: string
@@ -65,8 +65,15 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  avatarUrl: '',
+  displayName: '',
+  handle: '',
+  badges: () => [],
   title: '',
   summary: '',
+  bio: '',
+  profiles: () => [],
+  appsLabel: '',
   showSubtitle: true,
   showBadges: true,
   showBody: true,

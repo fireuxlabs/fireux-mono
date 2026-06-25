@@ -63,7 +63,7 @@ export function useEditableStringField(options: Options) {
 
   watch(
     () => options.firebaseValue,
-    (next) => {
+    (next: string | number | null | undefined) => {
       if (!isEditing.value) {
         const nextValue = toStringValue(next)
         draft.value = nextValue

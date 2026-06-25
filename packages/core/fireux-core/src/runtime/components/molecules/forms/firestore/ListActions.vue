@@ -90,7 +90,7 @@ type ListItem = {
   to?: string | null
 }
 
-type ActionHandler = (id: string) => void | Promise<void>
+type ActionHandler = (id: string) => void | Promise<unknown>
 type ToggleGetter = (id: string) => boolean
 type ToggleHandler = (id: string, next: boolean) => void | Promise<void>
 

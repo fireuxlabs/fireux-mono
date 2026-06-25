@@ -157,10 +157,10 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { IngredientCard } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
-type Props = Pick<
+type Props = Partial<Pick<
   IngredientCard.Card,
   'slug' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
-> & {
+>> & {
   warning?: string
   showSlug?: boolean
   showSubtitle?: boolean
@@ -174,6 +174,12 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  slug: '',
+  to: '',
+  name: '',
+  subtitle: '',
+  status: '',
+  imageUrl: '',
   showSlug: false,
   showSubtitle: true,
   showStatus: true,

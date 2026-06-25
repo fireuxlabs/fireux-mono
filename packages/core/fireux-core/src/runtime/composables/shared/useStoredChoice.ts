@@ -19,7 +19,7 @@ export function useStoredChoice<T extends string>(
   options: UseStoredChoiceOptions<T>
 ) {
   const key = computed(() => text(toValue(options.key)))
-  const choices = computed(() => Array.from(toValue(options.choices)))
+  const choices = computed<T[]>(() => Array.from(toValue(options.choices)))
   const fallback = computed(() => {
     const next = toValue(options.fallback)
 
@@ -34,9 +34,9 @@ export function useStoredChoice<T extends string>(
 
   // Shared choice spine: domain composables own the meaning; this only restores and persists one valid string option.
   watch(
-    [choices, fallback, stored, storageReady],
-    ([available, nextFallback, nextStored]) => {
-      if (!storageReady.value) return
+    () => [choices.value, fallback.value, stored.value, storageReady.value] as const,
+    ([available, nextFallback, nextStored, ready]) => {
+      if (!ready) return
 
       if (!initialChoiceResolved.value) {
         selected.value = available.includes(nextStored as T)
@@ -57,7 +57,7 @@ export function useStoredChoice<T extends string>(
 
   watch(
     key,
-    (nextKey) => {
+    (nextKey: string) => {
       if (!import.meta.client) return
 
       stored.value = nextKey && isChoice(window.localStorage.getItem(nextKey))
@@ -69,7 +69,7 @@ export function useStoredChoice<T extends string>(
     { immediate: true }
   )
 
-  watch(selected, (next) => {
+  watch(selected, (next: T) => {
     if (!import.meta.client || !key.value) return
 
     stored.value = next

@@ -328,7 +328,7 @@ const draftSections = computed(() =>
 )
 watch(
   currentUser,
-  async (user) => {
+  async (user: { getIdToken: () => Promise<string> } | null) => {
     authToken.value = import.meta.client && user ? await user.getIdToken() : ''
   },
   { immediate: true }

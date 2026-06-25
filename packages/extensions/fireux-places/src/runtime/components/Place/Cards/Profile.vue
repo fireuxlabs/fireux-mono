@@ -65,7 +65,7 @@
                 v-if="model.verified"
                 size="xs"
                 variant="soft"
-                color="emerald"
+                color="success"
                 >Verified</UBadge
               >
             </div>

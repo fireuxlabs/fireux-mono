@@ -87,9 +87,8 @@ import { computed } from 'vue'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { Kitchen } from '../../../models/kitchen.model'
 
-type KitchenCollectionItem = Kitchen | KitchenSurface
+type KitchenCollectionItem = KitchenSurface
 
 const props = withDefaults(
   defineProps<{
@@ -121,7 +120,7 @@ const props = withDefaults(
 )
 
 const fetched = useKitchenCollection()
-const rawCollection = computed(() => fetched.kitchens.value)
+const rawCollection = computed<KitchenCollectionItem[]>(() => fetched.kitchens.value ?? [])
 const pending = computed(() => fetched.pending.value)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Kitchens'))

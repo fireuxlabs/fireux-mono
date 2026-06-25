@@ -165,7 +165,7 @@ const debug = computed(() => ({
 
 watch(
   defaultTargetKitchenId,
-  (nextKitchenId) => {
+  (nextKitchenId: string) => {
     if (String(targetKitchenId.value || '').trim()) return
     targetKitchenId.value = String(nextKitchenId || '').trim()
   },
@@ -211,7 +211,7 @@ const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
     can_write: true,
     created: { at: {} },
     updated: { at: {} },
-  } as Kitchen
+  } as unknown as Kitchen
 }
 
 const buildCollections = (kitchenId: string) => ({

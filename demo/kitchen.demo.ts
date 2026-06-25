@@ -3,9 +3,27 @@
 // They are not canonical storage or runtime contracts.
 
 
-import type { Kitchen, KitchenCollection } from 'fireux-kitchens/runtime/models/kitchen.model'
+import { KitchenModel, type Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { demoPlaceDocDataList } from './place.demo'
+
+type KitchenCollection = Pick<Kitchen, 'id'> & {
+  created_at?: Record<string, unknown>
+  updated_at?: Record<string, unknown>
+}
+
+type DemoKitchenSurface = Kitchen & {
+  name: string
+  short_name: string
+  short_address: string
+  formatted_address: string
+  lat: number
+  lng: number
+  image_url: string
+  image_shade: Place['image_shade']
+  claimed_by: string
+  source: Place['source']
+}
 
 export const demoKitchen: KitchenCollection = {
   id: 'dev-place-harbor-001',
@@ -51,8 +69,12 @@ export const demoKitchenCollectionList: KitchenCollection[] = [
  * Private hydration helper (no external function file).
  * Merge the kitchen record with the subset of Place fields we expose on Kitchen.
  */
-function hydrateKitchenFromPlace(kitchen: KitchenCollection, place: Partial<Place>): Kitchen {
+function hydrateKitchenFromPlace(
+  kitchen: KitchenCollection,
+  place: Partial<Place>
+): DemoKitchenSurface {
   return {
+    ...KitchenModel,
     ...kitchen,
 
     // Place props we hydrate onto Kitchen (read-time only)
@@ -65,7 +87,7 @@ function hydrateKitchenFromPlace(kitchen: KitchenCollection, place: Partial<Plac
     image_url: typeof place.image_url === 'string' ? place.image_url : '',
     image_shade: (place as any)?.image_shade ?? 'none',
     claimed_by: typeof (place as any)?.claimed_by === 'string' ? (place as any).claimed_by : '',
-    source: ((place as any)?.source ?? 'demo') as any,
+    source: ((place as any)?.source ?? 'manual') as Place['source'],
   }
 }
 
@@ -76,9 +98,10 @@ const placeById = new Map<string, Partial<Place>>(
   ])
 )
 
-export const demoKitchenHydratedList: Kitchen[] = demoKitchenCollectionList.map((kitchen) => {
+export const demoKitchenHydratedList: DemoKitchenSurface[] = demoKitchenCollectionList.map((kitchen) => {
   const place = placeById.get(String(kitchen.id))
-  return place ? hydrateKitchenFromPlace(kitchen, place) : kitchen
+  return hydrateKitchenFromPlace(kitchen, place ?? {})
 })
 
-export const demoKitchenHydrated: Kitchen = demoKitchenHydratedList[0] ?? demoKitchen
+export const demoKitchenHydrated: DemoKitchenSurface =
+  demoKitchenHydratedList[0] ?? hydrateKitchenFromPlace(demoKitchen, {})

@@ -23,6 +23,7 @@
     "dev:sproochli": "node scripts/dev-app-with-smoke.mjs --app sproochli",
     "dev:granite": "node scripts/dev-app-with-smoke.mjs --app granite",
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
+    "dev:bangin-coffee": "node scripts/dev-app-with-smoke.mjs --app bangin-coffee",
     "dev:go-qr": "node scripts/dev-app-with-smoke.mjs --app go-qr",
     "dev:fireux-blank": "node scripts/dev-app-with-smoke.mjs --app fireux-blank",
     "dev:yellow-velo": "node scripts/dev-app-with-smoke.mjs --app yellow-velo",
@@ -95,7 +96,8 @@
     "kill:yellow-velo": "node scripts/free-port.mjs 3014",
     "kill:granite": "node scripts/free-port.mjs 3007",
     "kill:slap": "node scripts/free-port.mjs 3009",
-    "kill:la-tap-berne": "node scripts/free-port.mjs 3008"
+    "kill:la-tap-berne": "node scripts/free-port.mjs 3008",
+    "kill:bangin-coffee": "node scripts/free-port.mjs 3016"
   },
   "engines": {
     "node": ">=20.11 <23",

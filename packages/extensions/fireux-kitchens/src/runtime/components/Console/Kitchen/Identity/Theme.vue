@@ -67,18 +67,17 @@ import {
   resolveMenuFont,
   resolveMenuTitleFont,
 } from '../../../../composables/fireux/public/menu/useMenuTheme'
+import type { Menu } from '../../../../models/menu/menu.model'
 
 const {
   selectedKitchen,
   kitchenId,
   rootCollection,
-  databaseId,
   canWrite,
 } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate()
 const { publishedMenus } = useMenuCollection(kitchenId, {
   kitchenCollectionPath: rootCollection,
-  databaseId,
 })
 const toast = useToastify()
 
@@ -112,7 +111,7 @@ const normalizePageStyle = (style?: Partial<PageStyle> | null): Partial<PageStyl
     font_family: font.family,
   }
 }
-const pageStyleEquals = (a: PageStyle, b: PageStyle) =>
+const pageStyleEquals = (a: Partial<PageStyle>, b: Partial<PageStyle>) =>
   JSON.stringify(normalizePageStyle(a)) === JSON.stringify(normalizePageStyle(b))
 const kitchenName = computed(() =>
   normalizeString(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
@@ -164,8 +163,8 @@ const pendingPersistStyle = ref<Partial<PageStyle> | null>(null)
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 watch(
   previewMenus,
-  (menus) => {
-    const ids = menus.map((menu) => normalizeString(menu.id)).filter(Boolean)
+  (menus: Menu[]) => {
+    const ids = menus.map((menu: Menu) => normalizeString(menu.id)).filter(Boolean)
     if (selectedPreviewMenuId.value && ids.includes(selectedPreviewMenuId.value)) return
 
     selectedPreviewMenuId.value = normalizeString(fallbackPreviewMenu.value?.id)
@@ -177,7 +176,7 @@ watch(
 
 watch(
   storedPageStyle,
-  (style) => {
+  (style: Partial<PageStyle>) => {
     const normalized = normalizePageStyle(style)
     if (!saving.value || pageStyleEquals(draftPageStyle.value, normalized)) {
       draftPageStyle.value = normalized

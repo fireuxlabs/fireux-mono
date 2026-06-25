@@ -41,14 +41,16 @@
 
         <div v-if="hasOrderType('pre_order')" class="grid gap-3 md:grid-cols-2">
           <UFormField label="Pre-order notice">
-            <UInput
-              :model-value="preOrderNoticeHours"
-              type="number"
-              min="1"
-              :disabled="!canWrite"
-              trailing="hours"
-              @update:model-value="setPreOrderNoticeHours"
-            />
+            <div class="flex items-center gap-2">
+              <UInput
+                :model-value="preOrderNoticeHours"
+                type="number"
+                min="1"
+                :disabled="!canWrite"
+                @update:model-value="setPreOrderNoticeHours"
+              />
+              <span class="text-sm text-dimmed">hours</span>
+            </div>
           </UFormField>
         </div>
       </div>
@@ -203,7 +205,7 @@ async function updateOrdering(
   }
 }
 
-async function setOrderingEnabled(value: boolean) {
+async function setOrderingEnabled(value: boolean | 'indeterminate') {
   const enabled = value === true
   if (!enabled) {
     await updateOrdering({ enabled: false, order_types: [] }, [])

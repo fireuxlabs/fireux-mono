@@ -50,7 +50,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
 
   watch(
     resolvedAppId,
-    (nextAppId) => {
+    (nextAppId: string) => {
       membershipsRef.value = nextAppId
         ? appRead.firestoreFetchCollection<AppUser>(
             `${AppStorage.collection}/${nextAppId}/${AppUserStorage.collection}`

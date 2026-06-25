@@ -1,5 +1,8 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
+import type {
+  FireuxAppScope as FireuxAppScopeShape,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
@@ -94,7 +97,14 @@ export const KitchenModel = {
   },
 } as const
 
-export type Kitchen = WidenLiteral<typeof KitchenModel>
+export type Kitchen = Omit<
+  WidenLiteral<typeof KitchenModel>,
+  'app_scope_state' | 'menu_currency_format' | 'menu_style'
+> &
+  FireuxAppScopeShape & {
+    menu_currency_format: CurrencyDisplayFormat
+    menu_style?: Partial<PageStyle>
+  }
 
 export type AppKitchen = {
   id: string

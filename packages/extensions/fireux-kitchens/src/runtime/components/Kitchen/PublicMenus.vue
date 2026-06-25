@@ -44,10 +44,10 @@ import { computed } from 'vue'
 import { usePublicAppScopedSource } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useMenuCollection } from '../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import KitchenPublicMenuLink from './PublicMenuLink.vue'
-import type { Kitchen } from '../../models/kitchen.model'
+import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
-  kitchen: Kitchen
+  kitchen: KitchenSurface
 }>()
 
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())

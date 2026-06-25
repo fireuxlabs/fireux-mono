@@ -14,7 +14,7 @@ const demoUserStamp = () => ({
 const demoHumanAvatar = (photoId: string) =>
   `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=240&q=80`
 
-export const demoUserList = [
+const demoUserSeedList = [
   {
     id: 'demo-user-fireux-admin',
     email: 'admin@fireux.demo',
@@ -360,6 +360,11 @@ export const demoUserList = [
     created: demoUserStamp(),
     updated: demoUserStamp(),
   },
-] satisfies User[]
+] satisfies Array<Omit<User, 'myKitchens'>>
+
+export const demoUserList: User[] = demoUserSeedList.map((user) => ({
+  ...user,
+  myKitchens: [],
+}))
 
 export const demoUser = demoUserList[0]

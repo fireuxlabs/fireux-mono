@@ -117,7 +117,7 @@ const overlay = computed(() =>
 const appAdmins = computed(() =>
   Array.isArray(app.value?.admin_ids)
     ? app.value.admin_ids.filter(
-        (id): id is string => typeof id === 'string' && id.length > 0
+        (id: unknown): id is string => typeof id === 'string' && id.length > 0
       )
     : []
 )

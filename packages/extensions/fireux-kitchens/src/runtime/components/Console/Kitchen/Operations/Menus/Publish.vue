@@ -7,7 +7,7 @@
           <p class="text-sm text-dimmed">{{ description }}</p>
         </div>
         <UBadge :color="statusColor" variant="soft">
-          {{ menu.status }}
+          {{ menuStatus }}
         </UBadge>
       </div>
     </template>
@@ -44,6 +44,7 @@ const toast = useToastify()
 const busy = ref(false)
 
 const isPublished = computed(() => menu.value?.status === 'published')
+const menuStatus = computed(() => menu.value?.status || 'draft')
 const showPublishAction = computed(
   () => !isPublished.value
 )

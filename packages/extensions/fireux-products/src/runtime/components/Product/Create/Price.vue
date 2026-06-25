@@ -53,6 +53,7 @@ import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
 import { computed } from 'vue';
 import { useCreatePricesState } from '../../../composables/fireux/product/create/useCreatePricesState';
 import { useCreateProductState } from '../../../composables/fireux/product/create/useCreateProductState';
+import type { PriceInterval } from '../../../models/product.model'
 
 const props = defineProps<{
   index: number
@@ -105,6 +106,8 @@ const price = computed(() => {
 })
 
 const runtimeBillingIntervals = computed(() => ['month', 'year'])
+const isPriceInterval = (value: unknown): value is PriceInterval =>
+  value === 'day' || value === 'week' || value === 'month' || value === 'year'
 
 const billingFrequencyOptions = computed<RadioGroupItem[]>(() => {
   const labels: Record<string, string> = {
@@ -134,7 +137,7 @@ const uiFrequency = computed<RadioGroupValue>({
       price.value.interval_count = undefined
     } else {
       price.value.type = 'recurring'
-      price.value.interval = String(val)
+      price.value.interval = isPriceInterval(val) ? val : undefined
       price.value.interval_count = 1
     }
   },

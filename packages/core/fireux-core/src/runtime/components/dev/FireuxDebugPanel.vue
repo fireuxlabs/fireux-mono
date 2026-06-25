@@ -56,6 +56,7 @@ defineOptions({ name: 'FireuxDebugPanel' })
 type FireuxDebugScope =
   | 'console'
   | 'collection'
+  | 'dev'
   | 'document'
   | 'index'
   | 'route'
@@ -71,7 +72,7 @@ const props = withDefaults(
   {
     title: 'Debug',
     scope: 'runtime',
-    data: null,
+    data: () => ({}),
     defaultOpen: false,
   }
 )
@@ -88,11 +89,12 @@ const { dataKindLabel, dataSizeLabel, jsonString } = useDevDebugData(
 )
 const scopeLabel = computed(() => `${props.scope} debug`)
 
-const copyDebug = () =>
-  copyText(jsonString.value, {
+const copyDebug = async () => {
+  await copyText(jsonString.value, {
     label: props.title,
     success: 'Debug copied to clipboard',
   })
+}
 </script>
 
 <style scoped>

@@ -151,7 +151,13 @@ watch(
       postAuthPath.value,
       creatingUser.value,
     ] as const,
-  async ([path, authReady, authenticated, target, creating]) => {
+  async ([path, authReady, authenticated, target, creating]: readonly [
+    string,
+    boolean,
+    boolean,
+    string,
+    boolean,
+  ]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
     if (creating) return

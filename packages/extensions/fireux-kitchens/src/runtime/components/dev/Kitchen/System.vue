@@ -115,6 +115,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import { useKitchenChildCollection } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
+import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import {
   ROOT_KITCHEN_COLLECTION_PATH,
   resolveKitchenScopeCollectionPath,
@@ -147,17 +148,19 @@ const overlayKitchenCollectionPath = computed(() =>
   resolvedAppId.value ? resolveKitchenScopeCollectionPath(resolvedAppId.value) : ''
 )
 
-const kitchenAppsRef = shallowRef<Ref<AppKitchen[] | undefined> | null>(null)
+const kitchenAppsRef = shallowRef<unknown>(null)
 
 watch(
   overlayKitchenCollectionPath,
-  (nextPath) => {
+  (nextPath: string) => {
     kitchenAppsRef.value = nextPath ? firestoreFetchCollection<AppKitchen>(nextPath) : null
   },
   { immediate: true }
 )
 
-const kitchenApps = computed(() => kitchenAppsRef.value?.value ?? [])
+const kitchenApps = computed<AppKitchen[]>(() =>
+  ((kitchenAppsRef.value as Ref<AppKitchen[] | undefined> | null)?.value ?? [])
+)
 
 const {
   driftKind: kitchensDriftKind,
@@ -176,7 +179,7 @@ const {
 })
 
 const hydratedById = computed(() => {
-  const map = new Map<string, Kitchen>()
+  const map = new Map<string, KitchenSurface>()
   for (const kitchen of hydratedKitchens.value ?? []) {
     if (kitchen?.id) map.set(String(kitchen.id), kitchen)
   }
@@ -210,7 +213,7 @@ const kitchenAppById = computed(() => {
 const filteredKitchensResolved = computed(() =>
   filteredKitchens.value
     .map((kitchen) => hydratedById.value.get(String(kitchen.id)))
-    .filter(Boolean) as Kitchen[]
+    .filter(Boolean) as KitchenSurface[]
 )
 
 const filteredKitchensDriftPayload = buildKitchensDriftPayload({
@@ -247,13 +250,15 @@ const kitchenInspectorOptions = computed(() =>
 
 watch(
   kitchenInspectorOptions,
-  (options) => {
+  (options: Array<{ label: string; value: string }>) => {
     if (!options.length) {
       selectedKitchenId.value = ''
       return
     }
 
-    const stillExists = options.some((option) => option.value === selectedKitchenId.value)
+    const stillExists = options.some(
+      (option: { label: string; value: string }) => option.value === selectedKitchenId.value
+    )
     if (!stillExists) {
       selectedKitchenId.value = String(options[0]?.value || '')
     }

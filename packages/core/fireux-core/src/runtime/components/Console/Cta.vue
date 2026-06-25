@@ -49,7 +49,7 @@ const props = withDefaults(defineProps<{
   title: string
   description: string
   countLabel?: string
-  actions?: ConsoleCtaAction[]
+  actions?: readonly ConsoleCtaAction[]
 }>(), {
   actions: () => [],
 })

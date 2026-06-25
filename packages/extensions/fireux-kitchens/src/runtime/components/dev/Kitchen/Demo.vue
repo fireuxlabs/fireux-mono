@@ -62,11 +62,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { demoKitchenHydratedList } from '../../../../../../../../demo/kitchen.demo';
-import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
-import type { Kitchen } from '../../../models/kitchen.model';
+import {
+  useKitchenInterface,
+  type KitchenSurface,
+  type KitchenCard,
+} from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
 
 const emit = defineEmits<{
-  (event: 'ready', kitchen: Kitchen): void
+  (event: 'ready', kitchen: KitchenSurface): void
 }>()
 
 const { pill, cell, preview, profile } = useKitchenInterface()
@@ -77,20 +80,22 @@ const demoKitchen = computed(() => {
   const selected = demoKitchenHydratedList.find(
     (kitchen) => String(kitchen.id) === selectedId.value
   )
-  return (selected ?? demoKitchenHydratedList[0]) as Kitchen
+  return (selected ?? demoKitchenHydratedList[0]) as KitchenSurface
 })
 
-const selectKitchen = (kitchen: Kitchen) => {
+const selectKitchen = (kitchen: KitchenSurface) => {
   selectedId.value = String(kitchen.id)
 }
 
 const pillItems = computed(() =>
   demoKitchenHydratedList
     .map((kitchen) => ({
-      kitchen,
+      kitchen: kitchen as KitchenSurface,
       card: pill(kitchen) as ReturnType<typeof pill>,
     }))
-    .filter((item) => Boolean(item.card))
+    .filter((item): item is { kitchen: KitchenSurface; card: KitchenCard.Card } =>
+      Boolean(item.card)
+    )
 )
 
 const demoPill = computed(() => pill(demoKitchen.value))
@@ -102,7 +107,7 @@ onMounted(() => {
   emit('ready', demoKitchen.value)
 })
 
-watch(demoKitchen, (next) => {
+watch(demoKitchen, (next: KitchenSurface) => {
   emit('ready', next)
 })
 </script>

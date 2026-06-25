@@ -1,5 +1,5 @@
 import { computed, toValue } from 'vue'
-import type { Ref, ComputedRef } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 
 /**
  * Utility to proxy Google avatar URLs through our server (avoids CORS issues).
@@ -27,9 +27,7 @@ export function useAvatarProxy() {
   }
 
   function useProxiedAvatar(
-    avatarUrl:
-      | Ref<string | null | undefined>
-      | ComputedRef<string | null | undefined>
+    avatarUrl: MaybeRefOrGetter<string | null | undefined>
   ) {
     return computed(() => getProxiedAvatarUrl(toValue(avatarUrl)))
   }

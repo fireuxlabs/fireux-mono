@@ -77,11 +77,11 @@ import { useCreateProductState } from '../../../composables/fireux/product/creat
 
 const { product } = await useCreateProductState()
 
-const runtimeKinds = computed(() => {
+const runtimeKinds = computed<string[]>(() => {
   const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
   const kinds = Array.isArray(cfg.productKinds) ? cfg.productKinds : []
   return kinds.length
-    ? kinds
+    ? kinds.map((kind: unknown) => String(kind)).filter(Boolean)
     : ['physical', 'digital', 'service', 'subscription']
 })
 

@@ -120,7 +120,7 @@ const {
 } = useIngredientInterface()
 
 const fetched = useIngredientCollection()
-const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value)
+const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value ?? [])
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
   baseRoute: computed(() => props.baseRoute),

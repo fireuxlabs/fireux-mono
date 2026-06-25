@@ -211,7 +211,7 @@ const appUserIds = computed(() =>
 
 watch(
   appUserIds,
-  async (ids) => {
+  async (ids: string[]) => {
     if (import.meta.server) return
     const appId = driftAppId.value
     if (!appId) return
@@ -220,7 +220,7 @@ watch(
     const next = new Map<string, User | null>()
 
     await Promise.all(
-      ids.map(async (id) => {
+      ids.map(async (id: string) => {
         try {
           const snap = await getDoc(doc(identityDb, UserStorage.rootCollection, id) as any)
           next.set(id, snap.exists() ? (snap.data() as User) : null)

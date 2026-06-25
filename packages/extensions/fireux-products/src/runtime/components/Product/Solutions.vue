@@ -28,7 +28,7 @@
 
     <UAlert
       v-if="!solutionItems.length"
-      color="amber"
+      color="warning"
       title="No solution products found"
       description="Create FireUX starter products to show solution previews here."
       class="mt-3"

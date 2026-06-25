@@ -68,7 +68,7 @@ withDefaults(defineProps<{
   source?: string
   countLabel?: string
   family?: EntityIndexCtaFamily
-  actions?: EntityIndexAction[]
+  actions?: readonly EntityIndexAction[]
 }>(), {
   actions: () => [],
 })

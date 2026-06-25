@@ -247,12 +247,26 @@ export const APP_REGISTRY = {
     consoles: ['kitchen'],
     launchOrder: 14,
   },
+  'bangin-coffee': {
+    key: 'bangin-coffee',
+    name: 'Bangin Coffee',
+    appId: 'bangin-coffee',
+    ecosystem: 'misebox',
+    databaseId: 'misebox',
+    role: 'tenant',
+    workspace: './projects/misebox/bangin-coffee',
+    port: 3016,
+    consoles: [],
+    toolProviders: ['go-qr'],
+    smokeRoutes: ['/', '/contact'],
+    launchOrder: 16,
+  },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne', 'bangin-coffee'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

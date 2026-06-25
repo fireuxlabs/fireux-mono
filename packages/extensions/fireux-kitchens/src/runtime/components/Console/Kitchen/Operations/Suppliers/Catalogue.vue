@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierCatalogueInterface } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueInterface'
+import type { SupplierCatalogueInterfaceItem } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueInterface'
 import { useKitchenConsoleSupplierCatalogue } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplierCatalogue'
 
 const {
@@ -83,7 +84,7 @@ const { pill } = useSupplierCatalogueInterface()
 
 const cards = computed(() =>
   catalogues.value
-    .map((catalogue) => pill(catalogue))
+    .map((catalogue) => pill(catalogue as SupplierCatalogueInterfaceItem))
     .filter((card): card is NonNullable<ReturnType<typeof pill>> =>
       Boolean(card)
     )

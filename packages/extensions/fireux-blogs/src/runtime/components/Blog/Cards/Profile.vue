@@ -17,12 +17,12 @@
 import type { BlogCard } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
-  card: BlogCard.Teaser
+  card: BlogCard.Card
   avatar?: string | null
   prop?: string
 }>()
 
-const { title, author, avatar: cardAvatar } = card
+const { title, author, avatarUrl } = card
 const subtitle = author
-const avatar = avatarProp ?? cardAvatar ?? null
+const avatar = avatarProp ?? avatarUrl ?? null
 </script>

@@ -55,7 +55,7 @@ export function useKitchenPublicMenuUrl(options: {
   const appKitchenCount = computed(() => appKitchenState.data.value?.length ?? 0)
   const appKitchenIds = computed(() =>
     (appKitchenState.data.value ?? [])
-      .map((kitchen) => text(kitchen.id))
+      .map((kitchen: Record<string, unknown>) => text(kitchen.id))
       .filter(Boolean)
   )
   const singleKitchenId = computed(() =>
