@@ -1,5 +1,6 @@
 import {
   computed,
+  onMounted,
   ref,
   toValue,
   watch,
@@ -101,6 +102,7 @@ export function useMenuOrderDraft(
     toValue(options.orderType) || 'dine_in'
   )
   const draft = ref<Record<string, MenuOrderDraftItem>>({})
+  const hasMounted = ref(false)
   const items = computed<MenuOrderDraftItem[]>(() =>
     Object.values(draft.value)
   )
@@ -122,40 +124,46 @@ export function useMenuOrderDraft(
     kitchenSlug: options.kitchenSlug,
   })
 
-  watch(
-    key,
-    (nextKey: string) => {
-      if (!import.meta.client || !nextKey) return
+  function restoreDraft(nextKey: string) {
+    if (!import.meta.client || !nextKey) return
 
-      try {
-        const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
-        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
 
-        draft.value = Object.values(parsed)
-          .filter(isDraftItem)
-          .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
-            const lineId = text(item.lineId || item.id)
-            const variant = normalizeVariant(item.variant)
+      draft.value = Object.values(parsed)
+        .filter(isDraftItem)
+        .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
+          const lineId = text(item.lineId || item.id)
+          const variant = normalizeVariant(item.variant)
 
-            map[lineId] = {
-              id: text(item.id),
-              lineId,
-              name: text(item.name),
-              quantity: Number(item.quantity),
-              unitPrice: numberValue(item.unitPrice),
-              ...(normalizeAddOns(item.addOns).length
-                ? { addOns: normalizeAddOns(item.addOns) }
-                : {}),
-              ...(variant ? { variant } : {}),
-            }
-            return map
-          }, {})
-      } catch {
-        draft.value = {}
-      }
-    },
-    { immediate: true }
-  )
+          map[lineId] = {
+            id: text(item.id),
+            lineId,
+            name: text(item.name),
+            quantity: Number(item.quantity),
+            unitPrice: numberValue(item.unitPrice),
+            ...(normalizeAddOns(item.addOns).length
+              ? { addOns: normalizeAddOns(item.addOns) }
+              : {}),
+            ...(variant ? { variant } : {}),
+          }
+          return map
+        }, {})
+    } catch {
+      draft.value = {}
+    }
+  }
+
+  onMounted(() => {
+    hasMounted.value = true
+    restoreDraft(key.value)
+  })
+
+  watch(key, (nextKey: string) => {
+    if (!hasMounted.value) return
+    restoreDraft(nextKey)
+  })
 
   watch(draft, (nextDraft: Record<string, MenuOrderDraftItem>) => {
     if (!import.meta.client || !key.value) return

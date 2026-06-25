@@ -5,45 +5,40 @@
       aria-label="Delivery area map"
     >
       <div class="delivery-map__canvas">
-        <iframe
-          title="Google map for delivery area"
-          :src="googleMapSrc"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
-          credentialless
+        <div
+          ref="mapEl"
+          class="delivery-map__google"
         />
 
-        <div
-          v-if="deliveryZones.length"
-          class="delivery-map__zones"
-          aria-hidden="true"
+        <p
+          v-if="mapMessage"
+          class="delivery-map__message"
         >
-          <span
-            v-for="zone in deliveryZones"
-            :key="zone.id"
-            class="delivery-map__zone"
-            :style="zone.style"
-          />
-        </div>
+          {{ mapMessage }}
+        </p>
+
+        <p
+          v-if="mapError"
+          class="delivery-map__error"
+        >
+          {{ mapError }}
+        </p>
       </div>
+
+      <p class="delivery-map__debug">
+        {{ mapDebug }}
+      </p>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type {
-  MenuDeliveryZone,
-  MenuOrderTypeConfig,
-} from '../../../models/menu/menu.model'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRuntimeConfig } from '#imports'
+import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
 import type { KitchenOrderCustomer } from '../../../models/order.model'
 
 // Menu ordering funnel: docs/concepts/menu-ordering.md
-const zoneColors = ['#fb923c', '#2dd4bf', '#facc15', '#38bdf8'] as const
-const googleMapSrc =
-  'https://www.google.com/maps?q=Ringgenberg%20Interlaken%20Brienzersee%20Switzerland&output=embed'
-
 const props = withDefaults(
   defineProps<{
     modelValue: KitchenOrderCustomer
@@ -58,45 +53,174 @@ defineEmits<{
   (event: 'update:modelValue', value: KitchenOrderCustomer): void
 }>()
 
-type DeliveryZoneView = MenuDeliveryZone & {
-  style: Record<string, string>
+type GoogleMapsWindow = Window & {
+  google?: any
+  __fireuxGoogleMapsPromise?: Promise<void>
 }
 
-const deliveryZones = computed<DeliveryZoneView[]>(() =>
-  (props.policy?.fulfilment?.delivery_zones || []).map((zone, index) => ({
-    ...zone,
-    style: zoneStyle(zone, index),
-  }))
+const runtimeConfig = useRuntimeConfig()
+const publicConfig = runtimeConfig.public as Record<string, unknown>
+const mapEl = ref<HTMLElement | null>(null)
+const mapMessage = ref('Loading delivery map...')
+const mapError = ref('')
+const mapDebug = ref('Google map: waiting')
+const isMounted = ref(false)
+const selectedPlaceId = ref('')
+const testZoneColor = computed(() =>
+  props.policy?.fulfilment?.delivery_zones?.find((zone) => zone.color)?.color || ''
+)
+const testPostalCode = computed(() =>
+  props.policy?.fulfilment?.delivery_zones
+    ?.flatMap((zone) => zone.postal_codes || [])
+    .find(Boolean) || ''
+)
+const googleMapsApiKey = computed(() =>
+  String(publicConfig.googleMapsApiKey || '').trim()
+)
+const googleMapsMapId = computed(() =>
+  String(publicConfig.googleMapsMapId || '').trim()
 )
 
-function zoneStyle(zone: MenuDeliveryZone, index: number) {
-  const color = zoneColors[index % zoneColors.length]
-  const overlays: Record<string, Record<string, string>> = {
-    'ringgenberg-goldswil': {
-      inset: '30% 43% 37% 34%',
-      clipPath: 'polygon(5% 45%, 25% 12%, 96% 0, 88% 45%, 55% 78%, 18% 100%)',
-    },
-    'interlaken-area': {
-      inset: '44% 47% 23% 26%',
-      clipPath: 'polygon(0 32%, 20% 0, 88% 22%, 100% 74%, 34% 100%)',
-    },
-    niederried: {
-      inset: '24% 25% 47% 50%',
-      clipPath: 'polygon(4% 42%, 28% 4%, 100% 24%, 78% 94%, 14% 100%)',
-    },
-    'brienz-west': {
-      inset: '12% 6% 57% 64%',
-      clipPath: 'polygon(0 10%, 70% 0, 100% 55%, 60% 100%, 8% 76%)',
-    },
+onMounted(async () => {
+  isMounted.value = true
+  if (!mapEl.value) return
+  if (!googleMapsApiKey.value || !googleMapsMapId.value) {
+    mapMessage.value = ''
+    mapError.value = 'Google Maps key or Map ID is missing.'
+    mapDebug.value = 'Google map: missing key or map id'
+    return
   }
 
-  return {
-    '--zone-color': color,
-    ...(overlays[zone.id] || {
-      inset: `${18 + index * 8}% ${12 + index * 6}% ${46 - index * 5}% ${18 + index * 7}%`,
-      clipPath: 'polygon(8% 30%, 45% 0, 100% 26%, 84% 88%, 22% 100%, 0 62%)',
-    }),
+  try {
+    mapDebug.value = 'Google map: loading Maps JS'
+    await loadGoogleMaps(googleMapsApiKey.value)
+
+    const google = (window as GoogleMapsWindow).google
+    await google.maps.importLibrary('maps')
+
+    mapDebug.value = 'Google map: creating map with Map ID'
+    const map = new google.maps.Map(mapEl.value, {
+      center: { lat: 46.7004, lng: 7.8922 },
+      zoom: 11,
+      mapId: googleMapsMapId.value,
+      fullscreenControl: false,
+      mapTypeControl: false,
+      streetViewControl: false,
+    })
+    const featureLayer = map.getFeatureLayer('POSTAL_CODE')
+
+    mapDebug.value = testPostalCode.value
+      ? `Resolving postal code ${testPostalCode.value}...`
+      : 'POSTAL_CODE layer ready; no postal code configured.'
+    featureLayer.addListener('click', (event: any) => {
+      const feature = event.features?.[0]
+      const placeId = String(feature?.placeId || '').trim()
+      if (!placeId) return
+
+      selectedPlaceId.value = placeId
+      mapDebug.value = `Selected POSTAL_CODE placeId: ${placeId}`
+      featureLayer.style = stylePostalCodeFeature
+    })
+    featureLayer.style = stylePostalCodeFeature
+
+    const placeId = testPostalCode.value
+      ? await resolvePostalCodePlaceId(google, testPostalCode.value)
+      : ''
+    if (placeId) {
+      selectedPlaceId.value = placeId
+      mapDebug.value = `Colouring ${testPostalCode.value}: ${placeId}`
+      featureLayer.style = stylePostalCodeFeature
+    } else if (testPostalCode.value) {
+      mapDebug.value = `Could not resolve ${testPostalCode.value}; click a postcode area to capture it.`
+    }
+
+    if (isMounted.value) mapMessage.value = ''
+  } catch (error) {
+    if (!isMounted.value) return
+    mapMessage.value = ''
+    mapError.value = error instanceof Error
+      ? error.message
+      : 'Google Maps could not load.'
+    mapDebug.value = 'Google map: failed'
   }
+})
+
+function stylePostalCodeFeature(options: any) {
+  const placeId = String(options.feature?.placeId || '').trim()
+  const selected = selectedPlaceId.value && placeId === selectedPlaceId.value
+
+  return {
+    fillColor: selected ? testZoneColor.value || '#ff7a32' : '#000000',
+    fillOpacity: selected ? 0.42 : 0,
+    strokeColor: selected ? testZoneColor.value || '#ff7a32' : '#6b7280',
+    strokeOpacity: selected ? 1 : 0,
+    strokeWeight: selected ? 2 : 0,
+  }
+}
+
+function resolvePostalCodePlaceId(google: any, postalCode: string) {
+  return new Promise<string>((resolve) => {
+    const geocoder = new google.maps.Geocoder()
+
+    geocoder.geocode(
+      {
+        componentRestrictions: {
+          country: 'CH',
+          postalCode,
+        },
+      },
+      (results: any[] | null, status: string) => {
+        if (status !== 'OK' || !Array.isArray(results)) {
+          resolve('')
+          return
+        }
+
+        const result = results.find((entry) =>
+          Array.isArray(entry.types) && entry.types.includes('postal_code')
+        ) || results[0]
+
+        resolve(String(result?.place_id || '').trim())
+      }
+    )
+  })
+}
+
+onBeforeUnmount(() => {
+  isMounted.value = false
+})
+
+function loadGoogleMaps(apiKey: string) {
+  const target = window as GoogleMapsWindow
+
+  if (target.google?.maps?.importLibrary) {
+    return Promise.resolve()
+  }
+
+  if (target.__fireuxGoogleMapsPromise) {
+    return target.__fireuxGoogleMapsPromise
+  }
+
+  target.__fireuxGoogleMapsPromise = new Promise<void>((resolve, reject) => {
+    const callbackName = `__fireuxGoogleMapsReady_${Date.now()}`
+    ;(target as unknown as Record<string, unknown>)[callbackName] = () => {
+      delete (target as unknown as Record<string, unknown>)[callbackName]
+      resolve()
+    }
+
+    const script = document.createElement('script')
+    const url = new URL('https://maps.googleapis.com/maps/api/js')
+    url.searchParams.set('key', apiKey)
+    url.searchParams.set('v', 'weekly')
+    url.searchParams.set('loading', 'async')
+    url.searchParams.set('callback', callbackName)
+    script.src = url.toString()
+    script.async = true
+    script.defer = true
+    script.onerror = () => reject(new Error('Google Maps script failed to load.'))
+    document.head.appendChild(script)
+  })
+
+  return target.__fireuxGoogleMapsPromise
 }
 </script>
 
@@ -120,24 +244,33 @@ function zoneStyle(zone: MenuDeliveryZone, index: number) {
   background: color-mix(in srgb, var(--menu-bg) 90%, var(--menu-text));
 }
 
-.delivery-map iframe {
-  display: block;
+.delivery-map__google {
   width: 100%;
   height: 100%;
-  border: 0;
 }
 
-.delivery-map__zones {
+.delivery-map__message,
+.delivery-map__error {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
+  inset: auto 1rem 1rem 1rem;
+  z-index: 1;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--menu-bg) 88%, transparent);
+  color: var(--menu-text);
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
-.delivery-map__zone {
-  position: absolute;
-  border: 2px solid color-mix(in srgb, var(--zone-color) 86%, transparent);
-  background: var(--zone-color);
-  opacity: 0.34;
-  box-shadow: 0 0.75rem 2rem color-mix(in srgb, var(--menu-text) 20%, transparent);
+.delivery-map__error {
+  color: #b42318;
+}
+
+.delivery-map__debug {
+  margin: 0;
+  color: var(--menu-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 </style>

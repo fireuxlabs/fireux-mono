@@ -87,6 +87,10 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
     postal_codes: list(row.postal_codes)
       .map(text)
       .filter(Boolean),
+    place_ids: list(row.place_ids)
+      .map(text)
+      .filter(Boolean),
+    color: text(row.color),
   }) as MenuDeliveryZone
 }
 

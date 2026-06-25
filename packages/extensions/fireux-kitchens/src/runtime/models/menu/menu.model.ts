@@ -65,6 +65,8 @@ export type MenuDeliveryZone = {
   min_order_chf?: number
   fee_chf?: number
   postal_codes?: string[]
+  place_ids?: string[]
+  color?: string
 }
 
 export type MenuOrderDepositPolicy = {
