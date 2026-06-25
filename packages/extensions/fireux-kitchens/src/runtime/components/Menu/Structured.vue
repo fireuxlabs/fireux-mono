@@ -124,6 +124,10 @@ const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
     pending: creatingItemId.value === 'order',
     ...(policy ? { policy } : {}),
     quantity: basketQuantity.value,
+    selection: {
+      items: orderItems.value,
+      quantity: basketQuantity.value,
+    },
   }
 })
 const showOrderPanel = ref(false)

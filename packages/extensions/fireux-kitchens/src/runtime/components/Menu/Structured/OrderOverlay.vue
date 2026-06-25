@@ -15,6 +15,7 @@
       :order-type="order.orderType"
       :policy="order.policy"
       :pending="order.pending"
+      :selection="order.selection"
       @close="$emit('closeFunnel')"
       @submit="$emit('submit', $event)"
     />

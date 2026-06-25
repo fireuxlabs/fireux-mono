@@ -51,4 +51,10 @@ export type MenuStructuredOrderOverlayState = {
   pending: boolean
   policy?: MenuOrderTypeConfig
   quantity: number
+  selection: MenuStructuredSelectionSummary
+}
+
+export type MenuStructuredSelectionSummary = {
+  items: MenuStructuredBasketItem[]
+  quantity: number
 }

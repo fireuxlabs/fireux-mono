@@ -12,14 +12,21 @@
         <h2>{{ title }}</h2>
       </div>
 
-      <button
-        type="button"
-        class="menu-order-panel__close"
-        aria-label="Back to menu"
-        @click="$emit('close')"
-      >
-        <UIcon name="i-lucide-x" class="size-4" />
-      </button>
+      <div class="menu-order-panel__selection">
+        <p>
+          <strong>{{ totalLabel }}</strong>
+          <span>{{ itemCountLabel }}</span>
+        </p>
+
+        <button
+          type="button"
+          class="menu-order-panel__edit"
+          aria-label="Edit selected items"
+          @click="$emit('close')"
+        >
+          Edit
+        </button>
+      </div>
     </div>
 
     <p v-if="message" class="menu-order-panel__message">
@@ -60,14 +67,29 @@ import MenuFunnelDefault from './Default.vue'
 import MenuFunnelDelivery from './Delivery.vue'
 import MenuFunnelPreOrder from './PreOrder.vue'
 
+type MenuFunnelSelectionItem = {
+  quantity: number
+  unitPrice?: number
+}
+
+type MenuFunnelSelectionSummary = {
+  items: MenuFunnelSelectionItem[]
+  quantity: number
+}
+
 const props = withDefaults(
   defineProps<{
     orderType: KitchenOrderType
     policy?: MenuOrderTypeConfig
     pending?: boolean
+    selection?: MenuFunnelSelectionSummary
   }>(),
   {
     policy: undefined,
+    selection: () => ({
+      items: [],
+      quantity: 0,
+    }),
   }
 )
 
@@ -81,6 +103,22 @@ const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
 const submitLabel = computed(() => menuOrderSubmitLabel(props.orderType))
 const message = computed(() => props.policy?.message || '')
+const itemCountLabel = computed(() =>
+  `${props.selection.quantity} item${props.selection.quantity === 1 ? '' : 's'}`
+)
+const total = computed(() =>
+  props.selection.items.reduce(
+    (sum, item) =>
+      sum + Math.max(0, Number(item.unitPrice || 0)) * Math.max(0, Number(item.quantity || 0)),
+    0
+  )
+)
+const totalLabel = computed(() =>
+  new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: 'CHF',
+  }).format(total.value)
+)
 const customerPayload = computed<KitchenOrderCustomer>(() =>
   cleanKitchenOrderCustomer(customer.value)
 )
@@ -140,16 +178,43 @@ const funnelComponent = computed(() =>
   letter-spacing: -0.05em;
 }
 
-.menu-order-panel__close {
-  display: inline-grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  place-items: center;
+.menu-order-panel__selection {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: end;
+  min-width: max-content;
+}
+
+.menu-order-panel__selection p {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+  text-align: right;
+}
+
+.menu-order-panel__selection strong {
+  color: var(--menu-title);
+  font-size: 1rem;
+  font-weight: 950;
+}
+
+.menu-order-panel__selection span {
+  color: var(--menu-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.menu-order-panel__edit {
+  min-height: 2rem;
+  padding: 0.35rem 0.75rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: 999px;
-  background: transparent;
+  background: color-mix(in srgb, var(--menu-bg) 72%, transparent);
   color: var(--menu-text);
   cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
 }
 
 .menu-order-panel__message {
