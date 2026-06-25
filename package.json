@@ -61,6 +61,7 @@
     "go": "node scripts/go.mjs",
     "gen:cta-innards": "node scripts/generate-cta-innards.mjs",
     "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs",
+    "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
     "audit:usex": "node scripts/audit-usex-stack.mjs",
     "list:app-media-trash": "node scripts/list-app-media-trash.mjs",

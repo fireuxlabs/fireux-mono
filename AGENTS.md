@@ -300,6 +300,16 @@ Useful commands:
 
 Current caveat: guard-required README placeholders are intentionally blank TODO files after the documentation reset.
 
+## Script Lifecycle
+
+Tracked scripts under `scripts/` carry a small `@fireux-script` header with
+`last_used: YYYY-MM-DD`. When an agent runs or meaningfully relies on a script,
+update that date in the script header.
+
+Use `pnpm audit:scripts` to list scripts whose `last_used` date is older than
+six weeks. Do not delete stale scripts automatically; review whether they are
+still part of the active command surface first.
+
 ## Communication
 
 When the user says `canon`, `spine`, `align`, `family`, or `drift`, pause before editing and state:

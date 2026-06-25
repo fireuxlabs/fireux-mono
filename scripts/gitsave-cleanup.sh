@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# @fireux-script
+# last_used: 2026-06-25
+# usage_note: baseline after scripts cleanup; update when run.
 set -euo pipefail
 
 echo "gitsave cleanup: moving reports and removing build artifacts"

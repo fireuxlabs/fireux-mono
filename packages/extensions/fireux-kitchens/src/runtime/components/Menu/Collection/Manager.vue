@@ -63,7 +63,8 @@
     <DevJson
       :title="'Menus (JSON)'"
       context="collection manager · menus"
-      :data="devJsonData"
+      :objects="devObjects"
+      :derived="devDerived"
       :default-open="false"
     />
   </UCard>
@@ -156,4 +157,37 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
+
+const devObjects = computed(() => ({
+  // Debug spine: keep API/public-surface objects separate from interface-derived cards.
+  menus: devJsonData.value,
+}))
+
+const devDerived = computed(() => ({
+  family: 'Root Hydrated Collection Manager',
+  source: {
+    endpoint: '/api/menus',
+    hydration:
+      'Public menu API resolves creator, kitchen, app, scoped menu, ordering, and theme surface data.',
+  },
+  controls: {
+    query: query.value,
+    variant: variant.value,
+    linkEnabled: linkEnabled.value,
+    showSearchInput: showSearchInput.value,
+  },
+  counts: {
+    total: totalCount.value,
+    visible: visibleCount.value,
+  },
+  cards: cardsFiltered.value.map((card) => ({
+    id: card.id,
+    to: card.to,
+    title: card.title,
+    subtitle: card.subtitle,
+    meta: card.meta,
+    description: card.description,
+    active: card.active,
+  })),
+}))
 </script>

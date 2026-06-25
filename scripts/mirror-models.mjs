@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'

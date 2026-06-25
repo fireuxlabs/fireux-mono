@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 /**
  * Deletes ALL Firebase Storage objects under apps/{appId}/media/**
  * for each app found in temp/app-media-audit.json.

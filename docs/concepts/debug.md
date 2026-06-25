@@ -27,6 +27,11 @@ Good debug data:
 - derived flags
 - collection paths or endpoint paths when debugging data flow
 
+Object vs derived:
+- `objects`: fetched records, API surfaces, hydrated rows, and direct source payloads.
+- `derived`: interface cards, UI filters, counts, selected modes, computed labels, and route/action targets.
+- Prefer `DevJson` `objects` and `derived` props over a single flat `data` blob when both kinds exist.
+
 Avoid:
 - Multiple scattered debug panels on one page.
 - Debug UI that stays visible in production.

@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 /**
  * Clears one or more fields on a Firestore apps/{appId} doc.
  * Uses the per-ecosystem service account from temp/app-media-audit.json.

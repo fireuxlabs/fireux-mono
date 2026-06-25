@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 /**
  * Syncs app media from local /public/img/app/* into Firebase Storage and Firestore.
  *

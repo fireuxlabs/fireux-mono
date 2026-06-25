@@ -1,3 +1,6 @@
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
 
 import { spawnSync } from 'node:child_process'

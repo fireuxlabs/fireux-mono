@@ -1,3 +1,6 @@
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 export {
   APP_REGISTRY as DEV_APPS,
   APP_KEYS as DEV_APP_KEYS,

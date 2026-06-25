@@ -74,6 +74,12 @@ Card handoff contract:
 - `XCardsPill` and `XCardsCell` receive direct card fields, not a wrapped `card` prop.
 - `XCardsPill` and `XCardsCell` render real `<NuxtLink>` branches when `link && to`; action-only usage is the local delta.
 
+Debug contract:
+- Collection manager debug should separate `objects` from `derived`.
+- `objects` means fetched/API/hydrated collection rows as the manager receives them.
+- `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
+- Do not mix stored/public surface fields with `useXInterface()` card output in one flat JSON array.
+
 Current source-mode snapshot:
 - Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Agent`, `Professional`, `Chef`.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.

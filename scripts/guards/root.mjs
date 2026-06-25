@@ -1,3 +1,6 @@
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guards/root.mjs
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'

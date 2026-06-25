@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// @fireux-script
+// last_used: 2026-06-25
+// usage_note: baseline after scripts cleanup; update when run.
 /**
  * Deletes non-canonical app media objects listed in temp/app-media-trash.json.
  *
