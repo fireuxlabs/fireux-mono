@@ -6,6 +6,7 @@ import type {
   MenuView,
 } from '../../../../models/menu/menu.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
+import { readMenuOrderTypeConfig } from '../../../../utils/menu-ordering-policy'
 
 type MenuServiceProfileSource = {
   ordering?: unknown
@@ -56,24 +57,15 @@ const orderType = (value: unknown): KitchenOrderType | null => {
 const defaultOrderType = (types: KitchenOrderType[]) =>
   types.includes('dine_in') ? 'dine_in' : types[0] || 'dine_in'
 
-const noticeHours = (value: unknown) => {
-  const hours = Number(value)
-
-  return Number.isFinite(hours) && hours > 0 ? hours : undefined
-}
-
 const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
   const row = record(value)
-  const type = orderType(row.type)
-  const notice = noticeHours(row.notice_hours)
-  const message = text(row.message)
+  const normalized = readMenuOrderTypeConfig(row)
 
-  if (!type) return null
+  if (!normalized) return null
 
   return {
-    type,
-    ...(notice ? { notice_hours: notice } : {}),
-    ...(message ? { message } : {}),
+    ...normalized,
+    ...(text(row.message) ? { message: text(row.message) } : {}),
   }
 }
 

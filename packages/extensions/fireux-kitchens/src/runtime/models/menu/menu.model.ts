@@ -52,11 +52,39 @@ export const MenuEntity = defineFireuxEntity({
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuView = 'browse' | 'order'
+export type MenuPaymentMethod =
+  | 'cash'
+  | 'card_at_pickup'
+  | 'card_to_driver'
+  | 'online_card'
+  | 'deposit'
+
+export type MenuDeliveryZone = {
+  id: string
+  label: string
+  min_order_chf?: number
+  fee_chf?: number
+  postal_codes?: string[]
+}
+
+export type MenuOrderDepositPolicy = {
+  type: 'fixed' | 'fixed_per_person' | 'percent'
+  amount: number
+  currency_code?: string
+  label?: string
+}
+
+export type MenuOrderFulfilmentPolicy = {
+  delivery_zones?: MenuDeliveryZone[]
+  payment_methods?: MenuPaymentMethod[]
+  deposit?: MenuOrderDepositPolicy
+}
 
 export type MenuOrderTypeConfig = {
   type: KitchenOrderType
   notice_hours?: number
   message?: string
+  fulfilment?: MenuOrderFulfilmentPolicy
 }
 
 export type MenuOrderingConfig = {

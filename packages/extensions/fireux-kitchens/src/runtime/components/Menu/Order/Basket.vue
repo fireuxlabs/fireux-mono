@@ -47,7 +47,7 @@
         :disabled="pending"
         @click="$emit('place')"
       >
-        {{ pending ? 'Sending...' : 'Place order' }}
+        {{ pending ? 'Sending...' : actionLabel }}
       </button>
     </div>
 
@@ -61,7 +61,7 @@
         :disabled="pending"
         @click="$emit('place')"
       >
-        {{ pending ? 'Sending...' : 'Place order' }}
+        {{ pending ? 'Sending...' : actionLabel }}
       </button>
     </div>
   </footer>
@@ -83,9 +83,11 @@ const props = withDefaults(
     quantity: number
     items?: MenuBasketItem[]
     pending?: boolean
+    actionLabel?: string
   }>(),
   {
     items: () => [],
+    actionLabel: 'Place order',
   }
 )
 

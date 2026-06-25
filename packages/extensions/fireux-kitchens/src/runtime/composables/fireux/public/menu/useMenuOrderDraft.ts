@@ -5,7 +5,10 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import type { KitchenOrderType } from '../../../../models/order.model'
+import type {
+  KitchenOrderCustomer,
+  KitchenOrderType,
+} from '../../../../models/order.model'
 import { useMenuOrderCreate } from './useMenuOrderCreate'
 
 type MenuOrderItem = {
@@ -226,7 +229,7 @@ export function useMenuOrderDraft(
     draft.value = {}
   }
 
-  async function place() {
+  async function place(customer?: KitchenOrderCustomer) {
     if (!canOrder.value || !items.value.length) return
 
     const created = await createOrder({
@@ -237,6 +240,7 @@ export function useMenuOrderDraft(
         ...(item.variant ? { variant: item.variant } : {}),
       })),
       order_type: orderType.value,
+      customer,
     })
     if (created) clear()
   }

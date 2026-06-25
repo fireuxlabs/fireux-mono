@@ -94,6 +94,8 @@ export function useKitchenOrderCreate() {
       fire_state: fireState,
 
       items: [item],
+      fulfilment_policy: {},
+      customer: {},
 
       app_id: (input.app_id || appId || '') as any,
       creator_id: (input.creator_id || '') as any,

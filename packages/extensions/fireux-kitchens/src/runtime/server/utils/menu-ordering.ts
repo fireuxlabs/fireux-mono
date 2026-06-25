@@ -2,16 +2,8 @@ import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
 } from '../../models/menu/menu.model.ts'
-import type { KitchenOrderType } from '../../models/order.model.ts'
 import { menuSurfaceList, menuSurfaceText } from './menu-surface-types.ts'
-
-const orderTypes = [
-  'dine_in',
-  'collection',
-  'delivery',
-  'pre_order',
-  'room_service',
-] as const satisfies readonly KitchenOrderType[]
+import { readMenuOrderTypeConfig } from '../../utils/menu-ordering-policy.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -21,30 +13,15 @@ const record = (value: unknown): Record<string, unknown> =>
 const unique = <T extends string>(values: T[]) =>
   values.filter((value, index, source) => source.indexOf(value) === index)
 
-const orderType = (value: unknown): KitchenOrderType | null => {
-  const type = menuSurfaceText(value) as KitchenOrderType
-
-  return orderTypes.includes(type) ? type : null
-}
-
-const noticeHours = (value: unknown) => {
-  const hours = Number(value)
-
-  return Number.isFinite(hours) && hours > 0 ? hours : undefined
-}
-
 const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
   const row = record(value)
-  const type = orderType(row.type)
-  const notice = noticeHours(row.notice_hours)
-  const message = menuSurfaceText(row.message)
+  const normalized = readMenuOrderTypeConfig(row)
 
-  if (!type) return null
+  if (!normalized) return null
 
   return {
-    type,
-    ...(notice ? { notice_hours: notice } : {}),
-    ...(message ? { message } : {}),
+    ...normalized,
+    ...(menuSurfaceText(row.message) ? { message: menuSurfaceText(row.message) } : {}),
   }
 }
 

@@ -1,4 +1,5 @@
 import { createError } from 'h3'
+import type { KitchenOrderCustomer } from '../../models/order.model.ts'
 
 export type MenuOrderVariantInput = {
   id?: string
@@ -22,6 +23,7 @@ export type CreateMenuOrderBody = {
   }>
   order_type?: string
   requested_for?: string
+  customer?: KitchenOrderCustomer
 }
 
 type MenuOption = {

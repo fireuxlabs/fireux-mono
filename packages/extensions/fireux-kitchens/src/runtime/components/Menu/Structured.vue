@@ -34,12 +34,22 @@
       />
 
       <MenuOrderBasket
-        v-if="isOrderMode && basketQuantity"
+        v-if="isOrderMode && basketQuantity && !showOrderPanel"
         :quantity="basketQuantity"
         :items="orderItems"
         :pending="creatingItemId === 'order'"
+        :action-label="basketActionLabel"
         @clear="clearOrder"
-        @place="placeOrder"
+        @place="showOrderPanel = true"
+      />
+
+      <MenuOrderPanel
+        v-if="isOrderMode && basketQuantity && showOrderPanel"
+        :order-type="selectedOrderType"
+        :policy="selectedOrderTypeConfig"
+        :pending="creatingItemId === 'order'"
+        @close="showOrderPanel = false"
+        @submit="placeOrder"
       />
 
       <p
@@ -58,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
 import { useMenuViewMode } from '../../composables/fireux/public/menu/useMenuViewMode'
 import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
@@ -84,6 +94,7 @@ const {
   choiceOptions,
   selectedChoice,
   selectedOrderType,
+  selectedOrderTypeConfig,
   canOrder,
   isOrderMode,
   orderNotice,
@@ -107,6 +118,22 @@ const {
   canOrder,
   orderType: selectedOrderType,
   storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
+})
+const basketActionLabel = computed(() => {
+  const labels = {
+    delivery: 'Organise delivery',
+    collection: 'Organise collection',
+    pre_order: 'Organise pre-order',
+    room_service: 'Organise room service',
+    dine_in: 'Send to kitchen',
+  }
+
+  return labels[selectedOrderType.value] || 'Place order'
+})
+const showOrderPanel = ref(false)
+
+watch([selectedOrderType, basketQuantity], () => {
+  showOrderPanel.value = false
 })
 </script>
 

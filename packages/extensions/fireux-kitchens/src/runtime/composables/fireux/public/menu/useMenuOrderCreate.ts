@@ -5,6 +5,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import type {
+  KitchenOrderCustomer,
   KitchenOrderFireState,
   KitchenOrderType,
 } from '../../../../models/order.model'
@@ -27,6 +28,7 @@ type CreateMenuOrderInput = {
   items: MenuOrderLineInput[]
   order_type?: KitchenOrderType
   requested_for?: string
+  customer?: KitchenOrderCustomer
 }
 
 type CreatedMenuOrder = {
@@ -64,6 +66,18 @@ const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
   Array.isArray(addOns)
     ? addOns.map(cleanVariant).filter(Boolean)
     : []
+const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
+  const clean = {
+    name: text(customer?.name),
+    phone: text(customer?.phone),
+    address: text(customer?.address),
+    notes: text(customer?.notes),
+  }
+
+  return Object.fromEntries(
+    Object.entries(clean).filter(([, value]) => value)
+  )
+}
 
 export function useMenuOrderCreate(
   menuId: MaybeRefOrGetter<string>,
@@ -108,6 +122,7 @@ export function useMenuOrderCreate(
           items,
           order_type: input.order_type,
           requested_for: input.requested_for,
+          customer: cleanCustomer(input.customer),
         },
       })
 

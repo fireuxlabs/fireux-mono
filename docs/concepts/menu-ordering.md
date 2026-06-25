@@ -59,7 +59,7 @@ Public choice rail:
 
 Current examples:
 - Luna: no `ordering`, so the menu is browse-only.
-- Bären: `public_views: ['order']`, `ordering.order_types: [{ type: 'delivery' }, { type: 'collection' }]`.
+- Bären: `public_views: ['order']`, `ordering.order_types: [{ type: 'delivery', fulfilment: { delivery_zones } }, { type: 'collection' }]`.
 - La Tap: `public_views: ['browse', 'order']`, `ordering.order_types: [{ type: 'pre_order', notice_hours: 24 }]`.
 
 Likely future `type` values:
@@ -82,6 +82,16 @@ Possible future fulfilment policies:
 - `payment_methods`: cash, card on pickup, card to driver, online card, deposit.
 - `deposit`: amount or percentage required before accepting an order.
 - `party_size`: minimum or maximum guest count for a mode.
+
+V1 fulfilment policy:
+- Store fulfilment hints under each `ordering.order_types[]` row as
+  `fulfilment`.
+- Public menu rendering may show `message` and order choices.
+- Order creation copies the selected order-type policy to
+  `Order.fulfilment_policy` so historical tickets retain the rules the
+  customer ordered under.
+- Enforcement should wait for the relevant input UI. Example: do not enforce
+  `notice_hours` until the public order flow asks for `requested_for`.
 
 Bären delivery policy reference:
 - Their current provider uses coloured delivery areas with different minimum

@@ -11,6 +11,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import type {
+  KitchenOrderCustomer,
   KitchenOrderFireState,
   KitchenOrderType,
 } from '../../../../models/order.model'
@@ -81,6 +82,21 @@ const fireStateForOrderType = (
   if (orderType === 'pre_order') return 'held'
   if (orderType === 'dine_in') return 'fired'
   return 'ready_to_fire'
+}
+const readCustomer = (value: unknown): KitchenOrderCustomer => {
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+  const customer = {
+    name: text(source.name),
+    phone: text(source.phone),
+    address: text(source.address),
+    notes: text(source.notes),
+  }
+
+  return Object.fromEntries(
+    Object.entries(customer).filter(([, entry]) => entry)
+  ) as KitchenOrderCustomer
 }
 const readMenuDoc = async (
   appId: string,
@@ -196,7 +212,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
+  const orderTypeConfig = ordering.order_types.find((type) =>
+    type.type === orderType
+  )
   const requestedFor = text(body?.requested_for)
+  const customer = readCustomer(body?.customer)
   const rows = await readKitchenMenuPublicRows(getRuntimeFirestore(), {
     appId: context.appId,
     kitchenId: context.kitchenId,
@@ -259,6 +279,23 @@ export default defineEventHandler(async (event) => {
     order_type: orderType,
     requested_for: requestedFor,
     fire_state: fireState,
+    ...(Object.keys(customer).length ? { customer } : {}),
+    ...(orderTypeConfig
+      ? {
+          fulfilment_policy: {
+            order_type: orderTypeConfig.type,
+            ...(orderTypeConfig.notice_hours
+              ? { notice_hours: orderTypeConfig.notice_hours }
+              : {}),
+            ...(orderTypeConfig.message
+              ? { message: orderTypeConfig.message }
+              : {}),
+            ...(orderTypeConfig.fulfilment
+              ? { ...orderTypeConfig.fulfilment }
+              : {}),
+          },
+        }
+      : {}),
     channel: 'menu',
     items: orderItems,
     created_at: now,

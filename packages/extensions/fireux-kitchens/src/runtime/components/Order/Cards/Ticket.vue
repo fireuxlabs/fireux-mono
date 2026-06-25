@@ -88,6 +88,19 @@
         <div v-if="!lines.length" class="text-xs italic text-dimmed">
           No items in this order.
         </div>
+
+        <div
+          v-if="customerLines.length"
+          class="mt-3 space-y-0.5 border-t border-default pt-3 text-xs text-dimmed"
+        >
+          <p
+            v-for="line in customerLines"
+            :key="line"
+            class="m-0"
+          >
+            {{ line }}
+          </p>
+        </div>
       </div>
 
       <div class="flex h-12 shrink-0 items-center px-4 text-xs font-medium text-dimmed">
@@ -162,6 +175,11 @@ const orderValue = (keys: string[]) => {
   }
   return null
 }
+const orderRecord = computed(() => props.order as Record<string, unknown>)
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 const placedMs = computed(
   () =>
@@ -283,6 +301,15 @@ const lines = computed(() =>
       }))
     : []
 )
+const customerLines = computed(() => {
+  const customer = record(orderRecord.value.customer)
+  return [
+    normalizeString(customer.name),
+    normalizeString(customer.phone),
+    normalizeString(customer.address),
+    normalizeString(customer.notes),
+  ].filter(Boolean)
+})
 
 function trashOrder() {
   if (!orderId.value) return

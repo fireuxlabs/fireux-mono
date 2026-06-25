@@ -50,6 +50,13 @@ export type KitchenOrderFireState =
   | 'held'
   | 'fired'
 
+export type KitchenOrderCustomer = {
+  name?: string
+  phone?: string
+  address?: string
+  notes?: string
+}
+
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -61,6 +68,10 @@ export const KitchenOrderModel = {
   fire_state: 'fired' as KitchenOrderFireState,
 
   items: [] as KitchenOrderItem[],
+  // Snapshot of the selected menu order-type policy at order time.
+  // Fulfilment can evolve later without rewriting historical tickets.
+  fulfilment_policy: {} as Record<string, unknown>,
+  customer: {} as KitchenOrderCustomer,
 
   // Legacy transitional fields still read/written by existing surfaces.
   channel: '' as string,
