@@ -119,8 +119,6 @@ const totalLabel = computed(() =>
 
 <style scoped>
 .menu-basket {
-  position: sticky;
-  bottom: 1rem;
   display: grid;
   gap: 1rem;
   align-items: center;

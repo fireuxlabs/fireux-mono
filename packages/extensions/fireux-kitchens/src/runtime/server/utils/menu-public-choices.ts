@@ -4,7 +4,7 @@ import type {
   MenuPublicChoice,
   MenuView,
 } from '../../models/menu/menu.model.ts'
-import type { KitchenOrderType } from '../../models/order.model.ts'
+import { menuOrderTypeLabel } from '../../utils/menu-ordering-ui.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
@@ -22,17 +22,6 @@ const numberValue = (value: unknown) => {
   const number = Number(value)
 
   return Number.isFinite(number) ? number : 0
-}
-const orderTypeLabel = (type: KitchenOrderType) => {
-  const labels: Record<KitchenOrderType, string> = {
-    dine_in: 'Dine in',
-    collection: 'Collection',
-    delivery: 'Delivery',
-    pre_order: 'Pre-order',
-    room_service: 'Room service',
-  }
-
-  return labels[type] || type
 }
 const menuPath = (kitchenSlug: string, menuId: string) =>
   `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
@@ -78,7 +67,7 @@ function menuChoices(input: {
     ordering.order_types.forEach((orderType) => {
       choices.push({
         value: `order:${input.menuId}:${orderType.type}`,
-        label: orderTypeLabel(orderType.type),
+        label: menuOrderTypeLabel(orderType.type),
         view: 'order',
         menu_id: input.menuId,
         order_type: orderType.type,

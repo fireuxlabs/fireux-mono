@@ -11,7 +11,7 @@
 
     <MenuStructured
       v-else
-      :menu="structuredMenuForRender"
+      :menu="structuredMenu"
       :menu-id="menuId"
       :kitchen-slug="kitchenSlug"
       :pending="pending"
@@ -47,9 +47,6 @@ const {
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
 const documentUrl = computed(() => documentMenu.value?.file?.url || '')
-const structuredMenuForRender = computed(() =>
-  renderKind.value === 'structured' ? structuredMenu.value : null
-)
 // Menu theme spine: server manifest resolves tenant/app/kitchen source; renderer only consumes portable page_style.
 const pageStyle = computed(() =>
   documentMenu.value?.page_style ||

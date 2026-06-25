@@ -95,7 +95,7 @@ V1 fulfilment policy:
 
 Public order funnel spine:
 - `MenuSelectionBasket`: selected items and total.
-- `MenuFunnelPanel`: shared sticky platform shell, close, submit, selected
+- `MenuFunnelPanel`: shared overlay platform shell, close, submit, selected
   order-type policy.
 - `MenuFunnelDelivery`: delivery zones, payment methods, address/contact.
 - `MenuFunnelCollection`: payment methods and pickup contact.

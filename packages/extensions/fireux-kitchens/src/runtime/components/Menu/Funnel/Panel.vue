@@ -49,6 +49,12 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderType,
 } from '../../../models/order.model'
+import {
+  cleanKitchenOrderCustomer,
+  menuOrderFunnelTitle,
+  menuOrderSubmitLabel,
+  menuOrderTypeLabel,
+} from '../../../utils/menu-ordering-ui'
 import MenuFunnelCollection from './Collection.vue'
 import MenuFunnelDefault from './Default.vue'
 import MenuFunnelDelivery from './Delivery.vue'
@@ -71,36 +77,12 @@ defineEmits<{
 }>()
 
 const customer = ref<KitchenOrderCustomer>({})
-const labels: Record<KitchenOrderType, string> = {
-  dine_in: 'Order',
-  collection: 'Collection',
-  delivery: 'Delivery',
-  pre_order: 'Pre-order',
-  room_service: 'Room service',
-}
-const eyebrow = computed(() => labels[props.orderType] || 'Order')
-const title = computed(() => {
-  if (props.orderType === 'delivery') return 'Organise delivery'
-  if (props.orderType === 'collection') return 'Organise collection'
-  if (props.orderType === 'pre_order') return 'Organise pre-order'
-  if (props.orderType === 'room_service') return 'Organise room service'
-
-  return 'Send to kitchen'
-})
-const submitLabel = computed(() => {
-  if (props.orderType === 'delivery') return 'Send delivery order'
-  if (props.orderType === 'collection') return 'Send collection order'
-  if (props.orderType === 'pre_order') return 'Send pre-order'
-
-  return 'Send order'
-})
+const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
+const title = computed(() => menuOrderFunnelTitle(props.orderType))
+const submitLabel = computed(() => menuOrderSubmitLabel(props.orderType))
 const message = computed(() => props.policy?.message || '')
 const customerPayload = computed<KitchenOrderCustomer>(() =>
-  Object.fromEntries(
-    Object.entries(customer.value).filter(([, value]) =>
-      String(value ?? '').trim()
-    )
-  )
+  cleanKitchenOrderCustomer(customer.value)
 )
 const funnelComponents: Partial<Record<KitchenOrderType, Component>> = {
   delivery: MenuFunnelDelivery,
@@ -114,8 +96,6 @@ const funnelComponent = computed(() =>
 
 <style scoped>
 .menu-order-panel {
-  position: sticky;
-  bottom: 1rem;
   display: grid;
   gap: 1rem;
   width: min(44rem, calc(100% - 1rem));

@@ -11,6 +11,7 @@ import type {
   MenuView,
 } from '../../../../models/menu/menu.model'
 import type { KitchenOrderType } from '../../../../models/order.model'
+import { menuOrderTypeLabel } from '../../../../utils/menu-ordering-ui'
 
 type MenuViewSource = {
   ordering?: MenuOrderingConfig
@@ -50,17 +51,6 @@ const uniqueMenuViews = (views: MenuView[]) =>
   views.filter((mode, index, modes) => modes.indexOf(mode) === index)
 const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
   `order:${type}`
-const orderTypeLabel = (type: KitchenOrderType) => {
-  const labels: Record<KitchenOrderType, string> = {
-    dine_in: 'Dine in',
-    collection: 'Collection',
-    delivery: 'Delivery',
-    pre_order: 'Pre-order',
-    room_service: 'Room service',
-  }
-
-  return labels[type] || type
-}
 const orderType = (value: unknown): KitchenOrderType | undefined =>
   supportedOrderTypes.includes(value as KitchenOrderType)
     ? value as KitchenOrderType
@@ -152,7 +142,7 @@ export function useMenuViewMode(
 
         options.push({
           value: orderChoiceValue(type),
-          label: orderTypeLabel(type),
+          label: menuOrderTypeLabel(type),
           view: 'order',
           orderType: type,
           ...(config?.message ? { message: config.message } : {}),
