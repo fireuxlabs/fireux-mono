@@ -16,19 +16,17 @@ export type UseConsoleSelectionOptions<TTarget> = {
 }
 
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
-const defaultConsoleSelectionState = (): ConsoleSelectionState => ({
-  selectedId: '',
-})
 
 export function useConsoleSelection<TTarget = never>(
   family: string,
   options?: UseConsoleSelectionOptions<TTarget>
 ) {
   const normalizedFamily = normalizeConsoleFamily(family)
-  const state = useCookie<ConsoleSelectionState>(
+  // Keep selection unset until there is a real target; tenant auto-select should
+  // not write an empty cookie before writing the configured target.
+  const state = useCookie<ConsoleSelectionState | null>(
     `fireux-console-${normalizedFamily}`,
     {
-      default: defaultConsoleSelectionState,
       sameSite: 'lax',
     }
   )
@@ -42,15 +40,19 @@ export function useConsoleSelection<TTarget = never>(
   )
 
   const selectTarget = (id: string) => {
+    const nextId = normalizeString(id)
+    if (!nextId) {
+      clearSelection()
+      return
+    }
+
     state.value = {
-      selectedId: normalizeString(id),
+      selectedId: nextId,
     }
   }
 
   const clearSelection = () => {
-    state.value = {
-      selectedId: '',
-    }
+    state.value = null
   }
 
   const getTargetId = (item: TTarget | null | undefined) => {

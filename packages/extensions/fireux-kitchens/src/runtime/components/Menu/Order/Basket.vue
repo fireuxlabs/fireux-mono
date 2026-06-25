@@ -16,7 +16,7 @@
       />
     </button>
 
-    <template v-else>
+    <template v-if="isOpen && items.length">
       <div class="menu-basket__items">
         <div
           v-for="item in items"
