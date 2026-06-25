@@ -36,6 +36,14 @@
 <script setup lang="ts">
 import type { EducationItem } from '../../../../models/profiles/Professional/Professional.model';
 
+type ObjectArrayField = {
+  key: string
+  type: 'text' | 'textarea' | 'checkbox'
+  label?: string
+  placeholder?: string
+  rows?: number
+}
+
 const props = defineProps<{
   items: EducationItem[]
   onSave: (items: EducationItem[]) => Promise<void>
@@ -46,7 +54,7 @@ const itemDate = (item: EducationItem) =>
   `${item.start_year || 'Start'}–${item.ongoing ? 'Present' : (item.end_year || 'End')}`
 const itemSubtitle = (item: EducationItem) => item.institution || 'Institution'
 
-const fields = [
+const fields: ObjectArrayField[] = [
   { key: 'institution', type: 'text', label: 'Institution', placeholder: 'Institution' },
   { key: 'degree', type: 'text', label: 'Degree', placeholder: 'Degree' },
   { key: 'start_year', type: 'text', label: 'Start year', placeholder: 'Start year' },

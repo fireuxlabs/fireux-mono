@@ -84,7 +84,7 @@
 
       <UAlert
         v-else
-        color="amber"
+        color="warning"
         title="Product not found"
         description="The FireUX Template product record is missing."
       />
@@ -93,8 +93,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Price } from 'fireux-products/runtime/models/product.model'
+import { computed, ref, watch } from 'vue'
+import type {
+  FirebaseProduct,
+  Price,
+} from 'fireux-products/runtime/models/product.model'
 import { useProduct } from 'fireux-products/runtime/composables/fireux/firestore/product/useProduct'
 
 definePageMeta({
@@ -105,21 +108,40 @@ definePageMeta({
 
 const { fetchProductBySlug, fetchProductPrices } = useProduct()
 
-const product = await fetchProductBySlug('fireux-template')
-if (product?.id) {
-  product.prices = await fetchProductPrices(product.id)
-}
+const productSource = fetchProductBySlug('fireux-template')
+const productPrices = ref<Price[]>([])
+
+watch(
+  productSource,
+  async (nextProduct: FirebaseProduct | undefined) => {
+    productPrices.value = nextProduct?.id
+      ? await fetchProductPrices(nextProduct.id)
+      : []
+  },
+  { immediate: true }
+)
+
+const product = computed(() =>
+  productSource.value
+    ? {
+        ...productSource.value,
+        prices: productPrices.value,
+      }
+    : null
+)
 
 const activeFeatures = computed(() =>
-  (product?.features ?? []).filter((feature) => feature.available)
+  (product.value?.features ?? []).filter((feature) => feature.available)
 )
 
 const chosenPrice = computed<Price | null>(() => {
-  if (!product?.prices?.length) return null
-  const byDefaultId = product.default_price?.id
-    ? product.prices.find((price) => price.id === product.default_price.id)
+  if (!product.value?.prices?.length) return null
+  const byDefaultId = product.value.default_price?.id
+    ? product.value.prices.find(
+        (price: Price) => price.id === product.value?.default_price.id
+      )
     : null
-  return byDefaultId || product.prices[0] || null
+  return byDefaultId || product.value.prices[0] || null
 })
 
 const priceLabel = computed(() => {

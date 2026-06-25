@@ -125,7 +125,7 @@
 
       <UAlert
         v-else
-        color="amber"
+        color="warning"
         title="Module not found"
         description="This module does not exist yet."
       />
@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
+import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
 import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
 import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
 
@@ -152,7 +152,7 @@ definePageMeta({
 const route = useRoute()
 const slug = computed(() => String(route.params.id || '').trim())
 
-const { products } = useProductFetch()
+const { products } = useProductCollection()
 const { preview: toCard } = useProductInterface()
 
 const moduleProduct = computed(() => {
@@ -190,6 +190,8 @@ const moduleCard = computed(() =>
     name: moduleTitle.value,
     description: moduleDescription.value,
     imageUrl: moduleProduct.value?.main_image || '',
+    summary: moduleDescription.value,
+    status: String(moduleProduct.value?.product_type || ''),
     badges: [],
   }
 )
@@ -352,7 +354,12 @@ function resolveCheckoutPriceId(product?: Partial<FirebaseProduct>): string {
 
 async function startCheckout() {
   const product = moduleProduct.value
-  const appId = String(product?.appId || '').trim()
+  const appId = String(
+    product?.source_app_id ||
+      product?.created?.app_id ||
+      product?.metadata?.app_id ||
+      ''
+  ).trim()
   const productId = String(product?.id || '').trim()
   const productSlug = String(product?.slug || '').trim()
   const priceId = resolveCheckoutPriceId(product ?? undefined)

@@ -61,13 +61,42 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { demoCompanyHydratedList } from '../../../../../../../../demo/company.demo'
 import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
 import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 
 const { pill, cell, preview, profile } = useCompanyInterface()
 
-const demoCompanyList = demoCompanyHydratedList as CompanyHydrated[]
+// Dev component canon: keep demo records local so app typecheck never imports root demo fixtures.
+const demoCompanyList: CompanyHydrated[] = [
+  {
+    id: 'company-demo-harbor',
+    created: { at: {} as any },
+    updated: { at: {} as any },
+    name: 'Harbor Produce Co.',
+    short_name: 'Harbor Produce',
+    short_address: 'Interlaken, Switzerland',
+    formatted_address: 'Marktgasse 4, 3800 Interlaken, Switzerland',
+    image_url: '',
+    image_shade: 'none',
+    source: 'manual',
+  },
+  {
+    id: 'company-demo-atelier',
+    created: { at: {} as any },
+    updated: { at: {} as any },
+    name: 'Atelier Linen Supply',
+    short_name: 'Atelier Linen',
+    short_address: 'Bern, Switzerland',
+    formatted_address: 'Kramgasse 18, 3011 Bern, Switzerland',
+    image_url: '',
+    image_shade: 'none',
+    source: 'manual',
+  },
+]
+const isCompanyCard = (
+  card: CompanyCard.Card | null
+): card is CompanyCard.Card => Boolean(card)
 
 const selectedId = ref(String(demoCompanyList[0]?.id ?? ''))
 
@@ -85,7 +114,9 @@ const pillItems = computed(() =>
         card,
       }
     })
-    .filter((item) => Boolean(item.card))
+    .filter((item): item is Omit<typeof item, 'card'> & { card: CompanyCard.Card } =>
+      isCompanyCard(item.card)
+    )
 )
 
 const demoPill = computed(() => pill(selectedCompany.value ?? demoCompanyList[0]))

@@ -26,7 +26,7 @@
         :title="current.preview.title"
         :subtitle="current.preview.subtitle"
         :badges="current.preview.badges"
-        :prop="current.preview.prop"
+        :prop="current.preview.description"
       />
 
       <JobCardsCell v-if="current?.cell" v-bind="current.cell" />
@@ -40,10 +40,89 @@
 defineOptions({ name: 'DevJobDemo' })
 
 import { computed, ref } from 'vue'
-import { demoJobSurfaceList } from '../../../../../../../../demo/job.demo'
+import {
+  JobModel,
+  type Job,
+} from '../../../models/job.model'
+import {
+  useJobInterface,
+  type JobCard,
+  type JobView,
+} from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-const jobSurfaces = demoJobSurfaceList
+const demoJobs: JobView[] = [
+  {
+    ...JobModel,
+    id: 'job-demo-chef',
+    title: 'Chef / Cook',
+    description: 'Short deployment covering evening service.',
+    status: 'open',
+    workplace_type: 'kitchen',
+    workplace_id: 'demo-kitchen',
+    workplace_label: 'Demo Kitchen',
+    company_id: 'demo-company',
+    pay_rate: 32,
+    pay_unit: 'hour',
+    workplace: {
+      short_address: 'Interlaken, Switzerland',
+      image_url: '',
+    },
+  } as Job,
+  {
+    ...JobModel,
+    id: 'job-demo-breakfast',
+    title: 'Breakfast Lead',
+    description: 'Early shift, fast turnaround, consistent breakfast execution.',
+    status: 'open',
+    workplace_type: 'kitchen',
+    workplace_id: 'demo-kitchen-breakfast',
+    workplace_label: 'Breakfast Kitchen',
+    company_id: 'demo-company',
+    pay_rate: 28,
+    pay_unit: 'hour',
+    workplace: {
+      short_address: 'Matten bei Interlaken, Switzerland',
+      image_url: '',
+    },
+  } as Job,
+]
+const {
+  pill,
+  preview,
+  cell,
+  profile,
+} = useJobInterface()
+const isJobCard = (card: JobCard.Card | null): card is JobCard.Card =>
+  Boolean(card)
+const jobSurfaces = computed(() =>
+  demoJobs
+    .map((job) => {
+      const pillCard = pill(job)
+      const previewCard = preview(job)
+      const cellCard = cell(job)
+      const profileCard = profile(job)
+      if (
+        !isJobCard(pillCard) ||
+        !isJobCard(previewCard) ||
+        !isJobCard(cellCard) ||
+        !isJobCard(profileCard)
+      ) {
+        return null
+      }
+
+      return {
+        job,
+        pill: pillCard,
+        preview: previewCard,
+        cell: cellCard,
+        profile: profileCard,
+      }
+    })
+    .filter((surface): surface is NonNullable<typeof surface> => Boolean(surface))
+)
 const selectedIndex = ref(0)
 
-const current = computed(() => jobSurfaces[selectedIndex.value] ?? jobSurfaces[0])
+const current = computed(() =>
+  jobSurfaces.value[selectedIndex.value] ?? jobSurfaces.value[0]
+)
 </script>

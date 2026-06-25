@@ -88,7 +88,7 @@ async function loadPdf() {
       if (!context || !pagesHost.value) return
 
       pagesHost.value.appendChild(canvas)
-      await page.render({ canvasContext: context, viewport }).promise
+      await page.render({ canvas, canvasContext: context, viewport }).promise
     }
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Please open the original file.'

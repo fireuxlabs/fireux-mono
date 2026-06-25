@@ -90,7 +90,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import triggerBrandSrc from '../../assets/sproochli/translate-trigger-compact.png'
 import {
   isSproochliRtlLanguage,
   type SproochliLanguageCode,
@@ -114,6 +113,10 @@ const props = defineProps<{
 
 const route = useRoute()
 const open = ref(false)
+const triggerBrandSrc = new URL(
+  '../../assets/sproochli/translate-trigger-compact.png',
+  import.meta.url
+).href
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
 const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
 const popoverContent = {

@@ -91,7 +91,7 @@
                 <UCalendar
                   class="p-2"
                   :model-value="getStartDate(item)"
-                  @update:model-value="(value: DateValue | null) => onStartDateChange(item, value)"
+                  @update:model-value="(value) => onStartDateChange(item, value)"
                 />
               </template>
             </UPopover>
@@ -102,7 +102,7 @@
             <UCheckbox
               :model-value="Boolean(item.ongoing)"
               label=""
-              @update:model-value="(v: boolean) => onToggleOngoing(item, Boolean(v))"
+              @update:model-value="(value) => onToggleOngoing(item, value)"
             />
           </div>
 
@@ -123,7 +123,7 @@
                   class="p-2"
                   :model-value="getRangeValue(item)"
                   range
-                  @update:model-value="(value: { start?: DateValue | null; end?: DateValue | null } | null) => onRangeDateChange(item, value)"
+                  @update:model-value="(value) => onRangeDateChange(item, value)"
                 />
               </template>
             </UPopover>
@@ -184,6 +184,12 @@ import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
+type CalendarUpdateValue =
+  | DateValue
+  | DateValue[]
+  | { start?: DateValue | null; end?: DateValue | null }
+  | null
+  | undefined
 
 const props = defineProps<{
   label: string
@@ -197,7 +203,7 @@ const collectionOptions = computed(() => props.placeCollections ?? props.collect
 
 const selectedCollection = ref(collectionOptions.value[0] ?? '')
 
-watch(collectionOptions, (next) => {
+watch(collectionOptions, (next: string[]) => {
   if (!next.length) {
     selectedCollection.value = ''
     return
@@ -238,7 +244,7 @@ const placeIds = computed(() => {
 if (import.meta.client) {
   watch(
     placeIds,
-    (ids) => {
+    (ids: string[]) => {
       const next = new Map<string, Ref<Place | undefined>>()
       for (const id of ids) {
         const existing = placeDocRefs.value.get(id)
@@ -384,16 +390,26 @@ function getRangeValue(item: ExperienceItem) {
   }
 }
 
-function onStartDateChange(item: ExperienceItem, value: DateValue | null) {
-  if (!value) return
+function isRangeValue(
+  value: CalendarUpdateValue
+): value is { start?: DateValue | null; end?: DateValue | null } {
+  return Boolean(value && !Array.isArray(value) && 'start' in value)
+}
+
+function isSingleDateValue(value: CalendarUpdateValue): value is DateValue {
+  return Boolean(value && !Array.isArray(value) && !isRangeValue(value))
+}
+
+function onStartDateChange(item: ExperienceItem, value: CalendarUpdateValue) {
+  if (!isSingleDateValue(value)) return
   updateFromDate(item, value)
 }
 
 function onRangeDateChange(
   item: ExperienceItem,
-  value: { start?: DateValue | null; end?: DateValue | null } | null
+  value: CalendarUpdateValue
 ) {
-  if (!value) return
+  if (!isRangeValue(value)) return
   if (value.start) updateFromDate(item, value.start)
   if (value.end) {
     updateToDate(item, value.end)
@@ -403,9 +419,10 @@ function onRangeDateChange(
   }
 }
 
-function onToggleOngoing(item: ExperienceItem, value: boolean) {
-  item.ongoing = value
-  if (value) {
+function onToggleOngoing(item: ExperienceItem, value: boolean | 'indeterminate') {
+  const isOngoing = value === true
+  item.ongoing = isOngoing
+  if (isOngoing) {
     item.to_month = ''
     item.to_year = ''
   }

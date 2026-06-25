@@ -11,7 +11,25 @@
       "~/*": ["./app/*"],
       "@": ["./app"],
       "@/*": ["./app/*"],
-      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"]
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+
+      "fireux-blogs": ["../../../packages/extensions/fireux-blogs/src/module.ts"],
+      "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
+      "fireux-blogs/runtime/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
+      "@fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
+
+      "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
+      "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
+      "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
+      "@fireux-products/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
+
+      "fireux-slap": ["../../../packages/extensions/fireux-slap/src/module.ts"],
+      "fireux-slap/*": ["../../../packages/extensions/fireux-slap/src/*"],
+      "fireux-slap/runtime/*": ["../../../packages/extensions/fireux-slap/src/runtime/*"],
+      "@fireux-slap/*": ["../../../packages/extensions/fireux-slap/src/runtime/*"]
     },
     "skipLibCheck": true
   },
@@ -22,6 +40,7 @@
   ],
   "exclude": [
     "node_modules",
+    "../../../demo/**",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
   ]
 }

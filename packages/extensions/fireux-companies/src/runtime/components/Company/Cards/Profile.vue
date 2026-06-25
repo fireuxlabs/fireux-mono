@@ -56,7 +56,7 @@
               <div v-if="model.prop" class="fx-card__subtitle">{{ model.prop }}</div>
             </div>
             <div class="fx-card__badges">
-              <UBadge v-if="model.verified" size="xs" variant="soft" color="emerald">Verified</UBadge>
+              <UBadge v-if="model.verified" size="xs" variant="soft" color="success">Verified</UBadge>
               <UBadge v-if="sourceLabel" size="xs" variant="soft" color="neutral">{{ sourceLabel }}</UBadge>
             </div>
           </div>

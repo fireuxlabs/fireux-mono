@@ -37,12 +37,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Portfolio } from '../../../../models/portfolio.model'
-import { usePortfolioInterface } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import {
+  usePortfolioInterface,
+  type PortfolioSurface,
+} from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 const props = withDefaults(
   defineProps<{
-    collection?: Portfolio[]
+    // Console target lists consume Portfolio interface surfaces; storage completeness belongs in the Firestore stack.
+    collection?: PortfolioSurface[]
     pending?: boolean
   }>(),
   {

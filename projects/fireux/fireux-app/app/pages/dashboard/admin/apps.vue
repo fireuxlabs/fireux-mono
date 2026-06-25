@@ -60,13 +60,12 @@ import {
   useAppInterface,
   type AppCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import type { AppModel } from 'fireux-core/runtime/models/core/app.model'
 
 const { apps } = useAppCollection()
 const { cell: appCell } = useAppInterface()
 const clean = (value: unknown) => String(value ?? '').trim()
 
-const selectableApps = computed<AppModel[]>(() =>
+const selectableApps = computed(() =>
   (apps.value ?? [])
     .filter((entry) => clean(entry.id) && clean(entry.slug))
     .sort((a, b) =>
@@ -79,7 +78,7 @@ const selectableRows = computed<{ slug: string, card: AppCard.Card }[]>(() =>
   selectableApps.value
     .map((app) => {
       const slug = clean(app.slug)
-      const card = appCell(app)
+      const card = appCell(app as Parameters<typeof appCell>[0])
       return slug && card ? { slug, card } : null
     })
     .filter((row): row is { slug: string, card: AppCard.Card } =>

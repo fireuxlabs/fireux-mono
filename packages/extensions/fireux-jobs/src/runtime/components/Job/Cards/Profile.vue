@@ -24,7 +24,7 @@
             v-if="card.status"
             size="sm"
             variant="soft"
-            :color="card.status === 'open' ? 'emerald' : 'neutral'"
+            :color="card.status === 'open' ? 'success' : 'neutral'"
           >
             {{ card.status === 'open' ? 'Open' : card.status }}
           </UBadge>

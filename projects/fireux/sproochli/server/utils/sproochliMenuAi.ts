@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
+import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server.ts'
 import {
   normalizeSproochliLanguageCode,
   normalizeSproochliText,

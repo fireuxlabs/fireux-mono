@@ -43,8 +43,14 @@ const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
+// Supplier console selection displays the interface identity, not a raw `name` field.
 const supplierName = computed(() =>
-  String(props.supplier?.name || props.supplier?.slug || '').trim()
+  String(
+    props.supplier?.supplier_organization_name ||
+      props.supplier?.slug ||
+      props.supplier?.id ||
+      ''
+  ).trim()
 )
 const selectedTitle = 'Selected Supplier'
 </script>

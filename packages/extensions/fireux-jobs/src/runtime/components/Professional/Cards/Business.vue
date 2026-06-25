@@ -80,7 +80,7 @@ const qrDataUrl = ref('')
 
 watch(
   () => props.profileUrl,
-  async (nextUrl) => {
+  async (nextUrl: string | null | undefined) => {
     if (!import.meta.client) return
     if (!nextUrl) {
       qrDataUrl.value = ''

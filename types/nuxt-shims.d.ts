@@ -70,6 +70,8 @@ declare module '#build' {
 }
 
 declare global {
+  function defineAppConfig(...args: any[]): any
+  const computed: typeof import('vue')['computed']
   const definePageMeta: typeof import('nuxt/app')['definePageMeta']
   function useRoute(...args: any[]): any
   function useRouter(...args: any[]): any
@@ -79,6 +81,13 @@ declare global {
   function useFetch<T = any>(...args: any[]): any
   function useAsyncData<T = any>(...args: any[]): any
   function useNuxtApp(...args: any[]): any
+  function createError(...args: any[]): any
+  function setResponseStatus(...args: any[]): any
+}
+
+declare module '*.png' {
+  const src: string
+  export default src
 }
 
 export {}

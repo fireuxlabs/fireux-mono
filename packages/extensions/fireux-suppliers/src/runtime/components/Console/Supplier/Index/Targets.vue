@@ -37,12 +37,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Supplier } from '../../../../models/supplier/Supplier.model'
-import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import {
+  useSupplierInterface,
+  type SupplierSurface,
+} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = withDefaults(
   defineProps<{
-    collection?: Supplier[]
+    // Console target lists consume Supplier interface surfaces; storage completeness belongs in the Firestore stack.
+    collection?: SupplierSurface[]
     pending?: boolean
   }>(),
   {

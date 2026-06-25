@@ -27,7 +27,7 @@
                 variant="soft"
                 icon="i-lucide-refresh-ccw"
                 :loading="pending"
-                @click="refresh"
+                @click="() => refresh()"
               >
                 Refresh
               </UButton>

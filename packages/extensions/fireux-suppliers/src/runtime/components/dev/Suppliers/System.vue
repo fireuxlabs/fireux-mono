@@ -358,8 +358,12 @@ const buildSupplierIngredientRows = () =>
   })
 const uniqueSupplierIngredientIds = computed(() =>
   Array.from(
-    new Set(supplierIngredientRows.value.map((row) => row.ingredientId))
-  ).sort((a, b) => a.localeCompare(b))
+    new Set<string>(
+      supplierIngredientRows.value.map(
+        (row: SupplierIngredientRow) => row.ingredientId
+      )
+    )
+  ).sort((a: string, b: string) => a.localeCompare(b))
 )
 const supplierIngredientSearchTerm = computed(() =>
   normalizeString(supplierIngredientQuery.value).toLowerCase()
@@ -369,11 +373,13 @@ const filteredSupplierIngredientRows = computed(() => {
   const stateFilter = supplierIngredientStateFilter.value
   const stateFilteredRows = stateFilter === 'all'
     ? supplierIngredientRows.value
-    : supplierIngredientRows.value.filter((row) => row.state === stateFilter)
+    : supplierIngredientRows.value.filter(
+        (row: SupplierIngredientRow) => row.state === stateFilter
+      )
 
   if (!searchTerm) return stateFilteredRows
 
-  return stateFilteredRows.filter((row) =>
+  return stateFilteredRows.filter((row: SupplierIngredientRow) =>
     [
       row.ingredientId,
       row.supplierId,
@@ -442,14 +448,15 @@ const fetchSupplierIngredients = () => {
 
 watch(
   suppliers,
-  (nextSuppliers) => {
+  (nextSuppliers: SupplierDevRecord[]) => {
     if (!nextSuppliers.length) {
       selectedSupplierId.value = ''
       return
     }
 
     const selectedStillExists = nextSuppliers.some(
-      (supplier) => getSupplierId(supplier) === selectedSupplierId.value
+      (supplier: SupplierDevRecord) =>
+        getSupplierId(supplier) === selectedSupplierId.value
     )
     if (!selectedStillExists) {
       selectedSupplierId.value = getSupplierId(nextSuppliers[0] as SupplierDevRecord)

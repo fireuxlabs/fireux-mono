@@ -23,11 +23,8 @@ pids/
 *.seed
 *.pid.lock
 
-# Dummy data fixtures (local only)
-temp/dummy-data/
-temp/dummy-data/**
-temp/sproochli-menu-refresh/
-temp/sproochli-menu-refresh/**
+# Temporary workspace scratch (local only)
+temp/**
 dummy/
 dummy/**
 

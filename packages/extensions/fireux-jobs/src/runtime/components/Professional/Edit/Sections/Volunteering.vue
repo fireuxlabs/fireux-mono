@@ -34,6 +34,14 @@
 <script setup lang="ts">
 import type { VolunteeringItem } from '../../../../models/profiles/Professional/Professional.model';
 
+type ObjectArrayField = {
+  key: string
+  type: 'text' | 'textarea' | 'checkbox'
+  label?: string
+  placeholder?: string
+  rows?: number
+}
+
 const props = defineProps<{
   items: VolunteeringItem[]
   onSave: (items: VolunteeringItem[]) => Promise<void>
@@ -44,7 +52,7 @@ const itemDate = (item: VolunteeringItem) =>
   `${item.from_year || 'Start'}–${item.ongoing ? 'Present' : (item.to_year || 'End')}`
 const itemSubtitle = (item: VolunteeringItem) => item.role || 'Role'
 
-const fields = [
+const fields: ObjectArrayField[] = [
   { key: 'organization', type: 'text', label: 'Organization', placeholder: 'Organization' },
   { key: 'role', type: 'text', label: 'Role', placeholder: 'Role' },
   { key: 'from_year', type: 'text', label: 'From year', placeholder: 'From year' },

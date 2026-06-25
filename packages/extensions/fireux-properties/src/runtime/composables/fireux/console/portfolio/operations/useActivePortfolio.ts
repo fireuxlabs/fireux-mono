@@ -10,6 +10,9 @@ import {
 import { usePortfolioConsoleSelection } from '../core/usePortfolioConsoleSelection'
 
 export type ActivePortfolioRuntime = {
+  mode: ComputedRef<'live' | 'demo'>
+  isDemo: ComputedRef<boolean>
+  scenario: ComputedRef<Record<string, unknown> | null>
   id: ComputedRef<string>
   entity: ComputedRef<PortfolioConsoleEntity | null>
   rootCollection: ComputedRef<string>
@@ -36,8 +39,14 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
 
     return resolvePortfolioConsoleCollectionPath(runtime.appId.value)
   })
+  const mode = computed<'live' | 'demo'>(() => 'live')
+  const isDemo = computed(() => mode.value === 'demo')
+  const scenario = computed<Record<string, unknown> | null>(() => null)
 
   return {
+    mode,
+    isDemo,
+    scenario,
     id,
     entity: consoleSelection.portfolio,
     rootCollection: runtime.rootCollection,

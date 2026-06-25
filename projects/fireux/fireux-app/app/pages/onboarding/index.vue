@@ -27,7 +27,7 @@
       </div>
       <UAlert
         v-else
-        color="amber"
+        color="warning"
         title="No products found"
         description="Create a product first, then come back to run onboarding."
       />
@@ -38,7 +38,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
+import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
+import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
 
 definePageMeta({
   layout: 'default',
@@ -61,7 +62,7 @@ useSeoMeta({
 
 const route = useRoute()
 const router = useRouter()
-const { products } = useProductFetch()
+const { products } = useProductCollection()
 
 const selectedSlug = ref<string>(String(route.query.product || ''))
 
@@ -78,7 +79,7 @@ const selectedProduct = computed(() =>
 
 watch(
   () => products.value,
-  (list) => {
+  (list: FirebaseProduct[] | undefined) => {
     if (!selectedSlug.value && list?.length) {
       selectedSlug.value = list[0]?.slug || ''
     }
@@ -88,7 +89,7 @@ watch(
 
 watch(
   () => selectedSlug.value,
-  (value) => {
+  (value: string) => {
     const nextQuery = { ...route.query }
     if (value) {
       nextQuery.product = value

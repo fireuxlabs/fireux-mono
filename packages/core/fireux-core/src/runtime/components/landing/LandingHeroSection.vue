@@ -191,9 +191,9 @@ const props = defineProps<{
   secondaryCtaLabel?: string
   secondaryCtaTo?: string
   consoleBridgeLine?: string
-  heroBullets?: string[]
-  rightPanelItems?: RightPanelItem[]
-  rightPanelTags?: string[]
+  heroBullets?: readonly string[]
+  rightPanelItems?: readonly RightPanelItem[]
+  rightPanelTags?: readonly string[]
   rightPanelLongButtonLabel?: string
   rightPanelLongButtonTo?: string
 }>()

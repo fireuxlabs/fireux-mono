@@ -63,8 +63,8 @@ const appPlans = [
     button: {
       label: 'View ecosystems',
       to: '/ecosystems/pricing',
-      color: 'neutral',
-      variant: 'soft',
+      color: 'neutral' as const,
+      variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },
   },
@@ -82,8 +82,8 @@ const appPlans = [
     button: {
       label: 'Get started',
       to: '/get-started',
-      color: 'neutral',
-      variant: 'soft',
+      color: 'neutral' as const,
+      variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },
   },
@@ -101,12 +101,12 @@ const appPlans = [
     button: {
       label: 'Get started',
       to: '/get-started',
-      color: 'neutral',
-      variant: 'soft',
+      color: 'neutral' as const,
+      variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },
   },
-] as const
+]
 
 const appTableTiers = [
   {
@@ -122,7 +122,7 @@ const appTableTiers = [
     id: 'self-hosted',
     title: 'Self hosted',
   },
-] as const
+]
 
 const appTableSections = [
   {
@@ -175,7 +175,7 @@ const appTableSections = [
       },
     ],
   },
-] as const
+]
 
 definePageMeta({
   layout: 'landing',

@@ -9,9 +9,28 @@ import {
   ComplianceRecordStorage,
   type ComplianceRecord,
 } from '../../../../../../../models/compliance-record.model'
-import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
+type DemoComplianceRecord = Partial<Pick<
+  ComplianceRecord,
+  | 'id'
+  | 'portfolio_id'
+  | 'property_id'
+  | 'unit_id'
+  | 'type_id'
+  | 'type_label'
+  | 'provider'
+  | 'issue_date'
+  | 'expiry_date'
+  | 'document_id'
+>>
+
+const demoComplianceRecords = (
+  scenario: Record<string, unknown> | null
+): DemoComplianceRecord[] => {
+  const records = scenario?.complianceRecords
+  return Array.isArray(records) ? records as DemoComplianceRecord[] : []
+}
 
 const toComplianceRecord = (entry: DemoComplianceRecord): ComplianceRecord => ({
   id: normalizeId(entry.id),
@@ -51,8 +70,9 @@ export function usePortfolioComplianceRecordCollection(runtimePortfolio = useAct
 
   const collection = computed<ComplianceRecord[]>(() => {
     if (runtimePortfolio.isDemo.value) {
-      const records = runtimePortfolio.scenario.value?.complianceRecords ?? []
-      return records.map((entry) => toComplianceRecord(entry))
+      return demoComplianceRecords(runtimePortfolio.scenario.value).map((entry) =>
+        toComplianceRecord(entry)
+      )
     }
     return sourceRef.value?.value ?? []
   })

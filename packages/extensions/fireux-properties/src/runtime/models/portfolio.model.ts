@@ -116,11 +116,20 @@ export type PortfolioCreateInput = Omit<
   | 'operator_ids'
   | 'tagline'
   | 'image_url'
+  | 'status'
+  | 'slug'
 > &
   Partial<
-    Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline' | 'image_url'>
-  > & {
-    slug?: string
-  }
+    Pick<
+      Portfolio,
+      | 'app_scope_state'
+      | 'app_scope_app_id'
+      | 'operator_ids'
+      | 'tagline'
+      | 'image_url'
+      | 'status'
+      | 'slug'
+    >
+  >
 
 export type PortfolioUpdateInput = Partial<Omit<Portfolio, 'id' | 'created' | 'updated'>>

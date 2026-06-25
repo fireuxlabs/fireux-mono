@@ -67,7 +67,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
   const existingSnap = await getDoc(doc(db, CompanyStorage.collection, id))
   if (!existingSnap.exists()) {
-    await createCompany({ id, place, website: '' })
+    await createCompany({ id, place })
   }
 
   form.value = { ...form.value, company_id: id }

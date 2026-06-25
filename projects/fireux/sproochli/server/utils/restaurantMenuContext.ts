@@ -1,4 +1,4 @@
-import restaurantGlossarySeed from '../../../../../scripts/data/restaurant-translation-glossary.seed.json'
+import restaurantGlossarySeed from '../data/restaurant-translation-glossary.seed.json'
 import {
   normalizeSproochliLanguageCode,
   normalizeSproochliText,

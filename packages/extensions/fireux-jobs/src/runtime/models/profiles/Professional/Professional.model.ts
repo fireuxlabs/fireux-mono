@@ -14,6 +14,17 @@ import type {
     VolunteeringItem,
 } from './supporting'
 
+export type {
+  CertificationItem,
+  EducationItem,
+  ExperienceItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
+} from './supporting'
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *

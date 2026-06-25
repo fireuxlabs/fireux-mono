@@ -5,10 +5,25 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import { DocumentStorage, type Document } from '../../../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
+type DemoDocument = Partial<Pick<
+  Document,
+  | 'id'
+  | 'portfolio_id'
+  | 'file_name'
+  | 'file_type'
+  | 'size_bytes'
+  | 'storage_path'
+  | 'download_url'
+  | 'uploaded_at'
+>>
+
+const demoDocuments = (scenario: Record<string, unknown> | null): DemoDocument[] => {
+  const documents = scenario?.documents
+  return Array.isArray(documents) ? documents as DemoDocument[] : []
+}
 
 const toDocument = (entry: DemoDocument): Document => ({
   id: normalizeId(entry.id),
@@ -46,7 +61,9 @@ export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
 
   const collection = computed<Document[]>(() => {
     if (runtimePortfolio.isDemo.value) {
-      return (runtimePortfolio.scenario.value?.documents ?? []).map((entry) => toDocument(entry))
+      return demoDocuments(runtimePortfolio.scenario.value).map((entry) =>
+        toDocument(entry)
+      )
     }
     return sourceRef.value?.value ?? []
   })

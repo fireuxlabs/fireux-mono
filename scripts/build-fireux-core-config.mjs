@@ -10,6 +10,12 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const packageRoot = join(repoRoot, 'packages/core/fireux-core')
 const sourceRoot = join(packageRoot, 'src/config')
 const outputRoot = join(packageRoot, 'dist/config')
+const configDependencyFiles = [
+  {
+    source: join(packageRoot, 'src/utils/brandAssets.ts'),
+    output: join(packageRoot, 'dist/utils/brandAssets.mjs'),
+  },
+]
 
 const relativeImportPattern =
   /(from\s+['"])(\.{1,2}\/[^'"]+)(['"])|(import\s*\(\s*['"])(\.{1,2}\/[^'"]+)(['"]\s*\))/g
@@ -79,4 +85,21 @@ for (const file of files) {
   await writeFile(outputPath, withMjsExtensions(output.outputText), 'utf8')
 }
 
-console.log(`[fireux-core] built config helpers: ${files.length} file(s)`)
+for (const file of configDependencyFiles) {
+  const source = await readFile(file.source, 'utf8')
+  const output = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ES2022,
+      target: ts.ScriptTarget.ES2022,
+      sourceMap: false,
+    },
+    fileName: file.source,
+  })
+
+  await mkdir(dirname(file.output), { recursive: true })
+  await writeFile(file.output, withMjsExtensions(output.outputText), 'utf8')
+}
+
+console.log(
+  `[fireux-core] built config helpers: ${files.length} file(s), ${configDependencyFiles.length} dependency file(s)`
+)

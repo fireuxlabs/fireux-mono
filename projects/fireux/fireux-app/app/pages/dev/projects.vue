@@ -97,7 +97,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useProjectConsoleSelection } from '../../composables/fireux/console/project/core/useProjectConsoleSelection'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import type { ConsoleProject, Project } from 'fireux-core/runtime/models/system/project.model'
+import type { AppProject, Project } from 'fireux-core/runtime/models/system/project.model'
 import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
 
 definePageMeta({
@@ -123,7 +123,7 @@ const { projects } = useProjectCollection()
 const overlayProjectCollectionPath = computed(() =>
   resolvedAppId.value ? `apps/${resolvedAppId.value}/projects` : ''
 )
-const projectAppsState = useDevStorageCollection<ConsoleProject>(overlayProjectCollectionPath)
+const projectAppsState = useDevStorageCollection<AppProject>(overlayProjectCollectionPath)
 const projectApps = computed(() => projectAppsState.items.value)
 
 const rootProjectById = computed(() => {
@@ -137,7 +137,7 @@ const rootProjectById = computed(() => {
 })
 
 const projectAppById = computed(() => {
-  const map = new Map<string, ConsoleProject>()
+  const map = new Map<string, AppProject>()
   for (const project of projectApps.value) {
     const id = String(project?.id || '').trim()
     if (!id) continue
@@ -148,7 +148,7 @@ const projectAppById = computed(() => {
 
 const selectedProjectId = ref('')
 
-const projectOptions = computed(() =>
+const projectOptions = computed<{ label: string, value: string }[]>(() =>
   (projects.value ?? []).map((project) => {
     const id = String(project?.id || '').trim()
     const labelBase = String(project?.name || id).trim() || id
@@ -162,7 +162,7 @@ const projectOptions = computed(() =>
 
 watch(
   projectOptions,
-  (options) => {
+  (options: { label: string, value: string }[]) => {
     if (!options.length) {
       selectedProjectId.value = ''
       return

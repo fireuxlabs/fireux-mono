@@ -5,16 +5,41 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import { DocumentLinkStorage, type DocumentLink } from '../../../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
+type DemoDocumentLink = Partial<Pick<
+  DocumentLink,
+  | 'id'
+  | 'portfolio_id'
+  | 'document_id'
+  | 'target_type'
+  | 'target_id'
+>>
+
+const isDocumentLinkTargetType = (
+  value: unknown
+): value is DocumentLink['target_type'] =>
+  value === 'portfolio' ||
+  value === 'property' ||
+  value === 'unit' ||
+  value === 'compliance-record' ||
+  value === 'tenancy' ||
+  value === 'task'
+const demoDocumentLinks = (
+  scenario: Record<string, unknown> | null
+): DemoDocumentLink[] => {
+  const links = scenario?.documentLinks
+  return Array.isArray(links) ? links as DemoDocumentLink[] : []
+}
 
 const toDocumentLink = (entry: DemoDocumentLink): DocumentLink => ({
   id: normalizeId(entry.id),
   portfolio_id: normalizeId(entry.portfolio_id),
   document_id: normalizeId(entry.document_id),
-  target_type: normalizeId(entry.target_type) as DocumentLink['target_type'],
+  target_type: isDocumentLinkTargetType(entry.target_type)
+    ? entry.target_type
+    : 'portfolio',
   target_id: normalizeId(entry.target_id),
   target_label: '',
   created: { at: {} as any, by: undefined, app_id: undefined },
@@ -53,7 +78,7 @@ export function usePortfolioDocumentLinks(runtimePortfolio = useActivePortfolio(
 
   const collection = computed<DocumentLink[]>(() => {
     if (runtimePortfolio.isDemo.value) {
-      return (runtimePortfolio.scenario.value?.documentLinks ?? []).map((entry) =>
+      return demoDocumentLinks(runtimePortfolio.scenario.value).map((entry) =>
         toDocumentLink(entry)
       )
     }

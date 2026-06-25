@@ -64,7 +64,12 @@ export function useSupplierFetch(
   const source = shallowRef(null) as ShallowRef<Ref<SupplierFetchDoc | undefined> | null>
   watch(
     [sourceRef, pathRef, idRef, keyRef],
-    ([nextSource, nextPath, nextId, nextKey]) => {
+    ([nextSource, nextPath, nextId, nextKey]: [
+      SupplierFetchSource,
+      string,
+      string,
+      SupplierFetchKey,
+    ]) => {
       const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
       const docId = String(nextId || '').trim()
 

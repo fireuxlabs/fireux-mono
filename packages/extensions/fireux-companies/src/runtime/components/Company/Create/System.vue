@@ -67,7 +67,6 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const createdId = await createCompany({
       id,
       place,
-      website: '',
     })
 
     successId.value = createdId

@@ -75,7 +75,10 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import { ProfessionalModel as ProfessionalModelRuntime } from '../../../models/profiles/Professional/Professional.model'
+import {
+  ProfessionalModel as ProfessionalModelRuntime,
+  type Professional,
+} from '../../../models/profiles/Professional/Professional.model'
 
 defineOptions({ name: 'DevProfessionalSystem' })
 
@@ -189,10 +192,10 @@ const professionalPreviewCards = computed(() => {
 const professionalProfileEntries = computed(() => {
   const out: Array<{
     card: NonNullable<ReturnType<typeof makeProfessionalCard>>
-    profile: unknown
+    profile: Professional
   }> = []
   for (const item of filteredProfessionals.value ?? []) {
-    const profile = item as any
+    const profile = item as Professional
     const card = makeProfessionalCard(profile)
     if (!card) continue
     out.push({ card, profile })

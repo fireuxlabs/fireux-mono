@@ -93,7 +93,7 @@ export function useProfessionalProfileView(
   if (import.meta.client) {
     watch(
       relevantPlaceIds,
-      (ids) => {
+      (ids: string[]) => {
         const next = new Map<string, Ref<Place | undefined>>()
         for (const id of ids) {
           const existing = placeDocRefs.value.get(id)

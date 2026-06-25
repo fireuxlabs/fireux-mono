@@ -117,12 +117,13 @@ import {
 } from '../../../composables/fireux/console/portfolio/operations/Shared/shared'
 import { useActivePortfolio } from '../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import type { PortfolioSurface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import { ComplianceRecordStorage } from 'fireux-compliance/runtime/models/compliance-record.model'
 import { DocumentLinkStorage } from 'fireux-documents/runtime/models/document-link.model'
 import { DocumentStorage } from 'fireux-documents/runtime/models/document.model'
 import { TaskStorage } from 'fireux-tasks/runtime/models/task.model'
 import { ClientStorage } from '../../../models/client.model'
-import type { AppPortfolio, Portfolio } from '../../../models/portfolio.model'
+import type { AppPortfolio } from '../../../models/portfolio.model'
 import { PortfolioModel as PortfolioModelRuntime } from '../../../models/portfolio.model'
 import { PropertyStorage } from '../../../models/property.model'
 
@@ -147,7 +148,7 @@ const portfolioAppsState = useDevStorageCollection<AppPortfolio>(overlayPortfoli
 const portfolioApps = computed(() => portfolioAppsState.items.value)
 
 const rootPortfolioById = computed(() => {
-  const map = new Map<string, Portfolio>()
+  const map = new Map<string, PortfolioSurface>()
   for (const portfolio of portfolios.value) {
     const id = String(portfolio?.id || '').trim()
     if (!id) continue
@@ -168,7 +169,7 @@ const portfolioAppById = computed(() => {
 
 const selectedPortfolioId = ref('')
 
-const portfolioOptions = computed(() =>
+const portfolioOptions = computed<{ label: string, value: string }[]>(() =>
   portfolios.value.map((portfolio) => {
     const id = String(portfolio.id || '').trim()
     const labelBase = portfolio.name || id
@@ -182,7 +183,7 @@ const portfolioOptions = computed(() =>
 
 watch(
   portfolioOptions,
-  (options) => {
+  (options: { label: string, value: string }[]) => {
     if (!options.length) {
       selectedPortfolioId.value = ''
       return

@@ -34,16 +34,24 @@
 <script setup lang="ts">
 import type { CertificationItem } from '../../../../models/profiles/Professional/Professional.model';
 
+type ObjectArrayField = {
+  key: string
+  type: 'text' | 'textarea' | 'checkbox'
+  label?: string
+  placeholder?: string
+  rows?: number
+}
+
 const props = defineProps<{
   items: CertificationItem[]
   onSave: (items: CertificationItem[]) => Promise<void>
 }>()
 
 const itemTitle = (item: CertificationItem) => item.name || 'Certification'
-const itemDate = (item: CertificationItem) => item.year || 'Year not set'
+const itemDate = (item: CertificationItem) => String(item.year || 'Year not set')
 const itemSubtitle = (item: CertificationItem) => item.place_name || 'Organization'
 
-const fields = [
+const fields: ObjectArrayField[] = [
   { key: 'name', type: 'text', label: 'Certification name', placeholder: 'Certification name' },
   { key: 'place_name', type: 'text', label: 'Organization', placeholder: 'Organization' },
   { key: 'year', type: 'text', label: 'Year', placeholder: 'Year' },

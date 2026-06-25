@@ -12,6 +12,7 @@ type UseStoredChoiceOptions<T extends string> = {
   choices: MaybeRefOrGetter<readonly T[]>
   fallback: MaybeRefOrGetter<T>
 }
+type StoredChoiceWatchState<T extends string> = readonly [T[], T, T | '', boolean]
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -35,7 +36,8 @@ export function useStoredChoice<T extends string>(
   // Shared choice spine: domain composables own the meaning; this only restores and persists one valid string option.
   watch(
     () => [choices.value, fallback.value, stored.value, storageReady.value] as const,
-    ([available, nextFallback, nextStored, ready]) => {
+    (state: StoredChoiceWatchState<T>) => {
+      const [available, nextFallback, nextStored, ready] = state
       if (!ready) return
 
       if (!initialChoiceResolved.value) {

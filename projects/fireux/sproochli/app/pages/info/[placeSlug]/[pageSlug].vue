@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-default text-default" :dir="info.direction" :lang="info.language">
+  <main class="min-h-screen bg-default text-default" :dir="resolvedInfo.direction" :lang="resolvedInfo.language">
     <UContainer class="py-8">
       <div class="mx-auto max-w-3xl space-y-8">
         <header class="space-y-5">
@@ -10,13 +10,13 @@
 
           <div class="space-y-3">
             <p class="text-sm font-semibold uppercase text-muted">
-              {{ info.place.name }}
+              {{ resolvedInfo.place.name }}
             </p>
             <h1 class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
-              {{ info.page.title }}
+              {{ resolvedInfo.page.title }}
             </h1>
             <p class="text-base leading-7 text-muted sm:text-lg">
-              {{ info.page.description }}
+              {{ resolvedInfo.page.description }}
             </p>
           </div>
 
@@ -26,7 +26,7 @@
               :key="language.code"
               :to="languagePath(language.code)"
               class="rounded-md border border-default p-3 text-sm hover:bg-elevated"
-              :class="{ 'border-primary/30 bg-primary/10': language.code === info.language }"
+              :class="{ 'border-primary/30 bg-primary/10': language.code === resolvedInfo.language }"
             >
               <span class="block font-semibold">{{ language.label }}</span>
               <small class="text-xs uppercase text-muted">{{ language.source }}</small>
@@ -35,7 +35,7 @@
         </header>
 
         <section class="space-y-4" aria-label="Page sections">
-          <UCard v-for="section in info.page.sections" :key="section.id">
+          <UCard v-for="section in resolvedInfo.page.sections" :key="section.id">
             <template #header>
               <div>
                 <h2 class="text-xl font-semibold">{{ section.title }}</h2>

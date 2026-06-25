@@ -9,16 +9,23 @@
     ".": "./src/module.ts",
 
     "./types/*": "./src/types/*.ts",
-    "./config/app/*": "./src/config/app/*.ts",
+    "./config/app/*": {
+      "types": "./src/config/app/*.ts",
+      "development": "./src/config/app/*.ts",
+      "production": "./dist/config/app/*.mjs",
+      "default": "./dist/config/app/*.mjs"
+    },
     "./config/app/runtime": {
       "types": "./src/config/app/runtime.ts",
-      "default": "./src/config/app/runtime.ts"
+      "development": "./src/config/app/runtime.ts",
+      "production": "./dist/config/app/runtime.mjs",
+      "default": "./dist/config/app/runtime.mjs"
     },
     "./config/module/*": {
       "types": "./src/config/module/*.ts",
       "development": "./src/config/module/*.ts",
-      "production": "./src/config/module/*.ts",
-      "default": "./src/config/module/*.ts"
+      "production": "./dist/config/module/*.mjs",
+      "default": "./dist/config/module/*.mjs"
     },
     "./runtime/*": "./src/runtime/*",
 
