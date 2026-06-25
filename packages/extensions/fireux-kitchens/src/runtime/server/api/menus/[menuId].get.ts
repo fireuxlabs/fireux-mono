@@ -175,9 +175,10 @@ async function readMenuSurface(menuId: string) {
       { source: 'tenant-owner-api', style: ownerPageStyle },
       { source: 'app-kitchen', style: kitchenScope.page_style }
     ),
+    // Tenant menu dog-food spine: root and kitchen-scoped public routes both let the owner API override scoped fallback sections.
+    sections: sourceSections,
     ...ownerAppView,
     ...ownerMenuPayload,
-    sections: sourceSections,
     public_choices: publicChoices,
     createdByLabel:
       kitchenScope.createdByLabel ??
