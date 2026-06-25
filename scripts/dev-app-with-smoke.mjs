@@ -10,7 +10,12 @@ import process from 'node:process'
 
 import { parseArgs } from './_lib/args.mjs'
 import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
-import { runPrepareForApp, runRouteSmokeForApp, waitForAppReady } from './_lib/smoke.mjs'
+import {
+  ensureFireuxCoreConfigHelpers,
+  runPrepareForApp,
+  runRouteSmokeForApp,
+  waitForAppReady,
+} from './_lib/smoke.mjs'
 
 function usage() {
   console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--skip-prepare] [--skip-smoke] [--go-qr-provider deployed|local|url]')
@@ -129,6 +134,12 @@ if (goQrProvider) {
   devEnv.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL = goQrProvider
   console.log(`[dev] Go QR provider: ${goQrProvider}`)
 }
+
+// Dev app Nuxt configs resolve fireux-core config exports through dist unless
+// the runtime enables package "development" conditions. Rebuild immediately
+// before spawning the dev server so guard/preflight cleanup cannot leave the
+// child app without config helpers.
+ensureFireuxCoreConfigHelpers()
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
 const child = spawn('pnpm', ['--filter', app.filter, 'dev', ...passthroughArgs], {
