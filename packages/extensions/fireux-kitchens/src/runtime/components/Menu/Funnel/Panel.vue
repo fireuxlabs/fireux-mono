@@ -29,13 +29,24 @@
       </div>
     </div>
 
+    <MenuFunnelNotice
+      v-if="!allergyAccepted"
+      :message="allergyMessage"
+      action-label="I understand"
+      @confirm="allergyAccepted = true"
+    />
+
     <component
       :is="funnelComponent"
+      v-else
       v-model="customer"
+      :menu-id="props.menuId"
+      :kitchen-slug="props.kitchenSlug"
       :policy="policy"
     />
 
     <button
+      v-if="allergyAccepted"
       type="submit"
       class="menu-order-panel__submit"
       :disabled="pending"
@@ -46,7 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type Component } from 'vue'
+import { computed, ref, watch, type Component } from 'vue'
+import { useMenuCustomerAutofill } from '../../../composables/fireux/public/menu/useMenuCustomerAutofill'
 import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
 import type {
   KitchenOrderCustomer,
@@ -61,6 +73,7 @@ import {
 import MenuFunnelCollection from './Collection.vue'
 import MenuFunnelDefault from './Default.vue'
 import MenuFunnelDelivery from './Delivery.vue'
+import MenuFunnelNotice from './Notice.vue'
 import MenuFunnelPreOrder from './PreOrder.vue'
 
 type MenuFunnelSelectionItem = {
@@ -76,11 +89,14 @@ type MenuFunnelSelectionSummary = {
 const props = withDefaults(
   defineProps<{
     orderType: KitchenOrderType
+    menuId: string
+    kitchenSlug?: string
     policy?: MenuOrderTypeConfig
     pending?: boolean
     selection?: MenuFunnelSelectionSummary
   }>(),
   {
+    kitchenSlug: '',
     policy: undefined,
     selection: () => ({
       items: [],
@@ -95,6 +111,10 @@ defineEmits<{
 }>()
 
 const customer = ref<KitchenOrderCustomer>({})
+const { customer: customerAutofill } = useMenuCustomerAutofill()
+const allergyAccepted = ref(false)
+const allergyMessage =
+  'If you have a food allergy or intolerance, please speak to a member of the team before ordering.'
 const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
 const submitLabel = computed(() => menuOrderSubmitLabel(props.orderType))
@@ -124,6 +144,26 @@ const funnelComponents: Partial<Record<KitchenOrderType, Component>> = {
 }
 const funnelComponent = computed(() =>
   funnelComponents[props.orderType] || MenuFunnelDefault
+)
+
+watch(
+  customerAutofill,
+  (nextCustomer: KitchenOrderCustomer) => {
+    const next = { ...customer.value }
+    let changed = false
+
+    for (const field of ['name', 'phone', 'allergy_note'] as const) {
+      const currentValue = String(next[field] || '').trim()
+      const autofillValue = String(nextCustomer[field] || '').trim()
+      if (!currentValue && autofillValue) {
+        next[field] = autofillValue
+        changed = true
+      }
+    }
+
+    if (changed) customer.value = next
+  },
+  { immediate: true }
 )
 </script>
 

@@ -1,7 +1,5 @@
 <template>
   <MenuTheme :page-style="pageStyle">
-    <MenuAllergenNotice class="menu-notice" />
-
     <MenuDocument
       v-if="renderKind === 'document' && documentMenu"
       :kitchen-name="documentMenu.source?.kitchen_name"
@@ -54,9 +52,3 @@ const pageStyle = computed(() =>
   null
 )
 </script>
-
-<style scoped>
-.menu-notice {
-  margin-bottom: 1.5rem;
-}
-</style>

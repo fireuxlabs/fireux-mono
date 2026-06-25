@@ -54,6 +54,7 @@ export type KitchenOrderCustomer = {
   name?: string
   phone?: string
   address?: string
+  allergy_note?: string
   notes?: string
 }
 
@@ -71,6 +72,8 @@ export const KitchenOrderModel = {
   // Snapshot of the selected menu order-type policy at order time.
   // Fulfilment can evolve later without rewriting historical tickets.
   fulfilment_policy: {} as Record<string, unknown>,
+  // Snapshot of the concrete fulfilment match, such as the delivery zone found for an address.
+  fulfilment_match: {} as Record<string, unknown>,
   customer: {} as KitchenOrderCustomer,
 
   // Legacy transitional fields still read/written by existing surfaces.

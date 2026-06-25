@@ -120,6 +120,8 @@ const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
     actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
     funnelOpen: showOrderPanel.value,
     items: orderItems.value,
+    menuId: text(toValue(props.menuId)),
+    kitchenSlug: text(toValue(props.kitchenSlug)),
     orderType: selectedOrderType.value,
     pending: creatingItemId.value === 'order',
     ...(policy ? { policy } : {}),

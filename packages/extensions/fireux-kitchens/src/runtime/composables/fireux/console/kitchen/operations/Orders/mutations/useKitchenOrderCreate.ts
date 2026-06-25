@@ -95,6 +95,7 @@ export function useKitchenOrderCreate() {
 
       items: [item],
       fulfilment_policy: {},
+      fulfilment_match: {},
       customer: {},
 
       app_id: (input.app_id || appId || '') as any,

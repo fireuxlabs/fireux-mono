@@ -47,6 +47,8 @@ export type MenuStructuredOrderOverlayState = {
   actionLabel: string
   funnelOpen: boolean
   items: MenuStructuredBasketItem[]
+  menuId: string
+  kitchenSlug?: string
   orderType: KitchenOrderType
   pending: boolean
   policy?: MenuOrderTypeConfig

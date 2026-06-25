@@ -45,6 +45,16 @@
         @input="update('notes', $event)"
       />
     </label>
+
+    <label class="menu-order-fields__wide">
+      <span>Allergy note</span>
+      <textarea
+        :value="modelValue.allergy_note || ''"
+        rows="2"
+        placeholder="Allergies or intolerances the kitchen must know."
+        @input="update('allergy_note', $event)"
+      />
+    </label>
   </div>
 </template>
 

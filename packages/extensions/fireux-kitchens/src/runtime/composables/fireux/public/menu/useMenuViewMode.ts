@@ -205,12 +205,12 @@ export function useMenuViewMode(
     defaultOrderTypeConfig.value
   )
   const orderNotice = computed(() => {
+    if (selectedOrderType.value !== 'pre_order') return ''
     if (selectedChoiceOption.value.message) {
       return selectedChoiceOption.value.message
     }
 
     const noticeHours = selectedOrderTypeConfig.value?.notice_hours
-    if (selectedOrderType.value !== 'pre_order') return ''
     if (noticeHours) {
       return `Pre-orders need at least ${noticeHours} hours notice.`
     }

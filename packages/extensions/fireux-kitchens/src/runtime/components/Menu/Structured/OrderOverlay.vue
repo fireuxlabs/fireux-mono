@@ -13,6 +13,8 @@
     <MenuFunnelPanel
       v-else
       :order-type="order.orderType"
+      :menu-id="order.menuId"
+      :kitchen-slug="order.kitchenSlug"
       :policy="order.policy"
       :pending="order.pending"
       :selection="order.selection"

@@ -79,6 +79,16 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
   const label = text(row.label)
   if (!id || !label) return null
 
+  const polygon = list(row.polygon)
+    .map((point) => {
+      const source = record(point)
+      const lat = numberValue(source.lat)
+      const lng = numberValue(source.lng)
+
+      return lat !== undefined && lng !== undefined ? { lat, lng } : null
+    })
+    .filter((point): point is { lat: number, lng: number } => Boolean(point))
+
   return compact({
     id,
     label,
@@ -90,6 +100,7 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
     place_ids: list(row.place_ids)
       .map(text)
       .filter(Boolean),
+    polygon,
     color: text(row.color),
   }) as MenuDeliveryZone
 }

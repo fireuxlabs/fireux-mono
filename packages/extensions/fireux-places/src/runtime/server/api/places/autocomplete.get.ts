@@ -181,6 +181,7 @@ export default defineEventHandler(async (event: any) => {
   )
   url.searchParams.set('input', query)
   url.searchParams.set('key', key)
+  if (contextType === 'address') url.searchParams.set('types', 'address')
   if (location) url.searchParams.set('location', location)
   if (radius) url.searchParams.set('radius', radius)
 

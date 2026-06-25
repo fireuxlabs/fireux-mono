@@ -66,6 +66,10 @@ export type MenuDeliveryZone = {
   fee_chf?: number
   postal_codes?: string[]
   place_ids?: string[]
+  polygon?: Array<{
+    lat: number
+    lng: number
+  }>
   color?: string
 }
 

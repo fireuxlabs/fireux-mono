@@ -5,9 +5,7 @@ import {
   getRouterParam,
   readBody,
 } from 'h3'
-import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import type {
@@ -17,10 +15,13 @@ import type {
 } from '../../../../models/order.model'
 import { readKitchenMenuPublicRows } from '../../../utils/kitchen-menu-public-rows.ts'
 import {
-  readMenuKitchenBySlug,
-  readRootMenuKitchenScope,
-  resolveSourceAppId,
-} from '../../../utils/menu-kitchen-scope.ts'
+  checkMenuDeliveryAddress,
+  type MenuDeliveryAddressResult,
+} from '../../../utils/menu-delivery-address.ts'
+import {
+  currentMenuOrderAppId,
+  readMenuOrderContext,
+} from '../../../utils/menu-order-context.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
@@ -32,13 +33,6 @@ import {
   type CreateMenuOrderBody,
 } from '../../../utils/menu-order-lines.ts'
 
-type MenuOrderContext = {
-  appId: string
-  kitchenId: string
-  menuId: string
-  menuData: Record<string, unknown>
-}
-
 const orderTypes = new Set<KitchenOrderType>([
   'dine_in',
   'collection',
@@ -47,10 +41,6 @@ const orderTypes = new Set<KitchenOrderType>([
   'room_service',
 ])
 const text = (value: unknown) => String(value ?? '').trim()
-const currentAppId = () => {
-  const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
-  return text(fireux.id)
-}
 const orderId = () => {
   const now = Date.now()
   const rand = Math.random().toString(16).slice(2)
@@ -91,92 +81,13 @@ const readCustomer = (value: unknown): KitchenOrderCustomer => {
     name: text(source.name),
     phone: text(source.phone),
     address: text(source.address),
+    allergy_note: text(source.allergy_note),
     notes: text(source.notes),
   }
 
   return Object.fromEntries(
     Object.entries(customer).filter(([, entry]) => entry)
   ) as KitchenOrderCustomer
-}
-const readMenuDoc = async (
-  appId: string,
-  kitchenId: string,
-  menuId: string
-) => {
-  const db = getRuntimeFirestore()
-  const snap = await db
-    .collection(`apps/${appId}/kitchens/${kitchenId}/menus`)
-    .doc(menuId)
-    .get()
-
-  if (!snap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const menuData = snap.data() || {}
-  if (readRecordString(menuData, 'status') !== 'published') {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  return menuData
-}
-const readContext = async (
-  menuId: string,
-  kitchenSlug: string
-): Promise<MenuOrderContext> => {
-  if (kitchenSlug) {
-    const kitchen = await readMenuKitchenBySlug(kitchenSlug)
-    if (!kitchen) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
-
-    const appId = resolveSourceAppId(kitchen.data, currentAppId())
-    const menuData = await readMenuDoc(appId, kitchen.id, menuId)
-
-    return {
-      appId,
-      kitchenId: kitchen.id,
-      menuId,
-      menuData,
-    }
-  }
-
-  const db = getRuntimeFirestore()
-  const rootSnap = await db.collection('menus').doc(menuId).get()
-  if (!rootSnap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const rootData = rootSnap.data() || {}
-  const scope = await readRootMenuKitchenScope(rootData, currentAppId())
-  const appId = text(scope.kitchenAppId)
-  const kitchenId = text(scope.kitchenId)
-  const scopedMenuId = text(scope.kitchenMenuId) || menuId
-  if (!appId || !kitchenId || !scopedMenuId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'This menu cannot accept orders yet.',
-    })
-  }
-
-  return {
-    appId,
-    kitchenId,
-    menuId: scopedMenuId,
-    menuData: await readMenuDoc(appId, kitchenId, scopedMenuId),
-  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -201,7 +112,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const context = await readContext(menuId, kitchenSlug)
+  const context = await readMenuOrderContext(menuId, kitchenSlug)
   const ordering = readMenuOrderingConfig(context.menuData)
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   if (!isMenuOrderingEnabled(ordering)) {
@@ -217,6 +128,19 @@ export default defineEventHandler(async (event) => {
   )
   const requestedFor = text(body?.requested_for)
   const customer = readCustomer(body?.customer)
+  let deliveryAddressResult: MenuDeliveryAddressResult | null = null
+  if (orderType === 'delivery') {
+    deliveryAddressResult = await checkMenuDeliveryAddress(
+      customer.address || '',
+      orderTypeConfig?.fulfilment?.delivery_zones || []
+    )
+    if (!deliveryAddressResult.deliverable) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: deliveryAddressResult.reason || 'This address is outside the delivery area.',
+      })
+    }
+  }
   const rows = await readKitchenMenuPublicRows(getRuntimeFirestore(), {
     appId: context.appId,
     kitchenId: context.kitchenId,
@@ -280,6 +204,15 @@ export default defineEventHandler(async (event) => {
     requested_for: requestedFor,
     fire_state: fireState,
     ...(Object.keys(customer).length ? { customer } : {}),
+    ...(deliveryAddressResult?.zone
+      ? {
+          fulfilment_match: {
+            type: 'delivery_zone',
+            zone: deliveryAddressResult.zone,
+            address: deliveryAddressResult.address,
+          },
+        }
+      : {}),
     ...(orderTypeConfig
       ? {
           fulfilment_policy: {
@@ -303,7 +236,7 @@ export default defineEventHandler(async (event) => {
     created: {
       at: now,
       by: 'public-menu',
-      app_id: currentAppId(),
+      app_id: currentMenuOrderAppId(),
     },
     updated: {
       at: now,

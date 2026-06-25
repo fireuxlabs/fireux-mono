@@ -71,6 +71,7 @@ const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
     name: text(customer?.name),
     phone: text(customer?.phone),
     address: text(customer?.address),
+    allergy_note: text(customer?.allergy_note),
     notes: text(customer?.notes),
   }
 
