@@ -29,10 +29,6 @@
       </div>
     </div>
 
-    <p v-if="message" class="menu-order-panel__message">
-      {{ message }}
-    </p>
-
     <component
       :is="funnelComponent"
       v-model="customer"
@@ -102,7 +98,6 @@ const customer = ref<KitchenOrderCustomer>({})
 const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
 const submitLabel = computed(() => menuOrderSubmitLabel(props.orderType))
-const message = computed(() => props.policy?.message || '')
 const itemCountLabel = computed(() =>
   `${props.selection.quantity} item${props.selection.quantity === 1 ? '' : 's'}`
 )
@@ -158,7 +153,6 @@ const funnelComponent = computed(() =>
 }
 
 .menu-order-panel__eyebrow,
-.menu-order-panel__message,
 .menu-order-panel h2 {
   margin: 0;
 }
@@ -215,13 +209,6 @@ const funnelComponent = computed(() =>
   font: inherit;
   font-size: 0.78rem;
   font-weight: 850;
-}
-
-.menu-order-panel__message {
-  color: var(--menu-muted);
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.45;
 }
 
 .menu-order-panel__submit {

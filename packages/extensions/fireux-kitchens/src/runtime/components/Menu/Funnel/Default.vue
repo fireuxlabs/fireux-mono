@@ -1,22 +1,14 @@
 <template>
   <div class="menu-order-funnel">
-    <p v-if="message" class="menu-order-funnel__message">
-      {{ message }}
-    </p>
-
-    <MenuFunnelFields
-      :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
-    />
+    <p>Order funnel placeholder.</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
 import type { KitchenOrderCustomer } from '../../../models/order.model'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     modelValue: KitchenOrderCustomer
     policy?: MenuOrderTypeConfig
@@ -29,8 +21,6 @@ const props = withDefaults(
 defineEmits<{
   (event: 'update:modelValue', value: KitchenOrderCustomer): void
 }>()
-
-const message = computed(() => props.policy?.message || '')
 </script>
 
 <style scoped>
@@ -39,7 +29,7 @@ const message = computed(() => props.policy?.message || '')
   gap: 1rem;
 }
 
-.menu-order-funnel__message {
+.menu-order-funnel p {
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.92rem;
