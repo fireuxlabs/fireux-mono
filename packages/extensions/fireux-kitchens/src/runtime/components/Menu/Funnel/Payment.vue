@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MenuPaymentMethod } from '../../../../models/menu/menu.model'
+import type { MenuPaymentMethod } from '../../../models/menu/menu.model'
 
 const props = withDefaults(
   defineProps<{

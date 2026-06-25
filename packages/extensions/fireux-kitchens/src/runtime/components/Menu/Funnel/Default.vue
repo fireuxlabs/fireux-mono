@@ -4,7 +4,7 @@
       {{ message }}
     </p>
 
-    <MenuOrderFunnelFields
+    <MenuFunnelFields
       :model-value="modelValue"
       @update:model-value="$emit('update:modelValue', $event)"
     />
@@ -13,8 +13,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MenuOrderTypeConfig } from '../../../../models/menu/menu.model'
-import type { KitchenOrderCustomer } from '../../../../models/order.model'
+import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
+import type { KitchenOrderCustomer } from '../../../models/order.model'
 
 const props = withDefaults(
   defineProps<{

@@ -20,7 +20,7 @@
         :sections="menu.content.sections"
       />
 
-      <MenuOrderNotice
+      <MenuFunnelNotice
         v-if="isOrderMode && orderNotice"
         :message="orderNotice"
       />
@@ -33,7 +33,7 @@
         @remove="removeFromOrder"
       />
 
-      <MenuOrderBasket
+      <MenuSelectionBasket
         v-if="isOrderMode && basketQuantity && !showOrderPanel"
         :quantity="basketQuantity"
         :items="orderItems"
@@ -43,7 +43,7 @@
         @place="showOrderPanel = true"
       />
 
-      <MenuOrderPanel
+      <MenuFunnelPanel
         v-if="isOrderMode && basketQuantity && showOrderPanel"
         :order-type="selectedOrderType"
         :policy="selectedOrderTypeConfig"

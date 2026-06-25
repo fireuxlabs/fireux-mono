@@ -15,9 +15,9 @@
       </article>
     </div>
 
-    <MenuOrderFunnelPayment :methods="paymentMethods" />
+    <MenuFunnelPayment :methods="paymentMethods" />
 
-    <MenuOrderFunnelFields
+    <MenuFunnelFields
       :model-value="modelValue"
       address
       @update:model-value="$emit('update:modelValue', $event)"
@@ -30,8 +30,8 @@ import { computed } from 'vue'
 import type {
   MenuDeliveryZone,
   MenuOrderTypeConfig,
-} from '../../../../models/menu/menu.model'
-import type { KitchenOrderCustomer } from '../../../../models/order.model'
+} from '../../../models/menu/menu.model'
+import type { KitchenOrderCustomer } from '../../../models/order.model'
 
 const props = withDefaults(
   defineProps<{

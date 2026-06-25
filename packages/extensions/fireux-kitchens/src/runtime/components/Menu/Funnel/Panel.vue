@@ -49,10 +49,10 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderType,
 } from '../../../models/order.model'
-import MenuOrderFunnelCollection from './Funnel/Collection.vue'
-import MenuOrderFunnelDefault from './Funnel/Default.vue'
-import MenuOrderFunnelDelivery from './Funnel/Delivery.vue'
-import MenuOrderFunnelPreOrder from './Funnel/PreOrder.vue'
+import MenuFunnelCollection from './Collection.vue'
+import MenuFunnelDefault from './Default.vue'
+import MenuFunnelDelivery from './Delivery.vue'
+import MenuFunnelPreOrder from './PreOrder.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -103,12 +103,12 @@ const customerPayload = computed<KitchenOrderCustomer>(() =>
   )
 )
 const funnelComponents: Partial<Record<KitchenOrderType, Component>> = {
-  delivery: MenuOrderFunnelDelivery,
-  collection: MenuOrderFunnelCollection,
-  pre_order: MenuOrderFunnelPreOrder,
+  delivery: MenuFunnelDelivery,
+  collection: MenuFunnelCollection,
+  pre_order: MenuFunnelPreOrder,
 }
 const funnelComponent = computed(() =>
-  funnelComponents[props.orderType] || MenuOrderFunnelDefault
+  funnelComponents[props.orderType] || MenuFunnelDefault
 )
 </script>
 

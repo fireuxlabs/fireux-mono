@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenOrderCustomer } from '../../../../models/order.model'
+import type { KitchenOrderCustomer } from '../../../models/order.model'
 
 const props = withDefaults(
   defineProps<{
