@@ -100,6 +100,10 @@ export function useKitchenConsoleOrders() {
           id: item.id,
           dishId: item.dish_id,
           label: item.label,
+          addOns: item.add_ons || [],
+          variantId: item.variant_id || '',
+          variantLabel: item.variant_label || '',
+          unitPrice: item.unit_price || 0,
           quantity: item.quantity,
           checked: item.checked,
         }))

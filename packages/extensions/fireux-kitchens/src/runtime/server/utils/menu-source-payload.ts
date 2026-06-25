@@ -18,6 +18,40 @@ const priceNumber = (value: unknown) => {
 
   return Number.isFinite(parsed) ? parsed : 0
 }
+const priceOptions = (value: unknown) =>
+  (Array.isArray(value) ? value : [])
+    .map((option, optionIndex) => {
+      const optionRecord = readRecord(option)
+      const label = text(optionRecord.label)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id:
+          text(optionRecord.id) ||
+          label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+          `option-${optionIndex + 1}`,
+        label,
+        price,
+      }
+    })
+    .filter((option) => option.label && option.price > 0)
+const addOns = (value: unknown) =>
+  (Array.isArray(value) ? value : [])
+    .map((option, optionIndex) => {
+      const optionRecord = readRecord(option)
+      const label = text(optionRecord.label)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id:
+          text(optionRecord.id) ||
+          label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+          `add-on-${optionIndex + 1}`,
+        label,
+        price,
+      }
+    })
+    .filter((option) => option.label && option.price > 0)
 
 const payloadSections = (payload: Record<string, unknown>) => {
   const sections = Array.isArray(payload.sections) ? payload.sections : []
@@ -48,6 +82,10 @@ const payloadSections = (payload: Record<string, unknown>) => {
           `${sectionId}-item-${itemIndex + 1}`
         )
         const priceLabel = text(itemRecord.price_label || itemRecord.price)
+        const itemPriceOptions = priceOptions(
+          itemRecord.priceOptions || itemRecord.price_options
+        )
+        const itemAddOns = addOns(itemRecord.addOns || itemRecord.add_ons)
 
         return {
           id: itemId,
@@ -61,7 +99,8 @@ const payloadSections = (payload: Record<string, unknown>) => {
           description: readRecordString(itemRecord, 'description'),
           price: priceNumber(itemRecord.price),
           ...(priceLabel ? { priceLabel } : {}),
-          priceOptions: [],
+          priceOptions: itemPriceOptions,
+          addOns: itemAddOns,
         }
       }),
     }

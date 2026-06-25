@@ -7,8 +7,8 @@
       @click="isOpen = !isOpen"
     >
       <span class="menu-basket__copy">
-        <strong>{{ quantity }} item{{ quantity === 1 ? '' : 's' }}</strong>
-        <span>Ready to send to the kitchen.</span>
+        <strong>{{ totalLabel || itemCountLabel }}</strong>
+        <span>{{ itemCountLabel }}</span>
       </span>
       <UIcon
         :name="isOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
@@ -16,18 +16,23 @@
       />
     </button>
 
-    <div v-if="isOpen" class="menu-basket__items">
-      <div
-        v-for="item in items"
-        :key="item.id"
-        class="menu-basket__item"
-      >
-        <span>{{ item.quantity }}x</span>
-        <p>{{ item.name }}</p>
+    <template v-else>
+      <div class="menu-basket__items">
+        <div
+          v-for="item in items"
+          :key="item.lineId || item.id"
+          class="menu-basket__item"
+        >
+          <span>{{ item.quantity }}x</span>
+          <p>{{ item.name }}</p>
+        </div>
       </div>
-    </div>
+    </template>
 
-    <div class="menu-basket__actions">
+    <div
+      v-if="isOpen"
+      class="menu-basket__actions"
+    >
       <button
         type="button"
         class="menu-basket__button menu-basket__button--ghost"
@@ -45,19 +50,35 @@
         {{ pending ? 'Sending...' : 'Place order' }}
       </button>
     </div>
+
+    <div
+      v-else
+      class="menu-basket__actions"
+    >
+      <button
+        type="button"
+        class="menu-basket__button menu-basket__button--primary"
+        :disabled="pending"
+        @click="$emit('place')"
+      >
+        {{ pending ? 'Sending...' : 'Place order' }}
+      </button>
+    </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 type MenuBasketItem = {
   id: string
+  lineId?: string
   name: string
   quantity: number
+  unitPrice?: number
 }
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     quantity: number
     items?: MenuBasketItem[]
@@ -73,7 +94,25 @@ defineEmits<{
   (event: 'place'): void
 }>()
 
-const isOpen = ref(false)
+const isOpen = ref(true)
+const itemCountLabel = computed(() =>
+  `${props.quantity} item${props.quantity === 1 ? '' : 's'}`
+)
+const total = computed(() =>
+  props.items.reduce(
+    (sum, item) =>
+      sum + Math.max(0, Number(item.unitPrice || 0)) * Math.max(0, Number(item.quantity || 0)),
+    0
+  )
+)
+const totalLabel = computed(() =>
+  total.value
+    ? new Intl.NumberFormat('de-CH', {
+        style: 'currency',
+        currency: 'CHF',
+      }).format(total.value)
+    : ''
+)
 </script>
 
 <style scoped>
@@ -134,8 +173,10 @@ const isOpen = ref(false)
 }
 
 .menu-basket__actions {
-  grid-auto-flow: column;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.45rem;
+  align-items: center;
   justify-content: end;
 }
 

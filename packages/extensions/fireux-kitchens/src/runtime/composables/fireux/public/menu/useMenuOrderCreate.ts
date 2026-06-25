@@ -12,6 +12,15 @@ import type {
 type MenuOrderLineInput = {
   itemId: string
   quantity: number
+  addOns?: MenuOrderVariantInput[]
+  variant?: MenuOrderVariantInput
+}
+
+type MenuOrderVariantInput = {
+  id?: string
+  label?: string
+  price?: number
+  priceLabel?: string
 }
 
 type CreateMenuOrderInput = {
@@ -32,6 +41,29 @@ type UseMenuOrderCreateOptions = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const numberValue = (value: unknown) => {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : 0
+}
+const cleanVariant = (variant: MenuOrderVariantInput | undefined) => {
+  const id = text(variant?.id)
+  const label = text(variant?.label)
+  const price = numberValue(variant?.price)
+  const priceLabel = text(variant?.priceLabel)
+  if (!id && !label) return undefined
+
+  return {
+    id,
+    label,
+    ...(price ? { price } : {}),
+    ...(priceLabel ? { priceLabel } : {}),
+  }
+}
+const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
+  Array.isArray(addOns)
+    ? addOns.map(cleanVariant).filter(Boolean)
+    : []
 
 export function useMenuOrderCreate(
   menuId: MaybeRefOrGetter<string>,
@@ -57,6 +89,10 @@ export function useMenuOrderCreate(
       .map((item) => ({
         itemId: text(item.itemId),
         quantity: Math.max(1, Number(item.quantity || 1) || 1),
+        ...(cleanAddOns(item.addOns).length
+          ? { addOns: cleanAddOns(item.addOns) }
+          : {}),
+        ...(cleanVariant(item.variant) ? { variant: cleanVariant(item.variant) } : {}),
       }))
       .filter((item) => item.itemId)
     if (!endpoint.value || !items.length) return null

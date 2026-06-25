@@ -28,12 +28,25 @@ import {
 type CreateMenuOrderBody = {
   itemId?: string
   quantity?: number
+  addOns?: MenuOrderVariantInput[]
+  add_ons?: MenuOrderVariantInput[]
+  variant?: MenuOrderVariantInput
   items?: Array<{
     itemId?: string
     quantity?: number
+    addOns?: MenuOrderVariantInput[]
+    add_ons?: MenuOrderVariantInput[]
+    variant?: MenuOrderVariantInput
   }>
   order_type?: string
   requested_for?: string
+}
+
+type MenuOrderVariantInput = {
+  id?: string
+  label?: string
+  price?: number
+  priceLabel?: string
 }
 
 type MenuOrderContext = {
@@ -89,17 +102,127 @@ const fireStateForOrderType = (
 }
 const quantity = (value: unknown) =>
   Math.max(1, Number(value || 1) || 1)
+const variantKey = (value: unknown) =>
+  text(value).toLowerCase().replace(/[^a-z0-9]+/g, '-')
+const readVariant = (value: unknown): MenuOrderVariantInput | null => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+
+  const source = value as Record<string, unknown>
+  const id = text(source.id)
+  const label = text(source.label)
+  const price = Number(source.price)
+  const priceLabel = text(source.priceLabel || source.price_label)
+  if (!id && !label) return null
+
+  return {
+    id,
+    label,
+    ...(Number.isFinite(price) && price > 0 ? { price } : {}),
+    ...(priceLabel ? { priceLabel } : {}),
+  }
+}
+const readAddOns = (value: unknown) =>
+  (Array.isArray(value) ? value : [])
+    .map(readVariant)
+    .filter((addOn): addOn is MenuOrderVariantInput => Boolean(addOn))
 const readRequestedItems = (body: CreateMenuOrderBody | null) => {
   const items = Array.isArray(body?.items)
     ? body.items
-    : [{ itemId: body?.itemId, quantity: body?.quantity }]
+    : [{
+        itemId: body?.itemId,
+        quantity: body?.quantity,
+        addOns: body?.addOns || body?.add_ons,
+        variant: body?.variant,
+      }]
 
   return items
     .map((item) => ({
       itemId: text(item.itemId),
       quantity: quantity(item.quantity),
+      addOns: readAddOns(item.addOns || item.add_ons),
+      variant: readVariant(item.variant),
     }))
     .filter((item) => item.itemId)
+}
+const resolveVariant = (
+  options: Array<{ id?: string, label: string, price: number, priceLabel?: string }>,
+  requested: MenuOrderVariantInput | null
+) => {
+  if (!options.length) {
+    return requested?.label
+      ? {
+          id: requested.id,
+          label: requested.label,
+          price: Number(requested.price || 0) || 0,
+          priceLabel: requested.priceLabel,
+        }
+      : null
+  }
+  if (!requested && options.length === 1) return options[0]
+  if (!requested) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose an item variant.',
+    })
+  }
+
+  const requestedKeys = [
+    variantKey(requested.id),
+    variantKey(requested.label),
+  ].filter(Boolean)
+  const match = options.find((option, optionIndex) => {
+    const optionKeys = [
+      variantKey(option.id),
+      variantKey(option.label),
+      `option-${optionIndex + 1}`,
+    ].filter(Boolean)
+
+    return optionKeys.some((key) => requestedKeys.includes(key))
+  })
+  if (!match) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Selected item variant is not available.',
+    })
+  }
+
+  return match
+}
+const resolveAddOns = (
+  options: Array<{ id?: string, label: string, price: number }>,
+  requested: MenuOrderVariantInput[]
+) => {
+  if (!requested.length) return []
+  if (!options.length) {
+    return requested
+      .filter((addOn) => text(addOn.label))
+      .map((addOn) => ({
+        id: text(addOn.id) || variantKey(addOn.label),
+        label: text(addOn.label),
+        price: Number(addOn.price || 0) || 0,
+      }))
+  }
+
+  return requested.map((requestedAddOn) => {
+    const requestedKeys = [
+      variantKey(requestedAddOn.id),
+      variantKey(requestedAddOn.label),
+    ].filter(Boolean)
+    const match = options.find((option) =>
+      [
+        variantKey(option.id),
+        variantKey(option.label),
+      ].filter(Boolean).some((key) => requestedKeys.includes(key))
+    )
+    if (!match) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Selected item add-on is not available.',
+      })
+    }
+
+    return match
+  })
 }
 const readMenuDoc = async (
   appId: string,
@@ -234,12 +357,26 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Menu item not found.',
       })
     }
+    const variant = resolveVariant(item.priceOptions, requestedItem.variant)
+    const addOns = resolveAddOns(item.addOns || [], requestedItem.addOns)
+    const labelParts = [
+      item.name,
+      variant?.label,
+    ].filter(Boolean)
 
     return {
       id: `item-${index + 1}`,
       dish_id: item.dish_id,
-      label: item.name,
+      label: labelParts.join(' · '),
       quantity: requestedItem.quantity,
+      ...(addOns.length ? { add_ons: addOns } : {}),
+      ...(variant
+        ? {
+            variant_id: text(variant.id),
+            variant_label: variant.label,
+            unit_price: variant.price,
+          }
+        : {}),
       checked: false,
     }
   })

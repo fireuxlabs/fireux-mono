@@ -1,5 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../models/menu/menu-item.model'
 import {
@@ -61,6 +62,7 @@ export async function readKitchenMenuPublicRows(
               description: readRecordString(dish || {}, 'description'),
               price: numberValue(item.price),
               priceOptions: normalizeMenuItemPriceOptions(item.price_options),
+              addOns: normalizeMenuItemAddOns(item.add_ons),
             }
           })
 

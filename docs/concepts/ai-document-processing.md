@@ -1,6 +1,6 @@
 AI document processing map
-Updated: 2026-06-21
-Ref: 03d4d55bd
+Updated: 2026-06-25
+Ref: 22f65613f
 Role: map, not canon
 
 Purpose:
@@ -55,6 +55,9 @@ Menu example:
 - Kitchen owns `menu-uploads` and current menu/dish records.
 - `fireux-ai` processes uploaded menu photos.
 - Kitchen normalizes sections/items and compares against current dishes.
+- Menu extraction distinguishes required variants from optional extras:
+  `price_options` are mutually exclusive sizes/choices, while `add_ons`
+  are optional extras/toppings/sides that can be combined.
 - Processing estimates cost first, then writes draft/review data after
   operator confirmation.
 - Kitchen records AI usage for later billing/invoicing.

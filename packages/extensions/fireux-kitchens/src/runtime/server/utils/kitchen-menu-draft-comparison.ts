@@ -1,5 +1,6 @@
 import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../models/menu/menu-item.model'
 import type { KitchenMenuCurrentShape } from './kitchen-menu-current'
@@ -83,6 +84,7 @@ function flatCurrentItems(current: KitchenMenuCurrentShape) {
       section: section.label,
       name: item.name,
       price: item.price,
+      add_ons: normalizeMenuItemAddOns(item.add_ons),
       price_options: normalizeMenuItemPriceOptions(item.price_options),
     }))
   )
@@ -95,6 +97,7 @@ function flatDraftItems(sections: KitchenMenuDraftSection[]) {
       section: section.label,
       name: item.name,
       price: item.price,
+      add_ons: normalizeMenuItemAddOns(item.add_ons),
       price_options: normalizeMenuItemPriceOptions(item.price_options),
     }))
   )
@@ -170,6 +173,9 @@ const pairItems = (
 const priceOptionsCount = (
   items: ReturnType<typeof flatCurrentItems> | ReturnType<typeof flatDraftItems>
 ) => items.reduce((count, item) => count + item.price_options.length, 0)
+const addOnsCount = (
+  items: ReturnType<typeof flatCurrentItems> | ReturnType<typeof flatDraftItems>
+) => items.reduce((count, item) => count + item.add_ons.length, 0)
 
 const addFlag = (
   flags: KitchenMenuProcessFlag[],
@@ -238,11 +244,36 @@ export function compareKitchenMenuDraftToCurrent(
       item.name, item.section)
   }
 
+  for (const item of draftItems) {
+    if (!item.add_ons.length) continue
+
+    addFlag(flags, 'add-ons-found', 'info',
+      `${item.name} has ${item.add_ons.length} add-on option(s) in the draft.`,
+      item.name, item.section)
+
+    const current = matched.pairs.find((pair) => pair.draft === item)?.current
+    if (!current || current.add_ons.length >= item.add_ons.length) continue
+
+    addFlag(flags, 'add-ons-need-review', 'warning',
+      `${item.name} has ${item.add_ons.length} draft add-on(s), but the current menu has ${current.add_ons.length}.`,
+      item.name, item.section)
+  }
+
+  for (const item of matched.missing) {
+    if (!item.add_ons.length) continue
+
+    addFlag(flags, 'add-ons-missing-in-extraction', 'warning',
+      `${item.name} has current menu add-ons, but the draft did not include add-ons.`,
+      item.name, item.section)
+  }
+
   return {
     flags,
     counts: {
       extracted_sections: draftSections.length,
       extracted_items: draftItems.length,
+      current_add_ons: addOnsCount(currentItems),
+      extracted_add_ons: addOnsCount(draftItems),
       current_price_options: priceOptionsCount(currentItems),
       extracted_price_options: priceOptionsCount(draftItems),
     },

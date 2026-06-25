@@ -2,6 +2,16 @@ export type LaTapBerneMenuItem = {
   name: string
   description: string
   price: string
+  priceOptions?: Array<{
+    id: string
+    label: string
+    price: number
+  }>
+  addOns?: Array<{
+    id: string
+    label: string
+    price: number
+  }>
 }
 
 export type LaTapBerneMenuSection = {
@@ -27,6 +37,11 @@ export const laTapBerneMenuSections: LaTapBerneMenuSection[] = [
         name: 'Tortilla de Patata',
         description: 'Die spanische Kartoffel-Omelette. Ø24cm. Klein 9.50, mittel 16.-, gross 25.-',
         price: '9.50 / 16 / 25',
+        priceOptions: [
+          { id: 'klein', label: 'Klein', price: 9.5 },
+          { id: 'mittel', label: 'Mittel', price: 16 },
+          { id: 'gross', label: 'Gross', price: 25 },
+        ],
       },
       {
         name: 'Gebratene Pimientos de Padrón',
@@ -47,16 +62,25 @@ export const laTapBerneMenuSections: LaTapBerneMenuSection[] = [
         name: 'Buffalo-Schwein Ribs',
         description: 'mit scharfer Sauce. Mit Pommes 27.-',
         price: '23',
+        addOns: [
+          { id: 'pommes', label: 'Pommes', price: 4 },
+        ],
       },
       {
         name: '"The Famous" Schweinebauch Albariño Teriyaki',
         description: 'Wakame-Salat, Cipollotte und Sesam. Mit Pommes 25.-',
         price: '21',
+        addOns: [
+          { id: 'pommes', label: 'Pommes', price: 4 },
+        ],
       },
       {
         name: 'Crispy Chicken Fingers',
         description: '5 selbstgemachte knusprige Poulet Fingers, scharfe Pickles, Guacamole und Aioli Sauce. Mit Pommes 25.-',
         price: '21',
+        addOns: [
+          { id: 'pommes', label: 'Pommes', price: 4 },
+        ],
       },
     ],
   },
@@ -137,11 +161,23 @@ export const laTapBerneMenuSections: LaTapBerneMenuSection[] = [
         name: 'Zorza Schwein/Poulet',
         description: 'Marinierte Streifen auf Pommes allumettes und geröstete Paprika. Add-ons: Manchego 2.50, Spiegelei 2.50',
         price: '27',
+        priceOptions: [
+          { id: 'schwein', label: 'Schwein', price: 27 },
+          { id: 'poulet', label: 'Poulet', price: 27 },
+        ],
+        addOns: [
+          { id: 'manchego', label: 'Manchego', price: 2.5 },
+          { id: 'spiegelei', label: 'Spiegelei', price: 2.5 },
+        ],
       },
       {
         name: 'Huevos Rotos con Cecina',
         description: 'Cecina Schinken, 2 Spiegeleier und Rustico Frites. Add-ons: Manchego 2.50, Trüffelöl 2.50',
         price: '24',
+        addOns: [
+          { id: 'manchego', label: 'Manchego', price: 2.5 },
+          { id: 'trueffeloel', label: 'Trüffelöl', price: 2.5 },
+        ],
       },
       {
         name: 'Fish and Chips',

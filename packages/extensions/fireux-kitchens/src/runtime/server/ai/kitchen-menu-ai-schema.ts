@@ -26,6 +26,17 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                     required: ['label', 'price'],
                   },
                 },
+                add_ons: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      label: { type: 'string' },
+                      price: { type: 'number' },
+                    },
+                    required: ['label', 'price'],
+                  },
+                },
                 source_file_ids: {
                   type: 'array',
                   items: { type: 'string' },
@@ -36,6 +47,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                 'description',
                 'price',
                 'price_options',
+                'add_ons',
                 'source_file_ids',
               ],
             },

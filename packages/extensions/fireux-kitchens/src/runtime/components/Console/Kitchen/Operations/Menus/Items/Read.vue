@@ -141,6 +141,37 @@
                     />
                   </div>
                 </div>
+
+                <div v-if="row.addOns.length" class="grid gap-3">
+                  <p class="text-sm font-medium text-highlighted">
+                    Add-ons
+                  </p>
+
+                  <div
+                    v-for="(addOn, addOnIndex) in row.addOns"
+                    :key="`${row.id}-add-on-${addOnIndex}`"
+                    class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-2"
+                  >
+                    <MoleculesFormsFirestoreSimpleField
+                      label="Add-on label"
+                      :firebase-value="addOn.label"
+                      placeholder="Add-on label"
+                      :disabled="!canWrite"
+                      disabled-message="This menu is read-only."
+                      :update-function="(value) => saveAddOnLabel(row, addOnIndex, value)"
+                    />
+
+                    <MoleculesFormsFirestoreSimpleField
+                      label="Add-on price"
+                      type="number"
+                      :firebase-value="addOn.price"
+                      placeholder="0"
+                      :disabled="!canWrite"
+                      disabled-message="This menu is read-only."
+                      :update-function="(value) => saveAddOnPrice(row, addOnIndex, value)"
+                    />
+                  </div>
+                </div>
               </div>
             </template>
           </UCollapsible>
@@ -253,6 +284,20 @@ const saveOptionPrice = (row: MenuSectionItemRow, index: number, value: string) 
       optionIndex === index ? { ...option, price: money(value) } : option
     ),
   }, 'Variant price saved')
+
+const saveAddOnLabel = (row: MenuSectionItemRow, index: number, value: string) =>
+  saveItemPatch(row, {
+    add_ons: row.addOns.map((addOn, addOnIndex) =>
+      addOnIndex === index ? { ...addOn, label: text(value) } : addOn
+    ),
+  }, 'Add-on label saved')
+
+const saveAddOnPrice = (row: MenuSectionItemRow, index: number, value: string) =>
+  saveItemPatch(row, {
+    add_ons: row.addOns.map((addOn, addOnIndex) =>
+      addOnIndex === index ? { ...addOn, price: money(value) } : addOn
+    ),
+  }, 'Add-on price saved')
 
 async function archive(itemId: string) {
   try {

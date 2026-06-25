@@ -1,5 +1,6 @@
 import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../models/menu/menu-item.model'
 
@@ -7,6 +8,7 @@ export type KitchenMenuDraftItem = {
   name: string
   description: string
   price: number
+  add_ons: unknown[]
   price_options: unknown[]
   source_file_ids: string[]
 }
@@ -56,6 +58,9 @@ export function normalizeKitchenMenuDraftSections(
               name: readString(row.name),
               description: readString(row.description),
               price: money(row.price),
+              add_ons: Array.isArray(row.add_ons)
+                ? normalizeMenuItemAddOns(row.add_ons)
+                : [],
               price_options: Array.isArray(row.price_options)
                 ? normalizeMenuItemPriceOptions(row.price_options)
                 : [],

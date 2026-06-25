@@ -2,6 +2,7 @@ import { DishStorage } from '../../models/dish.model'
 import { MenuStorage } from '../../models/menu/menu.model'
 import {
   MenuItemModel,
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../models/menu/menu-item.model'
 import { MenuSectionModel } from '../../models/menu/menu-section.model'
@@ -112,6 +113,7 @@ export async function writeKitchenMenuDraft(input: {
       )
       const dishRef = db.doc(`${input.kitchenPath}/${DishStorage.collection}/${dishId}`)
       const itemId = `${dishId}-${itemIndex + 1}`
+      const addOns = normalizeMenuItemAddOns(item.add_ons)
       const priceOptions = normalizeMenuItemPriceOptions(item.price_options)
       const optionPrices = priceOptions
         .map((option) => option.price)
@@ -143,6 +145,7 @@ export async function writeKitchenMenuDraft(input: {
         section_id: sectionId,
         dish_id: dishId,
         price,
+        add_ons: addOns,
         price_options: priceOptions,
         status: 'active',
         sort_order: itemIndex,

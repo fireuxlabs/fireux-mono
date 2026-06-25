@@ -3,14 +3,54 @@
     <div class="menu-item__copy">
       <h3>{{ item.name }}</h3>
       <p
-        v-if="orderMode && item.priceLabel"
+        v-if="orderMode && displayPrice"
         class="menu-item__price menu-item__price--inline"
       >
-        {{ item.priceLabel }}
+        {{ displayPrice }}
       </p>
       <p v-if="item.description">
         {{ item.description }}
       </p>
+
+      <div
+        v-if="orderMode && variantOptions.length > 1"
+        class="menu-variants"
+        :aria-label="`${item.name} variants`"
+      >
+        <button
+          v-for="variant in variantOptions"
+          :key="variant.id"
+          type="button"
+          :class="[
+            'menu-variant',
+            selectedVariant?.id === variant.id && 'menu-variant--selected',
+          ]"
+          @click="selectedVariantId = variant.id"
+        >
+          <span>{{ variant.label }}</span>
+          <small v-if="variant.priceLabel">{{ variant.priceLabel }}</small>
+        </button>
+      </div>
+
+      <div
+        v-if="orderMode && addOnOptions.length"
+        class="menu-variants"
+        :aria-label="`${item.name} add-ons`"
+      >
+        <button
+          v-for="addOn in addOnOptions"
+          :key="addOn.id"
+          type="button"
+          :class="[
+            'menu-variant',
+            selectedAddOnIds.includes(addOn.id) && 'menu-variant--selected',
+          ]"
+          @click="toggleAddOn(addOn.id)"
+        >
+          <span>+ {{ addOn.label }}</span>
+          <small v-if="addOn.priceLabel">{{ addOn.priceLabel }}</small>
+        </button>
+      </div>
     </div>
 
     <div
@@ -29,7 +69,7 @@
             variant="soft"
             icon="i-lucide-minus"
             :aria-label="`Remove ${item.name}`"
-            @click="$emit('remove', item)"
+            @click="$emit('remove', orderItem)"
           />
           <span>{{ quantity }}</span>
         </template>
@@ -40,7 +80,7 @@
           variant="soft"
           icon="i-lucide-plus"
           :aria-label="`Add ${item.name}`"
-          @click="$emit('add', item)"
+          @click="$emit('add', orderItem)"
         />
       </div>
     </div>
@@ -48,18 +88,100 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuStructuredItem } from './types'
+import { computed, ref, watch } from 'vue'
+import type {
+  MenuStructuredAddOn,
+  MenuStructuredItem,
+  MenuStructuredOrderItem,
+  MenuStructuredPriceOption,
+} from './types'
 
-defineProps<{
+const props = defineProps<{
   item: MenuStructuredItem
   orderMode?: boolean
-  quantity?: number
+  quantities?: Record<string, number>
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuStructuredItem): void
-  (event: 'remove', item: MenuStructuredItem): void
+  (event: 'add', item: MenuStructuredOrderItem): void
+  (event: 'remove', item: MenuStructuredOrderItem): void
 }>()
+
+const selectedVariantId = ref('')
+const selectedAddOnIds = ref<string[]>([])
+const variantOptions = computed<MenuStructuredPriceOption[]>(() =>
+  props.item.priceOptions || []
+)
+const addOnOptions = computed<MenuStructuredAddOn[]>(() =>
+  props.item.addOns || []
+)
+const selectedVariant = computed(() =>
+  variantOptions.value.find((variant) => variant.id === selectedVariantId.value) ||
+  variantOptions.value[0] ||
+  null
+)
+const selectedAddOns = computed(() =>
+  selectedAddOnIds.value
+    .map((id: string) =>
+      addOnOptions.value.find((addOn: MenuStructuredAddOn) => addOn.id === id)
+    )
+    .filter((addOn: MenuStructuredAddOn | undefined): addOn is MenuStructuredAddOn =>
+      Boolean(addOn)
+    )
+)
+const variantLineId = (variant: MenuStructuredPriceOption | null) =>
+  [
+    props.item.id,
+    variant?.id,
+    ...selectedAddOns.value.map((addOn: MenuStructuredAddOn) => addOn.id),
+  ]
+    .filter(Boolean)
+    .join(':')
+const quantity = computed(() =>
+  Number(props.quantities?.[variantLineId(selectedVariant.value)] || 0)
+)
+const displayPrice = computed(() =>
+  selectedVariant.value?.priceLabel || props.item.priceLabel
+)
+const orderItem = computed<MenuStructuredOrderItem>(() => ({
+  ...props.item,
+  lineId: variantLineId(selectedVariant.value),
+  ...(selectedAddOns.value.length ? { addOns: selectedAddOns.value } : {}),
+  ...(selectedVariant.value ? { variant: selectedVariant.value } : {}),
+}))
+
+function toggleAddOn(id: string) {
+  selectedAddOnIds.value = selectedAddOnIds.value.includes(id)
+    ? selectedAddOnIds.value.filter((addOnId: string) => addOnId !== id)
+    : [...selectedAddOnIds.value, id].sort()
+}
+
+watch(
+  [variantOptions, addOnOptions, () => props.quantities],
+  () => {
+    selectedAddOnIds.value = selectedAddOnIds.value.filter((id: string) =>
+      addOnOptions.value.some((addOn: MenuStructuredAddOn) => addOn.id === id)
+    )
+
+    if (!variantOptions.value.length) {
+      selectedVariantId.value = ''
+      return
+    }
+
+    const selectedStillExists = variantOptions.value.some(
+      (variant) => variant.id === selectedVariantId.value
+    )
+    if (selectedStillExists) return
+
+    selectedVariantId.value =
+      variantOptions.value.find(
+        (variant) => Number(props.quantities?.[variantLineId(variant)] || 0) > 0
+      )?.id ||
+      variantOptions.value[0]?.id ||
+      ''
+  },
+  { immediate: true, deep: true }
+)
 </script>
 
 <style scoped>
@@ -124,6 +246,39 @@ defineEmits<{
   display: inline-flex;
   gap: 0.4rem;
   align-items: center;
+}
+
+.menu-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.25rem;
+}
+
+.menu-variant {
+  display: inline-flex;
+  gap: 0.28rem;
+  align-items: center;
+  padding: 0.32rem 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--menu-primary) 5%, transparent);
+  color: var(--menu-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.menu-variant small {
+  color: var(--menu-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.menu-variant--selected {
+  border-color: var(--menu-primary);
+  background: color-mix(in srgb, var(--menu-primary) 14%, transparent);
 }
 
 .menu-quantity span {

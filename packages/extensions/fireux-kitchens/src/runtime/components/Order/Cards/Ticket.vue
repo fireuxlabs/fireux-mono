@@ -68,7 +68,21 @@
           class="flex items-start gap-2 text-sm"
         >
           <span class="w-6 shrink-0 font-semibold">{{ line.qty }}x</span>
-          <span class="min-w-0">{{ line.label }}</span>
+          <span class="min-w-0">
+            {{ line.label }}
+            <small
+              v-if="line.variant && !line.label.includes(line.variant)"
+              class="block text-xs text-dimmed"
+            >
+              {{ line.variant }}
+            </small>
+            <small
+              v-if="line.addOns.length"
+              class="block text-xs text-dimmed"
+            >
+              + {{ line.addOns.join(', ') }}
+            </small>
+          </span>
         </div>
 
         <div v-if="!lines.length" class="text-xs italic text-dimmed">
@@ -259,6 +273,12 @@ const lines = computed(() =>
     ? props.order.items.map((item) => ({
         id: normalizeString(item.id) || normalizeString(item.label),
         label: normalizeString(item.label) || 'Item',
+        addOns: Array.isArray(item.add_ons)
+          ? item.add_ons
+              .map((addOn) => normalizeString(addOn.label))
+              .filter(Boolean)
+          : [],
+        variant: normalizeString(item.variant_label),
         qty: Number(item.quantity || 0),
       }))
     : []

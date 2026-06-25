@@ -1,6 +1,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../models/menu/menu-item.model'
 
@@ -40,6 +41,7 @@ const itemRow = (
   name: readString(dish?.name),
   description: readString(dish?.description),
   price: numberValue(item.price),
+  add_ons: normalizeMenuItemAddOns(item.add_ons),
   price_options: normalizeMenuItemPriceOptions(item.price_options),
   status: readString(item.status),
   sort_order: numberValue(item.sort_order),

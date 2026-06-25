@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-24
-Ref: d3492e130
+Updated: 2026-06-25
+Ref: 22f65613f
 Role: map, not canon
 
 Purpose:
@@ -83,6 +83,14 @@ Kitchen needed:
 - Manage kitchen menu operations.
 - Enable Sproochli/translation later.
 - Route through tenant/global kitchen ownership.
+
+Structured item options:
+- `price_options`: required or mutually exclusive choices such as sizes,
+  pieces, grams, protein choices, or named variants.
+- `add_ons`: optional extras such as toppings, sides, sauces, or add-on
+  modifiers.
+- AI menu processing should preserve both shapes before review/confirm so
+  operators can correct them instead of rebuilding them manually.
 
 Ordering note:
 - Menu ordering is mapped separately in `menu-ordering.md`.

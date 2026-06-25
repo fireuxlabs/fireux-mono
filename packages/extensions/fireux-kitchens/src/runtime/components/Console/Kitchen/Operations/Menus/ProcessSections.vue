@@ -35,7 +35,7 @@
                 {{ item.description }}
               </p>
               <div
-                v-if="item.priceOptions.length"
+                v-if="item.priceOptions.length || item.addOns.length"
                 class="flex flex-wrap gap-1 pt-1"
               >
                 <UBadge
@@ -46,6 +46,15 @@
                   size="xs"
                 >
                   {{ option.label }} · {{ option.price }}
+                </UBadge>
+                <UBadge
+                  v-for="addOn in item.addOns"
+                  :key="`${item.name}-add-on-${addOn.label}-${addOn.price}`"
+                  color="primary"
+                  variant="soft"
+                  size="xs"
+                >
+                  + {{ addOn.label }} · {{ addOn.price }}
                 </UBadge>
               </div>
             </div>
@@ -70,6 +79,10 @@ defineProps<{
       name: string
       description: string
       price: string
+      addOns: {
+        label: string
+        price: string
+      }[]
       priceOptions: {
         label: string
         price: string

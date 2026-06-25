@@ -26,6 +26,14 @@ export type KitchenOrderItem = {
   id: string
   dish_id: string
   label: string
+  add_ons?: Array<{
+    id: string
+    label: string
+    price?: number
+  }>
+  variant_id?: string
+  variant_label?: string
+  unit_price?: number
   quantity: number
   checked: boolean
 }

@@ -220,7 +220,7 @@ const processDescription = computed(() =>
     : 'Convert this upload into a new draft menu.'
 )
 const sourceDescription = computed(() =>
-  'This reads the saved menu source and saves a structured menu draft with sections, dishes, items, prices, and variants.'
+  'This reads the saved menu source and saves a structured menu draft with sections, dishes, items, prices, variants, and add-ons.'
 )
 const uploadId = computed(() => text(record(source.value).id) || text(menuId.value))
 const statusMessage = computed(() => {
@@ -263,6 +263,10 @@ const stats = computed(() => [
     value: numberText(counts.value.extracted_price_options),
   },
   {
+    label: 'Draft add-ons',
+    value: numberText(counts.value.extracted_add_ons),
+  },
+  {
     label: 'Review flags',
     value: String(flags.value.length),
   },
@@ -300,6 +304,12 @@ const toSections = (value: unknown) =>
       name: text(item.name),
       description: text(item.description),
       price: priceText(item.price),
+      addOns: records(item.add_ons)
+        .map((option) => ({
+          label: optionLabel(option),
+          price: priceText(option.price),
+        }))
+        .filter((option) => option.label && option.price),
       priceOptions: records(item.price_options)
         .map((option) => ({
           label: optionLabel(option),

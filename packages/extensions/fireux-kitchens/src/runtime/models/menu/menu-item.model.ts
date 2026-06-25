@@ -39,6 +39,12 @@ export type MenuItemPriceOption = {
   price: number
 }
 
+export type MenuItemAddOnOption = {
+  id: string
+  label: string
+  price: number
+}
+
 const cleanText = (value: unknown) => String(value ?? '').trim()
 const cleanNumber = (value: unknown) => {
   const number = Number(value)
@@ -78,6 +84,26 @@ export function normalizeMenuItemPriceOptions(value: unknown): MenuItemPriceOpti
     .filter((option) => option.label && option.price > 0)
 }
 
+export function normalizeMenuItemAddOns(value: unknown): MenuItemAddOnOption[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((option, optionIndex) => {
+      const data = record(option)
+      const label = cleanText(data.label)
+
+      return {
+        id:
+          cleanText(data.id) ||
+          label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+          `add-on-${optionIndex + 1}`,
+        label,
+        price: cleanNumber(data.price),
+      }
+    })
+    .filter((option) => option.id && option.label && option.price > 0)
+}
+
 export const MenuItemModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -86,6 +112,7 @@ export const MenuItemModel = {
   dish_id: '' as string,
   price: 0 as number,
   price_options: [] as MenuItemPriceOption[],
+  add_ons: [] as MenuItemAddOnOption[],
   status: 'active' as MenuItemStatus,
   sort_order: 0 as number,
   created: {

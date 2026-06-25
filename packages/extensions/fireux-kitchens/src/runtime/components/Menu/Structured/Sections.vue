@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import type {
-  MenuStructuredItem,
+  MenuStructuredOrderItem,
   MenuStructuredSection,
 } from './types'
 
@@ -26,8 +26,8 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuStructuredItem): void
-  (event: 'remove', item: MenuStructuredItem): void
+  (event: 'add', item: MenuStructuredOrderItem): void
+  (event: 'remove', item: MenuStructuredOrderItem): void
 }>()
 
 const sectionDomId = (id: string) =>

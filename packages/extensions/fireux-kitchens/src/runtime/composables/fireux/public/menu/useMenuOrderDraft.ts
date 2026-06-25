@@ -11,10 +11,30 @@ import { useMenuOrderCreate } from './useMenuOrderCreate'
 type MenuOrderItem = {
   id: string
   name: string
+  addOns?: MenuOrderAddOn[]
+  lineId?: string
+  price?: number
+  variant?: MenuOrderVariant
+}
+
+type MenuOrderAddOn = {
+  id: string
+  label: string
+  price?: number
+  priceLabel?: string
+}
+
+type MenuOrderVariant = {
+  id: string
+  label: string
+  price?: number
+  priceLabel?: string
 }
 
 type MenuOrderDraftItem = MenuOrderItem & {
+  lineId: string
   quantity: number
+  unitPrice: number
 }
 
 type MenuOrderDraftOptions = {
@@ -25,11 +45,47 @@ type MenuOrderDraftOptions = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const numberValue = (value: unknown) => {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : 0
+}
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+const normalizeVariant = (value: unknown): MenuOrderVariant | undefined => {
+  const source = record(value)
+  const id = text(source.id)
+  const label = text(source.label)
+  const price = numberValue(source.price)
+  const priceLabel = text(source.priceLabel || source.price_label)
+  if (!id && !label) return undefined
+
+  return {
+    id,
+    label,
+    ...(price ? { price } : {}),
+    ...(priceLabel ? { priceLabel } : {}),
+  }
+}
+const normalizeAddOns = (value: unknown): MenuOrderAddOn[] => {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map(normalizeVariant)
+    .filter((addOn): addOn is MenuOrderAddOn => Boolean(addOn))
+}
 const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
 
   const item = value as Partial<MenuOrderDraftItem>
-  return Boolean(text(item.id) && text(item.name) && Number(item.quantity) > 0)
+  return Boolean(
+    text(item.id) &&
+    text(item.name) &&
+    text(item.lineId || item.id) &&
+    Number(item.quantity) > 0
+  )
 }
 
 export function useMenuOrderDraft(
@@ -50,7 +106,7 @@ export function useMenuOrderDraft(
   )
   const quantities = computed(() =>
     items.value.reduce<Record<string, number>>((map, item) => {
-      map[item.id] = item.quantity
+      map[item.lineId] = item.quantity
       return map
     }, {})
   )
@@ -75,10 +131,19 @@ export function useMenuOrderDraft(
         draft.value = Object.values(parsed)
           .filter(isDraftItem)
           .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
-            map[item.id] = {
+            const lineId = text(item.lineId || item.id)
+            const variant = normalizeVariant(item.variant)
+
+            map[lineId] = {
               id: text(item.id),
+              lineId,
               name: text(item.name),
               quantity: Number(item.quantity),
+              unitPrice: numberValue(item.unitPrice),
+              ...(normalizeAddOns(item.addOns).length
+                ? { addOns: normalizeAddOns(item.addOns) }
+                : {}),
+              ...(variant ? { variant } : {}),
             }
             return map
           }, {})
@@ -108,29 +173,48 @@ export function useMenuOrderDraft(
     if (!canOrder.value) return
 
     const id = text(item.id)
+    const lineId = text(item.lineId) || id
     if (!id) return
 
-    const current = draft.value[id]
+    const variant = normalizeVariant(item.variant)
+    const addOns = normalizeAddOns(item.addOns)
+    const current = draft.value[lineId]
+    const addOnsPrice = addOns.reduce(
+      (total, addOn) => total + numberValue(addOn.price),
+      0
+    )
+    const basePrice = numberValue(variant?.price) || numberValue(item.price)
+    const unitPrice = basePrice + addOnsPrice
+    const suffix = [
+      variant?.label,
+      addOns.length
+        ? `+ ${addOns.map((addOn) => addOn.label).join(', ')}`
+        : '',
+    ].filter(Boolean).join(' · ')
     draft.value = {
       ...draft.value,
-      [id]: {
+      [lineId]: {
         id,
-        name: text(item.name),
+        lineId,
+        name: suffix ? `${text(item.name)} · ${suffix}` : text(item.name),
+        unitPrice,
+        ...(addOns.length ? { addOns } : {}),
+        ...(variant ? { variant } : {}),
         quantity: (current?.quantity || 0) + 1,
       },
     }
   }
 
   function remove(item: MenuOrderItem) {
-    const id = text(item.id)
-    const current = draft.value[id]
-    if (!id || !current) return
+    const lineId = text(item.lineId) || text(item.id)
+    const current = draft.value[lineId]
+    if (!lineId || !current) return
 
     const next = { ...draft.value }
     if (current.quantity <= 1) {
-      delete next[id]
+      delete next[lineId]
     } else {
-      next[id] = {
+      next[lineId] = {
         ...current,
         quantity: current.quantity - 1,
       }
@@ -149,6 +233,8 @@ export function useMenuOrderDraft(
       items: items.value.map((item) => ({
         itemId: item.id,
         quantity: item.quantity,
+        ...(item.addOns?.length ? { addOns: item.addOns } : {}),
+        ...(item.variant ? { variant: item.variant } : {}),
       })),
       order_type: orderType.value,
     })

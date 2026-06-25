@@ -53,7 +53,7 @@ function buildMenuNormalizationRequest(
     input: {
       sections: input.sections,
       instruction:
-        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, descriptions, and source_file_ids. Preserve labelled variants such as pieces, grams, sizes, and named choices in price_options. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
+        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Preserve optional extras, toppings, sides, and add-ons in add_ons. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
     },
     context: {
       domain: 'restaurant_menu',
@@ -76,6 +76,12 @@ function buildMenuNormalizationRequest(
               price_options: [
                 {
                   label: 'Variant label',
+                  price: 0,
+                },
+              ],
+              add_ons: [
+                {
+                  label: 'Optional add-on label',
                   price: 0,
                 },
               ],

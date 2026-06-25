@@ -2,8 +2,10 @@ import { useRoute } from '#imports'
 import { computed } from 'vue'
 import type { Dish } from '../../../../../../models/dish.model'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
+  type MenuItemAddOnOption,
   type MenuItemPriceOption,
 } from '../../../../../../models/menu/menu-item.model'
 import type { MenuSection } from '../../../../../../models/menu/menu-section.model'
@@ -26,6 +28,7 @@ export type MenuSectionItemRow = {
   dishId: string
   label: string
   price: number
+  addOns: MenuItemAddOnOption[]
   priceOptions: MenuItemPriceOption[]
 }
 
@@ -77,6 +80,7 @@ export function useKitchenConsoleMenuSection() {
         dishId: clean(item.dish_id),
         label: clean(dish?.name) || clean(item.dish_id),
         price: Number(item.price || 0),
+        addOns: normalizeMenuItemAddOns(record(item).add_ons),
         priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
       }
     })

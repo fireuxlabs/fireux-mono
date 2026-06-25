@@ -14,6 +14,23 @@ export type MenuManifestItem = {
   dishId: string
   name: string
   description: string
+  price: number
+  priceLabel: string
+  priceOptions: MenuManifestPriceOption[]
+  addOns: MenuManifestAddOn[]
+}
+
+export type MenuManifestPriceOption = {
+  id: string
+  label: string
+  price: number
+  priceLabel: string
+}
+
+export type MenuManifestAddOn = {
+  id: string
+  label: string
+  price: number
   priceLabel: string
 }
 
@@ -61,6 +78,57 @@ const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.priceLabel) ||
   text(item.price_label) ||
   text(item.price)
+const priceNumber = (value: unknown) => {
+  const parsed = Number(
+    text(value)
+      .replace(/chf/ig, '')
+      .replace(',', '.')
+      .match(/\d+(?:\.\d+)?/)?.[0] || 0
+  )
+
+  return Number.isFinite(parsed) ? parsed : 0
+}
+const optionId = (
+  option: Record<string, unknown>,
+  fallback: string
+) =>
+  text(option.id) ||
+  text(option.label).toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+  fallback
+const itemPriceOptions = (item: Record<string, unknown>) =>
+  list(item.priceOptions || item.price_options)
+    .map((option, optionIndex) => {
+      const optionRecord = record(option)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id: optionId(optionRecord, `option-${optionIndex + 1}`),
+        label: text(optionRecord.label) || `Option ${optionIndex + 1}`,
+        price,
+        priceLabel:
+          text(optionRecord.priceLabel) ||
+          text(optionRecord.price_label) ||
+          (price ? String(price) : ''),
+      }
+    })
+    .filter((option) => option.label && option.priceLabel)
+const itemAddOns = (item: Record<string, unknown>) =>
+  list(item.addOns || item.add_ons)
+    .map((option, optionIndex) => {
+      const optionRecord = record(option)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id: optionId(optionRecord, `add-on-${optionIndex + 1}`),
+        label: text(optionRecord.label) || `Add-on ${optionIndex + 1}`,
+        price,
+        priceLabel:
+          text(optionRecord.priceLabel) ||
+          text(optionRecord.price_label) ||
+          (price ? String(price) : ''),
+      }
+    })
+    .filter((option) => option.label && option.priceLabel)
 
 const menuSections = (source: PublicMenu): MenuManifestSection[] =>
   list(source.sections).map((section, sectionIndex) => {
@@ -83,7 +151,10 @@ const menuSections = (source: PublicMenu): MenuManifestSection[] =>
           dishId: text(itemRecord.dish_id),
           name,
           description: itemDescription(itemRecord),
+          price: priceNumber(itemRecord.price),
           priceLabel: itemPriceLabel(itemRecord),
+          priceOptions: itemPriceOptions(itemRecord),
+          addOns: itemAddOns(itemRecord),
         }
       }),
     }
