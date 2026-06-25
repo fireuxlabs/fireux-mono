@@ -34,6 +34,7 @@ type CreateMenuOrderInput = {
 type CreatedMenuOrder = {
   id: string
   order_number: string
+  status?: string
   order_type: KitchenOrderType
   fire_state: KitchenOrderFireState
 }
@@ -71,6 +72,7 @@ const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
     name: text(customer?.name),
     phone: text(customer?.phone),
     address: text(customer?.address),
+    address_place_id: text(customer?.address_place_id),
     allergy_note: text(customer?.allergy_note),
     notes: text(customer?.notes),
   }
@@ -126,6 +128,13 @@ export function useMenuOrderCreate(
           customer: cleanCustomer(input.customer),
         },
       })
+
+      if (created.status === 'pending_acceptance') {
+        message.value = created.order_number
+          ? `Order ${created.order_number} sent. Waiting for kitchen acceptance.`
+          : 'Order sent. Waiting for kitchen acceptance.'
+        return created
+      }
 
       message.value = created.order_number
         ? `Order ${created.order_number} sent to the kitchen.`

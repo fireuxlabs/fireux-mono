@@ -16,6 +16,7 @@ import type {
 import { readKitchenMenuPublicRows } from '../../../utils/kitchen-menu-public-rows.ts'
 import {
   checkMenuDeliveryAddress,
+  checkMenuDeliveryPlaceId,
   type MenuDeliveryAddressResult,
 } from '../../../utils/menu-delivery-address.ts'
 import {
@@ -41,6 +42,16 @@ const orderTypes = new Set<KitchenOrderType>([
   'room_service',
 ])
 const text = (value: unknown) => String(value ?? '').trim()
+const numberValue = (value: unknown) => {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : 0
+}
+const money = (value: number) =>
+  new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: 'CHF',
+  }).format(value)
 const orderId = () => {
   const now = Date.now()
   const rand = Math.random().toString(16).slice(2)
@@ -69,10 +80,13 @@ const normalizeOrderType = (
 const fireStateForOrderType = (
   orderType: KitchenOrderType
 ): KitchenOrderFireState => {
+  if (orderType === 'delivery') return 'held'
   if (orderType === 'pre_order') return 'held'
   if (orderType === 'dine_in') return 'fired'
   return 'ready_to_fire'
 }
+const statusForOrderType = (orderType: KitchenOrderType) =>
+  orderType === 'delivery' ? 'pending_acceptance' : 'open'
 const readCustomer = (value: unknown): KitchenOrderCustomer => {
   const source = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -81,6 +95,7 @@ const readCustomer = (value: unknown): KitchenOrderCustomer => {
     name: text(source.name),
     phone: text(source.phone),
     address: text(source.address),
+    address_place_id: text(source.address_place_id),
     allergy_note: text(source.allergy_note),
     notes: text(source.notes),
   }
@@ -130,10 +145,10 @@ export default defineEventHandler(async (event) => {
   const customer = readCustomer(body?.customer)
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null
   if (orderType === 'delivery') {
-    deliveryAddressResult = await checkMenuDeliveryAddress(
-      customer.address || '',
-      orderTypeConfig?.fulfilment?.delivery_zones || []
-    )
+    const zones = orderTypeConfig?.fulfilment?.delivery_zones || []
+    deliveryAddressResult = customer.address_place_id
+      ? await checkMenuDeliveryPlaceId(customer.address_place_id, zones)
+      : await checkMenuDeliveryAddress(customer.address || '', zones)
     if (!deliveryAddressResult.deliverable) {
       throw createError({
         statusCode: 400,
@@ -161,6 +176,14 @@ export default defineEventHandler(async (event) => {
     }
     const variant = resolveMenuOrderVariant(item.priceOptions, requestedItem.variant)
     const addOns = resolveMenuOrderAddOns(item.addOns || [], requestedItem.addOns)
+    const addOnsTotal = addOns.reduce(
+      (sum, addOn) => sum + numberValue(addOn.price),
+      0
+    )
+    const basePrice = variant
+      ? numberValue(variant.price)
+      : numberValue(item.price)
+    const unitPrice = basePrice + addOnsTotal
     const labelParts = [
       item.name,
       variant?.label,
@@ -171,12 +194,12 @@ export default defineEventHandler(async (event) => {
       dish_id: item.dish_id,
       label: labelParts.join(' · '),
       quantity: requestedItem.quantity,
+      unit_price: unitPrice,
       ...(addOns.length ? { add_ons: addOns } : {}),
       ...(variant
         ? {
             variant_id: text(variant.id),
             variant_label: variant.label,
-            unit_price: variant.price,
           }
         : {}),
       checked: false,
@@ -188,20 +211,42 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Menu item is required.',
     })
   }
+  const subtotal = orderItems.reduce(
+    (sum, item) =>
+      sum + numberValue(item.unit_price) * Math.max(1, Number(item.quantity || 1) || 1),
+    0
+  )
+  const deliveryMinimum = numberValue(
+    deliveryAddressResult?.zone?.min_order_chf
+  )
+  if (
+    orderType === 'delivery' &&
+    deliveryAddressResult?.zone &&
+    deliveryMinimum > 0 &&
+    subtotal < deliveryMinimum
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Minimum order is ${money(deliveryMinimum)} for this delivery area.`,
+    })
+  }
 
   const db = getRuntimeFirestore()
   const id = orderId()
   const number = orderNumber()
   const fireState = fireStateForOrderType(orderType)
+  const status = statusForOrderType(orderType)
   const now = FieldValue.serverTimestamp()
   const payload = {
     id,
     kitchen_id: context.kitchenId,
     menu_id: context.menuId,
     order_number: number,
-    status: 'open',
+    status,
     order_type: orderType,
     requested_for: requestedFor,
+    estimated_ready_minutes: 0,
+    estimated_ready_at: '',
     fire_state: fireState,
     ...(Object.keys(customer).length ? { customer } : {}),
     ...(deliveryAddressResult?.zone
@@ -210,6 +255,9 @@ export default defineEventHandler(async (event) => {
             type: 'delivery_zone',
             zone: deliveryAddressResult.zone,
             address: deliveryAddressResult.address,
+            subtotal_chf: subtotal,
+            fee_chf: numberValue(deliveryAddressResult.zone.fee_chf),
+            min_order_chf: deliveryMinimum,
           },
         }
       : {}),
@@ -252,6 +300,7 @@ export default defineEventHandler(async (event) => {
   return {
     id,
     order_number: number,
+    status,
     order_type: orderType,
     fire_state: fireState,
   }

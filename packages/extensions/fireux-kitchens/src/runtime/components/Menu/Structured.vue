@@ -19,7 +19,7 @@
 
       <!-- Menu ordering spine: base menu stays readable; selection/funnel overlays it. See docs/concepts/menu-ordering.md. -->
       <MenuStructuredOrderOverlay
-        v-if="isOrderMode && basketQuantity"
+        v-if="isOrderMode && (basketQuantity || awaitingAcceptance)"
         :order="orderOverlay"
         @clear="clearOrder"
         @close-funnel="showOrderPanel = false"
@@ -86,6 +86,7 @@ const {
 const {
   items: orderItems,
   quantity: basketQuantity,
+  awaitingAcceptance,
   quantities: orderQuantities,
   creatingItemId,
   message: orderMessage,
@@ -118,8 +119,10 @@ const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
 
   return {
     actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
+    awaitingAcceptance: awaitingAcceptance.value,
     funnelOpen: showOrderPanel.value,
     items: orderItems.value,
+    message: orderMessage.value,
     menuId: text(toValue(props.menuId)),
     kitchenSlug: text(toValue(props.kitchenSlug)),
     orderType: selectedOrderType.value,

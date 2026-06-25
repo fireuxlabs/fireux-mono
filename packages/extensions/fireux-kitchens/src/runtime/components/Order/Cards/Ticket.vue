@@ -263,11 +263,25 @@ const headerLabel = computed(() => {
   return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'
 })
 const statusLabel = computed(() => {
+  const status = normalizeString(props.order.status)
+  if (status === 'pending_acceptance') return 'waiting'
+
+  const estimatedReadyMinutes = Number(
+    (props.order as any).estimated_ready_minutes || 0
+  )
+  if (status === 'open' && estimatedReadyMinutes > 0) {
+    return `eta ${estimatedReadyMinutes} min`
+  }
+
+  const estimatedReadyMs = timestampMs((props.order as any).estimated_ready_at)
+  if (status === 'open' && estimatedReadyMs) {
+    return `eta ${formatTime(estimatedReadyMs)}`
+  }
+
   const fireState = normalizeString((props.order as any).fire_state)
   if (fireState === 'held') return 'held'
   if (fireState === 'ready_to_fire') return 'ready'
 
-  const status = normalizeString(props.order.status)
   if (!status || status === 'open') return ''
 
   return status.replace(/[_-]+/g, ' ')

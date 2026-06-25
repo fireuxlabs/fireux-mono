@@ -103,6 +103,7 @@ export function useMenuOrderDraft(
   )
   const draft = ref<Record<string, MenuOrderDraftItem>>({})
   const hasMounted = ref(false)
+  const awaitingAcceptance = ref(false)
   const items = computed<MenuOrderDraftItem[]>(() =>
     Object.values(draft.value)
   )
@@ -182,6 +183,7 @@ export function useMenuOrderDraft(
 
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return
+    awaitingAcceptance.value = false
 
     const id = text(item.id)
     const lineId = text(item.lineId) || id
@@ -235,6 +237,7 @@ export function useMenuOrderDraft(
 
   function clear() {
     draft.value = {}
+    awaitingAcceptance.value = false
   }
 
   async function place(customer?: KitchenOrderCustomer) {
@@ -250,10 +253,17 @@ export function useMenuOrderDraft(
       order_type: orderType.value,
       customer,
     })
-    if (created) clear()
+    if (!created) return
+
+    const isWaitingForAcceptance = created.status === 'pending_acceptance'
+    const nextAwaitingAcceptance =
+      isWaitingForAcceptance && orderType.value === 'delivery'
+    draft.value = {}
+    awaitingAcceptance.value = nextAwaitingAcceptance
   }
 
   return {
+    awaitingAcceptance,
     items,
     quantity,
     quantities,

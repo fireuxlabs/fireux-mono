@@ -43,15 +43,29 @@
       :menu-id="props.menuId"
       :kitchen-slug="props.kitchenSlug"
       :policy="policy"
+      @delivery-zone="setDeliveryZone"
     />
+
+    <p
+      v-if="submitBlockMessage"
+      class="menu-order-panel__notice"
+      aria-live="polite"
+    >
+      {{ submitBlockMessage }}
+    </p>
 
     <button
       v-if="allergyAccepted"
       type="submit"
       class="menu-order-panel__submit"
-      :disabled="pending"
+      :disabled="pending || !canSubmit"
     >
-      {{ pending ? 'Sending...' : submitLabel }}
+      <span
+        v-if="pending"
+        class="menu-order-panel__spinner"
+        aria-hidden="true"
+      />
+      {{ pending ? 'Sending order...' : submitLabel }}
     </button>
   </form>
 </template>
@@ -59,7 +73,10 @@
 <script setup lang="ts">
 import { computed, ref, watch, type Component } from 'vue'
 import { useMenuCustomerAutofill } from '../../../composables/fireux/public/menu/useMenuCustomerAutofill'
-import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
+import type {
+  MenuDeliveryZone,
+  MenuOrderTypeConfig,
+} from '../../../models/menu/menu.model'
 import type {
   KitchenOrderCustomer,
   KitchenOrderType,
@@ -112,6 +129,7 @@ defineEmits<{
 
 const customer = ref<KitchenOrderCustomer>({})
 const { customer: customerAutofill } = useMenuCustomerAutofill()
+const deliveryZone = ref<MenuDeliveryZone | null>(null)
 const allergyAccepted = ref(false)
 const allergyMessage =
   'If you have a food allergy or intolerance, please speak to a member of the team before ordering.'
@@ -128,12 +146,52 @@ const total = computed(() =>
     0
   )
 )
+const deliveryFee = computed(() =>
+  props.orderType === 'delivery' && deliveryZone.value
+    ? Math.max(0, Number(deliveryZone.value.fee_chf || 0))
+    : 0
+)
+const orderTotal = computed(() => total.value + deliveryFee.value)
+const minimumOrder = computed(() =>
+  props.orderType === 'delivery' && deliveryZone.value
+    ? Math.max(0, Number(deliveryZone.value.min_order_chf || 0))
+    : 0
+)
+const minimumShortfall = computed(() =>
+  Math.max(0, minimumOrder.value - total.value)
+)
 const totalLabel = computed(() =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency: 'CHF',
-  }).format(total.value)
+  }).format(orderTotal.value)
 )
+const money = (value: number) =>
+  new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: 'CHF',
+  }).format(value)
+const canSubmit = computed(() => {
+  if (props.orderType !== 'delivery') return true
+  if (!customer.value.address_place_id || !deliveryZone.value) return false
+
+  return minimumShortfall.value === 0
+})
+const submitBlockMessage = computed(() => {
+  if (!allergyAccepted.value || props.orderType !== 'delivery') return ''
+  if (!customer.value.address_place_id) return ''
+  if (!deliveryZone.value) {
+    return 'Choose an address inside the delivery area.'
+  }
+  if (minimumShortfall.value) {
+    return `Minimum order is ${money(minimumOrder.value)}. Add ${money(minimumShortfall.value)} more.`
+  }
+  if (deliveryFee.value) {
+    return `Delivery fee ${money(deliveryFee.value)} applies.`
+  }
+
+  return ''
+})
 const customerPayload = computed<KitchenOrderCustomer>(() =>
   cleanKitchenOrderCustomer(customer.value)
 )
@@ -145,6 +203,10 @@ const funnelComponents: Partial<Record<KitchenOrderType, Component>> = {
 const funnelComponent = computed(() =>
   funnelComponents[props.orderType] || MenuFunnelDefault
 )
+
+function setDeliveryZone(zone: MenuDeliveryZone | null) {
+  deliveryZone.value = zone
+}
 
 watch(
   customerAutofill,
@@ -164,6 +226,13 @@ watch(
     if (changed) customer.value = next
   },
   { immediate: true }
+)
+
+watch(
+  () => props.orderType,
+  () => {
+    deliveryZone.value = null
+  }
 )
 </script>
 
@@ -251,7 +320,22 @@ watch(
   font-weight: 850;
 }
 
+.menu-order-panel__notice {
+  justify-self: end;
+  max-width: 28rem;
+  margin: 0;
+  color: var(--menu-muted);
+  font-size: 0.84rem;
+  font-weight: 850;
+  line-height: 1.4;
+  text-align: right;
+}
+
 .menu-order-panel__submit {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
   justify-self: end;
   min-height: 2.6rem;
   padding: 0.65rem 1rem;
@@ -270,4 +354,18 @@ watch(
   opacity: 0.62;
 }
 
+.menu-order-panel__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid color-mix(in srgb, var(--menu-bg) 36%, transparent);
+  border-top-color: var(--menu-bg);
+  border-radius: 999px;
+  animation: menu-order-panel-spin 0.8s linear infinite;
+}
+
+@keyframes menu-order-panel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>

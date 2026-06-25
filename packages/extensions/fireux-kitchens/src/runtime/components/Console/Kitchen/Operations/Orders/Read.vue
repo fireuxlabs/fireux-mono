@@ -21,6 +21,37 @@
       <section class="space-y-3">
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-sm font-semibold text-highlighted">
+            Incoming
+          </h2>
+          <UBadge color="neutral" variant="soft">
+            {{ incomingOrders.length }}
+          </UBadge>
+        </div>
+
+        <div
+          v-if="incomingOrders.length"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+        >
+          <OrderCardsTicket
+            v-for="ticket in incomingOrders"
+            :key="ticket.id"
+            :order="ticket"
+            :trash-mode="trashMode"
+            :status-action-label="acceptLabel(ticket.id)"
+            :status-action-aria-label="acceptAriaLabel(ticket.id)"
+            @touch-status="acceptOrderWithEta"
+            @trash="trashOrder"
+          />
+        </div>
+
+        <p v-else class="text-sm text-dimmed">
+          No incoming orders waiting for acceptance.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-highlighted">
             Pass
           </h2>
           <UBadge color="neutral" variant="soft">
@@ -98,12 +129,16 @@ import { useKitchenConsoleOrders } from '../../../../../composables/fireux/conso
 
 const trashMode = ref(false)
 const sendReadyOrderId = ref('')
+const acceptingOrderId = ref('')
+const acceptEstimateMinutes = 45
 const {
+  incomingOrders,
   queueOrders,
   passOrders,
   pending,
   readOnly,
   canWrite,
+  acceptOrder,
   queueOrder,
   passOrder,
   archiveOrder,
@@ -112,6 +147,18 @@ const {
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
+
+function acceptLabel(orderId: string) {
+  return acceptingOrderId.value === normalizeId(orderId)
+    ? 'accepting...'
+    : `accept · ${acceptEstimateMinutes} min`
+}
+
+function acceptAriaLabel(orderId: string) {
+  return acceptingOrderId.value === normalizeId(orderId)
+    ? 'Accepting order'
+    : `Accept order with ${acceptEstimateMinutes} minute estimate`
+}
 
 function sendLabel(orderId: string) {
   return sendReadyOrderId.value === normalizeId(orderId) ? 'send' : 'on pass'
@@ -127,6 +174,18 @@ function moveToQueue(orderId: string) {
   const resolvedOrderId = normalizeId(orderId)
   if (sendReadyOrderId.value === resolvedOrderId) sendReadyOrderId.value = ''
   queueOrder(resolvedOrderId)
+}
+
+async function acceptOrderWithEta(orderId: string) {
+  const resolvedOrderId = normalizeId(orderId)
+  if (!resolvedOrderId || acceptingOrderId.value) return
+
+  acceptingOrderId.value = resolvedOrderId
+  try {
+    await acceptOrder(resolvedOrderId, acceptEstimateMinutes)
+  } finally {
+    if (acceptingOrderId.value === resolvedOrderId) acceptingOrderId.value = ''
+  }
 }
 
 function sendOrder(orderId: string) {

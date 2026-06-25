@@ -64,7 +64,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
-  (event: 'select', value: string): void
+  (event: 'select', value: MenuDeliveryAddressPrediction): void
 }>()
 
 const open = ref(false)
@@ -85,7 +85,7 @@ function update(event: Event) {
 function select(prediction: MenuDeliveryAddressPrediction) {
   open.value = false
   emit('update:modelValue', prediction.description)
-  emit('select', prediction.description)
+  emit('select', prediction)
 }
 </script>
 

@@ -10,6 +10,7 @@
       :menu-id="props.menuId"
       :kitchen-slug="props.kitchenSlug"
       @update:model-value="emit('update:modelValue', $event)"
+      @delivery-zone="emit('deliveryZone', $event)"
     />
   </div>
 </template>
@@ -40,6 +41,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: KitchenOrderCustomer): void
+  (event: 'deliveryZone', value: MenuDeliveryZone | null): void
 }>()
 
 // TODO: Complete delivery-zone editor/config. For this Bären prototype we hard-code zones here;

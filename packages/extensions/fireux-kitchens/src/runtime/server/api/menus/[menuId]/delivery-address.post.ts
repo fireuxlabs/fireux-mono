@@ -9,6 +9,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryCoordinates,
+  checkMenuDeliveryPlaceId,
 } from '../../../utils/menu-delivery-address.ts'
 import { readMenuOrderContext } from '../../../utils/menu-order-context.ts'
 import {
@@ -27,10 +28,13 @@ export default defineEventHandler(async (event) => {
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   const body = (await readBody(event)) as {
     address?: unknown
+    place_id?: unknown
+    placeId?: unknown
     lat?: unknown
     lng?: unknown
   } | null
   const address = text(body?.address)
+  const placeId = text(body?.place_id || body?.placeId)
   if (!menuId) {
     throw createError({
       statusCode: 400,
@@ -51,6 +55,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const zones = deliveryPolicy.fulfilment?.delivery_zones || []
+  if (placeId) {
+    return checkMenuDeliveryPlaceId(placeId, zones)
+  }
+
   const lat = Number(body?.lat)
   const lng = Number(body?.lng)
   if (Number.isFinite(lat) && Number.isFinite(lng)) {

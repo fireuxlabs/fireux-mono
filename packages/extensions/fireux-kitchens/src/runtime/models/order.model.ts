@@ -54,6 +54,7 @@ export type KitchenOrderCustomer = {
   name?: string
   phone?: string
   address?: string
+  address_place_id?: string
   allergy_note?: string
   notes?: string
 }
@@ -66,6 +67,8 @@ export const KitchenOrderModel = {
   status: 'open' as string,
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,
+  estimated_ready_minutes: 0 as number,
+  estimated_ready_at: '' as string | FirebaseTimestamp,
   fire_state: 'fired' as KitchenOrderFireState,
 
   items: [] as KitchenOrderItem[],

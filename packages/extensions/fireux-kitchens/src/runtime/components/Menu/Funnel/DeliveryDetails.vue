@@ -18,29 +18,8 @@
     <MenuFunnelDeliveryAddressAutocomplete
       :model-value="address"
       @update:model-value="updateAddress"
-      @select="checkAddressValue"
+      @select="selectAddress"
     />
-
-    <div class="delivery-details__actions">
-      <button
-        class="delivery-details__check"
-        type="button"
-        :disabled="locationPending || pending"
-        @click="useCurrentLocation"
-      >
-        <UIcon name="i-lucide-navigation" class="delivery-details__icon" />
-        {{ locationPending ? 'Locating...' : 'Use current location' }}
-      </button>
-
-      <button
-        class="delivery-details__check"
-        type="button"
-        :disabled="pending || !address"
-        @click="checkAddress"
-      >
-        {{ pending ? 'Checking...' : 'Check address' }}
-      </button>
-    </div>
 
     <p
       v-if="statusMessage"
@@ -50,12 +29,30 @@
     >
       {{ statusMessage }}
     </p>
+
+    <div
+      v-if="debugJson"
+      class="delivery-details__debug"
+    >
+      <div class="delivery-details__debug-header">
+        <span>Delivery debug</span>
+        <button
+          type="button"
+          @click="copyDebug"
+        >
+          {{ debugCopied ? 'Copied' : 'Copy' }}
+        </button>
+      </div>
+      <pre>{{ debugJson }}</pre>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import type { MenuDeliveryAddressPrediction } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
 import { useMenuDeliveryAddressCheck } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressCheck'
+import type { MenuDeliveryZone } from '../../../models/menu/menu.model'
 import type { KitchenOrderCustomer } from '../../../models/order.model'
 import MenuFunnelDeliveryAddressAutocomplete from './DeliveryAddressAutocomplete.vue'
 import MenuFunnelFields from './Fields.vue'
@@ -68,9 +65,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: KitchenOrderCustomer): void
+  (event: 'deliveryZone', value: MenuDeliveryZone | null): void
 }>()
 
 const address = computed(() => String(props.modelValue?.address || '').trim())
+const testDeliveryCustomer = {
+  phone: '+447583282242',
+  address: 'Bachtalenweg 21, 3852 Ringgenberg, Switzerland',
+  address_place_id: 'ChIJFayHzjejj0cRgEyCW4Yg5R4',
+} as const
 const {
   pending,
   error,
@@ -82,10 +85,10 @@ const {
     kitchenSlug: computed(() => props.kitchenSlug || ''),
   }
 )
-const locationPending = ref(false)
-const locationError = ref('')
+const selectedPlaceId = ref('')
+const debugCopied = ref(false)
 const statusMessage = computed(() => {
-  if (locationError.value) return locationError.value
+  if (pending.value) return 'Checking delivery area...'
   if (error.value) return error.value
   if (!result.value) return ''
   if (!result.value.deliverable) return result.value.reason
@@ -98,57 +101,72 @@ const statusMessage = computed(() => {
     zone.fee_chf !== undefined ? `fee CHF ${zone.fee_chf}` : '',
   ].filter(Boolean).join(' · ')
 })
+const debugJson = computed(() => {
+  if (!import.meta.dev || !result.value?.debug) return ''
 
-function checkAddress() {
-  locationError.value = ''
-  return check(address.value)
-}
+  return JSON.stringify(result.value.debug, null, 2)
+})
 
-function checkAddressValue(value: string) {
-  locationError.value = ''
-  return check(value)
+onMounted(() => {
+  seedTestDeliveryCustomer()
+})
+
+async function selectAddress(prediction: MenuDeliveryAddressPrediction) {
+  selectedPlaceId.value = prediction.place_id
+  emit('update:modelValue', {
+    ...props.modelValue,
+    address: prediction.description,
+    address_place_id: prediction.place_id,
+  })
+
+  const checked = await check({
+    address: prediction.description,
+    place_id: prediction.place_id,
+  })
+  emit('deliveryZone', checked?.deliverable ? checked.zone || null : null)
 }
 
 function updateAddress(value: string) {
+  selectedPlaceId.value = ''
+  emit('deliveryZone', null)
   emit('update:modelValue', {
     ...props.modelValue,
     address: value,
+    address_place_id: '',
   })
 }
 
-function useCurrentLocation() {
-  locationError.value = ''
-  if (!import.meta.client || !navigator.geolocation) {
-    locationError.value = 'Current location is not available in this browser.'
-    return
+async function seedTestDeliveryCustomer() {
+  if (!import.meta.dev) return
+  if (props.modelValue.address || props.modelValue.address_place_id) return
+
+  selectedPlaceId.value = testDeliveryCustomer.address_place_id
+  emit('update:modelValue', {
+    ...props.modelValue,
+    phone: props.modelValue.phone || testDeliveryCustomer.phone,
+    address: testDeliveryCustomer.address,
+    address_place_id: testDeliveryCustomer.address_place_id,
+  })
+
+  const checked = await check({
+    address: testDeliveryCustomer.address,
+    place_id: testDeliveryCustomer.address_place_id,
+  })
+  emit('deliveryZone', checked?.deliverable ? checked.zone || null : null)
+}
+
+async function copyDebug() {
+  if (!import.meta.client || !debugJson.value) return
+
+  try {
+    await navigator.clipboard.writeText(debugJson.value)
+    debugCopied.value = true
+    window.setTimeout(() => {
+      debugCopied.value = false
+    }, 1400)
+  } catch {
+    debugCopied.value = false
   }
-
-  locationPending.value = true
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const checked = await check({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      })
-
-      if (checked?.address?.formatted) {
-        emit('update:modelValue', {
-          ...props.modelValue,
-          address: checked.address.formatted,
-        })
-      }
-      locationPending.value = false
-    },
-    () => {
-      locationError.value = 'Current location permission was not granted.'
-      locationPending.value = false
-    },
-    {
-      enableHighAccuracy: false,
-      maximumAge: 60000,
-      timeout: 10000,
-    }
-  )
 }
 </script>
 
@@ -182,39 +200,6 @@ function useCurrentLocation() {
   letter-spacing: -0.03em;
 }
 
-.delivery-details__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.delivery-details__check {
-  display: inline-flex;
-  gap: 0.45rem;
-  align-items: center;
-  justify-content: center;
-  justify-self: start;
-  border: 1px solid color-mix(in srgb, var(--menu-accent) 44%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-accent) 12%, var(--menu-bg));
-  color: var(--menu-text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 900;
-  padding: 0.65rem 0.9rem;
-}
-
-.delivery-details__icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-.delivery-details__check:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
 .delivery-details__status {
   margin: 0;
   color: var(--menu-muted);
@@ -225,5 +210,46 @@ function useCurrentLocation() {
 
 .delivery-details__status--good {
   color: var(--menu-text);
+}
+
+.delivery-details__debug {
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
+  color: var(--menu-muted);
+}
+
+.delivery-details__debug-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.delivery-details__debug button {
+  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--menu-bg) 72%, transparent);
+  color: var(--menu-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 0.28rem 0.55rem;
+}
+
+.delivery-details__debug pre {
+  overflow: auto;
+  max-height: 14rem;
+  margin: 0;
+  padding: 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
 }
 </style>

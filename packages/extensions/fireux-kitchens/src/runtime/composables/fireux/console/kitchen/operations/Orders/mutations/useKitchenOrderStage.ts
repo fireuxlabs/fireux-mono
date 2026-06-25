@@ -1,4 +1,4 @@
-import { serverTimestamp } from 'firebase/firestore'
+import { serverTimestamp, Timestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import type { Ref } from 'vue'
@@ -12,7 +12,7 @@ import {
   type KitchenOrder,
 } from '../../../../../../../models/order.model'
 
-type KitchenOrderStage = 'queue' | 'pass' | 'archive'
+type KitchenOrderStage = 'accept' | 'queue' | 'pass' | 'archive'
 
 export function useKitchenOrderStage(
   options: {
@@ -40,7 +40,8 @@ export function useKitchenOrderStage(
   async function stageKitchenOrder(
     kitchenId: string,
     orderId: string,
-    stage: KitchenOrderStage
+    stage: KitchenOrderStage,
+    options: { estimatedMinutes?: number } = {}
   ) {
     const resolvedOrderId = normalizeString(orderId)
     if (!resolvedOrderId) throw new Error('Order id is required')
@@ -48,14 +49,34 @@ export function useKitchenOrderStage(
     await updateDocument<KitchenOrder>(
       ordersCollectionPath(kitchenId),
       resolvedOrderId,
-      stagePatch(stage)
+      stagePatch(stage, options)
     )
   }
 
   return { stageKitchenOrder }
 }
 
-function stagePatch(stage: KitchenOrderStage): Partial<KitchenOrder> {
+function stagePatch(
+  stage: KitchenOrderStage,
+  options: { estimatedMinutes?: number } = {}
+): Partial<KitchenOrder> {
+  if (stage === 'accept') {
+    const estimatedMinutes = Math.max(
+      1,
+      Number(options.estimatedMinutes || 45) || 45
+    )
+
+    return {
+      status: 'open',
+      fire_state: 'held',
+      estimated_ready_minutes: estimatedMinutes,
+      estimated_ready_at: Timestamp.fromDate(
+        new Date(Date.now() + estimatedMinutes * 60 * 1000)
+      ) as any,
+      updated_at: serverTimestamp() as any,
+    }
+  }
+
   if (stage === 'pass') {
     return {
       status: 'on_pass',

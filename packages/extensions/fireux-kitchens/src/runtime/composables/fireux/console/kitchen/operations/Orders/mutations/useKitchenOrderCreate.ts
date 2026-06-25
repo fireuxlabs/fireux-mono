@@ -91,6 +91,8 @@ export function useKitchenOrderCreate() {
       status: 'open',
       order_type: orderType,
       requested_for: normalizeString(input.requested_for) as any,
+      estimated_ready_minutes: 0,
+      estimated_ready_at: '' as any,
       fire_state: fireState,
 
       items: [item],

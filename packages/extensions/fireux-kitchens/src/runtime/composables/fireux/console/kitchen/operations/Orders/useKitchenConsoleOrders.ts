@@ -66,10 +66,13 @@ export function useKitchenConsoleOrders() {
   const visibleOrders = computed(() =>
     consoleOrders.value.filter((order) => getOrderStatus(order) !== 'trashed')
   )
+  const incomingOrders = computed(() =>
+    sortOrders(visibleOrders.value.filter(isIncomingOrder))
+  )
   const queueOrders = computed(() =>
     sortOrders(
       visibleOrders.value.filter((order) =>
-        !isArchivedOrder(order) && !isPassOrder(order)
+        !isIncomingOrder(order) && !isArchivedOrder(order) && !isPassOrder(order)
       )
     )
   )
@@ -88,6 +91,8 @@ export function useKitchenConsoleOrders() {
     status: order.status || '',
     orderType: order.order_type || getServiceMode(order) || '',
     fireState: order.fire_state || '',
+    estimatedReadyMinutes: (order as any).estimated_ready_minutes || 0,
+    estimatedReadyAt: (order as any).estimated_ready_at || '',
     requestedFor: orderValue(order, [
       'requested_for',
       'pickup_at',
@@ -110,6 +115,7 @@ export function useKitchenConsoleOrders() {
       : [],
   })
   const debugOrders = computed(() => ({
+    incoming: incomingOrders.value.map(debugOrder),
     queue: queueOrders.value.map(debugOrder),
     pass: passOrders.value.map(debugOrder),
     archive: archiveOrders.value.map(debugOrder),
@@ -117,12 +123,15 @@ export function useKitchenConsoleOrders() {
   const debugCount = (match: (order: KitchenOrder) => boolean) =>
     consoleOrders.value.filter(match).length
   const moveOrderToStage = async (
-    stage: 'queue' | 'pass' | 'archive',
-    orderId: string
+    stage: 'accept' | 'queue' | 'pass' | 'archive',
+    orderId: string,
+    options: { estimatedMinutes?: number } = {}
   ) => {
     if (readOnly.value || !canWrite.value) return
-    await stageKitchenOrder(kitchenId.value, orderId, stage)
+    await stageKitchenOrder(kitchenId.value, orderId, stage, options)
   }
+  const acceptOrder = (orderId: string, estimatedMinutes = 45) =>
+    moveOrderToStage('accept', orderId, { estimatedMinutes })
   const queueOrder = (orderId: string) => moveOrderToStage('queue', orderId)
   const passOrder = (orderId: string) => moveOrderToStage('pass', orderId)
   const archiveOrder = (orderId: string) =>
@@ -143,6 +152,7 @@ export function useKitchenConsoleOrders() {
       collectionPath: orderBoardPath.value,
       ordersCount: visibleOrders.value.length,
       rawOrdersCount: consoleOrders.value.length,
+      incomingCount: incomingOrders.value.length,
       queueCount: queueOrders.value.length,
       passCount: passOrders.value.length,
       archiveCount: archiveOrders.value.length,
@@ -167,10 +177,12 @@ export function useKitchenConsoleOrders() {
     canWrite,
     orders: consoleOrders,
     ticketOrders,
+    incomingOrders,
     queueOrders,
     passOrders,
     archiveOrders,
     pending,
+    acceptOrder,
     queueOrder,
     passOrder,
     archiveOrder,
@@ -263,6 +275,10 @@ const getFireState = (order: KitchenOrder) =>
 
 const isArchivedOrder = (order: KitchenOrder) =>
   ['archived', 'closed'].includes(getOrderStatus(order))
+
+// Menu ordering spine: incoming tickets wait for kitchen acceptance before queue.
+const isIncomingOrder = (order: KitchenOrder) =>
+  ['pending_acceptance', 'incoming', 'new'].includes(getOrderStatus(order))
 
 const isPassOrder = (order: KitchenOrder) =>
   ['on_pass', 'pass'].includes(getOrderStatus(order)) ||

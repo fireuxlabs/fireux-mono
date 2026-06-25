@@ -18,12 +18,15 @@ export type MenuDeliveryAddressCheckResult = {
     lng: number
   }
   zone?: MenuDeliveryZone
+  debug?: Record<string, unknown>
 }
 
 type DeliveryAddressCheckInput =
   | string
   | {
       address?: string
+      place_id?: string
+      placeId?: string
       lat?: number
       lng?: number
     }
@@ -58,13 +61,16 @@ export function useMenuDeliveryAddressCheck(
       ? { address: text(input) }
       : {
           ...(text(input.address) ? { address: text(input.address) } : {}),
+          ...(text(input.place_id || input.placeId)
+            ? { place_id: text(input.place_id || input.placeId) }
+            : {}),
           ...(Number.isFinite(input.lat) ? { lat: input.lat } : {}),
           ...(Number.isFinite(input.lng) ? { lng: input.lng } : {}),
         }
-    if (!endpoint.value || (!body.address && (body.lat === undefined || body.lng === undefined))) {
+    if (!endpoint.value || (!body.address && !body.place_id && (body.lat === undefined || body.lng === undefined))) {
       result.value = null
       error.value = endpoint.value
-        ? 'Delivery address or current location is required.'
+        ? 'Delivery address is required.'
         : 'Menu path is missing.'
       return null
     }
