@@ -93,6 +93,16 @@ V1 fulfilment policy:
 - Enforcement should wait for the relevant input UI. Example: do not enforce
   `notice_hours` until the public order flow asks for `requested_for`.
 
+Public order funnel spine:
+- `MenuOrderBasket`: selected items and total.
+- `MenuOrderPanel`: shared sticky platform shell, close, submit, selected
+  order-type policy.
+- `MenuOrderFunnelDelivery`: delivery zones, payment methods, address/contact.
+- `MenuOrderFunnelCollection`: payment methods and pickup contact.
+- `MenuOrderFunnelPreOrder`: notice copy and pre-order contact/request notes.
+- Each order type may own its inner funnel, but order submission stays through
+  the shared menu order draft/create seam.
+
 Bären delivery policy reference:
 - Their current provider uses coloured delivery areas with different minimum
   orders and fees.
