@@ -144,7 +144,7 @@ function buildMenuSourceExtractionRequest(
         source_url: input.file.file_url,
         page_text: input.file.text_excerpt,
         instruction:
-          `Classify this fetched restaurant menu or ordering URL, then extract only menu dishes that are present in the supplied page_text. page_text may be cleaned HTML text or resolved provider menu JSON. Use source_file_ids ["${input.file.id}"] for every item. If page_text is only a shell, booking widget, empty page, or does not contain visible menu items, return {"sections":[],"notes":["no visible menu items in fetched URL content"]}. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has required sizes or mutually exclusive variants, put them in price_options and keep the lowest displayed price in price. If a dish has optional extras, toppings, sides, or provider modifier_groups, put them in add_ons, not standalone dishes. Do not invent dishes, sections, prices, or provider data not present in page_text.`,
+          `Classify this fetched restaurant menu or ordering URL, then extract only menu dishes that are present in the supplied page_text. page_text may be cleaned HTML text or resolved provider menu JSON. Use source_file_ids ["${input.file.id}"] for every item. If page_text is only a shell, booking widget, empty page, or does not contain visible menu items, return {"sections":[],"notes":["no visible menu items in fetched URL content"]}. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If the provider data includes an item image_url, preserve it; otherwise return image_url as an empty string and do not invent stock images. If a dish has required sizes or mutually exclusive variants, put them in price_options and keep the lowest displayed price in price. If a dish has optional extras, toppings, sides, or provider modifier_groups, put them in add_ons, not standalone dishes. Do not invent dishes, sections, prices, images, or provider data not present in page_text.`,
       },
       context: {
         domain: 'restaurant_menu',
@@ -165,6 +165,7 @@ function buildMenuSourceExtractionRequest(
               {
                 name: 'Dish name',
                 description: 'Short description or empty string',
+                image_url: 'Provider image URL or empty string',
                 price: 0,
                 price_options: [
                   {
@@ -216,7 +217,7 @@ function buildMenuSourceExtractionRequest(
             imageDetail: MENU_SOURCE_IMAGE_DETAIL,
           }),
       instruction:
-        `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. If a dish has required sizes or mutually exclusive variants, put them in price_options and keep the lowest displayed price in price. Preserve variants such as 3Stk/4Stk/5Stk, 300gr/400gr, or named kids pasta choices as labelled price_options. If a dish has optional extras, toppings, or sides such as "Add-ons: Manchego 2.50" or "Mit Pommes 25.-", put those extras in add_ons. Do not invent dishes, sections, or prices.`,
+        `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. Preserve mixed-language wording. Return prices as CHF numbers. Return image_url as an empty string; do not invent stock images from uploaded documents. If a dish has required sizes or mutually exclusive variants, put them in price_options and keep the lowest displayed price in price. Preserve variants such as 3Stk/4Stk/5Stk, 300gr/400gr, or named kids pasta choices as labelled price_options. If a dish has optional extras, toppings, or sides such as "Add-ons: Manchego 2.50" or "Mit Pommes 25.-", put those extras in add_ons. Do not invent dishes, sections, prices, or images.`,
     },
     context: {
       domain: 'restaurant_menu',
@@ -237,6 +238,7 @@ function buildMenuSourceExtractionRequest(
             {
               name: 'Dish name',
               description: 'Short description or empty string',
+              image_url: '',
               price: 0,
               price_options: [
                 {

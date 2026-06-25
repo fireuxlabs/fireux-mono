@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-06-24
-Ref: d3492e130
+Updated: 2026-06-25
+Ref: f1e9891ff
 Role: map, not canon
 
 Purpose:
@@ -82,6 +82,18 @@ Possible future fulfilment policies:
 - `payment_methods`: cash, card on pickup, card to driver, online card, deposit.
 - `deposit`: amount or percentage required before accepting an order.
 - `party_size`: minimum or maximum guest count for a mode.
+
+Bären delivery policy reference:
+- Their current provider uses coloured delivery areas with different minimum
+  orders and fees.
+- The visible rules are minimum CHF 15 / fee CHF 0, minimum CHF 20 / fee CHF 0,
+  minimum CHF 30 / fee CHF 0, and minimum CHF 50 / fee CHF 10.
+- Treat this as fulfilment configuration, not as another menu mode.
+- V1 can match delivery zones by `postal_codes` or named areas.
+- Later versions can add map polygons if postcodes are not accurate enough.
+- Opening hours, delivery hours, pickup hours, reservation hours, payment
+  methods, address, and phone are also fulfilment/contact policy, not menu
+  rendering state.
 
 Naming notes:
 - Prefer `collection` when the order is collected by the customer.

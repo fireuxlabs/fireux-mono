@@ -144,6 +144,7 @@ export async function writeKitchenMenuDraft(input: {
         menu_id: input.menuId,
         section_id: sectionId,
         dish_id: dishId,
+        image_url: text(item.image_url),
         price,
         add_ons: addOns,
         price_options: priceOptions,

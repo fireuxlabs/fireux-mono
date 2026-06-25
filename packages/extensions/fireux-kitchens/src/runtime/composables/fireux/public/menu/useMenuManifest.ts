@@ -14,6 +14,7 @@ export type MenuManifestItem = {
   dishId: string
   name: string
   description: string
+  imageUrl: string
   price: number
   priceLabel: string
   priceOptions: MenuManifestPriceOption[]
@@ -73,6 +74,12 @@ const itemName = (item: Record<string, unknown>) =>
 
 const itemDescription = (item: Record<string, unknown>) =>
   text(item.description) || text(record(item.item).description)
+
+const itemImageUrl = (item: Record<string, unknown>) =>
+  text(item.imageUrl) ||
+  text(item.image_url) ||
+  text(record(item.item).image_url) ||
+  text(record(item.dish).image_url)
 
 const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.priceLabel) ||
@@ -151,6 +158,7 @@ const menuSections = (source: PublicMenu): MenuManifestSection[] =>
           dishId: text(itemRecord.dish_id),
           name,
           description: itemDescription(itemRecord),
+          imageUrl: itemImageUrl(itemRecord),
           price: priceNumber(itemRecord.price),
           priceLabel: itemPriceLabel(itemRecord),
           priceOptions: itemPriceOptions(itemRecord),

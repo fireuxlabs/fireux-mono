@@ -97,6 +97,9 @@ const payloadSections = (payload: Record<string, unknown>) => {
           dish: null,
           name,
           description: readRecordString(itemRecord, 'description'),
+          image_url:
+            readRecordString(itemRecord, 'image_url') ||
+            readRecordString(itemRecord, 'imageUrl'),
           price: priceNumber(itemRecord.price),
           ...(priceLabel ? { priceLabel } : {}),
           priceOptions: itemPriceOptions,

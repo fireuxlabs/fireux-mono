@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
 import {
+  normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
 } from '../../../../../models/menu/menu-item.model'
@@ -50,7 +51,9 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
             dish,
             name: text(dish?.name) || dishId,
             description: text(dish?.description),
+            image_url: text(record(item).image_url) || text(record(dish).image_url),
             price: Number(item.price || 0),
+            addOns: normalizeMenuItemAddOns(record(item).add_ons),
             priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
           }
         }),

@@ -68,6 +68,17 @@ const sizeRows = (item: Record<string, unknown>) => {
     .filter((size) => size.label)
 }
 
+const itemImageUrl = (item: Record<string, unknown>) =>
+  text(item.image_url) ||
+  text(item.imageUrl) ||
+  text(item.picture_url) ||
+  text(item.pictureUrl) ||
+  text(item.photo_url) ||
+  text(item.photoUrl) ||
+  text(item.image) ||
+  text(item.picture) ||
+  text(item.photo)
+
 const foodBookingPayload = (data: unknown) => {
   const root = record(data)
   const restaurant = record(root.restaurant || record(root.data).restaurant)
@@ -97,6 +108,7 @@ const foodBookingPayload = (data: unknown) => {
             id: text(item.id),
             name: text(item.name),
             description: text(item.description),
+            image_url: itemImageUrl(item),
             price: money(item.price),
             tags: Array.isArray(item.tags)
               ? item.tags.map(text).filter(Boolean)

@@ -60,6 +60,9 @@ export async function readKitchenMenuPublicRows(
               dish_id: dishId,
               name: readRecordString(dish || {}, 'name') || dishId,
               description: readRecordString(dish || {}, 'description'),
+              image_url:
+                readRecordString(item, 'image_url') ||
+                readRecordString(dish || {}, 'image_url'),
               price: numberValue(item.price),
               priceOptions: normalizeMenuItemPriceOptions(item.price_options),
               addOns: normalizeMenuItemAddOns(item.add_ons),

@@ -89,6 +89,9 @@ Structured item options:
   pieces, grams, protein choices, or named variants.
 - `add_ons`: optional extras such as toppings, sides, sauces, or add-on
   modifiers.
+- `image_url`: optional menu-row presentation image. For now this belongs to
+  `MenuItem`, not `Dish`, so kitchens can use stock/provider images without
+  promoting images into canonical dish truth too early.
 - AI menu processing should preserve both shapes before review/confirm so
   operators can correct them instead of rebuilding them manually.
 

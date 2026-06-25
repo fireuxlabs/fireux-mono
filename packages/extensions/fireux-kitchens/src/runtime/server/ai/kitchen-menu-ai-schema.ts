@@ -14,6 +14,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
               properties: {
                 name: { type: 'string' },
                 description: { type: 'string' },
+                image_url: { type: 'string' },
                 price: { type: 'number' },
                 price_options: {
                   type: 'array',
@@ -45,6 +46,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
               required: [
                 'name',
                 'description',
+                'image_url',
                 'price',
                 'price_options',
                 'add_ons',

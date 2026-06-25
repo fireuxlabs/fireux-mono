@@ -5,8 +5,9 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Family: App-scoped Kitchen Menu Section child record.
  *
- * MenuItem is a placement link to a Dish. Dish owns food truth; MenuItem only
- * owns menu placement state such as section, order, status, and price override.
+ * MenuItem is a placement link to a Dish. Dish owns food truth; MenuItem owns
+ * menu placement state such as section, order, status, price override, and
+ * optional menu-row presentation such as a stock image.
  */
 export const MenuItemStorage = {
   shape: 'scoped',
@@ -26,7 +27,7 @@ export const MenuItemRecord = defineFireuxEntity({
   scoped: MenuItemStorage.path,
   notes: [
     'MenuItem places a Dish in a MenuSection.',
-    'Dish owns food truth; MenuItem owns placement, order, and price overrides.',
+    'Dish owns food truth; MenuItem owns placement, order, price overrides, and optional row presentation.',
   ],
 })
 
@@ -110,6 +111,7 @@ export const MenuItemModel = {
   menu_id: '' as string,
   section_id: '' as string,
   dish_id: '' as string,
+  image_url: '' as string,
   price: 0 as number,
   price_options: [] as MenuItemPriceOption[],
   add_ons: [] as MenuItemAddOnOption[],

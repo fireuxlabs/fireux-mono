@@ -1,5 +1,16 @@
 <template>
-  <article class="menu-item">
+  <article :class="['menu-item', item.imageUrl && 'menu-item--with-image']">
+    <div
+      v-if="item.imageUrl"
+      class="menu-item__media"
+    >
+      <img
+        :src="item.imageUrl"
+        :alt="item.name"
+        loading="lazy"
+      >
+    </div>
+
     <div class="menu-item__copy">
       <h3>{{ item.name }}</h3>
       <p
@@ -194,9 +205,29 @@ watch(
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
 }
 
+.menu-item--with-image {
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+}
+
 .menu-item:last-child {
   padding-bottom: 0;
   border-bottom: 0;
+}
+
+.menu-item__media {
+  overflow: hidden;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+  border-radius: 0.95rem;
+  background: color-mix(in srgb, var(--menu-text) 8%, transparent);
+}
+
+.menu-item__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .menu-item__copy,
@@ -287,5 +318,17 @@ watch(
   font-size: 0.9rem;
   font-weight: 900;
   text-align: center;
+}
+
+@media (max-width: 620px) {
+  .menu-item--with-image {
+    grid-template-columns: 4.75rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .menu-item__media {
+    width: 4.75rem;
+    border-radius: 0.8rem;
+  }
 }
 </style>

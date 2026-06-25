@@ -7,6 +7,7 @@ import {
 export type KitchenMenuDraftItem = {
   name: string
   description: string
+  image_url: string
   price: number
   add_ons: unknown[]
   price_options: unknown[]
@@ -57,6 +58,7 @@ export function normalizeKitchenMenuDraftSections(
             return {
               name: readString(row.name),
               description: readString(row.description),
+              image_url: readString(row.image_url),
               price: money(row.price),
               add_ons: Array.isArray(row.add_ons)
                 ? normalizeMenuItemAddOns(row.add_ons)
