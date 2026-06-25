@@ -1,6 +1,6 @@
 <template>
   <div class="menu-order-funnel">
-    <p>Collection funnel placeholder.</p>
+    <p>Collection funnel placeholder</p>
   </div>
 </template>
 
