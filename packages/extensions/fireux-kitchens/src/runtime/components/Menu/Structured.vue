@@ -9,59 +9,23 @@
     </p>
 
     <article v-else-if="menu" class="menu">
-      <div
-        class="menu-base-layer"
-        :class="{ 'menu-base-layer--dimmed': showOrderPanel }"
-      >
-        <MenuStructuredHeader
-          v-model="selectedChoice"
-          :menu="menu"
-          :choices="choiceOptions"
-        />
+      <MenuStructuredBaseLayer
+        v-if="baseLayer"
+        :view="baseLayer"
+        @update:selected-choice="setSelectedChoice"
+        @add="addToOrder"
+        @remove="removeFromOrder"
+      />
 
-        <MenuFunnelNotice
-          v-if="isOrderMode && orderNotice"
-          :message="orderNotice"
-        />
-
-        <MenuStructuredSectionNav
-          v-if="isOrderMode && menu.content.sections.length > 1"
-          :sections="menu.content.sections"
-        />
-
-        <MenuStructuredSections
-          :sections="menu.content.sections"
-          :order-mode="isOrderMode"
-          :quantities="orderQuantities"
-          @add="addToOrder"
-          @remove="removeFromOrder"
-        />
-      </div>
-
-      <!-- Menu ordering layers: the menu remains layer one; basket/funnel overlays it. See docs/concepts/menu-ordering.md. -->
-      <div
+      <!-- Menu ordering spine: base menu stays readable; selection/funnel overlays it. See docs/concepts/menu-ordering.md. -->
+      <MenuStructuredOrderOverlay
         v-if="isOrderMode && basketQuantity"
-        class="menu-order-overlay"
-      >
-        <MenuSelectionBasket
-          v-if="!showOrderPanel"
-          :quantity="basketQuantity"
-          :items="orderItems"
-          :pending="creatingItemId === 'order'"
-          :action-label="basketActionLabel"
-          @clear="clearOrder"
-          @place="showOrderPanel = true"
-        />
-
-        <MenuFunnelPanel
-          v-else
-          :order-type="selectedOrderType"
-          :policy="selectedOrderTypeConfig"
-          :pending="creatingItemId === 'order'"
-          @close="showOrderPanel = false"
-          @submit="placeOrder"
-        />
-      </div>
+        :order="orderOverlay"
+        @clear="clearOrder"
+        @close-funnel="showOrderPanel = false"
+        @open-funnel="showOrderPanel = true"
+        @submit="placeOrder"
+      />
 
       <p
         v-if="orderMessage || orderError"
@@ -84,6 +48,11 @@ import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuO
 import { useMenuViewMode } from '../../composables/fireux/public/menu/useMenuViewMode'
 import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
 import { menuOrderBasketActionLabel } from '../../utils/menu-ordering-ui'
+import type {
+  MenuChoiceValue,
+  MenuStructuredBaseLayerView,
+  MenuStructuredOrderOverlayState,
+} from './Structured/types'
 
 const props = defineProps<{
   menu: MenuManifest | null
@@ -131,10 +100,37 @@ const {
   orderType: selectedOrderType,
   storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
 })
-const basketActionLabel = computed(() => {
-  return menuOrderBasketActionLabel(selectedOrderType.value)
+const baseLayer = computed<MenuStructuredBaseLayerView | null>(() => {
+  if (!props.menu) return null
+
+  return {
+    menu: props.menu,
+    choices: choiceOptions.value,
+    selectedChoice: selectedChoice.value,
+    orderMode: isOrderMode.value,
+    orderNotice: orderNotice.value,
+    quantities: orderQuantities.value,
+    dimmed: showOrderPanel.value,
+  }
+})
+const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
+  const policy = selectedOrderTypeConfig.value
+
+  return {
+    actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
+    funnelOpen: showOrderPanel.value,
+    items: orderItems.value,
+    orderType: selectedOrderType.value,
+    pending: creatingItemId.value === 'order',
+    ...(policy ? { policy } : {}),
+    quantity: basketQuantity.value,
+  }
 })
 const showOrderPanel = ref(false)
+
+function setSelectedChoice(value: MenuChoiceValue) {
+  selectedChoice.value = value
+}
 
 watch([selectedOrderType, basketQuantity], () => {
   showOrderPanel.value = false
@@ -154,20 +150,6 @@ watch([selectedOrderType, basketQuantity], () => {
   gap: clamp(2rem, 4vw, 3rem);
 }
 
-.menu-base-layer {
-  display: grid;
-  gap: clamp(2rem, 4vw, 3rem);
-  transition:
-    filter 180ms ease,
-    opacity 180ms ease;
-}
-
-.menu-base-layer--dimmed {
-  filter: saturate(0.72);
-  opacity: 0.38;
-  pointer-events: none;
-}
-
 .menu-state {
   margin: 0;
   color: var(--menu-muted);
@@ -181,21 +163,5 @@ watch([selectedOrderType, basketQuantity], () => {
   color: var(--menu-muted);
   font-size: 0.95rem;
   font-weight: 800;
-}
-
-.menu-order-overlay {
-  position: fixed;
-  z-index: 30;
-  right: 0;
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  left: 0;
-  display: grid;
-  justify-items: center;
-  padding-inline: 0.5rem;
-  pointer-events: none;
-}
-
-.menu-order-overlay > * {
-  pointer-events: auto;
 }
 </style>
