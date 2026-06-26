@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenOperationsMenusSource />
+        <ConsoleKitchenOperationsMenusCreationDetail />
       </section>
     </template>
   </UDashboardPanel>

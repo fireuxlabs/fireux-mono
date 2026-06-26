@@ -29,7 +29,7 @@
       class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]"
     >
       <div class="space-y-6">
-        <DishCardsProfile :dish="dish" />
+        <ConsoleKitchenOperationsDishesCardsProfile :dish="dish" />
 
         <UCard>
           <template #header>

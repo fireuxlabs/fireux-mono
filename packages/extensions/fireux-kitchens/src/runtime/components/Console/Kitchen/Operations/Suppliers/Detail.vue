@@ -10,7 +10,10 @@
       Back to suppliers
     </UButton>
 
-    <SupplierProfile v-if="supplier" :supplier="supplier" />
+    <ConsoleKitchenOperationsSuppliersCardsProfile
+      v-if="supplier"
+      :supplier="supplier"
+    />
 
     <UCard v-if="supplier">
       <div class="space-y-4">
@@ -72,7 +75,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleSupplier } from '../../../../../composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplier'
-import SupplierProfile from '../../../../Supplier/Cards/Profile.vue'
 
 const {
   supplier,

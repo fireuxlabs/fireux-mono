@@ -13,7 +13,7 @@
       </template>
 
       <div v-if="cards.length" class="space-y-3">
-        <RecipeCardsCell
+        <ConsoleKitchenOperationsRecipesCardsCell
           v-for="card in cards"
           :key="card.id"
           v-bind="card"

@@ -37,7 +37,7 @@
                 </p>
               </div>
 
-              <ConsoleKitchenOperationsMenusUpload
+              <ConsoleKitchenOperationsMenusCreationUpload
                 :upload-id="menuId"
                 :lock-slug="true"
                 :replace-existing="true"

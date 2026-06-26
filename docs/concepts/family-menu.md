@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-25
-Ref: 22f65613f
+Updated: 2026-06-26
+Ref: c00678d44
 Role: map, not canon
 
 Purpose:
@@ -83,6 +83,14 @@ Kitchen needed:
 - Manage kitchen menu operations.
 - Enable Sproochli/translation later.
 - Route through tenant/global kitchen ownership.
+
+Component placement:
+- Root menu rendering and public menu collection pieces live under `components/Menu`.
+- Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
+- Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
+- Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.
+- Use workflow buckets only when they name a real visible seam: `Creation`, `Process`, `QR`, `Sections`, and `Items`.
+- Keep primary selected-menu panels such as `Menu`, `Details`, `Ordering`, and `Publish` flat unless they grow their own child components.
 
 Structured item options:
 - `price_options`: required or mutually exclusive choices such as sizes,

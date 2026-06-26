@@ -1,6 +1,6 @@
 Components spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-26
+Ref: c00678d44
 Role: map, not canon
 
 Purpose:
@@ -35,6 +35,12 @@ Console component folders:
 - `Console/X/Identity`
 - `Console/X/Team`
 - `Console/X/Operations`
+
+Console bucket rule:
+- Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, and `Operations`.
+- These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
+- `Team` is a shared console access concept, not an operation.
+- `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
 
 Working rules:
 - Prefer named domain components over vague generic shells.

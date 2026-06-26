@@ -1,6 +1,6 @@
 Console spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-26
+Ref: c00678d44
 Role: map, not canon
 
 Purpose:
@@ -32,6 +32,13 @@ Allowed domain buckets:
 - `identity`
 - `team`
 - `operations`
+
+Component bucket shape:
+- Every `components/Console/X` family should carry `Index`, `Overview`, `Identity`, `Team`, and `Operations` as peer directories.
+- Each bucket owns an `Index.vue` entry when it renders directly.
+- Do not mix `Console/X/Overview.vue` with `Console/X/Overview/*`; use `Console/X/Overview/Index.vue`.
+- `Team` sits beside `Operations` because access/team management is shared by console families.
+- `Operations` is for selected-target work and may contain domain-specific child folders.
 
 Index pattern:
 - Page renders `ConsoleXIndex`.

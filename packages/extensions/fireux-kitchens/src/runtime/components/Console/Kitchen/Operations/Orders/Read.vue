@@ -48,7 +48,7 @@
           v-if="incomingOrders.length"
           class="kitchen-orders-rail__grid"
         >
-          <OrderCardsTicket
+          <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in incomingOrders"
             :key="ticket.id"
             :order="ticket"
@@ -80,7 +80,7 @@
           v-if="passOrders.length"
           class="kitchen-orders-rail__grid"
         >
-          <OrderCardsTicket
+          <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in passOrders"
             :key="ticket.id"
             :order="ticket"
@@ -113,7 +113,7 @@
           v-if="queueOrders.length"
           class="kitchen-orders-rail__grid"
         >
-          <OrderCardsTicket
+          <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in queueOrders"
             :key="ticket.id"
             :order="ticket"

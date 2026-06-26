@@ -22,7 +22,7 @@
       </template>
 
       <div v-if="visibleCards.length" class="grid gap-3 xl:grid-cols-2">
-        <DishCardsCell
+        <ConsoleKitchenOperationsDishesCardsCell
           v-for="card in visibleCards"
           :key="card.id"
           v-bind="card"

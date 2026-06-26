@@ -17,8 +17,8 @@
             creating dishes.
           </p>
         </div>
-        <ConsoleKitchenOperationsMenusCreate />
-        <ConsoleKitchenOperationsMenusSources />
+        <ConsoleKitchenOperationsMenusCreation />
+        <ConsoleKitchenOperationsMenusCreationQueue />
       </section>
 
       <section class="space-y-3">
