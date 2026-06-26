@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface space-y-4">
-    <ConsoleProjectAppsRead />
+    <ConsoleProjectOperationsAppsRead />
 
-    <ConsoleProjectAppsWrite v-if="canWrite" />
+    <ConsoleProjectOperationsAppsWrite v-if="canWrite" />
   </section>
 </template>
 

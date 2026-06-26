@@ -105,6 +105,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/Apps/useProjectConsoleApps'
 
+// Operation entry spine: docs/concepts/console.md
 const {
   selectedProject,
   appId,

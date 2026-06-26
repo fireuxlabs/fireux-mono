@@ -72,6 +72,7 @@ import type {
 import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/console/project/operations/Ecosystem/useProjectConsoleEcosystem'
 
+// Operation entry spine: docs/concepts/console.md
 const {
   selectedProject,
   ecosystemId,

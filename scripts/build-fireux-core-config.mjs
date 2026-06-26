@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-26
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/build-fireux-core-config.mjs
 // Build FireUX core config helpers that package builds load through subpath exports.
