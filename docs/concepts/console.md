@@ -1,6 +1,6 @@
 Console spine map
 Updated: 2026-06-26
-Ref: cd38d1d00
+Ref: 0cfed3931
 Role: map, not canon
 
 Purpose:
@@ -52,8 +52,8 @@ Index pattern:
 Operations:
 - Operations are child surfaces inside a selected console target.
 - Operations must not leak into Firestore entity root folders.
-- The default operation component spine is entry, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
-- The entry composes the operation page, `Read.vue` shows current state, and `Write.vue` owns selected-target mutation.
+- The default operation component spine is entry, optional tools seam, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
+- The entry composes tools first, then `Read.vue` for current state, then a collapsed write lane for selected-target mutation.
 - The matching operation composable is `useXConsoleOperation`; it owns selected target, child collection path, pending/write permissions, and debug wiring.
 - Use `Index.vue` only when the operation folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.

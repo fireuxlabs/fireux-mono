@@ -1,5 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
+    <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsoleKitchenOperationsMiseRead />
 
     <UAlert
@@ -10,7 +11,13 @@
       description="This kitchen can be inspected, but changes are disabled."
     />
 
-    <ConsoleKitchenOperationsMiseWrite v-if="canWrite" />
+    <ConsoleOperationWritePanel
+      v-if="canWrite"
+      title="Add mise task"
+      description="Create prep work for this kitchen."
+    >
+      <ConsoleKitchenOperationsMiseWrite />
+    </ConsoleOperationWritePanel>
   </section>
 </template>
 

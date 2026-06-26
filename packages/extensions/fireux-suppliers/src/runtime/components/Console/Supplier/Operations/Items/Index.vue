@@ -1,8 +1,15 @@
 <template>
   <section class="console-surface space-y-6">
+    <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsoleSupplierOperationsItemsRead />
 
-    <ConsoleSupplierOperationsItemsWrite v-if="canWrite" />
+    <ConsoleOperationWritePanel
+      v-if="canWrite"
+      title="Item actions"
+      description="Create or update supplier items."
+    >
+      <ConsoleSupplierOperationsItemsWrite />
+    </ConsoleOperationWritePanel>
   </section>
 </template>
 

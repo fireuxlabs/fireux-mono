@@ -1,5 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
+    <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsoleKitchenOperationsRecipesRead />
 
     <UAlert
@@ -10,7 +11,13 @@
       description="This kitchen can be inspected, but changes are disabled."
     />
 
-    <ConsoleKitchenOperationsRecipesWrite v-if="canWrite" />
+    <ConsoleOperationWritePanel
+      v-if="canWrite"
+      title="Create recipe"
+      description="Add a recipe to this kitchen."
+    >
+      <ConsoleKitchenOperationsRecipesWrite />
+    </ConsoleOperationWritePanel>
   </section>
 </template>
 

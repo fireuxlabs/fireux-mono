@@ -1,8 +1,15 @@
 <template>
   <section class="console-surface space-y-6">
+    <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsoleKitchenOperationsIngredientsRead />
 
-    <ConsoleKitchenOperationsIngredientsWrite v-if="canWrite" />
+    <ConsoleOperationWritePanel
+      v-if="canWrite"
+      title="Add ingredient"
+      description="Select or create an ingredient for this kitchen."
+    >
+      <ConsoleKitchenOperationsIngredientsWrite />
+    </ConsoleOperationWritePanel>
   </section>
 </template>
 

@@ -1,8 +1,15 @@
 <template>
   <section class="console-surface space-y-6">
+    <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsoleKitchenOperationsSuppliersRead />
 
-    <ConsoleKitchenOperationsSuppliersWrite v-if="canWrite" />
+    <ConsoleOperationWritePanel
+      v-if="canWrite"
+      title="Supplier actions"
+      description="Connect supplier workflows for this kitchen."
+    >
+      <ConsoleKitchenOperationsSuppliersWrite />
+    </ConsoleOperationWritePanel>
   </section>
 </template>
 
