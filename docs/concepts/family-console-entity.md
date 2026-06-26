@@ -32,7 +32,7 @@ Similar:
 - Should keep index/overview/identity/team/operations separated.
 - Root-plus-app console entities can share level-one buckets:
   `app_scope`, `visibility`, `identity`, then domain-owned operation config.
-- Core owns shared bucket models and readers in `fireux-core`; domain packages own their operation namespaces.
+- Core owns shared bucket model names in `fireux-core`; domain packages own their operation namespaces and readers until reuse is proven.
 
 Different:
 - Blank is the minimal mirror and should stay thin.

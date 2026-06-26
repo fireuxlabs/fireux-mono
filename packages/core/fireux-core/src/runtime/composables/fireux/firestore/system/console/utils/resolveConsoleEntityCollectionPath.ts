@@ -1,5 +1,3 @@
-import { readConsoleEntityAppScope } from '../../../../../../utils/consoleEntitySpine'
-
 export type ConsoleEntityRuntimeMode = 'live' | 'test' | 'demo'
 
 export type ConsoleEntityCollectionFamily =
@@ -23,6 +21,10 @@ const normalizePathPart = (value: unknown) =>
   String(value ?? '')
     .trim()
     .replace(/^\/+|\/+$/g, '')
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 const resolveTestCollectionPath = (family: string) =>
   family.startsWith('test-') ? family : `test-${family}`
@@ -31,8 +33,11 @@ export function resolveConsoleEntityAppId(
   target?: { app_scope?: unknown, app_scope_app_id?: unknown } | null,
   fallbackAppId?: string | null
 ) {
+  const appScope = record(target?.app_scope)
+
   return (
-    normalizePathPart(readConsoleEntityAppScope(target, fallbackAppId).appId) ||
+    normalizePathPart(appScope.app_id) ||
+    normalizePathPart(target?.app_scope_app_id) ||
     normalizePathPart(fallbackAppId)
   )
 }
