@@ -65,14 +65,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
+import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
   MenuView,
   MenuUpdateInput,
-} from '../../../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../../../models/order.model'
+} from '../../../../../../models/menu/menu.model'
+import type { KitchenOrderType } from '../../../../../../models/order.model'
 
 type OrderTypeOption = {
   type: KitchenOrderType

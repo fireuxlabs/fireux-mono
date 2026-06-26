@@ -1,8 +1,11 @@
 <template>
   <section class="console-surface space-y-6">
     <UBreadcrumb :items="breadcrumbItems" />
-    <ConsoleKitchenOperationsMenusDetail />
-    <ConsoleKitchenOperationsMenusOrdering />
+    <ConsoleKitchenOperationsMenusCardsProfile
+      :menu="menu"
+      :sections-count="sections.length"
+    />
+    <ConsoleKitchenOperationsMenusEdit />
     <UCard v-if="menu || source">
       <template #header>
         <div class="space-y-1">
@@ -65,6 +68,7 @@ const {
   menu,
   source,
   menuId,
+  sections,
 } = useKitchenConsoleMenu()
 const breadcrumbItems = computed(() => [
   {
