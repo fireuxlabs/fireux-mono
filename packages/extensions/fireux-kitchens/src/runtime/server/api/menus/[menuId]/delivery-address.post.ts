@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
-  const ordering = readMenuOrderingConfig(context.menuData)
+  const ordering = readMenuOrderingConfig(context.menuData, context.fulfilment)
   const deliveryPolicy = ordering.order_types.find((type) =>
     type.type === 'delivery'
   )

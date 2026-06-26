@@ -23,14 +23,11 @@
           <!-- place -->
           <KitchenDetailPlace :kitchen="kitchen" />
 
-          <!-- identity -->
-          <KitchenDetailIdentity :kitchen="kitchen" />
-
           <!-- main -->
           <KitchenDetailMenus :kitchen="kitchen" />
 
-          <!-- app membership -->
-          <AppJoinSection />
+          <!-- team access -->
+          <KitchenDetailJoin :kitchen="kitchen" />
 
           <!-- operator -->
           <KitchenDetailOperatorPanel :kitchen="kitchen" />

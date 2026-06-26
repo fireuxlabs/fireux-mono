@@ -1,6 +1,8 @@
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { KitchenFulfilmentConfig } from '../models/kitchen.model'
+import { readMenuOrderFulfilmentPolicy } from './menu-ordering-policy'
 
 type KitchenSpineRecord = Record<string, unknown> | null | undefined
 
@@ -91,3 +93,15 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
+
+export const readKitchenFulfilmentConfig = (
+  value: KitchenSpineRecord
+): KitchenFulfilmentConfig => {
+  const source = record(value)
+  const policy = readMenuOrderFulfilmentPolicy(source.fulfilment)
+
+  return {
+    delivery_zones: policy?.delivery_zones || [],
+    payment_methods: policy?.payment_methods || [],
+  }
+}

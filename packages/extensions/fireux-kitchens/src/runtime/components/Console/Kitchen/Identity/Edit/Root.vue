@@ -15,6 +15,12 @@
             :can-write="canWrite"
           />
 
+          <ConsoleKitchenIdentityEditFulfilment
+            :kitchen="kitchen"
+            :kitchen-id="kitchenId"
+            :collection-path="rootCollection"
+            :can-write="canWrite"
+          />
         </div>
 
         <ConsoleKitchenIdentityEditLinks />
@@ -29,6 +35,6 @@
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 
-const { selectedKitchen, kitchenId, canWrite } = useKitchenConsoleIdentity()
+const { selectedKitchen, kitchenId, rootCollection, canWrite } = useKitchenConsoleIdentity()
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 </script>

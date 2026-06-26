@@ -128,7 +128,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
-  const ordering = readMenuOrderingConfig(context.menuData)
+  const ordering = readMenuOrderingConfig(context.menuData, context.fulfilment)
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   if (!isMenuOrderingEnabled(ordering)) {
     throw createError({

@@ -3,16 +3,20 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
+  menuKitchenFulfilment,
+  readAppMenuKitchenData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from './menu-kitchen-scope.ts'
+import type { MenuOrderFulfilmentPolicy } from '../../models/menu/menu.model.ts'
 
 export type MenuOrderContext = {
   appId: string
   kitchenId: string
   menuId: string
   menuData: Record<string, unknown>
+  fulfilment?: MenuOrderFulfilmentPolicy
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -66,13 +70,17 @@ export const readMenuOrderContext = async (
     }
 
     const appId = resolveSourceAppId(kitchen.data, currentMenuOrderAppId())
-    const menuData = await readMenuDoc(appId, kitchen.id, menuId)
+    const [menuData, appKitchenData] = await Promise.all([
+      readMenuDoc(appId, kitchen.id, menuId),
+      readAppMenuKitchenData(appId, kitchen.id),
+    ])
 
     return {
       appId,
       kitchenId: kitchen.id,
       menuId,
       menuData,
+      fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
     }
   }
 
@@ -102,5 +110,6 @@ export const readMenuOrderContext = async (
     kitchenId,
     menuId: scopedMenuId,
     menuData: await readMenuDoc(appId, kitchenId, scopedMenuId),
+    fulfilment: scope.fulfilment,
   }
 }

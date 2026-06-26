@@ -2,9 +2,11 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
   readKitchenAppScope,
+  readKitchenFulfilmentConfig,
   readKitchenIdentity,
   readKitchenMenuStyle,
 } from '../../utils/kitchen-spine'
+import type { MenuOrderFulfilmentPolicy } from '../../models/menu/menu.model.ts'
 import { menuSourceFromData } from './menu-surface-source.ts'
 import { resolveMenuPageStyle } from './menu-page-style.ts'
 
@@ -16,6 +18,7 @@ export type MenuKitchenScope = {
   kitchenMenuId?: string
   createdByLabel?: string
   page_style?: Record<string, unknown>
+  fulfilment?: MenuOrderFulfilmentPolicy
 }
 
 export const kitchenDisplayName = (data: Record<string, unknown>) =>
@@ -57,6 +60,21 @@ export function menuKitchenIdentity(
       }
     ),
   }
+}
+
+export function menuKitchenFulfilment(
+  rootData: Record<string, unknown>,
+  appData: Record<string, unknown> = {}
+) {
+  const appFulfilment = readKitchenFulfilmentConfig(appData)
+  if (
+    appFulfilment.delivery_zones.length ||
+    appFulfilment.payment_methods.length
+  ) {
+    return appFulfilment
+  }
+
+  return readKitchenFulfilmentConfig(rootData)
 }
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
@@ -113,5 +131,6 @@ export async function readRootMenuKitchenScope(
     kitchenMenuId: source.menu_id || '',
     createdByLabel: '',
     page_style: identity.page_style,
+    fulfilment: menuKitchenFulfilment(kitchenData, appKitchenData),
   }
 }

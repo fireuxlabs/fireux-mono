@@ -1,6 +1,10 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type {
+  KitchenDeliveryZone,
+  KitchenFulfilmentPaymentMethod,
+} from '../kitchen.model'
 import type { KitchenOrderType } from '../order.model'
 
 /**
@@ -52,26 +56,9 @@ export const MenuEntity = defineFireuxEntity({
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 export type MenuView = 'browse' | 'order'
-export type MenuPaymentMethod =
-  | 'cash'
-  | 'card_at_pickup'
-  | 'card_to_driver'
-  | 'online_card'
-  | 'deposit'
+export type MenuPaymentMethod = KitchenFulfilmentPaymentMethod
 
-export type MenuDeliveryZone = {
-  id: string
-  label: string
-  min_order_chf?: number
-  fee_chf?: number
-  postal_codes?: string[]
-  place_ids?: string[]
-  polygon?: Array<{
-    lat: number
-    lng: number
-  }>
-  color?: string
-}
+export type MenuDeliveryZone = KitchenDeliveryZone
 
 export type MenuOrderDepositPolicy = {
   type: 'fixed' | 'fixed_per_person' | 'percent'

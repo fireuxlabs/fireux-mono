@@ -1,3 +1,5 @@
+import type { MenuOrderFulfilmentPolicy } from '../../models/menu/menu.model'
+
 export type MenuSurfaceScope = {
   kitchenId?: string
   kitchenSlug?: string
@@ -11,6 +13,7 @@ export type MenuSurfaceScope = {
   page_style?: Record<string, unknown>
   public_choices?: unknown[]
   sections?: unknown[]
+  fulfilment?: MenuOrderFulfilmentPolicy
 }
 
 export type MenuSurfaceFile = {

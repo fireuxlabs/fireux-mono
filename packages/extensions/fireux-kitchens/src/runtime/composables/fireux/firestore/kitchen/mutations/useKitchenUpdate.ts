@@ -2,7 +2,14 @@ import { collection, deleteField, getDocs, query, where } from 'firebase/firesto
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { computed, unref, type Ref } from 'vue'
 import { KitchenStorage, type Kitchen, type KitchenUpdateInput } from '../../../../../models/kitchen.model'
+
+type MaybeRef<T> = T | Ref<T>
+type UseKitchenUpdateOptions = {
+  collectionPath?: MaybeRef<string | null | undefined>
+  databaseId?: MaybeRef<string | null | undefined>
+}
 
 const COLLECTION_PATH = KitchenStorage.rootCollection
 
@@ -13,8 +20,13 @@ const pruneUndefined = (payload: Partial<Kitchen>) =>
     Object.entries(payload).filter(([, value]) => value !== undefined)
   ) as Partial<Kitchen>
 
-export function useKitchenUpdate() {
-  const { updateDocument } = useFirestoreUpdate()
+export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
+  const collectionPath = computed(() =>
+    clean(unref(options.collectionPath)) || COLLECTION_PATH
+  )
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const db = useFirestore()
 
   const resolveSlugUpdate = async (kitchenId: string, value: unknown) => {
@@ -58,7 +70,11 @@ export function useKitchenUpdate() {
       aliasPrunePatch.slugAliases = deleteField()
     }
 
-    await updateDocument<Kitchen>(COLLECTION_PATH, id, pruneUndefined(nextPatch))
+    await updateDocument<Kitchen>(
+      collectionPath.value,
+      id,
+      pruneUndefined(nextPatch)
+    )
   }
 
   return { updateKitchen }

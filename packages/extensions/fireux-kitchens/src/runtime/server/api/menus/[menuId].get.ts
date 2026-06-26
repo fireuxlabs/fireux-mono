@@ -26,6 +26,7 @@ import {
 import { readKitchenMenuPublicRows } from '../../utils/kitchen-menu-public-rows.ts'
 import { readKitchenMenuPublicChoices } from '../../utils/menu-public-choices.ts'
 import {
+  menuKitchenFulfilment,
   menuKitchenIdentity,
   readAppMenuKitchenData,
   readMenuKitchenBySlug,
@@ -117,6 +118,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
     public_choices: publicChoices,
+    fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
     ...ownerAppView,
     ...ownerMenuPayload,
   })

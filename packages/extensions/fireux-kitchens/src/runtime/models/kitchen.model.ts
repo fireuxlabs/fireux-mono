@@ -88,6 +88,32 @@ export type KitchenOrdersConfig = {
   }
 }
 
+export type KitchenDeliveryZone = {
+  id: string
+  label: string
+  min_order_chf?: number
+  fee_chf?: number
+  postal_codes?: string[]
+  place_ids?: string[]
+  polygon?: Array<{
+    lat: number
+    lng: number
+  }>
+  color?: string
+}
+
+export type KitchenFulfilmentPaymentMethod =
+  | 'cash'
+  | 'card_at_pickup'
+  | 'card_to_driver'
+  | 'online_card'
+  | 'deposit'
+
+export type KitchenFulfilmentConfig = {
+  delivery_zones: KitchenDeliveryZone[]
+  payment_methods: KitchenFulfilmentPaymentMethod[]
+}
+
 export const KitchenEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Kitchen',
@@ -136,6 +162,14 @@ export const KitchenModel = {
     },
   } as KitchenOrdersConfig,
 
+  // Kitchen-level fulfilment rules. Menus opt into delivery/collection/etc.;
+  // the Kitchen owns the actual delivery zones, default payment methods, and
+  // other venue service rules that public searches and ordering funnels consume.
+  fulfilment: {
+    delivery_zones: [],
+    payment_methods: [],
+  } as KitchenFulfilmentConfig,
+
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -149,11 +183,12 @@ export const KitchenModel = {
 
 export type Kitchen = Omit<
   WidenLiteral<typeof KitchenModel>,
-  'app_scope' | 'menus'
+  'app_scope' | 'menus' | 'fulfilment'
 > &
   {
     app_scope: KitchenAppScope
     menus: KitchenMenusConfig
+    fulfilment: KitchenFulfilmentConfig
 
     // Current stored data still has these flat fields while root Kitchen docs move to the spine namespaces.
     app_scope_state?: FireuxAppScopeShape['app_scope_state']

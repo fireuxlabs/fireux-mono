@@ -98,6 +98,39 @@
             </div>
           </div>
         </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-3">
+              <UIcon name="i-lucide-truck" class="size-5 text-muted" />
+              <div>
+                <div class="text-base font-semibold text-highlighted">
+                  Delivery fulfilment
+                </div>
+                <p class="text-sm text-dimmed">
+                  {{ deliveryZones.length }} delivery zone{{ deliveryZones.length === 1 ? '' : 's' }}
+                </p>
+              </div>
+            </div>
+          </template>
+
+          <div v-if="deliveryZones.length" class="space-y-2">
+            <div
+              v-for="zone in deliveryZones"
+              :key="zone.id"
+              class="console-summary-field"
+            >
+              {{ zone.label }}
+              <span class="console-summary-value">
+                Min CHF {{ zone.min_order_chf || 0 }} · fee CHF {{ zone.fee_chf || 0 }}
+              </span>
+            </div>
+          </div>
+
+          <p v-else class="text-sm text-dimmed">
+            No delivery zones configured.
+          </p>
+        </UCard>
       </div>
     </template>
 
@@ -112,6 +145,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-spine'
 
 const {
   selectedKitchen,
@@ -131,6 +165,9 @@ const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.default_currency_code ?? 'CHF'))
 const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format ?? 'dash'))
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
+const deliveryZones = computed(() =>
+  readKitchenFulfilmentConfig(kitchen.value).delivery_zones
+)
 
 const currencyFormatLabel = computed(() => {
   if (currencyFormat.value === 'symbol') return 'Symbol'
