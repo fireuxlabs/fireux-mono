@@ -1,9 +1,16 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
   FireuxAppScope as FireuxAppScopeShape,
+  FireuxConsoleEntityAppScope,
+  FireuxConsoleEntityIdentity,
+  FireuxConsoleEntityVisibility,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
-import { FireuxAppScope } from 'fireux-core/runtime/models/core/meta.model.ts'
+import {
+  FireuxConsoleEntityAppScopeModel,
+  FireuxConsoleEntityIdentityModel,
+  FireuxConsoleEntityVisibilityModel,
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -41,18 +48,45 @@ export const KitchenStorage = {
   rootCollection: 'kitchens',
   scopeCollection: 'kitchens',
   idParam: 'kitchenId',
-  children: {
-    dishes: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
-    ingredients: 'apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
-    menuUploads: 'apps/{appId}/kitchens/{kitchenId}/menu-uploads/{uploadId}',
-    menus: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
-    mise: 'apps/{appId}/kitchens/{kitchenId}/mise/{taskId}',
-    orders: 'apps/{appId}/kitchens/{kitchenId}/orders/{orderId}',
-    recipes: 'apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}',
-    stations: 'apps/{appId}/kitchens/{kitchenId}/stations/{stationId}',
-    team: 'apps/{appId}/kitchens/{kitchenId}/team/{memberId}',
-  },
+  operationsRoot: 'apps/{appId}/kitchens/{kitchenId}',
+  operations: [
+    'overview',
+    'identity',
+    'menus',
+    'ingredients',
+    'mise',
+    'recipes',
+    'dishes',
+    'stations',
+    'suppliers',
+    'team',
+    'orders',
+    'devices',
+  ],
 } as const
+
+export type KitchenOperationKey = typeof KitchenStorage.operations[number]
+
+export type KitchenAppScope = FireuxConsoleEntityAppScope
+
+export type KitchenVisibility = FireuxConsoleEntityVisibility
+
+export type KitchenIdentity = FireuxConsoleEntityIdentity
+
+export type KitchenMenusConfig = {
+  currency_format: CurrencyDisplayFormat
+  show_currency: boolean
+  style?: Partial<PageStyle>
+}
+
+export type KitchenOrdersConfig = {
+  modes: string[]
+  default_lead_time_minutes: number
+  acceptance_required: boolean
+  printing: {
+    ticket_device_id: string
+  }
+}
 
 export const KitchenEntity = defineFireuxEntity({
   kind: 'entity',
@@ -67,24 +101,40 @@ export const KitchenEntity = defineFireuxEntity({
 
 export const KitchenModel = {
   id: '',
-  ...FireuxAppScope,
-  is_test_kitchen: false,
-  show: false,
   place_id: '',
   slug: '',
 
-  // Standalone Kitchen identity or explicit presentation overrides.
-  // Empty means public Kitchen surfaces inherit linked Place name/image when a Place exists.
-  display_name: '',
-  tagline: '',
-  display_image_url: '',
-  food_gallery: [] as string[],
+  // Level 1 Kitchen spine: these namespaces mirror console/kitchen route groups.
+  // Records still live in operation-specific models and app-scoped collections.
+  app_scope: {
+    ...FireuxConsoleEntityAppScopeModel,
+  } as KitchenAppScope,
 
-  // Kitchen/menu presentation. Place owns default currency code.
-  menu_currency_format: 'dash' as CurrencyDisplayFormat,
-  menu_show_currency: true,
-  menu_style: undefined as Partial<PageStyle> | undefined,
-  menu_available: true,
+  visibility: {
+    ...FireuxConsoleEntityVisibilityModel,
+  } as KitchenVisibility,
+
+  identity: {
+    ...FireuxConsoleEntityIdentityModel,
+  } as KitchenIdentity,
+
+  // Default food-menu display config for this Kitchen.
+  // Actual menu records live under the `menus` operation.
+  menus: {
+    currency_format: 'dash',
+    show_currency: true,
+    style: undefined,
+  } as KitchenMenusConfig,
+
+  // Kitchen-level ordering defaults. Order records live under the `orders` operation.
+  orders: {
+    modes: [],
+    default_lead_time_minutes: 0,
+    acceptance_required: true,
+    printing: {
+      ticket_device_id: '',
+    },
+  } as KitchenOrdersConfig,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -99,11 +149,26 @@ export const KitchenModel = {
 
 export type Kitchen = Omit<
   WidenLiteral<typeof KitchenModel>,
-  'app_scope_state' | 'menu_currency_format' | 'menu_style'
+  'app_scope' | 'menus'
 > &
-  FireuxAppScopeShape & {
-    menu_currency_format: CurrencyDisplayFormat
+  {
+    app_scope: KitchenAppScope
+    menus: KitchenMenusConfig
+
+    // Current stored data still has these flat fields while root Kitchen docs move to the spine namespaces.
+    app_scope_state?: FireuxAppScopeShape['app_scope_state']
+    app_scope_app_id?: FireuxAppScopeShape['app_scope_app_id']
+    is_test_kitchen?: boolean
+    show?: boolean
+    active?: boolean
+    display_name?: string
+    tagline?: string
+    display_image_url?: string
+    food_gallery?: string[]
+    menu_currency_format?: CurrencyDisplayFormat
+    menu_show_currency?: boolean
     menu_style?: Partial<PageStyle>
+    menu_available?: boolean
   }
 
 export type AppKitchen = {
@@ -121,28 +186,9 @@ export type KitchenCreateInput = Partial<
     | 'id'
     | 'place_id'
     | 'slug'
-    | 'display_name'
-    | 'display_image_url'
-    | 'food_gallery'
-    | 'menu_currency_format'
-    | 'menu_show_currency'
+    | 'identity'
+    | 'menus'
   >
 >
 
-export type KitchenUpdateInput = Partial<
-  Pick<
-    Kitchen,
-    | 'is_test_kitchen'
-    | 'show'
-    | 'place_id'
-    | 'slug'
-    | 'display_name'
-    | 'tagline'
-    | 'display_image_url'
-    | 'food_gallery'
-    | 'menu_currency_format'
-    | 'menu_show_currency'
-    | 'menu_style'
-    | 'menu_available'
-  >
->
+export type KitchenUpdateInput = Partial<Kitchen> & Record<string, unknown>

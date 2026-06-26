@@ -14,11 +14,13 @@ import {
   readMenuSourceData,
 } from '../../utils/menu-source-behaviour.ts'
 import { readMenuPageStyle } from '../../utils/menu-page-style.ts'
+import {
+  readKitchenIdentity,
+  readKitchenMenuStyle,
+} from '../../../utils/kitchen-spine'
 
 const kitchenDisplayName = (data: Record<string, unknown>) =>
-  readRecordString(data, 'display_name') ||
-  readRecordString(data, 'name') ||
-  readRecordString(data, 'short_name')
+  readKitchenIdentity(data).displayName
 
 const currentAppId = () => {
   const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
@@ -49,7 +51,7 @@ export default defineEventHandler(async () => {
         kitchenId,
         {
           name: kitchenSnap.exists ? kitchenDisplayName(kitchenData) : '',
-          page_style: readMenuPageStyle(kitchenData.menu_style),
+          page_style: readMenuPageStyle(readKitchenMenuStyle(kitchenData)),
         },
       ] as const
     })

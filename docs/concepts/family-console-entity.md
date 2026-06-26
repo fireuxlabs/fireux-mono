@@ -1,6 +1,6 @@
 Console entity family map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-26
+Ref: 1fa0ab5dc
 Role: map, not canon
 
 Purpose:
@@ -30,6 +30,9 @@ Similar:
 - Uses shared console primitives where possible.
 - Should have access/team surface.
 - Should keep index/overview/identity/team/operations separated.
+- Root-plus-app console entities can share level-one buckets:
+  `app_scope`, `visibility`, `identity`, then domain-owned operation config.
+- Core owns shared bucket models and readers in `fireux-core`; domain packages own their operation namespaces.
 
 Different:
 - Blank is the minimal mirror and should stay thin.
@@ -49,3 +52,4 @@ Shared component naming:
 Open questions:
 - Exact operation child matrix still needs cleanup.
 - Operator/claim panels need a tighter shared mental model.
+- Older flat root fields still exist in stored data; readers may bridge them while families migrate.

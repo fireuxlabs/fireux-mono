@@ -1,3 +1,5 @@
+import { readConsoleEntityAppScope } from '../../../../../../utils/consoleEntitySpine'
+
 export type ConsoleEntityRuntimeMode = 'live' | 'test' | 'demo'
 
 export type ConsoleEntityCollectionFamily =
@@ -12,7 +14,7 @@ export type ResolveConsoleEntityCollectionPathOptions = {
   family: ConsoleEntityCollectionFamily
   mode?: ConsoleEntityRuntimeMode | null
   appId?: string | null
-  target?: { app_scope_app_id?: unknown } | null
+  target?: { app_scope?: unknown, app_scope_app_id?: unknown } | null
   explicitPath?: string | null
   useAppOverlay?: boolean
 }
@@ -26,10 +28,13 @@ const resolveTestCollectionPath = (family: string) =>
   family.startsWith('test-') ? family : `test-${family}`
 
 export function resolveConsoleEntityAppId(
-  target?: { app_scope_app_id?: unknown } | null,
+  target?: { app_scope?: unknown, app_scope_app_id?: unknown } | null,
   fallbackAppId?: string | null
 ) {
-  return normalizePathPart(target?.app_scope_app_id) || normalizePathPart(fallbackAppId)
+  return (
+    normalizePathPart(readConsoleEntityAppScope(target, fallbackAppId).appId) ||
+    normalizePathPart(fallbackAppId)
+  )
 }
 
 export function resolveConsoleEntityCollectionPath(

@@ -1,6 +1,7 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../app/FireUXConfig'
 import type { FireuxAppScopeState } from '../../../../models/core/meta.model'
+import { readConsoleEntityAppScope } from '../../../../utils/consoleEntitySpine'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
@@ -22,6 +23,7 @@ export type PublicScopedRecordsOptions<TEntity> = {
 }
 
 export type PublicAppScopedTarget = {
+  app_scope?: unknown
   app_scope_state?: unknown
   app_scope_app_id?: unknown
 }
@@ -36,9 +38,9 @@ export function resolvePublicAppScopedSource(
   target?: PublicAppScopedTarget | null,
   fallbackAppId?: unknown
 ): PublicAppScopedSource {
-  const state = text(target?.app_scope_state) as FireuxAppScopeState | ''
-  const scopedAppId = text(target?.app_scope_app_id)
-  const sourceAppId = scopedAppId || text(fallbackAppId)
+  const resolved = readConsoleEntityAppScope(target, fallbackAppId)
+  const state = resolved.state as FireuxAppScopeState | ''
+  const sourceAppId = resolved.appId
 
   return {
     state,

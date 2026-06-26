@@ -68,6 +68,10 @@ import {
   resolveMenuTitleFont,
 } from '../../../../composables/fireux/public/menu/useMenuTheme'
 import type { Menu } from '../../../../models/menu/menu.model'
+import {
+  readKitchenIdentity,
+  readKitchenMenuStyle,
+} from '../../../../utils/kitchen-spine'
 
 const {
   selectedKitchen,
@@ -114,7 +118,7 @@ const normalizePageStyle = (style?: Partial<PageStyle> | null): Partial<PageStyl
 const pageStyleEquals = (a: Partial<PageStyle>, b: Partial<PageStyle>) =>
   JSON.stringify(normalizePageStyle(a)) === JSON.stringify(normalizePageStyle(b))
 const kitchenName = computed(() =>
-  normalizeString(kitchen.value?.display_name || kitchen.value?.name) || 'Kitchen'
+  readKitchenIdentity(kitchen.value).displayName || 'Kitchen'
 )
 const kitchenSlug = computed(() => normalizeString(kitchen.value?.slug))
 const selectedPreviewMenuId = ref('')
@@ -154,7 +158,7 @@ const publicMenuUrl = computed(() => {
 
   return menuId ? `${menuIndexUrl}/${encodeURIComponent(menuId)}` : menuIndexUrl
 })
-const pageStyle = computed(() => (kitchen.value?.menu_style ?? {}) as Partial<PageStyle>)
+const pageStyle = computed(() => readKitchenMenuStyle(kitchen.value) ?? {})
 const storedPageStyle = computed(() => normalizePageStyle(pageStyle.value))
 const draftPageStyle = ref<Partial<PageStyle>>(normalizePageStyle())
 const saving = ref(false)
@@ -231,7 +235,7 @@ async function flushThemeSave(style: Partial<PageStyle>) {
 
       saveState.value = 'Saving...'
       await updateKitchen(id, {
-        menu_style: compactStyle,
+        'menus.style': compactStyle,
       })
     }
 

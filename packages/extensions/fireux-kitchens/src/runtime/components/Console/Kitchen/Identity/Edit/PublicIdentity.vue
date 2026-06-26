@@ -60,6 +60,7 @@ import { computed } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type { KitchenUpdateInput } from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -70,8 +71,8 @@ const props = defineProps<{
 const { updateKitchen } = useKitchenUpdate()
 const toast = useToastify()
 
-const name = computed(() => String(props.kitchen?.display_name ?? ''))
-const tagline = computed(() => String(props.kitchen?.tagline ?? ''))
+const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
+const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
 const slug = computed(() => String(props.kitchen?.slug ?? ''))
 
 const updateIdentityField = async (
@@ -105,14 +106,14 @@ const updateIdentityField = async (
 
 const handleName = async (value: string) =>
   updateIdentityField(
-    { display_name: value },
+    { 'identity.display_name': value },
     'Display name updated',
     'Failed to update display name'
   )
 
 const handleTagline = async (value: string) =>
   updateIdentityField(
-    { tagline: value },
+    { 'identity.tagline': value },
     'Tagline updated',
     'Failed to update tagline'
   )

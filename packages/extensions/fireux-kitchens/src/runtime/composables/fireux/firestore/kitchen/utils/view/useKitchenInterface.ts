@@ -8,6 +8,12 @@ import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/mone
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
+import {
+  readKitchenAppScope,
+  readKitchenIdentity,
+  readKitchenMenusConfig,
+  readKitchenVisibility,
+} from '../../../../../../utils/kitchen-spine'
 
 export namespace KitchenCard {
   export type Card = {
@@ -57,6 +63,7 @@ export type KitchenSurface = {
   app_scope_app_id?: string
   slug?: string
   show?: boolean
+  active?: boolean
   route_scope?: 'live' | 'demo' | 'test'
   is_test_kitchen?: boolean
   place_id?: string
@@ -191,10 +198,27 @@ export function useKitchenInterface() {
     } as TKitchen & KitchenSurface
     const id = safeString(merged.id).trim()
     if (!id) return null
+    const identity = readKitchenIdentity(merged)
+    const appScope = readKitchenAppScope(merged)
+    const visibility = readKitchenVisibility(merged)
+    const menus = readKitchenMenusConfig(merged)
 
     return {
       ...merged,
       id,
+      app_scope_state: appScope.state || merged.app_scope_state,
+      app_scope_app_id: appScope.appId || merged.app_scope_app_id,
+      show: visibility.show,
+      active: visibility.active,
+      is_test_kitchen: visibility.isTest,
+      display_name: identity.displayName || merged.display_name,
+      tagline: identity.tagline || merged.tagline,
+      display_image_url: identity.imageUrl || merged.display_image_url,
+      food_gallery: identity.gallery.length ? identity.gallery : merged.food_gallery,
+      menu_currency_format: menus.currencyFormat,
+      menu_show_currency: menus.showCurrency,
+      menu_style: menus.style,
+      menu_available: menus.available,
       route_scope: parts.routeScope ?? merged.route_scope,
     }
   }
@@ -202,11 +226,12 @@ export function useKitchenInterface() {
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString(kitchen.slug).trim()
-    const name = safeString(kitchen.display_name || kitchen.name)
+    const identity = readKitchenIdentity(kitchen)
+    const name = safeString(identity.displayName || kitchen.name)
     const shortName = safeString(kitchen.short_name)
     const shortAddress = safeString(kitchen.short_address)
     const formattedAddress = safeString(kitchen.formatted_address)
-    const imageUrl = safeString(kitchen.display_image_url || kitchen.image_url)
+    const imageUrl = safeString(identity.imageUrl || kitchen.image_url)
 
     const badges = kitchen.show === false ? ['Hidden'] : []
 
@@ -257,14 +282,11 @@ export function useKitchenInterface() {
 
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const displayName = safeString(target.display_name || target.name).trim()
-    const tagline = safeString(target.tagline).trim()
-    const imageUrl = safeString(target.display_image_url || target.image_url).trim()
-    const foodGallery = Array.isArray(target.food_gallery)
-      ? target.food_gallery
-          .map((image) => safeString(image).trim())
-          .filter(Boolean)
-      : []
+    const identity = readKitchenIdentity(target)
+    const displayName = safeString(identity.displayName || target.name).trim()
+    const tagline = safeString(identity.tagline).trim()
+    const imageUrl = safeString(identity.imageUrl || target.image_url).trim()
+    const foodGallery = identity.gallery
     const hasKitchenPublicData = Boolean(
       displayName ||
         tagline ||

@@ -1,5 +1,9 @@
 import { computed, type Ref } from 'vue'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
+import {
+  readKitchenIdentity,
+  readKitchenVisibility,
+} from '../../../../../../utils/kitchen-spine'
 
 export function useKitchenComputed(
   kitchen?: Ref<Partial<Kitchen> | null | undefined>
@@ -8,21 +12,24 @@ export function useKitchenComputed(
     () => kitchen?.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
   )
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
+  const identity = computed(() => readKitchenIdentity(view.value))
+  const visibility = computed(() => readKitchenVisibility(view.value))
   const hasMissingName = computed(() =>
-    !String(view.value?.display_name || view.value?.name || '').trim()
+    !String(identity.value.displayName || view.value?.name || '').trim()
   )
   const hasMissingSlug = computed(() =>
     !String(kitchen?.value?.slug || '').trim()
   )
-  const isPublic = computed(() => kitchen?.value?.show === true)
-  const isHidden = computed(() => kitchen?.value?.show === false)
-  const isTestKitchen = computed(() => kitchen?.value?.is_test_kitchen === true)
+  const isPublic = computed(() => visibility.value.show === true)
+  const isHidden = computed(() => visibility.value.show === false)
+  const isTestKitchen = computed(() => visibility.value.isTest === true)
   const displayStatus = computed(() =>
     isPublic.value ? 'Public' : isHidden.value ? 'Hidden' : 'Unknown'
   )
   const displayName = computed(() =>
     String(
-      view.value?.display_name ||
+      identity.value.displayName ||
+        view.value?.display_name ||
         view.value?.name ||
         view.value?.short_name ||
         kitchen?.value?.slug ||
@@ -31,7 +38,7 @@ export function useKitchenComputed(
     ).trim()
   )
   const displayImageUrl = computed(() =>
-    String(view.value?.display_image_url || view.value?.image_url || '').trim()
+    String(identity.value.imageUrl || view.value?.image_url || '').trim()
   )
   const hasAddress = computed(() =>
     Boolean(

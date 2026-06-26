@@ -1,5 +1,10 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import {
+  readKitchenAppScope,
+  readKitchenIdentity,
+  readKitchenMenuStyle,
+} from '../../utils/kitchen-spine'
 import { menuSourceFromData } from './menu-surface-source.ts'
 import { resolveMenuPageStyle } from './menu-page-style.ts'
 
@@ -14,14 +19,12 @@ export type MenuKitchenScope = {
 }
 
 export const kitchenDisplayName = (data: Record<string, unknown>) =>
-  readRecordString(data, 'display_name') ||
-  readRecordString(data, 'name') ||
-  readRecordString(data, 'short_name')
+  readKitchenIdentity(data).displayName
 
 export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>,
   fallbackAppId: string
-) => readRecordString(kitchenData, 'app_scope_app_id') || fallbackAppId
+) => readKitchenAppScope(kitchenData, fallbackAppId).appId
 
 export async function readAppMenuKitchenData(
   appId: string,
@@ -41,18 +44,16 @@ export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
   appData: Record<string, unknown> = {}
 ) {
-  const isTenantOwned =
-    readRecordString(rootData, 'app_scope_state') === 'dedicated_app' &&
-    Boolean(readRecordString(rootData, 'app_scope_app_id'))
+  const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
 
   // Public menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
   return {
     name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
     page_style: resolveMenuPageStyle(
-      { source: 'app-kitchen', style: appData.menu_style },
+      { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
       {
         source: 'root-kitchen',
-        style: isTenantOwned ? {} : rootData.menu_style,
+        style: isTenantOwned ? {} : readKitchenMenuStyle(rootData),
       }
     ),
   }

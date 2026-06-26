@@ -48,6 +48,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -64,9 +65,7 @@ const slug = computed(() => String(props.kitchen?.slug ?? ''))
 const shortName = computed(() => String(props.kitchen?.short_name ?? ''))
 const shortAddress = computed(() => String(props.kitchen?.short_address ?? ''))
 const formattedAddress = computed(() => String(props.kitchen?.formatted_address ?? ''))
-const imageUrl = computed(() =>
-  String(props.kitchen?.display_image_url || props.kitchen?.image_url || '')
-)
+const imageUrl = computed(() => readKitchenIdentity(props.kitchen).imageUrl)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
 const placeSource = computed(() => String(props.kitchen?.source ?? '').trim())
 const claimedBy = computed(() => String(props.kitchen?.claimed_by ?? '').trim())
@@ -104,10 +103,10 @@ const handleImageUpload = async (file: File) => {
     throw new Error('No kitchen selected.')
   }
 
-  imageUploading.value = true
+    imageUploading.value = true
   try {
     const url = await uploadImage(`kitchens/${props.kitchenId}/image/current`, file)
-    await updateKitchen(props.kitchenId, { display_image_url: cacheBust(url) })
+    await updateKitchen(props.kitchenId, { 'identity.image_url': cacheBust(url) })
     toast.add({ title: 'Kitchen image updated', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'

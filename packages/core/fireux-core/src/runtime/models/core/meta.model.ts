@@ -84,6 +84,45 @@ export type FireuxAppScope = {
   [K in keyof typeof FireuxAppScope]: (typeof FireuxAppScope)[K]
 }
 
+/**
+ * Nested console entity buckets for root-plus-app console families.
+ *
+ * These are the shared level-one model namespaces used by console-backed
+ * entities before domain-specific operation config is added.
+ */
+export const FireuxConsoleEntityAppScopeModel = {
+  state: 'root_only' as FireuxAppScopeState,
+  app_id: '' as string,
+} as const
+
+export type FireuxConsoleEntityAppScope = {
+  [K in keyof typeof FireuxConsoleEntityAppScopeModel]:
+    (typeof FireuxConsoleEntityAppScopeModel)[K]
+}
+
+export const FireuxConsoleEntityVisibilityModel = {
+  show: false as boolean,
+  active: true as boolean,
+  is_test: false as boolean,
+} as const
+
+export type FireuxConsoleEntityVisibility = {
+  [K in keyof typeof FireuxConsoleEntityVisibilityModel]:
+    (typeof FireuxConsoleEntityVisibilityModel)[K]
+}
+
+export const FireuxConsoleEntityIdentityModel = {
+  display_name: '' as string,
+  tagline: '' as string,
+  image_url: '' as string,
+  gallery: [] as string[],
+} as const
+
+export type FireuxConsoleEntityIdentity = {
+  [K in keyof typeof FireuxConsoleEntityIdentityModel]:
+    (typeof FireuxConsoleEntityIdentityModel)[K]
+}
+
 export const FireuxConsoleAccessModel = {
   operator_ids: [] as string[],
 } as const
