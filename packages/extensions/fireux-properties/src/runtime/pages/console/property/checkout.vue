@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertyInfoEditor page-key="checkout" />
+      <ConsolePropertySundriesInfoEditor page-key="checkout" />
     </template>
   </UDashboardPanel>
 </template>

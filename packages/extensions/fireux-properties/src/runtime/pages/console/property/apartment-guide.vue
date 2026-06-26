@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertyInfoEditor page-key="apartment-guide" />
+      <ConsolePropertySundriesInfoEditor page-key="apartment-guide" />
     </template>
   </UDashboardPanel>
 </template>

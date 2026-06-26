@@ -1,20 +1,10 @@
 <template>
-  <UDashboardPanel id="console-kitchen-purchase-orders">
-    <template #header>
-      <LayoutsConsoleNavbar title="Kitchen Purchase Orders" />
-    </template>
-
-    <template #body>
-      <section class="space-y-4">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Kitchen purchase orders are parked"
-          description="This kitchen console route is intentionally hidden until purchase orders are wired."
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+  <ConsoleKitchenSundriesParked
+    panel-id="console-kitchen-purchase-orders"
+    title="Kitchen Purchase Orders"
+    alert-title="Kitchen purchase orders are parked"
+    description="This kitchen console route is intentionally hidden until purchase orders are wired."
+  />
 </template>
 
 <script setup lang="ts">

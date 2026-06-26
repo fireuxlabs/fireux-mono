@@ -5,12 +5,7 @@
     </template>
 
     <template #body>
-      <UAlert
-        color="neutral"
-        variant="soft"
-        title="QR"
-        description="Property QR scaffold."
-      />
+      <ConsolePropertySundriesQR />
     </template>
   </UDashboardPanel>
 </template>

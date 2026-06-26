@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertyInfoEditor page-key="check-in" />
+      <ConsolePropertySundriesInfoEditor page-key="check-in" />
     </template>
   </UDashboardPanel>
 </template>

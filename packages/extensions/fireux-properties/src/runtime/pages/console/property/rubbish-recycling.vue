@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertyInfoEditor page-key="rubbish-recycling" />
+      <ConsolePropertySundriesInfoEditor page-key="rubbish-recycling" />
     </template>
   </UDashboardPanel>
 </template>

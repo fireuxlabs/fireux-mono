@@ -198,6 +198,8 @@ Shared console primitives live in:
 Domain console composables belong under:
 
 `composables/fireux/console/<entity>/{core,index,overview,identity,team,operations}`
+or, for deliberately parked surfaces only,
+`composables/fireux/console/<entity>/sundries`.
 
 Allowed console entity root buckets are only:
 
@@ -207,6 +209,11 @@ Allowed console entity root buckets are only:
 - `overview`
 - `team`
 - `operations`
+- `sundries`
+
+`sundries` is a temporary quarantine for parked, loose, or underdeveloped
+console surfaces. Do not treat it as a permanent product bucket; a sundry
+should later graduate into `operations`, move into a core sheet, or be deleted.
 
 Do not add console buckets named `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`.
 

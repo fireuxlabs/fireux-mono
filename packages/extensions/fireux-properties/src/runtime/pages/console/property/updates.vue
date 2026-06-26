@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <ConsolePropertyInfoEditor page-key="updates" />
+      <ConsolePropertySundriesInfoEditor page-key="updates" />
     </template>
   </UDashboardPanel>
 </template>

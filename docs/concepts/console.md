@@ -1,6 +1,6 @@
 Console spine map
 Updated: 2026-06-26
-Ref: c00678d44
+Ref: 2a3861666
 Role: map, not canon
 
 Purpose:
@@ -32,13 +32,15 @@ Allowed domain buckets:
 - `identity`
 - `team`
 - `operations`
+- `sundries`
 
 Component bucket shape:
-- Every `components/Console/X` family should carry `Index`, `Overview`, `Identity`, `Team`, and `Operations` as peer directories.
+- Every `components/Console/X` family should carry `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries` as peer directories.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
 - Do not mix `Console/X/Overview.vue` with `Console/X/Overview/*`; use `Console/X/Overview/Index.vue`.
 - `Team` sits beside `Operations` because access/team management is shared by console families.
 - `Operations` is for selected-target work and may contain domain-specific child folders.
+- `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
 
 Index pattern:
 - Page renders `ConsoleXIndex`.
@@ -55,6 +57,7 @@ Operations:
 - Use `Index.vue` only when the operation folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.
 - Do not use root entity buckets like `Create` inside operations unless the visible scoped workflow is actually named creation.
+- Do not promote `Sundries` into a permanent product bucket. A sundry should later graduate into `Operations`, move into a core sheet, or be deleted.
 
 Similarities:
 - All console entities need target selection or a selected target.

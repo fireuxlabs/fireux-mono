@@ -1,6 +1,6 @@
 Components spine map
 Updated: 2026-06-26
-Ref: c00678d44
+Ref: 2a3861666
 Role: map, not canon
 
 Purpose:
@@ -47,12 +47,14 @@ Console component folders:
 - `Console/X/Identity`
 - `Console/X/Team`
 - `Console/X/Operations`
+- `Console/X/Sundries`
 
 Console bucket rule:
-- Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, and `Operations`.
+- Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries`.
 - These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
 - `Team` is a shared console access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
+- `Sundries` quarantines parked or underdeveloped console surfaces so they do not pretend to be confirmed operations.
 - Operation folders should default to an entry component, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
 - Use `Index.vue` only when the folder itself is intentionally the auto-imported component.
 - `Create` belongs to root/public entity creation by default. In scoped operations, prefer `Write` unless a real UI workflow is named creation.
