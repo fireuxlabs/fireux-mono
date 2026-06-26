@@ -10,7 +10,14 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderType,
 } from '../../../../models/order.model'
-import { useMenuOrderCreate } from './useMenuOrderCreate'
+import {
+  useMenuOrderCreate,
+  type CreatedMenuOrder,
+} from './useMenuOrderCreate'
+import {
+  useMenuOrderStatus,
+  type PublicMenuOrderStatus,
+} from './useMenuOrderStatus'
 
 type MenuOrderItem = {
   id: string
@@ -104,6 +111,8 @@ export function useMenuOrderDraft(
   const draft = ref<Record<string, MenuOrderDraftItem>>({})
   const hasMounted = ref(false)
   const awaitingAcceptance = ref(false)
+  const acceptedOrder = ref(false)
+  const trackedOrder = ref<CreatedMenuOrder | null>(null)
   const items = computed<MenuOrderDraftItem[]>(() =>
     Object.values(draft.value)
   )
@@ -123,6 +132,29 @@ export function useMenuOrderDraft(
     createOrder,
   } = useMenuOrderCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
+  })
+  const {
+    status: trackedOrderStatus,
+  } = useMenuOrderStatus(
+    menuId,
+    computed(() => trackedOrder.value?.id || ''),
+    {
+      kitchenSlug: options.kitchenSlug,
+      enabled: computed(() => awaitingAcceptance.value),
+    }
+  )
+  const awaitingMessage = computed(() => {
+    const status = trackedOrderStatus.value
+    if (!acceptedOrder.value) {
+      return message.value || 'The kitchen will confirm your order shortly.'
+    }
+
+    const minutes = Number(status?.estimated_ready_minutes || 0)
+    if (minutes > 0) {
+      return `Accepted. Estimated ready in ${minutes} minutes.`
+    }
+
+    return 'Accepted. The kitchen is preparing your order.'
   })
 
   function restoreDraft(nextKey: string) {
@@ -184,6 +216,8 @@ export function useMenuOrderDraft(
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return
     awaitingAcceptance.value = false
+    acceptedOrder.value = false
+    trackedOrder.value = null
 
     const id = text(item.id)
     const lineId = text(item.lineId) || id
@@ -238,6 +272,8 @@ export function useMenuOrderDraft(
   function clear() {
     draft.value = {}
     awaitingAcceptance.value = false
+    acceptedOrder.value = false
+    trackedOrder.value = null
   }
 
   async function place(customer?: KitchenOrderCustomer) {
@@ -259,11 +295,22 @@ export function useMenuOrderDraft(
     const nextAwaitingAcceptance =
       isWaitingForAcceptance && orderType.value === 'delivery'
     draft.value = {}
+    trackedOrder.value = created
+    acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance
   }
 
+  watch(trackedOrderStatus, (status: PublicMenuOrderStatus | null) => {
+    if (!status || !awaitingAcceptance.value) return
+    if (status.status === 'pending_acceptance') return
+
+    acceptedOrder.value = true
+  })
+
   return {
     awaitingAcceptance,
+    acceptedOrder,
+    awaitingMessage,
     items,
     quantity,
     quantities,

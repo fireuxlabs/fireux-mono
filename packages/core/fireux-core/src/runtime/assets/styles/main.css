@@ -1,6 +1,28 @@
 /* stripped */@import 'tailwindcss';
 @import '@nuxt/ui';
 
+@layer base {
+	html,
+	body {
+		/* Mobile app surfaces should not double-tap zoom, but pinch zoom remains allowed. */
+		touch-action: manipulation;
+	}
+
+	a,
+	button,
+	input,
+	label,
+	select,
+	summary,
+	textarea,
+	[role='button'],
+	[role='menuitem'],
+	[role='option'],
+	[role='tab'] {
+		touch-action: manipulation;
+	}
+}
+
 h3 {
 	font-weight: 600;
 	font-size: 1rem;

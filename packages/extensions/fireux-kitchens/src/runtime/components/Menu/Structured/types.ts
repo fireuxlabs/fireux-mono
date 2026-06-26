@@ -45,6 +45,7 @@ export type MenuStructuredBaseLayerView = {
 
 export type MenuStructuredOrderOverlayState = {
   actionLabel: string
+  accepted: boolean
   awaitingAcceptance: boolean
   funnelOpen: boolean
   items: MenuStructuredBasketItem[]

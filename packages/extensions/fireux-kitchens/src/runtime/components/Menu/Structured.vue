@@ -87,6 +87,8 @@ const {
   items: orderItems,
   quantity: basketQuantity,
   awaitingAcceptance,
+  acceptedOrder,
+  awaitingMessage,
   quantities: orderQuantities,
   creatingItemId,
   message: orderMessage,
@@ -119,10 +121,11 @@ const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
 
   return {
     actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
+    accepted: acceptedOrder.value,
     awaitingAcceptance: awaitingAcceptance.value,
     funnelOpen: showOrderPanel.value,
     items: orderItems.value,
-    message: orderMessage.value,
+    message: awaitingMessage.value || orderMessage.value,
     menuId: text(toValue(props.menuId)),
     kitchenSlug: text(toValue(props.kitchenSlug)),
     orderType: selectedOrderType.value,

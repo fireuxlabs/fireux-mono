@@ -30,26 +30,11 @@
       {{ statusMessage }}
     </p>
 
-    <div
-      v-if="debugJson"
-      class="delivery-details__debug"
-    >
-      <div class="delivery-details__debug-header">
-        <span>Delivery debug</span>
-        <button
-          type="button"
-          @click="copyDebug"
-        >
-          {{ debugCopied ? 'Copied' : 'Copy' }}
-        </button>
-      </div>
-      <pre>{{ debugJson }}</pre>
-    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import type { MenuDeliveryAddressPrediction } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
 import { useMenuDeliveryAddressCheck } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressCheck'
 import type { MenuDeliveryZone } from '../../../models/menu/menu.model'
@@ -85,8 +70,6 @@ const {
     kitchenSlug: computed(() => props.kitchenSlug || ''),
   }
 )
-const selectedPlaceId = ref('')
-const debugCopied = ref(false)
 const statusMessage = computed(() => {
   if (pending.value) return 'Checking delivery area...'
   if (error.value) return error.value
@@ -101,18 +84,12 @@ const statusMessage = computed(() => {
     zone.fee_chf !== undefined ? `fee CHF ${zone.fee_chf}` : '',
   ].filter(Boolean).join(' · ')
 })
-const debugJson = computed(() => {
-  if (!import.meta.dev || !result.value?.debug) return ''
-
-  return JSON.stringify(result.value.debug, null, 2)
-})
 
 onMounted(() => {
   seedTestDeliveryCustomer()
 })
 
 async function selectAddress(prediction: MenuDeliveryAddressPrediction) {
-  selectedPlaceId.value = prediction.place_id
   emit('update:modelValue', {
     ...props.modelValue,
     address: prediction.description,
@@ -127,7 +104,6 @@ async function selectAddress(prediction: MenuDeliveryAddressPrediction) {
 }
 
 function updateAddress(value: string) {
-  selectedPlaceId.value = ''
   emit('deliveryZone', null)
   emit('update:modelValue', {
     ...props.modelValue,
@@ -140,7 +116,6 @@ async function seedTestDeliveryCustomer() {
   if (!import.meta.dev) return
   if (props.modelValue.address || props.modelValue.address_place_id) return
 
-  selectedPlaceId.value = testDeliveryCustomer.address_place_id
   emit('update:modelValue', {
     ...props.modelValue,
     phone: props.modelValue.phone || testDeliveryCustomer.phone,
@@ -153,20 +128,6 @@ async function seedTestDeliveryCustomer() {
     place_id: testDeliveryCustomer.address_place_id,
   })
   emit('deliveryZone', checked?.deliverable ? checked.zone || null : null)
-}
-
-async function copyDebug() {
-  if (!import.meta.client || !debugJson.value) return
-
-  try {
-    await navigator.clipboard.writeText(debugJson.value)
-    debugCopied.value = true
-    window.setTimeout(() => {
-      debugCopied.value = false
-    }, 1400)
-  } catch {
-    debugCopied.value = false
-  }
 }
 </script>
 
@@ -210,46 +171,5 @@ async function copyDebug() {
 
 .delivery-details__status--good {
   color: var(--menu-text);
-}
-
-.delivery-details__debug {
-  margin: 0;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
-  color: var(--menu-muted);
-}
-
-.delivery-details__debug-header {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
-.delivery-details__debug button {
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-bg) 72%, transparent);
-  color: var(--menu-text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.7rem;
-  font-weight: 900;
-  padding: 0.28rem 0.55rem;
-}
-
-.delivery-details__debug pre {
-  overflow: auto;
-  max-height: 14rem;
-  margin: 0;
-  padding: 0.75rem;
-  font-size: 0.72rem;
-  line-height: 1.45;
-  white-space: pre-wrap;
 }
 </style>

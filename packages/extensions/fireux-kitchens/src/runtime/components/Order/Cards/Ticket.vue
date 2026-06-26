@@ -18,15 +18,29 @@
         <span class="flex min-w-0 items-center gap-2">
           <UIcon :name="headerIcon" class="size-4 shrink-0" />
           <span class="truncate">{{ headerLabel }}</span>
+          <span
+            v-if="isWaitingForAcceptance"
+            class="order-ticket__waiting-status"
+            aria-label="Waiting for kitchen acceptance"
+          >
+            <span class="order-ticket__spinner" aria-hidden="true" />
+            <span>waiting</span>
+          </span>
         </span>
         <span class="flex shrink-0 items-center gap-2">
           <button
             v-if="canTouchStatus"
-            class="rounded px-1.5 py-0.5 text-xs font-medium text-dimmed hover:bg-muted hover:text-highlighted"
+            class="order-ticket__status-action"
             type="button"
+            :disabled="statusActionPending"
             :aria-label="statusActionAriaLabel || statusActionLabel"
             @click.stop="touchStatus"
           >
+            <span
+              v-if="statusActionPending"
+              class="order-ticket__spinner"
+              aria-hidden="true"
+            />
             {{ statusActionLabel }}
           </button>
 
@@ -122,6 +136,7 @@ const props = withDefaults(
     bodyActionLabel?: string
     statusActionLabel?: string
     statusActionAriaLabel?: string
+    statusActionPending?: boolean
   }>(),
   {
     trashMode: false,
@@ -129,6 +144,7 @@ const props = withDefaults(
     bodyActionLabel: '',
     statusActionLabel: '',
     statusActionAriaLabel: '',
+    statusActionPending: false,
   }
 )
 const emit = defineEmits<{
@@ -176,6 +192,10 @@ const orderValue = (keys: string[]) => {
   return null
 }
 const orderRecord = computed(() => props.order as Record<string, unknown>)
+const orderStatus = computed(() => normalizeString(props.order.status))
+const isWaitingForAcceptance = computed(() =>
+  orderStatus.value === 'pending_acceptance'
+)
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -263,7 +283,7 @@ const headerLabel = computed(() => {
   return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'
 })
 const statusLabel = computed(() => {
-  const status = normalizeString(props.order.status)
+  const status = orderStatus.value
   if (status === 'pending_acceptance') return 'waiting'
 
   const estimatedReadyMinutes = Number(
@@ -298,7 +318,7 @@ const canTouchBody = computed(() =>
   Boolean(orderId.value && props.bodyActionLabel)
 )
 const canTouchStatus = computed(() =>
-  Boolean(orderId.value && props.statusActionLabel)
+  Boolean(orderId.value && props.statusActionLabel && !props.statusActionPending)
 )
 const lines = computed(() =>
   Array.isArray(props.order.items)
@@ -345,3 +365,56 @@ function touchStatus() {
   emit('touch-status', orderId.value)
 }
 </script>
+
+<style scoped>
+.order-ticket__status-action {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--ui-text-dimmed);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.order-ticket__status-action:hover {
+  background: var(--ui-bg-muted);
+  color: var(--ui-text-highlighted);
+}
+
+.order-ticket__status-action:disabled {
+  cursor: wait;
+  opacity: 0.82;
+}
+
+.order-ticket__waiting-status {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex: 0 0 auto;
+  color: var(--ui-text-dimmed);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.order-ticket__spinner {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-top-color: currentColor;
+  border-radius: 999px;
+  animation: order-ticket-spin 0.8s linear infinite;
+}
+
+@keyframes order-ticket-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

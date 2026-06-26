@@ -31,7 +31,7 @@ type CreateMenuOrderInput = {
   customer?: KitchenOrderCustomer
 }
 
-type CreatedMenuOrder = {
+export type CreatedMenuOrder = {
   id: string
   order_number: string
   status?: string
