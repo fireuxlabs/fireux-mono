@@ -43,6 +43,7 @@ export function useDishUpdate(
     if ('name' in patch) next.name = trim(patch.name)
     if ('slug' in patch) next.slug = optional(patch.slug) || ''
     if ('description' in patch) next.description = trim(patch.description)
+    if ('image_url' in patch) next.image_url = trim(patch.image_url)
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`
     await updateDocument<Dish>(collectionPath, resolvedDishId, next)

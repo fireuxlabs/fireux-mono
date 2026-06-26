@@ -30,137 +30,71 @@
     >
       <div class="space-y-6">
         <ConsoleKitchenOperationsDishesCardsProfile :dish="dish" />
-
-        <UCard>
-          <template #header>
-            <div class="collection-manager__header">
-              <div class="collection-manager__title">
-                <h2>Menu placements</h2>
-                <p>Where this dish appears in current menus.</p>
-              </div>
-
-              <div class="collection-manager__controls">
-                <UBadge variant="soft">
-                  {{ placementRows.length }}
-                </UBadge>
-              </div>
-            </div>
-          </template>
-
-          <div
-            v-if="placementRows.length"
-            class="collection-stack"
-          >
-            <article
-              v-for="placement in placementRows"
-              :key="placement.id"
-              class="flex items-center gap-3 rounded-lg border border-default bg-default p-3"
-            >
-              <UChip
-                :color="placement.active ? 'success' : 'error'"
-                position="top-left"
-                inset
-              >
-                <UAvatar
-                  icon="i-lucide-list-tree"
-                  size="md"
-                />
-              </UChip>
-
-              <div class="min-w-0 flex-1">
-                <div class="truncate text-sm font-semibold text-highlighted">
-                  {{ placement.menuName }}
-                </div>
-                <p class="truncate text-xs text-dimmed">
-                  {{ placement.sectionLabel }}
-                </p>
-              </div>
-
-              <UButton
-                :to="placement.to"
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-arrow-right"
-                size="xs"
-                aria-label="Open menu section"
-              />
-            </article>
-          </div>
-
-          <p
-            v-else
-            class="text-sm text-muted"
-          >
-            Not placed in a menu section.
-          </p>
-        </UCard>
       </div>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="saveDish"
-      >
-        <UCard>
-          <template #header>
-            <div class="console-card-header">
-              <div>
-                <div class="console-card-header__title">Edit copy</div>
-                <p class="text-sm text-dimmed">
-                  Update the default dish text.
-                </p>
-              </div>
-            </div>
-          </template>
-
-          <div class="space-y-4">
-            <UFormField label="Name">
-              <UInput
-                v-model="form.name"
-                :disabled="!canWrite"
-              />
-            </UFormField>
-
-            <UFormField label="Description">
-              <UTextarea
-                v-model="form.description"
-                :disabled="!canWrite"
-                :rows="5"
-              />
-            </UFormField>
-          </div>
-
-          <template #footer>
-            <div
-              v-if="canWrite"
-              class="flex flex-wrap items-center gap-3"
-            >
-              <UButton
-                type="submit"
-                icon="i-lucide-save"
-                :loading="saving"
-                :disabled="!isDirty || saving"
-              >
-                Save dish
-              </UButton>
-
-              <p
-                v-if="saveMessage"
-                class="text-sm text-dimmed"
-              >
-                {{ saveMessage }}
+      <UCard>
+        <template #header>
+          <div class="console-card-header">
+            <div>
+              <div class="console-card-header__title">Edit copy</div>
+              <p class="text-sm text-dimmed">
+                Update the default dish text.
               </p>
             </div>
+          </div>
+        </template>
 
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="Read only"
-              description="You can inspect this dish, but editing is disabled for the selected kitchen."
-            />
-          </template>
-        </UCard>
-      </form>
+        <div class="space-y-4">
+          <UFormField label="Image">
+            <div class="flex flex-col items-center gap-2">
+              <MoleculesFormsFirestoreImagePicker
+                v-if="canWrite"
+                :src="dishImageUrl"
+                :alt="dishName || 'Dish'"
+                :initials="imageInitials"
+                :update-function="handleImageUpload"
+              />
+              <UAvatar
+                v-else
+                :src="dishImageUrl || undefined"
+                :alt="dishName || 'Dish'"
+                :text="imageInitials"
+                icon="i-lucide-utensils"
+                size="3xl"
+              />
+              <p
+                v-if="imageUploading"
+                class="text-xs text-dimmed"
+              >
+                Uploading image...
+              </p>
+            </div>
+          </UFormField>
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Name"
+            :firebase-value="dishName"
+            placeholder="Dish name"
+            :maxlength="140"
+            :disabled="!canWrite"
+            disabled-message="This dish is read-only."
+            :validation-function="validateDishName"
+            :update-function="handleName"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Description"
+            type="textarea"
+            :rows="5"
+            :firebase-value="dishDescription"
+            placeholder="Default dish description"
+            :maxlength="800"
+            :disabled="!canWrite"
+            disabled-message="This dish is read-only."
+            :update-function="handleDescription"
+          />
+        </div>
+      </UCard>
     </div>
 
     <UAlert
@@ -187,10 +121,11 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { computed, reactive, ref, watch } from 'vue'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { computed, ref } from 'vue'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
 import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
-import type { Dish } from '../../../../../models/dish.model'
+import type { DishUpdateInput } from '../../../../../models/dish.model'
 
 const {
   dish,
@@ -198,7 +133,6 @@ const {
   kitchenId,
   rootCollection,
   databaseId,
-  menuUsage,
   pending,
   canWrite,
   debug,
@@ -209,92 +143,85 @@ const { updateDish, deleteDish } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
-const saving = ref(false)
+const { uploadImage } = useImageStorage()
+const imageUploading = ref(false)
 const deleting = ref(false)
-const saveMessage = ref('')
-const originalSignature = ref('')
-
-const form = reactive({
-  name: '',
-  description: '',
-})
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const buildSignature = () =>
-  JSON.stringify({
-    name: normalizeString(form.name),
-    description: normalizeString(form.description),
-  })
-
-const isDirty = computed(() => buildSignature() !== originalSignature.value)
-
-const placementRows = computed(() =>
-  menuUsage.value.map((placement) => ({
-    id: `${placement.menuId}:${placement.sectionId}:${placement.itemId}`,
-    menuName: normalizeString(placement.menuName) || placement.menuId,
-    sectionLabel: normalizeString(placement.sectionLabel) || placement.sectionId,
-    active: placement.active !== false,
-    to: `/console/kitchen/menus/${encodeURIComponent(
-      placement.menuId
-    )}/${encodeURIComponent(placement.sectionId)}`,
-  }))
-)
+const dishName = computed(() => normalizeString(dish.value?.name))
+const dishDescription = computed(() => normalizeString(dish.value?.description))
+const dishImageUrl = computed(() => normalizeString(dish.value?.image_url))
+const imageInitials = computed(() => {
+  const parts = dishName.value.split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'D'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+})
 
 const fireuxDebugData = computed(() => ({
   ...debug.value,
   dish: dish.value,
-  menu_usage: menuUsage.value,
 }))
 
-const resetForm = (source: Dish | null) => {
-  saveMessage.value = ''
-
-  form.name = normalizeString(source?.name)
-  form.description = normalizeString(source?.description)
-  originalSignature.value = buildSignature()
+const validateDishName = (value: string) => {
+  const next = normalizeString(value)
+  return {
+    isValid: Boolean(next),
+    message: next ? '' : 'Dish name is required.',
+  }
 }
 
-watch(dish, (next: Dish | null) => resetForm(next), { immediate: true })
-
-const saveDish = async () => {
-  if (!canWrite.value || !dish.value || saving.value) return
-
-  const name = normalizeString(form.name)
-  if (!name) {
-    toast.add({
-      title: 'Dish name is required',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    return
-  }
-
-  saving.value = true
-  saveMessage.value = ''
-
+async function updateDishField(
+  patch: DishUpdateInput,
+  successTitle: string,
+  failTitle: string
+) {
+  if (!canWrite.value) throw new Error('This dish is read-only.')
+  if (!dishId.value || !kitchenId.value) throw new Error('No dish selected.')
   try {
-    const description = normalizeString(form.description)
-    await updateDish(
-      dishId.value,
-      {
-        name,
-        description,
-      },
-      { kitchenId: kitchenId.value }
-    )
-    originalSignature.value = buildSignature()
-    saveMessage.value = 'Saved.'
-    toast.add({ title: 'Dish saved', icon: 'i-heroicons-check-circle' })
+    await updateDish(dishId.value, patch, { kitchenId: kitchenId.value })
+    toast.add({ title: successTitle, color: 'success', icon: 'i-lucide-check' })
+    return 'success'
   } catch (error) {
-    const message = String((error as any)?.message || error || 'Failed to save dish')
     toast.add({
-      title: 'Dish save failed',
-      description: message,
+      title: failTitle,
+      description: error instanceof Error ? error.message : 'Please try again.',
       color: 'error',
-      icon: 'i-heroicons-exclamation-triangle',
+      icon: 'i-lucide-alert-triangle',
     })
+    throw error
+  }
+}
+
+const handleName = async (value: string) =>
+  updateDishField(
+    { name: normalizeString(value) },
+    'Dish name updated',
+    'Could not update dish name'
+  )
+
+const handleDescription = async (value: string) =>
+  updateDishField(
+    { description: normalizeString(value) },
+    'Dish description updated',
+    'Could not update dish description'
+  )
+
+const handleImageUpload = async (file: File) => {
+  if (!canWrite.value || !dishId.value || !kitchenId.value) return
+  imageUploading.value = true
+  try {
+    const url = await uploadImage(
+      `kitchens/${kitchenId.value}/dishes/${dishId.value}/image/current`,
+      file
+    )
+    await updateDishField(
+      { image_url: url },
+      'Dish image updated',
+      'Could not update dish image'
+    )
   } finally {
-    saving.value = false
+    imageUploading.value = false
   }
 }
 
@@ -302,14 +229,8 @@ const deleteSelectedDish = async () => {
   if (!canWrite.value || !dish.value || deleting.value) return
 
   const title = normalizeString(dish.value.name)
-  const usageCount = menuUsage.value.length
-  const usageNote = usageCount
-    ? `\n\n${usageCount} menu item${
-        usageCount === 1 ? '' : 's'
-      } reference this dish. This delete will not cascade.`
-    : ''
   const ok = window.confirm(
-    `Delete dish "${title}"?\n\nThis will only delete the dish document.${usageNote}`
+    `Delete dish "${title}"?\n\nThis will only delete the dish document.`
   )
   if (!ok) return
 

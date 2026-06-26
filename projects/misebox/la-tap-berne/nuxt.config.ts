@@ -9,6 +9,9 @@ const fireuxConfig = defineFireuxConfig({
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',
+  seo: {
+    siteUrl: 'https://tapberne.web.app',
+  },
   consoles: ['kitchen'],
   consoleConfig: {
     kitchen: {

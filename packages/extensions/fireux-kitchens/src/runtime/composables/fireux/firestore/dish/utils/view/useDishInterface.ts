@@ -50,7 +50,7 @@ export function useDishInterface() {
     return {
       id,
       to: `/console/kitchen/dishes/${encodeURIComponent(id)}`,
-      imageUrl: '',
+      imageUrl: safeString(dish.image_url).trim(),
       title: name,
       subtitle: description,
       meta: 'Dish',

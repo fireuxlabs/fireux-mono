@@ -15,6 +15,7 @@ import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKit
 type DishCreateDraft = {
   name: string
   description?: string
+  image_url?: string
 }
 
 export type DishCreateResult = {
@@ -30,12 +31,14 @@ function buildDishPayload(
 ): DishCreateInput {
   const name = normalizeString(draft.name)
   const description = normalizeString(draft.description)
+  const imageUrl = normalizeString(draft.image_url)
 
   return {
     id: dishId,
     name,
     slug: dishId,
     description,
+    image_url: imageUrl,
     kitchen_id: kitchenId,
   }
 }

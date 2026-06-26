@@ -9,9 +9,10 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Path: apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}
  * Owner app scope: Kitchen within an app runtime
  *
- * Dish owns guest-facing food copy. Menus decide where dishes appear.
- * Ingredients, prep, recipes, pricing, stock, images, and service workflow are
- * not active on the public Dish model yet.
+ * Dish owns guest-facing food copy and an optional image. Menus decide where
+ * dishes appear and which price/options apply in that menu context.
+ * Ingredients, prep, recipes, pricing, stock, and service workflow are not
+ * active on the public Dish model yet.
  */
 export const DishStorage = {
   shape: 'scoped',
@@ -26,6 +27,7 @@ export const DishModel = {
   name: '' as string,
   slug: '' as string,
   description: '' as string,
+  image_url: '' as string,
   kitchen_id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
@@ -66,6 +68,7 @@ export function normalizeDish(value: unknown): Dish {
     name: pickString(source.name),
     slug: pickString(source.slug),
     description: pickString(source.description),
+    image_url: pickString(source.image_url),
     kitchen_id: pickString(source.kitchen_id),
     created,
     updated,

@@ -1,7 +1,7 @@
 <template>
   <div class="landing-index-section">
     <div class="mb-6 text-center">
-      <h2 class="text-2xl lg:text-3xl font-bold">Our Apps</h2>
+      <h2 class="text-2xl font-bold lg:text-3xl">Our Apps</h2>
     </div>
 
     <div class="flex flex-wrap justify-center gap-2">
@@ -11,53 +11,38 @@
         :text="app.name"
       >
         <a
-          v-if="hrefFor(app.key)"
-          :href="hrefFor(app.key)"
+          :href="app.href"
           :aria-label="`Open ${app.name}`"
-          class="inline-flex rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
-            :src="app.src || undefined"
+            :src="app.src"
             :alt="app.name"
             :text="app.text"
-            size="md"
+            size="xs"
           />
+          <span>{{ app.name }}</span>
         </a>
-        <UAvatar
-          v-else
-          :src="app.src || undefined"
-          :alt="app.name"
-          :text="app.text"
-          size="md"
-        />
       </UTooltip>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRuntimeConfig } from 'nuxt/app'
-
-type AppKey = 'misebox'
-
 const apps = [
-  { key: 'misebox', name: 'Misebox', text: 'M', src: '/img/app/logo.png' },
+  {
+    key: 'misebox',
+    name: 'Misebox',
+    text: 'M',
+    src: '/img/app/logo.png',
+    href: '/about',
+  },
+  {
+    key: 'la-tap-berne',
+    name: 'La Tap Berne',
+    text: 'LT',
+    src: 'https://tapberne.web.app/img/app/thumbnail.png',
+    href: '/apps/la-tap-berne',
+  },
 ] as const
-
-const publicApps = (useRuntimeConfig().public as any)?.apps as
-  | Partial<Record<AppKey, string>>
-  | undefined
-
-const devBaseUrl = (key: AppKey) =>
-  ({
-    misebox: 'http://localhost:3001',
-  })[key]
-
-const hrefFor = (key: AppKey) => {
-  if (import.meta.dev) return devBaseUrl(key)
-  const raw = publicApps?.[key]
-  return typeof raw === 'string' && raw.trim()
-    ? raw.trim().replace(/\/+$/, '')
-    : ''
-}
 </script>
