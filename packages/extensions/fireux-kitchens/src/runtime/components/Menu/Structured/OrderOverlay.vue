@@ -31,7 +31,7 @@
       </NuxtLink>
     </aside>
 
-    <MenuSelectionBasket
+    <MenuOrderBasket
       v-else-if="!order.funnelOpen"
       :quantity="order.quantity"
       :items="order.items"

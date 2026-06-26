@@ -45,8 +45,8 @@
     </template>
 
     <div class="space-y-4">
-      <!-- Menu preview spine: mirror Menu/index.vue so this edits the same tokens public menus consume. -->
-      <MenuTheme
+      <!-- Menu preview spine: mirror Menu/index.vue so this edits the same page_style data public menus consume. -->
+      <MenuDisplayFrame
         :page-style="pageStyle"
         variant="preview"
         :color-mode="previewMode"
@@ -79,7 +79,7 @@
           title="No menu selected"
           description="Publish a menu before previewing menu display."
         />
-      </MenuTheme>
+      </MenuDisplayFrame>
 
       <UCollapsible>
         <UButton

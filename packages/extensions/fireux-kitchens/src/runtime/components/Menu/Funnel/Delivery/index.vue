@@ -20,12 +20,13 @@ import { computed } from 'vue'
 import type {
   MenuDeliveryZone,
   MenuOrderTypeConfig,
-} from '../../../models/menu/menu.model'
-import type { KitchenOrderCustomer } from '../../../models/order.model'
-import MenuFunnelDeliveryDetails from './DeliveryDetails.vue'
-import MenuFunnelDeliveryMap from './DeliveryMap.vue'
+} from '../../../../models/menu/menu.model'
+import type { KitchenOrderCustomer } from '../../../../models/order.model'
+import MenuFunnelDeliveryDetails from './Details.vue'
+import MenuFunnelDeliveryMap from './Map.vue'
 
 // Menu ordering funnel: docs/concepts/menu-ordering.md
+// Delivery owns its dedicated folder; shared funnel shell/components stay in ../.
 const props = withDefaults(
   defineProps<{
     modelValue: KitchenOrderCustomer

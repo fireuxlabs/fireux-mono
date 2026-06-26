@@ -87,11 +87,11 @@ import {
   menuOrderSubmitLabel,
   menuOrderTypeLabel,
 } from '../../../utils/menu-ordering-ui'
-import MenuFunnelCollection from './Collection.vue'
-import MenuFunnelDefault from './Default.vue'
-import MenuFunnelDelivery from './Delivery.vue'
 import MenuFunnelNotice from './Notice.vue'
-import MenuFunnelPreOrder from './PreOrder.vue'
+import MenuFunnelCollection from './Collection/index.vue'
+import MenuFunnelDefault from './Default/index.vue'
+import MenuFunnelDelivery from './Delivery/index.vue'
+import MenuFunnelPreOrder from './PreOrder/index.vue'
 
 type MenuFunnelSelectionItem = {
   quantity: number

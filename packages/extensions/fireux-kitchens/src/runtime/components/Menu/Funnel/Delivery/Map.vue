@@ -47,7 +47,7 @@ import { useRuntimeConfig } from '#imports'
 import type {
   MenuDeliveryZone,
   MenuOrderTypeConfig,
-} from '../../../models/menu/menu.model'
+} from '../../../../models/menu/menu.model'
 
 type GoogleMapsWindow = Window & {
   google?: any

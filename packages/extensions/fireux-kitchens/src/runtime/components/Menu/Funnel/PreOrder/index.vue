@@ -1,12 +1,12 @@
 <template>
   <div class="menu-order-funnel">
-    <p>Order funnel placeholder</p>
+    <p>Pre-order funnel placeholder</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderTypeConfig } from '../../../models/menu/menu.model'
-import type { KitchenOrderCustomer } from '../../../models/order.model'
+import type { MenuOrderTypeConfig } from '../../../../models/menu/menu.model'
+import type { KitchenOrderCustomer } from '../../../../models/order.model'
 
 withDefaults(
   defineProps<{

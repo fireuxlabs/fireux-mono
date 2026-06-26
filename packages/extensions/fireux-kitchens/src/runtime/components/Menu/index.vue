@@ -1,5 +1,5 @@
 <template>
-  <MenuTheme :page-style="pageStyle">
+  <MenuDisplayFrame :page-style="pageStyle">
     <MenuDocument
       v-if="renderKind === 'document' && documentMenu"
       :kitchen-name="documentMenu.source?.kitchen_name"
@@ -15,7 +15,7 @@
       :pending="pending"
       :error="error"
     />
-  </MenuTheme>
+  </MenuDisplayFrame>
 
   <DevJson
     title="Menu debug"
@@ -45,7 +45,7 @@ const {
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
 const documentUrl = computed(() => documentMenu.value?.file?.url || '')
-// Menu theme spine: server manifest resolves tenant/app/kitchen source; renderer only consumes portable page_style.
+// Menu display spine: page_style is data; MenuDisplayFrame is only the CSS/font provider.
 const pageStyle = computed(() =>
   documentMenu.value?.page_style ||
   structuredMenu.value?.presentation.pageStyle ||

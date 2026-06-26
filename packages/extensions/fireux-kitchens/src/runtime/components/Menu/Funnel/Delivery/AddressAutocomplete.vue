@@ -56,7 +56,7 @@ import { ref, toRef } from 'vue'
 import {
   useMenuDeliveryAddressAutocomplete,
   type MenuDeliveryAddressPrediction,
-} from '../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
+} from '../../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
 
 const props = defineProps<{
   modelValue: string

@@ -44,15 +44,15 @@
 
 <script setup lang="ts">
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
-import { useMenuOrderDraft } from '../../composables/fireux/public/menu/useMenuOrderDraft'
-import { useMenuViewMode } from '../../composables/fireux/public/menu/useMenuViewMode'
-import type { MenuManifest } from '../../composables/fireux/public/menu/useMenuManifest'
-import { menuOrderBasketActionLabel } from '../../utils/menu-ordering-ui'
+import { useMenuOrderDraft } from '../../../composables/fireux/public/menu/useMenuOrderDraft'
+import { useMenuViewMode } from '../../../composables/fireux/public/menu/useMenuViewMode'
+import type { MenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
+import { menuOrderBasketActionLabel } from '../../../utils/menu-ordering-ui'
 import type {
   MenuChoiceValue,
   MenuStructuredBaseLayerView,
   MenuStructuredOrderOverlayState,
-} from './Structured/types'
+} from './types'
 
 const props = defineProps<{
   menu: MenuManifest | null

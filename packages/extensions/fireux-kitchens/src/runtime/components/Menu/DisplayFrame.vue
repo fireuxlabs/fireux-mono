@@ -20,6 +20,7 @@ import {
   resolveMenuTitleFont,
 } from '../../composables/fireux/public/menu/useMenuTheme'
 
+// Menu display frame spine: page_style/theme is data; this component only applies portable tokens to rendering.
 const props = defineProps<{
   pageStyle?: Partial<PageStyle> | null
   variant?: 'page' | 'preview'

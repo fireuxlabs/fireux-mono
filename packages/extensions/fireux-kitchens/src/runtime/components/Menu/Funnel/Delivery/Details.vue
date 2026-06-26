@@ -35,12 +35,12 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import type { MenuDeliveryAddressPrediction } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
-import { useMenuDeliveryAddressCheck } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressCheck'
-import type { MenuDeliveryZone } from '../../../models/menu/menu.model'
-import type { KitchenOrderCustomer } from '../../../models/order.model'
-import MenuFunnelDeliveryAddressAutocomplete from './DeliveryAddressAutocomplete.vue'
-import MenuFunnelFields from './Fields.vue'
+import type { MenuDeliveryAddressPrediction } from '../../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
+import { useMenuDeliveryAddressCheck } from '../../../../composables/fireux/public/menu/useMenuDeliveryAddressCheck'
+import type { MenuDeliveryZone } from '../../../../models/menu/menu.model'
+import type { KitchenOrderCustomer } from '../../../../models/order.model'
+import MenuFunnelFields from '../Fields.vue'
+import MenuFunnelDeliveryAddressAutocomplete from './AddressAutocomplete.vue'
 
 const props = defineProps<{
   modelValue: KitchenOrderCustomer
