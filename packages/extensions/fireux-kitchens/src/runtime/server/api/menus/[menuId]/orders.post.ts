@@ -236,7 +236,20 @@ export default defineEventHandler(async (event) => {
   const number = orderNumber()
   const fireState = fireStateForOrderType(orderType)
   const status = statusForOrderType(orderType)
+  const receiptCreatedAt = new Date().toISOString()
   const now = FieldValue.serverTimestamp()
+  const deliveryFee = numberValue(deliveryAddressResult?.zone?.fee_chf)
+  const total = subtotal + deliveryFee
+  const receiptItems = orderItems.map((item) => ({
+    id: item.id,
+    label: item.label,
+    quantity: item.quantity,
+    unit_price_chf: numberValue(item.unit_price),
+    total_chf:
+      numberValue(item.unit_price) * Math.max(1, Number(item.quantity || 1) || 1),
+    ...(item.add_ons?.length ? { add_ons: item.add_ons } : {}),
+    ...(item.variant_label ? { variant_label: item.variant_label } : {}),
+  }))
   const payload = {
     id,
     kitchen_id: context.kitchenId,
@@ -303,5 +316,25 @@ export default defineEventHandler(async (event) => {
     status,
     order_type: orderType,
     fire_state: fireState,
+    receipt: {
+      id,
+      order_number: number,
+      order_type: orderType,
+      status,
+      created_at: receiptCreatedAt,
+      ...(requestedFor ? { requested_for: requestedFor } : {}),
+      currency: 'CHF',
+      subtotal_chf: subtotal,
+      ...(deliveryFee ? { delivery_fee_chf: deliveryFee } : {}),
+      total_chf: total,
+      ...(Object.keys(customer).length ? { customer } : {}),
+      items: receiptItems,
+      kitchen: {
+        id: context.kitchenId,
+      },
+      menu: {
+        id: context.menuId,
+      },
+    },
   }
 })

@@ -253,7 +253,7 @@ const colorGroups: { title: string, description: string, fields: ColorField[] }[
 ]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-// Theme editor spine: keep fields aligned with PageStyle and MenuDisplayFrame; full tenant app chrome stays outside this editor.
+// Theme editor spine: keep fields aligned with PageStyle and MenuDetailDisplayFrame; full tenant app chrome stays outside this editor.
 const normalizeStyle = (style: Partial<PageStyle>): Partial<PageStyle> => {
   const resolved = resolveMenuPageStyle(style)
   const fontSource = normalizeString(style.font_source) === 'google' ? 'google' : 'system'

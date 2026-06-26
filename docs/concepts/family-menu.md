@@ -86,11 +86,15 @@ Kitchen needed:
 
 Component placement:
 - Root menu rendering and public menu collection pieces live under `components/Menu`.
+- The public detail entry is `components/Menu/Detail/Index.vue`, rendered as `MenuDetail` from public menu routes.
+- Detail-owned renderers live under `components/Menu/Detail/*`, such as `DisplayFrame`, `Document`, and `Structured`.
+- Customer-facing ordering lives under `components/Menu/Detail/Ordering/*`; it is a detail child layer, not a console `Operations` bucket.
+- This mirrors root public entity detail entries such as `components/Kitchen/Detail/Index.vue` when kitchen detail owns child slices.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.
 - Use workflow buckets only when they name a real visible seam: `Creation`, `Process`, `QR`, `Sections`, and `Items`.
-- Keep primary selected-menu panels such as `Menu`, `Details`, `Ordering`, and `Publish` flat unless they grow their own child components.
+- Keep primary selected-menu panels such as `Menu`, `Detail`, `Ordering`, and `Publish` flat unless they grow their own child components.
 
 Structured item options:
 - `price_options`: required or mutually exclusive choices such as sizes,

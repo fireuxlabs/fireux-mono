@@ -49,7 +49,7 @@ export function useMenuDeliveryAddressAutocomplete(query: Ref<string>) {
       const response = await fetch(url, {
         headers: { accept: 'application/json' },
       })
-      const json = await response.json()
+      const json = await response.json().catch(() => null)
       if (currentRun !== runId) return
       if (!response.ok || json?.error) {
         error.value = 'Address suggestions are not available right now.'
@@ -57,6 +57,7 @@ export function useMenuDeliveryAddressAutocomplete(query: Ref<string>) {
         return
       }
 
+      error.value = ''
       predictions.value = Array.isArray(json?.predictions)
         ? json.predictions.map(cleanPrediction).filter(Boolean)
         : []

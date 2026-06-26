@@ -36,7 +36,7 @@
         </button>
 
         <!-- TODO: Revisit popup feel; older landing used a lighter tenant-local menu renderer. -->
-        <Menu menu-id="main" />
+        <MenuDetail menu-id="main" />
       </section>
     </Transition>
   </div>

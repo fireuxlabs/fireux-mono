@@ -25,9 +25,21 @@ Domain component folders:
 - `X/Cards`
 - `X/Collection`
 - `X/Create`
+- `X/Detail.vue`
+- `X/Detail/Index.vue` when detail owns child slices
 - `X/Edit`
 - `X/Overview`
 - `Console/X/*`
+
+Detail rule:
+- Use `X/Detail.vue` when the detail component is simple and self-contained.
+- Use `X/Detail/Index.vue` when the detail surface owns child components.
+- Put those child components inside `X/Detail/*` so the filesystem reads like the UI surface.
+
+Root entity naming:
+- Root entity component folders such as `Kitchen/**`, `Menu/**`, and `Supplier/**` are already public/root surfaces.
+- Do not prefix components in those folders with `Public` unless it names an external imported concept.
+- Use route/composable buckets such as `fireux/public/*` when “public” distinguishes runtime behavior rather than component location.
 
 Console component folders:
 - `Console/X/Index`
@@ -41,6 +53,10 @@ Console bucket rule:
 - These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
 - `Team` is a shared console access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
+- Operation folders should default to an entry component, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
+- Use `Index.vue` only when the folder itself is intentionally the auto-imported component.
+- `Create` belongs to root/public entity creation by default. In scoped operations, prefer `Write` unless a real UI workflow is named creation.
+- Workflow subfolders under operations should be named after visible operator concepts, not technical storage buckets.
 
 Working rules:
 - Prefer named domain components over vague generic shells.

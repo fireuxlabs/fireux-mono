@@ -31,12 +31,48 @@ type CreateMenuOrderInput = {
   customer?: KitchenOrderCustomer
 }
 
+export type CreatedMenuOrderReceiptLine = {
+  id: string
+  label: string
+  quantity: number
+  unit_price_chf: number
+  total_chf: number
+  add_ons?: Array<{
+    id: string
+    label: string
+    price?: number
+  }>
+  variant_label?: string
+}
+
+export type CreatedMenuOrderReceipt = {
+  id: string
+  order_number: string
+  order_type: KitchenOrderType
+  status?: string
+  created_at: string
+  requested_for?: string
+  currency: 'CHF'
+  subtotal_chf: number
+  delivery_fee_chf?: number
+  total_chf: number
+  customer?: KitchenOrderCustomer
+  items: CreatedMenuOrderReceiptLine[]
+  kitchen: {
+    id: string
+  }
+  menu: {
+    id: string
+  }
+}
+
 export type CreatedMenuOrder = {
   id: string
   order_number: string
   status?: string
   order_type: KitchenOrderType
   fire_state: KitchenOrderFireState
+  receipt?: CreatedMenuOrderReceipt
 }
 
 type UseMenuOrderCreateOptions = {

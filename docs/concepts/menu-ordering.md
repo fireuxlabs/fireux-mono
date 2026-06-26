@@ -94,12 +94,12 @@ V1 fulfilment policy:
   `notice_hours` until the public order flow asks for `requested_for`.
 
 Public order funnel spine:
-- `MenuSelectionBasket`: selected items and total.
-- `MenuFunnelPanel`: shared overlay platform shell, close, submit, selected
+- `Menu/Detail/Ordering/Basket`: selected items and total.
+- `Menu/Detail/Ordering/Funnel/Panel`: shared overlay platform shell, close, submit, selected
   order-type policy.
-- `MenuFunnelDelivery`: delivery zones, payment methods, address/contact.
-- `MenuFunnelCollection`: payment methods and pickup contact.
-- `MenuFunnelPreOrder`: notice copy and pre-order contact/request notes.
+- `Menu/Detail/Ordering/Funnel/Delivery`: delivery zones, payment methods, address/contact.
+- `Menu/Detail/Ordering/Funnel/Collection`: payment methods and pickup contact.
+- `Menu/Detail/Ordering/Funnel/PreOrder`: notice copy and pre-order contact/request notes.
 - Each order type may own its inner funnel, but order submission stays through
   the shared menu order draft/create seam.
 

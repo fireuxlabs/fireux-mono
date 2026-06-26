@@ -1,10 +1,6 @@
 <template>
   <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
-    <KitchenPublicBreadcrumbs
-      :kitchen-name="kitchenName"
-      :kitchen-slug="kitchenSlug"
-      current="menus"
-    />
+    <UBreadcrumb :items="breadcrumbItems" />
 
     <UPageHeader
       class="pageheader"
@@ -75,4 +71,18 @@ const {
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )
+const kitchenPath = computed(() =>
+  kitchenSlug.value
+    ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}`
+    : '/kitchens'
+)
+const breadcrumbItems = computed(() => [
+  {
+    label: kitchenName.value,
+    to: kitchenPath.value,
+  },
+  {
+    label: 'Menus',
+  },
+])
 </script>

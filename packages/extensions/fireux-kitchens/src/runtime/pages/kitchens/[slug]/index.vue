@@ -1,5 +1,5 @@
 <template>
-  <KitchenPublicDetail :locator="routeLocator" />
+  <KitchenDetail :locator="routeLocator" />
 </template>
 
 <script setup lang="ts">

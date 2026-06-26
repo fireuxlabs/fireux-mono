@@ -310,6 +310,7 @@ export function useMenuOrderDraft(
   return {
     awaitingAcceptance,
     acceptedOrder,
+    sentOrder: trackedOrder,
     awaitingMessage,
     items,
     quantity,

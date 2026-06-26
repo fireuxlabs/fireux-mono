@@ -1,5 +1,5 @@
 <template>
-  <Menu
+  <MenuDetail
     :menu-id="menuId"
     :kitchen-slug="kitchenSlug"
   />

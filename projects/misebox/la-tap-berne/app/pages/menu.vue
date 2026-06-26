@@ -8,7 +8,7 @@
       <UIcon name="i-ph-x" class="size-5" />
     </a>
 
-    <Menu menu-id="main" />
+    <MenuDetail menu-id="main" />
   </div>
 </template>
 
