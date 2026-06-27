@@ -60,8 +60,15 @@
             variant="subtle"
           />
 
+          <!-- Reuse the public fulfilment map so console and customer routes show the same delivery truth. -->
+          <KitchenFulfilmentDeliveryZonesMap
+            v-if="mapZones.length"
+            class="delivery-zone-map-preview"
+            :zones="mapZones"
+          />
+
           <ConsoleKitchenIdentitySectionsDeliveryZones
-            v-else-if="hasPolygonZones"
+            v-if="hasPolygonZones"
             :zones="mapZones"
             :selected-index="activeZoneIndex"
             :can-write="canWrite"
@@ -461,6 +468,10 @@ async function save() {
       transparent 34%
     ),
     var(--ui-bg);
+}
+
+.delivery-zone-map-preview {
+  max-width: min(42rem, 100%);
 }
 
 .delivery-zone-panel__header {
