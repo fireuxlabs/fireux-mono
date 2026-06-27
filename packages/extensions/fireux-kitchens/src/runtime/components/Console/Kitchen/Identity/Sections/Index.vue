@@ -1,46 +1,35 @@
 <template>
   <ClientOnly>
     <div v-if="kitchen" class="space-y-6">
-      <ConsoleKitchenIdentitySectionsSummary
-        :kitchen="kitchen"
-        :kitchen-id="kitchenId"
-        :can-write="canWrite"
+      <KitchenCardsPreview
+        v-if="previewModel"
+        v-bind="previewModel"
+        :show-badges="false"
       />
 
       <div class="space-y-4">
-        <ConsoleKitchenIdentitySectionsSection
-          title="Identity"
-          description="Manage guest-facing credentials, theme, and more."
-          icon="i-lucide-store"
-        >
-          <div class="space-y-4">
-            <ConsoleKitchenIdentitySectionsBasics
-              :kitchen="kitchen"
-              :kitchen-id="kitchenId"
-              :can-write="canWrite"
-            />
+        <ConsoleKitchenIdentitySectionsIdentity
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
 
-            <ConsoleKitchenIdentitySectionsPlaceTheme />
-          </div>
-        </ConsoleKitchenIdentitySectionsSection>
-
-        <ConsoleKitchenIdentitySectionsSection
+        <ConsoleKitchenIdentitySectionsDelivery
           v-if="hasDeliveryMenus"
-          title="Delivery"
-          description="Delivery zones for menus that accept delivery orders."
-          icon="i-lucide-truck"
-        >
-          <ConsoleKitchenIdentitySectionsFulfilment
-            :kitchen="kitchen"
-            :kitchen-id="kitchenId"
-            :collection-path="rootCollection"
-            :can-write="canWrite"
-          />
-        </ConsoleKitchenIdentitySectionsSection>
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
+          :can-write="canWrite"
+        />
       </div>
     </div>
 
-    <MoleculesStateCard v-else entity="kitchen identity" kind="document" loading />
+    <MoleculesStateCard
+      v-else
+      entity="kitchen identity"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -48,11 +37,18 @@
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
+import { useKitchenInterface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { menuAcceptsOrderType } from '../../../../../utils/menu-ordering-policy'
 
-const { selectedKitchen, kitchenId, rootCollection, canWrite } = useKitchenConsoleIdentity()
+const { selectedKitchen, kitchenId, rootCollection, canWrite } =
+  useKitchenConsoleIdentity()
 const { menus } = useKitchenConsoleMenus()
-const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
+const { preview } = useKitchenInterface()
+const kitchen = computed(
+  () => selectedKitchen.value as KitchenSurface | null
+)
+const previewModel = computed(() => preview(kitchen.value))
 const hasDeliveryMenus = computed(() =>
   menus.value.some((menu) => menuAcceptsOrderType(menu, 'delivery'))
 )

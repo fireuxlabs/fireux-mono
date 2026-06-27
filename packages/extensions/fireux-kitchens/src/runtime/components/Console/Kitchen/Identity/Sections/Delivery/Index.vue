@@ -1,166 +1,200 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="flex items-start gap-3">
-          <UIcon name="i-lucide-truck" class="mt-1 size-5 shrink-0 text-muted" />
-          <div>
-            <div class="text-base font-semibold text-highlighted">
-              Delivery
+  <UCollapsible default-open>
+    <UButton
+      class="group"
+      color="neutral"
+      variant="soft"
+      block
+      trailing-icon="i-lucide-chevron-down"
+      :ui="{
+        trailingIcon:
+          'group-data-[state=open]:rotate-180 transition-transform duration-200',
+      }"
+    >
+      <span class="flex min-w-0 items-start gap-3 text-left">
+        <UIcon
+          name="i-lucide-truck"
+          class="mt-0.5 size-4 shrink-0 text-muted"
+        />
+        <span class="grid min-w-0">
+          <span class="truncate">Delivery</span>
+          <span class="truncate text-xs font-normal text-dimmed">
+            Kitchen-level delivery zones used by menus that accept delivery
+            orders.
+          </span>
+        </span>
+      </span>
+    </UButton>
+
+    <template #content>
+      <UCard class="mt-4">
+        <template #header>
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <UIcon
+                name="i-lucide-truck"
+                class="mt-1 size-5 shrink-0 text-muted"
+              />
+              <div>
+                <div class="text-base font-semibold text-highlighted">
+                  Delivery
+                </div>
+                <p class="text-sm text-dimmed">
+                  Kitchen-level delivery zones used by menus that accept
+                  delivery orders.
+                </p>
+              </div>
             </div>
-            <p class="text-sm text-dimmed">
-              Kitchen-level delivery zones used by menus that accept delivery orders.
-            </p>
+
+            <UBadge color="neutral" variant="soft">
+              {{ zones.length }} zone{{ zones.length === 1 ? '' : 's' }}
+            </UBadge>
           </div>
-        </div>
+        </template>
 
-        <UBadge color="neutral" variant="soft">
-          {{ zones.length }} zone{{ zones.length === 1 ? '' : 's' }}
-        </UBadge>
-      </div>
-    </template>
+        <div class="space-y-4">
+          <UPageCard
+            v-if="!zones.length"
+            title="No delivery zones"
+            description="Add a zone before using delivery order checks."
+            variant="subtle"
+          />
 
-    <div class="space-y-4">
-      <UPageCard
-        v-if="!zones.length"
-        title="No delivery zones"
-        description="Add a zone before using delivery order checks."
-        variant="subtle"
-      />
+          <ConsoleKitchenIdentitySectionsDeliveryZones
+            v-else-if="hasPolygonZones"
+            :zones="mapZones"
+            :selected-index="activeZoneIndex"
+            :can-write="canWrite"
+            @select-zone="setActiveZoneIndex"
+            @update:polygon="setActivePolygon"
+          />
 
-      <ConsoleKitchenIdentitySectionsFulfilmentZones
-        v-else-if="hasPolygonZones"
-        :zones="mapZones"
-        :selected-index="activeZoneIndex"
-        :can-write="canWrite"
-        @select-zone="setActiveZoneIndex"
-        @update:polygon="setActivePolygon"
-      />
+          <div
+            v-for="(zone, index) in zones"
+            :key="zone.key"
+            class="delivery-zone-panel"
+            :style="zoneCardStyle(Number(index))"
+          >
+            <div class="delivery-zone-panel__header">
+              <div class="delivery-zone-panel__name">
+                <UInput
+                  v-model="zone.label"
+                  :disabled="!canWrite"
+                  :placeholder="zonePlaceholder(index)"
+                />
+              </div>
 
-      <div
-        v-for="(zone, index) in zones"
-        :key="zone.key"
-        class="delivery-zone-panel"
-        :style="zoneCardStyle(Number(index))"
-      >
-        <div class="delivery-zone-panel__header">
-          <div class="delivery-zone-panel__name">
-            <UInput
-              v-model="zone.label"
-              :disabled="!canWrite"
-              :placeholder="zonePlaceholder(index)"
-            />
+              <div class="delivery-zone-panel__actions">
+                <UButton
+                  v-if="zone.boundary_type === 'polygon'"
+                  color="primary"
+                  variant="soft"
+                  size="sm"
+                  icon="i-lucide-map"
+                  aria-label="Edit boundary"
+                  :disabled="!canWrite"
+                  @click="setActiveZoneIndex(index)"
+                />
+
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  icon="i-lucide-trash-2"
+                  aria-label="Remove zone"
+                  :disabled="!canWrite"
+                  @click="removeZone(index)"
+                />
+              </div>
+            </div>
+
+            <div class="delivery-zone-row">
+              <UFormField class="delivery-zone-row__money" label="Minimum">
+                <UInput
+                  v-model="zone.min_order_chf"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  :disabled="!canWrite"
+                />
+              </UFormField>
+
+              <UFormField class="delivery-zone-row__money" label="Fee">
+                <UInput
+                  v-model="zone.fee_chf"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  :disabled="!canWrite"
+                />
+              </UFormField>
+
+              <UFormField label="Boundary">
+                <URadioGroup
+                  v-model="zone.boundary_type"
+                  :items="boundaryTypeOptions"
+                  :disabled="!canWrite"
+                />
+              </UFormField>
+
+              <UFormField
+                v-if="zone.boundary_type === 'postal_codes'"
+                class="delivery-zone-row__boundary"
+                label="Postcode(s)"
+              >
+                <UInput
+                  v-model="zone.postal_codes"
+                  :disabled="!canWrite"
+                  placeholder="3852, 3800"
+                />
+              </UFormField>
+
+              <UFormField
+                v-else
+                class="delivery-zone-row__boundary"
+                label="Polygon points"
+              >
+                <UTextarea
+                  v-model="zone.polygon"
+                  :rows="2"
+                  :disabled="!canWrite"
+                  placeholder="46.765, 7.975"
+                />
+              </UFormField>
+            </div>
           </div>
 
-          <div class="delivery-zone-panel__actions">
-            <UButton
-              v-if="zone.boundary_type === 'polygon'"
-              color="primary"
-              variant="soft"
-              size="sm"
-              icon="i-lucide-map"
-              aria-label="Edit boundary"
-              :disabled="!canWrite"
-              @click="setActiveZoneIndex(index)"
-            />
-
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <UButton
               color="neutral"
-              variant="ghost"
-              size="sm"
-              icon="i-lucide-trash-2"
-              aria-label="Remove zone"
-              :disabled="!canWrite"
-              @click="removeZone(index)"
-            />
+              variant="soft"
+              icon="i-lucide-plus"
+              :disabled="!canWrite || zones.length >= maxZones"
+              @click="addZone"
+            >
+              {{ zones.length >= maxZones ? '4 zones max' : 'Add zone' }}
+            </UButton>
+
+            <div class="flex items-center gap-2">
+              <span v-if="saveState" class="text-xs text-dimmed">
+                {{ saveState }}
+              </span>
+
+              <UButton
+                color="primary"
+                icon="i-lucide-save"
+                :loading="saving"
+                :disabled="!canWrite || saving"
+                @click="save"
+              >
+                Save delivery zones
+              </UButton>
+            </div>
           </div>
         </div>
-
-        <div class="delivery-zone-row">
-          <UFormField class="delivery-zone-row__money" label="Minimum">
-            <UInput
-              v-model="zone.min_order_chf"
-              type="number"
-              min="0"
-              step="0.5"
-              :disabled="!canWrite"
-            />
-          </UFormField>
-
-          <UFormField class="delivery-zone-row__money" label="Fee">
-            <UInput
-              v-model="zone.fee_chf"
-              type="number"
-              min="0"
-              step="0.5"
-              :disabled="!canWrite"
-            />
-          </UFormField>
-
-          <UFormField label="Boundary">
-            <URadioGroup
-              v-model="zone.boundary_type"
-              :items="boundaryTypeOptions"
-              :disabled="!canWrite"
-            />
-          </UFormField>
-
-          <UFormField
-            v-if="zone.boundary_type === 'postal_codes'"
-            class="delivery-zone-row__boundary"
-            label="Postcode(s)"
-          >
-            <UInput
-              v-model="zone.postal_codes"
-              :disabled="!canWrite"
-              placeholder="3852, 3800"
-            />
-          </UFormField>
-
-          <UFormField
-            v-else
-            class="delivery-zone-row__boundary"
-            label="Polygon points"
-          >
-            <UTextarea
-              v-model="zone.polygon"
-              :rows="2"
-              :disabled="!canWrite"
-              placeholder="46.765, 7.975"
-            />
-          </UFormField>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <UButton
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-plus"
-          :disabled="!canWrite || zones.length >= maxZones"
-          @click="addZone"
-        >
-          {{ zones.length >= maxZones ? '4 zones max' : 'Add zone' }}
-        </UButton>
-
-        <div class="flex items-center gap-2">
-          <span v-if="saveState" class="text-xs text-dimmed">
-            {{ saveState }}
-          </span>
-
-          <UButton
-            color="primary"
-            icon="i-lucide-save"
-            :loading="saving"
-            :disabled="!canWrite || saving"
-            @click="save"
-          >
-            Save delivery zones
-          </UButton>
-        </div>
-      </div>
-    </div>
-  </UCard>
+      </UCard>
+    </template>
+  </UCollapsible>
 </template>
 
 <script setup lang="ts">
@@ -188,12 +222,7 @@ type EditableZone = {
   polygon: string
 }
 
-const zoneColors = [
-  '#ff7a32',
-  '#f4b41a',
-  '#2fb7a0',
-  '#39bfe3',
-]
+const zoneColors = ['#ff7a32', '#f4b41a', '#2fb7a0', '#39bfe3']
 const maxZones = 4
 const boundaryTypeOptions = [
   { label: 'Postcode(s)', value: 'postal_codes' },
@@ -215,8 +244,8 @@ const activeZoneIndex = ref(0)
 const saving = ref(false)
 const saveState = ref('')
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
-const deliveryZones = computed<KitchenDeliveryZone[]>(() =>
-  fulfilment.value.delivery_zones
+const deliveryZones = computed<KitchenDeliveryZone[]>(
+  () => fulfilment.value.delivery_zones
 )
 const paymentMethods = computed(() => fulfilment.value.payment_methods || [])
 
@@ -237,9 +266,7 @@ const compactList = (value: string) =>
     .map((entry) => entry.trim())
     .filter(Boolean)
 const polygonText = (zone: KitchenDeliveryZone) =>
-  (zone.polygon || [])
-    .map((point) => `${point.lat}, ${point.lng}`)
-    .join('\n')
+  (zone.polygon || []).map((point) => `${point.lat}, ${point.lng}`).join('\n')
 const parsePolygon = (value: string) =>
   value
     .split('\n')
@@ -248,16 +275,19 @@ const parsePolygon = (value: string) =>
       const lat = Number(latRaw)
       const lng = Number(lngRaw)
 
-      return Number.isFinite(lat) && Number.isFinite(lng)
-        ? { lat, lng }
-        : null
+      return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null
     })
-    .filter((point): point is { lat: number, lng: number } => Boolean(point))
-const polygonInput = (points: { lat: number, lng: number }[]) =>
+    .filter((point): point is { lat: number; lng: number } => Boolean(point))
+const polygonInput = (points: { lat: number; lng: number }[]) =>
   points
-    .map((point) => `${roundCoordinate(point.lat)}, ${roundCoordinate(point.lng)}`)
+    .map(
+      (point) => `${roundCoordinate(point.lat)}, ${roundCoordinate(point.lng)}`
+    )
     .join('\n')
-const editableZone = (zone: KitchenDeliveryZone, index: number): EditableZone => ({
+const editableZone = (
+  zone: KitchenDeliveryZone,
+  index: number
+): EditableZone => ({
   key: `${zone.id || 'zone'}-${index}-${Date.now()}`,
   label: text(zone.label),
   min_order_chf: numberText(zone.min_order_chf),
@@ -268,7 +298,8 @@ const editableZone = (zone: KitchenDeliveryZone, index: number): EditableZone =>
 })
 const zonePlaceholder = (index: string | number) => `Zone ${Number(index) + 1}`
 const zoneId = (zone: EditableZone, index: number) =>
-  normalizeSlug(text(zone.label), { maxLength: 80 }) || `delivery-zone-${index + 1}`
+  normalizeSlug(text(zone.label), { maxLength: 80 }) ||
+  `delivery-zone-${index + 1}`
 const zoneColor = (index: number) => zoneColors[index % zoneColors.length]
 const zoneCardStyle = (index: number): Record<string, string> => {
   const color = zoneColor(index)
@@ -295,7 +326,10 @@ const hasPolygonZones = computed(() =>
 const mapZones = computed<KitchenDeliveryZone[]>(() =>
   zones.value.map((zone: EditableZone, index: number) => mapZone(zone, index))
 )
-const normalizedZone = (zone: EditableZone, index: number): KitchenDeliveryZone | null => {
+const normalizedZone = (
+  zone: EditableZone,
+  index: number
+): KitchenDeliveryZone | null => {
   const label = text(zone.label)
   if (!label) return null
 
@@ -360,7 +394,7 @@ function setActiveZoneIndex(index: string | number) {
   )
 }
 
-function setActivePolygon(points: { lat: number, lng: number }[]) {
+function setActivePolygon(points: { lat: number; lng: number }[]) {
   const activeZone = zones.value[activeZoneIndex.value]
   if (!activeZone) return
   activeZone.boundary_type = 'polygon'
@@ -453,7 +487,10 @@ async function save() {
 
 @media (min-width: 768px) {
   .delivery-zone-row {
-    grid-template-columns: repeat(2, minmax(5.5rem, 0.45fr)) minmax(9rem, 0.65fr);
+    grid-template-columns: repeat(2, minmax(5.5rem, 0.45fr)) minmax(
+        9rem,
+        0.65fr
+      );
     align-items: end;
   }
 }
@@ -470,5 +507,4 @@ async function save() {
 .delivery-zone-row__boundary {
   min-width: 0;
 }
-
 </style>
