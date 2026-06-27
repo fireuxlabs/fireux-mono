@@ -1,5 +1,5 @@
 <template>
-  <aside class="space-y-4">
+  <div class="grid gap-4 lg:grid-cols-2">
     <UCard>
       <template #header>
         <div class="flex items-start gap-3">
@@ -31,7 +31,7 @@
           <UIcon name="i-lucide-palette" class="mt-1 size-5 shrink-0 text-muted" />
           <div>
             <div class="text-base font-semibold text-highlighted">
-              Themes
+              Theme
             </div>
             <p class="text-sm text-dimmed">
               Menu colours and price display now live on their own page.
@@ -46,33 +46,8 @@
         icon="i-lucide-palette"
         to="/console/kitchen/identity/theme"
       >
-        Open themes
+        Open theme
       </UButton>
     </UCard>
-
-    <UCard>
-      <template #header>
-        <div class="flex items-start gap-3">
-          <UIcon name="i-lucide-plug" class="mt-1 size-5 shrink-0 text-muted" />
-          <div>
-            <div class="text-base font-semibold text-highlighted">
-              Plugins
-            </div>
-            <p class="text-sm text-dimmed">
-              Optional tools for menu language and kitchen workflows.
-            </p>
-          </div>
-        </div>
-      </template>
-
-      <UButton
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-plug"
-        to="/console/kitchen/identity/plugins"
-      >
-        Open plugins
-      </UButton>
-    </UCard>
-  </aside>
+  </div>
 </template>

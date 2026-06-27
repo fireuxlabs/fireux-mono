@@ -6,7 +6,7 @@
           <UIcon name="i-lucide-truck" class="mt-1 size-5 shrink-0 text-muted" />
           <div>
             <div class="text-base font-semibold text-highlighted">
-              Delivery fulfilment
+              Delivery
             </div>
             <p class="text-sm text-dimmed">
               Kitchen-level delivery zones used by menus that accept delivery orders.
@@ -28,8 +28,8 @@
         variant="subtle"
       />
 
-      <ConsoleKitchenIdentityEditDeliveryZoneMap
-        v-else
+      <ConsoleKitchenIdentitySectionsFulfilmentZones
+        v-else-if="hasPolygonZones"
         :zones="mapZones"
         :selected-index="activeZoneIndex"
         :can-write="canWrite"
@@ -40,59 +40,44 @@
       <div
         v-for="(zone, index) in zones"
         :key="zone.key"
-        class="rounded-xl border border-default p-4"
+        class="delivery-zone-panel"
+        :style="zoneCardStyle(Number(index))"
       >
-        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="text-sm font-semibold text-highlighted">
-              {{ zoneTitle(zone, index) }}
-            </h3>
-            <p class="text-xs text-dimmed">
-              Minimum CHF {{ zone.min_order_chf || 0 }} · fee CHF {{ zone.fee_chf || 0 }}
-            </p>
-          </div>
-
-          <UButton
-            color="primary"
-            variant="soft"
-            size="xs"
-            icon="i-lucide-map"
-            :disabled="!canWrite"
-            @click="setActiveZoneIndex(index)"
-          >
-            Edit boundary
-          </UButton>
-
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="xs"
-            icon="i-lucide-trash-2"
-            :disabled="!canWrite"
-            @click="removeZone(index)"
-          >
-            Remove
-          </UButton>
-        </div>
-
-        <div class="grid gap-3 md:grid-cols-2">
-          <UFormField label="Zone id">
-            <UInput
-              v-model="zone.id"
-              :disabled="!canWrite"
-              placeholder="ringgenberg-goldswil"
-            />
-          </UFormField>
-
-          <UFormField label="Label">
+        <div class="delivery-zone-panel__header">
+          <div class="delivery-zone-panel__name">
             <UInput
               v-model="zone.label"
               :disabled="!canWrite"
-              placeholder="Ringgenberg & Goldswil"
+              :placeholder="zonePlaceholder(index)"
             />
-          </UFormField>
+          </div>
 
-          <UFormField label="Minimum order">
+          <div class="delivery-zone-panel__actions">
+            <UButton
+              v-if="zone.boundary_type === 'polygon'"
+              color="primary"
+              variant="soft"
+              size="sm"
+              icon="i-lucide-map"
+              aria-label="Edit boundary"
+              :disabled="!canWrite"
+              @click="setActiveZoneIndex(index)"
+            />
+
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              icon="i-lucide-trash-2"
+              aria-label="Remove zone"
+              :disabled="!canWrite"
+              @click="removeZone(index)"
+            />
+          </div>
+        </div>
+
+        <div class="delivery-zone-row">
+          <UFormField class="delivery-zone-row__money" label="Minimum">
             <UInput
               v-model="zone.min_order_chf"
               type="number"
@@ -102,7 +87,7 @@
             />
           </UFormField>
 
-          <UFormField label="Delivery fee">
+          <UFormField class="delivery-zone-row__money" label="Fee">
             <UInput
               v-model="zone.fee_chf"
               type="number"
@@ -112,15 +97,19 @@
             />
           </UFormField>
 
-          <UFormField label="Colour">
-            <UInput
-              v-model="zone.color"
+          <UFormField label="Boundary">
+            <URadioGroup
+              v-model="zone.boundary_type"
+              :items="boundaryTypeOptions"
               :disabled="!canWrite"
-              placeholder="#ff7a32"
             />
           </UFormField>
 
-          <UFormField label="Postal codes">
+          <UFormField
+            v-if="zone.boundary_type === 'postal_codes'"
+            class="delivery-zone-row__boundary"
+            label="Postcode(s)"
+          >
             <UInput
               v-model="zone.postal_codes"
               :disabled="!canWrite"
@@ -128,10 +117,14 @@
             />
           </UFormField>
 
-          <UFormField class="md:col-span-2" label="Polygon points">
+          <UFormField
+            v-else
+            class="delivery-zone-row__boundary"
+            label="Polygon points"
+          >
             <UTextarea
               v-model="zone.polygon"
-              :rows="4"
+              :rows="2"
               :disabled="!canWrite"
               placeholder="46.765, 7.975"
             />
@@ -144,10 +137,10 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-plus"
-          :disabled="!canWrite"
+          :disabled="!canWrite || zones.length >= maxZones"
           @click="addZone"
         >
-          Add zone
+          {{ zones.length >= maxZones ? '4 zones max' : 'Add zone' }}
         </UButton>
 
         <div class="flex items-center gap-2">
@@ -171,26 +164,41 @@
 </template>
 
 <script setup lang="ts">
+import type { RadioGroupItem } from '@nuxt/ui'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, ref, watch } from 'vue'
-import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import { useKitchenUpdate } from '../../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   KitchenDeliveryZone,
   KitchenFulfilmentConfig,
   KitchenUpdateInput,
-} from '../../../../../models/kitchen.model'
-import { readKitchenFulfilmentConfig } from '../../../../../utils/kitchen-spine'
+} from '../../../../../../models/kitchen.model'
+import { readKitchenFulfilmentConfig } from '../../../../../../utils/kitchen-spine'
+
+type BoundaryType = 'postal_codes' | 'polygon'
 
 type EditableZone = {
   key: string
-  id: string
   label: string
   min_order_chf: string
   fee_chf: string
+  boundary_type: BoundaryType
   postal_codes: string
   polygon: string
-  color: string
 }
+
+const zoneColors = [
+  '#ff7a32',
+  '#f4b41a',
+  '#2fb7a0',
+  '#39bfe3',
+]
+const maxZones = 4
+const boundaryTypeOptions = [
+  { label: 'Postcode(s)', value: 'postal_codes' },
+  { label: 'Polygon', value: 'polygon' },
+] satisfies RadioGroupItem[]
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -251,32 +259,45 @@ const polygonInput = (points: { lat: number, lng: number }[]) =>
     .join('\n')
 const editableZone = (zone: KitchenDeliveryZone, index: number): EditableZone => ({
   key: `${zone.id || 'zone'}-${index}-${Date.now()}`,
-  id: text(zone.id),
   label: text(zone.label),
   min_order_chf: numberText(zone.min_order_chf),
   fee_chf: numberText(zone.fee_chf),
+  boundary_type: zone.polygon?.length ? 'polygon' : 'postal_codes',
   postal_codes: (zone.postal_codes || []).join(', '),
   polygon: polygonText(zone),
-  color: text(zone.color),
 })
-const zoneTitle = (zone: EditableZone, index: string | number) =>
-  zone.label || `Delivery zone ${Number(index) + 1}`
+const zonePlaceholder = (index: string | number) => `Zone ${Number(index) + 1}`
+const zoneId = (zone: EditableZone, index: number) =>
+  normalizeSlug(text(zone.label), { maxLength: 80 }) || `delivery-zone-${index + 1}`
+const zoneColor = (index: number) => zoneColors[index % zoneColors.length]
+const zoneCardStyle = (index: number): Record<string, string> => {
+  const color = zoneColor(index)
+
+  return {
+    '--delivery-zone-color': color,
+    borderColor: color,
+    boxShadow: `inset 0.35rem 0 0 ${color}`,
+  }
+}
 const mapZone = (zone: EditableZone, index: number): KitchenDeliveryZone => ({
-  id: text(zone.id) || `delivery-zone-${index + 1}`,
+  id: zoneId(zone, index),
   label: text(zone.label) || `Delivery zone ${index + 1}`,
   min_order_chf: numberValue(zone.min_order_chf) || 0,
   fee_chf: numberValue(zone.fee_chf) || 0,
-  postal_codes: compactList(zone.postal_codes),
-  polygon: parsePolygon(zone.polygon),
-  color: text(zone.color) || '#ff7a32',
+  ...(zone.boundary_type === 'postal_codes'
+    ? { postal_codes: compactList(zone.postal_codes) }
+    : { polygon: parsePolygon(zone.polygon) }),
+  color: zoneColor(index),
 })
+const hasPolygonZones = computed(() =>
+  zones.value.some((zone: EditableZone) => zone.boundary_type === 'polygon')
+)
 const mapZones = computed<KitchenDeliveryZone[]>(() =>
   zones.value.map((zone: EditableZone, index: number) => mapZone(zone, index))
 )
-const normalizedZone = (zone: EditableZone): KitchenDeliveryZone | null => {
-  const id = text(zone.id)
+const normalizedZone = (zone: EditableZone, index: number): KitchenDeliveryZone | null => {
   const label = text(zone.label)
-  if (!id || !label) return null
+  if (!label) return null
 
   const postalCodes = compactList(zone.postal_codes)
   const polygon = parsePolygon(zone.polygon)
@@ -284,13 +305,15 @@ const normalizedZone = (zone: EditableZone): KitchenDeliveryZone | null => {
   const fee = numberValue(zone.fee_chf)
 
   return {
-    id,
+    id: zoneId(zone, index),
     label,
     ...(minOrder !== undefined ? { min_order_chf: minOrder } : {}),
     ...(fee !== undefined ? { fee_chf: fee } : {}),
-    ...(postalCodes.length ? { postal_codes: postalCodes } : {}),
-    ...(polygon.length ? { polygon } : {}),
-    ...(text(zone.color) ? { color: text(zone.color) } : {}),
+    ...(zone.boundary_type === 'postal_codes' && postalCodes.length
+      ? { postal_codes: postalCodes }
+      : {}),
+    ...(zone.boundary_type === 'polygon' && polygon.length ? { polygon } : {}),
+    color: zoneColor(index),
   }
 }
 
@@ -312,17 +335,17 @@ watch(
 )
 
 function addZone() {
+  if (zones.value.length >= maxZones) return
   const index = zones.value.length + 1
 
   zones.value.push({
     key: `new-zone-${index}-${Date.now()}`,
-    id: `delivery-zone-${index}`,
     label: `Delivery zone ${index}`,
     min_order_chf: '0',
     fee_chf: '0',
+    boundary_type: 'postal_codes',
     postal_codes: '',
     polygon: '',
-    color: '#ff7a32',
   })
 }
 
@@ -340,6 +363,7 @@ function setActiveZoneIndex(index: string | number) {
 function setActivePolygon(points: { lat: number, lng: number }[]) {
   const activeZone = zones.value[activeZoneIndex.value]
   if (!activeZone) return
+  activeZone.boundary_type = 'polygon'
   activeZone.polygon = polygonInput(points)
 }
 
@@ -353,8 +377,8 @@ async function save() {
   if (!kitchenId) throw new Error('No kitchen selected.')
 
   const nextDeliveryZones: KitchenDeliveryZone[] = []
-  for (const zone of zones.value) {
-    const nextZone = normalizedZone(zone)
+  for (const [index, zone] of zones.value.entries()) {
+    const nextZone = normalizedZone(zone, index)
     if (nextZone) nextDeliveryZones.push(nextZone)
   }
   const nextFulfilment: KitchenFulfilmentConfig = {
@@ -388,3 +412,63 @@ async function save() {
   }
 }
 </script>
+
+<style scoped>
+.delivery-zone-panel {
+  display: grid;
+  gap: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 1rem;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--delivery-zone-color) 14%, transparent),
+      transparent 34%
+    ),
+    var(--ui-bg);
+}
+
+.delivery-zone-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.delivery-zone-panel__name {
+  flex: 1;
+  min-width: min(16rem, 100%);
+}
+
+.delivery-zone-panel__actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.delivery-zone-row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .delivery-zone-row {
+    grid-template-columns: repeat(2, minmax(5.5rem, 0.45fr)) minmax(9rem, 0.65fr);
+    align-items: end;
+  }
+}
+
+@media (min-width: 1280px) {
+  .delivery-zone-row {
+    grid-template-columns:
+      repeat(2, minmax(5rem, 0.34fr))
+      minmax(9rem, 0.62fr)
+      minmax(11rem, 1fr);
+  }
+}
+
+.delivery-zone-row__boundary {
+  min-width: 0;
+}
+
+</style>

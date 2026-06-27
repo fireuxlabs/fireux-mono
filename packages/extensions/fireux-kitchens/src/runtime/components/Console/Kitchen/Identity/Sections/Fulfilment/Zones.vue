@@ -88,8 +88,8 @@
 <script setup lang="ts">
 import { useRuntimeConfig } from '#imports'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { KitchenDeliveryZone } from '../../../../../models/kitchen.model'
-import { loadFireuxGoogleMaps, readGoogleMaps } from '../../../../../utils/google-maps'
+import type { KitchenDeliveryZone } from '../../../../../../models/kitchen.model'
+import { loadFireuxGoogleMaps, readGoogleMaps } from '../../../../../../utils/google-maps'
 
 type LatLngPoint = { lat: number, lng: number }
 
@@ -273,8 +273,9 @@ function roundCoordinate(value: number) {
 .delivery-zone-map-editor {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
-  min-height: 22rem;
+  aspect-ratio: 4 / 1;
+  min-height: 9rem;
+  max-height: 11rem;
   border: 1px solid var(--ui-border);
   border-radius: 1rem;
   background: var(--ui-bg-muted);

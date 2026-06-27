@@ -1,43 +1,42 @@
 <template>
   <ClientOnly>
     <div v-if="kitchen" class="space-y-6">
-      <ConsoleKitchenIdentityEditSummary
+      <ConsoleKitchenIdentitySectionsSummary
         :kitchen="kitchen"
         :kitchen-id="kitchenId"
         :can-write="canWrite"
       />
 
-      <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div class="space-y-4">
-          <ConsoleKitchenIdentityEditSection
-            title="Public identity"
-            description="Guest-facing name, slug, and tagline."
-            icon="i-lucide-store"
-            :default-open="true"
-          >
-            <ConsoleKitchenIdentityEditPublicIdentity
+      <div class="space-y-4">
+        <ConsoleKitchenIdentitySectionsSection
+          title="Identity"
+          description="Manage guest-facing credentials, theme, and more."
+          icon="i-lucide-store"
+        >
+          <div class="space-y-4">
+            <ConsoleKitchenIdentitySectionsBasics
               :kitchen="kitchen"
               :kitchen-id="kitchenId"
               :can-write="canWrite"
             />
-          </ConsoleKitchenIdentityEditSection>
 
-          <ConsoleKitchenIdentityEditSection
-            v-if="hasDeliveryMenus"
-            title="Delivery fulfilment"
-            description="Delivery zones for menus that accept delivery orders."
-            icon="i-lucide-truck"
-          >
-            <ConsoleKitchenIdentityEditFulfilment
-              :kitchen="kitchen"
-              :kitchen-id="kitchenId"
-              :collection-path="rootCollection"
-              :can-write="canWrite"
-            />
-          </ConsoleKitchenIdentityEditSection>
-        </div>
+            <ConsoleKitchenIdentitySectionsPlaceTheme />
+          </div>
+        </ConsoleKitchenIdentitySectionsSection>
 
-        <ConsoleKitchenIdentityEditLinks />
+        <ConsoleKitchenIdentitySectionsSection
+          v-if="hasDeliveryMenus"
+          title="Delivery"
+          description="Delivery zones for menus that accept delivery orders."
+          icon="i-lucide-truck"
+        >
+          <ConsoleKitchenIdentitySectionsFulfilment
+            :kitchen="kitchen"
+            :kitchen-id="kitchenId"
+            :collection-path="rootCollection"
+            :can-write="canWrite"
+          />
+        </ConsoleKitchenIdentitySectionsSection>
       </div>
     </div>
 
