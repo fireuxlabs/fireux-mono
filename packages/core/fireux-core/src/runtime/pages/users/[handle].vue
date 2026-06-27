@@ -37,7 +37,7 @@
       <DevJson
         :title="'Public User DTO'"
         context="User public page · users/[handle] · endpoint-first SSR"
-        :data="profile"
+        :data="devJsonData"
         :default-open="false"
       />
     </UPageBody>
@@ -105,8 +105,52 @@ const profile = computed<PublicUserDto | null>(() => {
 })
 
 const { user: sessionUser } = useUser()
+const liveSelfProfile = computed<PublicUserDto | null>(() => {
+  const user = sessionUser.value
+  if (!user) return null
+
+  const userHandle = String(user.handle || '').trim().toLowerCase()
+  if (!userHandle || userHandle !== handle.value) return null
+
+  const displayName =
+    String(user.display_name || '').trim() ||
+    `@${userHandle}`
+  const bio = String(user.bio || '').trim()
+  const profiles = Array.isArray(user.profiles) ? user.profiles : []
+  const avatar = String(user.avatar || '').trim()
+
+  // Public detail family: SSR uses the public DTO; a signed-in user can then
+  // hydrate their own profile from the live auth-bound User document.
+  return {
+    id: String(user.id || '').trim(),
+    handle: userHandle,
+    displayName,
+    avatar,
+    bio,
+    profiles,
+    title: displayName,
+    description: bio || `Public profile for ${displayName}.`,
+    path: `/users/${encodeURIComponent(userHandle)}`,
+    image: avatar || undefined,
+    updatedAt: '',
+    isPublic: true,
+  }
+})
+const displayProfile = computed(() => liveSelfProfile.value ?? profile.value)
+const devJsonData = computed(() => ({
+  objects: {
+    endpointProfile: profile.value,
+    liveSelfProfile: liveSelfProfile.value,
+    displayProfile: displayProfile.value,
+  },
+  derived: {
+    source: liveSelfProfile.value ? 'live-self-user-doc' : 'public-user-api',
+    handle: handle.value,
+    isSelf: isSelf.value,
+  },
+}))
 const userCard = computed(() => {
-  const value = profile.value
+  const value = displayProfile.value
   if (!value) return null
   const profiles = Array.isArray(value.profiles) ? value.profiles : []
 
@@ -135,15 +179,17 @@ const statusCode = computed(() =>
 const missing = computed(() => statusCode.value === 404 || (!pending.value && !profile.value))
 const fetchFailed = computed(() => statusCode.value >= 500)
 const isSelf = computed(() =>
-  Boolean(profile.value?.handle && sessionUser.value?.handle === profile.value.handle)
+  Boolean(handle.value && sessionUser.value?.handle === handle.value)
 )
 
-const displayName = computed(() => profile.value?.displayName || profile.value?.title || null)
+const displayName = computed(() =>
+  displayProfile.value?.displayName || displayProfile.value?.title || null
+)
 const pageTitle = computed(() =>
   displayName.value ?? (handle.value ? `@${handle.value}` : 'User')
 )
 const pageDescription = computed(() =>
-  profile.value?.description ||
+  displayProfile.value?.description ||
   (displayName.value
     ? `Public profile for ${displayName.value}.`
     : 'Public user profile.')
@@ -173,7 +219,7 @@ const siteUrl = computed(() => {
   )
 })
 const canonicalPath = computed(() =>
-  String(profile.value?.path || `/users/${encodeURIComponent(handle.value || '')}`).trim()
+  String(displayProfile.value?.path || `/users/${encodeURIComponent(handle.value || '')}`).trim()
 )
 const canonicalUrl = computed(() =>
   siteUrl.value ? `${siteUrl.value}${canonicalPath.value.startsWith('/') ? canonicalPath.value : `/${canonicalPath.value}`}` : canonicalPath.value

@@ -1,11 +1,15 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="card card--cell"
->
+    v-if="link && to"
+    :to="to"
+    class="card card--cell"
+  >
     <div class="card__media">
-      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar
+        :src="proxiedAvatarUrl || undefined"
+        :alt="displayName"
+        size="sm"
+      />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -31,24 +35,24 @@
 
         <div v-if="showTagline" class="card__tagline">
           <span v-if="taglineOverride">{{ taglineOverride }}</span>
-          <span v-else-if="title && summary">{{ title }} · {{ summary }}</span>
           <span v-else-if="summary">{{ summary }}</span>
-          <span v-else-if="title">{{ title }}</span>
-          <span v-else-if="profiles.length && appsLabel">{{ profiles.join(', ') }} · {{ appsLabel }}</span>
-          <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
           <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="card card--cell"
-  @click="onClick"
->
+  <div
+    v-else
+    class="card card--cell"
+    @click="onClick"
+  >
     <div class="card__media">
-      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar
+        :src="proxiedAvatarUrl || undefined"
+        :alt="displayName"
+        size="sm"
+      />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -74,23 +78,22 @@
 
         <div v-if="showTagline" class="card__tagline">
           <span v-if="taglineOverride">{{ taglineOverride }}</span>
-          <span v-else-if="title && summary">{{ title }} · {{ summary }}</span>
           <span v-else-if="summary">{{ summary }}</span>
-          <span v-else-if="title">{{ title }}</span>
-          <span v-else-if="profiles.length && appsLabel">{{ profiles.join(', ') }} · {{ appsLabel }}</span>
-          <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
           <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
-import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import {
+  USER_AVATAR_FALLBACK_SRC,
+  type UserCard,
+} from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 type Props = Partial<Pick<
   UserCard.Card,
@@ -151,5 +154,7 @@ const onClick = (event?: MouseEvent) => {
 }
 
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
+const proxiedAvatarUrl = useProxiedAvatar(() =>
+  props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+)
 </script>

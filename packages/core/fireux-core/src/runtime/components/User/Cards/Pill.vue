@@ -1,72 +1,40 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill"
->
+    v-if="link && to"
+    :to="to"
+    class="pill"
+  >
     <UUser
       :name="displayName"
       :description="showSubtitle ? (handle || undefined) : undefined"
-      :avatar="
-        proxiedAvatarUrl
-          ? { src: proxiedAvatarUrl || undefined, alt: displayName || '' }
-          : undefined
-      "
+      :avatar="avatar"
       size="sm"
-    >
-      <template #default>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </template>
-    </UUser>
-</NuxtLink>
+    />
+  </NuxtLink>
 
-<div
-  v-else
-  class="pill"
-  @click="onClick"
->
+  <div
+    v-else
+    class="pill"
+    @click="onClick"
+  >
     <UUser
       :name="displayName"
       :description="showSubtitle ? (handle || undefined) : undefined"
-      :avatar="
-        proxiedAvatarUrl
-          ? { src: proxiedAvatarUrl || undefined, alt: displayName || '' }
-          : undefined
-      "
+      :avatar="avatar"
       size="sm"
-    >
-      <template #default>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </template>
-    </UUser>
-</div>
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
+import { computed } from 'vue'
 
-import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy';
-import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
+import {
+  USER_AVATAR_FALLBACK_SRC,
+  type UserCard,
+} from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 type PillProps = Partial<Pick<
   UserCard.Card,
@@ -108,5 +76,12 @@ const onClick = (event?: MouseEvent) => {
 }
 
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
+const proxiedAvatarUrl = useProxiedAvatar(() =>
+  props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+)
+const avatarAlt = computed(() => props.displayName || props.handle || 'User')
+const avatar = computed(() => ({
+  src: proxiedAvatarUrl.value,
+  alt: avatarAlt.value,
+}))
 </script>

@@ -11,7 +11,7 @@ const fireuxConfig = defineFireuxConfig({
   role: 'global',
   consoles: ['kitchen', 'supplier'],
   domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
-  profiles: ['chef', 'professional', 'agent', 'customer'],
+  profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   seo: {
     staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],
   },

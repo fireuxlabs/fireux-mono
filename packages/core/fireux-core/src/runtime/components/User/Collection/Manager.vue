@@ -41,16 +41,30 @@
       </div>
     </template>
 
+    <p v-if="pending" class="text-sm text-dimmed">Loading people...</p>
+
+    <p v-else-if="errorMessage" class="text-sm text-error">
+      {{ errorMessage }}
+    </p>
+
     <UserCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <UserCardsPill v-bind="card" :link="linkEnabled" />
+        <UserCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :show-badges="showBadges"
+        />
       </template>
       <template #cell="{ card }">
-        <UserCardsCell v-bind="card" :link="linkEnabled" />
+        <UserCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :show-badges="showBadges"
+        />
       </template>
     </UserCollectionList>
 
@@ -70,12 +84,32 @@
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useFetch } from '#imports'
 import { computed } from 'vue'
-import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
-import type { User } from '../../../models/core/user.model'
+import {
+  UserModel,
+  type User,
+} from '../../../models/core/user.model'
+
+type PublicUserDto = {
+  id: string
+  handle: string
+  displayName: string
+  avatar: string
+  bio: string
+  profiles: string[]
+  path: string
+  isPublic: boolean
+}
+
+type PublicUsersResponse = {
+  ok: true
+  count: number
+  items: PublicUserDto[]
+  users: PublicUserDto[]
+}
 
 const props = withDefaults(
   defineProps<{
@@ -86,37 +120,72 @@ const props = withDefaults(
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
+    showBadges?: boolean
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    title: 'Users',
-    description: 'Browse users available to this runtime.',
+    title: 'People',
+    description: 'Browse public profiles available to this runtime.',
     link: true,
-    searchPlaceholder: 'Search users…',
+    searchPlaceholder: 'Search people…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
+    showBadges: true,
+    initialVariant: 'cell',
   }
 )
 
-const fetched = useUserCollection()
-const collection = computed<User[]>(() => fetched.users.value)
-const { devJsonData } = useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Users'))
+// Public index family: this manager uses the server projection so raw identity
+// fields such as email/admin arrays never become public browse data.
+const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
+  key: 'public-users-index',
+  query: { limit: 200 },
+})
+const publicUsers = computed<PublicUserDto[]>(() => {
+  const payload = fetched.data.value
+  return Array.isArray(payload?.users)
+    ? payload.users
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : []
+})
+const collection = computed<User[]>(() =>
+  publicUsers.value.map((user) => ({
+    ...UserModel,
+    id: user.id,
+    display_name: user.displayName,
+    avatar: user.avatar,
+    handle: user.handle,
+    email: '',
+    bio: user.bio,
+    profiles: Array.isArray(user.profiles) ? user.profiles : [],
+    projects: [],
+    myKitchens: [],
+    userOf: [],
+    adminOf: [],
+    notifications: [],
+  }))
+)
+const title = computed(() => String(props.title || 'People'))
 const description = computed(() =>
-  String(props.description || 'Browse users available to this runtime.')
+  String(props.description || 'Browse public profiles available to this runtime.')
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search users…')
+  String(props.searchPlaceholder || 'Search people…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
+const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
+)
+const pending = computed(() => fetched.pending.value)
+const errorMessage = computed(() =>
+  fetched.error.value ? 'Public profiles are not available right now.' : ''
 )
 const {
   interface: makeCard,
@@ -153,5 +222,20 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const devJsonContext = 'collection manager · users · root: users'
+const devJsonContext = 'collection manager · users · public projection'
+const devJsonData = computed(() => ({
+  objects: {
+    users: publicUsers.value,
+  },
+  derived: {
+    source: '/api/public/users',
+    count: publicUsers.value.length,
+    visibleCount: visibleCount.value,
+    variant: variant.value,
+    query: query.value,
+    link: linkEnabled.value,
+    pending: pending.value,
+    hasError: Boolean(fetched.error.value),
+  },
+}))
 </script>

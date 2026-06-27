@@ -48,6 +48,8 @@ export type UserSurfaceParts<TUser extends object = Partial<User>> = {
   overlay?: Partial<AppUser> | Record<string, unknown> | null | undefined
 }
 
+export const USER_AVATAR_FALLBACK_SRC = '/img/app/logo.png'
+
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPill = UserCard.Card
   type UserCell = UserCard.Card
@@ -82,9 +84,14 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
     const currentUid = safeString(uid.value).trim()
     const targetUid = safeString(user.id).trim()
-    if (!currentUid || !targetUid || currentUid !== targetUid) return ''
+    if (!currentUid || !targetUid || currentUid !== targetUid) {
+      return USER_AVATAR_FALLBACK_SRC
+    }
 
-    return getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim())
+    return (
+      getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim()) ||
+      USER_AVATAR_FALLBACK_SRC
+    )
   }
 
   function map(user: User): UserCard.Card {
@@ -92,6 +99,11 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     const handle = normalizeUserHandle(safeString(user.handle))
     const handleLabel = handle ? `@${handle}` : ''
     const displayName = safeString(user.display_name).trim() || handleLabel || id
+    const bio = safeString(user.bio).trim()
+    const summary =
+      bio && bio.toLowerCase() !== displayName.toLowerCase()
+        ? bio
+        : ''
     const appCount = safeArray(user.userOf).length
     const profiles = safeArray<string>(user.profiles)
 
@@ -107,7 +119,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       displayName,
       title: profiles[0] || '',
       subtitle: displayName !== handleLabel ? handleLabel : '',
-      summary: safeString(user.bio),
+      summary,
 
       handle: handleLabel,
       badges: profiles,
@@ -116,7 +128,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       contactPhone: '',
       websiteUrl: '',
 
-      bio: safeString(user.bio),
+      bio: summary,
       profiles,
       appsLabel: appCount ? `${appCount} app${appCount === 1 ? '' : 's'}` : '',
     }

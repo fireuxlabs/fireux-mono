@@ -3,9 +3,11 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
-      <!-- Profile CTA family: User is the base identity before Chef, Agent, or Professional layers. -->
-      <UserCTA />
-      <UserCollectionManager />
+      <!-- Public index family: use the public user projection, not raw identity docs. -->
+      <UserCollectionManager
+        title="People"
+        description="Public profiles and collaborators in this Misebox network."
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -34,9 +36,9 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
 
-const pageTitle = 'Users'
+const pageTitle = 'People'
 const pageDescription =
-  'Find people, or create your account.'
+  'Browse public profiles on Misebox.'
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {
