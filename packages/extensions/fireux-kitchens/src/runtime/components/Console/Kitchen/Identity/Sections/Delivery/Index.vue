@@ -46,17 +46,14 @@
               </div>
             </div>
 
-            <UBadge color="neutral" variant="soft">
-              {{ zones.length }} zone{{ zones.length === 1 ? '' : 's' }}
-            </UBadge>
           </div>
         </template>
 
         <div class="space-y-4">
           <UPageCard
             v-if="!zones.length"
-            title="No delivery zones"
-            description="Add a zone before using delivery order checks."
+            title="Add your first delivery area"
+            description="Choose a radius, postcode, or polygon below."
             variant="subtle"
           />
 
@@ -66,22 +63,22 @@
             :key="mapPreviewKey"
             class="delivery-zone-map-preview"
             :zones="mapZones"
-          />
-
-          <ConsoleKitchenIdentitySectionsDeliveryZones
-            v-if="hasPolygonZones"
-            :zones="mapZones"
-            :selected-index="activeZoneIndex"
-            :can-write="canWrite"
-            @select-zone="setActiveZoneIndex"
-            @update:polygon="setActivePolygon"
+            :can-edit="canWrite"
+            :editable-mode="activeBoundaryMode"
+            :editable-zone-index="activeZoneIndex"
+            @polygon-point="addPolygonPoint"
           />
 
           <div
             v-for="(zone, index) in zones"
             :key="zone.key"
             class="delivery-zone-panel"
+            :class="{
+              'delivery-zone-panel--active': activeZoneIndex === Number(index),
+            }"
             :style="zoneCardStyle(Number(index))"
+            @click="setActiveZoneIndex(index)"
+            @focusin="setActiveZoneIndex(index)"
           >
             <div class="delivery-zone-panel__header">
               <div class="delivery-zone-panel__name">
@@ -93,17 +90,6 @@
               </div>
 
               <div class="delivery-zone-panel__actions">
-                <UButton
-                  v-if="zone.boundary_type === 'polygon'"
-                  color="primary"
-                  variant="soft"
-                  size="sm"
-                  icon="i-lucide-map"
-                  aria-label="Edit boundary"
-                  :disabled="!canWrite"
-                  @click="setActiveZoneIndex(index)"
-                />
-
                 <UButton
                   color="neutral"
                   variant="ghost"
@@ -117,7 +103,7 @@
             </div>
 
             <div class="delivery-zone-row">
-              <UFormField class="delivery-zone-row__money" label="Minimum">
+              <UFormField class="delivery-zone-row__money" label="Minimum order">
                 <UInput
                   v-model="zone.min_order_chf"
                   type="number"
@@ -126,6 +112,8 @@
                   :disabled="!canWrite"
                 />
               </UFormField>
+
+              <span class="delivery-zone-row__plus">+</span>
 
               <UFormField class="delivery-zone-row__money" label="Fee">
                 <UInput
@@ -137,11 +125,26 @@
                 />
               </UFormField>
 
-              <UFormField label="Boundary">
+              <UFormField label="Boundary type">
                 <URadioGroup
                   v-model="zone.boundary_type"
                   :items="boundaryTypeOptions"
                   :disabled="!canWrite"
+                />
+              </UFormField>
+
+              <UFormField
+                v-if="zone.boundary_type === 'radius'"
+                class="delivery-zone-row__boundary"
+                label="Radius (m)"
+              >
+                <UInput
+                  v-model="zone.radius_m"
+                  type="number"
+                  min="0"
+                  step="100"
+                  :disabled="!canWrite"
+                  placeholder="1500"
                 />
               </UFormField>
 
@@ -158,7 +161,7 @@
               </UFormField>
 
               <UFormField
-                v-else
+                v-if="zone.boundary_type === 'polygon'"
                 class="delivery-zone-row__boundary"
                 label="Polygon points"
               >
@@ -218,7 +221,7 @@ import type {
 } from '../../../../../../models/kitchen.model'
 import { readKitchenFulfilmentConfig } from '../../../../../../utils/kitchen-spine'
 
-type BoundaryType = 'postal_codes' | 'polygon'
+type BoundaryType = 'radius' | 'postal_codes' | 'polygon'
 
 type EditableZone = {
   key: string
@@ -226,6 +229,7 @@ type EditableZone = {
   min_order_chf: string
   fee_chf: string
   boundary_type: BoundaryType
+  radius_m: string
   postal_codes: string
   polygon: string
 }
@@ -233,6 +237,7 @@ type EditableZone = {
 const zoneColors = ['#ff7a32', '#f4b41a', '#2fb7a0', '#39bfe3']
 const maxZones = 4
 const boundaryTypeOptions = [
+  { label: 'Radius', value: 'radius' },
   { label: 'Postcode(s)', value: 'postal_codes' },
   { label: 'Polygon', value: 'polygon' },
 ] satisfies RadioGroupItem[]
@@ -287,12 +292,6 @@ const parsePolygon = (value: string) =>
       return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null
     })
     .filter((point): point is { lat: number; lng: number } => Boolean(point))
-const polygonInput = (points: { lat: number; lng: number }[]) =>
-  points
-    .map(
-      (point) => `${roundCoordinate(point.lat)}, ${roundCoordinate(point.lng)}`
-    )
-    .join('\n')
 const editableZone = (
   zone: KitchenDeliveryZone,
   index: number
@@ -301,10 +300,17 @@ const editableZone = (
   label: text(zone.label),
   min_order_chf: numberText(zone.min_order_chf),
   fee_chf: numberText(zone.fee_chf),
-  boundary_type: zone.polygon?.length ? 'polygon' : 'postal_codes',
+  boundary_type: zoneBoundaryType(zone),
+  radius_m: numberText(zone.radius_m),
   postal_codes: (zone.postal_codes || []).join(', '),
   polygon: polygonText(zone),
 })
+const zoneBoundaryType = (zone: KitchenDeliveryZone): BoundaryType => {
+  if (Number(zone.radius_m || 0) > 0) return 'radius'
+  if (zone.polygon?.length) return 'polygon'
+
+  return 'postal_codes'
+}
 const zonePlaceholder = (index: string | number) => `Zone ${Number(index) + 1}`
 const zoneId = (zone: EditableZone, index: number) =>
   normalizeSlug(text(zone.label), { maxLength: 80 }) ||
@@ -321,35 +327,45 @@ const zoneCardStyle = (index: number): Record<string, string> => {
 }
 const mapZone = (zone: EditableZone, index: number): KitchenDeliveryZone => ({
   id: zoneId(zone, index),
-  label: text(zone.label) || `Delivery zone ${index + 1}`,
+  label: text(zone.label) || `Zone ${index + 1}`,
   min_order_chf: numberValue(zone.min_order_chf) || 0,
   fee_chf: numberValue(zone.fee_chf) || 0,
+  ...(zone.boundary_type === 'radius'
+    ? { radius_m: numberValue(zone.radius_m) || 0 }
+    : {}),
   ...(zone.boundary_type === 'postal_codes'
     ? { postal_codes: compactList(zone.postal_codes) }
-    : { polygon: parsePolygon(zone.polygon) }),
+    : {}),
+  ...(zone.boundary_type === 'polygon'
+    ? { polygon: parsePolygon(zone.polygon) }
+    : {}),
   color: zoneColor(index),
 })
-const hasPolygonZones = computed(() =>
-  zones.value.some((zone: EditableZone) => zone.boundary_type === 'polygon')
-)
 const mapZones = computed<KitchenDeliveryZone[]>(() =>
   zones.value.map((zone: EditableZone, index: number) => mapZone(zone, index))
 )
+const activeZone = computed(() => zones.value[activeZoneIndex.value] || null)
+const activeBoundaryMode = computed(() => activeZone.value?.boundary_type || '')
 const mapPreviewKey = computed(() =>
-  mapZones.value
-    .map((zone) =>
-      [
-        zone.id,
-        zone.color,
-        zone.min_order_chf,
-        zone.fee_chf,
-        (zone.postal_codes || []).join(','),
-        (zone.polygon || [])
-          .map((point) => `${point.lat},${point.lng}`)
-          .join(';'),
-      ].join(':')
-    )
-    .join('|')
+  [
+    activeZoneIndex.value,
+    activeBoundaryMode.value,
+    mapZones.value
+      .map((zone) =>
+        [
+          zone.id,
+          zone.color,
+          zone.min_order_chf,
+          zone.fee_chf,
+          zone.radius_m,
+          (zone.postal_codes || []).join(','),
+          (zone.polygon || [])
+            .map((point) => `${point.lat},${point.lng}`)
+            .join(';'),
+        ].join(':')
+      )
+      .join('|'),
+  ].join('::')
 )
 const normalizedZone = (
   zone: EditableZone,
@@ -360,6 +376,7 @@ const normalizedZone = (
 
   const postalCodes = compactList(zone.postal_codes)
   const polygon = parsePolygon(zone.polygon)
+  const radius = numberValue(zone.radius_m)
   const minOrder = numberValue(zone.min_order_chf)
   const fee = numberValue(zone.fee_chf)
 
@@ -368,6 +385,9 @@ const normalizedZone = (
     label,
     ...(minOrder !== undefined ? { min_order_chf: minOrder } : {}),
     ...(fee !== undefined ? { fee_chf: fee } : {}),
+    ...(zone.boundary_type === 'radius' && radius !== undefined
+      ? { radius_m: radius }
+      : {}),
     ...(zone.boundary_type === 'postal_codes' && postalCodes.length
       ? { postal_codes: postalCodes }
       : {}),
@@ -381,6 +401,7 @@ watch(
   (nextDeliveryZones: KitchenDeliveryZone[]) => {
     syncingSavedZones.value = true
     zones.value = nextDeliveryZones.map(editableZone)
+    activeZoneIndex.value = 0
     saveState.value = ''
     queueMicrotask(() => {
       syncingSavedZones.value = false
@@ -392,11 +413,18 @@ watch(
 watch(
   zones,
   () => {
-    if (activeZoneIndex.value >= zones.value.length) {
-      activeZoneIndex.value = Math.max(0, zones.value.length - 1)
-    }
     if (!syncingSavedZones.value && !saving.value) {
       saveState.value = 'Unsaved changes'
+    }
+  },
+  { deep: true }
+)
+
+watch(
+  zones,
+  () => {
+    if (activeZoneIndex.value >= zones.value.length) {
+      activeZoneIndex.value = Math.max(zones.value.length - 1, 0)
     }
   },
   { deep: true }
@@ -408,13 +436,36 @@ function addZone() {
 
   zones.value.push({
     key: `new-zone-${index}-${Date.now()}`,
-    label: `Delivery zone ${index}`,
+    label: `Zone ${index}`,
     min_order_chf: '0',
     fee_chf: '0',
-    boundary_type: 'postal_codes',
+    boundary_type: 'radius',
+    radius_m: '1500',
     postal_codes: '',
     polygon: '',
   })
+  activeZoneIndex.value = zones.value.length - 1
+}
+
+function setActiveZoneIndex(index: string | number) {
+  const targetIndex = Number(index)
+  if (!Number.isInteger(targetIndex) || targetIndex < 0) return
+  if (targetIndex >= zones.value.length) return
+
+  activeZoneIndex.value = targetIndex
+}
+
+function addPolygonPoint(payload: {
+  zoneIndex: number
+  point: { lat: number; lng: number }
+}) {
+  if (!props.canWrite) return
+  const zone = zones.value[payload.zoneIndex]
+  if (!zone) return
+
+  zone.boundary_type = 'polygon'
+  const points = [...parsePolygon(zone.polygon), payload.point]
+  zone.polygon = points.map((point) => `${point.lat}, ${point.lng}`).join('\n')
 }
 
 async function removeZone(index: string | number) {
@@ -440,24 +491,6 @@ async function removeZone(index: string | number) {
   } finally {
     saving.value = false
   }
-}
-
-function setActiveZoneIndex(index: string | number) {
-  activeZoneIndex.value = Math.max(
-    0,
-    Math.min(Number(index), zones.value.length - 1)
-  )
-}
-
-function setActivePolygon(points: { lat: number; lng: number }[]) {
-  const activeZone = zones.value[activeZoneIndex.value]
-  if (!activeZone) return
-  activeZone.boundary_type = 'polygon'
-  activeZone.polygon = polygonInput(points)
-}
-
-function roundCoordinate(value: number) {
-  return Number(value.toFixed(6))
 }
 
 async function save() {
@@ -523,6 +556,16 @@ async function persistDeliveryZones(successTitle: string) {
     var(--ui-bg);
 }
 
+.delivery-zone-panel--active {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--delivery-zone-color) 24%, transparent),
+      transparent 38%
+    ),
+    var(--ui-bg);
+}
+
 .delivery-zone-map-preview {
   max-width: min(42rem, 100%);
 }
@@ -549,21 +592,35 @@ async function persistDeliveryZones(successTitle: string) {
   gap: 0.75rem;
 }
 
+.delivery-zone-row__plus {
+  display: none;
+  color: var(--ui-text-dimmed);
+  font-weight: 900;
+  line-height: 2.35rem;
+}
+
 @media (min-width: 768px) {
   .delivery-zone-row {
-    grid-template-columns: repeat(2, minmax(5.5rem, 0.45fr)) minmax(
-        9rem,
-        0.65fr
-      );
+    grid-template-columns:
+      minmax(5.5rem, 0.4fr)
+      auto
+      minmax(5.5rem, 0.4fr)
+      minmax(9rem, 0.7fr);
     align-items: end;
+  }
+
+  .delivery-zone-row__plus {
+    display: block;
   }
 }
 
 @media (min-width: 1280px) {
   .delivery-zone-row {
     grid-template-columns:
-      repeat(2, minmax(5rem, 0.34fr))
-      minmax(9rem, 0.62fr)
+      minmax(5rem, 0.3fr)
+      auto
+      minmax(5rem, 0.3fr)
+      minmax(9rem, 0.55fr)
       minmax(11rem, 1fr);
   }
 }

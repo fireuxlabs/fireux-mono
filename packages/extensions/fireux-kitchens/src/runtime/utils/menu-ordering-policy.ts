@@ -94,6 +94,7 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
     label,
     min_order_chf: nonNegativeNumber(row.min_order_chf),
     fee_chf: nonNegativeNumber(row.fee_chf),
+    radius_m: nonNegativeNumber(row.radius_m),
     postal_codes: list(row.postal_codes)
       .map(text)
       .filter(Boolean),

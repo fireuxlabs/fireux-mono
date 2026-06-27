@@ -50,11 +50,26 @@ import { loadFireuxGoogleMaps, readGoogleMaps } from '../../../utils/google-maps
 const props = withDefaults(
   defineProps<{
     zones?: KitchenDeliveryZone[]
+    center?: { lat: number; lng: number }
+    canEdit?: boolean
+    editableMode?: 'radius' | 'postal_codes' | 'polygon' | ''
+    editableZoneIndex?: number | null
   }>(),
   {
     zones: () => [],
+    center: () => ({ lat: 46.7004, lng: 7.8922 }),
+    canEdit: false,
+    editableMode: '',
+    editableZoneIndex: null,
   }
 )
+
+const emit = defineEmits<{
+  (
+    event: 'polygon-point',
+    payload: { zoneIndex: number; point: { lat: number; lng: number } }
+  ): void
+}>()
 
 const runtimeConfig = useRuntimeConfig()
 const publicConfig = runtimeConfig.public as Record<string, unknown>
@@ -62,6 +77,7 @@ const mapEl = ref<HTMLElement | null>(null)
 const mapMessage = ref('Loading delivery map...')
 const mapError = ref('')
 const isMounted = ref(false)
+const mapClickListener = ref<{ remove: () => void } | null>(null)
 const zoneColorsByPlaceId = ref<Record<string, string>>({})
 const deliveryZones = computed(() => props.zones)
 const googleMapsApiKey = computed(() =>
@@ -87,25 +103,30 @@ onMounted(async () => {
     await google.maps.importLibrary('maps')
 
     const map = new google.maps.Map(mapEl.value, {
-      center: { lat: 46.7004, lng: 7.8922 },
+      center: props.center,
       zoom: 11,
       mapId: googleMapsMapId.value,
       fullscreenControl: false,
       mapTypeControl: false,
       streetViewControl: false,
     })
-    const featureLayer = map.getFeatureLayer('POSTAL_CODE')
+    renderDeliveryZoneRadii(google, map, deliveryZones.value, props.center)
     renderDeliveryZonePolygons(google, map, deliveryZones.value)
+    renderDeliveryZonePolygonPoints(google, map, deliveryZones.value)
+    attachPolygonClickListener(map)
 
-    featureLayer.style = stylePostalCodeFeature
-
-    zoneColorsByPlaceId.value = await resolveDeliveryZonePlaceIds(
-      google,
-      deliveryZones.value
-    )
-    const resolvedCount = Object.keys(zoneColorsByPlaceId.value).length
-    if (resolvedCount) {
+    if (hasPostalCodeZones(deliveryZones.value)) {
+      const featureLayer = map.getFeatureLayer('POSTAL_CODE')
       featureLayer.style = stylePostalCodeFeature
+
+      zoneColorsByPlaceId.value = await resolveDeliveryZonePlaceIds(
+        google,
+        deliveryZones.value
+      )
+      const resolvedCount = Object.keys(zoneColorsByPlaceId.value).length
+      if (resolvedCount) {
+        featureLayer.style = stylePostalCodeFeature
+      }
     }
 
     if (isMounted.value) mapMessage.value = ''
@@ -129,6 +150,12 @@ function stylePostalCodeFeature(options: any) {
     strokeOpacity: color ? 1 : 0,
     strokeWeight: color ? 2 : 0,
   }
+}
+
+function hasPostalCodeZones(zones: KitchenDeliveryZone[]) {
+  return zones.some(
+    (zone) => Boolean(zone.place_ids?.length) || Boolean(zone.postal_codes?.length)
+  )
 }
 
 async function resolveDeliveryZonePlaceIds(
@@ -179,6 +206,85 @@ function renderDeliveryZonePolygons(
     })
 }
 
+function renderDeliveryZonePolygonPoints(
+  google: any,
+  map: any,
+  zones: KitchenDeliveryZone[]
+) {
+  zones
+    .filter((zone) => Array.isArray(zone.polygon) && zone.polygon.length)
+    .forEach((zone) => {
+      const color = zone.color || '#ff7a32'
+
+      zone.polygon?.forEach((point, index) => {
+        new google.maps.Marker({
+          position: point,
+          map,
+          label: {
+            text: String(index + 1),
+            color: '#111827',
+            fontWeight: '900',
+          },
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: color,
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        })
+      })
+    })
+}
+
+function renderDeliveryZoneRadii(
+  google: any,
+  map: any,
+  zones: KitchenDeliveryZone[],
+  center: { lat: number; lng: number }
+) {
+  zones
+    .filter((zone) => Number(zone.radius_m || 0) > 0)
+    .forEach((zone) => {
+      const color = zone.color || '#ff7a32'
+
+      new google.maps.Circle({
+        center,
+        radius: Number(zone.radius_m || 0),
+        fillColor: color,
+        fillOpacity: 0.22,
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        map,
+      })
+    })
+}
+
+function attachPolygonClickListener(map: any) {
+  if (!props.canEdit || props.editableMode !== 'polygon') return
+  const zoneIndex = Number(props.editableZoneIndex)
+  if (!Number.isInteger(zoneIndex) || zoneIndex < 0) return
+
+  mapClickListener.value = map.addListener('click', (event: any) => {
+    const latLng = event.latLng
+    if (!latLng) return
+
+    emit('polygon-point', {
+      zoneIndex,
+      point: {
+        lat: roundCoordinate(latLng.lat()),
+        lng: roundCoordinate(latLng.lng()),
+      },
+    })
+  })
+}
+
+function roundCoordinate(value: number) {
+  return Math.round(value * 1000000) / 1000000
+}
+
 function chf(value: number) {
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
@@ -222,6 +328,8 @@ function resolvePostalCodePlaceId(google: any, postalCode: string) {
 
 onBeforeUnmount(() => {
   isMounted.value = false
+  mapClickListener.value?.remove()
+  mapClickListener.value = null
 })
 </script>
 

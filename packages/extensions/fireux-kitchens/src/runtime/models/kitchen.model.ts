@@ -93,6 +93,7 @@ export type KitchenDeliveryZone = {
   label: string
   min_order_chf?: number
   fee_chf?: number
+  radius_m?: number
   postal_codes?: string[]
   place_ids?: string[]
   polygon?: Array<{
