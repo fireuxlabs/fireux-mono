@@ -251,6 +251,7 @@ const zones = ref<EditableZone[]>([])
 const activeZoneIndex = ref(0)
 const saving = ref(false)
 const saveState = ref('')
+const syncingSavedZones = ref(false)
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
 const deliveryZones = computed<KitchenDeliveryZone[]>(
   () => fulfilment.value.delivery_zones
@@ -378,7 +379,12 @@ const normalizedZone = (
 watch(
   deliveryZones,
   (nextDeliveryZones: KitchenDeliveryZone[]) => {
+    syncingSavedZones.value = true
     zones.value = nextDeliveryZones.map(editableZone)
+    saveState.value = ''
+    queueMicrotask(() => {
+      syncingSavedZones.value = false
+    })
   },
   { immediate: true }
 )
@@ -386,8 +392,12 @@ watch(
 watch(
   zones,
   () => {
-    if (activeZoneIndex.value < zones.value.length) return
-    activeZoneIndex.value = Math.max(0, zones.value.length - 1)
+    if (activeZoneIndex.value >= zones.value.length) {
+      activeZoneIndex.value = Math.max(0, zones.value.length - 1)
+    }
+    if (!syncingSavedZones.value && !saving.value) {
+      saveState.value = 'Unsaved changes'
+    }
   },
   { deep: true }
 )
@@ -407,8 +417,29 @@ function addZone() {
   })
 }
 
-function removeZone(index: string | number) {
-  zones.value.splice(Number(index), 1)
+async function removeZone(index: string | number) {
+  if (!props.canWrite) return
+  const targetIndex = Number(index)
+  if (!Number.isInteger(targetIndex) || targetIndex < 0) return
+  if (targetIndex >= zones.value.length) return
+
+  saving.value = true
+  saveState.value = 'Removing...'
+  zones.value.splice(targetIndex, 1)
+  try {
+    await persistDeliveryZones('Delivery zone removed')
+  } catch (error) {
+    saveState.value = 'Remove failed'
+    toast.add({
+      title: 'Could not remove delivery zone',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
+    throw error
+  } finally {
+    saving.value = false
+  }
 }
 
 function setActiveZoneIndex(index: string | number) {
@@ -431,6 +462,26 @@ function roundCoordinate(value: number) {
 
 async function save() {
   if (!props.canWrite) return
+
+  saving.value = true
+  saveState.value = 'Saving...'
+  try {
+    await persistDeliveryZones('Delivery zones updated')
+  } catch (error) {
+    saveState.value = 'Save failed'
+    toast.add({
+      title: 'Could not update delivery zones',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
+    throw error
+  } finally {
+    saving.value = false
+  }
+}
+
+async function persistDeliveryZones(successTitle: string) {
   const kitchenId = text(props.kitchenId)
   if (!kitchenId) throw new Error('No kitchen selected.')
 
@@ -447,27 +498,12 @@ async function save() {
     fulfilment: nextFulfilment,
   }
 
-  saving.value = true
-  saveState.value = 'Saving...'
-  try {
-    await updateKitchen(kitchenId, patch)
-    saveState.value = 'Saved'
-    toast.add({
-      title: 'Delivery zones updated',
-      icon: 'i-lucide-check-circle',
-    })
-  } catch (error) {
-    saveState.value = 'Save failed'
-    toast.add({
-      title: 'Could not update delivery zones',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-    throw error
-  } finally {
-    saving.value = false
-  }
+  await updateKitchen(kitchenId, patch)
+  saveState.value = 'Saved'
+  toast.add({
+    title: successTitle,
+    icon: 'i-lucide-check-circle',
+  })
 }
 </script>
 
