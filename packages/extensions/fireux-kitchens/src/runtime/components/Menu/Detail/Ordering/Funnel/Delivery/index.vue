@@ -1,6 +1,7 @@
 <template>
   <div class="menu-order-funnel">
     <KitchenFulfilmentDeliveryZonesMap
+      v-if="hasDeliveryZones"
       :zones="deliveryZonesForRender"
     />
 
@@ -47,6 +48,7 @@ const policyDeliveryZones = computed(() =>
   props.policy?.fulfilment?.delivery_zones || []
 )
 const deliveryZonesForRender = computed(() => policyDeliveryZones.value)
+const hasDeliveryZones = computed(() => deliveryZonesForRender.value.length > 0)
 </script>
 
 <style scoped>
