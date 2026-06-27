@@ -156,3 +156,15 @@ export const readMenuOrderTypeConfig = (
     ...(fulfilment ? { fulfilment } : {}),
   }
 }
+
+export const menuAcceptsOrderType = (
+  menu: unknown,
+  type: KitchenOrderType
+) => {
+  const ordering = record(record(menu).ordering)
+  if (ordering.enabled !== true) return false
+
+  return list(ordering.order_types)
+    .map(readMenuOrderTypeConfig)
+    .some((config) => config?.type === type)
+}

@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-06-27
-Ref: 61f975c2f
+Ref: 08f242070
 Role: map, not canon
 
 Purpose:
@@ -10,6 +10,7 @@ Vertical links:
 - Parent: family-menu.md
 - Parent: console.md
 - Parent: server-api.md
+- Child: order-processing-kitchen-fulfilment.md
 
 Horizontal links:
 - entities.md
@@ -121,6 +122,17 @@ Public order funnel spine:
 - Each order type may own its inner funnel, but order submission stays through
   the shared menu order draft/create seam.
 
+Customer funnel notes:
+- The allergy/safety notice should be a full step panel, not a small warning
+  competing with delivery details.
+- The waiting/accepted state should be customer-first: destination/status first,
+  order number as a small reference.
+- Address autocomplete felt smooth in the latest Bären test, but it was flaky
+  during setup; keep an asterisk here to revisit diagnostics if customers hit
+  "address not available" or selected addresses fail verification.
+- Public customer surfaces should not expose print-test actions; printing belongs
+  after kitchen acceptance in order processing.
+
 Bären delivery policy reference:
 - Their current provider uses coloured delivery areas with different minimum
   orders and fees.
@@ -149,4 +161,4 @@ Guardrails:
 Open questions:
 - Should order creation enforce `notice_hours` immediately, or only after the requested-time UI exists?
 - Should selected ordering mode config be copied onto the created Order for audit history?
-- Where exactly should fulfilment settings live when delivery zones, deposits, and table reservations become real?
+- Where exactly should daily fulfilment availability live when delivery pauses, deposits, and table reservations become real?

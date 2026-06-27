@@ -68,7 +68,7 @@
       </UCard>
 
       <div class="grid gap-4 lg:grid-cols-2">
-        <UCard>
+        <UCard v-if="hasDeliveryMenus">
           <template #header>
             <div class="flex items-center gap-3">
               <UIcon name="i-lucide-wallet" class="size-5 text-muted" />
@@ -145,7 +145,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-spine'
+import { menuAcceptsOrderType } from '../../../../utils/menu-ordering-policy'
 
 const {
   selectedKitchen,
@@ -154,6 +156,7 @@ const {
   placeId,
   debug,
 } = useKitchenConsoleIdentity()
+const { menus } = useKitchenConsoleMenus()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const imageUrl = computed(() =>
@@ -167,6 +170,9 @@ const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 const deliveryZones = computed(() =>
   readKitchenFulfilmentConfig(kitchen.value).delivery_zones
+)
+const hasDeliveryMenus = computed(() =>
+  menus.value.some((menu) => menuAcceptsOrderType(menu, 'delivery'))
 )
 
 const currencyFormatLabel = computed(() => {

@@ -4,6 +4,8 @@
     aria-live="polite"
     @submit.prevent="$emit('submit', customerPayload)"
   >
+    <MenuDetailOrderingCustomerPill />
+
     <div class="menu-order-panel__header">
       <div>
         <p class="menu-order-panel__eyebrow">
@@ -349,10 +351,7 @@ watch(
   font-weight: 900;
 }
 
-.menu-order-panel__submit:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
-}
+.menu-order-panel__submit:disabled { cursor: not-allowed; opacity: 0.62; }
 
 .menu-order-panel__spinner {
   width: 1rem;
@@ -363,9 +362,33 @@ watch(
   animation: menu-order-panel-spin 0.8s linear infinite;
 }
 
-@keyframes menu-order-panel-spin {
-  to {
-    transform: rotate(360deg);
+@keyframes menu-order-panel-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .menu-order-panel {
+    width: min(44rem, calc(100% - 0.5rem));
+    max-height: min(44rem, calc(100svh - 1rem));
+  }
+  .menu-order-panel__header {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .menu-order-panel__selection {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu-order-panel__selection p {
+    text-align: left;
+  }
+  .menu-order-panel__edit,
+  .menu-order-panel__submit {
+    width: 100%;
+  }
+  .menu-order-panel__notice {
+    justify-self: stretch;
+    text-align: left;
   }
 }
 </style>

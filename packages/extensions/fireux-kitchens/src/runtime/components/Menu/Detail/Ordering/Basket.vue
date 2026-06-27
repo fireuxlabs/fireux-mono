@@ -1,5 +1,7 @@
 <template>
   <footer class="menu-basket" aria-live="polite">
+    <MenuDetailOrderingCustomerPill />
+
     <button
       type="button"
       class="menu-basket__summary"
@@ -240,6 +242,10 @@ const totalLabel = computed(() =>
   .menu-basket__actions {
     grid-auto-flow: row;
     justify-content: stretch;
+  }
+
+  .menu-basket__button {
+    width: 100%;
   }
 }
 </style>

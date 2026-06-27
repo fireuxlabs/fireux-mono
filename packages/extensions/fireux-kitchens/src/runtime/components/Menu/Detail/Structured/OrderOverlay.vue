@@ -18,26 +18,29 @@
         aria-hidden="true"
       />
       <span>
+        <MenuDetailOrderingCustomerPill />
         <strong>{{ order.accepted ? 'Order accepted' : 'Waiting for order to be accepted' }}</strong>
-        <small>{{ order.message || 'The kitchen will confirm your order shortly.' }}</small>
-        <small
-          v-if="printError"
-          class="menu-order-waiting__print-error"
-        >
-          {{ printError }}
+        <small>{{ customerStatusMessage }}</small>
+        <ol class="menu-order-waiting__steps">
+          <li class="menu-order-waiting__step menu-order-waiting__step--done">
+            Sent
+          </li>
+          <li class="menu-order-waiting__step menu-order-waiting__step--done">
+            Received
+          </li>
+          <li
+            class="menu-order-waiting__step"
+            :class="{ 'menu-order-waiting__step--done': order.accepted }"
+          >
+            Kitchen accepted
+          </li>
+        </ol>
+        <small v-if="orderReference" class="menu-order-waiting__reference">
+          Reference {{ orderReference }}
         </small>
       </span>
 
       <div class="menu-order-waiting__actions">
-        <button
-          v-if="canPrintReceipt"
-          type="button"
-          class="menu-order-waiting__close"
-          @click="printReceipt"
-        >
-          Print test receipt
-        </button>
-
         <NuxtLink
           v-if="order.accepted"
           class="menu-order-waiting__close"
@@ -60,26 +63,15 @@
         aria-hidden="true"
       />
       <span>
+        <MenuDetailOrderingCustomerPill />
         <strong>Order sent</strong>
-        <small>{{ order.message || 'The order was sent to the kitchen.' }}</small>
-        <small
-          v-if="printError"
-          class="menu-order-waiting__print-error"
-        >
-          {{ printError }}
+        <small>{{ customerStatusMessage }}</small>
+        <small v-if="orderReference" class="menu-order-waiting__reference">
+          Reference {{ orderReference }}
         </small>
       </span>
 
       <div class="menu-order-waiting__actions">
-        <button
-          v-if="canPrintReceipt"
-          type="button"
-          class="menu-order-waiting__close"
-          @click="printReceipt"
-        >
-          Print test receipt
-        </button>
-
         <button
           type="button"
           class="menu-order-waiting__close"
@@ -115,9 +107,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { KitchenOrderCustomer } from '../../../../models/order.model'
-import { printMenuOrderReceipt } from '../../../../composables/fireux/public/menu/useMenuOrderReceiptPrint'
 import type { MenuStructuredOrderOverlayState } from './types'
 
 const props = defineProps<{
@@ -131,15 +122,35 @@ defineEmits<{
   (event: 'submit', customer: KitchenOrderCustomer): void
 }>()
 
-const printError = ref('')
-const canPrintReceipt = computed(() => Boolean(props.order.sentOrder?.receipt))
+const orderReference = computed(() =>
+  String(props.order.sentOrder?.order_number || '').trim()
+)
+const customerName = computed(() =>
+  String(props.order.sentOrder?.receipt?.customer?.name || '').trim()
+)
+const shortAddress = computed(() => {
+  const address = String(props.order.sentOrder?.receipt?.customer?.address || '').trim()
+  if (!address) return ''
 
-function printReceipt() {
-  printError.value = ''
-  if (printMenuOrderReceipt(props.order.sentOrder || null)) return
+  return address.split(',').slice(0, 2).join(', ')
+})
+const customerStatusMessage = computed(() => {
+  if (props.order.accepted) {
+    return shortAddress.value
+      ? `Accepted. We are preparing delivery to ${shortAddress.value}.`
+      : 'Accepted. The kitchen is preparing your order.'
+  }
 
-  printError.value = 'Receipt printer window was blocked.'
-}
+  if (shortAddress.value) {
+    return `We have your delivery for ${shortAddress.value}. Waiting for the kitchen to accept it.`
+  }
+
+  if (customerName.value) {
+    return `We have your order, ${customerName.value}. Waiting for the kitchen to accept it.`
+  }
+
+  return 'We have your order. Waiting for the kitchen to accept it.'
+})
 </script>
 
 <style scoped>
@@ -228,8 +239,34 @@ function printReceipt() {
   line-height: 1.45;
 }
 
-.menu-order-waiting__print-error {
-  color: var(--ui-error, #dc2626);
+.menu-order-waiting__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0;
+  margin: 1rem 0 0;
+  list-style: none;
+}
+
+.menu-order-waiting__step {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
+  border-radius: 999px;
+  color: var(--menu-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.menu-order-waiting__step--done {
+  border-color: color-mix(in srgb, var(--menu-accent) 36%, transparent);
+  background: color-mix(in srgb, var(--menu-accent) 12%, transparent);
+  color: var(--menu-title);
+}
+
+.menu-order-waiting__reference {
+  font-size: 0.78rem;
+  opacity: 0.78;
 }
 
 .menu-order-waiting__spinner {
@@ -268,6 +305,10 @@ function printReceipt() {
     grid-column: 1 / -1;
     justify-self: stretch;
     flex-direction: column;
+  }
+
+  .menu-order-waiting__steps {
+    display: grid;
   }
 }
 </style>
