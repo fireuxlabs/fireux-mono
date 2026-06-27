@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-06-25
-Ref: f1e9891ff
+Updated: 2026-06-27
+Ref: 61f975c2f
 Role: map, not canon
 
 Purpose:
@@ -82,6 +82,24 @@ Possible future fulfilment policies:
 - `payment_methods`: cash, card on pickup, card to driver, online card, deposit.
 - `deposit`: amount or percentage required before accepting an order.
 - `party_size`: minimum or maximum guest count for a mode.
+
+Delivery availability notes:
+- Delivery hours are not the same as venue opening hours and should not be
+  inferred from Google opening hours.
+- A Kitchen may be open while delivery is closed, paused, or overloaded.
+- V1 can store/show delivery zones first; delivery time windows should become
+  fulfilment policy when we add the editor.
+- Kitchens need an operational pause such as: "Sorry, the kitchen is too busy
+  to run delivery right now."
+- When delivery is paused or closed, public UI can offer nearby Misebox
+  kitchens instead of leaving the customer at a dead end.
+
+Item availability notes:
+- Operators need a fast out-of-stock control for menu items.
+- Running out of burgers is not a menu deletion; it is temporary availability
+  state.
+- Prefer item/menu availability before changing Dish truth, because one dish
+  can appear differently across menus or services.
 
 V1 fulfilment policy:
 - Store fulfilment hints under each `ordering.order_types[]` row as

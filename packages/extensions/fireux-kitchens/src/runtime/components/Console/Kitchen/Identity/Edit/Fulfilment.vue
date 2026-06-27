@@ -28,6 +28,15 @@
         variant="subtle"
       />
 
+      <ConsoleKitchenIdentityEditDeliveryZoneMap
+        v-else
+        :zones="mapZones"
+        :selected-index="activeZoneIndex"
+        :can-write="canWrite"
+        @select-zone="setActiveZoneIndex"
+        @update:polygon="setActivePolygon"
+      />
+
       <div
         v-for="(zone, index) in zones"
         :key="zone.key"
@@ -42,6 +51,17 @@
               Minimum CHF {{ zone.min_order_chf || 0 }} · fee CHF {{ zone.fee_chf || 0 }}
             </p>
           </div>
+
+          <UButton
+            color="primary"
+            variant="soft"
+            size="xs"
+            icon="i-lucide-map"
+            :disabled="!canWrite"
+            @click="setActiveZoneIndex(index)"
+          >
+            Edit boundary
+          </UButton>
 
           <UButton
             color="neutral"
@@ -183,6 +203,7 @@ const collectionPath = computed(() => props.collectionPath)
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const toast = useToastify()
 const zones = ref<EditableZone[]>([])
+const activeZoneIndex = ref(0)
 const saving = ref(false)
 const saveState = ref('')
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
@@ -224,6 +245,10 @@ const parsePolygon = (value: string) =>
         : null
     })
     .filter((point): point is { lat: number, lng: number } => Boolean(point))
+const polygonInput = (points: { lat: number, lng: number }[]) =>
+  points
+    .map((point) => `${roundCoordinate(point.lat)}, ${roundCoordinate(point.lng)}`)
+    .join('\n')
 const editableZone = (zone: KitchenDeliveryZone, index: number): EditableZone => ({
   key: `${zone.id || 'zone'}-${index}-${Date.now()}`,
   id: text(zone.id),
@@ -236,6 +261,18 @@ const editableZone = (zone: KitchenDeliveryZone, index: number): EditableZone =>
 })
 const zoneTitle = (zone: EditableZone, index: string | number) =>
   zone.label || `Delivery zone ${Number(index) + 1}`
+const mapZone = (zone: EditableZone, index: number): KitchenDeliveryZone => ({
+  id: text(zone.id) || `delivery-zone-${index + 1}`,
+  label: text(zone.label) || `Delivery zone ${index + 1}`,
+  min_order_chf: numberValue(zone.min_order_chf) || 0,
+  fee_chf: numberValue(zone.fee_chf) || 0,
+  postal_codes: compactList(zone.postal_codes),
+  polygon: parsePolygon(zone.polygon),
+  color: text(zone.color) || '#ff7a32',
+})
+const mapZones = computed<KitchenDeliveryZone[]>(() =>
+  zones.value.map((zone: EditableZone, index: number) => mapZone(zone, index))
+)
 const normalizedZone = (zone: EditableZone): KitchenDeliveryZone | null => {
   const id = text(zone.id)
   const label = text(zone.label)
@@ -265,6 +302,15 @@ watch(
   { immediate: true }
 )
 
+watch(
+  zones,
+  () => {
+    if (activeZoneIndex.value < zones.value.length) return
+    activeZoneIndex.value = Math.max(0, zones.value.length - 1)
+  },
+  { deep: true }
+)
+
 function addZone() {
   const index = zones.value.length + 1
 
@@ -282,6 +328,23 @@ function addZone() {
 
 function removeZone(index: string | number) {
   zones.value.splice(Number(index), 1)
+}
+
+function setActiveZoneIndex(index: string | number) {
+  activeZoneIndex.value = Math.max(
+    0,
+    Math.min(Number(index), zones.value.length - 1)
+  )
+}
+
+function setActivePolygon(points: { lat: number, lng: number }[]) {
+  const activeZone = zones.value[activeZoneIndex.value]
+  if (!activeZone) return
+  activeZone.polygon = polygonInput(points)
+}
+
+function roundCoordinate(value: number) {
+  return Number(value.toFixed(6))
 }
 
 async function save() {

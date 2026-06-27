@@ -23,6 +23,9 @@
           <!-- place -->
           <KitchenDetailPlace :kitchen="kitchen" />
 
+          <!-- fulfilment -->
+          <KitchenDetailFulfilment :kitchen="kitchen" />
+
           <!-- main -->
           <KitchenDetailMenus :kitchen="kitchen" />
 

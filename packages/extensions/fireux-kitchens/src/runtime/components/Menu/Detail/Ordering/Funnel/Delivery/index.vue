@@ -1,7 +1,6 @@
 <template>
   <div class="menu-order-funnel">
-    <DeliveryMap
-      :policy="props.policy"
+    <KitchenFulfilmentDeliveryZonesMap
       :zones="deliveryZonesForRender"
     />
 
@@ -23,7 +22,6 @@ import type {
 } from '../../../../../../models/menu/menu.model'
 import type { KitchenOrderCustomer } from '../../../../../../models/order.model'
 import DeliveryDetails from './Details.vue'
-import DeliveryMap from './Map.vue'
 
 // Menu ordering funnel: docs/concepts/menu-ordering.md
 // Delivery owns its dedicated folder; shared funnel shell/components stay in ../.
