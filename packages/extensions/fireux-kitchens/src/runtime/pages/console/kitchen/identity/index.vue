@@ -1,37 +1,12 @@
 <template>
   <UDashboardPanel id="console-kitchen-identity">
     <template #header>
-      <LayoutsConsoleNavbar :title="navTitle">
-        <template #right>
-          <UFieldGroup size="sm">
-            <UButton
-              icon="i-lucide-eye"
-              :variant="view === 'identity' ? 'solid' : 'ghost'"
-              color="neutral"
-              @click="view = 'identity'"
-            >
-              Overview
-            </UButton>
-
-            <UButton
-              icon="i-lucide-notebook-pen"
-              :variant="view === 'edit' ? 'solid' : 'ghost'"
-              color="neutral"
-              :disabled="!canWrite"
-              @click="view = 'edit'"
-            >
-              Edit
-            </UButton>
-          </UFieldGroup>
-        </template>
-      </LayoutsConsoleNavbar>
+      <LayoutsConsoleNavbar :title="navTitle" />
     </template>
 
     <template #body>
       <div class="console-profile">
-        <ConsoleKitchenIdentity v-if="view === 'identity' || !canWrite" />
-
-        <ClientOnly v-else>
+        <ClientOnly>
           <div class="console-profile__section">
             <ConsoleKitchenIdentitySections />
           </div>
@@ -42,12 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
-
 const navTitle = 'Identity'
-const view = ref<'identity' | 'edit'>('edit')
-const { canWrite } = useKitchenConsoleIdentity()
 
 definePageMeta({
   layout: 'console',

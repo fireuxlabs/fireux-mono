@@ -178,11 +178,13 @@ export function useKitchenInterface() {
     phone?: string
     currencyCode?: string
     menuAvailable?: boolean
+    badges?: string[]
     details?: {
       label: string
       value?: string | number | null
     }[]
     mapUrl?: string
+    to?: string
   }
 
   function surface<TKitchen extends object = Partial<Kitchen>>(
@@ -358,6 +360,8 @@ export function useKitchenInterface() {
   ): KitchenPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
+    const slug = safeString(target.slug)
+    const publicPath = base.to
     return {
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
@@ -370,15 +374,18 @@ export function useKitchenInterface() {
       phone: safeString(target.phone),
       currencyCode: safeString(target.default_currency_code),
       menuAvailable: target.menu_available !== false,
+      badges: [
+        publicPath || (slug ? `/kitchens/${slug}` : ''),
+        safeString(target.place_id) ? 'Place linked' : '',
+        safeString(target.claimed_by) ? 'Claimed' : '',
+        target.show === false ? 'Hidden' : '',
+      ].filter(Boolean),
+      to: publicPath,
       mapUrl:
         typeof target.lat === 'number' && typeof target.lng === 'number'
           ? `https://www.google.com/maps/search/?api=1&query=${target.lat},${target.lng}`
           : '',
       details: [
-        {
-          label: 'Short address',
-          value: base.shortAddress,
-        },
         {
           label: 'Phone',
           value: safeString(target.phone),

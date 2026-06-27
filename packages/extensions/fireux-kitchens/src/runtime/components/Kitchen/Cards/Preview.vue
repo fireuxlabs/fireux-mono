@@ -1,6 +1,6 @@
 <template>
-  <UCard class="overflow-hidden">
-    <div class="space-y-4">
+  <UCard variant="subtle" class="overflow-hidden">
+    <div class="space-y-5">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
         <UAvatar
           :src="resolvedImageUrl || undefined"
@@ -17,7 +17,7 @@
                 {{ eyebrow }}
               </p>
 
-              <h2 class="truncate text-xl font-semibold text-highlighted">
+              <h2 class="truncate text-2xl font-semibold text-highlighted">
                 {{ name }}
               </h2>
 
@@ -48,7 +48,7 @@
             <div
               v-for="item in visibleDetails"
               :key="item.label"
-              class="rounded-lg bg-muted/40 p-3"
+              class="rounded-xl bg-default/70 p-3 ring ring-default"
             >
               <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
                 {{ item.label }}
@@ -59,7 +59,17 @@
             </div>
           </div>
 
-          <div v-if="mapUrl || website || $slots.actions" class="flex flex-wrap gap-2 pt-1">
+          <div v-if="to || mapUrl || website || $slots.actions" class="flex flex-wrap gap-2 pt-1">
+            <UButton
+              v-if="to"
+              size="sm"
+              variant="soft"
+              color="neutral"
+              icon="i-lucide-external-link"
+              :to="to"
+            >
+              View kitchen
+            </UButton>
             <UButton
               v-if="mapUrl"
               size="sm"
@@ -112,10 +122,12 @@ type Props = {
   currencyCode?: string
   menuAvailable?: boolean
   eyebrow?: string
+  badges?: string[]
   showBadges?: boolean
   showBody?: boolean
   details?: KitchenPreviewDetail[]
   mapUrl?: string
+  to?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -148,6 +160,7 @@ const sourceLabel = computed(() =>
 const visibleBadges = computed(() =>
   props.showBadges
     ? [
+        ...(props.badges ?? []),
         props.menuAvailable ? 'Menu available' : 'Menu unavailable',
         sourceLabel.value,
       ].filter(Boolean)
