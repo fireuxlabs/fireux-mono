@@ -63,6 +63,7 @@
           <!-- Reuse the public fulfilment map so console and customer routes show the same delivery truth. -->
           <KitchenFulfilmentDeliveryZonesMap
             v-if="mapZones.length"
+            :key="mapPreviewKey"
             class="delivery-zone-map-preview"
             :zones="mapZones"
           />
@@ -332,6 +333,22 @@ const hasPolygonZones = computed(() =>
 )
 const mapZones = computed<KitchenDeliveryZone[]>(() =>
   zones.value.map((zone: EditableZone, index: number) => mapZone(zone, index))
+)
+const mapPreviewKey = computed(() =>
+  mapZones.value
+    .map((zone) =>
+      [
+        zone.id,
+        zone.color,
+        zone.min_order_chf,
+        zone.fee_chf,
+        (zone.postal_codes || []).join(','),
+        (zone.polygon || [])
+          .map((point) => `${point.lat},${point.lng}`)
+          .join(';'),
+      ].join(':')
+    )
+    .join('|')
 )
 const normalizedZone = (
   zone: EditableZone,
