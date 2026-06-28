@@ -14,8 +14,8 @@
     "src/**/*"
   ],
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "peerDependencies": {
     "@nuxt/kit": "^4.4.0",

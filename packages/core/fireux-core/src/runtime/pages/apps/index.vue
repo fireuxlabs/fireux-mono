@@ -2,10 +2,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
-      <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
-      <AppCTA />
-      <AppCollectionMine />
-      <AppCollectionManager />
+      <!-- Public index family: apps read as public cards, not admin/onboarding controls. -->
+      <AppCollectionPublic />
     </UPageBody>
   </UPage>
 </template>
@@ -34,7 +32,7 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Apps'
-const pageDescription = 'Find apps in this ecosystem, or start your app.'
+const pageDescription = 'Public app cards, logos, descriptions, launch links, and case studies.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

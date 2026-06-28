@@ -9,11 +9,11 @@
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
     "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project fireux-2005 --config firebase.json",
-    "deploy": "pnpm deploy:preflight && pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project fireux-2005 --config firebase.json",
-    "deploy:hosting": "pnpm deploy:preflight && pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project fireux-2005 --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rm -rf app/.nuxt .output dist"
+    "clean": "rm -rf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-06-28
+// usage_note: parked old mirror markdown report helper; restore only if mirror workflow returns.
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'

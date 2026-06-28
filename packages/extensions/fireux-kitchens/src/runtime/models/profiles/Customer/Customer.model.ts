@@ -26,6 +26,25 @@ export const AppCustomerStorage = {
   idParam: 'userId',
 } as const
 
+export type CustomerSavedAddress = {
+  id: string
+  label: string
+  address: string
+  place_id: string
+  delivery_note: string
+  is_default: boolean
+}
+
+export type CustomerOrderHistoryItem = {
+  order_id: string
+  app_id: string
+  kitchen_id: string
+  kitchen_name: string
+  ordered_at?: FirebaseTimestamp
+  total_cents?: number
+  status?: string
+}
+
 export const CustomerModel = {
   id: '' as string,
   title: '' as string,
@@ -37,6 +56,8 @@ export const CustomerModel = {
   customer_phone: '' as string,
   allergy_note: '' as string,
   default_delivery_address: '' as string,
+  saved_addresses: [] as CustomerSavedAddress[],
+  order_history: [] as CustomerOrderHistoryItem[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -58,6 +79,8 @@ export const AppCustomerModel = {
   customer_phone: '' as string,
   allergy_note: '' as string,
   default_delivery_address: '' as string,
+  saved_addresses: [] as CustomerSavedAddress[],
+  order_history: [] as CustomerOrderHistoryItem[],
   ...AppProfileStamps,
 } as const
 
@@ -69,6 +92,8 @@ export type AppCustomer = AppProfileBase &
       | 'customer_phone'
       | 'allergy_note'
       | 'default_delivery_address'
+      | 'saved_addresses'
+      | 'order_history'
     >
   >
 

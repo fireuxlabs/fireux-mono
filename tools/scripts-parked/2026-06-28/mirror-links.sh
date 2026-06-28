@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-06-25
-# usage_note: baseline after scripts cleanup; update when run.
+# last_used: 2026-06-28
+# usage_note: parked old mirror symlink helper; restore only if mirror workflow returns.
 set -euo pipefail
 
 # Usage:
-#   ./scripts/mirror-links.sh mirror/mirror.txt mirror
+#   ./tools/scripts-parked/2026-06-28/mirror-links.sh mirror/mirror.txt mirror
 #
 # The list file contains one repo-relative file path per line.
 

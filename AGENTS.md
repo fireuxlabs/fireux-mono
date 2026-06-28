@@ -80,7 +80,7 @@ If a tiny behavior requires a broad diff, stop and report the missing seam. Do n
 - Language: TypeScript.
 - Runtime/server: Nitro, h3, Firebase, VueFire, Firebase Admin where needed.
 - Styling: Nuxt UI plus existing app/package CSS; Tailwind 4 is present.
-- Node: root `package.json` requires Node `>=20.11 <23`.
+- Node: root `package.json` requires Node `>=22.23 <23`.
 
 Do not introduce React, another UI kit, another router, or another package manager.
 

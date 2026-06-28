@@ -48,6 +48,14 @@
       @delivery-zone="setDeliveryZone"
     />
 
+    <FunnelPayment
+      v-if="allergyAccepted && hasPaymentPolicy"
+      :methods="paymentMethods"
+      :deposit="depositPolicy"
+      :party-size="Number(customer.party_size || 0)"
+      :total-chf="orderTotal"
+    />
+
     <p
       v-if="submitBlockMessage"
       class="menu-order-panel__notice"
@@ -93,6 +101,7 @@ import FunnelNotice from './Notice.vue'
 import FunnelCollection from './Collection/index.vue'
 import FunnelDefault from './Default/index.vue'
 import FunnelDelivery from './Delivery/index.vue'
+import FunnelPayment from './Payment.vue'
 import FunnelPreOrder from './PreOrder/index.vue'
 
 type FunnelSelectionItem = {
@@ -137,7 +146,21 @@ const allergyMessage =
   'If you have a food allergy or intolerance, please speak to a member of the team before ordering.'
 const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
-const submitLabel = computed(() => menuOrderSubmitLabel(props.orderType))
+const paymentMethods = computed(() =>
+  props.policy?.fulfilment?.payment_methods || []
+)
+const depositPolicy = computed(() => props.policy?.fulfilment?.deposit)
+const hasPaymentPolicy = computed(() =>
+  paymentMethods.value.length > 0 || Boolean(depositPolicy.value)
+)
+const requiresOnlinePayment = computed(() =>
+  paymentMethods.value.includes('online_card') || Boolean(depositPolicy.value)
+)
+const submitLabel = computed(() =>
+  requiresOnlinePayment.value
+    ? 'Continue to payment'
+    : menuOrderSubmitLabel(props.orderType)
+)
 const itemCountLabel = computed(() =>
   `${props.selection.quantity} item${props.selection.quantity === 1 ? '' : 's'}`
 )

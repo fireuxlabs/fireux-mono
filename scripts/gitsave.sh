@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-06-25
+# last_used: 2026-06-28
 # usage_note: baseline after scripts cleanup; update when run.
 set -euo pipefail
 
@@ -165,10 +165,10 @@ cleanup_git_refs() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
   echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
-  echo "Safety defaults: block behind-state pushes. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
+  echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
 classify_path() {
@@ -285,6 +285,7 @@ run_repo_clean=false
 allow_mixed=false
 allow_large=false
 allow_behind=false
+allow_guard_failure=false
 strict_scope=false
 
 # Parse args
@@ -302,6 +303,7 @@ for a in "$@"; do
     --allow-mixed) allow_mixed=true ;;
     --allow-large) allow_large=true ;;
     --allow-behind) allow_behind=true ;;
+    --allow-guard-failure) allow_guard_failure=true ;;
     -h|--help) usage; exit 0 ;;
     *) args+=("$a") ;;
   esac
@@ -313,6 +315,10 @@ commit_message="${args[*]:-}"
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "Error: not inside a git repository" >&2
   exit 1
+fi
+
+if [[ -f "scripts/check-runtime.mjs" ]]; then
+  node scripts/check-runtime.mjs
 fi
 
 current_branch=$(git rev-parse --abbrev-ref HEAD)
@@ -346,17 +352,13 @@ fi
 # Optional guard (advisory, not blocking)
 if $run_guard; then
   if ! pnpm -s guard; then
-    echo "\nGuard failed. You may fix the issues above, or continue and push anyway." >&2
-    read -p "Continue and push anyway? [y/N]: " confirm
-    case "$confirm" in
-      [yY][eE][sS]|[yY])
-        echo "Proceeding with push despite guard violations..." >&2
-        ;;
-      *)
-        echo "Aborted by user due to guard violations." >&2
-        exit 1
-        ;;
-    esac
+    echo "\n[gitsave] Guard failed." >&2
+    if $allow_guard_failure; then
+      echo "[gitsave] Proceeding because --allow-guard-failure was provided." >&2
+    else
+      echo "[gitsave] Fix the issues above, or re-run with --allow-guard-failure if this save must proceed." >&2
+      exit 1
+    fi
   fi
 fi
 

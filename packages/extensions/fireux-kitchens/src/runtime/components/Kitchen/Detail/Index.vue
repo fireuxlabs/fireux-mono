@@ -24,7 +24,10 @@
           <KitchenDetailPlace :kitchen="kitchen" />
 
           <!-- fulfilment -->
-          <KitchenDetailFulfilment :kitchen="kitchen" />
+          <KitchenDetailFulfilment
+            :kitchen="kitchen"
+            :fulfilment="resolvedFulfilment"
+          />
 
           <!-- main -->
           <KitchenDetailMenus :kitchen="kitchen" />
@@ -65,22 +68,41 @@
 </template>
 
 <script setup lang="ts">
+import { useFetch } from '#imports'
 import { computed } from 'vue'
 import {
   useKitchenFetch,
   useKitchenInterface,
   useKitchenSeo,
 } from '../../../composables/fireux/firestore/kitchen/useKitchen'
+import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model'
 
 const props = defineProps<{
   locator: string
 }>()
 
 const locator = computed(() => String(props.locator || '').trim())
+const emptyFulfilment: KitchenFulfilmentConfig = {
+  delivery_zones: [],
+  payment_methods: [],
+}
+const fulfilmentPath = computed(() =>
+  locator.value
+    ? `/api/kitchens/${encodeURIComponent(locator.value)}/fulfilment`
+    : ''
+)
 
 const { kitchen, pending } = useKitchenFetch(locator)
+const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
+  fulfilmentPath,
+  {
+    immediate: Boolean(fulfilmentPath.value),
+    watch: [fulfilmentPath],
+  }
+)
 const { identity } = useKitchenInterface()
 const identityCard = computed(() => identity(kitchen.value))
+const resolvedFulfilment = computed(() => fulfilmentData.value || emptyFulfilment)
 const kitchenDisplayName = computed(() =>
   String(kitchen.value?.display_name ?? '').trim()
 )

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-27
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/pre-guard-clean.mjs
 // Removes local build artifacts that violate FireUX guard L1 shape rules.
@@ -25,6 +25,9 @@ const PROJECT_ROOT_FORBIDDEN_FILES = [
   'firebase-debug.log',
   'tsconfig.tsbuildinfo',
   '.firebaserc',
+]
+const PROJECT_APP_GENERATED_DIRS = [
+  '.nuxt',
 ]
 
 async function removeDirIfExists(dirPath) {
@@ -81,6 +84,14 @@ for (const group of ['core', 'ecosystem', 'extensions']) {
         const filePath = path.join(appRoot, fileName)
         if (await removeFileIfExists(filePath)) {
           removed.push(path.relative(repoRoot, filePath))
+        }
+      }
+
+      const appSrcRoot = path.join(appRoot, 'app')
+      for (const dirName of PROJECT_APP_GENERATED_DIRS) {
+        const dirPath = path.join(appSrcRoot, dirName)
+        if (await removeDirIfExists(dirPath)) {
+          removed.push(path.relative(repoRoot, dirPath))
         }
       }
     }

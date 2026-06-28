@@ -7,6 +7,7 @@ import {
 import type {
   KitchenOrderCustomer,
   KitchenOrderFireState,
+  KitchenOrderPayment,
   KitchenOrderType,
 } from '../../../../models/order.model'
 
@@ -56,6 +57,7 @@ export type CreatedMenuOrderReceipt = {
   subtotal_chf: number
   delivery_fee_chf?: number
   total_chf: number
+  payment?: KitchenOrderPayment
   customer?: KitchenOrderCustomer
   items: CreatedMenuOrderReceiptLine[]
   kitchen: {
@@ -72,6 +74,7 @@ export type CreatedMenuOrder = {
   status?: string
   order_type: KitchenOrderType
   fire_state: KitchenOrderFireState
+  payment?: KitchenOrderPayment
   receipt?: CreatedMenuOrderReceipt
 }
 
@@ -111,6 +114,7 @@ const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
     address_place_id: text(customer?.address_place_id),
     allergy_note: text(customer?.allergy_note),
     notes: text(customer?.notes),
+    party_size: Math.max(0, Math.floor(numberValue(customer?.party_size))),
   }
 
   return Object.fromEntries(
@@ -165,6 +169,12 @@ export function useMenuOrderCreate(
         },
       })
 
+      if (created.payment?.required && created.payment.status !== 'paid') {
+        message.value = 'Starting secure payment...'
+        await createCheckoutSession(created.id)
+        return created
+      }
+
       if (created.status === 'pending_acceptance') {
         message.value = created.order_number
           ? `Order ${created.order_number} sent. Waiting for kitchen acceptance.`
@@ -186,6 +196,29 @@ export function useMenuOrderCreate(
       return null
     } finally {
       creatingItemId.value = ''
+    }
+  }
+
+  const createCheckoutSession = async (orderId: string) => {
+    const orderPath = text(orderId)
+    if (!id.value || !orderPath) return
+
+    const query = new URLSearchParams()
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    const qs = query.toString()
+    const response = await $fetch<{ url?: string }>(
+      `/api/menus/${encodeURIComponent(id.value)}/orders/${encodeURIComponent(orderPath)}/checkout-session${qs ? `?${qs}` : ''}`,
+      {
+        method: 'POST',
+      }
+    )
+    const checkoutUrl = text(response?.url)
+    if (!checkoutUrl) {
+      throw new Error('Payment checkout could not be started.')
+    }
+
+    if (import.meta.client) {
+      window.location.href = checkoutUrl
     }
   }
 

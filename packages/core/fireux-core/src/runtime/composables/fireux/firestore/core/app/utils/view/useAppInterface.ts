@@ -39,6 +39,7 @@ export namespace AppCard {
     logoUrl: string
     wordmarkLightUrl: string
     wordmarkDarkUrl: string
+    coverUrl: string
 
     // Always safe to render (empty string if none)
     wordmarkUrl: string
@@ -130,7 +131,9 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       subtitle: safeString(app.tagline) || safeString(app.ecosystem),
       displayName: safeString(app.app_name),
       ecosystem: safeString(app.ecosystem),
-      badges: [],
+      badges: [app.role, app.ecosystem]
+        .map((value) => safeString(value))
+        .filter(Boolean),
 
       summary: safeString(app.short_bio) || safeString(app.description),
       status: app.role != null ? String(app.role) : '',
@@ -150,6 +153,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       logoUrl: safeString(media.logoUrl),
       wordmarkLightUrl: safeString(media.wordmarkLightUrl),
       wordmarkDarkUrl: safeString(media.wordmarkDarkUrl),
+      coverUrl: safeString(media.coverUrl),
       wordmarkUrl: resolveWordmarkUrl(app),
 
       socialLinks: (app.social_links ?? {}) as AppSocialLinks,

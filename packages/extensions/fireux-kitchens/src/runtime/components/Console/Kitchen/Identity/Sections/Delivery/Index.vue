@@ -1,5 +1,5 @@
 <template>
-  <UCollapsible default-open>
+  <UCollapsible :default-open="false">
     <UButton
       class="group"
       color="neutral"

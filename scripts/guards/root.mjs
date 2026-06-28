@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guards/root.mjs
 import { existsSync, readdirSync, statSync } from 'node:fs'
@@ -62,7 +62,9 @@ const ALLOWED_ROOT_DOTFILES = new Set([
   '.copilotignore',
   '.editorconfig',
   '.gitignore',
+  '.node-version',
   '.npmrc',
+  '.nvmrc',
   '.prettierignore',
   '.prettierrc',
 ])

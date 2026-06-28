@@ -51,8 +51,8 @@
     "failOnWarn": false
   },
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "dependencies": {
     "dompurify": "^3.2.6",

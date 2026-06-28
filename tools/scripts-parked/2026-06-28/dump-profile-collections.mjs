@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-06-28
+// usage_note: parked one-off profile collection dump; restore only if reused.
 /*
   Dump profile collections to JSON.
-  Usage:
-    node scripts/dump-profile-collections.mjs --project <projectId> --out <dir>
+  Parked usage:
+    node tools/scripts-parked/2026-06-28/dump-profile-collections.mjs --project <projectId> --out <dir>
 */
 import fs from 'node:fs/promises'
 import path from 'node:path'

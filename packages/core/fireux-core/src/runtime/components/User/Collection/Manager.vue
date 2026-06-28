@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import { useFetch } from '#imports'
 import { computed } from 'vue'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import {
@@ -142,13 +143,56 @@ const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
   key: 'public-users-index',
   query: { limit: 200 },
 })
-const publicUsers = computed<PublicUserDto[]>(() => {
+const { user: currentUser } = useUser()
+const liveSelfUser = computed<PublicUserDto | null>(() => {
+  const user = currentUser.value
+  if (!user) return null
+
+  const handle = String(user.handle || '').trim().toLowerCase()
+  if (!handle) return null
+
+  const visibility = String((user as any).visibility || '').trim().toLowerCase()
+  if (visibility === 'private') return null
+
+  const displayName =
+    String(user.display_name || '').trim() ||
+    `@${handle}`
+  const bio = String(user.bio || '').trim()
+  const avatar = String(user.avatar || '').trim()
+
+  return {
+    id: String(user.id || '').trim(),
+    handle,
+    displayName,
+    avatar,
+    bio,
+    profiles: Array.isArray(user.profiles) ? user.profiles : [],
+    path: `/users/${encodeURIComponent(handle)}`,
+    isPublic: true,
+  }
+})
+const fetchedPublicUsers = computed<PublicUserDto[]>(() => {
   const payload = fetched.data.value
   return Array.isArray(payload?.users)
     ? payload.users
     : Array.isArray(payload?.items)
       ? payload.items
       : []
+})
+const publicUsers = computed<PublicUserDto[]>(() => {
+  const merged = [...fetchedPublicUsers.value]
+  const live = liveSelfUser.value
+  if (!live) return merged
+
+  const index = merged.findIndex(
+    (entry) => entry.id === live.id || entry.handle === live.handle
+  )
+  if (index >= 0) {
+    merged[index] = { ...merged[index], ...live }
+    return merged
+  }
+
+  return [live, ...merged]
 })
 const collection = computed<User[]>(() =>
   publicUsers.value.map((user) => ({

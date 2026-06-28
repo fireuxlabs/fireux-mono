@@ -1,9 +1,5 @@
 <template>
   <div class="menu-reveal">
-    <Transition name="accent-wash">
-      <div v-if="isOpen" class="menu-reveal__accent" />
-    </Transition>
-
     <Transition name="content-fade">
       <div v-if="!isOpen" class="menu-reveal__content">
         <button
@@ -72,13 +68,6 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.menu-reveal__accent {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: color-mix(in srgb, var(--brand-accent-display) 20%, transparent);
-}
-
 .menu-reveal__content {
   position: absolute;
   inset-inline: 0;
@@ -133,37 +122,31 @@ onBeforeUnmount(() => {
 }
 
 .menu-reveal__panel {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 3;
-  display: grid;
-  align-content: start;
-  gap: clamp(0.9rem, 2vw, 1.4rem);
-  padding: clamp(6rem, 10vw, 8rem) clamp(1.5rem, 5vw, 5rem) clamp(4rem, 7vw, 6rem);
+  z-index: 100;
+  display: block;
+  padding: 0;
+  background: transparent;
   color: var(--brand-ink);
-  text-align: center;
   pointer-events: auto;
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .menu-reveal__panel :deep(.public-menu) {
-  min-height: auto;
-  background-color: color-mix(in srgb, var(--menu-bg) 80%, transparent);
-}
-
-.menu-reveal__panel :deep(.public-menu:not(.public-menu--preview)::before) {
-  background-color: transparent;
+  min-height: 100svh;
 }
 
 .menu-reveal__panel :deep(.menu-page) {
-  background-color: color-mix(in srgb, var(--menu-bg) 80%, transparent);
+  min-height: 100svh;
 }
 
 .menu-reveal__close {
   position: fixed;
   top: clamp(1rem, 3vw, 2rem);
   right: clamp(1rem, 3vw, 2rem);
-  z-index: 4;
+  z-index: 101;
   display: grid;
   width: 3.25rem;
   height: 3.25rem;
@@ -205,21 +188,6 @@ onBeforeUnmount(() => {
   .menu-reveal__content {
     top: 25%;
   }
-
-  .menu-reveal__panel {
-    align-content: start;
-    padding-top: 7rem;
-  }
-}
-
-.accent-wash-enter-active,
-.accent-wash-leave-active {
-  transition: opacity 240ms ease;
-}
-
-.accent-wash-enter-from,
-.accent-wash-leave-to {
-  opacity: 0;
 }
 
 .menu-pop-enter-active,

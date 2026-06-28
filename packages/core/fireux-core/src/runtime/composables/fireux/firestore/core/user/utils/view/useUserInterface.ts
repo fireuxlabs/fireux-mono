@@ -48,7 +48,7 @@ export type UserSurfaceParts<TUser extends object = Partial<User>> = {
   overlay?: Partial<AppUser> | Record<string, unknown> | null | undefined
 }
 
-export const USER_AVATAR_FALLBACK_SRC = '/img/app/logo.png'
+export const USER_AVATAR_FALLBACK_SRC = ''
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPill = UserCard.Card
@@ -85,12 +85,12 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     const currentUid = safeString(uid.value).trim()
     const targetUid = safeString(user.id).trim()
     if (!currentUid || !targetUid || currentUid !== targetUid) {
-      return USER_AVATAR_FALLBACK_SRC
+      return ''
     }
 
     return (
       getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim()) ||
-      USER_AVATAR_FALLBACK_SRC
+      ''
     )
   }
 

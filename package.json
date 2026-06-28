@@ -38,6 +38,8 @@
     "smoke:prepare:app": "node scripts/smoke-prepare.mjs",
     "smoke:prepare": "node scripts/smoke-prepare.mjs --all",
     "create:ecosystem": "node scripts/create-ecosystem.mjs",
+    "runtime:check": "node scripts/check-runtime.mjs",
+    "runtime:check:metadata": "node scripts/check-runtime.mjs --metadata-only",
     "check": "node scripts/check.mjs",
     "release:check": "node scripts/release-check.mjs",
     "build:all": "node scripts/build-fireux-core-config.mjs && pnpm -r --workspace-concurrency=2 --filter './projects/*/*' build",
@@ -64,6 +66,8 @@
     "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
     "audit:usex": "node scripts/audit-usex-stack.mjs",
+    "inspect:app-users": "node scripts/inspect-app-users.mjs",
+    "inspect:firestore-tree": "node scripts/inspect-firestore-tree.mjs",
     "list:app-media-trash": "node scripts/list-app-media-trash.mjs",
     "delete:app-media-trash": "node scripts/delete-app-media-trash.mjs",
     "delete:app-media-folders": "node scripts/delete-app-media-folders.mjs",
@@ -101,8 +105,8 @@
     "kill:bangin-coffee": "node scripts/free-port.mjs 3016"
   },
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",
@@ -139,22 +143,7 @@
     "vue-tsc": "3.3.0",
     "vuefire": "3.2.2"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ],
-    "overrides": {
-      "nuxt": "4.4.6",
-      "@nuxt/kit": "4.4.6",
-      "@nuxt/schema": "4.4.6",
-      "@nuxt/content": "3.6.3",
-      "vue": "3.5.20",
-      "firebase": "11.10.0",
-      "vuefire": "3.2.2",
-      "nuxt-vuefire": "^1.1.0"
-    }
-  },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@11.9.0",
   "dependencies": {
     "image-size": "^2.0.2",
     "qrcode": "^1.5.4"

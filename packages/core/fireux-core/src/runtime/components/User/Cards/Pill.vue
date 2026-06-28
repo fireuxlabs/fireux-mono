@@ -81,7 +81,7 @@ const proxiedAvatarUrl = useProxiedAvatar(() =>
 )
 const avatarAlt = computed(() => props.displayName || props.handle || 'User')
 const avatar = computed(() => ({
-  src: proxiedAvatarUrl.value,
+  src: proxiedAvatarUrl.value || undefined,
   alt: avatarAlt.value,
 }))
 </script>

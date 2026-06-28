@@ -20,8 +20,8 @@
     "clean": "rimraf dist"
   },
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "dependencies": {
     "fireux-ai": "workspace:*",
@@ -38,7 +38,13 @@
     "vue-router": "^4.5.0",
     "vuefire": "^3.2.2",
     "firebase": "^11.10.0",
-    "firebase-admin": "*"
+    "firebase-admin": "*",
+    "stripe": "*"
+  },
+  "peerDependenciesMeta": {
+    "stripe": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",

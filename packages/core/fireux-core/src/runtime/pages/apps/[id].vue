@@ -6,12 +6,12 @@
     />
 
     <UPageBody>
-      <UPageCard v-if="pending" variant="subtle">
+      <UPageCard v-if="pending || app === undefined" variant="subtle">
         <p class="text-sm text-dimmed">Loading app…</p>
       </UPageCard>
 
       <UPageCard
-        v-else-if="!app"
+        v-else-if="app === null"
         title="App not found"
         description="No app record exists for this id."
         variant="subtle"
@@ -21,9 +21,7 @@
         </UButton>
       </UPageCard>
 
-      <div v-else class="space-y-6">
-        <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
-      </div>
+      <AppDetailPublic v-else :app="app" />
     </UPageBody>
   </UPage>
 </template>
@@ -31,7 +29,6 @@
 <script setup lang="ts">
 import { computed, useHead, useRoute } from '#imports'
 import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
-import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 
 definePageMeta({
   layout: 'default',
@@ -44,11 +41,10 @@ definePageMeta({
 const route = useRoute()
 const appId = computed(() => String(route.params.id || '').trim())
 const { app, pending } = useAppFetch(appId)
-const { model: appProfileModel } = useAppProfileView(app)
 
 const pageTitle = computed(() => app.value?.app_name || appId.value || 'App')
 const pageDescription = computed(() =>
-  app.value?.description || 'Canonical app record, media, admins, and public profile.'
+  app.value?.description || 'Public app profile, launch link, and case-study notes.'
 )
 
 useHead({

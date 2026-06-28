@@ -7,13 +7,13 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
     "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project misebox-78f9c --config firebase.json",
-    "deploy": "pnpm deploy:preflight && pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project misebox-78f9c --config firebase.json",
-    "deploy:hosting": "pnpm deploy:preflight && pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project misebox-78f9c --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rm -rf app/.nuxt .output dist"
+    "clean": "rm -rf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
@@ -29,6 +29,7 @@
     "fireux-products": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "nuxt": "4.4.6",
+    "stripe": "^22.1.1",
     "vue": "3.5.20",
     "vue-router": "4.5.1"
   },

@@ -53,8 +53,8 @@
             :key="ticket.id"
             :order="ticket"
             :trash-mode="trashMode"
-            :status-action-label="acceptLabel(ticket.id)"
-            :status-action-aria-label="acceptAriaLabel(ticket.id)"
+            :status-action-label="acceptActionLabel(ticket)"
+            :status-action-aria-label="acceptActionAriaLabel(ticket)"
             :status-action-pending="acceptingOrderId === normalizeId(ticket.id)"
             @touch-status="acceptOrderWithEta"
             @trash="trashOrder"
@@ -130,6 +130,34 @@
           No queued orders.
         </p>
       </section>
+
+      <section class="kitchen-orders-rail kitchen-orders-rail--recent">
+        <div class="kitchen-orders-rail__header">
+          <h2>
+            Recent
+          </h2>
+          <UBadge color="neutral" variant="soft">
+            {{ archiveOrders.length }}
+          </UBadge>
+        </div>
+
+        <div
+          v-if="archiveOrders.length"
+          class="kitchen-orders-rail__grid"
+        >
+          <ConsoleKitchenOperationsOrdersCardsTicket
+            v-for="ticket in archiveOrders"
+            :key="ticket.id"
+            :order="ticket"
+            :trash-mode="trashMode"
+            @trash="trashOrder"
+          />
+        </div>
+
+        <p v-else class="kitchen-orders-empty">
+          No recent orders yet.
+        </p>
+      </section>
     </div>
 
     <DevFireuxDebugPanel
@@ -152,6 +180,7 @@ const {
   incomingOrders,
   queueOrders,
   passOrders,
+  archiveOrders,
   pending,
   readOnly,
   canWrite,
@@ -177,6 +206,10 @@ const railCounts = computed(() => [
     label: 'Queue',
     count: queueOrders.value.length,
   },
+  {
+    label: 'Recent',
+    count: archiveOrders.value.length,
+  },
 ])
 
 function acceptLabel(orderId: string) {
@@ -189,6 +222,18 @@ function acceptAriaLabel(orderId: string) {
   return acceptingOrderId.value === normalizeId(orderId)
     ? 'Accepting order'
     : `Accept order with ${acceptEstimateMinutes} minute estimate`
+}
+
+function isPaymentPending(order: Record<string, unknown>) {
+  return normalizeId(order.status) === 'pending_payment'
+}
+
+function acceptActionLabel(order: Record<string, unknown>) {
+  return isPaymentPending(order) ? '' : acceptLabel(normalizeId(order.id))
+}
+
+function acceptActionAriaLabel(order: Record<string, unknown>) {
+  return isPaymentPending(order) ? '' : acceptAriaLabel(normalizeId(order.id))
 }
 
 function sendLabel(orderId: string) {

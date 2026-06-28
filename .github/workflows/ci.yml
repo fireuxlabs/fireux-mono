@@ -21,12 +21,12 @@ jobs:
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
-          version: 10.12.1
+          version: 11.9.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20.11.1
+          node-version-file: .node-version
           cache: 'pnpm'
 
       - name: Install dependencies

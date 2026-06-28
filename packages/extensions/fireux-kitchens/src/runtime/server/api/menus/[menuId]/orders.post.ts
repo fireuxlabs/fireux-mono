@@ -28,6 +28,9 @@ import {
   readMenuOrderingConfig,
 } from '../../../utils/menu-ordering.ts'
 import {
+  resolveMenuOrderPayment,
+} from '../../../utils/menu-order-payment.ts'
+import {
   readRequestedMenuOrderItems,
   resolveMenuOrderAddOns,
   resolveMenuOrderVariant,
@@ -85,8 +88,15 @@ const fireStateForOrderType = (
   if (orderType === 'dine_in') return 'fired'
   return 'ready_to_fire'
 }
-const statusForOrderType = (orderType: KitchenOrderType) =>
-  orderType === 'delivery' ? 'pending_acceptance' : 'open'
+const statusForOrderType = (
+  orderType: KitchenOrderType,
+  paymentRequired = false
+) =>
+  paymentRequired
+    ? 'pending_payment'
+    : orderType === 'delivery'
+      ? 'pending_acceptance'
+      : 'open'
 const readCustomer = (value: unknown): KitchenOrderCustomer => {
   const source = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -98,6 +108,7 @@ const readCustomer = (value: unknown): KitchenOrderCustomer => {
     address_place_id: text(source.address_place_id),
     allergy_note: text(source.allergy_note),
     notes: text(source.notes),
+    party_size: numberValue(source.party_size),
   }
 
   return Object.fromEntries(
@@ -240,6 +251,17 @@ export default defineEventHandler(async (event) => {
   const now = FieldValue.serverTimestamp()
   const deliveryFee = numberValue(deliveryAddressResult?.zone?.fee_chf)
   const total = subtotal + deliveryFee
+  const payment = resolveMenuOrderPayment({
+    orderType,
+    orderTypeConfig,
+    customer,
+    subtotalChf: subtotal,
+    totalChf: total,
+  })
+  const paymentRequired = payment.required && payment.status !== 'paid'
+  const nextStatus = paymentRequired
+    ? statusForOrderType(orderType, true)
+    : status
   const receiptItems = orderItems.map((item) => ({
     id: item.id,
     label: item.label,
@@ -255,7 +277,7 @@ export default defineEventHandler(async (event) => {
     kitchen_id: context.kitchenId,
     menu_id: context.menuId,
     order_number: number,
-    status,
+    status: nextStatus,
     order_type: orderType,
     requested_for: requestedFor,
     estimated_ready_minutes: 0,
@@ -292,6 +314,7 @@ export default defineEventHandler(async (event) => {
       : {}),
     channel: 'menu',
     items: orderItems,
+    payment,
     created_at: now,
     updated_at: now,
     created: {
@@ -313,20 +336,21 @@ export default defineEventHandler(async (event) => {
   return {
     id,
     order_number: number,
-    status,
+    status: nextStatus,
     order_type: orderType,
     fire_state: fireState,
     receipt: {
       id,
       order_number: number,
       order_type: orderType,
-      status,
+      status: nextStatus,
       created_at: receiptCreatedAt,
       ...(requestedFor ? { requested_for: requestedFor } : {}),
       currency: 'CHF',
       subtotal_chf: subtotal,
       ...(deliveryFee ? { delivery_fee_chf: deliveryFee } : {}),
       total_chf: total,
+      payment,
       ...(Object.keys(customer).length ? { customer } : {}),
       items: receiptItems,
       kitchen: {
@@ -336,5 +360,6 @@ export default defineEventHandler(async (event) => {
         id: context.menuId,
       },
     },
+    payment,
   }
 })

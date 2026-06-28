@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/firebase-deploy-preflight.mjs
 
@@ -11,6 +11,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { parseArgs } from './_lib/args.mjs'
+import { assertFireuxRuntime } from './_lib/runtime.mjs'
 
 const DEFAULT_REGION = 'us-central1'
 const FIREBASE_TOOLS_VERSION = '15.8.0'
@@ -25,6 +26,13 @@ const project =
 const configArg = typeof args.config === 'string' && args.config.trim() ? args.config.trim() : 'firebase.json'
 const configPath = path.resolve(cwd, configArg)
 const appRoot = path.dirname(configPath)
+
+try {
+  assertFireuxRuntime({ repoRoot, label: 'firebase-preflight' })
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error))
+  process.exit(1)
+}
 
 if (!project) {
   console.error('[firebase-preflight] Missing --project (or FIREBASE_PROJECT_ID / GCLOUD_PROJECT).')
@@ -271,7 +279,15 @@ function readHostingRegions(hostingConfig) {
 function readRemoteFunctions(projectId, workingDirectory) {
   const result = spawnSync(
     'pnpm',
-    ['dlx', `firebase-tools@${FIREBASE_TOOLS_VERSION}`, 'functions:list', '--project', projectId, '--json'],
+    [
+      'dlx',
+      `firebase-tools@${FIREBASE_TOOLS_VERSION}`,
+      'functions:list',
+      '--project',
+      projectId,
+      '--json',
+      '--non-interactive',
+    ],
     {
       cwd: workingDirectory,
       encoding: 'utf8',

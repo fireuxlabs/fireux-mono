@@ -1,13 +1,13 @@
 <template>
   <main class="latap-default-layout">
-    <LayoutsMiseboxTenantHeader />
+    <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
     <section class="latap-default-layout__body" aria-label="La Tap Berne">
       <NuxtPage />
     </section>
 
     <LaTapBerneNav v-if="!chromeHidden" />
-    <LayoutsMiseboxTenantFooter />
+    <LayoutsMiseboxTenantFooter v-if="!chromeHidden" />
   </main>
 </template>
 

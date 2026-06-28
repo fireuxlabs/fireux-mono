@@ -57,6 +57,35 @@ export type KitchenOrderCustomer = {
   address_place_id?: string
   allergy_note?: string
   notes?: string
+  party_size?: number
+}
+
+export type KitchenOrderPaymentStatus =
+  | 'not_required'
+  | 'requires_payment'
+  | 'pending'
+  | 'paid'
+  | 'failed'
+  | 'cancelled'
+  | 'refunded'
+
+export type KitchenOrderPaymentMethod =
+  | 'online_card'
+  | 'deposit'
+  | 'cash'
+  | 'card_at_pickup'
+  | 'card_to_driver'
+
+export type KitchenOrderPayment = {
+  required: boolean
+  status: KitchenOrderPaymentStatus
+  method?: KitchenOrderPaymentMethod
+  amount_chf?: number
+  currency_code?: string
+  reason?: string
+  stripe_checkout_session_id?: string
+  stripe_payment_intent_id?: string
+  paid_at?: string | FirebaseTimestamp
 }
 
 export const KitchenOrderModel = {
@@ -78,6 +107,11 @@ export const KitchenOrderModel = {
   // Snapshot of the concrete fulfilment match, such as the delivery zone found for an address.
   fulfilment_match: {} as Record<string, unknown>,
   customer: {} as KitchenOrderCustomer,
+  payment: {
+    required: false,
+    status: 'not_required',
+    currency_code: 'CHF',
+  } as KitchenOrderPayment,
 
   // Legacy transitional fields still read/written by existing surfaces.
   channel: '' as string,

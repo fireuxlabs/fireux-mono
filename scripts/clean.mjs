@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * scripts/clean.mjs
@@ -24,8 +24,8 @@ const repoRoot = process.cwd()
 const argv = new Set(process.argv.slice(2))
 const deep = argv.has('--deep') || argv.has('--all')
 
-const ALWAYS_REMOVE_DIRS = new Set(['dist', '.output', '.nitro', '.cache', '.data'])
-const DEEP_REMOVE_DIRS = new Set(['.nuxt'])
+const GENERATED_REMOVE_DIRS = new Set(['dist', '.nuxt', '.output', '.nitro', '.cache', '.data'])
+const PROJECT_APP_GENERATED_DIRS = new Set(['.nuxt'])
 const ALWAYS_REMOVE_FILES = new Set(['tsconfig.tsbuildinfo'])
 const PROJECT_ONLY_REMOVE_DIRS = new Set(['.firebase'])
 const PROJECT_ONLY_REMOVE_FILES = new Set(['firebase-debug.log', '.firebaserc'])
@@ -52,18 +52,15 @@ function cleanPackageGroup(groupRoot) {
   const names = listChildDirs(groupRoot)
   for (const name of names) {
     const root = path.join(groupRoot, name)
-    for (const d of ALWAYS_REMOVE_DIRS) {
+    for (const d of GENERATED_REMOVE_DIRS) {
       if (removeIfExists(path.join(root, d), 'dir')) {
-        if (d === '.data' || d === '.output' || d === '.nitro') removedNuxtArtifacts = true
+        if (d === '.nuxt' || d === '.data' || d === '.output' || d === '.nitro') {
+          removedNuxtArtifacts = true
+        }
       }
     }
     for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
-    if (deep) {
-      for (const d of DEEP_REMOVE_DIRS) {
-        if (removeIfExists(path.join(root, d), 'dir')) removedNuxtArtifacts = true
-      }
-      removeIfExists(path.join(root, 'node_modules'), 'dir')
-    }
+    if (deep) removeIfExists(path.join(root, 'node_modules'), 'dir')
   }
 }
 
@@ -75,20 +72,21 @@ function cleanProjects() {
     const apps = listChildDirs(ecoRoot)
     for (const app of apps) {
       const root = path.join(ecoRoot, app)
-      for (const d of ALWAYS_REMOVE_DIRS) {
+      for (const d of GENERATED_REMOVE_DIRS) {
         if (removeIfExists(path.join(root, d), 'dir')) {
-          if (d === '.data' || d === '.output' || d === '.nitro') removedNuxtArtifacts = true
+          if (d === '.nuxt' || d === '.data' || d === '.output' || d === '.nitro') {
+            removedNuxtArtifacts = true
+          }
         }
+      }
+      const appSrcRoot = path.join(root, 'app')
+      for (const d of PROJECT_APP_GENERATED_DIRS) {
+        if (removeIfExists(path.join(appSrcRoot, d), 'dir')) removedNuxtArtifacts = true
       }
       for (const d of PROJECT_ONLY_REMOVE_DIRS) removeIfExists(path.join(root, d), 'dir')
       for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
       for (const f of PROJECT_ONLY_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
-      if (deep) {
-        for (const d of DEEP_REMOVE_DIRS) {
-          if (removeIfExists(path.join(root, d), 'dir')) removedNuxtArtifacts = true
-        }
-        removeIfExists(path.join(root, 'node_modules'), 'dir')
-      }
+      if (deep) removeIfExists(path.join(root, 'node_modules'), 'dir')
     }
   }
 }

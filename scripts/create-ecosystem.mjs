@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -161,8 +161,8 @@ function makeFiles({ slug, pkgName, displayName, description, firebaseProject, s
     "clean": "rimraf dist"
   },
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "dependencies": {
     "fireux-core": "workspace:*"

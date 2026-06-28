@@ -22,8 +22,8 @@
   },
   "private": true,
   "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
   },
   "dependencies": {
     "fireux-core": "workspace:*"

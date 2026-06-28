@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-26
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guard.mjs
 //
@@ -16,6 +16,7 @@ console.log('[guard] 🔎 Running FireUX guard checks...')
 
 import process from 'node:process'
 
+import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import { run as runRoot } from './guards/root.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
@@ -25,6 +26,13 @@ import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
+
+try {
+  assertFireuxRuntime({ repoRoot, label: 'guard' })
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error))
+  process.exit(1)
+}
 
 const guards = [
   { key: 'root', run: runRoot },

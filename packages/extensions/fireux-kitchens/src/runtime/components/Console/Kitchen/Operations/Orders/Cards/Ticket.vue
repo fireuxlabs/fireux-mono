@@ -284,6 +284,7 @@ const headerLabel = computed(() => {
 })
 const statusLabel = computed(() => {
   const status = orderStatus.value
+  if (status === 'pending_payment') return 'payment pending'
   if (status === 'pending_acceptance') return 'waiting'
 
   const estimatedReadyMinutes = Number(
@@ -337,10 +338,19 @@ const lines = computed(() =>
 )
 const customerLines = computed(() => {
   const customer = record(orderRecord.value.customer)
+  const payment = record(orderRecord.value.payment)
+  const amount = Number(payment.amount_chf || 0)
+  const paymentStatus = normalizeString(payment.status)
   return [
     normalizeString(customer.name),
     normalizeString(customer.phone),
     normalizeString(customer.address),
+    Number(customer.party_size || 0) > 0
+      ? `${Number(customer.party_size)} people`
+      : '',
+    paymentStatus && paymentStatus !== 'not_required'
+      ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
+      : '',
     normalizeString(customer.notes),
   ].filter(Boolean)
 })

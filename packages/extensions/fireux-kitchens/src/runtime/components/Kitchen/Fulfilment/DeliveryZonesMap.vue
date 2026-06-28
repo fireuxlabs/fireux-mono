@@ -47,6 +47,11 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { KitchenDeliveryZone } from '../../../models/kitchen.model'
 import { loadFireuxGoogleMaps, readGoogleMaps } from '../../../utils/google-maps'
 
+type ResolvedPostalCode = {
+  placeId: string
+  geometry?: any
+}
+
 const props = withDefaults(
   defineProps<{
     zones?: KitchenDeliveryZone[]
@@ -80,6 +85,7 @@ const isMounted = ref(false)
 const mapClickListener = ref<{ remove: () => void } | null>(null)
 const zoneColorsByPlaceId = ref<Record<string, string>>({})
 const deliveryZones = computed(() => props.zones)
+const mapPadding = 28
 const googleMapsApiKey = computed(() =>
   String(publicConfig.googleMapsApiKey || '').trim()
 )
@@ -110,24 +116,38 @@ onMounted(async () => {
       mapTypeControl: false,
       streetViewControl: false,
     })
+    const bounds = new google.maps.LatLngBounds()
+    let hasBounds = extendBoundsWithLocalZones(
+      google,
+      bounds,
+      deliveryZones.value,
+      props.center
+    )
+
     renderDeliveryZoneRadii(google, map, deliveryZones.value, props.center)
     renderDeliveryZonePolygons(google, map, deliveryZones.value)
-    renderDeliveryZonePolygonPoints(google, map, deliveryZones.value)
+    if (props.canEdit) {
+      renderDeliveryZonePolygonPoints(google, map, deliveryZones.value)
+    }
     attachPolygonClickListener(map)
 
     if (hasPostalCodeZones(deliveryZones.value)) {
       const featureLayer = map.getFeatureLayer('POSTAL_CODE')
       featureLayer.style = stylePostalCodeFeature
 
-      zoneColorsByPlaceId.value = await resolveDeliveryZonePlaceIds(
+      const resolvedZones = await resolveDeliveryZonePlaceIds(
         google,
-        deliveryZones.value
+        deliveryZones.value,
+        bounds
       )
+      zoneColorsByPlaceId.value = resolvedZones.colorsByPlaceId
+      hasBounds = hasBounds || resolvedZones.hasBounds
       const resolvedCount = Object.keys(zoneColorsByPlaceId.value).length
       if (resolvedCount) {
         featureLayer.style = stylePostalCodeFeature
       }
     }
+    fitDeliveryZoneBounds(map, bounds, hasBounds)
 
     if (isMounted.value) mapMessage.value = ''
   } catch (error) {
@@ -160,28 +180,36 @@ function hasPostalCodeZones(zones: KitchenDeliveryZone[]) {
 
 async function resolveDeliveryZonePlaceIds(
   google: any,
-  zones: KitchenDeliveryZone[]
+  zones: KitchenDeliveryZone[],
+  bounds: any
 ) {
-  const resolved: Record<string, string> = {}
+  const colorsByPlaceId: Record<string, string> = {}
+  let hasBounds = false
 
   for (const zone of zones) {
     const color = zone.color || '#ff7a32'
-    const placeIds = zone.place_ids?.length
-      ? zone.place_ids
+    const placeIds: ResolvedPostalCode[] = zone.place_ids?.length
+      ? zone.place_ids.map((placeId) => ({ placeId }))
       : await Promise.all(
         (zone.postal_codes || []).map((postalCode) =>
-          resolvePostalCodePlaceId(google, postalCode)
+          resolvePostalCode(google, postalCode)
         )
       )
 
     placeIds
-      .filter(Boolean)
-      .forEach((placeId) => {
-        resolved[placeId] = color
+      .filter((entry) => Boolean(entry.placeId))
+      .forEach((entry) => {
+        colorsByPlaceId[entry.placeId] = color
+        if (extendBoundsWithGeometry(bounds, entry.geometry)) {
+          hasBounds = true
+        }
       })
   }
 
-  return resolved
+  return {
+    colorsByPlaceId,
+    hasBounds,
+  }
 }
 
 function renderDeliveryZonePolygons(
@@ -262,6 +290,74 @@ function renderDeliveryZoneRadii(
     })
 }
 
+function extendBoundsWithLocalZones(
+  google: any,
+  bounds: any,
+  zones: KitchenDeliveryZone[],
+  center: { lat: number; lng: number }
+) {
+  let hasBounds = false
+
+  zones.forEach((zone) => {
+    const radius = Number(zone.radius_m || 0)
+    if (radius > 0) {
+      extendBoundsWithRadius(bounds, center, radius)
+      hasBounds = true
+    }
+
+    zone.polygon?.forEach((point) => {
+      bounds.extend(new google.maps.LatLng(point.lat, point.lng))
+      hasBounds = true
+    })
+  })
+
+  return hasBounds
+}
+
+function extendBoundsWithRadius(
+  bounds: any,
+  center: { lat: number; lng: number },
+  radiusM: number
+) {
+  const latDelta = radiusM / 111320
+  const lngDelta = radiusM /
+    (111320 * Math.max(Math.cos(center.lat * Math.PI / 180), 0.12))
+
+  bounds.extend({ lat: center.lat + latDelta, lng: center.lng + lngDelta })
+  bounds.extend({ lat: center.lat + latDelta, lng: center.lng - lngDelta })
+  bounds.extend({ lat: center.lat - latDelta, lng: center.lng + lngDelta })
+  bounds.extend({ lat: center.lat - latDelta, lng: center.lng - lngDelta })
+}
+
+function extendBoundsWithGeometry(bounds: any, geometry: any) {
+  if (!geometry) return false
+  if (geometry.bounds) {
+    bounds.union(geometry.bounds)
+    return true
+  }
+  if (geometry.viewport) {
+    bounds.union(geometry.viewport)
+    return true
+  }
+  if (geometry.location) {
+    bounds.extend(geometry.location)
+    return true
+  }
+
+  return false
+}
+
+function fitDeliveryZoneBounds(map: any, bounds: any, hasBounds: boolean) {
+  if (!hasBounds) return
+
+  map.fitBounds(bounds, {
+    top: mapPadding,
+    right: mapPadding,
+    bottom: mapPadding,
+    left: mapPadding,
+  })
+}
+
 function attachPolygonClickListener(map: any) {
   if (!props.canEdit || props.editableMode !== 'polygon') return
   const zoneIndex = Number(props.editableZoneIndex)
@@ -299,8 +395,8 @@ function zoneRuleLabel(zone: KitchenDeliveryZone) {
   ].join(', ')
 }
 
-function resolvePostalCodePlaceId(google: any, postalCode: string) {
-  return new Promise<string>((resolve) => {
+function resolvePostalCode(google: any, postalCode: string) {
+  return new Promise<ResolvedPostalCode>((resolve) => {
     const geocoder = new google.maps.Geocoder()
 
     geocoder.geocode(
@@ -312,7 +408,7 @@ function resolvePostalCodePlaceId(google: any, postalCode: string) {
       },
       (results: any[] | null, status: string) => {
         if (status !== 'OK' || !Array.isArray(results)) {
-          resolve('')
+          resolve({ placeId: '' })
           return
         }
 
@@ -320,7 +416,10 @@ function resolvePostalCodePlaceId(google: any, postalCode: string) {
           Array.isArray(entry.types) && entry.types.includes('postal_code')
         ) || results[0]
 
-        resolve(String(result?.place_id || '').trim())
+        resolve({
+          placeId: String(result?.place_id || '').trim(),
+          geometry: result?.geometry,
+        })
       }
     )
   })
@@ -342,7 +441,8 @@ onBeforeUnmount(() => {
 .delivery-zones-map__canvas {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 8;
+  max-height: 20rem;
   border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 14%, transparent);
   border-radius: 1.15rem;
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 90%, var(--menu-text, var(--ui-text)));

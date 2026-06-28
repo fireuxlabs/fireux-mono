@@ -278,7 +278,7 @@ const isArchivedOrder = (order: KitchenOrder) =>
 
 // Menu ordering spine: incoming tickets wait for kitchen acceptance before queue.
 const isIncomingOrder = (order: KitchenOrder) =>
-  ['pending_acceptance', 'incoming', 'new'].includes(getOrderStatus(order))
+  ['pending_payment', 'pending_acceptance', 'incoming', 'new'].includes(getOrderStatus(order))
 
 const isPassOrder = (order: KitchenOrder) =>
   ['on_pass', 'pass'].includes(getOrderStatus(order)) ||

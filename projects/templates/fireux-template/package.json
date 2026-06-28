@@ -10,7 +10,7 @@
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
