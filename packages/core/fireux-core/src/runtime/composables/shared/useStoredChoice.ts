@@ -1,5 +1,6 @@
 import {
   computed,
+  onMounted,
   ref,
   toValue,
   watch,
@@ -29,9 +30,14 @@ export function useStoredChoice<T extends string>(
   const selected = ref(fallback.value) as Ref<T>
   const stored = ref<T | ''>('')
   const storageReady = ref(!import.meta.client)
+  const mounted = ref(!import.meta.client)
   const initialChoiceResolved = ref(false)
   const isChoice = (value: unknown): value is T =>
     typeof value === 'string' && choices.value.includes(value as T)
+  const readStoredChoice = (nextKey: string) =>
+    nextKey && isChoice(window.localStorage.getItem(nextKey))
+      ? window.localStorage.getItem(nextKey) as T
+      : ''
 
   // Shared choice spine: domain composables own the meaning; this only restores and persists one valid string option.
   watch(
@@ -54,25 +60,30 @@ export function useStoredChoice<T extends string>(
           : nextFallback
       }
     },
-    { immediate: true }
+    { immediate: true, flush: 'sync' }
   )
 
   watch(
     key,
     (nextKey: string) => {
-      if (!import.meta.client) return
+      if (!import.meta.client || !mounted.value) return
 
-      stored.value = nextKey && isChoice(window.localStorage.getItem(nextKey))
-        ? window.localStorage.getItem(nextKey) as T
-        : ''
+      stored.value = readStoredChoice(nextKey)
       initialChoiceResolved.value = false
       storageReady.value = true
     },
     { immediate: true }
   )
 
+  onMounted(() => {
+    mounted.value = true
+    stored.value = readStoredChoice(key.value)
+    initialChoiceResolved.value = false
+    storageReady.value = true
+  })
+
   watch(selected, (next: T) => {
-    if (!import.meta.client || !key.value) return
+    if (!import.meta.client || !mounted.value || !key.value) return
 
     stored.value = next
     window.localStorage.setItem(key.value, next)

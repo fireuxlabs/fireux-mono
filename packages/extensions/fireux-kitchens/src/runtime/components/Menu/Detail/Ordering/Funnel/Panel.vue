@@ -1,12 +1,14 @@
 <template>
   <form
     class="menu-order-panel"
+    :class="`menu-order-panel--${funnelStep}`"
     aria-live="polite"
     @submit.prevent="$emit('submit', submitPayload)"
   >
-    <MenuDetailOrderingCustomerPill />
+    <MenuDetailOrderingCustomerPill v-if="funnelStep !== 'items'" />
 
     <FunnelSummaryHeader
+      v-if="funnelStep !== 'items'"
       :eyebrow="eyebrow"
       :title="stepTitle"
       :total-label="totalLabel"
@@ -18,6 +20,7 @@
       v-if="funnelStep === 'items'"
       :selection="props.selection"
       :total-label="totalLabel"
+      @close="$emit('close')"
       @continue="continueToSafety"
     />
 
@@ -28,7 +31,7 @@
       @confirm="continueToDetails"
     />
 
-    <template v-else>
+    <div v-else class="menu-order-panel__details">
       <component
         :is="funnelComponent"
         v-model="customer"
@@ -68,7 +71,7 @@
         />
         {{ pending ? 'Sending order...' : submitLabel }}
       </button>
-    </template>
+    </div>
   </form>
 </template>
 
@@ -297,80 +300,3 @@ watch(
   { immediate: true }
 )
 </script>
-
-<style scoped>
-.menu-order-panel {
-  display: grid;
-  align-content: start;
-  gap: 1rem;
-  width: min(58rem, 100%);
-  height: 100%;
-  max-height: 100%;
-  margin: 0 auto;
-  padding: clamp(1rem, 3vw, 1.35rem);
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 1.35rem;
-  background: color-mix(in srgb, var(--menu-bg) 94%, transparent);
-  color: var(--menu-text);
-  box-shadow: 0 1.25rem 4rem color-mix(in srgb, var(--menu-text) 18%, transparent);
-  overflow: auto;
-  text-align: left;
-  backdrop-filter: blur(20px);
-}
-
-.menu-order-panel__notice {
-  justify-self: end;
-  max-width: 28rem;
-  margin: 0;
-  color: var(--menu-muted);
-  font-size: 0.84rem;
-  font-weight: 850;
-  line-height: 1.4;
-  text-align: right;
-}
-
-.menu-order-panel__submit {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  justify-self: end;
-  min-height: 2.6rem;
-  padding: 0.65rem 1rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--menu-primary);
-  color: var(--menu-bg);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.88rem;
-  font-weight: 900;
-}
-
-.menu-order-panel__submit:disabled { cursor: not-allowed; opacity: 0.62; }
-
-.menu-order-panel__spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid color-mix(in srgb, var(--menu-bg) 36%, transparent);
-  border-top-color: var(--menu-bg);
-  border-radius: 999px;
-  animation: menu-order-panel-spin 0.8s linear infinite;
-}
-
-@keyframes menu-order-panel-spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 640px) {
-  .menu-order-panel {
-    width: 100%;
-    border-radius: 1.1rem;
-  }
-  .menu-order-panel__submit {
-    width: 100%;
-  }
-  .menu-order-panel__notice {
-    justify-self: stretch;
-    text-align: left;
-  }
-}
-</style>
