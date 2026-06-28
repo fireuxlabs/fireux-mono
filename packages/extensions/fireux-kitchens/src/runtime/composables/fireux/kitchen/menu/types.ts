@@ -1,12 +1,12 @@
-import type { Dish } from '../../../../../models/dish.model'
+import type { Dish } from '../../../../models/dish.model'
 import type {
   MenuItemAddOnOption,
   MenuItem,
   MenuItemPriceOption,
-} from '../../../../../models/menu/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu/menu-section.model'
+} from '../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../models/menu/menu-section.model'
 
-export type KitchenPublicMenuItemRow = {
+export type KitchenMenuItemRow = {
   id: string
   dish_id: string
   item?: MenuItem
@@ -20,10 +20,10 @@ export type KitchenPublicMenuItemRow = {
   addOns: MenuItemAddOnOption[]
 }
 
-export type KitchenPublicMenuSectionRow = {
+export type KitchenMenuSectionRow = {
   id: string
   section?: MenuSection
   label: string
   description: string
-  items: KitchenPublicMenuItemRow[]
+  items: KitchenMenuItemRow[]
 }

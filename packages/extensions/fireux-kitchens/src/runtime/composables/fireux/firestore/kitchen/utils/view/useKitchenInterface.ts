@@ -289,14 +289,14 @@ export function useKitchenInterface() {
     const tagline = safeString(identity.tagline).trim()
     const imageUrl = safeString(identity.imageUrl || target.image_url).trim()
     const foodGallery = identity.gallery
-    const hasKitchenPublicData = Boolean(
+    const hasKitchenDisplayData = Boolean(
       displayName ||
         tagline ||
         imageUrl ||
         foodGallery.length
     )
 
-    if (!id || !hasKitchenPublicData) return null
+    if (!id || !hasKitchenDisplayData) return null
 
     const badges = [
       target.show === false ? 'Hidden' : '',

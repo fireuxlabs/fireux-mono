@@ -1,11 +1,12 @@
-import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenFetch } from '../../../firestore/kitchen/useKitchen'
-import { useMenuCollection } from '../../../firestore/menu/useMenu'
-import type { Menu } from '../../../../../models/menu/menu.model'
-import { useKitchenPublicMenuUrl } from './useKitchenPublicMenuUrl'
+import { useRoute } from '#imports'
+import {
+  usePublicAppScopedSource,
+  usePublicScopedRecords,
+} from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
+import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
+import { useMenuCollection } from '../../firestore/menu/useMenu'
+import type { Menu } from '../../../../models/menu/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
@@ -15,19 +16,17 @@ const menuDebug = (menu: Menu) => ({
   status: text(menu.status),
 })
 
-export function useKitchenPublicSingleMenuScope() {
+export function useKitchenMenuScope() {
   const route = useRoute()
-  const fireux = useFireUXConfig()
-  const appId = computed(() => fireux.appId)
+  const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
-  const publicRoute = useKitchenPublicMenuUrl({
-    appId,
-    kitchenSlug: computed(() => ''),
-  })
-  const kitchenId = computed(() => publicRoute.singleKitchenId.value)
-  const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenId)
+  const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenSlug)
+  const kitchenId = computed(() => text(kitchen.value?.id))
+  const appScope = usePublicAppScopedSource(kitchen)
   const kitchenCollectionPath = computed(() =>
-    appId.value ? `apps/${appId.value}/kitchens` : ''
+    appScope.sourceAppId.value
+      ? `apps/${appScope.sourceAppId.value}/kitchens`
+      : ''
   )
   const menuRead = useMenuCollection(kitchenId, {
     kitchenCollectionPath,
@@ -41,21 +40,15 @@ export function useKitchenPublicSingleMenuScope() {
   })
   const pending = computed(
     () =>
-      publicRoute.pending.value ||
       kitchenPending.value ||
       (Boolean(kitchenId.value) && publicMenus.pending.value)
   )
+  const menuLink = (id: Menu['id']) =>
+    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
   const debug = computed(() => ({
     route: {
+      kitchenSlug: kitchenSlug.value,
       menuId: menuId.value || null,
-    },
-    appKitchenLookup: {
-      appId: appId.value,
-      collectionPath: publicRoute.debug.value.appKitchenCollectionPath,
-      count: publicRoute.appKitchenCount.value,
-      singleKitchenId: kitchenId.value,
-      routeMode: publicRoute.routeMode.value,
-      pending: publicRoute.pending.value,
     },
     kitchen: kitchen.value
       ? {
@@ -64,8 +57,15 @@ export function useKitchenPublicSingleMenuScope() {
           name: text((kitchen.value as Record<string, unknown>).name),
         }
       : null,
+    kitchenLookup: {
+      pending: kitchenPending.value,
+      matchesSlug: Boolean(kitchen.value),
+    },
     menuLookup: {
       kitchenId: kitchenId.value,
+      sourceAppId: appScope.sourceAppId.value,
+      appScopeState: appScope.state.value,
+      hasTenantApp: appScope.hasTenantApp.value,
       collectionPath: menuRead.collectionPath.value,
       pending: menuRead.pending.value,
       rawCount: (menuRead.menus.value ?? []).length,
@@ -80,14 +80,15 @@ export function useKitchenPublicSingleMenuScope() {
   }))
 
   return {
-    kitchenSlug: computed(() => text(kitchen.value?.slug)),
+    kitchenSlug,
     kitchen,
     menus: publicMenus.records,
     menu: publicMenus.record,
+    appScope,
     kitchenCollectionPath,
     menuCollectionPath: menuRead.collectionPath,
     pending,
-    menuLink: (id: Menu['id']) => `/menus/${encodeURIComponent(text(id))}`,
+    menuLink,
     debug,
   }
 }

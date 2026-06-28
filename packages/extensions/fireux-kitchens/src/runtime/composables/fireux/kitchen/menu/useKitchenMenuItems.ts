@@ -1,8 +1,8 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { ref, watch, type Ref } from 'vue'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { MenuItem } from '../../../../../models/menu/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu/menu-section.model'
+import type { MenuItem } from '../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../models/menu/menu-section.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isActive = (item: MenuItem) => text(item.status) !== 'archived'
@@ -13,7 +13,7 @@ const sortItems = (items: MenuItem[]) =>
       text(a.dish_id).localeCompare(text(b.dish_id))
   )
 
-export function useKitchenPublicMenuItems(
+export function useKitchenMenuItems(
   sectionCollectionPath: Ref<string>,
   sections: Ref<MenuSection[]>
 ) {
@@ -68,7 +68,7 @@ export function useKitchenPublicMenuItems(
         )
       } catch (error) {
         if (import.meta.dev) {
-          console.warn('[useKitchenPublicMenuItems] read failed', error)
+          console.warn('[useKitchenMenuItems] read failed', error)
         }
         if (currentRequestId === requestId) items.value = []
       } finally {

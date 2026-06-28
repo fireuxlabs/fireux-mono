@@ -1,21 +1,11 @@
 <template>
-  <MenuDetailDisplayFrame :page-style="pageStyle">
-    <MenuDetailDocument
-      v-if="renderKind === 'document' && documentMenu"
-      :kitchen-name="documentMenu.source?.kitchen_name"
-      :menu="documentMenu"
-      :document-url="documentUrl"
-    />
-
-    <MenuDetailStructured
-      v-else
-      :menu="structuredMenu"
-      :menu-id="menuId"
-      :kitchen-slug="kitchenSlug"
-      :pending="pending"
-      :error="error"
-    />
-  </MenuDetailDisplayFrame>
+  <MenuDetailStructured
+    :menu="structuredMenu"
+    :menu-id="menuId"
+    :kitchen-slug="kitchenSlug"
+    :pending="pending"
+    :error="error"
+  />
 
   <DevJson
     title="Menu debug"
@@ -35,20 +25,11 @@ const props = defineProps<{
 
 const menuId = computed(() => props.menuId)
 const kitchenSlug = computed(() => props.kitchenSlug)
-// Public detail spine: docs/concepts/family-public-detail.md and docs/concepts/family-menu.md. Route pages stay tiny; MenuDetail chooses document vs structured from the manifest.
+// Public detail spine: keep the active menu doorway boring first. Document/theme rendering is parked until the structured path is clean.
 const {
   pending,
   error,
-  renderKind,
-  documentMenu,
   structuredMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
-const documentUrl = computed(() => documentMenu.value?.file?.url || '')
-// Menu display spine: page_style is data; MenuDetailDisplayFrame is only the CSS/font provider.
-const pageStyle = computed(() =>
-  documentMenu.value?.page_style ||
-  structuredMenu.value?.presentation.pageStyle ||
-  null
-)
 </script>

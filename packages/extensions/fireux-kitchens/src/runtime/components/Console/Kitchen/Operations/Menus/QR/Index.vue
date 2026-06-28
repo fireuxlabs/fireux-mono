@@ -72,7 +72,7 @@
 import { create } from 'qrcode'
 import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
-import { useKitchenPublicMenuUrl } from '../../../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenuUrl'
+import { useKitchenMenuUrl } from '../../../../../../composables/fireux/kitchen/menu/useKitchenMenuUrl'
 import ConsoleKitchenOperationsMenusQRCentreMark from './CentreMark.vue'
 
 const { selectedKitchen, menus, activeKitchenAppId } = useKitchenConsoleMenus()
@@ -88,7 +88,7 @@ const kitchenName = computed(
 const kitchenLogo = computed(
   () => clean(kitchen.value?.display_image_url) || clean(kitchen.value?.image_url)
 )
-const publicMenuUrlResolver = useKitchenPublicMenuUrl({
+const menuUrlResolver = useKitchenMenuUrl({
   appId: activeKitchenAppId,
   kitchenSlug,
 })
@@ -96,10 +96,10 @@ const publishedMenus = computed(() =>
   menus.value.filter((menu) => menu.status === 'published' && clean(menu.id))
 )
 const publicMenuPath = computed(() =>
-  publishedMenus.value.length ? publicMenuUrlResolver.menuIndexPath.value : ''
+  publishedMenus.value.length ? menuUrlResolver.menuIndexPath.value : ''
 )
 const publicMenuUrl = computed(() =>
-  publishedMenus.value.length ? publicMenuUrlResolver.menuIndexUrl.value : ''
+  publishedMenus.value.length ? menuUrlResolver.menuIndexUrl.value : ''
 )
 
 watch(

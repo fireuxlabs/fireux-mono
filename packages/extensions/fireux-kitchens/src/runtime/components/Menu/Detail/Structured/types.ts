@@ -9,13 +9,6 @@ import type {
   MenuChoiceOption,
   MenuChoiceValue,
 } from '../../../../composables/fireux/public/menu/useMenuViewMode'
-import type { MenuOrderTypeConfig } from '../../../../models/menu/menu.model'
-import type {
-  KitchenOrderCustomer,
-  KitchenOrderPaymentMethod,
-  KitchenOrderType,
-} from '../../../../models/order.model'
-import type { CreatedMenuOrder } from '../../../../composables/fireux/public/menu/useMenuOrderCreate'
 
 export type { MenuChoiceValue }
 
@@ -30,14 +23,6 @@ export type MenuStructuredOrderItem = MenuStructuredItem & {
 }
 export type MenuStructuredSection = MenuManifestSection
 
-export type MenuStructuredBasketItem = {
-  id: string
-  lineId?: string
-  name: string
-  quantity: number
-  unitPrice?: number
-}
-
 export type MenuStructuredBaseLayerView = {
   menu: MenuManifest
   choices: MenuChoiceOption[]
@@ -46,31 +31,4 @@ export type MenuStructuredBaseLayerView = {
   orderNotice: string
   quantities: Record<string, number>
   dimmed: boolean
-}
-
-export type MenuStructuredOrderOverlayState = {
-  actionLabel: string
-  accepted: boolean
-  awaitingAcceptance: boolean
-  funnelOpen: boolean
-  items: MenuStructuredBasketItem[]
-  message: string
-  menuId: string
-  kitchenSlug?: string
-  orderType: KitchenOrderType
-  pending: boolean
-  policy?: MenuOrderTypeConfig
-  quantity: number
-  selection: MenuStructuredSelectionSummary
-  sentOrder?: CreatedMenuOrder | null
-}
-
-export type MenuStructuredSelectionSummary = {
-  items: MenuStructuredBasketItem[]
-  quantity: number
-}
-
-export type MenuStructuredOrderSubmitPayload = {
-  customer?: KitchenOrderCustomer
-  payment_method?: KitchenOrderPaymentMethod
 }

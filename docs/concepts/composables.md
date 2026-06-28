@@ -1,6 +1,6 @@
 Composables spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-28
+Ref: bcee764fe
 Role: map, not canon
 
 Purpose:
@@ -24,8 +24,17 @@ Composables should name a real seam. Do not create a composable just to hide a m
 Common buckets:
 - `composables/fireux/firestore/<entity>` for stored entity stacks.
 - `composables/fireux/console/<entity>` for console workspaces.
-- `composables/fireux/public/<entity>` for public-route behavior.
+- `composables/fireux/<entity>` for normal entity runtime helpers used by
+  root routes, tenant routes, and app surfaces when they are not specifically
+  Firestore or console seams.
 - `composables/fireux/app/*` for app-level shared runtime concerns.
+
+Naming note:
+- Avoid adding new `composables/fireux/public/<entity>` buckets by default.
+  Root/public-facing routes are usually the normal entity doorway; use explicit
+  `console` or `firestore` buckets only when the seam really is scoped to that
+  system. Existing `public/menu` files are transitional menu doorway helpers
+  and should collapse into the menu/kitchen spine as those seams are cleaned.
 
 Naming notes:
 - `useXCreate`: create an entity/record through a client runtime seam when the

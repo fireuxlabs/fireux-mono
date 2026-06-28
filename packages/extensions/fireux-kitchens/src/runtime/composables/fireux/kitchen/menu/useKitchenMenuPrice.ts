@@ -2,7 +2,7 @@ import {
   formatCurrencyAmount,
   type CurrencyDisplayFormat,
 } from 'fireux-core/runtime/models/core/money.model'
-import type { KitchenPublicMenuItemRow } from './types'
+import type { KitchenMenuItemRow } from './types'
 
 type MenuItemPriceOptions = {
   currencyCode?: string
@@ -31,8 +31,8 @@ const formatOptionUnit = (
   return [quantity, unit].filter(Boolean).join(' ')
 }
 
-export const formatKitchenPublicMenuItemPrice = (
-  item: KitchenPublicMenuItemRow,
+export const formatKitchenMenuItemPrice = (
+  item: KitchenMenuItemRow,
   options: MenuItemPriceOptions
 ) => {
   if (item.priceLabel) return item.priceLabel

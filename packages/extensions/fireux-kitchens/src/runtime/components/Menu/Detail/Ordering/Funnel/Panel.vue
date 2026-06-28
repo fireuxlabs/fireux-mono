@@ -282,9 +282,11 @@ watch(
 <style scoped>
 .menu-order-panel {
   display: grid;
+  align-content: start;
   gap: 1rem;
-  width: min(44rem, calc(100% - 1rem));
-  max-height: min(38rem, calc(100svh - 2rem));
+  width: min(58rem, 100%);
+  height: 100%;
+  max-height: 100%;
   margin: 0 auto;
   padding: clamp(1rem, 3vw, 1.35rem);
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
@@ -341,8 +343,8 @@ watch(
 
 @media (max-width: 640px) {
   .menu-order-panel {
-    width: min(44rem, calc(100% - 0.5rem));
-    max-height: min(44rem, calc(100svh - 1rem));
+    width: 100%;
+    border-radius: 1.1rem;
   }
   .menu-order-panel__submit {
     width: 100%;

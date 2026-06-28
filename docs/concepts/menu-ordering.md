@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-06-27
-Ref: 08f242070
+Updated: 2026-06-28
+Ref: bcee764fe
 Role: map, not canon
 
 Purpose:
@@ -113,9 +113,15 @@ V1 fulfilment policy:
   `notice_hours` until the public order flow asks for `requested_for`.
 
 Public order funnel spine:
-- `Menu/Detail/Ordering/Basket`: selected items and total.
-- `Menu/Detail/Ordering/Funnel/Panel`: shared overlay platform shell, close, submit, selected
-  order-type policy.
+- `Menu/Detail/Structured`: readable structured menu plus order-mode
+  coordination. It may know selected quantities so menu rows can show +/- state,
+  but it should not own basket/status/funnel rendering.
+- `Menu/Detail/Ordering/Layer`: fixed public ordering overlay. It chooses
+  basket launcher, checkout funnel, or customer status.
+- `Menu/Detail/Ordering/Basket`: compact floating basket launcher with count.
+- `Menu/Detail/Ordering/Status`: sent/waiting/accepted customer status card.
+- `Menu/Detail/Ordering/Funnel/Panel`: full-screen checkout panel shell,
+  close, submit, and selected order-type policy.
 - `Menu/Detail/Ordering/Funnel/Delivery`: delivery zones, payment methods, address/contact.
 - `Menu/Detail/Ordering/Funnel/Collection`: payment methods and pickup contact.
 - `Menu/Detail/Ordering/Funnel/PreOrder`: notice copy and pre-order contact/request notes.

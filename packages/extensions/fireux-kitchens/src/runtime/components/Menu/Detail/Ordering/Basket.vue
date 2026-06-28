@@ -1,202 +1,71 @@
 <template>
   <footer class="menu-basket" aria-live="polite">
-    <MenuDetailOrderingCustomerPill />
-
     <button
       type="button"
-      class="menu-basket__summary"
-      :aria-expanded="isOpen"
-      @click="isOpen = !isOpen"
+      class="menu-basket__button"
+      :disabled="pending"
+      :aria-label="actionLabel"
+      @click="$emit('place')"
     >
-      <span class="menu-basket__copy">
-        <strong>{{ totalLabel || itemCountLabel }}</strong>
-        <span>{{ itemCountLabel }}</span>
-      </span>
       <UIcon
-        :name="isOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
-        class="size-4"
+        name="i-lucide-shopping-basket"
+        class="menu-basket__icon"
+        aria-hidden="true"
       />
+      <span class="menu-basket__count">
+        {{ quantity }}
+      </span>
     </button>
-
-    <template v-if="isOpen && items.length">
-      <div class="menu-basket__items">
-        <div
-          v-for="item in items"
-          :key="item.lineId || item.id"
-          class="menu-basket__item"
-        >
-          <span>{{ item.quantity }}x</span>
-          <p>{{ item.name }}</p>
-        </div>
-      </div>
-    </template>
-
-    <div
-      v-if="isOpen"
-      class="menu-basket__actions"
-    >
-      <button
-        type="button"
-        class="menu-basket__button menu-basket__button--ghost"
-        :disabled="pending"
-        @click="$emit('clear')"
-      >
-        Clear
-      </button>
-      <button
-        type="button"
-        class="menu-basket__button menu-basket__button--primary"
-        :disabled="pending"
-        @click="$emit('place')"
-      >
-        {{ pending ? 'Sending...' : actionLabel }}
-      </button>
-    </div>
-
-    <div
-      v-else
-      class="menu-basket__actions"
-    >
-      <button
-        type="button"
-        class="menu-basket__button menu-basket__button--primary"
-        :disabled="pending"
-        @click="$emit('place')"
-      >
-        {{ pending ? 'Sending...' : actionLabel }}
-      </button>
-    </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-
-type MenuBasketItem = {
-  id: string
-  lineId?: string
-  name: string
-  quantity: number
-  unitPrice?: number
-}
-
-const props = withDefaults(
+withDefaults(
   defineProps<{
     quantity: number
-    items?: MenuBasketItem[]
     pending?: boolean
     actionLabel?: string
   }>(),
   {
-    items: () => [],
     actionLabel: 'Place order',
+    pending: false,
   }
 )
 
 defineEmits<{
-  (event: 'clear'): void
   (event: 'place'): void
 }>()
-
-const isOpen = ref(true)
-const itemCountLabel = computed(() =>
-  `${props.quantity} item${props.quantity === 1 ? '' : 's'}`
-)
-const total = computed(() =>
-  props.items.reduce(
-    (sum, item) =>
-      sum + Math.max(0, Number(item.unitPrice || 0)) * Math.max(0, Number(item.quantity || 0)),
-    0
-  )
-)
-const totalLabel = computed(() =>
-  total.value
-    ? new Intl.NumberFormat('de-CH', {
-        style: 'currency',
-        currency: 'CHF',
-      }).format(total.value)
-    : ''
-)
 </script>
 
 <style scoped>
 .menu-basket {
-  display: grid;
-  gap: 1rem;
-  align-items: center;
-  width: min(44rem, calc(100% - 1rem));
-  margin: 0 auto;
-  padding: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 1.25rem;
-  background: color-mix(in srgb, var(--menu-bg) 88%, transparent);
-  box-shadow: 0 1.25rem 4rem color-mix(in srgb, var(--menu-text) 18%, transparent);
-  backdrop-filter: blur(20px);
-}
-
-.menu-basket__summary {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-}
-
-.menu-basket__copy,
-.menu-basket__actions,
-.menu-basket__items {
-  display: grid;
-}
-
-.menu-basket__copy {
-  gap: 0.1rem;
-  text-align: left;
-}
-
-.menu-basket__copy span {
-  margin: 0;
-}
-
-.menu-basket__copy strong {
-  color: var(--menu-title);
-  font-weight: 900;
-}
-
-.menu-basket__copy span {
-  color: var(--menu-muted);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.menu-basket__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  align-items: center;
-  justify-content: end;
+  width: auto;
 }
 
 .menu-basket__button {
-  appearance: none;
-  min-height: 2.25rem;
-  padding: 0.48rem 0.85rem;
-  border: 1px solid transparent;
+  position: relative;
+  display: inline-grid;
+  width: 4rem;
+  height: 4rem;
+  align-items: center;
+  justify-items: center;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: 999px;
+  background: var(--menu-primary);
+  color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  font-size: 0.82rem;
-  font-weight: 850;
+  box-shadow: 0 1rem 2.5rem color-mix(in srgb, var(--menu-text) 22%, transparent);
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease,
     opacity 160ms ease;
+}
+
+.menu-basket__button:hover {
+  box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--menu-text) 26%, transparent);
+  transform: translateY(-1px);
 }
 
 .menu-basket__button:disabled {
@@ -204,48 +73,25 @@ const totalLabel = computed(() =>
   opacity: 0.62;
 }
 
-.menu-basket__button--ghost {
-  border-color: color-mix(in srgb, var(--menu-primary) 28%, transparent);
-  background: color-mix(in srgb, var(--menu-primary) 6%, transparent);
-  color: var(--menu-primary);
+.menu-basket__icon {
+  width: 1.55rem;
+  height: 1.55rem;
 }
 
-.menu-basket__button--primary {
-  background: var(--menu-primary);
+.menu-basket__count {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.35rem;
+  border: 2px solid var(--menu-bg);
+  border-radius: 999px;
+  background: var(--menu-accent);
   color: var(--menu-bg);
-}
-
-.menu-basket__items {
-  gap: 0.45rem;
-  padding-top: 0.25rem;
-  border-top: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
-}
-
-.menu-basket__item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.5rem;
-  align-items: start;
-  color: var(--menu-title);
-  font-size: 0.88rem;
-  font-weight: 800;
-  text-align: left;
-}
-
-.menu-basket__item p {
-  margin: 0;
-  color: var(--menu-muted);
-  font-weight: 700;
-}
-
-@media (max-width: 640px) {
-  .menu-basket__actions {
-    grid-auto-flow: row;
-    justify-content: stretch;
-  }
-
-  .menu-basket__button {
-    width: 100%;
-  }
+  font-size: 0.78rem;
+  font-weight: 950;
+  line-height: 1.25rem;
+  text-align: center;
 }
 </style>

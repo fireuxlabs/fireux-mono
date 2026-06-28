@@ -6,7 +6,7 @@ import type {
   MenuPublicChoice,
   MenuView,
 } from '../../../../models/menu/menu.model'
-import type { KitchenPublicMenuSectionRow } from '../kitchen/menu/useKitchenPublicMenu'
+import type { KitchenMenuSectionRow } from '../../kitchen/menu/useKitchenMenu'
 
 export type PublicMenu = {
   id: string
@@ -33,7 +33,7 @@ export type PublicMenu = {
   public_views?: MenuView[]
   public_choices?: MenuPublicChoice[]
   page_style?: Partial<PageStyle>
-  sections?: KitchenPublicMenuSectionRow[]
+  sections?: KitchenMenuSectionRow[]
   created_by?: string
   created_by_label?: string
   path: string
@@ -53,7 +53,7 @@ export function useMenuFetch(
     String(toValue(options.kitchenSlug) || '').trim()
   )
   const key = computed(
-    () => `public-menu-${kitchenSlug.value || 'root'}-${id.value || 'none'}`
+    () => `menu-${kitchenSlug.value || 'root'}-${id.value || 'none'}`
   )
   const endpoint = computed(() => {
     if (!id.value) return ''

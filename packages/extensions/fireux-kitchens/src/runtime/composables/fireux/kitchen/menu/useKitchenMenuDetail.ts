@@ -1,18 +1,18 @@
 import { computed } from 'vue'
-import type { Dish } from '../../../../../models/dish.model'
-import { useDishCollection } from '../../../firestore/dish/fetch/useDishCollection'
-import { useMenuSectionCollection } from '../../../firestore/menu/fetch/useMenuSectionCollection'
-import { useKitchenPublicMenuItems } from './useKitchenPublicMenuItems'
-import { useKitchenPublicMenuRows } from './useKitchenPublicMenuRows'
-import { useKitchenPublicMenuScope } from './useKitchenPublicMenuScope'
-import { useKitchenPublicSingleMenuScope } from './useKitchenPublicSingleMenuScope'
+import type { Dish } from '../../../../models/dish.model'
+import { useDishCollection } from '../../firestore/dish/fetch/useDishCollection'
+import { useMenuSectionCollection } from '../../firestore/menu/fetch/useMenuSectionCollection'
+import { useKitchenMenuItems } from './useKitchenMenuItems'
+import { useKitchenMenuRows } from './useKitchenMenuRows'
+import { useKitchenMenuScope } from './useKitchenMenuScope'
+import { useKitchenSingleMenuScope } from './useKitchenSingleMenuScope'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-function useKitchenPublicMenuDetailFromScope(
+function useKitchenMenuDetailFromScope(
   state:
-    | ReturnType<typeof useKitchenPublicMenuScope>
-    | ReturnType<typeof useKitchenPublicSingleMenuScope>
+    | ReturnType<typeof useKitchenMenuScope>
+    | ReturnType<typeof useKitchenSingleMenuScope>
 ) {
   const kitchenId = computed(() => text(state.kitchen.value?.id))
   const resolvedMenuId = computed(() => text(state.menu.value?.id))
@@ -24,7 +24,7 @@ function useKitchenPublicMenuDetailFromScope(
     resolvedMenuId,
     collectionOptions
   )
-  const itemState = useKitchenPublicMenuItems(
+  const itemState = useKitchenMenuItems(
     sectionState.collectionPath,
     sectionState.sections
   )
@@ -44,7 +44,7 @@ function useKitchenPublicMenuDetailFromScope(
       itemState.pending.value ||
       dishState.pending.value
   )
-  const rows = useKitchenPublicMenuRows({
+  const rows = useKitchenMenuRows({
     sections: sectionState.sections,
     items: itemState.items,
     dishesById,
@@ -84,10 +84,10 @@ function useKitchenPublicMenuDetailFromScope(
   }
 }
 
-export function useKitchenPublicMenuDetail() {
-  return useKitchenPublicMenuDetailFromScope(useKitchenPublicMenuScope())
+export function useKitchenMenuDetail() {
+  return useKitchenMenuDetailFromScope(useKitchenMenuScope())
 }
 
-export function useKitchenPublicSingleMenuDetail() {
-  return useKitchenPublicMenuDetailFromScope(useKitchenPublicSingleMenuScope())
+export function useKitchenSingleMenuDetail() {
+  return useKitchenMenuDetailFromScope(useKitchenSingleMenuScope())
 }

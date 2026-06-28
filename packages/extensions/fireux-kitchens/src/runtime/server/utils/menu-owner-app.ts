@@ -4,9 +4,9 @@ import {
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
-  kitchenPublicMenuPath,
-  kitchenPublicMenuRouteMode,
-} from '../../utils/kitchen-public-menu-route.ts'
+  kitchenMenuPath,
+  kitchenMenuRouteMode,
+} from '../../utils/kitchen-menu-route.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
@@ -31,8 +31,8 @@ export function menuOwnerAppView(options: {
   }
 
   const publicOrigin = appPublicOrigin(options.ownerAppData)
-  const path = kitchenPublicMenuPath({
-    mode: kitchenPublicMenuRouteMode(options.ownerAppKitchenCount),
+  const path = kitchenMenuPath({
+    mode: kitchenMenuRouteMode(options.ownerAppKitchenCount),
     kitchenSlug: options.kitchenSlug,
     menuId: options.menuId,
   })

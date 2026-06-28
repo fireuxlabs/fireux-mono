@@ -7,19 +7,19 @@ import {
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../models/kitchen.model'
 import {
-  kitchenPublicMenuIndexPath,
-  kitchenPublicMenuPath,
-  kitchenPublicMenuRouteMode,
-} from '../../../../../utils/kitchen-public-menu-route'
+  kitchenMenuIndexPath,
+  kitchenMenuPath,
+  kitchenMenuRouteMode,
+} from '../../../../utils/kitchen-menu-route'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
 
-export function useKitchenPublicMenuUrl(options: {
+export function useKitchenMenuUrl(options: {
   appId: MaybeRef<string | null | undefined>
   kitchenSlug: MaybeRef<string | null | undefined>
 }) {
@@ -62,10 +62,10 @@ export function useKitchenPublicMenuUrl(options: {
     appKitchenCount.value === 1 ? appKitchenIds.value[0] ?? '' : ''
   )
   const routeMode = computed(() =>
-    kitchenPublicMenuRouteMode(appKitchenCount.value)
+    kitchenMenuRouteMode(appKitchenCount.value)
   )
   const menuIndexPath = computed(() =>
-    kitchenPublicMenuIndexPath({
+    kitchenMenuIndexPath({
       mode: routeMode.value,
       kitchenSlug: kitchenSlug.value,
     })
@@ -93,7 +93,7 @@ export function useKitchenPublicMenuUrl(options: {
     return new URL(menuIndexPath.value, publicOrigin.value).toString()
   })
   const menuPath = (menuId: unknown) =>
-    kitchenPublicMenuPath({
+    kitchenMenuPath({
       mode: routeMode.value,
       kitchenSlug: kitchenSlug.value,
       menuId,

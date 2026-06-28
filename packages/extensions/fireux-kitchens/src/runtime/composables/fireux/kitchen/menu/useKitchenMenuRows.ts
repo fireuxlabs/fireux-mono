@@ -1,12 +1,12 @@
 import { computed, type Ref } from 'vue'
-import type { Dish } from '../../../../../models/dish.model'
+import type { Dish } from '../../../../models/dish.model'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
-} from '../../../../../models/menu/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu/menu-section.model'
-import type { KitchenPublicMenuSectionRow } from './types'
+} from '../../../../models/menu/menu-item.model'
+import type { MenuSection } from '../../../../models/menu/menu-section.model'
+import type { KitchenMenuSectionRow } from './types'
 
 type MenuRowOptions = {
   sections: Ref<MenuSection[]>
@@ -20,7 +20,7 @@ const record = (value: unknown) =>
     ? value as Record<string, unknown>
     : {}
 
-export function useKitchenPublicMenuRows(options: MenuRowOptions) {
+export function useKitchenMenuRows(options: MenuRowOptions) {
   const itemsBySectionId = computed(() => {
     const map = new Map<string, MenuItem[]>()
     for (const item of options.items.value) {
@@ -31,7 +31,7 @@ export function useKitchenPublicMenuRows(options: MenuRowOptions) {
     return map
   })
 
-  const sectionRows = computed<KitchenPublicMenuSectionRow[]>(() =>
+  const sectionRows = computed<KitchenMenuSectionRow[]>(() =>
     options.sections.value.map((section) => {
       const sectionId = text(section.id)
       const items = itemsBySectionId.value.get(sectionId) ?? []

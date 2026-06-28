@@ -17,10 +17,10 @@
         @remove="removeFromOrder"
       />
 
-      <!-- Menu ordering spine: base menu stays readable; selection/funnel overlays it. See docs/concepts/menu-ordering.md. -->
-      <MenuDetailStructuredOrderOverlay
+      <!-- Menu ordering spine: base menu stays readable; ordering is a detail overlay layer, not a structured renderer child. -->
+      <MenuDetailOrderingLayer
         v-if="isOrderMode && (basketQuantity || awaitingAcceptance || sentOrder)"
-        :order="orderOverlay"
+        :order="orderingLayer"
         @clear="clearOrder"
         @close-funnel="showOrderPanel = false"
         @open-funnel="showOrderPanel = true"
@@ -51,9 +51,11 @@ import { menuOrderBasketActionLabel } from '../../../../utils/menu-ordering-ui'
 import type {
   MenuChoiceValue,
   MenuStructuredBaseLayerView,
-  MenuStructuredOrderOverlayState,
-  MenuStructuredOrderSubmitPayload,
 } from './types'
+import type {
+  MenuDetailOrderingLayerState,
+  MenuDetailOrderingSubmitPayload,
+} from '../Ordering/types'
 
 const props = defineProps<{
   menu: MenuManifest | null
@@ -118,7 +120,7 @@ const baseLayer = computed<MenuStructuredBaseLayerView | null>(() => {
     dimmed: showOrderPanel.value,
   }
 })
-const orderOverlay = computed<MenuStructuredOrderOverlayState>(() => {
+const orderingLayer = computed<MenuDetailOrderingLayerState>(() => {
   const policy = selectedOrderTypeConfig.value
 
   return {
@@ -147,7 +149,7 @@ function setSelectedChoice(value: MenuChoiceValue) {
   selectedChoice.value = value
 }
 
-function submitOrder(payload: MenuStructuredOrderSubmitPayload) {
+function submitOrder(payload: MenuDetailOrderingSubmitPayload) {
   placeOrder(payload)
 }
 
@@ -158,10 +160,42 @@ watch([selectedOrderType, basketQuantity], () => {
 
 <style scoped>
 .structured-menu {
+  --menu-bg-light: #f8fafc;
+  --menu-bg-dark: #0f172a;
+  --menu-text-light: #0f172a;
+  --menu-text-dark: #f8fafc;
+  --menu-title-light: var(--menu-text-light);
+  --menu-title-dark: var(--menu-text-dark);
+  --menu-primary-source: #0f766e;
+  --menu-primary: var(--menu-primary-source);
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
+  --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
+  --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
+  --menu-secondary: #64748b;
+  --menu-accent: var(--menu-secondary);
+  --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-title-font: var(--menu-font);
+
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
+  width: min(100%, 72rem);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--menu-bg);
   color: var(--menu-text);
+  font-family: var(--menu-font);
   text-align: center;
+}
+
+:global(.dark) .structured-menu {
+  --menu-bg: var(--menu-bg-dark);
+  --menu-text: var(--menu-text-dark);
+  --menu-title: var(--menu-title-dark);
+  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
 }
 
 .menu {

@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenPublicMenu } from '../../../../composables/fireux/public/kitchen/menu/useKitchenPublicMenu'
+import { useKitchenMenu } from '../../../../composables/fireux/kitchen/menu/useKitchenMenu'
 
 const {
   kitchenSlug,
@@ -67,7 +67,7 @@ const {
   menus,
   pending,
   menuLink,
-} = useKitchenPublicMenu()
+} = useKitchenMenu()
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )

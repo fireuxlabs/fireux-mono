@@ -1,16 +1,16 @@
-export type KitchenPublicMenuRouteMode =
+export type KitchenMenuRouteMode =
   | 'single-kitchen-app'
   | 'kitchen-directory'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
 
-export function kitchenPublicMenuRouteMode(appKitchenCount: number) {
+export function kitchenMenuRouteMode(appKitchenCount: number) {
   return appKitchenCount === 1 ? 'single-kitchen-app' : 'kitchen-directory'
 }
 
-export function kitchenPublicMenuIndexPath(options: {
-  mode: KitchenPublicMenuRouteMode
+export function kitchenMenuIndexPath(options: {
+  mode: KitchenMenuRouteMode
   kitchenSlug: unknown
 }) {
   if (options.mode === 'single-kitchen-app') return '/menus'
@@ -19,12 +19,12 @@ export function kitchenPublicMenuIndexPath(options: {
   return kitchenSlug ? `/kitchens/${kitchenSlug}/menus` : ''
 }
 
-export function kitchenPublicMenuPath(options: {
-  mode: KitchenPublicMenuRouteMode
+export function kitchenMenuPath(options: {
+  mode: KitchenMenuRouteMode
   kitchenSlug: unknown
   menuId: unknown
 }) {
-  const indexPath = kitchenPublicMenuIndexPath(options)
+  const indexPath = kitchenMenuIndexPath(options)
   const menuId = segment(options.menuId)
 
   return indexPath && menuId ? `${indexPath}/${menuId}` : ''
