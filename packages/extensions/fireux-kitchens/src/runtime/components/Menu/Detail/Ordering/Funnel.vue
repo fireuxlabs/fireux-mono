@@ -1,9 +1,9 @@
 <template>
   <div
-    class="menu-order-layer"
+    class="menu-order-funnel"
     :class="{
-      'menu-order-layer--funnel': order.funnelOpen,
-      'menu-order-layer--status': order.awaitingAcceptance || order.sentOrder,
+      'menu-order-funnel--panel': order.panelOpen,
+      'menu-order-funnel--status': order.awaitingAcceptance || order.sentOrder,
     }"
   >
     <MenuDetailOrderingStatus
@@ -13,11 +13,11 @@
     />
 
     <MenuDetailOrderingBasket
-      v-else-if="!order.funnelOpen"
+      v-else-if="!order.panelOpen"
       :quantity="order.quantity"
       :pending="order.pending"
       :action-label="order.actionLabel"
-      @place="$emit('openFunnel')"
+      @place="$emit('openPanel')"
     />
 
     <MenuDetailOrderingFunnelPanel
@@ -28,7 +28,7 @@
       :policy="order.policy"
       :pending="order.pending"
       :selection="order.selection"
-      @close="$emit('closeFunnel')"
+      @close="$emit('closePanel')"
       @submit="$emit('submit', $event)"
     />
   </div>
@@ -36,24 +36,24 @@
 
 <script setup lang="ts">
 import type {
-  MenuOrderingLayerState,
+  MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
 } from './types'
 
 defineProps<{
-  order: MenuOrderingLayerState
+  order: MenuOrderingFunnelState
 }>()
 
 defineEmits<{
   (event: 'clear'): void
-  (event: 'closeFunnel'): void
-  (event: 'openFunnel'): void
+  (event: 'closePanel'): void
+  (event: 'openPanel'): void
   (event: 'submit', payload: MenuOrderingSubmitPayload): void
 }>()
 </script>
 
 <style scoped>
-.menu-order-layer {
+.menu-order-funnel {
   position: fixed;
   z-index: 30;
   right: max(1rem, env(safe-area-inset-right));
@@ -65,12 +65,12 @@ defineEmits<{
   pointer-events: none;
 }
 
-.menu-order-layer > * {
+.menu-order-funnel > * {
   pointer-events: auto;
 }
 
-.menu-order-layer--funnel,
-.menu-order-layer--status {
+.menu-order-funnel--panel,
+.menu-order-funnel--status {
   inset: 0;
   justify-items: center;
   padding:
@@ -82,11 +82,11 @@ defineEmits<{
   pointer-events: auto;
 }
 
-.menu-order-layer--funnel {
+.menu-order-funnel--panel {
   align-items: stretch;
 }
 
-.menu-order-layer--status {
+.menu-order-funnel--status {
   align-items: center;
 }
 </style>

@@ -8,60 +8,67 @@
 
     <FunnelSummaryHeader
       :eyebrow="eyebrow"
-      :title="title"
+      :title="stepTitle"
       :total-label="totalLabel"
       :item-count-label="itemCountLabel"
       @edit="$emit('close')"
     />
 
+    <FunnelItems
+      v-if="funnelStep === 'items'"
+      :selection="props.selection"
+      :total-label="totalLabel"
+      @continue="continueToSafety"
+    />
+
     <FunnelNotice
-      v-if="!allergyAccepted"
+      v-else-if="funnelStep === 'safety'"
       :message="allergyMessage"
       action-label="I understand"
-      @confirm="allergyAccepted = true"
+      @confirm="continueToDetails"
     />
 
-    <component
-      :is="funnelComponent"
-      v-else
-      v-model="customer"
-      :menu-id="props.menuId"
-      :kitchen-slug="props.kitchenSlug"
-      :policy="policy"
-      @delivery-zone="setDeliveryZone"
-    />
-
-    <FunnelPayment
-      v-if="allergyAccepted && hasPaymentPolicy"
-      v-model="selectedPaymentMethod"
-      :methods="paymentMethods"
-      :deposit="depositPolicy"
-      :order-type="props.orderType"
-      :party-size="Number(customer.party_size || 0)"
-      :total-chf="orderTotal"
-    />
-
-    <p
-      v-if="submitBlockMessage"
-      class="menu-order-panel__notice"
-      aria-live="polite"
-    >
-      {{ submitBlockMessage }}
-    </p>
-
-    <button
-      v-if="allergyAccepted"
-      type="submit"
-      class="menu-order-panel__submit"
-      :disabled="pending || !canSubmit"
-    >
-      <span
-        v-if="pending"
-        class="menu-order-panel__spinner"
-        aria-hidden="true"
+    <template v-else>
+      <component
+        :is="funnelComponent"
+        v-model="customer"
+        :menu-id="props.menuId"
+        :kitchen-slug="props.kitchenSlug"
+        :policy="policy"
+        @delivery-zone="setDeliveryZone"
       />
-      {{ pending ? 'Sending order...' : submitLabel }}
-    </button>
+
+      <FunnelPayment
+        v-if="hasPaymentPolicy"
+        v-model="selectedPaymentMethod"
+        :methods="paymentMethods"
+        :deposit="depositPolicy"
+        :order-type="props.orderType"
+        :party-size="Number(customer.party_size || 0)"
+        :total-chf="orderTotal"
+      />
+
+      <p
+        v-if="submitBlockMessage"
+        class="menu-order-panel__notice"
+        aria-live="polite"
+      >
+        {{ submitBlockMessage }}
+      </p>
+
+      <button
+        type="submit"
+        class="menu-order-panel__submit"
+        :disabled="pending || !canSubmit"
+      >
+        <span
+          v-if="pending"
+          class="menu-order-panel__spinner"
+          aria-hidden="true"
+        />
+        {{ pending ? 'Sending order...' : submitLabel }}
+      </button>
+    </template>
   </form>
 </template>
 
@@ -83,6 +90,8 @@ import {
   menuOrderSubmitLabel,
   menuOrderTypeLabel,
 } from '../../../../../utils/menu-ordering-ui'
+import type { MenuOrderingSelectionSummary } from '../types'
+import FunnelItems from './Items.vue'
 import FunnelNotice from './Notice.vue'
 import FunnelCollection from './Collection/index.vue'
 import FunnelDefault from './Default/index.vue'
@@ -91,15 +100,7 @@ import FunnelPayment from './Payment.vue'
 import FunnelPreOrder from './PreOrder/index.vue'
 import FunnelSummaryHeader from './SummaryHeader.vue'
 
-type FunnelSelectionItem = {
-  quantity: number
-  unitPrice?: number
-}
-
-type FunnelSelectionSummary = {
-  items: FunnelSelectionItem[]
-  quantity: number
-}
+type FunnelStep = 'items' | 'safety' | 'details'
 
 const props = withDefaults(
   defineProps<{
@@ -108,7 +109,7 @@ const props = withDefaults(
     kitchenSlug?: string
     policy?: MenuOrderTypeConfig
     pending?: boolean
-    selection?: FunnelSelectionSummary
+    selection?: MenuOrderingSelectionSummary
   }>(),
   {
     kitchenSlug: '',
@@ -132,11 +133,18 @@ const customer = ref<KitchenOrderCustomer>({})
 const selectedPaymentMethod = ref<KitchenOrderPaymentMethod | undefined>()
 const { customer: customerAutofill } = useMenuCustomerAutofill()
 const deliveryZone = ref<MenuDeliveryZone | null>(null)
-const allergyAccepted = ref(false)
+const funnelStep = ref<FunnelStep>('items')
 const allergyMessage =
   'If you have a food allergy or intolerance, please speak to a member of the team before ordering.'
 const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
+const stepTitle = computed(() => {
+  if (funnelStep.value === 'items') return 'Your items'
+  if (funnelStep.value === 'safety') return 'Food safety'
+
+  return title.value
+})
+const allergyAccepted = computed(() => funnelStep.value === 'details')
 const paymentMethods = computed(() =>
   props.policy?.fulfilment?.payment_methods || []
 )
@@ -158,7 +166,9 @@ const itemCountLabel = computed(() =>
 const total = computed(() =>
   props.selection.items.reduce(
     (sum, item) =>
-      sum + Math.max(0, Number(item.unitPrice || 0)) * Math.max(0, Number(item.quantity || 0)),
+      sum +
+      Math.max(0, Number(item.unitPrice || 0)) *
+        Math.max(0, Number(item.quantity || 0)),
     0
   )
 )
@@ -230,6 +240,14 @@ function setDeliveryZone(zone: MenuDeliveryZone | null) {
   deliveryZone.value = zone
 }
 
+function continueToSafety() {
+  funnelStep.value = 'safety'
+}
+
+function continueToDetails() {
+  funnelStep.value = 'details'
+}
+
 watch(
   customerAutofill,
   (nextCustomer: KitchenOrderCustomer) => {
@@ -254,6 +272,7 @@ watch(
   () => props.orderType,
   () => {
     deliveryZone.value = null
+    funnelStep.value = 'items'
   }
 )
 

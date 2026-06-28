@@ -15,7 +15,7 @@ import type {
   MenuStructuredBaseLayerView,
 } from '../Structured/types'
 import type {
-  MenuOrderingLayerState,
+  MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
 } from './types'
 
@@ -30,7 +30,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 // Menu ordering spine: keep ordering state beside the Ordering components,
 // while Menu/Detail/Index only composes the base menu layer and checkout layer.
 export function useMenuOrdering(options: UseMenuOrderingOptions) {
-  const showOrderPanel = ref(false)
+  const panelOpen = ref(false)
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
     const id = text(toValue(options.menuId))
@@ -67,17 +67,17 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       orderMode: isOrderMode.value,
       orderNotice: orderNotice.value,
       quantities: draft.quantities.value,
-      dimmed: showOrderPanel.value,
+      dimmed: panelOpen.value,
     }
   })
-  const orderingView = computed<MenuOrderingLayerState>(() => {
+  const funnelView = computed<MenuOrderingFunnelState>(() => {
     const policy = selectedOrderTypeConfig.value
 
     return {
       actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
       accepted: draft.acceptedOrder.value,
       awaitingAcceptance: draft.awaitingAcceptance.value,
-      funnelOpen: showOrderPanel.value,
+      panelOpen: panelOpen.value,
       items: draft.items.value,
       message: draft.awaitingMessage.value || draft.message.value,
       menuId: text(toValue(options.menuId)),
@@ -93,7 +93,7 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       sentOrder: draft.sentOrder.value,
     }
   })
-  const showOrderingLayer = computed(() =>
+  const showFunnel = computed(() =>
     isOrderMode.value &&
       Boolean(
         draft.quantity.value ||
@@ -106,19 +106,19 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     selectedChoice.value = value
   }
 
-  function openFunnel() {
-    showOrderPanel.value = true
+  function openPanel() {
+    panelOpen.value = true
   }
 
-  function closeFunnel() {
-    showOrderPanel.value = false
+  function closePanel() {
+    panelOpen.value = false
   }
 
   function submit(payload: MenuOrderingSubmitPayload) {
     draft.place(payload)
   }
 
-  watch([selectedOrderType, draft.quantity], closeFunnel)
+  watch([selectedOrderType, draft.quantity], closePanel)
 
   return {
     structured: proxyRefs({
@@ -127,12 +127,12 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       remove: draft.remove,
       select: setSelectedChoice,
     }),
-    layer: proxyRefs({
-      show: showOrderingLayer,
-      order: orderingView,
+    funnel: proxyRefs({
+      show: showFunnel,
+      order: funnelView,
       clear: draft.clear,
-      close: closeFunnel,
-      open: openFunnel,
+      close: closePanel,
+      open: openPanel,
       submit,
     }),
     status: proxyRefs({

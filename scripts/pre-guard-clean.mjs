@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-06-29
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/pre-guard-clean.mjs
 // Removes local build artifacts that violate FireUX guard L1 shape rules.
@@ -51,6 +51,14 @@ async function listChildDirs(parentDir) {
 
 const removed = []
 const force = process.argv.includes('--force')
+const DEV_PROCESS_MARKERS = [
+  'dev-app-with-smoke.mjs',
+  'pnpm dev:',
+  ' nuxi dev',
+  ' nuxt dev',
+  '/nuxt/bin/nuxt.mjs dev',
+  '@nuxt/cli/dist/dev/',
+]
 
 function activeDevProcesses() {
   try {
@@ -73,14 +81,16 @@ function activeDevProcesses() {
       .filter(({ pid, command }) =>
         pid !== String(process.pid) &&
         command.includes(repoRoot) &&
-        (
-          command.includes('nuxi dev') ||
-          command.includes('dev-app-with-smoke.mjs') ||
-          command.includes('pnpm dev:')
-        )
+        DEV_PROCESS_MARKERS.some((marker) => command.includes(marker))
       )
   } catch {
-    return []
+    return [
+      {
+        pid: '?',
+        command:
+          'Unable to inspect active processes. Stop dev servers first or rerun with --force.',
+      },
+    ]
   }
 }
 

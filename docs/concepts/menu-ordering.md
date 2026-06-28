@@ -117,13 +117,14 @@ Public order funnel spine:
   owns order-mode coordination and draft state, and renders the base menu layer
   plus ordering layer for every public menu route.
 - `Menu/Detail/Ordering/useMenuOrdering`: component-local state seam that turns
-  manifest/order draft state into the structured-menu and ordering-layer view
+  manifest/order draft state into the structured-menu and ordering-funnel view
   models.
 - `Menu/Detail/Structured`: readable structured menu renderer. It receives a
   view model, emits choice/add/remove events, and does not own basket/status/
   funnel rendering.
-- `Menu/Detail/Ordering/Layer`: fixed public ordering overlay. It chooses
-  basket launcher, checkout funnel, or customer status.
+- `Menu/Detail/Ordering/Funnel.vue`: fixed public ordering funnel shell. It
+  chooses collapsed basket launcher, expanded checkout panel, or customer
+  status.
 - `Menu/Detail/Ordering/Basket`: compact floating basket launcher with count.
 - `Menu/Detail/Ordering/Status`: sent/waiting/accepted customer status card.
 - `Menu/Detail/Ordering/Funnel/Panel`: full-screen checkout panel shell,

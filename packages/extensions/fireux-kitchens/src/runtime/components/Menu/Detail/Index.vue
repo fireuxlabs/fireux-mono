@@ -9,13 +9,13 @@
       @remove="ordering.structured.remove"
     />
 
-    <MenuDetailOrderingLayer
-      v-if="ordering.layer.show"
-      :order="ordering.layer.order"
-      @clear="ordering.layer.clear"
-      @close-funnel="ordering.layer.close"
-      @open-funnel="ordering.layer.open"
-      @submit="ordering.layer.submit"
+    <MenuDetailOrderingFunnel
+      v-if="ordering.funnel.show"
+      :order="ordering.funnel.order"
+      @clear="ordering.funnel.clear"
+      @close-panel="ordering.funnel.close"
+      @open-panel="ordering.funnel.open"
+      @submit="ordering.funnel.submit"
     />
 
     <p

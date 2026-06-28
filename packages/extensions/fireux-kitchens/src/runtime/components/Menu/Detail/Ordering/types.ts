@@ -19,11 +19,11 @@ export type MenuOrderingSelectionSummary = {
   quantity: number
 }
 
-export type MenuOrderingLayerState = {
+export type MenuOrderingFunnelState = {
   actionLabel: string
   accepted: boolean
   awaitingAcceptance: boolean
-  funnelOpen: boolean
+  panelOpen: boolean
   items: MenuOrderingBasketItem[]
   message: string
   menuId: string
