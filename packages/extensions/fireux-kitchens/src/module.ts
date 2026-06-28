@@ -12,6 +12,7 @@ import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
+import { configureAssets } from './config/module/assets-config'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
@@ -78,6 +79,7 @@ export default defineNuxtModule<ModuleOptions>({
       layouts: configureLayouts,
       models: configureModels,
       pages: configurePages,
+      assets: configureAssets,
       server: configureServer,
     })
   },

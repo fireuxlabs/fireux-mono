@@ -1,14 +1,16 @@
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
 
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { setTimeout as delay } from 'node:timers/promises'
+import { spawnSyncPnpm } from './pnpm.mjs'
 
 const ROUTE_TIMEOUT_MS = 20_000
-const READY_TIMEOUT_MS = 90_000
+const READY_ROUTE_TIMEOUT_MS = 3_000
+const READY_TIMEOUT_MS = 180_000
 const READY_INTERVAL_MS = 1_000
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
 
@@ -32,7 +34,7 @@ export function runPrepareForApp(app) {
 
   console.log(`[smoke:prepare] ${app.name} -> nuxi prepare`)
 
-  const result = spawnSync('pnpm', ['--filter', app.filter, 'exec', 'nuxi', 'prepare'], {
+  const result = spawnSyncPnpm(['--filter', app.filter, 'exec', 'nuxi', 'prepare'], {
     stdio: 'inherit',
   })
 
@@ -60,7 +62,7 @@ export async function waitForAppReady(app) {
     try {
       const response = await fetch(app.baseUrl, {
         redirect: 'follow',
-        signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
+        signal: AbortSignal.timeout(READY_ROUTE_TIMEOUT_MS),
       })
 
       if (response.status < 500) {

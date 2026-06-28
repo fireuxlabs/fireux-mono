@@ -113,9 +113,15 @@ V1 fulfilment policy:
   `notice_hours` until the public order flow asks for `requested_for`.
 
 Public order funnel spine:
-- `Menu/Detail/Structured`: readable structured menu plus order-mode
-  coordination. It may know selected quantities so menu rows can show +/- state,
-  but it should not own basket/status/funnel rendering.
+- `Menu/Detail/Index`: public menu experience owner. It fetches the manifest,
+  owns order-mode coordination and draft state, and renders the base menu layer
+  plus ordering layer for every public menu route.
+- `Menu/Detail/Ordering/useMenuOrdering`: component-local state seam that turns
+  manifest/order draft state into the structured-menu and ordering-layer view
+  models.
+- `Menu/Detail/Structured`: readable structured menu renderer. It receives a
+  view model, emits choice/add/remove events, and does not own basket/status/
+  funnel rendering.
 - `Menu/Detail/Ordering/Layer`: fixed public ordering overlay. It chooses
   basket launcher, checkout funnel, or customer status.
 - `Menu/Detail/Ordering/Basket`: compact floating basket launcher with count.

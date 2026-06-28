@@ -6,7 +6,7 @@ import type {
 } from '../../../../models/order.model'
 import type { CreatedMenuOrder } from '../../../../composables/fireux/public/menu/useMenuOrderCreate'
 
-export type MenuDetailOrderingBasketItem = {
+export type MenuOrderingBasketItem = {
   id: string
   lineId?: string
   name: string
@@ -14,17 +14,17 @@ export type MenuDetailOrderingBasketItem = {
   unitPrice?: number
 }
 
-export type MenuDetailOrderingSelectionSummary = {
-  items: MenuDetailOrderingBasketItem[]
+export type MenuOrderingSelectionSummary = {
+  items: MenuOrderingBasketItem[]
   quantity: number
 }
 
-export type MenuDetailOrderingLayerState = {
+export type MenuOrderingLayerState = {
   actionLabel: string
   accepted: boolean
   awaitingAcceptance: boolean
   funnelOpen: boolean
-  items: MenuDetailOrderingBasketItem[]
+  items: MenuOrderingBasketItem[]
   message: string
   menuId: string
   kitchenSlug?: string
@@ -32,11 +32,11 @@ export type MenuDetailOrderingLayerState = {
   pending: boolean
   policy?: MenuOrderTypeConfig
   quantity: number
-  selection: MenuDetailOrderingSelectionSummary
+  selection: MenuOrderingSelectionSummary
   sentOrder?: CreatedMenuOrder | null
 }
 
-export type MenuDetailOrderingSubmitPayload = {
+export type MenuOrderingSubmitPayload = {
   customer?: KitchenOrderCustomer
   payment_method?: KitchenOrderPaymentMethod
 }

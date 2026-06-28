@@ -4,7 +4,7 @@
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
 
-import { spawn, spawnSync } from 'node:child_process'
+import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 
 import { parseArgs } from './_lib/args.mjs'
@@ -16,6 +16,7 @@ import {
   runRouteSmokeForApp,
   waitForAppReady,
 } from './_lib/smoke.mjs'
+import { spawnPnpm } from './_lib/pnpm.mjs'
 
 try {
   assertFireuxRuntime({ label: 'dev-app' })
@@ -136,7 +137,7 @@ if (goQrProvider) {
 ensureFireuxCoreConfigHelpers()
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
-const child = spawn('pnpm', ['--filter', app.filter, 'dev', ...passthroughArgs], {
+const child = spawnPnpm(['--filter', app.filter, 'dev', ...passthroughArgs], {
   stdio: 'inherit',
   env: devEnv,
 })

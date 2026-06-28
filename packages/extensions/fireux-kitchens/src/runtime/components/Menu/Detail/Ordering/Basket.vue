@@ -4,7 +4,7 @@
       type="button"
       class="menu-basket__button"
       :disabled="pending"
-      :aria-label="actionLabel"
+      :aria-label="basketLabel"
       @click="$emit('place')"
     >
       <UIcon
@@ -12,15 +12,14 @@
         class="menu-basket__icon"
         aria-hidden="true"
       />
-      <span class="menu-basket__count">
-        {{ quantity }}
-      </span>
     </button>
   </footer>
 </template>
 
 <script setup lang="ts">
-withDefaults(
+import { computed } from 'vue'
+
+const props = withDefaults(
   defineProps<{
     quantity: number
     pending?: boolean
@@ -35,6 +34,15 @@ withDefaults(
 defineEmits<{
   (event: 'place'): void
 }>()
+
+const basketLabel = computed(() => {
+  const count = Math.max(0, Number(props.quantity || 0))
+  const countLabel = count
+    ? `${count} item${count === 1 ? '' : 's'} selected`
+    : 'No items selected'
+
+  return `${props.actionLabel}. ${countLabel}.`
+})
 </script>
 
 <style scoped>
@@ -76,22 +84,5 @@ defineEmits<{
 .menu-basket__icon {
   width: 1.55rem;
   height: 1.55rem;
-}
-
-.menu-basket__count {
-  position: absolute;
-  top: -0.25rem;
-  right: -0.25rem;
-  min-width: 1.45rem;
-  height: 1.45rem;
-  padding: 0 0.35rem;
-  border: 2px solid var(--menu-bg);
-  border-radius: 999px;
-  background: var(--menu-accent);
-  color: var(--menu-bg);
-  font-size: 0.78rem;
-  font-weight: 950;
-  line-height: 1.25rem;
-  text-align: center;
 }
 </style>

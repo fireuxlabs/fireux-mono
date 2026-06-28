@@ -36,19 +36,19 @@
 
 <script setup lang="ts">
 import type {
-  MenuDetailOrderingLayerState,
-  MenuDetailOrderingSubmitPayload,
+  MenuOrderingLayerState,
+  MenuOrderingSubmitPayload,
 } from './types'
 
 defineProps<{
-  order: MenuDetailOrderingLayerState
+  order: MenuOrderingLayerState
 }>()
 
 defineEmits<{
   (event: 'clear'): void
   (event: 'closeFunnel'): void
   (event: 'openFunnel'): void
-  (event: 'submit', payload: MenuDetailOrderingSubmitPayload): void
+  (event: 'submit', payload: MenuOrderingSubmitPayload): void
 }>()
 </script>
 

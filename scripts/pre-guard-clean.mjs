@@ -8,6 +8,7 @@
 
 import { existsSync } from 'node:fs'
 import { rm, readdir } from 'node:fs/promises'
+import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -49,6 +50,53 @@ async function listChildDirs(parentDir) {
 }
 
 const removed = []
+const force = process.argv.includes('--force')
+
+function activeDevProcesses() {
+  try {
+    const output = execFileSync('ps', ['-ax', '-o', 'pid=,command='], {
+      encoding: 'utf8',
+    })
+
+    return output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [pid = '', ...commandParts] = line.split(/\s+/)
+
+        return {
+          pid,
+          command: commandParts.join(' '),
+        }
+      })
+      .filter(({ pid, command }) =>
+        pid !== String(process.pid) &&
+        command.includes(repoRoot) &&
+        (
+          command.includes('nuxi dev') ||
+          command.includes('dev-app-with-smoke.mjs') ||
+          command.includes('pnpm dev:')
+        )
+      )
+  } catch {
+    return []
+  }
+}
+
+const devProcesses = force ? [] : activeDevProcesses()
+if (devProcesses.length) {
+  console.error(
+    '[pre-guard-clean] Refusing to clean generated dev artifacts while a FireUX dev server is running.'
+  )
+  console.error(
+    '[pre-guard-clean] Stop the dev server first, or rerun with --force if you intentionally want to interrupt it.'
+  )
+  devProcesses
+    .slice(0, 5)
+    .forEach(({ pid, command }) => console.error(`  - ${pid} ${command}`))
+  process.exit(1)
+}
 
 // Remove dist/ at package roots: packages/{core,ecosystem,extensions}/*/dist
 for (const group of ['core', 'ecosystem', 'extensions']) {

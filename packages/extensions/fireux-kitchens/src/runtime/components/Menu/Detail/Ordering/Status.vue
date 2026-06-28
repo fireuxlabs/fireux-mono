@@ -84,10 +84,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MenuDetailOrderingLayerState } from './types'
+import type { MenuOrderingLayerState } from './types'
 
 const props = defineProps<{
-  order: MenuDetailOrderingLayerState
+  order: MenuOrderingLayerState
 }>()
 
 defineEmits<{
