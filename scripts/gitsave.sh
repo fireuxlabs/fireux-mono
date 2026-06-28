@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-06-28
+# last_used: 2026-06-29
 # usage_note: baseline after scripts cleanup; update when run.
 set -euo pipefail
 
@@ -60,6 +60,13 @@ run_preflight_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running lightweight preflight clean..."
     pnpm -s pre-guard-clean || true
+  fi
+}
+
+run_required_pre_push_clean() {
+  if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
+    echo "[gitsave] Running pre-push artifact clean..."
+    pnpm -s pre-guard-clean
   fi
 }
 
@@ -376,6 +383,7 @@ if git diff --cached --quiet; then
     ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
     if [[ "${ahead_count}" != "0" ]]; then
       echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
+      run_required_pre_push_clean
       git push origin "$current_branch"
       cleanup_git_refs "$current_branch"
       echo "Saved: pushed $current_branch to origin." >&2
@@ -446,6 +454,7 @@ if ! git commit -m "$commit_message"; then
 fi
 
 # Push to the matching branch on origin.
+run_required_pre_push_clean
 git push origin "$current_branch"
 cleanup_git_refs "$current_branch"
 
