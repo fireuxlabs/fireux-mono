@@ -11,6 +11,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderFireState,
+  KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/order.model'
 import { readKitchenMenuPublicRows } from '../../../utils/kitchen-menu-public-rows.ts'
@@ -79,6 +80,21 @@ const normalizeOrderType = (
   }
 
   return allowedModes[0] || 'dine_in'
+}
+const normalizePaymentMethod = (
+  value: unknown,
+  allowedMethods: KitchenOrderPaymentMethod[]
+): KitchenOrderPaymentMethod | undefined => {
+  if (!allowedMethods.length) return undefined
+
+  const requested = text(value) as KitchenOrderPaymentMethod
+  if (!requested) return allowedMethods[0]
+  if (allowedMethods.includes(requested)) return requested
+
+  throw createError({
+    statusCode: 400,
+    statusMessage: 'Choose a valid payment method.',
+  })
 }
 const fireStateForOrderType = (
   orderType: KitchenOrderType
@@ -151,6 +167,10 @@ export default defineEventHandler(async (event) => {
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const orderTypeConfig = ordering.order_types.find((type) =>
     type.type === orderType
+  )
+  const paymentMethod = normalizePaymentMethod(
+    body?.payment_method,
+    (orderTypeConfig?.fulfilment?.payment_methods || []) as KitchenOrderPaymentMethod[]
   )
   const requestedFor = text(body?.requested_for)
   const customer = readCustomer(body?.customer)
@@ -255,6 +275,7 @@ export default defineEventHandler(async (event) => {
     orderType,
     orderTypeConfig,
     customer,
+    paymentMethod,
     subtotalChf: subtotal,
     totalChf: total,
   })

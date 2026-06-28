@@ -8,6 +8,7 @@ import {
 } from 'vue'
 import type {
   KitchenOrderCustomer,
+  KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/order.model'
 import {
@@ -53,6 +54,11 @@ type MenuOrderDraftOptions = {
   canOrder?: MaybeRefOrGetter<boolean>
   orderType?: MaybeRefOrGetter<KitchenOrderType>
   storageKey?: MaybeRefOrGetter<string | null | undefined>
+}
+
+type MenuOrderPlaceInput = {
+  customer?: KitchenOrderCustomer
+  payment_method?: KitchenOrderPaymentMethod
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -276,7 +282,7 @@ export function useMenuOrderDraft(
     trackedOrder.value = null
   }
 
-  async function place(customer?: KitchenOrderCustomer) {
+  async function place(input?: MenuOrderPlaceInput) {
     if (!canOrder.value || !items.value.length) return
 
     const created = await createOrder({
@@ -287,7 +293,8 @@ export function useMenuOrderDraft(
         ...(item.variant ? { variant: item.variant } : {}),
       })),
       order_type: orderType.value,
-      customer,
+      payment_method: input?.payment_method,
+      customer: input?.customer,
     })
     if (!created) return
 

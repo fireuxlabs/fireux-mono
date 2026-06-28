@@ -2,6 +2,7 @@ import type { MenuOrderTypeConfig } from '../../models/menu/menu.model.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
+  KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../models/order.model.ts'
 
@@ -9,6 +10,7 @@ type ResolveMenuOrderPaymentInput = {
   orderType: KitchenOrderType
   orderTypeConfig?: MenuOrderTypeConfig
   customer: KitchenOrderCustomer
+  paymentMethod?: KitchenOrderPaymentMethod
   subtotalChf: number
   totalChf: number
 }
@@ -50,6 +52,7 @@ export function resolveMenuOrderPayment(
   const fulfilment = input.orderTypeConfig?.fulfilment
   const methods = fulfilment?.payment_methods || []
   const deposit = fulfilment?.deposit
+  const method = input.paymentMethod || methods[0]
 
   if (deposit) {
     const amount = money(depositAmount(deposit, input))
@@ -66,7 +69,7 @@ export function resolveMenuOrderPayment(
     }
   }
 
-  if (methods.includes('online_card')) {
+  if (method === 'online_card' && methods.includes('online_card')) {
     const amount = money(input.totalChf)
 
     if (amount > 0) {
@@ -86,6 +89,7 @@ export function resolveMenuOrderPayment(
   return {
     required: false,
     status: 'not_required',
+    ...(method ? { method } : {}),
     currency_code: 'CHF',
   }
 }

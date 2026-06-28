@@ -10,7 +10,11 @@ import type {
   MenuChoiceValue,
 } from '../../../../composables/fireux/public/menu/useMenuViewMode'
 import type { MenuOrderTypeConfig } from '../../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../../models/order.model'
+import type {
+  KitchenOrderCustomer,
+  KitchenOrderPaymentMethod,
+  KitchenOrderType,
+} from '../../../../models/order.model'
 import type { CreatedMenuOrder } from '../../../../composables/fireux/public/menu/useMenuOrderCreate'
 
 export type { MenuChoiceValue }
@@ -64,4 +68,9 @@ export type MenuStructuredOrderOverlayState = {
 export type MenuStructuredSelectionSummary = {
   items: MenuStructuredBasketItem[]
   quantity: number
+}
+
+export type MenuStructuredOrderSubmitPayload = {
+  customer?: KitchenOrderCustomer
+  payment_method?: KitchenOrderPaymentMethod
 }

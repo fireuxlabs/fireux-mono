@@ -1,5 +1,8 @@
 import { createError } from 'h3'
-import type { KitchenOrderCustomer } from '../../models/order.model.ts'
+import type {
+  KitchenOrderCustomer,
+  KitchenOrderPaymentMethod,
+} from '../../models/order.model.ts'
 
 export type MenuOrderVariantInput = {
   id?: string
@@ -22,6 +25,7 @@ export type CreateMenuOrderBody = {
     variant?: MenuOrderVariantInput
   }>
   order_type?: string
+  payment_method?: KitchenOrderPaymentMethod | string
   requested_for?: string
   customer?: KitchenOrderCustomer
 }

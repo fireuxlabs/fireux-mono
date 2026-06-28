@@ -341,6 +341,19 @@ const customerLines = computed(() => {
   const payment = record(orderRecord.value.payment)
   const amount = Number(payment.amount_chf || 0)
   const paymentStatus = normalizeString(payment.status)
+  const paymentMethod = normalizeString(payment.method)
+  const paymentMethodLabels: Record<string, string> = {
+    cash: 'cash on delivery',
+    card_to_driver: 'card on delivery',
+    card_at_pickup: 'card at pickup',
+    online_card: 'online card',
+    deposit: 'deposit',
+  }
+  const paymentLine = paymentStatus && paymentStatus !== 'not_required'
+    ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
+    : paymentMethod
+      ? `Payment ${paymentMethodLabels[paymentMethod] || paymentMethod}`
+      : ''
   return [
     normalizeString(customer.name),
     normalizeString(customer.phone),
@@ -348,9 +361,7 @@ const customerLines = computed(() => {
     Number(customer.party_size || 0) > 0
       ? `${Number(customer.party_size)} people`
       : '',
-    paymentStatus && paymentStatus !== 'not_required'
-      ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
-      : '',
+    paymentLine,
     normalizeString(customer.notes),
   ].filter(Boolean)
 })

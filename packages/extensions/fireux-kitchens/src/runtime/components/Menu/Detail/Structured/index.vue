@@ -24,7 +24,7 @@
         @clear="clearOrder"
         @close-funnel="showOrderPanel = false"
         @open-funnel="showOrderPanel = true"
-        @submit="placeOrder"
+        @submit="submitOrder"
       />
 
       <p
@@ -52,6 +52,7 @@ import type {
   MenuChoiceValue,
   MenuStructuredBaseLayerView,
   MenuStructuredOrderOverlayState,
+  MenuStructuredOrderSubmitPayload,
 } from './types'
 
 const props = defineProps<{
@@ -144,6 +145,10 @@ const showOrderPanel = ref(false)
 
 function setSelectedChoice(value: MenuChoiceValue) {
   selectedChoice.value = value
+}
+
+function submitOrder(payload: MenuStructuredOrderSubmitPayload) {
+  placeOrder(payload)
 }
 
 watch([selectedOrderType, basketQuantity], () => {

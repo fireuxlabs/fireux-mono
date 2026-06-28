@@ -108,8 +108,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrderCustomer } from '../../../../models/order.model'
-import type { MenuStructuredOrderOverlayState } from './types'
+import type {
+  MenuStructuredOrderOverlayState,
+  MenuStructuredOrderSubmitPayload,
+} from './types'
 
 const props = defineProps<{
   order: MenuStructuredOrderOverlayState
@@ -119,7 +121,7 @@ defineEmits<{
   (event: 'clear'): void
   (event: 'closeFunnel'): void
   (event: 'openFunnel'): void
-  (event: 'submit', customer: KitchenOrderCustomer): void
+  (event: 'submit', payload: MenuStructuredOrderSubmitPayload): void
 }>()
 
 const orderReference = computed(() =>

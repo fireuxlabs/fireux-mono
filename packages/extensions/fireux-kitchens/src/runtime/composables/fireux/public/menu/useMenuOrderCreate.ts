@@ -8,6 +8,7 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderFireState,
   KitchenOrderPayment,
+  KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/order.model'
 
@@ -28,6 +29,7 @@ type MenuOrderVariantInput = {
 type CreateMenuOrderInput = {
   items: MenuOrderLineInput[]
   order_type?: KitchenOrderType
+  payment_method?: KitchenOrderPaymentMethod
   requested_for?: string
   customer?: KitchenOrderCustomer
 }
@@ -164,6 +166,7 @@ export function useMenuOrderCreate(
         body: {
           items,
           order_type: input.order_type,
+          payment_method: input.payment_method,
           requested_for: input.requested_for,
           customer: cleanCustomer(input.customer),
         },

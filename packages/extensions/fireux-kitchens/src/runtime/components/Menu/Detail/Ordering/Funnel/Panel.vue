@@ -2,7 +2,7 @@
   <form
     class="menu-order-panel"
     aria-live="polite"
-    @submit.prevent="$emit('submit', customerPayload)"
+    @submit.prevent="$emit('submit', submitPayload)"
   >
     <MenuDetailOrderingCustomerPill />
 
@@ -33,8 +33,10 @@
 
     <FunnelPayment
       v-if="allergyAccepted && hasPaymentPolicy"
+      v-model="selectedPaymentMethod"
       :methods="paymentMethods"
       :deposit="depositPolicy"
+      :order-type="props.orderType"
       :party-size="Number(customer.party_size || 0)"
       :total-chf="orderTotal"
     />
@@ -72,6 +74,7 @@ import type {
 } from '../../../../../models/menu/menu.model'
 import type {
   KitchenOrderCustomer,
+  KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../../models/order.model'
 import {
@@ -119,10 +122,14 @@ const props = withDefaults(
 
 defineEmits<{
   (event: 'close'): void
-  (event: 'submit', customer: KitchenOrderCustomer): void
+  (event: 'submit', payload: {
+    customer: KitchenOrderCustomer
+    payment_method?: KitchenOrderPaymentMethod
+  }): void
 }>()
 
 const customer = ref<KitchenOrderCustomer>({})
+const selectedPaymentMethod = ref<KitchenOrderPaymentMethod | undefined>()
 const { customer: customerAutofill } = useMenuCustomerAutofill()
 const deliveryZone = ref<MenuDeliveryZone | null>(null)
 const allergyAccepted = ref(false)
@@ -138,7 +145,7 @@ const hasPaymentPolicy = computed(() =>
   paymentMethods.value.length > 0 || Boolean(depositPolicy.value)
 )
 const requiresOnlinePayment = computed(() =>
-  paymentMethods.value.includes('online_card') || Boolean(depositPolicy.value)
+  selectedPaymentMethod.value === 'online_card' || Boolean(depositPolicy.value)
 )
 const submitLabel = computed(() =>
   requiresOnlinePayment.value
@@ -204,6 +211,12 @@ const submitBlockMessage = computed(() => {
 const customerPayload = computed<KitchenOrderCustomer>(() =>
   cleanKitchenOrderCustomer(customer.value)
 )
+const submitPayload = computed(() => ({
+  customer: customerPayload.value,
+  ...(selectedPaymentMethod.value
+    ? { payment_method: selectedPaymentMethod.value }
+    : {}),
+}))
 const funnelComponents: Partial<Record<KitchenOrderType, Component>> = {
   delivery: FunnelDelivery,
   collection: FunnelCollection,
@@ -242,6 +255,27 @@ watch(
   () => {
     deliveryZone.value = null
   }
+)
+
+watch(
+  paymentMethods,
+  (methods: KitchenOrderPaymentMethod[]) => {
+    const selectable = methods.filter(
+      (method: KitchenOrderPaymentMethod) => method !== 'deposit'
+    )
+    if (!selectable.length) {
+      selectedPaymentMethod.value = undefined
+      return
+    }
+
+    if (
+      !selectedPaymentMethod.value ||
+      !selectable.includes(selectedPaymentMethod.value)
+    ) {
+      selectedPaymentMethod.value = selectable[0]
+    }
+  },
+  { immediate: true }
 )
 </script>
 
