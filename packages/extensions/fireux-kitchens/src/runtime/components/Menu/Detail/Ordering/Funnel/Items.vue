@@ -2,19 +2,17 @@
   <section class="menu-order-items" aria-label="Selected order items">
     <header class="menu-order-items__header">
       <div>
-        <p class="menu-order-items__eyebrow">
-          Basket
-        </p>
-        <h2>Your items</h2>
+        <p>{{ stepLabel }}</p>
+        <h2>Basket</h2>
       </div>
 
       <button
         type="button"
         class="menu-order-items__close"
-        aria-label="Close basket"
+        aria-label="Fold basket away"
         @click="$emit('close')"
       >
-        Close
+        <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
       </button>
     </header>
 
@@ -55,6 +53,7 @@ import type {
 
 defineProps<{
   selection: MenuOrderingSelectionSummary
+  stepLabel: string
   totalLabel: string
 }>()
 

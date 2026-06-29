@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-order-funnel">
+  <div class="menu-order-step">
     <p>Order funnel placeholder</p>
   </div>
 </template>
@@ -24,12 +24,12 @@ defineEmits<{
 </script>
 
 <style scoped>
-.menu-order-funnel {
+.menu-order-step {
   display: grid;
   gap: 1rem;
 }
 
-.menu-order-funnel p {
+.menu-order-step p {
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.92rem;

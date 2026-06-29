@@ -1,26 +1,43 @@
 <template>
   <div v-if="paymentLabels.length || depositLabel" class="menu-order-payment">
-    <p>Payment</p>
-    <fieldset
-      v-if="selectableMethods.length > 1"
-      class="menu-order-payment__options"
-    >
-      <legend class="sr-only">Choose payment method</legend>
-      <label
-        v-for="method in selectableMethods"
-        :key="method"
-        class="menu-order-payment__option"
-        :class="{ 'menu-order-payment__option--selected': method === selectedMethod }"
+    <template v-if="onlineCardOnly">
+      <div class="menu-order-payment__pay-now">
+        <p>Pay now</p>
+        <strong>{{ paymentTotalLabel }}</strong>
+        <span>Secure card payment before the kitchen accepts your order.</span>
+      </div>
+
+      <p
+        v-if="deliveryFeeLabel"
+        class="menu-order-payment__note"
       >
-        <input
-          v-model="selectedMethod"
-          type="radio"
-          :value="method"
+        {{ deliveryFeeLabel }}
+      </p>
+    </template>
+
+    <template v-else>
+      <p>Payment</p>
+      <fieldset
+        v-if="selectableMethods.length > 1"
+        class="menu-order-payment__options"
+      >
+        <legend class="sr-only">Choose payment method</legend>
+        <label
+          v-for="method in selectableMethods"
+          :key="method"
+          class="menu-order-payment__option"
+          :class="{ 'menu-order-payment__option--selected': method === selectedMethod }"
         >
-        <span>{{ paymentLabel(method) }}</span>
-      </label>
-    </fieldset>
-    <span v-else>{{ paymentSummary }}</span>
+          <input
+            v-model="selectedMethod"
+            type="radio"
+            :value="method"
+          >
+          <span>{{ paymentLabel(method) }}</span>
+        </label>
+      </fieldset>
+      <span v-else>{{ paymentSummary }}</span>
+    </template>
   </div>
 </template>
 
@@ -68,6 +85,10 @@ const paymentLabel = (method: MenuPaymentMethod) => {
 const selectableMethods = computed(() =>
   Array.from(new Set(props.methods)).filter((method) => method !== 'deposit')
 )
+const onlineCardOnly = computed(() =>
+  selectableMethods.value.length === 1 &&
+  selectableMethods.value[0] === 'online_card'
+)
 const selectedMethod = computed({
   get: () => props.modelValue || selectableMethods.value[0],
   set: (value: MenuPaymentMethod) => emit('update:modelValue', value),
@@ -80,6 +101,9 @@ const money = (value: number) =>
     style: 'currency',
     currency: props.deposit?.currency_code || 'CHF',
   }).format(value)
+const paymentTotalLabel = computed(() =>
+  money(Math.max(0, Number(props.totalChf || 0)))
+)
 const depositAmount = computed(() => {
   const deposit = props.deposit
   const amount = Number(deposit?.amount || 0)
@@ -109,4 +133,9 @@ const paymentSummary = computed(() =>
     ...paymentLabels.value,
   ].filter(Boolean).join(' · ')
 )
+const deliveryFeeLabel = computed(() => {
+  if (props.orderType !== 'delivery') return ''
+
+  return 'Includes any delivery fee confirmed for your address.'
+})
 </script>

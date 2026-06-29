@@ -168,10 +168,9 @@ export default defineEventHandler(async (event) => {
   const orderTypeConfig = ordering.order_types.find((type) =>
     type.type === orderType
   )
-  const paymentMethod = normalizePaymentMethod(
-    body?.payment_method,
-    (orderTypeConfig?.fulfilment?.payment_methods || []) as KitchenOrderPaymentMethod[]
-  )
+  const paymentMethod = normalizePaymentMethod(body?.payment_method, [
+    'online_card',
+  ])
   const requestedFor = text(body?.requested_for)
   const customer = readCustomer(body?.customer)
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null

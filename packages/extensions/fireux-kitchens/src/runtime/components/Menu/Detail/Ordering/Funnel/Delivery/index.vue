@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-order-funnel">
+  <div class="menu-order-step menu-order-step--delivery">
     <KitchenFulfilmentDeliveryZonesMap
       v-if="hasDeliveryZones"
       :zones="deliveryZonesForRender"
@@ -52,8 +52,27 @@ const hasDeliveryZones = computed(() => deliveryZonesForRender.value.length > 0)
 </script>
 
 <style scoped>
-.menu-order-funnel {
+.menu-order-step {
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
+}
+
+.menu-order-step--delivery :deep(.delivery-zones-map) {
+  gap: 0.5rem;
+}
+
+.menu-order-step--delivery :deep(.delivery-zones-map__canvas) {
+  aspect-ratio: 16 / 7;
+  max-height: 11rem;
+  border-radius: 1rem;
+}
+
+.menu-order-step--delivery :deep(.delivery-zones-map__key) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.6rem;
+}
+
+.menu-order-step--delivery :deep(.delivery-zones-map__key-item) {
+  font-size: 0.76rem;
 }
 </style>

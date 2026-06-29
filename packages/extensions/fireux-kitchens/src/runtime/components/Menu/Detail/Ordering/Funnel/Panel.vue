@@ -5,11 +5,10 @@
     aria-live="polite"
     @submit.prevent="$emit('submit', submitPayload)"
   >
-    <MenuDetailOrderingCustomerPill v-if="funnelStep !== 'items'" />
-
     <FunnelSummaryHeader
-      v-if="funnelStep !== 'items'"
-      :eyebrow="eyebrow"
+      v-if="showStepHeader"
+      :eyebrow="stepEyebrow"
+      :step-label="stepLabel"
       :title="stepTitle"
       :total-label="totalLabel"
       :item-count-label="itemCountLabel"
@@ -19,6 +18,7 @@
     <FunnelItems
       v-if="funnelStep === 'items'"
       :selection="props.selection"
+      :step-label="stepLabel"
       :total-label="totalLabel"
       @close="$emit('close')"
       @continue="continueToSafety"
@@ -27,11 +27,17 @@
     <FunnelNotice
       v-else-if="funnelStep === 'safety'"
       :message="allergyMessage"
+      :step-label="stepLabel"
       action-label="I understand"
-      @confirm="continueToDetails"
+      back-label="Back"
+      @back="backToItems"
+      @confirm="continueToFulfilment"
     />
 
-    <div v-else class="menu-order-panel__details">
+    <div
+      v-else-if="funnelStep === 'fulfilment'"
+      class="menu-order-panel__details"
+    >
       <component
         :is="funnelComponent"
         v-model="customer"
@@ -41,6 +47,64 @@
         @delivery-zone="setDeliveryZone"
       />
 
+      <p
+        v-if="submitBlockMessage"
+        class="menu-order-panel__notice"
+        aria-live="polite"
+      >
+        {{ submitBlockMessage }}
+      </p>
+
+      <div class="menu-order-panel__actions">
+        <button
+          type="button"
+          class="menu-order-panel__back"
+          @click="backToSafety"
+        >
+          Back
+        </button>
+
+        <button
+          type="button"
+          class="menu-order-panel__submit"
+          :disabled="!canContinueToCustomer"
+          @click="continueToCustomer"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-else-if="funnelStep === 'customer'"
+      class="menu-order-panel__details"
+    >
+      <FunnelFields
+        :model-value="customer"
+        notes-placeholder="Doorbell, floor, timing, or anything helpful."
+        @update:model-value="customer = $event"
+      />
+
+      <div class="menu-order-panel__actions">
+        <button
+          type="button"
+          class="menu-order-panel__back"
+          @click="backToFulfilment"
+        >
+          Back
+        </button>
+
+        <button
+          type="button"
+          class="menu-order-panel__submit"
+          @click="continueToPayment"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <div v-else class="menu-order-panel__details">
       <FunnelPayment
         v-if="hasPaymentPolicy"
         v-model="selectedPaymentMethod"
@@ -59,24 +123,35 @@
         {{ submitBlockMessage }}
       </p>
 
-      <button
-        type="submit"
-        class="menu-order-panel__submit"
-        :disabled="pending || !canSubmit"
-      >
-        <span
-          v-if="pending"
-          class="menu-order-panel__spinner"
-          aria-hidden="true"
-        />
-        {{ pending ? 'Sending order...' : submitLabel }}
-      </button>
+      <div class="menu-order-panel__actions">
+        <button
+          type="button"
+          class="menu-order-panel__back"
+          @click="backToCustomer"
+        >
+          Back
+        </button>
+
+        <button
+          type="submit"
+          class="menu-order-panel__submit"
+          :disabled="pending || !canSubmit"
+        >
+          <span
+            v-if="pending"
+            class="menu-order-panel__spinner"
+            aria-hidden="true"
+          />
+          {{ pending ? 'Sending order...' : submitLabel }}
+        </button>
+      </div>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch, type Component } from 'vue'
+import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { useMenuCustomerAutofill } from '../../../../../composables/fireux/public/menu/useMenuCustomerAutofill'
 import type {
   MenuDeliveryZone,
@@ -99,11 +174,20 @@ import FunnelNotice from './Notice.vue'
 import FunnelCollection from './Collection/index.vue'
 import FunnelDefault from './Default/index.vue'
 import FunnelDelivery from './Delivery/index.vue'
+import FunnelFields from './Fields.vue'
 import FunnelPayment from './Payment.vue'
 import FunnelPreOrder from './PreOrder/index.vue'
 import FunnelSummaryHeader from './SummaryHeader.vue'
 
-type FunnelStep = 'items' | 'safety' | 'details'
+type FunnelStep = 'items' | 'safety' | 'fulfilment' | 'customer' | 'payment'
+type SelectablePaymentMethod = Exclude<KitchenOrderPaymentMethod, 'deposit'>
+const funnelSteps = [
+  'items',
+  'safety',
+  'fulfilment',
+  'customer',
+  'payment',
+] as const satisfies readonly FunnelStep[]
 
 const props = withDefaults(
   defineProps<{
@@ -133,24 +217,54 @@ defineEmits<{
 }>()
 
 const customer = ref<KitchenOrderCustomer>({})
-const selectedPaymentMethod = ref<KitchenOrderPaymentMethod | undefined>()
+const selectedPaymentMethod = ref<SelectablePaymentMethod | undefined>()
 const { customer: customerAutofill } = useMenuCustomerAutofill()
 const deliveryZone = ref<MenuDeliveryZone | null>(null)
-const funnelStep = ref<FunnelStep>('items')
+const funnelStepKey = computed(() =>
+  [
+    'fireux-menu-order-funnel',
+    props.menuId,
+    props.kitchenSlug,
+    props.orderType,
+  ].filter(Boolean).join(':')
+)
+const { selected: funnelStep } = useStoredChoice<FunnelStep>({
+  key: funnelStepKey,
+  choices: funnelSteps,
+  fallback: 'items',
+})
 const allergyMessage =
   'If you have a food allergy or intolerance, please speak to a member of the team before ordering.'
-const eyebrow = computed(() => menuOrderTypeLabel(props.orderType))
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
+const stepEyebrow = computed(() => {
+  if (funnelStep.value === 'customer') return 'Customer'
+  if (funnelStep.value === 'payment') return 'Payment'
+
+  return menuOrderTypeLabel(props.orderType)
+})
 const stepTitle = computed(() => {
   if (funnelStep.value === 'items') return 'Your items'
-  if (funnelStep.value === 'safety') return 'Food safety'
+  if (funnelStep.value === 'customer') return 'Your details'
+  if (funnelStep.value === 'payment') return 'Payment'
 
   return title.value
 })
-const allergyAccepted = computed(() => funnelStep.value === 'details')
-const paymentMethods = computed(() =>
-  props.policy?.fulfilment?.payment_methods || []
+const stepNumbers: Record<FunnelStep, number> = {
+  items: 1,
+  safety: 2,
+  fulfilment: 3,
+  customer: 4,
+  payment: 5,
+}
+const stepLabel = computed(() => `Step ${stepNumbers[funnelStep.value]} of 5`)
+const showStepHeader = computed(() =>
+  funnelStep.value === 'fulfilment' ||
+  funnelStep.value === 'customer' ||
+  funnelStep.value === 'payment'
 )
+const paymentMethods = computed<SelectablePaymentMethod[]>(() => [
+  'online_card',
+])
 const depositPolicy = computed(() => props.policy?.fulfilment?.deposit)
 const hasPaymentPolicy = computed(() =>
   paymentMethods.value.length > 0 || Boolean(depositPolicy.value)
@@ -159,8 +273,8 @@ const requiresOnlinePayment = computed(() =>
   selectedPaymentMethod.value === 'online_card' || Boolean(depositPolicy.value)
 )
 const submitLabel = computed(() =>
-  requiresOnlinePayment.value
-    ? 'Continue to payment'
+  funnelStep.value === 'payment' && requiresOnlinePayment.value
+    ? `Pay ${totalLabel.value}`
     : menuOrderSubmitLabel(props.orderType)
 )
 const itemCountLabel = computed(() =>
@@ -206,8 +320,13 @@ const canSubmit = computed(() => {
 
   return minimumShortfall.value === 0
 })
+const canContinueToCustomer = computed(() => {
+  if (props.orderType !== 'delivery') return true
+
+  return canSubmit.value
+})
 const submitBlockMessage = computed(() => {
-  if (!allergyAccepted.value || props.orderType !== 'delivery') return ''
+  if (props.orderType !== 'delivery') return ''
   if (!customer.value.address_place_id) return ''
   if (!deliveryZone.value) {
     return 'Choose an address inside the delivery area.'
@@ -247,8 +366,33 @@ function continueToSafety() {
   funnelStep.value = 'safety'
 }
 
-function continueToDetails() {
-  funnelStep.value = 'details'
+function backToItems() {
+  funnelStep.value = 'items'
+}
+
+function backToSafety() {
+  funnelStep.value = 'safety'
+}
+
+function continueToFulfilment() {
+  funnelStep.value = 'fulfilment'
+}
+
+function backToFulfilment() {
+  funnelStep.value = 'fulfilment'
+}
+
+function continueToCustomer() {
+  if (!canContinueToCustomer.value) return
+  funnelStep.value = 'customer'
+}
+
+function backToCustomer() {
+  funnelStep.value = 'customer'
+}
+
+function continueToPayment() {
+  funnelStep.value = 'payment'
 }
 
 watch(
@@ -281,20 +425,17 @@ watch(
 
 watch(
   paymentMethods,
-  (methods: KitchenOrderPaymentMethod[]) => {
-    const selectable = methods.filter(
-      (method: KitchenOrderPaymentMethod) => method !== 'deposit'
-    )
-    if (!selectable.length) {
+  (methods: SelectablePaymentMethod[]) => {
+    if (!methods.length) {
       selectedPaymentMethod.value = undefined
       return
     }
 
     if (
       !selectedPaymentMethod.value ||
-      !selectable.includes(selectedPaymentMethod.value)
+      !methods.includes(selectedPaymentMethod.value)
     ) {
-      selectedPaymentMethod.value = selectable[0]
+      selectedPaymentMethod.value = methods[0]
     }
   },
   { immediate: true }

@@ -1,11 +1,11 @@
 import {
   computed,
   proxyRefs,
-  ref,
   toValue,
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { useMenuOrderDraft } from '../../../../composables/fireux/public/menu/useMenuOrderDraft'
 import { useMenuViewMode } from '../../../../composables/fireux/public/menu/useMenuViewMode'
 import { menuOrderBasketActionLabel } from '../../../../utils/menu-ordering-ui'
@@ -24,13 +24,14 @@ type UseMenuOrderingOptions = {
   menuId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
+type PanelState = 'closed' | 'open'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 
 // Menu ordering spine: keep ordering state beside the Ordering components,
 // while Menu/Detail/Index only composes the base menu layer and checkout layer.
 export function useMenuOrdering(options: UseMenuOrderingOptions) {
-  const panelOpen = ref(false)
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
     const id = text(toValue(options.menuId))
@@ -50,6 +51,24 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     behaviour,
     computed(() => `fireux:menu:${menuStorageScope.value}:view`)
   )
+  const { selected: panelState } = useStoredChoice<PanelState>({
+    key: computed(() =>
+      [
+        'fireux:menu',
+        menuStorageScope.value,
+        'funnel',
+        selectedOrderType.value,
+      ].filter(Boolean).join(':')
+    ),
+    choices: panelStates,
+    fallback: 'closed',
+  })
+  const panelOpen = computed({
+    get: () => panelState.value === 'open',
+    set: (open: boolean) => {
+      panelState.value = open ? 'open' : 'closed'
+    },
+  })
   const draft = useMenuOrderDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
     canOrder,
@@ -118,7 +137,10 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     draft.place(payload)
   }
 
-  watch([selectedOrderType, draft.quantity], closePanel)
+  watch(selectedOrderType, closePanel)
+  watch(draft.quantity, (quantity: number) => {
+    if (!quantity) closePanel()
+  })
 
   return {
     structured: proxyRefs({

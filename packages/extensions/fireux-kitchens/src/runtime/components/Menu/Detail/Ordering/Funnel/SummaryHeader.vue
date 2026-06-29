@@ -2,7 +2,7 @@
   <div class="menu-order-summary">
     <div>
       <p class="menu-order-summary__eyebrow">
-        {{ eyebrow }}
+        {{ stepLabel }} · {{ eyebrow }}
       </p>
       <h2>{{ title }}</h2>
     </div>
@@ -29,6 +29,7 @@
 // Menu ordering spine: docs/concepts/menu-ordering.md
 defineProps<{
   eyebrow: string
+  stepLabel: string
   title: string
   totalLabel: string
   itemCountLabel: string

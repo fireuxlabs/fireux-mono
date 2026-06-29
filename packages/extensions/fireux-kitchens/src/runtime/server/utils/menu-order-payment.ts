@@ -50,7 +50,7 @@ export function resolveMenuOrderPayment(
   input: ResolveMenuOrderPaymentInput
 ): KitchenOrderPayment {
   const fulfilment = input.orderTypeConfig?.fulfilment
-  const methods = fulfilment?.payment_methods || []
+  const methods: KitchenOrderPaymentMethod[] = ['online_card']
   const deposit = fulfilment?.deposit
   const method = input.paymentMethod || methods[0]
 

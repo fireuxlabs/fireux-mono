@@ -3,18 +3,6 @@
     class="delivery-details"
     aria-label="Delivery details"
   >
-    <div>
-      <p class="delivery-details__eyebrow">
-        Delivery details
-      </p>
-      <h3>Where should we bring it?</h3>
-    </div>
-
-    <FunnelFields
-      :model-value="modelValue"
-      @update:model-value="emit('update:modelValue', $event)"
-    />
-
     <DeliveryAddressAutocomplete
       :model-value="address"
       @update:model-value="updateAddress"
@@ -39,7 +27,6 @@ import type { MenuDeliveryAddressPrediction } from '../../../../../../composable
 import { useMenuDeliveryAddressCheck } from '../../../../../../composables/fireux/public/menu/useMenuDeliveryAddressCheck'
 import type { MenuDeliveryZone } from '../../../../../../models/menu/menu.model'
 import type { KitchenOrderCustomer } from '../../../../../../models/order.model'
-import FunnelFields from '../Fields.vue'
 import DeliveryAddressAutocomplete from './AddressAutocomplete.vue'
 
 const props = defineProps<{
@@ -135,34 +122,13 @@ async function seedTestDeliveryCustomer() {
 .delivery-details {
   display: grid;
   gap: 0.85rem;
-  padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--menu-bg) 92%, var(--menu-text));
-}
-
-.delivery-details__eyebrow,
-.delivery-details h3 {
-  margin: 0;
-}
-
-.delivery-details__eyebrow {
-  color: var(--menu-muted);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.delivery-details h3 {
-  color: var(--menu-text);
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
 }
 
 .delivery-details__status {
   margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--menu-primary) 8%, var(--menu-bg));
   color: var(--menu-muted);
   font-size: 0.86rem;
   font-weight: 800;

@@ -79,7 +79,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const stripe = getMenuStripe()
   const baseUrl = baseUrlFromEvent(event)
   const menuPath = kitchenSlug
     ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
@@ -88,6 +87,7 @@ export default defineEventHandler(async (event) => {
   const reason = text(payment.reason) || 'Kitchen order payment'
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
+  const stripe = getMenuStripe()
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     line_items: [
