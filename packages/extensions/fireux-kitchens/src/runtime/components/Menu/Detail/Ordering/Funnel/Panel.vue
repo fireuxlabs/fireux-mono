@@ -76,9 +76,15 @@
       <FunnelActions
         action-label="Continue"
         @back="backToFulfilment"
-        @action="continueToPayment"
+        @action="continueToReview"
       />
     </div>
+
+    <FunnelPlaceholder
+      v-else-if="funnelStep === 'review'"
+      @back="backToCustomer"
+      @continue="continueToPayment"
+    />
 
     <div v-else class="menu-order-panel__details">
       <FunnelPayment
@@ -139,12 +145,13 @@ import FunnelDefault from './Default/index.vue'
 import FunnelDelivery from './Delivery/index.vue'
 import FunnelFields from './Fields.vue'
 import FunnelPayment from './Payment.vue'
+import FunnelPlaceholder from './Placeholder.vue'
 import FunnelPreOrder from './PreOrder/index.vue'
 import FunnelSummaryHeader from './SummaryHeader.vue'
 
-type FunnelStep = 'items' | 'safety' | 'fulfilment' | 'customer' | 'payment'
+type FunnelStep = 'items' | 'safety' | 'fulfilment' | 'customer' | 'review' | 'payment'
 type SelectablePaymentMethod = Exclude<KitchenOrderPaymentMethod, 'deposit'>
-const funnelSteps = ['items', 'safety', 'fulfilment', 'customer', 'payment'] as const satisfies readonly FunnelStep[]
+const funnelSteps = ['items', 'safety', 'fulfilment', 'customer', 'review', 'payment'] as const satisfies readonly FunnelStep[]
 
 const props = withDefaults(
   defineProps<{
@@ -195,6 +202,7 @@ const allergyMessage =
 const title = computed(() => menuOrderFunnelTitle(props.orderType))
 const stepEyebrow = computed(() => {
   if (funnelStep.value === 'customer') return 'Customer'
+  if (funnelStep.value === 'review') return 'Review'
   if (funnelStep.value === 'payment') return 'Payment'
 
   return menuOrderTypeLabel(props.orderType)
@@ -202,17 +210,14 @@ const stepEyebrow = computed(() => {
 const stepTitle = computed(() => {
   if (funnelStep.value === 'items') return 'Your items'
   if (funnelStep.value === 'customer') return 'Your details'
+  if (funnelStep.value === 'review') return 'Hello world'
   if (funnelStep.value === 'payment') return 'Payment'
 
   return title.value
 })
-const stepNumbers: Record<FunnelStep, number> = { items: 1, safety: 2, fulfilment: 3, customer: 4, payment: 5 }
-const stepLabel = computed(() => `Step ${stepNumbers[funnelStep.value]} of 5`)
-const showStepHeader = computed(() =>
-  funnelStep.value === 'fulfilment' ||
-  funnelStep.value === 'customer' ||
-  funnelStep.value === 'payment'
-)
+const stepNumbers: Record<FunnelStep, number> = { items: 1, safety: 2, fulfilment: 3, customer: 4, review: 5, payment: 6 }
+const stepLabel = computed(() => `Step ${stepNumbers[funnelStep.value]} of 6`)
+const showStepHeader = computed(() => !['items', 'safety'].includes(funnelStep.value))
 const paymentMethods = computed<SelectablePaymentMethod[]>(() => [
   'online_card',
 ])
@@ -342,9 +347,9 @@ function backToCustomer() {
   funnelStep.value = 'customer'
 }
 
-function continueToPayment() {
-  funnelStep.value = 'payment'
-}
+function continueToReview() { funnelStep.value = 'review' }
+
+function continueToPayment() { funnelStep.value = 'payment' }
 
 watch(
   customerAutofill,

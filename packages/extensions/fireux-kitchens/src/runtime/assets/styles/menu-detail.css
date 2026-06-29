@@ -123,6 +123,7 @@
 .menu-order-funnel--panel:has(.menu-order-panel--safety),
 .menu-order-funnel--panel:has(.menu-order-panel--fulfilment),
 .menu-order-funnel--panel:has(.menu-order-panel--customer),
+.menu-order-funnel--panel:has(.menu-order-panel--review),
 .menu-order-funnel--panel:has(.menu-order-panel--payment) {
   align-items: end;
   padding:
@@ -169,6 +170,7 @@
 .menu-order-panel--safety,
 .menu-order-panel--fulfilment,
 .menu-order-panel--customer,
+.menu-order-panel--review,
 .menu-order-panel--payment {
   grid-template-rows: minmax(0, auto);
   width: min(100%, 34rem);
@@ -190,6 +192,7 @@
 
 .menu-order-panel--fulfilment,
 .menu-order-panel--customer,
+.menu-order-panel--review,
 .menu-order-panel--payment {
   grid-template-rows: auto minmax(0, auto);
   width: min(100%, 42rem);
@@ -207,6 +210,14 @@
   display: grid;
   align-content: start;
   gap: 0.85rem;
+}
+
+.menu-order-panel__copy {
+  margin: 0;
+  color: var(--menu-muted);
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .menu-order-panel__notice {
@@ -850,6 +861,7 @@
   .menu-order-panel--safety,
   .menu-order-panel--fulfilment,
   .menu-order-panel--customer,
+  .menu-order-panel--review,
   .menu-order-panel--payment {
     width: min(34rem, 100%);
     height: auto;
@@ -863,6 +875,7 @@
 
   .menu-order-panel--fulfilment,
   .menu-order-panel--customer,
+  .menu-order-panel--review,
   .menu-order-panel--payment {
     width: min(42rem, 100%);
     max-height: min(46rem, calc(100dvh - 2rem));
