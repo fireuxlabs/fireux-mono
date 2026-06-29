@@ -6,6 +6,8 @@ import {
   type Customer,
 } from '../../../../../../models/profiles/Customer/Customer.model'
 
+type CustomerPatch = Partial<Customer> & Record<string, unknown>
+
 export function useCustomerUpdate(profile?: ProfileRefs<Customer> | null) {
   const base = useProfileUpdateBase<Customer>(
     CustomerStorage.rootCollection,
@@ -30,24 +32,30 @@ export function useCustomerUpdate(profile?: ProfileRefs<Customer> | null) {
 
   const updateCustomerName = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ customer_name: normalized ?? undefined })
+    await updateCoreProfile({
+      'private.name': normalized ?? '',
+    } as CustomerPatch)
   }
 
   const updateCustomerPhone = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ customer_phone: normalized ?? undefined })
+    await updateCoreProfile({
+      'private.phone': normalized ?? '',
+    } as CustomerPatch)
   }
 
   const updateAllergyNote = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ allergy_note: normalized ?? undefined })
+    await updateCoreProfile({
+      'private.allergy_note': normalized ?? '',
+    } as CustomerPatch)
   }
 
   const updateDefaultDeliveryAddress = async (value: string) => {
     const normalized = base.cleanString(value)
     await updateCoreProfile({
-      default_delivery_address: normalized ?? undefined,
-    })
+      'private.default_delivery_address': normalized ?? '',
+    } as CustomerPatch)
   }
 
   return {

@@ -1,48 +1,11 @@
 <template>
   <UPage>
-    <!-- Public customer centre placeholder: docs/concepts/pages.md · not a full customer entity surface yet. -->
-    <UPageHeader
-      title="Customer centre"
-      description="Your orders, favourites, offers, and useful kitchen updates will live here."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
-      <UPageCard>
-        <div class="space-y-3">
-          <UBadge variant="soft">
-            Preview
-          </UBadge>
-
-          <h2 class="text-xl font-semibold text-highlighted">
-            Thanks for ordering.
-          </h2>
-
-          <p class="text-sm text-dimmed">
-            This will become the customer home for order updates, special
-            offers, favourite kitchens, and saved details.
-          </p>
-
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              to="/menus"
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-book-open-check"
-            >
-              Browse menus
-            </UButton>
-
-            <UButton
-              to="/"
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-home"
-            >
-              Home
-            </UButton>
-          </div>
-        </div>
-      </UPageCard>
+      <!-- Profile CTA family: Customer is an ordering profile attached to a User. -->
+      <CustomerCTA />
+      <CustomerCollectionManager />
     </UPageBody>
   </UPage>
 </template>
@@ -52,13 +15,26 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 definePageMeta({
+  tag: 'customers',
+  nav: {
+    visibility: { profiles: ['customer'] },
+    key: 'customers',
+    label: 'Customers',
+    icon: 'i-lucide-user-round',
+    order: 42,
+    desktop: false,
+    mobile: false,
+    layouts: ['default'],
+  },
   layout: 'default',
   name: 'CustomersIndexPage',
-  title: 'Customer centre',
-  description: 'A placeholder customer centre for orders, offers, and saved details.',
+  title: 'Customers',
+  description: 'Browse customer profiles.',
 })
 
+const pageTitle = 'Customers'
+const pageDescription = 'Find customers, or create your ordering profile.'
 const { appName } = useFireUXConfig()
 
-useHead({ title: `${appName} | Customer centre` })
+useHead({ title: `${appName} | ${pageTitle}` })
 </script>

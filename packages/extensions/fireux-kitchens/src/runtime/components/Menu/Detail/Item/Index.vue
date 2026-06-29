@@ -236,53 +236,6 @@ watch(
   white-space: normal;
 }
 
-.menu-item__quantity {
-  display: inline-flex;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.menu-item__choices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  padding-top: 0.25rem;
-}
-
-.menu-item__choice {
-  display: inline-flex;
-  gap: 0.28rem;
-  align-items: center;
-  padding: 0.32rem 0.52rem;
-  border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-primary) 5%, transparent);
-  color: var(--menu-primary);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.menu-item__choice small {
-  color: var(--menu-muted);
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.menu-item__choice--selected {
-  border-color: var(--menu-primary);
-  background: color-mix(in srgb, var(--menu-primary) 14%, transparent);
-}
-
-.menu-item__quantity span {
-  min-width: 1.5rem;
-  color: var(--menu-primary);
-  font-size: 0.9rem;
-  font-weight: 900;
-  text-align: center;
-}
-
 @media (max-width: 620px) {
   .menu-item--with-image {
     grid-template-columns: 4.75rem minmax(0, 1fr) auto;

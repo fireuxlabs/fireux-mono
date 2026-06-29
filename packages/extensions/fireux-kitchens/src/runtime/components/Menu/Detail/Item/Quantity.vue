@@ -34,3 +34,19 @@ defineEmits<{
   (event: 'remove'): void
 }>()
 </script>
+
+<style scoped>
+.menu-item__quantity {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.menu-item__quantity span {
+  min-width: 1.5rem;
+  color: var(--menu-primary);
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-align: center;
+}
+</style>

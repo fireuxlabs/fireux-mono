@@ -3,21 +3,21 @@ import { computed } from 'vue'
 import { useCustomer } from '../../firestore/profiles/Customer/useCustomer'
 import type { KitchenOrderCustomer } from '../../../../models/order.model'
 import type {
+  CustomerPrivate,
   CustomerSavedAddress,
 } from '../../../../models/profiles/Customer/Customer.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const customerPrivate = (
+  source: { private?: Partial<CustomerPrivate> } | null | undefined
+) =>
+  source?.private ?? {}
 const firstDefaultSavedAddress = (
   addresses: CustomerSavedAddress[] | undefined
 ) =>
   (addresses || []).find((address) => address.is_default) ||
   (addresses || [])[0] ||
   null
-const legacyDeliveryAddress = (source: unknown) => {
-  const row = source as Record<string, unknown> | null | undefined
-
-  return text(row?.deliveryaddress || row?.deliveryAddress)
-}
 
 export function useMenuCustomerAutofill() {
   const {
@@ -31,27 +31,27 @@ export function useMenuCustomerAutofill() {
     const app = appProfile.value
     const profile = coreProfile.value
     const user = coreUser.value
+    const appPrivate = customerPrivate(app)
+    const profilePrivate = customerPrivate(profile)
     const savedAddress =
-      firstDefaultSavedAddress(app?.saved_addresses) ||
-      firstDefaultSavedAddress(profile?.saved_addresses)
+      firstDefaultSavedAddress(appPrivate.saved_addresses) ||
+      firstDefaultSavedAddress(profilePrivate.saved_addresses)
 
     return {
       name: text(
-        app?.customer_name ||
-          profile?.customer_name ||
+        appPrivate.name ||
+          profilePrivate.name ||
           profile?.title ||
           user?.display_name
       ),
-      phone: text(app?.customer_phone || profile?.customer_phone),
+      phone: text(appPrivate.phone || profilePrivate.phone),
       address: text(
         savedAddress?.address ||
-          app?.default_delivery_address ||
-          profile?.default_delivery_address ||
-          legacyDeliveryAddress(app) ||
-          legacyDeliveryAddress(profile)
+          appPrivate.default_delivery_address ||
+          profilePrivate.default_delivery_address
       ),
       address_place_id: text(savedAddress?.place_id),
-      allergy_note: text(app?.allergy_note || profile?.allergy_note),
+      allergy_note: text(appPrivate.allergy_note || profilePrivate.allergy_note),
     }
   })
 

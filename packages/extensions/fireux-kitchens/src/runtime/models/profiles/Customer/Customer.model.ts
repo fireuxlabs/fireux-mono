@@ -45,6 +45,24 @@ export type CustomerOrderHistoryItem = {
   status?: string
 }
 
+export type CustomerPrivate = {
+  name: string
+  phone: string
+  allergy_note: string
+  default_delivery_address: string
+  saved_addresses: CustomerSavedAddress[]
+  order_history: CustomerOrderHistoryItem[]
+}
+
+export const CustomerPrivateModel = {
+  name: '' as string,
+  phone: '' as string,
+  allergy_note: '' as string,
+  default_delivery_address: '' as string,
+  saved_addresses: [] as CustomerSavedAddress[],
+  order_history: [] as CustomerOrderHistoryItem[],
+} as const satisfies CustomerPrivate
+
 export const CustomerModel = {
   id: '' as string,
   title: '' as string,
@@ -52,12 +70,9 @@ export const CustomerModel = {
   tagline: '' as string,
   tags: [] as string[],
 
-  customer_name: '' as string,
-  customer_phone: '' as string,
-  allergy_note: '' as string,
-  default_delivery_address: '' as string,
-  saved_addresses: [] as CustomerSavedAddress[],
-  order_history: [] as CustomerOrderHistoryItem[],
+  // Personal ordering data is intentionally behind `private` so generic
+  // profile cards/pills cannot accidentally render address or contact details.
+  private: { ...CustomerPrivateModel } as CustomerPrivate,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -75,27 +90,12 @@ export type Customer = {
 
 export const AppCustomerModel = {
   id: '' as string,
-  customer_name: '' as string,
-  customer_phone: '' as string,
-  allergy_note: '' as string,
-  default_delivery_address: '' as string,
-  saved_addresses: [] as CustomerSavedAddress[],
-  order_history: [] as CustomerOrderHistoryItem[],
+  private: { ...CustomerPrivateModel } as CustomerPrivate,
   ...AppProfileStamps,
 } as const
 
 export type AppCustomer = AppProfileBase &
-  Partial<
-    Pick<
-      Customer,
-      | 'customer_name'
-      | 'customer_phone'
-      | 'allergy_note'
-      | 'default_delivery_address'
-      | 'saved_addresses'
-      | 'order_history'
-    >
-  >
+  Partial<Pick<Customer, 'private'>>
 
 export type CustomerCreateInput = Omit<Customer, 'id' | 'created' | 'updated'>
 export type CustomerUpdateInput = Partial<

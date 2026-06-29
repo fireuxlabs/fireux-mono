@@ -99,6 +99,11 @@ export function useKitchenOrderCreate() {
       fulfilment_policy: {},
       fulfilment_match: {},
       customer: {},
+      payment: {
+        required: false,
+        status: 'not_required',
+        currency_code: 'CHF',
+      },
 
       app_id: (input.app_id || appId || '') as any,
       creator_id: (input.creator_id || '') as any,

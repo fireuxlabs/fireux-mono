@@ -226,6 +226,26 @@
   font-weight: 850;
 }
 
+.menu-order-selected-address {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 34%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
+  color: var(--menu-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.menu-order-selected-address span {
+  color: var(--menu-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 .menu-order-address-options button {
   display: grid;
   gap: 0.2rem;

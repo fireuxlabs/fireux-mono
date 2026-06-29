@@ -54,6 +54,25 @@ export function useFunnelDeliveryZone(
   const minimumMet = computed(() =>
     !matchedZone.value || total.value >= minimum.value
   )
+  const selectedAddressLabel = computed(() =>
+    text(selectedAddress.value?.description) ||
+      text(result.value?.address?.formatted) ||
+      text(address.value)
+  )
+  const hasSelectedAddress = computed(() =>
+    Boolean(selectedAddress.value && selectedAddressLabel.value)
+  )
+  const ready = computed(() => {
+    if (toValue(order).orderType !== 'delivery') return true
+
+    return Boolean(
+      text(address.value) &&
+        result.value?.deliverable &&
+        minimumMet.value &&
+        !suggestionsPending.value &&
+        !checkPending.value
+    )
+  })
   const status = computed(() => {
     if (toValue(order).orderType !== 'delivery') {
       return 'Delivery zone checks are only needed for delivery orders.'
@@ -72,8 +91,34 @@ export function useFunnelDeliveryZone(
   async function selectAddress(prediction: MenuDeliveryAddressPrediction) {
     selectedAddress.value = prediction
     address.value = prediction.description
+    predictions.value = []
     await check({ place_id: prediction.place_id })
   }
+
+  function clearAddress() {
+    selectedAddress.value = null
+    address.value = ''
+    result.value = null
+    predictions.value = []
+  }
+
+  watch(address, (value) => {
+    const input = text(value)
+    if (!input) {
+      selectedAddress.value = null
+      result.value = null
+      return
+    }
+
+    const selectedText = text(selectedAddress.value?.description)
+    const checkedText = text(
+      result.value?.address?.formatted || result.value?.address?.input
+    )
+    if (result.value && input !== selectedText && input !== checkedText) {
+      selectedAddress.value = null
+      result.value = null
+    }
+  })
 
   watch(
     autofillCustomer,
@@ -90,6 +135,10 @@ export function useFunnelDeliveryZone(
 
       autofillApplied.value = true
       address.value = savedAddress
+      selectedAddress.value = {
+        place_id: text(customer.address_place_id),
+        description: savedAddress,
+      }
       await check(
         customer.address_place_id
           ? { address: savedAddress, place_id: customer.address_place_id }
@@ -102,12 +151,16 @@ export function useFunnelDeliveryZone(
   return {
     address,
     checkPending,
+    clearAddress,
     fee,
+    hasSelectedAddress,
     minimum,
     minimumMet,
     predictions,
+    ready,
     result,
     selectedAddress,
+    selectedAddressLabel,
     selectAddress,
     status,
     suggestionsError,

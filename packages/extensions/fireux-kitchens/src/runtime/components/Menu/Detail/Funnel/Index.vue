@@ -48,7 +48,7 @@
         <button
           type="button"
           class="menu-order-primary"
-          :disabled="surfaceNumber === surfaceCount"
+          :disabled="continueDisabled"
           @click="nextSurface"
         >
           Continue
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
 import Basket from './Basket.vue'
@@ -97,6 +97,8 @@ const surfaceTitles = [
 ] as const
 const surfaceChoices = ['1', '2', '3', '4', '5', '6'] as const
 type SurfaceChoice = typeof surfaceChoices[number]
+const allergenAccepted = ref(false)
+const deliveryZoneReady = ref(false)
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -117,12 +119,35 @@ const currentSurface = computed(() =>
 const surfaceTitle = computed(() =>
   surfaceTitles[surfaceNumber.value - 1] || 'Order'
 )
-const currentSurfaceProps = computed(() =>
-  surfaceNumber.value === 1 ||
-    surfaceNumber.value === 3 ||
-    surfaceNumber.value === 4
-    ? { order: props.order }
-    : {}
+const currentSurfaceProps = computed(() => {
+  if (surfaceNumber.value === 2) {
+    return {
+      modelValue: allergenAccepted.value,
+      'onUpdate:modelValue': (value: boolean) => {
+        allergenAccepted.value = value
+      },
+    }
+  }
+
+  if (surfaceNumber.value === 3) {
+    return {
+      order: props.order,
+      'onUpdate:ready': (value: boolean) => {
+        deliveryZoneReady.value = value
+      },
+    }
+  }
+
+  if (surfaceNumber.value === 1 || surfaceNumber.value === 4) {
+    return { order: props.order }
+  }
+
+  return {}
+})
+const continueDisabled = computed(() =>
+  surfaceNumber.value === surfaceCount ||
+  (surfaceNumber.value === 2 && !allergenAccepted.value) ||
+  (surfaceNumber.value === 3 && !deliveryZoneReady.value)
 )
 
 function previousSurface() {
@@ -130,6 +155,7 @@ function previousSurface() {
 }
 
 function nextSurface() {
+  if (continueDisabled.value) return
   setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
 }
 
@@ -140,7 +166,11 @@ function setSurfaceNumber(next: number) {
 watch(
   () => props.order.quantity,
   (quantity) => {
-    if (!quantity) setSurfaceNumber(1)
+    if (!quantity) {
+      allergenAccepted.value = false
+      deliveryZoneReady.value = false
+      setSurfaceNumber(1)
+    }
   }
 )
 </script>

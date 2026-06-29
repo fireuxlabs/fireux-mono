@@ -8,17 +8,31 @@
       />
     </ClientOnly>
 
-    <label class="menu-order-field">
+    <div class="menu-order-field">
       <span>Delivery address</span>
+      <button
+        v-if="hasSelectedAddress"
+        type="button"
+        class="menu-order-selected-address"
+        @click="clearAddress"
+      >
+        <strong>{{ selectedAddressLabel }}</strong>
+        <span>Tap to change</span>
+      </button>
+
       <UInput
+        v-else
         v-model="address"
         autocomplete="street-address"
         placeholder="Start typing your delivery address"
         size="xl"
       />
-    </label>
+    </div>
 
-    <div v-if="predictions.length" class="menu-order-address-options">
+    <div
+      v-if="!hasSelectedAddress && predictions.length"
+      class="menu-order-address-options"
+    >
       <button
         v-for="prediction in predictions"
         :key="prediction.place_id"
@@ -52,22 +66,38 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
 import { useFunnelDeliveryZone } from '../../../../composables/fireux/public/menu/useFunnelDeliveryZone'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
 }>()
+
+const emit = defineEmits<{
+  (event: 'update:ready', value: boolean): void
+}>()
+
 const {
   address,
   checkPending,
+  clearAddress,
+  hasSelectedAddress,
   minimumMet,
   predictions,
+  ready,
   result,
+  selectedAddressLabel,
   selectAddress,
   status,
   suggestionsError,
   suggestionsPending,
   zones,
 } = useFunnelDeliveryZone(() => props.order)
+
+watch(
+  ready,
+  (value) => emit('update:ready', value),
+  { immediate: true }
+)
 </script>
