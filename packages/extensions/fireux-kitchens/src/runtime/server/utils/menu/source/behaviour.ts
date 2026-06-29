@@ -1,0 +1,33 @@
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import type { MenuSurfaceSource } from '../public/types.ts'
+
+export async function readMenuSourceData(source: MenuSurfaceSource) {
+  if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
+
+  const snap = await getRuntimeFirestore()
+    .collection(`apps/${source.app_id}/kitchens/${source.kitchen_id}/menus`)
+    .doc(source.menu_id)
+    .get()
+  if (!snap.exists) return {}
+
+  const data = snap.data() || {}
+  return readRecordString(data, 'status') === 'published' ? data : {}
+}
+
+export function menuSurfaceDataWithSourceBehaviour(
+  doorwayData: Record<string, unknown>,
+  sourceData: Record<string, unknown>
+) {
+  if (!Object.keys(sourceData).length) return doorwayData
+
+  // Public menu doorway spine: docs/concepts/family-menu.md. Root doorways keep stable paths; source menus own structured behaviour.
+  const ordering = sourceData.ordering ?? doorwayData.ordering
+  const publicViews = sourceData.public_views ?? doorwayData.public_views
+
+  return {
+    ...doorwayData,
+    ...(ordering ? { ordering } : {}),
+    ...(publicViews ? { public_views: publicViews } : {}),
+  }
+}

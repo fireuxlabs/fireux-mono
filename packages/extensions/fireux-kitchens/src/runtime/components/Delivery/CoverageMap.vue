@@ -53,6 +53,7 @@ const props = withDefaults(
     editableMode?: 'radius' | 'postal_codes' | 'polygon' | ''
     editableZoneIndex?: number | null
     compact?: boolean
+    maxZoom?: number
   }>(),
   {
     zones: () => [],
@@ -61,6 +62,7 @@ const props = withDefaults(
     editableMode: '',
     editableZoneIndex: null,
     compact: false,
+    maxZoom: 0,
   }
 )
 
@@ -142,6 +144,7 @@ onMounted(async () => {
       }
     }
     fitDeliveryZoneBounds(map, bounds, hasBounds, mapPadding)
+    capZoom(google, map)
 
     if (isMounted.value) mapMessage.value = ''
   } catch (error) {
@@ -182,6 +185,18 @@ function attachPolygonClickListener(map: any) {
         lng: roundCoordinate(latLng.lng()),
       },
     })
+  })
+}
+
+function capZoom(google: any, map: any) {
+  const maxZoom = Number(props.maxZoom || 0)
+  if (!Number.isFinite(maxZoom) || maxZoom <= 0) return
+
+  google.maps.event.addListenerOnce(map, 'idle', () => {
+    const zoom = Number(map.getZoom?.())
+    if (Number.isFinite(zoom) && zoom > maxZoom) {
+      map.setZoom(maxZoom)
+    }
   })
 }
 

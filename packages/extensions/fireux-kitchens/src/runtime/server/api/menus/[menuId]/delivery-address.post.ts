@@ -10,12 +10,12 @@ import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryCoordinates,
   checkMenuDeliveryPlaceId,
-} from '../../../utils/menu-delivery-address.ts'
-import { readMenuOrderContext } from '../../../utils/menu-order-context.ts'
+} from '../../../utils/menu/ordering/delivery-address.ts'
+import { readMenuOrderContext } from '../../../utils/menu/ordering/context.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
-} from '../../../utils/menu-ordering.ts'
+} from '../../../utils/menu/ordering/config.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

@@ -8,23 +8,23 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { menuSurfaceFromData } from '../../utils/menu-surface.ts'
-import { menuSourceFromData } from '../../utils/menu-surface-source.ts'
+import { menuSurfaceFromData } from '../../utils/menu/public/surface.ts'
+import { menuSourceFromData } from '../../utils/menu/public/source.ts'
 import {
   menuCreatorLabel,
   readMenuCreatorLabels,
-} from '../../utils/menu-creators.ts'
+} from '../../utils/menu/ownership/creators.ts'
 import {
   menuOwnerAppApiTo,
   readMenuOwnerAppView,
-} from '../../utils/menu-owner-app.ts'
-import { menuSourcePayloadFromApi } from '../../utils/menu-source-payload.ts'
+} from '../../utils/menu/ownership/owner-app.ts'
+import { menuSourcePayloadFromApi } from '../../utils/menu/source/payload.ts'
 import {
   menuSurfaceDataWithSourceBehaviour,
   readMenuSourceData,
-} from '../../utils/menu-source-behaviour.ts'
-import { readKitchenMenuPublicRows } from '../../utils/kitchen-menu-public-rows.ts'
-import { readKitchenMenuPublicChoices } from '../../utils/menu-public-choices.ts'
+} from '../../utils/menu/source/behaviour.ts'
+import { readKitchenMenuPublicRows } from '../../utils/menu/public/rows.ts'
+import { readKitchenMenuPublicChoices } from '../../utils/menu/public/choices.ts'
 import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
@@ -32,8 +32,8 @@ import {
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
   resolveSourceAppId,
-} from '../../utils/menu-kitchen-scope.ts'
-import { resolveMenuPageStyle } from '../../utils/menu-page-style.ts'
+} from '../../utils/menu/ownership/kitchen-scope.ts'
+import { resolveMenuPageStyle } from '../../utils/menu/public/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

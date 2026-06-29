@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-06-30
 // usage_note: shared runtime contract check; update when run or imported for runtime enforcement.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'

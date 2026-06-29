@@ -51,9 +51,13 @@
           :disabled="continueDisabled"
           @click="nextSurface"
         >
-          Continue
+          {{ continueLabel }}
         </button>
       </footer>
+
+      <p v-if="pingError" class="menu-order-placeholder">
+        {{ pingError }}
+      </p>
     </section>
   </div>
 </template>
@@ -103,6 +107,9 @@ type SurfaceChoice = typeof surfaceChoices[number]
 const allergenAccepted = ref(false)
 const deliveryZoneReady = ref(false)
 const deliveryState = ref<MenuOrderingDeliveryState>({ ready: false })
+const pingPending = ref(false)
+const pingError = ref('')
+const kitchenPingSent = ref(false)
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -160,21 +167,57 @@ const currentSurfaceProps = computed(() => {
 })
 const continueDisabled = computed(() =>
   surfaceNumber.value === surfaceCount ||
+  pingPending.value ||
   (surfaceNumber.value === 2 && !allergenAccepted.value) ||
   (surfaceNumber.value === 3 && !deliveryZoneReady.value)
+)
+const continueLabel = computed(() =>
+  pingPending.value ? 'Sending...' : 'Continue'
 )
 
 function previousSurface() {
   setSurfaceNumber(Math.max(1, surfaceNumber.value - 1))
 }
 
-function nextSurface() {
+async function nextSurface() {
   if (continueDisabled.value) return
+  if (surfaceNumber.value === 3 && !kitchenPingSent.value) {
+    await sendKitchenPing()
+    if (pingError.value) return
+  }
   setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
 }
 
 function setSurfaceNumber(next: number) {
   surfaceChoice.value = String(next) as SurfaceChoice
+}
+
+async function sendKitchenPing() {
+  const menuId = String(props.order.menuId || '').trim()
+  if (!menuId) return
+
+  const query = new URLSearchParams()
+  if (props.order.kitchenSlug) query.set('kitchenSlug', props.order.kitchenSlug)
+  const qs = query.toString()
+  const endpoint = `/api/menus/${encodeURIComponent(menuId)}/kitchen-ping${qs ? `?${qs}` : ''}`
+
+  pingPending.value = true
+  pingError.value = ''
+  try {
+    await $fetch(endpoint, {
+      method: 'POST',
+      body: {
+        basket: props.order.selection,
+      },
+    })
+    kitchenPingSent.value = true
+  } catch (error) {
+    pingError.value = error instanceof Error
+      ? error.message
+      : 'Kitchen ping could not be sent.'
+  } finally {
+    pingPending.value = false
+  }
 }
 
 watch(
@@ -184,6 +227,8 @@ watch(
       allergenAccepted.value = false
       deliveryZoneReady.value = false
       deliveryState.value = { ready: false }
+      kitchenPingSent.value = false
+      pingError.value = ''
       setSurfaceNumber(1)
     }
   }

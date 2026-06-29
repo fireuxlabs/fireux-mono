@@ -2,17 +2,17 @@ import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { writeKitchenMenuDraft } from '../../../../utils/kitchen-menu-draft-write'
+import { writeKitchenMenuDraft } from '../../../../utils/menu/draft/write'
 import {
   countKitchenMenuDraftItems,
   normalizeKitchenMenuDraftSections,
-} from '../../../../utils/kitchen-menu-draft-sections'
+} from '../../../../utils/menu/draft/sections'
 import {
   assertKitchenMenuUploadAccess,
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
-} from '../../../../utils/kitchen-menu-uploads'
+} from '../../../../utils/menu/source/uploads'
 
 type ConfirmMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>> & {
   confirmDishes?: boolean

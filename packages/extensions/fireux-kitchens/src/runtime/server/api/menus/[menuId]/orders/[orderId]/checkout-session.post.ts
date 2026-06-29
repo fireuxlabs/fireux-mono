@@ -9,8 +9,8 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { readMenuOrderContext } from '../../../../../utils/menu-order-context.ts'
-import { getMenuStripe } from '../../../../../utils/menu-stripe.ts'
+import { readMenuOrderContext } from '../../../../../utils/menu/ordering/context.ts'
+import { getMenuStripe } from '../../../../../utils/menu/ordering/stripe.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const safeSegment = (value: string) =>

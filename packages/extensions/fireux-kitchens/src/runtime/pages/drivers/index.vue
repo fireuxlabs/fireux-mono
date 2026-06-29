@@ -6,6 +6,8 @@
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCTA />
 
+      <DriverDeliveryPings />
+
       <!-- Driver follows the normal profile stack; Manage is a temporary dispatch workbench over those profiles. -->
       <DriverManage />
 

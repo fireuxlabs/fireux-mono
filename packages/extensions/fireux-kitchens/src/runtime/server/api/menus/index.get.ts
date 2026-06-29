@@ -2,18 +2,18 @@ import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { menuSurfaceFromData } from '../../utils/menu-surface.ts'
-import { menuSourceFromData } from '../../utils/menu-surface-source.ts'
+import { menuSurfaceFromData } from '../../utils/menu/public/surface.ts'
+import { menuSourceFromData } from '../../utils/menu/public/source.ts'
 import {
   menuCreatorLabel,
   readMenuCreatorLabels,
-} from '../../utils/menu-creators.ts'
-import { menuOwnerAppView } from '../../utils/menu-owner-app.ts'
+} from '../../utils/menu/ownership/creators.ts'
+import { menuOwnerAppView } from '../../utils/menu/ownership/owner-app.ts'
 import {
   menuSurfaceDataWithSourceBehaviour,
   readMenuSourceData,
-} from '../../utils/menu-source-behaviour.ts'
-import { readMenuPageStyle } from '../../utils/menu-page-style.ts'
+} from '../../utils/menu/source/behaviour.ts'
+import { readMenuPageStyle } from '../../utils/menu/public/page-style.ts'
 import {
   readKitchenIdentity,
   readKitchenMenuStyle,

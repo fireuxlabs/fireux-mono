@@ -12,7 +12,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   currentMenuOrderAppId,
   readMenuOrderContext,
-} from '../../../utils/menu-order-context.ts'
+} from '../../../utils/menu/ordering/context.ts'
 
 type DeliveryPingBody = {
   delivery?: {
@@ -82,6 +82,7 @@ export default defineEventHandler(async (event) => {
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const db = getRuntimeFirestore()
   const basket = readBasket(body)
+  const pickup = await readPickup(db, context.kitchenId)
   const now = FieldValue.serverTimestamp()
   const id = pingId({
     menuId: context.menuId,
@@ -99,8 +100,10 @@ export default defineEventHandler(async (event) => {
       app_id: currentMenuOrderAppId(),
       source_app_id: context.appId,
       kitchen_id: context.kitchenId,
-      kitchen_slug: kitchenSlug,
+      kitchen_slug: context.kitchenSlug || kitchenSlug,
+      kitchen_name: context.kitchenName || '',
       menu_id: context.menuId,
+      ...(pickup ? { pickup } : {}),
       destination,
       basket,
       created_at: now,
@@ -128,6 +131,53 @@ function pingId(input: {
     .slice(0, 24)
 
   return `weak-${digest}`
+}
+
+async function readPickup(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  kitchenId: string
+) {
+  if (!kitchenId) return null
+
+  const snap = await db.collection('kitchens').doc(kitchenId).get()
+  const data = snap.data() || {}
+  const placeData = await readLinkedPlace(db, data)
+  const point = readPoint(data) || readPoint(placeData)
+  if (!point) return null
+
+  return {
+    label: text(
+      data.display_name ||
+      data.name ||
+      placeData?.short_name ||
+      placeData?.name ||
+      data.slug ||
+      'Kitchen'
+    ),
+    ...point,
+  }
+}
+
+async function readLinkedPlace(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  kitchenData: Record<string, unknown>
+) {
+  const placeId = text(kitchenData.place_id)
+  if (!placeId) return null
+
+  const snap = await db.collection('places').doc(placeId).get()
+  return snap.exists ? snap.data() || {} : null
+}
+
+function readPoint(data: Record<string, unknown> | null) {
+  const lat = coordinateValue(data?.lat)
+  const lng = coordinateValue(data?.lng)
+  if (lat === null || lng === null) return null
+
+  return {
+    lat,
+    lng,
+  }
 }
 
 function readDestination(body: DeliveryPingBody | null) {

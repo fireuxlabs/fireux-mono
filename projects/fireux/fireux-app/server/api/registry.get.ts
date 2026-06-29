@@ -1,6 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
-import { getFirestoreDb } from './firebase-admin'
+import { getFirestoreDb } from '../utils/firebase-admin'
 
 type RegistryDocument = Record<string, unknown> & { id?: string }
 

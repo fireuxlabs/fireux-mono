@@ -14,29 +14,29 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/order.model'
-import { readKitchenMenuPublicRows } from '../../../utils/kitchen-menu-public-rows.ts'
+import { readKitchenMenuPublicRows } from '../../../utils/menu/public/rows.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
   type MenuDeliveryAddressResult,
-} from '../../../utils/menu-delivery-address.ts'
+} from '../../../utils/menu/ordering/delivery-address.ts'
 import {
   currentMenuOrderAppId,
   readMenuOrderContext,
-} from '../../../utils/menu-order-context.ts'
+} from '../../../utils/menu/ordering/context.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
-} from '../../../utils/menu-ordering.ts'
+} from '../../../utils/menu/ordering/config.ts'
 import {
   resolveMenuOrderPayment,
-} from '../../../utils/menu-order-payment.ts'
+} from '../../../utils/menu/ordering/payment.ts'
 import {
   readRequestedMenuOrderItems,
   resolveMenuOrderAddOns,
   resolveMenuOrderVariant,
   type CreateMenuOrderBody,
-} from '../../../utils/menu-order-lines.ts'
+} from '../../../utils/menu/ordering/lines.ts'
 
 const orderTypes = new Set<KitchenOrderType>([
   'dine_in',
