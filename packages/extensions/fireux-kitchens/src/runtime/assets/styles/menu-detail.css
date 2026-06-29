@@ -4,20 +4,54 @@
  * state and composition, not app-specific chrome.
  */
 .fireux-menu-detail {
+  --menu-bg-light: #f8fafc;
+  --menu-bg-dark: #0f172a;
+  --menu-text-light: #0f172a;
+  --menu-text-dark: #f8fafc;
+  --menu-title-light: var(--menu-text-light);
+  --menu-title-dark: var(--menu-text-dark);
+  --menu-primary-source: #0f766e;
+  --menu-primary: var(--menu-primary-source);
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
+  --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
+  --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
+  --menu-secondary: #64748b;
+  --menu-accent: var(--menu-secondary);
+  --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-title-font: var(--menu-font);
+
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
   width: min(100%, 72rem);
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
   background: var(--menu-bg);
   color: var(--menu-text);
   font-family: var(--menu-font);
   text-align: center;
 }
 
+.fireux-menu-detail.public-menu--light {
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
+  --menu-primary: var(--menu-primary-source);
+}
+
+.fireux-menu-detail.public-menu--dark {
+  --menu-bg: var(--menu-bg-dark);
+  --menu-text: var(--menu-text-dark);
+  --menu-title: var(--menu-title-dark);
+  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
+}
+
 /*
  * Menu ordering funnel v0.
- * One component owns the six-screen skeleton until each screen earns a seam.
+ * Start with the smallest seam: basket opens one sheet.
  */
 .menu-order-funnel {
   position: fixed;
@@ -33,8 +67,7 @@
   pointer-events: auto;
 }
 
-.menu-order-funnel--panel,
-.menu-order-funnel--status {
+.menu-order-funnel--panel {
   inset: 0;
   place-items: end center;
   padding:
@@ -81,15 +114,7 @@
   text-align: left;
 }
 
-.menu-order-card--status {
-  align-self: center;
-  grid-template-columns: auto minmax(0, 1fr);
-  width: min(100%, 38rem);
-}
-
-.menu-order-header,
-.menu-order-footer,
-.menu-order-actions {
+.menu-order-header {
   display: flex;
   gap: 0.85rem;
   align-items: center;
@@ -97,21 +122,59 @@
 }
 
 .menu-order-header h2,
-.menu-order-card p {
+.menu-order-step-label,
+.menu-order-placeholder {
   margin: 0;
 }
 
-.menu-order-header h2,
-.menu-order-card--status h2 {
+.menu-order-header h2 {
   color: var(--menu-title);
   font-size: clamp(1.4rem, 5vw, 2rem);
   font-weight: 950;
   letter-spacing: -0.05em;
 }
 
-.menu-order-step-label,
-.menu-order-footer span,
-.menu-order-card small {
+.menu-order-placeholder {
+  color: var(--menu-muted);
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.menu-order-basket-list,
+.menu-order-items {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.menu-order-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-order-items li,
+.menu-order-total {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-order-items li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
+  color: var(--menu-title);
+  font-weight: 900;
+}
+
+.menu-order-total {
+  margin: 0;
+  padding-top: 0.35rem;
+  color: var(--menu-title);
+}
+
+.menu-order-total span {
   color: var(--menu-muted);
   font-size: 0.76rem;
   font-weight: 850;
@@ -119,72 +182,26 @@
   text-transform: uppercase;
 }
 
-.menu-order-body {
-  display: grid;
-  gap: 1rem;
-  min-height: 8rem;
+.menu-order-total strong {
+  font-size: 1.3rem;
+  font-weight: 950;
+}
+
+.menu-order-step-label {
   color: var(--menu-muted);
-  font-size: 0.95rem;
-  font-weight: 750;
-  line-height: 1.45;
-}
-
-.menu-order-items {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.menu-order-items li {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
-  color: var(--menu-title);
-  font-weight: 900;
-}
-
-.menu-order-fields {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.menu-order-fields label {
-  display: grid;
-  gap: 0.35rem;
-  color: var(--menu-muted);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 850;
-}
-
-.menu-order-fields input {
-  width: 100%;
-  padding: 0.75rem 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--menu-bg) 88%, var(--menu-text));
-  color: var(--menu-text);
-  font: inherit;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .menu-order-footer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
   padding-top: 0.85rem;
   border-top: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
-}
-
-.menu-order-footer p {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.menu-order-footer strong {
-  color: var(--menu-title);
-  font-size: 1.35rem;
-  font-weight: 950;
 }
 
 .menu-order-primary,
@@ -201,17 +218,16 @@
   font-weight: 900;
 }
 
+.menu-order-primary,
+.menu-order-secondary {
+  min-height: 2.6rem;
+  padding: 0.6rem 1rem;
+}
+
 .menu-order-primary {
-  min-height: 2.75rem;
-  padding: 0.65rem 1rem;
   border: 0;
   background: var(--menu-primary);
   color: var(--menu-bg);
-}
-
-.menu-order-primary:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
 }
 
 .menu-order-secondary,
@@ -221,9 +237,10 @@
   color: var(--menu-text);
 }
 
-.menu-order-secondary {
-  min-height: 2.5rem;
-  padding: 0.55rem 0.85rem;
+.menu-order-primary:disabled,
+.menu-order-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
 }
 
 .menu-order-fold {
@@ -232,30 +249,8 @@
   padding: 0;
 }
 
-.menu-order-spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid color-mix(in srgb, currentColor 34%, transparent);
-  border-top-color: currentColor;
-  border-radius: 999px;
-  animation: menu-order-spin 0.8s linear infinite;
-}
-
-.menu-order-status-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  color: var(--menu-accent);
-}
-
-@keyframes menu-order-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (max-width: 640px) {
-  .menu-order-funnel--panel,
-  .menu-order-funnel--status {
+  .menu-order-funnel--panel {
     place-items: end stretch;
     background: transparent;
   }
@@ -264,14 +259,9 @@
     width: 100%;
   }
 
-  .menu-order-header,
   .menu-order-footer {
-    align-items: stretch;
-  }
-
-  .menu-order-footer,
-  .menu-order-actions {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .menu-order-primary,

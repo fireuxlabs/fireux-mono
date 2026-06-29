@@ -112,11 +112,7 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
   })
   const showFunnel = computed(() =>
     isOrderMode.value &&
-      Boolean(
-        draft.quantity.value ||
-          draft.awaitingAcceptance.value ||
-          draft.sentOrder.value
-      )
+      draft.quantity.value > 0
   )
 
   function setSelectedChoice(value: MenuChoiceValue) {

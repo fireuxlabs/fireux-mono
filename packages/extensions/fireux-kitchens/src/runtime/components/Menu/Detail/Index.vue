@@ -1,33 +1,25 @@
 <template>
-  <section
+  <div
     class="fireux-menu-detail menu-detail"
     :class="themeClassName"
     :style="themeStyleVars"
   >
     <MenuDetailStructured
-      :view="ordering.structured.view"
+      :view="interaction.structured.view"
       :pending="pending"
       :error="error"
-      @update:selected-choice="ordering.structured.select"
-      @add="ordering.structured.add"
-      @remove="ordering.structured.remove"
+      @update:selected-choice="interaction.structured.select"
+      @add="interaction.structured.add"
+      @remove="interaction.structured.remove"
     />
 
     <MenuDetailOrderingFunnel
-      v-if="ordering.funnel.show"
-      :order="ordering.funnel.order"
-      @clear="ordering.funnel.clear"
-      @close-panel="ordering.funnel.close"
-      @open-panel="ordering.funnel.open"
-      @submit="ordering.funnel.submit"
+      v-if="interaction.funnel.show"
+      :order="interaction.funnel.order"
+      @close-panel="interaction.funnel.close"
+      @open-panel="interaction.funnel.open"
     />
-  </section>
-
-  <DevJson
-    title="Menu debug"
-    context="MenuDetail · Menu/Detail/Index.vue"
-    :data="debug"
-  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -41,15 +33,13 @@ const props = defineProps<{
   kitchenSlug?: string
 }>()
 
-const menuId = computed(() => props.menuId)
-const kitchenSlug = computed(() => props.kitchenSlug)
-// Public detail spine: keep the active menu doorway boring first. Document/theme rendering is parked until the structured path is clean.
 const {
   pending,
   error,
   structuredMenu,
-  debug,
-} = useMenuManifest(menuId, { kitchenSlug })
+} = useMenuManifest(() => props.menuId, {
+  kitchenSlug: () => props.kitchenSlug,
+})
 const pageStyle = computed(() =>
   structuredMenu.value?.presentation.pageStyle || null
 )
@@ -57,9 +47,9 @@ const {
   className: themeClassName,
   styleVars: themeStyleVars,
 } = useMenuThemeSurface({ pageStyle })
-const ordering = useMenuOrdering({
+const interaction = useMenuOrdering({
   menu: structuredMenu,
-  menuId,
-  kitchenSlug,
+  menuId: () => props.menuId,
+  kitchenSlug: () => props.kitchenSlug,
 })
 </script>
