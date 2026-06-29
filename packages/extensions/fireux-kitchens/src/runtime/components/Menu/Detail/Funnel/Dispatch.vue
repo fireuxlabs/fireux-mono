@@ -1,35 +1,49 @@
 <template>
   <div class="menu-order-dispatch">
-    <UIcon
-      name="i-lucide-radio"
-      class="menu-order-dispatch__icon"
-      aria-hidden="true"
-    />
+    <section class="menu-order-dispatch__section">
+      <UIcon
+        name="i-lucide-chef-hat"
+        class="menu-order-dispatch__icon"
+        aria-hidden="true"
+      />
 
-    <div class="menu-order-dispatch__copy">
-      <p>
-        We have the basket and delivery address. This is where the order starts
-        moving.
-      </p>
+      <div class="menu-order-dispatch__copy">
+        <strong>{{ kitchen.title }}</strong>
+        <span>{{ kitchen.status }}</span>
+      </div>
+    </section>
 
-      <ul>
-        <li v-for="stage in stages" :key="stage">
-          {{ stage }}
-        </li>
-      </ul>
-    </div>
+    <div class="menu-order-dispatch__divider" />
+
+    <section class="menu-order-dispatch__section">
+      <UIcon
+        name="i-lucide-radio-tower"
+        class="menu-order-dispatch__icon"
+        aria-hidden="true"
+      />
+
+      <div class="menu-order-dispatch__copy">
+        <strong>Hailing drivers</strong>
+        <span>{{ driverStatus }}</span>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import type {
+  MenuOrderingDeliveryState,
+  MenuOrderingFunnelState,
+} from '../../../../models/menu/menu-ordering.model'
 import { useFunnelDispatch } from '../../../../composables/fireux/public/menu/useFunnelDispatch'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
+  delivery?: MenuOrderingDeliveryState | null
 }>()
 
 const {
-  stages,
-} = useFunnelDispatch(() => props.order)
+  driverStatus,
+  kitchen,
+} = useFunnelDispatch(() => props.order, () => props.delivery)
 </script>

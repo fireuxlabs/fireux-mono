@@ -66,6 +66,19 @@ export type MenuOrderingSelectionSummary = {
   quantity: number
 }
 
+export type MenuOrderingDeliveryState = {
+  ready: boolean
+  address?: {
+    input?: string
+    formatted?: string
+    postal_code?: string
+    place_id?: string
+    lat?: number
+    lng?: number
+  }
+  zone?: unknown
+}
+
 export type MenuOrderingFunnelState = {
   actionLabel: string
   accepted: boolean

@@ -270,9 +270,8 @@
 }
 
 .menu-order-dispatch {
-  display: flex;
-  gap: 0.85rem;
-  align-items: flex-start;
+  display: grid;
+  gap: 1rem;
 }
 
 .menu-order-dispatch__icon {
@@ -282,28 +281,35 @@
   color: var(--menu-primary);
 }
 
+.menu-order-dispatch__section {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
 .menu-order-dispatch__copy {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
-.menu-order-dispatch__copy p,
-.menu-order-dispatch__copy ul {
-  margin: 0;
+.menu-order-dispatch__copy strong {
+  color: var(--menu-text);
+  font-size: 1rem;
+  font-weight: 950;
 }
 
-.menu-order-dispatch__copy p,
-.menu-order-dispatch__copy li {
+.menu-order-dispatch__copy span {
   color: var(--menu-muted);
   font-size: 0.95rem;
   font-weight: 750;
   line-height: 1.45;
 }
 
-.menu-order-dispatch__copy ul {
-  display: grid;
-  gap: 0.4rem;
-  padding-inline-start: 1.1rem;
+.menu-order-dispatch__divider {
+  width: 100%;
+  height: 1px;
+  background: color-mix(in srgb, var(--menu-text) 14%, transparent);
 }
 
 .menu-order-delivery-map .delivery-zones-map__canvas {

@@ -1,11 +1,24 @@
-import type { KitchenDeliveryZone } from '../models/kitchen.model'
+export type DeliveryCoverageZone = {
+  id?: string
+  label?: string
+  radius_m?: number
+  postal_codes?: string[]
+  place_ids?: string[]
+  polygon?: Array<{
+    lat: number
+    lng: number
+  }>
+  color?: string
+  min_order_chf?: number
+  fee_chf?: number
+}
 
 type ResolvedPostalCode = {
   placeId: string
   geometry?: any
 }
 
-export function hasPostalCodeZones(zones: KitchenDeliveryZone[]) {
+export function hasPostalCodeZones(zones: DeliveryCoverageZone[]) {
   return zones.some(
     (zone) => Boolean(zone.place_ids?.length) || Boolean(zone.postal_codes?.length)
   )
@@ -13,7 +26,7 @@ export function hasPostalCodeZones(zones: KitchenDeliveryZone[]) {
 
 export async function resolveDeliveryZonePlaceIds(
   google: any,
-  zones: KitchenDeliveryZone[],
+  zones: DeliveryCoverageZone[],
   bounds: any
 ) {
   const colorsByPlaceId: Record<string, string> = {}
@@ -48,7 +61,7 @@ export async function resolveDeliveryZonePlaceIds(
 export function renderDeliveryZonePolygons(
   google: any,
   map: any,
-  zones: KitchenDeliveryZone[]
+  zones: DeliveryCoverageZone[]
 ) {
   zones
     .filter((zone) => Array.isArray(zone.polygon) && zone.polygon.length >= 3)
@@ -70,7 +83,7 @@ export function renderDeliveryZonePolygons(
 export function renderDeliveryZonePolygonPoints(
   google: any,
   map: any,
-  zones: KitchenDeliveryZone[]
+  zones: DeliveryCoverageZone[]
 ) {
   zones
     .filter((zone) => Array.isArray(zone.polygon) && zone.polygon.length)
@@ -102,7 +115,7 @@ export function renderDeliveryZonePolygonPoints(
 export function renderDeliveryZoneRadii(
   google: any,
   map: any,
-  zones: KitchenDeliveryZone[],
+  zones: DeliveryCoverageZone[],
   center: { lat: number; lng: number }
 ) {
   zones
@@ -126,7 +139,7 @@ export function renderDeliveryZoneRadii(
 export function extendBoundsWithLocalZones(
   google: any,
   bounds: any,
-  zones: KitchenDeliveryZone[],
+  zones: DeliveryCoverageZone[],
   center: { lat: number; lng: number }
 ) {
   let hasBounds = false
@@ -167,7 +180,7 @@ export function roundCoordinate(value: number) {
   return Math.round(value * 1000000) / 1000000
 }
 
-export function zoneRuleLabel(zone: KitchenDeliveryZone) {
+export function zoneRuleLabel(zone: DeliveryCoverageZone) {
   return [
     `Min - ${chf(Number(zone.min_order_chf || 0))}`,
     `Fee - ${chf(Number(zone.fee_chf || 0))}`,

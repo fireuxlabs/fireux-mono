@@ -61,7 +61,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import type {
+  MenuOrderingDeliveryState,
+  MenuOrderingFunnelState,
+} from '../../../../models/menu/menu-ordering.model'
 import Basket from './Basket.vue'
 import Allergen from './Allergen.vue'
 import DeliveryZone from './DeliveryZone.vue'
@@ -91,7 +94,7 @@ const surfaceTitles = [
   'Basket',
   'Allergy check',
   'Delivery area',
-  'Contact kitchen and drivers',
+  'Dispatch',
   'Review',
   'Payment',
 ] as const
@@ -99,6 +102,7 @@ const surfaceChoices = ['1', '2', '3', '4', '5', '6'] as const
 type SurfaceChoice = typeof surfaceChoices[number]
 const allergenAccepted = ref(false)
 const deliveryZoneReady = ref(false)
+const deliveryState = ref<MenuOrderingDeliveryState>({ ready: false })
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -135,10 +139,20 @@ const currentSurfaceProps = computed(() => {
       'onUpdate:ready': (value: boolean) => {
         deliveryZoneReady.value = value
       },
+      'onUpdate:delivery': (value: MenuOrderingDeliveryState) => {
+        deliveryState.value = value
+      },
     }
   }
 
-  if (surfaceNumber.value === 1 || surfaceNumber.value === 4) {
+  if (surfaceNumber.value === 4) {
+    return {
+      order: props.order,
+      delivery: deliveryState.value,
+    }
+  }
+
+  if (surfaceNumber.value === 1) {
     return { order: props.order }
   }
 
@@ -169,6 +183,7 @@ watch(
     if (!quantity) {
       allergenAccepted.value = false
       deliveryZoneReady.value = false
+      deliveryState.value = { ready: false }
       setSurfaceNumber(1)
     }
   }

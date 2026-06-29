@@ -13,6 +13,10 @@ export type DriverKitchenLink = {
   active: boolean
 }
 
+export type DriverCoverage = {
+  radius_m: number
+}
+
 /**
  * Family: Identity/profile capability.
  * Sibling: profiles/Customer/Customer.model.ts
@@ -48,6 +52,9 @@ export const DriverModel = {
   accepts_weak_pings: true as boolean,
   accepts_delivery_tenders: true as boolean,
   kitchen_links: [] as DriverKitchenLink[],
+  coverage: {
+    radius_m: 1500,
+  } as DriverCoverage,
 
   created: {
     at: {} as FirebaseTimestamp,

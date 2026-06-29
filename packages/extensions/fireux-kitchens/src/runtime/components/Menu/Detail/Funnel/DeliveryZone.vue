@@ -67,7 +67,10 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import type {
+  MenuOrderingDeliveryState,
+  MenuOrderingFunnelState,
+} from '../../../../models/menu/menu-ordering.model'
 import { useFunnelDeliveryZone } from '../../../../composables/fireux/public/menu/useFunnelDeliveryZone'
 
 const props = defineProps<{
@@ -76,6 +79,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
+  (event: 'update:delivery', value: MenuOrderingDeliveryState): void
 }>()
 
 const {
@@ -98,6 +102,18 @@ const {
 watch(
   ready,
   (value) => emit('update:ready', value),
+  { immediate: true }
+)
+
+watch(
+  [ready, result],
+  ([isReady, checked]) => {
+    emit('update:delivery', {
+      ready: Boolean(isReady),
+      ...(checked?.address ? { address: checked.address } : {}),
+      ...(checked?.zone ? { zone: checked.zone } : {}),
+    })
+  },
   { immediate: true }
 )
 </script>
