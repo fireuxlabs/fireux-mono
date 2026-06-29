@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderingFunnelState } from './types'
-import { useFunnelBasket } from './useFunnelBasket'
+import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import { useFunnelBasket } from '../../../../composables/fireux/public/menu/useFunnelBasket'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState

@@ -25,19 +25,48 @@
     </div>
 
     <div
-      class="delivery-zones-map__key"
+      class="delivery-zones-map__key-mobile"
       aria-label="Delivery fees"
     >
-      <p
-        v-for="zone in deliveryZones"
-        :key="zone.id || zone.label"
-        class="delivery-zones-map__key-item"
-        :style="{ '--zone-color': zone.color || '#ff7a32' }"
-      >
-        <span />
-        {{ zoneRuleLabel(zone) }}
+      <p class="delivery-zones-map__key-note">
+        Amounts in CHF
       </p>
+
+      <div
+        v-for="zone in deliveryZoneRows"
+        :key="zone.id"
+        class="delivery-zones-map__key-row"
+      >
+        <span class="delivery-zones-map__key-zone">
+          <i
+            :style="{ '--zone-color': zone.color }"
+            aria-hidden="true"
+          />
+          {{ zone.label }}
+        </span>
+
+        <span class="delivery-zones-map__key-price">
+          Min {{ zone.minimum }} · Fee {{ zone.fee }}
+        </span>
+      </div>
     </div>
+
+    <UTable
+      :data="deliveryZoneRows"
+      :columns="deliveryZoneColumns"
+      class="delivery-zones-map__key delivery-zones-map__key--table"
+      aria-label="Delivery fees"
+    >
+      <template #label-cell="{ row }">
+        <span class="delivery-zones-map__key-zone">
+          <i
+            :style="{ '--zone-color': row.original.color }"
+            aria-hidden="true"
+          />
+          {{ row.original.label }}
+        </span>
+      </template>
+    </UTable>
   </section>
 </template>
 
@@ -55,7 +84,6 @@ import {
   renderDeliveryZoneRadii,
   resolveDeliveryZonePlaceIds,
   roundCoordinate,
-  zoneRuleLabel,
 } from '../../../utils/kitchen-delivery-zones-map'
 
 // Kitchen detail fulfilment map: shared by public kitchen detail, console identity, and menu ordering previews.
@@ -93,6 +121,29 @@ const isMounted = ref(false)
 const mapClickListener = ref<{ remove: () => void } | null>(null)
 const zoneColorsByPlaceId = ref<Record<string, string>>({})
 const deliveryZones = computed(() => props.zones)
+const deliveryZoneColumns = [
+  {
+    accessorKey: 'label',
+    header: 'Zone',
+  },
+  {
+    accessorKey: 'minimum',
+    header: 'Minimum order (CHF)',
+  },
+  {
+    accessorKey: 'fee',
+    header: 'Fee (CHF)',
+  },
+]
+const deliveryZoneRows = computed(() =>
+  deliveryZones.value.map((zone, index) => ({
+    id: String(zone.id || zone.label || `zone-${index + 1}`),
+    label: zone.label || `Zone ${index + 1}`,
+    minimum: amount(Number(zone.min_order_chf || 0)),
+    fee: amount(Number(zone.fee_chf || 0)),
+    color: zone.color || '#ff7a32',
+  }))
+)
 const mapPadding = 28
 const googleMapsApiKey = computed(() =>
   String(publicConfig.googleMapsApiKey || '').trim()
@@ -199,6 +250,13 @@ function attachPolygonClickListener(map: any) {
   })
 }
 
+function amount(value: number) {
+  return new Intl.NumberFormat('de-CH', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+  }).format(Math.max(0, value))
+}
+
 onBeforeUnmount(() => {
   isMounted.value = false
   mapClickListener.value?.remove()
@@ -245,26 +303,115 @@ onBeforeUnmount(() => {
   color: #b42318;
 }
 
-.delivery-zones-map__key {
+.delivery-zones-map__key-mobile {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
-.delivery-zones-map__key-item {
-  display: flex;
-  gap: 0.55rem;
-  align-items: center;
+.delivery-zones-map__key-note {
   margin: 0;
-  color: var(--menu-text, var(--ui-text));
-  font-size: 0.84rem;
+  color: color-mix(in srgb, var(--menu-text, var(--ui-text)) 62%, var(--menu-bg, var(--ui-bg)));
+  font-size: 0.66rem;
   font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.delivery-zones-map__key-item span {
+.delivery-zones-map__key-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.46rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 10%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 82%, transparent);
+  color: var(--menu-text, var(--ui-text));
+  font-weight: 900;
+}
+
+.delivery-zones-map__key-price {
+  color: color-mix(in srgb, var(--menu-text, var(--ui-text)) 72%, var(--menu-bg, var(--ui-bg)));
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.delivery-zones-map__key--table {
+  display: none;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 10%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 82%, transparent);
+  color: var(--menu-text, var(--ui-text));
+}
+
+.delivery-zones-map__key--table :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.delivery-zones-map__key--table :deep(th) {
+  background: color-mix(in srgb, var(--menu-text, var(--ui-text)) 8%, transparent);
+  color: color-mix(in srgb, var(--menu-text, var(--ui-text)) 70%, var(--menu-bg, var(--ui-bg)));
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.delivery-zones-map__key--table :deep(th),
+.delivery-zones-map__key--table :deep(td) {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 8%, transparent);
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.delivery-zones-map__key--table :deep(tbody tr:last-child td) {
+  border-bottom: 0;
+}
+
+.delivery-zones-map__key--table :deep(th:nth-child(2)),
+.delivery-zones-map__key--table :deep(th:nth-child(3)),
+.delivery-zones-map__key--table :deep(td:nth-child(2)),
+.delivery-zones-map__key--table :deep(td:nth-child(3)) {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.delivery-zones-map__key--table :deep(td:nth-child(2)),
+.delivery-zones-map__key--table :deep(td:nth-child(3)) {
+  font-variant-numeric: tabular-nums;
+}
+
+.delivery-zones-map__key-zone {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.delivery-zones-map__key-zone i {
+  flex: 0 0 auto;
   width: 0.9rem;
   height: 0.9rem;
   border-radius: 999px;
   background: var(--zone-color);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--menu-text, var(--ui-text)) 16%, transparent);
+}
+
+@media (min-width: 640px) {
+  .delivery-zones-map__key-mobile {
+    display: none;
+  }
+
+  .delivery-zones-map__key--table {
+    display: block;
+  }
 }
 </style>

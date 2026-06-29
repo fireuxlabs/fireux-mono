@@ -1,7 +1,7 @@
 <template>
   <section
-    class="structured-menu"
-    :class="{ 'structured-menu--dimmed': view?.dimmed }"
+    class="menu-detail-content"
+    :class="{ 'menu-detail-content--dimmed': view?.dimmed }"
   >
     <p v-if="pending" class="menu-state">
       Loading menu...
@@ -12,14 +12,14 @@
     </p>
 
     <article v-else-if="view" class="menu">
-      <MenuDetailStructuredHeader
+      <MenuDetailHeader
         :model-value="view.selectedChoice"
         :menu="view.menu"
         :choices="view.choices"
         @update:model-value="$emit('update:selectedChoice', $event)"
       />
 
-      <MenuDetailStructuredSectionNav
+      <MenuDetailSectionNav
         v-if="view.orderMode && view.menu.content.sections.length > 1"
         :sections="view.menu.content.sections"
       />
@@ -41,26 +41,26 @@
 
 <script setup lang="ts">
 import type {
+  MenuDetailOrderItem,
+  MenuDetailView,
   MenuChoiceValue,
-  MenuStructuredOrderItem,
-  MenuStructuredView,
-} from './types'
+} from '../../../composables/fireux/public/menu/useMenuOrdering'
 
 defineProps<{
-  view: MenuStructuredView | null
+  view: MenuDetailView | null
   pending?: boolean
   error?: unknown
 }>()
 
 defineEmits<{
   (event: 'update:selectedChoice', value: MenuChoiceValue): void
-  (event: 'add', item: MenuStructuredOrderItem): void
-  (event: 'remove', item: MenuStructuredOrderItem): void
+  (event: 'add', item: MenuDetailOrderItem): void
+  (event: 'remove', item: MenuDetailOrderItem): void
 }>()
 </script>
 
 <style scoped>
-.structured-menu {
+.menu-detail-content {
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
   color: var(--menu-text);
@@ -70,7 +70,7 @@ defineEmits<{
     opacity 180ms ease;
 }
 
-.structured-menu--dimmed {
+.menu-detail-content--dimmed {
   filter: saturate(0.72);
   opacity: 0.38;
   pointer-events: none;

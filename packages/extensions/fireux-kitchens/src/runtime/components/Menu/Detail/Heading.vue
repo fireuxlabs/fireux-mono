@@ -1,10 +1,10 @@
 <template>
-  <div class="menu-structured-heading">
-    <p v-if="kitchenName" class="menu-structured-heading__eyebrow">
+  <div class="menu-detail-heading">
+    <p v-if="kitchenName" class="menu-detail-heading__eyebrow">
       {{ kitchenName }}
     </p>
     <h1>{{ name }}</h1>
-    <p v-if="description" class="menu-structured-heading__description">
+    <p v-if="description" class="menu-detail-heading__description">
       {{ description }}
     </p>
   </div>
@@ -20,13 +20,13 @@ defineProps<{
 </script>
 
 <style scoped>
-.menu-structured-heading {
+.menu-detail-heading {
   display: grid;
   gap: 0.75rem;
   justify-items: center;
 }
 
-.menu-structured-heading__eyebrow {
+.menu-detail-heading__eyebrow {
   margin: 0;
   color: var(--menu-primary);
   font-size: 0.78rem;
@@ -35,7 +35,7 @@ defineProps<{
   text-transform: uppercase;
 }
 
-.menu-structured-heading h1 {
+.menu-detail-heading h1 {
   max-width: 11ch;
   margin: 0;
   color: var(--menu-title);
@@ -46,7 +46,7 @@ defineProps<{
   line-height: 0.86;
 }
 
-.menu-structured-heading__description {
+.menu-detail-heading__description {
   margin: 0;
   color: var(--menu-secondary);
   font-size: 0.95rem;

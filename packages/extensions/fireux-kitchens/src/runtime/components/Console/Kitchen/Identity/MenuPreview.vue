@@ -52,7 +52,7 @@
         :style="themeStyleVars"
       >
         <section v-if="previewMenu" class="menu-preview-surface">
-          <MenuDetailHero
+          <MenuDetailHeading
             :kitchen-name="kitchenName"
             :name="previewMenu.name"
             :description="previewDescription"

@@ -4,16 +4,16 @@
     :class="themeClassName"
     :style="themeStyleVars"
   >
-    <MenuDetailStructured
-      :view="interaction.structured.view"
+    <MenuDetailContent
+      :view="interaction.detail.view"
       :pending="pending"
       :error="error"
-      @update:selected-choice="interaction.structured.select"
-      @add="interaction.structured.add"
-      @remove="interaction.structured.remove"
+      @update:selected-choice="interaction.detail.select"
+      @add="interaction.detail.add"
+      @remove="interaction.detail.remove"
     />
 
-    <MenuDetailOrderingFunnel
+    <MenuDetailFunnel
       v-if="interaction.funnel.show"
       :order="interaction.funnel.order"
       @close-panel="interaction.funnel.close"
@@ -26,7 +26,7 @@
 import { computed } from 'vue'
 import { useMenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
 import { useMenuThemeSurface } from '../../../composables/fireux/public/menu/useMenuThemeSurface'
-import { useMenuOrdering } from './Ordering/useMenuOrdering'
+import { useMenuOrdering } from '../../../composables/fireux/public/menu/useMenuOrdering'
 
 const props = defineProps<{
   menuId: string
@@ -36,19 +36,19 @@ const props = defineProps<{
 const {
   pending,
   error,
-  structuredMenu,
+  structuredMenu: detailMenu,
 } = useMenuManifest(() => props.menuId, {
   kitchenSlug: () => props.kitchenSlug,
 })
 const pageStyle = computed(() =>
-  structuredMenu.value?.presentation.pageStyle || null
+  detailMenu.value?.presentation.pageStyle || null
 )
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
 } = useMenuThemeSurface({ pageStyle })
 const interaction = useMenuOrdering({
-  menu: structuredMenu,
+  menu: detailMenu,
   menuId: () => props.menuId,
   kitchenSlug: () => props.kitchenSlug,
 })

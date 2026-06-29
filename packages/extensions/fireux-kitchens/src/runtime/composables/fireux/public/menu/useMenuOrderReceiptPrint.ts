@@ -1,7 +1,7 @@
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceipt,
-} from './useMenuOrderCreate'
+} from '../../../../models/menu/menu-ordering.model'
 
 const escapeHtml = (value: unknown) =>
   String(value ?? '')

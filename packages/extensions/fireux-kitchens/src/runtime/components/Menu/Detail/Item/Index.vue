@@ -23,45 +23,22 @@
         {{ item.description }}
       </p>
 
-      <div
+      <MenuDetailItemChoices
         v-if="orderMode && variantOptions.length > 1"
-        class="menu-variants"
-        :aria-label="`${item.name} variants`"
-      >
-        <button
-          v-for="variant in variantOptions"
-          :key="variant.id"
-          type="button"
-          :class="[
-            'menu-variant',
-            selectedVariant?.id === variant.id && 'menu-variant--selected',
-          ]"
-          @click="selectedVariantId = variant.id"
-        >
-          <span>{{ variant.label }}</span>
-          <small v-if="variant.priceLabel">{{ variant.priceLabel }}</small>
-        </button>
-      </div>
+        :label="`${item.name} variants`"
+        :options="variantOptions"
+        :selected-ids="selectedVariant ? [selectedVariant.id] : []"
+        @toggle="selectedVariantId = $event"
+      />
 
-      <div
+      <MenuDetailItemChoices
         v-if="orderMode && addOnOptions.length"
-        class="menu-variants"
-        :aria-label="`${item.name} add-ons`"
-      >
-        <button
-          v-for="addOn in addOnOptions"
-          :key="addOn.id"
-          type="button"
-          :class="[
-            'menu-variant',
-            selectedAddOnIds.includes(addOn.id) && 'menu-variant--selected',
-          ]"
-          @click="toggleAddOn(addOn.id)"
-        >
-          <span>+ {{ addOn.label }}</span>
-          <small v-if="addOn.priceLabel">{{ addOn.priceLabel }}</small>
-        </button>
-      </div>
+        :label="`${item.name} add-ons`"
+        :options="addOnOptions"
+        :selected-ids="selectedAddOnIds"
+        prefix="+ "
+        @toggle="toggleAddOn"
+      />
     </div>
 
     <div
@@ -72,28 +49,13 @@
         {{ item.priceLabel }}
       </p>
 
-      <div v-if="orderMode" class="menu-quantity">
-        <template v-if="quantity">
-          <UButton
-            size="xs"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-minus"
-            :aria-label="`Remove ${item.name}`"
-            @click="$emit('remove', orderItem)"
-          />
-          <span>{{ quantity }}</span>
-        </template>
-
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-plus"
-          :aria-label="`Add ${item.name}`"
-          @click="$emit('add', orderItem)"
-        />
-      </div>
+      <MenuDetailItemQuantity
+        v-if="orderMode"
+        :label="item.name"
+        :quantity="quantity"
+        @add="$emit('add', orderItem)"
+        @remove="$emit('remove', orderItem)"
+      />
     </div>
   </article>
 </template>
@@ -106,7 +68,7 @@ import type {
   MenuFoodItem,
   MenuFoodOrderItem,
   MenuFoodPriceOption,
-} from '../../../models/menu/menu-food.model'
+} from '../../../../models/menu/menu-food.model'
 
 const props = defineProps<{
   item: MenuFoodItem
@@ -274,20 +236,20 @@ watch(
   white-space: normal;
 }
 
-.menu-quantity {
+.menu-item__quantity {
   display: inline-flex;
   gap: 0.4rem;
   align-items: center;
 }
 
-.menu-variants {
+.menu-item__choices {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   padding-top: 0.25rem;
 }
 
-.menu-variant {
+.menu-item__choice {
   display: inline-flex;
   gap: 0.28rem;
   align-items: center;
@@ -302,18 +264,18 @@ watch(
   font-weight: 850;
 }
 
-.menu-variant small {
+.menu-item__choice small {
   color: var(--menu-muted);
   font-size: 0.72rem;
   font-weight: 800;
 }
 
-.menu-variant--selected {
+.menu-item__choice--selected {
   border-color: var(--menu-primary);
   background: color-mix(in srgb, var(--menu-primary) 14%, transparent);
 }
 
-.menu-quantity span {
+.menu-item__quantity span {
   min-width: 1.5rem;
   color: var(--menu-primary);
   font-size: 0.9rem;

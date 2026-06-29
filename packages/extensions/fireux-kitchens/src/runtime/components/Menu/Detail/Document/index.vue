@@ -1,5 +1,5 @@
 <template>
-  <MenuDetailHeader
+  <MenuDetailDocumentHeader
     :kitchen-name="kitchenName || ''"
     :name="menu.name"
     :description="menu.description"

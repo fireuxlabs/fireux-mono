@@ -6,18 +6,30 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { useMenuOrderDraft } from '../../../../composables/fireux/public/menu/useMenuOrderDraft'
-import { useMenuViewMode } from '../../../../composables/fireux/public/menu/useMenuViewMode'
+import { useMenuOrderDraft } from './useMenuOrderDraft'
+import {
+  useMenuViewMode,
+  type MenuChoiceOption,
+  type MenuChoiceValue,
+} from './useMenuViewMode'
 import { menuOrderBasketActionLabel } from '../../../../utils/menu-ordering-ui'
-import type { MenuManifest } from '../../../../composables/fireux/public/menu/useMenuManifest'
-import type {
-  MenuChoiceValue,
-  MenuStructuredView,
-} from '../Structured/types'
+import type { MenuManifest } from './useMenuManifest'
+import type { MenuFoodOrderItem } from '../../../../models/menu/menu-food.model'
 import type {
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
-} from './types'
+} from '../../../../models/menu/menu-ordering.model'
+
+export type { MenuChoiceValue }
+export type MenuDetailOrderItem = MenuFoodOrderItem
+export type MenuDetailView = {
+  menu: MenuManifest
+  choices: MenuChoiceOption[]
+  selectedChoice: MenuChoiceValue
+  orderMode: boolean
+  quantities: Record<string, number>
+  dimmed: boolean
+}
 
 type UseMenuOrderingOptions = {
   menu: MaybeRefOrGetter<MenuManifest | null>
@@ -29,8 +41,7 @@ type PanelState = 'closed' | 'open'
 const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 
-// Menu ordering spine: keep ordering state beside the Ordering components,
-// while Menu/Detail/Index only composes the base menu layer and checkout layer.
+// Menu ordering spine: keep ordering state in composables; Menu/Detail composes the menu layer and funnel layer.
 export function useMenuOrdering(options: UseMenuOrderingOptions) {
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
@@ -74,7 +85,7 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     orderType: selectedOrderType,
     storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
   })
-  const structuredView = computed<MenuStructuredView | null>(() => {
+  const detailView = computed<MenuDetailView | null>(() => {
     const menu = toValue(options.menu)
     if (!menu) return null
 
@@ -136,8 +147,8 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
   })
 
   return {
-    structured: proxyRefs({
-      view: structuredView,
+    detail: proxyRefs({
+      view: detailView,
       add: draft.add,
       remove: draft.remove,
       select: setSelectedChoice,

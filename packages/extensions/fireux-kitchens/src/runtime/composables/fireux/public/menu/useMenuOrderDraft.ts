@@ -13,8 +13,8 @@ import type {
 } from '../../../../models/order.model'
 import {
   useMenuOrderCreate,
-  type CreatedMenuOrder,
 } from './useMenuOrderCreate'
+import type { CreatedMenuOrder } from '../../../../models/menu/menu-ordering.model'
 import {
   useMenuOrderStatus,
   type PublicMenuOrderStatus,
