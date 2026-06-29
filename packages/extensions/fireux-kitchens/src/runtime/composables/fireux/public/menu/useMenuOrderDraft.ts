@@ -215,10 +215,6 @@ export function useMenuOrderDraft(
     window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
   }, { deep: true })
 
-  watch(orderType, () => {
-    clear()
-  })
-
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return
     awaitingAcceptance.value = false

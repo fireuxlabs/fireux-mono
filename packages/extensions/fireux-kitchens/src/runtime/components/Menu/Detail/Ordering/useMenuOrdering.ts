@@ -137,7 +137,6 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     draft.place(payload)
   }
 
-  watch(selectedOrderType, closePanel)
   watch(draft.quantity, (quantity: number) => {
     if (!quantity) closePanel()
   })
