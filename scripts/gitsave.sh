@@ -59,14 +59,45 @@ run_repo_cleanup() {
 run_preflight_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running lightweight preflight clean..."
-    pnpm -s pre-guard-clean || true
+    pnpm -s pre-guard-clean --skip-if-dev-running || true
   fi
 }
 
 run_required_pre_push_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running pre-push artifact clean..."
-    pnpm -s pre-guard-clean
+    if $force_clean; then
+      pnpm -s pre-guard-clean --force
+    else
+      pnpm -s pre-guard-clean
+    fi
+  fi
+}
+
+dev_server_running() {
+  if [[ ! -f "scripts/pre-guard-clean.mjs" ]]; then
+    return 1
+  fi
+
+  set +e
+  pnpm -s pre-guard-clean --check-dev --quiet >/dev/null 2>&1
+  local status=$?
+  set -e
+
+  [[ "$status" == "2" ]]
+}
+
+skip_push_if_dev_server_running() {
+  if $force_clean; then
+    return 1
+  fi
+
+  if dev_server_running; then
+    echo "[gitsave] Dev server is running; saved locally and skipped push so artifact cleanup does not interrupt it." >&2
+    echo "[gitsave] Stop the dev server and rerun pnpm gitsave to push, or use --force-clean if you intentionally want cleanup to interrupt dev artifacts." >&2
+    cleanup_git_refs "$current_branch"
+    print_repo_state "end"
+    exit 0
   fi
 }
 
@@ -172,9 +203,10 @@ cleanup_git_refs() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure] [--force-clean]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
   echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
+  echo "Dev server default: save locally and skip push rather than deleting live Nuxt artifacts. Use --force-clean to interrupt them." >&2
   echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
@@ -294,6 +326,7 @@ allow_large=false
 allow_behind=false
 allow_guard_failure=false
 strict_scope=false
+force_clean=false
 
 # Parse args
 args=()
@@ -311,6 +344,7 @@ for a in "$@"; do
     --allow-large) allow_large=true ;;
     --allow-behind) allow_behind=true ;;
     --allow-guard-failure) allow_guard_failure=true ;;
+    --force-clean) force_clean=true ;;
     -h|--help) usage; exit 0 ;;
     *) args+=("$a") ;;
   esac
@@ -383,6 +417,7 @@ if git diff --cached --quiet; then
     ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
     if [[ "${ahead_count}" != "0" ]]; then
       echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
+      skip_push_if_dev_server_running
       run_required_pre_push_clean
       git push origin "$current_branch"
       cleanup_git_refs "$current_branch"
@@ -454,6 +489,7 @@ if ! git commit -m "$commit_message"; then
 fi
 
 # Push to the matching branch on origin.
+skip_push_if_dev_server_running
 run_required_pre_push_clean
 git push origin "$current_branch"
 cleanup_git_refs "$current_branch"

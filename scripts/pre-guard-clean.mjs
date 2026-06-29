@@ -51,6 +51,9 @@ async function listChildDirs(parentDir) {
 
 const removed = []
 const force = process.argv.includes('--force')
+const skipIfDevRunning = process.argv.includes('--skip-if-dev-running')
+const checkDev = process.argv.includes('--check-dev')
+const quiet = process.argv.includes('--quiet')
 const DEV_PROCESS_MARKERS = [
   'dev-app-with-smoke.mjs',
   'pnpm dev:',
@@ -95,7 +98,31 @@ function activeDevProcesses() {
 }
 
 const devProcesses = force ? [] : activeDevProcesses()
+if (checkDev) {
+  if (devProcesses.length) {
+    if (!quiet) {
+      console.error('[pre-guard-clean] FireUX dev server is running.')
+      devProcesses
+        .slice(0, 5)
+        .forEach(({ pid, command }) => console.error(`  - ${pid} ${command}`))
+    }
+    process.exit(2)
+  }
+
+  process.exit(0)
+}
+
 if (devProcesses.length) {
+  if (skipIfDevRunning) {
+    console.log(
+      '[pre-guard-clean] ⏭️ Skipping artifact clean while a FireUX dev server is running.'
+    )
+    console.log(
+      '[pre-guard-clean] Stop the dev server before push/guard cleanup, or use --force to interrupt generated artifacts.'
+    )
+    process.exit(0)
+  }
+
   console.error(
     '[pre-guard-clean] Refusing to clean generated dev artifacts while a FireUX dev server is running.'
   )
