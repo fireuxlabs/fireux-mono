@@ -1,6 +1,6 @@
 <template>
   <div class="menu-sections">
-    <MenuDetailStructuredSection
+    <MenuDetailSection
       v-for="section in sections"
       :key="section.id"
       :id="sectionDomId(section.id)"
@@ -15,19 +15,19 @@
 
 <script setup lang="ts">
 import type {
-  MenuStructuredOrderItem,
-  MenuStructuredSection,
-} from './types'
+  MenuFoodOrderItem,
+  MenuFoodSection as MenuFoodSectionModel,
+} from '../../../models/menu/menu-food.model'
 
 const props = defineProps<{
-  sections: MenuStructuredSection[]
+  sections: MenuFoodSectionModel[]
   orderMode?: boolean
   quantities?: Record<string, number>
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuStructuredOrderItem): void
-  (event: 'remove', item: MenuStructuredOrderItem): void
+  (event: 'add', item: MenuFoodOrderItem): void
+  (event: 'remove', item: MenuFoodOrderItem): void
 }>()
 
 const sectionDomId = (id: string) =>

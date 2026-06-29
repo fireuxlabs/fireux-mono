@@ -12,7 +12,7 @@ import { menuOrderBasketActionLabel } from '../../../../utils/menu-ordering-ui'
 import type { MenuManifest } from '../../../../composables/fireux/public/menu/useMenuManifest'
 import type {
   MenuChoiceValue,
-  MenuStructuredBaseLayerView,
+  MenuStructuredView,
 } from '../Structured/types'
 import type {
   MenuOrderingFunnelState,
@@ -46,7 +46,6 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     selectedOrderTypeConfig,
     canOrder,
     isOrderMode,
-    orderNotice,
   } = useMenuViewMode(
     behaviour,
     computed(() => `fireux:menu:${menuStorageScope.value}:view`)
@@ -75,7 +74,7 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
     orderType: selectedOrderType,
     storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
   })
-  const structuredView = computed<MenuStructuredBaseLayerView | null>(() => {
+  const structuredView = computed<MenuStructuredView | null>(() => {
     const menu = toValue(options.menu)
     if (!menu) return null
 
@@ -84,7 +83,6 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       choices: choiceOptions.value,
       selectedChoice: selectedChoice.value,
       orderMode: isOrderMode.value,
-      orderNotice: orderNotice.value,
       quantities: draft.quantities.value,
       dimmed: panelOpen.value,
     }
@@ -155,10 +153,6 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       close: closePanel,
       open: openPanel,
       submit,
-    }),
-    status: proxyRefs({
-      message: draft.message,
-      error: draft.error,
     }),
   }
 }

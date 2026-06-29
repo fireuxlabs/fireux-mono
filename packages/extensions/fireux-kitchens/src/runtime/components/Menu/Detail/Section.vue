@@ -2,7 +2,7 @@
   <section class="menu-section">
     <h2>{{ section.label }}</h2>
 
-    <MenuDetailStructuredItem
+    <MenuDetailItem
       v-for="item in section.items"
       :key="item.id"
       :item="item"
@@ -16,19 +16,19 @@
 
 <script setup lang="ts">
 import type {
-  MenuStructuredOrderItem,
-  MenuStructuredSection,
-} from './types'
+  MenuFoodOrderItem,
+  MenuFoodSection,
+} from '../../../models/menu/menu-food.model'
 
 defineProps<{
-  section: MenuStructuredSection
+  section: MenuFoodSection
   orderMode?: boolean
   quantities?: Record<string, number>
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuStructuredOrderItem): void
-  (event: 'remove', item: MenuStructuredOrderItem): void
+  (event: 'add', item: MenuFoodOrderItem): void
+  (event: 'remove', item: MenuFoodOrderItem): void
 }>()
 </script>
 

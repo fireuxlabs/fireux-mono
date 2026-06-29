@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+// Menu detail title surface; richer section/item display lives beside this detail stack.
 defineProps<{
   kitchenName: string
   name: string

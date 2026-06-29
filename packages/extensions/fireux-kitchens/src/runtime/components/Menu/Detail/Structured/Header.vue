@@ -1,6 +1,6 @@
 <template>
   <header class="menu-header">
-    <MenuDetailStructuredHeading
+    <MenuDetailHero
       :kitchen-name="menu.presentation.kitchenName"
       :name="menu.content.name"
       :description="menu.content.description"

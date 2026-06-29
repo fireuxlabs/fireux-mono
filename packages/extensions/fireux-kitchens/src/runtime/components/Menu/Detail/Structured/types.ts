@@ -1,34 +1,32 @@
 import type {
-  MenuManifestAddOn,
-  MenuManifestItem,
-  MenuManifestPriceOption,
-  MenuManifestSection,
   MenuManifest,
 } from '../../../../composables/fireux/public/menu/useMenuManifest'
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
 } from '../../../../composables/fireux/public/menu/useMenuViewMode'
+import type {
+  MenuFoodAddOn,
+  MenuFoodItem,
+  MenuFoodOrderItem,
+  MenuFoodPriceOption,
+  MenuFoodSection,
+} from '../../../../models/menu/menu-food.model'
 
 export type { MenuChoiceValue }
 
-// Structured menu component spine: item/section display types come from useMenuManifest so detail rendering stays aligned with the manifest contract.
-export type MenuStructuredItem = MenuManifestItem
-export type MenuStructuredAddOn = MenuManifestAddOn
-export type MenuStructuredPriceOption = MenuManifestPriceOption
-export type MenuStructuredOrderItem = MenuStructuredItem & {
-  lineId: string
-  addOns?: MenuStructuredAddOn[]
-  variant?: MenuStructuredPriceOption
-}
-export type MenuStructuredSection = MenuManifestSection
+// Detail structured spine: food render types live in menu models; this file adds the detail view model.
+export type MenuStructuredItem = MenuFoodItem
+export type MenuStructuredAddOn = MenuFoodAddOn
+export type MenuStructuredPriceOption = MenuFoodPriceOption
+export type MenuStructuredOrderItem = MenuFoodOrderItem
+export type MenuStructuredSection = MenuFoodSection
 
-export type MenuStructuredBaseLayerView = {
+export type MenuStructuredView = {
   menu: MenuManifest
   choices: MenuChoiceOption[]
   selectedChoice: MenuChoiceValue
   orderMode: boolean
-  orderNotice: string
   quantities: Record<string, number>
   dimmed: boolean
 }

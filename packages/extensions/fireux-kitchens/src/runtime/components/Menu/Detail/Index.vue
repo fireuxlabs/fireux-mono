@@ -17,14 +17,6 @@
       @open-panel="ordering.funnel.open"
       @submit="ordering.funnel.submit"
     />
-
-    <p
-      v-if="ordering.status.message || ordering.status.error"
-      class="menu-detail__order-state"
-      aria-live="polite"
-    >
-      {{ ordering.status.message || ordering.status.error }}
-    </p>
   </section>
 
   <DevJson
@@ -59,13 +51,3 @@ const ordering = useMenuOrdering({
   kitchenSlug,
 })
 </script>
-
-<style scoped>
-.menu-detail__order-state {
-  justify-self: center;
-  margin: 0;
-  color: var(--menu-muted);
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-</style>

@@ -28,7 +28,7 @@
     <template #content>
       <UCard class="mt-4">
         <ClientOnly>
-          <KitchenFulfilmentDeliveryZonesMap :zones="deliveryZones" />
+          <KitchenDetailDeliveryZonesMap :zones="deliveryZones" />
         </ClientOnly>
       </UCard>
     </template>

@@ -58,7 +58,7 @@
           />
 
           <!-- Reuse the public fulfilment map so console and customer routes show the same delivery truth. -->
-          <KitchenFulfilmentDeliveryZonesMap
+          <KitchenDetailDeliveryZonesMap
             v-if="mapZones.length"
             :key="mapPreviewKey"
             class="delivery-zone-map-preview"

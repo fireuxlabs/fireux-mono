@@ -100,30 +100,31 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+// Menu detail item render spine: source data comes from the public menu manifest model.
 import type {
-  MenuStructuredAddOn,
-  MenuStructuredItem,
-  MenuStructuredOrderItem,
-  MenuStructuredPriceOption,
-} from './types'
+  MenuFoodAddOn,
+  MenuFoodItem,
+  MenuFoodOrderItem,
+  MenuFoodPriceOption,
+} from '../../../models/menu/menu-food.model'
 
 const props = defineProps<{
-  item: MenuStructuredItem
+  item: MenuFoodItem
   orderMode?: boolean
   quantities?: Record<string, number>
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuStructuredOrderItem): void
-  (event: 'remove', item: MenuStructuredOrderItem): void
+  (event: 'add', item: MenuFoodOrderItem): void
+  (event: 'remove', item: MenuFoodOrderItem): void
 }>()
 
 const selectedVariantId = ref('')
 const selectedAddOnIds = ref<string[]>([])
-const variantOptions = computed<MenuStructuredPriceOption[]>(() =>
+const variantOptions = computed<MenuFoodPriceOption[]>(() =>
   props.item.priceOptions || []
 )
-const addOnOptions = computed<MenuStructuredAddOn[]>(() =>
+const addOnOptions = computed<MenuFoodAddOn[]>(() =>
   props.item.addOns || []
 )
 const selectedVariant = computed(() =>
@@ -134,17 +135,17 @@ const selectedVariant = computed(() =>
 const selectedAddOns = computed(() =>
   selectedAddOnIds.value
     .map((id: string) =>
-      addOnOptions.value.find((addOn: MenuStructuredAddOn) => addOn.id === id)
+      addOnOptions.value.find((addOn: MenuFoodAddOn) => addOn.id === id)
     )
-    .filter((addOn: MenuStructuredAddOn | undefined): addOn is MenuStructuredAddOn =>
+    .filter((addOn: MenuFoodAddOn | undefined): addOn is MenuFoodAddOn =>
       Boolean(addOn)
     )
 )
-const variantLineId = (variant: MenuStructuredPriceOption | null) =>
+const variantLineId = (variant: MenuFoodPriceOption | null) =>
   [
     props.item.id,
     variant?.id,
-    ...selectedAddOns.value.map((addOn: MenuStructuredAddOn) => addOn.id),
+    ...selectedAddOns.value.map((addOn: MenuFoodAddOn) => addOn.id),
   ]
     .filter(Boolean)
     .join(':')
@@ -154,7 +155,7 @@ const quantity = computed(() =>
 const displayPrice = computed(() =>
   selectedVariant.value?.priceLabel || props.item.priceLabel
 )
-const orderItem = computed<MenuStructuredOrderItem>(() => ({
+const orderItem = computed<MenuFoodOrderItem>(() => ({
   ...props.item,
   lineId: variantLineId(selectedVariant.value),
   ...(selectedAddOns.value.length ? { addOns: selectedAddOns.value } : {}),
@@ -171,7 +172,7 @@ watch(
   [variantOptions, addOnOptions, () => props.quantities],
   () => {
     selectedAddOnIds.value = selectedAddOnIds.value.filter((id: string) =>
-      addOnOptions.value.some((addOn: MenuStructuredAddOn) => addOn.id === id)
+      addOnOptions.value.some((addOn: MenuFoodAddOn) => addOn.id === id)
     )
 
     if (!variantOptions.value.length) {

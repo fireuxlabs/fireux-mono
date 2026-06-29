@@ -46,13 +46,13 @@
 
     <div class="space-y-4">
       <!-- Menu preview spine: mirror Menu/Detail/Index.vue so this edits the same page_style data public menus consume. -->
-      <MenuDetailDisplayFrame
+      <MenuDetailTheme
         :page-style="pageStyle"
         variant="preview"
         :color-mode="previewMode"
       >
         <section v-if="previewMenu" class="menu-preview-surface">
-          <MenuDetailStructuredHeading
+          <MenuDetailHero
             :kitchen-name="kitchenName"
             :name="previewMenu.name"
             :description="previewDescription"
@@ -66,7 +66,7 @@
             description="This menu has no public sections yet."
           />
 
-          <MenuDetailStructuredSections
+          <MenuDetailSectionList
             v-else
             :sections="previewSections"
           />
@@ -79,7 +79,7 @@
           title="No menu selected"
           description="Publish a menu before previewing menu display."
         />
-      </MenuDetailDisplayFrame>
+      </MenuDetailTheme>
 
       <UCollapsible>
         <UButton
