@@ -55,24 +55,12 @@
         {{ submitBlockMessage }}
       </p>
 
-      <div class="menu-order-panel__actions">
-        <button
-          type="button"
-          class="menu-order-panel__back"
-          @click="backToSafety"
-        >
-          Back
-        </button>
-
-        <button
-          type="button"
-          class="menu-order-panel__submit"
-          :disabled="!canContinueToCustomer"
-          @click="continueToCustomer"
-        >
-          Continue
-        </button>
-      </div>
+      <FunnelActions
+        action-label="Continue"
+        :disabled="!canContinueToCustomer"
+        @back="backToSafety"
+        @action="continueToCustomer"
+      />
     </div>
 
     <div
@@ -85,23 +73,11 @@
         @update:model-value="customer = $event"
       />
 
-      <div class="menu-order-panel__actions">
-        <button
-          type="button"
-          class="menu-order-panel__back"
-          @click="backToFulfilment"
-        >
-          Back
-        </button>
-
-        <button
-          type="button"
-          class="menu-order-panel__submit"
-          @click="continueToPayment"
-        >
-          Continue
-        </button>
-      </div>
+      <FunnelActions
+        action-label="Continue"
+        @back="backToFulfilment"
+        @action="continueToPayment"
+      />
     </div>
 
     <div v-else class="menu-order-panel__details">
@@ -123,28 +99,14 @@
         {{ submitBlockMessage }}
       </p>
 
-      <div class="menu-order-panel__actions">
-        <button
-          type="button"
-          class="menu-order-panel__back"
-          @click="backToCustomer"
-        >
-          Back
-        </button>
-
-        <button
-          type="submit"
-          class="menu-order-panel__submit"
-          :disabled="pending || !canSubmit"
-        >
-          <span
-            v-if="pending"
-            class="menu-order-panel__spinner"
-            aria-hidden="true"
-          />
-          {{ pending ? 'Sending order...' : submitLabel }}
-        </button>
-      </div>
+      <FunnelActions
+        :action-label="submitLabel"
+        :disabled="!canSubmit"
+        :pending="pending"
+        pending-label="Sending order..."
+        submit
+        @back="backToCustomer"
+      />
     </div>
   </form>
 </template>
@@ -169,6 +131,7 @@ import {
   menuOrderTypeLabel,
 } from '../../../../../utils/menu-ordering-ui'
 import type { MenuOrderingSelectionSummary } from '../types'
+import FunnelActions from './Actions.vue'
 import FunnelItems from './Items.vue'
 import FunnelNotice from './Notice.vue'
 import FunnelCollection from './Collection/index.vue'
@@ -181,13 +144,7 @@ import FunnelSummaryHeader from './SummaryHeader.vue'
 
 type FunnelStep = 'items' | 'safety' | 'fulfilment' | 'customer' | 'payment'
 type SelectablePaymentMethod = Exclude<KitchenOrderPaymentMethod, 'deposit'>
-const funnelSteps = [
-  'items',
-  'safety',
-  'fulfilment',
-  'customer',
-  'payment',
-] as const satisfies readonly FunnelStep[]
+const funnelSteps = ['items', 'safety', 'fulfilment', 'customer', 'payment'] as const satisfies readonly FunnelStep[]
 
 const props = withDefaults(
   defineProps<{
@@ -249,13 +206,7 @@ const stepTitle = computed(() => {
 
   return title.value
 })
-const stepNumbers: Record<FunnelStep, number> = {
-  items: 1,
-  safety: 2,
-  fulfilment: 3,
-  customer: 4,
-  payment: 5,
-}
+const stepNumbers: Record<FunnelStep, number> = { items: 1, safety: 2, fulfilment: 3, customer: 4, payment: 5 }
 const stepLabel = computed(() => `Step ${stepNumbers[funnelStep.value]} of 5`)
 const showStepHeader = computed(() =>
   funnelStep.value === 'fulfilment' ||
