@@ -46,10 +46,10 @@
 
     <div class="space-y-4">
       <!-- Menu preview spine: mirror Menu/Detail/Index.vue so this edits the same page_style data public menus consume. -->
-      <MenuDetailTheme
-        :page-style="pageStyle"
-        variant="preview"
-        :color-mode="previewMode"
+      <section
+        class="menu-preview-frame"
+        :class="themeClassName"
+        :style="themeStyleVars"
       >
         <section v-if="previewMenu" class="menu-preview-surface">
           <MenuDetailHero
@@ -79,7 +79,7 @@
           title="No menu selected"
           description="Publish a menu before previewing menu display."
         />
-      </MenuDetailTheme>
+      </section>
 
       <UCollapsible>
         <UButton
@@ -103,6 +103,7 @@
 import { computed, ref } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { MenuManifestSection } from '../../../../composables/fireux/public/menu/useMenuManifest'
+import { useMenuThemeSurface } from '../../../../composables/fireux/public/menu/useMenuThemeSurface'
 import type { Menu } from '../../../../models/menu/menu.model'
 
 const props = defineProps<{
@@ -128,6 +129,13 @@ const previewModes = [
 ]
 
 const text = (value: unknown) => String(value ?? '').trim()
+const {
+  className: themeClassName,
+  styleVars: themeStyleVars,
+} = useMenuThemeSurface({
+  pageStyle: computed(() => props.pageStyle),
+  colorMode: previewMode,
+})
 const previewDescription = computed(() => text(props.menu?.description))
 const previewMenu = computed(() => props.menu ?? null)
 const previewSections = computed(() =>
@@ -158,6 +166,45 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 </script>
 
 <style scoped>
+.menu-preview-frame {
+  --menu-bg-light: #f8fafc;
+  --menu-bg-dark: #0f172a;
+  --menu-text-light: #0f172a;
+  --menu-text-dark: #f8fafc;
+  --menu-title-light: var(--menu-text-light);
+  --menu-title-dark: var(--menu-text-dark);
+  --menu-primary-source: #0f766e;
+  --menu-primary: var(--menu-primary-source);
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
+  --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
+  --menu-secondary: #64748b;
+  --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-title-font: var(--menu-font);
+
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-radius: 1rem;
+  background: var(--menu-bg);
+  color: var(--menu-text);
+  font-family: var(--menu-font);
+  overflow: hidden;
+}
+
+.menu-preview-frame.public-menu--light {
+  --menu-bg: var(--menu-bg-light);
+  --menu-text: var(--menu-text-light);
+  --menu-title: var(--menu-title-light);
+  --menu-primary: var(--menu-primary-source);
+}
+
+.menu-preview-frame.public-menu--dark {
+  --menu-bg: var(--menu-bg-dark);
+  --menu-text: var(--menu-text-dark);
+  --menu-title: var(--menu-title-dark);
+  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
+}
+
 .menu-preview-surface {
   /* Console preview spine: keep the page layout compact, but preserve public menu breathing room inside the preview itself. */
   display: grid;

@@ -1,5 +1,9 @@
 <template>
-  <section class="fireux-menu-detail menu-detail">
+  <section
+    class="fireux-menu-detail menu-detail"
+    :class="themeClassName"
+    :style="themeStyleVars"
+  >
     <MenuDetailStructured
       :view="ordering.structured.view"
       :pending="pending"
@@ -29,6 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
+import { useMenuThemeSurface } from '../../../composables/fireux/public/menu/useMenuThemeSurface'
 import { useMenuOrdering } from './Ordering/useMenuOrdering'
 
 const props = defineProps<{
@@ -45,6 +50,13 @@ const {
   structuredMenu,
   debug,
 } = useMenuManifest(menuId, { kitchenSlug })
+const pageStyle = computed(() =>
+  structuredMenu.value?.presentation.pageStyle || null
+)
+const {
+  className: themeClassName,
+  styleVars: themeStyleVars,
+} = useMenuThemeSurface({ pageStyle })
 const ordering = useMenuOrdering({
   menu: structuredMenu,
   menuId,
