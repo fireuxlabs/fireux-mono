@@ -1,10 +1,3 @@
-import {
-  applicationDefault as firebaseApplicationDefault,
-  cert as firebaseCert,
-  getApps as getFirebaseApps,
-  initializeApp as initializeFirebaseApp,
-  type App as FirebaseApp,
-} from 'firebase-admin/app'
 import { createError } from 'h3'
 import { AppStorage, type App } from '../../models/core/app.model'
 import { EcosystemStorage } from '../../models/system/ecosystem.model'
@@ -16,17 +9,12 @@ import type {
   FireuxConsoleProject,
 } from '../../types/fireux-console'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
-import { getFirestore } from 'firebase-admin/firestore'
 
 type DefaultAppRecord = Partial<App> & { id: string }
 
 type FireuxConsoleProjectControl = {
   main_app_id: string
   main_ecosystem_id: string
-}
-
-function readEnv(name: string) {
-  return String(process.env[name] || '').trim()
 }
 
 function normalizeString(value: unknown) {
@@ -107,48 +95,8 @@ function requireString(value: unknown, label: string): string {
   })
 }
 
-function getServiceAccountFromEnv() {
-  const raw = readEnv('FIREBASE_SERVICE_ACCOUNT')
-  if (!raw) return null
-
-  try {
-    const parsed = JSON.parse(raw)
-    const projectId = normalizeString(parsed.project_id || parsed.projectId)
-    const clientEmail = normalizeString(parsed.client_email || parsed.clientEmail)
-    const privateKey = String(parsed.private_key || parsed.privateKey || '')
-      .replace(/\\n/g, '\n')
-      .trim()
-
-    if (!projectId || !clientEmail || !privateKey) return null
-
-    return {
-      projectId,
-      clientEmail,
-      privateKey,
-    }
-  } catch {
-    return null
-  }
-}
-
-function getAdminApp(): FirebaseApp {
-  const existing = getFirebaseApps()
-  if (existing.length) return existing[0]
-
-  const serviceAccount = getServiceAccountFromEnv()
-  if (serviceAccount) {
-    return initializeFirebaseApp({
-      credential: firebaseCert(serviceAccount),
-    })
-  }
-
-  return initializeFirebaseApp({
-    credential: firebaseApplicationDefault(),
-  })
-}
-
 async function readProjectControl(projectId: string): Promise<FireuxConsoleProjectControl> {
-  const db = getFirestore(getAdminApp())
+  const db = getRuntimeFirestore()
   const snapshot = await db.collection(ProjectStorage.rootCollection).doc(projectId).get()
 
   if (!snapshot.exists) {
@@ -282,7 +230,7 @@ function normalizeEcosystem(docId: string, data: Record<string, unknown>): Fireu
 async function readCurrentEcosystem(
   control: FireuxConsoleProjectControl
 ): Promise<FireuxConsoleEcosystem | null> {
-  const db = getFirestore(getAdminApp())
+  const db = getRuntimeFirestore()
   const snapshot = await db.collection(EcosystemStorage.collection).get()
   const target = normalizeString(control.main_ecosystem_id)
 
