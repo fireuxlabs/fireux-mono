@@ -55,8 +55,8 @@
         </button>
       </footer>
 
-      <p v-if="pingError" class="menu-order-placeholder">
-        {{ pingError }}
+      <p v-if="orderError" class="menu-order-placeholder">
+        {{ orderError }}
       </p>
     </section>
   </div>
@@ -107,9 +107,10 @@ type SurfaceChoice = typeof surfaceChoices[number]
 const allergenAccepted = ref(false)
 const deliveryZoneReady = ref(false)
 const deliveryState = ref<MenuOrderingDeliveryState>({ ready: false })
-const pingPending = ref(false)
-const pingError = ref('')
-const kitchenPingSent = ref(false)
+const orderPending = ref(false)
+const orderError = ref('')
+const orderCreated = ref(false)
+const activeOrderPath = ref('')
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -156,6 +157,7 @@ const currentSurfaceProps = computed(() => {
     return {
       order: props.order,
       delivery: deliveryState.value,
+      orderPath: activeOrderPath.value,
     }
   }
 
@@ -167,12 +169,12 @@ const currentSurfaceProps = computed(() => {
 })
 const continueDisabled = computed(() =>
   surfaceNumber.value === surfaceCount ||
-  pingPending.value ||
+  orderPending.value ||
   (surfaceNumber.value === 2 && !allergenAccepted.value) ||
   (surfaceNumber.value === 3 && !deliveryZoneReady.value)
 )
 const continueLabel = computed(() =>
-  pingPending.value ? 'Sending...' : 'Continue'
+  orderPending.value ? 'Sending...' : 'Continue'
 )
 
 function previousSurface() {
@@ -181,9 +183,9 @@ function previousSurface() {
 
 async function nextSurface() {
   if (continueDisabled.value) return
-  if (surfaceNumber.value === 3 && !kitchenPingSent.value) {
-    await sendKitchenPing()
-    if (pingError.value) return
+  if (surfaceNumber.value === 3 && !orderCreated.value) {
+    await createOrder()
+    if (orderError.value) return
   }
   setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
 }
@@ -192,7 +194,7 @@ function setSurfaceNumber(next: number) {
   surfaceChoice.value = String(next) as SurfaceChoice
 }
 
-async function sendKitchenPing() {
+async function createOrder() {
   const menuId = String(props.order.menuId || '').trim()
   if (!menuId) return
 
@@ -201,22 +203,28 @@ async function sendKitchenPing() {
   const qs = query.toString()
   const endpoint = `/api/menus/${encodeURIComponent(menuId)}/kitchen-ping${qs ? `?${qs}` : ''}`
 
-  pingPending.value = true
-  pingError.value = ''
+  orderPending.value = true
+  orderError.value = ''
   try {
-    await $fetch(endpoint, {
+    const response = await $fetch<{
+      order_id?: string
+      order_path?: string
+    }>(endpoint, {
       method: 'POST',
       body: {
         basket: props.order.selection,
+        delivery: deliveryState.value,
+        order_type: props.order.orderType,
       },
     })
-    kitchenPingSent.value = true
+    activeOrderPath.value = String(response?.order_path || '').trim()
+    orderCreated.value = true
   } catch (error) {
-    pingError.value = error instanceof Error
+    orderError.value = error instanceof Error
       ? error.message
-      : 'Kitchen ping could not be sent.'
+      : 'Order could not be sent.'
   } finally {
-    pingPending.value = false
+    orderPending.value = false
   }
 }
 
@@ -227,8 +235,9 @@ watch(
       allergenAccepted.value = false
       deliveryZoneReady.value = false
       deliveryState.value = { ready: false }
-      kitchenPingSent.value = false
-      pingError.value = ''
+      orderCreated.value = false
+      activeOrderPath.value = ''
+      orderError.value = ''
       setSurfaceNumber(1)
     }
   }

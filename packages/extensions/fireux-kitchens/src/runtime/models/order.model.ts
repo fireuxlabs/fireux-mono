@@ -52,6 +52,8 @@ export type KitchenOrderFireState =
 
 export type KitchenOrderCustomer = {
   name?: string
+  avatar?: string
+  avatar_url?: string
   phone?: string
   address?: string
   address_place_id?: string

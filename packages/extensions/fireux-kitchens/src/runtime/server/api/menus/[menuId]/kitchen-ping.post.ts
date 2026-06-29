@@ -25,7 +25,7 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 const array = (value: unknown): unknown[] =>
   Array.isArray(value) ? value : []
-const orderId = () => `ping-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`
+const orderId = () => `order-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`
 const orderNumber = () => {
   const now = new Date()
   const y = String(now.getFullYear()).slice(-2)
@@ -57,15 +57,40 @@ export default defineEventHandler(async (event) => {
   const id = orderId()
   const now = FieldValue.serverTimestamp()
   const items = readBasketItems(body)
+  const orderType = text(body.order_type) || 'delivery'
+  const destination = readDestination(body)
+  if (orderType === 'delivery' && !destination) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Checked delivery address is required.',
+    })
+  }
+
+  const pickup = await readPickup(db, context.kitchenId)
+  const orderPath = `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${id}`
   const payload = {
     id,
     kitchen_id: context.kitchenId,
+    kitchen_slug: context.kitchenSlug || kitchenSlug,
+    kitchen_name: context.kitchenName || '',
     menu_id: context.menuId,
     order_number: orderNumber(),
     status: 'pending_acceptance',
-    order_type: 'delivery',
+    order_type: orderType,
     fire_state: 'held',
     items,
+    ...(pickup ? { pickup } : {}),
+    fulfilment_match: {
+      ...(destination ? { delivery_address: destination } : {}),
+      ...(Object.keys(record(record(body.delivery).zone)).length
+        ? { delivery_zone: record(record(body.delivery).zone) }
+        : {}),
+    },
+    customer: {
+      ...(destination?.formatted ? { address: destination.formatted } : {}),
+      ...(destination?.place_id ? { address_place_id: destination.place_id } : {}),
+    },
+    driver_responses: {},
     channel: 'menu',
     created_at: now,
     updated_at: now,
@@ -80,14 +105,14 @@ export default defineEventHandler(async (event) => {
     },
   }
 
-  await db
-    .collection(`apps/${context.appId}/kitchens/${context.kitchenId}/orders`)
-    .doc(id)
-    .set(payload)
+  await db.doc(orderPath).set(payload)
 
   return {
     ok: true,
     id,
+    order_id: id,
+    order_path: orderPath,
+    status: payload.status,
   }
 })
 
@@ -113,11 +138,78 @@ function readBasketItems(body: Record<string, unknown>) {
     ? items
     : [
         {
-          id: 'ping',
+          id: 'order-started',
           dish_id: '',
-          label: 'ping',
+          label: 'Order started',
           quantity: 1,
           checked: false,
         },
       ]
+}
+
+async function readPickup(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  kitchenId: string
+) {
+  if (!kitchenId) return null
+
+  const snap = await db.collection('kitchens').doc(kitchenId).get()
+  const data = snap.data() || {}
+  const placeData = await readLinkedPlace(db, data)
+  const point = readPoint(data) || readPoint(placeData)
+
+  return {
+    label: text(
+      data.display_name ||
+      data.name ||
+      placeData?.short_name ||
+      placeData?.name ||
+      data.slug ||
+      'Kitchen'
+    ),
+    ...(point || {}),
+  }
+}
+
+async function readLinkedPlace(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  kitchenData: Record<string, unknown>
+) {
+  const placeId = text(kitchenData.place_id)
+  if (!placeId) return null
+
+  const snap = await db.collection('places').doc(placeId).get()
+  return snap.exists ? snap.data() || {} : null
+}
+
+function readPoint(data: Record<string, unknown> | null) {
+  const lat = coordinateValue(data?.lat)
+  const lng = coordinateValue(data?.lng)
+  if (lat === null || lng === null) return null
+
+  return {
+    lat,
+    lng,
+  }
+}
+
+function coordinateValue(value: unknown) {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : null
+}
+
+function readDestination(body: Record<string, unknown>) {
+  const address = record(record(body.delivery).address)
+  const lat = coordinateValue(address.lat)
+  const lng = coordinateValue(address.lng)
+  if (lat === null || lng === null) return null
+
+  return {
+    formatted: text(address.formatted || address.input),
+    place_id: text(address.place_id),
+    postal_code: text(address.postal_code),
+    lat,
+    lng,
+  }
 }

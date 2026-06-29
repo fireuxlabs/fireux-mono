@@ -12,6 +12,7 @@ const customerPrivate = (
   source: { private?: Partial<CustomerPrivate> } | null | undefined
 ) =>
   source?.private ?? {}
+type CustomerAvatarLike = { avatar?: string }
 const firstDefaultSavedAddress = (
   addresses: CustomerSavedAddress[] | undefined
 ) =>
@@ -33,6 +34,10 @@ export function useMenuCustomerAutofill() {
     const user = coreUser.value
     const appPrivate = customerPrivate(app)
     const profilePrivate = customerPrivate(profile)
+    const profileAvatar = text(
+      (app as CustomerAvatarLike | null)?.avatar ||
+        (profile as CustomerAvatarLike | null)?.avatar
+    )
     const savedAddress =
       firstDefaultSavedAddress(appPrivate.saved_addresses) ||
       firstDefaultSavedAddress(profilePrivate.saved_addresses)
@@ -44,6 +49,8 @@ export function useMenuCustomerAutofill() {
           profile?.title ||
           user?.display_name
       ),
+      avatar: profileAvatar,
+      avatar_url: text(profileAvatar || user?.avatar),
       phone: text(appPrivate.phone || profilePrivate.phone),
       address: text(
         savedAddress?.address ||

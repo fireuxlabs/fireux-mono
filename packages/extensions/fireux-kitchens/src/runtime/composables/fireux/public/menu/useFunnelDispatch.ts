@@ -1,34 +1,54 @@
 import {
   computed,
-  ref,
   toValue,
-  watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { doc } from 'firebase/firestore'
+import {
+  useDocument,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
 } from '../../../../models/menu/menu-ordering.model'
 
+type DispatchOrder = {
+  id?: string
+  driver_responses?: Record<string, {
+    status?: string
+  }>
+}
+
 export function useFunnelDispatch(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
-  delivery: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>
+  delivery: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>,
+  orderPath?: MaybeRefOrGetter<string | null | undefined>
 ) {
-  const pending = ref(false)
-  const error = ref('')
-  const pingCount = ref(0)
-  const lastPingKey = ref('')
-  const menuId = computed(() => text(toValue(order).menuId))
-  const kitchenSlug = computed(() => text(toValue(order).kitchenSlug))
-  const endpoint = computed(() => {
-    if (!menuId.value) return ''
-
-    const query = new URLSearchParams()
-    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    const qs = query.toString()
-
-    return `/api/menus/${encodeURIComponent(menuId.value)}/driver-pings${qs ? `?${qs}` : ''}`
-  })
+  const db = useFirestore()
+  const resolvedOrderPath = computed(() => text(toValue(orderPath)))
+  const orderRef = computed(() =>
+    resolvedOrderPath.value ? doc(db, resolvedOrderPath.value) : null
+  )
+  const { data: activeOrder } = useDocument(orderRef, {
+    ssrKey: computed(() =>
+      resolvedOrderPath.value
+        ? `menu-dispatch-order-${resolvedOrderPath.value}`
+        : undefined
+    ),
+    transform: (docSnap: any) => {
+      if (!docSnap?.exists?.()) return undefined
+      return { id: docSnap.id, ...(docSnap.data() ?? {}) } as DispatchOrder
+    },
+  } as any)
+  const activeDriverResponses = computed(() =>
+    ((activeOrder.value as DispatchOrder | undefined)?.driver_responses || {})
+  )
+  const watchingCount = computed(() =>
+    Object.values(activeDriverResponses.value)
+      .filter((response) => text(response?.status) === 'watching')
+      .length
+  )
   const kitchen = computed(() => {
     const orderType = toValue(order).orderType
     if (orderType !== 'delivery') {
@@ -45,78 +65,23 @@ export function useFunnelDispatch(
   })
   const driverStatus = computed(() => {
     if (toValue(order).orderType !== 'delivery') {
-      return 'Driver pings are only needed for delivery orders.'
+      return 'Driver watching is only needed for delivery orders.'
     }
     if (!toValue(delivery)?.ready) {
       return 'Waiting for a checked delivery address.'
     }
-    if (pending.value) return 'Sending a weak delivery beacon.'
-    if (error.value) return error.value
-    if (pingCount.value > 0) {
-      return 'Weak delivery beacon sent.'
+    if (!resolvedOrderPath.value) return 'Waiting for the order to be created.'
+    if (watchingCount.value > 0) {
+      return `${watchingCount.value} driver${watchingCount.value === 1 ? '' : 's'} watching.`
     }
 
-    return 'Waiting to send delivery beacon.'
+    return 'Order created. Waiting for drivers to watch.'
   })
-
-  async function sendDriverPings() {
-    const currentOrder = toValue(order)
-    const currentDelivery = toValue(delivery)
-    const pingKey = [
-      endpoint.value,
-      currentDelivery?.address?.place_id,
-      currentDelivery?.address?.lat,
-      currentDelivery?.address?.lng,
-      currentOrder.quantity,
-      ...currentOrder.items.map((item) => `${item.id}:${item.quantity}`),
-    ].join('|')
-
-    if (
-      !endpoint.value ||
-      currentOrder.orderType !== 'delivery' ||
-      !currentDelivery?.ready ||
-      !currentDelivery.address?.lat ||
-      !currentDelivery.address?.lng ||
-      lastPingKey.value === pingKey
-    ) {
-      return
-    }
-
-    pending.value = true
-    error.value = ''
-    try {
-      const response = await $fetch<{ ping_count?: number }>(endpoint.value, {
-        method: 'POST',
-        body: {
-          delivery: currentDelivery,
-          basket: currentOrder.selection,
-        },
-      })
-      pingCount.value = Math.max(0, Number(response?.ping_count || 0))
-      lastPingKey.value = pingKey
-    } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
-      error.value = statusMessage || 'Driver beacon could not be sent.'
-    } finally {
-      pending.value = false
-    }
-  }
-
-  watch(
-    [endpoint, () => toValue(delivery), () => toValue(order).quantity],
-    () => {
-      void sendDriverPings()
-    },
-    { immediate: true, deep: true }
-  )
 
   return {
     driverStatus,
     kitchen,
-    pending,
-    pingCount,
+    watchingCount,
   }
 }
 

@@ -71,7 +71,11 @@ export type KitchenAppScope = FireuxConsoleEntityAppScope
 
 export type KitchenVisibility = FireuxConsoleEntityVisibility
 
-export type KitchenIdentity = FireuxConsoleEntityIdentity
+export type KitchenImageShade = 'light' | 'dark' | 'none'
+
+export type KitchenIdentity = FireuxConsoleEntityIdentity & {
+  image_shade?: KitchenImageShade
+}
 
 export type KitchenMenusConfig = {
   currency_format: CurrencyDisplayFormat
@@ -143,6 +147,7 @@ export const KitchenModel = {
 
   identity: {
     ...FireuxConsoleEntityIdentityModel,
+    image_shade: 'none',
   } as KitchenIdentity,
 
   // Default food-menu display config for this Kitchen.
@@ -200,6 +205,7 @@ export type Kitchen = Omit<
     display_name?: string
     tagline?: string
     display_image_url?: string
+    image_shade?: KitchenImageShade
     food_gallery?: string[]
     menu_currency_format?: CurrencyDisplayFormat
     menu_show_currency?: boolean

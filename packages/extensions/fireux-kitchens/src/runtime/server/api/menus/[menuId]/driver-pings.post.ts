@@ -36,6 +36,11 @@ type DeliveryPingBody = {
       unitPrice?: unknown
     }>
   }
+  customer?: {
+    name?: unknown
+    avatar?: unknown
+    avatar_url?: unknown
+  }
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -82,6 +87,7 @@ export default defineEventHandler(async (event) => {
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const db = getRuntimeFirestore()
   const basket = readBasket(body)
+  const customer = readCustomer(body)
   const pickup = await readPickup(db, context.kitchenId)
   const now = FieldValue.serverTimestamp()
   const id = pingId({
@@ -106,6 +112,7 @@ export default defineEventHandler(async (event) => {
       ...(pickup ? { pickup } : {}),
       destination,
       basket,
+      ...(Object.keys(customer).length ? { customer } : {}),
       created_at: now,
       updated_at: now,
     },
@@ -216,4 +223,17 @@ function readBasket(body: DeliveryPingBody | null) {
     quantity: Math.max(0, Math.floor(numberValue(basket.quantity))),
     items,
   }
+}
+
+function readCustomer(body: DeliveryPingBody | null) {
+  const customer = record(body?.customer)
+  const snapshot = {
+    name: text(customer.name),
+    avatar: text(customer.avatar),
+    avatar_url: text(customer.avatar_url || customer.avatar),
+  }
+
+  return Object.fromEntries(
+    Object.entries(snapshot).filter(([, value]) => value)
+  )
 }

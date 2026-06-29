@@ -76,6 +76,31 @@
               />
             </div>
 
+            <div class="md:col-span-2 space-y-2">
+              <div>
+                <p class="text-sm font-medium text-highlighted">
+                  Logo tone
+                </p>
+                <p class="text-xs text-dimmed">
+                  Adds the opposite backing behind transparent logos when needed.
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  v-for="option in imageShadeOptions"
+                  :key="option.value"
+                  size="sm"
+                  color="neutral"
+                  :variant="imageShade === option.value ? 'solid' : 'soft'"
+                  :disabled="!canWrite"
+                  @click="handleImageShade(option.value)"
+                >
+                  {{ option.label }}
+                </UButton>
+              </div>
+            </div>
+
             <p class="md:col-span-2 text-sm text-dimmed">
               Address, map, contact, and venue image live on the linked Place.
             </p>
@@ -94,7 +119,10 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import type { KitchenUpdateInput } from '../../../../../models/kitchen.model'
+import type {
+  KitchenImageShade,
+  KitchenUpdateInput,
+} from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
@@ -109,7 +137,16 @@ const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
+const imageShade = computed(() => readKitchenIdentity(props.kitchen).imageShade)
 const slug = computed(() => String(props.kitchen?.slug ?? ''))
+const imageShadeOptions: Array<{
+  value: KitchenImageShade
+  label: string
+}> = [
+  { value: 'none', label: 'No backing' },
+  { value: 'light', label: 'Light logo' },
+  { value: 'dark', label: 'Dark logo' },
+]
 
 const updateIdentityField = async (
   patch: KitchenUpdateInput,
@@ -153,6 +190,16 @@ const handleTagline = async (value: string) =>
     { 'identity.tagline': value },
     'Tagline updated',
     'Failed to update tagline'
+  )
+
+const handleImageShade = async (value: KitchenImageShade) =>
+  updateIdentityField(
+    {
+      'identity.image_shade': value,
+      image_shade: value,
+    },
+    'Logo tone updated',
+    'Failed to update logo tone'
   )
 
 const formatSlugField = (value: string) =>

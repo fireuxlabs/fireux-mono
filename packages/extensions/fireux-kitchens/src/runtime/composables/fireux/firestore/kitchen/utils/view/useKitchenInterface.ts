@@ -216,6 +216,7 @@ export function useKitchenInterface() {
       display_name: identity.displayName || merged.display_name,
       tagline: identity.tagline || merged.tagline,
       display_image_url: identity.imageUrl || merged.display_image_url,
+      image_shade: identity.imageShade || merged.image_shade,
       food_gallery: identity.gallery.length ? identity.gallery : merged.food_gallery,
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,

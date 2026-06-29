@@ -1,7 +1,10 @@
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { KitchenFulfilmentConfig } from '../models/kitchen.model'
+import type {
+  KitchenFulfilmentConfig,
+  KitchenImageShade,
+} from '../models/kitchen.model'
 import { readMenuOrderFulfilmentPolicy } from './menu-ordering-policy'
 
 type KitchenSpineRecord = Record<string, unknown> | null | undefined
@@ -21,6 +24,12 @@ const stringArray = (value: unknown) =>
   Array.isArray(value)
     ? value.map(text).filter(Boolean)
     : []
+const imageShade = (value: unknown): KitchenImageShade => {
+  const shade = text(value).toLowerCase()
+  return shade === 'light' || shade === 'dark' || shade === 'none'
+    ? shade
+    : 'none'
+}
 
 export const readKitchenAppScope = (
   value: KitchenSpineRecord,
@@ -59,6 +68,7 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
     displayName,
     tagline: text(identity.tagline) || text(source.tagline),
     imageUrl,
+    imageShade: imageShade(identity.image_shade || source.image_shade),
     gallery,
   }
 }

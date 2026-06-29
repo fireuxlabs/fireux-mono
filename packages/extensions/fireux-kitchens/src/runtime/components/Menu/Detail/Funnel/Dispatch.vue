@@ -40,10 +40,15 @@ import { useFunnelDispatch } from '../../../../composables/fireux/public/menu/us
 const props = defineProps<{
   order: MenuOrderingFunnelState
   delivery?: MenuOrderingDeliveryState | null
+  orderPath?: string
 }>()
 
 const {
   driverStatus,
   kitchen,
-} = useFunnelDispatch(() => props.order, () => props.delivery)
+} = useFunnelDispatch(
+  () => props.order,
+  () => props.delivery,
+  () => props.orderPath
+)
 </script>
