@@ -67,6 +67,7 @@ Snapshot ownership rule:
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
 - Domain parents may cascade into their domain children. Workplace/job sync belongs to the jobs domain.
 - `User` may cascade safe public identity into attached profile rows because profiles are part of the identity family.
+- User profile snapshots are maintained by `useCoreUserUpdate`, `useProfileCreate`, and the backfill/sync script.
 - Collection managers consume the row/projection they receive; they do not make per-row hydration calls.
 
 Source contract:

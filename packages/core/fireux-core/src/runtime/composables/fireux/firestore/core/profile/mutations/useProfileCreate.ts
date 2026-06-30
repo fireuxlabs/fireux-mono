@@ -9,7 +9,7 @@ import {
   type ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
-import { UserStorage } from '../../../../../../models/core/user.model'
+import { UserStorage, type User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
@@ -18,6 +18,26 @@ import { requireUid } from '../../../utils/useEnsureCommon'
 type ProfileCreateResult = {
   createdCore: boolean
   createdApp: boolean
+}
+
+const publicUserSnapshot = (id: string, user?: Partial<User> | null) => ({
+  id,
+  display_name: String(user?.display_name || '').trim(),
+  avatar: String(user?.avatar || '').trim(),
+  handle: String(user?.handle || '').trim(),
+})
+
+const snapshotsMatch = (
+  left: ReturnType<typeof publicUserSnapshot>,
+  right: unknown
+) => {
+  const record = right && typeof right === 'object' ? right as Record<string, unknown> : {}
+  return (
+    String(record.id || '').trim() === left.id &&
+    String(record.display_name || '').trim() === left.display_name &&
+    String(record.avatar || '').trim() === left.avatar &&
+    String(record.handle || '').trim() === left.handle
+  )
 }
 
 /**
@@ -43,6 +63,11 @@ export function useProfileCreate(config: ProfileConfig) {
 
     let createdCore = false
     let createdApp = false
+    const userSnapshot = await getDoc(doc(identityDb, UserStorage.rootCollection, uid))
+    const userSummary = publicUserSnapshot(
+      uid,
+      userSnapshot.exists() ? userSnapshot.data() as Partial<User> : null
+    )
 
     const coreRef = doc(identityDb, config.collectionName, uid)
     const coreSnapshot = await getDoc(coreRef)
@@ -53,6 +78,7 @@ export function useProfileCreate(config: ProfileConfig) {
         subtitle: seed.subtitle,
         tagline: seed.tagline,
         tags: [...seed.tags],
+        user: userSummary,
       } as any, {
         creator: true,
       })
@@ -65,6 +91,7 @@ export function useProfileCreate(config: ProfileConfig) {
       if (typeof existing?.subtitle !== 'string') patch.subtitle = ''
       if (typeof existing?.tagline !== 'string') patch.tagline = ''
       if (!Array.isArray(existing?.tags)) patch.tags = []
+      if (!snapshotsMatch(userSummary, existing?.user)) patch.user = userSummary
       if (!(existing?.created && existing?.created.at)) {
         patch['created.at'] = existing?.created_at ?? serverTimestamp()
       }
@@ -82,6 +109,7 @@ export function useProfileCreate(config: ProfileConfig) {
         await appCreate.setDocument(appCollection, uid, {
           created: seed.created,
           updated: seed.updated,
+          user: userSummary,
         } as any, {
           creator: true,
           app: true,
@@ -96,6 +124,7 @@ export function useProfileCreate(config: ProfileConfig) {
         if (!String(existing?.created?.app_id || '').trim()) {
           patch['created.app_id'] = appId
         }
+        if (!snapshotsMatch(userSummary, existing?.user)) patch.user = userSummary
         if (Object.keys(patch).length) {
           await appUpdate.updateDocument(appCollection, uid, patch)
         }
