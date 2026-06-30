@@ -56,8 +56,8 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
-  // View surface only: Place-like fields here are hydrated from Place, not
-  // repeated Kitchen storage truth.
+  // View surface only: Place-like fields here are copied public snapshots from
+  // Place or local Kitchen overrides, not live collection-manager hydration.
   id?: string
   app_scope_state?: FireuxAppScopeState
   app_scope_app_id?: string

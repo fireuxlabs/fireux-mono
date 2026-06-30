@@ -162,7 +162,7 @@ const devObjects = computed(() => ({
 const devDerived = computed(() => ({
   family: 'Root Simple Collection Manager',
   source: {
-    collection: 'menus',
+    rootPath: 'menus',
     hydration:
       'None here. Menu detail/manifest resolves kitchen, app, ordering, and theme context.',
   },

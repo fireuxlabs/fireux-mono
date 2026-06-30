@@ -4,7 +4,7 @@
 // usage_note: sync denormalized list/card snapshots so collection rows are self-contained.
 
 import { cert, initializeApp } from 'firebase-admin/app'
-import { Timestamp, getFirestore } from 'firebase-admin/firestore'
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
 
@@ -42,10 +42,15 @@ const text = (value) => String(value ?? '').trim()
 const record = (value) =>
   value && typeof value === 'object' && !Array.isArray(value) ? value : {}
 const array = (value) => (Array.isArray(value) ? value : [])
+const isFirestoreSentinel = (value) =>
+  value && typeof value === 'object' && typeof value.isEqual === 'function'
+const isDeleteSentinel = (value) =>
+  isFirestoreSentinel(value) && value.constructor?.name === 'DeleteTransform'
 const compactObject = (value) =>
   Object.fromEntries(
     Object.entries(value).filter(([, entry]) => {
       if (entry === undefined || entry === null) return false
+      if (isFirestoreSentinel(entry)) return true
       if (typeof entry === 'string') return Boolean(entry.trim())
       if (Array.isArray(entry)) return entry.length > 0
       if (entry && typeof entry === 'object') return Object.keys(entry).length > 0
@@ -61,6 +66,26 @@ const userSnapshot = (user, id) =>
     handle: text(user.handle),
   })
 
+const kitchenPlaceCardSnapshot = (place) =>
+  compactObject({
+    name: text(place.name),
+    brand_tagline: text(place.brand_tagline),
+    short_address: text(place.short_address),
+    formatted_address: text(place.formatted_address),
+    image_url: text(place.image_url || place.cover_image),
+    image_shade: text(place.image_shade),
+    source: text(place.source),
+  })
+
+const kitchenPlaceCardSnapshotTrim = {
+  short_name: FieldValue.delete(),
+  lat: FieldValue.delete(),
+  lng: FieldValue.delete(),
+  phone: FieldValue.delete(),
+  website: FieldValue.delete(),
+  default_currency_code: FieldValue.delete(),
+}
+
 const placeSnapshot = (place) =>
   compactObject({
     name: text(place.name),
@@ -72,7 +97,6 @@ const placeSnapshot = (place) =>
     lng: typeof place.lng === 'number' ? place.lng : undefined,
     image_url: text(place.image_url || place.cover_image),
     image_shade: text(place.image_shade),
-    source: record(place.source),
     phone: text(place.phone),
     website: text(place.website),
     default_currency_code: text(place.default_currency_code),
@@ -125,6 +149,7 @@ const kitchens = await collectionById('kitchens')
 const patches = []
 
 const normaliseForCompare = (value) => {
+  if (isFirestoreSentinel(value)) return `__FIRESTORE_${value.constructor?.name || 'SENTINEL'}__`
   if (Array.isArray(value)) return value.map(normaliseForCompare)
   if (value && typeof value === 'object') {
     return Object.fromEntries(
@@ -137,6 +162,7 @@ const normaliseForCompare = (value) => {
 }
 
 const currentShapeForPatch = (currentValue, patchValue) => {
+  if (isDeleteSentinel(patchValue)) return undefined
   if (Array.isArray(patchValue)) return currentValue
   if (patchValue && typeof patchValue === 'object') {
     const currentRecord = record(currentValue)
@@ -152,10 +178,25 @@ const currentShapeForPatch = (currentValue, patchValue) => {
 
 const patchHasDelta = (current, patch) =>
   Object.entries(patch).some(([key, patchValue]) => {
+    if (isDeleteSentinel(patchValue)) {
+      return Object.prototype.hasOwnProperty.call(record(current), key)
+    }
+
     const currentValue = currentShapeForPatch(record(current)[key], patchValue)
     return JSON.stringify(normaliseForCompare(currentValue)) !==
       JSON.stringify(normaliseForCompare(patchValue))
   })
+
+const serialiseForOutput = (value) => {
+  if (isDeleteSentinel(value)) return '__DELETE_FIELD__'
+  if (Array.isArray(value)) return value.map(serialiseForOutput)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [key, serialiseForOutput(entry)])
+    )
+  }
+  return value
+}
 
 async function queuePatch(ref, current, patch, reason) {
   const sourcePatch = compactObject(patch)
@@ -173,7 +214,7 @@ async function queuePatch(ref, current, patch, reason) {
   patches.push({
     path: ref.path,
     reason,
-    patch: cleanPatch,
+    patch: serialiseForOutput(cleanPatch),
   })
 
   if (commit) {
@@ -190,7 +231,7 @@ async function syncKitchens() {
     const place = places.get(placeId) || places.get(doc.id)
     if (!place) continue
 
-    const snapshot = placeSnapshot(place)
+    const snapshot = kitchenPlaceCardSnapshot(place)
     kitchens.set(doc.id, {
       ...kitchen,
       ...snapshot,
@@ -199,7 +240,10 @@ async function syncKitchens() {
     await queuePatch(
       doc.ref,
       kitchen,
-      snapshot,
+      {
+        ...snapshot,
+        ...kitchenPlaceCardSnapshotTrim,
+      },
       'kitchen place public card snapshot'
     )
   }
