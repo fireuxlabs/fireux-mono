@@ -76,7 +76,9 @@ import Allergen from './Allergen.vue'
 import DeliveryZone from './Delivery/Zone.vue'
 import DeliveryDispatch from './Delivery/Dispatch.vue'
 import CollectionDetails from './Collection/Details.vue'
-import CollectionDispatch from './Collection/Dispatch.vue'
+import CollectionKitchen from './Collection/Kitchen.vue'
+import PreOrderDetails from './PreOrder/Details.vue'
+import PreOrderKitchen from './PreOrder/Kitchen.vue'
 import Review from './Review.vue'
 import Payment from './Payment.vue'
 
@@ -98,7 +100,9 @@ type SurfaceKind =
   | 'delivery-zone'
   | 'delivery-dispatch'
   | 'collection-details'
-  | 'collection-dispatch'
+  | 'collection-kitchen'
+  | 'pre-order-details'
+  | 'pre-order-kitchen'
   | 'review'
   | 'payment'
 type Surface = {
@@ -118,7 +122,15 @@ const collectionSurfaces = [
   { component: Basket, kind: 'basket', title: 'Basket' },
   { component: Allergen, kind: 'allergen', title: 'Allergy check' },
   { component: CollectionDetails, kind: 'collection-details', title: 'Collection' },
-  { component: CollectionDispatch, kind: 'collection-dispatch', title: 'Dispatch' },
+  { component: CollectionKitchen, kind: 'collection-kitchen', title: 'Kitchen' },
+  { component: Review, kind: 'review', title: 'Review' },
+  { component: Payment, kind: 'payment', title: 'Payment' },
+] as const satisfies readonly Surface[]
+const preOrderSurfaces = [
+  { component: Basket, kind: 'basket', title: 'Basket' },
+  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
+  { component: PreOrderDetails, kind: 'pre-order-details', title: 'Pre-order' },
+  { component: PreOrderKitchen, kind: 'pre-order-kitchen', title: 'Kitchen' },
   { component: Review, kind: 'review', title: 'Review' },
   { component: Payment, kind: 'payment', title: 'Payment' },
 ] as const satisfies readonly Surface[]
@@ -131,7 +143,9 @@ const orderCreated = ref(false)
 const surfaces = computed(() =>
   props.order.orderType === 'collection'
     ? collectionSurfaces
-    : deliverySurfaces
+    : props.order.orderType === 'pre_order'
+      ? preOrderSurfaces
+      : deliverySurfaces
 )
 const surfaceCount = computed(() => surfaces.value.length)
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
@@ -190,7 +204,7 @@ const currentSurfaceProps = computed(() => {
     }
   }
 
-  if (kind === 'collection-details') {
+  if (kind === 'collection-details' || kind === 'pre-order-details') {
     return {
       order: props.order,
       'onUpdate:ready': (value: boolean) => {
@@ -199,7 +213,7 @@ const currentSurfaceProps = computed(() => {
     }
   }
 
-  if (kind === 'collection-dispatch') {
+  if (kind === 'collection-kitchen' || kind === 'pre-order-kitchen') {
     return { order: props.order }
   }
 
@@ -212,7 +226,8 @@ const continueDisabled = computed(() =>
   (
     (
       currentSurfaceConfig.value.kind === 'delivery-zone' ||
-      currentSurfaceConfig.value.kind === 'collection-details'
+      currentSurfaceConfig.value.kind === 'collection-details' ||
+      currentSurfaceConfig.value.kind === 'pre-order-details'
     ) &&
     !fulfilmentReady.value
   )
@@ -241,7 +256,8 @@ function setSurfaceNumber(next: number) {
 
 const shouldCreateOrder = computed(() =>
   currentSurfaceConfig.value.kind === 'delivery-zone' ||
-  currentSurfaceConfig.value.kind === 'collection-details'
+  currentSurfaceConfig.value.kind === 'collection-details' ||
+  currentSurfaceConfig.value.kind === 'pre-order-details'
 )
 
 function fulfilmentSubmitPayload(): MenuOrderingSubmitPayload {
