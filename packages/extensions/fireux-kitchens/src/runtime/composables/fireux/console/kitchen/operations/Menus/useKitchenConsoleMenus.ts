@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
-import { useMenuCollection } from '../../../../firestore/menu/fetch/useMenuCollection'
+import { useKitchenMenuCollection } from '../../../../firestore/menu/fetch/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../firestore/menu/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../firestore/menu/mutations/useMenuUpdate'
 import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
@@ -38,7 +38,7 @@ export function useKitchenConsoleMenus() {
     pending: menusPending,
     collectionPath,
   } =
-    useMenuCollection(fetchKitchenId, {
+    useKitchenMenuCollection(fetchKitchenId, {
       kitchenCollectionPath: kitchenConsole.runtime.rootCollection,
       databaseId: kitchenConsole.runtime.databaseId,
   })

@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePublicAppScopedSource } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useKitchenMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 import KitchenDetailMenuLink from './MenuLink.vue'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -65,7 +65,7 @@ const defaultChromeLabels = {
   noMenusAvailable: 'No menus available',
   openMenu: 'Open menu',
 }
-const { publishedMenus, pending: menusPending } = useMenuCollection(
+const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
   kitchenId,
   { kitchenCollectionPath }
 )

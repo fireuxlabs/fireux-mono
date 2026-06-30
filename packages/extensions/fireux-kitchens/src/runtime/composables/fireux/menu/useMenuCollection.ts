@@ -2,9 +2,9 @@ import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import type { PublicMenu } from './useMenuFetch'
 
-export function useMenuDoorwayCollection() {
+export function useMenuCollection() {
   const state = useAsyncData(
-    'menu-doorways',
+    'menu-collection',
     () => $fetch<PublicMenu[]>('/api/menus')
   )
   const menus = computed(() => state.data.value ?? [])

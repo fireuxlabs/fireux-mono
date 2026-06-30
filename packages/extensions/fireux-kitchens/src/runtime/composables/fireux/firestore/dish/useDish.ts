@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { Dish } from '../../../../models/dish.model'
-import { useDishCollection } from './fetch/useDishCollection'
+import { useKitchenDishCollection } from './fetch/useKitchenDishCollection'
 import { useDishFetch } from './fetch/useDishFetch'
 import { useDishCreate } from './mutations/useDishCreate'
 import { useDishUpdate } from './mutations/useDishUpdate'
@@ -12,7 +12,7 @@ export type { Dish }
 export type { DishCard, DishProfile } from './utils/view/useDishInterface'
 
 export {
-  useDishCollection,
+  useKitchenDishCollection,
   useDishFetch,
   useDishCreate,
   useDishUpdate,

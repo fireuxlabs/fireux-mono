@@ -8,14 +8,14 @@ import { resolveKitchenChildCollectionBasePath } from '../../kitchen/utils/paths
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/${RecipeStorage.collection}`
 
-type UseRecipeCollectionOptions = {
+type UseKitchenRecipeCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
 
-export function useRecipeCollection(
+export function useKitchenRecipeCollection(
   kitchenId?: string | Ref<string | null | undefined>,
-  options: UseRecipeCollectionOptions = {}
+  options: UseKitchenRecipeCollectionOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead({
     databaseId: options.databaseId,

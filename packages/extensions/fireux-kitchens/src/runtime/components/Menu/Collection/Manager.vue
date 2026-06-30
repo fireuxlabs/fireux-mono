@@ -78,7 +78,7 @@ import {
   useMenuInterface,
   type MenuInterfaceSource,
 } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
-import { useMenuDoorwayCollection } from '../../../composables/fireux/menu/useMenuDoorwayCollection'
+import { useMenuCollection } from '../../../composables/fireux/menu/useMenuCollection'
 
 const props = withDefaults(
   defineProps<{
@@ -108,12 +108,12 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useMenuInterface()
-const menuDoorways = useMenuDoorwayCollection()
+const menuCollection = useMenuCollection()
 // Card handoff spine: pass v-bind="card" plus linkEnabled, matching sibling collection managers.
 const linkEnabled = computed(() => props.link !== false)
 
 const collection = computed(() =>
-  [...menuDoorways.menus.value].sort(
+  [...menuCollection.menus.value].sort(
     (a, b) =>
       Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
       String(a.name ?? '').localeCompare(String(b.name ?? ''))

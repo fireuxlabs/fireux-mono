@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useRecipeCollection } from '../../../../firestore/recipe/fetch/useRecipeCollection'
+import { useKitchenRecipeCollection } from '../../../../firestore/recipe/fetch/useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../../../../models/recipe.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
@@ -27,7 +27,7 @@ export function useKitchenConsoleRecipes() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { recipes, pending: recipesPending, collectionPath } =
-    useRecipeCollection(fetchKitchenId, {
+    useKitchenRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })

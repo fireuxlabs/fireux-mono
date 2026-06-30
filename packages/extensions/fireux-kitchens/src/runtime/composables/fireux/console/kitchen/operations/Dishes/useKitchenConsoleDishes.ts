@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useDishCollection } from '../../../../firestore/dish/useDish'
+import { useKitchenDishCollection } from '../../../../firestore/dish/useDish'
 import { DishStorage, type Dish } from '../../../../../../models/dish.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
@@ -38,7 +38,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { dishes, pending: dishesPending, collectionPath } =
-    useDishCollection(fetchKitchenId, {
+    useKitchenDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })

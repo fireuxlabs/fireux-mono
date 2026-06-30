@@ -5,7 +5,7 @@ import {
   usePublicScopedRecords,
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
-import { useMenuCollection } from '../../firestore/menu/useMenu'
+import { useKitchenMenuCollection } from '../../firestore/menu/useMenu'
 import type { Menu } from '../../../../models/menu/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -28,7 +28,7 @@ export function useKitchenMenuScope() {
       ? `apps/${appScope.sourceAppId.value}/kitchens`
       : ''
   )
-  const menuRead = useMenuCollection(kitchenId, {
+  const menuRead = useKitchenMenuCollection(kitchenId, {
     kitchenCollectionPath,
   })
   const publicMenus = usePublicScopedRecords({

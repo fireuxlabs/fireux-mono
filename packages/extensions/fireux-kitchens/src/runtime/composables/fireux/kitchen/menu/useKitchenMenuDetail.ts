@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { Dish } from '../../../../models/dish.model'
-import { useDishCollection } from '../../firestore/dish/fetch/useDishCollection'
+import { useKitchenDishCollection } from '../../firestore/dish/fetch/useKitchenDishCollection'
 import { useMenuSectionCollection } from '../../firestore/menu/fetch/useMenuSectionCollection'
 import { useKitchenMenuItems } from './useKitchenMenuItems'
 import { useKitchenMenuRows } from './useKitchenMenuRows'
@@ -28,7 +28,7 @@ function useKitchenMenuDetailFromScope(
     sectionState.collectionPath,
     sectionState.sections
   )
-  const dishState = useDishCollection(kitchenId, collectionOptions)
+  const dishState = useKitchenDishCollection(kitchenId, collectionOptions)
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     for (const dish of dishState.dishes.value) {

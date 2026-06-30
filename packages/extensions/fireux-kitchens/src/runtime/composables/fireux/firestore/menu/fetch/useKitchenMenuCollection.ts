@@ -4,7 +4,7 @@ import { computed, unref, type Ref } from 'vue'
 import { MenuStorage, type Menu } from '../../../../../models/menu/menu.model'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
-type UseMenuCollectionOptions = {
+type UseKitchenMenuCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
@@ -18,9 +18,9 @@ const sortMenus = (menus: Menu[]) =>
       String(a.name).localeCompare(String(b.name))
   )
 
-export function useMenuCollection(
+export function useKitchenMenuCollection(
   kitchenId?: string | Ref<string | null | undefined>,
-  options: UseMenuCollectionOptions = {}
+  options: UseKitchenMenuCollectionOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead({
     databaseId: options.databaseId,

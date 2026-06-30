@@ -58,7 +58,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useKitchenMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useMenuManifest } from '../../../../composables/fireux/menu/useMenuManifest'
 import {
@@ -80,7 +80,7 @@ const {
   canWrite,
 } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate()
-const { publishedMenus } = useMenuCollection(kitchenId, {
+const { publishedMenus } = useKitchenMenuCollection(kitchenId, {
   kitchenCollectionPath: rootCollection,
 })
 const toast = useToastify()

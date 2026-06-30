@@ -1,5 +1,5 @@
 import { useRecipeFetch } from './fetch/useRecipeFetch'
-import { useRecipeCollection } from './fetch/useRecipeCollection'
+import { useKitchenRecipeCollection } from './fetch/useKitchenRecipeCollection'
 import { useRecipeCreate } from './mutations/useRecipeCreate'
 import { useRecipeUpdate } from './mutations/useRecipeUpdate'
 import { useRecipeDelete } from './mutations/useRecipeDelete'
@@ -8,7 +8,7 @@ import { useRecipeInterface } from './utils/view/useRecipeInterface'
 
 export {
   useRecipeFetch,
-  useRecipeCollection,
+  useKitchenRecipeCollection,
   useRecipeCreate,
   useRecipeUpdate,
   useRecipeDelete,
@@ -18,7 +18,7 @@ export {
 
 export function useRecipe() {
   return {
-    ...useRecipeCollection(),
+    ...useKitchenRecipeCollection(),
     ...useRecipeFetch(),
     ...useRecipeCreate(),
     ...useRecipeUpdate(),

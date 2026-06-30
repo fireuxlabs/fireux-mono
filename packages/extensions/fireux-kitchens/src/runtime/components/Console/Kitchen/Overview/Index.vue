@@ -39,14 +39,14 @@ import { computed } from 'vue'
 import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import { useKitchenConsoleOverview } from '../../../../composables/fireux/console/kitchen/overview/useKitchenConsoleOverview'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import { useKitchenMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 
 const { focus, multiple, debug, kitchenId, rootCollection } = useKitchenConsoleOverview()
 const { pill } = useKitchenInterface()
 const {
   activeMenus: menus,
   pending: menusPending,
-} = useMenuCollection(kitchenId, {
+} = useKitchenMenuCollection(kitchenId, {
   kitchenCollectionPath: rootCollection,
 })
 const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
