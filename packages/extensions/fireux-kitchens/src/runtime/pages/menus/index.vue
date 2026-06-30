@@ -3,11 +3,11 @@
     <!-- Index map: docs/concepts/family-public-index.md · family: Menu public index -->
     <UPageHeader
       :title="pageTitle"
-      description="Start with a simple menu QR, then grow into a Kitchen Console when you're ready."
+      description="Browse live Misebox kitchen menus and order where online ordering is available."
     />
     <UPageBody>
       <MenuCTA />
-      <MenuCollectionManager />
+      <MenuCollectionManager id="live-menus" />
     </UPageBody>
   </UPage>
 </template>
@@ -30,7 +30,7 @@ definePageMeta({
   layout: 'default',
   name: 'MenusIndexPage',
   title: 'Menus',
-  description: "Start with a simple menu QR, then grow into a Kitchen Console when you're ready.",
+  description: 'Browse live Misebox kitchen menus and order where online ordering is available.',
 })
 
 const pageTitle = 'Menus'

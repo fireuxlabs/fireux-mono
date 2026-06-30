@@ -1,5 +1,6 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 
 export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   id?: string
@@ -88,6 +89,7 @@ export function useMenuInterface() {
     const meta = status && status !== 'published' ? status : ''
     const routeId = id || slug
     const to = routeId ? `/menus/${encodeURIComponent(routeId)}` : ''
+    const actionLabel = getActionLabel(menu)
 
     return {
       id,
@@ -102,12 +104,35 @@ export function useMenuInterface() {
       name,
       description,
       active: true,
-      actionLabel: '',
+      actionLabel,
       itemCount: 0,
       isActiveNow: true,
       windowLabel: '',
       sortOrder: Number(menu.sort_order ?? 0),
     }
+  }
+
+  function getActionLabel(menu: MenuInterfaceSource): string {
+    const explicitViews = Array.isArray(menu.public_views)
+      ? menu.public_views
+      : []
+    const orderTypes = Array.isArray(menu.ordering?.order_types)
+      ? menu.ordering.order_types
+          .map((type) => type?.type)
+          .filter((type): type is KitchenOrderType => Boolean(type))
+      : []
+    const canOrder = Boolean(menu.ordering?.enabled && orderTypes.length) ||
+      explicitViews.includes('order')
+
+    if (!canOrder) return 'View menu'
+    if (orderTypes.includes('delivery') && orderTypes.includes('collection')) {
+      return 'Order'
+    }
+    if (orderTypes.includes('delivery')) return 'Delivery'
+    if (orderTypes.includes('collection')) return 'Collection'
+    if (orderTypes.includes('pre_order')) return 'Pre-order'
+
+    return 'Order'
   }
 
   function buildInterface(

@@ -92,8 +92,8 @@ const props = withDefaults(
     link?: boolean
   }>(),
   {
-    title: 'Public menus',
-    description: 'Open menu links that are live today.',
+    title: 'Live menus',
+    description: 'Open a menu, browse dishes, or start an order from kitchens using Misebox.',
     searchPlaceholder: 'Search menus...',
     showSearch: true,
     showVariantToggle: true,
