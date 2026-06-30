@@ -6,19 +6,19 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { useMenuOrderDraft } from './useMenuOrderDraft'
+import { useKitchenOrderFunnelDraft } from './useKitchenOrderFunnelDraft'
 import {
   useMenuViewMode,
   type MenuChoiceOption,
   type MenuChoiceValue,
-} from './useMenuViewMode'
-import { menuOrderBasketActionLabel } from '../../../utils/menu-ordering-ui'
-import type { MenuManifest } from './useMenuManifest'
-import type { MenuFoodOrderItem } from '../../../models/menu/menu-food.model'
+} from '../../../menu/useMenuViewMode'
+import { menuOrderBasketActionLabel } from '../../../../../utils/menu-ordering-ui'
+import type { MenuManifest } from '../../../menu/useMenuManifest'
+import type { MenuFoodOrderItem } from '../../../../../models/menu/menu-food.model'
 import type {
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
-} from '../../../models/menu/menu-ordering.model'
+} from '../../../../../models/menu/menu-ordering.model'
 
 export type { MenuChoiceValue }
 export type MenuDetailOrderItem = MenuFoodOrderItem
@@ -31,7 +31,7 @@ export type MenuDetailView = {
   dimmed: boolean
 }
 
-type UseMenuOrderingOptions = {
+type UseKitchenOrderFunnelOptions = {
   menu: MaybeRefOrGetter<MenuManifest | null>
   menuId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
@@ -41,8 +41,8 @@ type PanelState = 'closed' | 'open'
 const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 
-// Menu ordering spine: keep ordering state in composables; Menu/Detail composes the menu layer and funnel layer.
-export function useMenuOrdering(options: UseMenuOrderingOptions) {
+// Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
+export function useKitchenOrderFunnel(options: UseKitchenOrderFunnelOptions) {
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
     const id = text(toValue(options.menuId))
@@ -79,7 +79,7 @@ export function useMenuOrdering(options: UseMenuOrderingOptions) {
       panelState.value = open ? 'open' : 'closed'
     },
   })
-  const draft = useMenuOrderDraft(options.menuId, {
+  const draft = useKitchenOrderFunnelDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
     canOrder,
     orderType: selectedOrderType,

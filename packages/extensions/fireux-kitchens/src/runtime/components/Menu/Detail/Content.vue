@@ -44,7 +44,7 @@ import type {
   MenuDetailOrderItem,
   MenuDetailView,
   MenuChoiceValue,
-} from '../../../composables/fireux/menu/useMenuOrdering'
+} from '../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel'
 
 defineProps<{
   view: MenuDetailView | null

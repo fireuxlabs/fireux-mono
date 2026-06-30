@@ -26,7 +26,7 @@
 import { computed } from 'vue'
 import { useMenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
-import { useMenuOrdering } from '../../../composables/fireux/menu/useMenuOrdering'
+import { useKitchenOrderFunnel } from '../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel'
 
 const props = defineProps<{
   menuId: string
@@ -47,7 +47,7 @@ const {
   className: themeClassName,
   styleVars: themeStyleVars,
 } = useMenuThemeSurface({ pageStyle })
-const interaction = useMenuOrdering({
+const interaction = useKitchenOrderFunnel({
   menu: detailMenu,
   menuId: () => props.menuId,
   kitchenSlug: () => props.kitchenSlug,

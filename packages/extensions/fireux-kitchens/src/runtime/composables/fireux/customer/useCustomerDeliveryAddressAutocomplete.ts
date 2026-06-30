@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from 'vue'
 
-export type MenuDeliveryAddressPrediction = {
+export type CustomerDeliveryAddressPrediction = {
   place_id: string
   description: string
   structured_formatting?: {
@@ -12,8 +12,8 @@ export type MenuDeliveryAddressPrediction = {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuDeliveryAddressAutocomplete(query: Ref<string>) {
-  const predictions = ref<MenuDeliveryAddressPrediction[]>([])
+export function useCustomerDeliveryAddressAutocomplete(query: Ref<string>) {
+  const predictions = ref<CustomerDeliveryAddressPrediction[]>([])
   const pending = ref(false)
   const error = ref('')
   const canSearch = computed(() => text(query.value).length >= 3)
@@ -78,7 +78,7 @@ export function useMenuDeliveryAddressAutocomplete(query: Ref<string>) {
   }
 }
 
-function cleanPrediction(value: unknown): MenuDeliveryAddressPrediction | null {
+function cleanPrediction(value: unknown): CustomerDeliveryAddressPrediction | null {
   const row = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, any>
     : {}

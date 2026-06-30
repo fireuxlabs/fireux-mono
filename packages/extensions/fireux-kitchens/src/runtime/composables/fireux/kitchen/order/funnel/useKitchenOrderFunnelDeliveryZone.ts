@@ -5,12 +5,12 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import { useMenuCustomerAutofill } from '../../../menu/useMenuCustomerAutofill'
-import { useMenuDeliveryAddressAutocomplete } from '../../../menu/useMenuDeliveryAddressAutocomplete'
-import { useMenuDeliveryAddressCheck } from '../../../menu/useMenuDeliveryAddressCheck'
-import type {
-  MenuDeliveryAddressPrediction,
-} from '../../../menu/useMenuDeliveryAddressAutocomplete'
+import {
+  useCustomerDeliveryAddressAutocomplete,
+  type CustomerDeliveryAddressPrediction,
+} from '../../../customer/useCustomerDeliveryAddressAutocomplete'
+import { useKitchenOrderFunnelCustomerAutofill } from './useKitchenOrderFunnelCustomerAutofill'
+import { useKitchenOrderFunnelDeliveryAddressCheck } from './useKitchenOrderFunnelDeliveryAddressCheck'
 import type { MenuDeliveryZone } from '../../../../../models/menu/menu.model'
 import type { MenuOrderingFunnelState } from '../../../../../models/menu/menu-ordering.model'
 
@@ -21,10 +21,10 @@ export function useKitchenOrderFunnelDeliveryZone(
 ) {
   const address = ref('')
   const autofillApplied = ref(false)
-  const selectedAddress = ref<MenuDeliveryAddressPrediction | null>(null)
+  const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
-  const { customer: autofillCustomer } = useMenuCustomerAutofill()
+  const { customer: autofillCustomer } = useKitchenOrderFunnelCustomerAutofill()
   const zones = computed(() =>
     toValue(order).policy?.fulfilment?.delivery_zones || []
   )
@@ -41,13 +41,13 @@ export function useKitchenOrderFunnelDeliveryZone(
     predictions,
     pending: suggestionsPending,
     error: suggestionsError,
-  } = useMenuDeliveryAddressAutocomplete(address)
+  } = useCustomerDeliveryAddressAutocomplete(address)
   const {
     pending: checkPending,
     error: checkError,
     result,
     check,
-  } = useMenuDeliveryAddressCheck(menuId, { kitchenSlug })
+  } = useKitchenOrderFunnelDeliveryAddressCheck(menuId, { kitchenSlug })
   const matchedZone = computed(() => result.value?.zone || null)
   const minimum = computed(() => Number(matchedZone.value?.min_order_chf || 0))
   const fee = computed(() => Number(matchedZone.value?.fee_chf || 0))
@@ -88,7 +88,7 @@ export function useKitchenOrderFunnelDeliveryZone(
     return `${zoneLabel(matchedZone.value)} · minimum order ${chf(minimum.value)} · fee ${chf(fee.value)}`
   })
 
-  async function selectAddress(prediction: MenuDeliveryAddressPrediction) {
+  async function selectAddress(prediction: CustomerDeliveryAddressPrediction) {
     selectedAddress.value = prediction
     address.value = prediction.description
     predictions.value = []

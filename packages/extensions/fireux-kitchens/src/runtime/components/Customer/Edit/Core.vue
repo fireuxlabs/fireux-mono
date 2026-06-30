@@ -98,7 +98,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useCustomer } from '../../../composables/fireux/firestore/profiles/Customer/useCustomer'
-import { useMenuDeliveryAddressAutocomplete } from '../../../composables/fireux/menu/useMenuDeliveryAddressAutocomplete'
+import { useCustomerDeliveryAddressAutocomplete } from '../../../composables/fireux/customer/useCustomerDeliveryAddressAutocomplete'
 
 const {
   coreProfile,
@@ -117,7 +117,7 @@ const {
   predictions: addressPredictions,
   pending: addressSuggestionsPending,
   error: addressSuggestionsError,
-} = useMenuDeliveryAddressAutocomplete(addressDraft)
+} = useCustomerDeliveryAddressAutocomplete(addressDraft)
 
 const customer = computed(() => coreProfile.value ?? null)
 const customerPrivate = computed(() => customer.value?.private ?? null)

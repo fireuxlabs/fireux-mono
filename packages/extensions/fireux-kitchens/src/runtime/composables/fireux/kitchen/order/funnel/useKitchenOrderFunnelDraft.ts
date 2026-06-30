@@ -10,15 +10,15 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../models/order.model'
+} from '../../../../../models/order.model'
 import {
-  useMenuOrderCreate,
-} from './useMenuOrderCreate'
-import type { CreatedMenuOrder } from '../../../models/menu/menu-ordering.model'
+  useKitchenOrderFunnelCreate,
+} from './useKitchenOrderFunnelCreate'
+import type { CreatedMenuOrder } from '../../../../../models/menu/menu-ordering.model'
 import {
-  useMenuOrderStatus,
-  type PublicMenuOrderStatus,
-} from './useMenuOrderStatus'
+  useKitchenOrderFunnelStatus,
+  type KitchenOrderFunnelStatus,
+} from './useKitchenOrderFunnelStatus'
 
 type MenuOrderItem = {
   id: string
@@ -105,7 +105,7 @@ const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
   )
 }
 
-export function useMenuOrderDraft(
+export function useKitchenOrderFunnelDraft(
   menuId: MaybeRefOrGetter<string>,
   options: MenuOrderDraftOptions = {}
 ) {
@@ -136,12 +136,12 @@ export function useMenuOrderDraft(
     message,
     error,
     createOrder,
-  } = useMenuOrderCreate(menuId, {
+  } = useKitchenOrderFunnelCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
   })
   const {
     status: trackedOrderStatus,
-  } = useMenuOrderStatus(
+  } = useKitchenOrderFunnelStatus(
     menuId,
     computed(() => trackedOrder.value?.id || ''),
     {
@@ -303,7 +303,7 @@ export function useMenuOrderDraft(
     awaitingAcceptance.value = nextAwaitingAcceptance
   }
 
-  watch(trackedOrderStatus, (status: PublicMenuOrderStatus | null) => {
+  watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
     if (!status || !awaitingAcceptance.value) return
     if (status.status === 'pending_acceptance') return
 

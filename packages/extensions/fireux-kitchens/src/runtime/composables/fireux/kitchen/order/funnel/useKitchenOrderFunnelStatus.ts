@@ -7,7 +7,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 
-export type PublicMenuOrderStatus = {
+export type KitchenOrderFunnelStatus = {
   id: string
   order_number: string
   status: string
@@ -24,12 +24,12 @@ type UseMenuOrderStatusOptions = {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuOrderStatus(
+export function useKitchenOrderFunnelStatus(
   menuId: MaybeRefOrGetter<string>,
   orderId: MaybeRefOrGetter<string | null | undefined>,
   options: UseMenuOrderStatusOptions = {}
 ) {
-  const status = ref<PublicMenuOrderStatus | null>(null)
+  const status = ref<KitchenOrderFunnelStatus | null>(null)
   const pending = ref(false)
   const error = ref('')
   let timer: number | null = null
@@ -56,7 +56,7 @@ export function useMenuOrderStatus(
     pending.value = true
     error.value = ''
     try {
-      const nextStatus = await $fetch<PublicMenuOrderStatus>(endpoint.value)
+      const nextStatus = await $fetch<KitchenOrderFunnelStatus>(endpoint.value)
       status.value = nextStatus
       return nextStatus
     } catch (err) {

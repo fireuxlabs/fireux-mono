@@ -4,7 +4,7 @@ import {
   toValue,
   type MaybeRefOrGetter,
 } from 'vue'
-import type { MenuDeliveryZone } from '../../../models/menu/menu.model'
+import type { MenuDeliveryZone } from '../../../../../models/menu/menu.model'
 
 export type MenuDeliveryAddressCheckResult = {
   deliverable: boolean
@@ -31,15 +31,15 @@ type DeliveryAddressCheckInput =
       lng?: number
     }
 
-type UseMenuDeliveryAddressCheckOptions = {
+type UseKitchenOrderFunnelDeliveryAddressCheckOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuDeliveryAddressCheck(
+export function useKitchenOrderFunnelDeliveryAddressCheck(
   menuId: MaybeRefOrGetter<string>,
-  options: UseMenuDeliveryAddressCheckOptions = {}
+  options: UseKitchenOrderFunnelDeliveryAddressCheckOptions = {}
 ) {
   const id = computed(() => text(toValue(menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
