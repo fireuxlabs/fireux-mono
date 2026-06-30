@@ -24,7 +24,6 @@ export function useKitchenConsoleIndex() {
   const targetCollection = useKitchenCollection({ ids: targetIds })
   const demoCollection = useKitchenCollection({
     source: 'demo',
-    hydrate: false,
   })
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.kitchens.value)

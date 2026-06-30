@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-26
-Ref: c00678d44
+Updated: 2026-06-30
+Ref: 151c7ad49
 Role: map, not canon
 
 Purpose:
@@ -88,7 +88,7 @@ Component placement:
 - Root menu rendering and public menu collection pieces live under `components/Menu`.
 - The public detail entry is `components/Menu/Detail/Index.vue`, rendered as `MenuDetail` from public menu routes.
 - Detail-owned renderers live under `components/Menu/Detail/*`, such as `DisplayFrame`, `Document`, and `Structured`.
-- Customer-facing ordering lives under `components/Menu/Detail/Ordering/*`; it is a detail child layer, not a console `Operations` bucket.
+- Customer-facing ordering lives under `components/Menu/Detail/Funnel/*`; it is a detail child layer, not a console `Operations` bucket.
 - This mirrors root public entity detail entries such as `components/Kitchen/Detail/Index.vue` when kitchen detail owns child slices.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.

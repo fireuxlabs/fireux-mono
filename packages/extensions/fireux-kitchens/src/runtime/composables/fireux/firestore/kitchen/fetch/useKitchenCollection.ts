@@ -1,7 +1,6 @@
 import { computed, isRef, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeSimulationFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
@@ -11,7 +10,6 @@ import type { KitchenFetchSource } from './useKitchenFetch'
 type KitchenCollectionDoc = KitchenSurface
 
 type UseKitchenCollectionOptions = {
-  hydrate?: boolean | Ref<boolean>
   ids?: string[] | Ref<string[] | null | undefined>
   source?: KitchenFetchSource | Ref<KitchenFetchSource>
 }
@@ -41,11 +39,6 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       : ''
   )
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
-  const shouldHydrate = computed(() =>
-    isRef(options.hydrate)
-      ? options.hydrate.value !== false
-      : options.hydrate !== false
-  )
   const idSet = computed(() => {
     const ids = isRef(options.ids) ? options.ids.value : options.ids
     return new Set((ids ?? []).map((id) => normalize(id)).filter(Boolean))
@@ -120,45 +113,6 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
           ? exactRootSource.docs.value ?? []
           : rootSource.value ?? []
   )
-  const placeIds = computed(() =>
-    Array.from(
-      new Set(
-        rootDocs.value
-          .map((kitchen) => normalize(kitchen?.place_id))
-          .filter(Boolean)
-      )
-    )
-  )
-  const placeCollectionPath = computed(() =>
-    shouldHydrate.value && sourceRef.value === 'live' && !hasIdFilter.value
-      ? PlaceStorage.collection
-      : ''
-  )
-  const placeSource = liveRead.firestoreFetchCollection<Place>(placeCollectionPath)
-  const exactPlaceSource = liveRead.firestoreLoadDocsByIds<Place>({
-    collectionPath: PlaceStorage.collection,
-    ids: computed(() =>
-      shouldHydrate.value && sourceRef.value === 'live' && hasIdFilter.value
-        ? placeIds.value
-        : []
-    ),
-  })
-  const placesById = computed(() => {
-    const map = new Map<string, Place>()
-
-    if (!shouldHydrate.value || sourceRef.value !== 'live') return map
-
-    const places = hasIdFilter.value
-      ? exactPlaceSource.docs.value ?? []
-      : placeSource.value ?? []
-
-    for (const place of places) {
-      const placeId = normalize(place?.id)
-      if (placeId) map.set(placeId, place)
-    }
-
-    return map
-  })
   const kitchens = computed<KitchenCollectionDoc[]>(() =>
     rootDocs.value
       .map((kitchen) => {
@@ -166,9 +120,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         if (!id) return null
         if (hasIdFilter.value && !idSet.value.has(id)) return null
 
-        const placeId = normalize(kitchen?.place_id)
         return surface({
-          place: placeId ? placesById.value.get(placeId) ?? null : null,
           kitchen: {
             ...kitchen,
             id,
@@ -193,13 +145,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       : sourceRef.value === 'test'
         ? testSource.value === undefined
         : rootSource.value === undefined
-    const placePending = shouldHydrate.value && sourceRef.value === 'live'
-      ? hasIdFilter.value
-        ? exactPlaceSource.pending.value
-        : placeSource.value === undefined
-      : false
-
-    return rootPending || placePending
+    return rootPending
   })
 
   return {

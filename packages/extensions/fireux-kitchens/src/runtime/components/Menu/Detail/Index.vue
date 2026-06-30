@@ -16,6 +16,7 @@
     <MenuDetailFunnel
       v-if="interaction.funnel.show"
       :order="interaction.funnel.order"
+      :submit="interaction.funnel.submit"
       @close-panel="interaction.funnel.close"
       @open-panel="interaction.funnel.open"
     />

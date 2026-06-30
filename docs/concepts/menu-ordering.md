@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-06-28
-Ref: bcee764fe
+Updated: 2026-06-30
+Ref: 151c7ad49
 Role: map, not canon
 
 Purpose:
@@ -116,24 +116,24 @@ Public order funnel spine:
 - `Menu/Detail/Index`: public menu experience owner. It fetches the manifest,
   owns order-mode coordination and draft state, and renders the base menu layer
   plus ordering layer for every public menu route.
-- `Menu/Detail/Ordering/useMenuOrdering`: component-local state seam that turns
-  manifest/order draft state into the structured-menu and ordering-funnel view
-  models.
-- `Menu/Detail/Structured`: readable structured menu renderer. It receives a
-  view model, emits choice/add/remove events, and does not own basket/status/
-  funnel rendering.
-- `Menu/Detail/Ordering/Funnel.vue`: fixed public ordering funnel shell. It
-  chooses collapsed basket launcher, expanded checkout panel, or customer
-  status.
-- `Menu/Detail/Ordering/Basket`: compact floating basket launcher with count.
-- `Menu/Detail/Ordering/Status`: sent/waiting/accepted customer status card.
-- `Menu/Detail/Ordering/Funnel/Panel`: full-screen checkout panel shell,
-  close, submit, and selected order-type policy.
-- `Menu/Detail/Ordering/Funnel/Delivery`: delivery zones, payment methods, address/contact.
-- `Menu/Detail/Ordering/Funnel/Collection`: payment methods and pickup contact.
-- `Menu/Detail/Ordering/Funnel/PreOrder`: notice copy and pre-order contact/request notes.
-- Each order type may own its inner funnel, but order submission stays through
-  the shared menu order draft/create seam.
+- `Menu/Detail/Content`: readable menu renderer. It receives a view model,
+  emits choice/add/remove events, and does not own checkout/order creation.
+- `Menu/Detail/Funnel/Index`: public order funnel shell. It owns the six visible
+  checkout steps, but calls the injected submit seam instead of creating orders
+  locally.
+- `composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel`: state seam
+  between the menu detail and funnel. It owns draft state, selected public
+  choice, basket visibility, and submit.
+- `useKitchenOrderFunnelDraft`: local basket/draft persistence and final
+  `place` call.
+- `useKitchenOrderFunnelCreate`: client API seam for
+  `POST /api/menus/<menuId>/orders`.
+- `server/api/menus/[menuId]/orders.post.ts`: canonical public menu order
+  creation route for now. It writes `KitchenOrder` records under
+  `apps/<appId>/kitchens/<kitchenId>/orders`.
+- Do not create a second client-side generic `Order` record from the public
+  funnel unless the generic order engine and kitchen order console are
+  deliberately reconciled first.
 
 Customer funnel notes:
 - The allergy/safety notice should be a full step panel, not a small warning

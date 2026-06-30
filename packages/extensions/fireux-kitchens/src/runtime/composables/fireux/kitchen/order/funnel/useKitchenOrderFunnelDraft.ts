@@ -279,7 +279,7 @@ export function useKitchenOrderFunnelDraft(
   }
 
   async function place(input?: MenuOrderPlaceInput) {
-    if (!canOrder.value || !items.value.length) return
+    if (!canOrder.value || !items.value.length) return null
 
     const created = await createOrder({
       items: items.value.map((item) => ({
@@ -292,7 +292,7 @@ export function useKitchenOrderFunnelDraft(
       payment_method: input?.payment_method,
       customer: input?.customer,
     })
-    if (!created) return
+    if (!created) return null
 
     const isWaitingForAcceptance = created.status === 'pending_acceptance'
     const nextAwaitingAcceptance =
@@ -301,6 +301,8 @@ export function useKitchenOrderFunnelDraft(
     trackedOrder.value = created
     acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance
+
+    return created
   }
 
   watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {

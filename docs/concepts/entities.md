@@ -1,6 +1,6 @@
 Entities map
-Updated: 2026-06-17
-Ref: e52d9a3d0
+Updated: 2026-06-30
+Ref: 151c7ad49
 Role: map, not canon
 
 Purpose:
@@ -52,6 +52,13 @@ Storage scopes:
 - `both`: has root identity plus scoped/app-operational state.
 - `none`: no stored entity shape.
 - `to-confirm`: not settled yet.
+
+Model placement spine:
+- Root or root-plus-overlay identity models live on the root model spine as `models/<entity>.model.ts` when the root identity is the primary concept.
+- Kitchen-scoped operational models live under `models/kitchen/<operation>.model.ts`.
+- Menu-owned support records live under `models/kitchen/menu/<record>.model.ts` while Menu remains a kitchen operation with a public doorway.
+- Root/public capability profiles such as Chef, Customer, and Driver use root model files even if their Firestore composables stay grouped under `firestore/profiles` for now.
+- Parent-local wrappers such as KitchenIngredient and KitchenSupplierIngredient live under the parent model folder, not beside the root Ingredient model.
 
 Route/index families:
 - Root index entity: has or deserves a public/root index route like `/<entities>`.
@@ -123,13 +130,15 @@ First confirmed markers:
 - Supplier: entity, both, console-entity.
 - Portfolio: entity, both, console-entity.
 
-First to-confirm marker:
-- Menu: entity candidate, storage to-confirm, because quick public uploads and kitchen-owned menus currently overlap.
+First confirmed bridge marker:
+- Menu: entity, storage both/bridge in behavior, because public menu doorways manifest kitchen-owned scoped menus.
 
 Confirmed support records:
 - MenuSection: record under Menu.
 - MenuItem: record under MenuSection.
 - MenuSourceUpload: record under Kitchen.
+- KitchenIngredient: kitchen-local wrapper around ingredient usage.
+- KitchenSupplierIngredient: kitchen-local supplier ingredient wrapper.
 
 Confirmed means:
 - Confirmed for the current implementation.
@@ -137,9 +146,7 @@ Confirmed means:
 - If the product concept changes, discuss the entity-ness again before moving files or adding ceremony.
 
 To-confirm examples:
-- Dish, likely Kitchen-scoped.
 - Recipe, Kitchen-scoped today; may grow public/root later only after a fresh entity/index decision.
-- Ingredient, likely root plus local usage wrappers.
 - Product, likely root plus supplier/kitchen wrappers.
 
 Not entity by default:

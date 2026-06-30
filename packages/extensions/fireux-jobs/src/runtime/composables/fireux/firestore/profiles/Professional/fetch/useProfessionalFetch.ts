@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { professionalConfig } from '../config/professionalConfig'
 import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 
-// Hydrated (user-attached) professional profiles for UI use.
+// Professional profiles for UI use. Public user summaries live on the profile rows.
 export function useProfessionalFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
     useProfileCollection<Professional>(professionalConfig)

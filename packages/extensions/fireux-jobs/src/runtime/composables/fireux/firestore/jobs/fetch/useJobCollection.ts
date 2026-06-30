@@ -1,13 +1,9 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
 import { computed } from 'vue'
 import { JobStorage, type Job } from '../../../../../models/job.model'
 
-type MiseboxJobResolved = Job & {
-  kitchen?: Kitchen | null
-}
+type MiseboxJobResolved = Job
 
 export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()
@@ -15,33 +11,10 @@ export function useJobCollection() {
 
   const jobs = firestoreFetchCollection<Job>(JobStorage.collection)
   const pending = computed(() => jobs.value === undefined)
-  const { kitchens } = useKitchenCollection()
-
-  const kitchenById = computed(() => {
-    const map = new Map<string, any>()
-    for (const kitchen of kitchens.value ?? []) {
-      if (kitchen?.id) map.set(String(kitchen.id), kitchen)
-    }
-    return map
-  })
 
   const resolvedJobs = computed<MiseboxJobResolved[]>(() => {
     const allJobs = jobs.value ?? []
-    return allJobs.map((job) => ({
-      ...job,
-      kitchen: (() => {
-        const workplaceId = String((job as any)?.workplace_id ?? '').trim()
-        const workplaceType = String((job as any)?.workplace_type ?? '').trim()
-        if (workplaceType !== 'kitchen' || !workplaceId) return null
-        return kitchenById.value.get(String(workplaceId)) ?? null
-      })(),
-      workplace: (() => {
-        const workplaceId = String((job as any)?.workplace_id ?? '').trim()
-        const workplaceType = String((job as any)?.workplace_type ?? '').trim()
-        if (workplaceType !== 'kitchen' || !workplaceId) return null
-        return kitchenById.value.get(String(workplaceId)) ?? null
-      })(),
-    }))
+    return allJobs
   })
 
   const appJobs = computed<MiseboxJobResolved[]>(() => {

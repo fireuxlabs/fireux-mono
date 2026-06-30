@@ -1,6 +1,6 @@
 Firestore entity spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-06-30
+Ref: 151c7ad49
 Role: map, not canon
 
 Purpose:
@@ -50,6 +50,8 @@ Differences:
 - Some entities are root/public.
 - Some entities are scoped to a console or parent.
 - Some entities are both, but that must be explicit in the model and route behavior.
+- Model placement and Firestore composable placement are related but not identical.
+- Root/both profile models can live on the root model spine while current Firestore composables remain grouped under `firestore/profiles/<Profile>` until that stack is deliberately realigned.
 
 Do not:
 - Put console operation folders inside Firestore stacks.

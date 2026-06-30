@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { chefConfig } from '../config/chefConfig'
 import type { Chef } from '../../../../../../models/chef.model'
 
-// Hydrated (user-attached) chef profiles for UI use.
+// Chef profiles for UI use. Public user summaries live on the profile rows.
 export function useChefFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
     useProfileCollection<Chef>(chefConfig)

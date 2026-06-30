@@ -25,9 +25,18 @@ type UserSummary = {
   email?: string
 }
 
+type UseProfileCollectionOptions = {
+  /**
+   * Default false. Collection rows should carry their public user snapshot.
+   * Enable only for a deliberate detail/admin surface that needs live User truth.
+   */
+  hydrateUser?: boolean
+}
+
 export function useProfileCollection<
   TProfile extends ProfileBase = ProfileBase
->(config: ProfileConfig) {
+>(config: ProfileConfig, options: UseProfileCollectionOptions = {}) {
+  const hydrateUser = options.hydrateUser === true
   const appDb = useFirestore()
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const identityDb = useFirestore(identityDatabaseId)
@@ -52,7 +61,7 @@ export function useProfileCollection<
         )
       : null
 
-  const { users } = useAppUserCollection()
+  const users = hydrateUser ? useAppUserCollection().users : computed<UserSummary[]>(() => [])
   const coreUserRefs = new Map<string, Ref<User | undefined>>()
 
   const ensureCoreUserRef = (id?: string | null) => {
@@ -83,6 +92,8 @@ export function useProfileCollection<
   }
 
   watchEffect(() => {
+    if (!hydrateUser) return
+
     const ids = collectProfileUserIds()
     ids.forEach((id) => {
       ensureCoreUserRef(id)
@@ -126,6 +137,7 @@ export function useProfileCollection<
     entries: TProfile[] | null | undefined
   ): Array<TProfile & { user?: User | UserSummary }> => {
     if (!entries?.length) return []
+    if (!hydrateUser) return entries
     return entries.map((profile) => {
       const resolvedUser = resolveUserForProfile(profile)
       if (!resolvedUser) return profile
@@ -136,6 +148,8 @@ export function useProfileCollection<
     })
   }
 
+  // Compatibility name: by default this returns stored profile rows whose
+  // `user` summary is expected to be self-contained on the profile document.
   const globalProfilesWithUser = computed<
     Array<TProfile & { user?: User | UserSummary }>
   >(() =>

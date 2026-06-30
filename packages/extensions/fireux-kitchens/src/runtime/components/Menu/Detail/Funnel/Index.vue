@@ -55,8 +55,8 @@
         </button>
       </footer>
 
-      <p v-if="orderError" class="menu-order-placeholder">
-        {{ orderError }}
+      <p v-if="order.message" class="menu-order-placeholder">
+        {{ order.message }}
       </p>
     </section>
   </div>
@@ -65,10 +65,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { useKitchenOrder } from '../../../../composables/fireux/kitchen/order/useKitchenOrder'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
+  MenuOrderingSubmitPayload,
+  CreatedMenuOrder,
 } from '../../../../models/kitchen/menu/menu-ordering.model'
 import Basket from './Basket.vue'
 import Allergen from './Allergen.vue'
@@ -79,6 +80,9 @@ import Payment from './Payment.vue'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
+  submit?: (
+    payload: MenuOrderingSubmitPayload
+  ) => Promise<CreatedMenuOrder | null | undefined> | CreatedMenuOrder | null | undefined
 }>()
 
 defineEmits<{
@@ -108,11 +112,7 @@ type SurfaceChoice = typeof surfaceChoices[number]
 const allergenAccepted = ref(false)
 const deliveryZoneReady = ref(false)
 const deliveryState = ref<MenuOrderingDeliveryState>({ ready: false })
-const orderPending = ref(false)
-const orderError = ref('')
 const orderCreated = ref(false)
-const activeOrderPath = ref('')
-const { createFunnelOrder: createKitchenFunnelOrder } = useKitchenOrder()
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -159,7 +159,6 @@ const currentSurfaceProps = computed(() => {
     return {
       order: props.order,
       delivery: deliveryState.value,
-      orderPath: activeOrderPath.value,
     }
   }
 
@@ -171,12 +170,12 @@ const currentSurfaceProps = computed(() => {
 })
 const continueDisabled = computed(() =>
   surfaceNumber.value === surfaceCount ||
-  orderPending.value ||
+  props.order.pending ||
   (surfaceNumber.value === 2 && !allergenAccepted.value) ||
   (surfaceNumber.value === 3 && !deliveryZoneReady.value)
 )
 const continueLabel = computed(() =>
-  orderPending.value ? 'Sending...' : 'Continue'
+  props.order.pending ? 'Sending...' : 'Continue'
 )
 
 function previousSurface() {
@@ -186,8 +185,9 @@ function previousSurface() {
 async function nextSurface() {
   if (continueDisabled.value) return
   if (surfaceNumber.value === 3 && !orderCreated.value) {
-    await createFunnelOrder()
-    if (orderError.value) return
+    const created = await props.submit?.(deliverySubmitPayload())
+    if (!created) return
+    orderCreated.value = true
   }
   setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
 }
@@ -196,19 +196,17 @@ function setSurfaceNumber(next: number) {
   surfaceChoice.value = String(next) as SurfaceChoice
 }
 
-async function createFunnelOrder() {
-  orderPending.value = true
-  orderError.value = ''
-  try {
-    const created = await createKitchenFunnelOrder(props.order)
-    activeOrderPath.value = created.path
-    orderCreated.value = true
-  } catch (error) {
-    orderError.value = error instanceof Error
-      ? error.message
-      : 'Order could not be sent.'
-  } finally {
-    orderPending.value = false
+function deliverySubmitPayload(): MenuOrderingSubmitPayload {
+  const address = deliveryState.value.address
+
+  return {
+    customer: {
+      ...(address?.formatted || address?.input
+        ? { address: address.formatted || address.input }
+        : {}),
+      ...(address?.place_id ? { address_place_id: address.place_id } : {}),
+    },
+    payment_method: 'online_card',
   }
 }
 
@@ -220,8 +218,6 @@ watch(
       deliveryZoneReady.value = false
       deliveryState.value = { ready: false }
       orderCreated.value = false
-      activeOrderPath.value = ''
-      orderError.value = ''
       setSurfaceNumber(1)
     }
   }

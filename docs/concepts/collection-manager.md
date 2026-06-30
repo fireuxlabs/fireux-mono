@@ -1,10 +1,10 @@
 Collection manager map
-Updated: 2026-06-22
-Ref: 8e7d03962
+Updated: 2026-06-30
+Ref: 151c7ad49
 Role: map, not canon
 
 Purpose:
-Compare all `*/Collection/Manager.vue` files by hydration class.
+Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 Vertical links:
 - Parent: components.md
@@ -21,13 +21,15 @@ Working language:
 - Collection manager: visual/list/search/card manager for a collection family.
 - Root index manager: collection manager for a public/root entity index route.
 - Default source: collection manager fetches its own root/public collection.
-- Hydration: extra reads or API enrichment that add linked truth to a record.
-- Interface: `useXInterface()` maps fetched/hydrated records into cards.
+- Self-contained row: a collection row has every public list/card field needed by `useXInterface()`.
+- Synced snapshot: denormalized public fields copied onto the row from source truth by a migration/sync seam.
+- Hydration: extra live reads or API enrichment that add linked truth to a record. This is not the default collection-manager shape.
+- Interface: `useXInterface()` maps fetched collection rows into cards.
 
 Important split:
-- Hydration class answers: does this collection need linked truth from elsewhere?
+- Snapshot class answers: does this collection row already carry the list/card truth it needs?
 - Source mode answers: is this a root index manager, a scoped surface, or a custom-derived surface?
-- These are different axes. A root index manager can require hydration or not require hydration.
+- These are different axes. A root index manager can carry authored fields, synced snapshot fields, or a server-safe projection.
 
 Source modes:
 - Root index manager: fetches its own public/root entity collection.
@@ -35,36 +37,37 @@ Source modes:
 - Custom-derived: renders a shaped collection rather than a boring root entity list.
 
 Root index manager classes:
-- Root Simple Collection Manager: fetch root/public collection and render through `useXInterface()` without linked document hydration.
-- Root Hydrated Collection Manager: extends Root Simple Collection Manager by adding a hydration/enrichment seam before `useXInterface()`.
+- Root Simple Collection Manager: fetch root/public collection and render through `useXInterface()` with authored row fields.
+- Root Synced Snapshot Collection Manager: fetch root/public collection whose list/card fields are copied from source truth by `scripts/sync-self-contained-collection-rows.mjs`.
+- Root Projected Collection Manager: fetch a safe server projection because the raw root collection contains fields that should not power public browse UI.
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
 Root Simple Collection Manager members:
 - `App`.
 - `Ecosystem`.
-- `User`.
+- `Project`.
+- `Menu`.
 - `Place`.
 - `Blog`.
 - `Product`.
-- `Ingredient`, likely, but confirm because local usage records exist.
+- `Ingredient`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
 
-Root Hydrated Collection Manager members:
-- `Kitchen` extends Root Simple Collection Manager with Place hydration.
-- `Menu` extends Root Simple Collection Manager with creator/kitchen/app/scoped-menu doorway hydration.
-- `Project` extends Root Simple Collection Manager with App/Ecosystem/runtime enrichment.
-- `Company` extends Root Simple Collection Manager with Place hydration.
-- `Job` extends Root Simple Collection Manager with Kitchen/workplace hydration.
-- `Supplier` extends Root Simple Collection Manager with app-scoped overlay and future Company link.
-- `Portfolio` extends Root Simple Collection Manager with app-scoped overlay.
-- `Property` extends Root Simple Collection Manager with app-scoped overlay.
-- `Chef`, `Agent`, and `Professional` extend Root Simple Collection Manager with User/profile hydration.
+Root Synced Snapshot Collection Manager members:
+- `Kitchen` carries public Place snapshot fields copied onto the Kitchen row.
+- `Company` carries public Place snapshot fields copied onto the Company row.
+- `Job` carries public workplace snapshot fields copied onto the Job row.
+- `Chef`, `Customer`, `Driver`, `Agent`, and `Professional` carry public User summary snapshots copied onto the profile row.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
+
+Root Projected Collection Manager members:
+- `User` uses a public users API so raw identity/private user fields do not become public browse data.
 
 Source contract:
 - `XCollectionManager` belongs to `/xs` root/public browse surfaces.
 - Consumers mount `XCollectionManager` directly with no source params.
-- The manager fetches its own public/root collection and may hydrate internally.
+- The manager fetches its own public/root collection and should not hydrate internally.
+- If list/card truth lives elsewhere, copy a public snapshot onto the row through a sync seam.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
 Card handoff contract:
@@ -76,12 +79,12 @@ Card handoff contract:
 
 Debug contract:
 - Collection manager debug should separate `objects` from `derived`.
-- `objects` means fetched/API/hydrated collection rows as the manager receives them.
+- `objects` means fetched/API collection rows as the manager receives them.
 - `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
 - Do not mix stored/public surface fields with `useXInterface()` card output in one flat JSON array.
 
 Current source-mode snapshot:
-- Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Agent`, `Professional`, `Chef`.
+- Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Customer`, `Driver`, `Agent`, `Professional`.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
@@ -94,8 +97,11 @@ Hydration directions:
 Working rule:
 - Root/public entity collection managers fetch a default public/root collection.
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
-- Hydration should usually live in `useXCollection()`, a public API endpoint, or a dedicated fetch seam.
-- The Vue manager should avoid manual per-row document reads when a composable/API can return a hydrated surface.
+- Root/public collection rows are self-contained for list/card display.
+- Source truth changes must be propagated by an explicit sync seam, currently `scripts/sync-self-contained-collection-rows.mjs`.
+- Hydration belongs on detail or named scoped/secure surfaces, not default collection managers.
+- Public API projection is reserved for privacy/security or server-only work, not as the default collection-manager source.
+- The Vue manager should avoid manual per-row document reads.
 
 Guard-backed lock:
 - `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
@@ -104,31 +110,38 @@ Guard-backed lock:
 
 Root Simple Collection Managers
 
-| Manager | Hydration source | Direction | Current note |
+| Manager | Snapshot source | Direction | Current note |
 | --- | --- | --- | --- |
 | `App` | None in manager | Self | Root index manager fetches apps. |
 | `Ecosystem` | None in manager | Self | Root index manager fetches ecosystems. |
-| `User` | None in manager | Self | Root index manager fetches users. |
+| `Project` | None in manager | Self/filter | Root index manager fetches projects and can apply operator/team filters. |
+| `Menu` | None in manager | Self | Root index manager fetches public root doorway records from `menus`; detail manifest hydrates context later. |
 | `Blog` | None in manager | Self | Root index manager fetches blog posts. |
-| `Place` | None in manager | Self | Root index manager fetches places; Place is often the hydration source for others. |
-| `Product` | None in manager | Self | Root index manager fetches products; often a hydration source for supplier/kitchen items. |
-| `Ingredient` | None in root manager | Self | Root index manager fetches ingredients; often a hydration source for local usage records. |
+| `Place` | None in manager | Self | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere. |
+| `Product` | None in manager | Self | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere. |
+| `Ingredient` | None in root manager | Self | Root index manager fetches ingredients; Ingredient can be source truth for synced snapshots elsewhere. |
+| `Supplier` | None for root browse | Self/scoped delta | Root browse fetches suppliers. Operator-filtered console/access flows may join app overlays. |
+| `Portfolio` | None for root browse | Self/scoped delta | Root browse fetches portfolios. Operator-filtered console/access flows may join app overlays. |
+| `Property` | None for root browse | Self/scoped delta | Root browse fetches properties. Scoped overlay shape is explicit via options. |
 
-Root Hydrated Collection Managers
+Root Projected Collection Managers
 
-| Manager | Hydration source | Direction | Current note |
+| Manager | Projection source | Direction | Current note |
 | --- | --- | --- | --- |
-| `Kitchen` | Place by `place_id` | Up | Implemented in `useKitchenCollection()`. |
-| `Menu` | User creator, Kitchen, owner App, scoped Kitchen Menu | Side, up, down | Implemented through public menu API/default collection. |
-| `Project` | App/Ecosystem/runtime project surface | Side/overlay | Default collection exists; exact enrichment to confirm. |
-| `Company` | Place by id | Up | Implemented in `useCompanyFetch()`. |
-| `Job` | Kitchen/workplace by `workplace_id` | Side/up | Implemented in `useJobCollection()`. |
-| `Supplier` | App-scoped supplier overlay; future Company link | Overlay/side | Default collection exists. |
-| `Portfolio` | App-scoped portfolio overlay | Overlay | Default collection exists. |
-| `Property` | App-scoped property overlay | Overlay | Default collection exists. |
-| `Chef` | User/profile collection | Side | Root index manager fetches hydrated profile rows. |
-| `Agent` | User/profile collection | Side | Root index manager fetches hydrated profile rows. |
-| `Professional` | User/profile collection | Side | Root index manager fetches hydrated profile rows. |
+| `User` | `/api/public/users` | Server projection | Public users index gets safe user DTOs, then maps them through `useUserInterface()`. |
+
+Root Synced Snapshot Collection Managers
+
+| Manager | Snapshot source | Direction | Current note |
+| --- | --- | --- | --- |
+| `Kitchen` | Place by `place_id` or same id | Up | Public Place card fields are copied onto root Kitchen rows. |
+| `Company` | Place by same id | Up | Public Place card fields are copied onto root Company rows. |
+| `Job` | Kitchen/workplace by `workplace_id` | Side/up | Public workplace card fields are copied onto root Job rows. |
+| `Chef` | User by profile id | Side | Public User summary is copied onto profile rows. |
+| `Customer` | User by profile id | Side | Public User summary is copied onto profile rows. |
+| `Driver` | User by profile id | Side | Public User summary is copied onto profile rows. |
+| `Agent` | User by profile id | Side | Public User summary is copied onto profile rows. |
+| `Professional` | User by profile id | Side | Public User summary is copied onto profile rows. |
 
 Scoped/provided collection surfaces
 
@@ -153,7 +166,6 @@ Custom-derived surfaces
 | `Console.Portfolio.Operations.Clients` | Portfolio/client/property rows | Custom/scoped | Operation surface. |
 
 Open questions:
-- Which hydration is too expensive for client-side collection reads?
-- Which hydrated labels should be denormalized onto public/root documents instead?
-- Should expensive hydration happen through server APIs rather than Firestore client collection managers?
-- Does “hydration” need separate names for up, down, side, and overlay reads?
+- Which synced snapshots should become Cloud Function triggers rather than manual scripts?
+- Which secure projections need APIs because raw rows should not power public browse UI?
+- Which scoped overlay joins should graduate into their own named scoped surfaces?

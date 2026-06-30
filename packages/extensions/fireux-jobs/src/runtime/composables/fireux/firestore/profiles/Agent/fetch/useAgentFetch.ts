@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { agentConfig } from '../config/agentConfig'
 import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
-// Hydrated (user-attached) agent profiles for UI use.
+// Agent profiles for UI use. Public user summaries live on the profile rows.
 export function useAgentFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
     useProfileCollection<Agent>(agentConfig)

@@ -3,6 +3,9 @@ import { JobStorage, type Job } from '../../../../../../models/job.model'
 
 export type JobView = Job & {
   workplace?: unknown | null
+  workplace_image_url?: string
+  workplace_short_address?: string
+  workplace_formatted_address?: string
 }
 
 export namespace JobCard {
@@ -38,7 +41,12 @@ export function useJobInterface() {
 
   function resolveSubtitle(job: JobView): string {
     const workplace = (job as any)?.workplace as any | null | undefined
-    return safeString(workplace?.short_address).trim()
+    return (
+      safeString((job as any)?.workplace_short_address).trim() ||
+      safeString((job as any)?.workplace_formatted_address).trim() ||
+      safeString(workplace?.short_address).trim() ||
+      safeString(job.workplace_label).trim()
+    )
   }
 
   function map(job: JobView): JobCard.Card {
@@ -51,7 +59,9 @@ export function useJobInterface() {
       id,
       to: id ? `/${JobStorage.collection}/${id}` : '',
 
-      imageUrl: safeString(workplace?.image_url),
+      imageUrl:
+        safeString((job as any)?.workplace_image_url) ||
+        safeString(workplace?.image_url),
       title: safeString(job.title),
       subtitle: resolveSubtitle(job),
       summary: safeString(job.description),

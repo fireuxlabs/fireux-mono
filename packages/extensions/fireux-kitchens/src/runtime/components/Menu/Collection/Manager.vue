@@ -78,7 +78,7 @@ import {
   useMenuInterface,
   type MenuInterfaceSource,
 } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
-import { useMenuCollection } from '../../../composables/fireux/menu/useMenuCollection'
+import { useMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 
 const props = withDefaults(
   defineProps<{
@@ -113,11 +113,7 @@ const menuCollection = useMenuCollection()
 const linkEnabled = computed(() => props.link !== false)
 
 const collection = computed(() =>
-  [...menuCollection.menus.value].sort(
-    (a, b) =>
-      Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
-      String(a.name ?? '').localeCompare(String(b.name ?? ''))
-  )
+  menuCollection.menus.value
 )
 
 const { devJsonData } = useDevCollectionJson(collection)
@@ -159,16 +155,16 @@ const countLabel = computed(() =>
 )
 
 const devObjects = computed(() => ({
-  // Debug spine: keep API/public-surface objects separate from interface-derived cards.
+  // Debug spine: keep root doorway objects separate from interface-derived cards.
   menus: devJsonData.value,
 }))
 
 const devDerived = computed(() => ({
-  family: 'Root Hydrated Collection Manager',
+  family: 'Root Simple Collection Manager',
   source: {
-    endpoint: '/api/menus',
+    collection: 'menus',
     hydration:
-      'Public menu API resolves creator, kitchen, app, scoped menu, ordering, and theme surface data.',
+      'None here. Menu detail/manifest resolves kitchen, app, ordering, and theme context.',
   },
   controls: {
     query: query.value,

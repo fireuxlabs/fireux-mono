@@ -107,7 +107,7 @@ export function useKitchenOrderFunnel(options: UseKitchenOrderFunnelOptions) {
       awaitingAcceptance: draft.awaitingAcceptance.value,
       panelOpen: panelOpen.value,
       items: draft.items.value,
-      message: draft.awaitingMessage.value || draft.message.value,
+      message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
       menuId: text(toValue(options.menuId)),
       kitchenSlug: text(toValue(options.kitchenSlug)),
       orderType: selectedOrderType.value,
@@ -139,7 +139,7 @@ export function useKitchenOrderFunnel(options: UseKitchenOrderFunnelOptions) {
   }
 
   function submit(payload: MenuOrderingSubmitPayload) {
-    draft.place(payload)
+    return draft.place(payload)
   }
 
   watch(draft.quantity, (quantity: number) => {
