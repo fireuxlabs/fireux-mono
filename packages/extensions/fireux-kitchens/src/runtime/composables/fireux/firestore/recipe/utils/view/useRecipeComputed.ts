@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Recipe } from '../../../../../../models/recipe.model'
+import type { Recipe } from '../../../../../../models/kitchen/recipe.model'
 
 export function useRecipeComputed(recipe?: Ref<Recipe | null | undefined>) {
   const hasRecipe = computed(() => Boolean(recipe?.value?.id))

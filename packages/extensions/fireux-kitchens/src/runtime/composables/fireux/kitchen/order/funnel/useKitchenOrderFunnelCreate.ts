@@ -8,8 +8,8 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../../../models/order.model'
-import type { CreatedMenuOrder } from '../../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/kitchen/order.model'
+import type { CreatedMenuOrder } from '../../../../../models/kitchen/menu/menu-ordering.model'
 
 type MenuOrderLineInput = {
   itemId: string

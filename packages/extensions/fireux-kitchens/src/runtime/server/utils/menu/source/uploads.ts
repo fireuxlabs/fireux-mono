@@ -21,7 +21,7 @@ import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/uti
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../../models/kitchen.model'
-import { MenuSourceUploadStorage } from '../../../../models/menu/menu-source-upload.model'
+import { MenuSourceUploadStorage } from '../../../../models/kitchen/menu/menu-source-upload.model'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10

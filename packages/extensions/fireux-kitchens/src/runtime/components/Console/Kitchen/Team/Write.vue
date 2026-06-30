@@ -94,7 +94,7 @@
 import { computed, ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 import { useKitchenTeamMemberCreate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberCreate'
-import type { KitchenTeamJoinRequest } from '../../../../models/kitchen-team.model'
+import type { KitchenTeamJoinRequest } from '../../../../models/kitchen/team.model'
 
 const {
   kitchenId,

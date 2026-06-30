@@ -4,10 +4,10 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Kitchen-scoped
+ * Family: App-scoped Kitchen operation
  * Storage: scoped operational record
- * Path: /kitchens/<kitchenId>/orders/<orderId>
- * Owner app scope: Kitchen
+ * Path: apps/{appId}/kitchens/{kitchenId}/orders/{orderId}
+ * Owner app scope: Kitchen within an app runtime
  *
  * Decision note:
  * - KitchenOrder is the kitchen-owned operational order record.
@@ -16,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenOrderStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/orders/{orderId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/orders/{orderId}',
   collection: 'orders',
   parent: 'kitchen',
   idParam: 'orderId',

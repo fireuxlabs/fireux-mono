@@ -4,7 +4,7 @@ import {
   type OrderLine,
   type OrderServiceMode,
 } from 'fireux-orders/runtime/composables/fireux/firestore/order/useOrder'
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

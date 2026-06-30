@@ -12,10 +12,12 @@ import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   IngredientStorage,
-  KitchenIngredientStorage,
   type Ingredient,
-  type KitchenIngredient,
 } from '../../../../../../../models/ingredient.model'
+import {
+  KitchenIngredientStorage,
+  type KitchenIngredient,
+} from '../../../../../../../models/kitchen/ingredient.model'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`

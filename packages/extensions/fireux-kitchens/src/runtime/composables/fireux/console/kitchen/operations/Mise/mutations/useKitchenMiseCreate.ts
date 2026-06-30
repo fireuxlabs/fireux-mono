@@ -8,7 +8,7 @@ import {
   type KitchenMisePriority,
   type KitchenMiseStatus,
   type KitchenMiseTask as KitchenMiseTaskDoc,
-} from '../../../../../../../models/kitchen-mise.model'
+} from '../../../../../../../models/kitchen/mise.model'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenMiseTaskStorage.collection}`
 

@@ -9,8 +9,8 @@ import type {
   MenuOrderTypeConfig,
   MenuPublicChoice,
   MenuView,
-} from '../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../models/order.model'
+} from '../../../models/kitchen/menu/menu.model'
+import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import { menuOrderTypeLabel } from '../../../utils/menu-ordering-ui'
 
 type MenuViewSource = {

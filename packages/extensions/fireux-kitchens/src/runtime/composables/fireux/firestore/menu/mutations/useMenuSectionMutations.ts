@@ -5,7 +5,7 @@ import { unref, type Ref } from 'vue'
 import {
   MenuSectionModel,
   type MenuSection,
-} from '../../../../../models/menu/menu-section.model'
+} from '../../../../../models/kitchen/menu/menu-section.model'
 import { menuSectionsPath } from '../utils/paths'
 
 type Options = {

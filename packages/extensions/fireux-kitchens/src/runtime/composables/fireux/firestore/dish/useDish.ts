@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { Dish } from '../../../../models/dish.model'
+import type { Dish } from '../../../../models/kitchen/dish.model'
 import { useKitchenDishCollection } from './fetch/useKitchenDishCollection'
 import { useDishFetch } from './fetch/useDishFetch'
 import { useDishCreate } from './mutations/useDishCreate'

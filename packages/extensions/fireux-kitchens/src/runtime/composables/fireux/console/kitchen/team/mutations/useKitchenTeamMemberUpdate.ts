@@ -6,7 +6,7 @@ import {
   KitchenTeamMemberStorage,
   type KitchenTeamMember,
   type KitchenTeamMemberUpdateInput,
-} from '../../../../../../models/kitchen-team.model'
+} from '../../../../../../models/kitchen/team.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

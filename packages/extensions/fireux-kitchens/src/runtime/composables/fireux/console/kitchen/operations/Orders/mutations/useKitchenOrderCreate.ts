@@ -8,7 +8,7 @@ import {
   type KitchenOrderFireState,
   type KitchenOrderItem,
   type KitchenOrderType,
-} from '../../../../../../../models/order.model'
+} from '../../../../../../../models/kitchen/order.model'
 
 type CreateKitchenOrderInput = {
   kitchenId: string

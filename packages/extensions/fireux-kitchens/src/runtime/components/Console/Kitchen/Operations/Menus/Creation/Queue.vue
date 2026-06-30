@@ -77,7 +77,7 @@
 import type {
   MenuSourceUploadKind,
   MenuSourceUploadStatus,
-} from '../../../../../../models/menu/menu-source-upload.model'
+} from '../../../../../../models/kitchen/menu/menu-source-upload.model'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
 const { menuSources, menuSourcesPending } = useKitchenConsoleMenus()

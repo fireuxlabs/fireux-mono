@@ -3,7 +3,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   KitchenStationStorage,
   type KitchenStation,
-} from '../../../../../../../models/kitchen-station.model'
+} from '../../../../../../../models/kitchen/station.model'
 import { useKitchenChildCollection } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 export function useKitchenStationCollection(

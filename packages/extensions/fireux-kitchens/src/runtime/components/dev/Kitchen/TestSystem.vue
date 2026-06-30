@@ -82,10 +82,10 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/demo/kitchen/scenarios'
-import { DishStorage } from '../../../models/dish.model'
+import { DishStorage } from '../../../models/kitchen/dish.model'
 import { KitchenStorage, type Kitchen } from '../../../models/kitchen.model'
-import { MenuStorage } from '../../../models/menu/menu.model'
-import { RecipeStorage } from '../../../models/recipe.model'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
+import { RecipeStorage } from '../../../models/kitchen/recipe.model'
 
 defineOptions({ name: 'DevTestKitchenSystem' })
 

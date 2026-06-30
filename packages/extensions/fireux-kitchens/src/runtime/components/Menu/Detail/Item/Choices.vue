@@ -24,7 +24,7 @@
 import type {
   MenuFoodAddOn,
   MenuFoodPriceOption,
-} from '../../../../models/menu/menu-food.model'
+} from '../../../../models/kitchen/menu/menu-food.model'
 
 withDefaults(
   defineProps<{

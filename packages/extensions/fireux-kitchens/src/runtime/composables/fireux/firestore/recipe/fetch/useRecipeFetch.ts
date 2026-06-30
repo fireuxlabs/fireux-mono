@@ -2,7 +2,7 @@ import { doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
+import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/kitchen/recipe.model'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 

@@ -1,11 +1,11 @@
-import { DishStorage } from '../../../../models/dish.model'
-import { MenuStorage } from '../../../../models/menu/menu.model'
+import { DishStorage } from '../../../../models/kitchen/dish.model'
+import { MenuStorage } from '../../../../models/kitchen/menu/menu.model'
 import {
   MenuItemModel,
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../../../models/menu/menu-item.model'
-import { MenuSectionModel } from '../../../../models/menu/menu-section.model'
+} from '../../../../models/kitchen/menu/menu-item.model'
+import { MenuSectionModel } from '../../../../models/kitchen/menu/menu-section.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'

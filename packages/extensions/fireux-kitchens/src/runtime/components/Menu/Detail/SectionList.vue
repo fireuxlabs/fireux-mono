@@ -17,7 +17,7 @@
 import type {
   MenuFoodOrderItem,
   MenuFoodSection as MenuFoodSectionModel,
-} from '../../../models/menu/menu-food.model'
+} from '../../../models/kitchen/menu/menu-food.model'
 
 const props = defineProps<{
   sections: MenuFoodSectionModel[]

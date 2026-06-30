@@ -10,7 +10,7 @@ import {
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from '../ownership/kitchen-scope.ts'
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/menu/menu.model.ts'
+import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
 
 export type MenuOrderContext = {
   appId: string

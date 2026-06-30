@@ -8,7 +8,7 @@ import {
   type KitchenSupplierIngredient,
   type KitchenSupplierIngredientCreateInput,
   type KitchenSupplierIngredientUpdateInput,
-} from '../../../../../../../models/ingredient.model'
+} from '../../../../../../../models/kitchen/supplier-ingredient.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

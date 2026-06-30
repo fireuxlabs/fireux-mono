@@ -1,6 +1,6 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import type { Menu } from '../../../../../../models/menu/menu.model'
+import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
 import { useMenuSectionCollection } from '../../../../firestore/menu/fetch/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../firestore/menu/mutations/useMenuSectionMutations'

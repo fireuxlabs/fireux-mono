@@ -2,7 +2,7 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
-} from '../../../../models/menu/menu.model.ts'
+} from '../../../../models/kitchen/menu/menu.model.ts'
 import { menuSurfaceList, menuSurfaceText } from '../public/types.ts'
 import { readMenuOrderTypeConfig } from '../../../../utils/menu-ordering-policy.ts'
 

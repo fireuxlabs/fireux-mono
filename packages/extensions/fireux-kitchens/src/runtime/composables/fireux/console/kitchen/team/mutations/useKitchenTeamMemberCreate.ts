@@ -3,7 +3,7 @@ import {
   KitchenTeamMemberStorage,
   KitchenTeamMemberModel,
   type KitchenTeamMember,
-} from '../../../../../../models/kitchen-team.model'
+} from '../../../../../../models/kitchen/team.model'
 
 type CreateKitchenTeamMemberInput = {
   kitchenId: string

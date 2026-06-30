@@ -7,7 +7,7 @@ import {
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import type { KitchenOrderType } from '../../../../models/order.model.ts'
+import type { KitchenOrderType } from '../../../../models/kitchen/order.model.ts'
 import { statusAfterPayment } from '../../../utils/menu/ordering/payment.ts'
 import {
   allowUnsignedStripeWebhook,

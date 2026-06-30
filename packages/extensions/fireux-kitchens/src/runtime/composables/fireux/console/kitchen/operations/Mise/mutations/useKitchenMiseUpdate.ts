@@ -2,7 +2,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
-} from '../../../../../../../models/kitchen-mise.model'
+} from '../../../../../../../models/kitchen/mise.model'
 
 type UpdateKitchenMiseInput = {
   kitchenId: string

@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import type { MenuDeliveryZone } from '../../../../models/menu/menu.model.ts'
+import type { MenuDeliveryZone } from '../../../../models/kitchen/menu/menu.model.ts'
 import {
   geocodeMenuDeliveryAddress,
   readMenuDeliveryPlaceDetails,

@@ -6,7 +6,7 @@ import {
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelState,
-} from '../../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/kitchen/menu/menu-ordering.model'
 
 export function useKitchenOrderFunnelBasket(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>

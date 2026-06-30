@@ -18,7 +18,7 @@
 import type {
   MenuFoodOrderItem,
   MenuFoodSection,
-} from '../../../models/menu/menu-food.model'
+} from '../../../models/kitchen/menu/menu-food.model'
 
 defineProps<{
   section: MenuFoodSection

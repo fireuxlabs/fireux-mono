@@ -2,7 +2,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { KitchenStationStorage } from '../../../../../../../models/kitchen-station.model'
+import { KitchenStationStorage } from '../../../../../../../models/kitchen/station.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

@@ -74,7 +74,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
 import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
-import type { DishUpdateInput } from '../../../../../models/dish.model'
+import type { DishUpdateInput } from '../../../../../models/kitchen/dish.model'
 
 const {
   dish,

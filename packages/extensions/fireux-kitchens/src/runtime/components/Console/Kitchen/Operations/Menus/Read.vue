@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuStatus } from '../../../../../models/menu/menu.model'
+import type { MenuStatus } from '../../../../../models/kitchen/menu/menu.model'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
 const { menus, pending } = useKitchenConsoleMenus()

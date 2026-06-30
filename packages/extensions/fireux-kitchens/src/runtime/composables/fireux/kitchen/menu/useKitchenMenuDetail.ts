@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { Dish } from '../../../../models/dish.model'
+import type { Dish } from '../../../../models/kitchen/dish.model'
 import { useKitchenDishCollection } from '../../firestore/dish/fetch/useKitchenDishCollection'
 import { useMenuSectionCollection } from '../../firestore/menu/fetch/useMenuSectionCollection'
 import { useKitchenMenuItems } from './useKitchenMenuItems'

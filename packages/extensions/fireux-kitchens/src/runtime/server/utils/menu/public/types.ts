@@ -1,4 +1,4 @@
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/menu/menu.model'
+import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model'
 
 export type MenuSurfaceScope = {
   kitchenId?: string

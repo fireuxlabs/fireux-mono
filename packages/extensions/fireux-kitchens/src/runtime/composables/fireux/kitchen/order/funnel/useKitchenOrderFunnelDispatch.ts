@@ -11,7 +11,7 @@ import {
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/kitchen/menu/menu-ordering.model'
 
 type DispatchOrder = {
   id?: string

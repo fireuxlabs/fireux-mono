@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Dish } from '../../../../../../models/dish.model'
+import type { Dish } from '../../../../../../models/kitchen/dish.model'
 
 defineProps<{
   dish: Dish | null

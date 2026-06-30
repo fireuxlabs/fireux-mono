@@ -13,7 +13,7 @@ import type {
   KitchenOrderFireState,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../../models/order.model'
+} from '../../../../models/kitchen/order.model'
 import { readKitchenMenuPublicRows } from '../../../utils/menu/public/rows.ts'
 import {
   checkMenuDeliveryAddress,

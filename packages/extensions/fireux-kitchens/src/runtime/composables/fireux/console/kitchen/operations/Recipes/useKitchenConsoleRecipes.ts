@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenRecipeCollection } from '../../../../firestore/recipe/fetch/useKitchenRecipeCollection'
-import { RecipeStorage, type Recipe } from '../../../../../../models/recipe.model'
+import { RecipeStorage, type Recipe } from '../../../../../../models/kitchen/recipe.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

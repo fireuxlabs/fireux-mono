@@ -69,7 +69,7 @@ import { useKitchenOrder } from '../../../../composables/fireux/kitchen/order/us
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../models/menu/menu-ordering.model'
+} from '../../../../models/kitchen/menu/menu-ordering.model'
 import Basket from './Basket.vue'
 import Allergen from './Allergen.vue'
 import DeliveryZone from './DeliveryZone.vue'

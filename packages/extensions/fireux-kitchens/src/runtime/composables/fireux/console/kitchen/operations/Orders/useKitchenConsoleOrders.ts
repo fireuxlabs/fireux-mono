@@ -3,7 +3,7 @@ import { useKitchenOrdersFetch } from './fetch/useKitchenOrdersFetch'
 import {
   KitchenOrderStorage,
   type KitchenOrder,
-} from '../../../../../../models/order.model'
+} from '../../../../../../models/kitchen/order.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import { getDemoKitchenCollection } from '../../../../demo/kitchen/scenarios'

@@ -4,7 +4,7 @@ import {
   KitchenIngredientStorage,
   KitchenIngredientModel,
   type KitchenIngredient as KitchenIngredientDoc,
-} from '../../../../../../../models/ingredient.model'
+} from '../../../../../../../models/kitchen/ingredient.model'
 
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`

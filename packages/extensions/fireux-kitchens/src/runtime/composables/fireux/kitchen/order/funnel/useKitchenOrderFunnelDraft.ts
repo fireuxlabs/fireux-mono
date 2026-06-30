@@ -10,11 +10,11 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../../../models/order.model'
+} from '../../../../../models/kitchen/order.model'
 import {
   useKitchenOrderFunnelCreate,
 } from './useKitchenOrderFunnelCreate'
-import type { CreatedMenuOrder } from '../../../../../models/menu/menu-ordering.model'
+import type { CreatedMenuOrder } from '../../../../../models/kitchen/menu/menu-ordering.model'
 import {
   useKitchenOrderFunnelStatus,
   type KitchenOrderFunnelStatus,

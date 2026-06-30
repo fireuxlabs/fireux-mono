@@ -113,7 +113,7 @@ import { useRecipeUpdate } from '../../../../../composables/fireux/firestore/rec
 import {
   normalizeTranslatedText,
   type Recipe,
-} from '../../../../../models/recipe.model'
+} from '../../../../../models/kitchen/recipe.model'
 
 const {
   recipe,

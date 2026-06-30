@@ -10,7 +10,7 @@ import {
 import {
   KitchenOrderStorage,
   type KitchenOrder,
-} from '../../../../../../../models/order.model'
+} from '../../../../../../../models/kitchen/order.model'
 
 type KitchenOrderStage = 'accept' | 'queue' | 'pass' | 'archive'
 

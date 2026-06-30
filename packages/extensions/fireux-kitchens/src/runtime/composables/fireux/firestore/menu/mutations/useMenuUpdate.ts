@@ -4,10 +4,10 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { DishStorage } from '../../../../../models/dish.model'
-import type { MenuItem } from '../../../../../models/menu/menu-item.model'
-import type { MenuSection } from '../../../../../models/menu/menu-section.model'
-import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/menu/menu.model'
+import { DishStorage } from '../../../../../models/kitchen/dish.model'
+import type { MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
+import type { MenuSection } from '../../../../../models/kitchen/menu/menu-section.model'
+import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/kitchen/menu/menu.model'
 import {
   menuItemsPath,
   menuPath,

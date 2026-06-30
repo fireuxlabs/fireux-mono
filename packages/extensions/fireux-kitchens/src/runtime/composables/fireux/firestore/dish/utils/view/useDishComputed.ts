@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Dish } from '../../../../../../models/dish.model'
+import type { Dish } from '../../../../../../models/kitchen/dish.model'
 
 export function useDishComputed(dish?: Ref<Dish | null | undefined>) {
   const hasDish = computed(() => Boolean(dish?.value?.id))

@@ -7,7 +7,7 @@ import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/p
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
-} from '../../../../../../models/menu/menu-source-upload.model'
+} from '../../../../../../models/kitchen/menu/menu-source-upload.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const timestampSeconds = (value: unknown) => {

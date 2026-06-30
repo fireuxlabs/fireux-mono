@@ -3,7 +3,7 @@ import {
   KitchenStationStorage,
   KitchenStationModel,
   type KitchenStation,
-} from '../../../../../../../models/kitchen-station.model'
+} from '../../../../../../../models/kitchen/station.model'
 
 type CreateKitchenStationInput = {
   kitchenId: string

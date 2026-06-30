@@ -52,7 +52,7 @@ import { useKitchenTeamJoinRequestMutations } from '../../../composables/fireux/
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
-} from '../../../models/kitchen-team.model'
+} from '../../../models/kitchen/team.model'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null

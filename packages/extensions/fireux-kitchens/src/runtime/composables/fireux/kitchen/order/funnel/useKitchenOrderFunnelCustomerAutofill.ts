@@ -1,7 +1,7 @@
 // Menu ordering canon: docs/concepts/menu-ordering.md
 import { computed } from 'vue'
 import { useCustomer } from '../../../firestore/profiles/Customer/useCustomer'
-import type { KitchenOrderCustomer } from '../../../../../models/order.model'
+import type { KitchenOrderCustomer } from '../../../../../models/kitchen/order.model'
 import type {
   CustomerPrivate,
   CustomerSavedAddress,

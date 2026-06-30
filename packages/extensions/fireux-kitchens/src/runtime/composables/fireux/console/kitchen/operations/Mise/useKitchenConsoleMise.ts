@@ -4,7 +4,7 @@ import { useKitchenMiseToggleDone } from './mutations/useKitchenMiseToggleDone'
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
-} from '../../../../../../models/kitchen-mise.model'
+} from '../../../../../../models/kitchen/mise.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

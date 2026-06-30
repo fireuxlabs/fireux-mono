@@ -6,7 +6,7 @@ import {
   readKitchenIdentity,
   readKitchenMenuStyle,
 } from '../../../../utils/kitchen-spine'
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/menu/menu.model.ts'
+import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
 import { menuSourceFromData } from '../public/source.ts'
 import { resolveMenuPageStyle } from '../public/page-style.ts'
 

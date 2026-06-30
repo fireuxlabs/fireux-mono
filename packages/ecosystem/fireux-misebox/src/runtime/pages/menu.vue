@@ -88,8 +88,8 @@ import {
 } from 'fireux-sproochli/runtime/sproochli'
 import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { Dish } from 'fireux-kitchens/runtime/models/dish.model'
-import type { Menu } from 'fireux-kitchens/runtime/models/menu/menu.model'
+import type { Dish } from 'fireux-kitchens/runtime/models/kitchen/dish.model'
+import type { Menu } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
 
 type PublicKitchenRecord = KitchenSurface & {
   currency_format?: string

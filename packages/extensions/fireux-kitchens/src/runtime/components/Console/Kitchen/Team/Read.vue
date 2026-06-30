@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
-import type { KitchenTeamMember } from '../../../../models/kitchen-team.model'
+import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
 
 const { teamMembers, debug } = useKitchenConsoleTeam()
 const normalizeString = (value: unknown) => String(value ?? '').trim()

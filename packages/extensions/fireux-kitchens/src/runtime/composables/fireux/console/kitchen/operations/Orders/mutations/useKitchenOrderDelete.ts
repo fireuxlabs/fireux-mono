@@ -7,7 +7,7 @@ import { unref } from 'vue'
 import {
   KitchenOrderStorage,
   type KitchenOrder,
-} from '../../../../../../../models/order.model'
+} from '../../../../../../../models/kitchen/order.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

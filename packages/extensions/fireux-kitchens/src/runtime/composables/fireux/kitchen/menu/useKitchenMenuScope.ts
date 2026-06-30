@@ -6,7 +6,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
 import { useKitchenMenuCollection } from '../../firestore/menu/useMenu'
-import type { Menu } from '../../../../models/menu/menu.model'
+import type { Menu } from '../../../../models/kitchen/menu/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'

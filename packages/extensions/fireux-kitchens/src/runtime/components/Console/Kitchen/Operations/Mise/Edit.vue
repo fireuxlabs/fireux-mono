@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
+import type { KitchenMiseTask } from '../../../../../models/kitchen/mise.model'
 import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMiseTask'
 import { useKitchenMiseUpdate } from '../../../../../composables/fireux/console/kitchen/operations/Mise/mutations/useKitchenMiseUpdate'
 

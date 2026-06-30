@@ -1,4 +1,4 @@
-// FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen-mise.model.ts
+// FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'

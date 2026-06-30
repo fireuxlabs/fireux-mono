@@ -8,7 +8,7 @@ import {
   DishStorage,
   type Dish,
   type DishCreateInput,
-} from '../../../../../models/dish.model'
+} from '../../../../../models/kitchen/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 

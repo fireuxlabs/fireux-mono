@@ -1,8 +1,6 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type {
-  Ingredient,
-  KitchenIngredient,
-} from '../../../../../../models/ingredient.model'
+import type { Ingredient } from '../../../../../../models/ingredient.model'
+import type { KitchenIngredient } from '../../../../../../models/kitchen/ingredient.model'
 
 const joinSubtitle = (supplierRef = ''): string =>
   safeString(supplierRef).trim()

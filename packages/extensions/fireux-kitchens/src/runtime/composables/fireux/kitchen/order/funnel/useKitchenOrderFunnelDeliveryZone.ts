@@ -11,8 +11,8 @@ import {
 } from '../../../customer/useCustomerDeliveryAddressAutocomplete'
 import { useKitchenOrderFunnelCustomerAutofill } from './useKitchenOrderFunnelCustomerAutofill'
 import { useKitchenOrderFunnelDeliveryAddressCheck } from './useKitchenOrderFunnelDeliveryAddressCheck'
-import type { MenuDeliveryZone } from '../../../../../models/menu/menu.model'
-import type { MenuOrderingFunnelState } from '../../../../../models/menu/menu-ordering.model'
+import type { MenuDeliveryZone } from '../../../../../models/kitchen/menu/menu.model'
+import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

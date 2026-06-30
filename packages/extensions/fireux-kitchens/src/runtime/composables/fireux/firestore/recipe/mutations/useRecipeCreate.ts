@@ -9,7 +9,7 @@ import {
   RecipeStorage,
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
-} from '../../../../../models/recipe.model'
+} from '../../../../../models/kitchen/recipe.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 

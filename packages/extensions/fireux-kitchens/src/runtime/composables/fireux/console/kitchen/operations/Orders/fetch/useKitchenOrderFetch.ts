@@ -4,7 +4,7 @@ import { useKitchenChildCollection } from '../../../../../firestore/kitchen/util
 import {
   KitchenOrderStorage,
   type KitchenOrder,
-} from '../../../../../../../models/order.model'
+} from '../../../../../../../models/kitchen/order.model'
 
 type UseKitchenOrderFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

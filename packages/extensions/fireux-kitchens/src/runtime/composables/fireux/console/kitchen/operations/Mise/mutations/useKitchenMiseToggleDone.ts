@@ -4,7 +4,7 @@ import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitc
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
-} from '../../../../../../../models/kitchen-mise.model'
+} from '../../../../../../../models/kitchen/mise.model'
 
 type ToggleKitchenMiseDoneInput = {
   kitchenId: string

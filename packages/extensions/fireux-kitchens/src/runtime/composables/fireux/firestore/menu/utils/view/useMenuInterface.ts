@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Menu } from '../../../../../../models/menu/menu.model'
+import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 
 export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   id?: string

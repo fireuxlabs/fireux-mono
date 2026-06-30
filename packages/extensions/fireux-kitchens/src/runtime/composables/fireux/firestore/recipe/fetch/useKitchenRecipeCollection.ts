@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
+import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../../models/kitchen/recipe.model'
 import { resolveKitchenChildCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>

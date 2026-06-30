@@ -104,7 +104,7 @@ import { computed, ref } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { MenuManifestSection } from '../../../../composables/fireux/menu/useMenuManifest'
 import { useMenuThemeSurface } from '../../../../composables/fireux/menu/useMenuThemeSurface'
-import type { Menu } from '../../../../models/menu/menu.model'
+import type { Menu } from '../../../../models/kitchen/menu/menu.model'
 
 const props = defineProps<{
   kitchenName: string

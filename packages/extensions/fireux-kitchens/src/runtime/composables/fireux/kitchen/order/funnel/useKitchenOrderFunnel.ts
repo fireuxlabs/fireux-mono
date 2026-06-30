@@ -14,11 +14,11 @@ import {
 } from '../../../menu/useMenuViewMode'
 import { menuOrderBasketActionLabel } from '../../../../../utils/menu-ordering-ui'
 import type { MenuManifest } from '../../../menu/useMenuManifest'
-import type { MenuFoodOrderItem } from '../../../../../models/menu/menu-food.model'
+import type { MenuFoodOrderItem } from '../../../../../models/kitchen/menu/menu-food.model'
 import type {
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
-} from '../../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/kitchen/menu/menu-ordering.model'
 
 export type { MenuChoiceValue }
 export type MenuDetailOrderItem = MenuFoodOrderItem

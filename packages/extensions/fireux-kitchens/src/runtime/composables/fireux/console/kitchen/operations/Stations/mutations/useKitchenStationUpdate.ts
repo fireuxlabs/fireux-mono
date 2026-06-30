@@ -6,7 +6,7 @@ import {
   KitchenStationStorage,
   type KitchenStation,
   type KitchenStationUpdateInput,
-} from '../../../../../../../models/kitchen-station.model'
+} from '../../../../../../../models/kitchen/station.model'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

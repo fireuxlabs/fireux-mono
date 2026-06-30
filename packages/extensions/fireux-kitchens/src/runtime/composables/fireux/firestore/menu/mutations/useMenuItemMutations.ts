@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { unref, type Ref } from 'vue'
-import { MenuItemModel, type MenuItem } from '../../../../../models/menu/menu-item.model'
+import { MenuItemModel, type MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
 import { menuItemsPath } from '../utils/paths'
 
 type Options = {

@@ -4,8 +4,8 @@ import type {
   MenuPublicChoice,
   MenuServiceProfile,
   MenuView,
-} from '../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../models/order.model'
+} from '../../../models/kitchen/menu/menu.model'
+import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import { readMenuOrderTypeConfig } from '../../../utils/menu-ordering-policy'
 
 type MenuServiceProfileSource = {

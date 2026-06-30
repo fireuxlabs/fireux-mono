@@ -1,4 +1,4 @@
-import type { KitchenOrderCustomer, KitchenOrderType } from '../models/order.model'
+import type { KitchenOrderCustomer, KitchenOrderType } from '../models/kitchen/order.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

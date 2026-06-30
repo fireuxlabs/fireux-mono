@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Menu } from '../../../../../../models/menu/menu.model'
+import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 
 const props = withDefaults(
   defineProps<{

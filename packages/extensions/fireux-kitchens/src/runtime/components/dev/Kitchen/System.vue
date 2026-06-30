@@ -121,10 +121,10 @@ import {
   resolveKitchenScopeCollectionPath,
 } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { DishStorage } from '../../../models/dish.model'
+import { DishStorage } from '../../../models/kitchen/dish.model'
 import { IngredientStorage } from '../../../models/ingredient.model'
-import { MenuStorage } from '../../../models/menu/menu.model'
-import { RecipeStorage } from '../../../models/recipe.model'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
+import { RecipeStorage } from '../../../models/kitchen/recipe.model'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import {
   KitchenModel as KitchenModelRuntime,

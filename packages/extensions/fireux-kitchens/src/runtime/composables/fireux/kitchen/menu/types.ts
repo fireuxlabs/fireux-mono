@@ -1,10 +1,10 @@
-import type { Dish } from '../../../../models/dish.model'
+import type { Dish } from '../../../../models/kitchen/dish.model'
 import type {
   MenuItemAddOnOption,
   MenuItem,
   MenuItemPriceOption,
-} from '../../../../models/menu/menu-item.model'
-import type { MenuSection } from '../../../../models/menu/menu-section.model'
+} from '../../../../models/kitchen/menu/menu-item.model'
+import type { MenuSection } from '../../../../models/kitchen/menu/menu-section.model'
 
 export type KitchenMenuItemRow = {
   id: string

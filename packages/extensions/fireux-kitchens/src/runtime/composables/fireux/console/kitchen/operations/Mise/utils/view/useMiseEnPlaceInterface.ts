@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenMiseTask } from '../../../../../../../../models/kitchen-mise.model'
+import type { KitchenMiseTask } from '../../../../../../../../models/kitchen/mise.model'
 
 const MISSING_TITLE = 'Missing mise title'
 const FOOD_KIND_RE = /^(food|mise|food_mise|prep|component)$/

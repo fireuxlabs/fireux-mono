@@ -3,7 +3,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 import type {
   MenuPublicChoice,
   MenuView,
-} from '../../../../models/menu/menu.model.ts'
+} from '../../../../models/kitchen/menu/menu.model.ts'
 import { menuOrderTypeLabel } from '../../../../utils/menu-ordering-ui.ts'
 import {
   isMenuOrderingEnabled,

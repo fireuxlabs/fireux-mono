@@ -3,7 +3,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   KitchenMiseTaskStorage,
   type KitchenMiseTask,
-} from '../../../../../../../models/kitchen-mise.model'
+} from '../../../../../../../models/kitchen/mise.model'
 import { useKitchenChildCollection } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type UseKitchenMiseCollectionOptions = {

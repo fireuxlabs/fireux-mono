@@ -4,7 +4,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
   KitchenDeliveryZone,
   KitchenFulfilmentPaymentMethod,
-} from '../kitchen.model'
+} from '../../kitchen.model'
 import type { KitchenOrderType } from '../order.model'
 
 /**

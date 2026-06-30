@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenDishCollection } from '../../../../firestore/dish/useDish'
-import { DishStorage, type Dish } from '../../../../../../models/dish.model'
+import { DishStorage, type Dish } from '../../../../../../models/kitchen/dish.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 

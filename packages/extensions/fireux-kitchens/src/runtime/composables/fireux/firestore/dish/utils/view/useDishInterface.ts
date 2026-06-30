@@ -1,7 +1,7 @@
 import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Dish } from '../../../../../../models/dish.model'
+import type { Dish } from '../../../../../../models/kitchen/dish.model'
 
 export namespace DishCard {
   export type Card = {

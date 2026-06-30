@@ -2,7 +2,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../../../models/menu/menu-item.model'
+} from '../../../../models/kitchen/menu/menu-item.model'
 import {
   readRecord,
   readRecordString,

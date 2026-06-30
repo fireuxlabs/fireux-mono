@@ -71,8 +71,8 @@ import type {
   MenuOrderTypeConfig,
   MenuView,
   MenuUpdateInput,
-} from '../../../../../../models/menu/menu.model'
-import type { KitchenOrderType } from '../../../../../../models/order.model'
+} from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 
 type OrderTypeOption = {
   type: KitchenOrderType

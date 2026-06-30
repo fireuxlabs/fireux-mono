@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
 import { useKitchenOrderFunnelBasket } from '../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelBasket'
 
 const props = defineProps<{
