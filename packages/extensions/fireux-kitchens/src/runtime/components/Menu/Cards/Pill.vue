@@ -12,6 +12,7 @@
           :alt="title || ''"
           size="sm"
           icon="i-lucide-book-open-check"
+          :class="avatarClass"
         />
       </div>
 
@@ -48,6 +49,7 @@
           :alt="title || ''"
           size="sm"
           icon="i-lucide-book-open-check"
+          :class="avatarClass"
         />
       </div>
 
@@ -74,14 +76,17 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import { computed } from 'vue'
 import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 
 type MenuPillCard = Pick<
   MenuCard.Card,
-  'to' | 'title' | 'subtitle' | 'imageUrl' | 'actionLabel'
+  'to' | 'title' | 'subtitle' | 'imageUrl' | 'imageShade' | 'actionLabel'
 >
 
 type PillProps = MenuPillCard & {
+  imageShade?: PlaceImageShade
   showSubtitle?: boolean
   link?: boolean
   action?: boolean
@@ -97,9 +102,17 @@ const props = withDefaults(defineProps<PillProps>(), {
   subtitle: '',
   imageUrl: '',
   actionLabel: '',
+  imageShade: undefined,
   showSubtitle: true,
   link: false,
   action: false,
+})
+
+const avatarClass = computed(() => {
+  const shade = props.imageShade
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
 })
 
 const onClick = () => {

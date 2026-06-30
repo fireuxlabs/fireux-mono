@@ -117,6 +117,11 @@ const kitchenImage = (kitchen) => {
   return text(identity.image_url) || text(kitchen.display_image_url) || text(kitchen.image_url)
 }
 
+const kitchenImageShade = (kitchen) => {
+  const identity = record(kitchen.identity)
+  return text(identity.image_shade) || text(kitchen.image_shade)
+}
+
 async function collectionById(name) {
   const snap = await db.collection(name).get()
   const map = new Map()
@@ -293,6 +298,34 @@ async function syncJobs() {
   }
 }
 
+async function syncMenus() {
+  const snap = await db.collection('menus').get()
+
+  for (const doc of snap.docs) {
+    const menu = { id: doc.id, ...doc.data() }
+    const source = record(menu.source)
+    const kitchenId = text(source.kitchen_id)
+    if (!kitchenId) continue
+
+    const kitchen = kitchens.get(kitchenId)
+    if (!kitchen) continue
+
+    await queuePatch(
+      doc.ref,
+      menu,
+      {
+        source: {
+          kitchen_name: kitchenName(kitchen),
+          kitchen_slug: text(kitchen.slug) || text(source.kitchen_slug),
+        },
+        image_url: kitchenImage(kitchen),
+        image_shade: kitchenImageShade(kitchen),
+      },
+      'menu kitchen public card snapshot'
+    )
+  }
+}
+
 async function syncProfileCollection(collectionName) {
   const rootSnap = await db.collection(collectionName).get()
   const docs = [
@@ -321,6 +354,7 @@ async function syncProfileCollection(collectionName) {
 await syncKitchens()
 await syncCompanies()
 await syncJobs()
+await syncMenus()
 for (const profileCollection of [
   'chefs',
   'customers',
