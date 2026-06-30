@@ -88,7 +88,7 @@ const normalizePaymentMethod = (
   if (!allowedMethods.length) return undefined
 
   const requested = text(value) as KitchenOrderPaymentMethod
-  if (!requested) return allowedMethods[0]
+  if (!requested) return undefined
   if (allowedMethods.includes(requested)) return requested
 
   throw createError({

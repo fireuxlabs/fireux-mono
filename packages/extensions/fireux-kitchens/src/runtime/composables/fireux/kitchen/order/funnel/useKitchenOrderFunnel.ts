@@ -123,7 +123,10 @@ export function useKitchenOrderFunnel(options: UseKitchenOrderFunnelOptions) {
   })
   const showFunnel = computed(() =>
     isOrderMode.value &&
-      draft.quantity.value > 0
+      (
+        draft.quantity.value > 0 ||
+        Boolean(draft.sentOrder.value)
+      )
   )
 
   function setSelectedChoice(value: MenuChoiceValue) {
@@ -143,7 +146,7 @@ export function useKitchenOrderFunnel(options: UseKitchenOrderFunnelOptions) {
   }
 
   watch(draft.quantity, (quantity: number) => {
-    if (!quantity) closePanel()
+    if (!quantity && !draft.sentOrder.value) closePanel()
   })
 
   return {

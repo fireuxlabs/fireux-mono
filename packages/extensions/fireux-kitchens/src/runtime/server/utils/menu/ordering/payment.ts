@@ -52,7 +52,15 @@ export function resolveMenuOrderPayment(
   const fulfilment = input.orderTypeConfig?.fulfilment
   const methods: KitchenOrderPaymentMethod[] = ['online_card']
   const deposit = fulfilment?.deposit
-  const method = input.paymentMethod || methods[0]
+  const method = input.paymentMethod
+
+  if (!method) {
+    return {
+      required: false,
+      status: 'not_required',
+      currency_code: 'CHF',
+    }
+  }
 
   if (deposit) {
     const amount = money(depositAmount(deposit, input))

@@ -274,7 +274,6 @@ function fulfilmentSubmitPayload(): MenuOrderingSubmitPayload {
           },
         }
       : {}),
-    payment_method: 'online_card',
   }
 }
 

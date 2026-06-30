@@ -297,7 +297,6 @@ export function useKitchenOrderFunnelDraft(
     const isWaitingForAcceptance = created.status === 'pending_acceptance'
     const nextAwaitingAcceptance =
       isWaitingForAcceptance && orderType.value === 'delivery'
-    draft.value = {}
     trackedOrder.value = created
     acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance
