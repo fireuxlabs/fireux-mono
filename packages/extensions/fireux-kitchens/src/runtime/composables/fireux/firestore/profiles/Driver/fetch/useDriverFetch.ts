@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { driverConfig } from '../config/driverConfig'
-import type { Driver } from '../../../../../../models/profiles/Driver/Driver.model'
+import type { Driver } from '../../../../../../models/driver.model'
 
 type DriverEntry = Driver & { user?: unknown }
 

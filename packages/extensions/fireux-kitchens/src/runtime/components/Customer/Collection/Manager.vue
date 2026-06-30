@@ -64,7 +64,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { useCustomerFetch } from '../../../composables/fireux/firestore/profiles/Customer/fetch/useCustomerFetch'
 import { useCustomerInterface } from '../../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
-import type { Customer } from '../../../models/profiles/Customer/Customer.model'
+import type { Customer } from '../../../models/customer.model'
 
 type CustomerEntry = Customer & { user?: unknown }
 

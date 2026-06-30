@@ -6,7 +6,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Family: Identity/profile capability.
- * Sibling: profiles/Chef/Chef.model.ts
+ * Sibling: chef.model.ts
  * Delta: Customer is private ordering identity, not a public profile surface.
  */
 export const CustomerStorage = {

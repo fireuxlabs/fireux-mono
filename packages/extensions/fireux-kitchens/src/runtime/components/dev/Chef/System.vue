@@ -80,7 +80,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import { ChefModel as ChefModelRuntime } from '../../../models/profiles/Chef/Chef.model'
+import { ChefModel as ChefModelRuntime } from '../../../models/chef.model'
 
 defineOptions({ name: 'DevChefSystem' })
 
@@ -127,7 +127,7 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/chef.model',
   itemsKey: 'chefs',
   items: filteredDriftPayload,
   total: computed(() => collection.value.length),

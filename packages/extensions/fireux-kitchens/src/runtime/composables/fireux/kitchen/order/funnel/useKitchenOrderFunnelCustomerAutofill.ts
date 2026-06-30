@@ -5,7 +5,7 @@ import type { KitchenOrderCustomer } from '../../../../../models/kitchen/order.m
 import type {
   CustomerPrivate,
   CustomerSavedAddress,
-} from '../../../../../models/profiles/Customer/Customer.model'
+} from '../../../../../models/customer.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const customerPrivate = (

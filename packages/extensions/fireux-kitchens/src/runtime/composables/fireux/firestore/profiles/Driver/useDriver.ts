@@ -6,7 +6,7 @@ import { driverConfig } from './config/driverConfig'
 import type {
   AppDriver,
   Driver,
-} from '../../../../../models/profiles/Driver/Driver.model'
+} from '../../../../../models/driver.model'
 import { useDriverCreate } from './mutations/useDriverCreate'
 import { useDriverUpdate } from './mutations/useDriverUpdate'
 

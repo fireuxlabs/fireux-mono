@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { chefConfig } from '../config/chefConfig'
-import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../../models/chef.model'
 
 // Hydrated (user-attached) chef profiles for UI use.
 export function useChefFetch() {

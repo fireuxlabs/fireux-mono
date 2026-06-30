@@ -6,7 +6,7 @@ import { customerConfig } from './config/customerConfig'
 import type {
   AppCustomer,
   Customer,
-} from '../../../../../models/profiles/Customer/Customer.model'
+} from '../../../../../models/customer.model'
 import { useCustomerCreate } from './mutations/useCustomerCreate'
 import { useCustomerUpdate } from './mutations/useCustomerUpdate'
 

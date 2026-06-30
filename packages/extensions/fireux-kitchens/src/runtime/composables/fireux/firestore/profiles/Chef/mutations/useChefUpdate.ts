@@ -3,7 +3,7 @@ import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/fir
 import {
   ChefStorage,
   type Chef,
-} from '../../../../../../models/profiles/Chef/Chef.model'
+} from '../../../../../../models/chef.model'
 
 /**
  * useChefUpdate

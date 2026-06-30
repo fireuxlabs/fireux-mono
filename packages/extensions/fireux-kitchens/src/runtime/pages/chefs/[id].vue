@@ -78,7 +78,7 @@ import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore
 import { computed, ref } from 'vue'
 import { useChefSeo } from '../../composables/fireux/firestore/profiles/Chef/utils/useChefSeo'
 import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { AppChef, Chef } from '../../models/profiles/Chef/Chef.model'
+import type { AppChef, Chef } from '../../models/chef.model'
 
 definePageMeta({
   visibility: { profiles: ['chef'] },

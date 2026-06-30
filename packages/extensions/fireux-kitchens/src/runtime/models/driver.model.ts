@@ -19,7 +19,7 @@ export type DriverCoverage = {
 
 /**
  * Family: Identity/profile capability.
- * Sibling: profiles/Customer/Customer.model.ts
+ * Sibling: customer.model.ts
  * Delta: Driver marks a human who can accept delivery work; fleet, car, and
  * tender state belongs to kitchen fulfilment/order layers, not this profile.
  */

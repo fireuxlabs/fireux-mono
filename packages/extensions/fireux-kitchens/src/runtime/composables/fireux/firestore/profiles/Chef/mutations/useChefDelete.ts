@@ -7,7 +7,7 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   ChefStorage,
   type Chef,
-} from '../../../../../../models/profiles/Chef/Chef.model'
+} from '../../../../../../models/chef.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 

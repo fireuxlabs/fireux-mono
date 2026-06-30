@@ -75,7 +75,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { Chef } from '../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../models/chef.model'
 
 type ChefEntry = Chef & { user?: unknown }
 

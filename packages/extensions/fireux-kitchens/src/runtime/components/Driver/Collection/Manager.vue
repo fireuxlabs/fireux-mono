@@ -64,7 +64,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
-import type { Driver } from '../../../models/profiles/Driver/Driver.model'
+import type { Driver } from '../../../models/driver.model'
 
 type DriverEntry = Driver & { user?: unknown }
 

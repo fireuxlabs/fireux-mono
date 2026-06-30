@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { customerConfig } from '../config/customerConfig'
-import type { Customer } from '../../../../../../models/profiles/Customer/Customer.model'
+import type { Customer } from '../../../../../../models/customer.model'
 
 // Profile collection spine: sibling is profiles/Chef/fetch/useChefFetch.ts.
 export function useCustomerFetch() {

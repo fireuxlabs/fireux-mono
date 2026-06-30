@@ -58,7 +58,7 @@ import { computed, ref, watch } from 'vue'
 import { demoChefSurfaceList } from '../../../../../../../../demo/chef.demo'
 import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { Chef } from '../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../models/chef.model'
 
 defineOptions({ name: 'DevChefDemo' })
 

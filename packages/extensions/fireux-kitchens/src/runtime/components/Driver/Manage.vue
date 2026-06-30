@@ -82,7 +82,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { reactive, ref, watchEffect } from 'vue'
 import { useDriverFetch } from '../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverUpdate } from '../../composables/fireux/firestore/profiles/Driver/mutations/useDriverUpdate'
-import type { Driver } from '../../models/profiles/Driver/Driver.model'
+import type { Driver } from '../../models/driver.model'
 
 type DriverEntry = Driver & { user?: any }
 type DriverDraft = {

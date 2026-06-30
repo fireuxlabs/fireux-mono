@@ -8,7 +8,7 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Driver } from 'fireux-kitchens/runtime/models/profiles/Driver/Driver.model'
+import type { Driver } from 'fireux-kitchens/runtime/models/driver.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

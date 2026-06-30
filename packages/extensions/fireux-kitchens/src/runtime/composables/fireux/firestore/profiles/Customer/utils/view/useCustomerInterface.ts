@@ -8,7 +8,7 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Customer } from 'fireux-kitchens/runtime/models/profiles/Customer/Customer.model'
+import type { Customer } from 'fireux-kitchens/runtime/models/customer.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

@@ -4,7 +4,7 @@ import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/fir
 import {
   DriverStorage,
   type Driver,
-} from '../../../../../../models/profiles/Driver/Driver.model'
+} from '../../../../../../models/driver.model'
 
 export function useDriverUpdate(profile?: ProfileRefs<Driver> | null) {
   const base = useProfileUpdateBase<Driver>(DriverStorage.rootCollection, profile)
