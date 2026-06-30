@@ -98,6 +98,7 @@ export function useKitchenOrderCreate() {
       items: [item],
       fulfilment_policy: {},
       fulfilment_match: {},
+      driver_responses: {},
       customer: {},
       payment: {
         required: false,

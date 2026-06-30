@@ -90,6 +90,14 @@ export type KitchenOrderPayment = {
   paid_at?: string | FirebaseTimestamp
 }
 
+export type KitchenOrderDriverResponse = {
+  status?: 'watching' | 'rejected' | 'tendered'
+  driver_id?: string
+  driver_name?: string
+  avatar_url?: string
+  updated_at?: string | FirebaseTimestamp
+}
+
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -108,6 +116,8 @@ export const KitchenOrderModel = {
   fulfilment_policy: {} as Record<string, unknown>,
   // Snapshot of the concrete fulfilment match, such as the delivery zone found for an address.
   fulfilment_match: {} as Record<string, unknown>,
+  // Driver interest/tender state is attached to the order, not a parallel collection.
+  driver_responses: {} as Record<string, KitchenOrderDriverResponse>,
   customer: {} as KitchenOrderCustomer,
   payment: {
     required: false,
