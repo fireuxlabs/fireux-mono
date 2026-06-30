@@ -200,7 +200,7 @@ import {
   resolveMenuPageStyle,
   resolveMenuFont,
   resolveMenuTitleFont,
-} from '../../../../composables/fireux/public/menu/useMenuTheme'
+} from '../../../../composables/fireux/menu/useMenuTheme'
 
 type ColorStyleKey = Exclude<
   keyof PageStyle,

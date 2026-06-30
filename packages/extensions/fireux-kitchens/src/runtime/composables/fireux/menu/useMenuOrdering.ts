@@ -12,13 +12,13 @@ import {
   type MenuChoiceOption,
   type MenuChoiceValue,
 } from './useMenuViewMode'
-import { menuOrderBasketActionLabel } from '../../../../utils/menu-ordering-ui'
+import { menuOrderBasketActionLabel } from '../../../utils/menu-ordering-ui'
 import type { MenuManifest } from './useMenuManifest'
-import type { MenuFoodOrderItem } from '../../../../models/menu/menu-food.model'
+import type { MenuFoodOrderItem } from '../../../models/menu/menu-food.model'
 import type {
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
-} from '../../../../models/menu/menu-ordering.model'
+} from '../../../models/menu/menu-ordering.model'
 
 export type { MenuChoiceValue }
 export type MenuDetailOrderItem = MenuFoodOrderItem

@@ -30,7 +30,7 @@
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
-} from '../../../composables/fireux/public/menu/useMenuViewMode'
+} from '../../../composables/fireux/menu/useMenuViewMode'
 
 withDefaults(
   defineProps<{

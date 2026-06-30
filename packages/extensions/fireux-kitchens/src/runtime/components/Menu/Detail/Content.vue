@@ -44,7 +44,7 @@ import type {
   MenuDetailOrderItem,
   MenuDetailView,
   MenuChoiceValue,
-} from '../../../composables/fireux/public/menu/useMenuOrdering'
+} from '../../../composables/fireux/menu/useMenuOrdering'
 
 defineProps<{
   view: MenuDetailView | null

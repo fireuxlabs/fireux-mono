@@ -16,9 +16,6 @@
       "path": "core/fireux-nuxtfire"
     },
     {
-      "path": "core/fireux-translation"
-    },
-    {
       "path": "extensions/fireux-ai"
     },
     {
@@ -59,6 +56,9 @@
     },
     {
       "path": "extensions/fireux-tasks"
+    },
+    {
+      "path": "extensions/fireux-translation"
     },
     {
       "path": "ecosystem/fireux-bringli"

@@ -19,8 +19,8 @@
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
-} from '../../../composables/fireux/public/menu/useMenuViewMode'
-import type { MenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
+} from '../../../composables/fireux/menu/useMenuViewMode'
+import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
 
 defineProps<{
   menu: MenuManifest

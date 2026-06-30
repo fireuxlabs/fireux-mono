@@ -102,8 +102,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { MenuManifestSection } from '../../../../composables/fireux/public/menu/useMenuManifest'
-import { useMenuThemeSurface } from '../../../../composables/fireux/public/menu/useMenuThemeSurface'
+import type { MenuManifestSection } from '../../../../composables/fireux/menu/useMenuManifest'
+import { useMenuThemeSurface } from '../../../../composables/fireux/menu/useMenuThemeSurface'
 import type { Menu } from '../../../../models/menu/menu.model'
 
 const props = defineProps<{

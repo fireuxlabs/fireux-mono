@@ -11,7 +11,7 @@ import {
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/menu/menu-ordering.model'
 
 type DispatchOrder = {
   id?: string
@@ -20,7 +20,7 @@ type DispatchOrder = {
   }>
 }
 
-export function useFunnelDispatch(
+export function useKitchenOrderFunnelDispatch(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
   delivery: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>,
   orderPath?: MaybeRefOrGetter<string | null | undefined>

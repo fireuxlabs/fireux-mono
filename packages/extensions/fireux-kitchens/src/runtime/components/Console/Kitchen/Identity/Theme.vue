@@ -60,13 +60,13 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
-import { useMenuManifest } from '../../../../composables/fireux/public/menu/useMenuManifest'
+import { useMenuManifest } from '../../../../composables/fireux/menu/useMenuManifest'
 import {
   compactMenuPageStyle,
   resolveMenuPageStyle,
   resolveMenuFont,
   resolveMenuTitleFont,
-} from '../../../../composables/fireux/public/menu/useMenuTheme'
+} from '../../../../composables/fireux/menu/useMenuTheme'
 import type { Menu } from '../../../../models/menu/menu.model'
 import {
   readKitchenIdentity,

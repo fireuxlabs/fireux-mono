@@ -5,8 +5,8 @@ import type {
   MenuOrderingConfig,
   MenuPublicChoice,
   MenuView,
-} from '../../../../models/menu/menu.model'
-import type { KitchenMenuSectionRow } from '../../kitchen/menu/useKitchenMenu'
+} from '../../../models/menu/menu.model'
+import type { KitchenMenuSectionRow } from '../kitchen/menu/useKitchenMenu'
 
 export type PublicMenu = {
   id: string

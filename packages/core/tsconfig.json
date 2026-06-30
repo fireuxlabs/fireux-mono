@@ -5,8 +5,7 @@
     { "path": "fireux-core" },
     { "path": "fireux-docs" },
     { "path": "fireux-ecosystem-controller" },
-    { "path": "fireux-nuxtfire" },
-    { "path": "fireux-translation" }
+    { "path": "fireux-nuxtfire" }
   ],
   "compilerOptions": {
     "skipLibCheck": true

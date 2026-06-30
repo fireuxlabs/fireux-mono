@@ -1,7 +1,7 @@
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceipt,
-} from '../../../../models/menu/menu-ordering.model'
+} from '../../../../../../../models/menu/menu-ordering.model'
 
 const escapeHtml = (value: unknown) =>
   String(value ?? '')
@@ -189,7 +189,7 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
 </html>`
 }
 
-export function printMenuOrderReceipt(order: CreatedMenuOrder | null) {
+export function printKitchenOrderReceipt(order: CreatedMenuOrder | null) {
   if (!import.meta.client || !order?.receipt) return false
 
   const target = window.open('', '_blank', 'width=420,height=720')

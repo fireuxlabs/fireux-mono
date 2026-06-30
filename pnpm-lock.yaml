@@ -221,7 +221,7 @@ importers:
         specifier: 4.4.6
         version: 4.4.6
 
-  packages/core/fireux-translation:
+  packages/extensions/fireux-translation:
     devDependencies:
       '@nuxt/kit':
         specifier: 4.4.6
@@ -568,7 +568,7 @@ importers:
         version: link:../fireux-suppliers
       fireux-translation:
         specifier: workspace:*
-        version: link:../../core/fireux-translation
+        version: link:../fireux-translation
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^0.5.5

@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
+import { useKitchenOrder } from '../../../../composables/fireux/kitchen/order/useKitchenOrder'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
@@ -111,6 +112,7 @@ const orderPending = ref(false)
 const orderError = ref('')
 const orderCreated = ref(false)
 const activeOrderPath = ref('')
+const { createFunnelOrder: createKitchenFunnelOrder } = useKitchenOrder()
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -184,7 +186,7 @@ function previousSurface() {
 async function nextSurface() {
   if (continueDisabled.value) return
   if (surfaceNumber.value === 3 && !orderCreated.value) {
-    await createOrder()
+    await createFunnelOrder()
     if (orderError.value) return
   }
   setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
@@ -194,30 +196,12 @@ function setSurfaceNumber(next: number) {
   surfaceChoice.value = String(next) as SurfaceChoice
 }
 
-async function createOrder() {
-  const menuId = String(props.order.menuId || '').trim()
-  if (!menuId) return
-
-  const query = new URLSearchParams()
-  if (props.order.kitchenSlug) query.set('kitchenSlug', props.order.kitchenSlug)
-  const qs = query.toString()
-  const endpoint = `/api/menus/${encodeURIComponent(menuId)}/kitchen-ping${qs ? `?${qs}` : ''}`
-
+async function createFunnelOrder() {
   orderPending.value = true
   orderError.value = ''
   try {
-    const response = await $fetch<{
-      order_id?: string
-      order_path?: string
-    }>(endpoint, {
-      method: 'POST',
-      body: {
-        basket: props.order.selection,
-        delivery: deliveryState.value,
-        order_type: props.order.orderType,
-      },
-    })
-    activeOrderPath.value = String(response?.order_path || '').trim()
+    const created = await createKitchenFunnelOrder(props.order)
+    activeOrderPath.value = created.path
     orderCreated.value = true
   } catch (error) {
     orderError.value = error instanceof Error

@@ -1,7 +1,7 @@
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useMenuFetch, type PublicMenu } from './useMenuFetch'
 import { resolveMenuServiceProfile } from './useMenuServiceProfile'
-import type { MenuServiceProfile } from '../../../../models/menu/menu.model'
+import type { MenuServiceProfile } from '../../../models/menu/menu.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 
 type MenuManifestOptions = {

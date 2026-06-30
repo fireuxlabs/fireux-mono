@@ -5,18 +5,18 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import { useMenuCustomerAutofill } from './useMenuCustomerAutofill'
-import { useMenuDeliveryAddressAutocomplete } from './useMenuDeliveryAddressAutocomplete'
-import { useMenuDeliveryAddressCheck } from './useMenuDeliveryAddressCheck'
+import { useMenuCustomerAutofill } from '../../../menu/useMenuCustomerAutofill'
+import { useMenuDeliveryAddressAutocomplete } from '../../../menu/useMenuDeliveryAddressAutocomplete'
+import { useMenuDeliveryAddressCheck } from '../../../menu/useMenuDeliveryAddressCheck'
 import type {
   MenuDeliveryAddressPrediction,
-} from './useMenuDeliveryAddressAutocomplete'
-import type { MenuDeliveryZone } from '../../../../models/menu/menu.model'
-import type { MenuOrderingFunnelState } from '../../../../models/menu/menu-ordering.model'
+} from '../../../menu/useMenuDeliveryAddressAutocomplete'
+import type { MenuDeliveryZone } from '../../../../../models/menu/menu.model'
+import type { MenuOrderingFunnelState } from '../../../../../models/menu/menu-ordering.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useFunnelDeliveryZone(
+export function useKitchenOrderFunnelDeliveryZone(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const address = ref('')

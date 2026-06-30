@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMenuManifest } from '../../../composables/fireux/public/menu/useMenuManifest'
-import { useMenuThemeSurface } from '../../../composables/fireux/public/menu/useMenuThemeSurface'
-import { useMenuOrdering } from '../../../composables/fireux/public/menu/useMenuOrdering'
+import { useMenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
+import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import { useMenuOrdering } from '../../../composables/fireux/menu/useMenuOrdering'
 
 const props = defineProps<{
   menuId: string

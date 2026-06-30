@@ -98,7 +98,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useCustomer } from '../../../composables/fireux/firestore/profiles/Customer/useCustomer'
-import { useMenuDeliveryAddressAutocomplete } from '../../../composables/fireux/public/menu/useMenuDeliveryAddressAutocomplete'
+import { useMenuDeliveryAddressAutocomplete } from '../../../composables/fireux/menu/useMenuDeliveryAddressAutocomplete'
 
 const {
   coreProfile,

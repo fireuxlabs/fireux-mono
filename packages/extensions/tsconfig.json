@@ -15,7 +15,8 @@
     { "path": "fireux-products" },
     { "path": "fireux-properties" },
     { "path": "fireux-sproochli" },
-    { "path": "fireux-tasks" }
+    { "path": "fireux-tasks" },
+    { "path": "fireux-translation" }
   ],
   "compilerOptions": { "skipLibCheck": true }
 }

@@ -4,7 +4,7 @@ import {
   toValue,
   type MaybeRefOrGetter,
 } from 'vue'
-import type { MenuDeliveryZone } from '../../../../models/menu/menu.model'
+import type { MenuDeliveryZone } from '../../../models/menu/menu.model'
 
 export type MenuDeliveryAddressCheckResult = {
   deliverable: boolean

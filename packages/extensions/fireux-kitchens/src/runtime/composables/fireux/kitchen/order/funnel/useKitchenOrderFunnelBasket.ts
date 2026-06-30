@@ -6,9 +6,9 @@ import {
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelState,
-} from '../../../../models/menu/menu-ordering.model'
+} from '../../../../../models/menu/menu-ordering.model'
 
-export function useFunnelBasket(
+export function useKitchenOrderFunnelBasket(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const items = computed(() => toValue(order).selection.items)

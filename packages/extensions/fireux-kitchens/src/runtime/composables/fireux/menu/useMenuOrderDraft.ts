@@ -10,11 +10,11 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../../models/order.model'
+} from '../../../models/order.model'
 import {
   useMenuOrderCreate,
 } from './useMenuOrderCreate'
-import type { CreatedMenuOrder } from '../../../../models/menu/menu-ordering.model'
+import type { CreatedMenuOrder } from '../../../models/menu/menu-ordering.model'
 import {
   useMenuOrderStatus,
   type PublicMenuOrderStatus,
