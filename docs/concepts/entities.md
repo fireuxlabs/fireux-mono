@@ -1,6 +1,6 @@
 Entities map
 Updated: 2026-06-30
-Ref: 151c7ad49
+Ref: f882d8a82
 Role: map, not canon
 
 Purpose:
@@ -68,29 +68,36 @@ Route/index families:
 
 Root index classes:
 - Root Simple Index: root/public index entity whose index can render its own collection without linked document hydration.
-- Root Hydrated Index: root/public index entity whose index extends Root Simple Index with an enrichment seam before interface/card rendering.
+- Root Synced Snapshot Index: root/public index entity whose rows carry copied public card/list fields from a source entity.
+- Root Projected Index: root/public index entity whose raw root rows are too sensitive or broad, so a safe server projection powers browse UI.
+- Scoped/Overlay Access: root entity with app-scoped access/delta records used by console or operator filters.
+- Detail Hydration: detail surfaces may enrich a single entity with linked truth; this is not a collection-manager class.
 - Scoped Surface: parent-scoped route or console surface that should not use root collection-manager ceremony.
 
 Root Simple Index members:
 - App.
 - Ecosystem.
-- User.
+- Project, for public browse. Operator/team filtering is scoped/overlay access.
+- Menu.
 - Place.
 - Blog.
 - Product.
-- Ingredient, likely, but confirm because local kitchen/supplier usage also exists.
+- Ingredient.
 
-Root Hydrated Index members:
-- Kitchen extends Root Simple Index with Place hydration.
-- Menu extends Root Simple Index with creator/kitchen/app/scoped-menu doorway hydration.
-- Project extends Root Simple Index with App/Ecosystem/runtime enrichment.
-- Company extends Root Simple Index with Place hydration.
-- Job extends Root Simple Index with Kitchen/workplace hydration.
-- Supplier extends Root Simple Index with app-scoped supplier overlay and future Company link.
-- Portfolio extends Root Simple Index with app-scoped overlay.
-- Property extends Root Simple Index with app-scoped overlay.
-- Chef, Agent, and Professional extend Root Simple Index with User/profile hydration.
-- Recipe may extend Root Simple Index later if public recipe projection becomes real root truth and ingredient/dish enrichment is needed.
+Root Synced Snapshot Index members:
+- Kitchen carries public Place snapshot fields; Place stays ignorant of Kitchens.
+- Company carries public Place snapshot fields; Place stays ignorant of Companies.
+- Job carries public workplace snapshot fields; the jobs/workplace domain owns the cascade.
+- Chef, Customer, Driver, Agent, and Professional carry public User summary snapshots; User knows its attached profiles.
+
+Root Projected Index members:
+- User uses a public users API so raw identity/private user fields do not become public browse data.
+
+Scoped/Overlay Access members:
+- Supplier root browse is simple; operator-filtered access may join app-scoped supplier overlays.
+- Portfolio root browse is simple; operator-filtered access may join app-scoped portfolio overlays.
+- Property root browse is simple; scoped overlay shape is explicit.
+- Project root browse is simple; operator/team filters query access fields.
 
 Root index entity examples:
 - App: `/apps`.

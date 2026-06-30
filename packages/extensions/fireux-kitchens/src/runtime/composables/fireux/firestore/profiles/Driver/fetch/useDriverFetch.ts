@@ -8,11 +8,11 @@ type DriverEntry = Driver & { user?: unknown }
 
 // Profile collection spine: sibling is profiles/Customer/fetch/useCustomerFetch.ts.
 export function useDriverFetch() {
-  const { globalProfilesWithUser, localProfilesWithUser } =
+  const { globalProfiles, localProfiles } =
     useProfileCollection<Driver>(driverConfig)
 
-  const coreDrivers = computed(() => globalProfilesWithUser.value ?? [])
-  const appDrivers = computed(() => localProfilesWithUser?.value ?? [])
+  const coreDrivers = computed(() => globalProfiles.value ?? [])
+  const appDrivers = computed(() => localProfiles?.value ?? [])
   const drivers = computed<DriverEntry[]>(() =>
     mergeDrivers(
       coreDrivers.value as DriverEntry[],
@@ -23,8 +23,8 @@ export function useDriverFetch() {
   const { byId: appDriver } = useCollectionById(appDrivers)
 
   const pending = computed(() =>
-    globalProfilesWithUser.value === undefined ||
-    Boolean(localProfilesWithUser && localProfilesWithUser.value === undefined)
+    globalProfiles.value === undefined ||
+    Boolean(localProfiles && localProfiles.value === undefined)
   )
 
   return {

@@ -74,7 +74,6 @@ const kitchenPlaceCardSnapshot = (place) =>
     formatted_address: text(place.formatted_address),
     image_url: text(place.image_url || place.cover_image),
     image_shade: text(place.image_shade),
-    source: text(place.source),
   })
 
 const kitchenPlaceCardSnapshotTrim = {
@@ -84,6 +83,7 @@ const kitchenPlaceCardSnapshotTrim = {
   phone: FieldValue.delete(),
   website: FieldValue.delete(),
   default_currency_code: FieldValue.delete(),
+  source: FieldValue.delete(),
 }
 
 const placeSnapshot = (place) =>

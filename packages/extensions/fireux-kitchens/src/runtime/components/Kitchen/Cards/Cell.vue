@@ -29,18 +29,9 @@
           </div>
 
           <div
-            v-if="(showSource && sourceLabel) || visibleBadges.length"
+            v-if="visibleBadges.length"
             class="card__badges"
           >
-            <UBadge
-              v-if="showSource && sourceLabel"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="shrink-0"
-            >
-              {{ sourceLabel }}
-            </UBadge>
             <UBadge
               v-for="badge in visibleBadges"
               :key="badge"
@@ -91,18 +82,9 @@
           </div>
 
           <div
-            v-if="(showSource && sourceLabel) || visibleBadges.length"
+            v-if="visibleBadges.length"
             class="card__badges"
           >
-            <UBadge
-              v-if="showSource && sourceLabel"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="shrink-0"
-            >
-              {{ sourceLabel }}
-            </UBadge>
             <UBadge
               v-for="badge in visibleBadges"
               :key="badge"
@@ -131,10 +113,8 @@ import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/
 
 type Props = Partial<Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'>> & {
   badges?: KitchenCard.Card['badges']
-  source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
-  showSource?: boolean
   showBadges?: boolean
   showTagline?: boolean
   link?: boolean
@@ -156,7 +136,6 @@ const props = withDefaults(defineProps<Props>(), {
   badges: () => [],
   prop: '',
   showSubtitle: true,
-  showSource: false,
   showBadges: true,
   showTagline: true,
   link: false,
@@ -177,15 +156,6 @@ const avatarShadeClass = computed(() => {
   return ''
 })
 
-const sourceLabel = computed(() =>
-  props.source === 'fireux'
-    ? 'FireUX'
-    : props.source === 'manual'
-      ? 'Manual'
-      : props.source === 'google'
-        ? 'Google'
-        : ''
-)
 const visibleBadges = computed(() =>
   props.showBadges === false ? [] : props.badges ?? []
 )

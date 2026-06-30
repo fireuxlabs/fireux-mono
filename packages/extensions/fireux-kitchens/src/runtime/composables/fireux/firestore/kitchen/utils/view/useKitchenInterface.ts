@@ -2,7 +2,6 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type {
   Place,
   PlaceImageShade,
-  PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
@@ -37,9 +36,6 @@ export namespace KitchenCard {
 
     // Image tone metadata
     imageShade?: PlaceImageShade
-
-    // Source metadata
-    source?: PlaceSource
 
     // Search collection (optional)
     collection?: string
@@ -86,7 +82,6 @@ export type KitchenSurface = {
   image_url?: string
   display_image_url?: string
   image_shade?: PlaceImageShade
-  source?: PlaceSource
   claimed_by?: string
   brand_tagline?: string
   website?: string
@@ -130,7 +125,6 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'claimed_by'
     | 'verified'
     | 'default_currency_code'
-    | 'source'
     | 'slug'
     | 'search_term'
   >> | null | undefined
@@ -162,7 +156,6 @@ export function useKitchenInterface() {
     KitchenCard.Card,
     'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
   > & {
-    source?: PlaceSource
     prop?: string
   }
 
@@ -172,7 +165,6 @@ export function useKitchenInterface() {
     name: string
     formattedAddress: string
     shortAddress?: string
-    source?: PlaceSource
     prop?: string
     website?: string
     phone?: string
@@ -256,8 +248,6 @@ export function useKitchenInterface() {
 
       imageShade: kitchen.image_shade,
 
-      source: kitchen.source,
-
       claimedBy: safeString(kitchen.claimed_by),
     }
   }
@@ -315,7 +305,6 @@ export function useKitchenInterface() {
       shortAddress: '',
       imageUrl,
       imageShade: undefined,
-      source: undefined,
       claimedBy: '',
     }
 
@@ -351,7 +340,6 @@ export function useKitchenInterface() {
       formattedAddress: base.formattedAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      source: (target as any)?.source,
       prop: (target as any)?.brand_tagline,
     }
   }
@@ -369,7 +357,6 @@ export function useKitchenInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress,
       shortAddress: base.shortAddress,
-      source: (target as any)?.source as PlaceSource | undefined,
       prop: target.tagline || (target as any)?.brand_tagline,
       website: safeString(target.website),
       phone: safeString(target.phone),

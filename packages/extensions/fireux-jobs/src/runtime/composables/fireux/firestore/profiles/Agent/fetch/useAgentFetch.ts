@@ -6,20 +6,17 @@ import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 // Agent profiles for UI use. Public user summaries live on the profile rows.
 export function useAgentFetch() {
-  const { globalProfilesWithUser, localProfilesWithUser } =
+  const { globalProfiles, localProfiles } =
     useProfileCollection<Agent>(agentConfig)
 
-  const coreAgentsHydrated = globalProfilesWithUser
-  const appAgentsHydrated = localProfilesWithUser
-
-  const coreAgents = computed(() => coreAgentsHydrated.value ?? [])
-  const appAgents = computed(() => appAgentsHydrated?.value ?? [])
+  const coreAgents = computed(() => globalProfiles.value ?? [])
+  const appAgents = computed(() => localProfiles?.value ?? [])
   const { byId: coreAgent } = useCollectionById(coreAgents)
   const { byId: appAgent } = useCollectionById(appAgents)
 
   const pending = computed(() =>
-    coreAgentsHydrated.value === undefined ||
-    Boolean(appAgentsHydrated && appAgentsHydrated.value === undefined)
+    globalProfiles.value === undefined ||
+    Boolean(localProfiles && localProfiles.value === undefined)
   )
 
   return {

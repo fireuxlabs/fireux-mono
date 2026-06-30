@@ -6,20 +6,17 @@ import type { Chef } from '../../../../../../models/chef.model'
 
 // Chef profiles for UI use. Public user summaries live on the profile rows.
 export function useChefFetch() {
-  const { globalProfilesWithUser, localProfilesWithUser } =
+  const { globalProfiles, localProfiles } =
     useProfileCollection<Chef>(chefConfig)
 
-  const coreChefsHydrated = globalProfilesWithUser
-  const appChefsHydrated = localProfilesWithUser
-
-  const coreChefs = computed(() => coreChefsHydrated.value ?? [])
-  const appChefs = computed(() => appChefsHydrated?.value ?? [])
+  const coreChefs = computed(() => globalProfiles.value ?? [])
+  const appChefs = computed(() => localProfiles?.value ?? [])
   const { byId: coreChef } = useCollectionById(coreChefs)
   const { byId: appChef } = useCollectionById(appChefs)
 
   const pending = computed(() =>
-    coreChefsHydrated.value === undefined ||
-    Boolean(appChefsHydrated && appChefsHydrated.value === undefined)
+    globalProfiles.value === undefined ||
+    Boolean(localProfiles && localProfiles.value === undefined)
   )
 
   return {

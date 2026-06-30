@@ -1,6 +1,6 @@
 Collection manager map
 Updated: 2026-06-30
-Ref: 151c7ad49
+Ref: f882d8a82
 Role: map, not canon
 
 Purpose:
@@ -57,11 +57,17 @@ Root Synced Snapshot Collection Manager members:
 - `Kitchen` carries public Place snapshot fields copied onto the Kitchen row.
 - `Company` carries public Place snapshot fields copied onto the Company row.
 - `Job` carries public workplace snapshot fields copied onto the Job row.
-- `Chef`, `Customer`, `Driver`, `Agent`, and `Professional` carry public User summary snapshots copied onto the profile row.
+- `Chef`, `Customer`, `Driver`, `Agent`, and `Professional` carry public User summary snapshots copied onto the profile row; profile collection fetches do not hydrate users.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
 Root Projected Collection Manager members:
 - `User` uses a public users API so raw identity/private user fields do not become public browse data.
+
+Snapshot ownership rule:
+- Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
+- Domain parents may cascade into their domain children. Workplace/job sync belongs to the jobs domain.
+- `User` may cascade safe public identity into attached profile rows because profiles are part of the identity family.
+- Collection managers consume the row/projection they receive; they do not make per-row hydration calls.
 
 Source contract:
 - `XCollectionManager` belongs to `/xs` root/public browse surfaces.

@@ -59,7 +59,6 @@
         <KitchenCardsCell
           v-bind="card"
           :link="linkEnabled"
-          :show-source="showBadges"
           :show-badges="showBadges"
         />
       </template>

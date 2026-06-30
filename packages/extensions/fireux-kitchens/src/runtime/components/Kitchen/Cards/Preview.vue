@@ -115,7 +115,6 @@ type Props = {
   name: string
   formattedAddress: string
   shortAddress?: string
-  source?: 'google' | 'fireux' | 'manual'
   prop?: string
   website?: string
   phone?: string
@@ -148,21 +147,11 @@ const avatarShadeClass = computed(() => {
   return ''
 })
 
-const sourceLabel = computed(() =>
-  props.source === 'fireux'
-    ? 'FireUX'
-    : props.source === 'manual'
-      ? 'Manual'
-      : props.source === 'google'
-        ? 'Google'
-        : ''
-)
 const visibleBadges = computed(() =>
   props.showBadges
     ? [
         ...(props.badges ?? []),
         props.menuAvailable ? 'Menu available' : 'Menu unavailable',
-        sourceLabel.value,
       ].filter(Boolean)
     : []
 )

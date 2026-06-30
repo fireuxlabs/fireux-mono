@@ -97,7 +97,6 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       formatted_address: kitchen.formatted_address,
       image_url: kitchen.image_url,
       display_image_url: kitchen.image_url,
-      source: kitchen.source,
       route_scope: 'demo',
       is_test_kitchen: false,
     }))

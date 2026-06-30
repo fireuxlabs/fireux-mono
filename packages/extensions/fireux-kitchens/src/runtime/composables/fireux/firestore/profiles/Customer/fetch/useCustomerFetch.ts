@@ -6,17 +6,17 @@ import type { Customer } from '../../../../../../models/customer.model'
 
 // Profile collection spine: sibling is profiles/Chef/fetch/useChefFetch.ts.
 export function useCustomerFetch() {
-  const { globalProfilesWithUser, localProfilesWithUser } =
+  const { globalProfiles, localProfiles } =
     useProfileCollection<Customer>(customerConfig)
 
-  const coreCustomers = computed(() => globalProfilesWithUser.value ?? [])
-  const appCustomers = computed(() => localProfilesWithUser?.value ?? [])
+  const coreCustomers = computed(() => globalProfiles.value ?? [])
+  const appCustomers = computed(() => localProfiles?.value ?? [])
   const { byId: coreCustomer } = useCollectionById(coreCustomers)
   const { byId: appCustomer } = useCollectionById(appCustomers)
 
   const pending = computed(() =>
-    globalProfilesWithUser.value === undefined ||
-    Boolean(localProfilesWithUser && localProfilesWithUser.value === undefined)
+    globalProfiles.value === undefined ||
+    Boolean(localProfiles && localProfiles.value === undefined)
   )
 
   return {

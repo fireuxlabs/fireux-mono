@@ -138,7 +138,6 @@ export function useKitchenFetch(
         tagline: scenario.label,
         image_url: scenario.image_url,
         display_image_url: scenario.image_url,
-        source: place?.source ?? 'fireux',
         route_scope: 'demo',
       } as KitchenFetchDoc
     }
