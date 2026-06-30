@@ -31,12 +31,6 @@
             </div>
           </div>
 
-          <span
-            v-if="actionLabel"
-            class="inline-flex shrink-0 items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
-          >
-            {{ actionLabel }}
-          </span>
         </div>
 
         <div
@@ -81,12 +75,6 @@
             </div>
           </div>
 
-          <span
-            v-if="actionLabel"
-            class="inline-flex shrink-0 items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
-          >
-            {{ actionLabel }}
-          </span>
         </div>
 
         <div
@@ -111,7 +99,6 @@ type MenuCellCard = Pick<
   | 'to'
   | 'title'
   | 'subtitle'
-  | 'actionLabel'
   | 'description'
   | 'imageUrl'
   | 'imageShade'
@@ -133,7 +120,6 @@ const props = withDefaults(defineProps<Props>(), {
   to: '',
   title: '',
   subtitle: '',
-  actionLabel: '',
   description: '',
   imageUrl: '',
   imageShade: undefined,

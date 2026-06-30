@@ -39,7 +39,6 @@ export namespace MenuCard {
     name: string
     description: string
     active: boolean
-    actionLabel: string
     itemCount: number
     isActiveNow: boolean
     windowLabel: string
@@ -69,7 +68,6 @@ export function useMenuInterface() {
     | 'subtitle'
     | 'meta'
     | 'active'
-    | 'actionLabel'
     | 'description'
     | 'isActiveNow'
   >
@@ -113,7 +111,6 @@ export function useMenuInterface() {
       name,
       description,
       active: true,
-      actionLabel: '',
       itemCount: 0,
       isActiveNow: true,
       windowLabel: '',
@@ -157,7 +154,6 @@ export function useMenuInterface() {
       subtitle: base.subtitle,
       meta: base.meta,
       active: base.active,
-      actionLabel: base.actionLabel,
       description: '',
       isActiveNow: base.isActiveNow,
     }

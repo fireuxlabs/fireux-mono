@@ -26,12 +26,6 @@
         >
           {{ subtitle }}
         </p>
-        <span
-          v-if="actionLabel"
-          class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
-        >
-          {{ actionLabel }}
-        </span>
       </div>
     </div>
   </NuxtLink>
@@ -63,12 +57,6 @@
         >
           {{ subtitle }}
         </p>
-        <span
-          v-if="actionLabel"
-          class="inline-flex w-fit items-center rounded-md bg-primary px-2 py-1 text-xs font-medium text-inverted"
-        >
-          {{ actionLabel }}
-        </span>
       </div>
     </div>
   </button>
@@ -82,7 +70,7 @@ import type { MenuCard } from '../../../composables/fireux/firestore/menu/utils/
 
 type MenuPillCard = Pick<
   MenuCard.Card,
-  'to' | 'title' | 'subtitle' | 'imageUrl' | 'imageShade' | 'actionLabel'
+  'to' | 'title' | 'subtitle' | 'imageUrl' | 'imageShade'
 >
 
 type PillProps = MenuPillCard & {
@@ -101,7 +89,6 @@ const props = withDefaults(defineProps<PillProps>(), {
   title: '',
   subtitle: '',
   imageUrl: '',
-  actionLabel: '',
   imageShade: undefined,
   showSubtitle: true,
   link: false,
