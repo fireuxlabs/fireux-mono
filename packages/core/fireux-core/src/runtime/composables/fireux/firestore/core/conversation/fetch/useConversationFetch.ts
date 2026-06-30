@@ -1,14 +1,15 @@
 import { computed, isRef, type Ref } from 'vue'
-import { ConversationStorage, type Conversation } from '../../../../../../models/core/conversation.model'
+import type { Conversation } from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useConversationPaths } from '../utils/paths/useConversationPaths'
 
 type ConversationFetchSource = 'live' | 'test'
 
 type UseConversationFetchOptions = {
   source?: ConversationFetchSource | Ref<ConversationFetchSource>
+  appId?: string | Ref<string | null | undefined>
 }
 
-const DEFAULT_COLLECTION_PATH = ConversationStorage.collection
 const TEST_COLLECTION_PATH = 'test-conversations'
 
 export function useConversationFetch(
@@ -22,12 +23,17 @@ export function useConversationFetch(
   const sourceMode = computed<ConversationFetchSource>(() =>
     isRef(options.source) ? options.source.value : options.source ?? 'live'
   )
+  const paths = useConversationPaths(options.appId)
   const collectionPath = computed(() =>
-    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
+    sourceMode.value === 'test'
+      ? paths.appId.value
+        ? `apps/${paths.appId.value}/${TEST_COLLECTION_PATH}`
+        : ''
+      : paths.collectionPath.value
   )
 
   const firestoreSource = computed(() => {
-    if (!conversationId.value) return null
+    if (!conversationId.value || !collectionPath.value) return null
     return firestoreFetchDoc<Conversation>(collectionPath.value, conversationId.value)
   })
 

@@ -1,8 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
+import { ref } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import {
-  ConversationMessageStorage,
-  ConversationStorage,
   type Conversation,
   type ConversationCreateInput,
   type ConversationGuestContact,
@@ -15,6 +14,7 @@ import {
   type ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
+import { useConversationPaths } from '../utils/paths/useConversationPaths'
 
 type CreateConversationInput = {
   app_id?: string
@@ -54,6 +54,8 @@ const normalizeChannel = (value: unknown): ConversationPreferredChannel => {
 export function useConversationCreate() {
   const fireux = useFireUXConfig()
   const { createDocument } = useFirestoreCreate()
+  const scopedAppId = ref('')
+  const paths = useConversationPaths(scopedAppId)
 
   async function createConversation(input: CreateConversationInput): Promise<string> {
     const body = normalizeString(input.initial_message?.body)
@@ -63,6 +65,7 @@ export function useConversationCreate() {
       normalizeString(input.guest_contact?.name) ||
       'Guest'
     const appId = normalizeString(input.app_id) || fireux.appId
+    scopedAppId.value = appId
     const participantIds = toStringList(input.participant_ids)
 
     if (!appId) {
@@ -114,7 +117,7 @@ export function useConversationCreate() {
     }
 
     const conversationId = await createDocument<Partial<Conversation>>(
-      ConversationStorage.collection,
+      paths.collectionPath.value,
       conversation,
       { app: true }
     )
@@ -129,7 +132,7 @@ export function useConversationCreate() {
     }
 
     await createDocument<Partial<ConversationMessage>>(
-      `${ConversationStorage.collection}/${conversationId}/${ConversationMessageStorage.collection}`,
+      paths.messageCollectionPath(conversationId).value,
       message,
       { app: true }
     )

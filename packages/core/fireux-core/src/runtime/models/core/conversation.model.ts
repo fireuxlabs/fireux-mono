@@ -4,31 +4,32 @@ import type { FireuxStamped } from './meta.model'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Communication
- * Storage: root conversation record with message child records
- * Root path: /conversations/<conversationId>
- * Message path: /conversations/<conversationId>/messages/<messageId>
+ * Family: App-scoped communication
+ * Storage: app-scoped conversation record with message child records
+ * Conversation path: /apps/<appId>/conversations/<conversationId>
+ * Message path: /apps/<appId>/conversations/<conversationId>/messages/<messageId>
  *
  * Decision note:
- * - Conversation is a shared communication engine, not an app-specific contact form.
+ * - Conversation is a shared communication engine scoped to the app where it started.
  * - Product apps provide labels and related entity context; the stored shape stays shared.
  * - Public enquiry creation may use guest contact fields, but shipping rules must restrict
  *   reads and follow-up writes to participants or trusted server paths.
  */
 
 export const ConversationStorage = {
-  shape: 'public/root',
-  path: 'conversations/{conversationId}',
+  shape: 'scoped',
+  path: 'apps/{appId}/conversations/{conversationId}',
   collection: 'conversations',
+  parent: 'app',
   idParam: 'conversationId',
   children: {
-    messages: 'conversations/{conversationId}/messages/{messageId}',
+    messages: 'apps/{appId}/conversations/{conversationId}/messages/{messageId}',
   },
 } as const
 
 export const ConversationMessageStorage = {
   shape: 'scoped',
-  path: 'conversations/{conversationId}/messages/{messageId}',
+  path: 'apps/{appId}/conversations/{conversationId}/messages/{messageId}',
   collection: 'messages',
   parent: 'conversation',
   idParam: 'messageId',

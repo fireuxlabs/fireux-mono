@@ -4,8 +4,8 @@ import type {
   ConversationKind,
   ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
-import { ConversationStorage } from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useConversationPaths } from '../utils/paths/useConversationPaths'
 
 type ConversationCollectionSource = 'live' | 'test'
 
@@ -22,7 +22,6 @@ type UseConversationCollectionOptions = {
   filter?: ConversationCollectionFilter | Ref<ConversationCollectionFilter | null | undefined>
 }
 
-const DEFAULT_COLLECTION_PATH = ConversationStorage.collection
 const TEST_COLLECTION_PATH = 'test-conversations'
 
 const clean = (value: unknown) => String(value || '').trim()
@@ -37,8 +36,13 @@ export function useConversationCollection(
   const filter = computed<ConversationCollectionFilter>(() =>
     isRef(options.filter) ? options.filter.value ?? {} : options.filter ?? {}
   )
+  const paths = useConversationPaths(computed(() => filter.value.appId))
   const collectionPath = computed(() =>
-    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
+    sourceMode.value === 'test'
+      ? paths.appId.value
+        ? `apps/${paths.appId.value}/${TEST_COLLECTION_PATH}`
+        : ''
+      : paths.collectionPath.value
   )
   const firestoreSource = computed(() =>
     firestoreFetchCollection<Conversation>(collectionPath.value)

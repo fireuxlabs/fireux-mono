@@ -30,15 +30,12 @@ export { useConversationComputed } from './utils/view/useConversationComputed'
 export { useConversationInterface } from './utils/view/useConversationInterface'
 
 /**
- * FireUX stack family: Shared communication root + messages child.
+ * FireUX stack family: App-scoped communication + messages child.
  * Entity: Conversation.
- * Canon:
- * - docs/fireux-canon.md
- * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
- * Conversation is the shared communication root; ConversationMessage records
- * live under conversations/{conversationId}/messages/{messageId}. Archive is
- * the current removal posture, so status updates replace hard delete canon.
+ * Conversation records live under apps/{appId}/conversations/{conversationId}.
+ * ConversationMessage records live under the conversation messages child.
+ * Archive is the current removal posture, so status updates replace hard delete.
  */
 export function useConversation(id?: string) {
   const fetch = useConversationFetch(id || '')

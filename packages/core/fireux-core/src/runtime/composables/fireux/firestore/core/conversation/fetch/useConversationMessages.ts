@@ -1,13 +1,11 @@
 import { computed, isRef, type Ref } from 'vue'
-import {
-  ConversationMessageStorage,
-  ConversationStorage,
-  type ConversationMessage,
-} from '../../../../../../models/core/conversation.model'
+import type { ConversationMessage } from '../../../../../../models/core/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useConversationPaths } from '../utils/paths/useConversationPaths'
 
 export function useConversationMessages(
-  conversationId: string | Ref<string | null | undefined> | null | undefined
+  conversationId: string | Ref<string | null | undefined> | null | undefined,
+  options: { appId?: string | Ref<string | null | undefined> } = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const id = computed(() =>
@@ -15,11 +13,8 @@ export function useConversationMessages(
       ? String(conversationId.value || '').trim()
       : String(conversationId || '').trim()
   )
-  const collectionPath = computed(() =>
-    id.value
-      ? `${ConversationStorage.collection}/${id.value}/${ConversationMessageStorage.collection}`
-      : ''
-  )
+  const paths = useConversationPaths(options.appId)
+  const collectionPath = paths.messageCollectionPath(id)
   const firestoreSource = computed(() => {
     if (!collectionPath.value) return null
     return firestoreFetchCollection<ConversationMessage>(collectionPath.value)
