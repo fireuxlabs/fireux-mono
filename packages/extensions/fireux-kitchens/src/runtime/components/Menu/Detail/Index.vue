@@ -4,22 +4,31 @@
     :class="themeClassName"
     :style="themeStyleVars"
   >
-    <MenuDetailContent
-      :view="interaction.detail.view"
-      :pending="pending"
-      :error="error"
-      @update:selected-choice="interaction.detail.select"
-      @add="interaction.detail.add"
-      @remove="interaction.detail.remove"
+    <p v-if="pending" class="menu-detail__state">
+      Loading menu...
+    </p>
+
+    <p v-else-if="error" class="menu-detail__state">
+      Menu unavailable.
+    </p>
+
+    <MenuDetailDocument
+      v-else-if="renderKind === 'document' && documentMenu"
+      :kitchen-name="documentKitchenName"
+      :menu="documentMenu"
+      :document-url="documentUrl"
     />
 
-    <MenuDetailFunnel
-      v-if="interaction.funnel.show"
-      :order="interaction.funnel.order"
-      :submit="interaction.funnel.submit"
-      @close-panel="interaction.funnel.close"
-      @open-panel="interaction.funnel.open"
+    <MenuDetailFood
+      v-else-if="detailMenu"
+      :menu="detailMenu"
+      :menu-id="menuId"
+      :kitchen-slug="kitchenSlug"
     />
+
+    <p v-else class="menu-detail__state">
+      Menu unavailable.
+    </p>
   </div>
 </template>
 
@@ -27,30 +36,46 @@
 import { computed } from 'vue'
 import { useMenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
-import { useKitchenOrderFunnel } from '../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel'
 
 const props = defineProps<{
   menuId: string
   kitchenSlug?: string
 }>()
 
+const menuId = computed(() => props.menuId)
+const kitchenSlug = computed(() => props.kitchenSlug)
 const {
   pending,
   error,
+  renderKind,
+  documentMenu,
   structuredMenu: detailMenu,
-} = useMenuManifest(() => props.menuId, {
-  kitchenSlug: () => props.kitchenSlug,
+} = useMenuManifest(menuId, {
+  kitchenSlug,
 })
+const documentKitchenName = computed(() =>
+  documentMenu.value?.source?.kitchen_name || ''
+)
+const documentUrl = computed(() =>
+  documentMenu.value?.file?.url || ''
+)
 const pageStyle = computed(() =>
-  detailMenu.value?.presentation.pageStyle || null
+  detailMenu.value?.presentation.pageStyle ||
+  documentMenu.value?.page_style ||
+  null
 )
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
 } = useMenuThemeSurface({ pageStyle })
-const interaction = useKitchenOrderFunnel({
-  menu: detailMenu,
-  menuId: () => props.menuId,
-  kitchenSlug: () => props.kitchenSlug,
-})
 </script>
+
+<style scoped>
+.menu-detail__state {
+  margin: 0;
+  color: var(--menu-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+</style>

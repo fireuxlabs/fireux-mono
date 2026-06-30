@@ -1,6 +1,7 @@
 import { configureRuntime } from './runtime-config'
 
 type PlacesConfigOptions = {
+  debug?: boolean
   types?: string[]
   googleAutocompleteTypeFilters?: Record<string, string[]>
 }
@@ -10,6 +11,7 @@ export function configurePlaces(
   options: PlacesConfigOptions = {}
 ) {
   configureRuntime(nuxt, 'places', {
+    debug: Boolean(options.debug),
     enabled: true,
     types: options.types || [],
     googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},

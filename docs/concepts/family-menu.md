@@ -87,8 +87,9 @@ Kitchen needed:
 Component placement:
 - Root menu rendering and public menu collection pieces live under `components/Menu`.
 - The public detail entry is `components/Menu/Detail/Index.vue`, rendered as `MenuDetail` from public menu routes.
-- Detail-owned renderers live under `components/Menu/Detail/*`, such as `DisplayFrame`, `Document`, and `Structured`.
-- Customer-facing ordering lives under `components/Menu/Detail/Funnel/*`; it is a detail child layer, not a console `Operations` bucket.
+- `MenuDetail` is the public detail switchboard: it resolves the manifest and theme, then routes by format.
+- Document/photo/PDF quick menus render through `MenuDetailDocument`; they are first-class fast-onboarding surfaces and should not initialize ordering.
+- Structured food menus render through `MenuDetailFood`; customer-facing ordering and `components/Menu/Detail/Funnel/*` live under this food renderer, not under document menus and not under console `Operations`.
 - This mirrors root public entity detail entries such as `components/Kitchen/Detail/Index.vue` when kitchen detail owns child slices.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
@@ -114,3 +115,4 @@ Ordering note:
 Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.
 - Decide whether public doorway remains a record shape or makes Menu a true `both` entity.
+- Test a real `doc`/photo public menu after the next sample is seeded to verify the document renderer branch end to end.

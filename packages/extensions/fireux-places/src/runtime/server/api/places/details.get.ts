@@ -11,20 +11,26 @@ import { resolvePlacesApiKey } from '../../utils/places-api-key'
 export default defineEventHandler(async (event: any) => {
   const dev = import.meta.dev
   const reqId = Math.random().toString(36).slice(2, 8)
+  const runtimeConfig = useRuntimeConfig(event) as any
+  const debug =
+    dev &&
+    (
+      process.env.FIREUX_PLACES_DEBUG === 'true' ||
+      Boolean((runtimeConfig?.public as any)?.fireux?.places?.debug)
+    )
   const queryParams = getQuery(event)
   const placeId = queryParams.place_id as string | undefined
   if (!placeId) {
-    if (dev) {
+    if (debug) {
       console.warn('[places][details]', { reqId, stage: 'missing_place_id' })
     }
     return { result: null, error: 'missing_place_id' }
   }
 
-  if (dev) {
+  if (debug) {
     console.info('[places][details]', { reqId, stage: 'request', placeId })
   }
 
-  const runtimeConfig = useRuntimeConfig(event) as any
   const ip =
     getRequestHeader(event, 'x-forwarded-for')?.split(',')[0]?.trim() ||
     getRequestIP(event) ||
@@ -96,7 +102,7 @@ export default defineEventHandler(async (event: any) => {
     const res = await fetch(url.toString())
     const data = await res.json()
 
-    if (dev) {
+    if (debug) {
       console.info('[places][details]', {
         reqId,
         stage: 'upstream_response',
@@ -111,7 +117,7 @@ export default defineEventHandler(async (event: any) => {
       upstreamStatus === 'ZERO_RESULTS' || upstreamStatus === 'NOT_FOUND'
 
     if (isNoResultStatus) {
-      if (dev) {
+      if (debug) {
         console.info('[places][details]', {
           reqId,
           stage: 'no_result',
@@ -137,12 +143,12 @@ export default defineEventHandler(async (event: any) => {
       }
     }
 
-    if (dev) {
+    if (debug) {
       console.info('[places][details]', { reqId, stage: 'ok', placeId })
     }
     return { result: data.result }
   } catch (error) {
-    if (dev) {
+    if (debug) {
       console.error('[places][details]', {
         reqId,
         stage: 'upstream_error',

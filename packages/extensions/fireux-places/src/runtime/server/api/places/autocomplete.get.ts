@@ -84,6 +84,12 @@ export default defineEventHandler(async (event: any) => {
   const dev = import.meta.dev
   const reqId = Math.random().toString(36).slice(2, 8)
   const runtimeConfig = useRuntimeConfig(event) as any
+  const debug =
+    dev &&
+    (
+      process.env.FIREUX_PLACES_DEBUG === 'true' ||
+      Boolean((runtimeConfig?.public as any)?.fireux?.places?.debug)
+    )
   const filterMap =
     (runtimeConfig?.public as any)?.fireux?.places
       ?.googleAutocompleteTypeFilters || {}
@@ -101,7 +107,7 @@ export default defineEventHandler(async (event: any) => {
     (typeof defaults?.radius === 'string' ? defaults.radius : '')
   const query = String(q || '').trim()
   if (!query) {
-    if (dev) {
+    if (debug) {
       console.info('[places][autocomplete]', { reqId, stage: 'empty_query' })
     }
     return { predictions: [] }
@@ -114,7 +120,7 @@ export default defineEventHandler(async (event: any) => {
     'anon'
   const rl = rateLimit(ip)
   if (!rl.allowed) {
-    if (dev) {
+    if (debug) {
       console.warn('[places][autocomplete]', {
         reqId,
         stage: 'rate_limited',
@@ -164,7 +170,7 @@ export default defineEventHandler(async (event: any) => {
     return { predictions: [], error: 'missing_api_key' }
   }
 
-  if (dev) {
+  if (debug) {
     console.info('[places][autocomplete]', {
       reqId,
       stage: 'request',
@@ -193,7 +199,7 @@ export default defineEventHandler(async (event: any) => {
     const res = await fetch(url.toString())
     const data = await res.json()
 
-    if (dev) {
+    if (debug) {
       console.info('[places][autocomplete]', {
         reqId,
         stage: 'upstream_response',
@@ -207,7 +213,7 @@ export default defineEventHandler(async (event: any) => {
     const isNoResults = upstreamStatus === 'ZERO_RESULTS'
 
     if (isNoResults) {
-      if (dev) {
+      if (debug) {
         console.info('[places][autocomplete]', {
           reqId,
           stage: 'zero_results',
@@ -255,7 +261,7 @@ export default defineEventHandler(async (event: any) => {
         })
       : predictions
 
-    if (dev && shouldFilter) {
+    if (debug && shouldFilter) {
       console.info('[places][autocomplete]', {
         reqId,
         stage: 'filtered',
@@ -266,7 +272,7 @@ export default defineEventHandler(async (event: any) => {
       })
     }
 
-    if (dev) {
+    if (debug) {
       console.info('[places][autocomplete]', {
         reqId,
         stage: 'ok',
@@ -276,7 +282,7 @@ export default defineEventHandler(async (event: any) => {
 
     return { predictions: filtered }
   } catch (error) {
-    if (dev) {
+    if (debug) {
       console.error('[places][autocomplete]', {
         reqId,
         stage: 'upstream_error',

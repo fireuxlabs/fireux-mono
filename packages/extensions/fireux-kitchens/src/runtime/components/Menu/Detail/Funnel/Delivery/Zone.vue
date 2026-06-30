@@ -70,8 +70,8 @@ import { watch } from 'vue'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../models/kitchen/menu/menu-ordering.model'
-import { useKitchenOrderFunnelDeliveryZone } from '../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelDeliveryZone'
+} from '../../../../../models/kitchen/menu/menu-ordering.model'
+import { useKitchenOrderFunnelDeliveryZone } from '../../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelDeliveryZone'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState

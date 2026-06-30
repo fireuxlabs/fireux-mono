@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Component } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import type {
   MenuOrderingDeliveryState,
@@ -73,8 +73,10 @@ import type {
 } from '../../../../models/kitchen/menu/menu-ordering.model'
 import Basket from './Basket.vue'
 import Allergen from './Allergen.vue'
-import DeliveryZone from './DeliveryZone.vue'
-import Dispatch from './Dispatch.vue'
+import DeliveryZone from './Delivery/Zone.vue'
+import DeliveryDispatch from './Delivery/Dispatch.vue'
+import CollectionDetails from './Collection/Details.vue'
+import CollectionDispatch from './Collection/Dispatch.vue'
 import Review from './Review.vue'
 import Payment from './Payment.vue'
 
@@ -90,29 +92,48 @@ defineEmits<{
   (event: 'openPanel'): void
 }>()
 
-const surfaceCount = 6
-const surfaces = [
-  Basket,
-  Allergen,
-  DeliveryZone,
-  Dispatch,
-  Review,
-  Payment,
-] as const
-const surfaceTitles = [
-  'Basket',
-  'Allergy check',
-  'Delivery area',
-  'Dispatch',
-  'Review',
-  'Payment',
-] as const
+type SurfaceKind =
+  | 'basket'
+  | 'allergen'
+  | 'delivery-zone'
+  | 'delivery-dispatch'
+  | 'collection-details'
+  | 'collection-dispatch'
+  | 'review'
+  | 'payment'
+type Surface = {
+  component: Component
+  kind: SurfaceKind
+  title: string
+}
+const deliverySurfaces = [
+  { component: Basket, kind: 'basket', title: 'Basket' },
+  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
+  { component: DeliveryZone, kind: 'delivery-zone', title: 'Delivery area' },
+  { component: DeliveryDispatch, kind: 'delivery-dispatch', title: 'Dispatch' },
+  { component: Review, kind: 'review', title: 'Review' },
+  { component: Payment, kind: 'payment', title: 'Payment' },
+] as const satisfies readonly Surface[]
+const collectionSurfaces = [
+  { component: Basket, kind: 'basket', title: 'Basket' },
+  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
+  { component: CollectionDetails, kind: 'collection-details', title: 'Collection' },
+  { component: CollectionDispatch, kind: 'collection-dispatch', title: 'Dispatch' },
+  { component: Review, kind: 'review', title: 'Review' },
+  { component: Payment, kind: 'payment', title: 'Payment' },
+] as const satisfies readonly Surface[]
 const surfaceChoices = ['1', '2', '3', '4', '5', '6'] as const
 type SurfaceChoice = typeof surfaceChoices[number]
 const allergenAccepted = ref(false)
-const deliveryZoneReady = ref(false)
+const fulfilmentReady = ref(false)
 const deliveryState = ref<MenuOrderingDeliveryState>({ ready: false })
 const orderCreated = ref(false)
+const surfaces = computed(() =>
+  props.order.orderType === 'collection'
+    ? collectionSurfaces
+    : deliverySurfaces
+)
+const surfaceCount = computed(() => surfaces.value.length)
 const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   key: computed(() =>
     [
@@ -127,14 +148,21 @@ const { selected: surfaceChoice } = useStoredChoice<SurfaceChoice>({
   fallback: '1',
 })
 const surfaceNumber = computed(() => Number(surfaceChoice.value))
-const currentSurface = computed(() =>
-  surfaces[surfaceNumber.value - 1] || Basket
+const currentSurfaceConfig = computed(() =>
+  surfaces.value[surfaceNumber.value - 1] || surfaces.value[0]
 )
+const currentSurface = computed(() => currentSurfaceConfig.value.component)
 const surfaceTitle = computed(() =>
-  surfaceTitles[surfaceNumber.value - 1] || 'Order'
+  currentSurfaceConfig.value.title || 'Order'
 )
 const currentSurfaceProps = computed(() => {
-  if (surfaceNumber.value === 2) {
+  const kind = currentSurfaceConfig.value.kind
+
+  if (kind === 'basket') {
+    return { order: props.order }
+  }
+
+  if (kind === 'allergen') {
     return {
       modelValue: allergenAccepted.value,
       'onUpdate:modelValue': (value: boolean) => {
@@ -143,11 +171,11 @@ const currentSurfaceProps = computed(() => {
     }
   }
 
-  if (surfaceNumber.value === 3) {
+  if (kind === 'delivery-zone') {
     return {
       order: props.order,
       'onUpdate:ready': (value: boolean) => {
-        deliveryZoneReady.value = value
+        fulfilmentReady.value = value
       },
       'onUpdate:delivery': (value: MenuOrderingDeliveryState) => {
         deliveryState.value = value
@@ -155,24 +183,39 @@ const currentSurfaceProps = computed(() => {
     }
   }
 
-  if (surfaceNumber.value === 4) {
+  if (kind === 'delivery-dispatch') {
     return {
       order: props.order,
       delivery: deliveryState.value,
     }
   }
 
-  if (surfaceNumber.value === 1) {
+  if (kind === 'collection-details') {
+    return {
+      order: props.order,
+      'onUpdate:ready': (value: boolean) => {
+        fulfilmentReady.value = value
+      },
+    }
+  }
+
+  if (kind === 'collection-dispatch') {
     return { order: props.order }
   }
 
   return {}
 })
 const continueDisabled = computed(() =>
-  surfaceNumber.value === surfaceCount ||
+  surfaceNumber.value === surfaceCount.value ||
   props.order.pending ||
-  (surfaceNumber.value === 2 && !allergenAccepted.value) ||
-  (surfaceNumber.value === 3 && !deliveryZoneReady.value)
+  (currentSurfaceConfig.value.kind === 'allergen' && !allergenAccepted.value) ||
+  (
+    (
+      currentSurfaceConfig.value.kind === 'delivery-zone' ||
+      currentSurfaceConfig.value.kind === 'collection-details'
+    ) &&
+    !fulfilmentReady.value
+  )
 )
 const continueLabel = computed(() =>
   props.order.pending ? 'Sending...' : 'Continue'
@@ -184,28 +227,37 @@ function previousSurface() {
 
 async function nextSurface() {
   if (continueDisabled.value) return
-  if (surfaceNumber.value === 3 && !orderCreated.value) {
-    const created = await props.submit?.(deliverySubmitPayload())
+  if (shouldCreateOrder.value && !orderCreated.value) {
+    const created = await props.submit?.(fulfilmentSubmitPayload())
     if (!created) return
     orderCreated.value = true
   }
-  setSurfaceNumber(Math.min(surfaceCount, surfaceNumber.value + 1))
+  setSurfaceNumber(Math.min(surfaceCount.value, surfaceNumber.value + 1))
 }
 
 function setSurfaceNumber(next: number) {
   surfaceChoice.value = String(next) as SurfaceChoice
 }
 
-function deliverySubmitPayload(): MenuOrderingSubmitPayload {
+const shouldCreateOrder = computed(() =>
+  currentSurfaceConfig.value.kind === 'delivery-zone' ||
+  currentSurfaceConfig.value.kind === 'collection-details'
+)
+
+function fulfilmentSubmitPayload(): MenuOrderingSubmitPayload {
   const address = deliveryState.value.address
 
   return {
-    customer: {
-      ...(address?.formatted || address?.input
-        ? { address: address.formatted || address.input }
-        : {}),
-      ...(address?.place_id ? { address_place_id: address.place_id } : {}),
-    },
+    ...(props.order.orderType === 'delivery'
+      ? {
+          customer: {
+            ...(address?.formatted || address?.input
+              ? { address: address.formatted || address.input }
+              : {}),
+            ...(address?.place_id ? { address_place_id: address.place_id } : {}),
+          },
+        }
+      : {}),
     payment_method: 'online_card',
   }
 }
@@ -215,11 +267,22 @@ watch(
   (quantity) => {
     if (!quantity) {
       allergenAccepted.value = false
-      deliveryZoneReady.value = false
+      fulfilmentReady.value = false
       deliveryState.value = { ready: false }
       orderCreated.value = false
       setSurfaceNumber(1)
     }
+  }
+)
+
+watch(
+  () => props.order.orderType,
+  () => {
+    allergenAccepted.value = false
+    fulfilmentReady.value = false
+    deliveryState.value = { ready: false }
+    orderCreated.value = false
+    setSurfaceNumber(1)
   }
 )
 </script>

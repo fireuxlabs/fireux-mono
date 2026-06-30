@@ -14,6 +14,7 @@ import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
+  debug?: boolean
   prefix?: string
   types?: string[]
   /** Optional filter map for Google Autocomplete prediction types by context type.
@@ -39,6 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
     compatibility: { nuxt: '^4.1.0' },
   },
   defaults: {
+    debug: false,
     prefix: 'Fire',
     types: [],
     googleAutocompleteTypeFilters: {},
@@ -63,6 +65,7 @@ export default defineNuxtModule<ModuleOptions>({
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
         configurePlaces(nuxt, {
+          debug: Boolean(options.debug),
           types: options.types || [],
           googleAutocompleteTypeFilters:
             options.googleAutocompleteTypeFilters || {},

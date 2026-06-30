@@ -34,8 +34,8 @@
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../models/kitchen/menu/menu-ordering.model'
-import { useKitchenOrderFunnelDispatch } from '../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelDispatch'
+} from '../../../../../models/kitchen/menu/menu-ordering.model'
+import { useKitchenOrderFunnelDispatch } from '../../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelDispatch'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
