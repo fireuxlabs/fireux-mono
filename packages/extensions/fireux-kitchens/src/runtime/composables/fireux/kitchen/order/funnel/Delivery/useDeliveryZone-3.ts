@@ -8,15 +8,39 @@ import {
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
-} from '../../../customer/useCustomerDeliveryAddressAutocomplete'
-import { useKitchenOrderFunnelCustomerAutofill } from './useKitchenOrderFunnelCustomerAutofill'
-import { useKitchenOrderFunnelDeliveryAddressCheck } from './useKitchenOrderFunnelDeliveryAddressCheck'
-import type { MenuDeliveryZone } from '../../../../../models/kitchen/menu/menu.model'
-import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
+} from '../../../../customer/useCustomerDeliveryAddressAutocomplete'
+import { useFunnelCustomer } from '../shared/useCustomer'
+import type { MenuDeliveryZone } from '../../../../../../models/kitchen/menu/menu.model'
+import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
+
+export type DeliveryAddressCheckResult = {
+  deliverable: boolean
+  reason: string
+  address?: {
+    input: string
+    formatted: string
+    postal_code: string
+    place_id: string
+    lat: number
+    lng: number
+  }
+  zone?: MenuDeliveryZone
+  debug?: Record<string, unknown>
+}
+
+type DeliveryAddressCheckInput =
+  | string
+  | {
+      address?: string
+      place_id?: string
+      placeId?: string
+      lat?: number
+      lng?: number
+    }
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useKitchenOrderFunnelDeliveryZone(
+export function useDeliveryZone(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const address = ref('')
@@ -24,7 +48,7 @@ export function useKitchenOrderFunnelDeliveryZone(
   const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
-  const { customer: autofillCustomer } = useKitchenOrderFunnelCustomerAutofill()
+  const { customer: autofillCustomer } = useFunnelCustomer()
   const zones = computed(() =>
     toValue(order).policy?.fulfilment?.delivery_zones || []
   )
@@ -42,12 +66,18 @@ export function useKitchenOrderFunnelDeliveryZone(
     pending: suggestionsPending,
     error: suggestionsError,
   } = useCustomerDeliveryAddressAutocomplete(address)
-  const {
-    pending: checkPending,
-    error: checkError,
-    result,
-    check,
-  } = useKitchenOrderFunnelDeliveryAddressCheck(menuId, { kitchenSlug })
+  const checkPending = ref(false)
+  const checkError = ref('')
+  const result = ref<DeliveryAddressCheckResult | null>(null)
+  const checkEndpoint = computed(() => {
+    if (!menuId.value) return ''
+
+    const query = new URLSearchParams()
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+
+    const qs = query.toString()
+    return `/api/menus/${encodeURIComponent(menuId.value)}/delivery-address${qs ? `?${qs}` : ''}`
+  })
   const matchedZone = computed(() => result.value?.zone || null)
   const minimum = computed(() => Number(matchedZone.value?.min_order_chf || 0))
   const fee = computed(() => Number(matchedZone.value?.fee_chf || 0))
@@ -102,7 +132,7 @@ export function useKitchenOrderFunnelDeliveryZone(
     predictions.value = []
   }
 
-  watch(address, (value) => {
+  watch(address, (value: string) => {
     const input = text(value)
     if (!input) {
       selectedAddress.value = null
@@ -122,7 +152,7 @@ export function useKitchenOrderFunnelDeliveryZone(
 
   watch(
     autofillCustomer,
-    async (customer) => {
+    async (customer: { address: string, address_place_id: string }) => {
       const savedAddress = text(customer.address)
       if (
         autofillApplied.value ||
@@ -147,6 +177,51 @@ export function useKitchenOrderFunnelDeliveryZone(
     },
     { immediate: true }
   )
+
+  async function check(input: DeliveryAddressCheckInput) {
+    const body = typeof input === 'string'
+      ? { address: text(input) }
+      : {
+          ...(text(input.address) ? { address: text(input.address) } : {}),
+          ...(text(input.place_id || input.placeId)
+            ? { place_id: text(input.place_id || input.placeId) }
+            : {}),
+          ...(Number.isFinite(input.lat) ? { lat: input.lat } : {}),
+          ...(Number.isFinite(input.lng) ? { lng: input.lng } : {}),
+        }
+    const missingCoordinates = body.lat === undefined || body.lng === undefined
+    if (!checkEndpoint.value || (!body.address && !body.place_id && missingCoordinates)) {
+      result.value = null
+      checkError.value = checkEndpoint.value
+        ? 'Delivery address is required.'
+        : 'Menu path is missing.'
+      return null
+    }
+
+    checkPending.value = true
+    checkError.value = ''
+
+    try {
+      const checked = await $fetch<DeliveryAddressCheckResult>(checkEndpoint.value, {
+        method: 'POST',
+        body,
+      })
+
+      result.value = checked
+
+      return checked
+    } catch (err) {
+      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
+        ? text((err as { statusMessage?: unknown }).statusMessage)
+        : ''
+      checkError.value = statusMessage || 'Delivery address could not be checked.'
+      result.value = null
+
+      return null
+    } finally {
+      checkPending.value = false
+    }
+  }
 
   return {
     address,

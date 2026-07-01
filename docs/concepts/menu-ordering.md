@@ -114,20 +114,22 @@ V1 fulfilment policy:
 
 Public order funnel spine:
 - `Menu/Detail/Index`: public menu experience owner. It fetches the manifest,
-  owns order-mode coordination and draft state, and renders the base menu layer
-  plus ordering layer for every public menu route.
+  applies the theme, and routes document menus away from ordering.
+- `Menu/Detail/Food`: structured food menu experience. It renders the readable
+  menu body and the order funnel for orderable menus.
 - `Menu/Detail/Content`: readable menu renderer. It receives a view model,
   emits choice/add/remove events, and does not own checkout/order creation.
 - `Menu/Detail/Funnel/Index`: public order funnel shell. It owns the six visible
   checkout steps, but calls the injected submit seam instead of creating orders
   locally.
-- `composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel`: state seam
-  between the menu detail and funnel. It owns draft state, selected public
-  choice, basket visibility, and submit.
-- `useKitchenOrderFunnelDraft`: local basket/draft persistence and final
-  `place` call.
-- `useKitchenOrderFunnelCreate`: client API seam for
-  `POST /api/menus/<menuId>/orders`.
+- `composables/fireux/kitchen/order/funnel/shared/useFunnel`: state seam
+  between `MenuDetailFood` and the funnel. It owns selected public choice,
+  basket visibility, local draft persistence, and submit.
+- `funnel/shared`: common steps/seams such as basket, allergen notice,
+  customer autofill, and late notes.
+- `funnel/Delivery`: delivery-only steps such as `useDeliveryZone-3` and
+  `useFulfilment`.
+- `funnel/Collection`: collection-only timing/rendezvous with the kitchen.
 - `server/api/menus/[menuId]/orders.post.ts`: canonical public menu order
   creation route for now. It writes `KitchenOrder` records under
   `apps/<appId>/kitchens/<kitchenId>/orders`.

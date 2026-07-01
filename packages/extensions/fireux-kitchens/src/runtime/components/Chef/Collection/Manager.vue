@@ -77,7 +77,7 @@ import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Che
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { Chef } from '../../../models/chef.model'
 
-type ChefEntry = Chef & { user?: unknown }
+type ChefEntry = Partial<Chef> & { id: string, user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -104,7 +104,10 @@ const props = withDefaults(
 
 const fetched = useChefFetch()
 const collection = computed<ChefEntry[]>(() =>
-  [...(fetched.appChefs.value ?? []), ...(fetched.coreChefs.value ?? [])]
+  [
+    ...(fetched.appChefs.value ?? []),
+    ...(fetched.coreChefs.value ?? []),
+  ] as ChefEntry[]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))

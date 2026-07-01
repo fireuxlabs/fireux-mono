@@ -2,8 +2,8 @@
 // Use these records for dev surfaces, examples, and explicit preflight demos.
 // They are not canonical storage or runtime contracts.
 
-import type { Chef } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
-import { ChefModel } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
+import type { Chef } from '../packages/extensions/fireux-kitchens/src/runtime/models/chef.model'
+import { ChefModel } from '../packages/extensions/fireux-kitchens/src/runtime/models/chef.model'
 import { demoUserList } from './user.demo'
 
 type ChefBase = {

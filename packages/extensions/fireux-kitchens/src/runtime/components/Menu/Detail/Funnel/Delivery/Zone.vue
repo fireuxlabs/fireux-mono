@@ -71,7 +71,8 @@ import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
 } from '../../../../../models/kitchen/menu/menu-ordering.model'
-import { useKitchenOrderFunnelDeliveryZone } from '../../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelDeliveryZone'
+import type { DeliveryAddressCheckResult } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDeliveryZone-3'
+import { useDeliveryZone } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDeliveryZone-3'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -97,17 +98,17 @@ const {
   suggestionsError,
   suggestionsPending,
   zones,
-} = useKitchenOrderFunnelDeliveryZone(() => props.order)
+} = useDeliveryZone(() => props.order)
 
 watch(
   ready,
-  (value) => emit('update:ready', value),
+  (value: boolean) => emit('update:ready', value),
   { immediate: true }
 )
 
 watch(
   [ready, result],
-  ([isReady, checked]) => {
+  ([isReady, checked]: [boolean, DeliveryAddressCheckResult | null]) => {
     emit('update:delivery', {
       ready: Boolean(isReady),
       ...(checked?.address ? { address: checked.address } : {}),

@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
-import { useKitchenOrderFunnelBasket } from '../../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnelBasket'
+import { useBasket } from '../../../../composables/fireux/kitchen/order/funnel/shared/useBasket'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -32,5 +32,5 @@ const {
   items,
   lineTotal,
   totalLabel,
-} = useKitchenOrderFunnelBasket(() => props.order)
+} = useBasket(() => props.order)
 </script>

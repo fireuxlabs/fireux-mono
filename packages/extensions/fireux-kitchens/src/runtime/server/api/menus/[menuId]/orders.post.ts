@@ -270,6 +270,7 @@ export default defineEventHandler(async (event) => {
   const now = FieldValue.serverTimestamp()
   const deliveryFee = numberValue(deliveryAddressResult?.zone?.fee_chf)
   const total = subtotal + deliveryFee
+  const path = `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${id}`
   const payment = resolveMenuOrderPayment({
     orderType,
     orderTypeConfig,
@@ -348,13 +349,11 @@ export default defineEventHandler(async (event) => {
     },
   }
 
-  await db
-    .collection(`apps/${context.appId}/kitchens/${context.kitchenId}/orders`)
-    .doc(id)
-    .set(payload)
+  await db.doc(path).set(payload)
 
   return {
     id,
+    path,
     order_number: number,
     status: nextStatus,
     order_type: orderType,

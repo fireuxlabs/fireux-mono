@@ -84,7 +84,7 @@ import ProfessionalCardsCell from '../Cards/Cell.vue'
 import ProfessionalCardsPill from '../Cards/Pill.vue'
 import ProfessionalCollectionList from './List.vue'
 
-type ProfessionalEntry = Professional & { user?: unknown }
+type ProfessionalEntry = Partial<Professional> & { id: string, user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -114,7 +114,7 @@ const collection = computed<ProfessionalEntry[]>(() =>
   [
     ...(fetched.appProfessionals.value ?? []),
     ...(fetched.coreProfessionals.value ?? []),
-  ]
+  ] as ProfessionalEntry[]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))

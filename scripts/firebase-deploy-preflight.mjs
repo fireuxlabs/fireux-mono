@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-06-30
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/firebase-deploy-preflight.mjs
 

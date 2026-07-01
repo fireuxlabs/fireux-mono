@@ -16,7 +16,9 @@ export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortf
 
   watch(
     collectionPath,
-    (nextPath) => {
+    // 2026-07-01: preflight unblock. Revisit with the properties console canon pass
+    // and align this collection seam with the nearest operation sibling.
+    (nextPath: string) => {
       if (!nextPath) {
         sourceRef.value = null
         return

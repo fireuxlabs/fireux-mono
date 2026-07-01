@@ -1,11 +1,11 @@
 // Menu ordering canon: docs/concepts/menu-ordering.md
 import { computed } from 'vue'
-import { useCustomer } from '../../../firestore/profiles/Customer/useCustomer'
-import type { KitchenOrderCustomer } from '../../../../../models/kitchen/order.model'
+import { useCustomer } from '../../../../firestore/profiles/Customer/useCustomer'
+import type { KitchenOrderCustomer } from '../../../../../../models/kitchen/order.model'
 import type {
   CustomerPrivate,
   CustomerSavedAddress,
-} from '../../../../../models/customer.model'
+} from '../../../../../../models/customer.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const customerPrivate = (
@@ -20,7 +20,7 @@ const firstDefaultSavedAddress = (
   (addresses || [])[0] ||
   null
 
-export function useKitchenOrderFunnelCustomerAutofill() {
+export function useFunnelCustomer() {
   const {
     coreProfile,
     appProfile,

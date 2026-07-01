@@ -74,8 +74,8 @@ import type {
 import Basket from './Basket.vue'
 import Allergen from './Allergen.vue'
 import DeliveryZone from './Delivery/Zone.vue'
-import DeliveryDispatch from './Delivery/Dispatch.vue'
-import CollectionDetails from './Collection/Details.vue'
+import DeliveryFulfilment from './Delivery/Fulfilment.vue'
+import CollectionRendezvous from './Collection/Rendezvous.vue'
 import CollectionKitchen from './Collection/Kitchen.vue'
 import PreOrderDetails from './PreOrder/Details.vue'
 import PreOrderKitchen from './PreOrder/Kitchen.vue'
@@ -98,8 +98,8 @@ type SurfaceKind =
   | 'basket'
   | 'allergen'
   | 'delivery-zone'
-  | 'delivery-dispatch'
-  | 'collection-details'
+  | 'delivery-fulfilment'
+  | 'collection-rendezvous'
   | 'collection-kitchen'
   | 'pre-order-details'
   | 'pre-order-kitchen'
@@ -114,14 +114,14 @@ const deliverySurfaces = [
   { component: Basket, kind: 'basket', title: 'Basket' },
   { component: Allergen, kind: 'allergen', title: 'Allergy check' },
   { component: DeliveryZone, kind: 'delivery-zone', title: 'Delivery area' },
-  { component: DeliveryDispatch, kind: 'delivery-dispatch', title: 'Dispatch' },
+  { component: DeliveryFulfilment, kind: 'delivery-fulfilment', title: 'Fulfilment' },
   { component: Review, kind: 'review', title: 'Review' },
   { component: Payment, kind: 'payment', title: 'Payment' },
 ] as const satisfies readonly Surface[]
 const collectionSurfaces = [
   { component: Basket, kind: 'basket', title: 'Basket' },
   { component: Allergen, kind: 'allergen', title: 'Allergy check' },
-  { component: CollectionDetails, kind: 'collection-details', title: 'Collection' },
+  { component: CollectionRendezvous, kind: 'collection-rendezvous', title: 'Collection' },
   { component: CollectionKitchen, kind: 'collection-kitchen', title: 'Kitchen' },
   { component: Review, kind: 'review', title: 'Review' },
   { component: Payment, kind: 'payment', title: 'Payment' },
@@ -197,14 +197,15 @@ const currentSurfaceProps = computed(() => {
     }
   }
 
-  if (kind === 'delivery-dispatch') {
+  if (kind === 'delivery-fulfilment') {
     return {
       order: props.order,
       delivery: deliveryState.value,
+      orderPath: props.order.sentOrder?.path,
     }
   }
 
-  if (kind === 'collection-details' || kind === 'pre-order-details') {
+  if (kind === 'collection-rendezvous' || kind === 'pre-order-details') {
     return {
       order: props.order,
       'onUpdate:ready': (value: boolean) => {
@@ -226,7 +227,7 @@ const continueDisabled = computed(() =>
   (
     (
       currentSurfaceConfig.value.kind === 'delivery-zone' ||
-      currentSurfaceConfig.value.kind === 'collection-details' ||
+      currentSurfaceConfig.value.kind === 'collection-rendezvous' ||
       currentSurfaceConfig.value.kind === 'pre-order-details'
     ) &&
     !fulfilmentReady.value
@@ -256,7 +257,7 @@ function setSurfaceNumber(next: number) {
 
 const shouldCreateOrder = computed(() =>
   currentSurfaceConfig.value.kind === 'delivery-zone' ||
-  currentSurfaceConfig.value.kind === 'collection-details' ||
+  currentSurfaceConfig.value.kind === 'collection-rendezvous' ||
   currentSurfaceConfig.value.kind === 'pre-order-details'
 )
 
@@ -279,7 +280,7 @@ function fulfilmentSubmitPayload(): MenuOrderingSubmitPayload {
 
 watch(
   () => props.order.quantity,
-  (quantity) => {
+  (quantity: number) => {
     if (!quantity) {
       allergenAccepted.value = false
       fulfilmentReady.value = false

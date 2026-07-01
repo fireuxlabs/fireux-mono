@@ -11,16 +11,16 @@ import {
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
-} from '../../../../../models/kitchen/menu/menu-ordering.model'
+} from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
-type DispatchOrder = {
+type FulfilmentOrder = {
   id?: string
   driver_responses?: Record<string, {
     status?: string
   }>
 }
 
-export function useKitchenOrderFunnelDispatch(
+export function useFulfilment(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
   delivery: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>,
   orderPath?: MaybeRefOrGetter<string | null | undefined>
@@ -33,16 +33,16 @@ export function useKitchenOrderFunnelDispatch(
   const { data: activeOrder } = useDocument(orderRef, {
     ssrKey: computed(() =>
       resolvedOrderPath.value
-        ? `menu-dispatch-order-${resolvedOrderPath.value}`
+        ? `menu-fulfilment-order-${resolvedOrderPath.value}`
         : undefined
     ),
     transform: (docSnap: any) => {
       if (!docSnap?.exists?.()) return undefined
-      return { id: docSnap.id, ...(docSnap.data() ?? {}) } as DispatchOrder
+      return { id: docSnap.id, ...(docSnap.data() ?? {}) } as FulfilmentOrder
     },
   } as any)
   const activeDriverResponses = computed(() =>
-    ((activeOrder.value as DispatchOrder | undefined)?.driver_responses || {})
+    ((activeOrder.value as FulfilmentOrder | undefined)?.driver_responses || {})
   )
   const watchingCount = computed(() =>
     Object.values(activeDriverResponses.value)

@@ -45,6 +45,7 @@ export type CreatedMenuOrderReceipt = {
 
 export type CreatedMenuOrder = {
   id: string
+  path?: string
   order_number: string
   status?: string
   order_type: KitchenOrderType

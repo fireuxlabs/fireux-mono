@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrderFunnel } from '../../../composables/fireux/kitchen/order/funnel/useKitchenOrderFunnel'
+import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
 
 const props = defineProps<{
@@ -25,7 +25,7 @@ const props = defineProps<{
   kitchenSlug?: string
 }>()
 
-const interaction = useKitchenOrderFunnel({
+const interaction = useFunnel({
   menu: () => props.menu,
   menuId: () => props.menuId,
   kitchenSlug: () => props.kitchenSlug,

@@ -66,7 +66,7 @@ import { useCustomerFetch } from '../../../composables/fireux/firestore/profiles
 import { useCustomerInterface } from '../../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
 import type { Customer } from '../../../models/customer.model'
 
-type CustomerEntry = Customer & { user?: unknown }
+type CustomerEntry = Partial<Customer> & { id: string, user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -91,7 +91,10 @@ const props = withDefaults(
 
 const fetched = useCustomerFetch()
 const collection = computed<CustomerEntry[]>(() =>
-  [...(fetched.appCustomers.value ?? []), ...(fetched.coreCustomers.value ?? [])]
+  [
+    ...(fetched.appCustomers.value ?? []),
+    ...(fetched.coreCustomers.value ?? []),
+  ] as CustomerEntry[]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Customers'))

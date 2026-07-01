@@ -1,0 +1,749 @@
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  proxyRefs,
+  ref,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue'
+import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
+import {
+  useMenuViewMode,
+  type MenuChoiceOption,
+  type MenuChoiceValue,
+} from '../../../../menu/useMenuViewMode'
+import { menuOrderBasketActionLabel } from '../../../../../../utils/menu-ordering-ui'
+import type {
+  KitchenOrderCustomer,
+  KitchenOrderPaymentMethod,
+  KitchenOrderType,
+} from '../../../../../../models/kitchen/order.model'
+import type { MenuManifest } from '../../../../menu/useMenuManifest'
+import type { MenuFoodOrderItem } from '../../../../../../models/kitchen/menu/menu-food.model'
+import type {
+  CreatedMenuOrder,
+  MenuOrderingFunnelState,
+  MenuOrderingSubmitPayload,
+} from '../../../../../../models/kitchen/menu/menu-ordering.model'
+
+export type { MenuChoiceValue }
+export type MenuDetailOrderItem = MenuFoodOrderItem
+export type MenuDetailView = {
+  menu: MenuManifest
+  choices: MenuChoiceOption[]
+  selectedChoice: MenuChoiceValue
+  orderMode: boolean
+  quantities: Record<string, number>
+  dimmed: boolean
+}
+
+type UseKitchenOrderFunnelOptions = {
+  menu: MaybeRefOrGetter<MenuManifest | null>
+  menuId: MaybeRefOrGetter<string>
+  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+}
+type PanelState = 'closed' | 'open'
+
+const text = (value: unknown) => String(value ?? '').trim()
+const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
+
+// Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
+export function useFunnel(options: UseKitchenOrderFunnelOptions) {
+  const menuStorageScope = computed(() => {
+    const slug = text(toValue(options.kitchenSlug))
+    const id = text(toValue(options.menuId))
+
+    return slug ? `${slug}:${id}` : id
+  })
+  const behaviour = computed(() => toValue(options.menu)?.behaviour)
+  const {
+    choiceOptions,
+    selectedChoice,
+    selectedOrderType,
+    selectedOrderTypeConfig,
+    canOrder,
+    isOrderMode,
+  } = useMenuViewMode(
+    behaviour,
+    computed(() => `fireux:menu:${menuStorageScope.value}:view`)
+  )
+  const { selected: panelState } = useStoredChoice<PanelState>({
+    key: computed(() =>
+      [
+        'fireux:menu',
+        menuStorageScope.value,
+        'funnel',
+        selectedOrderType.value,
+      ].filter(Boolean).join(':')
+    ),
+    choices: panelStates,
+    fallback: 'closed',
+  })
+  const panelOpen = computed({
+    get: () => panelState.value === 'open',
+    set: (open: boolean) => {
+      panelState.value = open ? 'open' : 'closed'
+    },
+  })
+  const draft = useDraft(options.menuId, {
+    kitchenSlug: options.kitchenSlug,
+    canOrder,
+    orderType: selectedOrderType,
+    storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
+  })
+  const detailView = computed<MenuDetailView | null>(() => {
+    const menu = toValue(options.menu)
+    if (!menu) return null
+
+    return {
+      menu,
+      choices: choiceOptions.value,
+      selectedChoice: selectedChoice.value,
+      orderMode: isOrderMode.value,
+      quantities: draft.quantities.value,
+      dimmed: panelOpen.value,
+    }
+  })
+  const funnelView = computed<MenuOrderingFunnelState>(() => {
+    const policy = selectedOrderTypeConfig.value
+
+    return {
+      actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
+      accepted: draft.acceptedOrder.value,
+      awaitingAcceptance: draft.awaitingAcceptance.value,
+      panelOpen: panelOpen.value,
+      items: draft.items.value,
+      message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
+      menuId: text(toValue(options.menuId)),
+      kitchenSlug: text(toValue(options.kitchenSlug)),
+      orderType: selectedOrderType.value,
+      pending: draft.creatingItemId.value === 'order',
+      ...(policy ? { policy } : {}),
+      quantity: draft.quantity.value,
+      selection: {
+        items: draft.items.value,
+        quantity: draft.quantity.value,
+      },
+      sentOrder: draft.sentOrder.value,
+    }
+  })
+  const showFunnel = computed(() =>
+    isOrderMode.value &&
+      (
+        draft.quantity.value > 0 ||
+        Boolean(draft.sentOrder.value)
+      )
+  )
+
+  function setSelectedChoice(value: MenuChoiceValue) {
+    selectedChoice.value = value
+  }
+
+  function openPanel() {
+    panelOpen.value = true
+  }
+
+  function closePanel() {
+    panelOpen.value = false
+  }
+
+  function submit(payload: MenuOrderingSubmitPayload) {
+    return draft.place(payload)
+  }
+
+  watch(draft.quantity, (quantity: number) => {
+    if (!quantity && !draft.sentOrder.value) closePanel()
+  })
+
+  return {
+    detail: proxyRefs({
+      view: detailView,
+      add: draft.add,
+      remove: draft.remove,
+      select: setSelectedChoice,
+    }),
+    funnel: proxyRefs({
+      show: showFunnel,
+      order: funnelView,
+      clear: draft.clear,
+      close: closePanel,
+      open: openPanel,
+      submit,
+    }),
+  }
+}
+
+type MenuOrderItem = {
+  id: string
+  name: string
+  addOns?: MenuOrderAddOn[]
+  lineId?: string
+  price?: number
+  variant?: MenuOrderVariant
+}
+
+type MenuOrderAddOn = {
+  id: string
+  label: string
+  price?: number
+  priceLabel?: string
+}
+
+type MenuOrderVariant = {
+  id: string
+  label: string
+  price?: number
+  priceLabel?: string
+}
+
+type MenuOrderDraftItem = MenuOrderItem & {
+  lineId: string
+  quantity: number
+  unitPrice: number
+}
+
+type MenuOrderDraftOptions = {
+  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  canOrder?: MaybeRefOrGetter<boolean>
+  orderType?: MaybeRefOrGetter<KitchenOrderType>
+  storageKey?: MaybeRefOrGetter<string | null | undefined>
+}
+
+type MenuOrderLineInput = {
+  itemId: string
+  quantity: number
+  addOns?: MenuOrderVariantInput[]
+  variant?: MenuOrderVariantInput
+}
+
+type MenuOrderVariantInput = {
+  id?: string
+  label?: string
+  price?: number
+  priceLabel?: string
+}
+
+type CreateMenuOrderInput = {
+  items: MenuOrderLineInput[]
+  order_type?: KitchenOrderType
+  payment_method?: KitchenOrderPaymentMethod
+  requested_for?: string
+  customer?: KitchenOrderCustomer
+}
+
+type UseMenuOrderCreateOptions = {
+  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+}
+
+type KitchenOrderFunnelStatus = {
+  id: string
+  order_number: string
+  status: string
+  order_type: string
+  fire_state: string
+  estimated_ready_minutes: number
+  estimated_ready_at: string
+}
+
+type UseMenuOrderStatusOptions = {
+  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  enabled?: MaybeRefOrGetter<boolean>
+}
+
+const numberValue = (value: unknown) => {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : 0
+}
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+const normalizeVariant = (value: unknown): MenuOrderVariant | undefined => {
+  const source = record(value)
+  const id = text(source.id)
+  const label = text(source.label)
+  const price = numberValue(source.price)
+  const priceLabel = text(source.priceLabel || source.price_label)
+  if (!id && !label) return undefined
+
+  return {
+    id,
+    label,
+    ...(price ? { price } : {}),
+    ...(priceLabel ? { priceLabel } : {}),
+  }
+}
+const normalizeAddOns = (value: unknown): MenuOrderAddOn[] => {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map(normalizeVariant)
+    .filter((addOn): addOn is MenuOrderAddOn => Boolean(addOn))
+}
+const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+
+  const item = value as Partial<MenuOrderDraftItem>
+  return Boolean(
+    text(item.id) &&
+    text(item.name) &&
+    text(item.lineId || item.id) &&
+    Number(item.quantity) > 0
+  )
+}
+const cleanVariant = (variant: MenuOrderVariantInput | undefined) => {
+  const id = text(variant?.id)
+  const label = text(variant?.label)
+  const price = numberValue(variant?.price)
+  const priceLabel = text(variant?.priceLabel)
+  if (!id && !label) return undefined
+
+  return {
+    id,
+    label,
+    ...(price ? { price } : {}),
+    ...(priceLabel ? { priceLabel } : {}),
+  }
+}
+const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
+  Array.isArray(addOns)
+    ? addOns.map(cleanVariant).filter((addOn): addOn is NonNullable<ReturnType<typeof cleanVariant>> => Boolean(addOn))
+    : []
+const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
+  const clean = {
+    name: text(customer?.name),
+    phone: text(customer?.phone),
+    address: text(customer?.address),
+    address_place_id: text(customer?.address_place_id),
+    allergy_note: text(customer?.allergy_note),
+    notes: text(customer?.notes),
+    party_size: Math.max(0, Math.floor(numberValue(customer?.party_size))),
+  }
+
+  return Object.fromEntries(
+    Object.entries(clean).filter(([, value]) => value)
+  )
+}
+
+function useDraft(
+  menuId: MaybeRefOrGetter<string>,
+  options: MenuOrderDraftOptions = {}
+) {
+  const key = computed(() => text(toValue(options.storageKey)))
+  const canOrder = computed(() => toValue(options.canOrder) === true)
+  const orderType = computed<KitchenOrderType>(() =>
+    toValue(options.orderType) || 'dine_in'
+  )
+  const draft = ref<Record<string, MenuOrderDraftItem>>({})
+  const hasMounted = ref(false)
+  const awaitingAcceptance = ref(false)
+  const acceptedOrder = ref(false)
+  const trackedOrder = ref<CreatedMenuOrder | null>(null)
+  const items = computed<MenuOrderDraftItem[]>(() =>
+    Object.values(draft.value)
+  )
+  const quantity = computed(() =>
+    items.value.reduce((total, item) => total + item.quantity, 0)
+  )
+  const quantities = computed(() =>
+    items.value.reduce<Record<string, number>>((map, item) => {
+      map[item.lineId] = item.quantity
+      return map
+    }, {})
+  )
+  const {
+    creatingItemId,
+    message,
+    error,
+    createOrder,
+  } = useCreate(menuId, {
+    kitchenSlug: options.kitchenSlug,
+  })
+  const {
+    status: trackedOrderStatus,
+  } = useStatus(
+    menuId,
+    computed(() => trackedOrder.value?.id || ''),
+    {
+      kitchenSlug: options.kitchenSlug,
+      enabled: computed(() => awaitingAcceptance.value),
+    }
+  )
+  const awaitingMessage = computed(() => {
+    const status = trackedOrderStatus.value
+    if (message.value) return message.value
+    if (!trackedOrder.value) return ''
+
+    if (!acceptedOrder.value) {
+      return ''
+    }
+
+    const minutes = Number(status?.estimated_ready_minutes || 0)
+    if (minutes > 0) {
+      return `Accepted. Estimated ready in ${minutes} minutes.`
+    }
+
+    return 'Accepted. The kitchen is preparing your order.'
+  })
+
+  function restoreDraft(nextKey: string) {
+    if (!import.meta.client || !nextKey) return
+
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
+
+      draft.value = Object.values(parsed)
+        .filter(isDraftItem)
+        .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
+          const lineId = text(item.lineId || item.id)
+          const variant = normalizeVariant(item.variant)
+          const addOns = normalizeAddOns(item.addOns)
+
+          map[lineId] = {
+            id: text(item.id),
+            lineId,
+            name: text(item.name),
+            quantity: Number(item.quantity),
+            unitPrice: numberValue(item.unitPrice),
+            ...(addOns.length ? { addOns } : {}),
+            ...(variant ? { variant } : {}),
+          }
+          return map
+        }, {})
+    } catch {
+      draft.value = {}
+    }
+  }
+
+  onMounted(() => {
+    hasMounted.value = true
+    restoreDraft(key.value)
+  })
+
+  watch(key, (nextKey: string) => {
+    if (!hasMounted.value) return
+    restoreDraft(nextKey)
+  })
+
+  watch(draft, (nextDraft: Record<string, MenuOrderDraftItem>) => {
+    if (!import.meta.client || !key.value) return
+
+    if (!Object.keys(nextDraft).length) {
+      window.localStorage.removeItem(key.value)
+      return
+    }
+
+    window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
+  }, { deep: true })
+
+  function add(item: MenuOrderItem) {
+    if (!canOrder.value) return
+    awaitingAcceptance.value = false
+    acceptedOrder.value = false
+    trackedOrder.value = null
+
+    const id = text(item.id)
+    const lineId = text(item.lineId) || id
+    if (!id) return
+
+    const variant = normalizeVariant(item.variant)
+    const addOns = normalizeAddOns(item.addOns)
+    const current = draft.value[lineId]
+    const addOnsPrice = addOns.reduce(
+      (total, addOn) => total + numberValue(addOn.price),
+      0
+    )
+    const basePrice = numberValue(variant?.price) || numberValue(item.price)
+    const unitPrice = basePrice + addOnsPrice
+    const suffix = [
+      variant?.label,
+      addOns.length
+        ? `+ ${addOns.map((addOn) => addOn.label).join(', ')}`
+        : '',
+    ].filter(Boolean).join(' · ')
+    draft.value = {
+      ...draft.value,
+      [lineId]: {
+        id,
+        lineId,
+        name: suffix ? `${text(item.name)} · ${suffix}` : text(item.name),
+        unitPrice,
+        ...(addOns.length ? { addOns } : {}),
+        ...(variant ? { variant } : {}),
+        quantity: (current?.quantity || 0) + 1,
+      },
+    }
+  }
+
+  function remove(item: MenuOrderItem) {
+    const lineId = text(item.lineId) || text(item.id)
+    const current = draft.value[lineId]
+    if (!lineId || !current) return
+
+    const next = { ...draft.value }
+    if (current.quantity <= 1) {
+      delete next[lineId]
+    } else {
+      next[lineId] = {
+        ...current,
+        quantity: current.quantity - 1,
+      }
+    }
+    draft.value = next
+  }
+
+  function clear() {
+    draft.value = {}
+    awaitingAcceptance.value = false
+    acceptedOrder.value = false
+    trackedOrder.value = null
+  }
+
+  async function place(input?: MenuOrderingSubmitPayload) {
+    if (!canOrder.value || !items.value.length) return null
+
+    const created = await createOrder({
+      items: items.value.map((item) => ({
+        itemId: item.id,
+        quantity: item.quantity,
+        ...(item.addOns?.length ? { addOns: item.addOns } : {}),
+        ...(item.variant ? { variant: item.variant } : {}),
+      })),
+      order_type: orderType.value,
+      payment_method: input?.payment_method,
+      customer: input?.customer,
+    })
+    if (!created) return null
+
+    const isWaitingForAcceptance = created.status === 'pending_acceptance'
+    const nextAwaitingAcceptance =
+      isWaitingForAcceptance && orderType.value === 'delivery'
+    trackedOrder.value = created
+    acceptedOrder.value = false
+    awaitingAcceptance.value = nextAwaitingAcceptance
+
+    return created
+  }
+
+  watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
+    if (!status || !awaitingAcceptance.value) return
+    if (status.status === 'pending_acceptance') return
+
+    acceptedOrder.value = true
+  })
+
+  return {
+    awaitingAcceptance,
+    acceptedOrder,
+    sentOrder: trackedOrder,
+    awaitingMessage,
+    items,
+    quantity,
+    quantities,
+    creatingItemId,
+    message,
+    error,
+    add,
+    remove,
+    clear,
+    place,
+  }
+}
+
+function useCreate(
+  menuId: MaybeRefOrGetter<string>,
+  options: UseMenuOrderCreateOptions = {}
+) {
+  const id = computed(() => text(toValue(menuId)))
+  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const endpoint = computed(() => {
+    if (!id.value) return ''
+
+    const query = new URLSearchParams()
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+
+    const qs = query.toString()
+    return `/api/menus/${encodeURIComponent(id.value)}/orders${qs ? `?${qs}` : ''}`
+  })
+  const creatingItemId = ref('')
+  const message = ref('')
+  const error = ref('')
+
+  const createOrder = async (input: CreateMenuOrderInput) => {
+    const items = input.items
+      .map((item) => {
+        const addOns = cleanAddOns(item.addOns)
+        const variant = cleanVariant(item.variant)
+
+        return {
+          itemId: text(item.itemId),
+          quantity: Math.max(1, Number(item.quantity || 1) || 1),
+          ...(addOns.length ? { addOns } : {}),
+          ...(variant ? { variant } : {}),
+        }
+      })
+      .filter((item) => item.itemId)
+    if (!endpoint.value || !items.length) return null
+
+    creatingItemId.value = 'order'
+    message.value = ''
+    error.value = ''
+
+    try {
+      const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
+        method: 'POST',
+        body: {
+          items,
+          order_type: input.order_type,
+          payment_method: input.payment_method,
+          requested_for: input.requested_for,
+          customer: cleanCustomer(input.customer),
+        },
+      })
+
+      if (created.payment?.required && created.payment.status !== 'paid') {
+        message.value = 'Starting secure payment...'
+        await createCheckoutSession(created.id)
+        return created
+      }
+
+      if (created.status === 'pending_acceptance') {
+        message.value = created.order_number
+          ? `Order ${created.order_number} sent. Waiting for kitchen acceptance.`
+          : 'Order sent. Waiting for kitchen acceptance.'
+        return created
+      }
+
+      message.value = created.order_number
+        ? `Order ${created.order_number} sent to the kitchen.`
+        : 'Order sent to the kitchen.'
+
+      return created
+    } catch (err) {
+      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
+        ? text((err as { statusMessage?: unknown }).statusMessage)
+        : ''
+      error.value = statusMessage || 'Order could not be sent.'
+
+      return null
+    } finally {
+      creatingItemId.value = ''
+    }
+  }
+
+  const createCheckoutSession = async (orderId: string) => {
+    const orderPath = text(orderId)
+    if (!id.value || !orderPath) return
+
+    const query = new URLSearchParams()
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    const qs = query.toString()
+    const response = await $fetch<{ url?: string }>(
+      `/api/menus/${encodeURIComponent(id.value)}/orders/${encodeURIComponent(orderPath)}/checkout-session${qs ? `?${qs}` : ''}`,
+      {
+        method: 'POST',
+      }
+    )
+    const checkoutUrl = text(response?.url)
+    if (!checkoutUrl) {
+      throw new Error('Payment checkout could not be started.')
+    }
+
+    if (import.meta.client) {
+      window.location.href = checkoutUrl
+    }
+  }
+
+  return {
+    creatingItemId,
+    message,
+    error,
+    createOrder,
+  }
+}
+
+function useStatus(
+  menuId: MaybeRefOrGetter<string>,
+  orderId: MaybeRefOrGetter<string | null | undefined>,
+  options: UseMenuOrderStatusOptions = {}
+) {
+  const status = ref<KitchenOrderFunnelStatus | null>(null)
+  const pending = ref(false)
+  const error = ref('')
+  let timer: number | null = null
+
+  const endpoint = computed(() => {
+    const id = text(toValue(menuId))
+    const order = text(toValue(orderId))
+    if (!id || !order) return ''
+
+    const query = new URLSearchParams()
+    const kitchenSlug = text(toValue(options.kitchenSlug))
+    if (kitchenSlug) query.set('kitchenSlug', kitchenSlug)
+
+    const qs = query.toString()
+    return `/api/menus/${encodeURIComponent(id)}/orders/${encodeURIComponent(order)}${qs ? `?${qs}` : ''}`
+  })
+  const enabled = computed(() =>
+    toValue(options.enabled) !== false && Boolean(endpoint.value)
+  )
+
+  async function refresh() {
+    if (!enabled.value) return null
+
+    pending.value = true
+    error.value = ''
+    try {
+      const nextStatus = await $fetch<KitchenOrderFunnelStatus>(endpoint.value)
+      status.value = nextStatus
+      return nextStatus
+    } catch (err) {
+      error.value = err && typeof err === 'object' && 'statusMessage' in err
+        ? text((err as { statusMessage?: unknown }).statusMessage)
+        : 'Order status could not be checked.'
+      return null
+    } finally {
+      pending.value = false
+    }
+  }
+
+  function stop() {
+    if (!timer) return
+    window.clearTimeout(timer)
+    timer = null
+  }
+
+  function schedule() {
+    stop()
+    if (!import.meta.client || !enabled.value) return
+    timer = window.setTimeout(async () => {
+      await refresh()
+      schedule()
+    }, 2500)
+  }
+
+  watch(enabled, (isEnabled: boolean) => {
+    if (!isEnabled) {
+      stop()
+      status.value = null
+      return
+    }
+
+    refresh()
+    schedule()
+  }, { immediate: true })
+
+  onBeforeUnmount(stop)
+
+  return {
+    status,
+    pending,
+    error,
+    refresh,
+    stop,
+  }
+}

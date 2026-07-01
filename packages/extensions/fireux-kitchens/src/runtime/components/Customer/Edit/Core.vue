@@ -130,7 +130,7 @@ const defaultDeliveryAddress = computed(
 
 watch(
   customerPhone,
-  (value) => {
+  (value: string) => {
     if (savingField.value !== 'phone') phoneDraft.value = value
   },
   { immediate: true }
@@ -138,7 +138,7 @@ watch(
 
 watch(
   defaultDeliveryAddress,
-  (value) => {
+  (value: string) => {
     if (savingField.value !== 'address') addressDraft.value = value
   },
   { immediate: true }

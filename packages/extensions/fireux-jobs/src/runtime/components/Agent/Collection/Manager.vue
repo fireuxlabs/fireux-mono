@@ -77,7 +77,7 @@ import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Ag
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../../models/profiles/Agent/Agent.model'
 
-type AgentEntry = Agent & { user?: unknown }
+type AgentEntry = Partial<Agent> & { id: string, user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -104,7 +104,10 @@ const props = withDefaults(
 
 const fetched = useAgentFetch()
 const collection = computed<AgentEntry[]>(() =>
-  [...(fetched.appAgents.value ?? []), ...(fetched.coreAgents.value ?? [])]
+  [
+    ...(fetched.appAgents.value ?? []),
+    ...(fetched.coreAgents.value ?? []),
+  ] as AgentEntry[]
 )
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))

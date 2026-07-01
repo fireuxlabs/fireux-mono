@@ -23,7 +23,7 @@
         {{ item.description }}
       </p>
 
-      <MenuDetailItemChoices
+      <MenuDetailItemOptions
         v-if="orderMode && variantOptions.length > 1"
         :label="`${item.name} variants`"
         :options="variantOptions"
@@ -31,7 +31,7 @@
         @toggle="selectedVariantId = $event"
       />
 
-      <MenuDetailItemChoices
+      <MenuDetailItemOptions
         v-if="orderMode && addOnOptions.length"
         :label="`${item.name} add-ons`"
         :options="addOnOptions"
@@ -49,7 +49,7 @@
         {{ item.priceLabel }}
       </p>
 
-      <MenuDetailItemQuantity
+      <MenuDetailItemQuantityControl
         v-if="orderMode"
         :label="item.name"
         :quantity="quantity"
@@ -61,14 +61,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-// Menu detail item render spine: source data comes from the public menu manifest model.
 import type {
-  MenuFoodAddOn,
   MenuFoodItem,
   MenuFoodOrderItem,
-  MenuFoodPriceOption,
 } from '../../../../models/kitchen/menu/menu-food.model'
+import { useItem } from '../../../../composables/fireux/menu/detail/useItem'
 
 const props = defineProps<{
   item: MenuFoodItem
@@ -81,81 +78,20 @@ defineEmits<{
   (event: 'remove', item: MenuFoodOrderItem): void
 }>()
 
-const selectedVariantId = ref('')
-const selectedAddOnIds = ref<string[]>([])
-const variantOptions = computed<MenuFoodPriceOption[]>(() =>
-  props.item.priceOptions || []
-)
-const addOnOptions = computed<MenuFoodAddOn[]>(() =>
-  props.item.addOns || []
-)
-const selectedVariant = computed(() =>
-  variantOptions.value.find((variant) => variant.id === selectedVariantId.value) ||
-  variantOptions.value[0] ||
-  null
-)
-const selectedAddOns = computed(() =>
-  selectedAddOnIds.value
-    .map((id: string) =>
-      addOnOptions.value.find((addOn: MenuFoodAddOn) => addOn.id === id)
-    )
-    .filter((addOn: MenuFoodAddOn | undefined): addOn is MenuFoodAddOn =>
-      Boolean(addOn)
-    )
-)
-const variantLineId = (variant: MenuFoodPriceOption | null) =>
-  [
-    props.item.id,
-    variant?.id,
-    ...selectedAddOns.value.map((addOn: MenuFoodAddOn) => addOn.id),
-  ]
-    .filter(Boolean)
-    .join(':')
-const quantity = computed(() =>
-  Number(props.quantities?.[variantLineId(selectedVariant.value)] || 0)
-)
-const displayPrice = computed(() =>
-  selectedVariant.value?.priceLabel || props.item.priceLabel
-)
-const orderItem = computed<MenuFoodOrderItem>(() => ({
-  ...props.item,
-  lineId: variantLineId(selectedVariant.value),
-  ...(selectedAddOns.value.length ? { addOns: selectedAddOns.value } : {}),
-  ...(selectedVariant.value ? { variant: selectedVariant.value } : {}),
-}))
-
-function toggleAddOn(id: string) {
-  selectedAddOnIds.value = selectedAddOnIds.value.includes(id)
-    ? selectedAddOnIds.value.filter((addOnId: string) => addOnId !== id)
-    : [...selectedAddOnIds.value, id].sort()
-}
-
-watch(
-  [variantOptions, addOnOptions, () => props.quantities],
-  () => {
-    selectedAddOnIds.value = selectedAddOnIds.value.filter((id: string) =>
-      addOnOptions.value.some((addOn: MenuFoodAddOn) => addOn.id === id)
-    )
-
-    if (!variantOptions.value.length) {
-      selectedVariantId.value = ''
-      return
-    }
-
-    const selectedStillExists = variantOptions.value.some(
-      (variant) => variant.id === selectedVariantId.value
-    )
-    if (selectedStillExists) return
-
-    selectedVariantId.value =
-      variantOptions.value.find(
-        (variant) => Number(props.quantities?.[variantLineId(variant)] || 0) > 0
-      )?.id ||
-      variantOptions.value[0]?.id ||
-      ''
-  },
-  { immediate: true, deep: true }
-)
+const {
+  addOnOptions,
+  displayPrice,
+  orderItem,
+  quantity,
+  selectedAddOnIds,
+  selectedVariant,
+  selectedVariantId,
+  toggleAddOn,
+  variantOptions,
+} = useItem({
+  item: () => props.item,
+  quantities: () => props.quantities,
+})
 </script>
 
 <style scoped>
