@@ -14,7 +14,10 @@
       <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
     </button>
 
-    <section v-else class="menu-order-card" aria-live="polite">
+    <section
+      v-else
+      class="menu-order-card"
+    >
       <header class="menu-order-header">
         <div>
           <p class="menu-order-step-label">
