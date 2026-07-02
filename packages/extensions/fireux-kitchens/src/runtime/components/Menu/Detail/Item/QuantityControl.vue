@@ -1,25 +1,25 @@
 <template>
   <div class="menu-item__quantity">
     <template v-if="quantity">
-      <UButton
-        size="xs"
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-minus"
+      <button
+        type="button"
+        class="menu-item__quantity-button"
         :aria-label="`Remove ${label}`"
         @click="$emit('remove')"
-      />
+      >
+        <UIcon name="i-lucide-minus" aria-hidden="true" />
+      </button>
       <span>{{ quantity }}</span>
     </template>
 
-    <UButton
-      size="xs"
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-plus"
+    <button
+      type="button"
+      class="menu-item__quantity-button"
       :aria-label="`Add ${label}`"
       @click="$emit('add')"
-    />
+    >
+      <UIcon name="i-lucide-plus" aria-hidden="true" />
+    </button>
   </div>
 </template>
 
@@ -38,8 +38,25 @@ defineEmits<{
 <style scoped>
 .menu-item__quantity {
   display: inline-flex;
-  gap: 0.4rem;
+  gap: var(--menu-space-xs);
   align-items: center;
+}
+
+.menu-item__quantity-button {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 42%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-primary) 14%, var(--menu-bg));
+  color: var(--menu-primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.menu-item__quantity-button:hover {
+  background: color-mix(in srgb, var(--menu-primary) 24%, var(--menu-bg));
 }
 
 .menu-item__quantity span {

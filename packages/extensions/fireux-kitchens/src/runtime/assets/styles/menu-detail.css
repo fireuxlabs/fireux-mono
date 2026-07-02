@@ -21,9 +21,16 @@
   --menu-accent: var(--menu-secondary);
   --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-title-font: var(--menu-font);
+  --menu-radius: 1rem;
+  --menu-radius-control: 0.5rem;
+  --menu-space-2xs: 0.25rem;
+  --menu-space-xs: 0.4rem;
+  --menu-space-sm: 0.75rem;
+  --menu-space-md: 1rem;
+  --menu-space-lg: 2rem;
 
   display: grid;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: clamp(var(--menu-space-md), 3vw, var(--menu-space-lg));
   width: min(100%, 72rem);
   min-height: 100vh;
   min-height: 100dvh;
@@ -71,10 +78,10 @@
   inset: 0;
   place-items: end center;
   padding:
-    max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right))
-    max(1rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
+    max(var(--menu-space-md), env(safe-area-inset-top))
+    max(var(--menu-space-md), env(safe-area-inset-right))
+    max(var(--menu-space-md), env(safe-area-inset-bottom))
+    max(var(--menu-space-md), env(safe-area-inset-left));
   background: color-mix(in srgb, var(--menu-bg) 68%, transparent);
   pointer-events: auto;
 }
@@ -85,7 +92,7 @@
   height: 4.2rem;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 999px;
+  border-radius: var(--menu-radius);
   background: var(--menu-primary);
   color: var(--menu-bg);
   cursor: pointer;
@@ -101,13 +108,13 @@
 
 .menu-order-card {
   display: grid;
-  gap: 1rem;
+  gap: var(--menu-space-md);
   width: min(100%, 34rem);
   max-height: calc(100dvh - 2rem);
-  padding: clamp(1rem, 3vw, 1.25rem);
+  padding: clamp(var(--menu-space-md), 3vw, 1.25rem);
   overflow: auto;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 1.35rem;
+  border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 96%, transparent);
   color: var(--menu-text);
   box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--menu-text) 18%, transparent);
@@ -116,7 +123,7 @@
 
 .menu-order-header {
   display: flex;
-  gap: 0.85rem;
+  gap: var(--menu-space-sm);
   align-items: center;
   justify-content: space-between;
 }
@@ -144,7 +151,7 @@
 .menu-order-basket-list,
 .menu-order-items {
   display: grid;
-  gap: 0.85rem;
+  gap: var(--menu-space-sm);
 }
 
 .menu-order-items {
@@ -156,13 +163,13 @@
 .menu-order-items li,
 .menu-order-total {
   display: flex;
-  gap: 1rem;
+  gap: var(--menu-space-md);
   align-items: center;
   justify-content: space-between;
 }
 
 .menu-order-items li {
-  padding: 0.75rem 0;
+  padding: var(--menu-space-sm) 0;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
   color: var(--menu-title);
   font-weight: 900;
@@ -189,7 +196,7 @@
 
 .menu-order-allergen {
   display: grid;
-  gap: 0.85rem;
+  gap: var(--menu-space-sm);
   justify-items: start;
 }
 
@@ -201,7 +208,7 @@
 
 .menu-order-allergen__copy {
   display: grid;
-  gap: 0.8rem;
+  gap: var(--menu-space-sm);
 }
 
 .menu-order-allergen__copy p {
@@ -215,12 +222,12 @@
 .menu-order-delivery-zone,
 .menu-order-address-options {
   display: grid;
-  gap: 0.85rem;
+  gap: var(--menu-space-sm);
 }
 
 .menu-order-field {
   display: grid;
-  gap: 0.35rem;
+  gap: var(--menu-space-xs);
   color: var(--menu-muted);
   font-size: 0.78rem;
   font-weight: 850;
@@ -228,11 +235,11 @@
 
 .menu-order-selected-address {
   display: grid;
-  gap: 0.2rem;
+  gap: var(--menu-space-2xs);
   width: 100%;
-  padding: 0.9rem 1rem;
+  padding: var(--menu-space-sm) var(--menu-space-md);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 34%, transparent);
-  border-radius: 1rem;
+  border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-text);
   cursor: pointer;
@@ -248,10 +255,10 @@
 
 .menu-order-address-options button {
   display: grid;
-  gap: 0.2rem;
-  padding: 0.75rem 0.85rem;
+  gap: var(--menu-space-2xs);
+  padding: var(--menu-space-sm) var(--menu-space-sm);
   border: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
-  border-radius: 0.9rem;
+  border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-bg) 82%, var(--menu-text));
   color: var(--menu-text);
   cursor: pointer;
@@ -271,7 +278,7 @@
 
 .menu-order-dispatch {
   display: grid;
-  gap: 1rem;
+  gap: var(--menu-space-md);
 }
 
 .menu-order-dispatch__icon {
@@ -283,13 +290,13 @@
 
 .menu-order-dispatch__section {
   display: flex;
-  gap: 0.85rem;
+  gap: var(--menu-space-sm);
   align-items: flex-start;
 }
 
 .menu-order-dispatch__copy {
   display: grid;
-  gap: 0.35rem;
+  gap: var(--menu-space-xs);
   min-width: 0;
 }
 
@@ -315,7 +322,7 @@
 .menu-order-delivery-map .delivery-zones-map__canvas {
   aspect-ratio: 16 / 9;
   max-height: 12rem;
-  border-radius: 1rem;
+  border-radius: var(--menu-radius);
 }
 
 .menu-order-step-label {
@@ -328,10 +335,10 @@
 
 .menu-order-footer {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--menu-space-sm);
   align-items: center;
   justify-content: space-between;
-  padding-top: 0.85rem;
+  padding-top: var(--menu-space-sm);
   border-top: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
 }
 
@@ -339,10 +346,10 @@
 .menu-order-secondary,
 .menu-order-fold {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: var(--menu-space-xs);
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--menu-radius-control);
   cursor: pointer;
   font: inherit;
   font-size: 0.88rem;
@@ -352,7 +359,7 @@
 .menu-order-primary,
 .menu-order-secondary {
   min-height: 2.6rem;
-  padding: 0.6rem 1rem;
+  padding: 0.6rem var(--menu-space-md);
 }
 
 .menu-order-primary {

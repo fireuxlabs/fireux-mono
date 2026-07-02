@@ -37,7 +37,7 @@ const sectionDomId = (id: string) =>
 <style scoped>
 .menu-sections {
   display: grid;
-  gap: 2rem;
+  gap: var(--menu-space-lg);
   width: min(88rem, 100%);
   margin: 0 auto;
   text-align: left;
@@ -47,7 +47,7 @@ const sectionDomId = (id: string) =>
   .menu-sections {
     display: block;
     column-count: 2;
-    column-gap: clamp(2rem, 4vw, 4rem);
+    column-gap: clamp(var(--menu-space-lg), 4vw, 4rem);
   }
 }
 </style>

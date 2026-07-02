@@ -52,11 +52,11 @@ defineEmits<{
   display: inline-grid;
   grid-auto-columns: minmax(7rem, 1fr);
   grid-auto-flow: column;
-  gap: 0.3rem;
+  gap: var(--menu-space-xs);
   width: min(100%, 32rem);
-  padding: 0.32rem;
+  padding: var(--menu-space-xs);
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: 1.15rem;
+  border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 88%, var(--menu-text));
 }
 
@@ -66,9 +66,9 @@ defineEmits<{
   min-height: 2.65rem;
   align-items: center;
   justify-content: center;
-  padding: 0.58rem 0.95rem;
+  padding: 0.58rem var(--menu-space-md);
   border: 0;
-  border-radius: 0.88rem;
+  border-radius: var(--menu-radius-control);
   background: transparent;
   color: var(--menu-text);
   cursor: pointer;

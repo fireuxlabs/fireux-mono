@@ -35,7 +35,7 @@ defineEmits<{
 <style scoped>
 .menu-section {
   display: grid;
-  gap: 0.7rem;
+  gap: var(--menu-space-sm);
   align-content: start;
 }
 
@@ -43,7 +43,7 @@ defineEmits<{
   /* Menu theme spine: section labels are accent text, while primary stays for action controls. */
   display: grid;
   grid-template-columns: auto minmax(2rem, 1fr);
-  gap: 0.75rem;
+  gap: var(--menu-space-sm);
   align-items: center;
   margin: 0;
   color: var(--menu-secondary);

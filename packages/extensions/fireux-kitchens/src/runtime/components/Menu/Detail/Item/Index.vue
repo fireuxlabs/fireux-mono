@@ -96,7 +96,7 @@ const {
 .menu-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1rem;
+  gap: var(--menu-space-md);
   align-items: start;
   padding-bottom: 0.7rem;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
@@ -117,7 +117,7 @@ const {
   width: 5.5rem;
   aspect-ratio: 1;
   border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
-  border-radius: 0.95rem;
+  border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-text) 8%, transparent);
 }
 
@@ -134,12 +134,12 @@ const {
 }
 
 .menu-item__copy {
-  gap: 0.2rem;
+  gap: var(--menu-space-2xs);
 }
 
 .menu-item__actions {
   display: flex;
-  gap: 0.65rem;
+  gap: var(--menu-space-sm);
   align-items: center;
   justify-content: end;
 }
@@ -172,12 +172,12 @@ const {
 @media (max-width: 620px) {
   .menu-item--with-image {
     grid-template-columns: 4.75rem minmax(0, 1fr) auto;
-    gap: 0.75rem;
+    gap: var(--menu-space-sm);
   }
 
   .menu-item__media {
     width: 4.75rem;
-    border-radius: 0.8rem;
+    border-radius: var(--menu-radius);
   }
 }
 </style>

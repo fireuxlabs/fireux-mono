@@ -1,9 +1,5 @@
 <template>
   <div class="menu-order-basket-list">
-    <p class="menu-order-placeholder">
-      Check your items before continuing.
-    </p>
-
     <ul class="menu-order-items">
       <li
         v-for="item in items"

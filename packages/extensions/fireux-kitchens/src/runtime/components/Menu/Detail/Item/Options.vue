@@ -49,17 +49,17 @@ defineEmits<{
 .menu-item__choices {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  padding-top: 0.25rem;
+  gap: var(--menu-space-xs);
+  padding-top: var(--menu-space-2xs);
 }
 
 .menu-item__choice {
   display: inline-flex;
-  gap: 0.28rem;
+  gap: var(--menu-space-2xs);
   align-items: center;
-  padding: 0.32rem 0.52rem;
+  padding: var(--menu-space-xs) var(--menu-space-sm);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
-  border-radius: 999px;
+  border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-primary) 5%, transparent);
   color: var(--menu-primary);
   cursor: pointer;

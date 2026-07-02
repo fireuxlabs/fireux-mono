@@ -4,7 +4,7 @@
     :class="themeClassName"
     :style="themeStyleVars"
   >
-    <section>
+    <OrderingFunnelStage>
       <MenuDetailItem
         v-for="item in demoItems"
         :key="item.id"
@@ -14,12 +14,26 @@
         @add="addToBasket"
         @remove="removeFromBasket"
       />
-    </section>
+    </OrderingFunnelStage>
 
-    <MenuDetailFunnelBasket :order="order" />
-    <ClientOnly>
-      <MenuDetailFunnelAllergen v-model="allergenAccepted" />
-    </ClientOnly>
+    <OrderingFunnelStage
+      v-if="basketQuantity"
+      number="1"
+      total="6"
+      title="Basket"
+    >
+      <MenuDetailFunnelBasket :order="order" />
+    </OrderingFunnelStage>
+
+    <OrderingFunnelStage
+      number="2"
+      total="6"
+      title="Allergy check"
+    >
+      <ClientOnly>
+        <MenuDetailFunnelAllergen v-model="allergenAccepted" />
+      </ClientOnly>
+    </OrderingFunnelStage>
   </div>
 </template>
 
@@ -78,7 +92,10 @@ const demoItems: MenuFoodItem[] = [
     addOns: [],
   },
 ]
-const demoQuantities = ref<Record<string, number>>({})
+const demoQuantities = ref<Record<string, number>>({
+  'pizza-margherita': 2,
+  'banana-colada:2-5-liter': 1,
+})
 const basketItems = computed<MenuOrderingBasketItem[]>(() =>
   Object.keys(demoQuantities.value)
     .map((lineId) => basketItemFromLine(lineId, demoQuantities.value[lineId] || 0))

@@ -9,8 +9,8 @@
           Ordering funnels
         </h1>
         <p class="text-muted">
-          Start with delivery. We can add the other funnel pages once this one
-          feels right.
+          Start with delivery and pre-order. We can add the other funnel pages
+          once these feel right.
         </p>
       </section>
 
@@ -26,6 +26,26 @@
           </div>
           <UButton
             to="/ordering/delivery"
+            color="primary"
+            trailing-icon="i-lucide-arrow-right"
+          >
+            Open
+          </UButton>
+        </div>
+      </UCard>
+
+      <UCard>
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold">
+              Pre-order
+            </h2>
+            <p class="text-sm text-muted">
+              Basket, allergy check, pre-order details, kitchen acceptance.
+            </p>
+          </div>
+          <UButton
+            to="/ordering/pre-order"
             color="primary"
             trailing-icon="i-lucide-arrow-right"
           >
