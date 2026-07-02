@@ -7,11 +7,15 @@
   />
 
   <MenuDetailFunnel
-    v-if="interaction.funnel.show"
+    v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
     :order="interaction.funnel.order"
-    :submit="interaction.funnel.submit"
-    @close-panel="interaction.funnel.close"
-    @open-panel="interaction.funnel.open"
+    @close="interaction.funnel.close"
+  />
+
+  <MenuDetailFunnelTrigger
+    v-else-if="interaction.funnel.show"
+    :order="interaction.funnel.order"
+    @open="interaction.funnel.open"
   />
 </template>
 

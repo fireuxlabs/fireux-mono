@@ -5,7 +5,7 @@
     </h2>
 
     <p class="menu-order-placeholder">
-      6 hello world
+      Online card, deposit, tab, or pay-later choices will resolve here.
     </p>
   </div>
 </template>
