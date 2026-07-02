@@ -72,7 +72,7 @@
             </div>
           </UCard>
         </div>
-      </section>
+      </UContainer>
 
       <UContainer class="max-w-6xl pb-16">
         <section class="grid gap-4 lg:grid-cols-2">
