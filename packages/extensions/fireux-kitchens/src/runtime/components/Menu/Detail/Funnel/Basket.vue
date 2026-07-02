@@ -1,5 +1,9 @@
 <template>
   <div class="menu-order-basket-list">
+    <h2 class="menu-order-screen-title">
+      Basket
+    </h2>
+
     <ul class="menu-order-items">
       <li
         v-for="item in items"

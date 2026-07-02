@@ -1,5 +1,9 @@
 <template>
   <div class="menu-order-allergen">
+    <h2 class="menu-order-screen-title">
+      Allergy check
+    </h2>
+
     <UIcon
       :name="notice.icon"
       class="menu-order-allergen__icon"

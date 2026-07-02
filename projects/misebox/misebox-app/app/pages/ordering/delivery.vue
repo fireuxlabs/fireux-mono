@@ -20,7 +20,6 @@
       v-if="basketQuantity"
       number="1"
       total="6"
-      title="Basket"
     >
       <MenuDetailFunnelBasket :order="order" />
     </OrderingFunnelStage>
@@ -28,7 +27,6 @@
     <OrderingFunnelStage
       number="2"
       total="6"
-      title="Allergy check"
     >
       <ClientOnly>
         <MenuDetailFunnelAllergen v-model="allergenAccepted" />

@@ -19,12 +19,9 @@
       class="menu-order-card"
     >
       <header class="menu-order-header">
-        <div>
-          <p class="menu-order-step-label">
-            {{ surfaceNumber }} of {{ surfaceCount }}
-          </p>
-          <h2>{{ surfaceTitle }}</h2>
-        </div>
+        <p class="menu-order-step-label">
+          {{ surfaceNumber }} of {{ surfaceCount }}
+        </p>
 
         <button
           type="button"
@@ -111,31 +108,30 @@ type SurfaceKind =
 type Surface = {
   component: Component
   kind: SurfaceKind
-  title: string
 }
 const deliverySurfaces = [
-  { component: Basket, kind: 'basket', title: 'Basket' },
-  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
-  { component: DeliveryZone, kind: 'delivery-zone', title: 'Delivery area' },
-  { component: DeliveryFulfilment, kind: 'delivery-fulfilment', title: 'Fulfilment' },
-  { component: Review, kind: 'review', title: 'Review' },
-  { component: Payment, kind: 'payment', title: 'Payment' },
+  { component: Basket, kind: 'basket' },
+  { component: Allergen, kind: 'allergen' },
+  { component: DeliveryZone, kind: 'delivery-zone' },
+  { component: DeliveryFulfilment, kind: 'delivery-fulfilment' },
+  { component: Review, kind: 'review' },
+  { component: Payment, kind: 'payment' },
 ] as const satisfies readonly Surface[]
 const collectionSurfaces = [
-  { component: Basket, kind: 'basket', title: 'Basket' },
-  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
-  { component: CollectionRendezvous, kind: 'collection-rendezvous', title: 'Collection' },
-  { component: CollectionKitchen, kind: 'collection-kitchen', title: 'Kitchen' },
-  { component: Review, kind: 'review', title: 'Review' },
-  { component: Payment, kind: 'payment', title: 'Payment' },
+  { component: Basket, kind: 'basket' },
+  { component: Allergen, kind: 'allergen' },
+  { component: CollectionRendezvous, kind: 'collection-rendezvous' },
+  { component: CollectionKitchen, kind: 'collection-kitchen' },
+  { component: Review, kind: 'review' },
+  { component: Payment, kind: 'payment' },
 ] as const satisfies readonly Surface[]
 const preOrderSurfaces = [
-  { component: Basket, kind: 'basket', title: 'Basket' },
-  { component: Allergen, kind: 'allergen', title: 'Allergy check' },
-  { component: PreOrderDetails, kind: 'pre-order-details', title: 'Pre-order' },
-  { component: PreOrderKitchen, kind: 'pre-order-kitchen', title: 'Kitchen' },
-  { component: Review, kind: 'review', title: 'Review' },
-  { component: Payment, kind: 'payment', title: 'Payment' },
+  { component: Basket, kind: 'basket' },
+  { component: Allergen, kind: 'allergen' },
+  { component: PreOrderDetails, kind: 'pre-order-details' },
+  { component: PreOrderKitchen, kind: 'pre-order-kitchen' },
+  { component: Review, kind: 'review' },
+  { component: Payment, kind: 'payment' },
 ] as const satisfies readonly Surface[]
 const surfaceChoices = ['1', '2', '3', '4', '5', '6'] as const
 type SurfaceChoice = typeof surfaceChoices[number]
@@ -169,9 +165,6 @@ const currentSurfaceConfig = computed(() =>
   surfaces.value[surfaceNumber.value - 1] || surfaces.value[0]
 )
 const currentSurface = computed(() => currentSurfaceConfig.value.component)
-const surfaceTitle = computed(() =>
-  currentSurfaceConfig.value.title || 'Order'
-)
 const currentSurfaceProps = computed(() => {
   const kind = currentSurfaceConfig.value.kind
 

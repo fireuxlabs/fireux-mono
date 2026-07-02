@@ -1,5 +1,9 @@
 <template>
   <div class="menu-order-dispatch">
+    <h2 class="menu-order-screen-title">
+      Collection
+    </h2>
+
     <section class="menu-order-dispatch__section">
       <UIcon
         name="i-lucide-shopping-bag"

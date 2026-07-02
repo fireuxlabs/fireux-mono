@@ -1,5 +1,9 @@
 <template>
   <div class="menu-order-delivery-zone">
+    <h2 class="menu-order-screen-title">
+      Delivery area
+    </h2>
+
     <ClientOnly>
       <KitchenDetailDeliveryZonesMap
         v-if="zones.length"

@@ -128,13 +128,13 @@
   justify-content: space-between;
 }
 
-.menu-order-header h2,
 .menu-order-step-label,
 .menu-order-placeholder {
   margin: 0;
 }
 
-.menu-order-header h2 {
+.menu-order-screen-title {
+  margin: 0;
   color: var(--menu-title);
   font-size: clamp(1.4rem, 5vw, 2rem);
   font-weight: 950;
