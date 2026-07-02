@@ -13,12 +13,6 @@
 
     <div class="menu-item__copy">
       <h3>{{ item.name }}</h3>
-      <p
-        v-if="orderMode && displayPrice"
-        class="menu-item__price menu-item__price--inline"
-      >
-        {{ displayPrice }}
-      </p>
       <p v-if="item.description">
         {{ item.description }}
       </p>
@@ -56,6 +50,10 @@
         @add="$emit('add', orderItem)"
         @remove="$emit('remove', orderItem)"
       />
+
+      <p v-if="orderMode && displayPrice" class="menu-item__price">
+        {{ displayPrice }}
+      </p>
     </div>
   </article>
 </template>
@@ -102,6 +100,7 @@ const {
   align-items: start;
   padding-bottom: 0.7rem;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
+  text-align: left;
 }
 
 .menu-item--with-image {
@@ -139,8 +138,10 @@ const {
 }
 
 .menu-item__actions {
-  gap: 0.45rem;
-  justify-items: end;
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: end;
 }
 
 .menu-item h3,
@@ -166,10 +167,6 @@ const {
   font-size: 0.95rem;
   font-weight: 850;
   white-space: nowrap;
-}
-
-.menu-item__price--inline {
-  white-space: normal;
 }
 
 @media (max-width: 620px) {
