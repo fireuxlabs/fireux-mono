@@ -125,7 +125,7 @@ Public order funnel spine:
 - `composables/fireux/kitchen/order/funnel/shared/useFunnel`: state seam
   between `MenuDetailFood` and the funnel. It owns selected public choice,
   basket visibility, local draft persistence, and submit.
-- `funnel/shared`: common steps/seams such as basket, allergen notice,
+- `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - `funnel/Delivery`: delivery-only steps such as `useDeliveryZone-3` and
   `useFulfilment`.
