@@ -5,7 +5,7 @@
       :src="src || ''"
       :alt="alt || 'Image'"
       :text="initials || 'I'"
-      class="avatar"
+      :class="['avatar', avatarClass]"
     />
     <label class="upload-label">
       <UIcon name="i-lucide-camera" />
@@ -24,6 +24,7 @@ const props = defineProps<{
   src?: string
   alt?: string
   initials?: string
+  avatarClass?: string
   // Parent-provided handler to process selected file (e.g., upload then update URL)
   updateFunction?: (file: File) => unknown
 }>()

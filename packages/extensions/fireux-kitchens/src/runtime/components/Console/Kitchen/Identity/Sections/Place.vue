@@ -13,13 +13,13 @@
     >
       <span class="flex min-w-0 items-start gap-3 text-left">
         <UIcon
-          name="i-lucide-store"
+          name="i-lucide-map-pin"
           class="mt-0.5 size-4 shrink-0 text-muted"
         />
         <span class="grid min-w-0">
-          <span class="truncate">Identity</span>
+          <span class="truncate">Place</span>
           <span class="truncate text-xs font-normal text-dimmed">
-            Manage guest-facing credentials, theme, and more.
+            Venue logo, tone, location, and contact.
           </span>
         </span>
       </span>
@@ -31,133 +31,118 @@
           <template #header>
             <div class="flex items-start gap-3">
               <UIcon
-                name="i-lucide-store"
+                name="i-lucide-map-pin"
                 class="mt-1 size-5 shrink-0 text-muted"
               />
               <div>
                 <div class="text-base font-semibold text-highlighted">
-                  Public Identity
+                  Place
                 </div>
                 <p class="text-sm text-dimmed">
-                  What guests and operators see when this kitchen appears.
+                  Shared venue truth for the kitchen's public surfaces.
                 </p>
               </div>
             </div>
           </template>
 
-          <div class="grid gap-4 md:grid-cols-2">
-            <div class="md:col-span-2">
-              <MoleculesFormsFirestoreSimpleField
-                label="Name"
-                :firebase-value="name"
-                placeholder="Kitchen display name"
-                :maxlength="120"
-                :update-function="handleName"
+          <UAlert
+            v-if="!placeId"
+            color="warning"
+            variant="soft"
+            title="No linked Place"
+            description="This kitchen does not have a linked Place yet."
+          />
+
+          <MoleculesStateCard
+            v-else-if="pending"
+            entity="linked place"
+            kind="document"
+            loading
+          />
+
+          <UAlert
+            v-else-if="!place"
+            color="warning"
+            variant="soft"
+            title="Linked Place not found"
+            :description="`Kitchen points to Place ${placeId}, but that record is not available.`"
+          />
+
+          <div v-else class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+            <div class="flex flex-col items-center gap-2">
+              <MoleculesFormsFirestoreImagePicker
+                v-if="canWrite"
+                :src="logoImageUrl"
+                :alt="place.name || name || 'Kitchen logo'"
+                :initials="logoInitials"
+                :avatar-class="logoShadeClass"
+                :update-function="handleLogoUpload"
               />
+              <UAvatar
+                v-else
+                :src="logoImageUrl || undefined"
+                :alt="place.name || name || 'Kitchen logo'"
+                :text="logoInitials"
+                icon="i-lucide-image"
+                size="3xl"
+                :class="logoShadeClass"
+              />
+
+              <p
+                v-if="logoUploading"
+                class="text-xs text-dimmed"
+              >
+                Uploading logo...
+              </p>
             </div>
 
-            <MoleculesFormsFirestoreSimpleField
-              label="Slug"
-              :firebase-value="slug"
-              placeholder="luna-piccante"
-              :maxlength="80"
-              :validation-function="validateSlugField"
-              :formatting-function="formatSlugField"
-              :update-function="handleSlug"
-            />
-
-            <div class="md:col-span-2">
-              <MoleculesFormsFirestoreSimpleField
-                label="Tagline"
-                :firebase-value="tagline"
-                placeholder="Short service tagline"
-                :maxlength="120"
-                :update-function="handleTagline"
-              />
-            </div>
-
-            <div class="md:col-span-2 grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
-              <div class="flex flex-col items-center gap-2">
-                <MoleculesFormsFirestoreImagePicker
-                  v-if="canWrite"
-                  :src="logoImageUrl"
-                  :alt="name || 'Kitchen logo'"
-                  :initials="logoInitials"
-                  :update-function="handleLogoUpload"
-                />
-                <UAvatar
-                  v-else
-                  :src="logoImageUrl || undefined"
-                  :alt="name || 'Kitchen logo'"
-                  :text="logoInitials"
-                  icon="i-lucide-image"
-                  size="3xl"
-                  :class="logoShadeClass"
-                />
-
-                <p
-                  v-if="logoUploading"
-                  class="text-xs text-dimmed"
-                >
-                  Uploading logo...
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-medium text-highlighted">
+                  Logo
+                </p>
+                <p class="text-xs text-dimmed">
+                  Logo is owned by the linked Place and synced back to kitchen menus and cards.
                 </p>
               </div>
 
-              <div class="space-y-4">
-                <div>
-                  <p class="text-sm font-medium text-highlighted">
-                    Logo
-                  </p>
-                  <p class="text-xs text-dimmed">
-                    {{ logoHelpText }}
-                  </p>
-                </div>
-
-                <UButton
-                  v-if="placeId"
-                  size="sm"
-                  color="neutral"
-                  variant="soft"
-                  icon="i-lucide-map-pin"
-                  :to="`/console/kitchen/identity/place`"
-                >
-                  Open linked Place
-                </UButton>
-              </div>
-            </div>
-
-            <div class="md:col-span-2 space-y-2">
-              <div>
+              <div class="space-y-2">
                 <p class="text-sm font-medium text-highlighted">
                   Logo tone
                 </p>
                 <p class="text-xs text-dimmed">
                   Adds the opposite backing behind transparent logos when needed.
                 </p>
+
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in imageShadeOptions"
+                    :key="option.value"
+                    size="sm"
+                    color="neutral"
+                    :variant="imageShade === option.value ? 'solid' : 'soft'"
+                    :disabled="!canWrite"
+                    @click="handleImageShade(option.value)"
+                  >
+                    {{ option.label }}
+                  </UButton>
+                </div>
               </div>
 
               <div class="flex flex-wrap gap-2">
                 <UButton
-                  v-for="option in imageShadeOptions"
-                  :key="option.value"
                   size="sm"
                   color="neutral"
-                  :variant="imageShade === option.value ? 'solid' : 'soft'"
-                  :disabled="!canWrite"
-                  @click="handleImageShade(option.value)"
+                  variant="soft"
+                  icon="i-lucide-map-pin"
+                  to="/console/kitchen/identity/place"
                 >
-                  {{ option.label }}
+                  Open linked Place
                 </UButton>
               </div>
             </div>
-
-            <p class="md:col-span-2 text-sm text-dimmed">
-              Address, map, and contact live on the linked Place.
-            </p>
           </div>
         </UCard>
-
-        <ConsoleKitchenIdentitySectionsPlaceTheme />
       </div>
     </template>
   </UCollapsible>
@@ -167,17 +152,14 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import type {
   KitchenImageShade,
   KitchenUpdateInput,
 } from '../../../../../models/kitchen.model'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
 const props = defineProps<{
@@ -192,11 +174,12 @@ const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
-const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
-const imageShade = computed(() => readKitchenIdentity(props.kitchen).imageShade)
-const slug = computed(() => String(props.kitchen?.slug ?? ''))
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
-const { place } = usePlaceFetch(placeId)
+const { place, pending } = usePlaceFetch(placeId)
+const imageShade = computed(() => {
+  const placeShade = String(place.value?.image_shade ?? '').trim()
+  return (placeShade || readKitchenIdentity(props.kitchen).imageShade) as KitchenImageShade
+})
 const logoImageUrl = computed(() =>
   String(
     place.value?.image_url ||
@@ -206,7 +189,8 @@ const logoImageUrl = computed(() =>
   ).trim()
 )
 const logoInitials = computed(() => {
-  const parts = name.value.split(/\s+/).filter(Boolean)
+  const label = place.value?.name || name.value || 'Kitchen'
+  const parts = label.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'K'
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
   return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
@@ -216,11 +200,6 @@ const logoShadeClass = computed(() => {
   if (imageShade.value === 'dark') return 'fx-avatar-shade--dark'
   return ''
 })
-const logoHelpText = computed(() =>
-  placeId.value
-    ? 'Logo is owned by the linked Place and synced back to kitchen menus and cards.'
-    : 'Standalone kitchen logo used by menus and cards.'
-)
 const logoUploading = ref(false)
 const imageShadeOptions: Array<{
   value: KitchenImageShade
@@ -231,7 +210,7 @@ const imageShadeOptions: Array<{
   { value: 'dark', label: 'Dark logo' },
 ]
 
-const updateIdentityField = async (
+const updateKitchenProjection = async (
   patch: KitchenUpdateInput,
   successTitle: string,
   failTitle: string
@@ -261,20 +240,6 @@ const updateIdentityField = async (
   }
 }
 
-const handleName = async (value: string) =>
-  updateIdentityField(
-    { 'identity.display_name': value },
-    'Display name updated',
-    'Failed to update display name'
-  )
-
-const handleTagline = async (value: string) =>
-  updateIdentityField(
-    { 'identity.tagline': value },
-    'Tagline updated',
-    'Failed to update tagline'
-  )
-
 const handleImageShade = async (value: KitchenImageShade) => {
   if (placeId.value) {
     await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
@@ -282,7 +247,7 @@ const handleImageShade = async (value: KitchenImageShade) => {
     } as Partial<Place>)
   }
 
-  return updateIdentityField(
+  return updateKitchenProjection(
     {
       'identity.image_shade': value,
       image_shade: value,
@@ -308,7 +273,7 @@ const handleLogoUpload = async (file: File) => {
       } as Partial<Place>)
     }
 
-    await updateIdentityField(
+    await updateKitchenProjection(
       {
         'identity.image_url': url,
         display_image_url: url,
@@ -321,28 +286,4 @@ const handleLogoUpload = async (file: File) => {
     logoUploading.value = false
   }
 }
-
-const formatSlugField = (value: string) =>
-  normalizeSlug(value, { maxLength: 80 })
-
-const validateSlugField = (value: string) => {
-  const validation = validateSlug(formatSlugField(value), {
-    label: 'Kitchen slug',
-    namespace: KitchenStorage.rootCollection,
-    reservedScope: 'root',
-    maxLength: 80,
-  })
-
-  return {
-    isValid: validation.isValid,
-    message: validation.message,
-  }
-}
-
-const handleSlug = async (value: string) =>
-  updateIdentityField(
-    { slug: formatSlugField(value) },
-    'Slug updated',
-    'Failed to update slug'
-  )
 </script>

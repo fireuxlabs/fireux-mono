@@ -8,7 +8,13 @@
       />
 
       <div class="space-y-4">
-        <ConsoleKitchenIdentitySectionsIdentity
+        <ConsoleKitchenIdentitySectionsPlace
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
+
+        <ConsoleKitchenIdentitySectionsKitchen
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
           :can-write="canWrite"
