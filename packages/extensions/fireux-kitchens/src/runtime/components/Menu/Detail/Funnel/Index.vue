@@ -3,29 +3,29 @@
     <section class="menu-order-card">
       <header class="menu-order-header">
         <p class="menu-order-step-label">
-          {{ step }} of {{ stepCount }} · {{ order.orderType }}
+          {{ step }} of {{ stepCount }} · {{ funnel.order.orderType }}
         </p>
 
         <button
           type="button"
           class="menu-order-fold"
           aria-label="Fold order funnel away"
-          @click="$emit('close')"
+          @click="funnel.close"
         >
           <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
         </button>
       </header>
 
       <MenuDetailFunnelCollection
-        v-if="order.orderType === 'collection'"
-        :order="order"
+        v-if="funnel.order.orderType === 'collection'"
+        :funnel="funnel"
         :step="step"
         @update:ready="setScreenReady"
       />
 
       <MenuDetailFunnelShared
         v-else
-        :order="order"
+        :order="funnel.order"
         :step="step"
         @update:ready="setScreenReady"
       />
@@ -46,36 +46,33 @@
         <button
           type="button"
           class="menu-order-primary"
-          :disabled="continueDisabled"
-          @click="goNext"
+          :disabled="continueBlocked"
+          @click="continueFunnel"
         >
-          {{ isLastStep && !continueDisabled ? 'Done' : 'Continue' }}
+          {{ continueLabel }}
         </button>
       </footer>
 
-      <p v-if="order.message" class="menu-order-placeholder">
-        {{ order.message }}
+      <p v-if="funnel.order.message" class="menu-order-placeholder">
+        {{ funnel.order.message }}
       </p>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useFunnelIndex } from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnelIndex'
-import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
+import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const props = defineProps<{
-  order: MenuOrderingFunnelState
-}>()
-
-const emit = defineEmits<{
-  (event: 'close'): void
+  funnel: MenuOrderingFunnelController
 }>()
 
 const funnelStepCount = computed(() =>
-  props.order.orderType === 'collection' ? 6 : 3
+  props.funnel.order.orderType === 'collection' ? 6 : 3
 )
+const submittingStep = ref(false)
 const {
   continueDisabled,
   goBack,
@@ -85,8 +82,36 @@ const {
   setScreenReady,
   step,
   stepCount,
-} = useFunnelIndex(() => props.order, {
-  close: () => emit('close'),
+} = useFunnelIndex(() => props.funnel.order, {
+  close: () => props.funnel.close(),
   stepCount: funnelStepCount,
 })
+const shouldSubmitCollectionRequest = computed(() =>
+  props.funnel.incoming.order_type === 'collection' &&
+    step.value === 3 &&
+    !props.funnel.sending.sent_order
+)
+const continueBlocked = computed(() =>
+  continueDisabled.value || submittingStep.value
+)
+const continueLabel = computed(() => {
+  if (submittingStep.value) return 'Sending...'
+  return isLastStep.value && !continueBlocked.value ? 'Done' : 'Continue'
+})
+
+async function continueFunnel() {
+  if (continueBlocked.value) return
+
+  if (shouldSubmitCollectionRequest.value) {
+    submittingStep.value = true
+    try {
+      const created = await props.funnel.submit({})
+      if (!created) return
+    } finally {
+      submittingStep.value = false
+    }
+  }
+
+  goNext()
+}
 </script>

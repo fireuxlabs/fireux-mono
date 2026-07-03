@@ -9,7 +9,7 @@ export function useRendezvous(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const mode = ref<CollectionRendezvousMode>('queue')
-  const scheduledDate = ref('')
+  const scheduledDate = ref('today')
   const scheduledTime = ref('')
   const status = computed(() =>
     toValue(order).policy?.message ||

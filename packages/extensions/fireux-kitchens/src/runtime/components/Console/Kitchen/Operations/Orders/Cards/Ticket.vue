@@ -117,15 +117,33 @@
         </div>
       </div>
 
-      <div class="flex h-12 shrink-0 items-center px-4 text-xs font-medium text-dimmed">
-        {{ orderLabel }}
+      <div class="flex h-12 shrink-0 items-center justify-between gap-2 px-4 text-xs font-medium text-dimmed">
+        <span class="min-w-0 truncate">
+          {{ orderLabel }}
+        </span>
+
+        <button
+          type="button"
+          class="order-ticket__copy"
+          :disabled="!orderId"
+          @click.stop="copyTicket"
+        >
+          <UIcon
+            :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+            aria-hidden="true"
+          />
+          {{ copied ? 'Copied' : 'Copy' }}
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import {
+  computed,
+  ref,
+} from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 
 const props = withDefaults(
@@ -153,6 +171,7 @@ const emit = defineEmits<{
   (event: 'touch-body', id: string): void
   (event: 'touch-status', id: string): void
 }>()
+const copied = ref(false)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const timestampMs = (value: unknown, baseMs = 0) => {
@@ -385,9 +404,52 @@ function touchStatus() {
   if (!canTouchStatus.value) return
   emit('touch-status', orderId.value)
 }
+
+async function copyTicket() {
+  if (!orderId.value || !import.meta.client || !navigator.clipboard) return
+
+  await navigator.clipboard.writeText(JSON.stringify({
+    surface: 'kitchen_console_order_ticket',
+    copied_at: new Date().toISOString(),
+    order_id: orderId.value,
+    label: orderLabel.value,
+    header: headerLabel.value,
+    status: statusLabel.value,
+    service_mode: serviceMode.value,
+    lines: lines.value,
+    customer_lines: customerLines.value,
+    order: orderRecord.value,
+  }, null, 2))
+  copied.value = true
+  window.setTimeout(() => {
+    copied.value = false
+  }, 1400)
+}
 </script>
 
 <style scoped>
+.order-ticket__copy {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  flex: 0 0 auto;
+  min-height: 1.65rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-bg-elevated);
+  color: var(--ui-text-highlighted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.order-ticket__copy:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .order-ticket__status-action {
   display: inline-flex;
   gap: 0.35rem;

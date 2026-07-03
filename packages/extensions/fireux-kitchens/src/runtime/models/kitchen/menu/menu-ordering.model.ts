@@ -83,6 +83,66 @@ export type MenuOrderingDeliveryState = {
   zone?: unknown
 }
 
+export type MenuOrderingIncoming = {
+  order_type: KitchenOrderType
+  basket: Array<{
+    item_id: string
+    line_id?: string
+    name: string
+    quantity: number
+    unit_price_chf?: number
+  }>
+  allergen_checked?: boolean
+  choice?: Record<string, unknown>
+}
+
+export type MenuOrderingProcessing = {
+  exists: boolean
+  order_id: string
+  order_number: string
+  status: string
+  fire_state: string
+  items: Array<CreatedMenuOrderReceiptLine | MenuOrderingBasketItem>
+  total_chf: number
+  estimated_ready_minutes?: number
+  estimated_ready_at?: string
+  order?: CreatedMenuOrder | null
+}
+
+export type MenuOrderingSending = {
+  endpoint: string
+  body: {
+    order_type: KitchenOrderType
+    items: Array<{
+      itemId: string
+      quantity: number
+      addOns?: Array<{
+        id?: string
+        label?: string
+        price?: number
+        priceLabel?: string
+      }>
+      variant?: {
+        id?: string
+        label?: string
+        price?: number
+        priceLabel?: string
+      }
+    }>
+    requested_for?: string
+    payment_method?: KitchenOrderPaymentMethod
+    customer?: KitchenOrderCustomer
+  }
+  pending: boolean
+  expected_result: {
+    status: string
+    fire_state: KitchenOrderFireState
+  }
+  message?: string
+  error?: string
+  sent_order?: CreatedMenuOrder | null
+}
+
 export type MenuOrderingFunnelState = {
   actionLabel: string
   accepted: boolean
@@ -104,4 +164,22 @@ export type MenuOrderingFunnelState = {
 export type MenuOrderingSubmitPayload = {
   customer?: KitchenOrderCustomer
   payment_method?: KitchenOrderPaymentMethod
+  requested_for?: string
+}
+
+export type MenuOrderingFunnelController = {
+  show: boolean
+  order: MenuOrderingFunnelState
+  incoming: MenuOrderingIncoming
+  processing: MenuOrderingProcessing
+  sending: MenuOrderingSending
+  collect: (payload: Partial<MenuOrderingIncoming>) => void
+  clear: () => void
+  close: () => void
+  open: () => void
+  submit: (payload: MenuOrderingSubmitPayload) =>
+    Promise<CreatedMenuOrder | null | undefined> |
+    CreatedMenuOrder |
+    null |
+    undefined
 }

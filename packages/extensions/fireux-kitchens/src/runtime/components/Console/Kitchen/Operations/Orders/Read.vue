@@ -56,18 +56,29 @@
             <header class="kitchen-orders-cta__header">
               <div class="kitchen-orders-cta__title">
                 <UIcon
-                  v-if="isDeliveryOrder(ticket)"
-                  name="i-lucide-bike"
+                  v-if="incomingIcon(ticket)"
+                  :name="incomingIcon(ticket)"
                   class="kitchen-orders-cta__icon"
                   aria-hidden="true"
                 />
 
                 <div>
                   <p>Incoming</p>
-                  <h3>{{ isPaymentPending(ticket) ? 'Payment pending' : 'Set cooking time' }}</h3>
+                  <h3>{{ incomingTitle(ticket) }}</h3>
                 </div>
               </div>
 
+              <button
+                type="button"
+                class="kitchen-orders-copy"
+                @click="copyIncomingTicket(ticket)"
+              >
+                <UIcon
+                  :name="copiedIncomingOrderId === normalizeId(ticket.id) ? 'i-lucide-check' : 'i-lucide-copy'"
+                  aria-hidden="true"
+                />
+                {{ copiedIncomingOrderId === normalizeId(ticket.id) ? 'Copied' : 'Copy' }}
+              </button>
             </header>
 
             <div class="kitchen-orders-cta__lines">
@@ -216,11 +227,6 @@
       </section>
     </div>
 
-    <DevFireuxDebugPanel
-      title="Kitchen orders"
-      scope="console"
-      :data="debug"
-    />
   </div>
 </template>
 
@@ -232,6 +238,7 @@ const clearConfirm = ref(false)
 const clearingOrders = ref(false)
 const sendReadyOrderId = ref('')
 const acceptingOrderId = ref('')
+const copiedIncomingOrderId = ref('')
 const defaultEstimateMinutes = 45
 const estimatesByOrderId = ref<Record<string, number>>({})
 const {
@@ -247,7 +254,6 @@ const {
   passOrder,
   archiveOrder,
   trashOrder,
-  debug,
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
@@ -287,6 +293,60 @@ function isPaymentPending(order: Record<string, unknown>) {
 
 function isDeliveryOrder(order: Record<string, unknown>) {
   return normalizeId(order.order_type) === 'delivery'
+}
+
+function isCollectionOrder(order: Record<string, unknown>) {
+  return normalizeId(order.order_type) === 'collection'
+}
+
+function incomingIcon(order: Record<string, unknown>) {
+  if (isDeliveryOrder(order)) return 'i-lucide-bike'
+  if (isCollectionOrder(order)) return 'i-lucide-shopping-bag'
+  return ''
+}
+
+function incomingTitle(order: Record<string, unknown>) {
+  if (isPaymentPending(order)) return 'Payment pending'
+  if (isCollectionOrder(order)) return 'Collection timing request'
+
+  return 'Set cooking time'
+}
+
+function incomingCopyPayload(order: Record<string, unknown>) {
+  const orderId = normalizeId(order.id)
+
+  return {
+    surface: 'kitchen_console_orders_receiving',
+    action: incomingTitle(order),
+    copied_at: new Date().toISOString(),
+    order_id: orderId,
+    order_type: normalizeId(order.order_type),
+    status: normalizeId(order.status),
+    fire_state: normalizeId(order.fire_state),
+    estimate_minutes: estimateMinutesForId(
+      orderId,
+      Number(order.estimated_ready_minutes || 0)
+    ),
+    lines: orderLines(order),
+    customer: order.customer || null,
+    requested_for: order.requested_for || '',
+    payment: order.payment || null,
+    fulfilment_policy: order.fulfilment_policy || null,
+    fulfilment_match: order.fulfilment_match || null,
+    driver_responses: order.driver_responses || null,
+    received_order: order,
+  }
+}
+
+async function copyIncomingTicket(order: Record<string, unknown>) {
+  if (!import.meta.client || !navigator.clipboard) return
+
+  const orderId = normalizeId(order.id)
+  await navigator.clipboard.writeText(JSON.stringify(incomingCopyPayload(order), null, 2))
+  copiedIncomingOrderId.value = orderId
+  window.setTimeout(() => {
+    if (copiedIncomingOrderId.value === orderId) copiedIncomingOrderId.value = ''
+  }, 1400)
 }
 
 function sendLabel(orderId: string) {
@@ -541,6 +601,22 @@ async function clearOrders() {
   height: 1.35rem;
   margin-top: 0.1rem;
   color: var(--ui-primary);
+}
+
+.kitchen-orders-copy {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
+  border-radius: 999px;
+  background: var(--ui-bg-elevated);
+  color: var(--ui-text-highlighted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 850;
 }
 
 .kitchen-orders-cta__header p,

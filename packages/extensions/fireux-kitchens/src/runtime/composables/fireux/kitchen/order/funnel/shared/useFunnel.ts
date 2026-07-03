@@ -4,6 +4,7 @@ import {
   onMounted,
   proxyRefs,
   ref,
+  shallowRef,
   toValue,
   watch,
   type MaybeRefOrGetter,
@@ -24,6 +25,9 @@ import type { MenuManifest } from '../../../../menu/useMenuManifest'
 import type { MenuFoodOrderItem } from '../../../../../../models/kitchen/menu/menu-food.model'
 import type {
   CreatedMenuOrder,
+  MenuOrderingIncoming,
+  MenuOrderingProcessing,
+  MenuOrderingSending,
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
 } from '../../../../../../models/kitchen/menu/menu-ordering.model'
@@ -93,6 +97,18 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     orderType: selectedOrderType,
     storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
   })
+  const collectedIncoming = shallowRef<Partial<MenuOrderingIncoming>>({})
+  const menuId = computed(() => text(toValue(options.menuId)))
+  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const orderEndpoint = computed(() => {
+    if (!menuId.value) return ''
+
+    const query = new URLSearchParams()
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+
+    const qs = query.toString()
+    return `/api/menus/${encodeURIComponent(menuId.value)}/orders${qs ? `?${qs}` : ''}`
+  })
   const detailView = computed<MenuDetailView | null>(() => {
     const menu = toValue(options.menu)
     if (!menu) return null
@@ -106,6 +122,63 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       dimmed: panelOpen.value,
     }
   })
+  const incoming = computed<MenuOrderingIncoming>(() => {
+    return {
+      order_type: selectedOrderType.value,
+      basket: draft.items.value.map((item) => ({
+        item_id: item.id,
+        ...(item.lineId && item.lineId !== item.id ? { line_id: item.lineId } : {}),
+        name: item.name,
+        quantity: item.quantity,
+        ...(item.unitPrice ? { unit_price_chf: item.unitPrice } : {}),
+      })),
+      ...collectedIncoming.value,
+    }
+  })
+  const processing = computed<MenuOrderingProcessing>(() => {
+    const order = draft.sentOrder.value
+    const total = draft.items.value.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    )
+
+    return {
+      exists: Boolean(order),
+      order_id: order?.id || '',
+      order_number: order?.order_number || '',
+      status: order?.status || '',
+      fire_state: order?.fire_state || '',
+      items: order?.receipt?.items || draft.items.value,
+      total_chf: order?.receipt?.total_chf || total,
+      estimated_ready_minutes: 0,
+      estimated_ready_at: '',
+      order: order || null,
+    }
+  })
+  const sending = computed<MenuOrderingSending>(() => ({
+    endpoint: orderEndpoint.value,
+    body: {
+      order_type: selectedOrderType.value,
+      items: draft.items.value.map((item) => ({
+        itemId: item.id,
+        quantity: item.quantity,
+        ...(item.addOns?.length ? { addOns: item.addOns } : {}),
+        ...(item.variant ? { variant: item.variant } : {}),
+      })),
+    },
+    pending: draft.creatingItemId.value === 'order',
+    expected_result: {
+      status: ['collection', 'delivery'].includes(selectedOrderType.value)
+        ? 'pending_acceptance'
+        : 'open',
+      fire_state: ['collection', 'delivery'].includes(selectedOrderType.value)
+        ? 'held'
+        : 'ready_to_fire',
+    },
+    ...(draft.message.value ? { message: draft.message.value } : {}),
+    ...(draft.error.value ? { error: draft.error.value } : {}),
+    ...(draft.sentOrder.value ? { sent_order: draft.sentOrder.value } : {}),
+  }))
   const funnelView = computed<MenuOrderingFunnelState>(() => {
     const policy = selectedOrderTypeConfig.value
     const serviceHours = behaviour.value?.ordering.service_hours
@@ -117,8 +190,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       panelOpen: panelOpen.value,
       items: draft.items.value,
       message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
-      menuId: text(toValue(options.menuId)),
-      kitchenSlug: text(toValue(options.kitchenSlug)),
+      menuId: menuId.value,
+      kitchenSlug: kitchenSlug.value,
       orderType: selectedOrderType.value,
       pending: draft.creatingItemId.value === 'order',
       ...(policy ? { policy } : {}),
@@ -155,8 +228,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     return draft.place(payload)
   }
 
+  function collect(payload: Partial<MenuOrderingIncoming>) {
+    collectedIncoming.value = {
+      ...collectedIncoming.value,
+      ...payload,
+    }
+  }
+
   watch(draft.quantity, (quantity: number) => {
     if (!quantity && !draft.sentOrder.value) closePanel()
+  })
+
+  watch(draft.quantity, (quantity: number) => {
+    if (quantity) return
+
+    collectedIncoming.value = {}
   })
 
   return {
@@ -170,8 +256,12 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       show: showFunnel,
       order: funnelView,
       clear: draft.clear,
+      collect,
       close: closePanel,
+      incoming,
       open: openPanel,
+      processing,
+      sending,
       submit,
     }),
   }
@@ -517,13 +607,15 @@ function useDraft(
       })),
       order_type: orderType.value,
       payment_method: input?.payment_method,
+      requested_for: input?.requested_for,
       customer: input?.customer,
     })
     if (!created) return null
 
     const isWaitingForAcceptance = created.status === 'pending_acceptance'
     const nextAwaitingAcceptance =
-      isWaitingForAcceptance && orderType.value === 'delivery'
+      isWaitingForAcceptance &&
+        ['collection', 'delivery'].includes(orderType.value)
     trackedOrder.value = created
     acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance

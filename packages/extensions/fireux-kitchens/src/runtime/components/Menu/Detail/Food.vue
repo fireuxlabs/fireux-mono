@@ -8,14 +8,12 @@
 
   <MenuDetailFunnel
     v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
-    :order="interaction.funnel.order"
-    @close="interaction.funnel.close"
+    :funnel="interaction.funnel"
   />
 
   <MenuDetailFunnelTrigger
     v-else-if="interaction.funnel.show"
-    :order="interaction.funnel.order"
-    @open="interaction.funnel.open"
+    :funnel="interaction.funnel"
   />
 </template>
 

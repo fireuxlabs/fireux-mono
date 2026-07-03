@@ -203,8 +203,16 @@ const zonedDayTime = (date: Date, timezone: string) => {
   }
 }
 
-const inputDateDay = (value: unknown): WeekdayTimeDay | null => {
-  const match = text(value).match(/^(\d{4})-(\d{2})-(\d{2})$/)
+const inputDateDay = (
+  value: unknown,
+  timezone: string
+): WeekdayTimeDay | null => {
+  const source = text(value)
+  if (source.toLowerCase() === 'today') {
+    return zonedDayTime(new Date(), timezone).day
+  }
+
+  const match = source.match(/^(\d{4})-(\d{2})-(\d{2})$/)
   if (!match) return null
 
   const year = Number(match[1])
@@ -277,7 +285,7 @@ export const readWeekdayTimeSelectionState = (
   timeValue: unknown
 ) => {
   const hours = readWeekdayTimeWindowsConfig(value)
-  const day = inputDateDay(dateValue)
+  const day = inputDateDay(dateValue, hours.timezone)
   const minutes = timeMinutes(timeValue)
   const complete = Boolean(day && minutes >= 0)
   const known = Boolean(hours.windows.length)

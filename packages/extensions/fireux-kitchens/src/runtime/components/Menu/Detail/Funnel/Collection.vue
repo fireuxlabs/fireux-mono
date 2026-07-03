@@ -1,7 +1,7 @@
 <template>
   <MenuDetailFunnelBasket
     v-if="step === 1"
-    :order="order"
+    :order="funnel.order"
   />
 
   <ClientOnly v-else-if="step === 2">
@@ -10,12 +10,13 @@
 
   <MenuDetailFunnelCollectionRendezvous
     v-else-if="step === 3"
-    :order="order"
+    :order="funnel.order"
     @update:ready="rendezvousReady = $event"
   />
 
   <MenuDetailFunnelCollectionKitchen
     v-else-if="step === 4"
+    :funnel="funnel"
   />
 
   <MenuDetailFunnelPayment v-else-if="step === 5" />
@@ -24,12 +25,15 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue'
+import {
+  watch,
+  watchEffect,
+} from 'vue'
 import { useCollection } from '../../../../composables/fireux/kitchen/order/funnel/Collection/useCollection'
-import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
+import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const props = defineProps<{
-  order: MenuOrderingFunnelState
+  funnel: MenuOrderingFunnelController
   step: number
 }>()
 
@@ -41,9 +45,15 @@ const {
   allergenAccepted,
   ready,
   rendezvousReady,
-} = useCollection(() => props.order, () => props.step)
+} = useCollection(() => props.funnel.order, () => props.step)
 
 watchEffect(() => {
   emit('update:ready', ready.value)
+})
+
+watch(allergenAccepted, (accepted: boolean) => {
+  props.funnel.collect({
+    allergen_checked: accepted,
+  })
 })
 </script>

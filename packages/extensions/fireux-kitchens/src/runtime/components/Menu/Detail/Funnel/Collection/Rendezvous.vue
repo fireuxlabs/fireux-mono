@@ -51,7 +51,7 @@
           <input
             v-model="scheduledDate"
             class="menu-order-schedule__input"
-            type="date"
+            type="text"
           >
         </label>
 

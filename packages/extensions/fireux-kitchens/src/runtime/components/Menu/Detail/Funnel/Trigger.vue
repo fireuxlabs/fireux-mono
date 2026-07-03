@@ -2,22 +2,18 @@
   <button
     type="button"
     class="menu-order-basket"
-    :disabled="order.pending"
-    :aria-label="order.actionLabel"
-    @click="$emit('open')"
+    :disabled="funnel.order.pending"
+    :aria-label="funnel.order.actionLabel"
+    @click="funnel.open"
   >
     <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
   </button>
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
+import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 defineProps<{
-  order: MenuOrderingFunnelState
-}>()
-
-defineEmits<{
-  (event: 'open'): void
+  funnel: MenuOrderingFunnelController
 }>()
 </script>
