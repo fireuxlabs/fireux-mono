@@ -101,6 +101,7 @@ export type MenuOrderingIncoming = {
   }>
   allergen_checked?: boolean
   collection?: MenuOrderingCollectionState
+  delivery?: MenuOrderingDeliveryState
   choice?: Record<string, unknown>
 }
 

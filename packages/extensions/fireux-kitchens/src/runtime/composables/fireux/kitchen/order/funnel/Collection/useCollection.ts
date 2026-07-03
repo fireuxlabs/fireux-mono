@@ -134,7 +134,9 @@ export function useCollection(
     reset()
   })
 
-  watch(savedCollection, (nextCollection) => {
+  watch(savedCollection, (
+    nextCollection: MenuOrderingCollectionState | undefined
+  ) => {
     if (!nextCollection) return
     if (nextCollection.mode === 'queue' || nextCollection.mode === 'scheduled') {
       mode.value = nextCollection.mode

@@ -11,11 +11,9 @@ import {
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import {
-  useMenuViewMode,
-  type MenuChoiceOption,
-  type MenuChoiceValue,
-} from '../../../../menu/useMenuViewMode'
-import { menuOrderBasketActionLabel } from '../../../../../../utils/menu-ordering-ui'
+  menuOrderBasketActionLabel,
+  menuOrderTypeLabel,
+} from '../../../../../../utils/menu-ordering-ui'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
@@ -24,8 +22,14 @@ import type {
 import type { MenuManifest } from '../../../../menu/useMenuManifest'
 import type { MenuFoodOrderItem } from '../../../../../../models/kitchen/menu/menu-food.model'
 import type {
+  MenuOrderTypeConfig,
+  MenuPublicChoice,
+  MenuView,
+} from '../../../../../../models/kitchen/menu/menu.model'
+import type {
   CreatedMenuOrder,
   MenuOrderingCollectionState,
+  MenuOrderingDeliveryState,
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
@@ -33,7 +37,16 @@ import type {
   MenuOrderingSubmitPayload,
 } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
-export type { MenuChoiceValue }
+export type MenuChoiceValue = string
+export type MenuChoiceOption = {
+  value: MenuChoiceValue
+  label: string
+  view: MenuView
+  menuId?: string
+  to?: string
+  orderType?: KitchenOrderType
+  message?: string
+}
 export type MenuDetailOrderItem = MenuFoodOrderItem
 export type MenuDetailView = {
   menu: MenuManifest
@@ -53,6 +66,63 @@ type PanelState = 'closed' | 'open'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
+const supportedViews = ['browse', 'order'] as const satisfies readonly MenuView[]
+const supportedOrderTypes = [
+  'dine_in',
+  'collection',
+  'delivery',
+  'pre_order',
+  'room_service',
+] as const satisfies readonly KitchenOrderType[]
+const takeAwayOrderTypes = ['collection', 'delivery'] as const
+const publicFunnelOrderTypes = takeAwayOrderTypes
+const browseChoice = (): MenuChoiceOption => ({
+  value: 'browse',
+  label: 'Browse',
+  view: 'browse',
+})
+const uniqueMenuViews = (views: MenuView[]) =>
+  views.filter((mode, index, modes) => modes.indexOf(mode) === index)
+const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
+  `order:${type}`
+const orderType = (value: unknown): KitchenOrderType | undefined =>
+  supportedOrderTypes.includes(value as KitchenOrderType)
+    ? value as KitchenOrderType
+    : undefined
+const isTakeAwayChoice = (option: MenuChoiceOption) =>
+  option.view === 'order' &&
+    takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
+const isDineInChoice = (option: MenuChoiceOption) =>
+  option.view === 'browse' || option.orderType === 'dine_in'
+const isPublicFunnelChoice = (option: MenuChoiceOption) =>
+  option.view !== 'order' ||
+    publicFunnelOrderTypes.includes(option.orderType as typeof publicFunnelOrderTypes[number])
+const withDineInCampFallback = (options: MenuChoiceOption[]) =>
+  options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
+    ? [...options, browseChoice()]
+    : options
+
+const publicChoiceOption = (choice: MenuPublicChoice): MenuChoiceOption | null => {
+  const type = orderType(choice.order_type)
+
+  if (
+    !choice.value ||
+    !choice.label ||
+    !supportedViews.includes(choice.view)
+  ) {
+    return null
+  }
+
+  return {
+    value: choice.value,
+    label: choice.label,
+    view: choice.view,
+    ...(choice.menu_id ? { menuId: choice.menu_id } : {}),
+    ...(choice.to ? { to: choice.to } : {}),
+    ...(type ? { orderType: type } : {}),
+    ...(choice.message ? { message: choice.message } : {}),
+  }
+}
 
 // Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
 export function useFunnel(options: UseKitchenOrderFunnelOptions) {
@@ -63,16 +133,117 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     return slug ? `${slug}:${id}` : id
   })
   const behaviour = computed(() => toValue(options.menu)?.behaviour)
-  const {
-    choiceOptions,
-    selectedChoice,
-    selectedOrderType,
-    selectedOrderTypeConfig,
-    canOrder,
-    isOrderMode,
-  } = useMenuViewMode(
-    behaviour,
-    computed(() => `fireux:menu:${menuStorageScope.value}:view`)
+  const orderTypes = computed<KitchenOrderType[]>(() =>
+    Array.isArray(behaviour.value?.orderTypes) ? behaviour.value.orderTypes : []
+  )
+  const defaultOrderType = computed<KitchenOrderType>(() => {
+    if (orderTypes.value.includes('dine_in')) return 'dine_in'
+
+    return orderTypes.value[0] || 'dine_in'
+  })
+  const orderTypeConfigs = computed<MenuOrderTypeConfig[]>(() => {
+    const rows = behaviour.value?.ordering?.order_types
+
+    return Array.isArray(rows) ? rows : []
+  })
+  const canOrder = computed(() =>
+    Boolean(behaviour.value?.orderingEnabled && orderTypes.value.length)
+  )
+  const configuredViews = computed<MenuView[]>(() =>
+    Array.isArray(behaviour.value?.views)
+      ? behaviour.value.views.filter((mode): mode is MenuView =>
+          supportedViews.includes(mode as typeof supportedViews[number])
+        )
+      : []
+  )
+  const viewModes = computed<MenuView[]>(() => {
+    const configured = configuredViews.value.filter((mode) =>
+      mode === 'browse' || canOrder.value
+    )
+    const available: MenuView[] = configured.length
+      ? configured
+      : canOrder.value
+        ? ['browse', 'order']
+        : ['browse']
+
+    return uniqueMenuViews(available)
+  })
+  const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
+    const choices: MenuChoiceOption[] = []
+    if (viewModes.value.includes('browse')) {
+      choices.push(browseChoice())
+    }
+    if (canOrder.value && viewModes.value.includes('order')) {
+      orderTypes.value.forEach((type) => {
+        const config = orderTypeConfigs.value.find((row) => row.type === type)
+
+        choices.push({
+          value: orderChoiceValue(type),
+          label: menuOrderTypeLabel(type),
+          view: 'order',
+          orderType: type,
+          ...(config?.message ? { message: config.message } : {}),
+        })
+      })
+    }
+
+    return choices.length ? choices : [browseChoice()]
+  })
+  const publicChoiceOptions = computed<MenuChoiceOption[]>(() => {
+    const choices = Array.isArray(behaviour.value?.publicChoices)
+      ? behaviour.value.publicChoices
+          .map(publicChoiceOption)
+          .filter((choice): choice is MenuChoiceOption => Boolean(choice))
+      : []
+
+    return choices.length > 1 && choices.some((choice) => !choice.to)
+      ? choices
+      : []
+  })
+  const choiceOptions = computed<MenuChoiceOption[]>(() => {
+    const choices = withDineInCampFallback((publicChoiceOptions.value.length
+      ? publicChoiceOptions.value
+      : generatedChoiceOptions.value).filter(isPublicFunnelChoice))
+
+    return choices.length ? choices : [browseChoice()]
+  })
+  const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
+    const local = choiceOptions.value.filter((option) => !option.to)
+    const generated = withDineInCampFallback(
+      generatedChoiceOptions.value.filter(isPublicFunnelChoice)
+    )
+
+    return local.length ? local : generated.length ? generated : [browseChoice()]
+  })
+  const choiceValues = computed<MenuChoiceValue[]>(() =>
+    localChoiceOptions.value.map((option) => option.value)
+  )
+  const preferredChoice = computed<MenuChoiceValue>(() =>
+    choiceValues.value[0] || 'browse'
+  )
+  const { selected: selectedChoice } = useStoredChoice<MenuChoiceValue>({
+    key: computed(() => `fireux:menu:${menuStorageScope.value}:view`),
+    choices: choiceValues,
+    fallback: preferredChoice,
+  })
+  const selectedChoiceOption = computed<MenuChoiceOption>(() =>
+    localChoiceOptions.value.find((option) =>
+      option.value === selectedChoice.value
+    ) ||
+    localChoiceOptions.value[0] ||
+    browseChoice()
+  )
+  const viewMode = computed<MenuView>(() => selectedChoiceOption.value.view)
+  const selectedOrderType = computed<KitchenOrderType>(() =>
+    selectedChoiceOption.value.orderType || defaultOrderType.value
+  )
+  const selectedOrderTypeConfig = computed(() =>
+    orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
+    orderTypeConfigs.value.find((type) => type.type === defaultOrderType.value) ||
+    orderTypeConfigs.value[0]
+  )
+  const isOrderMode = computed(() =>
+    canOrder.value && viewMode.value === 'order'
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
     key: computed(() =>
@@ -99,6 +270,11 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
   })
   const collectedIncoming = shallowRef<Partial<MenuOrderingIncoming>>({})
+  const deliveryCustomer = computed(() =>
+    selectedOrderType.value === 'delivery'
+      ? customerFromDelivery(collectedIncoming.value.delivery)
+      : {}
+  )
   const menuId = computed(() => text(toValue(options.menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const orderEndpoint = computed(() => {
@@ -169,6 +345,9 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ...(collectedIncoming.value.collection
         ? { collection: collectedIncoming.value.collection }
         : {}),
+      ...(Object.keys(deliveryCustomer.value).length
+        ? { customer: deliveryCustomer.value }
+        : {}),
     },
     pending: draft.creatingItemId.value === 'order',
     expected_result: {
@@ -226,7 +405,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   }
 
   function submit(payload: MenuOrderingSubmitPayload) {
-    return draft.place(payload)
+    const fallbackCustomer = deliveryCustomer.value
+    const customer = {
+      ...fallbackCustomer,
+      ...(payload.customer || {}),
+    }
+
+    return draft.place({
+      ...payload,
+      ...(Object.keys(customer).length ? { customer } : {}),
+    })
   }
 
   function collect(payload: Partial<MenuOrderingIncoming>) {
@@ -424,6 +612,16 @@ const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
   return Object.fromEntries(
     Object.entries(clean).filter(([, value]) => value)
   )
+}
+const customerFromDelivery = (
+  delivery: MenuOrderingDeliveryState | undefined
+): KitchenOrderCustomer => {
+  const address = delivery?.address
+
+  return cleanCustomer({
+    address: text(address?.formatted || address?.input),
+    address_place_id: text(address?.place_id),
+  })
 }
 const isClearedOrderStatus = (status: unknown) =>
   ['trashed', 'deleted', 'cancelled', 'canceled'].includes(text(status))

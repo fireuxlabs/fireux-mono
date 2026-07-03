@@ -18,12 +18,18 @@ const props = defineProps<{
   funnel: MenuOrderingFunnelController
 }>()
 
+const requestLabel = computed(() => {
+  if (props.funnel.order.orderType === 'collection') return 'Collection request'
+  if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
+
+  return 'Order'
+})
 const confirmationLabel = computed(() => {
   const orderNumber = props.funnel.processing.order_number
-  if (!props.funnel.processing.exists) return 'Collection request is not sent yet.'
+  if (!props.funnel.processing.exists) return `${requestLabel.value} is not sent yet.`
 
   return orderNumber
-    ? `Collection request ${orderNumber} is with the kitchen.`
-    : 'Collection request is with the kitchen.'
+    ? `${requestLabel.value} ${orderNumber} is with the kitchen.`
+    : `${requestLabel.value} is with the kitchen.`
 })
 </script>

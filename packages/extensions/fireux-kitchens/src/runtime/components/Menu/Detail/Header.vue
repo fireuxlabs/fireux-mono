@@ -34,7 +34,7 @@ import { computed } from 'vue'
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
-} from '../../../composables/fireux/menu/useMenuViewMode'
+} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 

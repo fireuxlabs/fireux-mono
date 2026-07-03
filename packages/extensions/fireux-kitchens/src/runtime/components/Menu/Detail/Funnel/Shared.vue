@@ -9,7 +9,7 @@
   </ClientOnly>
 
   <p v-else class="menu-order-placeholder">
-    This order funnel is not wired yet. Collection is the first finishable path.
+    This order type is not wired yet.
   </p>
 </template>
 
