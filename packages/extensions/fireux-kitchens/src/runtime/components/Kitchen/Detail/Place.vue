@@ -47,21 +47,17 @@ import {
   usePlaceInterface,
 } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenServiceNow } from '../../../composables/fireux/kitchen/useKitchenServiceNow'
+import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 import {
   readKitchenIdentity,
   readKitchenOperationHours,
 } from '../../../utils/kitchen-spine'
-import {
-  readWeekdayTimeOpenState,
-  weekdayTimeLines,
-} from '../../../utils/weekday-time'
+import { weekdayTimeLines } from '../../../utils/weekday-time'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
 }>()
 
-const { now: serviceNow } = useKitchenServiceNow()
 const placeId = computed(() =>
   String(props.kitchen?.place_id || '').trim()
 )
@@ -83,17 +79,12 @@ const operationHours = computed(() =>
 const operationHourLines = computed(() =>
   weekdayTimeLines(operationHours.value)
 )
-const operationHoursOpenState = computed(() =>
-  readWeekdayTimeOpenState(operationHours.value, serviceNow.value)
-)
+const { menuServiceChip: operationHoursChip } =
+  useMenuServiceComputed(operationHours)
 const operationHoursChipLabel = computed(() => {
-  if (!operationHoursOpenState.value.known) return 'Hours unavailable'
-
-  return operationHoursOpenState.value.open ? 'Open now' : 'Closed now'
+  return operationHoursChip.value.label
 })
 const operationHoursChipColor = computed(() => {
-  if (!operationHoursOpenState.value.known) return 'neutral'
-
-  return operationHoursOpenState.value.open ? 'success' : 'error'
+  return operationHoursChip.value.color
 })
 </script>

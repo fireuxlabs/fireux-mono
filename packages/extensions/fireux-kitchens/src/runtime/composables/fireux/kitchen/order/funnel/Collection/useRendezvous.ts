@@ -1,17 +1,13 @@
 import { computed, ref, toValue, watchEffect, type MaybeRefOrGetter } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
-import { useKitchenServiceNow } from '../../../useKitchenServiceNow'
-import {
-  readWeekdayTimeOpenState,
-  readWeekdayTimeSelectionState,
-} from '../../../../../../utils/weekday-time'
+import { useMenuServiceComputed } from '../../../../firestore/menu/useMenu'
+import { readWeekdayTimeSelectionState } from '../../../../../../utils/weekday-time'
 
 export type CollectionRendezvousMode = 'queue' | 'scheduled'
 
 export function useRendezvous(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
-  const { now: serviceNow } = useKitchenServiceNow()
   const mode = ref<CollectionRendezvousMode>('queue')
   const scheduledDate = ref('')
   const scheduledTime = ref('')
@@ -19,22 +15,13 @@ export function useRendezvous(
     toValue(order).policy?.message ||
     'Choose whether to join the kitchen queue now or schedule collection for later.'
   )
-  const serviceTimes = computed(() => {
+  const serviceHours = computed(() => {
     const current = toValue(order)
-    const serviceHours = current.serviceHours
-    const menuServiceTimes = serviceHours?.operation_hours
-    const derivedMenuServiceTimes = readWeekdayTimeOpenState(
-      menuServiceTimes,
-      serviceNow.value
-    )
 
-    return {
-      ...derivedMenuServiceTimes,
-      label: derivedMenuServiceTimes.known
-        ? derivedMenuServiceTimes.open ? 'Open now' : 'Closed now'
-        : 'Hours unavailable',
-    }
+    return current.serviceHours?.operation_hours
   })
+  const { menuServiceChip: serviceTimes } =
+    useMenuServiceComputed(serviceHours)
   const canJoinQueue = computed(() =>
     !serviceTimes.value.known || serviceTimes.value.open
   )

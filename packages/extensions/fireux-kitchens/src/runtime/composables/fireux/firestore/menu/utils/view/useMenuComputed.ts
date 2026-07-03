@@ -1,12 +1,54 @@
-import { computed, type Ref } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import { readWeekdayTimeOpenState } from '../../../../../../utils/weekday-time'
+import { useKitchenServiceNow } from '../../../../kitchen/useKitchenServiceNow'
 import { useMenuInterface } from './useMenuInterface'
+
+type MenuServiceChipColor = 'neutral' | 'success' | 'error'
+
+export function useMenuServiceComputed(
+  serviceHours: MaybeRefOrGetter<unknown>
+) {
+  const { now: serviceNow } = useKitchenServiceNow()
+  const menuServiceOpenState = computed(() =>
+    readWeekdayTimeOpenState(toValue(serviceHours), serviceNow.value)
+  )
+  const menuServiceChip = computed(() => {
+    const known = menuServiceOpenState.value.known
+    const open = menuServiceOpenState.value.open
+    const color: MenuServiceChipColor = !known
+      ? 'neutral'
+      : open
+        ? 'success'
+        : 'error'
+
+    return {
+      known,
+      open,
+      color,
+      label: !known
+      ? 'Hours unavailable'
+      : open
+        ? 'Open now'
+        : 'Closed now',
+    }
+  })
+
+  return {
+    menuServiceChip,
+    menuServiceOpenState,
+  }
+}
 
 export function useMenuComputed(
   menu: Ref<Menu | null | undefined>,
   pending: Ref<boolean>
 ) {
   const { pill: menuInterface } = useMenuInterface()
+  const menuServiceHours = computed(() =>
+    menu.value?.ordering?.service_hours?.operation_hours
+  )
+  const menuServiceComputed = useMenuServiceComputed(menuServiceHours)
 
   const isPending = computed(() => Boolean(pending.value))
   const menuCard = computed(() => (menu.value ? menuInterface(menu.value) : null))
@@ -18,5 +60,6 @@ export function useMenuComputed(
     isPending,
     menuCard,
     menuSearchText,
+    ...menuServiceComputed,
   }
 }

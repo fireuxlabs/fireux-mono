@@ -36,8 +36,7 @@ import type {
   MenuChoiceValue,
 } from '../../../composables/fireux/menu/useMenuViewMode'
 import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
-import { useKitchenServiceNow } from '../../../composables/fireux/kitchen/useKitchenServiceNow'
-import { readWeekdayTimeOpenState } from '../../../utils/weekday-time'
+import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 
 const props = defineProps<{
   menu: MenuManifest
@@ -49,13 +48,11 @@ defineEmits<{
   (event: 'update:modelValue', value: MenuChoiceValue): void
 }>()
 
-const { now: serviceNow } = useKitchenServiceNow()
 const menuServiceTimes = computed(() =>
   props.menu.behaviour.ordering.service_hours?.operation_hours
 )
-const derivedMenuServiceTimes = computed(() =>
-  readWeekdayTimeOpenState(menuServiceTimes.value, serviceNow.value)
-)
+const { menuServiceChip: derivedMenuServiceTimes } =
+  useMenuServiceComputed(menuServiceTimes)
 </script>
 
 <style scoped>

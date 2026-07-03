@@ -12,11 +12,11 @@
 
           <ClientOnly>
             <UBadge
-              v-if="menuOpenState.known"
-              :color="menuOpenState.open ? 'success' : 'error'"
+              v-if="menuServiceChip.known"
+              :color="menuServiceChip.color"
               variant="soft"
             >
-              {{ menuOpenState.open ? 'Open now' : 'Closed now' }}
+              {{ menuServiceChip.label }}
             </UBadge>
           </ClientOnly>
         </div>
@@ -41,8 +41,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Menu } from '../../../models/kitchen/menu/menu.model'
-import { useKitchenServiceNow } from '../../../composables/fireux/kitchen/useKitchenServiceNow'
-import { readWeekdayTimeOpenState } from '../../../utils/weekday-time'
+import { useMenuComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 
 const props = defineProps<{
   menu: Menu
@@ -50,14 +49,11 @@ const props = defineProps<{
   to: string
 }>()
 
-const { now: serviceNow } = useKitchenServiceNow()
+const { menuServiceChip } = useMenuComputed(
+  computed(() => props.menu),
+  computed(() => false)
+)
 const text = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => text(props.menu.name))
 const menuDescription = computed(() => text(props.menu.description))
-const menuOpenState = computed(() =>
-  readWeekdayTimeOpenState(
-    props.menu.ordering?.service_hours?.operation_hours,
-    serviceNow.value
-  )
-)
 </script>

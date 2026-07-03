@@ -25,7 +25,10 @@ export {
   menuSectionsPath,
   scopedMenuPath,
 } from './utils/paths'
-export { useMenuComputed } from './utils/view/useMenuComputed'
+export {
+  useMenuComputed,
+  useMenuServiceComputed,
+} from './utils/view/useMenuComputed'
 export { useMenuInterface } from './utils/view/useMenuInterface'
 
 type UseMenuOptions = {
