@@ -6,6 +6,7 @@ import type {
   KitchenImageShade,
 } from '../models/kitchen.model'
 import { readMenuOrderFulfilmentPolicy } from './menu-ordering-policy'
+import { readWeekdayTimeWindowsConfig } from './weekday-time'
 
 type KitchenSpineRecord = Record<string, unknown> | null | undefined
 
@@ -114,4 +115,11 @@ export const readKitchenFulfilmentConfig = (
     delivery_zones: policy?.delivery_zones || [],
     payment_methods: policy?.payment_methods || [],
   }
+}
+
+export const readKitchenOperationHours = (value: KitchenSpineRecord) => {
+  const source = record(value)
+  const orders = record(source.orders)
+
+  return readWeekdayTimeWindowsConfig(orders.operation_hours)
 }

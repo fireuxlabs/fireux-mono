@@ -12,7 +12,7 @@
           <UAvatar
             :src="model.imageUrl || undefined"
             :alt="model.title"
-            class="fx-card__cover-avatar"
+            :class="['fx-card__cover-avatar', avatarShadeClass]"
             size="md"
           />
           <div class="fx-card__content">
@@ -44,7 +44,7 @@
         <UAvatar
           :src="model.imageUrl || undefined"
           :alt="model.title"
-          class="fx-card__avatar"
+          :class="['fx-card__avatar', avatarShadeClass]"
           size="md"
         />
         <div class="fx-card__content fx-card__stack fx-card__stack--tight">
@@ -215,6 +215,13 @@ const props = defineProps<{
   model: PlaceProfile
 }>()
 const { model } = toRefs(props)
+
+const avatarShadeClass = computed(() => {
+  const shade = model.value.card.imageShade
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 
 const tagChips = computed(() =>
   [...(model.value.tags ?? []), ...(model.value.types ?? [])]

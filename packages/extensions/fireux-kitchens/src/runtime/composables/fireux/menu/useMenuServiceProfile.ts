@@ -6,7 +6,10 @@ import type {
   MenuView,
 } from '../../../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
-import { readMenuOrderTypeConfig } from '../../../utils/menu-ordering-policy'
+import {
+  readMenuOrderTypeConfig,
+  readMenuServiceHoursConfig,
+} from '../../../utils/menu-ordering-policy'
 
 type MenuServiceProfileSource = {
   ordering?: unknown
@@ -74,17 +77,20 @@ const orderingConfig = (source: MenuServiceProfileSource): MenuOrderingConfig =>
   const configuredOrderTypes = list(ordering.order_types)
     .map(orderingType)
     .filter((type): type is MenuOrderTypeConfig => Boolean(type))
+  const serviceHours = readMenuServiceHoursConfig(ordering.service_hours)
 
   if (configuredOrderTypes.length) {
     return {
       enabled: ordering.enabled === true,
       order_types: configuredOrderTypes,
+      ...(serviceHours ? { service_hours: serviceHours } : {}),
     }
   }
 
   return {
     enabled: false,
     order_types: [],
+    ...(serviceHours ? { service_hours: serviceHours } : {}),
   }
 }
 

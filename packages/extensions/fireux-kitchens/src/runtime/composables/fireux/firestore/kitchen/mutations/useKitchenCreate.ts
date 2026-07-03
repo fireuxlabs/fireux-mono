@@ -109,6 +109,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         modes: [],
         default_lead_time_minutes: 0,
         acceptance_required: true,
+        operation_hours: {
+          timezone: 'Europe/Zurich',
+          windows: [],
+        },
         printing: {
           ticket_device_id: '',
         },

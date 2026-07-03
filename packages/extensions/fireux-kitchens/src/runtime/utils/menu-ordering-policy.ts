@@ -4,8 +4,10 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderTypeConfig,
   MenuPaymentMethod,
+  MenuServiceHoursConfig,
 } from '../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
+import { readWeekdayTimeWindowsConfig } from './weekday-time'
 
 export const kitchenOrderTypes = [
   'dine_in',
@@ -137,6 +139,21 @@ export const readMenuOrderFulfilmentPolicy = (
   }) as MenuOrderFulfilmentPolicy
 
   return Object.keys(policy).length ? policy : undefined
+}
+
+export const readMenuServiceHoursConfig = (
+  value: unknown
+): MenuServiceHoursConfig | undefined => {
+  const row = record(value)
+  const inherit = row.inherit_kitchen_operation_hours === true
+  const operationHours = readWeekdayTimeWindowsConfig(row.operation_hours)
+
+  if (!inherit && !operationHours.windows.length) return undefined
+
+  return compact({
+    inherit_kitchen_operation_hours: inherit,
+    operation_hours: operationHours.windows.length ? operationHours : undefined,
+  }) as MenuServiceHoursConfig
 }
 
 export const readMenuOrderTypeConfig = (

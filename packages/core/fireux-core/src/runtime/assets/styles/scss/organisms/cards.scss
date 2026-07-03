@@ -305,13 +305,15 @@
 
 /* Avatar shade helpers (opt-in via props/classes) */
 :where(.fx-avatar-shade--light) {
-	background: var(--ui-color-neutral-900);
+	--fx-avatar-shade-bg: var(--ui-color-neutral-900);
+	background: var(--fx-avatar-shade-bg);
 	border-radius: 9999px;
 	overflow: hidden;
 }
 
 :where(.fx-avatar-shade--dark) {
-	background: #ffffff;
+	--fx-avatar-shade-bg: #ffffff;
+	background: var(--fx-avatar-shade-bg);
 	border-radius: 9999px;
 	overflow: hidden;
 }
@@ -541,7 +543,7 @@
 }
 
 :where(.fx-card__cover-avatar) {
-	background: #fff;
+	background: var(--fx-avatar-shade-bg, #fff);
 	border-radius: 9999px;
 	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
 }
@@ -566,7 +568,7 @@
 }
 
 :where(.fx-card__avatar) {
-	background: #fff;
+	background: var(--fx-avatar-shade-bg, #fff);
 	border-radius: 9999px;
 }
 

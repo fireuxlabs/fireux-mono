@@ -136,6 +136,7 @@ const ordering = computed<MenuOrderingConfig>(() => {
       : Array.isArray(currentWithOldModes?.modes)
         ? currentWithOldModes.modes
         : [],
+    ...(current?.service_hours ? { service_hours: current.service_hours } : {}),
   }
 })
 const orderingEnabled = computed(() =>
@@ -179,11 +180,15 @@ async function updateOrdering(
 
   const cleanOrderTypes = nextOrdering.order_types.filter((orderType) => orderType.type)
   const enabled = nextOrdering.enabled && cleanOrderTypes.length > 0
+  const orderingPatch: MenuOrderingConfig = {
+    enabled,
+    order_types: cleanOrderTypes,
+    ...(ordering.value.service_hours
+      ? { service_hours: ordering.value.service_hours }
+      : {}),
+  }
   const patch: MenuUpdateInput = {
-    ordering: {
-      enabled,
-      order_types: cleanOrderTypes,
-    },
+    ordering: orderingPatch,
     public_views: enabled
       ? nextViews || (publicViews.value.length ? publicViews.value : ['browse', 'order'])
       : [],

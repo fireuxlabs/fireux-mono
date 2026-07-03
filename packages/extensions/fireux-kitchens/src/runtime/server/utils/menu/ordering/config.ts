@@ -4,7 +4,10 @@ import type {
   MenuOrderTypeConfig,
 } from '../../../../models/kitchen/menu/menu.model.ts'
 import { menuSurfaceList, menuSurfaceText } from '../public/types.ts'
-import { readMenuOrderTypeConfig } from '../../../../utils/menu-ordering-policy.ts'
+import {
+  readMenuOrderTypeConfig,
+  readMenuServiceHoursConfig,
+} from '../../../../utils/menu-ordering-policy.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -76,6 +79,7 @@ export function readMenuOrderingConfig(
   const orderTypes = menuSurfaceList(ordering.order_types)
     .map(orderingType)
     .filter((type): type is MenuOrderTypeConfig => Boolean(type))
+  const serviceHours = readMenuServiceHoursConfig(ordering.service_hours)
 
   if (orderTypes.length) {
     return {
@@ -83,12 +87,14 @@ export function readMenuOrderingConfig(
       order_types: orderTypes.map((type) =>
         withKitchenFulfilment(type, kitchenFulfilment)
       ),
+      ...(serviceHours ? { service_hours: serviceHours } : {}),
     }
   }
 
   return {
     enabled: false,
     order_types: [],
+    ...(serviceHours ? { service_hours: serviceHours } : {}),
   }
 }
 

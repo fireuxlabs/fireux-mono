@@ -4,16 +4,18 @@
       Allergy check
     </h2>
 
-    <UIcon
-      :name="notice.icon"
-      class="menu-order-allergen__icon"
-      aria-hidden="true"
-    />
+    <div class="menu-order-allergen__body">
+      <div class="menu-order-allergen__copy">
+        <UIcon
+          :name="notice.icon"
+          class="menu-order-allergen__icon"
+          aria-hidden="true"
+        />
 
-    <div class="menu-order-allergen__copy">
-      <p class="menu-order-placeholder">
-        {{ notice.message }}
-      </p>
+        <p class="menu-order-placeholder">
+          {{ notice.message }}
+        </p>
+      </div>
 
       <UCheckbox
         class="menu-order-allergen__check"

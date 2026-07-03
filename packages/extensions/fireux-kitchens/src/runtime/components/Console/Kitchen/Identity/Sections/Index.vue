@@ -14,6 +14,12 @@
           :can-write="canWrite"
         />
 
+        <ConsoleKitchenIdentitySectionsOperationHours
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
+
         <ConsoleKitchenIdentitySectionsDelivery
           v-if="hasDeliveryMenus"
           :kitchen="kitchen"

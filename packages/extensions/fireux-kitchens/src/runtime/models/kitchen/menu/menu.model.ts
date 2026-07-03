@@ -6,6 +6,7 @@ import type {
   KitchenFulfilmentPaymentMethod,
 } from '../../kitchen.model'
 import type { KitchenOrderType } from '../order.model'
+import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
 
 /**
  * Family: App-scoped Kitchen presentation records.
@@ -80,9 +81,15 @@ export type MenuOrderTypeConfig = {
   fulfilment?: MenuOrderFulfilmentPolicy
 }
 
+export type MenuServiceHoursConfig = {
+  inherit_kitchen_operation_hours: boolean
+  operation_hours?: WeekdayTimeWindowsConfig
+}
+
 export type MenuOrderingConfig = {
   enabled: boolean
   order_types: MenuOrderTypeConfig[]
+  service_hours?: MenuServiceHoursConfig
 }
 
 export type MenuPublicChoice = {
@@ -132,6 +139,9 @@ export const MenuModel = {
   ordering: {
     enabled: false,
     order_types: [] as MenuOrderTypeConfig[],
+    service_hours: {
+      inherit_kitchen_operation_hours: true,
+    },
   } as MenuOrderingConfig,
   // Omit public_views for browse-only menus; set it when a menu needs an exact public view set.
   public_views: [] as MenuView[],

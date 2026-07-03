@@ -246,7 +246,7 @@ export function useKitchenInterface() {
 
       imageUrl,
 
-      imageShade: kitchen.image_shade,
+      imageShade: identity.imageShade || kitchen.image_shade,
 
       claimedBy: safeString(kitchen.claimed_by),
     }

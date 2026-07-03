@@ -197,18 +197,27 @@
 .menu-order-allergen {
   display: grid;
   gap: var(--menu-space-sm);
-  justify-items: start;
+}
+
+.menu-order-allergen__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--menu-space-md);
+  align-items: center;
 }
 
 .menu-order-allergen__icon {
+  flex: 0 0 auto;
   width: 2.4rem;
   height: 2.4rem;
   color: var(--menu-primary);
 }
 
 .menu-order-allergen__copy {
-  display: grid;
+  display: flex;
   gap: var(--menu-space-sm);
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .menu-order-allergen__copy p {
@@ -217,6 +226,11 @@
   font-size: 0.95rem;
   font-weight: 750;
   line-height: 1.45;
+}
+
+.menu-order-allergen__check {
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .menu-order-delivery-zone,
@@ -319,6 +333,125 @@
   background: color-mix(in srgb, var(--menu-text) 14%, transparent);
 }
 
+.menu-order-choice-grid {
+  display: grid;
+  gap: var(--menu-space-sm);
+}
+
+.menu-order-choice {
+  display: flex;
+  gap: var(--menu-space-sm);
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--menu-space-sm);
+  border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-bg) 84%, transparent);
+  color: var(--menu-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.menu-order-choice--active {
+  border-color: color-mix(in srgb, var(--menu-primary) 55%, transparent);
+  background: color-mix(in srgb, var(--menu-primary) 12%, var(--menu-bg));
+}
+
+.menu-order-choice span {
+  display: grid;
+  gap: var(--menu-space-2xs);
+}
+
+.menu-order-choice strong {
+  font-size: 0.98rem;
+  font-weight: 950;
+}
+
+.menu-order-choice small {
+  color: var(--menu-muted);
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.menu-order-schedule {
+  display: grid;
+  gap: var(--menu-space-sm);
+  padding: var(--menu-space-sm);
+  border: 1px dashed color-mix(in srgb, var(--menu-primary) 32%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-primary) 8%, var(--menu-bg));
+}
+
+.menu-order-schedule__slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--menu-space-xs);
+}
+
+.menu-order-schedule__slot {
+  min-height: 2.4rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
+  color: var(--menu-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.menu-order-schedule__slot--active {
+  border-color: color-mix(in srgb, var(--menu-primary) 64%, transparent);
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+}
+
+.menu-order-time-context {
+  display: grid;
+  gap: var(--menu-space-xs);
+  margin: 0;
+}
+
+.menu-order-time-context__row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.72fr) minmax(0, 1fr);
+  gap: var(--menu-space-sm);
+  padding-top: var(--menu-space-xs);
+  border-top: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
+}
+
+.menu-order-time-context dt,
+.menu-order-time-context dd {
+  margin: 0;
+}
+
+.menu-order-time-context dt {
+  color: var(--menu-muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.menu-order-time-context dd {
+  display: grid;
+  gap: var(--menu-space-2xs);
+}
+
+.menu-order-time-context strong {
+  color: var(--menu-text);
+  font-size: 0.9rem;
+  font-weight: 950;
+}
+
+.menu-order-time-context span {
+  color: var(--menu-muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
 .menu-order-delivery-map .delivery-zones-map__canvas {
   aspect-ratio: 16 / 9;
   max-height: 12rem;
@@ -340,6 +473,10 @@
   justify-content: space-between;
   padding-top: var(--menu-space-sm);
   border-top: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
+}
+
+.menu-order-footer--single {
+  justify-content: flex-end;
 }
 
 .menu-order-primary,
@@ -395,6 +532,18 @@
 
   .menu-order-card {
     width: 100%;
+  }
+
+  .menu-order-allergen__body {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-order-allergen__check {
+    justify-self: start;
+  }
+
+  .menu-order-time-context__row {
+    grid-template-columns: 1fr;
   }
 
   .menu-order-footer {

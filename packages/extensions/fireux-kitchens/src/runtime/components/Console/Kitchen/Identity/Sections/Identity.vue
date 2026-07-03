@@ -76,6 +76,56 @@
               />
             </div>
 
+            <div class="md:col-span-2 grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+              <div class="flex flex-col items-center gap-2">
+                <MoleculesFormsFirestoreImagePicker
+                  v-if="canWrite"
+                  :src="logoImageUrl"
+                  :alt="name || 'Kitchen logo'"
+                  :initials="logoInitials"
+                  :update-function="handleLogoUpload"
+                />
+                <UAvatar
+                  v-else
+                  :src="logoImageUrl || undefined"
+                  :alt="name || 'Kitchen logo'"
+                  :text="logoInitials"
+                  icon="i-lucide-image"
+                  size="3xl"
+                  :class="logoShadeClass"
+                />
+
+                <p
+                  v-if="logoUploading"
+                  class="text-xs text-dimmed"
+                >
+                  Uploading logo...
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <p class="text-sm font-medium text-highlighted">
+                    Logo
+                  </p>
+                  <p class="text-xs text-dimmed">
+                    {{ logoHelpText }}
+                  </p>
+                </div>
+
+                <UButton
+                  v-if="placeId"
+                  size="sm"
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-map-pin"
+                  :to="`/console/kitchen/identity/place`"
+                >
+                  Open linked Place
+                </UButton>
+              </div>
+            </div>
+
             <div class="md:col-span-2 space-y-2">
               <div>
                 <p class="text-sm font-medium text-highlighted">
@@ -102,7 +152,7 @@
             </div>
 
             <p class="md:col-span-2 text-sm text-dimmed">
-              Address, map, contact, and venue image live on the linked Place.
+              Address, map, and contact live on the linked Place.
             </p>
           </div>
         </UCard>
@@ -115,10 +165,14 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { computed } from 'vue'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import type {
   KitchenImageShade,
   KitchenUpdateInput,
@@ -133,12 +187,41 @@ const props = defineProps<{
 }>()
 
 const { updateKitchen } = useKitchenUpdate()
+const { uploadImage } = useImageStorage()
+const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
 const imageShade = computed(() => readKitchenIdentity(props.kitchen).imageShade)
 const slug = computed(() => String(props.kitchen?.slug ?? ''))
+const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
+const { place } = usePlaceFetch(placeId)
+const logoImageUrl = computed(() =>
+  String(
+    place.value?.image_url ||
+      place.value?.cover_image ||
+      readKitchenIdentity(props.kitchen).imageUrl ||
+      ''
+  ).trim()
+)
+const logoInitials = computed(() => {
+  const parts = name.value.split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'K'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
+})
+const logoShadeClass = computed(() => {
+  if (imageShade.value === 'light') return 'fx-avatar-shade--light'
+  if (imageShade.value === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
+const logoHelpText = computed(() =>
+  placeId.value
+    ? 'Logo is owned by the linked Place and synced back to kitchen menus and cards.'
+    : 'Standalone kitchen logo used by menus and cards.'
+)
+const logoUploading = ref(false)
 const imageShadeOptions: Array<{
   value: KitchenImageShade
   label: string
@@ -192,8 +275,14 @@ const handleTagline = async (value: string) =>
     'Failed to update tagline'
   )
 
-const handleImageShade = async (value: KitchenImageShade) =>
-  updateIdentityField(
+const handleImageShade = async (value: KitchenImageShade) => {
+  if (placeId.value) {
+    await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+      image_shade: value,
+    } as Partial<Place>)
+  }
+
+  return updateIdentityField(
     {
       'identity.image_shade': value,
       image_shade: value,
@@ -201,6 +290,37 @@ const handleImageShade = async (value: KitchenImageShade) =>
     'Logo tone updated',
     'Failed to update logo tone'
   )
+}
+
+const handleLogoUpload = async (file: File) => {
+  if (!props.canWrite || !props.kitchenId || logoUploading.value) return
+
+  logoUploading.value = true
+  try {
+    const storagePath = placeId.value
+      ? `places/${placeId.value}/avatar`
+      : `kitchens/${props.kitchenId}/identity/logo/current`
+    const url = await uploadImage(storagePath, file)
+
+    if (placeId.value) {
+      await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
+        image_url: url,
+      } as Partial<Place>)
+    }
+
+    await updateIdentityField(
+      {
+        'identity.image_url': url,
+        display_image_url: url,
+        image_url: url,
+      },
+      'Logo updated',
+      'Failed to update logo'
+    )
+  } finally {
+    logoUploading.value = false
+  }
+}
 
 const formatSlugField = (value: string) =>
   normalizeSlug(value, { maxLength: 80 })

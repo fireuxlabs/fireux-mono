@@ -36,6 +36,22 @@
         disabled-message="This menu is read-only."
         :update-function="handleDescription"
       />
+
+      <div class="md:col-span-2 flex flex-wrap items-center justify-between gap-3">
+        <h3 class="text-sm font-semibold text-highlighted">
+          Service hours
+        </h3>
+
+        <UButton
+          size="sm"
+          color="neutral"
+          variant="soft"
+          :disabled="!canWrite"
+          @click="handleInheritServiceHours"
+        >
+          Inherit kitchen operation hours
+        </UButton>
+      </div>
     </div>
   </UCard>
 </template>
@@ -44,7 +60,10 @@
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import type { MenuUpdateInput } from '../../../../../../models/kitchen/menu/menu.model'
+import type {
+  MenuOrderingConfig,
+  MenuUpdateInput,
+} from '../../../../../../models/kitchen/menu/menu.model'
 
 const {
   menu,
@@ -57,6 +76,15 @@ const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => normalizeString(menu.value?.name))
 const menuDescription = computed(() => normalizeString(menu.value?.description))
+const ordering = computed<MenuOrderingConfig>(() => ({
+  enabled: menu.value?.ordering?.enabled === true,
+  order_types: Array.isArray(menu.value?.ordering?.order_types)
+    ? menu.value.ordering.order_types
+    : [],
+  ...(menu.value?.ordering?.service_hours
+    ? { service_hours: menu.value.ordering.service_hours }
+    : {}),
+}))
 const statusColor = computed(() =>
   menu.value?.status === 'published'
     ? 'success'
@@ -109,4 +137,19 @@ const handleDescription = async (value: string) =>
     'Menu description updated',
     'Could not update menu description'
   )
+
+async function handleInheritServiceHours() {
+  await updateDetailsField(
+    {
+      ordering: {
+        ...ordering.value,
+        service_hours: {
+          inherit_kitchen_operation_hours: true,
+        },
+      },
+    },
+    'Service hours updated',
+    'Could not update service hours'
+  )
+}
 </script>

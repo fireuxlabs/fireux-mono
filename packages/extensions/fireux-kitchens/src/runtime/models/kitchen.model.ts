@@ -14,6 +14,7 @@ import {
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { WeekdayTimeWindowsConfig } from './shared/weekday-time.model'
 
 type WidenLiteral<T> =
   T extends string ? string
@@ -87,6 +88,7 @@ export type KitchenOrdersConfig = {
   modes: string[]
   default_lead_time_minutes: number
   acceptance_required: boolean
+  operation_hours: WeekdayTimeWindowsConfig
   printing: {
     ticket_device_id: string
   }
@@ -163,6 +165,10 @@ export const KitchenModel = {
     modes: [],
     default_lead_time_minutes: 0,
     acceptance_required: true,
+    operation_hours: {
+      timezone: 'Europe/Zurich',
+      windows: [],
+    },
     printing: {
       ticket_device_id: '',
     },
