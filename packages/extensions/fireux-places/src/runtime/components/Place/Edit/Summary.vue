@@ -109,6 +109,7 @@
 						:src="imageUrl"
 						:alt="place?.name || 'Place'"
 						:initials="avatarInitials"
+						:avatar-class="imageShadeClass"
 						:update-function="canEditImage ? handleAvatarUpload : undefined"
 					/>
 				</div>
@@ -161,6 +162,11 @@ const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')
 const imageShade = computed(() => (place.value?.image_shade || 'none') as PlaceImageShade)
+const imageShadeClass = computed(() => {
+	if (imageShade.value === 'light') return 'fx-avatar-shade--light'
+	if (imageShade.value === 'dark') return 'fx-avatar-shade--dark'
+	return ''
+})
 const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {
 	const claimedBy = place.value?.claimed_by

@@ -108,6 +108,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   })
   const funnelView = computed<MenuOrderingFunnelState>(() => {
     const policy = selectedOrderTypeConfig.value
+    const serviceHours = behaviour.value?.ordering.service_hours
 
     return {
       actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
@@ -122,6 +123,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       pending: draft.creatingItemId.value === 'order',
       ...(policy ? { policy } : {}),
       quantity: draft.quantity.value,
+      ...(serviceHours ? { serviceHours } : {}),
       selection: {
         items: draft.items.value,
         quantity: draft.quantity.value,

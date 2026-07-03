@@ -28,6 +28,7 @@ import { readKitchenMenuPublicChoices } from '../../utils/menu/public/choices.ts
 import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
+  menuKitchenOperationHours,
   readAppMenuKitchenData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
@@ -119,6 +120,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     sections,
     public_choices: publicChoices,
     fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
+    kitchen_operation_hours: menuKitchenOperationHours(kitchen.data, appKitchenData),
     ...ownerAppView,
     ...ownerMenuPayload,
   })

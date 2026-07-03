@@ -19,7 +19,7 @@
         <span class="grid min-w-0">
           <span class="truncate">Operation hours</span>
           <span class="truncate text-xs font-normal text-dimmed">
-            Kitchen ordering windows used by menus that inherit hours.
+            Use Google business hours or set kitchen opening times.
           </span>
         </span>
       </span>
@@ -27,26 +27,60 @@
 
     <template #content>
       <UCard class="mt-4">
-        <template #header>
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <div class="text-base font-semibold text-highlighted">
-                Kitchen operation hours
-              </div>
-              <p class="text-sm text-dimmed">
-                Add the windows when this kitchen accepts online orders.
-              </p>
-            </div>
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <UButtonGroup>
+              <UButton
+                color="neutral"
+                :variant="hours.source === 'place' ? 'solid' : 'soft'"
+                :disabled="!canWrite || saving || !placeId"
+                @click="saveSource('place')"
+              >
+                Google business hours
+              </UButton>
+
+              <UButton
+                color="neutral"
+                :variant="hours.source === 'custom' ? 'solid' : 'soft'"
+                :disabled="!canWrite || saving"
+                @click="saveSource('custom')"
+              >
+                Set kitchen hours
+              </UButton>
+            </UButtonGroup>
 
             <UBadge color="neutral" variant="soft">
               {{ hours.timezone }}
             </UBadge>
           </div>
-        </template>
 
-        <div class="space-y-4">
+          <div
+            v-if="hours.source === 'place'"
+            class="space-y-3 rounded-lg border border-default p-4"
+          >
+            <p class="text-sm text-dimmed">
+              This kitchen is using the linked Place business hours from Google.
+              Set kitchen hours when ordering hours differ from public opening
+              hours.
+            </p>
+
+            <PlaceGoogleHours
+              v-if="placeId"
+              :place-id="placeId"
+              auto-load
+              button-label="Refresh Google hours"
+            />
+            <p
+              v-else
+              class="text-sm text-dimmed"
+            >
+              Link this kitchen to a Place before inheriting Place hours.
+            </p>
+          </div>
+
           <MoleculesFormsFirestoreObjectArray
-            label="Weekly windows"
+            v-else
+            label="Kitchen opening times"
             :firebase-value="hours.windows"
             :update-function="saveWindows"
             :item-title="operationHoursItemTitle"
@@ -134,7 +168,7 @@
                 :disabled="saving"
                 @click="push(defaultWindow())"
               >
-                Add item
+                Add time window
               </UButton>
             </template>
           </MoleculesFormsFirestoreObjectArray>
@@ -150,12 +184,14 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import PlaceGoogleHours from 'fireux-places/runtime/components/Place/GoogleHours.vue'
 import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   WeekdayTimeDay,
   WeekdayTimeWindow,
   WeekdayTimeWindowsConfig,
+  WeekdayTimeWindowsSource,
 } from '../../../../../models/shared/weekday-time.model'
 import {
   weekdayTimeDayOptions,
@@ -174,6 +210,7 @@ const toast = useToastify()
 const error = ref('')
 const saving = ref(false)
 const hours = computed(() => readKitchenOperationHours(props.kitchen))
+const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
 const dayOptions = weekdayTimeDayOptions
 
 const defaultWindow = (): WeekdayTimeWindow => ({
@@ -259,6 +296,7 @@ async function saveWindows(items: unknown[]) {
       return window
     })
     const nextHours: WeekdayTimeWindowsConfig = {
+      source: 'custom',
       timezone: hours.value.timezone,
       windows,
     }
@@ -282,6 +320,38 @@ async function saveWindows(items: unknown[]) {
       icon: 'i-lucide-alert-triangle',
     })
     error.value = message
+    throw caught
+  } finally {
+    saving.value = false
+  }
+}
+
+async function saveSource(source: WeekdayTimeWindowsSource) {
+  if (!props.canWrite || saving.value || source === hours.value.source) return
+  if (source === 'place' && !placeId.value) return
+  if (!props.kitchenId) throw new Error('No kitchen selected.')
+
+  saving.value = true
+  try {
+    await updateKitchen(props.kitchenId, {
+      'orders.operation_hours': {
+        ...hours.value,
+        source,
+      },
+    })
+    toast.add({
+      title: source === 'place' ? 'Using Google business hours' : 'Using kitchen hours',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+  } catch (caught) {
+    const message = caught instanceof Error ? caught.message : 'Please try again.'
+    toast.add({
+      title: 'Could not update operation hours source',
+      description: message,
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
     throw caught
   } finally {
     saving.value = false

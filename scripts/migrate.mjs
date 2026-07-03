@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-03
 // usage_note: baseline after scripts cleanup; update when run.
 /*
   Firestore migration runner (generic)

@@ -200,7 +200,10 @@
         </div>
       </div>
 
-      <PlaceGoogleHours :place-id="model.card.id" />
+      <PlaceGoogleHours
+        v-if="showGoogleHours"
+        :place-id="model.card.id"
+      />
     </div>
   </UCard>
 </template>
@@ -211,9 +214,12 @@ import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import PlaceGoogleHours from '../GoogleHours.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   model: PlaceProfile
-}>()
+  showGoogleHours?: boolean
+}>(), {
+  showGoogleHours: true,
+})
 const { model } = toRefs(props)
 
 const avatarShadeClass = computed(() => {

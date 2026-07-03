@@ -8,6 +8,17 @@
       {{ collectionStatus }}
     </p>
 
+    <ClientOnly>
+      <UBadge
+        v-if="serviceTimes.known"
+        :color="serviceTimes.open ? 'success' : 'error'"
+        variant="soft"
+        class="justify-self-center"
+      >
+        {{ serviceTimes.label }}
+      </UBadge>
+    </ClientOnly>
+
     <div class="menu-order-choice-grid">
       <button
         v-for="option in options"
@@ -34,37 +45,33 @@
       v-if="mode === 'scheduled'"
       class="menu-order-schedule"
     >
-      <p class="menu-order-placeholder">
-        Pick a collection time. These slots will come from kitchen opening times
-        and menu operation times.
-      </p>
+      <div class="menu-order-schedule__fields">
+        <label class="menu-order-field">
+          Date
+          <input
+            v-model="scheduledDate"
+            class="menu-order-schedule__input"
+            type="date"
+          >
+        </label>
 
-      <div class="menu-order-schedule__slots">
-        <button
-          v-for="slot in scheduleSlots"
-          :key="slot"
-          type="button"
-          class="menu-order-schedule__slot"
-          :class="{ 'menu-order-schedule__slot--active': scheduledSlot === slot }"
-          @click="scheduledSlot = slot"
-        >
-          {{ slot }}
-        </button>
+        <label class="menu-order-field">
+          Time
+          <input
+            v-model="scheduledTime"
+            class="menu-order-schedule__input"
+            type="time"
+          >
+        </label>
       </div>
 
-      <dl class="menu-order-time-context">
-        <div
-          v-for="row in timingContext"
-          :key="row.label"
-          class="menu-order-time-context__row"
-        >
-          <dt>{{ row.label }}</dt>
-          <dd>
-            <strong>{{ row.value }}</strong>
-            <span>{{ row.note }}</span>
-          </dd>
-        </div>
-      </dl>
+      <p
+        v-if="scheduleSelection.complete"
+        class="menu-order-placeholder"
+        :class="{ 'menu-order-placeholder--good': scheduleSelection.available }"
+      >
+        {{ scheduleSelection.label }}
+      </p>
     </section>
   </div>
 </template>
@@ -86,10 +93,11 @@ const {
   mode,
   options,
   ready,
-  scheduledSlot,
-  scheduleSlots,
+  scheduleSelection,
+  scheduledDate,
+  scheduledTime,
+  serviceTimes,
   status: collectionStatus,
-  timingContext,
 } = useRendezvous(() => props.order)
 
 watchEffect(() => {

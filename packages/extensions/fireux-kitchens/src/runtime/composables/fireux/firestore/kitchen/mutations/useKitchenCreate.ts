@@ -110,6 +110,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         default_lead_time_minutes: 0,
         acceptance_required: true,
         operation_hours: {
+          source: placeId ? 'place' : 'custom',
           timezone: 'Europe/Zurich',
           windows: [],
         },

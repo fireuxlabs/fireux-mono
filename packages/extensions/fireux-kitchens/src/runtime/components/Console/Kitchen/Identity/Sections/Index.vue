@@ -52,6 +52,8 @@ import { useKitchenConsoleMenus } from '../../../../../composables/fireux/consol
 import { useKitchenInterface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { menuAcceptsOrderType } from '../../../../../utils/menu-ordering-policy'
+import ConsoleKitchenIdentitySectionsKitchen from './Kitchen.vue'
+import ConsoleKitchenIdentitySectionsPlace from './Place.vue'
 
 const { selectedKitchen, kitchenId, rootCollection, canWrite } =
   useKitchenConsoleIdentity()

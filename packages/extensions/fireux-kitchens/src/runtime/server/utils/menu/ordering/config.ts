@@ -2,7 +2,9 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
+  MenuServiceHoursConfig,
 } from '../../../../models/kitchen/menu/menu.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
 import { menuSurfaceList, menuSurfaceText } from '../public/types.ts'
 import {
   readMenuOrderTypeConfig,
@@ -70,16 +72,35 @@ const withKitchenFulfilment = (
   }
 }
 
+const withInheritedOperationHours = (
+  serviceHours: MenuServiceHoursConfig | undefined,
+  kitchenOperationHours: WeekdayTimeWindowsConfig | undefined
+) => {
+  if (!serviceHours) return undefined
+  if (!serviceHours.inherit_kitchen_operation_hours) return serviceHours
+  if (serviceHours.operation_hours?.windows.length) return serviceHours
+  if (!kitchenOperationHours?.windows.length) return serviceHours
+
+  return {
+    ...serviceHours,
+    operation_hours: kitchenOperationHours,
+  }
+}
+
 // Menu ordering spine: docs/concepts/family-menu.md. Public views are display; order_types are the order creation policy.
 export function readMenuOrderingConfig(
   data: Record<string, unknown>,
-  kitchenFulfilment?: MenuOrderFulfilmentPolicy
+  kitchenFulfilment?: MenuOrderFulfilmentPolicy,
+  kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderingConfig {
   const ordering = record(data.ordering)
   const orderTypes = menuSurfaceList(ordering.order_types)
     .map(orderingType)
     .filter((type): type is MenuOrderTypeConfig => Boolean(type))
-  const serviceHours = readMenuServiceHoursConfig(ordering.service_hours)
+  const serviceHours = withInheritedOperationHours(
+    readMenuServiceHoursConfig(ordering.service_hours),
+    kitchenOperationHours
+  )
 
   if (orderTypes.length) {
     return {

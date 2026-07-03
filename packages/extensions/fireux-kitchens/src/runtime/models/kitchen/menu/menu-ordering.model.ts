@@ -1,4 +1,7 @@
-import type { MenuOrderTypeConfig } from './menu.model'
+import type {
+  MenuOrderTypeConfig,
+  MenuServiceHoursConfig,
+} from './menu.model'
 import type {
   KitchenOrderCustomer,
   KitchenOrderFireState,
@@ -93,6 +96,7 @@ export type MenuOrderingFunnelState = {
   pending: boolean
   policy?: MenuOrderTypeConfig
   quantity: number
+  serviceHours?: MenuServiceHoursConfig
   selection: MenuOrderingSelectionSummary
   sentOrder?: CreatedMenuOrder | null
 }

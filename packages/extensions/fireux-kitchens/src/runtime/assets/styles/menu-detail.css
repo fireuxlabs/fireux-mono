@@ -384,72 +384,28 @@
   background: color-mix(in srgb, var(--menu-primary) 8%, var(--menu-bg));
 }
 
-.menu-order-schedule__slots {
+.menu-order-schedule__fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--menu-space-xs);
 }
 
-.menu-order-schedule__slot {
-  min-height: 2.4rem;
+@media (min-width: 34rem) {
+  .menu-order-schedule__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.menu-order-schedule__input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.7rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
   border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
+  background: color-mix(in srgb, var(--menu-bg) 88%, transparent);
   color: var(--menu-text);
-  cursor: pointer;
   font: inherit;
-  font-weight: 900;
-}
-
-.menu-order-schedule__slot--active {
-  border-color: color-mix(in srgb, var(--menu-primary) 64%, transparent);
-  background: var(--menu-primary);
-  color: var(--menu-bg);
-}
-
-.menu-order-time-context {
-  display: grid;
-  gap: var(--menu-space-xs);
-  margin: 0;
-}
-
-.menu-order-time-context__row {
-  display: grid;
-  grid-template-columns: minmax(7.5rem, 0.72fr) minmax(0, 1fr);
-  gap: var(--menu-space-sm);
-  padding-top: var(--menu-space-xs);
-  border-top: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
-}
-
-.menu-order-time-context dt,
-.menu-order-time-context dd {
-  margin: 0;
-}
-
-.menu-order-time-context dt {
-  color: var(--menu-muted);
-  font-size: 0.76rem;
+  font-size: 0.95rem;
   font-weight: 850;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.menu-order-time-context dd {
-  display: grid;
-  gap: var(--menu-space-2xs);
-}
-
-.menu-order-time-context strong {
-  color: var(--menu-text);
-  font-size: 0.9rem;
-  font-weight: 950;
-}
-
-.menu-order-time-context span {
-  color: var(--menu-muted);
-  font-size: 0.82rem;
-  font-weight: 750;
-  line-height: 1.35;
 }
 
 .menu-order-delivery-map .delivery-zones-map__canvas {

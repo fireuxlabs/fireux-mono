@@ -19,7 +19,7 @@
         <span class="grid min-w-0">
           <span class="truncate">Place</span>
           <span class="truncate text-xs font-normal text-dimmed">
-            Venue logo, tone, location, and contact.
+            Logo, location, and public details.
           </span>
         </span>
       </span>
@@ -28,23 +28,6 @@
     <template #content>
       <div class="mt-4 space-y-4">
         <UCard>
-          <template #header>
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-map-pin"
-                class="mt-1 size-5 shrink-0 text-muted"
-              />
-              <div>
-                <div class="text-base font-semibold text-highlighted">
-                  Place
-                </div>
-                <p class="text-sm text-dimmed">
-                  Shared venue truth for the kitchen's public surfaces.
-                </p>
-              </div>
-            </div>
-          </template>
-
           <UAlert
             v-if="!placeId"
             color="warning"

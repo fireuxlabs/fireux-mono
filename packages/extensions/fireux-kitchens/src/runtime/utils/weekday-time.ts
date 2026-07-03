@@ -2,6 +2,7 @@ import type {
   WeekdayTimeDay,
   WeekdayTimeWindow,
   WeekdayTimeWindowsConfig,
+  WeekdayTimeWindowsSource,
 } from '../models/shared/weekday-time.model'
 
 export const weekdayTimeDays = [
@@ -55,6 +56,26 @@ const normalizeTime = (value: unknown) => {
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
+const timeMinutes = (value: unknown) => {
+  const normalized = normalizeTime(value)
+  if (!normalized) return -1
+
+  const [hour, minute] = normalized.split(':').map(Number)
+  return hour * 60 + minute
+}
+
+const previousDay = (day: WeekdayTimeDay) =>
+  weekdayTimeDays[
+    (weekdayTimeDays.indexOf(day) + weekdayTimeDays.length - 1) %
+      weekdayTimeDays.length
+  ]
+
+const timeSource = (value: unknown): WeekdayTimeWindowsSource => {
+  const source = text(value).toLowerCase()
+
+  return source === 'place' ? 'place' : 'custom'
+}
+
 const expandDayRange = (
   start: WeekdayTimeDay,
   end: WeekdayTimeDay
@@ -106,6 +127,7 @@ export const readWeekdayTimeWindowsConfig = (
   const source = record(value)
 
   return {
+    source: timeSource(source.source),
     timezone: text(source.timezone) || 'Europe/Zurich',
     windows: list(source.windows)
       .map(readWindow)
@@ -159,6 +181,127 @@ export const formatWeekdayTimeText = (value: unknown) => {
   return hours.windows.map(formatWeekdayTimeWindow).join('\n')
 }
 
+const zonedDayTime = (date: Date, timezone: string) => {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: timezone,
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const value = (type: string) =>
+    parts.find((part) => part.type === type)?.value || ''
+  const day = dayName(value('weekday'))
+  const hour = Number(value('hour'))
+  const minute = Number(value('minute'))
+
+  return {
+    day,
+    minutes: Number.isFinite(hour) && Number.isFinite(minute)
+      ? hour * 60 + minute
+      : -1,
+  }
+}
+
+const inputDateDay = (value: unknown): WeekdayTimeDay | null => {
+  const match = text(value).match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match) return null
+
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const date = new Date(Date.UTC(year, month - 1, day))
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null
+  }
+
+  const daysByUtcIndex = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+  ] as const
+
+  return daysByUtcIndex[date.getUTCDay()]
+}
+
+const isWindowOpen = (
+  window: WeekdayTimeWindow,
+  day: WeekdayTimeDay,
+  minutes: number
+) => {
+  const open = timeMinutes(window.open)
+  const close = timeMinutes(window.close)
+  if (open < 0 || close < 0 || minutes < 0) return false
+
+  if (open < close) {
+    return window.days.includes(day) && minutes >= open && minutes < close
+  }
+
+  return (
+    (window.days.includes(day) && minutes >= open) ||
+    (window.days.includes(previousDay(day)) && minutes < close)
+  )
+}
+
+export const readWeekdayTimeOpenState = (
+  value: unknown,
+  now = new Date()
+) => {
+  const hours = readWeekdayTimeWindowsConfig(value)
+  const { day, minutes } = zonedDayTime(now, hours.timezone)
+  const known = Boolean(day && hours.windows.length)
+  const open = day && hours.windows.length
+    ? hours.windows.some((window) => isWindowOpen(window, day, minutes))
+    : false
+
+  return {
+    known,
+    open,
+    label: known
+      ? open ? 'Serving' : 'Not serving'
+      : 'Service times unavailable',
+  }
+}
+
+export const readWeekdayTimeSelectionState = (
+  value: unknown,
+  dateValue: unknown,
+  timeValue: unknown
+) => {
+  const hours = readWeekdayTimeWindowsConfig(value)
+  const day = inputDateDay(dateValue)
+  const minutes = timeMinutes(timeValue)
+  const complete = Boolean(day && minutes >= 0)
+  const known = Boolean(hours.windows.length)
+  const available = Boolean(
+    known &&
+      day &&
+      minutes >= 0 &&
+      hours.windows.some((window) => isWindowOpen(window, day, minutes))
+  )
+
+  return {
+    known,
+    complete,
+    available,
+    label: !complete
+      ? ''
+      : !known
+        ? 'Service times unavailable.'
+        : available
+          ? 'Collection time available.'
+          : 'Choose a time during collection hours.',
+  }
+}
+
 export const parseWeekdayTimeText = (
   value: string,
   timezone = 'Europe/Zurich'
@@ -185,5 +328,5 @@ export const parseWeekdayTimeText = (
     })
     .filter((window): window is WeekdayTimeWindow => Boolean(window))
 
-  return { timezone, windows }
+  return { source: 'custom', timezone, windows }
 }

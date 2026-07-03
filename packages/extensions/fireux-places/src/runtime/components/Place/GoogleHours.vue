@@ -1,33 +1,41 @@
 <template>
   <div class="flex flex-col items-start gap-2 text-xs text-muted">
-      <UButton
-        size="xs"
-        variant="soft"
-        color="neutral"
-        icon="i-logos-google-icon"
-        :loading="pending"
-        :disabled="!placeId"
-        @click="load"
-      >
-        View operating hours
-      </UButton>
+    <UButton
+      v-if="showButton"
+      size="xs"
+      variant="soft"
+      color="neutral"
+      icon="i-logos-google-icon"
+      :loading="pending"
+      :disabled="!placeId"
+      @click="load"
+    >
+      {{ buttonLabel }}
+    </UButton>
 
-      <p v-if="message" class="text-xs text-dimmed">
-        {{ message }}
-      </p>
+    <p v-if="message" class="text-xs text-dimmed">
+      {{ message }}
+    </p>
 
-      <div v-if="hours.length" class="fx-card__stack">
-        <div v-for="line in hours" :key="line">{{ line }}</div>
-      </div>
+    <div v-if="hours.length" class="fx-card__stack">
+      <div v-for="line in hours" :key="line">{{ line }}</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   placeId: string
-}>()
+  autoLoad?: boolean
+  showButton?: boolean
+  buttonLabel?: string
+}>(), {
+  autoLoad: false,
+  showButton: true,
+  buttonLabel: 'View Google hours',
+})
 
 const pending = ref(false)
 const message = ref('')
@@ -67,4 +75,14 @@ async function load() {
     pending.value = false
   }
 }
+
+onMounted(() => {
+  if (props.autoLoad) load()
+})
+
+watch(() => props.placeId, () => {
+  hours.value = []
+  message.value = ''
+  if (props.autoLoad) load()
+})
 </script>

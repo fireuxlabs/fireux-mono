@@ -19,8 +19,7 @@
         <span class="grid min-w-0">
           <span class="truncate">Delivery</span>
           <span class="truncate text-xs font-normal text-dimmed">
-            Kitchen-level delivery zones used by menus that accept delivery
-            orders.
+            Zones, minimum orders, and delivery fees.
           </span>
         </span>
       </span>
@@ -28,27 +27,6 @@
 
     <template #content>
       <UCard class="mt-4">
-        <template #header>
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-truck"
-                class="mt-1 size-5 shrink-0 text-muted"
-              />
-              <div>
-                <div class="text-base font-semibold text-highlighted">
-                  Delivery
-                </div>
-                <p class="text-sm text-dimmed">
-                  Kitchen-level delivery zones used by menus that accept
-                  delivery orders.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </template>
-
         <div class="space-y-4">
           <UPageCard
             v-if="!zones.length"

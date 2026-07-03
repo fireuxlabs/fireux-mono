@@ -13,7 +13,10 @@ export type WeekdayTimeWindow = {
   close: string
 }
 
+export type WeekdayTimeWindowsSource = 'place' | 'custom'
+
 export type WeekdayTimeWindowsConfig = {
+  source: WeekdayTimeWindowsSource
   timezone: string
   windows: WeekdayTimeWindow[]
 }

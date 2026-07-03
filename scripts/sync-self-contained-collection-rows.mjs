@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-30
+// last_used: 2026-07-03
 // usage_note: sync denormalized list/card snapshots so collection rows are self-contained.
 
 import { cert, initializeApp } from 'firebase-admin/app'

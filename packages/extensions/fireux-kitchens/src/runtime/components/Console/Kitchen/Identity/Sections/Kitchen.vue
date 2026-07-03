@@ -19,7 +19,7 @@
         <span class="grid min-w-0">
           <span class="truncate">Kitchen</span>
           <span class="truncate text-xs font-normal text-dimmed">
-            Kitchen-owned name, slug, tagline, and theme.
+            Name, slug, tagline, and menu theme.
           </span>
         </span>
       </span>
@@ -28,23 +28,6 @@
     <template #content>
       <div class="mt-4 space-y-4">
         <UCard>
-          <template #header>
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-store"
-                class="mt-1 size-5 shrink-0 text-muted"
-              />
-              <div>
-                <div class="text-base font-semibold text-highlighted">
-                  Kitchen
-                </div>
-                <p class="text-sm text-dimmed">
-                  What guests and operators see when this kitchen appears.
-                </p>
-              </div>
-            </div>
-          </template>
-
           <div class="grid gap-4 md:grid-cols-2">
             <div class="md:col-span-2">
               <MoleculesFormsFirestoreSimpleField

@@ -50,7 +50,11 @@ export function menuSurfaceFromData(
   const description = readRecordString(data, 'description')
   const status = readRecordString(data, 'status')
   const pageStyle = readMenuPageStyle(scope.page_style)
-  const ordering = readMenuOrderingConfig(data, scope.fulfilment)
+  const ordering = readMenuOrderingConfig(
+    data,
+    scope.fulfilment,
+    scope.kitchen_operation_hours
+  )
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const menuViews = kind === 'menu'
     ? readMenuViews(data, orderingEnabled)

@@ -46,10 +46,10 @@
           size="sm"
           color="neutral"
           variant="soft"
-          :disabled="!canWrite"
-          @click="handleInheritServiceHours"
+          :disabled="!canWrite || !kitchenOperationHours.windows.length"
+          @click="handleCopyServiceHours"
         >
-          Inherit kitchen operation hours
+          Copy kitchen operation hours
         </UButton>
       </div>
     </div>
@@ -64,9 +64,11 @@ import type {
   MenuOrderingConfig,
   MenuUpdateInput,
 } from '../../../../../../models/kitchen/menu/menu.model'
+import { readKitchenOperationHours } from '../../../../../../utils/kitchen-spine'
 
 const {
   menu,
+  selectedKitchen,
   kitchenId,
   canWrite,
   updateMenu,
@@ -76,6 +78,9 @@ const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => normalizeString(menu.value?.name))
 const menuDescription = computed(() => normalizeString(menu.value?.description))
+const kitchenOperationHours = computed(() =>
+  readKitchenOperationHours(selectedKitchen.value as Record<string, unknown> | null)
+)
 const ordering = computed<MenuOrderingConfig>(() => ({
   enabled: menu.value?.ordering?.enabled === true,
   order_types: Array.isArray(menu.value?.ordering?.order_types)
@@ -138,13 +143,25 @@ const handleDescription = async (value: string) =>
     'Could not update menu description'
   )
 
-async function handleInheritServiceHours() {
+async function handleCopyServiceHours() {
+  const operationHours = kitchenOperationHours.value
+  if (!operationHours.windows.length) {
+    toast.add({
+      title: 'No kitchen operation hours to copy',
+      description: 'Set kitchen operation hours first, then copy them to this menu.',
+      color: 'warning',
+      icon: 'i-lucide-clock-alert',
+    })
+    return
+  }
+
   await updateDetailsField(
     {
       ordering: {
         ...ordering.value,
         service_hours: {
           inherit_kitchen_operation_hours: true,
+          operation_hours: operationHours,
         },
       },
     },

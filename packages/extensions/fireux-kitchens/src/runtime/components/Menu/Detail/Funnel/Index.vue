@@ -3,7 +3,7 @@
     <section class="menu-order-card">
       <header class="menu-order-header">
         <p class="menu-order-step-label">
-          {{ step }} of {{ stepCount }}
+          {{ step }} of {{ stepCount }} · {{ order.orderType }}
         </p>
 
         <button

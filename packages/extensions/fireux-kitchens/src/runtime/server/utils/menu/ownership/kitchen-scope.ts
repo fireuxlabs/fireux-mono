@@ -4,9 +4,11 @@ import {
   readKitchenAppScope,
   readKitchenFulfilmentConfig,
   readKitchenIdentity,
+  readKitchenOperationHours,
   readKitchenMenuStyle,
 } from '../../../../utils/kitchen-spine'
 import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
 import { menuSourceFromData } from '../public/source.ts'
 import { resolveMenuPageStyle } from '../public/page-style.ts'
 
@@ -19,7 +21,13 @@ export type MenuKitchenScope = {
   createdByLabel?: string
   page_style?: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
+  kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
+
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
 export const kitchenDisplayName = (data: Record<string, unknown>) =>
   readKitchenIdentity(data).displayName
@@ -77,6 +85,18 @@ export function menuKitchenFulfilment(
   return readKitchenFulfilmentConfig(rootData)
 }
 
+const hasKitchenOperationHours = (data: Record<string, unknown>) =>
+  Object.keys(record(record(data).orders).operation_hours || {}).length > 0
+
+export function menuKitchenOperationHours(
+  rootData: Record<string, unknown>,
+  appData: Record<string, unknown> = {}
+) {
+  return hasKitchenOperationHours(appData)
+    ? readKitchenOperationHours(appData)
+    : readKitchenOperationHours(rootData)
+}
+
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
   const snap = await getRuntimeFirestore()
     .collection('kitchens')
@@ -132,5 +152,6 @@ export async function readRootMenuKitchenScope(
     createdByLabel: '',
     page_style: identity.page_style,
     fulfilment: menuKitchenFulfilment(kitchenData, appKitchenData),
+    kitchen_operation_hours: menuKitchenOperationHours(kitchenData, appKitchenData),
   }
 }

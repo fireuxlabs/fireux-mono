@@ -1,4 +1,5 @@
 import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model'
+import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model'
 
 export type MenuSurfaceScope = {
   kitchenId?: string
@@ -14,6 +15,7 @@ export type MenuSurfaceScope = {
   public_choices?: unknown[]
   sections?: unknown[]
   fulfilment?: MenuOrderFulfilmentPolicy
+  kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
 
 export type MenuSurfaceFile = {
