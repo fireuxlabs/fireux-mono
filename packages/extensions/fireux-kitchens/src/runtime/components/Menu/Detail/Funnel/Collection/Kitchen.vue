@@ -56,13 +56,37 @@ const manifestLabel = computed(() => {
   return ''
 })
 
+const requestBasket = computed(() =>
+  props.funnel.incoming.basket.map((item) => ({
+    quantity: item.quantity,
+    name: item.name,
+  }))
+)
+const requestTotal = computed(() =>
+  props.funnel.incoming.basket.reduce(
+    (total, item) =>
+      total + item.quantity * Number(item.unit_price_chf || 0),
+    0
+  )
+)
 const requestPayload = computed(() => ({
-  surface: 'menu_order_funnel_sending',
-  action: 'collection_timing_request',
+  surface: 'menu_order_funnel',
+  action: 'collection_queue_request',
   copied_at: new Date().toISOString(),
-  incoming: props.funnel.incoming,
-  processing: props.funnel.processing,
-  sending: props.funnel.sending,
+  request: {
+    type: props.funnel.incoming.order_type,
+    collection: props.funnel.incoming.collection,
+    basket: requestBasket.value,
+    allergen_checked: Boolean(props.funnel.incoming.allergen_checked),
+    total_chf: requestTotal.value,
+  },
+  sent: props.funnel.sending.sent_order
+    ? {
+        id: props.funnel.sending.sent_order.id,
+        number: props.funnel.sending.sent_order.order_number,
+        status: props.funnel.sending.sent_order.status || '',
+      }
+    : null,
 }))
 
 async function copyRequest() {

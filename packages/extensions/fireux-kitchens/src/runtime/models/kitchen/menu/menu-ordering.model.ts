@@ -30,6 +30,7 @@ export type CreatedMenuOrderReceipt = {
   order_type: KitchenOrderType
   status?: string
   created_at: string
+  collection?: MenuOrderingCollectionState
   requested_for?: string
   currency: 'CHF'
   subtotal_chf: number
@@ -52,7 +53,8 @@ export type CreatedMenuOrder = {
   order_number: string
   status?: string
   order_type: KitchenOrderType
-  fire_state: KitchenOrderFireState
+  fire_state?: KitchenOrderFireState
+  collection?: MenuOrderingCollectionState
   payment?: KitchenOrderPayment
   receipt?: CreatedMenuOrderReceipt
 }
@@ -83,6 +85,11 @@ export type MenuOrderingDeliveryState = {
   zone?: unknown
 }
 
+export type MenuOrderingCollectionState = {
+  mode: 'queue' | 'scheduled'
+  requested_for?: string
+}
+
 export type MenuOrderingIncoming = {
   order_type: KitchenOrderType
   basket: Array<{
@@ -93,6 +100,7 @@ export type MenuOrderingIncoming = {
     unit_price_chf?: number
   }>
   allergen_checked?: boolean
+  collection?: MenuOrderingCollectionState
   choice?: Record<string, unknown>
 }
 
@@ -129,6 +137,7 @@ export type MenuOrderingSending = {
         priceLabel?: string
       }
     }>
+    collection?: MenuOrderingCollectionState
     requested_for?: string
     payment_method?: KitchenOrderPaymentMethod
     customer?: KitchenOrderCustomer
@@ -136,7 +145,7 @@ export type MenuOrderingSending = {
   pending: boolean
   expected_result: {
     status: string
-    fire_state: KitchenOrderFireState
+    fire_state?: KitchenOrderFireState
   }
   message?: string
   error?: string
@@ -162,6 +171,7 @@ export type MenuOrderingFunnelState = {
 }
 
 export type MenuOrderingSubmitPayload = {
+  collection?: MenuOrderingCollectionState
   customer?: KitchenOrderCustomer
   payment_method?: KitchenOrderPaymentMethod
   requested_for?: string

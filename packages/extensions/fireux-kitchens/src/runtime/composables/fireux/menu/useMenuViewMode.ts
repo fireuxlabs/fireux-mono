@@ -42,6 +42,7 @@ const supportedOrderTypes = [
   'pre_order',
   'room_service',
 ] as const satisfies readonly KitchenOrderType[]
+const takeAwayOrderTypes = ['collection', 'delivery'] as const
 const browseChoice = (): MenuChoiceOption => ({
   value: 'browse',
   label: 'Browse',
@@ -55,6 +56,15 @@ const orderType = (value: unknown): KitchenOrderType | undefined =>
   supportedOrderTypes.includes(value as KitchenOrderType)
     ? value as KitchenOrderType
     : undefined
+const isTakeAwayChoice = (option: MenuChoiceOption) =>
+  option.view === 'order' &&
+    takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
+const isDineInChoice = (option: MenuChoiceOption) =>
+  option.view === 'browse' || option.orderType === 'dine_in'
+const withDineInCampFallback = (options: MenuChoiceOption[]) =>
+  options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
+    ? [...options, browseChoice()]
+    : options
 
 const publicChoiceOption = (choice: MenuPublicChoice): MenuChoiceOption | null => {
   const type = orderType(choice.order_type)
@@ -131,7 +141,7 @@ export function useMenuViewMode(
     return uniqueMenuViews(available)
   })
   const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    // Public menu choice spine: browse and order types share one rail; delivery/collection are order types, not a second UI mode.
+    // Public menu choice spine: keep the selected value concrete; the renderer may group collection/delivery as take-away priming.
     const options: MenuChoiceOption[] = []
     if (viewModes.value.includes('browse')) {
       options.push(browseChoice())
@@ -166,9 +176,9 @@ export function useMenuViewMode(
       : []
   })
   const choiceOptions = computed<MenuChoiceOption[]>(() =>
-    publicChoiceOptions.value.length
+    withDineInCampFallback(publicChoiceOptions.value.length
       ? publicChoiceOptions.value
-      : generatedChoiceOptions.value
+      : generatedChoiceOptions.value)
   )
   const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
     const local = choiceOptions.value.filter((option) => !option.to)

@@ -80,6 +80,7 @@ export function useKitchenConsoleMenus() {
     menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu: create.createMenu,
     updateMenu: update.updateMenu,
+    renameMenu: update.renameMenu,
     publishMenu: update.publishMenu,
     archiveMenu: update.archiveMenu,
     debug: computed(() => ({

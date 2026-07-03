@@ -93,13 +93,15 @@ export function useKitchenConsoleOrders() {
     fireState: order.fire_state || '',
     estimatedReadyMinutes: (order as any).estimated_ready_minutes || 0,
     estimatedReadyAt: (order as any).estimated_ready_at || '',
-    requestedFor: orderValue(order, [
-      'requested_for',
-      'pickup_at',
-      'pickup_time',
-      'collection_at',
-      'due_at',
-    ]) || '',
+    requestedFor: collectionRequestedFor(order) ||
+      orderValue(order, [
+        'requested_for',
+        'pickup_at',
+        'pickup_time',
+        'collection_at',
+        'due_at',
+      ]) ||
+      '',
     items: Array.isArray(order.items)
       ? order.items.map((item) => ({
           id: item.id,
@@ -225,6 +227,14 @@ const orderValue = (order: KitchenOrder, keys: string[]) => {
   }
   return null
 }
+const collectionRequestedFor = (order: KitchenOrder) => {
+  const collection = (order as Record<string, unknown>).collection
+  if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
+    return ''
+  }
+
+  return String((collection as Record<string, unknown>).requested_for || '').trim()
+}
 
 const getCreatedMs = (order: KitchenOrder) =>
   timestampMs((order as any).created?.at) ||
@@ -235,13 +245,14 @@ const getCreatedMs = (order: KitchenOrder) =>
 const getPickupMs = (order: KitchenOrder) => {
   const createdMs = getCreatedMs(order)
   return timestampMs(
-    orderValue(order, [
-      'requested_for',
-      'pickup_at',
-      'pickup_time',
-      'collection_at',
-      'due_at',
-    ]),
+    collectionRequestedFor(order) ||
+      orderValue(order, [
+        'requested_for',
+        'pickup_at',
+        'pickup_time',
+        'collection_at',
+        'due_at',
+      ]),
     createdMs
   )
 }

@@ -8,10 +8,9 @@
     <MenuDetailFunnelAllergen v-model="allergenAccepted" />
   </ClientOnly>
 
-  <MenuDetailFunnelCollectionRendezvous
+  <MenuDetailFunnelCollectionRequest
     v-else-if="step === 3"
-    :order="funnel.order"
-    @update:ready="rendezvousReady = $event"
+    :state="collectionFunnel"
   />
 
   <MenuDetailFunnelCollectionKitchen
@@ -19,14 +18,20 @@
     :funnel="funnel"
   />
 
-  <MenuDetailFunnelPayment v-else-if="step === 5" />
+  <MenuDetailFunnelPayment
+    v-else-if="step === 5"
+    :funnel="funnel"
+  />
 
-  <MenuDetailFunnelConfirmation v-else-if="step === 6" />
+  <MenuDetailFunnelConfirmation
+    v-else-if="step === 6"
+    :funnel="funnel"
+  />
 </template>
 
 <script setup lang="ts">
 import {
-  watch,
+  computed,
   watchEffect,
 } from 'vue'
 import { useCollection } from '../../../../composables/fireux/kitchen/order/funnel/Collection/useCollection'
@@ -41,19 +46,27 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const {
-  allergenAccepted,
-  ready,
-  rendezvousReady,
-} = useCollection(() => props.funnel.order, () => props.step)
-
-watchEffect(() => {
-  emit('update:ready', ready.value)
+const collectionFunnel = useCollection(
+  () => props.funnel.order,
+  () => props.step,
+  () => props.funnel.incoming
+)
+const allergenAccepted = computed({
+  get: () => Boolean(props.funnel.incoming.allergen_checked),
+  set: (accepted: boolean) => {
+    props.funnel.collect({
+      allergen_checked: accepted,
+    })
+  },
 })
 
-watch(allergenAccepted, (accepted: boolean) => {
+watchEffect(() => {
+  emit('update:ready', collectionFunnel.ready.value)
+})
+
+watchEffect(() => {
   props.funnel.collect({
-    allergen_checked: accepted,
+    collection: collectionFunnel.collection.value,
   })
 })
 </script>

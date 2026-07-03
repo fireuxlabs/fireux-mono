@@ -240,6 +240,32 @@ const inputDateDay = (
   return daysByUtcIndex[date.getUTCDay()]
 }
 
+const zonedDateText = (date: Date, timezone: string) => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+  const value = (type: string) =>
+    parts.find((part) => part.type === type)?.value || ''
+  const year = value('year')
+  const month = value('month')
+  const day = value('day')
+
+  return year && month && day ? `${year}-${month}-${day}` : ''
+}
+
+const inputDateText = (
+  value: unknown,
+  timezone: string
+) => {
+  const source = text(value)
+  if (source.toLowerCase() === 'today') return zonedDateText(new Date(), timezone)
+
+  return source.match(/^\d{4}-\d{2}-\d{2}$/) ? source : ''
+}
+
 const isWindowOpen = (
   window: WeekdayTimeWindow,
   day: WeekdayTimeDay,
@@ -286,6 +312,8 @@ export const readWeekdayTimeSelectionState = (
 ) => {
   const hours = readWeekdayTimeWindowsConfig(value)
   const day = inputDateDay(dateValue, hours.timezone)
+  const dateText = inputDateText(dateValue, hours.timezone)
+  const timeText = normalizeTime(timeValue)
   const minutes = timeMinutes(timeValue)
   const complete = Boolean(day && minutes >= 0)
   const known = Boolean(hours.windows.length)
@@ -300,6 +328,9 @@ export const readWeekdayTimeSelectionState = (
     known,
     complete,
     available,
+    requested_for: available && dateText && timeText
+      ? `${dateText}T${timeText}:00`
+      : '',
     label: !complete
       ? ''
       : !known

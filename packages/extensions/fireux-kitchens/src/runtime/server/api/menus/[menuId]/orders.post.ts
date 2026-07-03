@@ -10,7 +10,6 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import type {
   KitchenOrderCustomer,
-  KitchenOrderFireState,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
@@ -96,21 +95,13 @@ const normalizePaymentMethod = (
     statusMessage: 'Choose a valid payment method.',
   })
 }
-const fireStateForOrderType = (
-  orderType: KitchenOrderType
-): KitchenOrderFireState => {
-  if (orderType === 'delivery') return 'held'
-  if (orderType === 'pre_order') return 'held'
-  if (orderType === 'dine_in') return 'fired'
-  return 'ready_to_fire'
-}
 const statusForOrderType = (
   orderType: KitchenOrderType,
   paymentRequired = false
 ) =>
   paymentRequired
     ? 'pending_payment'
-    : orderType === 'delivery'
+    : orderType === 'delivery' || orderType === 'collection'
       ? 'pending_acceptance'
       : 'open'
 const readCustomer = (value: unknown): KitchenOrderCustomer => {
@@ -130,6 +121,44 @@ const readCustomer = (value: unknown): KitchenOrderCustomer => {
   return Object.fromEntries(
     Object.entries(customer).filter(([, entry]) => entry)
   ) as KitchenOrderCustomer
+}
+const readCollection = (
+  value: unknown,
+  legacyRequestedFor: unknown,
+  orderType: KitchenOrderType
+) => {
+  if (orderType !== 'collection') return null
+
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+  const mode = text(source.mode)
+  const requestedFor = text(source.requested_for || legacyRequestedFor)
+
+  if (mode === 'scheduled') {
+    if (!requestedFor) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Choose a collection time.',
+      })
+    }
+
+    return {
+      mode: 'scheduled' as const,
+      requested_for: requestedFor,
+    }
+  }
+
+  if (requestedFor) {
+    return {
+      mode: 'scheduled' as const,
+      requested_for: requestedFor,
+    }
+  }
+
+  return {
+    mode: 'queue' as const,
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -172,6 +201,7 @@ export default defineEventHandler(async (event) => {
     'online_card',
   ])
   const requestedFor = text(body?.requested_for)
+  const collection = readCollection(body?.collection, requestedFor, orderType)
   const customer = readCustomer(body?.customer)
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null
   if (orderType === 'delivery') {
@@ -264,7 +294,6 @@ export default defineEventHandler(async (event) => {
   const db = getRuntimeFirestore()
   const id = orderId()
   const number = orderNumber()
-  const fireState = fireStateForOrderType(orderType)
   const status = statusForOrderType(orderType)
   const receiptCreatedAt = new Date().toISOString()
   const now = FieldValue.serverTimestamp()
@@ -300,10 +329,12 @@ export default defineEventHandler(async (event) => {
     order_number: number,
     status: nextStatus,
     order_type: orderType,
-    requested_for: requestedFor,
+    ...(orderType !== 'collection' && requestedFor
+      ? { requested_for: requestedFor }
+      : {}),
+    ...(collection ? { collection } : {}),
     estimated_ready_minutes: 0,
     estimated_ready_at: '',
-    fire_state: fireState,
     ...(Object.keys(customer).length ? { customer } : {}),
     ...(deliveryAddressResult?.zone
       ? {
@@ -357,14 +388,17 @@ export default defineEventHandler(async (event) => {
     order_number: number,
     status: nextStatus,
     order_type: orderType,
-    fire_state: fireState,
+    ...(collection ? { collection } : {}),
     receipt: {
       id,
       order_number: number,
       order_type: orderType,
       status: nextStatus,
       created_at: receiptCreatedAt,
-      ...(requestedFor ? { requested_for: requestedFor } : {}),
+      ...(orderType !== 'collection' && requestedFor
+        ? { requested_for: requestedFor }
+        : {}),
+      ...(collection ? { collection } : {}),
       currency: 'CHF',
       subtotal_chf: subtotal,
       ...(deliveryFee ? { delivery_fee_chf: deliveryFee } : {}),

@@ -210,6 +210,14 @@ const orderValue = (keys: string[]) => {
   }
   return null
 }
+const collectionRequestedFor = () => {
+  const collection = (props.order as Record<string, unknown>).collection
+  if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
+    return ''
+  }
+
+  return normalizeString((collection as Record<string, unknown>).requested_for)
+}
 const orderRecord = computed(() => props.order as Record<string, unknown>)
 const orderStatus = computed(() => normalizeString(props.order.status))
 const isWaitingForAcceptance = computed(() =>
@@ -229,13 +237,14 @@ const placedMs = computed(
 )
 const pickupMs = computed(() =>
   timestampMs(
-    orderValue([
-      'requested_for',
-      'pickup_at',
-      'pickup_time',
-      'collection_at',
-      'due_at',
-    ]),
+    collectionRequestedFor() ||
+      orderValue([
+        'requested_for',
+        'pickup_at',
+        'pickup_time',
+        'collection_at',
+        'due_at',
+      ]),
     placedMs.value
   )
 )

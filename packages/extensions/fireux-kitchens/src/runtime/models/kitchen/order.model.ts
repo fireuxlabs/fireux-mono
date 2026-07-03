@@ -98,6 +98,11 @@ export type KitchenOrderDriverResponse = {
   updated_at?: string | FirebaseTimestamp
 }
 
+export type KitchenOrderCollection = {
+  mode?: 'queue' | 'scheduled'
+  requested_for?: string | FirebaseTimestamp
+}
+
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -106,6 +111,7 @@ export const KitchenOrderModel = {
   status: 'open' as string,
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,
+  collection: {} as KitchenOrderCollection,
   estimated_ready_minutes: 0 as number,
   estimated_ready_at: '' as string | FirebaseTimestamp,
   fire_state: 'fired' as KitchenOrderFireState,

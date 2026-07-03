@@ -25,6 +25,7 @@ import type { MenuManifest } from '../../../../menu/useMenuManifest'
 import type { MenuFoodOrderItem } from '../../../../../../models/kitchen/menu/menu-food.model'
 import type {
   CreatedMenuOrder,
+  MenuOrderingCollectionState,
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
@@ -165,15 +166,15 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
         ...(item.addOns?.length ? { addOns: item.addOns } : {}),
         ...(item.variant ? { variant: item.variant } : {}),
       })),
+      ...(collectedIncoming.value.collection
+        ? { collection: collectedIncoming.value.collection }
+        : {}),
     },
     pending: draft.creatingItemId.value === 'order',
     expected_result: {
       status: ['collection', 'delivery'].includes(selectedOrderType.value)
         ? 'pending_acceptance'
         : 'open',
-      fire_state: ['collection', 'delivery'].includes(selectedOrderType.value)
-        ? 'held'
-        : 'ready_to_fire',
     },
     ...(draft.message.value ? { message: draft.message.value } : {}),
     ...(draft.error.value ? { error: draft.error.value } : {}),
@@ -242,6 +243,10 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   watch(draft.quantity, (quantity: number) => {
     if (quantity) return
 
+    collectedIncoming.value = {}
+  })
+
+  watch(selectedOrderType, () => {
     collectedIncoming.value = {}
   })
 
@@ -320,6 +325,7 @@ type MenuOrderVariantInput = {
 type CreateMenuOrderInput = {
   items: MenuOrderLineInput[]
   order_type?: KitchenOrderType
+  collection?: MenuOrderingCollectionState
   payment_method?: KitchenOrderPaymentMethod
   requested_for?: string
   customer?: KitchenOrderCustomer
@@ -419,6 +425,8 @@ const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
     Object.entries(clean).filter(([, value]) => value)
   )
 }
+const isClearedOrderStatus = (status: unknown) =>
+  ['trashed', 'deleted', 'cancelled', 'canceled'].includes(text(status))
 
 function useDraft(
   menuId: MaybeRefOrGetter<string>,
@@ -606,6 +614,7 @@ function useDraft(
         ...(item.variant ? { variant: item.variant } : {}),
       })),
       order_type: orderType.value,
+      collection: input?.collection,
       payment_method: input?.payment_method,
       requested_for: input?.requested_for,
       customer: input?.customer,
@@ -625,6 +634,13 @@ function useDraft(
 
   watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
     if (!status || !awaitingAcceptance.value) return
+    if (isClearedOrderStatus(status.status)) {
+      trackedOrder.value = null
+      awaitingAcceptance.value = false
+      acceptedOrder.value = false
+      message.value = ''
+      return
+    }
     if (status.status === 'pending_acceptance') return
 
     acceptedOrder.value = true
@@ -693,8 +709,9 @@ function useCreate(
         body: {
           items,
           order_type: input.order_type,
+          collection: input.collection,
           payment_method: input.payment_method,
-          requested_for: input.requested_for,
+          ...(input.requested_for ? { requested_for: input.requested_for } : {}),
           customer: cleanCustomer(input.customer),
         },
       })
@@ -796,6 +813,22 @@ function useStatus(
       status.value = nextStatus
       return nextStatus
     } catch (err) {
+      const statusCode = err && typeof err === 'object' && 'statusCode' in err
+        ? Number((err as { statusCode?: unknown }).statusCode)
+        : 0
+      if (statusCode === 404) {
+        status.value = {
+          id: text(toValue(orderId)),
+          order_number: '',
+          status: 'deleted',
+          order_type: '',
+          fire_state: '',
+          estimated_ready_minutes: 0,
+          estimated_ready_at: '',
+        }
+        return status.value
+      }
+
       error.value = err && typeof err === 'object' && 'statusMessage' in err
         ? text((err as { statusMessage?: unknown }).statusMessage)
         : 'Order status could not be checked.'

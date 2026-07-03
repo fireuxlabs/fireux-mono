@@ -20,8 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { watchEffect } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
+import { usePreOrder } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrder'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -31,12 +32,9 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const preOrderStatus = computed(() =>
-  props.order.policy?.message ||
-  'The kitchen will confirm your pre-order time before payment.'
-)
+const { detailsStatus: preOrderStatus, ready } = usePreOrder(() => props.order)
 
 watchEffect(() => {
-  emit('update:ready', true)
+  emit('update:ready', ready.value)
 })
 </script>

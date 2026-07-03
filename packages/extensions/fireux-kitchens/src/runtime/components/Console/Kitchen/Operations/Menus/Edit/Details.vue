@@ -26,6 +26,19 @@
       />
 
       <MoleculesFormsFirestoreSimpleField
+        label="URL id"
+        :firebase-value="menuId"
+        placeholder="pizza-snacks-and-drinks"
+        :maxlength="80"
+        :disabled="!canWrite"
+        disabled-message="This menu is read-only."
+        :validation-function="validateMenuId"
+        :formatting-function="formatMenuId"
+        :update-function="handleMenuId"
+      />
+
+      <MoleculesFormsFirestoreSimpleField
+        class="md:col-span-2"
         label="Menu description"
         type="textarea"
         :rows="3"
@@ -57,7 +70,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from '#imports'
 import { computed } from 'vue'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 import type {
@@ -70,10 +85,13 @@ const {
   menu,
   selectedKitchen,
   kitchenId,
+  menuId,
   canWrite,
   updateMenu,
+  renameMenu,
 } = useKitchenConsoleMenu()
 const toast = useToastify()
+const router = useRouter()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => normalizeString(menu.value?.name))
@@ -103,6 +121,14 @@ const validateMenuName = (value: string) => {
   return {
     isValid: Boolean(next),
     message: next ? '' : 'Menu name is required.',
+  }
+}
+const formatMenuId = (value: string) => normalizeSlug(value)
+const validateMenuId = (value: string) => {
+  const next = formatMenuId(value)
+  return {
+    isValid: Boolean(next),
+    message: next ? '' : 'URL id is required.',
   }
 }
 
@@ -142,6 +168,36 @@ const handleDescription = async (value: string) =>
     'Menu description updated',
     'Could not update menu description'
   )
+
+async function handleMenuId(value: string) {
+  if (!canWrite.value) throw new Error('This menu is read-only.')
+  const currentMenuId = normalizeString(menuId.value)
+  const nextMenuId = formatMenuId(value)
+  if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
+  if (!nextMenuId) throw new Error('URL id is required.')
+  if (nextMenuId === currentMenuId) return 'unchanged'
+
+  try {
+    const result = await renameMenu(kitchenId.value, currentMenuId, nextMenuId)
+    if (result.changed) {
+      await router.replace(`/console/kitchen/menus/${encodeURIComponent(result.id)}`)
+    }
+    toast.add({
+      title: 'Menu URL id updated',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+    return 'success'
+  } catch (error) {
+    toast.add({
+      title: 'Could not update menu URL id',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
+    throw error
+  }
+}
 
 async function handleCopyServiceHours() {
   const operationHours = kitchenOperationHours.value

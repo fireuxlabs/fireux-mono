@@ -257,6 +257,10 @@ const {
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 const railCounts = computed(() => [
   {
     label: 'Incoming',
@@ -314,27 +318,31 @@ function incomingTitle(order: Record<string, unknown>) {
 
 function incomingCopyPayload(order: Record<string, unknown>) {
   const orderId = normalizeId(order.id)
+  const collection = record(order.collection)
+  const lines = orderLines(order)
+  const estimatedReadyMinutes = estimateMinutesForId(
+    orderId,
+    Number(order.estimated_ready_minutes || 0)
+  )
 
   return {
     surface: 'kitchen_console_orders_receiving',
     action: incomingTitle(order),
     copied_at: new Date().toISOString(),
-    order_id: orderId,
-    order_type: normalizeId(order.order_type),
-    status: normalizeId(order.status),
-    fire_state: normalizeId(order.fire_state),
-    estimate_minutes: estimateMinutesForId(
-      orderId,
-      Number(order.estimated_ready_minutes || 0)
-    ),
-    lines: orderLines(order),
-    customer: order.customer || null,
-    requested_for: order.requested_for || '',
-    payment: order.payment || null,
-    fulfilment_policy: order.fulfilment_policy || null,
-    fulfilment_match: order.fulfilment_match || null,
-    driver_responses: order.driver_responses || null,
-    received_order: order,
+    order: {
+      id: orderId,
+      number: normalizeId(order.order_number),
+      type: normalizeId(order.order_type),
+      status: normalizeId(order.status),
+      collection: Object.keys(collection).length ? collection : null,
+      items: lines.map((line) => ({
+        quantity: line.quantity,
+        label: line.label,
+      })),
+    },
+    response: {
+      estimated_ready_minutes: estimatedReadyMinutes,
+    },
   }
 }
 

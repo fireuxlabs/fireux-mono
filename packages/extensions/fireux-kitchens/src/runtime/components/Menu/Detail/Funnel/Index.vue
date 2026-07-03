@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useFunnelIndex } from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnelIndex'
 import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
@@ -99,13 +99,23 @@ const continueLabel = computed(() => {
   return isLastStep.value && !continueBlocked.value ? 'Done' : 'Continue'
 })
 
+watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
+  if (orderId) return
+  if (props.funnel.order.orderType !== 'collection') return
+  if (step.value <= 3) return
+
+  step.value = 3
+})
+
 async function continueFunnel() {
   if (continueBlocked.value) return
 
   if (shouldSubmitCollectionRequest.value) {
     submittingStep.value = true
     try {
-      const created = await props.funnel.submit({})
+      const created = await props.funnel.submit({
+        collection: props.funnel.incoming.collection,
+      })
       if (!created) return
     } finally {
       submittingStep.value = false

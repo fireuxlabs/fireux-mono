@@ -5,7 +5,7 @@
         <div>
           <h2 class="text-base font-semibold text-highlighted">Ordering</h2>
           <p class="text-sm text-dimmed">
-            Choose whether this menu can create orders and which order types guests can use.
+            Enable the dine-in and dine-out systems this menu should offer.
           </p>
         </div>
 
@@ -16,54 +16,57 @@
     </template>
 
     <div class="space-y-4">
-      <UCheckbox
-        :model-value="orderingEnabled"
-        :disabled="!canWrite"
-        label="Accept orders from this menu"
-        @update:model-value="setOrderingEnabled"
-      />
+      <div class="space-y-3">
+        <section
+          v-for="group in orderTypeGroups"
+          :key="group.key"
+          class="ordering-group"
+        >
+          <div class="ordering-group__header">
+            <h3 class="ordering-group__title">{{ group.label }}</h3>
+            <p class="ordering-group__description">{{ group.description }}</p>
+          </div>
 
-      <div v-if="orderingEnabled" class="space-y-3">
-        <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <button
-            v-for="option in orderTypeOptions"
-            :key="option.type"
-            type="button"
-            class="ordering-option"
-            :class="{ 'ordering-option--selected': hasOrderType(option.type) }"
-            :disabled="!canWrite"
-            @click="toggleOrderType(option.type)"
+          <div class="grid gap-3 md:grid-cols-2">
+            <button
+              v-for="option in group.options"
+              :key="option.type"
+              type="button"
+              class="ordering-option"
+              :class="{ 'ordering-option--selected': hasOrderType(option.type) }"
+              :disabled="!canWrite"
+              @click="toggleOrderType(option.type)"
+            >
+              <span class="ordering-option__title">{{ option.label }}</span>
+              <span class="ordering-option__description">{{ option.description }}</span>
+            </button>
+          </div>
+
+          <div
+            v-if="group.key === 'dine-in' && hasOrderType('pre_order')"
+            class="grid gap-3 md:grid-cols-2"
           >
-            <span class="ordering-option__title">{{ option.label }}</span>
-            <span class="ordering-option__description">{{ option.description }}</span>
-          </button>
-        </div>
-
-        <div v-if="hasOrderType('pre_order')" class="grid gap-3 md:grid-cols-2">
-          <UFormField label="Pre-order notice">
-            <div class="flex items-center gap-2">
-              <UInput
-                :model-value="preOrderNoticeHours"
-                type="number"
-                min="1"
-                :disabled="!canWrite"
-                @update:model-value="setPreOrderNoticeHours"
-              />
-              <span class="text-sm text-dimmed">hours</span>
-            </div>
-          </UFormField>
-        </div>
+            <UFormField label="Pre-order notice">
+              <div class="flex items-center gap-2">
+                <UInput
+                  :model-value="preOrderNoticeHours"
+                  type="number"
+                  min="1"
+                  :disabled="!canWrite"
+                  @update:model-value="setPreOrderNoticeHours"
+                />
+                <span class="text-sm text-dimmed">hours</span>
+              </div>
+            </UFormField>
+          </div>
+        </section>
       </div>
-
-      <p v-if="saveState" class="text-xs text-dimmed">
-        {{ saveState }}
-      </p>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 import type {
@@ -79,6 +82,12 @@ type OrderTypeOption = {
   label: string
   description: string
 }
+type OrderTypeGroup = {
+  key: string
+  label: string
+  description: string
+  options: OrderTypeOption[]
+}
 
 const {
   menu,
@@ -87,33 +96,46 @@ const {
   updateMenu,
 } = useKitchenConsoleMenu()
 const toast = useToastify()
-const saveState = ref('')
 
-const orderTypeOptions: OrderTypeOption[] = [
+const orderTypeGroups: OrderTypeGroup[] = [
   {
-    type: 'dine_in',
-    label: 'Dine in',
-    description: 'Guests order for normal in-venue service.',
+    key: 'dine-in',
+    label: 'Dine in systems',
+    description: 'Orders consumed on site or handled as in-house service.',
+    options: [
+      {
+        type: 'dine_in',
+        label: 'Dine in',
+        description: 'Guests order for normal in-venue service.',
+      },
+      {
+        type: 'pre_order',
+        label: 'Pre-order',
+        description: 'Guests order ahead for a later dine-in service.',
+      },
+      {
+        type: 'room_service',
+        label: 'Room service',
+        description: 'Hotel or private-room service.',
+      },
+    ],
   },
   {
-    type: 'collection',
-    label: 'Collection',
-    description: 'Guests collect from the kitchen.',
-  },
-  {
-    type: 'delivery',
-    label: 'Delivery',
-    description: 'Guests ask for food to be delivered.',
-  },
-  {
-    type: 'pre_order',
-    label: 'Pre-order',
-    description: 'Guests order ahead for a later dine-in service.',
-  },
-  {
-    type: 'room_service',
-    label: 'Room service',
-    description: 'Hotel or private-room service.',
+    key: 'dine-out',
+    label: 'Dine out systems',
+    description: 'Take-away systems where food leaves the normal table-service flow.',
+    options: [
+      {
+        type: 'collection',
+        label: 'Collection',
+        description: 'Guests collect from the kitchen.',
+      },
+      {
+        type: 'delivery',
+        label: 'Delivery',
+        description: 'Guests ask for food to be delivered.',
+      },
+    ],
   },
 ]
 
@@ -194,12 +216,9 @@ async function updateOrdering(
       : [],
   }
 
-  saveState.value = 'Saving...'
   try {
     await updateMenu(kitchenId.value, currentMenuId, patch)
-    saveState.value = 'Saved'
   } catch (error) {
-    saveState.value = 'Save failed'
     toast.add({
       title: 'Could not update ordering',
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -208,19 +227,6 @@ async function updateOrdering(
     })
     throw error
   }
-}
-
-async function setOrderingEnabled(value: boolean | 'indeterminate') {
-  const enabled = value === true
-  if (!enabled) {
-    await updateOrdering({ enabled: false, order_types: [] }, [])
-    return
-  }
-
-  const nextOrderTypes = orderTypeConfigs.value.length
-    ? orderTypeConfigs.value
-    : [{ type: 'dine_in' as const }]
-  await updateOrdering({ enabled: true, order_types: nextOrderTypes })
 }
 
 async function toggleOrderType(type: KitchenOrderType) {
@@ -254,6 +260,35 @@ async function setPreOrderNoticeHours(value: string | number) {
 </script>
 
 <style scoped>
+.ordering-group {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--ui-border);
+}
+
+.ordering-group:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ordering-group__header {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.ordering-group__title {
+  color: var(--ui-text-highlighted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.ordering-group__description {
+  color: var(--ui-text-dimmed);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
 .ordering-option {
   display: grid;
   gap: 0.25rem;

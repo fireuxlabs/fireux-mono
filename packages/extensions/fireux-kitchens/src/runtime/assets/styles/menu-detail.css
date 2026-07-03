@@ -408,6 +408,46 @@
   font-weight: 850;
 }
 
+.menu-order-date-control {
+  display: flex;
+  gap: var(--menu-space-xs);
+  align-items: center;
+}
+
+.menu-order-date-control .menu-order-schedule__input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.menu-order-date-pill {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 28%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
+  color: var(--menu-text);
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.menu-order-date-button {
+  display: inline-grid;
+  flex: 0 0 2.6rem;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-bg) 88%, transparent);
+  color: var(--menu-primary);
+  cursor: pointer;
+  font: inherit;
+}
+
 .menu-order-delivery-map .delivery-zones-map__canvas {
   aspect-ratio: 16 / 9;
   max-height: 12rem;

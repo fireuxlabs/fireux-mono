@@ -42,7 +42,7 @@ const depositAmount = (
 }
 
 export const statusAfterPayment = (orderType: KitchenOrderType) =>
-  orderType === 'delivery' || orderType === 'pre_order'
+  orderType === 'delivery' || orderType === 'collection' || orderType === 'pre_order'
     ? 'pending_acceptance'
     : 'open'
 

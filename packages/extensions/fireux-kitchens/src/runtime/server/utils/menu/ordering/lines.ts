@@ -26,6 +26,10 @@ export type CreateMenuOrderBody = {
   }>
   order_type?: string
   payment_method?: KitchenOrderPaymentMethod | string
+  collection?: {
+    mode?: string
+    requested_for?: string
+  }
   requested_for?: string
   customer?: KitchenOrderCustomer
 }

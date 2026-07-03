@@ -5,13 +5,25 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { doc } from 'firebase/firestore'
+import {
+  useDocument,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
 } from '../../../../customer/useCustomerDeliveryAddressAutocomplete'
-import { useFunnelCustomer } from '../shared/useCustomer'
+import { useCustomer } from '../../../../firestore/profiles/Customer/useCustomer'
+import type {
+  CustomerPrivate,
+  CustomerSavedAddress,
+} from '../../../../../../models/customer.model'
 import type { MenuDeliveryZone } from '../../../../../../models/kitchen/menu/menu.model'
-import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
+import type {
+  MenuOrderingDeliveryState,
+  MenuOrderingFunnelState,
+} from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
 export type DeliveryAddressCheckResult = {
   deliverable: boolean
@@ -38,17 +50,42 @@ type DeliveryAddressCheckInput =
       lng?: number
     }
 
-const text = (value: unknown) => String(value ?? '').trim()
+type UseDeliveryOptions = {
+  delivery?: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>
+  orderPath?: MaybeRefOrGetter<string | null | undefined>
+}
 
-export function useDeliveryZone(
-  order: MaybeRefOrGetter<MenuOrderingFunnelState>
+type FulfilmentOrder = {
+  id?: string
+  driver_responses?: Record<string, {
+    status?: string
+  }>
+}
+
+type CustomerAvatarLike = { avatar?: string }
+
+const text = (value: unknown) => String(value ?? '').trim()
+const customerPrivate = (
+  source: { private?: Partial<CustomerPrivate> } | null | undefined
+) =>
+  source?.private ?? {}
+const firstDefaultSavedAddress = (
+  addresses: CustomerSavedAddress[] | undefined
+) =>
+  (addresses || []).find((address) => address.is_default) ||
+  (addresses || [])[0] ||
+  null
+
+export function useDelivery(
+  order: MaybeRefOrGetter<MenuOrderingFunnelState>,
+  options: UseDeliveryOptions = {}
 ) {
   const address = ref('')
   const autofillApplied = ref(false)
   const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
-  const { customer: autofillCustomer } = useFunnelCustomer()
+  const { customer: autofillCustomer } = useDeliveryAutofillCustomer()
   const zones = computed(() =>
     toValue(order).policy?.fulfilment?.delivery_zones || []
   )
@@ -116,6 +153,57 @@ export function useDeliveryZone(
     }
 
     return `${zoneLabel(matchedZone.value)} · minimum order ${chf(minimum.value)} · fee ${chf(fee.value)}`
+  })
+  const db = useFirestore()
+  const resolvedOrderPath = computed(() => text(toValue(options.orderPath)))
+  const orderRef = computed(() =>
+    resolvedOrderPath.value ? doc(db, resolvedOrderPath.value) : null
+  )
+  const { data: activeOrder } = useDocument(orderRef, {
+    ssrKey: computed(() =>
+      resolvedOrderPath.value
+        ? `menu-delivery-order-${resolvedOrderPath.value}`
+        : undefined
+    ),
+    transform: (docSnap: any) => {
+      if (!docSnap?.exists?.()) return undefined
+      return { id: docSnap.id, ...(docSnap.data() ?? {}) } as FulfilmentOrder
+    },
+  } as any)
+  const activeDriverResponses = computed(() =>
+    ((activeOrder.value as FulfilmentOrder | undefined)?.driver_responses || {})
+  )
+  const watchingCount = computed(() =>
+    Object.values(activeDriverResponses.value)
+      .filter((response) => text(response?.status) === 'watching')
+      .length
+  )
+  const kitchen = computed(() => {
+    if (toValue(order).orderType !== 'delivery') {
+      return {
+        title: 'Contacting kitchen',
+        status: 'Checking kitchen timing.',
+      }
+    }
+
+    return {
+      title: 'Contacting kitchen',
+      status: 'Sending the basket and delivery address.',
+    }
+  })
+  const driverStatus = computed(() => {
+    if (toValue(order).orderType !== 'delivery') {
+      return 'Driver watching is only needed for delivery orders.'
+    }
+    if (!toValue(options.delivery)?.ready) {
+      return 'Waiting for a checked delivery address.'
+    }
+    if (!resolvedOrderPath.value) return 'Waiting for the order to be created.'
+    if (watchingCount.value > 0) {
+      return `${watchingCount.value} driver${watchingCount.value === 1 ? '' : 's'} watching.`
+    }
+
+    return 'Order created. Waiting for drivers to watch.'
   })
 
   async function selectAddress(prediction: CustomerDeliveryAddressPrediction) {
@@ -227,8 +315,10 @@ export function useDeliveryZone(
     address,
     checkPending,
     clearAddress,
+    driverStatus,
     fee,
     hasSelectedAddress,
+    kitchen,
     minimum,
     minimumMet,
     predictions,
@@ -241,8 +331,54 @@ export function useDeliveryZone(
     suggestionsError,
     suggestionsPending,
     total,
+    watchingCount,
     zones,
   }
+}
+
+function useDeliveryAutofillCustomer() {
+  const {
+    coreProfile,
+    appProfile,
+    coreUser,
+    pending,
+  } = useCustomer()
+
+  const customer = computed(() => {
+    const app = appProfile.value
+    const profile = coreProfile.value
+    const user = coreUser.value
+    const appPrivate = customerPrivate(app)
+    const profilePrivate = customerPrivate(profile)
+    const profileAvatar = text(
+      (app as CustomerAvatarLike | null)?.avatar ||
+        (profile as CustomerAvatarLike | null)?.avatar
+    )
+    const savedAddress =
+      firstDefaultSavedAddress(appPrivate.saved_addresses) ||
+      firstDefaultSavedAddress(profilePrivate.saved_addresses)
+
+    return {
+      name: text(
+        appPrivate.name ||
+          profilePrivate.name ||
+          profile?.title ||
+          user?.display_name
+      ),
+      avatar: profileAvatar,
+      avatar_url: text(profileAvatar || user?.avatar),
+      phone: text(appPrivate.phone || profilePrivate.phone),
+      address: text(
+        savedAddress?.address ||
+          appPrivate.default_delivery_address ||
+          profilePrivate.default_delivery_address
+      ),
+      address_place_id: text(savedAddress?.place_id),
+      allergy_note: text(appPrivate.allergy_note || profilePrivate.allergy_note),
+    }
+  })
+
+  return { customer, pending }
 }
 
 function zoneLabel(zone: MenuDeliveryZone | null) {

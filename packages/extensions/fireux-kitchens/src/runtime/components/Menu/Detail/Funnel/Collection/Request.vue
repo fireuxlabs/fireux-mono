@@ -1,12 +1,8 @@
 <template>
   <div class="menu-order-dispatch">
     <h2 class="menu-order-screen-title">
-      Collection request
+      Collection
     </h2>
-
-    <p class="menu-order-placeholder">
-      {{ collectionStatus }}
-    </p>
 
     <ClientOnly>
       <UBadge
@@ -48,11 +44,34 @@
       <div class="menu-order-schedule__fields">
         <label class="menu-order-field">
           Date
-          <input
-            v-model="scheduledDate"
-            class="menu-order-schedule__input"
-            type="text"
-          >
+          <span class="menu-order-date-control">
+            <span
+              v-if="!dateInputOpen"
+              class="menu-order-date-pill"
+            >
+              {{ scheduledDateLabel }}
+            </span>
+
+            <input
+              v-else
+              ref="dateInput"
+              v-model="scheduledDate"
+              class="menu-order-schedule__input"
+              type="date"
+            >
+
+            <button
+              type="button"
+              class="menu-order-date-button"
+              aria-label="Choose collection date"
+              @click="openCalendar"
+            >
+              <UIcon
+                name="i-lucide-calendar"
+                aria-hidden="true"
+              />
+            </button>
+          </span>
         </label>
 
         <label class="menu-order-field">
@@ -77,30 +96,36 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue'
-import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
-import { useRendezvous } from '../../../../../composables/fireux/kitchen/order/funnel/Collection/useRendezvous'
+import { nextTick, ref } from 'vue'
+import type { MenuOrderingCollectionFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/Collection/useCollection'
 
 const props = defineProps<{
-  order: MenuOrderingFunnelState
-}>()
-
-const emit = defineEmits<{
-  (event: 'update:ready', value: boolean): void
+  state: MenuOrderingCollectionFunnel
 }>()
 
 const {
+  dateInputOpen,
   mode,
+  openDateInput,
   options,
-  ready,
   scheduleSelection,
   scheduledDate,
+  scheduledDateLabel,
   scheduledTime,
   serviceTimes,
-  status: collectionStatus,
-} = useRendezvous(() => props.order)
+} = props.state
 
-watchEffect(() => {
-  emit('update:ready', ready.value)
-})
+const dateInput = ref<HTMLInputElement | null>(null)
+
+async function openCalendar() {
+  openDateInput()
+  await nextTick()
+  dateInput.value?.focus()
+  try {
+    dateInput.value?.showPicker?.()
+  } catch {
+    // Some browsers only allow native pickers during the original click frame.
+  }
+}
+
 </script>

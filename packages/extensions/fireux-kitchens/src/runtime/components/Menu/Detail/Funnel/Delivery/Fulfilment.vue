@@ -39,7 +39,7 @@ import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
 } from '../../../../../models/kitchen/menu/menu-ordering.model'
-import { useFulfilment } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useFulfilment'
+import { useDelivery } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDelivery'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -50,9 +50,8 @@ const props = defineProps<{
 const {
   driverStatus,
   kitchen,
-} = useFulfilment(
-  () => props.order,
-  () => props.delivery,
-  () => props.orderPath
-)
+} = useDelivery(() => props.order, {
+  delivery: () => props.delivery,
+  orderPath: () => props.orderPath,
+})
 </script>

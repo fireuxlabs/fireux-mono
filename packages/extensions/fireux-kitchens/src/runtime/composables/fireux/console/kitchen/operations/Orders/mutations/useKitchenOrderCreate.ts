@@ -74,6 +74,12 @@ export function useKitchenOrderCreate() {
     const orderId = makeOrderId()
     const orderType = normalizeOrderType(input.order_type || input.channel)
     const fireState = normalizeFireState(input.fire_state)
+    const requestedFor = normalizeString(input.requested_for)
+    const collection = orderType === 'collection'
+      ? requestedFor
+        ? { mode: 'scheduled' as const, requested_for: requestedFor }
+        : { mode: 'queue' as const }
+      : {}
 
     const item: KitchenOrderItem = {
       id: `item-1`,
@@ -90,7 +96,8 @@ export function useKitchenOrderCreate() {
       order_number: makeOrderNumber(),
       status: 'open',
       order_type: orderType,
-      requested_for: normalizeString(input.requested_for) as any,
+      requested_for: (orderType === 'collection' ? '' : requestedFor) as any,
+      collection,
       estimated_ready_minutes: 0,
       estimated_ready_at: '' as any,
       fire_state: fireState,
