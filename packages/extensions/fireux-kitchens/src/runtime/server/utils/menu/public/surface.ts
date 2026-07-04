@@ -1,9 +1,6 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { readMenuPageStyle } from './page-style.ts'
-import {
-  isMenuOrderingEnabled,
-  readMenuOrderingConfig,
-} from '../ordering/config.ts'
+import { readMenuOrderingConfig } from '../ordering/config.ts'
 import {
   compactMenuFile,
   hasMenuFile,
@@ -16,7 +13,6 @@ import {
   type MenuSurfaceKind,
   type MenuSurfaceScope,
 } from './types.ts'
-import { readMenuViews } from './view.ts'
 
 const menuPath = (publicId: string) => `/menus/${encodeURIComponent(publicId)}`
 
@@ -51,10 +47,6 @@ export function menuSurfaceFromData(
     scope.fulfilment,
     scope.kitchen_operation_hours
   )
-  const orderingEnabled = isMenuOrderingEnabled(ordering)
-  const menuViews = kind === 'menu'
-    ? readMenuViews(data, orderingEnabled)
-    : []
   const result = {
     id: menuId,
     name: readRecordString(data, 'name') || menuId,
@@ -64,7 +56,6 @@ export function menuSurfaceFromData(
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
     ...(ordering.order_types.length ? { ordering } : {}),
-    ...(kind === 'menu' && menuViews.length ? { public_views: menuViews } : {}),
     ...(kind === 'menu' && Array.isArray(scope.public_choices) && scope.public_choices.length
       ? { public_choices: scope.public_choices }
       : {}),

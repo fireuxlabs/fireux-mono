@@ -4,7 +4,6 @@ import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type {
   MenuOrderingConfig,
   MenuPublicChoice,
-  MenuView,
 } from '../../../models/kitchen/menu/menu.model'
 import type { KitchenMenuSectionRow } from '../kitchen/menu/useKitchenMenu'
 
@@ -30,7 +29,6 @@ export type PublicMenu = {
     menu_id?: string
   }
   ordering?: MenuOrderingConfig
-  public_views?: MenuView[]
   public_choices?: MenuPublicChoice[]
   page_style?: Partial<PageStyle>
   sections?: KitchenMenuSectionRow[]

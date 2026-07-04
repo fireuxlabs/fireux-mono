@@ -20,7 +20,10 @@ import type {
   KitchenOrderType,
 } from '../../../../../../models/kitchen/order.model'
 import type { MenuManifest } from '../../../../menu/useMenuManifest'
-import type { MenuFoodOrderItem } from '../../../../../../models/kitchen/menu/menu-food.model'
+import type {
+  MenuFoodItem,
+  MenuFoodOrderItem,
+} from '../../../../../../models/kitchen/menu/menu-food.model'
 import type {
   MenuOrderTypeConfig,
   MenuPublicChoice,
@@ -47,13 +50,14 @@ export type MenuChoiceOption = {
   orderType?: KitchenOrderType
   message?: string
 }
+export type MenuDetailItem = MenuFoodItem
 export type MenuDetailOrderItem = MenuFoodOrderItem
 export type MenuDetailView = {
   menu: MenuManifest
   choices: MenuChoiceOption[]
   selectedChoice: MenuChoiceValue
+  selectedItemId: string
   orderMode: boolean
-  quantities: Record<string, number>
   dimmed: boolean
 }
 
@@ -275,6 +279,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ? customerFromDelivery(collectedIncoming.value.delivery)
       : {}
   )
+  const selectedItemId = ref('')
   const menuId = computed(() => text(toValue(options.menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const orderEndpoint = computed(() => {
@@ -294,8 +299,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       menu,
       choices: choiceOptions.value,
       selectedChoice: selectedChoice.value,
+      selectedItemId: selectedItemId.value,
       orderMode: isOrderMode.value,
-      quantities: draft.quantities.value,
       dimmed: panelOpen.value,
     }
   })
@@ -396,6 +401,15 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     selectedChoice.value = value
   }
 
+  function selectItem(item: MenuFoodItem) {
+    if (!isOrderMode.value) return
+
+    const id = text(item.id)
+    if (!id) return
+
+    selectedItemId.value = selectedItemId.value === id ? '' : id
+  }
+
   function openPanel() {
     panelOpen.value = true
   }
@@ -436,14 +450,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
   watch(selectedOrderType, () => {
     collectedIncoming.value = {}
+    selectedItemId.value = ''
+  })
+
+  watch(isOrderMode, (enabled: boolean) => {
+    if (enabled) return
+
+    selectedItemId.value = ''
   })
 
   return {
     detail: proxyRefs({
       view: detailView,
       add: draft.add,
-      remove: draft.remove,
       select: setSelectedChoice,
+      selectItem,
     }),
     funnel: proxyRefs({
       show: showFunnel,
@@ -646,12 +667,6 @@ function useDraft(
   const quantity = computed(() =>
     items.value.reduce((total, item) => total + item.quantity, 0)
   )
-  const quantities = computed(() =>
-    items.value.reduce<Record<string, number>>((map, item) => {
-      map[item.lineId] = item.quantity
-      return map
-    }, {})
-  )
   const {
     creatingItemId,
     message,
@@ -851,7 +866,6 @@ function useDraft(
     awaitingMessage,
     items,
     quantity,
-    quantities,
     creatingItemId,
     message,
     error,

@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-06-30
-Ref: 151c7ad49
+Updated: 2026-07-04
+Ref: b24b43b6b
 Role: map, not canon
 
 Purpose:
@@ -110,7 +110,8 @@ Structured item options:
 
 Ordering note:
 - Menu ordering is mapped separately in `menu-ordering.md`.
-- Keep `public_views` as the public display mode and `ordering` as the order policy.
+- Menus render readable content by default; do not store a `public_views` marker.
+- Keep `ordering` as the order policy that decides whether order controls are available.
 
 Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.

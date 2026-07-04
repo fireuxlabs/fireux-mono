@@ -14,12 +14,10 @@ import type {
 
 type UseItemOptions = {
   item: MaybeRefOrGetter<MenuFoodItem>
-  quantities?: MaybeRefOrGetter<Record<string, number> | undefined>
 }
 
 export function useItem(options: UseItemOptions) {
   const item = computed(() => toValue(options.item))
-  const quantities = computed(() => toValue(options.quantities) || {})
   const selectedVariantId = ref('')
   const selectedAddOnIds = ref<string[]>([])
   const variantOptions = computed<MenuFoodPriceOption[]>(() =>
@@ -50,9 +48,6 @@ export function useItem(options: UseItemOptions) {
     ]
       .filter(Boolean)
       .join(':')
-  const quantity = computed(() =>
-    Number(quantities.value[variantLineId(selectedVariant.value)] || 0)
-  )
   const displayPrice = computed(() =>
     selectedVariant.value?.priceLabel || item.value.priceLabel
   )
@@ -70,7 +65,7 @@ export function useItem(options: UseItemOptions) {
   }
 
   watch(
-    [variantOptions, addOnOptions, quantities],
+    [variantOptions, addOnOptions],
     () => {
       selectedAddOnIds.value = selectedAddOnIds.value.filter((id: string) =>
         addOnOptions.value.some((addOn: MenuFoodAddOn) => addOn.id === id)
@@ -86,12 +81,7 @@ export function useItem(options: UseItemOptions) {
       )
       if (selectedStillExists) return
 
-      selectedVariantId.value =
-        variantOptions.value.find(
-          (variant) => Number(quantities.value[variantLineId(variant)] || 0) > 0
-        )?.id ||
-        variantOptions.value[0]?.id ||
-        ''
+      selectedVariantId.value = variantOptions.value[0]?.id || ''
     },
     { immediate: true, deep: true }
   )
@@ -100,7 +90,6 @@ export function useItem(options: UseItemOptions) {
     addOnOptions,
     displayPrice,
     orderItem,
-    quantity,
     selectedAddOnIds,
     selectedVariant,
     selectedVariantId,

@@ -25,7 +25,6 @@ export function menuSurfaceDataWithSourceBehaviour(
   const description = sourceData.description ?? rootMenuData.description
   const status = sourceData.status ?? rootMenuData.status
   const ordering = sourceData.ordering ?? rootMenuData.ordering
-  const publicViews = sourceData.public_views ?? rootMenuData.public_views
 
   return {
     ...rootMenuData,
@@ -33,6 +32,5 @@ export function menuSurfaceDataWithSourceBehaviour(
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
     ...(ordering ? { ordering } : {}),
-    ...(publicViews ? { public_views: publicViews } : {}),
   }
 }

@@ -135,7 +135,6 @@ export const MenuModel = {
   doc_name: '' as string,
   doc_type: '' as string,
   doc_storage_path: '' as string,
-  // Menu ordering policy belongs in one object; public_views only controls whether the order tab is visible.
   ordering: {
     enabled: false,
     order_types: [] as MenuOrderTypeConfig[],
@@ -143,8 +142,6 @@ export const MenuModel = {
       inherit_kitchen_operation_hours: true,
     },
   } as MenuOrderingConfig,
-  // Omit public_views for browse-only menus; set it when a menu needs an exact public view set.
-  public_views: [] as MenuView[],
   public_choices: [] as MenuPublicChoice[],
   created: {
     at: {} as FirebaseTimestamp,

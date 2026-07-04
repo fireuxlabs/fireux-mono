@@ -7,28 +7,29 @@
       :key="item.id"
       :item="item"
       :order-mode="orderMode"
-      :quantities="quantities"
+      :selected="selectedItemId === item.id"
+      @select="$emit('selectItem', $event)"
       @add="$emit('add', $event)"
-      @remove="$emit('remove', $event)"
     />
   </section>
 </template>
 
 <script setup lang="ts">
+import type { MenuFoodSection } from '../../../models/kitchen/menu/menu-food.model'
 import type {
-  MenuFoodOrderItem,
-  MenuFoodSection,
-} from '../../../models/kitchen/menu/menu-food.model'
+  MenuDetailItem,
+  MenuDetailOrderItem,
+} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 
 defineProps<{
   section: MenuFoodSection
   orderMode?: boolean
-  quantities?: Record<string, number>
+  selectedItemId?: string
 }>()
 
 defineEmits<{
-  (event: 'add', item: MenuFoodOrderItem): void
-  (event: 'remove', item: MenuFoodOrderItem): void
+  (event: 'selectItem', item: MenuDetailItem): void
+  (event: 'add', item: MenuDetailOrderItem): void
 }>()
 </script>
 

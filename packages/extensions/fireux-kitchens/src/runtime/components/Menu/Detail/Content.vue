@@ -3,15 +3,7 @@
     class="menu-detail-content"
     :class="{ 'menu-detail-content--dimmed': view?.dimmed }"
   >
-    <p v-if="pending" class="menu-state">
-      Loading menu...
-    </p>
-
-    <p v-else-if="error" class="menu-state">
-      Menu unavailable.
-    </p>
-
-    <article v-else-if="view" class="menu">
+    <article v-if="view" class="menu">
       <MenuDetailHeader
         :model-value="view.selectedChoice"
         :menu="view.menu"
@@ -27,9 +19,9 @@
       <MenuDetailSectionList
         :sections="view.menu.content.sections"
         :order-mode="view.orderMode"
-        :quantities="view.quantities"
+        :selected-item-id="view.selectedItemId"
+        @select-item="$emit('selectItem', $event)"
         @add="$emit('add', $event)"
-        @remove="$emit('remove', $event)"
       />
     </article>
 
@@ -41,6 +33,7 @@
 
 <script setup lang="ts">
 import type {
+  MenuDetailItem,
   MenuDetailOrderItem,
   MenuDetailView,
   MenuChoiceValue,
@@ -48,14 +41,12 @@ import type {
 
 defineProps<{
   view: MenuDetailView | null
-  pending?: boolean
-  error?: unknown
 }>()
 
 defineEmits<{
   (event: 'update:selectedChoice', value: MenuChoiceValue): void
+  (event: 'selectItem', item: MenuDetailItem): void
   (event: 'add', item: MenuDetailOrderItem): void
-  (event: 'remove', item: MenuDetailOrderItem): void
 }>()
 </script>
 

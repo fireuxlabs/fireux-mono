@@ -32,7 +32,16 @@ import {
 import { resolveKitchenCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const rootProjectionDerivedKeys = ['slug', 'path', 'qr_path', 'url', 'qr_url', 'source.menu_id']
+const rootProjectionDerivedKeys = [
+  'slug',
+  'path',
+  'qr_path',
+  'url',
+  'qr_url',
+  'source.menu_id',
+  'public_views',
+  'views',
+]
 const withoutId = <T extends Record<string, unknown>>(data: T, extraKeys: string[] = []) => {
   const next = { ...data }
   for (const key of ['id', ...extraKeys]) delete next[key]

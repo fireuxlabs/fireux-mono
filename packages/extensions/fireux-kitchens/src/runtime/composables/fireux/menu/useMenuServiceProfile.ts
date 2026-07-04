@@ -14,7 +14,6 @@ import {
 type MenuServiceProfileSource = {
   ordering?: unknown
   public_choices?: unknown[]
-  public_views?: unknown[]
   views?: unknown[]
 } | null | undefined
 
@@ -138,7 +137,7 @@ export function resolveMenuServiceProfile(
   const defaultType = defaultOrderType(orderTypes)
 
   return {
-    views: menuViewList(source?.public_views ?? source?.views),
+    views: menuViewList(source?.views),
     ordering,
     orderingEnabled: ordering.enabled && orderTypes.length > 0,
     orderTypes,

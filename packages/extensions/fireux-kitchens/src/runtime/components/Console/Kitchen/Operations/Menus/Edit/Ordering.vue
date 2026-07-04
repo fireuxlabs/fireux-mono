@@ -10,7 +10,7 @@
         </div>
 
         <UBadge :color="orderingEnabled ? 'success' : 'neutral'" variant="soft">
-          {{ orderingEnabled ? 'Ordering on' : 'Browse only' }}
+          {{ orderingEnabled ? 'Ordering on' : 'Ordering off' }}
         </UBadge>
       </div>
     </template>
@@ -72,7 +72,6 @@ import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/cons
 import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
-  MenuView,
   MenuUpdateInput,
 } from '../../../../../../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
@@ -165,9 +164,6 @@ const orderingEnabled = computed(() =>
   ordering.value.enabled && ordering.value.order_types.length > 0
 )
 const orderTypeConfigs = computed(() => ordering.value.order_types)
-const publicViews = computed<MenuView[]>(() =>
-  Array.isArray(menu.value?.public_views) ? menu.value.public_views : []
-)
 const preOrderNoticeHours = computed(() =>
   normalizeNoticeHours(
     orderTypeConfigs.value.find((type) => type.type === 'pre_order')?.notice_hours
@@ -192,10 +188,7 @@ function hasOrderType(type: KitchenOrderType) {
   return orderTypeConfigs.value.some((orderType) => orderType.type === type)
 }
 
-async function updateOrdering(
-  nextOrdering: MenuOrderingConfig,
-  nextViews?: MenuView[]
-) {
+async function updateOrdering(nextOrdering: MenuOrderingConfig) {
   if (!canWrite.value) throw new Error('This menu is read-only.')
   const currentMenuId = normalizeString(menu.value?.id)
   if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
@@ -211,9 +204,6 @@ async function updateOrdering(
   }
   const patch: MenuUpdateInput = {
     ordering: orderingPatch,
-    public_views: enabled
-      ? nextViews || (publicViews.value.length ? publicViews.value : ['browse', 'order'])
-      : [],
   }
 
   try {

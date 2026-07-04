@@ -1,24 +1,69 @@
 <template>
-  <article :class="['menu-item', item.imageUrl && 'menu-item--with-image']">
+  <article
+    :class="[
+      'menu-item',
+      orderMode && 'menu-item--selectable',
+      selected && 'menu-item--selected',
+    ]"
+  >
     <div
-      v-if="item.imageUrl"
-      class="menu-item__media"
+      :class="[
+        'menu-item__summary',
+        item.imageUrl && 'menu-item__summary--with-image',
+      ]"
+      :role="orderMode ? 'button' : undefined"
+      :tabindex="orderMode ? 0 : undefined"
+      :aria-expanded="orderMode ? selected : undefined"
+      @click="selectItem"
+      @keydown.enter.prevent="selectItem"
+      @keydown.space.prevent="selectItem"
     >
-      <img
-        :src="item.imageUrl"
-        :alt="item.name"
-        loading="lazy"
+      <div
+        v-if="item.imageUrl"
+        class="menu-item__media"
       >
+        <img
+          :src="item.imageUrl"
+          :alt="item.name"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="menu-item__copy">
+        <h3>{{ item.name }}</h3>
+        <p v-if="item.description">
+          {{ item.description }}
+        </p>
+      </div>
+
+      <div
+        v-if="item.priceLabel || orderMode"
+        class="menu-item__actions"
+      >
+        <p v-if="!orderMode && item.priceLabel" class="menu-item__price">
+          {{ item.priceLabel }}
+        </p>
+
+        <p v-if="orderMode && displayPrice" class="menu-item__price">
+          {{ displayPrice }}
+        </p>
+
+        <UIcon
+          v-if="orderMode"
+          name="i-lucide-chevron-down"
+          :class="['menu-item__chevron', selected && 'menu-item__chevron--open']"
+          aria-hidden="true"
+        />
+      </div>
     </div>
 
-    <div class="menu-item__copy">
-      <h3>{{ item.name }}</h3>
-      <p v-if="item.description">
-        {{ item.description }}
-      </p>
-
+    <div
+      v-if="orderMode && selected"
+      class="menu-item__interaction"
+      @click.stop
+    >
       <MenuDetailItemOptions
-        v-if="orderMode && variantOptions.length > 1"
+        v-if="variantOptions.length > 1"
         :label="`${item.name} variants`"
         :options="variantOptions"
         :selected-ids="selectedVariant ? [selectedVariant.id] : []"
@@ -26,43 +71,48 @@
       />
 
       <MenuDetailItemOptions
-        v-if="orderMode && addOnOptions.length"
+        v-if="addOnOptions.length"
         :label="`${item.name} add-ons`"
         :options="addOnOptions"
         :selected-ids="selectedAddOnIds"
         prefix="+ "
         @toggle="toggleAddOn"
       />
-    </div>
 
-    <div
-      v-if="item.priceLabel || orderMode"
-      class="menu-item__actions"
-    >
-      <p v-if="!orderMode && item.priceLabel" class="menu-item__price">
-        {{ item.priceLabel }}
-      </p>
-
-      <p v-if="orderMode && displayPrice" class="menu-item__price">
-        {{ displayPrice }}
-      </p>
+      <button
+        type="button"
+        class="menu-item__add"
+        @click="addItem"
+      >
+        <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
+        <span>Add</span>
+      </button>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import type { MenuFoodItem } from '../../../../models/kitchen/menu/menu-food.model'
+import type {
+  MenuFoodItem,
+  MenuFoodOrderItem,
+} from '../../../../models/kitchen/menu/menu-food.model'
 import { useItem } from '../../../../composables/fireux/menu/detail/useItem'
 
 const props = defineProps<{
   item: MenuFoodItem
   orderMode?: boolean
-  quantities?: Record<string, number>
+  selected?: boolean
+}>()
+
+const emit = defineEmits<{
+  (event: 'select', item: MenuFoodItem): void
+  (event: 'add', item: MenuFoodOrderItem): void
 }>()
 
 const {
   addOnOptions,
   displayPrice,
+  orderItem,
   selectedAddOnIds,
   selectedVariant,
   selectedVariantId,
@@ -70,23 +120,61 @@ const {
   variantOptions,
 } = useItem({
   item: () => props.item,
-  quantities: () => props.quantities,
 })
+
+function selectItem() {
+  if (!props.orderMode) return
+
+  emit('select', props.item)
+}
+
+function addItem() {
+  emit('add', orderItem.value)
+}
 </script>
 
 <style scoped>
 .menu-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--menu-space-md);
-  align-items: start;
+  display: block;
   padding-bottom: 0.7rem;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
   text-align: left;
 }
 
-.menu-item--with-image {
+.menu-item__summary {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--menu-space-md);
+  align-items: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.menu-item__summary[role="button"] {
+  cursor: pointer;
+}
+
+.menu-item__summary[role="button"]:hover h3,
+.menu-item__summary[role="button"]:focus-visible h3 {
+  color: var(--menu-primary);
+}
+
+.menu-item__summary[role="button"]:focus-visible {
+  outline: 2px solid var(--menu-primary);
+  outline-offset: 0.3rem;
+}
+
+.menu-item__summary--with-image {
   grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+}
+
+.menu-item--selected {
+  border-color: color-mix(in srgb, var(--menu-primary) 42%, transparent);
 }
 
 .menu-item:last-child {
@@ -126,6 +214,49 @@ const {
   justify-content: end;
 }
 
+.menu-item__chevron {
+  width: 1rem;
+  height: 1rem;
+  color: var(--menu-muted);
+  transition: transform 160ms ease;
+}
+
+.menu-item__chevron--open {
+  transform: rotate(180deg);
+}
+
+.menu-item__interaction {
+  display: grid;
+  gap: var(--menu-space-sm);
+  padding-top: var(--menu-space-sm);
+}
+
+.menu-item__add {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: var(--menu-space-xs);
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--menu-primary);
+  border-radius: var(--menu-radius-control);
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.menu-item__add:hover {
+  background: color-mix(in srgb, var(--menu-primary) 88%, black);
+}
+
+.menu-item__add :deep(.iconify) {
+  width: 1rem;
+  height: 1rem;
+}
+
 .menu-item h3,
 .menu-item p {
   margin: 0;
@@ -152,7 +283,7 @@ const {
 }
 
 @media (max-width: 620px) {
-  .menu-item--with-image {
+  .menu-item__summary--with-image {
     grid-template-columns: 4.75rem minmax(0, 1fr) auto;
     gap: var(--menu-space-sm);
   }

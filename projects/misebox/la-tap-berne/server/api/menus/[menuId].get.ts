@@ -47,7 +47,6 @@ export default defineEventHandler((event) => {
         },
       ],
     },
-    public_views: ['browse', 'order'],
     page_style: laTapBerneMenuTheme,
     sections: laTapBerneMenuSections,
   }

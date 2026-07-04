@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-06-30
-Ref: 151c7ad49
+Updated: 2026-07-04
+Ref: b24b43b6b
 Role: map, not canon
 
 Purpose:
@@ -18,14 +18,15 @@ Horizontal links:
 - components.md
 
 Core split:
-- `public_views` describes what the public menu can show.
+- Public menu content is readable by default.
 - `ordering` describes what kind of order the public menu can create.
 - `Order` records describe what a customer actually sent to the kitchen.
 - `Fulfilment` is not the same as Menu; it is the later operational promise and handoff layer.
 
-Current public views:
-- `browse`: read the structured menu.
-- `order`: add items and send an order.
+Current display rule:
+- Do not store a public view marker on menus.
+- If `ordering.enabled` and `ordering.order_types` are present, the renderer can offer order controls.
+- If ordering is absent or disabled, the same menu still renders as readable content.
 
 Current ordering shape:
 ```ts
@@ -47,21 +48,21 @@ Efficient matrix:
 
 Why this is efficient:
 - It avoids a premature second axis.
-- It keeps browse/order UI separate from operational order types.
+- It keeps display default and operational order types separate.
 - It lets Bären, La Tap, Luna, and future kitchens share one shape.
 - It lets the order system grow by adding small policy fields, not new one-off surfaces.
 
 Public choice rail:
 - The public menu endpoint may emit `public_choices`.
 - `public_choices` are derived from all published sibling menus for the same Kitchen.
-- Local choices switch the current menu between browse/order behaviour.
+- Local choices switch the current menu between readable content and available order behaviour.
 - Linked choices route to another published sibling menu.
 - Owner copy for a mode belongs on the order type `message`; renderer fallbacks should stay boring.
 
 Current examples:
-- Luna: no `ordering`, so the menu is browse-only.
-- Bären: `public_views: ['order']`, `ordering.order_types: [{ type: 'delivery', fulfilment: { delivery_zones } }, { type: 'collection' }]`.
-- La Tap: `public_views: ['browse', 'order']`, `ordering.order_types: [{ type: 'pre_order', notice_hours: 24 }]`.
+- Luna: no `ordering`, so the menu renders as readable content only.
+- Bären: `ordering.order_types` includes dine-in, pre-order, room service, collection, and delivery.
+- La Tap: `ordering.order_types: [{ type: 'pre_order', notice_hours: 24 }]`.
 
 Likely future `type` values:
 - `dine_in`: order for normal in-venue service.

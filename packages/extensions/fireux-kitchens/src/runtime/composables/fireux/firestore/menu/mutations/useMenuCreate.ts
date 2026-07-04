@@ -21,7 +21,6 @@ export type MenuCreateInput = {
   doc_type?: string
   doc_storage_path?: string
   ordering?: Menu['ordering']
-  public_views?: Menu['public_views']
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -54,7 +53,6 @@ function buildMenuPayload(
           enabled: false,
           order_types: [],
         },
-    public_views: Array.isArray(input.public_views) ? input.public_views : [],
   }
 }
 

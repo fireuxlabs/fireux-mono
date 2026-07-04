@@ -2,8 +2,8 @@
   <MenuDetailContent
     :view="interaction.detail.view"
     @update:selected-choice="interaction.detail.select"
+    @select-item="interaction.detail.selectItem"
     @add="interaction.detail.add"
-    @remove="interaction.detail.remove"
   />
 
   <MenuDetailFunnel

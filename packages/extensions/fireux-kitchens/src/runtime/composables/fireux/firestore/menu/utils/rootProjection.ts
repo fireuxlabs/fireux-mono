@@ -59,7 +59,6 @@ export const menuRootProjectionPatch = (data: Record<string, unknown>) => {
   if (hasOwn(data, 'description')) patch.description = clean(data.description)
   if (hasOwn(data, 'status')) patch.status = clean(data.status)
   if (hasOwn(data, 'ordering')) patch.ordering = data.ordering
-  if (hasOwn(data, 'public_views')) patch.public_views = data.public_views
 
   return patch
 }
