@@ -43,14 +43,6 @@
         {{ item.priceLabel }}
       </p>
 
-      <MenuDetailItemQuantityControl
-        v-if="orderMode"
-        :label="item.name"
-        :quantity="quantity"
-        @add="$emit('add', orderItem)"
-        @remove="$emit('remove', orderItem)"
-      />
-
       <p v-if="orderMode && displayPrice" class="menu-item__price">
         {{ displayPrice }}
       </p>
@@ -59,10 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  MenuFoodItem,
-  MenuFoodOrderItem,
-} from '../../../../models/kitchen/menu/menu-food.model'
+import type { MenuFoodItem } from '../../../../models/kitchen/menu/menu-food.model'
 import { useItem } from '../../../../composables/fireux/menu/detail/useItem'
 
 const props = defineProps<{
@@ -71,16 +60,9 @@ const props = defineProps<{
   quantities?: Record<string, number>
 }>()
 
-defineEmits<{
-  (event: 'add', item: MenuFoodOrderItem): void
-  (event: 'remove', item: MenuFoodOrderItem): void
-}>()
-
 const {
   addOnOptions,
   displayPrice,
-  orderItem,
-  quantity,
   selectedAddOnIds,
   selectedVariant,
   selectedVariantId,
