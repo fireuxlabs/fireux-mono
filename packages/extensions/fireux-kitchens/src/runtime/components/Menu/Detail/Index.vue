@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
+import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 
 const props = defineProps<{
@@ -48,20 +48,20 @@ const {
   pending,
   error,
   renderKind,
-  documentMenu,
-  structuredMenu: detailMenu,
-} = useMenuManifest(menuId, {
+  document: documentMenu,
+  manifest: detailMenu,
+} = useMenu(menuId, {
   kitchenSlug,
 })
 const documentKitchenName = computed(() =>
-  documentMenu.value?.source?.kitchen_name || ''
+  documentMenu.value?.kitchenName || ''
 )
 const documentUrl = computed(() =>
   documentMenu.value?.file?.url || ''
 )
 const pageStyle = computed(() =>
   detailMenu.value?.presentation.pageStyle ||
-  documentMenu.value?.page_style ||
+  documentMenu.value?.pageStyle ||
   null
 )
 const {

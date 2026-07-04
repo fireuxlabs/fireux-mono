@@ -1,0 +1,237 @@
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import type { KitchenOrderType } from '../../../../models/kitchen/order.model'
+import type {
+  MenuDetailPayload,
+  MenuDocumentFileKind,
+  MenuManifest,
+  MenuManifestAddOn,
+  MenuManifestPriceOption,
+  MenuManifestSection,
+} from '../../../../models/kitchen/menu/menu-detail.model'
+import type { MenuOrderTypeConfig, MenuPublicChoice } from '../../../../models/kitchen/menu/menu.model'
+import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
+import {
+  compactMenuFile,
+  hasMenuFile,
+  menuFileKind,
+  readMenuDocumentKind,
+  readMenuFile,
+} from './file.ts'
+import { readMenuPageStyle } from './page-style.ts'
+import { menuSourceFromData } from './source.ts'
+import {
+  type MenuDetailScope,
+  type MenuDetailSourceKind,
+} from './types.ts'
+
+const text = (value: unknown) => String(value ?? '').trim()
+const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+const unique = <T extends string>(values: T[]) =>
+  values.filter((value, index, source) => source.indexOf(value) === index)
+
+const readMenuSourceKind = (data: Record<string, unknown>): MenuDetailSourceKind =>
+  readRecordString(data, 'source_kind') === 'kitchen-menu' ||
+  readRecordString(data, 'kind') === 'menu'
+    ? 'menu'
+    : 'doc'
+
+const itemName = (item: Record<string, unknown>) =>
+  text(item.name) || text(record(item.item).name)
+
+const itemDescription = (item: Record<string, unknown>) =>
+  text(item.description) || text(record(item.item).description)
+
+const itemImageUrl = (item: Record<string, unknown>) =>
+  text(item.imageUrl) ||
+  text(item.image_url) ||
+  text(record(item.item).image_url) ||
+  text(record(item.dish).image_url)
+
+const itemPriceLabel = (item: Record<string, unknown>) =>
+  text(item.priceLabel) ||
+  text(item.price_label) ||
+  text(item.price)
+
+const priceNumber = (value: unknown) => {
+  const parsed = Number(
+    text(value)
+      .replace(/chf/ig, '')
+      .replace(',', '.')
+      .match(/\d+(?:\.\d+)?/)?.[0] || 0
+  )
+
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+const optionId = (option: Record<string, unknown>, fallback: string) =>
+  text(option.id) ||
+  text(option.label).toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+  fallback
+
+const itemPriceOptions = (item: Record<string, unknown>): MenuManifestPriceOption[] =>
+  list(item.priceOptions || item.price_options)
+    .map((option, optionIndex) => {
+      const optionRecord = record(option)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id: optionId(optionRecord, `option-${optionIndex + 1}`),
+        label: text(optionRecord.label) || `Option ${optionIndex + 1}`,
+        price,
+        priceLabel:
+          text(optionRecord.priceLabel) ||
+          text(optionRecord.price_label) ||
+          (price ? String(price) : ''),
+      }
+    })
+    .filter((option) => option.label && option.priceLabel)
+
+const itemAddOns = (item: Record<string, unknown>): MenuManifestAddOn[] =>
+  list(item.addOns || item.add_ons)
+    .map((option, optionIndex) => {
+      const optionRecord = record(option)
+      const price = priceNumber(optionRecord.price)
+
+      return {
+        id: optionId(optionRecord, `add-on-${optionIndex + 1}`),
+        label: text(optionRecord.label) || `Add-on ${optionIndex + 1}`,
+        price,
+        priceLabel:
+          text(optionRecord.priceLabel) ||
+          text(optionRecord.price_label) ||
+          (price ? String(price) : ''),
+      }
+    })
+    .filter((option) => option.label && option.priceLabel)
+
+const menuSections = (sections: unknown[]): MenuManifestSection[] =>
+  sections.map((section, sectionIndex) => {
+    const sectionRecord = record(section)
+    const nestedSection = record(sectionRecord.section)
+    const label =
+      text(sectionRecord.label) ||
+      text(nestedSection.label) ||
+      `Section ${sectionIndex + 1}`
+
+    return {
+      id: text(sectionRecord.id) || text(nestedSection.id) || label,
+      label,
+      items: list(sectionRecord.items).map((item, itemIndex) => {
+        const itemRecord = record(item)
+        const name = itemName(itemRecord) || `Item ${itemIndex + 1}`
+
+        return {
+          id: text(itemRecord.id) || name,
+          dishId: text(itemRecord.dish_id),
+          name,
+          description: itemDescription(itemRecord),
+          imageUrl: itemImageUrl(itemRecord),
+          price: priceNumber(itemRecord.price),
+          priceLabel: itemPriceLabel(itemRecord),
+          priceOptions: itemPriceOptions(itemRecord),
+          addOns: itemAddOns(itemRecord),
+        }
+      }),
+    }
+  })
+
+const defaultOrderType = (types: KitchenOrderType[]) =>
+  types.includes('dine_in') ? 'dine_in' : types[0] || 'dine_in'
+
+const serviceProfile = (
+  data: Record<string, unknown>,
+  scope: MenuDetailScope
+) => {
+  const ordering = readMenuOrderingConfig(
+    data,
+    scope.fulfilment,
+    scope.kitchen_operation_hours
+  )
+  const orderTypes = unique(ordering.order_types.map((type) => type.type))
+  const defaultType = defaultOrderType(orderTypes)
+  const publicChoices = Array.isArray(scope.public_choices)
+    ? scope.public_choices as MenuPublicChoice[]
+    : []
+
+  return {
+    views: [],
+    ordering,
+    orderingEnabled: isMenuOrderingEnabled(ordering),
+    orderTypes,
+    defaultOrderType: defaultType,
+    defaultOrderTypeConfig:
+      ordering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType) ||
+      ordering.order_types[0],
+    publicChoices,
+  }
+}
+
+export function buildMenuManifestPayload(
+  menuId: string,
+  data: Record<string, unknown>,
+  scope: MenuDetailScope = {}
+): MenuDetailPayload {
+  const source = menuSourceFromData(data, scope)
+  const manifest: MenuManifest = {
+    content: {
+      id: menuId,
+      name: readRecordString(data, 'name') || menuId,
+      description: readRecordString(data, 'description'),
+      sections: menuSections(scope.sections ?? []),
+    },
+    behaviour: serviceProfile(data, scope),
+    presentation: {
+      kitchenName: source.kitchen_name || '',
+      pageStyle: readMenuPageStyle(scope.page_style),
+    },
+  }
+
+  return {
+    kind: 'manifest',
+    manifest,
+  }
+}
+
+export function buildMenuDocumentPayload(
+  menuId: string,
+  data: Record<string, unknown>,
+  scope: MenuDetailScope = {}
+): MenuDetailPayload {
+  const file = readMenuFile(data)
+  const source = menuSourceFromData(data, scope)
+  const fileKind = menuFileKind({
+    file,
+    storedKind: readMenuDocumentKind(data),
+  }) as MenuDocumentFileKind
+
+  return {
+    kind: 'document',
+    document: {
+      id: menuId,
+      name: readRecordString(data, 'name') || menuId,
+      description: readRecordString(data, 'description'),
+      kitchenName: source.kitchen_name || '',
+      fileKind,
+      ...(hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),
+      pageStyle: readMenuPageStyle(scope.page_style),
+    },
+  }
+}
+
+export function buildMenuDetailPayload(
+  menuId: string,
+  data: Record<string, unknown>,
+  scope: MenuDetailScope = {}
+): MenuDetailPayload {
+  const sourceKind = scope.sourceKind === 'kitchen-menu'
+    ? 'menu'
+    : scope.sourceKind ?? readMenuSourceKind(data)
+
+  return sourceKind === 'menu'
+    ? buildMenuManifestPayload(menuId, data, scope)
+    : buildMenuDocumentPayload(menuId, data, scope)
+}

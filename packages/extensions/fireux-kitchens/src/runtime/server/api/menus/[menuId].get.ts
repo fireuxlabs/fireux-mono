@@ -8,7 +8,7 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { menuSurfaceFromData } from '../../utils/menu/public/surface.ts'
+import { buildMenuDetailPayload } from '../../utils/menu/public/detail.ts'
 import { menuSourceFromData } from '../../utils/menu/public/source.ts'
 import {
   menuCreatorLabel,
@@ -20,7 +20,7 @@ import {
 } from '../../utils/menu/ownership/owner-app.ts'
 import { menuSourcePayloadFromApi } from '../../utils/menu/source/payload.ts'
 import {
-  menuSurfaceDataWithSourceBehaviour,
+  menuDataWithSourceMenu,
   readMenuSourceData,
 } from '../../utils/menu/source/behaviour.ts'
 import { readKitchenMenuPublicRows } from '../../utils/menu/public/rows.ts'
@@ -105,7 +105,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     }),
   ])
 
-  return menuSurfaceFromData(menuId, data, {
+  return buildMenuDetailPayload(menuId, data, {
     kitchenId: kitchen.id,
     kitchenSlug,
     kitchenName: identity.name,
@@ -126,7 +126,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   })
 }
 
-async function readMenuSurface(menuId: string) {
+async function readRootMenuDetail(menuId: string) {
   const db = getRuntimeFirestore()
   const snap = await db.collection('menus').doc(menuId).get()
 
@@ -173,7 +173,7 @@ async function readMenuSurface(menuId: string) {
         ])
       : [[], []]
 
-  return menuSurfaceFromData(menuId, menuSurfaceDataWithSourceBehaviour(data, sourceData), {
+  return buildMenuDetailPayload(menuId, menuDataWithSourceMenu(data, sourceData), {
     ...kitchenScope,
     page_style: resolveMenuPageStyle(
       { source: 'tenant-owner-api', style: ownerPageStyle },
@@ -208,5 +208,5 @@ export default defineEventHandler(async (event) => {
     return readKitchenMenu(menuId, kitchenSlug)
   }
 
-  return readMenuSurface(menuId)
+  return readRootMenuDetail(menuId)
 })

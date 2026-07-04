@@ -1,8 +1,8 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import type { MenuSurfaceSource } from '../public/types.ts'
+import type { MenuDetailSource } from '../public/types.ts'
 
-export async function readMenuSourceData(source: MenuSurfaceSource) {
+export async function readMenuSourceData(source: MenuDetailSource) {
   if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
 
   const snap = await getRuntimeFirestore()
@@ -15,7 +15,7 @@ export async function readMenuSourceData(source: MenuSurfaceSource) {
   return readRecordString(data, 'status') === 'published' ? data : {}
 }
 
-export function menuSurfaceDataWithSourceBehaviour(
+export function menuDataWithSourceMenu(
   rootMenuData: Record<string, unknown>,
   sourceData: Record<string, unknown>
 ) {

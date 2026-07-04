@@ -3,7 +3,7 @@ import type {
   MenuManifestItem,
   MenuManifestPriceOption,
   MenuManifestSection,
-} from '../../../composables/fireux/menu/useMenuManifest'
+} from './menu-detail.model'
 
 // Food menu render model: section/item display reads the public menu manifest shape.
 export type MenuFoodItem = MenuManifestItem

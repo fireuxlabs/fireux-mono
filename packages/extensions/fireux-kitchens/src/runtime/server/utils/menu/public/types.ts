@@ -1,7 +1,7 @@
 import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model'
 import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model'
 
-export type MenuSurfaceScope = {
+export type MenuDetailScope = {
   kitchenId?: string
   kitchenSlug?: string
   kitchenName?: string
@@ -18,14 +18,14 @@ export type MenuSurfaceScope = {
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
 
-export type MenuSurfaceFile = {
+export type MenuDetailFile = {
   url?: string
   name?: string
   type?: string
   storage_path?: string
 }
 
-export type MenuSurfaceSource = {
+export type MenuDetailSource = {
   app_id?: string
   kitchen_id?: string
   kitchen_slug?: string
@@ -33,19 +33,16 @@ export type MenuSurfaceSource = {
   menu_id?: string
 }
 
-export type MenuSurfaceKind = 'doc' | 'menu'
+export type MenuDetailSourceKind = 'doc' | 'menu'
 
-export const menuSurfaceText = (value: unknown) =>
+export const menuDetailText = (value: unknown) =>
   String(value ?? '').trim()
 
-export const menuSurfaceList = (value: unknown) =>
-  Array.isArray(value) ? value : []
-
-export const compactMenuSurfaceRecord = <T extends Record<string, unknown>>(
+export const compactMenuDetailRecord = <T extends Record<string, unknown>>(
   value: T
 ) =>
   Object.fromEntries(
     Object.entries(value).filter(([, entry]) =>
-      Boolean(menuSurfaceText(entry))
+      Boolean(menuDetailText(entry))
     )
   ) as Partial<T>

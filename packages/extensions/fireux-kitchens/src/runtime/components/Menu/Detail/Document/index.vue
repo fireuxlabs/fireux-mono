@@ -20,22 +20,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
-type MenuDocumentModel = {
-  id?: string
-  name: string
-  description?: string
-  file?: {
-    url?: string
-    type?: string
-  }
-  file_kind?: string
-  kind?: string
-}
+import type { MenuDocumentPayload } from '../../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
   kitchenName?: string
-  menu: MenuDocumentModel
+  menu: MenuDocumentPayload
   documentUrl: string
 }>()
 

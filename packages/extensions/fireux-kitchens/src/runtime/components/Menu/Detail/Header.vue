@@ -35,7 +35,7 @@ import type {
   MenuChoiceOption,
   MenuChoiceValue,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
-import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
+import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 
 const props = defineProps<{

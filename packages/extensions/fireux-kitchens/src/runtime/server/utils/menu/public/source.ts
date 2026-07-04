@@ -3,18 +3,18 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
-  compactMenuSurfaceRecord,
-  type MenuSurfaceScope,
-  type MenuSurfaceSource,
+  compactMenuDetailRecord,
+  type MenuDetailScope,
+  type MenuDetailSource,
 } from './types.ts'
 
 export function menuSourceFromData(
   data: Record<string, unknown>,
-  scope: MenuSurfaceScope = {}
+  scope: MenuDetailScope = {}
 ) {
   const source = readRecord(data.source)
 
-  return compactMenuSurfaceRecord<MenuSurfaceSource>({
+  return compactMenuDetailRecord<MenuDetailSource>({
     app_id:
       scope.kitchenAppId ||
       readRecordString(source, 'app_id'),

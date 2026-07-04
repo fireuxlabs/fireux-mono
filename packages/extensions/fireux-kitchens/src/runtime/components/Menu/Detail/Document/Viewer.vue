@@ -29,20 +29,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
-type MenuDocumentSource = {
-  id?: string
-  name?: string
-  file?: {
-    url?: string
-    type?: string
-  }
-  file_kind?: string
-  kind?: string
-}
+import type { MenuDocumentPayload } from '../../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
-  menu: MenuDocumentSource
+  menu: MenuDocumentPayload
   menuId: string
   documentUrl?: string
   fileUrl?: string
@@ -57,14 +47,12 @@ const fileUrl = computed(
   () => text(props.fileUrl) || `/api/menus/${encodeURIComponent(props.menuId)}/file`
 )
 const isPhoto = computed(() =>
-  props.menu.file_kind === 'photo' ||
-  props.menu.kind === 'photo' ||
+  props.menu.fileKind === 'photo' ||
   text(props.menu.file?.type).startsWith('image/')
 )
 const isPdf = computed(() =>
   !isPhoto.value &&
-  (props.menu.file_kind === 'pdf' ||
-    props.menu.kind === 'pdf' ||
+  (props.menu.fileKind === 'pdf' ||
     text(props.menu.file?.type).includes('pdf'))
 )
 </script>

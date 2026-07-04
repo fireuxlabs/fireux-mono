@@ -60,7 +60,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useKitchenMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
-import { useMenuManifest } from '../../../../composables/fireux/menu/useMenuManifest'
+import { useMenu } from '../../../../composables/fireux/menu/useMenu'
 import {
   compactMenuPageStyle,
   resolveMenuPageStyle,
@@ -133,10 +133,10 @@ const previewMenu = computed(() =>
   fallbackPreviewMenu.value
 )
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
-const previewManifest = useMenuManifest(previewMenuId, { kitchenSlug })
+const previewMenuDetail = useMenu(previewMenuId, { kitchenSlug })
 const previewSections = computed(() => {
   // Console preview dogfoods the public menu manifest, then crops to the first useful section/item.
-  const sections = previewManifest.structuredMenu.value?.content.sections ?? []
+  const sections = previewMenuDetail.manifest.value?.content.sections ?? []
   const firstSection =
     sections.find((section) => section.items.length > 0) ??
     sections[0]

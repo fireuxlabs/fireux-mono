@@ -19,7 +19,7 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../../../models/kitchen/order.model'
-import type { MenuManifest } from '../../../../menu/useMenuManifest'
+import type { MenuManifest } from '../../../../../../models/kitchen/menu/menu-detail.model'
 import type {
   MenuFoodItem,
   MenuFoodOrderItem,

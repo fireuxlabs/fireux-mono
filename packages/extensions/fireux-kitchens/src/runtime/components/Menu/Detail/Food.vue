@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
-import type { MenuManifest } from '../../../composables/fireux/menu/useMenuManifest'
+import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
   menu: MenuManifest
