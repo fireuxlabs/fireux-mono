@@ -5,6 +5,10 @@ import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/sl
 import { computed, unref, type Ref } from 'vue'
 import { KitchenStorage, type Kitchen, type KitchenUpdateInput } from '../../../../../models/kitchen.model'
 import { MenuStorage } from '../../../../../models/kitchen/menu/menu.model'
+import {
+  menuRootProjectionPatchFromKitchen,
+  readMenuRootProjectionDocs,
+} from '../../menu/utils/rootProjection'
 
 type MaybeRef<T> = T | Ref<T>
 type UseKitchenUpdateOptions = {
@@ -20,18 +24,6 @@ const pruneUndefined = (payload: Partial<Kitchen>) =>
   Object.fromEntries(
     Object.entries(payload).filter(([, value]) => value !== undefined)
   ) as Partial<Kitchen>
-
-const hasOwn = (source: Record<string, unknown>, key: string) =>
-  Object.prototype.hasOwnProperty.call(source, key)
-
-function readPatchValue(source: Record<string, unknown>, dotted: string) {
-  if (hasOwn(source, dotted)) return source[dotted]
-
-  return dotted.split('.').reduce<unknown>((value, key) => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
-    return (value as Record<string, unknown>)[key]
-  }, source)
-}
 
 export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
   const collectionPath = computed(() =>
@@ -91,47 +83,25 @@ export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
       prunedPatch
     )
 
-    await syncRootMenuDoorways(id, prunedPatch)
+    await updateMenuRootProjections(id, prunedPatch)
   }
 
-  const syncRootMenuDoorways = async (
+  const updateMenuRootProjections = async (
     kitchenId: string,
     patch: Partial<Kitchen>
   ) => {
     if (collectionPath.value !== KitchenStorage.rootCollection) return
 
-    const source = patch as Record<string, unknown>
-    const menuPatch: Record<string, unknown> = {}
-    const displayName =
-      readPatchValue(source, 'identity.display_name') ??
-      readPatchValue(source, 'display_name') ??
-      readPatchValue(source, 'name')
-    const slug = readPatchValue(source, 'slug')
-    const imageUrl =
-      readPatchValue(source, 'identity.image_url') ??
-      readPatchValue(source, 'display_image_url') ??
-      readPatchValue(source, 'image_url')
-    const imageShade =
-      readPatchValue(source, 'identity.image_shade') ??
-      readPatchValue(source, 'image_shade')
-
-    if (displayName !== undefined) {
-      menuPatch['source.kitchen_name'] = clean(displayName)
-    }
-    if (slug !== undefined) menuPatch['source.kitchen_slug'] = clean(slug)
-    if (imageUrl !== undefined) menuPatch.image_url = clean(imageUrl)
-    if (imageShade !== undefined) menuPatch.image_shade = clean(imageShade)
-
+    const menuPatch = menuRootProjectionPatchFromKitchen(patch as Record<string, unknown>)
     if (!Object.keys(menuPatch).length) return
 
-    const menuQuery = query(
-      collection(db, MenuStorage.collection),
-      where('source.kitchen_id', '==', kitchenId)
-    )
-    const menuSnapshot = await getDocs(menuQuery)
+    const rootMenuDocs = await readMenuRootProjectionDocs({
+      db,
+      kitchenId,
+    })
 
     await Promise.all(
-      menuSnapshot.docs.map((docSnap) =>
+      rootMenuDocs.map((docSnap) =>
         updateDocument<Record<string, unknown>>(
           MenuStorage.collection,
           docSnap.id,

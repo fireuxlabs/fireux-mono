@@ -26,7 +26,7 @@
       />
 
       <MoleculesFormsFirestoreSimpleField
-        label="URL id"
+        label="Identifier"
         :firebase-value="menuId"
         placeholder="pizza-snacks-and-drinks"
         :maxlength="80"
@@ -128,7 +128,7 @@ const validateMenuId = (value: string) => {
   const next = formatMenuId(value)
   return {
     isValid: Boolean(next),
-    message: next ? '' : 'URL id is required.',
+    message: next ? '' : 'Menu identifier is required.',
   }
 }
 
@@ -174,7 +174,7 @@ async function handleMenuId(value: string) {
   const currentMenuId = normalizeString(menuId.value)
   const nextMenuId = formatMenuId(value)
   if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
-  if (!nextMenuId) throw new Error('URL id is required.')
+  if (!nextMenuId) throw new Error('Menu identifier is required.')
   if (nextMenuId === currentMenuId) return 'unchanged'
 
   try {
@@ -183,14 +183,14 @@ async function handleMenuId(value: string) {
       await router.replace(`/console/kitchen/menus/${encodeURIComponent(result.id)}`)
     }
     toast.add({
-      title: 'Menu URL id updated',
+      title: 'Menu identifier updated',
       color: 'success',
       icon: 'i-lucide-check',
     })
     return 'success'
   } catch (error) {
     toast.add({
-      title: 'Could not update menu URL id',
+      title: 'Could not update menu identifier',
       description: error instanceof Error ? error.message : 'Please try again.',
       color: 'error',
       icon: 'i-lucide-alert-triangle',

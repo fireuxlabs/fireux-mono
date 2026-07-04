@@ -16,17 +16,22 @@ export async function readMenuSourceData(source: MenuSurfaceSource) {
 }
 
 export function menuSurfaceDataWithSourceBehaviour(
-  doorwayData: Record<string, unknown>,
+  rootMenuData: Record<string, unknown>,
   sourceData: Record<string, unknown>
 ) {
-  if (!Object.keys(sourceData).length) return doorwayData
+  if (!Object.keys(sourceData).length) return rootMenuData
 
-  // Public menu doorway spine: docs/concepts/family-menu.md. Root doorways keep stable paths; source menus own structured behaviour.
-  const ordering = sourceData.ordering ?? doorwayData.ordering
-  const publicViews = sourceData.public_views ?? doorwayData.public_views
+  const name = sourceData.name ?? rootMenuData.name
+  const description = sourceData.description ?? rootMenuData.description
+  const status = sourceData.status ?? rootMenuData.status
+  const ordering = sourceData.ordering ?? rootMenuData.ordering
+  const publicViews = sourceData.public_views ?? rootMenuData.public_views
 
   return {
-    ...doorwayData,
+    ...rootMenuData,
+    ...(name ? { name } : {}),
+    ...(description ? { description } : {}),
+    ...(status ? { status } : {}),
     ...(ordering ? { ordering } : {}),
     ...(publicViews ? { public_views: publicViews } : {}),
   }

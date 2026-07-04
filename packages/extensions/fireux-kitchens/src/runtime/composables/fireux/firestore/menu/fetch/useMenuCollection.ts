@@ -3,9 +3,9 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { MenuStorage } from '../../../../../models/kitchen/menu/menu.model'
 import type { MenuInterfaceSource } from '../utils/view/useMenuInterface'
 
-export type MenuDoorway = MenuInterfaceSource
+export type MenuCollectionRow = MenuInterfaceSource
 
-const sortMenus = (menus: MenuDoorway[]) =>
+const sortMenus = (menus: MenuCollectionRow[]) =>
   [...menus].sort(
     (a, b) =>
       Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
@@ -13,14 +13,14 @@ const sortMenus = (menus: MenuDoorway[]) =>
   )
 
 /**
- * Public root Menu doorway collection.
+ * Public root Menu collection.
  *
  * Reads `menus/{menuId}` only. Kitchen/menu/source hydration belongs to the
  * menu detail manifest, not the public index list.
  */
 export function useMenuCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<MenuDoorway>(MenuStorage.collection)
+  const source = firestoreFetchCollection<MenuCollectionRow>(MenuStorage.collection)
   const menus = computed(() =>
     sortMenus(source.value ?? []).filter((menu) => menu.status === 'published')
   )

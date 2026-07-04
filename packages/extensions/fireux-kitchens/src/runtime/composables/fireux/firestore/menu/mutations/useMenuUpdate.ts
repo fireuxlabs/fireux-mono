@@ -16,19 +16,26 @@ import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/kitchen/dish.model'
 import type { MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
 import type { MenuSection } from '../../../../../models/kitchen/menu/menu-section.model'
-import { type Menu, type MenuStatus, type MenuUpdateInput } from '../../../../../models/kitchen/menu/menu.model'
+import { type Menu, MenuStorage, type MenuStatus, type MenuUpdateInput } from '../../../../../models/kitchen/menu/menu.model'
 import { MenuSourceUploadStorage } from '../../../../../models/kitchen/menu/menu-source-upload.model'
+import { menuItemsPath, menuPath, menuSectionsPath } from '../utils/paths'
 import {
-  menuItemsPath,
-  menuPath,
-  menuSectionsPath,
-} from '../utils/paths'
+  menuRootProjectionId,
+  menuRootProjectionMergePatchFromSourceMenu,
+  menuRootProjectionPatch,
+  menuRootProjectionPatchFromSourceMenu,
+  menuRootProjectionIdentifierPatch,
+  menuRootProjectionSourceIsCurrent,
+  readMenuRootProjectionDocs,
+  readSingleStaleMenuRootProjectionDoc,
+} from '../utils/rootProjection'
 import { resolveKitchenCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const withoutId = <T extends Record<string, unknown>>(data: T) => {
+const rootProjectionDerivedKeys = ['slug', 'path', 'qr_path', 'url', 'qr_url', 'source.menu_id']
+const withoutId = <T extends Record<string, unknown>>(data: T, extraKeys: string[] = []) => {
   const next = { ...data }
-  delete next.id
+  for (const key of ['id', ...extraKeys]) delete next[key]
   return next
 }
 
@@ -63,6 +70,66 @@ export function useMenuUpdate(
     const id = clean(menuId)
     if (!path || !id) throw new Error('Menu id is required')
     await updateDocument<Menu>(path, id, patch)
+
+    let rootMenuPatch = menuRootProjectionPatch(patch as Record<string, unknown>)
+    if (!Object.keys(rootMenuPatch).length) return
+
+    const db = resolveDb()
+    let rootMenuDocs = await readMenuRootProjectionDocs({
+      db,
+      appId,
+      kitchenId,
+      menuId: id,
+    })
+    if (!rootMenuDocs.length) {
+      rootMenuDocs = await readSingleStaleMenuRootProjectionDoc({
+        db,
+        appId,
+        kitchenId,
+        scopedMenuCollectionPath: path,
+        menuId: id,
+      })
+      if (rootMenuDocs.length) {
+        const menuSnap = await getDoc(doc(db, path, id))
+        if (menuSnap.exists()) {
+          rootMenuPatch = menuRootProjectionPatchFromSourceMenu({
+            scopedMenuCollectionPath: path,
+            menuId: id,
+            data: menuSnap.data() as Record<string, unknown>,
+          })
+        }
+      }
+    }
+    const needsSourceRepair = rootMenuDocs.some((docSnap) =>
+      !menuRootProjectionSourceIsCurrent(docSnap.data() as Record<string, unknown>, {
+        scopedMenuCollectionPath: path,
+        menuId: id,
+      })
+    )
+
+    if (needsSourceRepair) {
+      const menuSnap = await getDoc(doc(db, path, id))
+      if (menuSnap.exists()) {
+        rootMenuPatch = {
+          ...rootMenuPatch,
+          ...menuRootProjectionPatchFromSourceMenu({
+            scopedMenuCollectionPath: path,
+            menuId: id,
+            data: menuSnap.data() as Record<string, unknown>,
+          }),
+        }
+      }
+    }
+
+    await Promise.all(
+      rootMenuDocs.map((docSnap) =>
+        updateDocument<Record<string, unknown>>(
+          MenuStorage.collection,
+          docSnap.id,
+          rootMenuPatch
+        )
+      )
+    )
   }
 
   async function renameMenu(kitchenId: string, menuId: string, nextMenuId: string) {
@@ -84,6 +151,43 @@ export function useMenuUpdate(
 
     if (!oldMenuSnap.exists()) throw new Error(`Menu not found: ${oldId}`)
     if (nextMenuSnap.exists()) throw new Error(`Menu already exists: ${nextId}`)
+    let rootMenuDocs = await readMenuRootProjectionDocs({
+      db,
+      appId,
+      kitchenId,
+      menuId: oldId,
+    })
+    if (!rootMenuDocs.length) {
+      rootMenuDocs = await readSingleStaleMenuRootProjectionDoc({
+        db,
+        appId,
+        kitchenId,
+        scopedMenuCollectionPath: path,
+        menuId: oldId,
+      })
+    }
+
+    const rootProjectionMoves = await Promise.all(
+      rootMenuDocs.map(async (docSnap) => {
+        const rootData = docSnap.data() as Record<string, unknown>
+        const rootId = menuRootProjectionId(nextId) || docSnap.id
+        const ref = doc(db, MenuStorage.collection, rootId)
+
+        if (rootId !== docSnap.id) {
+          const existingSnap = await getDoc(ref)
+          if (existingSnap.exists()) {
+            throw new Error(`Menu public route already exists: ${rootId}`)
+          }
+        }
+
+        return {
+          from: docSnap,
+          to: ref,
+          id: rootId,
+          data: rootData,
+        }
+      })
+    )
 
     const sectionsPath = menuSectionsPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
@@ -186,6 +290,25 @@ export function useMenuUpdate(
 
     if (oldUploadSnap.exists() && !nextUploadSnap.exists()) {
       nextBatchOp().delete(oldUploadRef)
+    }
+
+    const rootMenuData = oldMenuSnap.data() as Record<string, unknown>
+    for (const move of rootProjectionMoves) {
+      nextBatchOp().set(move.to, {
+        ...withoutId(move.data, rootProjectionDerivedKeys),
+        ...menuRootProjectionIdentifierPatch(move.id),
+        ...menuRootProjectionMergePatchFromSourceMenu({
+          scopedMenuCollectionPath: path,
+          menuId: nextId,
+          data: rootMenuData,
+          source: move.data.source,
+        }),
+        updated,
+      }, { merge: true })
+
+      if (move.id !== move.from.id) {
+        nextBatchOp().delete(move.from.ref)
+      }
     }
 
     for (const { section, items } of sectionsWithItems) {

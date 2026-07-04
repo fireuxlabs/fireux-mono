@@ -18,10 +18,7 @@ import {
 } from './types.ts'
 import { readMenuViews } from './view.ts'
 
-const menuSlug = (data: Record<string, unknown>, docId: string) =>
-  readRecordString(data, 'slug') || docId
-
-const menuPath = (slug: string) => `/menus/${encodeURIComponent(slug)}`
+const menuPath = (publicId: string) => `/menus/${encodeURIComponent(publicId)}`
 
 const readMenuSourceKind = (data: Record<string, unknown>) =>
   readRecordString(data, 'source_kind') ||
@@ -32,8 +29,7 @@ export function menuSurfaceFromData(
   data: Record<string, unknown>,
   scope: MenuSurfaceScope = {}
 ) {
-  const slug = menuSlug(data, menuId)
-  const path = scope.path || readRecordString(data, 'path') || menuPath(slug)
+  const path = scope.path || menuPath(menuId)
   const file = readMenuFile(data)
   const sourceKind = scope.sourceKind ?? readMenuSourceKind(data)
   const kind: MenuSurfaceKind = sourceKind === 'kitchen-menu' || sourceKind === 'menu'
@@ -61,10 +57,9 @@ export function menuSurfaceFromData(
     : []
   const result = {
     id: menuId,
-    slug,
-    name: readRecordString(data, 'name') || slug,
+    name: readRecordString(data, 'name') || menuId,
     path,
-    qr_path: scope.qrPath || readRecordString(data, 'qr_path') || `${path}/qr`,
+    qr_path: scope.qrPath || `${path}/qr`,
     kind,
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
