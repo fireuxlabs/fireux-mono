@@ -13,14 +13,14 @@ const sortMenus = (menus: MenuCollectionRow[]) =>
   )
 
 /**
- * Public root Menu collection.
+ * Root Menu collection.
  *
  * Reads `menus/{menuId}` only. Kitchen/menu/source hydration belongs to the
  * menu detail manifest, not the index list.
  */
 export function useMenuCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<MenuCollectionRow>(MenuStorage.collection)
+  const source = firestoreFetchCollection<MenuCollectionRow>(MenuStorage.rootCollection)
   const menus = computed(() =>
     sortMenus(source.value ?? []).filter((menu) => menu.status === 'published')
   )

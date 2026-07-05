@@ -27,7 +27,6 @@ import type {
 import type {
   MenuOrderTypeConfig,
   MenuChoice,
-  MenuView,
 } from '../../../../../../models/kitchen/menu/menu.model'
 import type {
   CreatedMenuOrder,
@@ -44,7 +43,6 @@ export type MenuChoiceValue = string
 export type MenuChoiceOption = {
   value: MenuChoiceValue
   label: string
-  view: MenuView
   menuId?: string
   to?: string
   orderType?: KitchenOrderType
@@ -70,7 +68,6 @@ type PanelState = 'closed' | 'open'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
-const supportedViews = ['browse', 'order'] as const satisfies readonly MenuView[]
 const supportedOrderTypes = [
   'dine_in',
   'collection',
@@ -80,13 +77,10 @@ const supportedOrderTypes = [
 ] as const satisfies readonly KitchenOrderType[]
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
 const orderFunnelOrderTypes = takeAwayOrderTypes
-const browseChoice = (): MenuChoiceOption => ({
-  value: 'browse',
-  label: 'Browse',
-  view: 'browse',
+const defaultMenuChoice = (): MenuChoiceOption => ({
+  value: 'dine_in',
+  label: 'Dine in',
 })
-const uniqueMenuViews = (views: MenuView[]) =>
-  views.filter((mode, index, modes) => modes.indexOf(mode) === index)
 const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
   `order:${type}`
 const orderType = (value: unknown): KitchenOrderType | undefined =>
@@ -94,16 +88,16 @@ const orderType = (value: unknown): KitchenOrderType | undefined =>
     ? value as KitchenOrderType
     : undefined
 const isTakeAwayChoice = (option: MenuChoiceOption) =>
-  option.view === 'order' &&
-    takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
+  takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInChoice = (option: MenuChoiceOption) =>
-  option.view === 'browse' || option.orderType === 'dine_in'
+  option.orderType === 'dine_in' || !option.orderType
 const isOrderFunnelChoice = (option: MenuChoiceOption) =>
-  option.view !== 'order' ||
+  !option.orderType ||
+    option.orderType === 'dine_in' ||
     orderFunnelOrderTypes.includes(option.orderType as typeof orderFunnelOrderTypes[number])
 const withDineInCampFallback = (options: MenuChoiceOption[]) =>
   options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
-    ? [...options, browseChoice()]
+    ? [defaultMenuChoice(), ...options]
     : options
 
 const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
@@ -111,8 +105,7 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
 
   if (
     !choice.value ||
-    !choice.label ||
-    !supportedViews.includes(choice.view)
+    !choice.label
   ) {
     return null
   }
@@ -120,7 +113,6 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
   return {
     value: choice.value,
     label: choice.label,
-    view: choice.view,
     ...(choice.menu_id ? { menuId: choice.menu_id } : {}),
     ...(choice.to ? { to: choice.to } : {}),
     ...(type ? { orderType: type } : {}),
@@ -153,45 +145,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const canOrder = computed(() =>
     Boolean(behaviour.value?.orderingEnabled && orderTypes.value.length)
   )
-  const configuredViews = computed<MenuView[]>(() =>
-    Array.isArray(behaviour.value?.views)
-      ? behaviour.value.views.filter((mode): mode is MenuView =>
-          supportedViews.includes(mode as typeof supportedViews[number])
-        )
-      : []
-  )
-  const viewModes = computed<MenuView[]>(() => {
-    const configured = configuredViews.value.filter((mode) =>
-      mode === 'browse' || canOrder.value
-    )
-    const available: MenuView[] = configured.length
-      ? configured
-      : canOrder.value
-        ? ['browse', 'order']
-        : ['browse']
-
-    return uniqueMenuViews(available)
-  })
   const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices: MenuChoiceOption[] = []
-    if (viewModes.value.includes('browse')) {
-      choices.push(browseChoice())
-    }
-    if (canOrder.value && viewModes.value.includes('order')) {
-      orderTypes.value.forEach((type) => {
-        const config = orderTypeConfigs.value.find((row) => row.type === type)
+    if (!canOrder.value) return [defaultMenuChoice()]
 
-        choices.push({
-          value: orderChoiceValue(type),
-          label: menuOrderTypeLabel(type),
-          view: 'order',
-          orderType: type,
-          ...(config?.message ? { message: config.message } : {}),
-        })
-      })
-    }
+    const choices = orderTypes.value.map((type) => {
+      const config = orderTypeConfigs.value.find((row) => row.type === type)
 
-    return choices.length ? choices : [browseChoice()]
+      return {
+        value: orderChoiceValue(type),
+        label: menuOrderTypeLabel(type),
+        orderType: type,
+        ...(config?.message ? { message: config.message } : {}),
+      }
+    })
+
+    return choices.length ? choices : [defaultMenuChoice()]
   })
   const menuChoiceOptions = computed<MenuChoiceOption[]>(() => {
     const choices = Array.isArray(behaviour.value?.choices)
@@ -209,7 +177,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ? menuChoiceOptions.value
       : generatedChoiceOptions.value).filter(isOrderFunnelChoice))
 
-    return choices.length ? choices : [browseChoice()]
+    return choices.length ? choices : [defaultMenuChoice()]
   })
   const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
     const local = choiceOptions.value.filter((option) => !option.to)
@@ -217,16 +185,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       generatedChoiceOptions.value.filter(isOrderFunnelChoice)
     )
 
-    return local.length ? local : generated.length ? generated : [browseChoice()]
+    return local.length ? local : generated.length ? generated : [defaultMenuChoice()]
   })
   const choiceValues = computed<MenuChoiceValue[]>(() =>
     localChoiceOptions.value.map((option) => option.value)
   )
   const preferredChoice = computed<MenuChoiceValue>(() =>
-    choiceValues.value[0] || 'browse'
+    choiceValues.value[0] || defaultMenuChoice().value
   )
   const { selected: selectedChoice } = useStoredChoice<MenuChoiceValue>({
-    key: computed(() => `fireux:menu:${menuStorageScope.value}:view`),
+    key: computed(() => `fireux:menu:${menuStorageScope.value}:choice`),
     choices: choiceValues,
     fallback: preferredChoice,
   })
@@ -235,11 +203,10 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       option.value === selectedChoice.value
     ) ||
     localChoiceOptions.value[0] ||
-    browseChoice()
+    defaultMenuChoice()
   )
-  const viewMode = computed<MenuView>(() => selectedChoiceOption.value.view)
   const selectedOrderType = computed<KitchenOrderType>(() =>
-    selectedChoiceOption.value.orderType || defaultOrderType.value
+    selectedChoiceOption.value.orderType || 'dine_in'
   )
   const selectedOrderTypeConfig = computed(() =>
     orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
@@ -247,7 +214,10 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     orderTypeConfigs.value[0]
   )
   const isOrderMode = computed(() =>
-    canOrder.value && viewMode.value === 'order'
+    canOrder.value &&
+      orderFunnelOrderTypes.includes(
+        selectedOrderType.value as typeof orderFunnelOrderTypes[number]
+      )
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
     key: computed(() =>

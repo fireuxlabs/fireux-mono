@@ -23,6 +23,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const maxFileSizeMb = 10
 const allowedFileTypes = [
@@ -113,7 +114,7 @@ export default defineEventHandler(async (event) => {
   })
 
   const db = getRuntimeFirestore()
-  const menuRef = db.collection('menus').doc(slug)
+  const menuRef = db.collection(MenuStorage.rootCollection).doc(slug)
   const existing = await menuRef.get()
   if (existing.exists) {
     throw createError({

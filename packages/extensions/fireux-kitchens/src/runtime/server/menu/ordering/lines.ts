@@ -2,7 +2,7 @@ import { createError } from 'h3'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
-} from '../../../../models/kitchen/order.model.ts'
+} from '../../../models/kitchen/order.model.ts'
 
 export type MenuOrderVariantInput = {
   id?: string

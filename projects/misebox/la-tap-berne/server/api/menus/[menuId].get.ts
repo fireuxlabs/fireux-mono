@@ -86,7 +86,6 @@ export default defineEventHandler((event) => {
         sections: sections(),
       },
       behaviour: {
-        views: [],
         ordering,
         orderingEnabled: true,
         orderTypes: ['pre_order'],

@@ -11,21 +11,21 @@ import {
 } from 'firebase/firestore'
 import { MenuStorage } from '../../../../../models/kitchen/menu/menu.model'
 
-type MenuRootProjectionDoc = QueryDocumentSnapshot<DocumentData>
+type MenuRootEntryDoc = QueryDocumentSnapshot<DocumentData>
 
-type ReadMenuRootProjectionDocsInput = {
+type ReadMenuRootEntryDocsInput = {
   db: Firestore
   appId?: string | null | undefined
   kitchenId: string
   menuId?: string | null | undefined
 }
 
-type ReadStaleMenuRootProjectionDocInput = ReadMenuRootProjectionDocsInput & {
+type ReadStaleMenuRootEntryDocInput = ReadMenuRootEntryDocsInput & {
   scopedMenuCollectionPath: string
   menuId: string
 }
 
-type MenuRootProjectionFromSourceInput = {
+type MenuRootEntryFromSourceInput = {
   scopedMenuCollectionPath: string
   menuId: string
   data: Record<string, unknown>
@@ -53,7 +53,7 @@ function readPatchValue(source: Record<string, unknown>, dotted: string) {
   }, source)
 }
 
-export const menuRootProjectionPatch = (data: Record<string, unknown>) => {
+export const menuRootEntryPatch = (data: Record<string, unknown>) => {
   const patch: Record<string, unknown> = {}
   if (hasOwn(data, 'name')) patch.name = clean(data.name)
   if (hasOwn(data, 'description')) patch.description = clean(data.description)
@@ -63,23 +63,23 @@ export const menuRootProjectionPatch = (data: Record<string, unknown>) => {
   return patch
 }
 
-export const menuRootProjectionPatchFromSourceMenu = (
-  input: MenuRootProjectionFromSourceInput
+export const menuRootEntryPatchFromSourceMenu = (
+  input: MenuRootEntryFromSourceInput
 ) => ({
-  ...menuRootProjectionPatch(input.data),
+  ...menuRootEntryPatch(input.data),
   'source.menu_id': clean(input.menuId),
   source_path: `${clean(input.scopedMenuCollectionPath)}/${clean(input.menuId)}`,
 })
 
-export const menuRootProjectionMergePatchFromSourceMenu = (
-  input: MenuRootProjectionFromSourceInput & { source?: unknown }
+export const menuRootEntryMergePatchFromSourceMenu = (
+  input: MenuRootEntryFromSourceInput & { source?: unknown }
 ) => ({
-  ...menuRootProjectionPatch(input.data),
+  ...menuRootEntryPatch(input.data),
   source: { ...record(input.source), menu_id: clean(input.menuId) },
   source_path: `${clean(input.scopedMenuCollectionPath)}/${clean(input.menuId)}`,
 })
 
-export const menuRootProjectionSourceIsCurrent = (
+export const menuRootEntrySourceIsCurrent = (
   data: Record<string, unknown>,
   input: {
     scopedMenuCollectionPath: string
@@ -93,13 +93,13 @@ export const menuRootProjectionSourceIsCurrent = (
   return clean(source.menu_id) === menuId && clean(data.source_path) === sourcePath
 }
 
-export const menuRootProjectionId = (menuId: unknown) => kebabIdentifier(menuId)
+export const menuRootEntryId = (menuId: unknown) => kebabIdentifier(menuId)
 
-export const menuRootProjectionIdentifierPatch = (rootMenuId: string) => ({
+export const menuRootEntryIdentifierPatch = (rootMenuId: string) => ({
   id: rootMenuId,
 })
 
-export const menuRootProjectionPatchFromKitchen = (
+export const menuRootEntryPatchFromKitchen = (
   data: Record<string, unknown>
 ) => {
   const patch: Record<string, unknown> = {}
@@ -124,14 +124,14 @@ export const menuRootProjectionPatchFromKitchen = (
   return patch
 }
 
-export async function readMenuRootProjectionDocs(
-  input: ReadMenuRootProjectionDocsInput
-): Promise<MenuRootProjectionDoc[]> {
+export async function readMenuRootEntryDocs(
+  input: ReadMenuRootEntryDocsInput
+): Promise<MenuRootEntryDoc[]> {
   const kitchenId = clean(input.kitchenId)
   if (!kitchenId) return []
 
   const snap = await getDocs(query(
-    collection(input.db, MenuStorage.collection),
+    collection(input.db, MenuStorage.rootCollection),
     where('source.kitchen_id', '==', kitchenId)
   ))
   const appId = clean(input.appId)
@@ -146,16 +146,16 @@ export async function readMenuRootProjectionDocs(
   })
 }
 
-export async function readSingleStaleMenuRootProjectionDoc(
-  input: ReadStaleMenuRootProjectionDocInput
-): Promise<MenuRootProjectionDoc[]> {
-  const docs = await readMenuRootProjectionDocs({
+export async function readSingleStaleMenuRootEntryDoc(
+  input: ReadStaleMenuRootEntryDocInput
+): Promise<MenuRootEntryDoc[]> {
+  const docs = await readMenuRootEntryDocs({
     db: input.db,
     appId: input.appId,
     kitchenId: input.kitchenId,
   })
   const menuId = clean(input.menuId)
-  const staleDocs: MenuRootProjectionDoc[] = []
+  const staleDocs: MenuRootEntryDoc[] = []
 
   for (const docSnap of docs) {
     const sourceMenuId = clean(record(docSnap.data().source).menu_id)

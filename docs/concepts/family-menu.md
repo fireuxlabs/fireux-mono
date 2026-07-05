@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-04
-Ref: b24b43b6b
+Updated: 2026-07-05
+Ref: b57b4f38f
 Role: map, not canon
 
 Purpose:
@@ -110,7 +110,7 @@ Structured item options:
 
 Ordering note:
 - Menu ordering is mapped separately in `menu-ordering.md`.
-- Menus render readable content by default; do not store a `public_views` marker.
+- Menus render readable content by default; only `ordering` decides whether action controls are available.
 - Keep `ordering` as the order policy that decides whether order controls are available.
 
 Open questions:

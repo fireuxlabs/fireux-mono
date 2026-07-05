@@ -31,7 +31,7 @@ export function useKitchenMenuCollection(
     resolveKitchenChildCollectionPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
       kitchenId: resolvedKitchenId.value,
-      collectionName: MenuStorage.collection,
+      collectionName: MenuStorage.scopeCollection,
       appId,
     })
   )

@@ -12,7 +12,7 @@ import {
   saveKitchenMenuUploadFiles,
   setKitchenMenuUploadCors,
   storagePathsFromMenuUpload,
-} from '../../../../utils/menu/source/uploads'
+} from '../../../../menu/source/uploads'
 
 export default defineEventHandler(async (event: H3Event) => {
   setKitchenMenuUploadCors(event, 'POST')

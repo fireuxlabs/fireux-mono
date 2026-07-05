@@ -6,11 +6,11 @@ import {
   readKitchenIdentity,
   readKitchenOperationHours,
   readKitchenMenuStyle,
-} from '../../../../utils/kitchen-spine'
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
-import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
-import { menuSourceFromData } from '../detail/source.ts'
-import { resolveMenuPageStyle } from '../detail/page-style.ts'
+} from '../../../utils/kitchen-spine'
+import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
+import { menuSourceFromData } from '../payload/source.ts'
+import { resolveMenuPageStyle } from '../payload/page-style.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -56,7 +56,7 @@ export function menuKitchenIdentity(
 ) {
   const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
 
-  // Public menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
+  // Menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
   return {
     name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
     page_style: resolveMenuPageStyle(

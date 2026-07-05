@@ -26,7 +26,7 @@ export function useMenuFetch(
     resolveKitchenChildCollectionPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
       kitchenId: kitchenId.value,
-      collectionName: MenuStorage.collection,
+      collectionName: MenuStorage.scopeCollection,
       appId,
     })
   )

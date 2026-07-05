@@ -6,7 +6,7 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { readMenuOrderContext } from '../../../../utils/menu/ordering/context.ts'
+import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {

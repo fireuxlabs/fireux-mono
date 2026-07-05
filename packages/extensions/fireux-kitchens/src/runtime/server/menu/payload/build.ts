@@ -1,6 +1,6 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import type { KitchenOrderType } from '../../../../models/kitchen/order.model'
+import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type {
   MenuDetailPayload,
   MenuDocumentFileKind,
@@ -8,8 +8,8 @@ import type {
   MenuManifestAddOn,
   MenuManifestPriceOption,
   MenuManifestSection,
-} from '../../../../models/kitchen/menu/menu-detail.model'
-import type { MenuChoice, MenuOrderTypeConfig } from '../../../../models/kitchen/menu/menu.model'
+} from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   compactMenuFile,
@@ -21,9 +21,9 @@ import {
 import { readMenuPageStyle } from './page-style.ts'
 import { menuSourceFromData } from './source.ts'
 import {
-  type MenuDetailScope,
-  type MenuDetailSource,
-  type MenuDetailSourceKind,
+  type MenuPayloadScope,
+  type MenuPayloadSource,
+  type MenuPayloadSourceKind,
 } from './types.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -35,17 +35,17 @@ const record = (value: unknown): Record<string, unknown> =>
 const unique = <T extends string>(values: T[]) =>
   values.filter((value, index, source) => source.indexOf(value) === index)
 
-const readMenuSourceKind = (data: Record<string, unknown>): MenuDetailSourceKind =>
+const readMenuSourceKind = (data: Record<string, unknown>): MenuPayloadSourceKind =>
   readRecordString(data, 'source_kind') === 'kitchen-menu' ||
   readRecordString(data, 'kind') === 'menu'
     ? 'menu'
     : 'doc'
 
-const sourceMenuData = (scope: MenuDetailScope) => record(scope.sourceMenu)
+const sourceMenuData = (scope: MenuPayloadScope) => record(scope.sourceMenu)
 
 const menuDataForManifest = (
   rootMenuData: Record<string, unknown>,
-  scope: MenuDetailScope
+  scope: MenuPayloadScope
 ) => {
   const sourceMenu = sourceMenuData(scope)
   if (!Object.keys(sourceMenu).length) return rootMenuData
@@ -64,7 +64,7 @@ const menuDataForManifest = (
   }
 }
 
-export async function readMenuSourceMenu(source: MenuDetailSource) {
+export async function readMenuSourceMenu(source: MenuPayloadSource) {
   if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
 
   const snap = await getRuntimeFirestore()
@@ -182,7 +182,7 @@ const defaultOrderType = (types: KitchenOrderType[]) =>
 
 const serviceProfile = (
   data: Record<string, unknown>,
-  scope: MenuDetailScope
+  scope: MenuPayloadScope
 ) => {
   const ordering = readMenuOrderingConfig(
     data,
@@ -196,7 +196,6 @@ const serviceProfile = (
     : []
 
   return {
-    views: [],
     ordering,
     orderingEnabled: isMenuOrderingEnabled(ordering),
     orderTypes,
@@ -211,7 +210,7 @@ const serviceProfile = (
 export function buildMenuManifestPayload(
   menuId: string,
   data: Record<string, unknown>,
-  scope: MenuDetailScope = {}
+  scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
   const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
@@ -238,7 +237,7 @@ export function buildMenuManifestPayload(
 export function buildMenuDocumentPayload(
   menuId: string,
   data: Record<string, unknown>,
-  scope: MenuDetailScope = {}
+  scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
   const file = readMenuFile(data)
   const source = menuSourceFromData(data, scope)
@@ -261,10 +260,10 @@ export function buildMenuDocumentPayload(
   }
 }
 
-export function buildMenuDetailPayload(
+export function buildMenuPayload(
   menuId: string,
   data: Record<string, unknown>,
-  scope: MenuDetailScope = {}
+  scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
   const sourceKind = scope.sourceKind === 'kitchen-menu'
     ? 'menu'

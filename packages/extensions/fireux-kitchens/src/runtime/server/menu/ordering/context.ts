@@ -10,7 +10,10 @@ import {
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from '../ownership/kitchen-scope.ts'
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
+import {
+  MenuStorage,
+  type MenuOrderFulfilmentPolicy,
+} from '../../../models/kitchen/menu/menu.model.ts'
 
 export type MenuOrderContext = {
   appId: string
@@ -91,7 +94,7 @@ export const readMenuOrderContext = async (
   }
 
   const db = getRuntimeFirestore()
-  const rootSnap = await db.collection('menus').doc(menuId).get()
+  const rootSnap = await db.collection(MenuStorage.rootCollection).doc(menuId).get()
   if (!rootSnap.exists) {
     throw createError({
       statusCode: 404,

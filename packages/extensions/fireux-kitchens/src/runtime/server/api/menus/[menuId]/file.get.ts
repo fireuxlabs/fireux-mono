@@ -13,6 +13,7 @@ import {
   downloadStorageFile,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+import { MenuStorage } from '../../../../models/kitchen/menu/menu.model.ts'
 
 export default defineEventHandler(async (event) => {
   const menuId = String(getRouterParam(event, 'menuId') || '').trim()
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const snap = await getRuntimeFirestore()
-    .collection('menus')
+    .collection(MenuStorage.rootCollection)
     .doc(menuId)
     .get()
 

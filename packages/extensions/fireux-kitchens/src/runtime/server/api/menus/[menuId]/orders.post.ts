@@ -13,29 +13,29 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
-import { readKitchenMenuRows } from '../../../utils/menu/collection/rows.ts'
+import { readKitchenMenuSections } from '../../../menu/manifest/sections.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
   type MenuDeliveryAddressResult,
-} from '../../../utils/menu/ordering/delivery-address.ts'
+} from '../../../menu/ordering/delivery-address.ts'
 import {
   currentMenuOrderAppId,
   readMenuOrderContext,
-} from '../../../utils/menu/ordering/context.ts'
+} from '../../../menu/ordering/context.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
-} from '../../../utils/menu/ordering/config.ts'
+} from '../../../menu/ordering/config.ts'
 import {
   resolveMenuOrderPayment,
-} from '../../../utils/menu/ordering/payment.ts'
+} from '../../../menu/ordering/payment.ts'
 import {
   readRequestedMenuOrderItems,
   resolveMenuOrderAddOns,
   resolveMenuOrderVariant,
   type CreateMenuOrderBody,
-} from '../../../utils/menu/ordering/lines.ts'
+} from '../../../menu/ordering/lines.ts'
 
 const orderTypes = new Set<KitchenOrderType>([
   'dine_in',
@@ -216,7 +216,7 @@ export default defineEventHandler(async (event) => {
       })
     }
   }
-  const rows = await readKitchenMenuRows(getRuntimeFirestore(), {
+  const rows = await readKitchenMenuSections(getRuntimeFirestore(), {
     appId: context.appId,
     kitchenId: context.kitchenId,
     menuId: context.menuId,

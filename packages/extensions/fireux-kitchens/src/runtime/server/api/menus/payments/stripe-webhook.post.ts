@@ -8,11 +8,11 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import type { KitchenOrderType } from '../../../../models/kitchen/order.model.ts'
-import { statusAfterPayment } from '../../../utils/menu/ordering/payment.ts'
+import { statusAfterPayment } from '../../../menu/ordering/payment.ts'
 import {
   allowUnsignedStripeWebhook,
   getMenuStripe,
-} from '../../../utils/menu/ordering/stripe.ts'
+} from '../../../menu/ordering/stripe.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const safeSegment = (value: string) =>

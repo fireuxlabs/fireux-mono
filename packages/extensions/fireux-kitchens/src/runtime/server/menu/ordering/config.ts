@@ -3,12 +3,12 @@ import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
   MenuServiceHoursConfig,
-} from '../../../../models/kitchen/menu/menu.model.ts'
-import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
+} from '../../../models/kitchen/menu/menu.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   readMenuOrderTypeConfig,
   readMenuServiceHoursConfig,
-} from '../../../../utils/menu-ordering-policy.ts'
+} from '../../../utils/menu-ordering-policy.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const list = (value: unknown) => Array.isArray(value) ? value : []

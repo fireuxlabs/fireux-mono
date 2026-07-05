@@ -93,7 +93,7 @@ type KitchenCollectionName =
   | 'mise'
   | typeof RecipeStorage.collection
   | typeof DishStorage.collection
-  | typeof MenuStorage.collection
+  | typeof MenuStorage.scopeCollection
   | 'stations'
   | 'team'
   | 'suppliers'
@@ -110,7 +110,7 @@ const collectionOrder: KitchenCollectionName[] = [
   'mise',
   RecipeStorage.collection,
   DishStorage.collection,
-  MenuStorage.collection,
+  MenuStorage.scopeCollection,
   'stations',
   'team',
   'suppliers',
@@ -224,7 +224,7 @@ const buildCollections = (kitchenId: string) => ({
     asDocs(demoKitchenScenario.menuStack.dishes),
     kitchenId
   ),
-  [MenuStorage.collection]: withKitchenId(
+  [MenuStorage.scopeCollection]: withKitchenId(
     asDocs(demoKitchenScenario.menuStack.menus),
     kitchenId
   ),

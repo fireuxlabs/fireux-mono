@@ -20,19 +20,19 @@ import { type Menu, MenuStorage, type MenuStatus, type MenuUpdateInput } from '.
 import { MenuSourceUploadStorage } from '../../../../../models/kitchen/menu/menu-source-upload.model'
 import { menuItemsPath, menuPath, menuSectionsPath } from '../utils/paths'
 import {
-  menuRootProjectionId,
-  menuRootProjectionMergePatchFromSourceMenu,
-  menuRootProjectionPatch,
-  menuRootProjectionPatchFromSourceMenu,
-  menuRootProjectionIdentifierPatch,
-  menuRootProjectionSourceIsCurrent,
-  readMenuRootProjectionDocs,
-  readSingleStaleMenuRootProjectionDoc,
-} from '../utils/rootProjection'
+  menuRootEntryId,
+  menuRootEntryMergePatchFromSourceMenu,
+  menuRootEntryPatch,
+  menuRootEntryPatchFromSourceMenu,
+  menuRootEntryIdentifierPatch,
+  menuRootEntrySourceIsCurrent,
+  readMenuRootEntryDocs,
+  readSingleStaleMenuRootEntryDoc,
+} from '../utils/root-entry'
 import { resolveKitchenCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const rootProjectionDerivedKeys = [
+const rootEntryDerivedKeys = [
   'slug',
   'path',
   'qr_path',
@@ -79,18 +79,18 @@ export function useMenuUpdate(
     if (!path || !id) throw new Error('Menu id is required')
     await updateDocument<Menu>(path, id, patch)
 
-    let rootMenuPatch = menuRootProjectionPatch(patch as Record<string, unknown>)
+    let rootMenuPatch = menuRootEntryPatch(patch as Record<string, unknown>)
     if (!Object.keys(rootMenuPatch).length) return
 
     const db = resolveDb()
-    let rootMenuDocs = await readMenuRootProjectionDocs({
+    let rootMenuDocs = await readMenuRootEntryDocs({
       db,
       appId,
       kitchenId,
       menuId: id,
     })
     if (!rootMenuDocs.length) {
-      rootMenuDocs = await readSingleStaleMenuRootProjectionDoc({
+      rootMenuDocs = await readSingleStaleMenuRootEntryDoc({
         db,
         appId,
         kitchenId,
@@ -100,7 +100,7 @@ export function useMenuUpdate(
       if (rootMenuDocs.length) {
         const menuSnap = await getDoc(doc(db, path, id))
         if (menuSnap.exists()) {
-          rootMenuPatch = menuRootProjectionPatchFromSourceMenu({
+          rootMenuPatch = menuRootEntryPatchFromSourceMenu({
             scopedMenuCollectionPath: path,
             menuId: id,
             data: menuSnap.data() as Record<string, unknown>,
@@ -109,7 +109,7 @@ export function useMenuUpdate(
       }
     }
     const needsSourceRepair = rootMenuDocs.some((docSnap) =>
-      !menuRootProjectionSourceIsCurrent(docSnap.data() as Record<string, unknown>, {
+      !menuRootEntrySourceIsCurrent(docSnap.data() as Record<string, unknown>, {
         scopedMenuCollectionPath: path,
         menuId: id,
       })
@@ -120,7 +120,7 @@ export function useMenuUpdate(
       if (menuSnap.exists()) {
         rootMenuPatch = {
           ...rootMenuPatch,
-          ...menuRootProjectionPatchFromSourceMenu({
+          ...menuRootEntryPatchFromSourceMenu({
             scopedMenuCollectionPath: path,
             menuId: id,
             data: menuSnap.data() as Record<string, unknown>,
@@ -132,7 +132,7 @@ export function useMenuUpdate(
     await Promise.all(
       rootMenuDocs.map((docSnap) =>
         updateDocument<Record<string, unknown>>(
-          MenuStorage.collection,
+          MenuStorage.rootCollection,
           docSnap.id,
           rootMenuPatch
         )
@@ -159,14 +159,14 @@ export function useMenuUpdate(
 
     if (!oldMenuSnap.exists()) throw new Error(`Menu not found: ${oldId}`)
     if (nextMenuSnap.exists()) throw new Error(`Menu already exists: ${nextId}`)
-    let rootMenuDocs = await readMenuRootProjectionDocs({
+    let rootMenuDocs = await readMenuRootEntryDocs({
       db,
       appId,
       kitchenId,
       menuId: oldId,
     })
     if (!rootMenuDocs.length) {
-      rootMenuDocs = await readSingleStaleMenuRootProjectionDoc({
+      rootMenuDocs = await readSingleStaleMenuRootEntryDoc({
         db,
         appId,
         kitchenId,
@@ -175,11 +175,11 @@ export function useMenuUpdate(
       })
     }
 
-    const rootProjectionMoves = await Promise.all(
+    const rootEntryMoves = await Promise.all(
       rootMenuDocs.map(async (docSnap) => {
         const rootData = docSnap.data() as Record<string, unknown>
-        const rootId = menuRootProjectionId(nextId) || docSnap.id
-        const ref = doc(db, MenuStorage.collection, rootId)
+        const rootId = menuRootEntryId(nextId) || docSnap.id
+        const ref = doc(db, MenuStorage.rootCollection, rootId)
 
         if (rootId !== docSnap.id) {
           const existingSnap = await getDoc(ref)
@@ -301,11 +301,11 @@ export function useMenuUpdate(
     }
 
     const rootMenuData = oldMenuSnap.data() as Record<string, unknown>
-    for (const move of rootProjectionMoves) {
+    for (const move of rootEntryMoves) {
       nextBatchOp().set(move.to, {
-        ...withoutId(move.data, rootProjectionDerivedKeys),
-        ...menuRootProjectionIdentifierPatch(move.id),
-        ...menuRootProjectionMergePatchFromSourceMenu({
+        ...withoutId(move.data, rootEntryDerivedKeys),
+        ...menuRootEntryIdentifierPatch(move.id),
+        ...menuRootEntryMergePatchFromSourceMenu({
           scopedMenuCollectionPath: path,
           menuId: nextId,
           data: rootMenuData,

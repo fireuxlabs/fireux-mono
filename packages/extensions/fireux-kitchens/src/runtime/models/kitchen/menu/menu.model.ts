@@ -9,12 +9,11 @@ import type { KitchenOrderType } from '../order.model'
 import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
 
 /**
- * Family: App-scoped Kitchen presentation records.
+ * Family: Menu.
  *
- * Menu is managed under the app-scoped Kitchen record. A Kitchen can start in
- * the Misebox app and later move into its own app, but Menu storage remains
- * app-scoped either way. Menu routes render published Kitchen Menu
- * records; they do not create root Menu truth.
+ * Menu follows the same root/scope spine as Kitchen. The root menu record gives
+ * the menu its stable listable URL. The scoped Kitchen Menu record owns the
+ * operator-managed content, sections, items, and ordering policy.
  *
  * Dish describes food. Menu presents selected dishes. MenuSection and MenuItem
  * live in their own child model files.
@@ -24,15 +23,17 @@ import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
  * names such as "Comida Casera" live in `name`, not in the document id.
  *
  * Canon paths:
+ * - menus/{menuId}
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
  * - apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
 export const MenuStorage = {
-  shape: 'scoped',
-  scoped: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
-  collection: 'menus',
+  shape: 'both',
+  root: 'menus/{menuId}',
+  scope: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
+  rootCollection: 'menus',
+  scopeCollection: 'menus',
   parent: 'kitchen',
   idParam: 'menuId',
   children: {
@@ -45,18 +46,18 @@ export const MenuEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Menu',
   family: ['menu', 'kitchen'],
-  storage: 'to-confirm',
-  status: 'to-confirm',
-  scoped: MenuStorage.path,
+  storage: 'both',
+  status: 'confirmed',
+  root: MenuStorage.root,
+  scoped: MenuStorage.scope,
   notes: [
-    'Kitchen Menu is scoped to a Kitchen.',
-    'Root /menus records currently act as doorway/upload records.',
-    'Confirm whether Menu becomes both, or whether doorway remains a separate record shape.',
+    'Menu has a root record and a Kitchen-scoped operating record.',
+    'Root menus keep stable list/detail URLs.',
+    'Kitchen-scoped menus own sections, items, and ordering policy.',
   ],
 })
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
-export type MenuView = 'browse' | 'order'
 export type MenuPaymentMethod = KitchenFulfilmentPaymentMethod
 
 export type MenuDeliveryZone = KitchenDeliveryZone
@@ -95,7 +96,6 @@ export type MenuOrderingConfig = {
 export type MenuChoice = {
   value: string
   label: string
-  view: MenuView
   menu_id: string
   to?: string
   order_type?: KitchenOrderType
@@ -103,7 +103,6 @@ export type MenuChoice = {
 }
 
 export type MenuServiceProfile = {
-  views: MenuView[]
   ordering: MenuOrderingConfig
   orderingEnabled: boolean
   orderTypes: KitchenOrderType[]

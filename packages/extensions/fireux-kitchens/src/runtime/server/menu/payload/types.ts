@@ -1,7 +1,7 @@
-import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model'
-import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model'
+import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model'
+import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 
-export type MenuDetailScope = {
+export type MenuPayloadScope = {
   kitchenId?: string
   kitchenSlug?: string
   kitchenName?: string
@@ -16,14 +16,14 @@ export type MenuDetailScope = {
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
 
-export type MenuDetailFile = {
+export type MenuPayloadFile = {
   url?: string
   name?: string
   type?: string
   storage_path?: string
 }
 
-export type MenuDetailSource = {
+export type MenuPayloadSource = {
   app_id?: string
   kitchen_id?: string
   kitchen_slug?: string
@@ -31,16 +31,16 @@ export type MenuDetailSource = {
   menu_id?: string
 }
 
-export type MenuDetailSourceKind = 'doc' | 'menu'
+export type MenuPayloadSourceKind = 'doc' | 'menu'
 
-export const menuDetailText = (value: unknown) =>
+export const menuPayloadText = (value: unknown) =>
   String(value ?? '').trim()
 
-export const compactMenuDetailRecord = <T extends Record<string, unknown>>(
+export const compactMenuPayloadRecord = <T extends Record<string, unknown>>(
   value: T
 ) =>
   Object.fromEntries(
     Object.entries(value).filter(([, entry]) =>
-      Boolean(menuDetailText(entry))
+      Boolean(menuPayloadText(entry))
     )
   ) as Partial<T>

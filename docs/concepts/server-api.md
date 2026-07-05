@@ -1,6 +1,6 @@
 Server API spine map
-Updated: 2026-06-29
-Ref: 5906abfc7
+Updated: 2026-07-05
+Ref: b57b4f38f
 Role: map, not canon
 
 Purpose:
@@ -20,19 +20,28 @@ Current server surfaces:
 - Package APIs live under `src/runtime/server/api`.
 - App APIs live under `server/api`.
 - Server helpers live under `src/runtime/server/utils` or app `server/utils`.
+- Server domain stacks may live directly under `src/runtime/server/<domain>`
+  when the domain already has a named stack such as model/composables/routes.
 
 Server spine:
 - `server/api/**` follows the HTTP route and method surface. Registered module
   handlers should still live under `server/api` when they are request handlers.
-- `server/utils/**` holds reusable server-only work grouped by family and
+- `server/utils/**` holds reusable server-only primitives grouped by family and
   workflow, not as a flat package drawer.
+- `server/<domain>/**` extends an existing domain stack into server-only work.
+  Menu is the current example because the domain already has `useMenu`,
+  Menu models/storage, Menu routes, and Menu-specific server workflows:
+  `server/menu/manifest`, `server/menu/payload`, `server/menu/source`, and
+  `server/menu/ordering`.
 - Core utility buckets may be primitive buckets such as `auth`, `http`, `ids`,
   `records`, `uploads`, and `slug`.
-- Domain utility buckets should name the visible family and server workflow,
-  for example `menu/ai`, `menu/draft`, `menu/source`, `menu/public`,
-  `menu/ordering`, and `menu/ownership`.
-- Use top-level server folders such as `stripe` only for provider/runtime
+- Domain server buckets should name the visible family and server workflow,
+  for example `menu/ai`, `menu/draft`, `menu/source`, `menu/manifest`,
+  `menu/payload`, `menu/ordering`, and `menu/ownership`.
+- Use top-level provider folders such as `stripe` only for provider/runtime
   constants that are not a request handler and are not reusable helper logic.
+- Do not create a top-level domain folder only because a route is complicated;
+  prefer `server/utils` until the domain has a named stack to extend.
 
 Boundary rule:
 - Provider tools provide tool behavior.

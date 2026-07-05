@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 import { createError } from 'h3'
-import { STRIPE_API_VERSION } from '../../../stripe/version.ts'
+import { STRIPE_API_VERSION } from '../../stripe/version.ts'
 
 export function getMenuStripe() {
   const secret = process.env.STRIPE_SECRET_KEY

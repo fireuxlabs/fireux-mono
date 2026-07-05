@@ -3,7 +3,7 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import { readMenuPageStyle } from '../detail/page-style.ts'
+import { readMenuPageStyle } from '../payload/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

@@ -4,9 +4,9 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
-  compactMenuDetailRecord,
-  menuDetailText,
-  type MenuDetailFile,
+  compactMenuPayloadRecord,
+  menuPayloadText,
+  type MenuPayloadFile,
 } from './types.ts'
 
 export const readMenuDocumentKind = (data: Record<string, unknown>) =>
@@ -15,7 +15,7 @@ export const readMenuDocumentKind = (data: Record<string, unknown>) =>
 
 export const readMenuFile = (
   data: Record<string, unknown>
-): MenuDetailFile => {
+): MenuPayloadFile => {
   const file = readRecord(data.file)
 
   return {
@@ -26,18 +26,18 @@ export const readMenuFile = (
   }
 }
 
-export const hasMenuFile = (file: MenuDetailFile) =>
+export const hasMenuFile = (file: MenuPayloadFile) =>
   Boolean(file.url || file.name || file.type || file.storage_path)
 
-export const compactMenuFile = (file: MenuDetailFile) =>
-  compactMenuDetailRecord(file) as MenuDetailFile
+export const compactMenuFile = (file: MenuPayloadFile) =>
+  compactMenuPayloadRecord(file) as MenuPayloadFile
 
 export const menuFileKind = (options: {
-  file: MenuDetailFile
+  file: MenuPayloadFile
   storedKind: string
 }) =>
   documentKindFromFile({
-    fileName: menuDetailText(options.file.name),
-    contentType: menuDetailText(options.file.type),
+    fileName: menuPayloadText(options.file.name),
+    contentType: menuPayloadText(options.file.type),
     storedKind: options.storedKind,
   })

@@ -6,7 +6,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   kitchenMenuPath,
   kitchenMenuRouteMode,
-} from '../../../../utils/kitchen-menu-route.ts'
+} from '../../../utils/kitchen-menu-route.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')

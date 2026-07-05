@@ -155,7 +155,7 @@ const countLabel = computed(() =>
 )
 
 const devObjects = computed(() => ({
-  // Debug spine: keep root doorway objects separate from interface-derived cards.
+  // Debug spine: keep root menu objects separate from interface-derived cards.
   menus: devJsonData.value,
 }))
 

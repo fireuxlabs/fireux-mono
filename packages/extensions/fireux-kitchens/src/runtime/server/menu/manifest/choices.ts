@@ -2,8 +2,8 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type {
   MenuChoice,
-} from '../../../../models/kitchen/menu/menu.model.ts'
-import { menuOrderTypeLabel } from '../../../../utils/menu-ordering-ui.ts'
+} from '../../../models/kitchen/menu/menu.model.ts'
+import { menuOrderTypeLabel } from '../../../utils/menu-ordering-ui.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
@@ -33,29 +33,13 @@ function menuChoices(input: {
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const isCurrent = input.menuId === input.currentMenuId
   const to = isCurrent ? '' : menuPath(input.kitchenSlug, input.menuId)
-  const name = readRecordString(input.data, 'name') || input.menuId
-  const choiceLabel =
-    readRecordString(input.data, 'choice_label') ||
-    (orderingEnabled ? 'Browse' : name)
-  const message =
-    readRecordString(input.data, 'choice_message')
   const choices: MenuChoice[] = []
-
-  choices.push({
-    value: `browse:${input.menuId}`,
-    label: choiceLabel,
-    view: 'browse',
-    menu_id: input.menuId,
-    ...(to ? { to } : {}),
-    ...(message ? { message } : {}),
-  })
 
   if (orderingEnabled) {
     ordering.order_types.forEach((orderType) => {
       choices.push({
         value: `order:${input.menuId}:${orderType.type}`,
         label: menuOrderTypeLabel(orderType.type),
-        view: 'order',
         menu_id: input.menuId,
         order_type: orderType.type,
         ...(to ? { to } : {}),

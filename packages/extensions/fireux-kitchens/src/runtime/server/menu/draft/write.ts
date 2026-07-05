@@ -1,11 +1,11 @@
-import { DishStorage } from '../../../../models/kitchen/dish.model'
-import { MenuStorage } from '../../../../models/kitchen/menu/menu.model'
+import { DishStorage } from '../../../models/kitchen/dish.model'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
 import {
   MenuItemModel,
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../../../models/kitchen/menu/menu-item.model'
-import { MenuSectionModel } from '../../../../models/kitchen/menu/menu-section.model'
+} from '../../../models/kitchen/menu/menu-item.model'
+import { MenuSectionModel } from '../../../models/kitchen/menu/menu-section.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
@@ -48,7 +48,7 @@ export async function writeKitchenMenuDraft(input: {
   status?: string
 }) {
   const db = getRuntimeFirestore()
-  const menuRef = db.doc(`${input.kitchenPath}/${MenuStorage.collection}/${input.menuId}`)
+  const menuRef = db.doc(`${input.kitchenPath}/${MenuStorage.scopeCollection}/${input.menuId}`)
   const menuSnap = await menuRef.get()
   const oldSectionsSnap = await menuRef.collection('sections').get()
   const deleteBatch = db.batch()

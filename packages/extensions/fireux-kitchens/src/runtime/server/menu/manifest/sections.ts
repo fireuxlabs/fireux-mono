@@ -2,7 +2,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../../../models/kitchen/menu/menu-item.model'
+} from '../../../models/kitchen/menu/menu-item.model'
 import {
   readRecord,
   readRecordString,
@@ -18,7 +18,7 @@ const active = (data: Record<string, unknown>) =>
 const sortOrder = (data: Record<string, unknown>) =>
   numberValue(data.sort_order)
 
-export async function readKitchenMenuRows(
+export async function readKitchenMenuSections(
   db: Firestore,
   input: {
     appId: string

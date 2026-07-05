@@ -84,7 +84,7 @@ export function useMenuCreate(
     const name = normalizeString(input.name)
     const menuId = normalizeSlug(input.id || name)
     const collectionPath =
-      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.collection}`
+      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.scopeCollection}`
 
     if (!name) throw new Error('Menu name is required')
     if (!kitchenId) throw new Error('Kitchen id is required')

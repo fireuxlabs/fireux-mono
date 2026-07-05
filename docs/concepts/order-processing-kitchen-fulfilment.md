@@ -1,6 +1,6 @@
 Order processing and kitchen fulfilment spine
-Updated: 2026-06-27
-Ref: 08f242070
+Updated: 2026-07-05
+Ref: b57b4f38f
 Role: map, not canon
 
 Purpose:
@@ -32,7 +32,7 @@ Entity checkpoint:
 - The generic `fireux-orders` package is an adjacent order engine, not the kitchen fulfilment canon until a deliberate reconciliation pass happens.
 
 Core split:
-- `Menu.public_views`: what the public menu can show.
+- Menu content is readable by default; no stored view marker is needed.
 - `Menu.ordering.order_types[]`: what kind of order the public menu can create.
 - `Kitchen.fulfilment`: reusable venue rules such as delivery zones, payment methods, and deposits.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.

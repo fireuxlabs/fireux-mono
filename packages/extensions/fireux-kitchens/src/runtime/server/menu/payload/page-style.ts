@@ -19,7 +19,7 @@ const pageStyleKeys = [
   'font_family',
 ] as const satisfies readonly (keyof PageStyle)[]
 
-// Public menu theme spine: compact stored PageStyle tokens before exposing them in menu payloads.
+// Menu theme spine: compact stored PageStyle tokens before exposing them in menu payloads.
 export function readMenuPageStyle(value: unknown): Partial<PageStyle> {
   const record = readRecord(value)
   const entries = pageStyleKeys

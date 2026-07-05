@@ -1,14 +1,15 @@
 import { defineEventHandler } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { menuSourceFromData } from '../../utils/menu/detail/source.ts'
+import { menuSourceFromData } from '../../menu/payload/source.ts'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 export default defineEventHandler(async () => {
   const db = getRuntimeFirestore()
   const snap = await db
-    .collection('menus')
+    .collection(MenuStorage.rootCollection)
     .limit(100)
     .get()
 

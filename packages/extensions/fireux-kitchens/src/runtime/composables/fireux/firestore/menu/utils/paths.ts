@@ -18,7 +18,7 @@ export const scopedMenuPath = (options: MenuPathOptions) =>
   resolveKitchenChildCollectionPath({
     kitchenCollectionPath: options.kitchenCollectionPath,
     kitchenId: options.kitchenId,
-    collectionName: MenuStorage.collection,
+    collectionName: MenuStorage.scopeCollection,
     appId: options.appId,
   })
 

@@ -6,7 +6,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Family: App-scoped Kitchen Menu child record.
  *
  * MenuSection groups MenuItems for presentation. It is not a standalone food
- * entity and it is not public/root truth.
+ * entity and it is not root Menu truth.
  */
 export const MenuSectionStorage = {
   shape: 'scoped',

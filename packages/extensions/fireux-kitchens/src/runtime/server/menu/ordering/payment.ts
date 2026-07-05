@@ -1,10 +1,10 @@
-import type { MenuOrderTypeConfig } from '../../../../models/kitchen/menu/menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../../models/kitchen/order.model.ts'
+} from '../../../models/kitchen/order.model.ts'
 
 type ResolveMenuOrderPaymentInput = {
   orderType: KitchenOrderType

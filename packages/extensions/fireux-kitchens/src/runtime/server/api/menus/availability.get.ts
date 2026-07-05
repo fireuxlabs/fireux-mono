@@ -2,6 +2,7 @@ import { defineEventHandler, getQuery } from 'h3'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const reservedSlugs = [
   'about',
@@ -29,7 +30,7 @@ export default defineEventHandler(async (event) => {
     exists: async (slug) =>
       (
         await getRuntimeFirestore()
-          .collection('menus')
+          .collection(MenuStorage.rootCollection)
           .doc(slug)
           .get()
       ).exists,

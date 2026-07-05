@@ -272,10 +272,10 @@ const selectedHydratedKitchen = computed(() => hydratedById.value.get(selectedKi
 const selectedPlace = computed(() => placeById.value.get(selectedKitchenId.value) ?? null)
 const selectedKitchenApp = computed(() => kitchenAppById.value.get(selectedKitchenId.value) ?? null)
 
-const rootMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.collection, selectedKitchenId, {
+const rootMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.scopeCollection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.collection, selectedKitchenId, {
+const overlayMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.scopeCollection, selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 

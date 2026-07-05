@@ -135,10 +135,9 @@ type CampOption = {
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
 const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
 const isTakeAwayOption = (option: MenuChoiceOption) =>
-  option.view === 'order' &&
-    takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
+  takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInOption = (option: MenuChoiceOption) =>
-  option.orderType === 'dine_in' || option.view === 'browse'
+  option.orderType === 'dine_in' || !option.orderType
 
 const dineInOption = computed(() =>
   props.options.find(isDineInOption)

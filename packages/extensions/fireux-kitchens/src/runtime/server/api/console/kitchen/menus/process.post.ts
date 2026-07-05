@@ -5,11 +5,11 @@ import {
   type H3Event,
 } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { processKitchenMenuAiReview } from '../../../../utils/menu/ai/review'
+import { processKitchenMenuAiReview } from '../../../../menu/ai/review'
 import {
   assertKitchenMenuUploadAccess,
   requireKitchenMenuUploadUser,
-} from '../../../../utils/menu/source/uploads'
+} from '../../../../menu/source/uploads'
 
 type ProcessMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'quality', string>> & {
   limit?: number

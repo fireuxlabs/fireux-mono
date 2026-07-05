@@ -8,18 +8,19 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import {
-  buildMenuDetailPayload,
+  buildMenuPayload,
   readMenuSourceMenu,
-} from '../../utils/menu/detail/payload.ts'
-import { menuSourceFromData } from '../../utils/menu/detail/source.ts'
+} from '../../menu/payload/build.ts'
+import { menuSourceFromData } from '../../menu/payload/source.ts'
 import {
   menuOwnerAppApiTo,
   readMenuOwnerAppView,
-} from '../../utils/menu/ownership/owner-app.ts'
-import { menuSourcePayloadFromApi } from '../../utils/menu/source/payload.ts'
-import { readKitchenMenuRows } from '../../utils/menu/collection/rows.ts'
-import { readKitchenMenuChoices } from '../../utils/menu/collection/choices.ts'
+} from '../../menu/ownership/owner-app.ts'
+import { menuSourcePayloadFromApi } from '../../menu/source/payload.ts'
+import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'
+import { readKitchenMenuChoices } from '../../menu/manifest/choices.ts'
 import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
@@ -28,8 +29,8 @@ import {
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
   resolveSourceAppId,
-} from '../../utils/menu/ownership/kitchen-scope.ts'
-import { resolveMenuPageStyle } from '../../utils/menu/detail/page-style.ts'
+} from '../../menu/ownership/kitchen-scope.ts'
+import { resolveMenuPageStyle } from '../../menu/payload/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -87,7 +88,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     })
   }
   const [sections, choices] = await Promise.all([
-    readKitchenMenuRows(db, {
+    readKitchenMenuSections(db, {
       appId: kitchenAppId,
       kitchenId: kitchen.id,
       menuId,
@@ -100,7 +101,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     }),
   ])
 
-  return buildMenuDetailPayload(menuId, data, {
+  return buildMenuPayload(menuId, data, {
     kitchenId: kitchen.id,
     kitchenSlug,
     kitchenName: identity.name,
@@ -122,7 +123,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
 
 async function readRootMenuDetail(menuId: string) {
   const db = getRuntimeFirestore()
-  const snap = await db.collection('menus').doc(menuId).get()
+  const snap = await db.collection(MenuStorage.rootCollection).doc(menuId).get()
 
   if (!snap.exists) {
     throw createError({
@@ -151,7 +152,7 @@ async function readRootMenuDetail(menuId: string) {
   const [sourceSections, choices] =
     source.app_id && source.kitchen_id && source.menu_id && source.kitchen_slug
       ? await Promise.all([
-          readKitchenMenuRows(db, {
+          readKitchenMenuSections(db, {
             appId: source.app_id,
             kitchenId: source.kitchen_id,
             menuId: source.menu_id,
@@ -165,7 +166,7 @@ async function readRootMenuDetail(menuId: string) {
         ])
       : [[], []]
 
-  return buildMenuDetailPayload(menuId, data, {
+  return buildMenuPayload(menuId, data, {
     ...kitchenScope,
     sourceMenu,
     page_style: resolveMenuPageStyle(

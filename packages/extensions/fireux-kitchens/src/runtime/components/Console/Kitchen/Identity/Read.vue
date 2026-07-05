@@ -91,7 +91,7 @@
               <span class="console-summary-value">{{ currencyFormatLabel }}</span>
             </div>
             <div class="console-summary-field">
-              Public menu:
+              Menu display:
               <span class="console-summary-value">
                 {{ showCurrency ? 'Currency shown' : 'Currency hidden' }}
               </span>
