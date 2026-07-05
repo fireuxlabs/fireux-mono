@@ -32,7 +32,7 @@
 
       <MenuDetailFunnelShared
         v-else
-        :order="funnel.order"
+        :funnel="funnel"
         :step="step"
         @update:ready="setScreenReady"
       />
@@ -76,8 +76,14 @@ const props = defineProps<{
   funnel: MenuOrderingFunnelController
 }>()
 
+const takeAwayOrderTypes = ['collection', 'delivery'] as const
+const isTakeAwayOrder = computed(() =>
+  takeAwayOrderTypes.includes(
+    props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
+  )
+)
 const funnelStepCount = computed(() =>
-  ['collection', 'delivery'].includes(props.funnel.order.orderType) ? 6 : 3
+  isTakeAwayOrder.value ? 6 : 4
 )
 const submittingStep = ref(false)
 const {
@@ -93,11 +99,13 @@ const {
   close: () => props.funnel.close(),
   stepCount: funnelStepCount,
 })
-const shouldSubmitTakeAwayRequest = computed(() =>
-  ['collection', 'delivery'].includes(props.funnel.incoming.order_type) &&
-    step.value === 3 &&
-    !props.funnel.sending.sent_order
-)
+const shouldSubmitOrderRequest = computed(() => {
+  if (props.funnel.sending.sent_order) return false
+
+  return isTakeAwayOrder.value
+    ? step.value === 3
+    : step.value === 2
+})
 const continueBlocked = computed(() =>
   continueDisabled.value || submittingStep.value
 )
@@ -108,7 +116,7 @@ const continueLabel = computed(() => {
 
 watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
   if (orderId) return
-  if (!['collection', 'delivery'].includes(props.funnel.order.orderType)) return
+  if (!isTakeAwayOrder.value) return
   if (step.value <= 3) return
 
   step.value = 3
@@ -117,7 +125,7 @@ watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
 async function continueFunnel() {
   if (continueBlocked.value) return
 
-  if (shouldSubmitTakeAwayRequest.value) {
+  if (shouldSubmitOrderRequest.value) {
     submittingStep.value = true
     try {
       const created = await props.funnel.submit({

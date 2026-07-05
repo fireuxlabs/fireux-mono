@@ -1,24 +1,30 @@
 <template>
   <MenuDetailFunnelBasket
     v-if="step === 1"
-    :order="order"
+    :order="funnel.order"
   />
 
   <ClientOnly v-else-if="step === 2">
     <MenuDetailFunnelAllergen v-model="allergenAccepted" />
   </ClientOnly>
 
-  <p v-else class="menu-order-placeholder">
-    This order type is not wired yet.
-  </p>
+  <MenuDetailFunnelPayment
+    v-else-if="step === 3"
+    :funnel="funnel"
+  />
+
+  <MenuDetailFunnelConfirmation
+    v-else-if="step === 4"
+    :funnel="funnel"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue'
-import type { MenuOrderingFunnelState } from '../../../../models/kitchen/menu/menu-ordering.model'
+import { computed, watch } from 'vue'
+import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const props = defineProps<{
-  order: MenuOrderingFunnelState
+  funnel: MenuOrderingFunnelController
   step: number
 }>()
 
@@ -26,19 +32,32 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const allergenAccepted = ref(false)
-
-watchEffect(() => {
-  emit('update:ready', props.step < 3 && (props.step !== 2 || allergenAccepted.value))
+const allergenAccepted = computed({
+  get: () => Boolean(props.funnel.incoming.allergen_checked),
+  set: (accepted: boolean) => {
+    props.funnel.collect({
+      allergen_checked: accepted,
+    })
+  },
 })
 
-watch(() => props.order.quantity, (quantity: number) => {
+watch([() => props.step, allergenAccepted], () => {
+  emit('update:ready', props.step !== 2 || allergenAccepted.value)
+}, {
+  immediate: true,
+})
+
+watch(() => props.funnel.order.quantity, (quantity: number) => {
   if (quantity) return
 
-  allergenAccepted.value = false
+  props.funnel.collect({
+    allergen_checked: false,
+  })
 })
 
-watch(() => props.order.orderType, () => {
-  allergenAccepted.value = false
+watch(() => props.funnel.order.orderType, () => {
+  props.funnel.collect({
+    allergen_checked: false,
+  })
 })
 </script>

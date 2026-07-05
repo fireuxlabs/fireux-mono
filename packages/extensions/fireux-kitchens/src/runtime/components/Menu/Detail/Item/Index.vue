@@ -2,7 +2,7 @@
   <article
     :class="[
       'menu-item',
-      orderMode && 'menu-item--selectable',
+      'menu-item--selectable',
       selected && 'menu-item--selected',
     ]"
   >
@@ -11,9 +11,9 @@
         'menu-item__summary',
         item.imageUrl && 'menu-item__summary--with-image',
       ]"
-      :role="orderMode ? 'button' : undefined"
-      :tabindex="orderMode ? 0 : undefined"
-      :aria-expanded="orderMode ? selected : undefined"
+      role="button"
+      tabindex="0"
+      :aria-expanded="selected"
       @click="selectItem"
       @keydown.enter.prevent="selectItem"
       @keydown.space.prevent="selectItem"
@@ -47,18 +47,11 @@
         <p v-if="orderMode && displayPrice" class="menu-item__price">
           {{ displayPrice }}
         </p>
-
-        <UIcon
-          v-if="orderMode"
-          name="i-lucide-chevron-down"
-          :class="['menu-item__chevron', selected && 'menu-item__chevron--open']"
-          aria-hidden="true"
-        />
       </div>
     </div>
 
     <div
-      v-if="orderMode && selected"
+      v-if="selected && hasInteraction"
       class="menu-item__interaction"
       @click.stop
     >
@@ -80,6 +73,7 @@
       />
 
       <button
+        v-if="orderMode"
         type="button"
         class="menu-item__add"
         @click="addItem"
@@ -92,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type {
   MenuFoodItem,
   MenuFoodOrderItem,
@@ -122,9 +117,14 @@ const {
   item: () => props.item,
 })
 
-function selectItem() {
-  if (!props.orderMode) return
+const hasOptions = computed(() =>
+  variantOptions.value.length > 1 || addOnOptions.value.length > 0
+)
+const hasInteraction = computed(() =>
+  Boolean(props.orderMode || hasOptions.value)
+)
 
+function selectItem() {
   emit('select', props.item)
 }
 
@@ -212,17 +212,6 @@ function addItem() {
   gap: var(--menu-space-sm);
   align-items: center;
   justify-content: end;
-}
-
-.menu-item__chevron {
-  width: 1rem;
-  height: 1rem;
-  color: var(--menu-muted);
-  transition: transform 160ms ease;
-}
-
-.menu-item__chevron--open {
-  transform: rotate(180deg);
 }
 
 .menu-item__interaction {

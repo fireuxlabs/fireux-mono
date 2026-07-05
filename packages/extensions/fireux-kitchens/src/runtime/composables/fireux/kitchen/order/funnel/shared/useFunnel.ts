@@ -75,8 +75,14 @@ const supportedOrderTypes = [
   'pre_order',
   'room_service',
 ] as const satisfies readonly KitchenOrderType[]
+const visibleOrderTypes = [
+  'dine_in',
+  'pre_order',
+  'room_service',
+  'collection',
+  'delivery',
+] as const satisfies readonly KitchenOrderType[]
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
-const orderFunnelOrderTypes = takeAwayOrderTypes
 const defaultMenuChoice = (): MenuChoiceOption => ({
   value: 'dine_in',
   label: 'Dine in',
@@ -93,8 +99,7 @@ const isDineInChoice = (option: MenuChoiceOption) =>
   option.orderType === 'dine_in' || !option.orderType
 const isOrderFunnelChoice = (option: MenuChoiceOption) =>
   !option.orderType ||
-    option.orderType === 'dine_in' ||
-    orderFunnelOrderTypes.includes(option.orderType as typeof orderFunnelOrderTypes[number])
+    visibleOrderTypes.includes(option.orderType as typeof visibleOrderTypes[number])
 const withDineInCampFallback = (options: MenuChoiceOption[]) =>
   options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
     ? [defaultMenuChoice(), ...options]
@@ -148,16 +153,20 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
     if (!canOrder.value) return [defaultMenuChoice()]
 
-    const choices = orderTypes.value.map((type) => {
-      const config = orderTypeConfigs.value.find((row) => row.type === type)
+    const choices = orderTypes.value
+      .filter((type) =>
+        visibleOrderTypes.includes(type as typeof visibleOrderTypes[number])
+      )
+      .map((type) => {
+        const config = orderTypeConfigs.value.find((row) => row.type === type)
 
-      return {
-        value: orderChoiceValue(type),
-        label: menuOrderTypeLabel(type),
-        orderType: type,
-        ...(config?.message ? { message: config.message } : {}),
-      }
-    })
+        return {
+          value: orderChoiceValue(type),
+          label: menuOrderTypeLabel(type),
+          orderType: type,
+          ...(config?.message ? { message: config.message } : {}),
+        }
+      })
 
     return choices.length ? choices : [defaultMenuChoice()]
   })
@@ -215,9 +224,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   )
   const isOrderMode = computed(() =>
     canOrder.value &&
-      orderFunnelOrderTypes.includes(
-        selectedOrderType.value as typeof orderFunnelOrderTypes[number]
-      )
+      Boolean(selectedChoiceOption.value.orderType)
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
     key: computed(() =>
@@ -372,8 +379,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   }
 
   function selectItem(item: MenuFoodItem) {
-    if (!isOrderMode.value) return
-
     const id = text(item.id)
     if (!id) return
 
@@ -420,12 +425,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
   watch(selectedOrderType, () => {
     collectedIncoming.value = {}
-    selectedItemId.value = ''
-  })
-
-  watch(isOrderMode, (enabled: boolean) => {
-    if (enabled) return
-
     selectedItemId.value = ''
   })
 

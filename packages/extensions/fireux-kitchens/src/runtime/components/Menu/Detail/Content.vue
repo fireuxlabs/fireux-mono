@@ -12,7 +12,7 @@
       />
 
       <MenuDetailSectionNav
-        v-if="view.orderMode && view.menu.content.sections.length > 1"
+        v-if="view.menu.content.sections.length > 1"
         :sections="view.menu.content.sections"
       />
 

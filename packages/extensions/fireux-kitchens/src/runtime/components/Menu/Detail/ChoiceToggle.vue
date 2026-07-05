@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="useCampSelector || useTakeAwayOnlySelector"
+    v-if="useCampSelector || useDineInOnlySelector || useTakeAwayOnlySelector"
     class="menu-choice-stack"
   >
     <div
@@ -34,43 +34,43 @@
     </div>
 
     <div
-      v-if="showTakeAwaySelector"
-      class="menu-takeaway"
+      v-if="showMethodSelector"
+      class="menu-method"
       role="radiogroup"
-      aria-label="Take away method"
+      :aria-label="methodSelectorLabel"
     >
       <template
-        v-for="option in takeAwayOptions"
+        v-for="option in methodOptions"
         :key="option.value"
       >
         <NuxtLink
           v-if="option.to"
           :to="option.to"
           :class="[
-            'menu-takeaway__option',
-            { 'menu-takeaway__option--active': modelValue === option.value },
+            'menu-method__option',
+            { 'menu-method__option--active': modelValue === option.value },
           ]"
           role="radio"
           :aria-checked="modelValue === option.value"
         >
-          <span class="menu-takeaway__radio" aria-hidden="true" />
-          <span>{{ option.label }}</span>
+          <span class="menu-method__radio" aria-hidden="true" />
+          <span>{{ methodOptionLabel(option) }}</span>
         </NuxtLink>
 
         <label
           v-else
           :class="[
-            'menu-takeaway__option',
-            { 'menu-takeaway__option--active': modelValue === option.value },
+            'menu-method__option',
+            { 'menu-method__option--active': modelValue === option.value },
           ]"
         >
           <input
-            :name="takeAwayRadioName"
+            :name="methodRadioName"
             type="radio"
             :checked="modelValue === option.value"
             @change="selectOption(option)"
           >
-          <span>{{ option.label }}</span>
+          <span>{{ methodOptionLabel(option) }}</span>
         </label>
       </template>
     </div>
@@ -132,18 +132,34 @@ type CampOption = {
   option: MenuChoiceOption
 }
 
+const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
+const dineInOrderTypeOrder = new Map(
+  dineInOrderTypes.map((type, index) => [type, index])
+)
+const takeAwayOrderTypeOrder = new Map(
+  takeAwayOrderTypes.map((type, index) => [type, index])
+)
 const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
+const dineInOrderIndex = (option: MenuChoiceOption) =>
+  dineInOrderTypeOrder.get(option.orderType as typeof dineInOrderTypes[number]) ?? 99
+const takeAwayOrderIndex = (option: MenuChoiceOption) =>
+  takeAwayOrderTypeOrder.get(option.orderType as typeof takeAwayOrderTypes[number]) ?? 99
 const isTakeAwayOption = (option: MenuChoiceOption) =>
   takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInOption = (option: MenuChoiceOption) =>
-  option.orderType === 'dine_in' || !option.orderType
+  !option.orderType ||
+    dineInOrderTypes.includes(option.orderType as typeof dineInOrderTypes[number])
 
-const dineInOption = computed(() =>
-  props.options.find(isDineInOption)
+const dineInOptions = computed(() =>
+  props.options.filter(isDineInOption).sort((left, right) =>
+    dineInOrderIndex(left) - dineInOrderIndex(right)
+  )
 )
 const takeAwayOptions = computed(() =>
-  props.options.filter(isTakeAwayOption)
+  props.options.filter(isTakeAwayOption).sort((left, right) =>
+    takeAwayOrderIndex(left) - takeAwayOrderIndex(right)
+  )
 )
 const currentOption = computed(() =>
   props.options.find((option) => option.value === props.modelValue)
@@ -151,36 +167,52 @@ const currentOption = computed(() =>
 const currentTakeAwayOption = computed(() =>
   takeAwayOptions.value.find((option) => option.value === props.modelValue)
 )
+const currentDineInOption = computed(() =>
+  dineInOptions.value.find((option) => option.value === props.modelValue)
+)
+const selectedDineInOption = computed(() =>
+  currentDineInOption.value ||
+    dineInOptions.value.find((option) => !option.to) ||
+    dineInOptions.value[0]
+)
 const selectedTakeAwayOption = computed(() =>
   currentTakeAwayOption.value ||
     takeAwayOptions.value.find((option) => !option.to) ||
     takeAwayOptions.value[0]
 )
 const useCampSelector = computed(() =>
-  Boolean(dineInOption.value && selectedTakeAwayOption.value)
+  Boolean(selectedDineInOption.value && selectedTakeAwayOption.value)
+)
+const useDineInOnlySelector = computed(() =>
+  !useCampSelector.value &&
+    dineInOptions.value.length > 1 &&
+    dineInOptions.value.length === props.options.length
 )
 const useTakeAwayOnlySelector = computed(() =>
   !useCampSelector.value &&
     takeAwayOptions.value.length > 1 &&
     takeAwayOptions.value.length === props.options.length
 )
-const activeCamp = computed<CampValue>(() =>
-  currentTakeAwayOption.value ||
-    (
-      !currentOption.value &&
-      useTakeAwayOnlySelector.value
-    )
+const activeCamp = computed<CampValue>(() => {
+  if (
+    currentTakeAwayOption.value ||
+    (!currentOption.value && useTakeAwayOnlySelector.value)
+  ) {
+    return 'take_away'
+  }
+
+  return currentOption.value && isTakeAwayOption(currentOption.value)
     ? 'take_away'
     : 'dine_in'
-)
+})
 const campOptions = computed<CampOption[]>(() => {
   const options: CampOption[] = []
 
-  if (dineInOption.value) {
+  if (selectedDineInOption.value) {
     options.push({
       value: 'dine_in',
       label: 'Dine in',
-      option: dineInOption.value,
+      option: selectedDineInOption.value,
     })
   }
   if (selectedTakeAwayOption.value) {
@@ -197,9 +229,34 @@ const showTakeAwaySelector = computed(() =>
   takeAwayOptions.value.length > 1 &&
     (activeCamp.value === 'take_away' || useTakeAwayOnlySelector.value)
 )
-const takeAwayRadioName = computed(() =>
-  `menu-takeaway-${safeToken(takeAwayOptions.value.map((option) => option.value).join('-'))}`
+const showDineInSelector = computed(() =>
+  dineInOptions.value.length > 1 &&
+    (activeCamp.value === 'dine_in' || useDineInOnlySelector.value)
 )
+const methodOptions = computed(() =>
+  activeCamp.value === 'take_away'
+    ? takeAwayOptions.value
+    : dineInOptions.value
+)
+const showMethodSelector = computed(() =>
+  activeCamp.value === 'take_away'
+    ? showTakeAwaySelector.value
+    : showDineInSelector.value
+)
+const methodSelectorLabel = computed(() =>
+  activeCamp.value === 'take_away' ? 'Take away method' : 'Dine in service'
+)
+const methodRadioName = computed(() =>
+  `menu-method-${safeToken(methodOptions.value.map((option) => option.value).join('-'))}`
+)
+
+function methodOptionLabel(option: MenuChoiceOption) {
+  if (activeCamp.value === 'dine_in' && option.orderType === 'dine_in') {
+    return 'Now'
+  }
+
+  return option.label
+}
 
 function selectOption(option: MenuChoiceOption) {
   emit('update:modelValue', option.value)
@@ -259,7 +316,7 @@ function selectOption(option: MenuChoiceOption) {
   transform: translateY(-1px);
 }
 
-.menu-takeaway {
+.menu-method {
   display: inline-flex;
   flex-wrap: wrap;
   gap: var(--menu-space-xs);
@@ -267,7 +324,7 @@ function selectOption(option: MenuChoiceOption) {
   width: 100%;
 }
 
-.menu-takeaway__option {
+.menu-method__option {
   display: inline-flex;
   min-height: 2.35rem;
   align-items: center;
@@ -286,14 +343,14 @@ function selectOption(option: MenuChoiceOption) {
   text-decoration: none;
 }
 
-.menu-takeaway__option input {
+.menu-method__option input {
   width: 0.95rem;
   height: 0.95rem;
   margin: 0;
   accent-color: var(--menu-primary);
 }
 
-.menu-takeaway__radio {
+.menu-method__radio {
   width: 0.95rem;
   height: 0.95rem;
   border: 2px solid currentcolor;
@@ -301,12 +358,12 @@ function selectOption(option: MenuChoiceOption) {
   box-shadow: inset 0 0 0 0.18rem var(--menu-bg);
 }
 
-.menu-takeaway__option--active {
+.menu-method__option--active {
   border-color: color-mix(in srgb, var(--menu-primary) 58%, transparent);
   background: color-mix(in srgb, var(--menu-primary) 12%, var(--menu-bg));
 }
 
-.menu-takeaway__option--active .menu-takeaway__radio {
+.menu-method__option--active .menu-method__radio {
   background: var(--menu-primary);
 }
 
