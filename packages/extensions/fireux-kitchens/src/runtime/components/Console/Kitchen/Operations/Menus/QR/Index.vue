@@ -12,7 +12,7 @@
       <template #header>
         <div>
           <h2 class="text-base font-semibold text-highlighted">Menu QR</h2>
-          <p class="text-sm text-dimmed">QR codes point to the menu picker.</p>
+          <p class="text-sm text-dimmed">QR codes point to a menu or a locked ordering funnel.</p>
         </div>
       </template>
 
@@ -22,13 +22,86 @@
             <UInput :model-value="menuUrl" readonly />
           </UFormField>
 
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-highlighted">
+              Menus and QR targets
+            </p>
+
+            <div class="grid gap-3">
+              <div
+                v-if="menuPickerTarget"
+                class="qr-menu-group"
+              >
+                <div class="qr-menu-group__header">
+                  <span>
+                    <strong>Menu picker</strong>
+                    <small>Kitchen-level index for all published menus.</small>
+                  </span>
+                  <UBadge color="neutral" variant="soft">
+                    1 QR
+                  </UBadge>
+                </div>
+
+                <button
+                  type="button"
+                  class="qr-target"
+                  :class="{ 'qr-target--active': menuPickerTarget.id === selectedTargetId }"
+                  :aria-pressed="menuPickerTarget.id === selectedTargetId"
+                  @click="selectedTargetId = menuPickerTarget.id"
+                >
+                  <span class="qr-target__copy">
+                    <strong>{{ menuPickerTarget.label }}</strong>
+                    <small>{{ menuPickerTarget.description }}</small>
+                  </span>
+
+                  <code>{{ menuPickerTarget.path }}</code>
+                </button>
+              </div>
+
+              <div
+                v-for="group in qrMenuGroups"
+                :key="group.id"
+                class="qr-menu-group"
+              >
+                <div class="qr-menu-group__header">
+                  <span>
+                    <strong>{{ group.label }}</strong>
+                    <small>{{ group.description }}</small>
+                  </span>
+                  <UBadge color="neutral" variant="soft">
+                    {{ group.targets.length }} QR{{ group.targets.length === 1 ? '' : 's' }}
+                  </UBadge>
+                </div>
+
+                <div class="grid gap-2">
+                  <button
+                    v-for="target in group.targets"
+                    :key="target.id"
+                    type="button"
+                    class="qr-target"
+                    :class="{ 'qr-target--active': target.id === selectedTargetId }"
+                    :aria-pressed="target.id === selectedTargetId"
+                    @click="selectedTargetId = target.id"
+                  >
+                    <span class="qr-target__copy">
+                      <strong>{{ target.label }}</strong>
+                      <small>{{ target.description }}</small>
+                    </span>
+
+                    <code>{{ target.path }}</code>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="flex flex-wrap gap-2">
             <UButton
               icon="i-lucide-external-link"
               :to="menuUrl"
               target="_blank"
             >
-              Open menus
+              Open target
             </UButton>
             <UButton
               variant="soft"
@@ -73,13 +146,27 @@ import { create } from 'qrcode'
 import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useKitchenMenuUrl } from '../../../../../../composables/fireux/kitchen/menu/useKitchenMenuUrl'
+import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
+import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
+import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
 import ConsoleKitchenOperationsMenusQRCentreMark from './CentreMark.vue'
 
 const { selectedKitchen, menus, activeKitchenAppId } = useKitchenConsoleMenus()
 const qrDataUrl = ref('')
 const qrArtworkDataUrl = ref('')
+const selectedTargetId = ref('')
 
 const clean = (value: unknown) => String(value ?? '').trim()
+const orderTypes = new Set<KitchenOrderType>([
+  'dine_in',
+  'eat_in',
+  'takeaway',
+  'collection',
+  'delivery',
+  'pre_order',
+  'room_service',
+])
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const kitchenSlug = computed(() => clean(kitchen.value?.slug))
 const kitchenName = computed(
@@ -95,12 +182,23 @@ const menuUrlResolver = useKitchenMenuUrl({
 const publishedMenus = computed(() =>
   menus.value.filter((menu) => menu.status === 'published' && clean(menu.id))
 )
-const menuPath = computed(() =>
-  publishedMenus.value.length ? menuUrlResolver.menuIndexPath.value : ''
+const menuPickerTarget = computed(() =>
+  publishedMenus.value.length > 1
+    ? makeMenuPickerTarget()
+    : null
 )
-const menuUrl = computed(() =>
-  publishedMenus.value.length ? menuUrlResolver.menuIndexUrl.value : ''
+const qrMenuGroups = computed(() => buildQrMenuGroups(publishedMenus.value))
+const qrTargets = computed(() => [
+  ...(menuPickerTarget.value ? [menuPickerTarget.value] : []),
+  ...qrMenuGroups.value.flatMap((group) => group.targets),
+])
+const selectedQrTarget = computed(() =>
+  qrTargets.value.find((target) => target.id === selectedTargetId.value) ||
+    qrTargets.value[0] ||
+    null
 )
+const menuPath = computed(() => selectedQrTarget.value?.path || '')
+const menuUrl = computed(() => selectedQrTarget.value?.url || '')
 
 watch(
   menuUrl,
@@ -128,12 +226,151 @@ watch(
   { immediate: true }
 )
 
+watch(
+  qrTargets,
+  (targets: QrTarget[]) => {
+    if (targets.some((target) => target.id === selectedTargetId.value)) return
+
+    selectedTargetId.value = targets[0]?.id || ''
+  },
+  { immediate: true }
+)
+
 function downloadQr() {
   if (!import.meta.client || !qrArtworkDataUrl.value || !menuPath.value) return
   const link = document.createElement('a')
   link.href = qrArtworkDataUrl.value
-  link.download = `${kitchenSlug.value}-menus-qr.svg`
+  link.download = `${downloadSlug(kitchenSlug.value)}-${downloadSlug(selectedQrTarget.value?.id || 'menu')}-qr.svg`
   link.click()
+}
+
+type QrTarget = {
+  id: string
+  label: string
+  description: string
+  path: string
+  url: string
+}
+
+type QrMenuGroup = {
+  id: string
+  label: string
+  description: string
+  targets: QrTarget[]
+}
+
+function buildQrMenuGroups(sourceMenus: Menu[]): QrMenuGroup[] {
+  return sourceMenus.map((menu) => {
+    const menuId = clean(menu.id)
+    const menuName = clean(menu.name) || menuId
+    const targets: QrTarget[] = []
+
+    addTarget(targets, {
+      id: `${menuId}:browse`,
+      label: 'Readable menu',
+      description: 'Readable menu.',
+      path: menuUrlResolver.menuPath(menuId),
+      url: menuUrlResolver.menuUrl(menuId),
+    })
+
+    const enabledTypes = enabledOrderTypes(menu)
+
+    if (enabledTypes.includes('delivery') || enabledTypes.includes('collection')) {
+      const homeModes = enabledTypes
+        .filter((type) => type === 'delivery' || type === 'collection')
+        .map((type) => menuOrderTypeLabel(type))
+        .join(', ')
+
+      addMenuContextTarget(targets, {
+        menuId,
+        menuName,
+        context: 'home',
+        label: 'Home Delivery',
+        description: homeModes || 'Delivery and collection.',
+      })
+    }
+
+    ;([
+      'dine_in',
+      'eat_in',
+      'takeaway',
+      'pre_order',
+      'room_service',
+    ] as const).forEach((type) => {
+      if (!enabledTypes.includes(type)) return
+
+      addMenuContextTarget(targets, {
+        menuId,
+        menuName,
+        context: type,
+        label: menuOrderTypeLabel(type),
+        description: `${menuOrderTypeLabel(type)} funnel.`,
+      })
+    })
+
+    return {
+      id: menuId,
+      label: menuName,
+      description: enabledTypes.length
+        ? `${enabledTypes.length} order mode${enabledTypes.length === 1 ? '' : 's'} plus readable menu.`
+        : 'Readable menu only.',
+      targets,
+    }
+  }).filter((group) => Boolean(group.id && group.targets.length))
+}
+
+function makeMenuPickerTarget(): QrTarget | null {
+  const target = {
+    id: 'menu-picker',
+    label: 'Menu picker',
+    description: 'Let guests choose from the published menus.',
+    path: menuUrlResolver.menuIndexPath.value,
+    url: menuUrlResolver.menuIndexUrl.value,
+  }
+
+  return target.path && target.url ? target : null
+}
+
+function enabledOrderTypes(menu: Menu): KitchenOrderType[] {
+  if (!menu.ordering?.enabled) return []
+
+  return (menu.ordering.order_types || [])
+    .map((config) => clean(config?.type))
+    .filter((type): type is KitchenOrderType =>
+      orderTypes.has(type as KitchenOrderType)
+    )
+}
+
+function addMenuContextTarget(targets: QrTarget[], options: {
+  menuId: string
+  menuName: string
+  context: MenuRouteContext
+  label: string
+  description: string
+}) {
+  const contextualMenuId = `${options.menuId}.${options.context}`
+
+  addTarget(targets, {
+    id: `${options.menuId}:${options.context}`,
+    label: options.label,
+    description: `${options.menuName} · ${options.description}`,
+    path: menuUrlResolver.menuPath(contextualMenuId),
+    url: menuUrlResolver.menuUrl(contextualMenuId),
+  })
+}
+
+function addTarget(targets: QrTarget[], target: QrTarget) {
+  if (!target.path || !target.url) return
+  if (targets.some((existing) => existing.id === target.id)) return
+
+  targets.push(target)
+}
+
+function downloadSlug(value: unknown) {
+  return clean(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'menu'
 }
 
 async function imageToSvgHref(src: string) {
@@ -237,3 +474,95 @@ function escapeSvg(value: string) {
     .replace(/"/g, '&quot;')
 }
 </script>
+
+<style scoped>
+.qr-target {
+  display: grid;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 0.75rem;
+  background: var(--ui-bg);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.qr-target:hover {
+  border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-primary) 5%, var(--ui-bg));
+  transform: translateY(-1px);
+}
+
+.qr-target--active {
+  border-color: color-mix(in srgb, var(--ui-primary) 62%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-primary) 9%, var(--ui-bg));
+}
+
+.qr-menu-group {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--ui-bg) 82%, var(--ui-bg-muted));
+}
+
+.qr-menu-group__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.qr-menu-group__header span {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.qr-menu-group__header strong {
+  color: var(--ui-text-highlighted);
+  font-size: 0.95rem;
+  font-weight: 850;
+}
+
+.qr-menu-group__header small {
+  color: var(--ui-text-muted);
+  font-size: 0.8rem;
+}
+
+.qr-target__copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.qr-target__copy strong {
+  color: var(--ui-text-highlighted);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.qr-target__copy small {
+  color: var(--ui-text-muted);
+  font-size: 0.8rem;
+}
+
+.qr-target code {
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border-radius: 0.45rem;
+  background: var(--ui-bg-muted);
+  color: var(--ui-text-highlighted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.45rem;
+}
+</style>

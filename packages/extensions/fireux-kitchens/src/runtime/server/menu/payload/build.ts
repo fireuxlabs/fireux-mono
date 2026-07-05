@@ -198,6 +198,31 @@ const defaultOrderType = (
     'dine_in'
 }
 
+const contextOrderTypeConfigs = (
+  ordering: ReturnType<typeof readMenuOrderingConfig>,
+  contextValue: unknown
+) => {
+  const profile = menuContextProfile(contextValue)
+  if (profile.context === 'generic') return ordering.order_types
+
+  return ordering.order_types.filter((type) =>
+    profile.visibleOrderTypes.includes(type.type)
+  )
+}
+
+const contextChoices = (
+  choices: MenuChoice[],
+  types: KitchenOrderType[],
+  contextValue: unknown
+) => {
+  const profile = menuContextProfile(contextValue)
+  if (profile.context === 'generic') return choices
+
+  return choices.filter((choice) =>
+    choice.order_type && types.includes(choice.order_type)
+  )
+}
+
 const serviceProfile = (
   data: Record<string, unknown>,
   scope: MenuPayloadScope
@@ -207,8 +232,14 @@ const serviceProfile = (
     scope.fulfilment,
     scope.kitchen_operation_hours
   )
-  const orderTypes = unique(ordering.order_types.map((type) => type.type))
   const context = normalizeMenuRouteContext(scope.menuContext)
+  const orderTypeConfigs = contextOrderTypeConfigs(ordering, context)
+  const orderTypes = unique(orderTypeConfigs.map((type) => type.type))
+  const contextOrdering = {
+    ...ordering,
+    enabled: ordering.enabled && orderTypeConfigs.length > 0,
+    order_types: orderTypeConfigs,
+  }
   const defaultType = defaultOrderType(orderTypes, context)
   const choices = Array.isArray(scope.choices)
     ? scope.choices as MenuChoice[]
@@ -216,13 +247,13 @@ const serviceProfile = (
 
   return {
     context,
-    ordering,
-    orderingEnabled: isMenuOrderingEnabled(ordering),
+    ordering: contextOrdering,
+    orderingEnabled: isMenuOrderingEnabled(contextOrdering),
     orderTypes,
     defaultOrderType: defaultType,
     defaultOrderTypeConfig:
-      ordering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType),
-    choices,
+      contextOrdering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType),
+    choices: contextChoices(choices, orderTypes, context),
   }
 }
 
