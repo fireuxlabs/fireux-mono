@@ -23,6 +23,7 @@
       v-else-if="detailMenu"
       :menu="detailMenu"
       :menu-id="menuId"
+      :menu-context="menuContext"
       :kitchen-slug="kitchenSlug"
     />
 
@@ -36,13 +37,16 @@
 import { computed } from 'vue'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 
 const props = defineProps<{
   menuId: string
+  menuContext?: MenuRouteContext
   kitchenSlug?: string
 }>()
 
 const menuId = computed(() => props.menuId)
+const menuContext = computed(() => props.menuContext)
 const kitchenSlug = computed(() => props.kitchenSlug)
 const {
   pending,
@@ -51,6 +55,7 @@ const {
   document: documentMenu,
   manifest: detailMenu,
 } = useMenu(menuId, {
+  menuContext,
   kitchenSlug,
 })
 const documentKitchenName = computed(() =>

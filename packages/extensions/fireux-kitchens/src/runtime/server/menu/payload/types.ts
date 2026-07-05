@@ -1,4 +1,5 @@
 import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model'
+import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 
 export type MenuPayloadScope = {
@@ -8,6 +9,7 @@ export type MenuPayloadScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   sourceKind?: string
+  menuContext?: MenuRouteContext
   page_style?: Record<string, unknown>
   choices?: unknown[]
   sections?: unknown[]

@@ -14,11 +14,16 @@ import {
   menuOrderBasketActionLabel,
   menuOrderTypeLabel,
 } from '../../../../../../utils/menu-ordering-ui'
+import {
+  menuContextProfile,
+  normalizeMenuRouteContext,
+} from '../../../../../../utils/menu-context'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../../../models/kitchen/order.model'
+import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuManifest } from '../../../../../../models/kitchen/menu/menu-detail.model'
 import type {
   MenuFoodItem,
@@ -62,6 +67,7 @@ export type MenuDetailView = {
 type UseKitchenOrderFunnelOptions = {
   menu: MaybeRefOrGetter<MenuManifest | null>
   menuId: MaybeRefOrGetter<string>
+  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
 type PanelState = 'closed' | 'open'
@@ -70,22 +76,15 @@ const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 const supportedOrderTypes = [
   'dine_in',
+  'take_away',
   'collection',
   'delivery',
   'pre_order',
   'room_service',
 ] as const satisfies readonly KitchenOrderType[]
-const visibleOrderTypes = [
-  'dine_in',
-  'pre_order',
-  'room_service',
-  'collection',
-  'delivery',
-] as const satisfies readonly KitchenOrderType[]
-const takeAwayOrderTypes = ['collection', 'delivery'] as const
 const defaultMenuChoice = (): MenuChoiceOption => ({
-  value: 'dine_in',
-  label: 'Dine in',
+  value: 'menu',
+  label: 'Menu',
 })
 const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
   `order:${type}`
@@ -93,17 +92,10 @@ const orderType = (value: unknown): KitchenOrderType | undefined =>
   supportedOrderTypes.includes(value as KitchenOrderType)
     ? value as KitchenOrderType
     : undefined
-const isTakeAwayChoice = (option: MenuChoiceOption) =>
-  takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
-const isDineInChoice = (option: MenuChoiceOption) =>
-  option.orderType === 'dine_in' || !option.orderType
-const isOrderFunnelChoice = (option: MenuChoiceOption) =>
-  !option.orderType ||
-    visibleOrderTypes.includes(option.orderType as typeof visibleOrderTypes[number])
-const withDineInCampFallback = (options: MenuChoiceOption[]) =>
-  options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
-    ? [defaultMenuChoice(), ...options]
-    : options
+const orderTypeIndex = (
+  visibleOrderTypes: KitchenOrderType[],
+  option: MenuChoiceOption
+) => option.orderType ? visibleOrderTypes.indexOf(option.orderType) : -1
 
 const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
   const type = orderType(choice.order_type)
@@ -127,20 +119,30 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
 
 // Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
 export function useFunnel(options: UseKitchenOrderFunnelOptions) {
+  const behaviour = computed(() => toValue(options.menu)?.behaviour)
+  const menuContext = computed(() =>
+    normalizeMenuRouteContext(toValue(options.menuContext) || behaviour.value?.context)
+  )
+  const contextProfile = computed(() => menuContextProfile(menuContext.value))
+  const visibleOrderTypes = computed(() => contextProfile.value.visibleOrderTypes)
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
     const id = text(toValue(options.menuId))
+    const scope = slug ? `${slug}:${id}` : id
 
-    return slug ? `${slug}:${id}` : id
+    return [scope, menuContext.value].filter(Boolean).join(':')
   })
-  const behaviour = computed(() => toValue(options.menu)?.behaviour)
   const orderTypes = computed<KitchenOrderType[]>(() =>
     Array.isArray(behaviour.value?.orderTypes) ? behaviour.value.orderTypes : []
   )
+  const availableOrderTypes = computed<KitchenOrderType[]>(() =>
+    visibleOrderTypes.value.filter((type) => orderTypes.value.includes(type))
+  )
   const defaultOrderType = computed<KitchenOrderType>(() => {
-    if (orderTypes.value.includes('dine_in')) return 'dine_in'
+    const preferred = contextProfile.value.defaultOrderType
+    if (preferred && orderTypes.value.includes(preferred)) return preferred
 
-    return orderTypes.value[0] || 'dine_in'
+    return availableOrderTypes.value[0] || orderTypes.value[0] || 'dine_in'
   })
   const orderTypeConfigs = computed<MenuOrderTypeConfig[]>(() => {
     const rows = behaviour.value?.ordering?.order_types
@@ -148,15 +150,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     return Array.isArray(rows) ? rows : []
   })
   const canOrder = computed(() =>
-    Boolean(behaviour.value?.orderingEnabled && orderTypes.value.length)
+    Boolean(behaviour.value?.orderingEnabled && availableOrderTypes.value.length)
   )
+  const isVisibleChoice = (option: MenuChoiceOption) =>
+    option.orderType
+      ? availableOrderTypes.value.includes(option.orderType)
+      : menuContext.value === 'generic'
+  const sortChoiceOptions = (options: MenuChoiceOption[]) =>
+    [...options].sort((left, right) =>
+      orderTypeIndex(visibleOrderTypes.value, left) -
+        orderTypeIndex(visibleOrderTypes.value, right)
+    )
   const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
     if (!canOrder.value) return [defaultMenuChoice()]
 
-    const choices = orderTypes.value
-      .filter((type) =>
-        visibleOrderTypes.includes(type as typeof visibleOrderTypes[number])
-      )
+    const choices = availableOrderTypes.value
       .map((type) => {
         const config = orderTypeConfigs.value.find((row) => row.type === type)
 
@@ -177,21 +185,25 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
           .filter((choice): choice is MenuChoiceOption => Boolean(choice))
       : []
 
-    return choices.length > 1 && choices.some((choice) => !choice.to)
-      ? choices
+    const visibleChoices = sortChoiceOptions(choices.filter(isVisibleChoice))
+
+    return visibleChoices.length > 1 && visibleChoices.some((choice) => !choice.to)
+      ? visibleChoices
       : []
   })
   const choiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = withDineInCampFallback((menuChoiceOptions.value.length
+    const choices = sortChoiceOptions((menuChoiceOptions.value.length
       ? menuChoiceOptions.value
-      : generatedChoiceOptions.value).filter(isOrderFunnelChoice))
+      : generatedChoiceOptions.value).filter(isVisibleChoice))
 
     return choices.length ? choices : [defaultMenuChoice()]
   })
   const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    const local = choiceOptions.value.filter((option) => !option.to)
-    const generated = withDineInCampFallback(
-      generatedChoiceOptions.value.filter(isOrderFunnelChoice)
+    const local = sortChoiceOptions(
+      choiceOptions.value.filter((option) => !option.to && isVisibleChoice(option))
+    )
+    const generated = sortChoiceOptions(
+      generatedChoiceOptions.value.filter(isVisibleChoice)
     )
 
     return local.length ? local : generated.length ? generated : [defaultMenuChoice()]
@@ -199,9 +211,15 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const choiceValues = computed<MenuChoiceValue[]>(() =>
     localChoiceOptions.value.map((option) => option.value)
   )
-  const preferredChoice = computed<MenuChoiceValue>(() =>
-    choiceValues.value[0] || defaultMenuChoice().value
-  )
+  const preferredChoice = computed<MenuChoiceValue>(() => {
+    const preferred = contextProfile.value.defaultOrderType
+      ? localChoiceOptions.value.find((option) =>
+          option.orderType === contextProfile.value.defaultOrderType
+        )
+      : undefined
+
+    return preferred?.value || choiceValues.value[0] || defaultMenuChoice().value
+  })
   const { selected: selectedChoice } = useStoredChoice<MenuChoiceValue>({
     key: computed(() => `fireux:menu:${menuStorageScope.value}:choice`),
     choices: choiceValues,

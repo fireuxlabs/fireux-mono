@@ -39,6 +39,7 @@ import {
 
 const orderTypes = new Set<KitchenOrderType>([
   'dine_in',
+  'take_away',
   'collection',
   'delivery',
   'pre_order',

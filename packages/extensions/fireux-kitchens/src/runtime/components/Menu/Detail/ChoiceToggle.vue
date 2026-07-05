@@ -133,18 +133,8 @@ type CampOption = {
 }
 
 const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
-const takeAwayOrderTypes = ['collection', 'delivery'] as const
-const dineInOrderTypeOrder = new Map(
-  dineInOrderTypes.map((type, index) => [type, index])
-)
-const takeAwayOrderTypeOrder = new Map(
-  takeAwayOrderTypes.map((type, index) => [type, index])
-)
+const takeAwayOrderTypes = ['take_away', 'collection', 'delivery'] as const
 const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
-const dineInOrderIndex = (option: MenuChoiceOption) =>
-  dineInOrderTypeOrder.get(option.orderType as typeof dineInOrderTypes[number]) ?? 99
-const takeAwayOrderIndex = (option: MenuChoiceOption) =>
-  takeAwayOrderTypeOrder.get(option.orderType as typeof takeAwayOrderTypes[number]) ?? 99
 const isTakeAwayOption = (option: MenuChoiceOption) =>
   takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInOption = (option: MenuChoiceOption) =>
@@ -152,14 +142,10 @@ const isDineInOption = (option: MenuChoiceOption) =>
     dineInOrderTypes.includes(option.orderType as typeof dineInOrderTypes[number])
 
 const dineInOptions = computed(() =>
-  props.options.filter(isDineInOption).sort((left, right) =>
-    dineInOrderIndex(left) - dineInOrderIndex(right)
-  )
+  props.options.filter(isDineInOption)
 )
 const takeAwayOptions = computed(() =>
-  props.options.filter(isTakeAwayOption).sort((left, right) =>
-    takeAwayOrderIndex(left) - takeAwayOrderIndex(right)
-  )
+  props.options.filter(isTakeAwayOption)
 )
 const currentOption = computed(() =>
   props.options.find((option) => option.value === props.modelValue)
@@ -252,7 +238,7 @@ const methodRadioName = computed(() =>
 
 function methodOptionLabel(option: MenuChoiceOption) {
   if (activeCamp.value === 'dine_in' && option.orderType === 'dine_in') {
-    return 'Now'
+    return 'Eat in'
   }
 
   return option.label

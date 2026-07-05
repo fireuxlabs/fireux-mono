@@ -12,6 +12,10 @@ import type {
 import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
+  menuContextProfile,
+  normalizeMenuRouteContext,
+} from '../../../utils/menu-context.ts'
+import {
   compactMenuFile,
   hasMenuFile,
   menuFileKind,
@@ -177,8 +181,19 @@ const menuSections = (sections: unknown[]): MenuManifestSection[] =>
     }
   })
 
-const defaultOrderType = (types: KitchenOrderType[]) =>
-  types.includes('dine_in') ? 'dine_in' : types[0] || 'dine_in'
+const defaultOrderType = (
+  types: KitchenOrderType[],
+  contextValue: unknown
+) => {
+  const profile = menuContextProfile(contextValue)
+  const preferred = profile.defaultOrderType
+
+  if (preferred && types.includes(preferred)) return preferred
+
+  return profile.visibleOrderTypes.find((type) => types.includes(type)) ||
+    types[0] ||
+    'dine_in'
+}
 
 const serviceProfile = (
   data: Record<string, unknown>,
@@ -190,12 +205,14 @@ const serviceProfile = (
     scope.kitchen_operation_hours
   )
   const orderTypes = unique(ordering.order_types.map((type) => type.type))
-  const defaultType = defaultOrderType(orderTypes)
+  const context = normalizeMenuRouteContext(scope.menuContext)
+  const defaultType = defaultOrderType(orderTypes, context)
   const choices = Array.isArray(scope.choices)
     ? scope.choices as MenuChoice[]
     : []
 
   return {
+    context,
     ordering,
     orderingEnabled: isMenuOrderingEnabled(ordering),
     orderTypes,

@@ -40,6 +40,7 @@ export type KitchenOrderItem = {
 
 export type KitchenOrderType =
   | 'dine_in'
+  | 'take_away'
   | 'collection'
   | 'delivery'
   | 'pre_order'

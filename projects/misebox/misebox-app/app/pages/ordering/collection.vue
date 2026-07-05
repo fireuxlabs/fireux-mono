@@ -18,8 +18,8 @@
           Collection ordering
         </h1>
         <p class="text-muted">
-          Customer chooses items, acknowledges allergies, agrees a pickup
-          rendezvous, then pays once the kitchen timing is clear.
+          Customer orders before arriving, acknowledges allergies, agrees a
+          pickup rendezvous, then pays once the kitchen timing is clear.
         </p>
       </section>
 
@@ -49,6 +49,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Collection Ordering · Misebox',
   description:
-    'Misebox collection ordering for takeaway pickup, kitchen timing, customer pickup slots, and online payment.',
+    'Misebox collection ordering for remote pickup, kitchen timing, customer pickup slots, and online payment.',
 })
 </script>

@@ -22,6 +22,10 @@ import { menuSourcePayloadFromApi } from '../../menu/source/payload.ts'
 import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'
 import { readKitchenMenuChoices } from '../../menu/manifest/choices.ts'
 import {
+  normalizeMenuRouteContext,
+  parseMenuRouteTarget,
+} from '../../../utils/menu-context.ts'
+import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
   menuKitchenOperationHours,
@@ -39,7 +43,11 @@ const currentAppId = () => {
   return text(fireux.id)
 }
 
-async function readKitchenMenu(menuId: string, kitchenSlug: string) {
+async function readKitchenMenu(
+  menuId: string,
+  kitchenSlug: string,
+  menuContext: ReturnType<typeof normalizeMenuRouteContext>
+) {
   const db = getRuntimeFirestore()
   const kitchen = await readMenuKitchenBySlug(kitchenSlug)
 
@@ -108,6 +116,7 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
     kitchenAppId,
     kitchenMenuId: menuId,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
+    menuContext,
     page_style: resolveMenuPageStyle(
       { source: 'tenant-owner-api', style: ownerPageStyle },
       { source: 'app-kitchen', style: identity.page_style }
@@ -121,7 +130,10 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
   })
 }
 
-async function readRootMenuDetail(menuId: string) {
+async function readRootMenuDetail(
+  menuId: string,
+  menuContext: ReturnType<typeof normalizeMenuRouteContext>
+) {
   const db = getRuntimeFirestore()
   const snap = await db.collection(MenuStorage.rootCollection).doc(menuId).get()
 
@@ -169,6 +181,7 @@ async function readRootMenuDetail(menuId: string) {
   return buildMenuPayload(menuId, data, {
     ...kitchenScope,
     sourceMenu,
+    menuContext,
     page_style: resolveMenuPageStyle(
       { source: 'tenant-owner-api', style: ownerPageStyle },
       { source: 'app-kitchen', style: kitchenScope.page_style }
@@ -186,8 +199,14 @@ export default defineEventHandler(async (event) => {
     methods: ['GET'],
   })
 
-  const menuId = text(getRouterParam(event, 'menuId'))
-  const kitchenSlug = text(getQuery(event).kitchenSlug)
+  const target = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
+  const query = getQuery(event)
+  const menuId = target.menuId
+  const kitchenSlug = text(query.kitchenSlug)
+  const menuContext = Object.hasOwn(query, 'context')
+    ? normalizeMenuRouteContext(query.context)
+    : target.context
+
   if (!menuId) {
     throw createError({
       statusCode: 400,
@@ -196,8 +215,8 @@ export default defineEventHandler(async (event) => {
   }
 
   if (kitchenSlug) {
-    return readKitchenMenu(menuId, kitchenSlug)
+    return readKitchenMenu(menuId, kitchenSlug, menuContext)
   }
 
-  return readRootMenuDetail(menuId)
+  return readRootMenuDetail(menuId, menuContext)
 })

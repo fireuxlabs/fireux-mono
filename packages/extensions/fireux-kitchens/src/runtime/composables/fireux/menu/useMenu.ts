@@ -5,11 +5,14 @@ import type {
   MenuDocumentPayload,
   MenuManifest,
 } from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import { normalizeMenuRouteContext } from '../../../utils/menu-context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
 
 type UseMenuOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
 }
 
 export function useMenu(
@@ -20,14 +23,24 @@ export function useMenu(
   const kitchenSlug = computed(() =>
     String(toValue(options.kitchenSlug) || '').trim()
   )
+  const menuContext = computed(() =>
+    normalizeMenuRouteContext(toValue(options.menuContext))
+  )
   const key = computed(
-    () => `menu-${kitchenSlug.value || 'root'}-${id.value || 'none'}`
+    () =>
+      [
+        'menu',
+        kitchenSlug.value || 'root',
+        id.value || 'none',
+        menuContext.value,
+      ].join('-')
   )
   const endpoint = computed(() => {
     if (!id.value) return ''
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}${qs ? `?${qs}` : ''}`
@@ -54,6 +67,7 @@ export function useMenu(
   return {
     id,
     kitchenSlug,
+    menuContext,
     menu: state.data,
     renderKind,
     document,

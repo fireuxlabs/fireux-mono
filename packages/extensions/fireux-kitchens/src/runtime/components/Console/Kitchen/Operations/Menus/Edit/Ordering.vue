@@ -125,6 +125,11 @@ const orderTypeGroups: OrderTypeGroup[] = [
     description: 'Take-away systems where food leaves the normal table-service flow.',
     options: [
       {
+        type: 'take_away',
+        label: 'Take away',
+        description: 'Guests order in venue, wait in a queue, then collect a tray or bag.',
+      },
+      {
         type: 'collection',
         label: 'Collection',
         description: 'Guests collect from the kitchen.',
