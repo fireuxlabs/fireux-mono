@@ -134,10 +134,6 @@ onBeforeUnmount(() => {
   overscroll-behavior: contain;
 }
 
-.menu-reveal__panel :deep(.public-menu) {
-  min-height: 100svh;
-}
-
 .menu-reveal__panel :deep(.menu-page) {
   min-height: 100svh;
 }

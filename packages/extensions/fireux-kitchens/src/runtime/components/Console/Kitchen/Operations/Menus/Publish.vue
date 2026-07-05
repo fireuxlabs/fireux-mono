@@ -64,10 +64,10 @@ const title = computed(() => {
 })
 const description = computed(() => {
   if (!isPublished.value) {
-    return 'Publishing makes this menu public.'
+    return 'Publishing makes this menu visible.'
   }
 
-  return 'The public menu is live.'
+  return 'The menu is live.'
 })
 
 async function publishOrRepublish() {

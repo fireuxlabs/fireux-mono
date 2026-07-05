@@ -11,7 +11,7 @@ import {
 const text = (value: unknown) => String(value ?? '').trim()
 const origin = (value: unknown) => text(value).replace(/\/+$/, '')
 
-function appPublicOrigin(appData: Record<string, unknown>) {
+function ownerAppOrigin(appData: Record<string, unknown>) {
   const socialLinks = readRecord(appData.social_links)
 
   return origin(readRecordString(socialLinks, 'website')) ||
@@ -30,17 +30,17 @@ export function menuOwnerAppView(options: {
     return {}
   }
 
-  const publicOrigin = appPublicOrigin(options.ownerAppData)
+  const appOrigin = ownerAppOrigin(options.ownerAppData)
   const path = kitchenMenuPath({
     mode: kitchenMenuRouteMode(options.ownerAppKitchenCount),
     kitchenSlug: options.kitchenSlug,
     menuId: options.menuId,
   })
 
-  if (!publicOrigin || !path) return {}
+  if (!appOrigin || !path) return {}
 
   return {
-    apiTo: new URL(`/api/menus/${encodeURIComponent(options.menuId)}`, publicOrigin).toString(),
+    apiTo: new URL(`/api/menus/${encodeURIComponent(options.menuId)}`, appOrigin).toString(),
   }
 }
 

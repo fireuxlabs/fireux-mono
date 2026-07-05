@@ -8,9 +8,9 @@ export const metaContent = defineFireuxMeta({
   },
   copy: {
     big_personality: 'La Tap Berne',
-    headline: 'Bar, food, and public menu in Bern.',
+    headline: 'Bar, food, and menu in Bern.',
     positioning_html:
-      'La Tap Berne is a Misebox tenant app for public venue and menu surfaces.',
+      'La Tap Berne is a Misebox tenant app for venue and menu surfaces.',
     promise_html:
       'Show the menu clearly and keep venue data connected to the Misebox ecosystem.',
     console_bridge_html:
@@ -18,6 +18,6 @@ export const metaContent = defineFireuxMeta({
   },
   seo: {
     title: 'La Tap Berne',
-    description: 'Public menu and venue page for La Tap Berne.',
+    description: 'Menu and venue page for La Tap Berne.',
   },
 })

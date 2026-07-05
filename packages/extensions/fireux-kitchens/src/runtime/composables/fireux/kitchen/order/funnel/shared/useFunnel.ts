@@ -26,7 +26,7 @@ import type {
 } from '../../../../../../models/kitchen/menu/menu-food.model'
 import type {
   MenuOrderTypeConfig,
-  MenuPublicChoice,
+  MenuChoice,
   MenuView,
 } from '../../../../../../models/kitchen/menu/menu.model'
 import type {
@@ -79,7 +79,7 @@ const supportedOrderTypes = [
   'room_service',
 ] as const satisfies readonly KitchenOrderType[]
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
-const publicFunnelOrderTypes = takeAwayOrderTypes
+const orderFunnelOrderTypes = takeAwayOrderTypes
 const browseChoice = (): MenuChoiceOption => ({
   value: 'browse',
   label: 'Browse',
@@ -98,15 +98,15 @@ const isTakeAwayChoice = (option: MenuChoiceOption) =>
     takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInChoice = (option: MenuChoiceOption) =>
   option.view === 'browse' || option.orderType === 'dine_in'
-const isPublicFunnelChoice = (option: MenuChoiceOption) =>
+const isOrderFunnelChoice = (option: MenuChoiceOption) =>
   option.view !== 'order' ||
-    publicFunnelOrderTypes.includes(option.orderType as typeof publicFunnelOrderTypes[number])
+    orderFunnelOrderTypes.includes(option.orderType as typeof orderFunnelOrderTypes[number])
 const withDineInCampFallback = (options: MenuChoiceOption[]) =>
   options.some(isTakeAwayChoice) && !options.some(isDineInChoice)
     ? [...options, browseChoice()]
     : options
 
-const publicChoiceOption = (choice: MenuPublicChoice): MenuChoiceOption | null => {
+const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
   const type = orderType(choice.order_type)
 
   if (
@@ -193,10 +193,10 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
     return choices.length ? choices : [browseChoice()]
   })
-  const publicChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = Array.isArray(behaviour.value?.publicChoices)
-      ? behaviour.value.publicChoices
-          .map(publicChoiceOption)
+  const menuChoiceOptions = computed<MenuChoiceOption[]>(() => {
+    const choices = Array.isArray(behaviour.value?.choices)
+      ? behaviour.value.choices
+          .map(menuChoiceOption)
           .filter((choice): choice is MenuChoiceOption => Boolean(choice))
       : []
 
@@ -205,16 +205,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       : []
   })
   const choiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = withDineInCampFallback((publicChoiceOptions.value.length
-      ? publicChoiceOptions.value
-      : generatedChoiceOptions.value).filter(isPublicFunnelChoice))
+    const choices = withDineInCampFallback((menuChoiceOptions.value.length
+      ? menuChoiceOptions.value
+      : generatedChoiceOptions.value).filter(isOrderFunnelChoice))
 
     return choices.length ? choices : [browseChoice()]
   })
   const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
     const local = choiceOptions.value.filter((option) => !option.to)
     const generated = withDineInCampFallback(
-      generatedChoiceOptions.value.filter(isPublicFunnelChoice)
+      generatedChoiceOptions.value.filter(isOrderFunnelChoice)
     )
 
     return local.length ? local : generated.length ? generated : [browseChoice()]

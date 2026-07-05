@@ -92,7 +92,7 @@ export default defineEventHandler((event) => {
         orderTypes: ['pre_order'],
         defaultOrderType: 'pre_order',
         defaultOrderTypeConfig: ordering.order_types[0],
-        publicChoices: [],
+        choices: [],
       },
       presentation: {
         kitchenName: 'La Tapberne',

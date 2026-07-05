@@ -12,20 +12,20 @@
       <template #header>
         <div>
           <h2 class="text-base font-semibold text-highlighted">Menu QR</h2>
-          <p class="text-sm text-dimmed">QR codes point to the public menu picker.</p>
+          <p class="text-sm text-dimmed">QR codes point to the menu picker.</p>
         </div>
       </template>
 
       <div class="grid gap-6 md:grid-cols-[1fr_320px]">
         <div class="space-y-4">
-          <UFormField label="Public URL">
-            <UInput :model-value="publicMenuUrl" readonly />
+          <UFormField label="URL">
+            <UInput :model-value="menuUrl" readonly />
           </UFormField>
 
           <div class="flex flex-wrap gap-2">
             <UButton
               icon="i-lucide-external-link"
-              :to="publicMenuUrl"
+              :to="menuUrl"
               target="_blank"
             >
               Open menus
@@ -61,7 +61,7 @@
           <div v-else class="grid h-48 w-48 place-items-center rounded-2xl bg-elevated text-sm text-dimmed">
             Creating QR...
           </div>
-          <p class="break-all text-xs text-dimmed">{{ publicMenuUrl }}</p>
+          <p class="break-all text-xs text-dimmed">{{ menuUrl }}</p>
         </div>
       </div>
     </UCard>
@@ -95,15 +95,15 @@ const menuUrlResolver = useKitchenMenuUrl({
 const publishedMenus = computed(() =>
   menus.value.filter((menu) => menu.status === 'published' && clean(menu.id))
 )
-const publicMenuPath = computed(() =>
+const menuPath = computed(() =>
   publishedMenus.value.length ? menuUrlResolver.menuIndexPath.value : ''
 )
-const publicMenuUrl = computed(() =>
+const menuUrl = computed(() =>
   publishedMenus.value.length ? menuUrlResolver.menuIndexUrl.value : ''
 )
 
 watch(
-  publicMenuUrl,
+  menuUrl,
   async (url: string) => {
     if (!import.meta.client || !url) {
       qrDataUrl.value = ''
@@ -129,7 +129,7 @@ watch(
 )
 
 function downloadQr() {
-  if (!import.meta.client || !qrArtworkDataUrl.value || !publicMenuPath.value) return
+  if (!import.meta.client || !qrArtworkDataUrl.value || !menuPath.value) return
   const link = document.createElement('a')
   link.href = qrArtworkDataUrl.value
   link.download = `${kitchenSlug.value}-menus-qr.svg`

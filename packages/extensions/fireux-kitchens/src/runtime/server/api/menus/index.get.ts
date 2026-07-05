@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { menuSourceFromData } from '../../utils/menu/public/source.ts'
+import { menuSourceFromData } from '../../utils/menu/detail/source.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

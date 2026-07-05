@@ -1,4 +1,5 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import type { KitchenOrderType } from '../../../../models/kitchen/order.model'
 import type {
   MenuDetailPayload,
@@ -8,7 +9,7 @@ import type {
   MenuManifestPriceOption,
   MenuManifestSection,
 } from '../../../../models/kitchen/menu/menu-detail.model'
-import type { MenuOrderTypeConfig, MenuPublicChoice } from '../../../../models/kitchen/menu/menu.model'
+import type { MenuChoice, MenuOrderTypeConfig } from '../../../../models/kitchen/menu/menu.model'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   compactMenuFile,
@@ -21,6 +22,7 @@ import { readMenuPageStyle } from './page-style.ts'
 import { menuSourceFromData } from './source.ts'
 import {
   type MenuDetailScope,
+  type MenuDetailSource,
   type MenuDetailSourceKind,
 } from './types.ts'
 
@@ -38,6 +40,42 @@ const readMenuSourceKind = (data: Record<string, unknown>): MenuDetailSourceKind
   readRecordString(data, 'kind') === 'menu'
     ? 'menu'
     : 'doc'
+
+const sourceMenuData = (scope: MenuDetailScope) => record(scope.sourceMenu)
+
+const menuDataForManifest = (
+  rootMenuData: Record<string, unknown>,
+  scope: MenuDetailScope
+) => {
+  const sourceMenu = sourceMenuData(scope)
+  if (!Object.keys(sourceMenu).length) return rootMenuData
+
+  const name = sourceMenu.name ?? rootMenuData.name
+  const description = sourceMenu.description ?? rootMenuData.description
+  const status = sourceMenu.status ?? rootMenuData.status
+  const ordering = sourceMenu.ordering ?? rootMenuData.ordering
+
+  return {
+    ...rootMenuData,
+    ...(name ? { name } : {}),
+    ...(description ? { description } : {}),
+    ...(status ? { status } : {}),
+    ...(ordering ? { ordering } : {}),
+  }
+}
+
+export async function readMenuSourceMenu(source: MenuDetailSource) {
+  if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
+
+  const snap = await getRuntimeFirestore()
+    .collection(`apps/${source.app_id}/kitchens/${source.kitchen_id}/menus`)
+    .doc(source.menu_id)
+    .get()
+  if (!snap.exists) return {}
+
+  const data = snap.data() || {}
+  return readRecordString(data, 'status') === 'published' ? data : {}
+}
 
 const itemName = (item: Record<string, unknown>) =>
   text(item.name) || text(record(item.item).name)
@@ -153,8 +191,8 @@ const serviceProfile = (
   )
   const orderTypes = unique(ordering.order_types.map((type) => type.type))
   const defaultType = defaultOrderType(orderTypes)
-  const publicChoices = Array.isArray(scope.public_choices)
-    ? scope.public_choices as MenuPublicChoice[]
+  const choices = Array.isArray(scope.choices)
+    ? scope.choices as MenuChoice[]
     : []
 
   return {
@@ -166,7 +204,7 @@ const serviceProfile = (
     defaultOrderTypeConfig:
       ordering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType) ||
       ordering.order_types[0],
-    publicChoices,
+    choices,
   }
 }
 
@@ -175,15 +213,16 @@ export function buildMenuManifestPayload(
   data: Record<string, unknown>,
   scope: MenuDetailScope = {}
 ): MenuDetailPayload {
+  const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
   const manifest: MenuManifest = {
     content: {
       id: menuId,
-      name: readRecordString(data, 'name') || menuId,
-      description: readRecordString(data, 'description'),
+      name: readRecordString(menuData, 'name') || menuId,
+      description: readRecordString(menuData, 'description'),
       sections: menuSections(scope.sections ?? []),
     },
-    behaviour: serviceProfile(data, scope),
+    behaviour: serviceProfile(menuData, scope),
     presentation: {
       kitchenName: source.kitchen_name || '',
       pageStyle: readMenuPageStyle(scope.page_style),

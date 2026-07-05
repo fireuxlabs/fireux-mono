@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <!-- Index map: docs/concepts/family-public-index.md · family: Menu public index -->
+    <!-- Index map: docs/concepts/family-public-index.md · family: Menu index -->
     <UPageHeader
       :title="pageTitle"
       description="Browse live Misebox kitchen menus and order where online ordering is available."

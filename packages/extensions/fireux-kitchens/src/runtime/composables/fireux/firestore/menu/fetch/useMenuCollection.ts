@@ -16,7 +16,7 @@ const sortMenus = (menus: MenuCollectionRow[]) =>
  * Public root Menu collection.
  *
  * Reads `menus/{menuId}` only. Kitchen/menu/source hydration belongs to the
- * menu detail manifest, not the public index list.
+ * menu detail manifest, not the index list.
  */
 export function useMenuCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()

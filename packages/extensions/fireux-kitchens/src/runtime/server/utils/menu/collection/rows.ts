@@ -18,7 +18,7 @@ const active = (data: Record<string, unknown>) =>
 const sortOrder = (data: Record<string, unknown>) =>
   numberValue(data.sort_order)
 
-export async function readKitchenMenuPublicRows(
+export async function readKitchenMenuRows(
   db: Firestore,
   input: {
     appId: string

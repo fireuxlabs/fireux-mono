@@ -1,7 +1,7 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type {
-  MenuPublicChoice,
+  MenuChoice,
 } from '../../../../models/kitchen/menu/menu.model.ts'
 import { menuOrderTypeLabel } from '../../../../utils/menu-ordering-ui.ts'
 import {
@@ -9,7 +9,7 @@ import {
   readMenuOrderingConfig,
 } from '../ordering/config.ts'
 
-type PublicChoiceInput = {
+type MenuChoiceInput = {
   appId: string
   kitchenId: string
   kitchenSlug: string
@@ -28,25 +28,26 @@ function menuChoices(input: {
   menuId: string
   kitchenSlug: string
   currentMenuId: string
-}): MenuPublicChoice[] {
+}): MenuChoice[] {
   const ordering = readMenuOrderingConfig(input.data)
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const isCurrent = input.menuId === input.currentMenuId
   const to = isCurrent ? '' : menuPath(input.kitchenSlug, input.menuId)
   const name = readRecordString(input.data, 'name') || input.menuId
-  const publicChoiceLabel =
-    readRecordString(input.data, 'public_choice_label') ||
+  const choiceLabel =
+    readRecordString(input.data, 'choice_label') ||
     (orderingEnabled ? 'Browse' : name)
-  const publicMessage = readRecordString(input.data, 'public_message')
-  const choices: MenuPublicChoice[] = []
+  const message =
+    readRecordString(input.data, 'choice_message')
+  const choices: MenuChoice[] = []
 
   choices.push({
     value: `browse:${input.menuId}`,
-    label: publicChoiceLabel,
+    label: choiceLabel,
     view: 'browse',
     menu_id: input.menuId,
     ...(to ? { to } : {}),
-    ...(publicMessage ? { message: publicMessage } : {}),
+    ...(message ? { message } : {}),
   })
 
   if (orderingEnabled) {
@@ -66,10 +67,10 @@ function menuChoices(input: {
   return choices
 }
 
-export async function readKitchenMenuPublicChoices(
+export async function readKitchenMenuChoices(
   db: Firestore,
-  input: PublicChoiceInput
-): Promise<MenuPublicChoice[]> {
+  input: MenuChoiceInput
+): Promise<MenuChoice[]> {
   if (!input.appId || !input.kitchenId || !input.kitchenSlug || !input.currentMenuId) {
     return []
   }

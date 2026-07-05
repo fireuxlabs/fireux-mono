@@ -44,7 +44,7 @@
           :menu="previewMenu"
           :sections="previewSections"
           :page-style="draftPageStyle"
-          :public-menu-url="publicMenuUrl"
+          :menu-url="menuUrl"
         />
       </div>
     </div>
@@ -135,7 +135,7 @@ const previewMenu = computed(() =>
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
 const previewMenuDetail = useMenu(previewMenuId, { kitchenSlug })
 const previewSections = computed(() => {
-  // Console preview dogfoods the public menu manifest, then crops to the first useful section/item.
+  // Console preview dogfoods the menu manifest, then crops to the first useful section/item.
   const sections = previewMenuDetail.manifest.value?.content.sections ?? []
   const firstSection =
     sections.find((section) => section.items.length > 0) ??
@@ -150,7 +150,7 @@ const previewSections = computed(() => {
     },
   ]
 })
-const publicMenuUrl = computed(() => {
+const menuUrl = computed(() => {
   if (!kitchenSlug.value) return ''
 
   const menuId = previewMenuId.value

@@ -16,7 +16,7 @@
 
       <AppToolFoldaway
         title="Option 1: Upload a menu file"
-        description="No kitchen needed. Add a photo, PDF, or document and get a public menu link."
+        description="No kitchen needed. Add a photo, PDF, or document and get a menu link."
         provider="Go QR"
         open
       >
@@ -34,7 +34,7 @@
       >
         <div class="space-y-3">
           <p class="text-sm text-muted">
-            Input: public menu URL. Output: printable QR code for that URL.
+            Input: menu URL. Output: printable QR code for that URL.
           </p>
           <UButton
             to="/solutions/qr-menu-url"

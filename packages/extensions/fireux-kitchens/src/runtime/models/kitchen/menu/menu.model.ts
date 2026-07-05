@@ -13,7 +13,7 @@ import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
  *
  * Menu is managed under the app-scoped Kitchen record. A Kitchen can start in
  * the Misebox app and later move into its own app, but Menu storage remains
- * app-scoped either way. Public menu routes render published Kitchen Menu
+ * app-scoped either way. Menu routes render published Kitchen Menu
  * records; they do not create root Menu truth.
  *
  * Dish describes food. Menu presents selected dishes. MenuSection and MenuItem
@@ -50,8 +50,8 @@ export const MenuEntity = defineFireuxEntity({
   scoped: MenuStorage.path,
   notes: [
     'Kitchen Menu is scoped to a Kitchen.',
-    'Root /menus records currently act as public doorway/upload records.',
-    'Confirm whether Menu becomes both, or whether public doorway remains a separate record shape.',
+    'Root /menus records currently act as doorway/upload records.',
+    'Confirm whether Menu becomes both, or whether doorway remains a separate record shape.',
   ],
 })
 
@@ -92,7 +92,7 @@ export type MenuOrderingConfig = {
   service_hours?: MenuServiceHoursConfig
 }
 
-export type MenuPublicChoice = {
+export type MenuChoice = {
   value: string
   label: string
   view: MenuView
@@ -109,7 +109,7 @@ export type MenuServiceProfile = {
   orderTypes: KitchenOrderType[]
   defaultOrderType: KitchenOrderType
   defaultOrderTypeConfig?: MenuOrderTypeConfig
-  publicChoices: MenuPublicChoice[]
+  choices: MenuChoice[]
 }
 
 export type MenuDocument = {
@@ -142,7 +142,7 @@ export const MenuModel = {
       inherit_kitchen_operation_hours: true,
     },
   } as MenuOrderingConfig,
-  public_choices: [] as MenuPublicChoice[],
+  choices: [] as MenuChoice[],
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],

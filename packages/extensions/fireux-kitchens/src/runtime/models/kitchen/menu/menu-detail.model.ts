@@ -1,5 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { MenuOrderingConfig, MenuPublicChoice, MenuServiceProfile } from './menu.model'
+import type { MenuChoice, MenuOrderingConfig, MenuServiceProfile } from './menu.model'
 
 export type MenuManifestPriceOption = {
   id: string
@@ -82,5 +82,5 @@ export type MenuDetailPayload =
 
 export type MenuDetailOrderingSource = {
   ordering?: MenuOrderingConfig
-  public_choices?: MenuPublicChoice[]
+  choices?: MenuChoice[]
 }

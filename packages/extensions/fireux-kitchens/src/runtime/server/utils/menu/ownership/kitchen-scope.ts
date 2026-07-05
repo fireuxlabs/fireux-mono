@@ -9,8 +9,8 @@ import {
 } from '../../../../utils/kitchen-spine'
 import type { MenuOrderFulfilmentPolicy } from '../../../../models/kitchen/menu/menu.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
-import { menuSourceFromData } from '../public/source.ts'
-import { resolveMenuPageStyle } from '../public/page-style.ts'
+import { menuSourceFromData } from '../detail/source.ts'
+import { resolveMenuPageStyle } from '../detail/page-style.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -18,7 +18,6 @@ export type MenuKitchenScope = {
   kitchenName?: string
   kitchenAppId?: string
   kitchenMenuId?: string
-  createdByLabel?: string
   page_style?: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
@@ -149,7 +148,6 @@ export async function readRootMenuKitchenScope(
     kitchenName: identity.name,
     kitchenAppId,
     kitchenMenuId: source.menu_id || '',
-    createdByLabel: '',
     page_style: identity.page_style,
     fulfilment: menuKitchenFulfilment(kitchenData, appKitchenData),
     kitchen_operation_hours: menuKitchenOperationHours(kitchenData, appKitchenData),

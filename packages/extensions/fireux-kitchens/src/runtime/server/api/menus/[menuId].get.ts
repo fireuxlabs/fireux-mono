@@ -8,23 +8,18 @@ import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { buildMenuDetailPayload } from '../../utils/menu/public/detail.ts'
-import { menuSourceFromData } from '../../utils/menu/public/source.ts'
 import {
-  menuCreatorLabel,
-  readMenuCreatorLabels,
-} from '../../utils/menu/ownership/creators.ts'
+  buildMenuDetailPayload,
+  readMenuSourceMenu,
+} from '../../utils/menu/detail/payload.ts'
+import { menuSourceFromData } from '../../utils/menu/detail/source.ts'
 import {
   menuOwnerAppApiTo,
   readMenuOwnerAppView,
 } from '../../utils/menu/ownership/owner-app.ts'
 import { menuSourcePayloadFromApi } from '../../utils/menu/source/payload.ts'
-import {
-  menuDataWithSourceMenu,
-  readMenuSourceData,
-} from '../../utils/menu/source/behaviour.ts'
-import { readKitchenMenuPublicRows } from '../../utils/menu/public/rows.ts'
-import { readKitchenMenuPublicChoices } from '../../utils/menu/public/choices.ts'
+import { readKitchenMenuRows } from '../../utils/menu/collection/rows.ts'
+import { readKitchenMenuChoices } from '../../utils/menu/collection/choices.ts'
 import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
@@ -34,7 +29,7 @@ import {
   readRootMenuKitchenScope,
   resolveSourceAppId,
 } from '../../utils/menu/ownership/kitchen-scope.ts'
-import { resolveMenuPageStyle } from '../../utils/menu/public/page-style.ts'
+import { resolveMenuPageStyle } from '../../utils/menu/detail/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -91,13 +86,13 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
       statusMessage: 'Menu not found.',
     })
   }
-  const [sections, publicChoices] = await Promise.all([
-    readKitchenMenuPublicRows(db, {
+  const [sections, choices] = await Promise.all([
+    readKitchenMenuRows(db, {
       appId: kitchenAppId,
       kitchenId: kitchen.id,
       menuId,
     }),
-    readKitchenMenuPublicChoices(db, {
+    readKitchenMenuChoices(db, {
       appId: kitchenAppId,
       kitchenId: kitchen.id,
       kitchenSlug,
@@ -116,9 +111,8 @@ async function readKitchenMenu(menuId: string, kitchenSlug: string) {
       { source: 'tenant-owner-api', style: ownerPageStyle },
       { source: 'app-kitchen', style: identity.page_style }
     ),
-    path: `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`,
     sections,
-    public_choices: publicChoices,
+    choices,
     fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
     kitchen_operation_hours: menuKitchenOperationHours(kitchen.data, appKitchenData),
     ...ownerAppView,
@@ -138,8 +132,6 @@ async function readRootMenuDetail(menuId: string) {
   }
 
   const data = snap.data() || {}
-  const createdBy = readRecordString(data, 'created_by')
-  const creatorLabels = await readMenuCreatorLabels([createdBy])
   const kitchenScope = await readRootMenuKitchenScope(data, currentAppId())
   const source = menuSourceFromData(data, kitchenScope)
   const ownerAppView = await readMenuOwnerAppView({
@@ -155,16 +147,16 @@ async function readRootMenuDetail(menuId: string) {
     page_style: ownerPageStyle,
     ...ownerMenuPayload
   } = ownerPayload as Record<string, unknown>
-  const sourceData = await readMenuSourceData(source)
-  const [sourceSections, publicChoices] =
+  const sourceMenu = await readMenuSourceMenu(source)
+  const [sourceSections, choices] =
     source.app_id && source.kitchen_id && source.menu_id && source.kitchen_slug
       ? await Promise.all([
-          readKitchenMenuPublicRows(db, {
+          readKitchenMenuRows(db, {
             appId: source.app_id,
             kitchenId: source.kitchen_id,
             menuId: source.menu_id,
           }),
-          readKitchenMenuPublicChoices(db, {
+          readKitchenMenuChoices(db, {
             appId: source.app_id,
             kitchenId: source.kitchen_id,
             kitchenSlug: source.kitchen_slug,
@@ -173,20 +165,18 @@ async function readRootMenuDetail(menuId: string) {
         ])
       : [[], []]
 
-  return buildMenuDetailPayload(menuId, menuDataWithSourceMenu(data, sourceData), {
+  return buildMenuDetailPayload(menuId, data, {
     ...kitchenScope,
+    sourceMenu,
     page_style: resolveMenuPageStyle(
       { source: 'tenant-owner-api', style: ownerPageStyle },
       { source: 'app-kitchen', style: kitchenScope.page_style }
     ),
-    // Tenant menu dog-food spine: root and kitchen-scoped public routes both let the owner API override scoped fallback sections.
+    // Tenant menu dog-food spine: root and kitchen-scoped routes both let the owner API override scoped fallback sections.
     sections: sourceSections,
     ...ownerAppView,
     ...ownerMenuPayload,
-    public_choices: publicChoices,
-    createdByLabel:
-      kitchenScope.createdByLabel ??
-      menuCreatorLabel(createdBy, creatorLabels),
+    choices,
   })
 }
 

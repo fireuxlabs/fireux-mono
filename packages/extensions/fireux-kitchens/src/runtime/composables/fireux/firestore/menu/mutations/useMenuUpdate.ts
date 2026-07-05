@@ -39,7 +39,6 @@ const rootProjectionDerivedKeys = [
   'url',
   'qr_url',
   'source.menu_id',
-  'public_views',
   'views',
 ]
 const withoutId = <T extends Record<string, unknown>>(data: T, extraKeys: string[] = []) => {
@@ -185,7 +184,7 @@ export function useMenuUpdate(
         if (rootId !== docSnap.id) {
           const existingSnap = await getDoc(ref)
           if (existingSnap.exists()) {
-            throw new Error(`Menu public route already exists: ${rootId}`)
+            throw new Error(`Menu route already exists: ${rootId}`)
           }
         }
 

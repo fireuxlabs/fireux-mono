@@ -31,7 +31,7 @@ export function useKitchenMenuScope() {
   const menuRead = useKitchenMenuCollection(kitchenId, {
     kitchenCollectionPath,
   })
-  const publicMenus = usePublicScopedRecords({
+  const publishedMenus = usePublicScopedRecords({
     recordKey: menuId,
     records: menuRead.menus,
     recordKeyOf: (menu) => menu.id,
@@ -41,7 +41,7 @@ export function useKitchenMenuScope() {
   const pending = computed(
     () =>
       kitchenPending.value ||
-      (Boolean(kitchenId.value) && publicMenus.pending.value)
+      (Boolean(kitchenId.value) && publishedMenus.pending.value)
   )
   const menuLink = (id: Menu['id']) =>
     `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
@@ -69,11 +69,11 @@ export function useKitchenMenuScope() {
       collectionPath: menuRead.collectionPath.value,
       pending: menuRead.pending.value,
       rawCount: (menuRead.menus.value ?? []).length,
-      publicCount: publicMenus.records.value.length,
+      publishedCount: publishedMenus.records.value.length,
       rawMenus: (menuRead.menus.value ?? []).map(menuDebug),
-      publicMenus: publicMenus.records.value.map(menuDebug),
-      selectedMenu: publicMenus.record.value
-        ? menuDebug(publicMenus.record.value)
+      publishedMenus: publishedMenus.records.value.map(menuDebug),
+      selectedMenu: publishedMenus.record.value
+        ? menuDebug(publishedMenus.record.value)
         : null,
     },
     pending: pending.value,
@@ -82,8 +82,8 @@ export function useKitchenMenuScope() {
   return {
     kitchenSlug,
     kitchen,
-    menus: publicMenus.records,
-    menu: publicMenus.record,
+    menus: publishedMenus.records,
+    menu: publishedMenus.record,
     appScope,
     kitchenCollectionPath,
     menuCollectionPath: menuRead.collectionPath,

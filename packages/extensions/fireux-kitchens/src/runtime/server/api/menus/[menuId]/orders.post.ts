@@ -13,7 +13,7 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
-import { readKitchenMenuPublicRows } from '../../../utils/menu/public/rows.ts'
+import { readKitchenMenuRows } from '../../../utils/menu/collection/rows.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
@@ -216,7 +216,7 @@ export default defineEventHandler(async (event) => {
       })
     }
   }
-  const rows = await readKitchenMenuPublicRows(getRuntimeFirestore(), {
+  const rows = await readKitchenMenuRows(getRuntimeFirestore(), {
     appId: context.appId,
     kitchenId: context.kitchenId,
     menuId: context.menuId,
@@ -371,12 +371,12 @@ export default defineEventHandler(async (event) => {
     updated_at: now,
     created: {
       at: now,
-      by: 'public-menu',
+      by: 'menu',
       app_id: currentMenuOrderAppId(),
     },
     updated: {
       at: now,
-      by: 'public-menu',
+      by: 'menu',
     },
   }
 

@@ -30,8 +30,8 @@
           </div>
 
           <UButton
-            v-if="publicMenuUrl"
-            :to="publicMenuUrl"
+            v-if="menuUrl"
+            :to="menuUrl"
             target="_blank"
             color="neutral"
             variant="soft"
@@ -45,7 +45,7 @@
     </template>
 
     <div class="space-y-4">
-      <!-- Menu preview spine: mirror Menu/Detail/Index.vue so this edits the same page_style data public menus consume. -->
+      <!-- Menu preview spine: mirror Menu/Detail/Index.vue so this edits the same page_style data menu routes consume. -->
       <section
         class="menu-preview-frame"
         :class="themeClassName"
@@ -63,7 +63,7 @@
             color="neutral"
             variant="soft"
             title="Menu preview unavailable"
-            description="This menu has no public sections yet."
+            description="This menu has no sections yet."
           />
 
           <MenuDetailSectionList
@@ -111,7 +111,7 @@ const props = defineProps<{
   menu?: Menu | null
   sections?: MenuManifestSection[]
   pageStyle: Partial<PageStyle>
-  publicMenuUrl?: string
+  menuUrl?: string
 }>()
 
 const previewMode = ref<'light' | 'dark'>('light')
@@ -191,14 +191,14 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
   overflow: hidden;
 }
 
-.menu-preview-frame.public-menu--light {
+.menu-preview-frame.menu-theme--light {
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);
   --menu-primary: var(--menu-primary-source);
 }
 
-.menu-preview-frame.public-menu--dark {
+.menu-preview-frame.menu-theme--dark {
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
   --menu-title: var(--menu-title-dark);
@@ -206,7 +206,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 }
 
 .menu-preview-surface {
-  /* Console preview spine: keep the page layout compact, but preserve public menu breathing room inside the preview itself. */
+  /* Console preview spine: keep the page layout compact, but preserve menu breathing room inside the preview itself. */
   display: grid;
   gap: clamp(1.5rem, 4vw, 3rem);
   color: var(--menu-text);
@@ -214,7 +214,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 }
 
 .menu-preview-surface :deep(.menu-sections.menu-sections) {
-  /* The preview crops to one section/item, so it should not inherit the public two-column menu layout. */
+  /* The preview crops to one section/item, so it should not inherit the two-column menu layout. */
   display: grid;
   width: 100%;
   column-count: initial;

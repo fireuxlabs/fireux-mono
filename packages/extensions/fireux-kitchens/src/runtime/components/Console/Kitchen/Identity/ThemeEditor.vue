@@ -8,7 +8,7 @@
             Menu Theme
           </div>
           <p class="text-sm text-dimmed">
-            Choose the portable tokens used by this kitchen's public food menus.
+            Choose the portable tokens used by this kitchen's food menus.
           </p>
         </div>
       </div>

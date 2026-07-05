@@ -42,14 +42,14 @@
   text-align: center;
 }
 
-.fireux-menu-detail.public-menu--light {
+.fireux-menu-detail.menu-theme--light {
   --menu-bg: var(--menu-bg-light);
   --menu-text: var(--menu-text-light);
   --menu-title: var(--menu-title-light);
   --menu-primary: var(--menu-primary-source);
 }
 
-.fireux-menu-detail.public-menu--dark {
+.fireux-menu-detail.menu-theme--dark {
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
   --menu-title: var(--menu-title-dark);

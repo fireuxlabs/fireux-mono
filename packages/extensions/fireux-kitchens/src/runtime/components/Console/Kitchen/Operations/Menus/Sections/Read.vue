@@ -14,7 +14,7 @@
           <div>
             <h2 class="text-base font-semibold text-highlighted">Menu sections</h2>
             <p class="text-sm text-dimmed">
-              {{ menu.description || 'Build the public menu from sections and dish-backed items.' }}
+              {{ menu.description || 'Build the menu from sections and dish-backed items.' }}
             </p>
           </div>
           <UButton

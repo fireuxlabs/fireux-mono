@@ -81,7 +81,7 @@ export function useKitchenMenuUrl(options: {
       ? links as Record<string, unknown>
       : {}
   })
-  const publicOrigin = computed(
+  const appOrigin = computed(
     () =>
       origin(socialLinks.value.website) ||
       origin(appRecord.value.source_url) ||
@@ -89,8 +89,8 @@ export function useKitchenMenuUrl(options: {
       (import.meta.client ? origin(window.location.origin) : '')
   )
   const menuIndexUrl = computed(() => {
-    if (!menuIndexPath.value || !publicOrigin.value) return menuIndexPath.value
-    return new URL(menuIndexPath.value, publicOrigin.value).toString()
+    if (!menuIndexPath.value || !appOrigin.value) return menuIndexPath.value
+    return new URL(menuIndexPath.value, appOrigin.value).toString()
   })
   const menuPath = (menuId: unknown) =>
     kitchenMenuPath({
@@ -100,8 +100,8 @@ export function useKitchenMenuUrl(options: {
     })
   const menuUrl = (menuId: unknown) => {
     const path = menuPath(menuId)
-    if (!path || !publicOrigin.value) return path
-    return new URL(path, publicOrigin.value).toString()
+    if (!path || !appOrigin.value) return path
+    return new URL(path, appOrigin.value).toString()
   }
   const debug = computed(() => ({
     appId: appId.value,
@@ -113,7 +113,7 @@ export function useKitchenMenuUrl(options: {
     routeMode: routeMode.value,
     menuIndexPath: menuIndexPath.value,
     menuIndexUrl: menuIndexUrl.value,
-    publicOrigin: publicOrigin.value,
+    appOrigin: appOrigin.value,
     pending: appKitchenState.pending.value,
   }))
 

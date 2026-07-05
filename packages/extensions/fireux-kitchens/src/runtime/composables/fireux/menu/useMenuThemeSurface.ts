@@ -28,7 +28,7 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
   )
   const resolvedFont = computed(() => resolveMenuFont(resolvedPageStyle.value))
   const resolvedTitleFont = computed(() => resolveMenuTitleFont(resolvedPageStyle.value))
-  const className = computed(() => `public-menu--${activeColorMode.value}`)
+  const className = computed(() => `menu-theme--${activeColorMode.value}`)
   const styleVars = computed(() => {
     const style = resolvedPageStyle.value
     const vars: Record<string, string> = {}

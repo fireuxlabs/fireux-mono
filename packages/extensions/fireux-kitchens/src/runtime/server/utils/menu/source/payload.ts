@@ -3,7 +3,7 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import { readMenuPageStyle } from '../public/page-style.ts'
+import { readMenuPageStyle } from '../detail/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -54,6 +54,11 @@ const addOns = (value: unknown) =>
     .filter((option) => option.label && option.price > 0)
 
 const payloadSections = (payload: Record<string, unknown>) => {
+  const manifest = readRecord(payload.manifest)
+  const content = readRecord(manifest.content)
+  const manifestSections = Array.isArray(content.sections) ? content.sections : []
+  if (manifestSections.length) return manifestSections
+
   const sections = Array.isArray(payload.sections) ? payload.sections : []
 
   return sections.map((section, sectionIndex) => {
@@ -123,7 +128,9 @@ export async function menuSourcePayloadFromApi(apiTo: string) {
     if (!response.ok) return {}
 
     const payload = readRecord(await response.json())
-    const pageStyle = readMenuPageStyle(payload.page_style)
+    const manifest = readRecord(payload.manifest)
+    const presentation = readRecord(manifest.presentation)
+    const pageStyle = readMenuPageStyle(payload.page_style || presentation.pageStyle)
     const sections = payloadSections(payload)
 
     return {

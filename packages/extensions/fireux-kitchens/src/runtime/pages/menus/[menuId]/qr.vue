@@ -29,7 +29,7 @@
       </div>
 
       <p class="max-w-[92vw] break-all text-[10px] text-slate-600">
-        {{ publicUrl }}
+        {{ menuUrl }}
       </p>
     </div>
   </main>
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import { createError } from '#imports'
 import { toDataURL } from 'qrcode'
+import type { MenuDetailPayload } from '../../../models/kitchen/menu/menu-detail.model'
 
 type WaitingMenu = {
   id: string
@@ -57,7 +58,7 @@ definePageMeta({
 
 const { data } = await useAsyncData(
   `kitchen-waiting-menu-qr-${menuId}`,
-  () => $fetch<WaitingMenu>(`/api/menus/${encodeURIComponent(menuId)}`)
+  () => $fetch<MenuDetailPayload>(`/api/menus/${encodeURIComponent(menuId)}`)
 )
 
 if (!data.value) {
@@ -67,7 +68,20 @@ if (!data.value) {
   })
 }
 
-const menu = computed(() => data.value as WaitingMenu)
+const menu = computed<WaitingMenu>(() => {
+  const payload = data.value
+  if (!payload) return { id: menuId, name: menuId }
+
+  return payload.kind === 'manifest'
+    ? {
+        id: payload.manifest.content.id,
+        name: payload.manifest.content.name,
+      }
+    : {
+        id: payload.document.id,
+        name: payload.document.name,
+      }
+})
 const titleCase = (value: string) =>
   value
     .split(/[-_\s]+/)
@@ -76,13 +90,13 @@ const titleCase = (value: string) =>
     .join(' ')
 
 const qrCentreLabel = computed(() => titleCase(menu.value.name || menuId))
-const publicUrl = computed(() => {
+const menuUrl = computed(() => {
   const origin = import.meta.client ? window.location.origin : ''
   return `${origin}/menus/${encodeURIComponent(menuId)}`
 })
 
 onMounted(async () => {
-  qrDataUrl.value = await toDataURL(publicUrl.value, {
+  qrDataUrl.value = await toDataURL(menuUrl.value, {
     errorCorrectionLevel: 'H',
     width: 1024,
     margin: 2,

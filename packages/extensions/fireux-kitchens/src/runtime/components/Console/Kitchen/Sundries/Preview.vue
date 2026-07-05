@@ -13,7 +13,7 @@
         </template>
 
         <p class="text-sm text-dimmed">
-          Menus now preview through exact published public menu URLs. Create and publish a menu,
+          Menus now preview through exact published menu URLs. Create and publish a menu,
           then open it from the menu QR page.
         </p>
 

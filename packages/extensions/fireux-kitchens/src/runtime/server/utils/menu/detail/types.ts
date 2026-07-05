@@ -8,12 +8,10 @@ export type MenuDetailScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   sourceKind?: string
-  path?: string
-  qrPath?: string
-  createdByLabel?: string
   page_style?: Record<string, unknown>
-  public_choices?: unknown[]
+  choices?: unknown[]
   sections?: unknown[]
+  sourceMenu?: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }

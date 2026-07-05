@@ -1,7 +1,7 @@
 <template>
   <EntityIndexCta
     title="Menus"
-    description="Browse live menus, or create a simple public menu QR when you need one."
+    description="Browse live menus, or create a simple menu QR when you need one."
     family="domain-managed"
     :actions="actions"
   />

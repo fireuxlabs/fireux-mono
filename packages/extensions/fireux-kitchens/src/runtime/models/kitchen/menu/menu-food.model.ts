@@ -5,7 +5,7 @@ import type {
   MenuManifestSection,
 } from './menu-detail.model'
 
-// Food menu render model: section/item display reads the public menu manifest shape.
+// Food menu render model: section/item display reads the menu manifest shape.
 export type MenuFoodItem = MenuManifestItem
 export type MenuFoodAddOn = MenuManifestAddOn
 export type MenuFoodPriceOption = MenuManifestPriceOption
