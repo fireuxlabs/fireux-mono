@@ -11,7 +11,8 @@ import { readWeekdayTimeWindowsConfig } from './weekday-time'
 
 export const kitchenOrderTypes = [
   'dine_in',
-  'take_away',
+  'eat_in',
+  'takeaway',
   'collection',
   'delivery',
   'pre_order',

@@ -187,11 +187,14 @@ const defaultOrderType = (
 ) => {
   const profile = menuContextProfile(contextValue)
   const preferred = profile.defaultOrderType
+  const visibleTypes = profile.visibleOrderTypes.filter((type) =>
+    types.includes(type)
+  )
 
-  if (preferred && types.includes(preferred)) return preferred
+  if (preferred && visibleTypes.includes(preferred)) return preferred
 
-  return profile.visibleOrderTypes.find((type) => types.includes(type)) ||
-    types[0] ||
+  return visibleTypes[0] ||
+    (profile.context !== 'generic' ? preferred || profile.visibleOrderTypes[0] : types[0]) ||
     'dine_in'
 }
 
@@ -218,8 +221,7 @@ const serviceProfile = (
     orderTypes,
     defaultOrderType: defaultType,
     defaultOrderTypeConfig:
-      ordering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType) ||
-      ordering.order_types[0],
+      ordering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType),
     choices,
   }
 }

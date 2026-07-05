@@ -1,15 +1,29 @@
+import type { FulfilmentMode } from '../order.model'
+
+export const OrderingSurfaces = [
+  'homeDelivery',
+  'tableQr',
+  'kiosk',
+] as const
+
+export type OrderingSurface = typeof OrderingSurfaces[number]
+
+export const OrderingSurfaceModes = {
+  homeDelivery: ['delivery', 'collection'],
+  tableQr: ['dineIn'],
+  kiosk: ['eatIn', 'takeaway'],
+} as const satisfies Record<OrderingSurface, readonly FulfilmentMode[]>
+
 export const MenuRouteContexts = [
   'generic',
+  'home',
+  'table',
+  'kiosk',
   'dine_in',
-  'collection',
-  'delivery',
+  'eat_in',
+  'takeaway',
   'pre_order',
   'room_service',
-  'from_home',
-  'in_store',
-  'kiosk',
-  'from_table',
-  'from_room',
 ] as const
 
 export type MenuRouteContext = typeof MenuRouteContexts[number]

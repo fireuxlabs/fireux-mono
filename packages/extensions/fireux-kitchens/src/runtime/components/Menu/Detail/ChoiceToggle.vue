@@ -124,7 +124,7 @@ const emit = defineEmits<{
   (event: 'update:modelValue', value: MenuChoiceValue): void
 }>()
 
-type CampValue = 'dine_in' | 'take_away'
+type CampValue = 'dine_in' | 'takeaway'
 
 type CampOption = {
   value: CampValue
@@ -133,7 +133,7 @@ type CampOption = {
 }
 
 const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
-const takeAwayOrderTypes = ['take_away', 'collection', 'delivery'] as const
+const takeAwayOrderTypes = ['eat_in', 'takeaway', 'collection', 'delivery'] as const
 const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
 const isTakeAwayOption = (option: MenuChoiceOption) =>
   takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
@@ -184,11 +184,11 @@ const activeCamp = computed<CampValue>(() => {
     currentTakeAwayOption.value ||
     (!currentOption.value && useTakeAwayOnlySelector.value)
   ) {
-    return 'take_away'
+    return 'takeaway'
   }
 
   return currentOption.value && isTakeAwayOption(currentOption.value)
-    ? 'take_away'
+    ? 'takeaway'
     : 'dine_in'
 })
 const campOptions = computed<CampOption[]>(() => {
@@ -203,8 +203,8 @@ const campOptions = computed<CampOption[]>(() => {
   }
   if (selectedTakeAwayOption.value) {
     options.push({
-      value: 'take_away',
-      label: 'Take away',
+      value: 'takeaway',
+      label: 'Takeaway',
       option: selectedTakeAwayOption.value,
     })
   }
@@ -213,34 +213,38 @@ const campOptions = computed<CampOption[]>(() => {
 })
 const showTakeAwaySelector = computed(() =>
   takeAwayOptions.value.length > 1 &&
-    (activeCamp.value === 'take_away' || useTakeAwayOnlySelector.value)
+    (activeCamp.value === 'takeaway' || useTakeAwayOnlySelector.value)
 )
 const showDineInSelector = computed(() =>
   dineInOptions.value.length > 1 &&
     (activeCamp.value === 'dine_in' || useDineInOnlySelector.value)
 )
 const methodOptions = computed(() =>
-  activeCamp.value === 'take_away'
+  activeCamp.value === 'takeaway'
     ? takeAwayOptions.value
     : dineInOptions.value
 )
 const showMethodSelector = computed(() =>
-  activeCamp.value === 'take_away'
+  activeCamp.value === 'takeaway'
     ? showTakeAwaySelector.value
     : showDineInSelector.value
 )
-const methodSelectorLabel = computed(() =>
-  activeCamp.value === 'take_away' ? 'Take away method' : 'Dine in service'
+const hasKioskModes = computed(() =>
+  methodOptions.value.some((option) => option.orderType === 'eat_in') ||
+    methodOptions.value.some((option) => option.orderType === 'takeaway')
 )
+const methodSelectorLabel = computed(() => {
+  if (activeCamp.value === 'takeaway') {
+    return hasKioskModes.value ? 'Kiosk fulfilment' : 'Fulfilment method'
+  }
+
+  return 'Dine in service'
+})
 const methodRadioName = computed(() =>
   `menu-method-${safeToken(methodOptions.value.map((option) => option.value).join('-'))}`
 )
 
 function methodOptionLabel(option: MenuChoiceOption) {
-  if (activeCamp.value === 'dine_in' && option.orderType === 'dine_in') {
-    return 'Eat in'
-  }
-
   return option.label
 }
 

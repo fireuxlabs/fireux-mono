@@ -274,11 +274,23 @@ const serviceMode = computed(() => {
     return 'delivery'
   }
   if (
-    ['eat_in', 'eat-in', 'dine_in', 'dine-in', 'table'].includes(value) ||
-    value.includes('eat in') ||
+    ['dine_in', 'dine-in', 'table'].includes(value) ||
     value.includes('dine')
   ) {
+    return 'dine_in'
+  }
+  if (
+    ['eat_in', 'eat-in'].includes(value) ||
+    value.includes('eat in')
+  ) {
     return 'eat_in'
+  }
+  if (
+    ['takeaway', 'take-away'].includes(value) ||
+    value.includes('takeaway') ||
+    value.includes('take away')
+  ) {
+    return 'takeaway'
   }
   return value
 })
@@ -287,8 +299,10 @@ const headerIcon = computed(() =>
     ? 'i-lucide-shopping-bag'
     : serviceMode.value === 'delivery'
       ? 'i-lucide-bike'
-      : serviceMode.value === 'eat_in'
+      : serviceMode.value === 'dine_in' || serviceMode.value === 'eat_in'
         ? 'i-lucide-utensils'
+        : serviceMode.value === 'takeaway'
+          ? 'i-lucide-shopping-bag'
         : 'i-lucide-clock'
 )
 const headerLabel = computed(() => {
@@ -304,8 +318,16 @@ const headerLabel = computed(() => {
       : 'Delivery'
   }
 
+  if (serviceMode.value === 'dine_in') {
+    return 'Dine in'
+  }
+
   if (serviceMode.value === 'eat_in') {
     return 'Eat in'
+  }
+
+  if (serviceMode.value === 'takeaway') {
+    return 'Takeaway'
   }
 
   return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'

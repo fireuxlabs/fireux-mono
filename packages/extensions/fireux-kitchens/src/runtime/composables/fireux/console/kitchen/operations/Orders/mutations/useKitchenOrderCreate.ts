@@ -44,6 +44,9 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeOrderType = (value: unknown): KitchenOrderType => {
   const type = normalizeString(value)
   if (
+    type === 'dine_in' ||
+    type === 'eat_in' ||
+    type === 'takeaway' ||
     type === 'collection' ||
     type === 'delivery' ||
     type === 'pre_order' ||

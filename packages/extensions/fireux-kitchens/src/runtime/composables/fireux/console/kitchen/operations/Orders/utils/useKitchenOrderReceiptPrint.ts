@@ -22,6 +22,8 @@ const orderTypeLabel = (value: string) =>
     collection: 'Collection',
     delivery: 'Delivery',
     dine_in: 'Dine in',
+    eat_in: 'Eat in',
+    takeaway: 'Takeaway',
     pre_order: 'Pre-order',
     room_service: 'Room service',
   })[value] || value.replace(/[_-]+/g, ' ')

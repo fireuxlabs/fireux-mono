@@ -1,11 +1,17 @@
-import type { KitchenOrderType } from '../models/kitchen/order.model'
+import type {
+  FulfilmentMode,
+  KitchenOrderType,
+} from '../models/kitchen/order.model'
 import {
   MenuRouteContexts,
   type MenuRouteContext,
+  type OrderingSurface,
 } from '../models/kitchen/menu/menu-context.model'
 
 export type MenuContextProfile = {
   context: MenuRouteContext
+  surface?: OrderingSurface
+  fulfilmentModes?: FulfilmentMode[]
   visibleOrderTypes: KitchenOrderType[]
   defaultOrderType?: KitchenOrderType
   locked: boolean
@@ -24,13 +30,38 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     context: 'generic',
     visibleOrderTypes: [
       'dine_in',
-      'take_away',
-      'pre_order',
-      'room_service',
+      'eat_in',
+      'takeaway',
       'collection',
       'delivery',
+      'pre_order',
+      'room_service',
     ],
+    defaultOrderType: 'delivery',
+    locked: false,
+  },
+  home: {
+    context: 'home',
+    surface: 'homeDelivery',
+    fulfilmentModes: ['delivery', 'collection'],
+    visibleOrderTypes: ['delivery', 'collection'],
+    defaultOrderType: 'delivery',
+    locked: false,
+  },
+  table: {
+    context: 'table',
+    surface: 'tableQr',
+    fulfilmentModes: ['dineIn'],
+    visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
+    locked: true,
+  },
+  kiosk: {
+    context: 'kiosk',
+    surface: 'kiosk',
+    fulfilmentModes: ['eatIn', 'takeaway'],
+    visibleOrderTypes: ['eat_in', 'takeaway'],
+    defaultOrderType: 'eat_in',
     locked: false,
   },
   dine_in: {
@@ -39,16 +70,16 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     defaultOrderType: 'dine_in',
     locked: true,
   },
-  collection: {
-    context: 'collection',
-    visibleOrderTypes: ['collection'],
-    defaultOrderType: 'collection',
+  eat_in: {
+    context: 'eat_in',
+    visibleOrderTypes: ['eat_in'],
+    defaultOrderType: 'eat_in',
     locked: true,
   },
-  delivery: {
-    context: 'delivery',
-    visibleOrderTypes: ['delivery'],
-    defaultOrderType: 'delivery',
+  takeaway: {
+    context: 'takeaway',
+    visibleOrderTypes: ['takeaway'],
+    defaultOrderType: 'takeaway',
     locked: true,
   },
   pre_order: {
@@ -59,36 +90,6 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   },
   room_service: {
     context: 'room_service',
-    visibleOrderTypes: ['room_service'],
-    defaultOrderType: 'room_service',
-    locked: true,
-  },
-  from_home: {
-    context: 'from_home',
-    visibleOrderTypes: ['delivery', 'collection'],
-    defaultOrderType: 'delivery',
-    locked: false,
-  },
-  in_store: {
-    context: 'in_store',
-    visibleOrderTypes: ['dine_in'],
-    defaultOrderType: 'dine_in',
-    locked: true,
-  },
-  kiosk: {
-    context: 'kiosk',
-    visibleOrderTypes: ['dine_in', 'take_away'],
-    defaultOrderType: 'dine_in',
-    locked: false,
-  },
-  from_table: {
-    context: 'from_table',
-    visibleOrderTypes: ['dine_in'],
-    defaultOrderType: 'dine_in',
-    locked: true,
-  },
-  from_room: {
-    context: 'from_room',
     visibleOrderTypes: ['room_service'],
     defaultOrderType: 'room_service',
     locked: true,

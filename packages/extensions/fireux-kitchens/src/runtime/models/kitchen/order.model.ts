@@ -40,11 +40,30 @@ export type KitchenOrderItem = {
 
 export type KitchenOrderType =
   | 'dine_in'
-  | 'take_away'
+  | 'eat_in'
+  | 'takeaway'
   | 'collection'
   | 'delivery'
   | 'pre_order'
   | 'room_service'
+
+export const FulfilmentModes = [
+  'delivery',
+  'collection',
+  'dineIn',
+  'eatIn',
+  'takeaway',
+] as const
+
+export type FulfilmentMode = typeof FulfilmentModes[number]
+
+export const FulfilmentModeOrderTypes = {
+  delivery: 'delivery',
+  collection: 'collection',
+  dineIn: 'dine_in',
+  eatIn: 'eat_in',
+  takeaway: 'takeaway',
+} as const satisfies Record<FulfilmentMode, KitchenOrderType>
 
 export type KitchenOrderFireState =
   | 'ready_to_fire'

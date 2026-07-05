@@ -76,7 +76,8 @@ const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 const supportedOrderTypes = [
   'dine_in',
-  'take_away',
+  'eat_in',
+  'takeaway',
   'collection',
   'delivery',
   'pre_order',
