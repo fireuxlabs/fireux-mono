@@ -8,6 +8,8 @@
         :model-value="view.selectedChoice"
         :menu="view.menu"
         :choices="view.choices"
+        :surface-options="view.surfaceOptions"
+        :surface-label="view.surfaceLabel"
         @update:model-value="$emit('update:selectedChoice', $event)"
       />
 

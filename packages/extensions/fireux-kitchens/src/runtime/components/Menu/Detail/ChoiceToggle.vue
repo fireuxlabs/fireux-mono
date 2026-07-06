@@ -1,6 +1,21 @@
 <template>
   <div
-    v-if="useCampSelector || useDineInOnlySelector || useTakeAwayOnlySelector"
+    v-if="useHomeSelector"
+    class="menu-choice-stack"
+  >
+    <USelect
+      class="menu-method-select"
+      :model-value="modelValue"
+      :items="homeSelectOptions"
+      value-key="value"
+      label-key="label"
+      aria-label="Fulfilment method"
+      @update:model-value="selectValue"
+    />
+  </div>
+
+  <div
+    v-else-if="useCampSelector || useDineInOnlySelector || useTakeAwayOnlySelector"
     class="menu-choice-stack"
   >
     <div
@@ -113,9 +128,11 @@ import type {
 const props = withDefaults(
   defineProps<{
     modelValue: MenuChoiceValue
+    menuContext?: string
     options?: MenuChoiceOption[]
   }>(),
   {
+    menuContext: '',
     options: () => [],
   }
 )
@@ -134,18 +151,35 @@ type CampOption = {
 
 const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
 const takeAwayOrderTypes = ['eat_in', 'takeaway', 'collection', 'delivery'] as const
+const homeOrderTypes = ['delivery', 'collection'] as const
 const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
 const isTakeAwayOption = (option: MenuChoiceOption) =>
   takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInOption = (option: MenuChoiceOption) =>
   !option.orderType ||
     dineInOrderTypes.includes(option.orderType as typeof dineInOrderTypes[number])
+const isHomeOption = (option: MenuChoiceOption) =>
+  homeOrderTypes.includes(option.orderType as typeof homeOrderTypes[number])
 
 const dineInOptions = computed(() =>
   props.options.filter(isDineInOption)
 )
 const takeAwayOptions = computed(() =>
   props.options.filter(isTakeAwayOption)
+)
+const homeOptions = computed(() =>
+  props.options.filter(isHomeOption)
+)
+const homeSelectOptions = computed(() =>
+  homeOptions.value.map((option) => ({
+    label: methodOptionLabel(option),
+    value: option.value,
+  }))
+)
+const useHomeSelector = computed(() =>
+  props.menuContext === 'home' &&
+    homeOptions.value.length > 1 &&
+    homeOptions.value.length === props.options.length
 )
 const currentOption = computed(() =>
   props.options.find((option) => option.value === props.modelValue)
@@ -251,6 +285,11 @@ function methodOptionLabel(option: MenuChoiceOption) {
 function selectOption(option: MenuChoiceOption) {
   emit('update:modelValue', option.value)
 }
+
+function selectValue(value: unknown) {
+  const nextValue = String(value ?? '')
+  if (nextValue) emit('update:modelValue', nextValue)
+}
 </script>
 
 <style scoped>
@@ -355,6 +394,10 @@ function selectOption(option: MenuChoiceOption) {
 
 .menu-method__option--active .menu-method__radio {
   background: var(--menu-primary);
+}
+
+.menu-method-select {
+  width: min(100%, 18rem);
 }
 
 @media (max-width: 520px) {

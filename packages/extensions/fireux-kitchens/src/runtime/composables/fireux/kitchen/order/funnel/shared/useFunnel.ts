@@ -53,11 +53,19 @@ export type MenuChoiceOption = {
   orderType?: KitchenOrderType
   message?: string
 }
+export type MenuSurfaceOption = {
+  value: MenuRouteContext
+  label: string
+  to: string
+  active: boolean
+}
 export type MenuDetailItem = MenuFoodItem
 export type MenuDetailOrderItem = MenuFoodOrderItem
 export type MenuDetailView = {
   menu: MenuManifest
   choices: MenuChoiceOption[]
+  surfaceOptions: MenuSurfaceOption[]
+  surfaceLabel: string
   selectedChoice: MenuChoiceValue
   selectedItemId: string
   orderMode: boolean
@@ -87,6 +95,48 @@ const defaultMenuChoice = (): MenuChoiceOption => ({
   value: 'menu',
   label: 'Menu',
 })
+const surfaceContexts = [
+  {
+    context: 'home',
+    label: 'Home',
+    orderTypes: ['delivery', 'collection'],
+  },
+  {
+    context: 'table',
+    label: 'Table',
+    orderTypes: ['dine_in'],
+  },
+  {
+    context: 'kiosk',
+    label: 'Kiosk',
+    orderTypes: ['eat_in', 'takeaway'],
+  },
+  {
+    context: 'pre_order',
+    label: 'Pre-order',
+    orderTypes: ['pre_order'],
+  },
+  {
+    context: 'room_service',
+    label: 'Room service',
+    orderTypes: ['room_service'],
+  },
+] as const satisfies readonly {
+  context: MenuRouteContext
+  label: string
+  orderTypes: readonly KitchenOrderType[]
+}[]
+const contextLabels = {
+  generic: '',
+  home: 'Home',
+  table: 'Table',
+  kiosk: 'Kiosk',
+  dine_in: 'Dine in',
+  eat_in: 'Eat in',
+  takeaway: 'Takeaway',
+  pre_order: 'Pre-order',
+  room_service: 'Room service',
+} as const satisfies Record<MenuRouteContext, string>
 const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
   `order:${type}`
 const orderType = (value: unknown): KitchenOrderType | undefined =>
@@ -116,6 +166,19 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
     ...(type ? { orderType: type } : {}),
     ...(choice.message ? { message: choice.message } : {}),
   }
+}
+const contextualMenuPath = (
+  menuId: string,
+  kitchenSlug: string,
+  context: MenuRouteContext
+) => {
+  const contextualMenuId = context === 'generic'
+    ? menuId
+    : `${menuId}.${context}`
+
+  return kitchenSlug
+    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
+    : `/menus/${encodeURIComponent(contextualMenuId)}`
 }
 
 // Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
@@ -278,6 +341,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const selectedItemId = ref('')
   const menuId = computed(() => text(toValue(options.menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
+    if (!menuId.value || !orderTypes.value.length) return []
+
+    return surfaceContexts
+      .filter((surface) =>
+        surface.orderTypes.some((type) => orderTypes.value.includes(type))
+      )
+      .map((surface) => ({
+        value: surface.context,
+        label: surface.label,
+        to: contextualMenuPath(menuId.value, kitchenSlug.value, surface.context),
+        active: menuContext.value === surface.context,
+      }))
+  })
+  const surfaceLabel = computed(() => contextLabels[menuContext.value])
   const orderEndpoint = computed(() => {
     if (!menuId.value) return ''
 
@@ -294,6 +372,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     return {
       menu,
       choices: choiceOptions.value,
+      surfaceOptions: surfaceOptions.value,
+      surfaceLabel: surfaceLabel.value,
       selectedChoice: selectedChoice.value,
       selectedItemId: selectedItemId.value,
       orderMode: isOrderMode.value,
