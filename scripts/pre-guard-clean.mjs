@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-01
+// last_used: 2026-07-06
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/pre-guard-clean.mjs
 // Removes local build artifacts that violate FireUX guard L1 shape rules.

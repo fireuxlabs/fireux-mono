@@ -49,6 +49,8 @@
     >
       <MenuDetailFunnelPreOrderKitchen :order="order" />
     </OrderingFunnelStage>
+
+    <OrderingFunnelShapeTrack :track="shapeTrack" />
   </div>
 </template>
 
@@ -56,6 +58,7 @@
 import { computed, ref } from 'vue'
 import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuFoodItem,
   MenuFoodOrderItem,
@@ -171,6 +174,32 @@ const order = computed<MenuOrderingFunnelState>(() => ({
     quantity: basketQuantity.value,
   },
 }))
+const shapeTrack = computed(() =>
+  createOrderingFunnelShapeTrack({
+    route: {
+      menuId: 'la-tapberne-main',
+      kitchenSlug: 'la-tapberne',
+    },
+    orderType: 'pre_order',
+    modeLabel: 'preOrder',
+    basket: {
+      items: basketItems.value,
+      quantity: basketQuantity.value,
+    },
+    mode: {
+      preOrder: {
+        requested_for: '2026-07-08T18:30:00+02:00',
+        notice_hours: 24,
+      },
+    },
+    submission: {
+      id: 'demo-pre-order',
+      kitchen_id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
+      menu_id: 'main',
+      order_number: 'P-104',
+    },
+  })
+)
 
 function addToBasket(item: MenuFoodOrderItem) {
   setQuantity(item.lineId, (demoQuantities.value[item.lineId] || 0) + 1)

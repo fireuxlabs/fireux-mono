@@ -67,10 +67,12 @@ export type MenuOrderingBasketItem = {
   unitPrice?: number
 }
 
-export type MenuOrderingSelectionSummary = {
+export type MenuOrderingBasket = {
   items: MenuOrderingBasketItem[]
   quantity: number
 }
+
+export type MenuOrderingSelectionSummary = MenuOrderingBasket
 
 export type MenuOrderingDeliveryState = {
   ready: boolean
@@ -88,6 +90,93 @@ export type MenuOrderingDeliveryState = {
 export type MenuOrderingCollectionState = {
   mode: 'queue' | 'scheduled'
   requested_for?: string
+}
+
+export type MenuOrderingTableState = {
+  tableNumber: string
+}
+
+export type MenuOrderingKioskState = {
+  mode: 'eat_in' | 'takeaway'
+  handoff: 'tray' | 'bag'
+  queueArea?: string
+}
+
+export type MenuOrderingPreOrderState = {
+  requested_for: string
+  notice_hours?: number
+}
+
+export type MenuOrderingRoomServiceState = {
+  room: string
+  guestName?: string
+}
+
+export type MenuOrderingCateringState = {
+  eventDate: string
+  location: string
+  partySize: number
+}
+
+export type MenuOrderingAllergenCheck = {
+  checked: boolean
+}
+
+export type MenuOrderingRouteContext = {
+  menuId: string
+  kitchenSlug?: string
+}
+
+export type MenuOrderingDraft = {
+  orderType: KitchenOrderType
+  basket: MenuOrderingBasket
+  allergen?: MenuOrderingAllergenCheck
+  catering?: MenuOrderingCateringState
+  collection?: MenuOrderingCollectionState
+  delivery?: MenuOrderingDeliveryState
+  kiosk?: MenuOrderingKioskState
+  preOrder?: MenuOrderingPreOrderState
+  roomService?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
+}
+
+export type MenuOrderingDraftContext = {
+  route: MenuOrderingRouteContext
+  draft: MenuOrderingDraft
+}
+
+export type MenuOrderingOptionInput = {
+  id?: string
+  label?: string
+  price?: number
+  priceLabel?: string
+}
+
+export type MenuOrderingSubmitItem = {
+  itemId: string
+  quantity: number
+  addOns?: MenuOrderingOptionInput[]
+  variant?: MenuOrderingOptionInput
+}
+
+export type MenuOrderingSubmitBody = {
+  order_type: KitchenOrderType
+  items: MenuOrderingSubmitItem[]
+  collection?: MenuOrderingCollectionState
+  requested_for?: string
+  payment_method?: KitchenOrderPaymentMethod
+  customer?: KitchenOrderCustomer
+}
+
+export type MenuOrderingSubmission = {
+  id: string
+  kitchen_id: string
+  menu_id: string
+  order_number: string
+}
+
+export type MenuOrderingKitchenIntake = MenuOrderingDraft & {
+  submission: MenuOrderingSubmission
 }
 
 export type MenuOrderingIncoming = {
@@ -120,29 +209,7 @@ export type MenuOrderingProcessing = {
 
 export type MenuOrderingSending = {
   endpoint: string
-  body: {
-    order_type: KitchenOrderType
-    items: Array<{
-      itemId: string
-      quantity: number
-      addOns?: Array<{
-        id?: string
-        label?: string
-        price?: number
-        priceLabel?: string
-      }>
-      variant?: {
-        id?: string
-        label?: string
-        price?: number
-        priceLabel?: string
-      }
-    }>
-    collection?: MenuOrderingCollectionState
-    requested_for?: string
-    payment_method?: KitchenOrderPaymentMethod
-    customer?: KitchenOrderCustomer
-  }
+  body: MenuOrderingSubmitBody
   pending: boolean
   expected_result: {
     status: string

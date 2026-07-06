@@ -2,7 +2,9 @@
   <section class="menu-order-card">
     <header v-if="number && total" class="menu-order-header">
       <p class="menu-order-step-label">
-        {{ number }} of {{ total }}
+        {{ number }} of {{ total }}<template v-if="orderType">
+          &middot; {{ orderType }}
+        </template>
       </p>
     </header>
 
@@ -13,6 +15,7 @@
 <script setup lang="ts">
 defineProps<{
   number?: number | string
+  orderType?: string
   total?: number | string
 }>()
 </script>

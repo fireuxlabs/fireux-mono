@@ -4,17 +4,6 @@
       Collection
     </h2>
 
-    <ClientOnly>
-      <UBadge
-        v-if="serviceTimes.known"
-        :color="serviceTimes.open ? 'success' : 'error'"
-        variant="soft"
-        class="justify-self-center"
-      >
-        {{ serviceTimes.label }}
-      </UBadge>
-    </ClientOnly>
-
     <div class="menu-order-choice-grid">
       <button
         v-for="option in options"
@@ -112,7 +101,6 @@ const {
   scheduledDate,
   scheduledDateLabel,
   scheduledTime,
-  serviceTimes,
 } = props.state
 
 const dateInput = ref<HTMLInputElement | null>(null)

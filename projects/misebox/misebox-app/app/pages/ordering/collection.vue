@@ -1,6 +1,6 @@
 <template>
   <main class="min-h-screen bg-muted/30 py-10">
-    <UContainer class="max-w-6xl space-y-8">
+    <UContainer class="max-w-7xl space-y-8">
       <UButton
         to="/ordering"
         color="neutral"
@@ -10,112 +10,32 @@
         Ordering
       </UButton>
 
-      <section class="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
-          <div class="mb-5">
-            <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              Guest funnel screens
-            </p>
-            <h2 class="mt-1 text-2xl font-black tracking-tight text-highlighted">
-              Build the order in order
-            </h2>
-          </div>
+      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+        <div class="mb-5">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+            Guest funnel screens
+          </p>
+          <h2 class="mt-1 text-2xl font-black tracking-tight text-highlighted">
+            Build the order in order
+          </h2>
+        </div>
 
-          <div
-            class="fireux-menu-detail collection-funnel-demo mb-4"
-            :class="themeClassName"
-            :style="themeStyleVars"
-          >
-            <OrderingFunnelStage
-              number="1"
-              total="6"
-            >
-              <MenuDetailFunnelBasket :order="collectionOrder" />
-            </OrderingFunnelStage>
+        <OrderingObjectShape
+          class="mb-5"
+          title="starting context + draft"
+          :data="collectionShapeTrack.start"
+        />
 
-            <OrderingFunnelStage
-              number="2"
-              total="6"
-            >
-              <ClientOnly>
-                <MenuDetailFunnelAllergen v-model="allergenAccepted" />
-              </ClientOnly>
-            </OrderingFunnelStage>
-
-            <OrderingFunnelStage
-              number="3"
-              total="6"
-            >
-              <MenuDetailFunnelCollectionRequest :state="collectionRequest" />
-            </OrderingFunnelStage>
-
-            <OrderingFunnelStage
-              number="4"
-              total="6"
-            >
-              <MenuDetailFunnelCollectionKitchen :funnel="collectionFunnel" />
-            </OrderingFunnelStage>
-
-            <OrderingFunnelStage
-              number="5"
-              total="6"
-            >
-              <MenuDetailFunnelPayment :funnel="collectionFunnel" />
-            </OrderingFunnelStage>
-
-            <OrderingFunnelStage
-              number="6"
-              total="6"
-            >
-              <MenuDetailFunnelConfirmation :funnel="collectionFunnel" />
-            </OrderingFunnelStage>
-          </div>
-        </section>
-
-        <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
-          <div class="mb-5">
-            <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              Kitchen screens
-            </p>
-            <h2 class="mt-1 text-2xl font-black tracking-tight text-highlighted">
-              Manage the ticket in order
-            </h2>
-          </div>
-
-          <div class="space-y-3">
-            <article
-              v-for="screen in kitchenScreens"
-              :key="screen.label"
-              class="grid gap-3 rounded-md border border-default p-4 sm:grid-cols-[auto_1fr_auto] sm:items-center"
-            >
-              <span class="flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-black text-primary">
-                {{ screen.step }}
-              </span>
-              <div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-bold text-highlighted">
-                    {{ screen.label }}
-                  </h3>
-                  <UBadge
-                    :color="screen.color"
-                    variant="soft"
-                  >
-                    {{ screen.status }}
-                  </UBadge>
-                </div>
-                <p class="text-sm leading-6 text-muted">
-                  {{ screen.detail }}
-                </p>
-              </div>
-              <UBadge
-                color="neutral"
-                variant="soft"
-              >
-                {{ screen.lane }}
-              </UBadge>
-            </article>
-          </div>
-        </section>
+        <OrderingCollectionFunnelScreens
+          v-model:allergen-accepted="allergenAccepted"
+          :class-name="themeClassName"
+          :funnel="collectionFunnel"
+          :kitchen-intake="collectionShapeTrack.withSubmission"
+          :kitchen-receiving="collectionShapeTrack.kitchen"
+          :order="collectionOrder"
+          :state="collectionRequest"
+          :style-vars="themeStyleVars"
+        />
       </section>
     </UContainer>
   </main>
@@ -130,6 +50,7 @@ import {
 import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useCollection } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollection'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelController,
@@ -138,15 +59,7 @@ import type {
   MenuOrderingProcessing,
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
-
-type KitchenState = {
-  step: number
-  label: string
-  detail: string
-  status: string
-  color: 'primary' | 'success' | 'warning' | 'neutral'
-  lane: string
-}
+import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {
@@ -169,6 +82,51 @@ const basketTotal = basketItems.reduce(
   (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
   0
 )
+const collectionShapeTrack = createOrderingFunnelShapeTrack({
+  route: {
+    menuId: 'pizza-snacks-drinks',
+    kitchenSlug: 'baeren-ringgenberg',
+  },
+  orderType: 'collection',
+  modeLabel: 'collection',
+  basket: {
+    items: basketItems,
+    quantity: basketQuantity,
+  },
+  mode: {
+    collection: {
+      mode: 'queue',
+    },
+  },
+  submission: {
+    id: 'demo-collection-order',
+    kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
+    menu_id: 'pizza-snacks-drinks',
+    order_number: 'C-104',
+  },
+})
+const demoServiceHours: MenuServiceHoursConfig = {
+  inherit_kitchen_operation_hours: false,
+  operation_hours: {
+    source: 'custom',
+    timezone: 'Europe/Zurich',
+    windows: [
+      {
+        days: [
+          'monday',
+          'tuesday',
+          'wednesday',
+          'thursday',
+          'friday',
+          'saturday',
+          'sunday',
+        ],
+        open: '08:00',
+        close: '23:00',
+      },
+    ],
+  },
+}
 const collectionOrder: MenuOrderingFunnelState = {
   actionLabel: 'Open collection basket',
   accepted: false,
@@ -184,6 +142,7 @@ const collectionOrder: MenuOrderingFunnelState = {
     type: 'collection',
   },
   quantity: basketQuantity,
+  serviceHours: demoServiceHours,
   selection: {
     items: basketItems,
     quantity: basketQuantity,
@@ -295,57 +254,6 @@ watchEffect(() => {
   })
 })
 
-const kitchenScreens: KitchenState[] = [
-  {
-    step: 1,
-    label: 'No kitchen screen yet',
-    status: 'funneling',
-    detail: 'Guest is still building the order. Keep it away from the kitchen board.',
-    color: 'neutral',
-    lane: 'hidden',
-  },
-  {
-    step: 2,
-    label: 'Incoming ticket',
-    status: 'new',
-    detail: 'Ticket has been submitted and needs operator attention.',
-    color: 'warning',
-    lane: 'incoming',
-  },
-  {
-    step: 3,
-    label: 'Set pickup promise',
-    status: 'accepted',
-    detail: 'Operator owns the order and can give the pickup promise.',
-    color: 'primary',
-    lane: 'queue',
-  },
-  {
-    step: 4,
-    label: 'Prepare order',
-    status: 'preparing',
-    detail: 'Kitchen is actively making and packing the order.',
-    color: 'primary',
-    lane: 'queue',
-  },
-  {
-    step: 5,
-    label: 'Mark ready',
-    status: 'ready',
-    detail: 'Order waits at the pickup point.',
-    color: 'success',
-    lane: 'ready',
-  },
-  {
-    step: 6,
-    label: 'Complete pickup',
-    status: 'completed',
-    detail: 'Guest has collected the order.',
-    color: 'neutral',
-    lane: 'recent',
-  },
-]
-
 definePageMeta({
   layout: 'landing',
   name: 'MiseboxOrderingCollectionPage',
@@ -357,20 +265,3 @@ useSeoMeta({
     'Misebox collection ordering model for funnel drafts, submitted kitchen tickets, and operator status strings.',
 })
 </script>
-
-<style scoped>
-.collection-funnel-demo {
-  width: 100%;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  text-align: left;
-}
-
-.collection-funnel-demo :deep(.menu-order-card) {
-  width: 100%;
-  max-height: none;
-  box-shadow: none;
-}
-</style>
