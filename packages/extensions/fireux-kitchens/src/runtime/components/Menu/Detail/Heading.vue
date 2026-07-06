@@ -42,7 +42,7 @@ defineProps<{
   font-family: var(--menu-title-font);
   font-size: clamp(3.5rem, 9vw, 7rem);
   font-weight: 900;
-  letter-spacing: -0.08em;
+  letter-spacing: 0;
   line-height: 0.86;
 }
 

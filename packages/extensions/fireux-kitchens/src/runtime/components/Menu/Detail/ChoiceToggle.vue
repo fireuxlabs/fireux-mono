@@ -20,37 +20,39 @@
   >
     <div
       v-if="useCampSelector"
-      class="menu-mode"
+      class="menu-choice-row"
       aria-label="Menu mode"
     >
       <template
         v-for="camp in campOptions"
         :key="camp.value"
       >
-        <NuxtLink
+        <UButton
           v-if="camp.option.to"
           :to="camp.option.to"
-          :class="['menu-mode__button', { 'is-active': activeCamp === camp.value }]"
+          color="neutral"
+          size="sm"
+          :variant="activeCamp === camp.value ? 'solid' : 'soft'"
+          :label="camp.label"
           :aria-label="camp.label"
-        >
-          {{ camp.label }}
-        </NuxtLink>
+        />
 
-        <button
+        <UButton
           v-else
           type="button"
-          :class="['menu-mode__button', { 'is-active': activeCamp === camp.value }]"
+          color="neutral"
+          size="sm"
+          :variant="activeCamp === camp.value ? 'solid' : 'soft'"
+          :label="camp.label"
           :aria-pressed="activeCamp === camp.value"
           @click="selectOption(camp.option)"
-        >
-          {{ camp.label }}
-        </button>
+        />
       </template>
     </div>
 
     <div
       v-if="showMethodSelector"
-      class="menu-method"
+      class="menu-choice-row"
       role="radiogroup"
       :aria-label="methodSelectorLabel"
     >
@@ -58,62 +60,60 @@
         v-for="option in methodOptions"
         :key="option.value"
       >
-        <NuxtLink
+        <UButton
           v-if="option.to"
           :to="option.to"
-          :class="[
-            'menu-method__option',
-            { 'menu-method__option--active': modelValue === option.value },
-          ]"
+          color="neutral"
+          size="xs"
+          :variant="modelValue === option.value ? 'solid' : 'soft'"
+          :label="methodOptionLabel(option)"
           role="radio"
           :aria-checked="modelValue === option.value"
-        >
-          <span class="menu-method__radio" aria-hidden="true" />
-          <span>{{ methodOptionLabel(option) }}</span>
-        </NuxtLink>
+        />
 
-        <label
+        <UButton
           v-else
-          :class="[
-            'menu-method__option',
-            { 'menu-method__option--active': modelValue === option.value },
-          ]"
-        >
-          <input
-            :name="methodRadioName"
-            type="radio"
-            :checked="modelValue === option.value"
-            @change="selectOption(option)"
-          >
-          <span>{{ methodOptionLabel(option) }}</span>
-        </label>
+          type="button"
+          color="neutral"
+          size="xs"
+          :variant="modelValue === option.value ? 'solid' : 'soft'"
+          :label="methodOptionLabel(option)"
+          role="radio"
+          :aria-checked="modelValue === option.value"
+          @click="selectOption(option)"
+        />
       </template>
     </div>
   </div>
 
-  <div v-else-if="options.length > 1" class="menu-mode">
+  <div
+    v-else-if="options.length > 1"
+    class="menu-choice-row"
+  >
     <template
       v-for="option in options"
       :key="option.value"
     >
-      <NuxtLink
+      <UButton
         v-if="option.to"
         :to="option.to"
-        class="menu-mode__button"
+        color="neutral"
+        size="sm"
+        variant="soft"
+        :label="option.label"
         :aria-label="option.label"
-      >
-        {{ option.label }}
-      </NuxtLink>
+      />
 
-      <button
+      <UButton
         v-else
         type="button"
-        :class="['menu-mode__button', { 'is-active': modelValue === option.value }]"
+        color="neutral"
+        size="sm"
+        :variant="modelValue === option.value ? 'solid' : 'soft'"
+        :label="option.label"
         :aria-pressed="modelValue === option.value"
         @click="$emit('update:modelValue', option.value)"
-      >
-        {{ option.label }}
-      </button>
+      />
     </template>
   </div>
 </template>
@@ -152,7 +152,6 @@ type CampOption = {
 const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
 const takeAwayOrderTypes = ['eat_in', 'takeaway', 'collection', 'delivery'] as const
 const homeOrderTypes = ['delivery', 'collection'] as const
-const safeToken = (value: string) => value.replace(/[^a-z0-9_-]+/gi, '-')
 const isTakeAwayOption = (option: MenuChoiceOption) =>
   takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
 const isDineInOption = (option: MenuChoiceOption) =>
@@ -273,10 +272,6 @@ const methodSelectorLabel = computed(() => {
 
   return 'Dine in service'
 })
-const methodRadioName = computed(() =>
-  `menu-method-${safeToken(methodOptions.value.map((option) => option.value).join('-'))}`
-)
-
 function methodOptionLabel(option: MenuChoiceOption) {
   return option.label
 }
@@ -295,114 +290,25 @@ function selectValue(value: unknown) {
 .menu-choice-stack {
   display: grid;
   gap: var(--menu-space-xs);
-  justify-items: center;
-  width: min(100%, 32rem);
+  justify-items: start;
+  width: auto;
 }
 
-.menu-mode {
-  display: inline-grid;
-  grid-auto-columns: minmax(7rem, 1fr);
-  grid-auto-flow: column;
-  gap: var(--menu-space-xs);
-  width: min(100%, 32rem);
-  padding: var(--menu-space-xs);
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: var(--menu-radius);
-  background: color-mix(in srgb, var(--menu-bg) 88%, var(--menu-text));
-}
-
-.menu-mode__button {
-  appearance: none;
-  display: inline-flex;
-  min-height: 2.65rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0.58rem var(--menu-space-md);
-  border: 0;
-  border-radius: var(--menu-radius-control);
-  background: transparent;
-  color: var(--menu-text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 850;
-  letter-spacing: 0;
-  text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.menu-mode__button:hover {
-  background: color-mix(in srgb, var(--menu-text) 8%, transparent);
-}
-
-.menu-mode__button.is-active {
-  background: var(--menu-text);
-  color: var(--menu-bg);
-  transform: translateY(-1px);
-}
-
-.menu-method {
-  display: inline-flex;
+.menu-choice-row {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--menu-space-xs);
-  justify-content: center;
-  width: 100%;
-}
-
-.menu-method__option {
-  display: inline-flex;
-  min-height: 2.35rem;
   align-items: center;
-  gap: 0.48rem;
-  justify-content: center;
-  padding: 0.42rem 0.78rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, var(--menu-bg) 92%, var(--menu-text));
-  color: var(--menu-text);
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0;
-  line-height: 1.2;
-  text-decoration: none;
-}
-
-.menu-method__option input {
-  width: 0.95rem;
-  height: 0.95rem;
-  margin: 0;
-  accent-color: var(--menu-primary);
-}
-
-.menu-method__radio {
-  width: 0.95rem;
-  height: 0.95rem;
-  border: 2px solid currentcolor;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 0.18rem var(--menu-bg);
-}
-
-.menu-method__option--active {
-  border-color: color-mix(in srgb, var(--menu-primary) 58%, transparent);
-  background: color-mix(in srgb, var(--menu-primary) 12%, var(--menu-bg));
-}
-
-.menu-method__option--active .menu-method__radio {
-  background: var(--menu-primary);
+  justify-content: flex-start;
 }
 
 .menu-method-select {
-  width: min(100%, 18rem);
+  width: min(100%, 14rem);
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .menu-choice-stack,
-  .menu-mode {
-    grid-auto-columns: 1fr;
+  .menu-method-select {
     width: 100%;
   }
 }

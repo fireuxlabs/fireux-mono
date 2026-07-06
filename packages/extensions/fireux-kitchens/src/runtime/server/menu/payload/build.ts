@@ -211,11 +211,8 @@ const contextOrderTypeConfigs = (
 
 const contextChoices = (
   choices: MenuChoice[],
-  types: KitchenOrderType[],
-  contextValue: unknown
+  types: KitchenOrderType[]
 ) => {
-  const profile = menuContextProfile(contextValue)
-
   return choices.filter((choice) =>
     choice.order_type && types.includes(choice.order_type)
   )
@@ -251,7 +248,7 @@ const serviceProfile = (
     defaultOrderType: defaultType,
     defaultOrderTypeConfig:
       contextOrdering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType),
-    choices: contextChoices(choices, orderTypes, context),
+    choices: contextChoices(choices, orderTypes),
   }
 }
 

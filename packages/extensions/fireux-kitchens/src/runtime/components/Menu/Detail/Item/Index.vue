@@ -254,7 +254,7 @@ function addItem() {
 .menu-item h3 {
   font-size: 1.1rem;
   font-weight: 850;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   color: var(--menu-title);
 }
 

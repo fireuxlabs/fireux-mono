@@ -14,8 +14,6 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/kitchen/dish.model'
-import type { MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
-import type { MenuSection } from '../../../../../models/kitchen/menu/menu-section.model'
 import { type Menu, MenuStorage, type MenuStatus, type MenuUpdateInput } from '../../../../../models/kitchen/menu/menu.model'
 import { MenuSourceUploadStorage } from '../../../../../models/kitchen/menu/menu-source-upload.model'
 import { menuItemsPath, menuPath, menuSectionsPath } from '../utils/paths'
@@ -30,6 +28,7 @@ import {
   readSingleStaleMenuRootEntryDoc,
 } from '../utils/root-entry'
 import { resolveKitchenCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
+import { assertMenuCanPublish } from './assertMenuCanPublish'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const rootEntryDerivedKeys = [
@@ -334,65 +333,17 @@ export function useMenuUpdate(
 
   async function setMenuStatus(kitchenId: string, menuId: string, status: MenuStatus) {
     if (status === 'published') {
-      await assertMenuCanPublish(kitchenId, menuId)
-    }
-    await updateMenu(kitchenId, menuId, { status })
-  }
-
-  async function assertMenuCanPublish(kitchenId: string, menuId: string) {
-    const menuSnap = await getDoc(doc(resolveDb(), collectionPath(kitchenId), clean(menuId)))
-    const menu = menuSnap.exists()
-      ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
-      : null
-    if (clean(menu?.doc_url)) return
-
-    const sectionsPath = menuSectionsPath({
-      kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-      kitchenId,
-      menuId,
-      appId,
-    })
-    if (!sectionsPath) throw new Error('Missing menu sections')
-
-    const sectionsSnap = await getDocs(collection(resolveDb(), sectionsPath))
-    const sections = sectionsSnap.docs
-      .map((doc) => ({ ...(doc.data() as MenuSection), id: doc.id }))
-      .filter((section) => section.status !== 'archived')
-
-    if (!sections.length) throw new Error('Menu needs at least one section')
-
-    let itemCount = 0
-    for (const section of sections) {
-      const itemsPath = menuItemsPath({
+      await assertMenuCanPublish({
+        appId,
+        db: resolveDb(),
+        dishCollectionPath: dishesPath(kitchenId),
         kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
         kitchenId,
+        menuCollectionPath: collectionPath(kitchenId),
         menuId,
-        sectionId: section.id,
-        appId,
       })
-      const itemsSnap = await getDocs(collection(resolveDb(), itemsPath))
-      const items = itemsSnap.docs
-        .map((doc) => ({ ...(doc.data() as MenuItem), id: doc.id }))
-        .filter((item) => item.status !== 'archived')
-
-      itemCount += items.length
-      if (items.some((item) => !clean(item.dish_id))) {
-        throw new Error('Every menu item needs a dish')
-      }
-
-      const dishCollectionPath = dishesPath(kitchenId)
-      if (!dishCollectionPath) throw new Error('Missing dish collection')
-
-      for (const item of items) {
-        const dishId = clean(item.dish_id)
-        const dishSnap = await getDoc(doc(resolveDb(), dishCollectionPath, dishId))
-        if (!dishSnap.exists()) {
-          throw new Error(`Menu item references missing dish: ${dishId}`)
-        }
-      }
     }
-
-    if (!itemCount) throw new Error('Menu needs at least one item')
+    await updateMenu(kitchenId, menuId, { status })
   }
 
   return {

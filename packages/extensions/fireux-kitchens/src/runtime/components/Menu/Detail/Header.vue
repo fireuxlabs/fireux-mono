@@ -128,15 +128,6 @@ const { menuServiceChip: derivedMenuServiceTimes } =
   width: 100%;
 }
 
-.menu-header__service-row :deep(.menu-choice-stack) {
-  width: auto;
-  justify-items: start;
-}
-
-.menu-header__service-row :deep(.menu-method-select) {
-  width: 12rem;
-}
-
 .menu-service-times-chip {
   display: inline-flex;
   align-items: center;
@@ -202,11 +193,6 @@ const { menuServiceChip: derivedMenuServiceTimes } =
 @media (max-width: 640px) {
   .menu-header__service-row {
     align-items: stretch;
-  }
-
-  .menu-header__service-row :deep(.menu-choice-stack),
-  .menu-header__service-row :deep(.menu-method-select) {
-    width: 100%;
   }
 }
 </style>
