@@ -344,16 +344,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
     if (!menuId.value || !orderTypes.value.length) return []
 
-    return surfaceContexts
-      .filter((surface) =>
-        surface.orderTypes.some((type) => orderTypes.value.includes(type))
-      )
-      .map((surface) => ({
-        value: surface.context,
-        label: surface.label,
-        to: contextualMenuPath(menuId.value, kitchenSlug.value, surface.context),
-        active: menuContext.value === surface.context,
-      }))
+    const surfaces = surfaceContexts.filter((surface) =>
+      surface.orderTypes.some((type) => orderTypes.value.includes(type))
+    )
+
+    return surfaces.map((surface) => ({
+      value: surface.context,
+      label: surface.label,
+      to: contextualMenuPath(menuId.value, kitchenSlug.value, surface.context),
+      active: menuContext.value === surface.context,
+    }))
   })
   const surfaceLabel = computed(() => contextLabels[menuContext.value])
   const orderEndpoint = computed(() => {

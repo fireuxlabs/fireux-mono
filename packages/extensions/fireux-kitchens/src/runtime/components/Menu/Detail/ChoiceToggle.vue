@@ -177,8 +177,7 @@ const homeSelectOptions = computed(() =>
   }))
 )
 const useHomeSelector = computed(() =>
-  props.menuContext === 'home' &&
-    homeOptions.value.length > 1 &&
+  homeOptions.value.length > 1 &&
     homeOptions.value.length === props.options.length
 )
 const currentOption = computed(() =>

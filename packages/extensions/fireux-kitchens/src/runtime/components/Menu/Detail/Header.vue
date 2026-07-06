@@ -85,7 +85,7 @@ const menuServiceTimes = computed(() =>
   props.menu.behaviour.ordering.service_hours?.operation_hours
 )
 const showSurfaceRail = computed(() =>
-  props.menu.behaviour.context === 'generic' && props.surfaceOptions.length > 0
+  props.menu.behaviour.context === 'generic' && props.surfaceOptions.length > 1
 )
 const { menuServiceChip: derivedMenuServiceTimes } =
   useMenuServiceComputed(menuServiceTimes)

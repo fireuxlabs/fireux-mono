@@ -28,16 +28,7 @@ const contextSet = new Set<string>(MenuRouteContexts)
 const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   generic: {
     context: 'generic',
-    visibleOrderTypes: [
-      'dine_in',
-      'eat_in',
-      'takeaway',
-      'collection',
-      'delivery',
-      'pre_order',
-      'room_service',
-    ],
-    defaultOrderType: 'delivery',
+    visibleOrderTypes: [],
     locked: false,
   },
   home: {

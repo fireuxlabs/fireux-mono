@@ -203,7 +203,6 @@ const contextOrderTypeConfigs = (
   contextValue: unknown
 ) => {
   const profile = menuContextProfile(contextValue)
-  if (profile.context === 'generic') return ordering.order_types
 
   return ordering.order_types.filter((type) =>
     profile.visibleOrderTypes.includes(type.type)
@@ -216,7 +215,6 @@ const contextChoices = (
   contextValue: unknown
 ) => {
   const profile = menuContextProfile(contextValue)
-  if (profile.context === 'generic') return choices
 
   return choices.filter((choice) =>
     choice.order_type && types.includes(choice.order_type)
