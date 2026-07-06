@@ -1,11 +1,23 @@
 <template>
-  <UDashboardPanel id="console-kitchen-menu-qr">
+  <UDashboardPanel id="console-kitchen-qr">
     <template #header>
-      <LayoutsConsoleNavbar title="Menu QR" />
+      <LayoutsConsoleNavbar title="QR" />
     </template>
 
     <template #body>
-      <section class="space-y-4">
+      <section class="space-y-6">
+        <UCard>
+          <template #header>
+            <h2 class="text-base font-semibold text-highlighted">
+              Kitchen and app
+            </h2>
+          </template>
+
+          <p class="text-sm text-dimmed">
+            Kitchen and app QR surfaces will live here. Menu entry QR codes are below.
+          </p>
+        </UCard>
+
         <ConsoleKitchenOperationsMenusQR />
       </section>
     </template>
@@ -17,7 +29,7 @@ definePageMeta({
   layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
-    key: 'console-kitchen-menus-qr',
+    key: 'console-kitchen-qr',
     label: 'QR',
     icon: 'i-lucide-qr-code',
     position: 'top',

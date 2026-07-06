@@ -134,9 +134,9 @@ const orderTypeGroups: OrderTypeGroup[] = [
       {
         key: 'table-ordering',
         types: ['dine_in'],
-        label: 'Table Ordering',
-        description: 'Dine-in only. Requires table number.',
-        route: '/menus/{menuId}.table',
+        label: 'Dine in',
+        description: 'Guests order inside the restaurant.',
+        route: '/menus/{menuId}.dine_in',
       },
       {
         key: 'kiosk-ordering',

@@ -23,11 +23,11 @@
               Manage menus
             </UButton>
             <UButton
-              to="/console/kitchen/menus/qr"
+              to="/console/kitchen/qr"
               variant="soft"
               icon="i-lucide-qr-code"
             >
-              Menu QR
+              QR
             </UButton>
           </div>
         </template>

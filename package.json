@@ -116,6 +116,7 @@
     "@iconify-json/vscode-icons": "^1.2.37",
     "@internationalized/date": "^3.5.0",
     "@nuxt/eslint": "^1.12.1",
+    "@nuxt/fonts": "^0.11.4",
     "@nuxt/kit": "4.4.6",
     "@nuxt/schema": "4.4.6",
     "@nuxt/ui": "^4.0.0-alpha.2",
@@ -146,6 +147,7 @@
   "packageManager": "pnpm@11.9.0",
   "dependencies": {
     "image-size": "^2.0.2",
+    "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4"
   }
 }

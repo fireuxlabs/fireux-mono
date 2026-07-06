@@ -1,8 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
     <template v-if="selectedKitchen">
-      <!-- Tools: add operation-level actions here when a real tool emerges. -->
-      <ConsoleKitchenOperationsMenusRead />
       <ConsoleKitchenOperationsMenusQR />
 
       <UAlert

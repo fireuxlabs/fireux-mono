@@ -102,8 +102,8 @@ const surfaceContexts = [
     orderTypes: ['delivery', 'collection'],
   },
   {
-    context: 'table',
-    label: 'Table',
+    context: 'dine_in',
+    label: 'Dine in',
     orderTypes: ['dine_in'],
   },
   {
