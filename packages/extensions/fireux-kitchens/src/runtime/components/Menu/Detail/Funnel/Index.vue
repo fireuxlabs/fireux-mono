@@ -30,6 +30,13 @@
         @update:ready="setScreenReady"
       />
 
+      <MenuDetailFunnelPreOrder
+        v-else-if="funnel.order.orderType === 'pre_order'"
+        :funnel="funnel"
+        :step="step"
+        @update:ready="setScreenReady"
+      />
+
       <MenuDetailFunnelShared
         v-else
         :funnel="funnel"
@@ -82,8 +89,9 @@ const isTakeAwayOrder = computed(() =>
     props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
   )
 )
+const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
 const funnelStepCount = computed(() =>
-  isTakeAwayOrder.value ? 6 : 4
+  isTakeAwayOrder.value || isPreOrder.value ? 6 : 4
 )
 const submittingStep = ref(false)
 const {
@@ -102,6 +110,8 @@ const {
 const shouldSubmitOrderRequest = computed(() => {
   if (props.funnel.sending.sent_order) return false
 
+  if (isPreOrder.value) return step.value === 3
+
   return isTakeAwayOrder.value
     ? step.value === 3
     : step.value === 2
@@ -116,7 +126,7 @@ const continueLabel = computed(() => {
 
 watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
   if (orderId) return
-  if (!isTakeAwayOrder.value) return
+  if (!isTakeAwayOrder.value && !isPreOrder.value) return
   if (step.value <= 3) return
 
   step.value = 3

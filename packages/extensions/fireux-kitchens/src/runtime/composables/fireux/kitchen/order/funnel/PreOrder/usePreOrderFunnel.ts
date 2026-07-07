@@ -24,7 +24,7 @@ export function usePreOrderFunnel(
   )
   const depositLabel = computed(() => {
     const policy = deposit.value
-    if (!policy?.amount) return ''
+    if (!policy?.amount) return `${money(10, 'CHF')} deposit per person`
 
     const amount = money(policy.amount, policy.currency_code || 'CHF')
     if (policy.type === 'fixed_per_person') return `${amount} deposit per person`
@@ -34,8 +34,7 @@ export function usePreOrderFunnel(
   })
   const operatorOnline = computed(() => toValue(options.operatorOnline) !== false)
   const detailsStatus = computed(() =>
-    currentOrder.value.policy?.message ||
-      `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${noticeHours.value} hours before you arrive.`
+    `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${noticeHours.value} hours before you arrive.`
   )
   const kitchenStatus = computed(() =>
     operatorOnline.value

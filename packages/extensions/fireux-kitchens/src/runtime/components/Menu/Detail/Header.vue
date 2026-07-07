@@ -59,6 +59,27 @@
         @update:model-value="$emit('update:modelValue', $event)"
       />
     </div>
+
+    <section
+      v-if="showPreOrderNotice"
+      class="menu-pre-order-notice"
+    >
+      <UIcon
+        name="i-lucide-calendar-clock"
+        class="menu-pre-order-notice__icon"
+        aria-hidden="true"
+      />
+
+      <div class="menu-pre-order-notice__copy">
+        <strong>Pre-order for large groups</strong>
+        <span>{{ preOrderNotice }}</span>
+        <span>{{ preOrderDepositNotice }}</span>
+      </div>
+
+      <span class="menu-pre-order-notice__status">
+        Kitchen operator online
+      </span>
+    </section>
   </header>
 </template>
 
@@ -97,6 +118,38 @@ const showSurfaceRail = computed(() =>
 )
 const { menuServiceChip: derivedMenuServiceTimes } =
   useMenuServiceComputed(menuServiceTimes, { orderType })
+const preOrderPolicy = computed(() =>
+  props.menu.behaviour.ordering.order_types.find((type) =>
+    type.type === 'pre_order'
+  )
+)
+const showPreOrderNotice = computed(() =>
+  props.menu.behaviour.context === 'pre_order' || orderType.value === 'pre_order'
+)
+const preOrderNoticeHours = computed(() =>
+  Math.max(1, Number(preOrderPolicy.value?.notice_hours || 24))
+)
+const preOrderDeposit = computed(() =>
+  preOrderPolicy.value?.fulfilment?.deposit
+)
+const preOrderDepositAmount = computed(() =>
+  Number(preOrderDeposit.value?.amount || 10)
+)
+const preOrderDepositCurrency = computed(() =>
+  preOrderDeposit.value?.currency_code || 'CHF'
+)
+const preOrderDepositLabel = computed(() =>
+  new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: preOrderDepositCurrency.value,
+  }).format(preOrderDepositAmount.value)
+)
+const preOrderNotice = computed(() =>
+  `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${preOrderNoticeHours.value} hours before you arrive.`
+)
+const preOrderDepositNotice = computed(() =>
+  `Once confirmed, we will ask for a ${preOrderDepositLabel.value} deposit per person.`
+)
 </script>
 
 <style scoped>
@@ -198,9 +251,64 @@ const { menuServiceChip: derivedMenuServiceTimes } =
   color: var(--menu-bg);
 }
 
+.menu-pre-order-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--menu-space-sm);
+  align-items: start;
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
+  border-radius: var(--menu-radius-card);
+  background: color-mix(in srgb, var(--menu-bg) 86%, var(--menu-primary));
+}
+
+.menu-pre-order-notice__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--menu-primary);
+}
+
+.menu-pre-order-notice__copy {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  color: var(--menu-text);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.menu-pre-order-notice__copy strong {
+  font-size: 0.92rem;
+  font-weight: 950;
+}
+
+.menu-pre-order-notice__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.85rem;
+  padding: 0.3rem 0.62rem;
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, #16a34a 16%, var(--menu-bg));
+  color: #15803d;
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
 @media (max-width: 640px) {
   .menu-header__service-row {
     align-items: stretch;
+  }
+
+  .menu-pre-order-notice {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .menu-pre-order-notice__status {
+    grid-column: 2;
+    justify-self: start;
   }
 }
 </style>
