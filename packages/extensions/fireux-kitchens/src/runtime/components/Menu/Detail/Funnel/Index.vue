@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useFunnelIndex } from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnelIndex'
+import { useFunnelSteps } from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnelSteps'
 import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const props = defineProps<{
@@ -95,7 +95,7 @@ const {
   setScreenReady,
   step,
   stepCount,
-} = useFunnelIndex(() => props.funnel.order, {
+} = useFunnelSteps(() => props.funnel.order, {
   close: () => props.funnel.close(),
   stepCount: funnelStepCount,
 })

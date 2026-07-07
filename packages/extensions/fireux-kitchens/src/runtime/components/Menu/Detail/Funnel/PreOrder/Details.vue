@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
-import { usePreOrder } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrder'
+import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrderFunnel'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -32,7 +32,7 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const { detailsStatus: preOrderStatus, ready } = usePreOrder(() => props.order)
+const { detailsStatus: preOrderStatus, ready } = usePreOrderFunnel(() => props.order)
 
 watchEffect(() => {
   emit('update:ready', ready.value)

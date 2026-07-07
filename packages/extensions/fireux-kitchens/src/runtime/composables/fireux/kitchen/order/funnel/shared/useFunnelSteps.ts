@@ -7,14 +7,14 @@ import {
 } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
-type UseFunnelIndexOptions = {
+type UseFunnelStepsOptions = {
   close: () => void
   stepCount: MaybeRefOrGetter<number>
 }
 
-export function useFunnelIndex(
+export function useFunnelSteps(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
-  options: UseFunnelIndexOptions
+  options: UseFunnelStepsOptions
 ) {
   const step = ref(1)
   const screenReady = ref(true)

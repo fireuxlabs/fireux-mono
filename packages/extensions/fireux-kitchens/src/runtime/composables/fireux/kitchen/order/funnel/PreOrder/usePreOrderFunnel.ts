@@ -5,7 +5,7 @@ import {
 } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
-export function usePreOrder(
+export function usePreOrderFunnel(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const detailsStatus = computed(() =>

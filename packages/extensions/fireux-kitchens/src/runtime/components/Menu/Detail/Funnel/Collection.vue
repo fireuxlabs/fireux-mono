@@ -34,7 +34,7 @@ import {
   computed,
   watchEffect,
 } from 'vue'
-import { useCollection } from '../../../../composables/fireux/kitchen/order/funnel/Collection/useCollection'
+import { useCollectionFunnel } from '../../../../composables/fireux/kitchen/order/funnel/Collection/useCollectionFunnel'
 import type { MenuOrderingFunnelController } from '../../../../models/kitchen/menu/menu-ordering.model'
 
 const props = defineProps<{
@@ -46,7 +46,7 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const collectionFunnel = useCollection(
+const collectionFunnel = useCollectionFunnel(
   () => props.funnel.order,
   () => props.step,
   () => props.funnel.incoming

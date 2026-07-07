@@ -13,7 +13,7 @@
 
       <div class="menu-order-dispatch__copy">
         <strong>Contacting kitchen</strong>
-        <span>Sending the pre-order request for kitchen approval.</span>
+        <span>{{ kitchenStatus }}</span>
       </div>
     </section>
 
@@ -28,8 +28,22 @@
 
       <div class="menu-order-dispatch__copy">
         <strong>Pre-order timing</strong>
-        <span>The kitchen will confirm the time before payment.</span>
+        <span>{{ timingStatus }}</span>
       </div>
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
+import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrderFunnel'
+
+const props = defineProps<{
+  order: MenuOrderingFunnelState
+}>()
+
+const {
+  kitchenStatus,
+  timingStatus,
+} = usePreOrderFunnel(() => props.order)
+</script>

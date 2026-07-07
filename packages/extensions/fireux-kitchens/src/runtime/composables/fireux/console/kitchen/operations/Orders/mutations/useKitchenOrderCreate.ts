@@ -110,6 +110,7 @@ export function useKitchenOrderCreate() {
       fulfilment_match: {},
       driver_responses: {},
       customer: {},
+      kitchen_note: '',
       payment: {
         required: false,
         status: 'not_required',

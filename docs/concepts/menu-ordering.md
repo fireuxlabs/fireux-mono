@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-07-04
-Ref: b24b43b6b
+Updated: 2026-07-07
+Ref: 935094ef1
 Role: map, not canon
 
 Purpose:
@@ -128,8 +128,16 @@ Public order funnel spine:
   basket visibility, local draft persistence, and submit.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
-- `funnel/Delivery`: delivery-only steps such as `useDeliveryZone-3` and
-  `useFulfilment`.
+- Funnel composable naming should keep `useFunnel` as the shared root,
+  `use<Type>Funnel` as the type brain, and `use<Type>Funnel<Screen>` only when a
+  screen earns its own state seam. Shared screens can stay short, such as
+  `useBasket`.
+- `useFunnelSteps` owns shared step navigation for the funnel card. It is not a
+  type brain and should not own order creation rules.
+- `funnel/shared/utils`: shared funnel utilities such as customer autofill.
+- `funnel/Delivery`: delivery-only screens such as `Area` and `Fulfilment`,
+  backed by the single `useDeliveryFunnel` seam until a screen earns its own
+  extra composable.
 - `funnel/Collection`: collection-only timing/rendezvous with the kitchen.
 - `server/api/menus/[menuId]/orders.post.ts`: canonical public menu order
   creation route for now. It writes `KitchenOrder` records under

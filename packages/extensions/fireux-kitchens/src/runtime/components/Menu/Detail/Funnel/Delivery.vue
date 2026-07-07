@@ -8,7 +8,7 @@
     <MenuDetailFunnelAllergen v-model="allergenAccepted" />
   </ClientOnly>
 
-  <MenuDetailFunnelDeliveryZone
+  <MenuDetailFunnelDeliveryArea
     v-else-if="step === 3"
     :order="funnel.order"
     @update:delivery="setDelivery"

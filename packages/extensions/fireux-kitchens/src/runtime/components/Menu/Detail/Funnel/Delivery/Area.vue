@@ -75,8 +75,8 @@ import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
 } from '../../../../../models/kitchen/menu/menu-ordering.model'
-import type { DeliveryAddressCheckResult } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDelivery'
-import { useDelivery } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDelivery'
+import type { DeliveryAddressCheckResult } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDeliveryFunnel'
+import { useDeliveryFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/Delivery/useDeliveryFunnel'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
@@ -102,7 +102,7 @@ const {
   suggestionsError,
   suggestionsPending,
   zones,
-} = useDelivery(() => props.order)
+} = useDeliveryFunnel(() => props.order)
 
 watch(
   ready,

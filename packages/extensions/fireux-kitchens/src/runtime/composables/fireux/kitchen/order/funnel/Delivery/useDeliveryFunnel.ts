@@ -14,11 +14,7 @@ import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
 } from '../../../../customer/useCustomerDeliveryAddressAutocomplete'
-import { useCustomer } from '../../../../firestore/profiles/Customer/useCustomer'
-import type {
-  CustomerPrivate,
-  CustomerSavedAddress,
-} from '../../../../../../models/customer.model'
+import { useCustomer } from '../shared/utils/useCustomer'
 import type { MenuDeliveryZone } from '../../../../../../models/kitchen/menu/menu.model'
 import type {
   MenuOrderingDeliveryState,
@@ -62,21 +58,9 @@ type FulfilmentOrder = {
   }>
 }
 
-type CustomerAvatarLike = { avatar?: string }
-
 const text = (value: unknown) => String(value ?? '').trim()
-const customerPrivate = (
-  source: { private?: Partial<CustomerPrivate> } | null | undefined
-) =>
-  source?.private ?? {}
-const firstDefaultSavedAddress = (
-  addresses: CustomerSavedAddress[] | undefined
-) =>
-  (addresses || []).find((address) => address.is_default) ||
-  (addresses || [])[0] ||
-  null
 
-export function useDelivery(
+export function useDeliveryFunnel(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
   options: UseDeliveryOptions = {}
 ) {
@@ -85,7 +69,7 @@ export function useDelivery(
   const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
-  const { customer: autofillCustomer } = useDeliveryAutofillCustomer()
+  const { customer: autofillCustomer } = useCustomer()
   const zones = computed(() =>
     toValue(order).policy?.fulfilment?.delivery_zones || []
   )
@@ -334,51 +318,6 @@ export function useDelivery(
     watchingCount,
     zones,
   }
-}
-
-function useDeliveryAutofillCustomer() {
-  const {
-    coreProfile,
-    appProfile,
-    coreUser,
-    pending,
-  } = useCustomer()
-
-  const customer = computed(() => {
-    const app = appProfile.value
-    const profile = coreProfile.value
-    const user = coreUser.value
-    const appPrivate = customerPrivate(app)
-    const profilePrivate = customerPrivate(profile)
-    const profileAvatar = text(
-      (app as CustomerAvatarLike | null)?.avatar ||
-        (profile as CustomerAvatarLike | null)?.avatar
-    )
-    const savedAddress =
-      firstDefaultSavedAddress(appPrivate.saved_addresses) ||
-      firstDefaultSavedAddress(profilePrivate.saved_addresses)
-
-    return {
-      name: text(
-        appPrivate.name ||
-          profilePrivate.name ||
-          profile?.title ||
-          user?.display_name
-      ),
-      avatar: profileAvatar,
-      avatar_url: text(profileAvatar || user?.avatar),
-      phone: text(appPrivate.phone || profilePrivate.phone),
-      address: text(
-        savedAddress?.address ||
-          appPrivate.default_delivery_address ||
-          profilePrivate.default_delivery_address
-      ),
-      address_place_id: text(savedAddress?.place_id),
-      allergy_note: text(appPrivate.allergy_note || profilePrivate.allergy_note),
-    }
-  })
-
-  return { customer, pending }
 }
 
 function zoneLabel(zone: MenuDeliveryZone | null) {

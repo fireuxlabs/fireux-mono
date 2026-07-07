@@ -49,7 +49,7 @@ const collectionOptions = [
   },
 ] as const
 
-export function useCollection(
+export function useCollectionFunnel(
   order: MaybeRefOrGetter<MenuOrderingFunnelState>,
   step: MaybeRefOrGetter<number>,
   incoming: MaybeRefOrGetter<MenuOrderingIncoming>
@@ -174,4 +174,4 @@ export function useCollection(
   }
 }
 
-export type MenuOrderingCollectionFunnel = ReturnType<typeof useCollection>
+export type MenuOrderingCollectionFunnel = ReturnType<typeof useCollectionFunnel>
