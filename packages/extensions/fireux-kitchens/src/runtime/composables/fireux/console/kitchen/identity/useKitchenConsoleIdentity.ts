@@ -1,7 +1,10 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenConsole } from '../core/useKitchenConsole'
-import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
+import {
+  readKitchenCurrencyCode,
+  readKitchenIdentity,
+} from '../../../../../utils/kitchen-spine'
 
 export function useKitchenConsoleIdentity() {
   const {
@@ -27,7 +30,7 @@ export function useKitchenConsoleIdentity() {
     normalizeString(identity.value.tagline)
   )
   const currencyCode = computed(() =>
-    normalizeString(kitchenRecord.value?.default_currency_code) || 'CHF'
+    readKitchenCurrencyCode(kitchenRecord.value)
   )
   const slug = computed(() =>
     normalizeString(kitchenRecord.value?.slug)

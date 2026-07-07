@@ -9,6 +9,7 @@ import {
 } from '../../../../menu/draft/sections'
 import {
   assertKitchenMenuUploadAccess,
+  assertKitchenMenuCurrencyCode,
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
@@ -35,6 +36,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const uploadId = requirePathSegment(body?.uploadId || menuId, 'Upload id')
 
   await assertKitchenMenuUploadAccess(appId, kitchenId, uid)
+  await assertKitchenMenuCurrencyCode(appId, kitchenId)
 
   if (!body?.confirmDishes) {
     throw createError({

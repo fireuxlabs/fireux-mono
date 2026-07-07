@@ -20,6 +20,7 @@ export type MenuOrderContext = {
   kitchenId: string
   kitchenSlug?: string
   kitchenName?: string
+  currencyCode?: string
   menuId: string
   menuData: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
@@ -87,6 +88,7 @@ export const readMenuOrderContext = async (
       kitchenId: kitchen.id,
       kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
       kitchenName: identity.name,
+      currencyCode: identity.currencyCode,
       menuId,
       menuData,
       fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
@@ -119,6 +121,7 @@ export const readMenuOrderContext = async (
     kitchenId,
     kitchenSlug: text(scope.kitchenSlug),
     kitchenName: text(scope.kitchenName),
+    currencyCode: text(scope.currencyCode),
     menuId: scopedMenuId,
     menuData: await readMenuDoc(appId, kitchenId, scopedMenuId),
     fulfilment: scope.fulfilment,

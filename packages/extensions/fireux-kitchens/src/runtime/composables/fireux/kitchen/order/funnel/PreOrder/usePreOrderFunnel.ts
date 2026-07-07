@@ -5,6 +5,7 @@ import {
 } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
+const preOrderDepositPerPerson = 10
 const money = (amount: number, currencyCode: string) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
@@ -18,20 +19,15 @@ export function usePreOrderFunnel(
   } = {}
 ) {
   const currentOrder = computed(() => toValue(order))
-  const deposit = computed(() => currentOrder.value.policy?.fulfilment?.deposit)
+  const currencyCode = computed(() =>
+    currentOrder.value.currencyCode.trim().toUpperCase()
+  )
   const noticeHours = computed(() =>
     Math.max(0, Number(currentOrder.value.policy?.notice_hours || 24))
   )
-  const depositLabel = computed(() => {
-    const policy = deposit.value
-    if (!policy?.amount) return `${money(10, 'CHF')} deposit per person`
-
-    const amount = money(policy.amount, policy.currency_code || 'CHF')
-    if (policy.type === 'fixed_per_person') return `${amount} deposit per person`
-    if (policy.type === 'percent') return `${policy.amount}% deposit`
-
-    return `${amount} deposit`
-  })
+  const depositLabel = computed(() =>
+    `${money(preOrderDepositPerPerson, currencyCode.value)} deposit per person`
+  )
   const operatorOnline = computed(() => toValue(options.operatorOnline) !== false)
   const detailsStatus = computed(() =>
     `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${noticeHours.value} hours before you arrive.`

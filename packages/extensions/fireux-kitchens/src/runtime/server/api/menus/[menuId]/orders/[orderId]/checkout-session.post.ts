@@ -55,6 +55,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
+  const currencyCode = text(context.currencyCode)
+  if (!currencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen currency code is required before payment.',
+    })
+  }
   const db = getRuntimeFirestore()
   const orderRef = db.doc(`apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`)
   const orderSnap = await orderRef.get()
@@ -67,7 +74,7 @@ export default defineEventHandler(async (event) => {
 
   const order = orderSnap.data() || {}
   const orderType = text(order.order_type) as KitchenOrderType
-  const payment = resolveCheckoutPayment(order)
+  const payment = resolveCheckoutPayment(order, currencyCode)
   if (!payment.required) {
     throw createError({
       statusCode: 400,
@@ -97,6 +104,13 @@ export default defineEventHandler(async (event) => {
   const reason = text(payment.reason) || 'Kitchen order payment'
   const resumeStatus = text(payment.resume_status) ||
     statusAfterPayment(orderType)
+  const paymentCurrencyCode = text(payment.currency_code).toLowerCase()
+  if (!paymentCurrencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Order payment currency is required.',
+    })
+  }
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
   const stripe = getMenuStripe()
@@ -105,7 +119,7 @@ export default defineEventHandler(async (event) => {
     line_items: [
       {
         price_data: {
-          currency: text(payment.currency_code || 'CHF').toLowerCase(),
+          currency: paymentCurrencyCode,
           product_data: {
             name: `${reason} · ${orderNumber}`,
             metadata: {
@@ -156,7 +170,10 @@ export default defineEventHandler(async (event) => {
   }
 })
 
-function resolveCheckoutPayment(order: Record<string, unknown>) {
+function resolveCheckoutPayment(
+  order: Record<string, unknown>,
+  currencyCode: string
+) {
   const current = record(order.payment)
   if (current.required === true) {
     return {
@@ -178,7 +195,7 @@ function resolveCheckoutPayment(order: Record<string, unknown>) {
     status: 'requires_payment',
     method: 'online_card',
     amount_chf: amount,
-    currency_code: 'CHF',
+    currency_code: currencyCode,
     reason: text(order.order_type) === 'delivery'
       ? 'Delivery order payment'
       : 'Order payment',

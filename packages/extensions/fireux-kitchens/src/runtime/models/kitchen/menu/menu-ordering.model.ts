@@ -243,6 +243,7 @@ export type MenuOrderingFunnelState = {
   actionLabel: string
   accepted: boolean
   awaitingAcceptance: boolean
+  currencyCode: string
   panelOpen: boolean
   items: MenuOrderingBasketItem[]
   message: string

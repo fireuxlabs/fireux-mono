@@ -17,7 +17,7 @@
       aria-label="Delivery fees"
     >
       <p class="delivery-zones-map__key-note">
-        Amounts in CHF
+        Amounts in {{ currencyLabel }}
       </p>
 
       <div
@@ -67,6 +67,7 @@ import type { KitchenDeliveryZone } from '../../../models/kitchen.model'
 const props = withDefaults(
   defineProps<{
     zones?: KitchenDeliveryZone[]
+    currencyCode: string
     center?: { lat: number; lng: number }
     canEdit?: boolean
     editableMode?: 'radius' | 'postal_codes' | 'polygon' | ''
@@ -89,20 +90,21 @@ defineEmits<{
 }>()
 
 const deliveryZones = computed(() => props.zones)
-const deliveryZoneColumns = [
+const currencyLabel = computed(() => props.currencyCode.trim().toUpperCase())
+const deliveryZoneColumns = computed(() => [
   {
     accessorKey: 'label',
     header: 'Zone',
   },
   {
     accessorKey: 'minimum',
-    header: 'Minimum order (CHF)',
+    header: `Minimum order (${currencyLabel.value})`,
   },
   {
     accessorKey: 'fee',
-    header: 'Fee (CHF)',
+    header: `Fee (${currencyLabel.value})`,
   },
-]
+])
 const deliveryZoneRows = computed(() =>
   deliveryZones.value.map((zone, index) => ({
     id: String(zone.id || zone.label || `zone-${index + 1}`),

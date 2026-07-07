@@ -109,6 +109,7 @@ const collectionOrder: MenuOrderingFunnelState = {
   actionLabel: 'Open collection basket',
   accepted: false,
   awaitingAcceptance: false,
+  currencyCode: 'CHF',
   panelOpen: true,
   items: basketItems,
   message: '',

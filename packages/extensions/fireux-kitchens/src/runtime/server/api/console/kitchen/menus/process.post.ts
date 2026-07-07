@@ -7,6 +7,7 @@ import {
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { processKitchenMenuAiReview } from '../../../../menu/ai/review'
 import {
+  assertKitchenMenuCurrencyCode,
   assertKitchenMenuUploadAccess,
   requireKitchenMenuUploadUser,
 } from '../../../../menu/source/uploads'
@@ -29,6 +30,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const uploadId = requirePathSegment(body?.uploadId || menuId, 'Upload id')
 
   await assertKitchenMenuUploadAccess(appId, kitchenId, uid)
+  const currencyCode = await assertKitchenMenuCurrencyCode(appId, kitchenId)
 
   if (!body?.confirmBilling) {
     throw createError({
@@ -44,6 +46,7 @@ export default defineEventHandler(async (event: H3Event) => {
     menuId,
     uploadId,
     uid,
+    currencyCode,
     quality: body.quality,
     limit: body.limit,
     force: body.force,

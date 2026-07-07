@@ -151,10 +151,10 @@ export const KitchenOrderModel = {
   payment: {
     required: false,
     status: 'not_required',
-    currency_code: 'CHF',
+    currency_code: '',
   } as KitchenOrderPayment,
 
-  // Legacy transitional fields still read/written by existing surfaces.
+  // Flat order index fields used by console and customer route surfaces.
   channel: '' as string,
   app_id: '' as string,
   creator_id: '' as string,

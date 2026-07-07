@@ -75,6 +75,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const displayImageUrl = normalizeString(identity.image_url || input.display_image_url)
     const tagline = normalizeString(identity.tagline)
     const placeId = normalizeString(input.place_id || place.id)
+    const currencyCode = normalizeString(input.currency_code).toUpperCase()
     const slug = normalizeSlug(
       input.slug ||
       place.slug ||
@@ -82,6 +83,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       placeName
     )
     const style = menus.style
+    if (!currencyCode) {
+      throw new Error('Kitchen currency code is required')
+    }
+
     const payload: Partial<Kitchen> = {
       app_scope: {
         state: 'root_only',
@@ -98,6 +103,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         image_url: displayImageUrl,
         gallery: normalizeStringArray(identity.gallery),
       },
+      currency_code: currencyCode,
       menus: {
         currency_format: menus.currency_format || input.menu_currency_format || 'dash',
         show_currency: typeof menus.show_currency === 'boolean'
@@ -132,6 +138,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const id = normalizeString(input?.id || input?.place?.id)
     if (!id) {
       throw new Error('Kitchen id is required')
+    }
+    if (!normalizeString(input.currency_code)) {
+      throw new Error('Kitchen currency code is required')
     }
 
     const ref = doc(db, collectionPath, id)

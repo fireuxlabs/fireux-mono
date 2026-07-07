@@ -4,6 +4,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import {
   assertKitchenMenuUploadAccess,
   assertKitchenMenuUploadAvailable,
+  assertKitchenMenuCurrencyCode,
   kitchenMenuUploadPath,
   kitchenMenuUploadRecord,
   kitchenMenuUploadResponse,
@@ -21,6 +22,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const request = await readKitchenMenuUploadRequest(event)
 
   await assertKitchenMenuUploadAccess(request.appId, request.kitchenId, uid)
+  await assertKitchenMenuCurrencyCode(request.appId, request.kitchenId)
   if (!request.replaceExisting) {
     await assertKitchenMenuUploadAvailable(
       request.appId,

@@ -8,6 +8,7 @@ export type MenuPayloadScope = {
   kitchenName?: string
   kitchenAppId?: string
   kitchenMenuId?: string
+  currencyCode?: string
   sourceKind?: string
   menuContext?: MenuRouteContext
   page_style?: Record<string, unknown>

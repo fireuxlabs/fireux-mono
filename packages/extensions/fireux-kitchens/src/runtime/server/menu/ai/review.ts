@@ -36,6 +36,7 @@ export type ProcessKitchenMenuAiReviewInput = {
   menuId: string
   uploadId: string
   uid: string
+  currencyCode: string
   quality?: string
   limit?: number
   force?: boolean
@@ -175,6 +176,7 @@ export async function processKitchenMenuAiReview(
     : await extractMenuWithAi(input.event, {
         appId: input.appId,
         menuId: input.menuId,
+        currencyCode: input.currencyCode,
         sourceFiles: files,
         model,
         normalizationModel,

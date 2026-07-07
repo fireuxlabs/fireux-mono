@@ -84,7 +84,7 @@
           <div class="space-y-3">
             <div class="console-summary-field">
               Code:
-              <span class="console-summary-value">{{ currencyCode || 'CHF' }} from Place</span>
+              <span class="console-summary-value">{{ currencyCode || 'Missing' }}</span>
             </div>
             <div class="console-summary-field">
               Display:
@@ -146,7 +146,10 @@
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
-import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-spine'
+import {
+  readKitchenCurrencyCode,
+  readKitchenFulfilmentConfig,
+} from '../../../../utils/kitchen-spine'
 import { menuAcceptsOrderType } from '../../../../utils/menu-ordering-policy'
 
 const {
@@ -165,7 +168,7 @@ const imageUrl = computed(() =>
 const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
 const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
-const currencyCode = computed(() => String(kitchen.value?.default_currency_code ?? 'CHF'))
+const currencyCode = computed(() => readKitchenCurrencyCode(kitchen.value))
 const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format ?? 'dash'))
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 const deliveryZones = computed(() =>
@@ -182,7 +185,7 @@ const currencyFormatLabel = computed(() => {
 })
 const menuDisplaySummary = computed(
   () =>
-    `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value} · ${
+    `${currencyCode.value || 'Missing currency'} · ${currencyFormatLabel.value} · ${
       showCurrency.value ? 'Shown' : 'Hidden'
     }`
 )

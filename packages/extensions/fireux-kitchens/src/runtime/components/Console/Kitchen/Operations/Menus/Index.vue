@@ -11,8 +11,16 @@
         description="This kitchen can be inspected, but changes are disabled."
       />
 
+      <UAlert
+        v-else-if="!canCreateMenu"
+        color="warning"
+        variant="soft"
+        title="Currency required"
+        :description="menuCreateBlockedMessage"
+      />
+
       <ConsoleOperationWritePanel
-        v-if="canWrite"
+        v-if="canWrite && canCreateMenu"
         title="Menu creation tools"
         description="Upload sources, process drafts, and create kitchen menus."
       >
@@ -42,5 +50,7 @@ const {
   selectedKitchen,
   readOnly,
   canWrite,
+  canCreateMenu,
+  menuCreateBlockedMessage,
 } = useKitchenConsoleMenus()
 </script>

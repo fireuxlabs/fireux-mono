@@ -46,6 +46,7 @@ const skippedNormalization = (reason: string): MenuAiNormalizationResult => ({
 function buildMenuNormalizationRequest(
   input: {
     menuId: string
+    currencyCode: string
     sections: KitchenMenuDraftSection[]
   }
 ) {
@@ -59,7 +60,7 @@ function buildMenuNormalizationRequest(
       domain: 'restaurant_menu',
       menuId: input.menuId,
       sourceKind: 'raw_menu_photo_extraction',
-      currency: 'CHF',
+      currency: input.currencyCode,
       languagePolicy:
         'Treat the original menu as default mixed-language copy, not one source language.',
     },
@@ -108,6 +109,7 @@ export async function normalizeMenuExtractionWithAi(
   input: {
     appId: string
     menuId: string
+    currencyCode: string
     model: string
     timeoutMs: number
     sections: KitchenMenuDraftSection[]
@@ -116,6 +118,8 @@ export async function normalizeMenuExtractionWithAi(
   if (!input.sections.length) {
     return skippedNormalization('Raw extraction did not produce sections to normalize.')
   }
+  const currencyCode = String(input.currencyCode ?? '').trim().toUpperCase()
+  if (!currencyCode) throw new Error('Kitchen currency code is required')
 
   const ai = useFireuxAi(event)
   const response = await ai.generateJson<NormalizedMenu>({
@@ -125,6 +129,7 @@ export async function normalizeMenuExtractionWithAi(
     timeoutMs: input.timeoutMs,
     ...buildMenuNormalizationRequest({
       menuId: input.menuId,
+      currencyCode,
       sections: input.sections,
     }),
   })

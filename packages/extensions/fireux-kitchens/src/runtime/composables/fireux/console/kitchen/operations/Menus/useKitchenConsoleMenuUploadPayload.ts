@@ -2,6 +2,7 @@ import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
+import { readKitchenCurrencyCode } from '../../../../../../utils/kitchen-spine'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 
@@ -35,6 +36,9 @@ export function useKitchenConsoleMenuUploadPayload(
         kitchenConsole.selection.kitchenId.value
     )
   )
+  const currencyCode = computed(() =>
+    readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)
+  )
   const menuPath = computed(() =>
     normalizeSlug(optionText(options.uploadId) || 'main-menu')
   )
@@ -66,6 +70,7 @@ export function useKitchenConsoleMenuUploadPayload(
     Boolean(
       kitchenConsole.runtime.appId.value &&
         kitchenConsole.selection.kitchenId.value &&
+        currencyCode.value &&
         menuPath.value &&
         createEndpoint.value &&
         availabilityEndpoint.value
@@ -118,6 +123,7 @@ export function useKitchenConsoleMenuUploadPayload(
 
   return {
     canUseTool,
+    currencyCode,
     payload,
     authToken,
   }

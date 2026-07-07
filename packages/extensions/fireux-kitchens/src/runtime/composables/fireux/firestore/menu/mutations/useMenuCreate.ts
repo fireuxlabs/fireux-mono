@@ -9,6 +9,8 @@ import {
 } from '../../../../../models/kitchen/menu/menu.model'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
+import { useKitchenConsole } from '../../../console/kitchen/core/useKitchenConsole'
+import { readKitchenCurrencyCode } from '../../../../../utils/kitchen-spine'
 
 export type MenuCreateInput = {
   kitchenId?: string
@@ -69,6 +71,7 @@ export function useMenuCreate(
   })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
+  const kitchenConsole = useKitchenConsole()
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
@@ -88,6 +91,9 @@ export function useMenuCreate(
 
     if (!name) throw new Error('Menu name is required')
     if (!kitchenId) throw new Error('Kitchen id is required')
+    if (!readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)) {
+      throw new Error('Select a kitchen currency code before creating menus.')
+    }
 
     const payload = buildMenuPayload({ ...input, kitchenId }, name)
     const id = menuId

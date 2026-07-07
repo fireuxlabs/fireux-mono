@@ -10,6 +10,7 @@ type ResolveMenuOrderPaymentInput = {
   orderType: KitchenOrderType
   orderTypeConfig?: MenuOrderTypeConfig
   customer: KitchenOrderCustomer
+  currencyCode: string
   paymentMethod?: KitchenOrderPaymentMethod
   subtotalChf: number
   totalChf: number
@@ -53,12 +54,17 @@ export function resolveMenuOrderPayment(
   const methods: KitchenOrderPaymentMethod[] = ['online_card']
   const deposit = fulfilment?.deposit
   const method = input.paymentMethod
+  const currencyCode = input.currencyCode.trim().toUpperCase()
+
+  if (!currencyCode) {
+    throw new Error('Kitchen currency code is required')
+  }
 
   if (!method) {
     return {
       required: false,
       status: 'not_required',
-      currency_code: 'CHF',
+      currency_code: currencyCode,
     }
   }
 
@@ -71,7 +77,7 @@ export function resolveMenuOrderPayment(
         status: 'requires_payment',
         method: 'deposit',
         amount_chf: amount,
-        currency_code: deposit.currency_code || 'CHF',
+        currency_code: currencyCode,
         reason: deposit.label || 'Deposit',
       }
     }
@@ -86,7 +92,7 @@ export function resolveMenuOrderPayment(
         status: 'requires_payment',
         method: 'online_card',
         amount_chf: amount,
-        currency_code: 'CHF',
+        currency_code: currencyCode,
         reason: input.orderType === 'delivery'
           ? 'Delivery order payment'
           : 'Order payment',
@@ -98,6 +104,6 @@ export function resolveMenuOrderPayment(
     required: false,
     status: 'not_required',
     ...(method ? { method } : {}),
-    currency_code: 'CHF',
+    currency_code: currencyCode,
   }
 }

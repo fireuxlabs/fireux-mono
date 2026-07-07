@@ -45,6 +45,9 @@
     <p v-if="message" class="mt-3 text-sm text-dimmed">
       {{ message }}
     </p>
+    <p v-if="!currencyCode" class="mt-3 text-sm text-warning">
+      Select a kitchen currency code before creating menus.
+    </p>
     <p v-if="error" class="mt-3 text-sm text-error">
       {{ error }}
     </p>
@@ -59,6 +62,7 @@ import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/con
 
 const {
   activeKitchenAppId,
+  currencyCode,
   kitchenId,
 } = useKitchenConsoleMenus()
 const { currentUser } = useAuth()
@@ -74,6 +78,7 @@ const canSave = computed(() =>
   Boolean(
     activeKitchenAppId.value &&
       kitchenId.value &&
+      currencyCode.value &&
       uploadId.value &&
       sourceUrl.value &&
       authToken.value &&

@@ -70,7 +70,7 @@ export type KitchenSurface = {
   tagline?: string
   short_name?: string
   food_gallery?: string[]
-  default_currency_code?: string
+  currency_code?: string
   menu_currency_format?: CurrencyDisplayFormat
   menu_show_currency?: boolean
   menu_available?: boolean
@@ -124,7 +124,6 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'price_level'
     | 'claimed_by'
     | 'verified'
-    | 'default_currency_code'
     | 'slug'
     | 'search_term'
   >> | null | undefined
@@ -360,7 +359,7 @@ export function useKitchenInterface() {
       prop: target.tagline || (target as any)?.brand_tagline,
       website: safeString(target.website),
       phone: safeString(target.phone),
-      currencyCode: safeString(target.default_currency_code),
+      currencyCode: safeString(target.currency_code),
       menuAvailable: target.menu_available !== false,
       badges: [
         publicPath || (slug ? `/kitchens/${slug}` : ''),
@@ -384,7 +383,7 @@ export function useKitchenInterface() {
         },
         {
           label: 'Currency',
-          value: safeString(target.default_currency_code),
+          value: safeString(target.currency_code),
         },
       ].filter((item) => Boolean(safeString(item.value))),
     }

@@ -95,7 +95,7 @@ const foodBookingPayload = (data: unknown) => {
     menu: {
       id: text(menu.id),
       name: text(menu.name),
-      currency: text(menu.currency) || 'CHF',
+      currency: text(menu.currency),
     },
     sections: categories
       .map((category) => ({

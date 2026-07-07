@@ -9,6 +9,7 @@
         v-if="zones.length"
         class="menu-order-delivery-map"
         :zones="zones"
+        :currency-code="order.currencyCode"
       />
     </ClientOnly>
 

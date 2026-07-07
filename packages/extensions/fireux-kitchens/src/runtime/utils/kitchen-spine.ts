@@ -105,6 +105,12 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
 
+export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
+  const source = record(value)
+
+  return text(source.currency_code).toUpperCase()
+}
+
 export const readKitchenFulfilmentConfig = (
   value: KitchenSpineRecord
 ): KitchenFulfilmentConfig => {

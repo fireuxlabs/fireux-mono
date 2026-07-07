@@ -1,3 +1,4 @@
+import { createError } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
@@ -267,6 +268,14 @@ export function buildMenuManifestPayload(
 ): MenuDetailPayload {
   const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
+  const currencyCode = text(scope.currencyCode)
+  if (!currencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen currency code is required before publishing menus.',
+    })
+  }
+
   const manifest: MenuManifest = {
     content: {
       id: menuId,
@@ -276,6 +285,7 @@ export function buildMenuManifestPayload(
     },
     behaviour: serviceProfile(menuData, scope),
     presentation: {
+      currencyCode,
       kitchenName: source.kitchen_name || '',
       pageStyle: readMenuPageStyle(scope.page_style),
     },

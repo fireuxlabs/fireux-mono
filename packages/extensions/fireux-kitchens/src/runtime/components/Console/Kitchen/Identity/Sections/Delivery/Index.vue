@@ -41,6 +41,7 @@
             :key="mapPreviewKey"
             class="delivery-zone-map-preview"
             :zones="mapZones"
+            :currency-code="currencyCode"
             :can-edit="canWrite"
             :editable-mode="activeBoundaryMode"
             :editable-zone-index="activeZoneIndex"
@@ -197,7 +198,10 @@ import type {
   KitchenFulfilmentConfig,
   KitchenUpdateInput,
 } from '../../../../../../models/kitchen.model'
-import { readKitchenFulfilmentConfig } from '../../../../../../utils/kitchen-spine'
+import {
+  readKitchenCurrencyCode,
+  readKitchenFulfilmentConfig,
+} from '../../../../../../utils/kitchen-spine'
 
 type BoundaryType = 'radius' | 'postal_codes' | 'polygon'
 
@@ -236,6 +240,7 @@ const saving = ref(false)
 const saveState = ref('')
 const syncingSavedZones = ref(false)
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
+const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
 const deliveryZones = computed<KitchenDeliveryZone[]>(
   () => fulfilment.value.delivery_zones
 )

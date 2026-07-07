@@ -58,7 +58,7 @@ const props = defineProps<{
 const money = (value: number) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: 'CHF',
+    currency: props.funnel.order.currencyCode.trim().toUpperCase(),
   }).format(value)
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {

@@ -1,5 +1,13 @@
 <template>
   <div class="space-y-4">
+    <UFormField label="Currency">
+      <USelect
+        v-model="currencyCode"
+        :options="currencyOptions"
+        placeholder="Select currency"
+      />
+    </UFormField>
+
     <PlaceSearchSection
       type="kitchen"
       placeholder="Search by name or address"
@@ -102,7 +110,14 @@ const router = useRouter()
 const error = ref<string | null>(null)
 const successResult = ref<ConsoleCreateResult | null>(null)
 const existingId = ref<string | null>(null)
+const currencyCode = ref('')
 
+const currencyOptions = [
+  'CHF',
+  'EUR',
+  'GBP',
+  'USD',
+]
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const isConsoleMode = computed(() => props.mode === 'console')
 const resolvedReturnTo = computed(() => {
@@ -186,9 +201,14 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     }
 
     const create = isConsoleMode.value ? createKitchenConsole : createKitchen
+    if (!currencyCode.value) {
+      throw new Error('Select a currency code before creating this kitchen.')
+    }
+
     const result = await create({
       id,
       place: placeForRecord,
+      currency_code: currencyCode.value,
     })
 
     if (isConsoleMode.value) {

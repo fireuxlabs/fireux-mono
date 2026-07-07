@@ -22,6 +22,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../models/kitchen.model'
 import { MenuSourceUploadStorage } from '../../../models/kitchen/menu/menu-source-upload.model'
+import { readKitchenCurrencyCode } from '../../../utils/kitchen-spine'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10
@@ -195,6 +196,29 @@ export async function assertKitchenMenuUploadAccess(
       statusMessage: 'You do not have access to this kitchen.',
     })
   }
+}
+
+export async function assertKitchenMenuCurrencyCode(
+  appId: string,
+  kitchenId: string
+) {
+  const db = getRuntimeFirestore()
+  const [scopedSnap, rootSnap] = await Promise.all([
+    db.doc(kitchenMenuUploadKitchenPath(appId, kitchenId)).get(),
+    db.doc(`${KitchenStorage.rootCollection}/${kitchenId}`).get(),
+  ])
+  const currencyCode =
+    readKitchenCurrencyCode(scopedSnap.data()) ||
+    readKitchenCurrencyCode(rootSnap.data())
+
+  if (!currencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Select a kitchen currency code before creating menus.',
+    })
+  }
+
+  return currencyCode
 }
 
 export async function kitchenMenuUploadExists(

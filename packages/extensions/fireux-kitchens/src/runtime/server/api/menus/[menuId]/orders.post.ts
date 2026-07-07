@@ -70,6 +70,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
+  const currencyCode = text(context.currencyCode)
+  if (!currencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen currency code is required before creating orders.',
+    })
+  }
   const ordering = readMenuOrderingConfig(context.menuData, context.fulfilment)
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   if (!isMenuOrderingEnabled(ordering)) {
@@ -87,7 +94,7 @@ export default defineEventHandler(async (event) => {
     'online_card',
   ])
   const requestedFor = text(body?.requested_for)
-  const collection = readCollection(body?.collection, requestedFor, orderType)
+  const collection = readCollection(body?.collection, orderType)
   const customer = readCustomer(body?.customer)
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null
   if (orderType === 'delivery') {
@@ -194,7 +201,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 400,
-      statusMessage: `Minimum order is ${money(deliveryMinimum)} for this delivery area.`,
+      statusMessage: `Minimum order is ${money(deliveryMinimum, currencyCode)} for this delivery area.`,
     })
   }
 
@@ -210,6 +217,7 @@ export default defineEventHandler(async (event) => {
     orderType,
     orderTypeConfig,
     customer,
+    currencyCode,
     paymentMethod,
     subtotalChf: subtotal,
     totalChf: total,
@@ -306,7 +314,7 @@ export default defineEventHandler(async (event) => {
         ? { requested_for: requestedFor }
         : {}),
       ...(collection ? { collection } : {}),
-      currency: 'CHF',
+      currency: currencyCode,
       subtotal_chf: subtotal,
       ...(deliveryFee ? { delivery_fee_chf: deliveryFee } : {}),
       total_chf: total,

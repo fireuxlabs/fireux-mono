@@ -133,6 +133,7 @@ const preOrderOrder: MenuOrderingFunnelState = {
   actionLabel: 'Open pre-order basket',
   accepted: false,
   awaitingAcceptance: false,
+  currencyCode: 'CHF',
   panelOpen: true,
   items: basketItems,
   message: '',
@@ -171,7 +172,7 @@ const preOrderPayment = {
   status: 'requires_payment' as const,
   method: 'deposit' as const,
   amount_chf: depositTotal,
-  currency_code: depositPolicy.currency_code || 'CHF',
+  currency_code: 'CHF',
   reason: depositPolicy.label || 'Deposit',
   resume_status: 'open',
 }

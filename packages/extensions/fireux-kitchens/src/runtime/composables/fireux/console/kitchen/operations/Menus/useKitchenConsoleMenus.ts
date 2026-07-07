@@ -8,6 +8,7 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../../../models/kitchen/menu/menu-source-upload.model'
+import { readKitchenCurrencyCode } from '../../../../../../utils/kitchen-spine'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const timestampSeconds = (value: unknown) => {
@@ -62,6 +63,25 @@ export function useKitchenConsoleMenus() {
   const menuSources = computed(() =>
     sortMenuSources(sourceUploads.items.value)
   )
+  const currencyCode = computed(() =>
+    readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)
+  )
+  const canCreateMenu = computed(() =>
+    kitchenConsole.runtime.canWrite.value && Boolean(currencyCode.value)
+  )
+  const menuCreateBlockedMessage = computed(() =>
+    currencyCode.value
+      ? ''
+      : 'Select a kitchen currency code before creating menus.'
+  )
+
+  async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
+    if (!currencyCode.value) {
+      throw new Error(menuCreateBlockedMessage.value)
+    }
+
+    return create.createMenu(input)
+  }
 
   return {
     selectedKitchen: kitchenConsole.selection.kitchen,
@@ -71,6 +91,8 @@ export function useKitchenConsoleMenus() {
     databaseId: kitchenConsole.runtime.databaseId,
     readOnly: kitchenConsole.runtime.readOnly,
     canWrite: kitchenConsole.runtime.canWrite,
+    canCreateMenu,
+    currencyCode,
     collectionPath,
     menus: activeMenus,
     rawMenus,
@@ -78,7 +100,8 @@ export function useKitchenConsoleMenus() {
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
-    createMenu: create.createMenu,
+    createMenu,
+    menuCreateBlockedMessage,
     updateMenu: update.updateMenu,
     renameMenu: update.renameMenu,
     publishMenu: update.publishMenu,

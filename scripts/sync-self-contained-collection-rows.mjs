@@ -82,7 +82,6 @@ const kitchenPlaceCardSnapshotTrim = {
   lng: FieldValue.delete(),
   phone: FieldValue.delete(),
   website: FieldValue.delete(),
-  default_currency_code: FieldValue.delete(),
   source: FieldValue.delete(),
 }
 
@@ -99,7 +98,6 @@ const placeSnapshot = (place) =>
     image_shade: text(place.image_shade),
     phone: text(place.phone),
     website: text(place.website),
-    default_currency_code: text(place.default_currency_code),
   })
 
 const kitchenName = (kitchen) => {

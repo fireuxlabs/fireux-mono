@@ -43,6 +43,7 @@ export type MenuManifestContent = {
 export type MenuManifestBehaviour = MenuServiceProfile
 
 export type MenuManifestPresentation = {
+  currencyCode: string
   kitchenName: string
   pageStyle?: Partial<PageStyle>
 }

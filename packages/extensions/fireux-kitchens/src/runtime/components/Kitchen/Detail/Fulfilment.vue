@@ -28,7 +28,10 @@
     <template #content>
       <UCard class="mt-4">
         <ClientOnly>
-          <KitchenDetailDeliveryZonesMap :zones="deliveryZones" />
+          <KitchenDetailDeliveryZonesMap
+            :zones="deliveryZones"
+            :currency-code="currencyCode"
+          />
         </ClientOnly>
       </UCard>
     </template>
@@ -39,7 +42,10 @@
 import { computed } from 'vue'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model'
-import { readKitchenFulfilmentConfig } from '../../../utils/kitchen-spine'
+import {
+  readKitchenCurrencyCode,
+  readKitchenFulfilmentConfig,
+} from '../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
@@ -50,4 +56,5 @@ const deliveryZones = computed(() =>
   props.fulfilment?.delivery_zones ||
   readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
+const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
 </script>

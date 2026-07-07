@@ -19,6 +19,7 @@ type CreateKitchenOrderInput = {
   requested_for?: string
   fire_state?: KitchenOrderFireState
   channel?: string
+  currency_code?: string
   kitchenCollectionPath?: string
   app_id?: string
   creator_id?: string
@@ -70,6 +71,8 @@ export function useKitchenOrderCreate() {
   const createOrder = async (input: CreateKitchenOrderInput) => {
     const kitchenId = normalizeString(input.kitchenId)
     if (!kitchenId) throw new Error('Missing kitchenId')
+    const currencyCode = normalizeString(input.currency_code).toUpperCase()
+    if (!currencyCode) throw new Error('Missing kitchen currency_code')
 
     const kitchenCollectionPath =
       normalizeString(input.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
@@ -114,7 +117,7 @@ export function useKitchenOrderCreate() {
       payment: {
         required: false,
         status: 'not_required',
-        currency_code: 'CHF',
+        currency_code: currencyCode,
       },
 
       app_id: (input.app_id || appId || '') as any,

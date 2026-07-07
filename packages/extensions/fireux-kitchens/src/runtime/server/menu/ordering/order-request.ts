@@ -23,10 +23,10 @@ export const numberValue = (value: unknown) => {
   return Number.isFinite(number) ? number : 0
 }
 
-export const money = (value: number) =>
+export const money = (value: number, currencyCode: string) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: 'CHF',
+    currency: currencyCode,
   }).format(value)
 
 export const orderId = () => {
@@ -104,7 +104,6 @@ export const readCustomer = (value: unknown): KitchenOrderCustomer => {
 
 export const readCollection = (
   value: unknown,
-  legacyRequestedFor: unknown,
   orderType: KitchenOrderType
 ) => {
   if (orderType !== 'collection') return null
@@ -113,7 +112,7 @@ export const readCollection = (
     ? value as Record<string, unknown>
     : {}
   const mode = text(source.mode)
-  const requestedFor = text(source.requested_for || legacyRequestedFor)
+  const requestedFor = text(source.requested_for)
 
   if (mode === 'scheduled') {
     if (!requestedFor) {

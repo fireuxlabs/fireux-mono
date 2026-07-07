@@ -136,6 +136,7 @@ export const KitchenModel = {
   id: '',
   place_id: '',
   slug: '',
+  currency_code: '',
 
   // Level 1 Kitchen spine: these namespaces mirror console/kitchen route groups.
   // Records still live in operation-specific models and app-scoped collections.
@@ -203,7 +204,7 @@ export type Kitchen = Omit<
     menus: KitchenMenusConfig
     fulfilment: KitchenFulfilmentConfig
 
-    // Current stored data still has these flat fields while root Kitchen docs move to the spine namespaces.
+    // Flat kitchen surface fields used by collection, route, and console views.
     app_scope_state?: FireuxAppScopeShape['app_scope_state']
     app_scope_app_id?: FireuxAppScopeShape['app_scope_app_id']
     is_test_kitchen?: boolean
@@ -214,6 +215,7 @@ export type Kitchen = Omit<
     display_image_url?: string
     image_shade?: KitchenImageShade
     food_gallery?: string[]
+    currency_code?: string
     menu_currency_format?: CurrencyDisplayFormat
     menu_show_currency?: boolean
     menu_style?: Partial<PageStyle>
@@ -235,6 +237,7 @@ export type KitchenCreateInput = Partial<
     | 'id'
     | 'place_id'
     | 'slug'
+    | 'currency_code'
     | 'identity'
     | 'menus'
   >

@@ -129,20 +129,14 @@ const showPreOrderNotice = computed(() =>
 const preOrderNoticeHours = computed(() =>
   Math.max(1, Number(preOrderPolicy.value?.notice_hours || 24))
 )
-const preOrderDeposit = computed(() =>
-  preOrderPolicy.value?.fulfilment?.deposit
-)
-const preOrderDepositAmount = computed(() =>
-  Number(preOrderDeposit.value?.amount || 10)
-)
 const preOrderDepositCurrency = computed(() =>
-  preOrderDeposit.value?.currency_code || 'CHF'
+  props.menu.presentation.currencyCode.trim().toUpperCase()
 )
 const preOrderDepositLabel = computed(() =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency: preOrderDepositCurrency.value,
-  }).format(preOrderDepositAmount.value)
+  }).format(10)
 )
 const preOrderNotice = computed(() =>
   `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${preOrderNoticeHours.value} hours before you arrive.`

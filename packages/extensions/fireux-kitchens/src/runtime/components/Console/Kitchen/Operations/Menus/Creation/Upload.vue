@@ -6,6 +6,14 @@
       :payload="payload"
       :auth-token="authToken"
     />
+
+    <UAlert
+      v-else-if="!currencyCode"
+      color="warning"
+      variant="soft"
+      title="Currency required"
+      description="Select a kitchen currency code before creating menus."
+    />
   </section>
 </template>
 
@@ -22,7 +30,7 @@ const props = defineProps<{
   ctaLabel?: string
 }>()
 
-const { canUseTool, payload, authToken } =
+const { canUseTool, currencyCode, payload, authToken } =
   useKitchenConsoleMenuUploadPayload({
     uploadId: toRef(props, 'uploadId'),
     lockSlug: toRef(props, 'lockSlug'),

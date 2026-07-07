@@ -115,6 +115,7 @@ async function readKitchenMenu(
     kitchenName: identity.name,
     kitchenAppId,
     kitchenMenuId: menuId,
+    currencyCode: identity.currencyCode,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
     page_style: resolveMenuPageStyle(

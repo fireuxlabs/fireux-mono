@@ -471,11 +471,13 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const funnelView = computed<MenuOrderingFunnelState>(() => {
     const policy = selectedOrderTypeConfig.value
     const serviceHours = behaviour.value?.ordering.service_hours
+    const currencyCode = text(toValue(options.menu)?.presentation.currencyCode)
 
     return {
       actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
       accepted: draft.acceptedOrder.value,
       awaitingAcceptance: draft.awaitingAcceptance.value,
+      currencyCode,
       panelOpen: panelOpen.value,
       items: draft.items.value,
       message: draft.error.value || draft.awaitingMessage.value || draft.message.value,

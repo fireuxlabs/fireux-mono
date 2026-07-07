@@ -51,10 +51,13 @@ const paymentBeforeKitchen = computed(() =>
 const paymentAmount = computed(() =>
   Number(payment.value?.amount_chf || props.funnel.processing.total_chf || 0)
 )
+const currencyCode = computed(() =>
+  props.funnel.order.currencyCode.trim().toUpperCase()
+)
 const totalLabel = computed(() =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: 'CHF',
+    currency: currencyCode.value,
   }).format(paymentAmount.value)
 )
 const canStartPayment = computed(() =>
