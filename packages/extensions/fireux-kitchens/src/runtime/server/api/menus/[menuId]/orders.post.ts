@@ -44,6 +44,9 @@ import {
   text,
 } from '../../../menu/ordering/order-request.ts'
 
+const safeSegment = (value: string) =>
+  Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
+
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['POST', 'OPTIONS'],
@@ -99,18 +102,38 @@ export default defineEventHandler(async (event) => {
       })
     }
   }
-  const rows = await readKitchenMenuSections(getRuntimeFirestore(), {
-    appId: context.appId,
-    kitchenId: context.kitchenId,
-    menuId: context.menuId,
-  })
-  const rowsById = new Map(
-    rows.flatMap((section) =>
-      section.items.map((item) => [item.id, item])
-    )
+  const sourceMenuIds = Array.from(new Set(
+    requestedItems.map((item) => text(item.menuId) || context.menuId)
+  ))
+  if (!sourceMenuIds.every(safeSegment)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Menu item source is invalid.',
+    })
+  }
+
+  const db = getRuntimeFirestore()
+  const rowsByMenuId = new Map(
+    await Promise.all(sourceMenuIds.map(async (sourceMenuId) => {
+      const rows = await readKitchenMenuSections(db, {
+        appId: context.appId,
+        kitchenId: context.kitchenId,
+        menuId: sourceMenuId,
+      })
+
+      return [
+        sourceMenuId,
+        new Map(
+          rows.flatMap((section) =>
+            section.items.map((item) => [item.id, item])
+          )
+        ),
+      ] as const
+    }))
   )
   const orderItems = requestedItems.map((requestedItem, index) => {
-    const item = rowsById.get(requestedItem.itemId)
+    const sourceMenuId = text(requestedItem.menuId) || context.menuId
+    const item = rowsByMenuId.get(sourceMenuId)?.get(requestedItem.itemId)
     if (!item?.dish_id) {
       throw createError({
         statusCode: 404,
@@ -134,6 +157,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       id: `item-${index + 1}`,
+      menu_id: sourceMenuId,
       dish_id: item.dish_id,
       label: labelParts.join(' · '),
       quantity: requestedItem.quantity,
@@ -174,7 +198,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const db = getRuntimeFirestore()
   const id = orderId()
   const number = orderNumber()
   const status = statusForOrderType(orderType)
@@ -197,6 +220,7 @@ export default defineEventHandler(async (event) => {
     : status
   const receiptItems = orderItems.map((item) => ({
     id: item.id,
+    menu_id: item.menu_id,
     label: item.label,
     quantity: item.quantity,
     unit_price_chf: numberValue(item.unit_price),

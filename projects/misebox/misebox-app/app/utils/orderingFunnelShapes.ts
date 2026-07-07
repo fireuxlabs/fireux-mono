@@ -3,6 +3,7 @@ import type {
   MenuOrderingDraft,
   MenuOrderingDraftContext,
   MenuOrderingKitchenIntake,
+  MenuOrderingOperatorPresence,
   MenuOrderingRouteContext,
   MenuOrderingSubmission,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
@@ -55,6 +56,7 @@ export type OrderingFunnelShapeOptions = {
   mode: DraftModePatch
   modeLabel: string
   orderType: KitchenOrderType
+  operator?: MenuOrderingOperatorPresence
   payment?: KitchenOrderPayment
   route: MenuOrderingRouteContext
   submission: MenuOrderingSubmission
@@ -105,6 +107,7 @@ export function createOrderingFunnelShapeTrack(
   }
   const withSubmission: MenuOrderingKitchenIntake = {
     ...withMode,
+    ...(options.operator ? { operator: options.operator } : {}),
     submission: options.submission,
   }
   const kitchen = createKitchenReceiving(withSubmission, options.payment)
@@ -180,6 +183,7 @@ function createKitchenReceiving(
       ...intake,
       given: {
         status: 'pending_acceptance',
+        ...(intake.operator ? { operator: intake.operator } : {}),
       },
     },
   }

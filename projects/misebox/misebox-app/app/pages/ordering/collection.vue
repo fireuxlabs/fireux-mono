@@ -48,7 +48,7 @@ import {
   watchEffect,
 } from 'vue'
 import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
-import { useCollection } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollection'
+import { useCollectionFunnel } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollectionFunnel'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
@@ -283,7 +283,7 @@ const collectionFunnel: MenuOrderingFunnelController = {
   },
   submit: () => collectionProcessing.order,
 }
-const collectionRequest = useCollection(
+const collectionRequest = useCollectionFunnel(
   () => collectionOrder,
   () => 3,
   () => collectionIncoming

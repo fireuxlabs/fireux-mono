@@ -24,6 +24,7 @@ export const KitchenOrderStorage = {
 
 export type KitchenOrderItem = {
   id: string
+  menu_id?: string
   dish_id: string
   label: string
   add_ons?: Array<{

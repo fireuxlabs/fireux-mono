@@ -108,7 +108,7 @@ export type MenuServiceProfile = {
   ordering: MenuOrderingConfig
   orderingEnabled: boolean
   orderTypes: KitchenOrderType[]
-  defaultOrderType: KitchenOrderType
+  defaultOrderType?: KitchenOrderType
   defaultOrderTypeConfig?: MenuOrderTypeConfig
   choices: MenuChoice[]
 }

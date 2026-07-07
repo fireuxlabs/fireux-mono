@@ -185,6 +185,8 @@ const defaultOrderType = (
   types: KitchenOrderType[],
   contextValue: unknown
 ) => {
+  if (!types.length) return undefined
+
   const profile = menuContextProfile(contextValue)
   const preferred = profile.defaultOrderType
   const visibleTypes = profile.visibleOrderTypes.filter((type) =>
@@ -245,9 +247,15 @@ const serviceProfile = (
     ordering: contextOrdering,
     orderingEnabled: isMenuOrderingEnabled(contextOrdering),
     orderTypes,
-    defaultOrderType: defaultType,
-    defaultOrderTypeConfig:
-      contextOrdering.order_types.find((type: MenuOrderTypeConfig) => type.type === defaultType),
+    ...(defaultType
+      ? {
+          defaultOrderType: defaultType,
+          defaultOrderTypeConfig:
+            contextOrdering.order_types.find((type: MenuOrderTypeConfig) =>
+              type.type === defaultType
+            ),
+        }
+      : {}),
     choices: contextChoices(choices, orderTypes),
   }
 }

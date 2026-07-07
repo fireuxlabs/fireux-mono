@@ -11,6 +11,7 @@
     <div class="menu-header__service-row">
       <ClientOnly>
         <span
+          v-if="derivedMenuServiceTimes.label"
           class="menu-service-times-chip"
           :class="{
             'menu-service-times-chip--open':
@@ -87,7 +88,9 @@ const menuServiceTimes = computed(() =>
   props.menu.behaviour.ordering.service_hours?.operation_hours
 )
 const orderType = computed(() =>
-  props.menu.behaviour.defaultOrderType
+  props.menu.behaviour.orderingEnabled
+    ? props.menu.behaviour.defaultOrderType
+    : undefined
 )
 const showSurfaceRail = computed(() =>
   props.menu.behaviour.context === 'generic' && props.surfaceOptions.length > 1

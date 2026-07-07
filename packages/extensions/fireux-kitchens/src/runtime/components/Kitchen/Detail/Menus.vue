@@ -7,6 +7,25 @@
     </template>
 
     <div class="space-y-4">
+      <ClientOnly>
+        <div
+          v-if="activeSessions.length"
+          class="flex flex-wrap gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3"
+        >
+          <UButton
+            v-for="session in activeSessions"
+            :key="session.key"
+            :to="sessionLink(session)"
+            color="primary"
+            variant="soft"
+            size="sm"
+            icon="i-lucide-shopping-basket"
+          >
+            {{ session.quantity }} · {{ session.label }} basket
+          </UButton>
+        </div>
+      </ClientOnly>
+
       <UButton
         v-if="menusIndexLink"
         size="sm"
@@ -31,7 +50,7 @@
           v-for="menu in sortedMenus"
           :key="menu.id"
           :menu="menu"
-          :to="menuLink(menu.id)"
+          :entries="menuEntries(menu)"
           :summary="defaultChromeLabels.openMenu"
         />
       </div>
@@ -43,7 +62,14 @@
 import { computed } from 'vue'
 import { usePublicAppScopedSource } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
+import {
+  orderSessionContextForOrderType,
+  useOrderSessionSummaries,
+  type MenuOrderSessionSummary,
+} from '../../../composables/fireux/kitchen/order/funnel/shared/useOrderSession'
 import KitchenDetailMenuLink from './MenuLink.vue'
+import type { Menu } from '../../../models/kitchen/menu/menu.model'
+import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const props = defineProps<{
@@ -69,6 +95,7 @@ const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
   kitchenId,
   { kitchenCollectionPath }
 )
+const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
 
 const menusLoading = computed(() =>
   Boolean(kitchenId.value) && menusPending.value
@@ -92,4 +119,70 @@ const menuLink = (menuIdRaw: unknown) => {
   if (!kitchenSlug.value || !menuId) return ''
   return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}`
 }
+const hasOrderType = (menu: Menu, types: KitchenOrderType[]) =>
+  Boolean(menu.ordering?.order_types?.some((row) => types.includes(row.type)))
+const contextualMenuLink = (menu: Menu, context: string) => {
+  const base = menuLink(menu.id)
+  if (!base) return ''
+
+  return `${base}.${context}`
+}
+const firstMenuForOrderType = (orderType: KitchenOrderType) =>
+  sortedMenus.value.find((menu) => hasOrderType(menu, [orderType])) ||
+    sortedMenus.value.find((menu) =>
+      hasOrderType(menu, orderType === 'delivery' || orderType === 'collection'
+        ? ['delivery', 'collection']
+        : orderType === 'eat_in' || orderType === 'takeaway'
+          ? ['eat_in', 'takeaway']
+          : [orderType])
+    )
+const sessionLink = (session: MenuOrderSessionSummary) => {
+  const menuId = session.firstMenuId || firstMenuForOrderType(session.orderType)?.id
+  const base = menuLink(menuId)
+  const context = orderSessionContextForOrderType(session.orderType)
+
+  return base && context !== 'generic' ? `${base}.${context}` : base
+}
+const menuEntries = (menu: Menu) => [
+  {
+    label: 'Browse',
+    to: menuLink(menu.id),
+    icon: 'i-lucide-book-open',
+  },
+  ...(hasOrderType(menu, ['delivery', 'collection'])
+    ? [{
+        label: 'Home',
+        to: contextualMenuLink(menu, 'home'),
+        icon: 'i-lucide-house',
+      }]
+    : []),
+  ...(hasOrderType(menu, ['pre_order'])
+    ? [{
+        label: 'Pre-order',
+        to: contextualMenuLink(menu, 'pre_order'),
+        icon: 'i-lucide-calendar-clock',
+      }]
+    : []),
+  ...(hasOrderType(menu, ['dine_in'])
+    ? [{
+        label: 'Dine in',
+        to: contextualMenuLink(menu, 'dine_in'),
+        icon: 'i-lucide-utensils',
+      }]
+    : []),
+  ...(hasOrderType(menu, ['eat_in', 'takeaway'])
+    ? [{
+        label: 'Kiosk',
+        to: contextualMenuLink(menu, 'kiosk'),
+        icon: 'i-lucide-monitor',
+      }]
+    : []),
+  ...(hasOrderType(menu, ['room_service'])
+    ? [{
+        label: 'Room service',
+        to: contextualMenuLink(menu, 'room_service'),
+        icon: 'i-lucide-concierge-bell',
+      }]
+    : []),
+].filter((entry) => entry.to)
 </script>

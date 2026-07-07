@@ -13,12 +13,16 @@ export type MenuOrderVariantInput = {
 
 export type CreateMenuOrderBody = {
   itemId?: string
+  menuId?: string
+  menu_id?: string
   quantity?: number
   addOns?: MenuOrderVariantInput[]
   add_ons?: MenuOrderVariantInput[]
   variant?: MenuOrderVariantInput
   items?: Array<{
     itemId?: string
+    menuId?: string
+    menu_id?: string
     quantity?: number
     addOns?: MenuOrderVariantInput[]
     add_ons?: MenuOrderVariantInput[]
@@ -77,6 +81,7 @@ export const readRequestedMenuOrderItems = (
     ? body.items
     : [{
         itemId: body?.itemId,
+        menuId: body?.menuId || body?.menu_id,
         quantity: body?.quantity,
         addOns: body?.addOns || body?.add_ons,
         variant: body?.variant,
@@ -85,6 +90,7 @@ export const readRequestedMenuOrderItems = (
   return items
     .map((item) => ({
       itemId: text(item.itemId),
+      menuId: text(item.menuId || item.menu_id),
       quantity: quantity(item.quantity),
       addOns: readAddOns(item.addOns || item.add_ons),
       variant: readVariant(item.variant),

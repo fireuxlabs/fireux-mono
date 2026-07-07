@@ -1,8 +1,5 @@
 <template>
-  <NuxtLink
-    :to="to"
-    class="rounded-lg border border-default p-4 transition hover:bg-elevated/50"
-  >
+  <article class="rounded-lg border border-default p-4">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <div class="flex flex-wrap items-center gap-2">
@@ -31,11 +28,25 @@
         </p>
       </div>
       <UIcon
-        name="i-lucide-arrow-up-right"
+        name="i-lucide-book-open-check"
         class="mt-1 size-4 shrink-0 text-muted"
       />
     </div>
-  </NuxtLink>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      <UButton
+        v-for="entry in entries"
+        :key="entry.to"
+        :to="entry.to"
+        :icon="entry.icon"
+        color="neutral"
+        variant="soft"
+        size="sm"
+      >
+        {{ entry.label }}
+      </UButton>
+    </div>
+  </article>
 </template>
 
 <script setup lang="ts">
@@ -44,9 +55,13 @@ import type { Menu } from '../../../models/kitchen/menu/menu.model'
 import { useMenuComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 
 const props = defineProps<{
+  entries: Array<{
+    label: string
+    to: string
+    icon: string
+  }>
   menu: Menu
   summary: string
-  to: string
 }>()
 
 const { menuServiceChip } = useMenuComputed(

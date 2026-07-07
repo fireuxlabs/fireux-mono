@@ -41,24 +41,16 @@
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="4" order-type="pre_order" total="6">
-        <MenuDetailFunnelPayment :funnel="funnel" />
-      </OrderingFunnelStage>
-
-      <OrderingObjectShape
-        title="order + allergen + preOrder + submission + deposit"
-        :data="screenShapes.withDeposit"
-      />
-    </article>
-
-    <article class="pre-order-funnel-screen">
-      <OrderingFunnelStage number="5" order-type="pre_order" total="6">
-        <MenuDetailFunnelPreOrderKitchen />
+        <MenuDetailFunnelPreOrderKitchen
+          :operator-online="operatorOnline"
+          :order="order"
+        />
 
         <section
-          v-if="!depositPaid"
+          v-if="!operatorOnline"
           class="mt-3 rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-muted"
         >
-          Kitchen receives this after the deposit is paid.
+          The request waits until a kitchen operator or team member is online.
         </section>
 
         <section
@@ -86,18 +78,39 @@
       </OrderingFunnelStage>
 
       <OrderingObjectShape
-        title="order + allergen + preOrder + submission + deposit + given"
+        title="order + allergen + preOrder + submission + operator"
         :data="screenShapes.kitchenInput"
       />
     </article>
 
     <OrderingKitchenReceiving
-      v-if="depositPaid"
+      v-if="operatorOnline && !depositPaid"
       :key="kitchenReceivingResetKey"
       :receiving="kitchenReceiving"
-      title="kitchen receives paid pre-order"
+      title="kitchen receives pre-order request"
       @update:outcome="updateKitchenOutcome"
     />
+
+    <article class="pre-order-funnel-screen">
+      <OrderingFunnelStage number="5" order-type="pre_order" total="6">
+        <MenuDetailFunnelPayment
+          v-if="kitchenAccepted"
+          :funnel="funnel"
+        />
+
+        <section
+          v-else
+          class="rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-muted"
+        >
+          The deposit appears after a kitchen operator accepts the request.
+        </section>
+      </OrderingFunnelStage>
+
+      <OrderingObjectShape
+        title="order + allergen + preOrder + submission + operator + deposit"
+        :data="screenShapes.withDeposit"
+      />
+    </article>
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="6" order-type="pre_order" total="6">
@@ -156,6 +169,13 @@ type KitchenOutcome =
 const detailsReady = ref(false)
 const kitchenOutcome = ref<KitchenOutcome | null>(null)
 const kitchenReceivingResetKey = ref(0)
+const operatorOnline = computed(() =>
+  props.kitchenIntake.operator?.status !== 'offline'
+)
+const kitchenAccepted = computed(() =>
+  kitchenOutcome.value?.status === 'accepted' ||
+    props.funnel.processing.status === 'open'
+)
 const acceptedModel = computed({
   get: () => props.allergenAccepted,
   set: (value: boolean) => {
@@ -163,9 +183,7 @@ const acceptedModel = computed({
   },
 })
 const depositPaid = computed(() =>
-  props.funnel.processing.order?.payment?.status === 'paid' ||
-    props.funnel.processing.status === 'pending_acceptance' ||
-    props.funnel.processing.status === 'open'
+  props.funnel.processing.order?.payment?.status === 'paid'
 )
 const screenShapes = computed(() => {
   const { incoming, processing } = props.funnel
@@ -209,10 +227,11 @@ const screenShapes = computed(() => {
 function returnToPreOrderDetails() {
   kitchenOutcome.value = null
   kitchenReceivingResetKey.value += 1
-  props.funnel.processing.status = 'pending_payment'
+  props.funnel.processing.status = 'pending_acceptance'
   props.funnel.processing.fire_state = 'held'
+  props.funnel.order.accepted = false
   if (props.funnel.processing.order) {
-    props.funnel.processing.order.status = 'pending_payment'
+    props.funnel.processing.order.status = 'pending_acceptance'
     props.funnel.processing.order.fire_state = 'held'
   }
 

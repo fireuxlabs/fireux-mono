@@ -16,6 +16,21 @@
         <span>{{ preOrderStatus }}</span>
       </div>
     </section>
+
+    <div class="menu-order-dispatch__divider" />
+
+    <section class="menu-order-dispatch__section">
+      <UIcon
+        name="i-lucide-credit-card"
+        class="menu-order-dispatch__icon"
+        aria-hidden="true"
+      />
+
+      <div class="menu-order-dispatch__copy">
+        <strong>Deposit</strong>
+        <span>{{ depositStatus }}</span>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -32,7 +47,11 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const { detailsStatus: preOrderStatus, ready } = usePreOrderFunnel(() => props.order)
+const {
+  depositStatus,
+  detailsStatus: preOrderStatus,
+  ready,
+} = usePreOrderFunnel(() => props.order)
 
 watchEffect(() => {
   emit('update:ready', ready.value)

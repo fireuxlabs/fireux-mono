@@ -37,7 +37,7 @@ export function useMenuServiceComputed(
       // service windows. Pre-orders can be submitted any time; confirmation is
       // gated by kitchen opening hours or an operator being signed in.
       label: isPreOrder
-        ? 'Served by pre-order'
+        ? ''
         : !known
           ? 'Hours unavailable'
         : open

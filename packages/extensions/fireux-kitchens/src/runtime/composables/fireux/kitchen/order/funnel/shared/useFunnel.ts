@@ -18,6 +18,11 @@ import {
   menuContextProfile,
   normalizeMenuRouteContext,
 } from '../../../../../../utils/menu-context'
+import {
+  notifyOrderSessionChanged,
+  orderSessionStorageKey,
+  useOrderSessionConflict,
+} from './useOrderSession'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
@@ -190,6 +195,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   )
   const contextProfile = computed(() => menuContextProfile(menuContext.value))
   const visibleOrderTypes = computed(() => contextProfile.value.visibleOrderTypes)
+  const menuId = computed(() => text(toValue(options.menuId)))
+  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const menuStorageScope = computed(() => {
     const slug = text(toValue(options.kitchenSlug))
     const id = text(toValue(options.menuId))
@@ -300,13 +307,26 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const selectedOrderType = computed<KitchenOrderType>(() =>
     selectedChoiceOption.value.orderType || 'dine_in'
   )
+  const orderChoiceActive = computed(() =>
+    canOrder.value &&
+      Boolean(selectedChoiceOption.value.orderType)
+  )
+  const sessionGuard = useOrderSessionConflict({
+    enabled: orderChoiceActive,
+    kitchenSlug,
+    menuId,
+    orderType: selectedOrderType,
+  })
+  const canAddToSession = computed(() =>
+    canOrder.value && !sessionGuard.hasConflict.value
+  )
   const selectedOrderTypeConfig = computed(() =>
     orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
     orderTypeConfigs.value.find((type) => type.type === defaultOrderType.value) ||
     orderTypeConfigs.value[0]
   )
   const isOrderMode = computed(() =>
-    canOrder.value &&
+    canAddToSession.value &&
       Boolean(selectedChoiceOption.value.orderType)
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
@@ -327,11 +347,19 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       panelState.value = open ? 'open' : 'closed'
     },
   })
+  const selectedItemId = ref('')
   const draft = useDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
-    canOrder,
+    canOrder: canAddToSession,
     orderType: selectedOrderType,
-    storageKey: computed(() => `fireux:menu:${menuStorageScope.value}:order`),
+    sourceMenuId: options.menuId,
+    storageKey: computed(() =>
+      orderSessionStorageKey({
+        kitchenSlug: kitchenSlug.value,
+        menuId: menuId.value,
+        orderType: selectedOrderType.value,
+      })
+    ),
   })
   const collectedIncoming = shallowRef<Partial<MenuOrderingIncoming>>({})
   const deliveryCustomer = computed(() =>
@@ -339,9 +367,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ? customerFromDelivery(collectedIncoming.value.delivery)
       : {}
   )
-  const selectedItemId = ref('')
-  const menuId = computed(() => text(toValue(options.menuId)))
-  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
     if (!menuId.value || !orderTypes.value.length) return []
 
@@ -386,6 +411,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       order_type: selectedOrderType.value,
       basket: draft.items.value.map((item) => ({
         item_id: item.id,
+        ...(item.menuId ? { menu_id: item.menuId } : {}),
         ...(item.lineId && item.lineId !== item.id ? { line_id: item.lineId } : {}),
         name: item.name,
         quantity: item.quantity,
@@ -420,6 +446,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       order_type: selectedOrderType.value,
       items: draft.items.value.map((item) => ({
         itemId: item.id,
+        ...(item.menuId ? { menuId: item.menuId } : {}),
         quantity: item.quantity,
         ...(item.addOns?.length ? { addOns: item.addOns } : {}),
         ...(item.variant ? { variant: item.variant } : {}),
@@ -489,6 +516,14 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     panelOpen.value = true
   }
 
+  function openSession() {
+    const conflict = sessionGuard.conflict.value
+    if (!conflict) return
+
+    selectedChoice.value = orderChoiceValue(conflict.orderType)
+    panelOpen.value = true
+  }
+
   function closePanel() {
     panelOpen.value = false
   }
@@ -543,10 +578,13 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       close: closePanel,
       incoming,
       open: openPanel,
+      openSession,
       pay: draft.pay,
       payment: draft.payment,
       processing,
+      restartSession: sessionGuard.restart,
       sending,
+      sessionConflict: sessionGuard.conflict,
       submit,
     }),
   }
@@ -557,6 +595,7 @@ type MenuOrderItem = {
   name: string
   addOns?: MenuOrderAddOn[]
   lineId?: string
+  menuId?: string
   price?: number
   variant?: MenuOrderVariant
 }
@@ -577,6 +616,7 @@ type MenuOrderVariant = {
 
 type MenuOrderDraftItem = MenuOrderItem & {
   lineId: string
+  menuId?: string
   quantity: number
   unitPrice: number
 }
@@ -585,11 +625,13 @@ type MenuOrderDraftOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
   canOrder?: MaybeRefOrGetter<boolean>
   orderType?: MaybeRefOrGetter<KitchenOrderType>
+  sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
   storageKey?: MaybeRefOrGetter<string | null | undefined>
 }
 
 type MenuOrderLineInput = {
   itemId: string
+  menuId?: string
   quantity: number
   addOns?: MenuOrderVariantInput[]
   variant?: MenuOrderVariantInput
@@ -727,6 +769,7 @@ function useDraft(
   const orderType = computed<KitchenOrderType>(() =>
     toValue(options.orderType) || 'dine_in'
   )
+  const sourceMenuId = computed(() => text(toValue(options.sourceMenuId)))
   const draft = ref<Record<string, MenuOrderDraftItem>>({})
   const hasMounted = ref(false)
   const awaitingAcceptance = ref(false)
@@ -793,12 +836,14 @@ function useDraft(
         .filter(isDraftItem)
         .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
           const lineId = text(item.lineId || item.id)
+          const menuId = text(item.menuId) || sourceMenuId.value
           const variant = normalizeVariant(item.variant)
           const addOns = normalizeAddOns(item.addOns)
 
           map[lineId] = {
             id: text(item.id),
             lineId,
+            ...(menuId ? { menuId } : {}),
             name: text(item.name),
             quantity: Number(item.quantity),
             unitPrice: numberValue(item.unitPrice),
@@ -827,10 +872,12 @@ function useDraft(
 
     if (!Object.keys(nextDraft).length) {
       window.localStorage.removeItem(key.value)
+      notifyOrderSessionChanged()
       return
     }
 
     window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
+    notifyOrderSessionChanged()
   }, { deep: true })
 
   function add(item: MenuOrderItem) {
@@ -840,7 +887,9 @@ function useDraft(
     trackedOrder.value = null
 
     const id = text(item.id)
-    const lineId = text(item.lineId) || id
+    const menuId = text(item.menuId) || sourceMenuId.value
+    const rawLineId = text(item.lineId) || id
+    const lineId = [menuId, rawLineId].filter(Boolean).join(':')
     if (!id) return
 
     const variant = normalizeVariant(item.variant)
@@ -863,6 +912,7 @@ function useDraft(
       [lineId]: {
         id,
         lineId,
+        ...(menuId ? { menuId } : {}),
         name: suffix ? `${text(item.name)} · ${suffix}` : text(item.name),
         unitPrice,
         ...(addOns.length ? { addOns } : {}),
@@ -902,6 +952,7 @@ function useDraft(
     const created = await createOrder({
       items: items.value.map((item) => ({
         itemId: item.id,
+        ...(item.menuId ? { menuId: item.menuId } : {}),
         quantity: item.quantity,
         ...(item.addOns?.length ? { addOns: item.addOns } : {}),
         ...(item.variant ? { variant: item.variant } : {}),
@@ -995,6 +1046,7 @@ function useCreate(
 
         return {
           itemId: text(item.itemId),
+          ...(item.menuId ? { menuId: text(item.menuId) } : {}),
           quantity: Math.max(1, Number(item.quantity || 1) || 1),
           ...(addOns.length ? { addOns } : {}),
           ...(variant ? { variant } : {}),

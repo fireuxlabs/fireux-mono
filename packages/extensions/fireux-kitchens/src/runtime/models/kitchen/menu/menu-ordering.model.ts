@@ -12,6 +12,7 @@ import type {
 
 export type CreatedMenuOrderReceiptLine = {
   id: string
+  menu_id?: string
   label: string
   quantity: number
   unit_price_chf: number
@@ -63,6 +64,7 @@ export type CreatedMenuOrder = {
 export type MenuOrderingBasketItem = {
   id: string
   lineId?: string
+  menuId?: string
   name: string
   quantity: number
   unitPrice?: number
@@ -156,6 +158,7 @@ export type MenuOrderingOptionInput = {
 
 export type MenuOrderingSubmitItem = {
   itemId: string
+  menuId?: string
   quantity: number
   addOns?: MenuOrderingOptionInput[]
   variant?: MenuOrderingOptionInput
@@ -177,7 +180,13 @@ export type MenuOrderingSubmission = {
   order_number: string
 }
 
+export type MenuOrderingOperatorPresence = {
+  role: 'team_member' | 'kitchen_operator'
+  status: 'online' | 'offline'
+}
+
 export type MenuOrderingKitchenIntake = MenuOrderingDraft & {
+  operator?: MenuOrderingOperatorPresence
   submission: MenuOrderingSubmission
 }
 
@@ -185,6 +194,7 @@ export type MenuOrderingIncoming = {
   order_type: KitchenOrderType
   basket: Array<{
     item_id: string
+    menu_id?: string
     line_id?: string
     name: string
     quantity: number
@@ -254,6 +264,14 @@ export type MenuOrderingSubmitPayload = {
   requested_for?: string
 }
 
+export type MenuOrderingSessionConflict = {
+  currentLabel: string
+  label: string
+  orderType: KitchenOrderType
+  quantity: number
+  to: string
+}
+
 export type MenuOrderingFunnelController = {
   show: boolean
   order: MenuOrderingFunnelState
@@ -261,11 +279,14 @@ export type MenuOrderingFunnelController = {
   processing: MenuOrderingProcessing
   sending: MenuOrderingSending
   payment: MenuOrderingPayment
+  sessionConflict?: MenuOrderingSessionConflict | null
   collect: (payload: Partial<MenuOrderingIncoming>) => void
   clear: () => void
   close: () => void
   open: () => void
+  openSession?: () => void
   pay: () => Promise<void> | void
+  restartSession?: () => void
   submit: (payload: MenuOrderingSubmitPayload) =>
     Promise<CreatedMenuOrder | null | undefined> |
     CreatedMenuOrder |

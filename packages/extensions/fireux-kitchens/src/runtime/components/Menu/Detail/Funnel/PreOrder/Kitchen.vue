@@ -4,6 +4,10 @@
       Kitchen
     </h2>
 
+    <p class="menu-order-step-label">
+      Kitchen operator {{ operatorStatus }}
+    </p>
+
     <section class="menu-order-dispatch__section">
       <UIcon
         name="i-lucide-chef-hat"
@@ -40,10 +44,14 @@ import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/ord
 
 const props = defineProps<{
   order: MenuOrderingFunnelState
+  operatorOnline?: boolean
 }>()
 
 const {
   kitchenStatus,
+  operatorStatus,
   timingStatus,
-} = usePreOrderFunnel(() => props.order)
+} = usePreOrderFunnel(() => props.order, {
+  operatorOnline: () => props.operatorOnline,
+})
 </script>
