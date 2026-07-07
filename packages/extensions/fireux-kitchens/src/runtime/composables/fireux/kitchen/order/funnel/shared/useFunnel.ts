@@ -39,6 +39,7 @@ import type {
   MenuOrderingDeliveryState,
   MenuOrderingIncoming,
   MenuOrderingProcessing,
+  MenuOrderingPayment,
   MenuOrderingSending,
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
@@ -542,6 +543,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       close: closePanel,
       incoming,
       open: openPanel,
+      pay: draft.pay,
+      payment: draft.payment,
       processing,
       sending,
       submit,
@@ -740,6 +743,10 @@ function useDraft(
     message,
     error,
     createOrder,
+    checkoutError,
+    checkoutMessage,
+    checkoutPending,
+    createCheckoutSession,
   } = useCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
   })
@@ -769,6 +776,11 @@ function useDraft(
 
     return 'Accepted. The kitchen is preparing your order.'
   })
+  const payment = computed<MenuOrderingPayment>(() => ({
+    pending: checkoutPending.value,
+    ...(checkoutMessage.value ? { message: checkoutMessage.value } : {}),
+    ...(checkoutError.value ? { error: checkoutError.value } : {}),
+  }))
 
   function restoreDraft(nextKey: string) {
     if (!import.meta.client || !nextKey) return
@@ -913,6 +925,13 @@ function useDraft(
     return created
   }
 
+  async function pay() {
+    const orderId = text(trackedOrder.value?.id)
+    if (!orderId) return
+
+    await createCheckoutSession(orderId)
+  }
+
   watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
     if (!status || !awaitingAcceptance.value) return
     if (isClearedOrderStatus(status.status)) {
@@ -937,9 +956,11 @@ function useDraft(
     creatingItemId,
     message,
     error,
+    payment,
     add,
     remove,
     clear,
+    pay,
     place,
   }
 }
@@ -962,6 +983,9 @@ function useCreate(
   const creatingItemId = ref('')
   const message = ref('')
   const error = ref('')
+  const checkoutPending = ref(false)
+  const checkoutMessage = ref('')
+  const checkoutError = ref('')
 
   const createOrder = async (input: CreateMenuOrderInput) => {
     const items = input.items
@@ -1030,22 +1054,37 @@ function useCreate(
     const orderPath = text(orderId)
     if (!id.value || !orderPath) return
 
+    checkoutPending.value = true
+    checkoutMessage.value = 'Opening secure payment...'
+    checkoutError.value = ''
+
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     const qs = query.toString()
-    const response = await $fetch<{ url?: string }>(
-      `/api/menus/${encodeURIComponent(id.value)}/orders/${encodeURIComponent(orderPath)}/checkout-session${qs ? `?${qs}` : ''}`,
-      {
-        method: 'POST',
+    try {
+      const response = await $fetch<{ url?: string }>(
+        `/api/menus/${encodeURIComponent(id.value)}/orders/${encodeURIComponent(orderPath)}/checkout-session${qs ? `?${qs}` : ''}`,
+        {
+          method: 'POST',
+        }
+      )
+      const checkoutUrl = text(response?.url)
+      if (!checkoutUrl) {
+        throw new Error('Payment checkout could not be started.')
       }
-    )
-    const checkoutUrl = text(response?.url)
-    if (!checkoutUrl) {
-      throw new Error('Payment checkout could not be started.')
-    }
 
-    if (import.meta.client) {
-      window.location.href = checkoutUrl
+      checkoutMessage.value = 'Redirecting to Stripe...'
+      if (import.meta.client) {
+        window.location.href = checkoutUrl
+      }
+    } catch (err) {
+      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
+        ? text((err as { statusMessage?: unknown }).statusMessage)
+        : ''
+      checkoutError.value = statusMessage || 'Payment checkout could not be started.'
+      throw err
+    } finally {
+      checkoutPending.value = false
     }
   }
 
@@ -1053,7 +1092,11 @@ function useCreate(
     creatingItemId,
     message,
     error,
+    checkoutError,
+    checkoutMessage,
+    checkoutPending,
     createOrder,
+    createCheckoutSession,
   }
 }
 

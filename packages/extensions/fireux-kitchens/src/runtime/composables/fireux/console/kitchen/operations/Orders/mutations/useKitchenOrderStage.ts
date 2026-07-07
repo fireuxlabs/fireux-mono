@@ -12,7 +12,7 @@ import {
   type KitchenOrder,
 } from '../../../../../../../models/kitchen/order.model'
 
-type KitchenOrderStage = 'accept' | 'queue' | 'pass' | 'archive'
+type KitchenOrderStage = 'accept' | 'reject' | 'queue' | 'pass' | 'archive'
 
 export function useKitchenOrderStage(
   options: {
@@ -41,7 +41,7 @@ export function useKitchenOrderStage(
     kitchenId: string,
     orderId: string,
     stage: KitchenOrderStage,
-    options: { estimatedMinutes?: number } = {}
+    options: { estimatedMinutes?: number | null; note?: string } = {}
   ) {
     const resolvedOrderId = normalizeString(orderId)
     if (!resolvedOrderId) throw new Error('Order id is required')
@@ -58,9 +58,17 @@ export function useKitchenOrderStage(
 
 function stagePatch(
   stage: KitchenOrderStage,
-  options: { estimatedMinutes?: number } = {}
+  options: { estimatedMinutes?: number | null; note?: string } = {}
 ): Partial<KitchenOrder> {
   if (stage === 'accept') {
+    if (options.estimatedMinutes === null) {
+      return {
+        status: 'open',
+        fire_state: 'held',
+        updated_at: serverTimestamp() as any,
+      }
+    }
+
     const estimatedMinutes = Math.max(
       1,
       Number(options.estimatedMinutes || 45) || 45
@@ -73,6 +81,15 @@ function stagePatch(
       estimated_ready_at: Timestamp.fromDate(
         new Date(Date.now() + estimatedMinutes * 60 * 1000)
       ) as any,
+      updated_at: serverTimestamp() as any,
+    }
+  }
+
+  if (stage === 'reject') {
+    return {
+      status: 'cancelled',
+      fire_state: 'held',
+      kitchen_note: normalizeString(options.note),
       updated_at: serverTimestamp() as any,
     }
   }

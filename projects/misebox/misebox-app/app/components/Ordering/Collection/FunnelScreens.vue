@@ -28,7 +28,7 @@
       />
     </article>
 
-    <article class="collection-funnel-screen">
+    <article id="collection-request-screen" class="collection-funnel-screen">
       <OrderingFunnelStage number="3" order-type="collection" total="6">
         <MenuDetailFunnelCollectionRequest :state="state" />
       </OrderingFunnelStage>
@@ -42,6 +42,29 @@
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="4" order-type="collection" total="6">
         <MenuDetailFunnelCollectionKitchen :funnel="funnel" />
+
+        <section
+          v-if="kitchenOutcome?.status === 'rejected'"
+          class="mt-3 grid gap-3 rounded-lg border border-error/20 bg-error/5 p-3"
+        >
+          <div class="grid gap-1">
+            <strong class="text-sm font-black text-highlighted">
+              Kitchen could not accept this order
+            </strong>
+            <p class="m-0 text-sm font-semibold text-muted">
+              {{ kitchenOutcome.note }}
+            </p>
+          </div>
+
+          <UButton
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-arrow-left"
+            @click="returnToCollectionRequest"
+          >
+            Back to collection time
+          </UButton>
+        </section>
       </OrderingFunnelStage>
 
       <OrderingObjectShape
@@ -51,8 +74,10 @@
     </article>
 
     <OrderingKitchenReceiving
+      :key="kitchenReceivingResetKey"
       :receiving="kitchenReceiving"
       title="order + allergen + collection + submission + given"
+      @update:outcome="updateKitchenOutcome"
     />
 
     <article class="collection-funnel-screen">
@@ -82,6 +107,7 @@
 <script setup lang="ts">
 import {
   computed,
+  ref,
   type StyleValue,
 } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
@@ -109,6 +135,18 @@ const emit = defineEmits<{
   (event: 'update:allergenAccepted', value: boolean): void
 }>()
 
+type KitchenOutcome =
+  | {
+      status: 'accepted'
+      estimatedMinutes: number | null
+    }
+  | {
+      status: 'rejected'
+      note: string
+    }
+
+const kitchenOutcome = ref<KitchenOutcome | null>(null)
+const kitchenReceivingResetKey = ref(0)
 const acceptedModel = computed({
   get: () => props.allergenAccepted,
   set: (value: boolean) => {
@@ -141,6 +179,59 @@ const screenShapes = computed(() => {
     processingOrder: processing.order,
   }
 })
+
+function returnToCollectionRequest() {
+  kitchenOutcome.value = null
+  kitchenReceivingResetKey.value += 1
+  props.funnel.processing.status = 'pending_acceptance'
+  props.funnel.processing.fire_state = 'held'
+  if (props.funnel.processing.order) {
+    props.funnel.processing.order.status = 'pending_acceptance'
+    props.funnel.processing.order.fire_state = 'held'
+  }
+
+  if (!import.meta.client) return
+  document
+    .getElementById('collection-request-screen')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function updateKitchenOutcome(outcome: KitchenOutcome | null) {
+  kitchenOutcome.value = outcome
+  if (!outcome) return
+
+  if (outcome.status === 'rejected') {
+    props.funnel.processing.status = 'cancelled'
+    props.funnel.processing.fire_state = 'held'
+    if (props.funnel.processing.order) {
+      const order = props.funnel.processing.order as Record<string, unknown>
+      props.funnel.processing.order.status = 'cancelled'
+      props.funnel.processing.order.fire_state = 'held'
+      order.kitchen_note = outcome.note
+    }
+    return
+  }
+
+  props.funnel.processing.status = 'open'
+  props.funnel.processing.fire_state = 'held'
+  props.funnel.order.accepted = true
+  if (props.funnel.processing.order) {
+    props.funnel.processing.order.status = 'open'
+    props.funnel.processing.order.fire_state = 'held'
+    if (outcome.estimatedMinutes !== null) {
+      const order = props.funnel.processing.order as Record<string, unknown>
+      const estimatedReadyAt = etaAt(outcome.estimatedMinutes)
+      props.funnel.processing.estimated_ready_minutes = outcome.estimatedMinutes
+      props.funnel.processing.estimated_ready_at = estimatedReadyAt
+      order.estimated_ready_minutes = outcome.estimatedMinutes
+      order.estimated_ready_at = estimatedReadyAt
+    }
+  }
+}
+
+function etaAt(minutes: number) {
+  return new Date(Date.now() + minutes * 60_000).toISOString()
+}
 </script>
 
 <style scoped>

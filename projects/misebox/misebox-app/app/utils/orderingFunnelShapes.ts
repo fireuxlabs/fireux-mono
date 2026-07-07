@@ -47,6 +47,7 @@ export type OrderingKitchenReceiving = {
 
 export type OrderingKitchenReceivingGiven = {
   status: string
+  [key: string]: unknown
 }
 
 export type OrderingFunnelShapeOptions = {
@@ -54,6 +55,7 @@ export type OrderingFunnelShapeOptions = {
   mode: DraftModePatch
   modeLabel: string
   orderType: KitchenOrderType
+  payment?: KitchenOrderPayment
   route: MenuOrderingRouteContext
   submission: MenuOrderingSubmission
 }
@@ -105,7 +107,7 @@ export function createOrderingFunnelShapeTrack(
     ...withMode,
     submission: options.submission,
   }
-  const kitchen = createKitchenReceiving(withSubmission)
+  const kitchen = createKitchenReceiving(withSubmission, options.payment)
 
   return {
     basket,
@@ -126,12 +128,13 @@ export function createOrderingFunnelShapeTrack(
 }
 
 function createKitchenReceiving(
-  intake: MenuOrderingKitchenIntake
+  intake: MenuOrderingKitchenIntake,
+  paymentOverride?: KitchenOrderPayment
 ): OrderingKitchenReceiving {
   const customer = kitchenCustomer(intake)
   const fulfilment = kitchenFulfilment(intake)
   const requestedFor = intake.preOrder?.requested_for
-  const payment: KitchenOrderPayment = {
+  const payment: KitchenOrderPayment = paymentOverride || {
     required: false,
     status: 'not_required',
     currency_code: 'CHF',
@@ -203,6 +206,9 @@ function kitchenCustomer(
     ...(intake.delivery?.address?.place_id
       ? { address_place_id: intake.delivery.address.place_id }
       : {}),
+    ...(intake.preOrder?.party_size
+      ? { party_size: intake.preOrder.party_size }
+      : {}),
     ...(intake.roomService?.guestName
       ? { name: intake.roomService.guestName }
       : {}),
@@ -237,6 +243,13 @@ function kitchenFulfilment(intake: MenuOrderingKitchenIntake) {
     return {
       type: 'room_service',
       room: intake.roomService.room,
+    }
+  }
+  if (intake.preOrder) {
+    return {
+      type: 'pre_order',
+      requested_for: intake.preOrder.requested_for,
+      notice_hours: intake.preOrder.notice_hours,
     }
   }
   if (intake.catering) {

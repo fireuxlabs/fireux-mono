@@ -105,6 +105,7 @@ export type KitchenOrderPayment = {
   amount_chf?: number
   currency_code?: string
   reason?: string
+  resume_status?: string
   stripe_checkout_session_id?: string
   stripe_payment_intent_id?: string
   paid_at?: string | FirebaseTimestamp
@@ -145,6 +146,7 @@ export const KitchenOrderModel = {
   // Driver interest/tender state is attached to the order, not a parallel collection.
   driver_responses: {} as Record<string, KitchenOrderDriverResponse>,
   customer: {} as KitchenOrderCustomer,
+  kitchen_note: '' as string,
   payment: {
     required: false,
     status: 'not_required',

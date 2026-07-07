@@ -95,17 +95,18 @@ export default defineEventHandler(async (event: H3Event) => {
   if (!orderSnap.exists) return { received: true }
 
   const order = orderSnap.data() || {}
+  const payment = (order.payment && typeof order.payment === 'object')
+    ? order.payment as Record<string, unknown>
+    : {}
   const orderType = text(order.order_type) as KitchenOrderType
-  const paidStatus = statusAfterPayment(orderType)
+  const paidStatus = text(payment.resume_status) || statusAfterPayment(orderType)
   const now = FieldValue.serverTimestamp()
 
   await orderRef.set(
     {
       status: paidStatus,
       payment: {
-        ...((order.payment && typeof order.payment === 'object')
-          ? order.payment
-          : {}),
+        ...payment,
         required: true,
         status: 'paid',
         stripe_checkout_session_id: metadata.checkoutSessionId,

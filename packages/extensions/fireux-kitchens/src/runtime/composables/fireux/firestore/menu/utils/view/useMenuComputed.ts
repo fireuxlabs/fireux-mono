@@ -7,16 +7,23 @@ import { useMenuInterface } from './useMenuInterface'
 type MenuServiceChipColor = 'neutral' | 'success' | 'error'
 
 export function useMenuServiceComputed(
-  serviceHours: MaybeRefOrGetter<unknown>
+  serviceHours: MaybeRefOrGetter<unknown>,
+  options: {
+    orderType?: MaybeRefOrGetter<string | null | undefined>
+  } = {}
 ) {
   const { now: serviceNow } = useKitchenServiceNow()
   const menuServiceOpenState = computed(() =>
     readWeekdayTimeOpenState(toValue(serviceHours), serviceNow.value)
   )
+  const orderType = computed(() =>
+    String(toValue(options.orderType) || '').trim()
+  )
   const menuServiceChip = computed(() => {
     const known = menuServiceOpenState.value.known
     const open = menuServiceOpenState.value.open
-    const color: MenuServiceChipColor = !known
+    const isPreOrder = orderType.value === 'pre_order'
+    const color: MenuServiceChipColor = isPreOrder || !known
       ? 'neutral'
       : open
         ? 'success'
@@ -26,11 +33,16 @@ export function useMenuServiceComputed(
       known,
       open,
       color,
-      label: !known
-      ? 'Hours unavailable'
-      : open
-        ? 'Open now'
-        : 'Closed now',
+      // TODO(menu-ordering): migrate kitchen hours into editable menu-level
+      // service windows. Pre-orders can be submitted any time; confirmation is
+      // gated by kitchen opening hours or an operator being signed in.
+      label: isPreOrder
+        ? 'Served by pre-order'
+        : !known
+          ? 'Hours unavailable'
+        : open
+          ? 'Serving now'
+          : 'Not serving now',
     }
   })
 

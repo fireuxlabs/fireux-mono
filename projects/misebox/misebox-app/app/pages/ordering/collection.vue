@@ -53,6 +53,7 @@ import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
+  MenuOrderingCollectionState,
   MenuOrderingFunnelController,
   MenuOrderingFunnelState,
   MenuOrderingIncoming,
@@ -82,29 +83,6 @@ const basketTotal = basketItems.reduce(
   (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
   0
 )
-const collectionShapeTrack = createOrderingFunnelShapeTrack({
-  route: {
-    menuId: 'pizza-snacks-drinks',
-    kitchenSlug: 'baeren-ringgenberg',
-  },
-  orderType: 'collection',
-  modeLabel: 'collection',
-  basket: {
-    items: basketItems,
-    quantity: basketQuantity,
-  },
-  mode: {
-    collection: {
-      mode: 'queue',
-    },
-  },
-  submission: {
-    id: 'demo-collection-order',
-    kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
-    menu_id: 'pizza-snacks-drinks',
-    order_number: 'C-104',
-  },
-})
 const demoServiceHours: MenuServiceHoursConfig = {
   inherit_kitchen_operation_hours: false,
   operation_hours: {
@@ -162,11 +140,41 @@ const collectionIncoming = reactive<MenuOrderingIncoming>({
     mode: 'queue',
   },
 })
+const currentCollection = computed<MenuOrderingCollectionState>(() =>
+  collectionIncoming.collection || {
+    mode: 'queue',
+  }
+)
+const collectionShapeTrack = computed(() =>
+  createOrderingFunnelShapeTrack({
+    route: {
+      menuId: 'pizza-snacks-drinks',
+      kitchenSlug: 'baeren-ringgenberg',
+    },
+    orderType: 'collection',
+    modeLabel: 'collection',
+    basket: {
+      items: basketItems,
+      quantity: basketQuantity,
+    },
+    mode: {
+      collection: currentCollection.value,
+    },
+    submission: {
+      id: currentCollection.value.mode === 'scheduled'
+        ? 'demo-scheduled-collection-order'
+        : 'demo-collection-order',
+      kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
+      menu_id: 'pizza-snacks-drinks',
+      order_number: currentCollection.value.mode === 'scheduled' ? 'C-105' : 'C-104',
+    },
+  })
+)
 const collectionProcessing = reactive<MenuOrderingProcessing>({
   exists: true,
   order_id: 'demo-collection-order',
   order_number: 'C-104',
-  status: 'new',
+  status: 'pending_acceptance',
   fire_state: 'held',
   items: basketItems,
   total_chf: basketTotal,
@@ -174,7 +182,7 @@ const collectionProcessing = reactive<MenuOrderingProcessing>({
     id: 'demo-collection-order',
     order_number: 'C-104',
     order_type: 'collection',
-    status: 'new',
+    status: 'pending_acceptance',
     collection: {
       mode: 'queue',
     },
@@ -194,10 +202,15 @@ const collectionSending = reactive<MenuOrderingSending>({
   },
   pending: false,
   expected_result: {
-    status: 'new',
+    status: 'pending_acceptance',
     fire_state: 'held',
   },
   sent_order: collectionProcessing.order,
+})
+const collectionPayment = reactive({
+  pending: false,
+  message: '',
+  error: '',
 })
 const collectionFunnel: MenuOrderingFunnelController = {
   show: true,
@@ -205,6 +218,7 @@ const collectionFunnel: MenuOrderingFunnelController = {
   incoming: collectionIncoming,
   processing: collectionProcessing,
   sending: collectionSending,
+  payment: collectionPayment,
   collect: (payload) => {
     Object.assign(collectionIncoming, payload)
     if (payload.collection) {
@@ -217,6 +231,56 @@ const collectionFunnel: MenuOrderingFunnelController = {
   clear: () => {},
   close: () => {},
   open: () => {},
+  pay: () => {
+    if (collectionPayment.pending) return
+    if (collectionProcessing.order?.payment?.status === 'paid') return
+
+    collectionPayment.pending = true
+    collectionPayment.message = 'Payment is in progress.'
+    collectionPayment.error = ''
+    collectionProcessing.status = 'pending_payment'
+    if (collectionProcessing.order) {
+      collectionProcessing.order.status = 'pending_payment'
+      collectionProcessing.order.payment = {
+        required: true,
+        status: 'pending',
+        method: 'online_card',
+        amount_chf: basketTotal,
+        currency_code: 'CHF',
+        reason: 'Order payment',
+        resume_status: 'open',
+      }
+    }
+
+    const acceptPayment = () => {
+      collectionPayment.pending = false
+      collectionPayment.message = 'Payment accepted.'
+      collectionProcessing.status = 'open'
+      collectionProcessing.fire_state = 'held'
+      if (!collectionProcessing.order) return
+
+      collectionProcessing.order.status = 'open'
+      collectionProcessing.order.fire_state = 'held'
+      collectionProcessing.order.payment = {
+        ...collectionProcessing.order.payment,
+        required: true,
+        status: 'paid',
+        method: 'online_card',
+        amount_chf: basketTotal,
+        currency_code: 'CHF',
+        reason: 'Order payment',
+        resume_status: 'open',
+        paid_at: new Date().toISOString(),
+      }
+    }
+
+    if (!import.meta.client) {
+      acceptPayment()
+      return
+    }
+
+    window.setTimeout(acceptPayment, 1000)
+  },
   submit: () => collectionProcessing.order,
 }
 const collectionRequest = useCollection(

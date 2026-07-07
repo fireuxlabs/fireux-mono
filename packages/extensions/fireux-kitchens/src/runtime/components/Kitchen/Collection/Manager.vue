@@ -82,7 +82,11 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
+import {
+  computed,
+  onMounted,
+  ref,
+} from 'vue'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -120,7 +124,10 @@ const props = withDefaults(
 
 const fetched = useKitchenCollection()
 const rawCollection = computed<KitchenCollectionItem[]>(() => fetched.kitchens.value ?? [])
-const pending = computed(() => fetched.pending.value)
+const hydrated = ref(false)
+const pending = computed(() =>
+  fetched.pending.value || (!hydrated.value && !rawCollection.value.length)
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
@@ -192,4 +199,7 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 
+onMounted(() => {
+  hydrated.value = true
+})
 </script>

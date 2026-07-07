@@ -13,10 +13,12 @@
         <span
           class="menu-service-times-chip"
           :class="{
-            'menu-service-times-chip--open': derivedMenuServiceTimes.open,
+            'menu-service-times-chip--open':
+              derivedMenuServiceTimes.color === 'success',
             'menu-service-times-chip--closed':
-              derivedMenuServiceTimes.known && !derivedMenuServiceTimes.open,
-            'menu-service-times-chip--unknown': !derivedMenuServiceTimes.known,
+              derivedMenuServiceTimes.color === 'error',
+            'menu-service-times-chip--unknown':
+              derivedMenuServiceTimes.color === 'neutral',
           }"
         >
           {{ derivedMenuServiceTimes.label }}
@@ -84,11 +86,14 @@ defineEmits<{
 const menuServiceTimes = computed(() =>
   props.menu.behaviour.ordering.service_hours?.operation_hours
 )
+const orderType = computed(() =>
+  props.menu.behaviour.defaultOrderType
+)
 const showSurfaceRail = computed(() =>
   props.menu.behaviour.context === 'generic' && props.surfaceOptions.length > 1
 )
 const { menuServiceChip: derivedMenuServiceTimes } =
-  useMenuServiceComputed(menuServiceTimes)
+  useMenuServiceComputed(menuServiceTimes, { orderType })
 </script>
 
 <style scoped>

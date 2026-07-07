@@ -5,7 +5,7 @@
         <div>
           <h2 class="text-base font-semibold text-highlighted">Ordering</h2>
           <p class="text-sm text-dimmed">
-            Choose which guest surfaces this menu should offer.
+            Choose which order modes this menu should offer.
           </p>
         </div>
 
@@ -16,62 +16,57 @@
     </template>
 
     <div class="space-y-4">
-      <div class="space-y-3">
-        <section
-          v-for="group in orderTypeGroups"
-          :key="group.key"
-          class="ordering-group"
+      <div class="grid gap-3 md:grid-cols-2">
+        <div
+          v-for="option in orderTypeOptions"
+          :key="option.key"
+          class="rounded-md border p-3 transition-colors"
+          :class="hasOrderTypeOption(option)
+            ? 'border-primary/50 bg-primary/5'
+            : 'border-default bg-default/60'"
         >
-          <div class="ordering-group__header">
-            <h3 class="ordering-group__title">{{ group.label }}</h3>
-            <p class="ordering-group__description">{{ group.description }}</p>
-            <code
-              v-if="group.route"
-              class="ordering-group__route"
-            >
-              {{ group.route }}
-            </code>
-          </div>
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 space-y-1">
+              <p class="text-sm font-bold text-highlighted">
+                {{ option.label }}
+              </p>
+              <p class="text-sm leading-5 text-dimmed">
+                {{ option.description }}
+              </p>
+            </div>
 
-          <div class="grid gap-3 md:grid-cols-2">
-            <button
-              v-for="option in group.options"
-              :key="option.key"
-              type="button"
-              class="ordering-option"
-              :class="{ 'ordering-option--selected': hasOrderTypeOption(option) }"
+            <USwitch
+              :model-value="hasOrderTypeOption(option)"
               :disabled="!canWrite"
-              @click="toggleOrderTypeOption(option)"
-            >
-              <span class="ordering-option__title">{{ option.label }}</span>
-              <span class="ordering-option__description">{{ option.description }}</span>
-              <code
-                v-if="option.route"
-                class="ordering-option__route"
-              >
-                {{ option.route }}
-              </code>
-            </button>
+              @update:model-value="setOrderTypeOption(option, Boolean($event))"
+            />
           </div>
 
-          <div
-            v-if="group.key === 'scheduled' && hasOrderType('pre_order')"
-            class="grid gap-3 md:grid-cols-2"
+          <code
+            v-if="option.route"
+            class="mt-3 inline-block break-all rounded bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
           >
-            <UFormField label="Pre-order notice">
-              <div class="flex items-center gap-2">
-                <UInput
-                  :model-value="preOrderNoticeHours"
-                  type="number"
-                  min="1"
-                  :disabled="!canWrite"
-                  @update:model-value="setPreOrderNoticeHours"
-                />
-                <span class="text-sm text-dimmed">hours</span>
-              </div>
-            </UFormField>
+            {{ option.route }}
+          </code>
+        </div>
+      </div>
+
+      <div
+        v-if="hasOrderType('pre_order')"
+        class="grid gap-3 md:grid-cols-2"
+      >
+        <UFormField label="Pre-order notice">
+          <div class="flex items-center gap-2">
+            <UInput
+              :model-value="preOrderNoticeHours"
+              type="number"
+              min="1"
+              :disabled="!canWrite"
+              @update:model-value="setPreOrderNoticeHours"
+            />
+            <span class="text-sm text-dimmed">hours</span>
           </div>
-        </section>
+        </UFormField>
       </div>
     </div>
   </UCard>
@@ -95,13 +90,6 @@ type OrderTypeOption = {
   description: string
   route?: string
 }
-type OrderTypeGroup = {
-  key: string
-  label: string
-  description: string
-  route?: string
-  options: OrderTypeOption[]
-}
 
 const {
   menu,
@@ -111,60 +99,39 @@ const {
 } = useKitchenConsoleMenu()
 const toast = useToastify()
 
-const orderTypeGroups: OrderTypeGroup[] = [
+const orderTypeOptions: OrderTypeOption[] = [
   {
-    key: 'home',
+    key: 'home-delivery',
+    types: ['delivery', 'collection'],
     label: 'Home Delivery',
-    description: 'Remote ordering with delivery first. Collection comes with the same home surface.',
+    description: 'Guests order from home with delivery as the bias and collection available from the same menu.',
     route: '/menus/{menuId}.home',
-    options: [
-      {
-        key: 'home-delivery',
-        types: ['delivery', 'collection'],
-        label: 'Home Delivery',
-        description: 'Guests order from home with delivery as the bias and collection available from the same menu.',
-      },
-    ],
   },
   {
-    key: 'premises',
-    label: 'On Premises',
-    description: 'Ordering while guests are at the premises.',
-    options: [
-      {
-        key: 'table-ordering',
-        types: ['dine_in'],
-        label: 'Dine in',
-        description: 'Guests order inside the restaurant.',
-        route: '/menus/{menuId}.dine_in',
-      },
-      {
-        key: 'kiosk-ordering',
-        types: ['eat_in', 'takeaway'],
-        label: 'Kiosk Ordering',
-        description: 'Eat-in and takeaway. Uses queue / order number.',
-        route: '/menus/{menuId}.kiosk',
-      },
-    ],
+    key: 'dine-in',
+    types: ['dine_in'],
+    label: 'Dine in',
+    description: 'Guests order on premises and eat in.',
+    route: '/menus/{menuId}.dine_in',
   },
   {
-    key: 'scheduled',
-    label: 'Scheduled & private',
-    description: 'Specific systems that do not belong to the home, table, or kiosk surface yet.',
-    options: [
-      {
-        key: 'pre-order',
-        types: ['pre_order'],
-        label: 'Pre-order',
-        description: 'Guests order ahead for a later service.',
-      },
-      {
-        key: 'room-service',
-        types: ['room_service'],
-        label: 'Room service',
-        description: 'Hotel or private-room service.',
-      },
-    ],
+    key: 'take-away',
+    types: ['takeaway'],
+    label: 'Take away',
+    description: 'Guests order on premises and take it away.',
+    route: '/menus/{menuId}.takeaway',
+  },
+  {
+    key: 'pre-order',
+    types: ['pre_order'],
+    label: 'Pre-order',
+    description: 'Guests order ahead for a later service.',
+  },
+  {
+    key: 'room-service',
+    types: ['room_service'],
+    label: 'Room service',
+    description: 'Hotel or private-room service.',
   },
 ]
 
@@ -253,15 +220,19 @@ async function updateOrdering(nextOrdering: MenuOrderingConfig) {
   }
 }
 
-async function toggleOrderTypeOption(option: OrderTypeOption) {
+async function setOrderTypeOption(option: OrderTypeOption, enabled: boolean) {
   if (!canWrite.value) return
+  const currentlyEnabled = hasOrderTypeOption(option)
+  if (enabled === currentlyEnabled) return
 
   const optionTypes = new Set(option.types)
-  const nextOrderTypes = hasOrderTypeOption(option)
-    ? orderTypeConfigs.value.filter((orderType) => !optionTypes.has(orderType.type))
-    : [
+  const nextOrderTypes = enabled
+    ? [
         ...orderTypeConfigs.value.filter((orderType) => !optionTypes.has(orderType.type)),
         ...option.types.map(orderTypeConfig),
+      ]
+    : [
+        ...orderTypeConfigs.value.filter((orderType) => !optionTypes.has(orderType.type)),
       ]
   await updateOrdering({
     enabled: nextOrderTypes.length > 0,
@@ -286,95 +257,3 @@ async function setPreOrderNoticeHours(value: string | number) {
   })
 }
 </script>
-
-<style scoped>
-.ordering-group {
-  display: grid;
-  gap: 0.75rem;
-  padding: 0.9rem 0;
-  border-top: 1px solid var(--ui-border);
-}
-
-.ordering-group:first-child {
-  padding-top: 0;
-  border-top: 0;
-}
-
-.ordering-group__header {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.ordering-group__title {
-  color: var(--ui-text-highlighted);
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.ordering-group__description {
-  color: var(--ui-text-dimmed);
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.ordering-group__route {
-  width: fit-content;
-  padding: 0.2rem 0.42rem;
-  border-radius: 0.38rem;
-  background: var(--ui-bg-muted);
-  color: var(--ui-text-muted);
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.ordering-option {
-  display: grid;
-  gap: 0.25rem;
-  min-height: 5rem;
-  padding: 0.85rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 0.85rem;
-  background: var(--ui-bg);
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.ordering-option:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
-}
-
-.ordering-option--selected {
-  border-color: color-mix(in srgb, var(--ui-primary) 58%, var(--ui-border));
-  background: color-mix(in srgb, var(--ui-primary) 8%, var(--ui-bg));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary) 24%, transparent);
-}
-
-.ordering-option__title {
-  color: var(--ui-text-highlighted);
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.ordering-option__description {
-  color: var(--ui-text-dimmed);
-  font-size: 0.8rem;
-  line-height: 1.35;
-}
-
-.ordering-option__route {
-  width: fit-content;
-  margin-top: 0.12rem;
-  padding: 0.16rem 0.36rem;
-  border-radius: 0.34rem;
-  background: var(--ui-bg-muted);
-  color: var(--ui-text-muted);
-  font-size: 0.66rem;
-  font-weight: 800;
-}
-</style>

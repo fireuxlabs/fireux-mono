@@ -1,75 +1,306 @@
 <template>
-  <div
-    class="fireux-menu-detail menu-detail"
-    :class="themeClassName"
-    :style="themeStyleVars"
-  >
-    <OrderingFunnelStage>
-      <MenuDetailItem
-        v-for="item in demoItems"
-        :key="item.id"
-        :item="item"
-        order-mode
-        :quantities="demoQuantities"
-        @add="addToBasket"
-        @remove="removeFromBasket"
-      />
-    </OrderingFunnelStage>
+  <main class="min-h-screen bg-muted/30 py-10">
+    <UContainer class="max-w-7xl space-y-8">
+      <UButton
+        to="/ordering"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-arrow-left"
+      >
+        Ordering
+      </UButton>
 
-    <OrderingFunnelStage
-      v-if="basketQuantity"
-      number="1"
-      total="6"
-    >
-      <MenuDetailFunnelBasket :order="order" />
-    </OrderingFunnelStage>
+      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+        <div class="mb-5">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+            Guest funnel screens
+          </p>
+          <h2 class="mt-1 text-2xl font-black tracking-tight text-highlighted">
+            Pre-order compared with collection
+          </h2>
+        </div>
 
-    <OrderingFunnelStage
-      number="2"
-      total="6"
-    >
-      <ClientOnly>
-        <MenuDetailFunnelAllergen v-model="allergenAccepted" />
-      </ClientOnly>
-    </OrderingFunnelStage>
+        <div class="mb-5 grid gap-4 lg:grid-cols-2">
+          <OrderingObjectShape
+            title="pre_order vs collection"
+            :data="preOrderCollectionDiff"
+          />
 
-    <OrderingFunnelStage
-      number="3"
-      total="6"
-    >
-      <MenuDetailFunnelPreOrderDetails
-        :order="order"
-        @update:ready="preOrderReady = $event"
-      />
-    </OrderingFunnelStage>
+          <OrderingObjectShape
+            title="starting context + draft"
+            :data="preOrderShapeTrack.start"
+          />
+        </div>
 
-    <OrderingFunnelStage
-      number="4"
-      total="6"
-    >
-      <MenuDetailFunnelPreOrderKitchen :order="order" />
-    </OrderingFunnelStage>
-
-    <OrderingFunnelShapeTrack :track="shapeTrack" />
-  </div>
+        <OrderingPreOrderFunnelScreens
+          v-model:allergen-accepted="allergenAccepted"
+          :class-name="themeClassName"
+          :funnel="preOrderFunnel"
+          :kitchen-intake="preOrderShapeTrack.withSubmission"
+          :kitchen-receiving="preOrderShapeTrack.kitchen"
+          :order="preOrderOrder"
+          :pre-order="preOrderDetails"
+          :style-vars="themeStyleVars"
+        />
+      </section>
+    </UContainer>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import {
+  computed,
+  reactive,
+} from 'vue'
 import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
-  MenuFoodItem,
-  MenuFoodOrderItem,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-food.model'
-import type {
   MenuOrderingBasketItem,
+  MenuOrderingFunnelController,
   MenuOrderingFunnelState,
+  MenuOrderingIncoming,
+  MenuOrderingPreOrderState,
+  MenuOrderingProcessing,
+  MenuOrderingSending,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
+import type { MenuOrderDepositPolicy } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
 
-const allergenAccepted = ref(false)
-const preOrderReady = ref(false)
+const basketItems: MenuOrderingBasketItem[] = [
+  {
+    id: 'tortilla-de-patata',
+    lineId: 'tortilla-de-patata:gross',
+    name: 'Tortilla de Patata · Gross',
+    quantity: 1,
+    unitPrice: 25,
+  },
+  {
+    id: 'zorza-schwein-poulet',
+    lineId: 'zorza-schwein-poulet',
+    name: 'Zorza Schwein/Poulet',
+    quantity: 1,
+    unitPrice: 27,
+  },
+]
+const basketQuantity = basketItems.reduce((sum, item) => sum + item.quantity, 0)
+const basketTotal = basketItems.reduce(
+  (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
+  0
+)
+const depositPolicy: MenuOrderDepositPolicy = {
+  type: 'fixed_per_person',
+  amount: 10,
+  currency_code: 'CHF',
+  label: 'Pre-order deposit',
+}
+const preOrderDetails: MenuOrderingPreOrderState = {
+  requested_for: '2026-07-08T18:30:00+02:00',
+  notice_hours: 24,
+  party_size: 4,
+}
+const depositTotal = depositPolicy.amount * Math.max(1, preOrderDetails.party_size || 1)
+const preOrderCollectionDiff = {
+  same: [
+    'basket',
+    'allergen',
+    'kitchen can accept or reject',
+    'one kitchen order shape',
+  ],
+  collection: {
+    timing: 'queue or scheduled pickup',
+    payment: 'full order after kitchen accepts ETA or pickup time',
+    kitchen_receives: 'before payment',
+    mode_key: 'collection',
+  },
+  pre_order: {
+    timing: 'requested_for is required',
+    payment: 'deposit before kitchen receives the request',
+    kitchen_receives: 'after deposit payment',
+    mode_key: 'preOrder',
+    needs: [
+      'notice_hours',
+      'party_size',
+    ],
+  },
+}
+const preOrderOrder: MenuOrderingFunnelState = {
+  actionLabel: 'Open pre-order basket',
+  accepted: false,
+  awaitingAcceptance: false,
+  panelOpen: true,
+  items: basketItems,
+  message: '',
+  menuId: 'la-tapberne-main',
+  kitchenSlug: 'la-tapberne',
+  orderType: 'pre_order',
+  pending: false,
+  policy: {
+    type: 'pre_order',
+    notice_hours: preOrderDetails.notice_hours,
+    message: 'Pre-orders need 24 hours notice and kitchen acceptance.',
+    fulfilment: {
+      deposit: depositPolicy,
+    },
+  },
+  quantity: basketQuantity,
+  selection: {
+    items: basketItems,
+    quantity: basketQuantity,
+  },
+}
+const preOrderIncoming = reactive<MenuOrderingIncoming>({
+  order_type: 'pre_order',
+  basket: basketItems.map((item) => ({
+    item_id: item.id,
+    line_id: item.lineId,
+    name: item.name,
+    quantity: item.quantity,
+    unit_price_chf: item.unitPrice,
+  })),
+  allergen_checked: true,
+  pre_order: preOrderDetails,
+})
+const preOrderPayment = {
+  required: true,
+  status: 'requires_payment' as const,
+  method: 'deposit' as const,
+  amount_chf: depositTotal,
+  currency_code: depositPolicy.currency_code || 'CHF',
+  reason: depositPolicy.label || 'Deposit',
+  resume_status: 'pending_acceptance',
+}
+const preOrderShapeTrack = computed(() =>
+  createOrderingFunnelShapeTrack({
+    route: {
+      menuId: 'la-tapberne-main',
+      kitchenSlug: 'la-tapberne',
+    },
+    orderType: 'pre_order',
+    modeLabel: 'preOrder',
+    basket: {
+      items: basketItems,
+      quantity: basketQuantity,
+    },
+    mode: {
+      preOrder: preOrderDetails,
+    },
+    payment: {
+      ...preOrderPayment,
+      status: preOrderProcessing.order?.payment?.status || preOrderPayment.status,
+      paid_at: preOrderProcessing.order?.payment?.paid_at,
+    },
+    submission: {
+      id: 'demo-pre-order',
+      kitchen_id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
+      menu_id: 'main',
+      order_number: 'P-104',
+    },
+  })
+)
+const preOrderProcessing = reactive<MenuOrderingProcessing>({
+  exists: true,
+  order_id: 'demo-pre-order',
+  order_number: 'P-104',
+  status: 'pending_payment',
+  fire_state: 'held',
+  items: basketItems,
+  total_chf: basketTotal,
+  order: {
+    id: 'demo-pre-order',
+    order_number: 'P-104',
+    order_type: 'pre_order',
+    status: 'pending_payment',
+    requested_for: preOrderDetails.requested_for,
+    payment: preOrderPayment,
+  },
+})
+const preOrderSending = reactive<MenuOrderingSending>({
+  endpoint: '/api/menus/la-tapberne-main/orders',
+  body: {
+    order_type: 'pre_order',
+    items: basketItems.map((item) => ({
+      itemId: item.id,
+      quantity: item.quantity,
+    })),
+    requested_for: preOrderDetails.requested_for,
+    payment_method: 'deposit',
+    customer: {
+      party_size: preOrderDetails.party_size,
+    },
+  },
+  pending: false,
+  expected_result: {
+    status: 'pending_payment',
+    fire_state: 'held',
+  },
+  sent_order: preOrderProcessing.order,
+})
+const preOrderPaymentState = reactive({
+  pending: false,
+  message: '',
+  error: '',
+})
+const preOrderFunnel: MenuOrderingFunnelController = {
+  show: true,
+  order: preOrderOrder,
+  incoming: preOrderIncoming,
+  processing: preOrderProcessing,
+  sending: preOrderSending,
+  payment: preOrderPaymentState,
+  collect: (payload) => {
+    Object.assign(preOrderIncoming, payload)
+  },
+  clear: () => {},
+  close: () => {},
+  open: () => {},
+  pay: () => {
+    if (preOrderPaymentState.pending) return
+    if (preOrderProcessing.order?.payment?.status === 'paid') return
+
+    preOrderPaymentState.pending = true
+    preOrderPaymentState.message = 'Deposit payment is in progress.'
+    preOrderPaymentState.error = ''
+    if (preOrderProcessing.order) {
+      preOrderProcessing.order.status = 'pending_payment'
+      preOrderProcessing.order.payment = {
+        ...preOrderPayment,
+        status: 'pending',
+      }
+    }
+
+    const acceptDeposit = () => {
+      preOrderPaymentState.pending = false
+      preOrderPaymentState.message = 'Deposit accepted.'
+      preOrderProcessing.status = 'pending_acceptance'
+      preOrderProcessing.fire_state = 'held'
+      if (!preOrderProcessing.order) return
+
+      preOrderProcessing.order.status = 'pending_acceptance'
+      preOrderProcessing.order.fire_state = 'held'
+      preOrderProcessing.order.payment = {
+        ...preOrderPayment,
+        status: 'paid',
+        paid_at: new Date().toISOString(),
+      }
+    }
+
+    if (!import.meta.client) {
+      acceptDeposit()
+      return
+    }
+
+    window.setTimeout(acceptDeposit, 1000)
+  },
+  submit: () => preOrderProcessing.order,
+}
+const allergenAccepted = computed({
+  get: () => Boolean(preOrderIncoming.allergen_checked),
+  set: (accepted: boolean) => {
+    preOrderFunnel.collect({
+      allergen_checked: accepted,
+    })
+  },
+})
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
@@ -85,167 +316,6 @@ const {
     secondary_color: '#E99F5E',
   },
 })
-const demoItems: MenuFoodItem[] = [
-  {
-    id: 'tortilla-de-patata',
-    dishId: 'tortilla-de-patata',
-    name: 'Tortilla de Patata',
-    description: 'Die spanische Kartoffel-Omelette.',
-    imageUrl: '',
-    price: 9.5,
-    priceLabel: '9.50 / 16 / 25',
-    priceOptions: [
-      {
-        id: 'klein',
-        label: 'Klein',
-        price: 9.5,
-        priceLabel: '9.50',
-      },
-      {
-        id: 'mittel',
-        label: 'Mittel',
-        price: 16,
-        priceLabel: '16',
-      },
-      {
-        id: 'gross',
-        label: 'Gross',
-        price: 25,
-        priceLabel: '25',
-      },
-    ],
-    addOns: [],
-  },
-  {
-    id: 'zorza-schwein-poulet',
-    dishId: 'zorza-schwein-poulet',
-    name: 'Zorza Schwein/Poulet',
-    description: 'Marinierte Streifen auf Pommes allumettes und geröstete Paprika.',
-    imageUrl: '',
-    price: 27,
-    priceLabel: '27',
-    priceOptions: [],
-    addOns: [
-      {
-        id: 'manchego',
-        label: 'Manchego',
-        price: 2.5,
-        priceLabel: '2.50',
-      },
-      {
-        id: 'spiegelei',
-        label: 'Spiegelei',
-        price: 2.5,
-        priceLabel: '2.50',
-      },
-    ],
-  },
-]
-const demoQuantities = ref<Record<string, number>>({
-  'tortilla-de-patata:gross': 1,
-  'zorza-schwein-poulet': 1,
-})
-const basketItems = computed<MenuOrderingBasketItem[]>(() =>
-  Object.keys(demoQuantities.value)
-    .map((lineId) => basketItemFromLine(lineId, demoQuantities.value[lineId] || 0))
-    .filter((item): item is MenuOrderingBasketItem => Boolean(item))
-)
-const basketQuantity = computed(() =>
-  basketItems.value.reduce((sum, item) => sum + item.quantity, 0)
-)
-const order = computed<MenuOrderingFunnelState>(() => ({
-  actionLabel: 'Open pre-order basket',
-  accepted: false,
-  awaitingAcceptance: false,
-  panelOpen: true,
-  items: basketItems.value,
-  message: '',
-  menuId: 'la-tapberne-main',
-  kitchenSlug: 'la-tapberne',
-  orderType: 'pre_order',
-  pending: false,
-  policy: {
-    type: 'pre_order',
-    message: 'Pre-orders need 24 hours notice and kitchen acceptance.',
-  },
-  quantity: basketQuantity.value,
-  selection: {
-    items: basketItems.value,
-    quantity: basketQuantity.value,
-  },
-}))
-const shapeTrack = computed(() =>
-  createOrderingFunnelShapeTrack({
-    route: {
-      menuId: 'la-tapberne-main',
-      kitchenSlug: 'la-tapberne',
-    },
-    orderType: 'pre_order',
-    modeLabel: 'preOrder',
-    basket: {
-      items: basketItems.value,
-      quantity: basketQuantity.value,
-    },
-    mode: {
-      preOrder: {
-        requested_for: '2026-07-08T18:30:00+02:00',
-        notice_hours: 24,
-      },
-    },
-    submission: {
-      id: 'demo-pre-order',
-      kitchen_id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-      menu_id: 'main',
-      order_number: 'P-104',
-    },
-  })
-)
-
-function addToBasket(item: MenuFoodOrderItem) {
-  setQuantity(item.lineId, (demoQuantities.value[item.lineId] || 0) + 1)
-}
-
-function removeFromBasket(item: MenuFoodOrderItem) {
-  setQuantity(item.lineId, Math.max(0, (demoQuantities.value[item.lineId] || 0) - 1))
-}
-
-function setQuantity(lineId: string, quantity: number) {
-  const next = { ...demoQuantities.value }
-  if (quantity > 0) {
-    next[lineId] = quantity
-  } else {
-    delete next[lineId]
-  }
-  demoQuantities.value = next
-}
-
-function basketItemFromLine(
-  lineId: string,
-  quantity: number
-): MenuOrderingBasketItem | null {
-  if (quantity <= 0) return null
-
-  const [itemId, variantId, ...addOnIds] = lineId.split(':')
-  const item = demoItems.find((entry) => entry.id === itemId)
-  if (!item) return null
-
-  const variant = item.priceOptions.find((entry) => entry.id === variantId)
-  const addOns = addOnIds
-    .map((id) => item.addOns.find((entry) => entry.id === id))
-    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-  const addOnTotal = addOns.reduce((sum, addOn) => sum + addOn.price, 0)
-  const addOnLabel = addOns.length
-    ? ` + ${addOns.map((addOn) => addOn.label).join(', ')}`
-    : ''
-
-  return {
-    id: item.id,
-    lineId,
-    name: `${item.name}${variant ? ` · ${variant.label}` : ''}${addOnLabel}`,
-    quantity,
-    unitPrice: (variant?.price || item.price) + addOnTotal,
-  }
-}
 
 definePageMeta({
   layout: 'landing',
@@ -255,6 +325,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pre-order Funnel · Misebox',
   description:
-    'A La Tap Berne-style pre-order funnel walkthrough using reusable menu and funnel components.',
+    'A pre-order funnel simulator showing the differences from collection ordering.',
 })
 </script>

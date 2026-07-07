@@ -1,19 +1,23 @@
 <template>
-  <div class="kitchen-orders-board">
-    <header class="kitchen-orders-toolbar">
-      <div class="kitchen-orders-toolbar__copy">
-        <p>Order intake</p>
-        <h1>Live board</h1>
+  <div class="grid gap-4">
+    <header class="flex flex-col gap-4 rounded-lg border border-default bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="grid min-w-36 gap-0.5">
+        <p class="m-0 text-xs font-extrabold uppercase text-muted">
+          Order intake
+        </p>
+        <h1 class="m-0 text-2xl font-black leading-none text-highlighted">
+          Live board
+        </h1>
       </div>
 
-      <div class="kitchen-orders-toolbar__stats">
+      <div class="flex flex-1 flex-wrap gap-2 sm:justify-end">
         <div
           v-for="count in railCounts"
           :key="count.label"
-          class="kitchen-orders-stat"
+          class="grid min-w-[5.5rem] flex-1 rounded-lg border border-default bg-default px-3 py-2 sm:flex-none"
         >
-          <span>{{ count.label }}</span>
-          <strong>{{ count.count }}</strong>
+          <span class="text-xs font-bold text-muted">{{ count.label }}</span>
+          <strong class="text-xl font-black leading-none text-highlighted">{{ count.count }}</strong>
         </div>
       </div>
 
@@ -29,14 +33,14 @@
       </UButton>
     </header>
 
-    <p v-if="pending" class="kitchen-orders-empty">
+    <p v-if="pending" class="m-0 text-sm font-semibold text-muted">
       Loading orders...
     </p>
 
-    <div v-else class="kitchen-orders-lanes">
-      <section class="kitchen-orders-rail kitchen-orders-rail--incoming">
-        <div class="kitchen-orders-rail__header">
-          <h2>
+    <div v-else class="grid gap-4">
+      <section class="grid gap-4 rounded-lg border border-primary/30 bg-elevated/80 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="m-0 text-sm font-extrabold text-highlighted">
             Incoming
           </h2>
           <UBadge color="neutral" variant="soft">
@@ -46,102 +50,30 @@
 
         <div
           v-if="incomingOrders.length"
-          class="kitchen-orders-rail__grid"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
-          <article
+          <ConsoleKitchenOperationsOrdersReceiving
             v-for="ticket in incomingOrders"
             :key="ticket.id"
-            class="kitchen-orders-cta"
-          >
-            <header class="kitchen-orders-cta__header">
-              <div class="kitchen-orders-cta__title">
-                <UIcon
-                  v-if="incomingIcon(ticket)"
-                  :name="incomingIcon(ticket)"
-                  class="kitchen-orders-cta__icon"
-                  aria-hidden="true"
-                />
-
-                <div>
-                  <p>Incoming</p>
-                  <h3>{{ incomingTitle(ticket) }}</h3>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                class="kitchen-orders-copy"
-                @click="copyIncomingTicket(ticket)"
-              >
-                <UIcon
-                  :name="copiedIncomingOrderId === normalizeId(ticket.id) ? 'i-lucide-check' : 'i-lucide-copy'"
-                  aria-hidden="true"
-                />
-                {{ copiedIncomingOrderId === normalizeId(ticket.id) ? 'Copied' : 'Copy' }}
-              </button>
-            </header>
-
-            <div class="kitchen-orders-cta__lines">
-              <p
-                v-for="line in orderLines(ticket)"
-                :key="line.id"
-              >
-                {{ line.quantity }}x {{ line.label }}
-              </p>
-            </div>
-
-            <div v-if="!isPaymentPending(ticket)" class="kitchen-orders-eta">
-              <label :for="`eta-${normalizeId(ticket.id)}`">
-                Cooking time
-                <strong>{{ estimateMinutes(ticket) }} min</strong>
-              </label>
-
-              <input
-                :id="`eta-${normalizeId(ticket.id)}`"
-                type="range"
-                min="5"
-                max="90"
-                step="5"
-                :value="estimateMinutes(ticket)"
-                @input="setEstimateMinutes(normalizeId(ticket.id), ($event.target as HTMLInputElement).value)"
-              >
-
-              <div class="kitchen-orders-eta__actions">
-                <button
-                  type="button"
-                  @click="nudgeEstimateMinutes(normalizeId(ticket.id), -5)"
-                >
-                  -5
-                </button>
-
-                <button
-                  type="button"
-                  class="kitchen-orders-eta__accept"
-                  :disabled="acceptingOrderId === normalizeId(ticket.id)"
-                  @click="acceptOrderWithEta(normalizeId(ticket.id))"
-                >
-                  {{ acceptingOrderId === normalizeId(ticket.id) ? 'Accepting...' : `Accept · ${estimateMinutes(ticket)} min` }}
-                </button>
-
-                <button
-                  type="button"
-                  @click="nudgeEstimateMinutes(normalizeId(ticket.id), 5)"
-                >
-                  +5
-                </button>
-              </div>
-            </div>
-          </article>
+            :accepting="acceptingOrderId === normalizeId(ticket.id)"
+            :estimate-minutes="estimateMinutes(ticket)"
+            :order="ticket"
+            :rejecting="rejectingOrderId === normalizeId(ticket.id)"
+            @accept="acceptIncomingOrder"
+            @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
+            @reject="rejectIncomingOrder"
+            @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
+          />
         </div>
 
-        <p v-else class="kitchen-orders-empty">
+        <p v-else class="m-0 text-sm font-semibold text-muted">
           No incoming orders waiting for acceptance.
         </p>
       </section>
 
-      <section class="kitchen-orders-rail kitchen-orders-rail--pass">
-        <div class="kitchen-orders-rail__header">
-          <h2>
+      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="m-0 text-sm font-extrabold text-highlighted">
             Pass
           </h2>
           <UBadge color="neutral" variant="soft">
@@ -151,7 +83,7 @@
 
         <div
           v-if="passOrders.length"
-          class="kitchen-orders-rail__grid"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
           <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in passOrders"
@@ -165,14 +97,14 @@
           />
         </div>
 
-        <p v-else class="kitchen-orders-empty">
+        <p v-else class="m-0 text-sm font-semibold text-muted">
           Nothing on the pass.
         </p>
       </section>
 
-      <section class="kitchen-orders-rail kitchen-orders-rail--queue">
-        <div class="kitchen-orders-rail__header">
-          <h2>
+      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="m-0 text-sm font-extrabold text-highlighted">
             Queue
           </h2>
           <UBadge color="neutral" variant="soft">
@@ -182,7 +114,7 @@
 
         <div
           v-if="queueOrders.length"
-          class="kitchen-orders-rail__grid"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
           <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in queueOrders"
@@ -195,14 +127,14 @@
           />
         </div>
 
-        <p v-else class="kitchen-orders-empty">
+        <p v-else class="m-0 text-sm font-semibold text-muted">
           No queued orders.
         </p>
       </section>
 
-      <section class="kitchen-orders-rail kitchen-orders-rail--recent">
-        <div class="kitchen-orders-rail__header">
-          <h2>
+      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="m-0 text-sm font-extrabold text-highlighted">
             Recent
           </h2>
           <UBadge color="neutral" variant="soft">
@@ -212,7 +144,7 @@
 
         <div
           v-if="archiveOrders.length"
-          class="kitchen-orders-rail__grid"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
           <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in archiveOrders"
@@ -221,7 +153,7 @@
           />
         </div>
 
-        <p v-else class="kitchen-orders-empty">
+        <p v-else class="m-0 text-sm font-semibold text-muted">
           No recent orders yet.
         </p>
       </section>
@@ -238,7 +170,7 @@ const clearConfirm = ref(false)
 const clearingOrders = ref(false)
 const sendReadyOrderId = ref('')
 const acceptingOrderId = ref('')
-const copiedIncomingOrderId = ref('')
+const rejectingOrderId = ref('')
 const defaultEstimateMinutes = 45
 const estimatesByOrderId = ref<Record<string, number>>({})
 const {
@@ -250,6 +182,7 @@ const {
   readOnly,
   canWrite,
   acceptOrder,
+  rejectOrder,
   queueOrder,
   passOrder,
   archiveOrder,
@@ -257,10 +190,6 @@ const {
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
 const railCounts = computed(() => [
   {
     label: 'Incoming',
@@ -291,72 +220,6 @@ const clearButtonLabel = computed(() => {
   return 'Trash'
 })
 
-function isPaymentPending(order: Record<string, unknown>) {
-  return normalizeId(order.status) === 'pending_payment'
-}
-
-function isDeliveryOrder(order: Record<string, unknown>) {
-  return normalizeId(order.order_type) === 'delivery'
-}
-
-function isCollectionOrder(order: Record<string, unknown>) {
-  return normalizeId(order.order_type) === 'collection'
-}
-
-function incomingIcon(order: Record<string, unknown>) {
-  if (isDeliveryOrder(order)) return 'i-lucide-bike'
-  if (isCollectionOrder(order)) return 'i-lucide-shopping-bag'
-  return ''
-}
-
-function incomingTitle(order: Record<string, unknown>) {
-  if (isPaymentPending(order)) return 'Payment pending'
-  if (isCollectionOrder(order)) return 'Collection timing request'
-
-  return 'Set cooking time'
-}
-
-function incomingCopyPayload(order: Record<string, unknown>) {
-  const orderId = normalizeId(order.id)
-  const collection = record(order.collection)
-  const lines = orderLines(order)
-  const estimatedReadyMinutes = estimateMinutesForId(
-    orderId,
-    Number(order.estimated_ready_minutes || 0)
-  )
-
-  return {
-    surface: 'kitchen_console_orders_receiving',
-    action: incomingTitle(order),
-    copied_at: new Date().toISOString(),
-    order: {
-      id: orderId,
-      number: normalizeId(order.order_number),
-      type: normalizeId(order.order_type),
-      status: normalizeId(order.status),
-      collection: Object.keys(collection).length ? collection : null,
-      items: lines.map((line) => ({
-        quantity: line.quantity,
-        label: line.label,
-      })),
-    },
-    response: {
-      estimated_ready_minutes: estimatedReadyMinutes,
-    },
-  }
-}
-
-async function copyIncomingTicket(order: Record<string, unknown>) {
-  if (!import.meta.client || !navigator.clipboard) return
-
-  const orderId = normalizeId(order.id)
-  await navigator.clipboard.writeText(JSON.stringify(incomingCopyPayload(order), null, 2))
-  copiedIncomingOrderId.value = orderId
-  window.setTimeout(() => {
-    if (copiedIncomingOrderId.value === orderId) copiedIncomingOrderId.value = ''
-  }, 1400)
-}
-
 function sendLabel(orderId: string) {
   return sendReadyOrderId.value === normalizeId(orderId) ? 'send' : 'on pass'
 }
@@ -373,31 +236,31 @@ function moveToQueue(orderId: string) {
   queueOrder(resolvedOrderId)
 }
 
-async function acceptOrderWithEta(orderId: string) {
-  const resolvedOrderId = normalizeId(orderId)
+async function acceptIncomingOrder(
+  payload: { id: string; estimatedMinutes: number | null }
+) {
+  const resolvedOrderId = normalizeId(payload.id)
   if (!resolvedOrderId || acceptingOrderId.value) return
 
   acceptingOrderId.value = resolvedOrderId
   try {
-    await acceptOrder(resolvedOrderId, estimateMinutesForId(resolvedOrderId))
+    await acceptOrder(resolvedOrderId, payload.estimatedMinutes)
   } finally {
     if (acceptingOrderId.value === resolvedOrderId) acceptingOrderId.value = ''
   }
 }
 
-function orderLines(order: Record<string, unknown>) {
-  const items = Array.isArray(order.items) ? order.items : []
-  return items.map((item, index) => {
-    const row = item && typeof item === 'object' && !Array.isArray(item)
-      ? item as Record<string, unknown>
-      : {}
+async function rejectIncomingOrder(payload: { id: string; note: string }) {
+  const resolvedOrderId = normalizeId(payload.id)
+  const note = payload.note.trim()
+  if (!resolvedOrderId || !note || rejectingOrderId.value) return
 
-    return {
-      id: normalizeId(row.id) || `line-${index + 1}`,
-      label: normalizeId(row.label) || 'ping',
-      quantity: Math.max(1, Number(row.quantity || 1) || 1),
-    }
-  })
+  rejectingOrderId.value = resolvedOrderId
+  try {
+    await rejectOrder(resolvedOrderId, note)
+  } finally {
+    if (rejectingOrderId.value === resolvedOrderId) rejectingOrderId.value = ''
+  }
 }
 
 function estimateMinutes(order: Record<string, unknown>) {
@@ -464,271 +327,3 @@ async function clearOrders() {
   }
 }
 </script>
-
-<style scoped>
-.kitchen-orders-board {
-  display: grid;
-  gap: 1rem;
-}
-
-.kitchen-orders-toolbar {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--ui-primary) 12%, transparent), transparent 34rem),
-    var(--ui-bg-elevated);
-}
-
-.kitchen-orders-toolbar__copy {
-  display: grid;
-  gap: 0.1rem;
-  min-width: 9rem;
-}
-
-.kitchen-orders-toolbar__copy p,
-.kitchen-orders-toolbar__copy h1 {
-  margin: 0;
-}
-
-.kitchen-orders-toolbar__copy p {
-  color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.kitchen-orders-toolbar__copy h1 {
-  color: var(--ui-text-highlighted);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 0.95;
-}
-
-.kitchen-orders-toolbar__stats {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.kitchen-orders-stat {
-  display: grid;
-  min-width: 5.5rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--ui-bg) 86%, transparent);
-}
-
-.kitchen-orders-stat span {
-  color: var(--ui-text-muted);
-  font-size: 0.72rem;
-  font-weight: 750;
-}
-
-.kitchen-orders-stat strong {
-  color: var(--ui-text-highlighted);
-  font-size: 1.25rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.kitchen-orders-lanes,
-.kitchen-orders-rail {
-  display: grid;
-  gap: 1rem;
-}
-
-.kitchen-orders-rail {
-  padding: 1rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 1.25rem;
-  background: color-mix(in srgb, var(--ui-bg-elevated) 88%, transparent);
-}
-
-.kitchen-orders-rail--incoming {
-  border-color: color-mix(in srgb, var(--ui-primary) 28%, var(--ui-border));
-}
-
-.kitchen-orders-rail__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.kitchen-orders-rail__header h2 {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: 0.95rem;
-  font-weight: 850;
-  letter-spacing: -0.02em;
-}
-
-.kitchen-orders-rail__grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-}
-
-.kitchen-orders-cta {
-  display: grid;
-  gap: 0.9rem;
-  max-width: 22rem;
-  padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, var(--ui-border));
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  box-shadow: 0 0.75rem 1.75rem color-mix(in srgb, var(--ui-text) 8%, transparent);
-}
-
-.kitchen-orders-cta__header {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.kitchen-orders-cta__title {
-  display: flex;
-  gap: 0.65rem;
-  align-items: flex-start;
-  min-width: 0;
-}
-
-.kitchen-orders-cta__icon {
-  width: 1.35rem;
-  height: 1.35rem;
-  margin-top: 0.1rem;
-  color: var(--ui-primary);
-}
-
-.kitchen-orders-copy {
-  display: inline-flex;
-  gap: 0.3rem;
-  align-items: center;
-  min-height: 2rem;
-  padding: 0.35rem 0.55rem;
-  border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
-  border-radius: 999px;
-  background: var(--ui-bg-elevated);
-  color: var(--ui-text-highlighted);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.76rem;
-  font-weight: 850;
-}
-
-.kitchen-orders-cta__header p,
-.kitchen-orders-cta__header h3,
-.kitchen-orders-cta__lines p {
-  margin: 0;
-}
-
-.kitchen-orders-cta__header p {
-  color: var(--ui-text-muted);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.kitchen-orders-cta__header h3 {
-  color: var(--ui-text-highlighted);
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-}
-
-.kitchen-orders-cta__lines {
-  display: grid;
-  gap: 0.25rem;
-  color: var(--ui-text-highlighted);
-  font-size: 0.95rem;
-  font-weight: 750;
-}
-
-.kitchen-orders-eta {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.kitchen-orders-eta label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--ui-text-muted);
-  font-size: 0.82rem;
-  font-weight: 750;
-}
-
-.kitchen-orders-eta label strong {
-  color: var(--ui-text-highlighted);
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.kitchen-orders-eta input {
-  width: 100%;
-}
-
-.kitchen-orders-eta__actions {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 0.45rem;
-}
-
-.kitchen-orders-eta__actions button {
-  min-height: 2.45rem;
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  background: var(--ui-bg-elevated);
-  color: var(--ui-text-highlighted);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.84rem;
-  font-weight: 850;
-}
-
-.kitchen-orders-eta__actions .kitchen-orders-eta__accept {
-  border-color: transparent;
-  background: var(--ui-primary);
-  color: var(--ui-bg);
-}
-
-.kitchen-orders-eta__actions button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.kitchen-orders-empty {
-  margin: 0;
-  color: var(--ui-text-muted);
-  font-size: 0.9rem;
-  font-weight: 650;
-}
-
-@media (max-width: 760px) {
-  .kitchen-orders-toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .kitchen-orders-toolbar__stats {
-    justify-content: stretch;
-  }
-
-  .kitchen-orders-stat {
-    flex: 1;
-  }
-}
-</style>

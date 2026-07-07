@@ -55,6 +55,7 @@ export type CreatedMenuOrder = {
   order_type: KitchenOrderType
   fire_state?: KitchenOrderFireState
   collection?: MenuOrderingCollectionState
+  requested_for?: string
   payment?: KitchenOrderPayment
   receipt?: CreatedMenuOrderReceipt
 }
@@ -105,6 +106,7 @@ export type MenuOrderingKioskState = {
 export type MenuOrderingPreOrderState = {
   requested_for: string
   notice_hours?: number
+  party_size?: number
 }
 
 export type MenuOrderingRoomServiceState = {
@@ -191,6 +193,7 @@ export type MenuOrderingIncoming = {
   allergen_checked?: boolean
   collection?: MenuOrderingCollectionState
   delivery?: MenuOrderingDeliveryState
+  pre_order?: MenuOrderingPreOrderState
   choice?: Record<string, unknown>
 }
 
@@ -218,6 +221,12 @@ export type MenuOrderingSending = {
   message?: string
   error?: string
   sent_order?: CreatedMenuOrder | null
+}
+
+export type MenuOrderingPayment = {
+  pending: boolean
+  message?: string
+  error?: string
 }
 
 export type MenuOrderingFunnelState = {
@@ -251,10 +260,12 @@ export type MenuOrderingFunnelController = {
   incoming: MenuOrderingIncoming
   processing: MenuOrderingProcessing
   sending: MenuOrderingSending
+  payment: MenuOrderingPayment
   collect: (payload: Partial<MenuOrderingIncoming>) => void
   clear: () => void
   close: () => void
   open: () => void
+  pay: () => Promise<void> | void
   submit: (payload: MenuOrderingSubmitPayload) =>
     Promise<CreatedMenuOrder | null | undefined> |
     CreatedMenuOrder |
