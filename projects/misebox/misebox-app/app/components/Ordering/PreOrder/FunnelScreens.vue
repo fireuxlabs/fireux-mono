@@ -28,7 +28,7 @@
     <article id="pre-order-details-screen" class="pre-order-funnel-screen">
       <OrderingFunnelStage number="3" order-type="pre_order" total="6">
         <MenuDetailFunnelPreOrderDetails
-          :order="order"
+          :funnel="funnel"
           @update:ready="detailsReady = $event"
         />
       </OrderingFunnelStage>
@@ -42,8 +42,8 @@
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="4" order-type="pre_order" total="6">
         <MenuDetailFunnelPreOrderKitchen
+          :funnel="funnel"
           :operator-online="operatorOnline"
-          :order="order"
         />
 
         <section

@@ -33,7 +33,7 @@ export type CreatedMenuOrderReceipt = {
   created_at: string
   collection?: MenuOrderingCollectionState
   requested_for?: string
-  currency: 'CHF'
+  currency: string
   subtotal_chf: number
   delivery_fee_chf?: number
   total_chf: number
@@ -203,6 +203,8 @@ export type MenuOrderingIncoming = {
   allergen_checked?: boolean
   collection?: MenuOrderingCollectionState
   delivery?: MenuOrderingDeliveryState
+  customer?: KitchenOrderCustomer
+  operator?: MenuOrderingOperatorPresence
   pre_order?: MenuOrderingPreOrderState
   choice?: Record<string, unknown>
 }

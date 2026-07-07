@@ -4,6 +4,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
+import { readWeekdayTimeNextOpeningText } from '../../../../../../utils/weekday-time-next'
 
 const preOrderDepositPerPerson = 10
 const money = (amount: number, currencyCode: string) =>
@@ -29,13 +30,16 @@ export function usePreOrderFunnel(
     `${money(preOrderDepositPerPerson, currencyCode.value)} deposit per person`
   )
   const operatorOnline = computed(() => toValue(options.operatorOnline) !== false)
+  const nextOpening = computed(() =>
+    readWeekdayTimeNextOpeningText(currentOrder.value.serviceHours?.operation_hours)
+  )
   const detailsStatus = computed(() =>
-    `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${noticeHours.value} hours before you arrive.`
+    `For large groups, we appreciate a pre-order. Choose an arrival time during serving hours and send it at least ${noticeHours.value} hours before you arrive.`
   )
   const kitchenStatus = computed(() =>
     operatorOnline.value
       ? 'A kitchen operator is online to receive this request.'
-      : 'No kitchen operator is online right now.'
+      : 'No kitchen operator is online right now. Leave an email and the team will confirm that they have your request.'
   )
   const depositStatus = computed(() =>
     depositLabel.value
@@ -46,7 +50,9 @@ export function usePreOrderFunnel(
     operatorOnline.value ? 'online' : 'offline'
   )
   const timingStatus = computed(() =>
-    'The request needs to be received before the notice window closes.'
+    nextOpening.value
+      ? `Next serving window starts ${nextOpening.value}.`
+      : 'The team will confirm when a kitchen operator is online.'
   )
   const ready = computed(() => true)
 

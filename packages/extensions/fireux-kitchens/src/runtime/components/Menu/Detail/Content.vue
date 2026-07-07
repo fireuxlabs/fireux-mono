@@ -8,6 +8,7 @@
         :model-value="view.selectedChoice"
         :menu="view.menu"
         :choices="view.choices"
+        :pre-order-operator-status="preOrderOperatorStatus"
         :surface-options="view.surfaceOptions"
         :surface-label="view.surfaceLabel"
         @update:model-value="$emit('update:selectedChoice', $event)"
@@ -40,9 +41,11 @@ import type {
   MenuDetailView,
   MenuChoiceValue,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+import type { MenuOrderingOperatorPresence } from '../../../models/kitchen/menu/menu-ordering.model'
 
 defineProps<{
   view: MenuDetailView | null
+  preOrderOperatorStatus?: MenuOrderingOperatorPresence['status']
 }>()
 
 defineEmits<{

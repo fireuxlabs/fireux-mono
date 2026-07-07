@@ -110,7 +110,7 @@ const {
 const shouldSubmitOrderRequest = computed(() => {
   if (props.funnel.sending.sent_order) return false
 
-  if (isPreOrder.value) return step.value === 3
+  if (isPreOrder.value) return step.value === 4
 
   return isTakeAwayOrder.value
     ? step.value === 3
@@ -138,9 +138,22 @@ async function continueFunnel() {
   if (shouldSubmitOrderRequest.value) {
     submittingStep.value = true
     try {
+      const preOrder = props.funnel.incoming.pre_order
+      const customer = props.funnel.incoming.customer || {}
       const created = await props.funnel.submit({
         ...(props.funnel.incoming.order_type === 'collection'
           ? { collection: props.funnel.incoming.collection }
+          : {}),
+        ...(isPreOrder.value && preOrder?.requested_for
+          ? { requested_for: preOrder.requested_for }
+          : {}),
+        ...(isPreOrder.value
+          ? {
+              customer: {
+                ...customer,
+                ...(preOrder?.party_size ? { party_size: preOrder.party_size } : {}),
+              },
+            }
           : {}),
       })
       if (!created) return

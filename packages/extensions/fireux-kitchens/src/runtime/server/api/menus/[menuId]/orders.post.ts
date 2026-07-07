@@ -32,6 +32,9 @@ import {
   type CreateMenuOrderBody,
 } from '../../../menu/ordering/lines.ts'
 import {
+  readWeekdayTimeSelectionState,
+} from '../../../../utils/weekday-time.ts'
+import {
   money,
   normalizeOrderType,
   normalizePaymentMethod,
@@ -46,6 +49,14 @@ import {
 
 const safeSegment = (value: string) =>
   Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
+const requestedForParts = (value: unknown) => {
+  const [date = '', time = ''] = text(value).split('T')
+
+  return {
+    date,
+    time: time.slice(0, 5),
+  }
+}
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -96,6 +107,30 @@ export default defineEventHandler(async (event) => {
   const requestedFor = text(body?.requested_for)
   const collection = readCollection(body?.collection, orderType)
   const customer = readCustomer(body?.customer)
+  if (orderType === 'pre_order') {
+    if (!requestedFor) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Choose when you would like to eat.',
+      })
+    }
+
+    const hours = ordering.service_hours?.operation_hours
+    if (hours?.windows.length) {
+      const selected = requestedForParts(requestedFor)
+      const selection = readWeekdayTimeSelectionState(
+        hours,
+        selected.date,
+        selected.time
+      )
+      if (!selection.available) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose a time during pre-order serving hours.',
+        })
+      }
+    }
+  }
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null
   if (orderType === 'delivery') {
     const zones = orderTypeConfig?.fulfilment?.delivery_zones || []

@@ -76,8 +76,14 @@
         <span>{{ preOrderDepositNotice }}</span>
       </div>
 
-      <span class="menu-pre-order-notice__status">
-        Kitchen operator online
+      <span
+        class="menu-pre-order-notice__status"
+        :class="{
+          'menu-pre-order-notice__status--online': preOrderOperatorOnline,
+          'menu-pre-order-notice__status--offline': !preOrderOperatorOnline,
+        }"
+      >
+        {{ preOrderOperatorLabel }}
       </span>
     </section>
   </header>
@@ -91,12 +97,14 @@ import type {
   MenuSurfaceOption,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuOrderingOperatorPresence } from '../../../models/kitchen/menu/menu-ordering.model'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 
 const props = defineProps<{
   menu: MenuManifest
   modelValue: MenuChoiceValue
   choices: MenuChoiceOption[]
+  preOrderOperatorStatus?: MenuOrderingOperatorPresence['status']
   surfaceOptions: MenuSurfaceOption[]
   surfaceLabel: string
 }>()
@@ -139,10 +147,16 @@ const preOrderDepositLabel = computed(() =>
   }).format(10)
 )
 const preOrderNotice = computed(() =>
-  `For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least ${preOrderNoticeHours.value} hours before you arrive.`
+  `For large groups, we appreciate a pre-order. Please send it at least ${preOrderNoticeHours.value} hours before you arrive.`
 )
 const preOrderDepositNotice = computed(() =>
   `Once confirmed, we will ask for a ${preOrderDepositLabel.value} deposit per person.`
+)
+const preOrderOperatorOnline = computed(() =>
+  props.preOrderOperatorStatus === 'online'
+)
+const preOrderOperatorLabel = computed(() =>
+  preOrderOperatorOnline.value ? 'Operator online' : 'Operator offline'
 )
 </script>
 
@@ -283,12 +297,23 @@ const preOrderDepositNotice = computed(() =>
   justify-content: center;
   min-height: 1.85rem;
   padding: 0.3rem 0.62rem;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, #16a34a 16%, var(--menu-bg));
-  color: #15803d;
   font-size: 0.72rem;
   font-weight: 950;
   line-height: 1.1;
+}
+
+.menu-pre-order-notice__status--online {
+  border-color: color-mix(in srgb, #16a34a 32%, transparent);
+  background: color-mix(in srgb, #16a34a 16%, var(--menu-bg));
+  color: #15803d;
+}
+
+.menu-pre-order-notice__status--offline {
+  border-color: color-mix(in srgb, #d97706 30%, transparent);
+  background: color-mix(in srgb, #d97706 12%, var(--menu-bg));
+  color: #b45309;
 }
 
 @media (max-width: 640px) {

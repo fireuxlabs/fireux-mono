@@ -10,7 +10,7 @@
 
     <section class="menu-order-dispatch__section">
       <UIcon
-        name="i-lucide-chef-hat"
+        :name="operatorOnline ? 'i-lucide-chef-hat' : 'i-lucide-mail'"
         class="menu-order-dispatch__icon"
         aria-hidden="true"
       />
@@ -20,6 +20,21 @@
         <span>{{ kitchenStatus }}</span>
       </div>
     </section>
+
+    <label
+      v-if="!operatorOnline"
+      class="menu-order-field"
+    >
+      Email for confirmation
+      <input
+        v-model="email"
+        autocomplete="email"
+        class="menu-order-schedule__input"
+        inputmode="email"
+        placeholder="you@example.com"
+        type="email"
+      >
+    </label>
 
     <div class="menu-order-dispatch__divider" />
 
@@ -39,19 +54,43 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuOrderingFunnelState } from '../../../../../models/kitchen/menu/menu-ordering.model'
+import { computed, ref, watchEffect } from 'vue'
+import type { MenuOrderingFunnelController } from '../../../../../models/kitchen/menu/menu-ordering.model'
 import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrderFunnel'
 
 const props = defineProps<{
-  order: MenuOrderingFunnelState
+  funnel: MenuOrderingFunnelController
   operatorOnline?: boolean
+}>()
+const emit = defineEmits<{
+  (event: 'update:ready', value: boolean): void
 }>()
 
 const {
   kitchenStatus,
   operatorStatus,
   timingStatus,
-} = usePreOrderFunnel(() => props.order, {
+} = usePreOrderFunnel(() => props.funnel.order, {
   operatorOnline: () => props.operatorOnline,
+})
+const email = ref(String(props.funnel.incoming.customer?.email ?? '').trim())
+const emailReady = computed(() =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())
+)
+const ready = computed(() =>
+  props.operatorOnline === true || emailReady.value
+)
+
+watchEffect(() => {
+  props.funnel.collect({
+    operator: {
+      role: 'kitchen_operator',
+      status: props.operatorOnline ? 'online' : 'offline',
+    },
+    customer: {
+      email: email.value.trim(),
+    },
+  })
+  emit('update:ready', ready.value)
 })
 </script>

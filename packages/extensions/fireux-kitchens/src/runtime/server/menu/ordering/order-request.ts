@@ -79,7 +79,7 @@ export const statusForOrderType = (
 ) =>
   paymentRequired
     ? 'pending_payment'
-    : orderType === 'delivery' || orderType === 'collection'
+    : orderType === 'delivery' || orderType === 'collection' || orderType === 'pre_order'
       ? 'pending_acceptance'
       : 'open'
 
@@ -89,6 +89,7 @@ export const readCustomer = (value: unknown): KitchenOrderCustomer => {
     : {}
   const customer = {
     name: text(source.name),
+    email: text(source.email),
     phone: text(source.phone),
     address: text(source.address),
     address_place_id: text(source.address_place_id),

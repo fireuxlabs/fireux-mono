@@ -737,6 +737,7 @@ const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
 const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
   const clean = {
     name: text(customer?.name),
+    email: text(customer?.email),
     phone: text(customer?.phone),
     address: text(customer?.address),
     address_place_id: text(customer?.address_place_id),
@@ -970,7 +971,7 @@ function useDraft(
     const isWaitingForAcceptance = created.status === 'pending_acceptance'
     const nextAwaitingAcceptance =
       isWaitingForAcceptance &&
-        ['collection', 'delivery'].includes(orderType.value)
+        ['collection', 'delivery', 'pre_order'].includes(orderType.value)
     trackedOrder.value = created
     acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance

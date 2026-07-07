@@ -1,6 +1,7 @@
 <template>
   <MenuDetailContent
     :view="interaction.detail.view"
+    :pre-order-operator-status="preOrderOperatorStatus"
     @update:selected-choice="interaction.detail.select"
     @select-item="interaction.detail.selectItem"
     @add="interaction.detail.add"
@@ -65,9 +66,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed, watch } from 'vue'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
+import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+
+type OperatorStatus = 'online' | 'offline'
+type OperatorPresenceWatch = {
+  orderType: string
+  status: OperatorStatus
+}
 
 const props = defineProps<{
   menu: MenuManifest
@@ -82,4 +94,46 @@ const interaction = useFunnel({
   menuContext: () => props.menuContext,
   kitchenSlug: () => props.kitchenSlug,
 })
+const { uid } = useAuth()
+const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
+const { kitchen: rootKitchen } = useKitchenFetch(kitchenSlug, {
+  hydrate: false,
+})
+const scopedKitchenId = computed(() =>
+  String(rootKitchen.value?.id || '').trim()
+)
+const scopedKitchenAppId = computed(() => {
+  const kitchen = rootKitchen.value as Record<string, unknown> | null
+
+  return String(kitchen?.app_scope_app_id || kitchen?.app_id || '').trim()
+})
+const scopedKitchenCollectionPath = computed(() =>
+  scopedKitchenAppId.value
+    ? resolveKitchenScopeCollectionPath(scopedKitchenAppId.value)
+    : ''
+)
+const { kitchen: scopedKitchen } = useKitchenFetch(scopedKitchenId, {
+  collectionPath: scopedKitchenCollectionPath,
+  hydrate: false,
+})
+const preOrderOperatorStatus = computed(() =>
+  targetHasOperator(scopedKitchen.value, String(uid.value || '').trim())
+    ? 'online' as const
+    : 'offline' as const
+)
+const activeOrderType = computed(() => interaction.funnel.order.orderType)
+
+watch((): OperatorPresenceWatch => ({
+  orderType: String(activeOrderType.value || ''),
+  status: preOrderOperatorStatus.value,
+}), ({ orderType, status }: OperatorPresenceWatch) => {
+  if (orderType !== 'pre_order') return
+
+  interaction.funnel.collect({
+    operator: {
+      role: 'kitchen_operator',
+      status,
+    },
+  })
+}, { immediate: true })
 </script>
