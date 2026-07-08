@@ -5,6 +5,15 @@
   />
 
   <section v-else-if="showKioskDump" class="menu-kiosk-dump">
+    <button
+      type="button"
+      class="menu-kiosk-dump__close"
+      aria-label="Go back"
+      @click="resetKiosk"
+    >
+      <UIcon name="i-lucide-x" aria-hidden="true" />
+    </button>
+
     <pre>{{ kioskDumpJson }}</pre>
   </section>
 
@@ -91,6 +100,7 @@ type OperatorPresenceWatch = {
   orderType: string
   status: OperatorStatus
 }
+type KioskEntryMode = 'eat_in' | 'takeaway'
 
 const props = defineProps<{
   menu: MenuManifest
@@ -107,6 +117,7 @@ const interaction = useFunnel({
 })
 const { uid } = useAuth()
 const kioskStarted = ref(false)
+const kioskMode = ref<KioskEntryMode | ''>('')
 const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
 const { kitchen: rootKitchen } = useKitchenFetch(kitchenSlug, {
   hydrate: false,
@@ -151,6 +162,9 @@ const kioskDump = computed(() => ({
     menuContext: props.menuContext,
     kitchenSlug: props.kitchenSlug,
   },
+  kiosk: {
+    mode: kioskMode.value,
+  },
   manifest: props.menu,
   interaction: {
     detail: interaction.detail.view,
@@ -168,8 +182,15 @@ const kioskDumpJson = computed(() =>
   JSON.stringify(kioskDump.value, null, 2)
 )
 
-function startKiosk() {
+function startKiosk(mode: KioskEntryMode) {
+  kioskMode.value = mode
+  interaction.detail.select(`order:${mode}`)
   kioskStarted.value = true
+}
+
+function resetKiosk() {
+  kioskStarted.value = false
+  kioskMode.value = ''
 }
 
 watch((): OperatorPresenceWatch => ({
@@ -189,6 +210,7 @@ watch((): OperatorPresenceWatch => ({
 
 <style scoped>
 .menu-kiosk-dump {
+  position: relative;
   display: block;
   min-height: 100svh;
   padding: 1rem;
@@ -196,9 +218,40 @@ watch((): OperatorPresenceWatch => ({
   color: var(--menu-text);
 }
 
+.menu-kiosk-dump__close {
+  position: sticky;
+  top: 1rem;
+  z-index: 1;
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-left: auto;
+  place-items: center;
+  border: 1px solid var(--menu-primary);
+  border-radius: 999px;
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+  cursor: pointer;
+}
+
+.menu-kiosk-dump__close:hover,
+.menu-kiosk-dump__close:focus-visible {
+  background: color-mix(in srgb, var(--menu-primary) 88%, black);
+}
+
+.menu-kiosk-dump__close:focus-visible {
+  outline: 2px solid var(--menu-primary);
+  outline-offset: 0.25rem;
+}
+
+.menu-kiosk-dump__close :deep(.iconify) {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .menu-kiosk-dump pre {
   overflow: auto;
-  margin: 0;
+  margin: 1rem 0 0;
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);

@@ -28,14 +28,14 @@
         v-if="isOpen"
         class="pointer-events-auto fixed inset-0 z-[100] overflow-auto overscroll-contain bg-transparent p-0 text-[var(--brand-ink)]"
         aria-label="La Tap Berne menu"
-      >
+        >
         <button
-          class="latap-glass fixed right-4 top-4 z-[101] grid size-[3.25rem] cursor-pointer place-items-center rounded-full border-0 p-0 sm:right-8 sm:top-8"
+          class="latap-menu-close latap-glass fixed right-4 top-4 z-[101] sm:right-8 sm:top-8"
           type="button"
           aria-label="Close menu"
           @click="closeMenu"
         >
-          <UIcon name="i-ph-x" class="size-8" />
+          <UIcon name="i-lucide-x" />
         </button>
 
         <MenuDetail

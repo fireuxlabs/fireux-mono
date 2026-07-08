@@ -1,18 +1,28 @@
 <template>
   <section class="kiosk-start" aria-label="Kiosk start screen">
-    <button
-      type="button"
-      class="kiosk-start__button"
-      @click="$emit('start')"
-    >
-      Order
-    </button>
+    <div class="kiosk-start__actions">
+      <button
+        type="button"
+        class="kiosk-start__button"
+        @click="$emit('start', 'eat_in')"
+      >
+        Eat in
+      </button>
+
+      <button
+        type="button"
+        class="kiosk-start__button"
+        @click="$emit('start', 'takeaway')"
+      >
+        Takeaway
+      </button>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 defineEmits<{
-  (event: 'start'): void
+  (event: 'start', mode: 'eat_in' | 'takeaway'): void
 }>()
 </script>
 
@@ -26,9 +36,15 @@ defineEmits<{
   color: var(--menu-text);
 }
 
+.kiosk-start__actions {
+  display: grid;
+  width: min(100%, 42rem);
+  gap: 1rem;
+}
+
 .kiosk-start__button {
   display: inline-grid;
-  min-width: min(18rem, 80vw);
+  width: 100%;
   min-height: 5rem;
   place-items: center;
   border: 1px solid var(--menu-primary);
@@ -49,5 +65,11 @@ defineEmits<{
 .kiosk-start__button:focus-visible {
   outline: 2px solid var(--menu-primary);
   outline-offset: 0.3rem;
+}
+
+@media (min-width: 720px) {
+  .kiosk-start__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

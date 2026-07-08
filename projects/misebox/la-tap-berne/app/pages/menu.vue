@@ -1,11 +1,11 @@
 <template>
   <div class="contents">
     <a
-      class="latap-glass fixed right-4 top-4 z-50 grid size-12 place-items-center rounded-full no-underline"
+      class="latap-menu-close latap-glass fixed right-4 top-4 z-50 no-underline sm:right-8 sm:top-8"
       href="/"
       aria-label="Close menu"
     >
-      <UIcon name="i-ph-x" class="size-5" />
+      <UIcon name="i-lucide-x" />
     </a>
 
     <MenuDetail
