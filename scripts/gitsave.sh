@@ -423,9 +423,10 @@ if git diff --cached --quiet; then
   if has_upstream; then
     ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
     if [[ "${ahead_count}" != "0" ]]; then
-      echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
+      echo "No changes to commit; branch is ahead by ${ahead_count}." >&2
       skip_push_if_dev_server_running
       run_required_pre_push_clean
+      echo "[gitsave] Pushing ${current_branch} to origin..." >&2
       git push origin "$current_branch"
       cleanup_git_refs "$current_branch"
       echo "Saved: pushed $current_branch to origin." >&2
