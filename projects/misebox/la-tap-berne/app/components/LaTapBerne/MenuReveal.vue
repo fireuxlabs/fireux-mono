@@ -1,16 +1,23 @@
 <template>
-  <div class="menu-reveal">
+  <div class="pointer-events-none absolute inset-0 z-20">
     <Transition name="content-fade">
-      <div v-if="!isOpen" class="menu-reveal__content">
+      <div
+        v-if="!isOpen"
+        class="pointer-events-auto absolute inset-x-0 top-1/4 z-[2] flex -translate-y-1/2 justify-center"
+      >
         <button
-          class="menu-reveal__button latap-glass"
+          class="latap-glass flex min-h-[4.25rem] cursor-pointer items-center justify-start gap-3 rounded-2xl px-4 py-3"
           type="button"
           @click="openMenu"
         >
-          <UIcon name="i-ph-fork-knife" />
-          <span class="menu-reveal__button-copy">
-            <span>View menu</span>
-            <small>Comida Casera</small>
+          <UIcon name="i-ph-fork-knife" class="size-5 shrink-0" />
+          <span class="grid min-w-32 gap-0.5 text-left">
+            <span class="text-sm font-black uppercase leading-none tracking-wider">
+              View menu
+            </span>
+            <small class="font-serif text-sm font-semibold italic leading-none opacity-[0.84]">
+              Comida Casera
+            </small>
           </span>
         </button>
       </div>
@@ -19,19 +26,18 @@
     <Transition name="menu-pop">
       <section
         v-if="isOpen"
-        class="menu-reveal__panel"
+        class="pointer-events-auto fixed inset-0 z-[100] overflow-auto overscroll-contain bg-transparent p-0 text-[var(--brand-ink)]"
         aria-label="La Tap Berne menu"
       >
         <button
-          class="menu-reveal__close"
+          class="latap-glass fixed right-4 top-4 z-[101] grid size-[3.25rem] cursor-pointer place-items-center rounded-full border-0 p-0 sm:right-8 sm:top-8"
           type="button"
           aria-label="Close menu"
           @click="closeMenu"
         >
-          <UIcon name="i-ph-x" />
+          <UIcon name="i-ph-x" class="size-8" />
         </button>
 
-        <!-- TODO: Revisit popup feel; older landing used a lighter tenant-local menu renderer. -->
         <MenuDetail
           menu-id="main"
           kitchen-slug="la-tapberne"
@@ -64,131 +70,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.menu-reveal {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  pointer-events: none;
-}
-
-.menu-reveal__content {
-  position: absolute;
-  inset-inline: 0;
-  top: 25%;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  pointer-events: auto;
-  transform: translateY(-50%);
-}
-
-.menu-reveal__button {
-  display: flex;
-  min-height: 4.25rem;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.8rem;
-  padding: 0.85rem 1rem;
-  border-radius: 0.95rem;
-  cursor: pointer;
-}
-
-.menu-reveal__button :deep(.iconify) {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: 0 0 auto;
-}
-
-.menu-reveal__button-copy {
-  display: grid;
-  gap: 0.12rem;
-  min-width: 8rem;
-  text-align: left;
-}
-
-.menu-reveal__button-copy span {
-  font-size: 0.92rem;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.menu-reveal__button-copy small {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 0.9rem;
-  font-style: italic;
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 1;
-  opacity: 0.84;
-}
-
-.menu-reveal__panel {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: block;
-  padding: 0;
-  background: transparent;
-  color: var(--brand-ink);
-  pointer-events: auto;
-  overflow: auto;
-  overscroll-behavior: contain;
-}
-
-.menu-reveal__panel :deep(.menu-page) {
-  min-height: 100svh;
-}
-
-.menu-reveal__close {
-  position: fixed;
-  top: clamp(1rem, 3vw, 2rem);
-  right: clamp(1rem, 3vw, 2rem);
-  z-index: 101;
-  display: grid;
-  width: 3.25rem;
-  height: 3.25rem;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: var(--brand-canvas, #f2e8d8);
-  color: var(--brand-ink, #171717);
-  cursor: pointer;
-  place-items: center;
-  box-shadow: 0 0.5rem 1.25rem rgb(var(--brand-ink-rgb, 23 23 23) / 18%);
-  transition:
-    background 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.menu-reveal__close:hover {
-  background: color-mix(in srgb, var(--brand-canvas, #f2e8d8) 88%, white);
-  transform: scale(1.04);
-}
-
-:global(:root.dark) .menu-reveal__close {
-  background: var(--brand-ink, #171717);
-  color: var(--brand-canvas, #f2e8d8);
-  box-shadow: 0 0.5rem 1.25rem rgb(0 0 0 / 28%);
-}
-
-:global(:root.dark) .menu-reveal__close:hover {
-  background: color-mix(in srgb, var(--brand-ink, #171717) 88%, black);
-}
-
-.menu-reveal__close :deep(.iconify) {
-  width: 2.1rem;
-  height: 2.1rem;
-}
-
-@media (max-width: 720px) {
-  .menu-reveal__content {
-    top: 25%;
-  }
-}
-
 .menu-pop-enter-active,
 .menu-pop-leave-active {
   transition:

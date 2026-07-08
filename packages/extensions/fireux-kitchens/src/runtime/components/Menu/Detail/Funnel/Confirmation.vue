@@ -73,19 +73,49 @@ const record = (value: unknown): Record<string, unknown> =>
 const requestLabel = computed(() => {
   if (props.funnel.order.orderType === 'collection') return 'Collection request'
   if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
+  if (['eat_in', 'takeaway'].includes(props.funnel.order.orderType)) return 'Kiosk order'
 
   return 'Order'
 })
 const order = computed(() => record(props.funnel.processing.order))
+const receipt = computed(() => record(order.value.receipt))
+const customer = computed(() =>
+  record(order.value.customer || receipt.value.customer)
+)
 const payment = computed(() => record(order.value.payment))
 const paymentAccepted = computed(() =>
   text(payment.value.status) === 'paid'
+)
+const orderStatus = computed(() =>
+  text(order.value.status || props.funnel.processing.status)
+)
+const fireState = computed(() =>
+  text(order.value.fire_state || props.funnel.processing.fire_state)
+)
+const isKioskOrder = computed(() =>
+  ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
+)
+const customerName = computed(() => text(customer.value.name))
+const readyForCounter = computed(() =>
+  isKioskOrder.value &&
+    (
+      ['ready', 'on_pass'].includes(orderStatus.value) ||
+      fireState.value === 'ready_to_fire'
+    )
 )
 const detailTitle = computed(() => {
   const orderNumber = props.funnel.processing.order_number
   return orderNumber ? `Order ${orderNumber}` : requestLabel.value
 })
 const detailStatus = computed(() => {
+  if (readyForCounter.value) {
+    return customerName.value
+      ? `${customerName.value}, your order is ready. Please collect from the counter.`
+      : 'Your order is ready. Please collect from the counter.'
+  }
+  if (isKioskOrder.value && customerName.value) {
+    return `${customerName.value}, we will call you when it is ready.`
+  }
   if (paymentAccepted.value) return 'Payment accepted. The kitchen has the order details.'
   if (text(payment.value.status) === 'pending') return 'Payment is in progress.'
 
@@ -94,6 +124,16 @@ const detailStatus = computed(() => {
 const confirmationLabel = computed(() => {
   const orderNumber = props.funnel.processing.order_number
   if (!props.funnel.processing.exists) return `${requestLabel.value} is not sent yet.`
+  if (readyForCounter.value) {
+    return customerName.value
+      ? `${customerName.value}, your order is ready.`
+      : 'Your order is ready.'
+  }
+  if (isKioskOrder.value) {
+    return orderNumber
+      ? `Order ${orderNumber} is with the kitchen.`
+      : 'Your order is with the kitchen.'
+  }
   if (paymentAccepted.value) {
     return orderNumber
       ? `Payment accepted for ${requestLabel.value.toLowerCase()} ${orderNumber}.`

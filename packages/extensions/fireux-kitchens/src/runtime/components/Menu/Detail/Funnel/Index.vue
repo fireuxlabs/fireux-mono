@@ -37,6 +37,13 @@
         @update:ready="setScreenReady"
       />
 
+      <MenuDetailFunnelKiosk
+        v-else-if="isKioskOrder"
+        :funnel="funnel"
+        :step="step"
+        @update:ready="setScreenReady"
+      />
+
       <MenuDetailFunnelShared
         v-else
         :funnel="funnel"
@@ -84,15 +91,24 @@ const props = defineProps<{
 }>()
 
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
+const kioskOrderTypes = ['eat_in', 'takeaway'] as const
 const isTakeAwayOrder = computed(() =>
   takeAwayOrderTypes.includes(
     props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
   )
 )
-const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
-const funnelStepCount = computed(() =>
-  isTakeAwayOrder.value || isPreOrder.value ? 6 : 4
+const isKioskOrder = computed(() =>
+  kioskOrderTypes.includes(
+    props.funnel.order.orderType as typeof kioskOrderTypes[number]
+  )
 )
+const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
+const funnelStepCount = computed(() => {
+  if (isTakeAwayOrder.value || isPreOrder.value) return 6
+  if (isKioskOrder.value) return 4
+
+  return 4
+})
 const submittingStep = ref(false)
 const {
   continueDisabled,
@@ -111,6 +127,7 @@ const shouldSubmitOrderRequest = computed(() => {
   if (props.funnel.sending.sent_order) return false
 
   if (isPreOrder.value) return step.value === 4
+  if (isKioskOrder.value) return step.value === 3
 
   return isTakeAwayOrder.value
     ? step.value === 3
@@ -126,7 +143,7 @@ const continueLabel = computed(() => {
 
 watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
   if (orderId) return
-  if (!isTakeAwayOrder.value && !isPreOrder.value) return
+  if (!isTakeAwayOrder.value && !isPreOrder.value && !isKioskOrder.value) return
   if (step.value <= 3) return
 
   step.value = 3
@@ -140,6 +157,7 @@ async function continueFunnel() {
     try {
       const preOrder = props.funnel.incoming.pre_order
       const customer = props.funnel.incoming.customer || {}
+      const hasCustomer = Object.keys(customer).length > 0
       const created = await props.funnel.submit({
         ...(props.funnel.incoming.order_type === 'collection'
           ? { collection: props.funnel.incoming.collection }
@@ -155,6 +173,7 @@ async function continueFunnel() {
               },
             }
           : {}),
+        ...(!isPreOrder.value && hasCustomer ? { customer } : {}),
       })
       if (!created) return
     } finally {
