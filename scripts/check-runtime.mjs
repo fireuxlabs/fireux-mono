@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-07-08
 // usage_note: validates Node/pnpm runtime contract.
 
 import process from 'node:process'

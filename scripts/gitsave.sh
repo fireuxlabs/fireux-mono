@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-06-29
+# last_used: 2026-07-08
 # usage_note: baseline after scripts cleanup; update when run.
 set -euo pipefail
 
