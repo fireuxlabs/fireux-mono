@@ -136,6 +136,7 @@ export const MenuModel = {
   doc_name: '' as string,
   doc_type: '' as string,
   doc_storage_path: '' as string,
+  kiosk_skin_id: '' as string,
   ordering: {
     enabled: false,
     order_types: [] as MenuOrderTypeConfig[],

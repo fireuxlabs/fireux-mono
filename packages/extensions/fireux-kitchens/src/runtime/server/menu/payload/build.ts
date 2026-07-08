@@ -11,6 +11,7 @@ import type {
   MenuManifestSection,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
+import { menuKioskSkinById } from '../../../models/kitchen/menu/kiosk-skin.model'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   menuContextProfile,
@@ -59,6 +60,7 @@ const menuDataForManifest = (
   const description = sourceMenu.description ?? rootMenuData.description
   const status = sourceMenu.status ?? rootMenuData.status
   const ordering = sourceMenu.ordering ?? rootMenuData.ordering
+  const kioskSkinId = sourceMenu.kiosk_skin_id ?? rootMenuData.kiosk_skin_id
 
   return {
     ...rootMenuData,
@@ -66,6 +68,7 @@ const menuDataForManifest = (
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
     ...(ordering ? { ordering } : {}),
+    ...(kioskSkinId ? { kiosk_skin_id: kioskSkinId } : {}),
   }
 }
 
@@ -269,6 +272,7 @@ export function buildMenuManifestPayload(
   const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
+  const kioskSkin = menuKioskSkinById(menuData.kiosk_skin_id)
   if (!currencyCode) {
     throw createError({
       statusCode: 400,
@@ -287,6 +291,12 @@ export function buildMenuManifestPayload(
     presentation: {
       currencyCode,
       kitchenName: source.kitchen_name || '',
+      ...(kioskSkin
+        ? {
+            kioskSkin,
+            kioskSkinId: readRecordString(menuData, 'kiosk_skin_id'),
+          }
+        : {}),
       pageStyle: readMenuPageStyle(scope.page_style),
     },
   }

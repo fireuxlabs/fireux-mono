@@ -1,4 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { MenuKioskSkin } from './kiosk-skin.model'
 import type { MenuChoice, MenuOrderingConfig, MenuServiceProfile } from './menu.model'
 
 export type MenuManifestPriceOption = {
@@ -45,6 +46,8 @@ export type MenuManifestBehaviour = MenuServiceProfile
 export type MenuManifestPresentation = {
   currencyCode: string
   kitchenName: string
+  kioskSkin?: MenuKioskSkin
+  kioskSkinId?: string
   pageStyle?: Partial<PageStyle>
 }
 

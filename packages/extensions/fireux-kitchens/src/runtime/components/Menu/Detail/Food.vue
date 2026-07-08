@@ -1,6 +1,7 @@
 <template>
   <MenuDetailKioskStart
     v-if="showKioskStart"
+    :background-image-url="kioskStartBackgroundImageUrl"
     @start="startKiosk"
   />
 
@@ -155,6 +156,9 @@ const showKioskStart = computed(() =>
 )
 const showKioskDump = computed(() =>
   isKioskContext.value && kioskStarted.value
+)
+const kioskStartBackgroundImageUrl = computed(() =>
+  props.menu.presentation.kioskSkin?.backgroundImageUrl || ''
 )
 const kioskDump = computed(() => ({
   route: {
