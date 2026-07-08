@@ -1,26 +1,171 @@
 <template>
   <section class="console-surface">
-    <div class="console-surface__grid console-surface__grid--2">
-      <ConsoleOverviewFocus
-        entity-label="Kitchen"
-        entity-plural-label="Kitchens"
-        :focus="focus"
-        :multiple="multiple"
-        :card="focusCard"
-      >
-        <ConsoleAppScope :entity="focus.entity" />
-        <ConsoleKitchenOverviewMenus
-          :menus="menus"
-          :pending="menusPending"
-        />
-        <ConsoleKitchenOverviewOperators :operator-ids="operatorIds" />
-      </ConsoleOverviewFocus>
-      <ConsoleOverviewMultiple
-        entity-label="Kitchen"
-        entity-plural-label="Kitchens"
-        :multiple="multiple"
-        :cards="multipleCards"
-      />
+    <UAlert
+      v-if="!selectedKitchen"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-store"
+      title="No kitchen selected"
+      description="Select or create a kitchen before using the operations overview."
+    />
+
+    <div v-else class="space-y-4">
+      <UCard>
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div class="min-w-0 space-y-4">
+            <div class="flex items-start gap-3">
+              <UAvatar
+                :src="identityImage || undefined"
+                :alt="kitchenTitle"
+                :text="imageInitials"
+                size="lg"
+              />
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="text-xl font-semibold text-highlighted">
+                    {{ kitchenTitle }}
+                  </h2>
+                  <UBadge :color="publicBadgeColor" variant="soft">
+                    {{ publicBadgeLabel }}
+                  </UBadge>
+                </div>
+                <p v-if="kitchenSubtitle" class="mt-1 text-sm text-dimmed">
+                  {{ kitchenSubtitle }}
+                </p>
+              </div>
+            </div>
+
+            <div v-if="kitchenPill" class="max-w-sm">
+              <KitchenCardsPill
+                v-bind="kitchenPill"
+                :link="false"
+                :show-badges="false"
+              />
+            </div>
+          </div>
+
+          <div class="grid min-w-0 gap-2 sm:grid-cols-2 lg:min-w-80">
+            <div
+              v-for="item in detailItems"
+              :key="item.key"
+              class="rounded-lg border border-default px-3 py-2"
+            >
+              <div class="flex items-center gap-2 text-xs font-medium text-dimmed">
+                <UIcon :name="item.icon" class="size-3.5" />
+                <span>{{ item.label }}</span>
+              </div>
+              <div class="mt-1 truncate text-sm text-highlighted">
+                {{ item.value }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </UCard>
+
+      <div class="grid gap-4 xl:grid-cols-[minmax(18rem,0.75fr)_minmax(0,1fr)]">
+        <UCard>
+          <template #header>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-sm font-semibold text-highlighted">
+                  Core identity
+                </div>
+              </div>
+              <div class="text-2xl font-semibold text-highlighted">
+                {{ identityPercent }}%
+              </div>
+            </div>
+          </template>
+
+          <div class="space-y-4">
+            <div class="h-2 overflow-hidden rounded-full bg-muted">
+              <div
+                class="h-full rounded-full bg-primary"
+                :style="{ width: `${identityPercent}%` }"
+              />
+            </div>
+
+            <div v-if="missingIdentityFields.length" class="flex flex-wrap gap-2">
+              <UButton
+                v-for="field in missingIdentityFields"
+                :key="field.key"
+                :to="field.to"
+                color="neutral"
+                variant="soft"
+                size="xs"
+              >
+                {{ field.label }}
+              </UButton>
+            </div>
+
+            <div v-else class="flex flex-wrap gap-2">
+              <UBadge color="success" variant="soft">
+                Ready
+              </UBadge>
+            </div>
+
+            <div class="grid gap-2">
+              <div
+                v-for="field in priorityIdentityFields"
+                :key="field.key"
+                class="flex items-center justify-between gap-3 text-sm"
+              >
+                <span class="text-toned">{{ field.label }}</span>
+                <div class="flex items-center gap-2">
+                  <UBadge
+                    :color="field.complete ? 'success' : 'neutral'"
+                    variant="soft"
+                    size="xs"
+                  >
+                    {{ field.complete ? 'Ready' : 'Missing' }}
+                  </UBadge>
+                  <UButton
+                    v-if="!field.complete && field.to"
+                    :to="field.to"
+                    size="xs"
+                    color="neutral"
+                    variant="ghost"
+                    icon="i-lucide-arrow-right"
+                    aria-label="Fix field"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <UCard
+            v-for="card in operationCards"
+            :key="card.key"
+            :ui="{ body: 'space-y-3' }"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 text-sm font-semibold text-highlighted">
+                  <UIcon :name="card.icon" class="size-4 text-dimmed" />
+                  <span>{{ card.label }}</span>
+                </div>
+                <p class="mt-1 text-xs text-dimmed">
+                  {{ card.detail }}
+                </p>
+              </div>
+              <div class="text-2xl font-semibold text-highlighted">
+                {{ card.pending ? '…' : card.count }}
+              </div>
+            </div>
+
+            <UButton
+              size="xs"
+              color="neutral"
+              variant="soft"
+              :to="card.to"
+            >
+              Open
+            </UButton>
+          </UCard>
+        </div>
+      </div>
     </div>
 
     <div class="mt-4">
@@ -35,57 +180,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import { useKitchenConsoleOverview } from '../../../../composables/fireux/console/kitchen/overview/useKitchenConsoleOverview'
-import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 
-const { focus, multiple, debug, kitchenId, rootCollection } = useKitchenConsoleOverview()
-const { pill } = useKitchenInterface()
 const {
-  activeMenus: menus,
-  pending: menusPending,
-} = useKitchenMenuCollection(kitchenId, {
-  kitchenCollectionPath: rootCollection,
-})
-const focusCard = computed(() => pill(focus.value.entity) as ConsoleTargetCard | null)
-const appScopeState = computed(() =>
-  String(focus.value.entity?.app_scope_state ?? '').trim()
-)
-const appScopeAppId = computed(() =>
-  String(focus.value.entity?.app_scope_app_id ?? '').trim()
-)
-const hasTenantApp = computed(() => appScopeState.value === 'dedicated_app')
-const operatorIds = computed(() =>
-  Array.from(
-    new Set(
-      ((focus.value.entity as { operator_ids?: unknown[] } | null)?.operator_ids ?? [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    )
-  )
-)
-const pageDebug = computed(() => ({
-  ...debug.value,
-  appScope: {
-    state: appScopeState.value,
-    appId: appScopeAppId.value,
-    hasTenantApp: hasTenantApp.value,
-  },
-  operators: {
-    ids: operatorIds.value,
-    count: operatorIds.value.length,
-  },
-  menus: {
-    count: menus.value.length,
-    names: menus.value.map((menu) => String(menu.name || menu.id || '').trim()).filter(Boolean),
-    pending: menusPending.value,
-  },
-}))
-const multipleCards = computed(() =>
-  multiple.value.items
-    .map((kitchen) => pill(kitchen) as ConsoleTargetCard | null)
-    .filter((card): card is ConsoleTargetCard => Boolean(card))
-)
+  selectedKitchen,
+  kitchenTitle,
+  kitchenSubtitle,
+  identityImage,
+  imageInitials,
+  kitchenPill,
+  detailItems,
+  publicBadgeLabel,
+  publicBadgeColor,
+  identityPercent,
+  missingIdentityFields,
+  priorityIdentityFields,
+  operationCards,
+  debug,
+} = useKitchenConsoleOverview()
+const pageDebug = debug
 </script>

@@ -5,7 +5,7 @@
         <div>
           <h2 class="text-base font-semibold text-highlighted">Ordering</h2>
           <p class="text-sm text-dimmed">
-            Choose which order modes this menu should offer.
+            Choose which ordering surfaces this menu should offer.
           </p>
         </div>
 
@@ -101,37 +101,39 @@ const toast = useToastify()
 
 const orderTypeOptions: OrderTypeOption[] = [
   {
-    key: 'home-delivery',
+    key: 'from-home',
     types: ['delivery', 'collection'],
-    label: 'Home Delivery',
-    description: 'Guests order from home with delivery as the bias and collection available from the same menu.',
+    label: 'From home',
+    description: 'Customer starts away from the venue. Delivery is biased; collection can sit beside it.',
     route: '/menus/{menuId}.home',
   },
   {
-    key: 'dine-in',
+    key: 'table-qr',
     types: ['dine_in'],
-    label: 'Dine in',
-    description: 'Guests order on premises and eat in.',
+    label: 'Table QR',
+    description: 'Customer is already seated. The table number is carried into the order.',
     route: '/menus/{menuId}.dine_in',
   },
   {
-    key: 'take-away',
-    types: ['takeaway'],
-    label: 'Take away',
-    description: 'Guests order on premises and take it away.',
-    route: '/menus/{menuId}.takeaway',
+    key: 'kiosk',
+    types: ['eat_in', 'takeaway'],
+    label: 'Kiosk',
+    description: 'Shared in-store terminal. Eat in means tray; takeaway means bag.',
+    route: '/menus/{menuId}.kiosk',
   },
   {
     key: 'pre-order',
     types: ['pre_order'],
     label: 'Pre-order',
-    description: 'Guests order ahead for a later service.',
+    description: 'Timing-first request. The kitchen confirms before deposit or final preparation.',
+    route: '/menus/{menuId}.pre_order',
   },
   {
     key: 'room-service',
     types: ['room_service'],
     label: 'Room service',
-    description: 'Hotel or private-room service.',
+    description: 'Internal delivery to a room inside a hotel, aparthotel, or venue.',
+    route: '/menus/{menuId}.room_service',
   },
 ]
 
@@ -186,7 +188,7 @@ function hasOrderType(type: KitchenOrderType) {
 }
 
 function hasOrderTypeOption(option: OrderTypeOption) {
-  return option.types.some(hasOrderType)
+  return option.types.every(hasOrderType)
 }
 
 async function updateOrdering(nextOrdering: MenuOrderingConfig) {

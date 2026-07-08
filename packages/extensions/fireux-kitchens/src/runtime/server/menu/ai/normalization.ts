@@ -54,7 +54,7 @@ function buildMenuNormalizationRequest(
     input: {
       sections: input.sections,
       instruction:
-        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Preserve optional extras, toppings, sides, and add-ons in add_ons. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, or ingredients. Preserve the original mixed-language restaurant wording, but make names dish-ready and professional.',
+        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Preserve optional extras, toppings, sides, and add-ons in add_ons. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, or ingredients. If names, section labels, variants, add-ons, or descriptions include translated duplicate text in multiple languages, keep only the default menu language text and remove secondary-language copies instead of joining them with slashes.',
     },
     context: {
       domain: 'restaurant_menu',
@@ -62,7 +62,7 @@ function buildMenuNormalizationRequest(
       sourceKind: 'raw_menu_photo_extraction',
       currency: input.currencyCode,
       languagePolicy:
-        'Treat the original menu as default mixed-language copy, not one source language.',
+        'Keep the default menu language only. Drop translated duplicate text such as Arabic, Chinese, or other secondary-language copies from names and labels.',
     },
     outputJsonSchema: MENU_NORMALIZATION_JSON_SCHEMA,
     outputSchema: {

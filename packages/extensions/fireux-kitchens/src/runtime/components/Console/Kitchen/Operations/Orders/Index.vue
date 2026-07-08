@@ -1,6 +1,6 @@
 <template>
-  <section class="console-surface">
-    <!-- Tools: add operation-level actions here when a real tool emerges. -->
+  <section class="console-surface space-y-6">
+    <ConsoleKitchenOperationsOrdersWrite />
     <ConsoleKitchenOperationsOrdersRead />
   </section>
 </template>

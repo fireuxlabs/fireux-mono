@@ -43,8 +43,9 @@
           <div class="flex flex-wrap justify-end gap-2">
             <UButton
               size="sm"
-              variant="soft"
-              icon="i-lucide-scan-text"
+              :color="source.status === 'draft' ? 'success' : 'primary'"
+              :variant="source.status === 'draft' ? 'solid' : 'soft'"
+              :icon="processIcon(source)"
               :to="`/console/kitchen/menus/${encodeURIComponent(source.id)}`"
             >
               {{ processLabel(source) }}
@@ -113,8 +114,16 @@ const sourceKind = (source: {
 
 const processLabel = (source: {
   file_kind?: MenuSourceUploadKind
+  status?: MenuSourceUploadStatus
   source_url?: string
-}) => sourceKind(source) === 'url' ? 'Process URL with AI' : 'Process with AI'
+}) => {
+  if (source.status === 'draft') return 'Confirm draft'
+  return sourceKind(source) === 'url' ? 'Review and process URL' : 'Review and process'
+}
+
+const processIcon = (source: {
+  status?: MenuSourceUploadStatus
+}) => source.status === 'draft' ? 'i-lucide-check-circle-2' : 'i-lucide-scan-text'
 
 const statusColor = (status: MenuSourceUploadStatus) => {
   if (status === 'published') return 'success'

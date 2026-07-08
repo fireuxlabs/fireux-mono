@@ -25,11 +25,99 @@ const stringArray = (value: unknown) =>
   Array.isArray(value)
     ? value.map(text).filter(Boolean)
     : []
+const hasKeys = (value: Record<string, unknown>) =>
+  Boolean(Object.keys(value).length)
 const imageShade = (value: unknown): KitchenImageShade => {
   const shade = text(value).toLowerCase()
   return shade === 'light' || shade === 'dark' || shade === 'none'
     ? shade
     : 'none'
+}
+const publicKitchenStringKeys = [
+  'slug',
+  'name',
+  'display_name',
+  'short_name',
+  'tagline',
+  'brand_tagline',
+  'short_address',
+  'formatted_address',
+  'display_image_url',
+  'image_url',
+  'image_shade',
+  'cover_image',
+  'phone',
+  'website',
+  'google_maps_url',
+  'place_id',
+  'currency_code',
+  'menu_currency_format',
+  'claimed_by',
+] as const
+const publicKitchenArrayKeys = [
+  'food_gallery',
+  'gallery_images',
+  'types',
+  'tags',
+] as const
+const publicKitchenIdentityKeys = [
+  'display_name',
+  'tagline',
+  'image_url',
+  'image_shade',
+] as const
+
+export const composeKitchenScopedSurface = (
+  publicKitchen: KitchenSpineRecord,
+  scopedKitchen: KitchenSpineRecord
+) => {
+  const publicRecord = record(publicKitchen)
+  const scopedRecord = record(scopedKitchen)
+
+  if (!hasKeys(publicRecord)) return hasKeys(scopedRecord) ? scopedRecord : null
+  if (!hasKeys(scopedRecord)) return publicRecord
+
+  const composed: Record<string, unknown> = {
+    ...publicRecord,
+    ...scopedRecord,
+  }
+
+  for (const key of publicKitchenStringKeys) {
+    if (text(composed[key])) continue
+
+    const publicValue = publicRecord[key]
+    if (text(publicValue)) composed[key] = publicValue
+  }
+
+  for (const key of publicKitchenArrayKeys) {
+    if (stringArray(composed[key]).length) continue
+
+    const publicValues = stringArray(publicRecord[key])
+    if (publicValues.length) composed[key] = publicValues
+  }
+
+  const publicIdentity = record(publicRecord.identity)
+  const scopedIdentity = record(scopedRecord.identity)
+  const identity: Record<string, unknown> = {
+    ...publicIdentity,
+    ...scopedIdentity,
+  }
+
+  for (const key of publicKitchenIdentityKeys) {
+    if (text(identity[key])) continue
+
+    const publicValue = publicIdentity[key]
+    if (text(publicValue)) identity[key] = publicValue
+  }
+
+  if (!stringArray(identity.gallery).length) {
+    const publicGallery = stringArray(publicIdentity.gallery)
+    if (publicGallery.length) identity.gallery = publicGallery
+  }
+
+  if (hasKeys(identity)) composed.identity = identity
+
+  return composed
 }
 
 export const readKitchenAppScope = (

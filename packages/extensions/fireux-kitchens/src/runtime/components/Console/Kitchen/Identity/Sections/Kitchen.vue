@@ -59,6 +59,64 @@
               />
             </div>
 
+            <MoleculesFormsFirestoreSimpleField
+              label="Currency"
+              :firebase-value="currencyCode"
+              placeholder="ISO code"
+              :maxlength="3"
+              :validation-function="validateCurrencyCode"
+              :formatting-function="formatCurrencyCode"
+              :update-function="handleCurrencyCode"
+            />
+
+            <div class="md:col-span-2 rounded-lg border border-default bg-muted/30 p-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="space-y-1">
+                  <p class="text-sm font-medium text-highlighted">
+                    Cover image
+                  </p>
+                  <p class="text-xs text-dimmed">
+                    1280 x 720 public kitchen hero.
+                  </p>
+                </div>
+
+                <UButton
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-image-up"
+                  :disabled="!canWrite || coverUploading"
+                  :loading="coverUploading"
+                  @click="triggerCoverInput"
+                >
+                  {{ coverImage ? 'Change cover' : 'Add cover' }}
+                </UButton>
+
+                <input
+                  ref="coverInputRef"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handleCoverFile"
+                >
+              </div>
+
+              <div class="mt-3 aspect-video overflow-hidden rounded-lg bg-elevated">
+                <img
+                  v-if="coverImage"
+                  :src="coverImage"
+                  :alt="`${name || 'Kitchen'} cover image`"
+                  class="size-full object-cover"
+                >
+                <div
+                  v-else
+                  class="flex size-full items-center justify-center text-xs text-dimmed"
+                >
+                  1280 x 720
+                </div>
+              </div>
+            </div>
+
             <div class="md:col-span-2">
               <UButton
                 color="neutral"
@@ -78,13 +136,20 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type { KitchenUpdateInput } from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
-import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
+import {
+  readKitchenCurrencyCode,
+  readKitchenIdentity,
+} from '../../../../../utils/kitchen-spine'
+
+const COVER_WIDTH = 1280
+const COVER_HEIGHT = 720
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -100,6 +165,11 @@ const toast = useToastify()
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
 const slug = computed(() => String(props.kitchen?.slug ?? ''))
+const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
+const coverImage = computed(() => String(props.kitchen?.cover_image ?? '').trim())
+const { uploadImage } = useImageStorage()
+const coverInputRef = ref<HTMLInputElement | null>(null)
+const coverUploading = ref(false)
 
 const updateKitchenField = async (
   patch: KitchenUpdateInput,
@@ -145,6 +215,65 @@ const handleTagline = async (value: string) =>
     'Failed to update tagline'
   )
 
+const formatCurrencyCode = (value: string) =>
+  String(value || '').trim().toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3)
+
+const validateCurrencyCode = (value: string) => {
+  const next = formatCurrencyCode(value)
+
+  return {
+    isValid: /^[A-Z]{3}$/.test(next),
+    message: next.length === 3 ? '' : 'Use a 3-letter ISO currency code.',
+  }
+}
+
+const handleCurrencyCode = async (value: string) =>
+  updateKitchenField(
+    { currency_code: formatCurrencyCode(value) },
+    'Currency updated',
+    'Failed to update currency'
+  )
+
+function triggerCoverInput() {
+  if (!props.canWrite || coverUploading.value) return
+  coverInputRef.value?.click()
+}
+
+async function handleCoverFile(event: Event) {
+  const input = event.target as HTMLInputElement | null
+  const file = input?.files?.[0]
+  if (!file) return
+  if (!props.canWrite) {
+    toast.error('This kitchen is read-only.')
+    if (input) input.value = ''
+    return
+  }
+  if (!props.kitchenId) {
+    toast.error('No kitchen selected.')
+    if (input) input.value = ''
+    return
+  }
+
+  coverUploading.value = true
+  try {
+    const coverBlob = await resizeImageToCover(file)
+    const url = await uploadImage(`kitchens/${props.kitchenId}/cover`, coverBlob)
+    await updateKitchenField(
+      { cover_image: url },
+      'Cover image updated',
+      'Failed to update cover image'
+    )
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to prepare cover image: ${description}`)
+    throw error
+  } finally {
+    coverUploading.value = false
+    if (input) input.value = ''
+  }
+}
+
 const formatSlugField = (value: string) =>
   normalizeSlug(value, { maxLength: 80 })
 
@@ -168,4 +297,64 @@ const handleSlug = async (value: string) =>
     'Slug updated',
     'Failed to update slug'
   )
+
+function loadImage(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    const objectUrl = URL.createObjectURL(file)
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl)
+      resolve(image)
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
+      reject(new Error('Could not read image file.'))
+    }
+    image.src = objectUrl
+  })
+}
+
+async function resizeImageToCover(file: File): Promise<Blob> {
+  const image = await loadImage(file)
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Could not prepare image.')
+
+  canvas.width = COVER_WIDTH
+  canvas.height = COVER_HEIGHT
+
+  const sourceRatio = image.width / image.height
+  const targetRatio = COVER_WIDTH / COVER_HEIGHT
+  const sourceWidth = sourceRatio > targetRatio
+    ? image.height * targetRatio
+    : image.width
+  const sourceHeight = sourceRatio > targetRatio
+    ? image.height
+    : image.width / targetRatio
+  const sourceX = (image.width - sourceWidth) / 2
+  const sourceY = (image.height - sourceHeight) / 2
+
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    0,
+    0,
+    COVER_WIDTH,
+    COVER_HEIGHT
+  )
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error('Could not export image.'))
+      },
+      'image/jpeg',
+      0.88
+    )
+  })
+}
 </script>

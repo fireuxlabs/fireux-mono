@@ -1,5 +1,5 @@
 <template>
-  <UCard class="fx-card fx-card--public-action">
+  <UCard v-if="showPanel" class="fx-card fx-card--public-action">
     <div class="fx-public-action">
       <div class="fx-public-action__badges">
         <UBadge :color="accessBadgeColor" variant="soft">
@@ -110,9 +110,7 @@ const panelDescription = computed(() =>
     ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app console.`
     : hasConsoleAccess.value
     ? 'You have operator access for this kitchen console.'
-    : canActivateConsole.value
-      ? 'This kitchen has no operators yet. Make a console to manage menus, orders, team, and stations.'
-      : 'This kitchen has no operators yet.'
+    : 'This kitchen has no operators yet. Make a console to manage menus, orders, team, and stations.'
 )
 const subjectLabel = computed(() =>
   hasConsoleAccess.value ? 'Signed in as' : ''
@@ -128,6 +126,9 @@ const accessIcon = computed(() =>
 )
 const canActivateConsole = computed(() =>
   Boolean(isAdmin.value || isClaimant.value)
+)
+const showPanel = computed(() =>
+  Boolean(hasConsoleAccess.value || canActivateConsole.value)
 )
 const consolePath = '/console/kitchen'
 const consoleCreatePath = `${consolePath}/create`

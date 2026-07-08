@@ -10,6 +10,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { composeKitchenScopedSurface } from '../../../../../utils/kitchen-spine'
 import {
   useKitchenFetch,
   type KitchenFetchSource,
@@ -17,18 +18,6 @@ import {
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type KitchenConsoleEntity = KitchenSurface
-
-const publicIdentityKeys = [
-  'name',
-  'display_name',
-  'short_name',
-  'short_address',
-  'formatted_address',
-  'display_image_url',
-  'image_url',
-  'cover_image',
-  'brand_tagline',
-] as const
 
 const uniqueStrings = (values: unknown[]) =>
   Array.from(
@@ -44,36 +33,10 @@ const composeConsoleKitchen = (
   publicKitchen: KitchenConsoleEntity | null,
   scoped: KitchenConsoleEntity | null
 ): KitchenConsoleEntity | null => {
-  if (!publicKitchen) return scoped
-  if (!scoped) return publicKitchen
-
-  const composed = {
-    ...(publicKitchen as Record<string, unknown>),
-    ...(scoped as Record<string, unknown>),
-  }
-
-  for (const key of publicIdentityKeys) {
-    if (normalizeString(composed[key])) continue
-
-    const publicValue = (publicKitchen as Record<string, unknown>)[key]
-    if (normalizeString(publicValue)) composed[key] = publicValue
-  }
-
-  const publicImage =
-    normalizeString((publicKitchen as Record<string, unknown>).display_image_url) ||
-    normalizeString((publicKitchen as Record<string, unknown>).image_url)
-
-  if (publicImage) {
-    if (!normalizeString(composed.display_image_url)) {
-      composed.display_image_url = publicImage
-    }
-
-    if (!normalizeString(composed.image_url)) {
-      composed.image_url = publicImage
-    }
-  }
-
-  return composed as KitchenConsoleEntity
+  return composeKitchenScopedSurface(
+    publicKitchen,
+    scoped
+  ) as KitchenConsoleEntity | null
 }
 
 /**

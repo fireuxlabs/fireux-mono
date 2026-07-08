@@ -5,6 +5,7 @@ import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitc
 import {
   KitchenOrderStorage,
   type KitchenOrder,
+  type KitchenOrderCustomer,
   type KitchenOrderFireState,
   type KitchenOrderItem,
   type KitchenOrderType,
@@ -12,8 +13,9 @@ import {
 
 type CreateKitchenOrderInput = {
   kitchenId: string
-  dish_id: string
-  label: string
+  dish_id?: string
+  label?: string
+  items?: KitchenOrderItem[]
   quantity?: number
   order_type?: KitchenOrderType
   requested_for?: string
@@ -23,6 +25,8 @@ type CreateKitchenOrderInput = {
   kitchenCollectionPath?: string
   app_id?: string
   creator_id?: string
+  customer?: KitchenOrderCustomer
+  kitchen_note?: string
 }
 
 const makeOrderId = () => {
@@ -87,12 +91,27 @@ export function useKitchenOrderCreate() {
         : { mode: 'queue' as const }
       : {}
 
-    const item: KitchenOrderItem = {
-      id: `item-1`,
-      dish_id: normalizeString(input.dish_id),
-      label: normalizeString(input.label),
-      quantity: Number(input.quantity || 1),
-      checked: false,
+    const items = Array.isArray(input.items) && input.items.length
+      ? input.items.map((item, index) => ({
+          ...item,
+          id: normalizeString(item.id) || `item-${index + 1}`,
+          dish_id: normalizeString(item.dish_id),
+          label: normalizeString(item.label),
+          quantity: Math.max(1, Number(item.quantity || 1)),
+          checked: Boolean(item.checked),
+        }))
+      : [
+          {
+            id: 'item-1',
+            dish_id: normalizeString(input.dish_id),
+            label: normalizeString(input.label),
+            quantity: Number(input.quantity || 1),
+            checked: false,
+          },
+        ]
+
+    if (!items.every((item) => item.dish_id && item.label)) {
+      throw new Error('Order items need dish ids and labels.')
     }
 
     const payload: KitchenOrder = {
@@ -108,12 +127,12 @@ export function useKitchenOrderCreate() {
       estimated_ready_at: '' as any,
       fire_state: fireState,
 
-      items: [item],
+      items,
       fulfilment_policy: {},
       fulfilment_match: {},
       driver_responses: {},
-      customer: {},
-      kitchen_note: '',
+      customer: input.customer || {},
+      kitchen_note: normalizeString(input.kitchen_note),
       payment: {
         required: false,
         status: 'not_required',
@@ -122,7 +141,7 @@ export function useKitchenOrderCreate() {
 
       app_id: (input.app_id || appId || '') as any,
       creator_id: (input.creator_id || '') as any,
-      channel: orderType,
+      channel: normalizeString(input.channel) || orderType,
       created_at: serverTimestamp() as any,
       updated_at: serverTimestamp() as any,
       created: {

@@ -1,3 +1,5 @@
+import { defaultMenuLanguageText } from '../language/default-text'
+
 export type KitchenMenuUrlContent = {
   provider: string
   source_url: string
@@ -47,7 +49,7 @@ const foodBookingIds = (html: string) =>
 const optionGroupSummary = (value: unknown) =>
   rows(value)
     .map((group) => ({
-      name: text(group.name),
+      name: defaultMenuLanguageText(group.name),
       required: Boolean(group.required),
       options_count: rows(group.options).length,
     }))
@@ -61,7 +63,7 @@ const sizeRows = (item: Record<string, unknown>) => {
       const priceDelta = money(size.price)
 
       return {
-        label: text(size.name),
+        label: defaultMenuLanguageText(size.name),
         price: priceDelta ? basePrice + priceDelta : basePrice,
       }
     })
@@ -90,24 +92,24 @@ const foodBookingPayload = (data: unknown) => {
     restaurant: {
       id: text(restaurant.id),
       uid: text(restaurant.uid),
-      name: text(restaurant.name),
+      name: defaultMenuLanguageText(restaurant.name),
     },
     menu: {
       id: text(menu.id),
-      name: text(menu.name),
+      name: defaultMenuLanguageText(menu.name),
       currency: text(menu.currency),
     },
     sections: categories
       .map((category) => ({
         id: text(category.id),
-        name: text(category.name),
-        description: text(category.description),
+        name: defaultMenuLanguageText(category.name),
+        description: defaultMenuLanguageText(category.description),
         items: rows(category.items)
           .filter((item) => item.active !== false)
           .map((item) => ({
             id: text(item.id),
-            name: text(item.name),
-            description: text(item.description),
+            name: defaultMenuLanguageText(item.name),
+            description: defaultMenuLanguageText(item.description),
             image_url: itemImageUrl(item),
             price: money(item.price),
             tags: Array.isArray(item.tags)

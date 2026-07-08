@@ -49,8 +49,8 @@
         </template>
       </UCollapsible>
 
-      <div v-if="result" class="space-y-4">
-        <div class="grid gap-3 md:grid-cols-4">
+      <div v-if="hasDraft" class="space-y-4">
+        <div v-if="result" class="grid gap-3 md:grid-cols-4">
           <UPageCard
             v-for="stat in stats"
             :key="stat.label"
@@ -111,7 +111,7 @@
           </template>
         </UCollapsible>
 
-        <div class="grid gap-4" :class="{ 'xl:grid-cols-2': currentSections.length }">
+        <div v-if="result" class="grid gap-4" :class="{ 'xl:grid-cols-2': currentSections.length }">
           <UCollapsible v-if="currentSections.length">
             <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
               Existing menu
@@ -229,7 +229,7 @@ const statusMessage = computed(() => {
   }
 
   if (pendingMode.value === 'strong') {
-    return 'Rerunning with the stronger model. This costs more than the standard pass.'
+    return 'Processing with the stronger model. This costs more than the recommended pass.'
   }
 
   return ''
@@ -335,6 +335,10 @@ const normalizedSections = computed(() =>
 )
 const draftSections = computed(() =>
   normalizedSections.value.length ? normalizedSections.value : extractedSections.value
+)
+const hasDraft = computed(() => Boolean(result.value) ||
+  records(record(record(source.value).ai_draft).sections)
+    .some((section) => records(section.items).length)
 )
 watch(
   currentUser,

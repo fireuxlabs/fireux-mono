@@ -1,12 +1,6 @@
 <template>
   <ClientOnly>
     <UPage>
-      <UPageHeader
-        class="pageheader"
-        :title="pageTitle"
-        :description="pageDescription"
-      />
-
       <UPageBody class="pagebody">
         <UPageCard v-if="pending" variant="subtle">
           <p class="text-sm text-dimmed">Loading kitchen…</p>
@@ -20,49 +14,22 @@
         />
 
         <div v-else class="space-y-4">
-          <!-- identity -->
           <KitchenDetailIdentity :kitchen="kitchen" />
 
-          <!-- people -->
-          <KitchenDetailTeam :kitchen="kitchen" />
+          <KitchenDetailMenus :kitchen="kitchen" />
 
-          <!-- place -->
-          <KitchenDetailPlace :kitchen="kitchen" />
-
-          <!-- fulfilment -->
           <KitchenDetailFulfilment
             :kitchen="kitchen"
             :fulfilment="resolvedFulfilment"
           />
 
-          <!-- main -->
-          <KitchenDetailMenus :kitchen="kitchen" />
-
-          <!-- team access -->
-          <KitchenDetailJoin :kitchen="kitchen" />
-
-          <!-- operator -->
           <KitchenDetailOperatorPanel :kitchen="kitchen" />
-
-          <!-- dev -->
-          <DevJson
-            :title="'Kitchen (Doc)'"
-            context="KitchenDetail · kitchens/[slug] · hydrated kitchen doc"
-            :data="kitchen"
-            :default-open="false"
-          />
         </div>
       </UPageBody>
     </UPage>
 
     <template #fallback>
       <UPage>
-        <UPageHeader
-          class="pageheader"
-          :title="pageTitle"
-          :description="pageDescription"
-        />
-
         <UPageBody class="pagebody">
           <UPageCard variant="subtle">
             <p class="text-sm text-dimmed">Loading kitchen…</p>
@@ -76,12 +43,22 @@
 <script setup lang="ts">
 import { useFetch } from '#imports'
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   useKitchenFetch,
-  useKitchenInterface,
   useKitchenSeo,
 } from '../../../composables/fireux/firestore/kitchen/useKitchen'
-import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model'
+import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type {
+  Kitchen,
+  KitchenFulfilmentConfig,
+} from '../../../models/kitchen.model'
+import { KitchenStorage } from '../../../models/kitchen.model'
+import {
+  composeKitchenScopedSurface,
+  readKitchenAppScope,
+} from '../../../utils/kitchen-spine'
 
 const props = defineProps<{
   locator: string
@@ -98,7 +75,44 @@ const fulfilmentPath = computed(() =>
     : ''
 )
 
-const { kitchen, pending } = useKitchenFetch(locator)
+const { appId } = useFireUXConfig()
+const { kitchen: rootKitchen, pending } = useKitchenFetch(locator)
+const rootKitchenId = computed(() =>
+  String(rootKitchen.value?.id ?? '').trim()
+)
+const kitchenAppScope = computed(() => readKitchenAppScope(rootKitchen.value))
+const scopedKitchenAppId = computed(() => {
+  const state = kitchenAppScope.value.state
+  const scopedAppId = kitchenAppScope.value.appId
+  if ((state === 'parent_app' || state === 'dedicated_app') && scopedAppId) {
+    return scopedAppId
+  }
+
+  return String(appId || '').trim()
+})
+const scopedKitchenCollection = computed(() => {
+  const resolvedAppId = scopedKitchenAppId.value
+  if (!resolvedAppId) return ''
+
+  return `${AppStorage.collection}/${resolvedAppId}/${KitchenStorage.scopeCollection}`
+})
+const scopedKitchenId = computed(() => {
+  if (!scopedKitchenCollection.value) return ''
+  return rootKitchenId.value
+})
+const { kitchen: scopedKitchen } = useKitchenFetch(scopedKitchenId, {
+  collectionPath: scopedKitchenCollection,
+  hydrate: false,
+})
+const kitchen = computed<KitchenSurface | null>(() =>
+  composeKitchenScopedSurface(
+    rootKitchen.value,
+    scopedKitchen.value
+  ) as KitchenSurface | null
+)
+const seoKitchen = computed(() =>
+  kitchen.value as Partial<Kitchen> | null
+)
 const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
   fulfilmentPath,
   {
@@ -106,22 +120,7 @@ const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
     watch: [fulfilmentPath],
   }
 )
-const { identity } = useKitchenInterface()
-const identityCard = computed(() => identity(kitchen.value))
 const resolvedFulfilment = computed(() => fulfilmentData.value || emptyFulfilment)
-const kitchenDisplayName = computed(() =>
-  String(kitchen.value?.display_name ?? '').trim()
-)
-const kitchenTagline = computed(() =>
-  String(kitchen.value?.tagline ?? '').trim()
-)
 
-const pageTitle = computed(() =>
-  kitchenDisplayName.value || identityCard.value?.title || locator.value || 'Kitchen'
-)
-const pageDescription = computed(() =>
-  kitchenTagline.value || identityCard.value?.subtitle || ''
-)
-
-useKitchenSeo(kitchen)
+useKitchenSeo(seoKitchen)
 </script>

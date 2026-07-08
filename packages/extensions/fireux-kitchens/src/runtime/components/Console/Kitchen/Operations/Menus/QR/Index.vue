@@ -1,7 +1,23 @@
 <template>
   <section class="space-y-4">
     <UAlert
-      v-if="!menuPanels.length"
+      v-if="!menuPanels.length && draftSource"
+      color="warning"
+      variant="soft"
+      icon="i-lucide-file-check-2"
+      title="Menu draft ready"
+      description="Confirm the draft to create menu records, then publish before generating guest entry points."
+      :actions="[
+        {
+          label: 'Confirm draft',
+          to: `/console/kitchen/menus/${encodeURIComponent(draftSource.id)}`,
+          icon: 'i-lucide-check-circle-2',
+        },
+      ]"
+    />
+
+    <UAlert
+      v-else-if="!menuPanels.length"
       color="neutral"
       variant="soft"
       title="No menus yet"
@@ -29,7 +45,8 @@ import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
 import ConsoleKitchenOperationsMenusQRMenuPanel from './MenuPanel.vue'
 import type { MenuQrPanel, MenuQrTarget } from './types'
 
-const { selectedKitchen, menus, activeKitchenAppId } = useKitchenConsoleMenus()
+const { selectedKitchen, menus, menuSources, activeKitchenAppId } =
+  useKitchenConsoleMenus()
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const orderTypes = new Set<KitchenOrderType>([
@@ -48,6 +65,9 @@ const menuUrlResolver = useKitchenMenuUrl({
   kitchenSlug,
 })
 const menuPanels = computed(() => buildMenuPanels(menus.value))
+const draftSource = computed(() =>
+  menuSources.value.find((source) => clean(source.status) === 'draft') ?? null
+)
 
 function buildMenuPanels(sourceMenus: Menu[]): MenuQrPanel[] {
   return sourceMenus

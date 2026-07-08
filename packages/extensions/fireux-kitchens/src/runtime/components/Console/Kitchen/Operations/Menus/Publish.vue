@@ -46,7 +46,7 @@ const busy = ref(false)
 const isPublished = computed(() => menu.value?.status === 'published')
 const menuStatus = computed(() => menu.value?.status || 'draft')
 const showPublishAction = computed(
-  () => !isPublished.value
+  () => Boolean(menu.value) && !isPublished.value
 )
 const actionLabel = computed(() =>
   isPublished.value ? 'Published' : 'Publish menu'

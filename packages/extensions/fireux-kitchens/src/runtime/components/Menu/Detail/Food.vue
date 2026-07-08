@@ -1,5 +1,12 @@
 <template>
+  <MenuDetailKioskStart
+    v-if="showKioskStart"
+    :menu="menu"
+    @start="startKiosk"
+  />
+
   <MenuDetailContent
+    v-else
     :view="interaction.detail.view"
     :pre-order-operator-status="preOrderOperatorStatus"
     @update:selected-choice="interaction.detail.select"
@@ -8,7 +15,7 @@
   />
 
   <section
-    v-if="interaction.funnel.sessionConflict"
+    v-if="!showKioskStart && interaction.funnel.sessionConflict"
     class="mx-auto mt-6 w-full max-w-3xl rounded-lg border border-default bg-muted p-4"
   >
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -55,18 +62,18 @@
   </section>
 
   <MenuDetailFunnel
-    v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+    v-if="!showKioskStart && interaction.funnel.show && interaction.funnel.order.panelOpen"
     :funnel="interaction.funnel"
   />
 
   <MenuDetailFunnelTrigger
-    v-else-if="interaction.funnel.show"
+    v-else-if="!showKioskStart && interaction.funnel.show"
     :funnel="interaction.funnel"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
@@ -95,6 +102,7 @@ const interaction = useFunnel({
   kitchenSlug: () => props.kitchenSlug,
 })
 const { uid } = useAuth()
+const kioskStarted = ref(false)
 const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
 const { kitchen: rootKitchen } = useKitchenFetch(kitchenSlug, {
   hydrate: false,
@@ -122,6 +130,18 @@ const preOrderOperatorStatus = computed(() =>
     : 'offline' as const
 )
 const activeOrderType = computed(() => interaction.funnel.order.orderType)
+const isKioskContext = computed(() =>
+  props.menu.behaviour.context === 'kiosk' || props.menuContext === 'kiosk'
+)
+const showKioskStart = computed(() =>
+  isKioskContext.value &&
+    !kioskStarted.value &&
+    !interaction.funnel.show
+)
+
+function startKiosk() {
+  kioskStarted.value = true
+}
 
 watch((): OperatorPresenceWatch => ({
   orderType: String(activeOrderType.value || ''),

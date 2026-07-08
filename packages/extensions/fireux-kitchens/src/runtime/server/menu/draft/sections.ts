@@ -3,6 +3,7 @@ import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../../models/kitchen/menu/menu-item.model'
+import { defaultMenuLanguageText } from '../language/default-text'
 
 export type KitchenMenuDraftItem = {
   name: string
@@ -39,6 +40,22 @@ const money = (value: unknown) => {
   return normalized ? numberValue(normalized[0]) : 0
 }
 
+const cleanAddOns = (value: unknown) =>
+  normalizeMenuItemAddOns(value)
+    .map((option) => ({
+      ...option,
+      label: defaultMenuLanguageText(option.label),
+    }))
+    .filter((option) => option.label)
+
+const cleanPriceOptions = (value: unknown) =>
+  normalizeMenuItemPriceOptions(value)
+    .map((option) => ({
+      ...option,
+      label: defaultMenuLanguageText(option.label),
+    }))
+    .filter((option) => option.label)
+
 export function normalizeKitchenMenuDraftSections(
   value: unknown
 ): KitchenMenuDraftSection[] {
@@ -51,20 +68,18 @@ export function normalizeKitchenMenuDraftSections(
       const items = Array.isArray(data.items) ? data.items : []
 
       return {
-        label: readString(data.label),
+        label: defaultMenuLanguageText(data.label),
         items: items
           .map((item) => {
             const row = asRecord(item)
             return {
-              name: readString(row.name),
-              description: readString(row.description),
+              name: defaultMenuLanguageText(row.name),
+              description: defaultMenuLanguageText(row.description),
               image_url: readString(row.image_url),
               price: money(row.price),
-              add_ons: Array.isArray(row.add_ons)
-                ? normalizeMenuItemAddOns(row.add_ons)
-                : [],
+              add_ons: Array.isArray(row.add_ons) ? cleanAddOns(row.add_ons) : [],
               price_options: Array.isArray(row.price_options)
-                ? normalizeMenuItemPriceOptions(row.price_options)
+                ? cleanPriceOptions(row.price_options)
                 : [],
               source_file_ids: Array.isArray(row.source_file_ids)
                 ? row.source_file_ids.map(readString).filter(Boolean)

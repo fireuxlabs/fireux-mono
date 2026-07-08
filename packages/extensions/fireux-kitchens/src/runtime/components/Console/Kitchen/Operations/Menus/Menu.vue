@@ -6,7 +6,23 @@
       :sections-count="sections.length"
     />
     <ConsoleKitchenOperationsMenusEdit />
-    <UCard v-if="menu || source">
+
+    <UCard v-if="source && !menu">
+      <template #header>
+        <div class="space-y-1">
+          <h2 class="text-base font-semibold text-highlighted">
+            Process {{ sourceLabel }}
+          </h2>
+          <p class="text-sm text-dimmed">
+            Convert this saved source into a review draft.
+          </p>
+        </div>
+      </template>
+
+      <ConsoleKitchenOperationsMenusProcess />
+    </UCard>
+
+    <UCard v-else-if="menu || source">
       <template #header>
         <div class="space-y-1">
           <h2 class="text-base font-semibold text-highlighted">
@@ -77,8 +93,11 @@ const breadcrumbItems = computed(() => [
     to: '/console/kitchen/menus',
   },
   {
-    label: String(menu.value?.name || 'Menu details').trim(),
+    label: String(menu.value?.name || source.value?.id || 'Menu details').trim(),
     icon: 'i-lucide-list-tree',
   },
 ])
+const sourceLabel = computed(() =>
+  String(source.value?.source_url ? 'menu URL' : 'menu source')
+)
 </script>

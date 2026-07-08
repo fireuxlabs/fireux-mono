@@ -1,5 +1,5 @@
 <template>
-  <UPageCard v-if="hasSurface" variant="subtle">
+  <section v-if="hasSurface" class="space-y-4">
     <div
       :class="[
         'grid gap-4',
@@ -20,30 +20,30 @@
       </div>
 
       <div class="flex min-w-0 flex-col justify-between gap-5">
-        <div class="space-y-3">
-          <div class="flex flex-wrap gap-2">
-            <UBadge color="primary" variant="soft">
-              Kitchen
-            </UBadge>
-            <UBadge v-if="claimedBy" color="success" variant="soft">
-              Claimed
-            </UBadge>
-            <UBadge v-if="isDraft" color="neutral" variant="soft">
-              Draft
-            </UBadge>
-          </div>
+        <div>
+          <div class="flex items-start gap-3">
+            <UAvatar
+              v-if="logoImage"
+              :src="logoImage"
+              :alt="logoAlt"
+              :text="logoInitials"
+              size="xl"
+              :class="logoShadeClass"
+              class="mt-0.5 shrink-0"
+            />
 
-          <div class="space-y-2">
-            <h2 class="text-2xl font-semibold text-highlighted">
-              {{ title }}
-            </h2>
-            <p v-if="subtitle" class="text-sm text-dimmed">
-              {{ subtitle }}
-            </p>
-            <p v-if="address" class="flex gap-2 text-sm text-muted">
-              <UIcon name="i-lucide-map-pin" class="mt-0.5 size-4 shrink-0" />
-              <span>{{ address }}</span>
-            </p>
+            <div class="min-w-0 space-y-2">
+              <h2 class="text-2xl font-semibold text-highlighted">
+                {{ title }}
+              </h2>
+              <p v-if="subtitle" class="text-sm text-dimmed">
+                {{ subtitle }}
+              </p>
+              <p v-if="address" class="flex gap-2 text-sm text-muted">
+                <UIcon name="i-lucide-map-pin" class="mt-0.5 size-4 shrink-0" />
+                <span>{{ address }}</span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -61,33 +61,6 @@
             {{ action.label }}
           </UButton>
         </div>
-
-        <div v-if="detailItems.length" class="grid gap-2 sm:grid-cols-2">
-          <div
-            v-for="item in detailItems"
-            :key="item.key"
-            class="rounded-lg border border-default bg-default px-3 py-2"
-          >
-            <div class="flex items-center gap-2 text-xs font-medium text-dimmed">
-              <UIcon :name="item.icon" class="size-3.5" />
-              <span>{{ item.label }}</span>
-            </div>
-            <div class="mt-1 truncate text-sm text-highlighted">
-              {{ item.value }}
-            </div>
-          </div>
-        </div>
-
-        <div v-if="typeChips.length" class="flex flex-wrap gap-2">
-          <UBadge
-            v-for="chip in typeChips"
-            :key="chip"
-            color="neutral"
-            variant="soft"
-          >
-            {{ chip }}
-          </UBadge>
-        </div>
       </div>
     </div>
 
@@ -100,7 +73,7 @@
         class="size-24 shrink-0 rounded-lg object-cover"
       >
     </div>
-  </UPageCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -113,6 +86,11 @@ const props = defineProps<{
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const raw = computed(() => (props.kitchen || {}) as Record<string, any>)
+const identityRecord = computed(() =>
+  raw.value.identity && typeof raw.value.identity === 'object'
+    ? raw.value.identity as Record<string, unknown>
+    : {}
+)
 const titleRaw = computed(() => clean(raw.value.display_name || raw.value.name))
 const title = computed(() =>
   titleRaw.value || 'Kitchen'
@@ -127,6 +105,11 @@ const subtitle = computed(() =>
 const heroImage = computed(() =>
   clean(raw.value.cover_image)
 )
+const logoImage = computed(() =>
+  clean(identityRecord.value.image_url) ||
+  clean(raw.value.display_image_url) ||
+  clean(raw.value.image_url)
+)
 const foodGallery = computed(() => {
   const gallery = Array.isArray(raw.value.food_gallery)
     ? raw.value.food_gallery
@@ -139,14 +122,24 @@ const foodGallery = computed(() => {
 const imageAlt = computed(() =>
   title.value ? `${title.value} food image` : 'Kitchen food image'
 )
+const logoAlt = computed(() =>
+  title.value ? `${title.value} logo` : 'Kitchen logo'
+)
+const logoInitials = computed(() => {
+  const parts = title.value.split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'K'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
+})
+const logoShadeClass = computed(() => {
+  const shade = clean(identityRecord.value.image_shade || raw.value.image_shade)
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 const phone = computed(() => clean(raw.value.phone))
 const website = computed(() => clean(raw.value.website))
 const mapUrl = computed(() => clean(raw.value.google_maps_url))
-const claimedBy = computed(() => clean(raw.value.claimed_by))
-const isDraft = computed(() => raw.value.show === false)
-const websiteLabel = computed(() =>
-  website.value.replace(/^https?:\/\//, '').replace(/\/$/, '')
-)
 const actions = computed(() =>
   [
     phone.value
@@ -183,55 +176,6 @@ const actions = computed(() =>
     target?: string
   }>
 )
-const detailItems = computed(() =>
-  [
-    address.value
-      ? {
-          key: 'address',
-          label: 'Address',
-          value: address.value,
-          icon: 'i-lucide-map-pin',
-        }
-      : null,
-    phone.value
-      ? {
-          key: 'phone',
-          label: 'Phone',
-          value: phone.value,
-          icon: 'i-lucide-phone',
-        }
-      : null,
-    website.value
-      ? {
-          key: 'website',
-          label: 'Website',
-          value: websiteLabel.value,
-          icon: 'i-lucide-globe',
-        }
-      : null,
-  ].filter(Boolean) as Array<{
-    key: string
-    label: string
-    value: string
-    icon: string
-  }>
-)
-const typeChips = computed(() => {
-  const generic = new Set(['establishment', 'point_of_interest'])
-  const types = Array.isArray(raw.value.types) ? raw.value.types : []
-  const tags = Array.isArray(raw.value.tags) ? raw.value.tags : []
-
-  return [...types, ...tags]
-    .map(clean)
-    .filter((item) => item && !generic.has(item))
-    .map((item) =>
-      item
-        .split('_')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ')
-    )
-    .slice(0, 5)
-})
 const hasSurface = computed(() =>
   Boolean(
     titleRaw.value ||

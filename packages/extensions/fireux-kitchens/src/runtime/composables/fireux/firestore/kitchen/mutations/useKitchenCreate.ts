@@ -136,8 +136,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     const data = snap.data() as Record<string, unknown>
     const appScope = isRecord(data.app_scope) ? data.app_scope : {}
-    const state = normalizeString(appScope.state || data.app_scope_state)
-    const appId = normalizeString(appScope.app_id || data.app_scope_app_id)
+    const state = normalizeString(data.app_scope_state || appScope.state)
+    const appId = normalizeString(data.app_scope_app_id || appScope.app_id)
     if (!state) return
 
     await updateDoc(ref, {

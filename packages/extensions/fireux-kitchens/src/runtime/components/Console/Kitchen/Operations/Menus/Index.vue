@@ -1,7 +1,7 @@
 <template>
   <section class="console-surface space-y-6">
     <template v-if="selectedKitchen">
-      <ConsoleKitchenOperationsMenusQR />
+      <ConsoleKitchenOperationsMenusList />
 
       <UAlert
         v-if="readOnly"
@@ -30,6 +30,7 @@
         </div>
       </ConsoleOperationWritePanel>
 
+      <ConsoleKitchenOperationsMenusQR v-if="menus.length" />
       <ConsoleKitchenOperationsMenusDebug />
     </template>
 
@@ -52,5 +53,6 @@ const {
   canWrite,
   canCreateMenu,
   menuCreateBlockedMessage,
+  menus,
 } = useKitchenConsoleMenus()
 </script>

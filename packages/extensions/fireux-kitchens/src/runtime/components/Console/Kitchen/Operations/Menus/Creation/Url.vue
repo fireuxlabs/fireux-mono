@@ -3,11 +3,11 @@
     <template #header>
       <div class="space-y-1">
         <h3 class="text-sm font-semibold text-highlighted">
-          Use menu URL
+          Create from URL
         </h3>
         <p class="text-sm text-dimmed">
-          Paste an existing ordering or menu page. This saves the source URL
-          so AI can turn visible menu content into a review draft.
+          Paste an existing ordering or menu page, then process it from the
+          queue.
         </p>
       </div>
     </template>
@@ -37,7 +37,7 @@
           :loading="pending"
           :disabled="!canSave"
         >
-          Save URL source
+          Save menu URL
         </UButton>
       </div>
     </form>
@@ -111,7 +111,7 @@ async function save() {
       },
     })
 
-    message.value = `Saved ${uploadId.value} as a menu URL source.`
+    message.value = `Saved ${uploadId.value}. Process it from the queue below.`
   } catch (caught) {
     error.value = caught instanceof Error
       ? caught.message
