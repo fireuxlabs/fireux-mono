@@ -9,6 +9,14 @@ trim() {
   echo "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
+run_pnpm() {
+  if command -v corepack >/dev/null 2>&1; then
+    corepack pnpm "$@"
+  else
+    pnpm "$@"
+  fi
+}
+
 has_upstream() {
   git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1
 }
@@ -59,7 +67,7 @@ run_repo_cleanup() {
 run_preflight_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running lightweight preflight clean..."
-    pnpm -s pre-guard-clean --skip-if-dev-running || true
+    run_pnpm -s pre-guard-clean --skip-if-dev-running || true
   fi
 }
 
@@ -67,9 +75,9 @@ run_required_pre_push_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running pre-push artifact clean..."
     if $force_clean; then
-      pnpm -s pre-guard-clean --force
+      run_pnpm -s pre-guard-clean --force
     else
-      pnpm -s pre-guard-clean
+      run_pnpm -s pre-guard-clean
     fi
   fi
 }
@@ -80,7 +88,7 @@ dev_server_running() {
   fi
 
   set +e
-  pnpm -s pre-guard-clean --check-dev --quiet >/dev/null 2>&1
+  run_pnpm -s pre-guard-clean --check-dev --quiet >/dev/null 2>&1
   local status=$?
   set -e
 
@@ -386,13 +394,13 @@ run_preflight_clean
 
 # Optional clean
 if $run_clean; then
-  pnpm -s clean || true
+  run_pnpm -s clean || true
 fi
 
 # Optional guard
 # Optional guard (advisory, not blocking)
 if $run_guard; then
-  if ! pnpm -s guard; then
+  if ! run_pnpm -s guard; then
     echo "\n[gitsave] Guard failed." >&2
     if $allow_guard_failure; then
       echo "[gitsave] Proceeding because --allow-guard-failure was provided." >&2
