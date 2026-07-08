@@ -10,7 +10,18 @@
     @start="startKiosk"
   />
 
-  <section v-else-if="showKioskDump" class="menu-kiosk-dump">
+  <section
+    v-else-if="showKioskDump"
+    class="menu-kiosk-dump"
+    :style="kioskScreenStyle"
+  >
+    <img
+      v-if="props.menu.presentation.kitchenImageUrl"
+      class="menu-kiosk-dump__logo"
+      :src="props.menu.presentation.kitchenImageUrl"
+      :alt="props.menu.presentation.kitchenName || ''"
+    >
+
     <button
       type="button"
       class="menu-kiosk-dump__close"
@@ -20,7 +31,7 @@
       <UIcon name="i-lucide-x" aria-hidden="true" />
     </button>
 
-    <pre>{{ kioskDumpJson }}</pre>
+    <div class="menu-kiosk-dump__hello">hello</div>
   </section>
 
   <template v-else>
@@ -165,32 +176,14 @@ const showKioskDump = computed(() =>
 const kioskStartBackgroundImageUrl = computed(() =>
   props.menu.presentation.kioskSkin?.backgroundImageUrl || ''
 )
-const kioskDump = computed(() => ({
-  route: {
-    menuId: props.menuId,
-    menuContext: props.menuContext,
-    kitchenSlug: props.kitchenSlug,
-  },
-  kiosk: {
-    mode: kioskMode.value,
-  },
-  manifest: props.menu,
-  interaction: {
-    detail: interaction.detail.view,
-    funnel: {
-      show: interaction.funnel.show,
-      order: interaction.funnel.order,
-      incoming: interaction.funnel.incoming,
-      processing: interaction.funnel.processing,
-      sending: interaction.funnel.sending,
-      sessionConflict: interaction.funnel.sessionConflict,
-    },
-  },
-}))
-const kioskDumpJson = computed(() =>
-  JSON.stringify(kioskDump.value, null, 2)
+const kioskScreenStyle = computed(() =>
+  kioskStartBackgroundImageUrl.value
+    ? {
+        '--kiosk-screen-background-image':
+          `url('${kioskStartBackgroundImageUrl.value}')`,
+      }
+    : {}
 )
-
 function startKiosk(mode: KioskEntryMode) {
   kioskMode.value = mode
   interaction.detail.select(`order:${mode}`)
@@ -223,29 +216,54 @@ watch((): OperatorPresenceWatch => ({
   display: block;
   min-height: 100svh;
   padding: 1rem;
-  background: var(--menu-bg);
-  color: var(--menu-text);
+  overflow: hidden;
+  background-image:
+    linear-gradient(rgb(0 0 0 / 28%), rgb(0 0 0 / 42%)),
+    var(
+      --kiosk-screen-background-image,
+      linear-gradient(145deg, #111, #2a1204)
+    );
+  background-position: center;
+  background-size: cover;
+  color: white;
+}
+
+.menu-kiosk-dump__logo {
+  position: absolute;
+  inset-inline: 0;
+  top: 14.85svh;
+  z-index: 0;
+  width: min(31vw, 21rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 1.1rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 58%);
+  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 28%);
+  object-fit: contain;
+  transform: translateY(-50%);
 }
 
 .menu-kiosk-dump__close {
   position: sticky;
   top: 1rem;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   width: 4.5rem;
   height: 4.5rem;
   margin-left: auto;
   place-items: center;
-  border: 1px solid var(--menu-primary);
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 76%, white);
   border-radius: 999px;
-  background: var(--menu-primary);
-  color: var(--menu-bg);
+  background: rgb(0 0 0 / 36%);
+  color: white;
   cursor: pointer;
+  text-shadow: 0 0.25rem 0.9rem rgb(0 0 0 / 42%);
 }
 
 .menu-kiosk-dump__close:hover,
 .menu-kiosk-dump__close:focus-visible {
-  background: color-mix(in srgb, var(--menu-primary) 88%, black);
+  background: rgb(0 0 0 / 52%);
 }
 
 .menu-kiosk-dump__close:focus-visible {
@@ -258,17 +276,15 @@ watch((): OperatorPresenceWatch => ({
   height: 2.5rem;
 }
 
-.menu-kiosk-dump pre {
-  overflow: auto;
-  margin: 1rem 0 0;
-  padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: var(--menu-radius);
-  background: color-mix(in srgb, var(--menu-text) 6%, transparent);
-  color: inherit;
-  font-size: 0.8rem;
-  line-height: 1.45;
-  text-align: left;
-  white-space: pre-wrap;
+.menu-kiosk-dump__hello {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: calc(100svh - 6.5rem);
+  place-items: center;
+  color: white;
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 950;
+  text-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 48%);
 }
 </style>
