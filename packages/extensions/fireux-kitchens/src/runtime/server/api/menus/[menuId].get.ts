@@ -109,11 +109,12 @@ async function readKitchenMenu(
     }),
   ])
 
-  return buildMenuPayload(menuId, data, {
+  return await buildMenuPayload(menuId, data, {
     kitchenId: kitchen.id,
     kitchenImageUrl: identity.imageUrl,
     kitchenSlug,
     kitchenName: identity.name,
+    kitchenWordmarkImageUrl: identity.wordmarkImageUrl,
     kitchenAppId,
     kitchenMenuId: menuId,
     currencyCode: identity.currencyCode,
@@ -180,7 +181,7 @@ async function readRootMenuDetail(
         ])
       : [[], []]
 
-  return buildMenuPayload(menuId, data, {
+  return await buildMenuPayload(menuId, data, {
     ...kitchenScope,
     sourceMenu,
     menuContext,

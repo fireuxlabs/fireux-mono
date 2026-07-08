@@ -7,6 +7,7 @@ export type MenuPayloadScope = {
   kitchenImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
+  kitchenWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string

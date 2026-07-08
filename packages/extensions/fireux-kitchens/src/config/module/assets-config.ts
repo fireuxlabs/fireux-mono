@@ -12,20 +12,4 @@ export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
       nuxt.options.css.push(menuDetailCss)
     }
   }
-
-  const publicDir = resolver.resolve('./runtime/public')
-  if (!existsSync(publicDir)) return
-
-  const nitro = ((nuxt.options as any).nitro ||= {}) as Record<string, any>
-  const publicAssets = (nitro.publicAssets ||= []) as Array<
-    string | { baseURL?: string; dir: string; maxAge?: number }
-  >
-  const baseURL = '/_fireux/kitchens'
-  const already = publicAssets.some((entry) =>
-    typeof entry === 'string'
-      ? entry === publicDir
-      : entry?.dir === publicDir && entry?.baseURL === baseURL
-  )
-
-  if (!already) publicAssets.push({ dir: publicDir, baseURL })
 }

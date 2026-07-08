@@ -12,6 +12,13 @@
     >
 
     <div class="kiosk-start__actions">
+      <img
+        v-if="wordmarkImageUrl"
+        class="kiosk-start__wordmark"
+        :src="wordmarkImageUrl"
+        :alt="kitchenName || ''"
+      >
+
       <button
         type="button"
         class="kiosk-start__button"
@@ -38,6 +45,8 @@ const props = defineProps<{
   backgroundImageUrl?: string
   kitchenName?: string
   logoImageUrl?: string
+  primaryColor?: string
+  wordmarkImageUrl?: string
 }>()
 
 defineEmits<{
@@ -50,8 +59,11 @@ const backgroundStyle = computed(() => {
   return url
     ? {
         '--kiosk-start-background-image': `url('${url}')`,
+        '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
       }
-    : {}
+    : {
+        '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
+      }
 })
 </script>
 
@@ -78,15 +90,15 @@ const backgroundStyle = computed(() => {
   z-index: 1;
   display: grid;
   width: min(100%, 44rem);
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .kiosk-start__logo {
   position: absolute;
   inset-inline: 0;
   top: 14.85svh;
-  z-index: 1;
-  width: min(29vw, 19rem);
+  z-index: 0;
+  width: min(31vw, 21rem);
   aspect-ratio: 1;
   margin-inline: auto;
   padding: 1.1rem;
@@ -102,9 +114,9 @@ const backgroundStyle = computed(() => {
   width: 100%;
   min-height: 7rem;
   place-items: center;
-  border: 1px solid rgb(255 121 18 / 70%);
+  border: 1px solid color-mix(in srgb, var(--kiosk-start-primary-color) 76%, white);
   border-radius: 1.5rem;
-  background: rgb(0 0 0 / 74%);
+  background: color-mix(in srgb, var(--kiosk-start-primary-color) 86%, black);
   color: white;
   cursor: pointer;
   font: inherit;
@@ -114,17 +126,29 @@ const backgroundStyle = computed(() => {
   backdrop-filter: blur(10px);
 }
 
+.kiosk-start__wordmark {
+  justify-self: center;
+  width: min(96%, 42rem);
+  max-height: 13rem;
+  margin-bottom: 1rem;
+  object-fit: contain;
+}
+
 .kiosk-start__button:hover,
 .kiosk-start__button:focus-visible {
-  background: rgb(217 91 9 / 90%);
+  background: color-mix(in srgb, var(--kiosk-start-primary-color) 92%, white);
 }
 
 .kiosk-start__button:focus-visible {
-  outline: 2px solid rgb(255 121 18 / 90%);
+  outline: 2px solid color-mix(in srgb, var(--kiosk-start-primary-color) 82%, white);
   outline-offset: 0.3rem;
 }
 
 @media (min-width: 720px) {
+  .kiosk-start__wordmark {
+    grid-column: 1 / -1;
+  }
+
   .kiosk-start__actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

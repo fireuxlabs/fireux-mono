@@ -47,6 +47,7 @@ export type MenuManifestPresentation = {
   currencyCode: string
   kitchenImageUrl?: string
   kitchenName: string
+  kitchenWordmarkImageUrl?: string
   kioskSkin?: MenuKioskSkin
   kioskSkinId?: string
   pageStyle?: Partial<PageStyle>

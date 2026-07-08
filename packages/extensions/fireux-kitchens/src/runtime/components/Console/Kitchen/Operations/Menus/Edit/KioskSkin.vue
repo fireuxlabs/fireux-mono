@@ -15,9 +15,24 @@
       </div>
     </template>
 
-    <div class="grid gap-3 sm:grid-cols-2">
+    <MoleculesStateCard
+      v-if="pending"
+      entity="kiosk skins"
+      kind="collection"
+      loading
+    />
+
+    <UAlert
+      v-else-if="!skins.length"
+      color="warning"
+      variant="soft"
+      title="No kiosk skins"
+      description="Add kiosk skins to the app skin library before selecting one."
+    />
+
+    <div v-else class="grid gap-3 sm:grid-cols-2">
       <button
-        v-for="skin in menuKioskSkins"
+        v-for="skin in skins"
         :key="skin.id"
         type="button"
         class="overflow-hidden rounded-lg border text-left transition"
@@ -28,14 +43,21 @@
         @click="selectSkin(skin.id)"
       >
         <img
-          :src="skin.backgroundImageUrl"
+          :src="skin.thumbnailImageUrl || skin.backgroundImageUrl"
           :alt="skin.label"
           class="aspect-[9/16] w-full object-cover"
         >
 
         <div class="flex items-center justify-between gap-3 p-3">
-          <span class="text-sm font-semibold text-highlighted">
-            {{ skin.label }}
+          <span class="flex min-w-0 items-center gap-2">
+            <span
+              class="size-3 rounded-full ring ring-default"
+              :style="{ backgroundColor: skin.primaryColor }"
+              aria-hidden="true"
+            />
+            <span class="truncate text-sm font-semibold text-highlighted">
+              {{ skin.label }}
+            </span>
           </span>
 
           <UBadge
@@ -55,10 +77,24 @@
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import { menuKioskSkins } from '../../../../../../models/kitchen/menu/kiosk-skin.model'
+import { useMenuKioskSkinCollection } from '../../../../../../composables/fireux/firestore/menu/fetch/useMenuKioskSkinCollection'
 
-const { menu, kitchenId, canWrite, updateMenu } = useKitchenConsoleMenu()
+const {
+  menu,
+  kitchenId,
+  activeKitchenAppId,
+  databaseId,
+  canWrite,
+  updateMenu,
+} = useKitchenConsoleMenu()
 const toast = useToastify()
+const {
+  skins,
+  pending,
+} = useMenuKioskSkinCollection({
+  appId: activeKitchenAppId,
+  databaseId,
+})
 
 const selectedSkinId = computed(() => String(menu.value?.kiosk_skin_id || '').trim())
 

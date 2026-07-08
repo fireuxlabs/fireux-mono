@@ -22,6 +22,13 @@
           :can-write="canWrite"
         />
 
+        <ConsoleKitchenIdentitySectionsWordmark
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
+          :can-write="canWrite"
+        />
+
         <ConsoleKitchenIdentitySectionsOperationHours
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
@@ -57,6 +64,7 @@ import type { KitchenSurface } from '../../../../../composables/fireux/firestore
 import { menuAcceptsOrderType } from '../../../../../utils/menu-ordering-policy'
 import ConsoleKitchenIdentitySectionsKitchen from './Kitchen.vue'
 import ConsoleKitchenIdentitySectionsPlace from './Place.vue'
+import ConsoleKitchenIdentitySectionsWordmark from './Wordmark.vue'
 
 const { selectedKitchen, kitchenId, rootCollection, canWrite } =
   useKitchenConsoleIdentity()

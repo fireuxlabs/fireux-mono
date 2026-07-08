@@ -43,6 +43,8 @@ const publicKitchenStringKeys = [
   'short_address',
   'formatted_address',
   'display_image_url',
+  'wordmark_no_logo_image_url',
+  'wordmark_image_url',
   'image_url',
   'image_shade',
   'cover_image',
@@ -64,6 +66,8 @@ const publicKitchenIdentityKeys = [
   'display_name',
   'tagline',
   'image_url',
+  'wordmark_no_logo_image_url',
+  'wordmark_image_url',
   'image_shade',
 ] as const
 
@@ -149,6 +153,12 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
     text(identity.image_url) ||
     text(source.display_image_url) ||
     text(source.image_url)
+  const wordmarkImageUrl =
+    text(identity.wordmark_image_url) ||
+    text(source.wordmark_image_url)
+  const wordmarkNoLogoImageUrl =
+    text(identity.wordmark_no_logo_image_url) ||
+    text(source.wordmark_no_logo_image_url)
   const gallery = stringArray(identity.gallery).length
     ? stringArray(identity.gallery)
     : stringArray(source.food_gallery)
@@ -157,6 +167,8 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
     displayName,
     tagline: text(identity.tagline) || text(source.tagline),
     imageUrl,
+    wordmarkNoLogoImageUrl,
+    wordmarkImageUrl,
     imageShade: imageShade(identity.image_shade || source.image_shade),
     gallery,
   }

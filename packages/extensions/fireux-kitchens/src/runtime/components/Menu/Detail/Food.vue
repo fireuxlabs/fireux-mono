@@ -4,6 +4,8 @@
     :background-image-url="kioskStartBackgroundImageUrl"
     :kitchen-name="props.menu.presentation.kitchenName"
     :logo-image-url="props.menu.presentation.kitchenImageUrl"
+    :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
+    :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
     @start="startKiosk"
   />
 

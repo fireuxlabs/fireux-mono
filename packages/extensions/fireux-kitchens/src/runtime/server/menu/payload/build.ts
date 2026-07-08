@@ -11,7 +11,6 @@ import type {
   MenuManifestSection,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
-import { menuKioskSkinById } from '../../../models/kitchen/menu/kiosk-skin.model'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   menuContextProfile,
@@ -25,6 +24,7 @@ import {
   readMenuFile,
 } from './file.ts'
 import { readMenuPageStyle } from './page-style.ts'
+import { readMenuKioskSkin } from './kiosk-skin.ts'
 import { menuSourceFromData } from './source.ts'
 import {
   type MenuPayloadScope,
@@ -264,15 +264,16 @@ const serviceProfile = (
   }
 }
 
-export function buildMenuManifestPayload(
+export async function buildMenuManifestPayload(
   menuId: string,
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
-): MenuDetailPayload {
+): Promise<MenuDetailPayload> {
   const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
-  const kioskSkin = menuKioskSkinById(menuData.kiosk_skin_id)
+  const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
+  const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
   if (!currencyCode) {
     throw createError({
       statusCode: 400,
@@ -294,10 +295,13 @@ export function buildMenuManifestPayload(
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
         : {}),
       kitchenName: source.kitchen_name || '',
+      ...(text(scope.kitchenWordmarkImageUrl)
+        ? { kitchenWordmarkImageUrl: text(scope.kitchenWordmarkImageUrl) }
+        : {}),
       ...(kioskSkin
         ? {
             kioskSkin,
-            kioskSkinId: readRecordString(menuData, 'kiosk_skin_id'),
+            kioskSkinId,
           }
         : {}),
       pageStyle: readMenuPageStyle(scope.page_style),
@@ -336,16 +340,16 @@ export function buildMenuDocumentPayload(
   }
 }
 
-export function buildMenuPayload(
+export async function buildMenuPayload(
   menuId: string,
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
-): MenuDetailPayload {
+): Promise<MenuDetailPayload> {
   const sourceKind = scope.sourceKind === 'kitchen-menu'
     ? 'menu'
     : scope.sourceKind ?? readMenuSourceKind(data)
 
   return sourceKind === 'menu'
-    ? buildMenuManifestPayload(menuId, data, scope)
+    ? await buildMenuManifestPayload(menuId, data, scope)
     : buildMenuDocumentPayload(menuId, data, scope)
 }

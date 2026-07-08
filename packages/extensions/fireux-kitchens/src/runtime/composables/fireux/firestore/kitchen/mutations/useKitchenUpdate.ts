@@ -121,6 +121,13 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     }
     if (hasOwn(identity, 'tagline')) source['identity.tagline'] = identity.tagline
     if (hasOwn(identity, 'image_url')) source['identity.image_url'] = identity.image_url
+    if (hasOwn(identity, 'wordmark_no_logo_image_url')) {
+      source['identity.wordmark_no_logo_image_url'] =
+        identity.wordmark_no_logo_image_url
+    }
+    if (hasOwn(identity, 'wordmark_image_url')) {
+      source['identity.wordmark_image_url'] = identity.wordmark_image_url
+    }
     if (hasOwn(identity, 'image_shade')) {
       source['identity.image_shade'] = identity.image_shade
     }
@@ -164,6 +171,13 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
   moveString('display_image_url', 'identity.image_url')
   moveString('image_url', 'identity.image_url')
   moveString('identity.image_url', 'identity.image_url')
+  moveString('wordmark_no_logo_image_url', 'identity.wordmark_no_logo_image_url')
+  moveString(
+    'identity.wordmark_no_logo_image_url',
+    'identity.wordmark_no_logo_image_url'
+  )
+  moveString('wordmark_image_url', 'identity.wordmark_image_url')
+  moveString('identity.wordmark_image_url', 'identity.wordmark_image_url')
   moveString('cover_image', 'cover_image')
   normalizeImageShade('image_shade', 'identity.image_shade')
   normalizeImageShade('identity.image_shade', 'identity.image_shade')

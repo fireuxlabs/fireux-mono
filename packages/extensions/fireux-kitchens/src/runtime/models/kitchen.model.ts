@@ -76,6 +76,8 @@ export type KitchenImageShade = 'light' | 'dark' | 'none'
 
 export type KitchenIdentity = FireuxConsoleEntityIdentity & {
   image_shade?: KitchenImageShade
+  wordmark_no_logo_image_url?: string
+  wordmark_image_url?: string
 }
 
 export type KitchenMenusConfig = {
@@ -152,6 +154,8 @@ export const KitchenModel = {
   identity: {
     ...FireuxConsoleEntityIdentityModel,
     image_shade: 'none',
+    wordmark_no_logo_image_url: '',
+    wordmark_image_url: '',
   } as KitchenIdentity,
 
   // Default food-menu display config for this Kitchen.
@@ -217,6 +221,8 @@ export type Kitchen = Omit<
     short_address?: string
     cover_image?: string
     display_image_url?: string
+    wordmark_no_logo_image_url?: string
+    wordmark_image_url?: string
     image_shade?: KitchenImageShade
     food_gallery?: string[]
     currency_code?: string

@@ -18,6 +18,7 @@ export type MenuKitchenScope = {
   kitchenImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
+  kitchenWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string
@@ -64,6 +65,11 @@ export function menuKitchenIdentity(
   return {
     name: appIdentity.displayName || rootIdentity.displayName,
     imageUrl: appIdentity.imageUrl || rootIdentity.imageUrl,
+    wordmarkImageUrl:
+      appIdentity.wordmarkNoLogoImageUrl ||
+      rootIdentity.wordmarkNoLogoImageUrl ||
+      appIdentity.wordmarkImageUrl ||
+      rootIdentity.wordmarkImageUrl,
     currencyCode,
     page_style: resolveMenuPageStyle(
       { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
@@ -160,6 +166,7 @@ export async function readRootMenuKitchenScope(
     kitchenImageUrl: identity.imageUrl,
     kitchenSlug: resolvedKitchenSlug,
     kitchenName: identity.name,
+    kitchenWordmarkImageUrl: identity.wordmarkImageUrl,
     kitchenAppId,
     kitchenMenuId: source.menu_id || '',
     currencyCode: identity.currencyCode,

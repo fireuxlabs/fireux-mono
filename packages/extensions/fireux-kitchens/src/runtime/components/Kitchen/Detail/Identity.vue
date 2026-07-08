@@ -4,7 +4,7 @@
       :class="[
         'grid gap-4',
         heroImage
-          ? 'lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]'
+          ? 'lg:grid-cols-[minmax(0,0.575fr)_minmax(18rem,1fr)]'
           : '',
       ]"
     >
