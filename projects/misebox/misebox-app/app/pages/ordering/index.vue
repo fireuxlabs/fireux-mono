@@ -32,7 +32,15 @@
         <UCard
           v-for="surface in orderingSurfaces"
           :key="surface.title"
+          :class="[
+            surface.to && 'cursor-pointer transition hover:ring-primary/30',
+          ]"
           :ui="{ body: 'flex h-full flex-col gap-4' }"
+          :role="surface.to ? 'link' : undefined"
+          :tabindex="surface.to ? 0 : undefined"
+          @click="openSurface(surface)"
+          @keydown.enter.prevent="openSurface(surface)"
+          @keydown.space.prevent="openSurface(surface)"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
@@ -66,11 +74,11 @@
               <UButton
                 v-for="mode in surface.modes"
                 :key="mode.orderType"
-                :to="mode.to"
                 :trailing-icon="mode.to ? 'i-lucide-arrow-right' : undefined"
                 color="neutral"
                 size="xs"
                 :variant="mode.to ? 'soft' : 'subtle'"
+                @click.stop="openMode(mode)"
               >
                 {{ mode.label }}
               </UButton>
@@ -109,6 +117,7 @@ type OrderingSurface = {
   icon: string
   modes: OrderingMode[]
   parked?: boolean
+  to?: string
   unsharedProps: string[]
 }
 
@@ -144,6 +153,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'From home',
     description: 'Customer starts away from the venue. Delivery is biased; collection can sit beside it.',
     icon: 'i-lucide-house',
+    to: '/ordering/delivery',
     modes: [
       {
         label: 'Delivery',
@@ -168,6 +178,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'Table QR',
     description: 'Customer is already seated. The table number is carried into the order.',
     icon: 'i-lucide-qr-code',
+    to: '/ordering/dine-in',
     modes: [
       {
         label: 'Dine in',
@@ -183,6 +194,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'Kiosk',
     description: 'Shared in-store terminal. Eat in means tray; takeaway means bag.',
     icon: 'i-lucide-tablet',
+    to: '/ordering/kiosk',
     modes: [
       {
         label: 'Eat in',
@@ -207,6 +219,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'Pre-order',
     description: 'Timing-first request. The kitchen confirms before deposit or final preparation.',
     icon: 'i-lucide-calendar-clock',
+    to: '/ordering/pre-order',
     modes: [
       {
         label: 'Pre-order',
@@ -226,6 +239,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'Room service',
     description: 'Internal delivery to a room inside a hotel, aparthotel, or venue.',
     icon: 'i-lucide-concierge-bell',
+    to: '/ordering/room-service',
     modes: [
       {
         label: 'Room service',
@@ -268,6 +282,18 @@ const orderingSurfaces: OrderingSurface[] = [
     ],
   },
 ]
+
+function openSurface(surface: OrderingSurface) {
+  if (!surface.to) return
+
+  navigateTo(surface.to)
+}
+
+function openMode(mode: OrderingMode) {
+  if (!mode.to) return
+
+  navigateTo(mode.to)
+}
 
 /*
 Future ordering-adjacent ideas, held until they earn a page:
