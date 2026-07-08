@@ -6,11 +6,11 @@ export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
   const menuDetailCss = resolver.resolve(
     './runtime/assets/styles/menu-detail.css'
   )
-  if (!existsSync(menuDetailCss)) return
-
-  nuxt.options.css = nuxt.options.css || []
-  if (!nuxt.options.css.includes(menuDetailCss)) {
-    nuxt.options.css.push(menuDetailCss)
+  if (existsSync(menuDetailCss)) {
+    nuxt.options.css = nuxt.options.css || []
+    if (!nuxt.options.css.includes(menuDetailCss)) {
+      nuxt.options.css.push(menuDetailCss)
+    }
   }
 
   const publicDir = resolver.resolve('./runtime/public')
@@ -20,9 +20,12 @@ export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
   const publicAssets = (nitro.publicAssets ||= []) as Array<
     string | { baseURL?: string; dir: string; maxAge?: number }
   >
+  const baseURL = '/_fireux/kitchens'
   const already = publicAssets.some((entry) =>
-    typeof entry === 'string' ? entry === publicDir : entry?.dir === publicDir
+    typeof entry === 'string'
+      ? entry === publicDir
+      : entry?.dir === publicDir && entry?.baseURL === baseURL
   )
 
-  if (!already) publicAssets.push({ dir: publicDir })
+  if (!already) publicAssets.push({ dir: publicDir, baseURL })
 }

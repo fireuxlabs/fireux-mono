@@ -9,7 +9,7 @@ export const menuKioskSkins = [
   {
     id: 'spice-dark',
     label: 'Spice dark',
-    backgroundImageUrl: '/img/kiosk/skins/spice-dark/background.png',
+    backgroundImageUrl: '/_fireux/kitchens/img/kiosk/skins/spice-dark/background.png',
     tone: 'dark',
   },
 ] as const satisfies readonly MenuKioskSkin[]
