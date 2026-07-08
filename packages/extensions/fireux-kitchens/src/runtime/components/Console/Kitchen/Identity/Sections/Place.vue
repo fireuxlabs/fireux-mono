@@ -148,10 +148,12 @@ import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
   kitchenId: string
+  collectionPath: string
   canWrite: boolean
 }>()
 
-const { updateKitchen } = useKitchenUpdate()
+const collectionPath = computed(() => props.collectionPath)
+const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const { uploadImage } = useImageStorage()
 const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()

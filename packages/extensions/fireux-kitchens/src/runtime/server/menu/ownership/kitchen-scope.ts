@@ -78,7 +78,10 @@ export function menuKitchenFulfilment(
   rootData: Record<string, unknown>,
   appData: Record<string, unknown> = {}
 ) {
+  const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
   const appFulfilment = readKitchenFulfilmentConfig(appData)
+  if (isTenantOwned) return appFulfilment
+
   if (
     appFulfilment.delivery_zones.length ||
     appFulfilment.payment_methods.length
@@ -96,6 +99,10 @@ export function menuKitchenOperationHours(
   rootData: Record<string, unknown>,
   appData: Record<string, unknown> = {}
 ) {
+  if (readKitchenAppScope(rootData).hasTenantApp) {
+    return readKitchenOperationHours(appData)
+  }
+
   return hasKitchenOperationHours(appData)
     ? readKitchenOperationHours(appData)
     : readKitchenOperationHours(rootData)

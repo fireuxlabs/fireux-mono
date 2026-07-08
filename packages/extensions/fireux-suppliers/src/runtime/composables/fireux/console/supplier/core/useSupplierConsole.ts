@@ -1,9 +1,6 @@
 import { computed, isRef } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useSupplierCollection,
@@ -32,7 +29,6 @@ type UseSupplierConsoleOptions = {
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
-  const consoleRoot = useConsole('supplier')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<SupplierCollectionFilter>(() => {
@@ -51,36 +47,26 @@ export function useSupplierConsole(
     filter: targetFilter,
   })
 
-  const {
-    selectedTarget,
-    selectTarget,
-    clearSelection,
-  } = useConsoleSelection<SupplierSurface>('supplier', {
+  const entity = useConsoleEntityRuntime<SupplierSurface>({
+    family: 'supplier',
+    storageFamily: SupplierStorage.rootCollection,
     targetItems: targetSuppliers,
+    targetPending: targetsPending,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
+    userId,
   })
 
   const selectedSupplier = computed<SupplierSurface | null>(
-    () => selectedTarget.value as SupplierSurface | null
+    () => entity.selection.selectedTarget.value as SupplierSurface | null
   )
-  const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
-  const activeSupplierAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedSupplier.value, consoleRoot.appId)
-  )
-  const rootCollection = computed(() =>
-    SupplierStorage.rootCollection
-  )
-  const readOnly = computed(() => false)
-  const canWrite = computed(() =>
-    !readOnly.value && targetHasOperator(selectedSupplier.value, userId.value)
-  )
+  const supplierId = entity.selection.entityId
 
   const clearSelectedSupplier = () => {
-    clearSelection()
+    entity.actions.clearSelection()
   }
 
   const selectSupplier = (supplierId: string) => {
-    selectTarget(supplierId)
+    entity.actions.selectTarget(supplierId)
   }
   const suppliers = {
     targets: targetSuppliers,
@@ -90,13 +76,7 @@ export function useSupplierConsole(
   const selection = {
     supplier: selectedSupplier,
     supplierId,
-    hasSelection: computed(() => Boolean(supplierId.value)),
-  }
-  const runtime = {
-    appId: activeSupplierAppId,
-    rootCollection,
-    readOnly,
-    canWrite,
+    hasSelection: entity.selection.hasSelection,
   }
   const actions = {
     selectSupplier,
@@ -106,7 +86,7 @@ export function useSupplierConsole(
   return {
     suppliers,
     selection,
-    runtime,
+    runtime: entity.runtime,
     actions,
   }
 }

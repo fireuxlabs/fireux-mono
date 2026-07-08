@@ -1,9 +1,6 @@
 import { computed, isRef } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   usePortfolioCollection,
@@ -41,7 +38,6 @@ type UsePortfolioConsoleOptions = {
  * It should not own Portfolio child operation records; those live under console/portfolio/operations.
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
-  const consoleRoot = useConsole('portfolio')
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
   const { pill } = usePortfolioInterface()
@@ -61,31 +57,20 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     filter: targetFilter,
   })
 
-  const {
-    selectedId,
-    selectedTarget,
-    selectTarget,
-    clearSelection,
-  } = useConsoleSelection<PortfolioConsoleEntity>('portfolio', {
+  const entity = useConsoleEntityRuntime<PortfolioConsoleEntity>({
+    family: 'portfolio',
+    storageFamily: PortfolioStorage.rootCollection,
     targetItems: targetPortfolios,
+    targetPending: targetsPending,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
+    userId: normalizedUid,
   })
 
   const selectedPortfolio = computed<PortfolioConsoleEntity | null>(
-    () => selectedTarget.value as PortfolioConsoleEntity | null
+    () => entity.selection.selectedTarget.value as PortfolioConsoleEntity | null
   )
-  const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
-  const activePortfolioAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedPortfolio.value, consoleRoot.appId)
-  )
-  const rootCollection = computed(() =>
-    PortfolioStorage.rootCollection
-  )
-  const readOnly = computed(() => false)
-  const canWrite = computed(() =>
-    !readOnly.value && targetHasOperator(selectedPortfolio.value, normalizedUid.value)
-  )
+  const portfolioId = entity.selection.entityId
 
   const portfolio = computed(() => {
     const target = selectedPortfolio.value
@@ -101,18 +86,18 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   })
 
   const portfolioState = {
-    id: selectedId,
+    id: entity.selection.selectedId,
     entity: selectedPortfolio,
   }
 
   const clearSelectedPortfolio = () => {
-    clearSelection()
+    entity.actions.clearSelection()
   }
 
   const selectPortfolio = (
     portfolioId: string,
   ) => {
-    selectTarget(portfolioId)
+    entity.actions.selectTarget(portfolioId)
   }
   const portfolios = {
     targets: targetPortfolios,
@@ -124,13 +109,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     portfolioId,
     portfolioCard: portfolio,
     portfolioState,
-    hasSelection: computed(() => Boolean(portfolioId.value)),
-  }
-  const runtime = {
-    appId: activePortfolioAppId,
-    rootCollection,
-    readOnly,
-    canWrite,
+    hasSelection: entity.selection.hasSelection,
   }
   const actions = {
     selectPortfolio,
@@ -140,7 +119,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   return {
     portfolios,
     selection,
-    runtime,
+    runtime: entity.runtime,
     actions,
   }
 }

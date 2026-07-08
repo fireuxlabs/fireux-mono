@@ -79,7 +79,7 @@ const {
   rootCollection,
   canWrite,
 } = useKitchenConsoleIdentity()
-const { updateKitchen } = useKitchenUpdate()
+const { updateKitchen } = useKitchenUpdate({ collectionPath: rootCollection })
 const { publishedMenus } = useKitchenMenuCollection(kitchenId, {
   kitchenCollectionPath: rootCollection,
 })

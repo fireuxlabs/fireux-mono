@@ -4,6 +4,7 @@ import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
+import { useConsoleEntityFirestore } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/useConsoleEntityFirestore'
 import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
@@ -14,7 +15,6 @@ import {
   type KitchenFetchSource,
 } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
-import { resolveKitchenScopeCollectionPath } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 type KitchenConsoleEntity = KitchenSurface
 
@@ -141,12 +141,17 @@ export function useKitchenConsole() {
       ? readRuntimeSimulationFirestoreDatabaseId() || ''
       : readRuntimeFirestoreDatabaseId() || ''
   )
-  const kitchenCollectionPath = computed(() => {
-    if (kitchenSource.value === 'test') return KitchenStorage.rootCollection
-    if (kitchenSource.value === 'demo') return ''
-
-    return resolveKitchenScopeCollectionPath(scopedAppId.value)
+  const firestore = useConsoleEntityFirestore({
+    family: KitchenStorage.scopeCollection,
+    target: selectedPublicKitchen,
+    appId: scopedAppId,
+    mode: kitchenSource,
+    testCollectionPath: KitchenStorage.rootCollection,
+    useAppOverlay: computed(
+      () => kitchenSource.value === 'live' && Boolean(scopedAppId.value)
+    ),
   })
+  const kitchenCollectionPath = firestore.writeCollection
   const liveScopedKitchenId = computed(() =>
     kitchenSource.value === 'live' ? kitchenId.value : ''
   )
@@ -207,10 +212,17 @@ export function useKitchenConsole() {
     hasSelection: computed(() => Boolean(kitchenId.value)),
   }
   const runtime = {
-    appId: scopedAppId,
+    appId: firestore.appId,
     source: kitchenSource,
+    canonicalRootCollection: firestore.rootCollection,
+    collectionPath: firestore.collectionPath,
+    isTenantOwned: firestore.isTenantOwned,
     kitchenCollectionPath,
     rootCollection: kitchenCollectionPath,
+    scopeState: firestore.scopeState,
+    scopedCollection: firestore.scopedCollection,
+    usesAppOverlay: firestore.usesAppOverlay,
+    writeCollection: firestore.writeCollection,
     databaseId,
     readOnly,
     canWrite,

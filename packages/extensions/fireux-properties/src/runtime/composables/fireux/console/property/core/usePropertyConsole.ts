@@ -1,9 +1,6 @@
 import { computed, isRef } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
@@ -29,7 +26,6 @@ type UsePropertyConsoleOptions = {
  * It should not become a Portfolio management seam or a public property info page helper.
  */
 export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
-  const consoleRoot = useConsole('property')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<PropertyCollectionFilter>(() => {
@@ -49,35 +45,26 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     filter: targetFilter,
   })
 
-  const {
-    selectedId,
-    selectedTarget,
-    selectTarget,
-    clearSelection,
-  } = useConsoleSelection<Property>('property', {
+  const entity = useConsoleEntityRuntime<Property>({
+    family: 'property',
+    storageFamily: PropertyStorage.rootCollection,
     targetItems: targetProperties,
+    targetPending: targetsPending,
     getId: (property) => normalizeString(property?.id),
+    userId,
   })
 
-  const selectedProperty = computed<Property | null>(() => selectedTarget.value)
-  const propertyId = computed(() => normalizeString(selectedId.value))
-  const activePropertyAppId = computed(() =>
-    resolveConsoleEntityAppId(selectedProperty.value, consoleRoot.appId)
+  const selectedProperty = computed<Property | null>(
+    () => entity.selection.selectedTarget.value
   )
-  const rootCollection = computed(() =>
-    PropertyStorage.rootCollection
-  )
-  const readOnly = computed(() => false)
-  const canWrite = computed(() =>
-    !readOnly.value && targetHasOperator(selectedProperty.value, userId.value)
-  )
+  const propertyId = entity.selection.entityId
 
   const clearSelectedProperty = () => {
-    clearSelection()
+    entity.actions.clearSelection()
   }
 
   const selectProperty = (propertyId: string) => {
-    selectTarget(propertyId)
+    entity.actions.selectTarget(propertyId)
   }
   const properties = {
     targets: targetProperties,
@@ -87,13 +74,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const selection = {
     property: selectedProperty,
     propertyId,
-    hasSelection: computed(() => Boolean(propertyId.value)),
-  }
-  const runtime = {
-    appId: activePropertyAppId,
-    rootCollection,
-    readOnly,
-    canWrite,
+    hasSelection: entity.selection.hasSelection,
   }
   const actions = {
     selectProperty,
@@ -103,7 +84,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   return {
     properties,
     selection,
-    runtime,
+    runtime: entity.runtime,
     actions,
   }
 }

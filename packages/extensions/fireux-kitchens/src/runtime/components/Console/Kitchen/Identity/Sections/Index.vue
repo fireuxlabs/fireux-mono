@@ -11,18 +11,21 @@
         <ConsoleKitchenIdentitySectionsPlace
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
           :can-write="canWrite"
         />
 
         <ConsoleKitchenIdentitySectionsKitchen
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
           :can-write="canWrite"
         />
 
         <ConsoleKitchenIdentitySectionsOperationHours
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
           :can-write="canWrite"
         />
 

@@ -202,10 +202,12 @@ import { readKitchenOperationHours } from '../../../../../utils/kitchen-spine'
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
   kitchenId: string
+  collectionPath: string
   canWrite: boolean
 }>()
 
-const { updateKitchen } = useKitchenUpdate()
+const collectionPath = computed(() => props.collectionPath)
+const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const toast = useToastify()
 const error = ref('')
 const saving = ref(false)

@@ -12,9 +12,21 @@ export type ResolveConsoleEntityCollectionPathOptions = {
   family: ConsoleEntityCollectionFamily
   mode?: ConsoleEntityRuntimeMode | null
   appId?: string | null
-  target?: { app_scope?: unknown, app_scope_app_id?: unknown } | null
+  target?: ConsoleEntityScopeTarget | null
   explicitPath?: string | null
   useAppOverlay?: boolean
+}
+
+export type ConsoleEntityScopeState =
+  | ''
+  | 'root_only'
+  | 'parent_app'
+  | 'dedicated_app'
+
+export type ConsoleEntityScopeTarget = {
+  app_scope?: unknown
+  app_scope_state?: unknown
+  app_scope_app_id?: unknown
 }
 
 const normalizePathPart = (value: unknown) =>
@@ -30,7 +42,7 @@ const resolveTestCollectionPath = (family: string) =>
   family.startsWith('test-') ? family : `test-${family}`
 
 export function resolveConsoleEntityAppId(
-  target?: { app_scope?: unknown, app_scope_app_id?: unknown } | null,
+  target?: ConsoleEntityScopeTarget | null,
   fallbackAppId?: string | null
 ) {
   const appScope = record(target?.app_scope)
@@ -40,6 +52,31 @@ export function resolveConsoleEntityAppId(
     normalizePathPart(target?.app_scope_app_id) ||
     normalizePathPart(fallbackAppId)
   )
+}
+
+export function resolveConsoleEntityScopeState(
+  target?: ConsoleEntityScopeTarget | null
+): ConsoleEntityScopeState {
+  const appScope = record(target?.app_scope)
+  const state = normalizePathPart(appScope.state) ||
+    normalizePathPart(target?.app_scope_state)
+
+  if (
+    state === 'root_only' ||
+    state === 'parent_app' ||
+    state === 'dedicated_app'
+  ) {
+    return state
+  }
+
+  return ''
+}
+
+export function consoleEntityUsesAppScope(
+  target?: ConsoleEntityScopeTarget | null
+) {
+  const state = resolveConsoleEntityScopeState(target)
+  return state === 'parent_app' || state === 'dedicated_app'
 }
 
 export function resolveConsoleEntityCollectionPath(
