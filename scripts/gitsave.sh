@@ -89,7 +89,7 @@ dev_server_running() {
 
 skip_push_if_dev_server_running() {
   if $force_clean; then
-    return 1
+    return 0
   fi
 
   if dev_server_running; then
