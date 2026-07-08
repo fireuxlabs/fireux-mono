@@ -54,3 +54,15 @@
   --menu-title: var(--menu-title-dark);
   --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
 }
+
+.fireux-menu-detail.menu-detail--kiosk {
+  gap: 0;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  text-align: initial;
+}

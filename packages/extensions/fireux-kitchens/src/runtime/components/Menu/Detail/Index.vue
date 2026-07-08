@@ -1,7 +1,7 @@
 <template>
   <div
     class="fireux-menu-detail menu-detail"
-    :class="themeClassName"
+    :class="[themeClassName, { 'menu-detail--kiosk': isKioskMenu }]"
     :style="themeStyleVars"
   >
     <p v-if="pending" class="menu-detail__state">
@@ -68,6 +68,10 @@ const pageStyle = computed(() =>
   detailMenu.value?.presentation.pageStyle ||
   documentMenu.value?.pageStyle ||
   null
+)
+const isKioskMenu = computed(() =>
+  menuContext.value === 'kiosk' ||
+    detailMenu.value?.behaviour.context === 'kiosk'
 )
 const {
   className: themeClassName,

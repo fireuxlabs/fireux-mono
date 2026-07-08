@@ -290,6 +290,9 @@ export function buildMenuManifestPayload(
     behaviour: serviceProfile(menuData, scope),
     presentation: {
       currencyCode,
+      ...(text(scope.kitchenImageUrl)
+        ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
+        : {}),
       kitchenName: source.kitchen_name || '',
       ...(kioskSkin
         ? {

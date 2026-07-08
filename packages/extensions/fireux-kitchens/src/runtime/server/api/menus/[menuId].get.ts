@@ -111,6 +111,7 @@ async function readKitchenMenu(
 
   return buildMenuPayload(menuId, data, {
     kitchenId: kitchen.id,
+    kitchenImageUrl: identity.imageUrl,
     kitchenSlug,
     kitchenName: identity.name,
     kitchenAppId,

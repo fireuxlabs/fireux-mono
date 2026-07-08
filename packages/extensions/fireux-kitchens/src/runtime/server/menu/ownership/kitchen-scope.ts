@@ -15,6 +15,7 @@ import { resolveMenuPageStyle } from '../payload/page-style.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
+  kitchenImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
   kitchenAppId?: string
@@ -29,9 +30,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
-
-export const kitchenDisplayName = (data: Record<string, unknown>) =>
-  readKitchenIdentity(data).displayName
 
 export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>,
@@ -57,12 +55,15 @@ export function menuKitchenIdentity(
   appData: Record<string, unknown> = {}
 ) {
   const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
+  const rootIdentity = readKitchenIdentity(rootData)
+  const appIdentity = readKitchenIdentity(appData)
   const currencyCode = readKitchenCurrencyCode(appData) ||
     readKitchenCurrencyCode(rootData)
 
   // Menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
   return {
-    name: kitchenDisplayName(appData) || kitchenDisplayName(rootData),
+    name: appIdentity.displayName || rootIdentity.displayName,
+    imageUrl: appIdentity.imageUrl || rootIdentity.imageUrl,
     currencyCode,
     page_style: resolveMenuPageStyle(
       { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
@@ -156,6 +157,7 @@ export async function readRootMenuKitchenScope(
 
   return {
     kitchenId: resolvedKitchenId,
+    kitchenImageUrl: identity.imageUrl,
     kitchenSlug: resolvedKitchenSlug,
     kitchenName: identity.name,
     kitchenAppId,

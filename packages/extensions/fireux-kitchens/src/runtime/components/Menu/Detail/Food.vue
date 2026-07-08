@@ -2,6 +2,8 @@
   <MenuDetailKioskStart
     v-if="showKioskStart"
     :background-image-url="kioskStartBackgroundImageUrl"
+    :kitchen-name="props.menu.presentation.kitchenName"
+    :logo-image-url="props.menu.presentation.kitchenImageUrl"
     @start="startKiosk"
   />
 

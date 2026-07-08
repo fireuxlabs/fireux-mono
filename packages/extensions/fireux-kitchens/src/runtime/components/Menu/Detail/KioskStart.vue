@@ -4,6 +4,13 @@
     :style="backgroundStyle"
     aria-label="Kiosk start screen"
   >
+    <img
+      v-if="logoImageUrl"
+      class="kiosk-start__logo"
+      :src="logoImageUrl"
+      :alt="kitchenName || ''"
+    >
+
     <div class="kiosk-start__actions">
       <button
         type="button"
@@ -29,6 +36,8 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   backgroundImageUrl?: string
+  kitchenName?: string
+  logoImageUrl?: string
 }>()
 
 defineEmits<{
@@ -53,7 +62,6 @@ const backgroundStyle = computed(() => {
   min-height: 100svh;
   overflow: hidden;
   place-items: center;
-  padding: 2rem;
   background-image:
     linear-gradient(rgb(0 0 0 / 22%), rgb(0 0 0 / 34%)),
     var(
@@ -71,6 +79,22 @@ const backgroundStyle = computed(() => {
   display: grid;
   width: min(100%, 44rem);
   gap: 1rem;
+}
+
+.kiosk-start__logo {
+  position: absolute;
+  inset-inline: 0;
+  top: 14.85svh;
+  z-index: 1;
+  width: min(29vw, 19rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 1.1rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 58%);
+  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 28%);
+  object-fit: contain;
+  transform: translateY(-50%);
 }
 
 .kiosk-start__button {

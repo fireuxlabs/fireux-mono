@@ -45,6 +45,7 @@ export type MenuManifestBehaviour = MenuServiceProfile
 
 export type MenuManifestPresentation = {
   currencyCode: string
+  kitchenImageUrl?: string
   kitchenName: string
   kioskSkin?: MenuKioskSkin
   kioskSkinId?: string
