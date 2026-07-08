@@ -50,11 +50,16 @@
 
         <div class="flex items-center justify-between gap-3 p-3">
           <span class="flex min-w-0 items-center gap-2">
-            <span
-              class="size-3 rounded-full ring ring-default"
-              :style="{ backgroundColor: skin.primaryColor }"
-              aria-hidden="true"
-            />
+            <span class="flex -space-x-1" aria-hidden="true">
+              <span
+                class="size-3 rounded-full ring ring-default"
+                :style="{ backgroundColor: skin.primaryColor }"
+              />
+              <span
+                class="size-3 rounded-full ring ring-default"
+                :style="{ backgroundColor: skin.secondaryColor }"
+              />
+            </span>
             <span class="truncate text-sm font-semibold text-highlighted">
               {{ skin.label }}
             </span>
