@@ -11,27 +11,39 @@
   />
 
   <section
-    v-else-if="showKioskDump"
-    class="menu-kiosk-dump"
+    v-else-if="showKioskOrder"
+    class="menu-kiosk-screen"
     :style="kioskScreenStyle"
   >
     <img
       v-if="props.menu.presentation.kitchenImageUrl"
-      class="menu-kiosk-dump__logo"
+      class="menu-kiosk-screen__logo"
       :src="props.menu.presentation.kitchenImageUrl"
       :alt="props.menu.presentation.kitchenName || ''"
     >
 
     <button
       type="button"
-      class="menu-kiosk-dump__close"
+      class="menu-kiosk-screen__close"
       aria-label="Go back"
       @click="resetKiosk"
     >
       <UIcon name="i-lucide-x" aria-hidden="true" />
     </button>
 
-    <div class="menu-kiosk-dump__hello">hello</div>
+    <MenuDetailKioskOrder
+      :basket="interaction.funnel.order"
+      :mode="kioskMode"
+      :view="interaction.detail.view"
+      @open-basket="interaction.funnel.open"
+      @select-item="interaction.detail.selectItem"
+      @add="interaction.detail.add"
+    />
+
+    <MenuDetailFunnel
+      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+      :funnel="interaction.funnel"
+    />
   </section>
 
   <template v-else>
@@ -170,19 +182,25 @@ const showKioskStart = computed(() =>
     !kioskStarted.value &&
     !interaction.funnel.show
 )
-const showKioskDump = computed(() =>
+const showKioskOrder = computed(() =>
   isKioskContext.value && kioskStarted.value
 )
 const kioskStartBackgroundImageUrl = computed(() =>
   props.menu.presentation.kioskSkin?.backgroundImageUrl || ''
 )
 const kioskScreenStyle = computed(() =>
-  kioskStartBackgroundImageUrl.value
-    ? {
-        '--kiosk-screen-background-image':
-          `url('${kioskStartBackgroundImageUrl.value}')`,
-      }
-    : {}
+  ({
+    ...(kioskStartBackgroundImageUrl.value
+      ? {
+          '--kiosk-background-image':
+            `url('${kioskStartBackgroundImageUrl.value}')`,
+        }
+      : {}),
+    '--kiosk-primary':
+      props.menu.presentation.kioskSkin?.primaryColor || '#ff7912',
+    '--kiosk-secondary':
+      props.menu.presentation.kioskSkin?.secondaryColor || '#050505',
+  })
 )
 function startKiosk(mode: KioskEntryMode) {
   kioskMode.value = mode
@@ -211,7 +229,7 @@ watch((): OperatorPresenceWatch => ({
 </script>
 
 <style scoped>
-.menu-kiosk-dump {
+.menu-kiosk-screen {
   position: relative;
   display: block;
   min-height: 100svh;
@@ -220,7 +238,7 @@ watch((): OperatorPresenceWatch => ({
   background-image:
     linear-gradient(rgb(0 0 0 / 28%), rgb(0 0 0 / 42%)),
     var(
-      --kiosk-screen-background-image,
+      --kiosk-background-image,
       linear-gradient(145deg, #111, #2a1204)
     );
   background-position: center;
@@ -228,7 +246,7 @@ watch((): OperatorPresenceWatch => ({
   color: white;
 }
 
-.menu-kiosk-dump__logo {
+.menu-kiosk-screen__logo {
   position: absolute;
   inset-inline: 0;
   top: 14.85svh;
@@ -244,7 +262,7 @@ watch((): OperatorPresenceWatch => ({
   transform: translateY(-50%);
 }
 
-.menu-kiosk-dump__close {
+.menu-kiosk-screen__close {
   position: sticky;
   top: 1rem;
   z-index: 2;
@@ -253,38 +271,27 @@ watch((): OperatorPresenceWatch => ({
   height: 4.5rem;
   margin-left: auto;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--menu-primary) 76%, white);
+  border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
   border-radius: 999px;
-  background: rgb(0 0 0 / 36%);
+  background: color-mix(in srgb, var(--kiosk-secondary) 36%, transparent);
   color: white;
   cursor: pointer;
   text-shadow: 0 0.25rem 0.9rem rgb(0 0 0 / 42%);
 }
 
-.menu-kiosk-dump__close:hover,
-.menu-kiosk-dump__close:focus-visible {
-  background: rgb(0 0 0 / 52%);
+.menu-kiosk-screen__close:hover,
+.menu-kiosk-screen__close:focus-visible {
+  background: color-mix(in srgb, var(--kiosk-secondary) 52%, transparent);
 }
 
-.menu-kiosk-dump__close:focus-visible {
-  outline: 2px solid var(--menu-primary);
+.menu-kiosk-screen__close:focus-visible {
+  outline: 2px solid var(--kiosk-primary);
   outline-offset: 0.25rem;
 }
 
-.menu-kiosk-dump__close :deep(.iconify) {
+.menu-kiosk-screen__close :deep(.iconify) {
   width: 2.5rem;
   height: 2.5rem;
 }
 
-.menu-kiosk-dump__hello {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  min-height: calc(100svh - 6.5rem);
-  place-items: center;
-  color: white;
-  font-size: clamp(4rem, 12vw, 9rem);
-  font-weight: 950;
-  text-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 48%);
-}
 </style>

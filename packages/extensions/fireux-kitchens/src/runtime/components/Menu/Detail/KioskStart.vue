@@ -59,13 +59,13 @@ const backgroundStyle = computed(() => {
 
   return url
     ? {
-        '--kiosk-start-background-image': `url('${url}')`,
-        '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
-        '--kiosk-start-secondary-color': props.secondaryColor || '#050505',
+        '--kiosk-background-image': `url('${url}')`,
+        '--kiosk-primary': props.primaryColor || '#ff7912',
+        '--kiosk-secondary': props.secondaryColor || '#050505',
       }
     : {
-        '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
-        '--kiosk-start-secondary-color': props.secondaryColor || '#050505',
+        '--kiosk-primary': props.primaryColor || '#ff7912',
+        '--kiosk-secondary': props.secondaryColor || '#050505',
       }
 })
 </script>
@@ -80,7 +80,7 @@ const backgroundStyle = computed(() => {
   background-image:
     linear-gradient(rgb(0 0 0 / 22%), rgb(0 0 0 / 34%)),
     var(
-      --kiosk-start-background-image,
+      --kiosk-background-image,
       linear-gradient(145deg, #111, #2a1204)
     );
   background-position: center;
@@ -117,9 +117,9 @@ const backgroundStyle = computed(() => {
   width: 100%;
   min-height: 7rem;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--kiosk-start-primary-color) 76%, white);
+  border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
   border-radius: 1.5rem;
-  background: color-mix(in srgb, var(--kiosk-start-secondary-color) 33%, transparent);
+  background: color-mix(in srgb, var(--kiosk-secondary) 33%, transparent);
   color: white;
   cursor: pointer;
   font: inherit;
@@ -138,11 +138,11 @@ const backgroundStyle = computed(() => {
 
 .kiosk-start__button:hover,
 .kiosk-start__button:focus-visible {
-  background: color-mix(in srgb, var(--kiosk-start-secondary-color) 46%, transparent);
+  background: color-mix(in srgb, var(--kiosk-secondary) 46%, transparent);
 }
 
 .kiosk-start__button:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--kiosk-start-primary-color) 82%, white);
+  outline: 2px solid color-mix(in srgb, var(--kiosk-primary) 82%, white);
   outline-offset: 0.3rem;
 }
 
