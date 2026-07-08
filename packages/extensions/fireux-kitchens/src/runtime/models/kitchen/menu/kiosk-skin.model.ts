@@ -3,6 +3,7 @@ export type MenuKioskSkin = {
   label: string
   backgroundImageUrl: string
   primaryColor: string
+  secondaryColor: string
   thumbnailImageUrl?: string
   tone: 'dark' | 'light'
 }
@@ -14,6 +15,7 @@ export type MenuKioskSkinDoc = {
   label?: string
   background_image_url?: string
   primary_color?: string
+  secondary_color?: string
   thumbnail_image_url?: string
   tone?: 'dark' | 'light'
   status?: MenuKioskSkinStatus
@@ -41,15 +43,17 @@ export const menuKioskSkinFromDoc = (
   const label = clean(data.label) || resolvedId
   const backgroundImageUrl = clean(data.background_image_url)
   const primaryColor = hexColor(data.primary_color)
+  const secondaryColor = hexColor(data.secondary_color)
   const tone = data.tone === 'light' ? 'light' : 'dark'
 
-  if (!resolvedId || !backgroundImageUrl || !primaryColor) return null
+  if (!resolvedId || !backgroundImageUrl || !primaryColor || !secondaryColor) return null
 
   return {
     id: resolvedId,
     label,
     backgroundImageUrl,
     primaryColor,
+    secondaryColor,
     ...(clean(data.thumbnail_image_url)
       ? { thumbnailImageUrl: clean(data.thumbnail_image_url) }
       : {}),

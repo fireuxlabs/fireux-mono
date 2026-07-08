@@ -5,6 +5,7 @@
     :kitchen-name="props.menu.presentation.kitchenName"
     :logo-image-url="props.menu.presentation.kitchenImageUrl"
     :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
+    :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
     :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
     @start="startKiosk"
   />

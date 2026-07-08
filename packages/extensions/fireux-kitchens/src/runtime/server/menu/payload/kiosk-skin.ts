@@ -1,4 +1,4 @@
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
   MenuKioskSkinStorage,

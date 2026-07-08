@@ -46,6 +46,7 @@ const props = defineProps<{
   kitchenName?: string
   logoImageUrl?: string
   primaryColor?: string
+  secondaryColor?: string
   wordmarkImageUrl?: string
 }>()
 
@@ -60,9 +61,11 @@ const backgroundStyle = computed(() => {
     ? {
         '--kiosk-start-background-image': `url('${url}')`,
         '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
+        '--kiosk-start-secondary-color': props.secondaryColor || '#050505',
       }
     : {
         '--kiosk-start-primary-color': props.primaryColor || '#ff7912',
+        '--kiosk-start-secondary-color': props.secondaryColor || '#050505',
       }
 })
 </script>
@@ -116,14 +119,13 @@ const backgroundStyle = computed(() => {
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--kiosk-start-primary-color) 76%, white);
   border-radius: 1.5rem;
-  background: color-mix(in srgb, var(--kiosk-start-primary-color) 86%, black);
+  background: color-mix(in srgb, var(--kiosk-start-secondary-color) 33%, transparent);
   color: white;
   cursor: pointer;
   font: inherit;
   font-size: clamp(1.75rem, 5vw, 3rem);
   font-weight: 950;
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 35%);
-  backdrop-filter: blur(10px);
+  text-shadow: 0 0.25rem 0.9rem rgb(0 0 0 / 42%);
 }
 
 .kiosk-start__wordmark {
@@ -136,7 +138,7 @@ const backgroundStyle = computed(() => {
 
 .kiosk-start__button:hover,
 .kiosk-start__button:focus-visible {
-  background: color-mix(in srgb, var(--kiosk-start-primary-color) 92%, white);
+  background: color-mix(in srgb, var(--kiosk-start-secondary-color) 46%, transparent);
 }
 
 .kiosk-start__button:focus-visible {
