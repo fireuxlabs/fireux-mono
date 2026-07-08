@@ -35,7 +35,6 @@
         <MenuDetail
           menu-id="main"
           kitchen-slug="la-tapberne"
-          menu-context="pre_order"
         />
       </section>
     </Transition>
