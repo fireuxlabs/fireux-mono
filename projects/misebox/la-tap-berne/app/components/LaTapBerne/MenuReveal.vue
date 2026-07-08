@@ -32,7 +32,11 @@
         </button>
 
         <!-- TODO: Revisit popup feel; older landing used a lighter tenant-local menu renderer. -->
-        <MenuDetail menu-id="main" kitchen-slug="la-tapberne" />
+        <MenuDetail
+          menu-id="main"
+          kitchen-slug="la-tapberne"
+          menu-context="pre_order"
+        />
       </section>
     </Transition>
   </div>

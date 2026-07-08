@@ -1,102 +1,88 @@
 import {
   createError,
   defineEventHandler,
+  getQuery,
   getRouterParam,
 } from 'h3'
-import { laTapBerneMenuSections } from '../../data/menu'
+import { useRuntimeConfig } from '#imports'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { buildMenuPayload } from 'fireux-kitchens/runtime/server/menu/payload/build.ts'
+import { readKitchenMenuChoices } from 'fireux-kitchens/runtime/server/menu/manifest/choices.ts'
+import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections.ts'
+import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/utils/menu-context.ts'
+import kitchenConfig from '../../../app/config/kitchen.config'
 import { laTapBerneMenuTheme } from '../../data/menu-theme'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const slugPart = (value: unknown) =>
-  text(value)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-const priceNumber = (value: unknown) => {
-  const parsed = Number(
-    text(value)
-      .replace(/chf/ig, '')
-      .replace(',', '.')
-      .match(/\d+(?:\.\d+)?/)?.[0] || 0
-  )
 
-  return Number.isFinite(parsed) ? parsed : 0
-}
-
-const ordering = {
-  enabled: true,
-  order_types: [
-    {
-      type: 'pre_order',
-      notice_hours: 24,
-      message:
-        'Pre-orders need at least 24 hours notice. For normal service, please order at the bar or at your table.',
-    },
-  ],
-}
-
-const sections = () =>
-  laTapBerneMenuSections.map((section, sectionIndex) => {
-    const sectionId = slugPart(section.label) || `section-${sectionIndex + 1}`
-
-    return {
-      id: sectionId,
-      label: section.label,
-      items: section.items.map((item, itemIndex) => {
-        const itemId = slugPart(item.name) || `${sectionId}-${itemIndex + 1}`
-
-        return {
-          id: itemId,
-          dishId: '',
-          name: item.name,
-          description: item.description,
-          imageUrl: '',
-          price: priceNumber(item.price),
-          priceLabel: item.price,
-          priceOptions: (item.priceOptions ?? []).map((option) => ({
-            ...option,
-            priceLabel: String(option.price),
-          })),
-          addOns: (item.addOns ?? []).map((option) => ({
-            ...option,
-            priceLabel: String(option.price),
-          })),
-        }
-      }),
-    }
-  })
-
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   const menuId = text(getRouterParam(event, 'menuId'))
+  const menuContext = normalizeMenuRouteContext(getQuery(event).context)
+  const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<
+    string,
+    unknown
+  >
+  const appId = text(fireux.id)
+  const kitchenId = text(kitchenConfig.kitchens[0])
 
-  if (menuId !== 'main') {
+  if (!appId || !kitchenId) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Kitchen scope is not configured.',
+    })
+  }
+
+  const db = getRuntimeFirestore()
+  const snap = await db.doc(`apps/${appId}/kitchens/${kitchenId}`).get()
+  const menuSnap = await db
+    .doc(`apps/${appId}/kitchens/${kitchenId}/menus/${menuId}`)
+    .get()
+  const kitchen = (snap.data() ?? {}) as Record<string, unknown>
+  const menu = (menuSnap.data() ?? {}) as Record<string, unknown>
+  const currencyCode = text(kitchen.currency_code).toUpperCase()
+  const kitchenName =
+    text((kitchen.identity as Record<string, unknown> | undefined)?.display_name) ||
+    text(kitchen.display_name) ||
+    text(kitchen.name) ||
+    text(kitchen.short_name)
+  const kitchenSlug = text(kitchen.slug)
+
+  if (!menuSnap.exists || text(menu.status) !== 'published') {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found.',
     })
   }
 
-  return {
-    kind: 'manifest',
-    manifest: {
-      content: {
-        id: 'main',
-        name: 'Comida Casera',
-        description: 'Swiss Alpine Tapas',
-        sections: sections(),
-      },
-      behaviour: {
-        ordering,
-        orderingEnabled: true,
-        orderTypes: ['pre_order'],
-        defaultOrderType: 'pre_order',
-        defaultOrderTypeConfig: ordering.order_types[0],
-        choices: [],
-      },
-      presentation: {
-        kitchenName: 'La Tapberne',
-        pageStyle: laTapBerneMenuTheme,
-      },
-    },
+  if (!currencyCode || !kitchenName) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen identity is required before publishing menus.',
+    })
   }
+  const sections = await readKitchenMenuSections(db, {
+    appId,
+    kitchenId,
+    menuId,
+  })
+  const choices = await readKitchenMenuChoices(db, {
+    appId,
+    kitchenId,
+    kitchenSlug,
+    currentMenuId: menuId,
+  })
+
+  return buildMenuPayload(menuId, menu, {
+    kitchenId,
+    kitchenSlug,
+    kitchenName,
+    kitchenAppId: appId,
+    kitchenMenuId: menuId,
+    currencyCode,
+    sourceKind: 'kitchen-menu',
+    menuContext,
+    page_style: laTapBerneMenuTheme,
+    sections,
+    choices,
+  })
 })
