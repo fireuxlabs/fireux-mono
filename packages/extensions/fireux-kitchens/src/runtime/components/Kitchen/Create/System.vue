@@ -27,12 +27,12 @@
             The kitchen mutation creates
             <code>kitchens/&lt;id&gt;</code>.
           </li>
-          <li>
-            When an app context exists, the shared console create seam also creates
+          <li v-if="isConsoleMode">
+            Console activation separately creates
             <code>apps/&lt;appId&gt;/kitchens/&lt;id&gt;</code>.
           </li>
           <li>
-            Route mode changes the entry and return flow, not the root/app write rule.
+            Public kitchen creation does not create a console kitchen.
           </li>
           <li v-if="isConsoleMode">
             Console entry selects the kitchen for runtime. Chef profile links stay optional display/authorship data.
@@ -43,13 +43,14 @@
           </li>
           <li v-else>
             Success routes to
-            <code>/kitchens/&lt;id&gt;</code>.
+            <code>/kitchens/&lt;id&gt;/edit</code>.
           </li>
         </ul>
       </div>
 
       <KitchenCreateWrite
         :mode="resolvedMode"
+        :existing-root-id="existingRootId"
         :return-to="returnTo"
         :cancel-to="cancelTo"
       />
@@ -65,10 +66,12 @@ import KitchenCreateWrite from './Write.vue'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode
+  existingRootId?: string
   returnTo?: string
   cancelTo?: string
 }>(), {
   mode: 'console',
+  existingRootId: '',
   returnTo: '',
   cancelTo: '',
 })
@@ -76,23 +79,38 @@ const props = withDefaults(defineProps<{
 const { notesVisible } = useDevUi()
 
 const resolvedMode = computed<ConsoleCreateMode>(() => props.mode)
+const existingRootId = computed(() => String(props.existingRootId || '').trim())
 const returnTo = computed(() => String(props.returnTo || '').trim())
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const isConsoleMode = computed(() => resolvedMode.value === 'console')
+const isExistingConsoleActivation = computed(() =>
+  isConsoleMode.value && Boolean(existingRootId.value)
+)
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() =>
-  isConsoleMode.value ? 'Create Kitchen Console' : 'Create Kitchen'
+  isExistingConsoleActivation.value
+    ? 'Activate Existing Kitchen Console'
+    : isConsoleMode.value
+      ? 'Create Kitchen Console'
+      : 'Create Kitchen'
 )
 const headerTitle = computed(() =>
-  isConsoleMode.value ? 'Search for your venue' : 'Search for a venue'
+  isExistingConsoleActivation.value
+    ? 'Making kitchen console'
+    : isConsoleMode.value
+      ? 'Search for your venue'
+      : 'Search for a venue'
 )
 const headerDescription = computed(() =>
-  isConsoleMode.value
-    ? 'We’ll connect this location to your console overlay. Nothing is duplicated.'
-    : 'We’ll create the public kitchen entity for a real venue. App context may also create the overlay.'
+  isExistingConsoleActivation.value
+    ? 'We’ll connect this existing kitchen to your console.'
+    : isConsoleMode.value
+    ? 'We’ll activate this location for your console. Nothing is duplicated.'
+    : 'We’ll create the public kitchen entity for a real venue. Setup continues on the kitchen edit page.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value
-  return isConsoleMode.value ? '/console/kitchen' : '/kitchens/<id>'
+  if (isExistingConsoleActivation.value) return '/console/kitchen/overview'
+  return isConsoleMode.value ? '/console/kitchen' : '/kitchens/<id>/edit'
 })
 </script>

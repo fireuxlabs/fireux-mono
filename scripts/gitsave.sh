@@ -74,11 +74,7 @@ run_preflight_clean() {
 run_required_pre_push_clean() {
   if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
     echo "[gitsave] Running pre-push artifact clean..."
-    if $force_clean; then
-      run_pnpm -s pre-guard-clean --force
-    else
-      run_pnpm -s pre-guard-clean
-    fi
+    run_pnpm -s pre-guard-clean
   fi
 }
 
@@ -96,13 +92,9 @@ dev_server_running() {
 }
 
 skip_push_if_dev_server_running() {
-  if $force_clean; then
-    return 0
-  fi
-
   if dev_server_running; then
     echo "[gitsave] Dev server is running; saved locally and skipped push so artifact cleanup does not interrupt it." >&2
-    echo "[gitsave] Stop the dev server and rerun pnpm gitsave to push, or use --force-clean if you intentionally want cleanup to interrupt dev artifacts." >&2
+    echo "[gitsave] Stop the dev server and rerun pnpm gitsave to push. Live dev artifacts were left untouched." >&2
     cleanup_git_refs "$current_branch"
     print_repo_state "end"
     exit 0
@@ -211,10 +203,10 @@ cleanup_git_refs() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure] [--force-clean]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
   echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
-  echo "Dev server default: save locally and skip push rather than deleting live Nuxt artifacts. Use --force-clean to interrupt them." >&2
+  echo "Dev server default: save locally and skip push rather than deleting live Nuxt artifacts. Stop dev and rerun to push." >&2
   echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
@@ -334,7 +326,6 @@ allow_large=false
 allow_behind=false
 allow_guard_failure=false
 strict_scope=false
-force_clean=false
 
 # Parse args
 args=()
@@ -352,7 +343,7 @@ for a in "$@"; do
     --allow-large) allow_large=true ;;
     --allow-behind) allow_behind=true ;;
     --allow-guard-failure) allow_guard_failure=true ;;
-    --force-clean) force_clean=true ;;
+    --force-clean) ;; # Deprecated no-op: gitsave never cleans live dev artifacts.
     -h|--help) usage; exit 0 ;;
     *) args+=("$a") ;;
   esac
@@ -394,7 +385,11 @@ run_preflight_clean
 
 # Optional clean
 if $run_clean; then
-  run_pnpm -s clean || true
+  if dev_server_running; then
+    echo "[gitsave] Dev server is running; skipped optional clean so live artifacts stay intact." >&2
+  else
+    run_pnpm -s clean || true
+  fi
 fi
 
 # Optional guard
@@ -413,7 +408,11 @@ fi
 
 # Optional repository cleanup
 if $run_repo_clean; then
-  run_repo_cleanup
+  if dev_server_running; then
+    echo "[gitsave] Dev server is running; skipped repository cleanup so live artifacts stay intact." >&2
+  else
+    run_repo_cleanup
+  fi
 fi
 
 # Stage everything, including deletions.

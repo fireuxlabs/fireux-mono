@@ -15,7 +15,7 @@ export function buildKitchenJsonLd(kitchen: Partial<Kitchen> | null | undefined)
     '@type': 'Restaurant',
     name,
     description: excerpt(entry?.tagline || entry?.formatted_address),
-    image: clean(entry?.display_image_url || entry?.image_url) || undefined,
+    image: clean(entry?.cover_image || entry?.display_image_url || entry?.image_url) || undefined,
     address: clean(entry?.formatted_address) || undefined,
   }
 }
@@ -43,7 +43,11 @@ export function useKitchenSeo(kitchen: MaybeRefOrGetter<Partial<Kitchen> | null 
       )
     ),
     image: computed(() => {
-      return clean(view.value?.display_image_url || view.value?.image_url)
+      return clean(
+        view.value?.cover_image ||
+          view.value?.display_image_url ||
+          view.value?.image_url
+      )
     }),
     path: computed(() => (slug.value ? `/kitchens/${encodeURIComponent(slug.value)}` : '')),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),

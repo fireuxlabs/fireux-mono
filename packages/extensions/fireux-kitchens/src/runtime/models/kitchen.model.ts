@@ -81,6 +81,7 @@ export type KitchenIdentity = FireuxConsoleEntityIdentity & {
 export type KitchenMenusConfig = {
   currency_format: CurrencyDisplayFormat
   show_currency: boolean
+  available?: boolean
   style?: Partial<PageStyle>
 }
 
@@ -212,6 +213,9 @@ export type Kitchen = Omit<
     active?: boolean
     display_name?: string
     tagline?: string
+    formatted_address?: string
+    short_address?: string
+    cover_image?: string
     display_image_url?: string
     image_shade?: KitchenImageShade
     food_gallery?: string[]
@@ -220,6 +224,7 @@ export type Kitchen = Omit<
     menu_show_currency?: boolean
     menu_style?: Partial<PageStyle>
     menu_available?: boolean
+    claimed_by?: string
   }
 
 export type AppKitchen = {
@@ -237,6 +242,10 @@ export type KitchenCreateInput = Partial<
     | 'id'
     | 'place_id'
     | 'slug'
+    | 'claimed_by'
+    | 'formatted_address'
+    | 'short_address'
+    | 'cover_image'
     | 'currency_code'
     | 'identity'
     | 'menus'

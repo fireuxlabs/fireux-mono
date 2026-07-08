@@ -388,7 +388,6 @@ export function useKitchenInterface() {
       ].filter((item) => Boolean(safeString(item.value))),
     }
   }
-
   return {
     surface,
     interface: toInterface,

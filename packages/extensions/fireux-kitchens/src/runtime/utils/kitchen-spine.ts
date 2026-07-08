@@ -98,7 +98,7 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
     ) as CurrencyDisplayFormat,
     showCurrency: bool(menus.show_currency, source.menu_show_currency !== false),
     style: style as Partial<PageStyle> | undefined,
-    available: source.menu_available !== false,
+    available: bool(menus.available, source.menu_available !== false),
   }
 }
 

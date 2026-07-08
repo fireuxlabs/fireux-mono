@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-08
 // usage_note: baseline after scripts cleanup; update when run.
 import { execSync } from 'node:child_process'
 

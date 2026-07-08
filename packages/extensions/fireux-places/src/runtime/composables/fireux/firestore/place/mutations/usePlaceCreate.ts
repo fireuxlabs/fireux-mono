@@ -26,25 +26,51 @@ const normalizeBoolean = (value: unknown): boolean => value === true
 
 const normalizeAddress = (value: unknown) => {
   const source = (value ?? {}) as Record<string, unknown>
-  return {
+  return compactRecord({
     street: normalizeString(source.street),
     city: normalizeString(source.city),
     region: normalizeString(source.region),
     postal_code: normalizeString(source.postal_code),
     country_code: normalizeString(source.country_code),
-  }
+  })
 }
 
 const normalizeSocialLinks = (value: unknown) => {
   const source = (value ?? {}) as Record<string, unknown>
-  return {
+  return compactRecord({
     website: normalizeString(source.website),
     instagram: normalizeString(source.instagram),
     facebook: normalizeString(source.facebook),
     tiktok: normalizeString(source.tiktok),
     linkedin: normalizeString(source.linkedin),
     youtube: normalizeString(source.youtube),
-  }
+  })
+}
+
+function compactRecord(source: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(source).filter(([, value]) => {
+      if (typeof value === 'string') return Boolean(value.trim())
+      if (Array.isArray(value)) return value.length > 0
+      if (value && typeof value === 'object') return Object.keys(value).length > 0
+      if (typeof value === 'boolean') return value
+      return value !== null && value !== undefined
+    })
+  )
+}
+
+function putString(target: Record<string, unknown>, key: string, value: unknown) {
+  const next = normalizeString(value)
+  if (next) target[key] = next
+}
+
+function putStringArray(target: Record<string, unknown>, key: string, value: unknown) {
+  const next = normalizeStringArray(value)
+  if (next.length) target[key] = next
+}
+
+function putObject(target: Record<string, unknown>, key: string, value: Record<string, unknown>) {
+  if (Object.keys(value).length) target[key] = value
 }
 
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
@@ -113,6 +139,13 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
 
     const name =
       typeof (place as any)?.name === 'string' ? String((place as any).name) : ''
+    if (!normalizeString(name)) {
+      if (import.meta.dev) {
+        console.warn('[fireux-places] Skipping place with missing name', { id })
+      }
+      return false
+    }
+
     const shortName =
       typeof (place as any)?.short_name === 'string'
         ? normalizeString((place as any).short_name)
@@ -207,39 +240,43 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     const slug = toPlaceSlug(name)
 
     const payload = {
-      id,
       source: 'fireux',
-      name,
-      short_name: shortName,
-      brand_tagline: normalizeString((place as any)?.brand_tagline),
-      about: normalizeString((place as any)?.about),
-      formatted_address: formatted,
-      short_address: shortAddress,
-      address: normalizeAddress((place as any)?.address),
-      timezone: normalizeString((place as any)?.timezone),
-      slug,
-      image_url,
-      cover_image: normalizeString((place as any)?.cover_image),
-      gallery_images: normalizeStringArray((place as any)?.gallery_images),
-      image_shade,
-      phone: normalizeString((place as any)?.phone),
-      email: normalizeString((place as any)?.email),
-      website: normalizeString((place as any)?.website),
-      google_maps_url: normalizeString((place as any)?.google_maps_url),
-      social_links: normalizeSocialLinks((place as any)?.social_links),
+      name: normalizeString(name),
       lat,
       lng,
       place_type: 'physical',
-      types: normalizeStringArray((place as any)?.types),
-      tags: normalizeStringArray((place as any)?.tags),
-      price_level: normalizeString((place as any)?.price_level),
-      default_currency_code: normalizeString(
-        (place as any)?.default_currency_code
-      ).toUpperCase(),
-      claimed_by: normalizeString((place as any)?.claimed_by),
-      verified: normalizeBoolean((place as any)?.verified),
       search_term: normalizedSearchTerm,
-    } as any as PlaceUpsertInput
+    } as Record<string, unknown>
+
+    putString(payload, 'formatted_address', formatted)
+    putString(payload, 'short_address', shortAddress)
+    putString(payload, 'short_name', shortName)
+    putString(payload, 'brand_tagline', (place as any)?.brand_tagline)
+    putString(payload, 'about', (place as any)?.about)
+    putObject(payload, 'address', normalizeAddress((place as any)?.address))
+    putString(payload, 'timezone', (place as any)?.timezone)
+    putString(payload, 'slug', slug)
+    putString(payload, 'image_url', image_url)
+    putString(payload, 'cover_image', (place as any)?.cover_image)
+    putStringArray(payload, 'gallery_images', (place as any)?.gallery_images)
+    if (image_shade === 'light' || image_shade === 'dark') {
+      payload.image_shade = image_shade
+    }
+    putString(payload, 'phone', (place as any)?.phone)
+    putString(payload, 'email', (place as any)?.email)
+    putString(payload, 'website', (place as any)?.website)
+    putString(payload, 'google_maps_url', (place as any)?.google_maps_url)
+    putObject(payload, 'social_links', normalizeSocialLinks((place as any)?.social_links))
+    putStringArray(payload, 'types', (place as any)?.types)
+    putStringArray(payload, 'tags', (place as any)?.tags)
+    putString(payload, 'price_level', (place as any)?.price_level)
+    putString(
+      payload,
+      'default_currency_code',
+      normalizeString((place as any)?.default_currency_code).toUpperCase()
+    )
+    putString(payload, 'claimed_by', (place as any)?.claimed_by)
+    if (normalizeBoolean((place as any)?.verified)) payload.verified = true
 
     if (import.meta.dev) {
       console.log('[fireux-places] create:payload', {
@@ -250,7 +287,12 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       })
     }
 
-    await setDocument(collectionPath, id, payload, { creator: true })
+    await setDocument<Partial<PlaceUpsertInput>>(
+      collectionPath,
+      id,
+      payload as Partial<PlaceUpsertInput>,
+      { creator: true }
+    )
 
     if (import.meta.dev) console.log(`[fireux-places] Created new place: ${id}`)
 

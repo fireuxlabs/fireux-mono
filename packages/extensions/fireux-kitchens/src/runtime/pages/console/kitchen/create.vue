@@ -9,7 +9,8 @@
         <KitchenCreateSystem
           v-if="canCreate"
           mode="console"
-          return-to="/console/kitchen"
+          :existing-root-id="existingRootId"
+          :return-to="returnTo"
           cancel-to="/console/kitchen"
         />
 
@@ -25,12 +26,20 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { computed } from 'vue'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import KitchenCreateSystem from '../../../components/Kitchen/Create/System.vue'
 
 const { canCreateTarget } = useConsole('kitchen')
 const canCreate = computed(() => canCreateTarget())
+const route = useRoute()
+const existingRootId = computed(() =>
+  String(route.query.existingRootId || '').trim()
+)
+const returnTo = computed(() =>
+  existingRootId.value ? '/console/kitchen/overview' : '/console/kitchen'
+)
 
 definePageMeta({
   layout: 'console',

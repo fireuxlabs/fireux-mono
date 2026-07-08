@@ -32,6 +32,8 @@ type MenuRootEntryFromSourceInput = {
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
+const cleanPatchText = (value: unknown) =>
+  typeof value === 'string' || typeof value === 'number' ? clean(value) : undefined
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -116,10 +118,15 @@ export const menuRootEntryPatchFromKitchen = (
     readPatchValue(data, 'identity.image_shade') ??
     readPatchValue(data, 'image_shade')
 
-  if (displayName !== undefined) patch['source.kitchen_name'] = clean(displayName)
-  if (slug !== undefined) patch['source.kitchen_slug'] = clean(slug)
-  if (imageUrl !== undefined) patch.image_url = clean(imageUrl)
-  if (imageShade !== undefined) patch.image_shade = clean(imageShade)
+  const displayNameText = cleanPatchText(displayName)
+  const slugText = cleanPatchText(slug)
+  const imageUrlText = cleanPatchText(imageUrl)
+  const imageShadeText = cleanPatchText(imageShade)
+
+  if (displayNameText !== undefined) patch['source.kitchen_name'] = displayNameText
+  if (slugText !== undefined) patch['source.kitchen_slug'] = slugText
+  if (imageUrlText !== undefined) patch.image_url = imageUrlText
+  if (imageShadeText !== undefined) patch.image_shade = imageShadeText
 
   return patch
 }

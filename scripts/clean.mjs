@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-07-08
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * scripts/clean.mjs
@@ -16,13 +16,17 @@
  * It MUST NOT delete authored source files.
  */
 
+import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, rmSync } from 'node:fs'
 import path from 'node:path'
+import process from 'node:process'
 
 const repoRoot = process.cwd()
 
 const argv = new Set(process.argv.slice(2))
 const deep = argv.has('--deep') || argv.has('--all')
+const allowDevClean = argv.has('--allow-dev-clean')
+const skipIfDevRunning = argv.has('--skip-if-dev-running')
 
 const GENERATED_REMOVE_DIRS = new Set(['dist', '.nuxt', '.output', '.nitro', '.cache', '.data'])
 const PROJECT_APP_GENERATED_DIRS = new Set(['.nuxt'])
@@ -32,6 +36,19 @@ const PROJECT_ONLY_REMOVE_FILES = new Set(['firebase-debug.log', '.firebaserc'])
 
 let removedCount = 0
 let removedNuxtArtifacts = false
+
+function devServerRunning() {
+  const result = spawnSync(
+    process.execPath,
+    ['scripts/pre-guard-clean.mjs', '--check-dev', '--quiet'],
+    {
+      cwd: repoRoot,
+      stdio: 'ignore',
+    }
+  )
+
+  return result.status === 2
+}
 
 function removeIfExists(fullPath, kind) {
   if (!existsSync(fullPath)) return false
@@ -94,6 +111,18 @@ function cleanProjects() {
 function cleanRepoRootFiles() {
   for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(repoRoot, f), 'file')
   if (deep) removeIfExists(path.join(repoRoot, 'node_modules'), 'dir')
+}
+
+if (!allowDevClean && devServerRunning()) {
+  if (skipIfDevRunning) {
+    console.log('[clean] Skipping clean while a FireUX dev server is running.')
+    console.log('[clean] Live Nuxt/core artifacts were left untouched.')
+    process.exit(0)
+  }
+
+  console.error('[clean] Refusing to clean generated artifacts while a FireUX dev server is running.')
+  console.error('[clean] Stop the dev server first. Use --allow-dev-clean only when you intentionally want to break the running dev session.')
+  process.exit(1)
 }
 
 console.log(

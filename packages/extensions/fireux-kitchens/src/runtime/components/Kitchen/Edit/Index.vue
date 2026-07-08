@@ -37,50 +37,28 @@
         />
 
         <div v-else class="space-y-6">
-          <UPageCard variant="subtle">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
-                  Editing kitchen
-                </p>
-                <p class="text-sm font-medium text-highlighted">
-                  {{ kitchenTitle }}
-                </p>
-                <p v-if="kitchenSubtitle" class="text-xs text-dimmed">
-                  {{ kitchenSubtitle }}
-                </p>
-              </div>
-
-              <div class="flex flex-wrap gap-2">
-                <UButton
-                  size="xs"
-                  variant="soft"
-                  color="neutral"
-                  icon="i-lucide-eye"
-                  :to="detailTo"
-                >
-                  View public page
-                </UButton>
-                <UButton
-                  v-if="placeEditTo"
-                  size="xs"
-                  variant="soft"
-                  color="neutral"
-                  icon="i-lucide-map-pin"
-                  :to="placeEditTo"
-                >
-                  Edit linked place
-                </UButton>
-              </div>
-            </div>
-          </UPageCard>
+          <KitchenEditSummary
+            :kitchen="hydratedKitchen"
+            :kitchen-id="kitchenId"
+            :detail-to="detailTo"
+            :place-edit-to="placeEditTo"
+          />
 
           <template v-if="canEdit">
-            <KitchenEditIdentity
-              :kitchen="hydratedKitchen"
-              :kitchen-id="kitchenId"
-              :can-write="canEdit"
-            />
+            <KitchenDetailOperatorPanel :kitchen="hydratedKitchen" />
+
+            <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+              <KitchenEditIdentity
+                :kitchen="hydratedKitchen"
+                :kitchen-id="kitchenId"
+                :can-write="canEdit"
+              />
+
+              <KitchenEditSetup
+                :kitchen="hydratedKitchen"
+                :place-edit-to="placeEditTo"
+              />
+            </div>
           </template>
           <UAlert
             v-else
@@ -139,7 +117,10 @@ const clean = (value: unknown) => String(value ?? '').trim()
 const kitchenTitle = computed(() =>
   clean(hydratedKitchen.value?.display_name || hydratedKitchen.value?.name) || 'Kitchen'
 )
-const kitchenSubtitle = computed(() => clean(hydratedKitchen.value?.tagline))
+const address = computed(() =>
+  clean(hydratedKitchen.value?.formatted_address) ||
+    clean(hydratedKitchen.value?.short_address)
+)
 const placeLocator = computed(() =>
   clean(hydratedKitchen.value?.place_id)
 )
@@ -158,7 +139,7 @@ const pageTitle = computed(
     )
 )
 const pageSubtitle = computed(() =>
-  kitchenId.value ? `Kitchen: ${kitchenId.value}` : 'Edit a kitchen'
+  address.value || 'Finish this kitchen profile.'
 )
 
 const toast = useToastify()

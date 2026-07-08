@@ -118,17 +118,19 @@ const props = withDefaults(
     link: true,
     showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
-    devJsonContext: 'collection manager · kitchens · raw collection',
+    devJsonContext: 'collection manager · kitchens · collection surface',
   }
 )
 
 const fetched = useKitchenCollection()
-const rawCollection = computed<KitchenCollectionItem[]>(() => fetched.kitchens.value ?? [])
+const collectionSurface = computed<KitchenCollectionItem[]>(
+  () => fetched.kitchens.value ?? []
+)
 const hydrated = ref(false)
 const pending = computed(() =>
-  fetched.pending.value || (!hydrated.value && !rawCollection.value.length)
+  fetched.pending.value || (!hydrated.value && !collectionSurface.value.length)
 )
-const { devJsonData } = useDevCollectionJson(rawCollection)
+const { devJsonData } = useDevCollectionJson(collectionSurface)
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
   String(
@@ -148,7 +150,7 @@ const devJsonTitle = computed(() =>
 )
 const devJsonContext = computed(() =>
   String(
-    props.devJsonContext || 'collection manager · kitchens · raw collection'
+    props.devJsonContext || 'collection manager · kitchens · collection surface'
   ).trim()
 )
 const {
@@ -158,7 +160,7 @@ const {
 } = useKitchenInterface()
 
 const collection = computed<KitchenCollectionItem[]>(() =>
-  rawCollection.value
+  collectionSurface.value
     .filter((row): row is KitchenCollectionItem => Boolean(makeCard(row)))
 )
 

@@ -20,6 +20,12 @@
         />
 
         <div v-else class="space-y-4">
+          <!-- identity -->
+          <KitchenDetailIdentity :kitchen="kitchen" />
+
+          <!-- people -->
+          <KitchenDetailTeam :kitchen="kitchen" />
+
           <!-- place -->
           <KitchenDetailPlace :kitchen="kitchen" />
 

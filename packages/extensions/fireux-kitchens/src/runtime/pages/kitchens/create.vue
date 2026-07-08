@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Create Kitchen"
-      description="Create the public kitchen record for a real venue. Console setup happens separately."
+      description="Create the public kitchen record for a real venue. Setup continues on the kitchen edit page."
     />
 
     <UPageBody class="pagebody">

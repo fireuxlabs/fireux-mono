@@ -65,7 +65,6 @@ import type {
     PlaceSource,
     PlaceUpsertInput,
 } from '../../../models/place.model'
-import { PlaceModel } from '../../../models/place.model'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(
@@ -190,21 +189,26 @@ function toDraft(
   }
 
   return {
-    ...PlaceModel,
     id: placeId,
     source: selectedSource.value,
     name,
     short_name: String((place as any)?.short_name ?? ''),
     formatted_address: formatted,
     short_address: String((place as any)?.short_address ?? ''),
+    address: (place as any)?.address,
     lat: Number((place as any)?.lat ?? 0),
     lng: Number((place as any)?.lng ?? 0),
     image_shade: toShade((place as any)?.image_shade),
-
     image_url: resolvedLogo,
     claimed_by: String((place as any)?.claimed_by ?? ''),
+    website: String((place as any)?.website ?? ''),
+    phone: String((place as any)?.phone ?? ''),
+    google_maps_url: String((place as any)?.google_maps_url ?? ''),
+    types: Array.isArray((place as any)?.types) ? (place as any).types : [],
+    price_level: String((place as any)?.price_level ?? ''),
+    default_currency_code: String((place as any)?.default_currency_code ?? ''),
     search_term: existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
-  }
+  } as PlaceUpsertInput
 }
 
 async function onConfirmClick() {

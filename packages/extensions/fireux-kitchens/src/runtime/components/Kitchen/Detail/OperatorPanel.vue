@@ -2,14 +2,14 @@
   <UCard class="fx-card fx-card--public-action">
     <div class="fx-public-action">
       <div class="fx-public-action__badges">
-        <UBadge color="primary" variant="soft">
-          Operator
+        <UBadge :color="accessBadgeColor" variant="soft">
+          {{ accessBadgeLabel }}
         </UBadge>
       </div>
 
       <div class="fx-public-action__body">
         <UAvatar
-          icon="i-lucide-key-round"
+          :icon="accessIcon"
           size="md"
           class="fx-public-action__avatar"
         />
@@ -24,49 +24,27 @@
             </p>
           </div>
 
-          <div v-if="operatorUserPill" class="fx-public-action__subject">
-            <span class="fx-public-action__label">{{ operatorLabel }}</span>
+          <div v-if="subjectUserPill" class="fx-public-action__subject">
+            <span class="fx-public-action__label">{{ subjectLabel }}</span>
             <UserCardsPill
-              v-bind="operatorUserPill"
+              v-bind="subjectUserPill"
               :show-badges="false"
-              :link="Boolean(operatorUserPill.to)"
+              :link="Boolean(subjectUserPill.to)"
               class="block"
             />
           </div>
 
-          <div v-if="manageAction" class="fx-public-action__actions">
+          <div v-if="operationAction" class="fx-public-action__actions">
             <UButton
               size="xs"
-              :color="manageAction.color"
+              :color="operationAction.color"
               variant="soft"
-              :icon="manageAction.icon"
-              :to="manageAction.to"
-              @click="manageAction.onClick"
+              :icon="operationAction.icon"
+              :to="operationAction.to"
+              @click="operationAction.onClick"
             >
-              {{ manageAction.label }}
+              {{ operationAction.label }}
             </UButton>
-          </div>
-
-          <div v-if="groups.length" class="fx-public-action__groups">
-            <div
-              v-for="group in groups"
-              :key="group.label"
-              class="fx-public-action__group"
-            >
-              <p class="fx-public-action__label">
-                {{ group.label }}
-              </p>
-              <div class="fx-public-action__chips">
-                <UBadge
-                  v-for="item in group.items"
-                  :key="item"
-                  :color="group.color"
-                  variant="soft"
-                >
-                  {{ item }}
-                </UBadge>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -79,7 +57,6 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import {
   useUser,
-  useUserFetch,
   useUserInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -89,28 +66,13 @@ import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/u
 import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import {
-  visiblePublicActionGroups,
-  type PublicActionButton,
-  type PublicActionGroup,
-} from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
+import type { PublicActionButton } from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null
 }>()
 
-const aligned = ['Identity', 'Recipe', 'Ingredient', 'Dish']
-const notAligned = [
-  'Menu',
-  'Supplier',
-  'Mise',
-  'Order',
-  'Team',
-  'Station',
-]
-
 const claimedBy = computed(() => String(props.kitchen?.claimed_by ?? '').trim())
-const { user: ownerUser } = useUserFetch(claimedBy)
 const { pill } = useUserInterface()
 const { currentUser, isAdmin } = useUser()
 const { appId } = useFireUXConfig()
@@ -134,10 +96,11 @@ const { kitchen: consoleKitchen } = useKitchenFetch(kitchenId, {
 const hasConsoleAccess = computed(() =>
   targetHasOperator(consoleKitchen.value, currentUserId.value)
 )
-const operatorUserPill = computed(() =>
-  hasConsoleAccess.value
-    ? pill(currentUser.value)
-    : pill(ownerUser.value)
+const isClaimant = computed(() =>
+  Boolean(claimedBy.value && currentUserId.value === claimedBy.value)
+)
+const subjectUserPill = computed(() =>
+  hasConsoleAccess.value ? pill(currentUser.value) : null
 )
 const operatorAppName = computed(() =>
   String((operatorApp.value as any)?.app_short_name || (operatorApp.value as any)?.app_name || '').trim()
@@ -147,79 +110,71 @@ const panelDescription = computed(() =>
     ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app console.`
     : hasConsoleAccess.value
     ? 'You have operator access for this kitchen console.'
-    : 'Operators manage menus, recipes, ingredients, and kitchen work from the kitchen console.'
+    : canActivateConsole.value
+      ? 'This kitchen has no operators yet. Make a console to manage menus, orders, team, and stations.'
+      : 'This kitchen has no operators yet.'
 )
-const operatorLabel = computed(() =>
-  hasConsoleAccess.value ? 'Signed in as' : 'Operator'
+const subjectLabel = computed(() =>
+  hasConsoleAccess.value ? 'Signed in as' : ''
 )
-const canEdit = computed(() =>
-  Boolean(
-    hasConsoleAccess.value ||
-      isAdmin.value ||
-      (claimedBy.value && currentUserId.value === claimedBy.value)
-  )
+const accessBadgeLabel = computed(() =>
+  hasConsoleAccess.value ? 'Operator' : 'No operators'
 )
-const isAdminEdit = computed(() =>
-  Boolean(
-    isAdmin.value &&
-      !hasConsoleAccess.value &&
-      (!claimedBy.value || currentUserId.value !== claimedBy.value)
-  )
+const accessBadgeColor = computed(() =>
+  hasConsoleAccess.value ? 'primary' : 'neutral'
 )
-const editLocator = computed(() =>
-  String(props.kitchen?.slug || props.kitchen?.id || '').trim()
+const accessIcon = computed(() =>
+  hasConsoleAccess.value ? 'i-lucide-key-round' : 'i-lucide-users-round'
+)
+const canActivateConsole = computed(() =>
+  Boolean(isAdmin.value || isClaimant.value)
 )
 const consolePath = '/console/kitchen'
+const consoleCreatePath = `${consolePath}/create`
+const consoleCreateTo = computed(() =>
+  kitchenId.value
+    ? `${consoleCreatePath}?existingRootId=${encodeURIComponent(kitchenId.value)}`
+    : consoleCreatePath
+)
 const operatorAppOrigin = computed(() =>
   normalizeOrigin(
     (operatorApp.value as any)?.social_links?.website ||
       (operatorApp.value as any)?.website
   )
 )
-const editTo = computed(() =>
+const operationTo = computed(() =>
   hasConsoleAccess.value
     ? isTenantConsoleHandoff.value
       ? operatorAppOrigin.value
         ? `${operatorAppOrigin.value}${consolePath}`
         : ''
       : consolePath
-    : editLocator.value
-      ? `/kitchens/${encodeURIComponent(editLocator.value)}/edit`
+    : canActivateConsole.value
+      ? consoleCreateTo.value
       : ''
 )
-const manageLabel = computed(() =>
+const operationLabel = computed(() =>
   hasConsoleAccess.value && isTenantConsoleHandoff.value
     ? `Open ${operatorAppName.value || 'tenant'} console`
     : hasConsoleAccess.value
     ? 'Open console'
-    : 'Edit kitchen'
+    : 'Make console'
 )
-const manageAction = computed<PublicActionButton | null>(() =>
-  canEdit.value && editTo.value
+const operationAction = computed<PublicActionButton | null>(() =>
+  operationTo.value
     ? {
-        label: isAdminEdit.value ? 'Admin Edit' : manageLabel.value,
-        to: editTo.value,
-        icon: isAdminEdit.value
-          ? 'i-lucide-shield-check'
-          : 'i-lucide-pencil',
-        color: isAdminEdit.value ? 'warning' as const : 'neutral' as const,
-        onClick: selectConsoleKitchen,
+        label: operationLabel.value,
+        to: operationTo.value,
+        icon: hasConsoleAccess.value
+          ? 'i-lucide-panel-right-open'
+          : 'i-lucide-key-round',
+        color: hasConsoleAccess.value ? 'neutral' as const : 'primary' as const,
+        onClick:
+          hasConsoleAccess.value && !isTenantConsoleHandoff.value
+            ? selectConsoleKitchen
+            : undefined,
       }
     : null
-)
-const groups = computed<PublicActionGroup[]>(() =>
-  visiblePublicActionGroups([
-    {
-      label: 'Aligned',
-      items: aligned,
-      color: 'primary' as const,
-    },
-    {
-      label: 'Not aligned yet',
-      items: notAligned,
-      color: 'neutral' as const,
-    },
-  ])
 )
 const { setKitchenConsoleSelection } = useKitchenConsoleSelection()
 

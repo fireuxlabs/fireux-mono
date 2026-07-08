@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-08
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * scripts/go.mjs
@@ -67,6 +67,18 @@ function shouldCleanForPath(p) {
   return generatedSegments.some((seg) => s.includes(seg) || s.endsWith(seg))
 }
 
+function devServerRunning() {
+  const result = spawnSync(
+    process.execPath,
+    ['scripts/pre-guard-clean.mjs', '--check-dev', '--quiet'],
+    {
+      stdio: 'ignore',
+    }
+  )
+
+  return result.status === 2
+}
+
 const argv = process.argv.slice(2)
 const hasCleanFlag = argv.includes('--clean')
 const hasNoCleanFlag = argv.includes('--no-clean')
@@ -103,11 +115,17 @@ if (dirtyPaths.length === 0) {
 
 const autoCleanNeeded = dirtyPaths.some(shouldCleanForPath)
 const willClean = hasCleanFlag ? true : hasNoCleanFlag ? false : autoCleanNeeded
+let cleanRan = false
 
 if (willClean) {
-  console.log('[go] Detected build artifacts; running clean')
-  run('pnpm', ['-s', 'clean'])
+  if (devServerRunning()) {
+    console.log('[go] Dev server is running; skipping clean so live artifacts stay intact.')
+  } else {
+    console.log('[go] Detected build artifacts; running clean')
+    run('pnpm', ['-s', 'clean'])
+    cleanRan = true
+  }
 }
 
 console.log('[go] Running gitsave')
-run('bash', ['scripts/gitsave.sh', ...argv, ...(willClean && !hasCleanFlag ? ['--clean'] : [])])
+run('bash', ['scripts/gitsave.sh', ...argv, ...(cleanRan && !hasCleanFlag ? ['--clean'] : [])])

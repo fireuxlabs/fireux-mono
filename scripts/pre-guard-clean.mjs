@@ -50,7 +50,7 @@ async function listChildDirs(parentDir) {
 }
 
 const removed = []
-const force = process.argv.includes('--force')
+const allowDevClean = process.argv.includes('--allow-dev-clean')
 const skipIfDevRunning = process.argv.includes('--skip-if-dev-running')
 const checkDev = process.argv.includes('--check-dev')
 const quiet = process.argv.includes('--quiet')
@@ -91,13 +91,13 @@ function activeDevProcesses() {
       {
         pid: '?',
         command:
-          'Unable to inspect active processes. Stop dev servers first or rerun with --force.',
+          'Unable to inspect active processes. Stop dev servers first before cleaning generated artifacts.',
       },
     ]
   }
 }
 
-const devProcesses = force ? [] : activeDevProcesses()
+const devProcesses = allowDevClean ? [] : activeDevProcesses()
 if (checkDev) {
   if (devProcesses.length) {
     if (!quiet) {
@@ -118,7 +118,7 @@ if (devProcesses.length) {
       '[pre-guard-clean] ⏭️ Skipping artifact clean while a FireUX dev server is running.'
     )
     console.log(
-      '[pre-guard-clean] Stop the dev server before push/guard cleanup, or use --force to interrupt generated artifacts.'
+      '[pre-guard-clean] Stop the dev server before push/guard cleanup. Live dev artifacts were left untouched.'
     )
     process.exit(0)
   }
@@ -127,7 +127,7 @@ if (devProcesses.length) {
     '[pre-guard-clean] Refusing to clean generated dev artifacts while a FireUX dev server is running.'
   )
   console.error(
-    '[pre-guard-clean] Stop the dev server first, or rerun with --force if you intentionally want to interrupt it.'
+    '[pre-guard-clean] Stop the dev server first. Use --allow-dev-clean only when you intentionally want to break the running dev session.'
   )
   devProcesses
     .slice(0, 5)
