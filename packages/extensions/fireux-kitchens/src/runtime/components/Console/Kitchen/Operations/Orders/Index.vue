@@ -1,6 +1,5 @@
 <template>
-  <section class="console-surface space-y-6">
-    <ConsoleKitchenOperationsOrdersWrite />
+  <section class="console-surface">
     <ConsoleKitchenOperationsOrdersRead />
   </section>
 </template>

@@ -1,52 +1,56 @@
 <template>
   <MenuDetailKioskBackground
-    v-if="showKioskStart"
-    aria-label="Kiosk start screen"
+    v-if="isKioskContext"
+    aria-label="Kiosk menu"
     :background-image-url="kioskStartBackgroundImageUrl"
     :kitchen-name="props.menu.presentation.kitchenName"
     :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
     :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
     :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
   >
-    <MenuDetailKioskStart
-      :kitchen-name="props.menu.presentation.kitchenName"
-      :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
-      @start="startKiosk"
-    />
-  </MenuDetailKioskBackground>
+    <Transition name="menu-kiosk-surface" mode="out-in">
+      <div
+        v-if="showKioskStart"
+        key="start"
+        class="menu-kiosk-screen menu-kiosk-screen--start"
+      >
+        <MenuDetailKioskStart
+          :kitchen-name="props.menu.presentation.kitchenName"
+          :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
+          @start="startKiosk"
+        />
+      </div>
 
-  <MenuDetailKioskBackground
-    v-else-if="showKioskBrowse"
-    aria-label="Kiosk browse screen"
-    :background-image-url="kioskStartBackgroundImageUrl"
-    :kitchen-name="props.menu.presentation.kitchenName"
-    :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
-    :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
-    :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
-  >
-    <button
-      type="button"
-      class="menu-kiosk-screen__close"
-      aria-label="Go back"
-      @click="resetKiosk"
-    >
-      <UIcon name="i-lucide-x" aria-hidden="true" />
-    </button>
+      <div
+        v-else
+        key="browse"
+        class="menu-kiosk-screen menu-kiosk-screen--browse"
+      >
+        <button
+          type="button"
+          class="menu-kiosk-screen__close"
+          aria-label="Go back"
+          @click="resetKiosk"
+        >
+          <UIcon name="i-lucide-x" aria-hidden="true" />
+        </button>
 
-    <MenuDetailKioskBrowse
-      :view="interaction.detail.view"
-      @add="interaction.detail.add"
-    />
+        <MenuDetailKioskBrowse
+          :view="interaction.detail.view"
+          @add="interaction.detail.add"
+        />
 
-    <MenuDetailFunnel
-      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
-      :funnel="interaction.funnel"
-    />
+        <MenuDetailFunnel
+          v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+          :funnel="interaction.funnel"
+        />
 
-    <MenuDetailFunnelTrigger
-      v-else-if="interaction.funnel.show"
-      :funnel="interaction.funnel"
-    />
+        <MenuDetailFunnelTrigger
+          v-else-if="interaction.funnel.show"
+          :funnel="interaction.funnel"
+        />
+      </div>
+    </Transition>
   </MenuDetailKioskBackground>
 
   <template v-else>
@@ -207,9 +211,6 @@ const isKioskContext = computed(() =>
 const showKioskStart = computed(() =>
   isKioskContext.value && !kioskStarted.value
 )
-const showKioskBrowse = computed(() =>
-  isKioskContext.value && kioskStarted.value
-)
 const { backgroundImageUrl: kioskStartBackgroundImageUrl } = useKioskSkinBackground({
   skin: () => props.menu.presentation.kioskSkin,
 })
@@ -244,6 +245,11 @@ watch((): OperatorPresenceWatch => ({
 </script>
 
 <style scoped>
+.menu-kiosk-screen {
+  height: 100%;
+  min-height: 0;
+}
+
 .menu-kiosk-screen__close {
   position: fixed;
   top: clamp(1rem, 2.4svh, 2rem);
@@ -274,6 +280,39 @@ watch((): OperatorPresenceWatch => ({
 .menu-kiosk-screen__close :deep(.iconify) {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+.menu-kiosk-surface-enter-active,
+.menu-kiosk-surface-leave-active {
+  transition:
+    opacity 240ms ease,
+    filter 240ms ease,
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu-kiosk-surface-enter-from {
+  opacity: 0;
+  filter: blur(0.45rem);
+  transform: translateY(1.15rem) scale(0.985);
+}
+
+.menu-kiosk-surface-leave-to {
+  opacity: 0;
+  filter: blur(0.35rem);
+  transform: translateY(-0.8rem) scale(1.015);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-kiosk-surface-enter-active,
+  .menu-kiosk-surface-leave-active {
+    transition: opacity 120ms ease;
+  }
+
+  .menu-kiosk-surface-enter-from,
+  .menu-kiosk-surface-leave-to {
+    filter: none;
+    transform: none;
+  }
 }
 
 @media (max-width: 900px) {

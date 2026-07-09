@@ -17,7 +17,10 @@
     </p>
 
     <button type="button" class="kiosk-item__add" @click="addItem">
-      <span>Add</span>
+      <span class="kiosk-item__add-label">
+        <UIcon name="i-lucide-plus" aria-hidden="true" />
+        <span>Add</span>
+      </span>
       <strong v-if="displayPrice">{{ displayPrice }}</strong>
     </button>
   </article>
@@ -120,22 +123,74 @@ function addItem() {
 
 .kiosk-item__add {
   display: flex;
-  min-height: 3rem;
+  min-height: 3.15rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0.9rem;
-  border: 0;
-  background: var(--kiosk-primary, #ff7912);
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem 0.55rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--kiosk-primary) 62%, white);
+  border-radius: 0.7rem;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--kiosk-primary) 18%, transparent),
+      color-mix(in srgb, var(--kiosk-secondary) 48%, transparent)
+    ),
+    color-mix(in srgb, var(--kiosk-secondary) 42%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 0.65rem 1.35rem rgb(0 0 0 / 18%);
   color: white;
   cursor: pointer;
   font: inherit;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 900;
+  text-shadow: 0 0.2rem 0.7rem rgb(0 0 0 / 34%);
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.kiosk-item__add:hover,
+.kiosk-item__add:focus-visible {
+  border-color: color-mix(in srgb, var(--kiosk-primary) 82%, white);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--kiosk-primary) 28%, transparent),
+      color-mix(in srgb, var(--kiosk-secondary) 52%, transparent)
+    ),
+    color-mix(in srgb, var(--kiosk-secondary) 48%, transparent);
+  transform: translateY(-1px);
+}
+
+.kiosk-item__add:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
+  outline-offset: 0.22rem;
+}
+
+.kiosk-item__add-label {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.kiosk-item__add-label :deep(.iconify) {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .kiosk-item__add strong {
-  font-size: 1.05rem;
+  flex: 0 0 auto;
+  padding: 0.34rem 0.48rem;
+  border: 1px solid color-mix(in srgb, var(--kiosk-primary) 44%, transparent);
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--kiosk-primary) 20%, transparent);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 @media (max-width: 560px) {

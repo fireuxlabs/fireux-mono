@@ -161,6 +161,7 @@ watch(activeSections, (sections) => {
   min-height: 0;
   padding: var(--kiosk-browse-padding);
   overflow: hidden;
+  overscroll-behavior: none;
   background: rgb(0 0 0 / 20%);
 }
 
@@ -204,6 +205,8 @@ watch(activeSections, (sections) => {
 .kiosk-browse__sections,
 .kiosk-browse__content {
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .kiosk-browse__group,
@@ -223,9 +226,9 @@ watch(activeSections, (sections) => {
 }
 
 .kiosk-browse__group {
-  min-height: 3.25rem;
-  padding: 0.7rem 0.7rem 0.7rem 0.85rem;
-  font-size: 0.98rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.65rem 0.55rem 0.78rem;
+  font-size: 0.92rem;
 }
 
 .kiosk-browse__section {
@@ -259,14 +262,7 @@ watch(activeSections, (sections) => {
 }
 
 .kiosk-browse__content-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   padding-bottom: 1rem;
-  background: linear-gradient(
-    rgb(0 0 0 / 28%),
-    rgb(0 0 0 / 0%)
-  );
 }
 
 .kiosk-browse__content-header h2 {
@@ -333,6 +329,7 @@ watch(activeSections, (sections) => {
     display: flex;
     gap: 0.5rem;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding-bottom: 0.2rem;
     scrollbar-width: none;
   }
@@ -355,8 +352,8 @@ watch(activeSections, (sections) => {
   }
 
   .kiosk-browse__group {
-    min-height: 3rem;
-    padding: 0.65rem 0.85rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.8rem;
   }
 
   .kiosk-browse__section {
@@ -366,12 +363,6 @@ watch(activeSections, (sections) => {
 
   .kiosk-browse__content {
     padding: 0.35rem 0 0;
-  }
-
-  .kiosk-browse__content-header {
-    position: static;
-    padding-bottom: 0.75rem;
-    background: transparent;
   }
 
   .kiosk-browse__content-header h2 {

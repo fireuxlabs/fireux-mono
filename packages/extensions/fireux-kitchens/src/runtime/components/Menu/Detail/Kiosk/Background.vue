@@ -61,6 +61,7 @@ const backgroundStyle = computed(() => {
   height: 100svh;
   min-height: 100svh;
   overflow: hidden;
+  overscroll-behavior: none;
   background-image:
     linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%)),
     var(
@@ -93,6 +94,7 @@ const backgroundStyle = computed(() => {
   z-index: 1;
   height: 100%;
   min-height: 0;
+  overscroll-behavior: none;
 }
 
 @media (max-width: 900px) {
