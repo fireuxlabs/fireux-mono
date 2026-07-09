@@ -34,6 +34,7 @@
     <MenuDetailKioskOrder
       :mode="kioskMode"
       :view="interaction.detail.view"
+      @add="interaction.detail.add"
     />
   </section>
 

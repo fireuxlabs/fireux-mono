@@ -48,36 +48,12 @@
         </header>
 
         <div class="kiosk-order__dishes">
-          <article
+          <MenuDetailKioskItem
             v-for="item in activeSection.items"
             :key="item.id"
-            class="kiosk-order__dish"
-          >
-            <img
-              v-if="item.imageUrl"
-              :src="item.imageUrl"
-              :alt="item.name"
-              class="kiosk-order__dish-image"
-            >
-            <div
-              v-else
-              class="kiosk-order__dish-image kiosk-order__dish-image--empty"
-              aria-hidden="true"
-            />
-
-            <div class="kiosk-order__dish-copy">
-              <h3>
-                {{ item.name }}
-              </h3>
-              <p v-if="item.description">
-                {{ item.description }}
-              </p>
-            </div>
-
-            <p v-if="itemPrice(item)" class="kiosk-order__dish-price">
-              {{ itemPrice(item) }}
-            </p>
-          </article>
+            :item="item"
+            @add="emit('add', $event)"
+          />
         </div>
       </section>
     </main>
@@ -90,7 +66,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { MenuDetailView } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+import type {
+  MenuDetailOrderItem,
+  MenuDetailView,
+} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type {
   MenuManifestItem,
   MenuManifestSection,
@@ -107,6 +86,10 @@ type KioskGroup = {
 const props = defineProps<{
   mode?: 'eat_in' | 'takeaway' | ''
   view: MenuDetailView | null
+}>()
+
+const emit = defineEmits<{
+  (event: 'add', item: MenuDetailOrderItem): void
 }>()
 
 const groupOrder: Array<{ id: KioskGroupId, label: string }> = [
@@ -153,15 +136,10 @@ const modeLabel = computed(() =>
       ? 'Takeaway'
       : 'Kiosk'
 )
-const currencyCode = computed(() =>
-  String(props.view?.menu.presentation.currencyCode || '').trim()
-)
 const chooseGroup = (groupId: KioskGroupId) => {
   activeGroupId.value = groupId
   activeSectionId.value = ''
 }
-const itemPrice = (item: MenuManifestItem) =>
-  item.priceLabel || (item.price ? `${currencyCode.value} ${item.price.toFixed(2)}` : '')
 
 watch(groups, (nextGroups) => {
   const current = nextGroups.find((group) => group.id === activeGroupId.value)
@@ -209,9 +187,6 @@ watch(activeSections, (sections) => {
 }
 
 .kiosk-order__mode,
-.kiosk-order__dish-copy h3,
-.kiosk-order__dish-copy p,
-.kiosk-order__dish-price,
 .kiosk-order__content-header h2 {
   margin: 0;
 }
@@ -229,6 +204,11 @@ watch(activeSections, (sections) => {
 .kiosk-order__dish-section {
   display: grid;
   gap: 0.75rem;
+}
+
+.kiosk-order__dishes {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  align-items: start;
 }
 
 .kiosk-order__sections,
@@ -285,51 +265,6 @@ watch(activeSections, (sections) => {
   color: #18181b;
   font-size: 2.5rem;
   font-weight: 900;
-}
-
-.kiosk-order__dish {
-  display: grid;
-  grid-template-columns: 8rem minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: center;
-  min-height: 7rem;
-  padding: 1rem;
-  border: 1px solid rgb(0 0 0 / 10%);
-  background: white;
-}
-
-.kiosk-order__dish-image {
-  width: 8rem;
-  height: 6rem;
-  background: #f4f4f5;
-  object-fit: cover;
-}
-
-.kiosk-order__dish-copy {
-  display: grid;
-  gap: 0.25rem;
-  min-width: 0;
-}
-
-.kiosk-order__dish-copy h3 {
-  color: #18181b;
-  font-size: 1.45rem;
-  font-weight: 900;
-}
-
-.kiosk-order__dish-copy p {
-  display: -webkit-box;
-  overflow: hidden;
-  color: #52525b;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-
-.kiosk-order__dish-price {
-  color: #18181b;
-  font-size: 1.2rem;
-  font-weight: 900;
-  white-space: nowrap;
 }
 
 .kiosk-order__empty {
