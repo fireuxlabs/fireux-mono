@@ -14,12 +14,12 @@
         @update:model-value="$emit('update:selectedChoice', $event)"
       />
 
-      <MenuDetailSectionNav
+      <MenuDetailContentSectionNav
         v-if="view.menu.content.sections.length > 1"
         :sections="view.menu.content.sections"
       />
 
-      <MenuDetailSectionList
+      <MenuDetailContentSectionList
         :sections="view.menu.content.sections"
         :order-mode="view.orderMode"
         :selected-item-id="view.selectedItemId"

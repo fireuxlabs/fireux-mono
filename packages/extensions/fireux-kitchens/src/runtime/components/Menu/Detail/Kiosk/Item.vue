@@ -78,18 +78,20 @@ function addItem() {
 }
 
 .kiosk-item__media {
+  position: relative;
   display: grid;
   min-height: 0;
   overflow: hidden;
-  background: rgb(0 0 0 / 30%);
   place-items: center;
 }
 
 .kiosk-item__media img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center center;
 }
 

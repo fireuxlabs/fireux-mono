@@ -1,6 +1,6 @@
 <template>
   <div class="menu-sections">
-    <MenuDetailSection
+    <MenuDetailContentSection
       v-for="section in sections"
       :key="section.id"
       :id="sectionDomId(section.id)"
@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuFoodSection as MenuFoodSectionModel } from '../../../models/kitchen/menu/menu-food.model'
+import type { MenuFoodSection as MenuFoodSectionModel } from '../../../../models/kitchen/menu/menu-food.model'
 import type {
   MenuDetailItem,
   MenuDetailOrderItem,
-} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+} from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 
 const props = defineProps<{
   sections: MenuFoodSectionModel[]

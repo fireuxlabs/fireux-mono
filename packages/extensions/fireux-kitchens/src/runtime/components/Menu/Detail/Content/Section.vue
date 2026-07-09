@@ -15,11 +15,11 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuFoodSection } from '../../../models/kitchen/menu/menu-food.model'
+import type { MenuFoodSection } from '../../../../models/kitchen/menu/menu-food.model'
 import type {
   MenuDetailItem,
   MenuDetailOrderItem,
-} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+} from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 
 defineProps<{
   section: MenuFoodSection

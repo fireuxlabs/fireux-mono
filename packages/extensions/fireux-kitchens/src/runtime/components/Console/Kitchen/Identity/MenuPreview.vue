@@ -52,7 +52,7 @@
         :style="themeStyleVars"
       >
         <section v-if="previewMenu" class="menu-preview-surface">
-          <MenuDetailHeading
+          <MenuDetailHeaderHeading
             :kitchen-name="kitchenName"
             :name="previewMenu.name"
             :description="previewDescription"
@@ -66,7 +66,7 @@
             description="This menu has no sections yet."
           />
 
-          <MenuDetailSectionList
+          <MenuDetailContentSectionList
             v-else
             :sections="previewSections"
           />

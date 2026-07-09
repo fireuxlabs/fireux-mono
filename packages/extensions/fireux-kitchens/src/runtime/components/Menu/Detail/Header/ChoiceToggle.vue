@@ -123,7 +123,7 @@ import { computed } from 'vue'
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
-} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+} from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 
 const props = withDefaults(
   defineProps<{
