@@ -72,6 +72,13 @@ const backgroundStyle = computed(() => {
 
 <style scoped>
 .kiosk-start {
+  --kiosk-start-actions-gap: 1.25rem;
+  --kiosk-start-actions-width: min(100%, 44rem);
+  --kiosk-start-button-height: 7rem;
+  --kiosk-start-wordmark-width: min(96%, 42rem);
+  --kiosk-logo-size: min(25.5vw, 17.25rem);
+  --kiosk-logo-top: 12.75svh;
+
   position: relative;
   display: grid;
   min-height: 100svh;
@@ -83,8 +90,10 @@ const backgroundStyle = computed(() => {
       --kiosk-background-image,
       linear-gradient(145deg, #111, #2a1204)
     );
-  background-position: center;
-  background-size: cover;
+  background-color: var(--kiosk-secondary, #050505);
+  background-position: center, center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%, auto 100%;
   color: white;
 }
 
@@ -92,30 +101,28 @@ const backgroundStyle = computed(() => {
   position: relative;
   z-index: 1;
   display: grid;
-  width: min(100%, 44rem);
-  gap: 1.25rem;
+  width: var(--kiosk-start-actions-width);
+  gap: var(--kiosk-start-actions-gap);
 }
 
 .kiosk-start__logo {
   position: absolute;
   inset-inline: 0;
-  top: 14.85svh;
+  top: var(--kiosk-logo-top);
   z-index: 0;
-  width: min(31vw, 21rem);
-  aspect-ratio: 1;
+  width: var(--kiosk-logo-size);
+  height: auto;
+  max-height: var(--kiosk-logo-size);
   margin-inline: auto;
-  padding: 1.1rem;
-  border-radius: 999px;
-  background: rgb(0 0 0 / 58%);
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 28%);
   object-fit: contain;
+  pointer-events: none;
   transform: translateY(-50%);
 }
 
 .kiosk-start__button {
   display: inline-grid;
   width: 100%;
-  min-height: 7rem;
+  min-height: var(--kiosk-start-button-height);
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
   border-radius: 1.5rem;
@@ -130,7 +137,7 @@ const backgroundStyle = computed(() => {
 
 .kiosk-start__wordmark {
   justify-self: center;
-  width: min(96%, 42rem);
+  width: var(--kiosk-start-wordmark-width);
   max-height: 13rem;
   margin-bottom: 1rem;
   object-fit: contain;
@@ -153,6 +160,27 @@ const backgroundStyle = computed(() => {
 
   .kiosk-start__actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .kiosk-start {
+    --kiosk-start-actions-width: min(100%, 34rem);
+    --kiosk-start-button-height: 5.75rem;
+    --kiosk-logo-size: min(22vw, 10.8rem);
+    --kiosk-logo-top: 14.6svh;
+
+    padding: 16svh 1.25rem 2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .kiosk-start {
+    --kiosk-start-actions-gap: 0.85rem;
+    --kiosk-start-button-height: 5rem;
+    --kiosk-start-wordmark-width: min(100%, 24rem);
+    --kiosk-logo-size: min(25vw, 6.25rem);
+    --kiosk-logo-top: 11.5svh;
   }
 }
 </style>

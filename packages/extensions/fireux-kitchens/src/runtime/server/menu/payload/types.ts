@@ -5,6 +5,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 export type MenuPayloadScope = {
   kitchenId?: string
   kitchenImageUrl?: string
+  kitchenLogoImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
   kitchenWordmarkImageUrl?: string

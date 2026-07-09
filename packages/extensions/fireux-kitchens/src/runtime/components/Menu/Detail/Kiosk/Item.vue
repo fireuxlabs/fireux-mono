@@ -52,8 +52,11 @@ function addItem() {
 
 <style scoped>
 .kiosk-item {
+  --kiosk-item-image-scale: 2.15;
+  --kiosk-item-title-size: 1.35rem;
+
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto minmax(0, 1.35fr) auto auto;
   gap: 0.75rem;
   aspect-ratio: 1;
   min-width: 0;
@@ -69,7 +72,7 @@ function addItem() {
   display: -webkit-box;
   overflow: hidden;
   color: white;
-  font-size: 1.35rem;
+  font-size: var(--kiosk-item-title-size);
   font-weight: 900;
   line-height: 1.05;
   text-shadow: 0 0.25rem 0.85rem rgb(0 0 0 / 42%);
@@ -95,7 +98,7 @@ function addItem() {
   padding: clamp(0.35rem, 1.8%, 0.65rem);
   object-fit: contain;
   object-position: center center;
-  transform: scale(1.95);
+  transform: scale(var(--kiosk-item-image-scale));
 }
 
 .kiosk-item__media :deep(.iconify) {
@@ -133,5 +136,16 @@ function addItem() {
 
 .kiosk-item__add strong {
   font-size: 1.05rem;
+}
+
+@media (max-width: 560px) {
+  .kiosk-item {
+    --kiosk-item-image-scale: 1.95;
+    --kiosk-item-title-size: 1.2rem;
+
+    min-height: 22rem;
+    aspect-ratio: auto;
+    grid-template-rows: auto 12rem auto auto;
+  }
 }
 </style>

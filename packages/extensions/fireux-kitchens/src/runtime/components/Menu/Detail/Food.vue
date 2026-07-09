@@ -3,7 +3,7 @@
     v-if="showKioskStart"
     :background-image-url="kioskStartBackgroundImageUrl"
     :kitchen-name="props.menu.presentation.kitchenName"
-    :logo-image-url="props.menu.presentation.kitchenImageUrl"
+    :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
     :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
     :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
     :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
@@ -16,9 +16,9 @@
     :style="kioskScreenStyle"
   >
     <img
-      v-if="props.menu.presentation.kitchenImageUrl"
+      v-if="props.menu.presentation.kitchenLogoImageUrl"
       class="menu-kiosk-screen__logo"
-      :src="props.menu.presentation.kitchenImageUrl"
+      :src="props.menu.presentation.kitchenLogoImageUrl"
       :alt="props.menu.presentation.kitchenName || ''"
     >
 
@@ -32,7 +32,6 @@
     </button>
 
     <MenuDetailKioskBrowse
-      :mode="kioskMode"
       :view="interaction.detail.view"
       @add="interaction.detail.add"
     />
@@ -113,6 +112,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
+import { useKioskSkinBackground } from '../../../composables/fireux/menu/detail/useKioskSkinBackground'
 import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
@@ -200,9 +200,9 @@ const showKioskStart = computed(() =>
 const showKioskBrowse = computed(() =>
   isKioskContext.value && kioskStarted.value
 )
-const kioskStartBackgroundImageUrl = computed(() =>
-  props.menu.presentation.kioskSkin?.backgroundImageUrl || ''
-)
+const { backgroundImageUrl: kioskStartBackgroundImageUrl } = useKioskSkinBackground({
+  skin: () => props.menu.presentation.kioskSkin,
+})
 const kioskScreenStyle = computed(() =>
   ({
     ...(kioskStartBackgroundImageUrl.value
@@ -249,6 +249,9 @@ watch((): OperatorPresenceWatch => ({
 
 <style scoped>
 .menu-kiosk-screen {
+  --kiosk-logo-size: min(25.5vw, 17.25rem);
+  --kiosk-logo-top: 12.75svh;
+
   position: relative;
   display: block;
   height: 100svh;
@@ -260,24 +263,24 @@ watch((): OperatorPresenceWatch => ({
       --kiosk-background-image,
       linear-gradient(145deg, #111, #2a1204)
     );
-  background-position: center;
-  background-size: cover;
+  background-color: var(--kiosk-secondary, #050505);
+  background-position: center, center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%, auto 100%;
   color: white;
 }
 
 .menu-kiosk-screen__logo {
   position: absolute;
   inset-inline: 0;
-  top: 14.85svh;
+  top: var(--kiosk-logo-top);
   z-index: 0;
-  width: min(31vw, 21rem);
-  aspect-ratio: 1;
+  width: var(--kiosk-logo-size);
+  height: auto;
+  max-height: var(--kiosk-logo-size);
   margin-inline: auto;
-  padding: 1.1rem;
-  border-radius: 999px;
-  background: rgb(0 0 0 / 58%);
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 28%);
   object-fit: contain;
+  pointer-events: none;
   transform: translateY(-50%);
 }
 
@@ -313,4 +316,37 @@ watch((): OperatorPresenceWatch => ({
   height: 2.5rem;
 }
 
+@media (max-width: 900px) {
+  .menu-kiosk-screen {
+    --kiosk-logo-size: min(22vw, 10.8rem);
+    --kiosk-logo-top: 14.6svh;
+  }
+
+  .menu-kiosk-screen__close {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+
+  .menu-kiosk-screen__close :deep(.iconify) {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .menu-kiosk-screen {
+    --kiosk-logo-size: min(25vw, 6.25rem);
+    --kiosk-logo-top: 11.5svh;
+  }
+
+  .menu-kiosk-screen__close {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .menu-kiosk-screen__close :deep(.iconify) {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}
 </style>

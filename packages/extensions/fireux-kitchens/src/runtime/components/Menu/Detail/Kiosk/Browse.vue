@@ -8,10 +8,6 @@
       class="kiosk-browse__menu"
       aria-label="Menu"
     >
-      <p class="kiosk-browse__mode">
-        {{ modeLabel }}
-      </p>
-
       <div class="kiosk-browse__groups" aria-label="Menu groups">
         <button
           v-for="group in groups"
@@ -84,7 +80,6 @@ type KioskGroup = {
 }
 
 const props = defineProps<{
-  mode?: 'eat_in' | 'takeaway' | ''
   view: MenuDetailView | null
 }>()
 
@@ -129,13 +124,6 @@ const activeSection = computed(() =>
     activeSections.value[0] ??
     null
 )
-const modeLabel = computed(() =>
-  props.mode === 'eat_in'
-    ? 'Eat in'
-    : props.mode === 'takeaway'
-      ? 'Takeaway'
-      : 'Kiosk'
-)
 const chooseGroup = (groupId: KioskGroupId) => {
   activeGroupId.value = groupId
   activeSectionId.value = ''
@@ -158,15 +146,20 @@ watch(activeSections, (sections) => {
 
 <style scoped>
 .kiosk-browse {
+  --kiosk-browse-columns: 10.5rem minmax(0, 1fr);
+  --kiosk-browse-gap: 2.5rem;
+  --kiosk-browse-padding: 24svh 2rem 2rem 0;
+  --kiosk-dish-columns: repeat(3, minmax(0, 1fr));
+
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 18rem minmax(0, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: var(--kiosk-browse-columns);
+  gap: var(--kiosk-browse-gap);
   width: 100%;
   height: 100svh;
   min-height: 0;
-  padding: 24svh 2rem 2rem 0;
+  padding: var(--kiosk-browse-padding);
   overflow: hidden;
   background: rgb(0 0 0 / 20%);
 }
@@ -174,28 +167,20 @@ watch(activeSections, (sections) => {
 .kiosk-browse__menu,
 .kiosk-browse__content {
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
 .kiosk-browse__menu {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgb(0 0 0 / 68%);
+  gap: 0.85rem;
+  padding-left: 0.75rem;
   color: white;
 }
 
-.kiosk-browse__mode,
 .kiosk-browse__content-header h2 {
   margin: 0;
-}
-
-.kiosk-browse__mode {
-  color: rgb(255 255 255 / 70%);
-  font-size: 0.85rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .kiosk-browse__groups,
@@ -206,8 +191,13 @@ watch(activeSections, (sections) => {
   gap: 0.75rem;
 }
 
+.kiosk-browse__sections {
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
 .kiosk-browse__dishes {
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: var(--kiosk-dish-columns);
   align-items: start;
 }
 
@@ -219,8 +209,12 @@ watch(activeSections, (sections) => {
 .kiosk-browse__group,
 .kiosk-browse__section {
   width: 100%;
-  border: 1px solid rgb(255 255 255 / 18%);
-  background: rgb(255 255 255 / 8%);
+  max-width: 9.75rem;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 0.5rem;
+  background: rgb(0 0 0 / 38%);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);
   color: white;
   cursor: pointer;
   font: inherit;
@@ -229,21 +223,32 @@ watch(activeSections, (sections) => {
 }
 
 .kiosk-browse__group {
-  min-height: 4rem;
-  padding: 0.9rem 1rem;
-  font-size: 1.25rem;
+  min-height: 3.25rem;
+  padding: 0.7rem 0.7rem 0.7rem 0.85rem;
+  font-size: 0.98rem;
 }
 
 .kiosk-browse__section {
-  min-height: 3.5rem;
-  padding: 0.75rem;
-  color: rgb(255 255 255 / 76%);
+  min-height: 2.7rem;
+  padding: 0.58rem 0.65rem 0.58rem 0.78rem;
+  background: rgb(0 0 0 / 28%);
+  color: rgb(255 255 255 / 78%);
+  font-size: 0.9rem;
 }
 
-.kiosk-browse__group--active,
-.kiosk-browse__section--active {
+.kiosk-browse__group--active {
   border-color: var(--kiosk-primary);
-  background: rgb(255 255 255 / 16%);
+  background: var(--kiosk-primary);
+  box-shadow: 0 0.65rem 1.4rem rgb(0 0 0 / 18%);
+  color: white;
+}
+
+.kiosk-browse__section--active {
+  border-color: color-mix(in srgb, var(--kiosk-primary) 62%, transparent);
+  background: rgb(0 0 0 / 52%);
+  box-shadow:
+    inset 0.35rem 0 0 var(--kiosk-primary),
+    inset 0 1px 0 rgb(255 255 255 / 8%);
   color: white;
 }
 
@@ -278,5 +283,107 @@ watch(activeSections, (sections) => {
   color: white;
   font-size: 2rem;
   font-weight: 900;
+}
+
+@media (max-width: 1100px) and (max-height: 900px) {
+  .kiosk-browse {
+    --kiosk-browse-columns: 9.5rem minmax(0, 1fr);
+    --kiosk-browse-gap: 1.5rem;
+    --kiosk-browse-padding: 22svh 1.25rem 1.25rem 0;
+    --kiosk-dish-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  }
+
+  .kiosk-browse__group,
+  .kiosk-browse__section {
+    max-width: 8.85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .kiosk-browse {
+    --kiosk-browse-columns: 8.5rem minmax(0, 1fr);
+    --kiosk-browse-gap: 1rem;
+    --kiosk-browse-padding: 18svh 1rem 1rem 0;
+    --kiosk-dish-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kiosk-browse__group,
+  .kiosk-browse__section {
+    max-width: 7.85rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .kiosk-browse {
+    --kiosk-browse-columns: 1fr;
+    --kiosk-browse-padding: 18svh 1rem 1rem;
+    --kiosk-dish-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .kiosk-browse__menu {
+    gap: 0.5rem;
+    padding-left: 0;
+    overflow: visible;
+  }
+
+  .kiosk-browse__groups,
+  .kiosk-browse__sections {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+  }
+
+  .kiosk-browse__groups::-webkit-scrollbar,
+  .kiosk-browse__sections::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kiosk-browse__sections {
+    margin-top: 0.15rem;
+  }
+
+  .kiosk-browse__group,
+  .kiosk-browse__section {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  .kiosk-browse__group {
+    min-height: 3rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .kiosk-browse__section {
+    min-height: 2.55rem;
+    padding: 0.55rem 0.75rem 0.55rem 0.9rem;
+  }
+
+  .kiosk-browse__content {
+    padding: 0.35rem 0 0;
+  }
+
+  .kiosk-browse__content-header {
+    position: static;
+    padding-bottom: 0.75rem;
+    background: transparent;
+  }
+
+  .kiosk-browse__content-header h2 {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+  }
+
+}
+
+@media (max-width: 560px) {
+  .kiosk-browse {
+    --kiosk-browse-padding: 16svh 0.85rem 0.85rem;
+    --kiosk-dish-columns: 1fr;
+  }
 }
 </style>

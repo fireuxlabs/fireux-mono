@@ -112,6 +112,7 @@ async function readKitchenMenu(
   return await buildMenuPayload(menuId, data, {
     kitchenId: kitchen.id,
     kitchenImageUrl: identity.imageUrl,
+    kitchenLogoImageUrl: identity.logoImageUrl,
     kitchenSlug,
     kitchenName: identity.name,
     kitchenWordmarkImageUrl: identity.wordmarkImageUrl,

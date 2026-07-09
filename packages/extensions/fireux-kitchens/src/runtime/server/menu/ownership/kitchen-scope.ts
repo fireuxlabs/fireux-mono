@@ -16,6 +16,7 @@ import { resolveMenuPageStyle } from '../payload/page-style.ts'
 export type MenuKitchenScope = {
   kitchenId?: string
   kitchenImageUrl?: string
+  kitchenLogoImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
   kitchenWordmarkImageUrl?: string
@@ -65,6 +66,7 @@ export function menuKitchenIdentity(
   return {
     name: appIdentity.displayName || rootIdentity.displayName,
     imageUrl: appIdentity.imageUrl || rootIdentity.imageUrl,
+    logoImageUrl: appIdentity.logoImageUrl || rootIdentity.logoImageUrl,
     wordmarkImageUrl:
       appIdentity.wordmarkNoLogoImageUrl ||
       rootIdentity.wordmarkNoLogoImageUrl ||
@@ -164,6 +166,7 @@ export async function readRootMenuKitchenScope(
   return {
     kitchenId: resolvedKitchenId,
     kitchenImageUrl: identity.imageUrl,
+    kitchenLogoImageUrl: identity.logoImageUrl,
     kitchenSlug: resolvedKitchenSlug,
     kitchenName: identity.name,
     kitchenWordmarkImageUrl: identity.wordmarkImageUrl,

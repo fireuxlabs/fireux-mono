@@ -305,6 +305,9 @@ export async function buildMenuManifestPayload(
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
         : {}),
+      ...(text(scope.kitchenLogoImageUrl)
+        ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }
+        : {}),
       kitchenName: source.kitchen_name || '',
       ...(text(scope.kitchenWordmarkImageUrl)
         ? { kitchenWordmarkImageUrl: text(scope.kitchenWordmarkImageUrl) }
