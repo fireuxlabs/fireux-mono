@@ -1,5 +1,9 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import {
+  normalizeDishDealFlag,
+  readDishItemKind,
+} from '../../../models/kitchen/dish.model'
+import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../../models/kitchen/menu/menu-item.model'
@@ -58,6 +62,13 @@ export async function readKitchenMenuSections(
             return {
               id: text(item.id),
               dish_id: dishId,
+              item_kind:
+                readDishItemKind(item.item_kind) ||
+                readDishItemKind(dish?.item_kind) ||
+                'food',
+              is_deal:
+                normalizeDishDealFlag(item.is_deal) ||
+                normalizeDishDealFlag(dish?.is_deal),
               name: readRecordString(dish || {}, 'name') || dishId,
               description: readRecordString(dish || {}, 'description'),
               image_url:

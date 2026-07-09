@@ -1,6 +1,10 @@
 import { createError } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import {
+  normalizeDishDealFlag,
+  readDishItemKind,
+} from '../../../models/kitchen/dish.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type {
   MenuDetailPayload,
@@ -173,6 +177,13 @@ const menuSections = (sections: unknown[]): MenuManifestSection[] =>
         return {
           id: text(itemRecord.id) || name,
           dishId: text(itemRecord.dish_id),
+          itemKind:
+            readDishItemKind(itemRecord.itemKind) ||
+            readDishItemKind(itemRecord.item_kind) ||
+            'food',
+          isDeal:
+            normalizeDishDealFlag(itemRecord.isDeal) ||
+            normalizeDishDealFlag(itemRecord.is_deal),
           name,
           description: itemDescription(itemRecord),
           imageUrl: itemImageUrl(itemRecord),

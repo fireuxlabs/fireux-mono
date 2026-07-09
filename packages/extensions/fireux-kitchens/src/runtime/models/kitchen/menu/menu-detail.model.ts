@@ -1,4 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { DishItemKind } from '../dish.model'
 import type { MenuKioskSkin } from './kiosk-skin.model'
 import type { MenuChoice, MenuOrderingConfig, MenuServiceProfile } from './menu.model'
 
@@ -19,6 +20,8 @@ export type MenuManifestAddOn = {
 export type MenuManifestItem = {
   id: string
   dishId: string
+  itemKind: DishItemKind
+  isDeal: boolean
   name: string
   description: string
   imageUrl: string

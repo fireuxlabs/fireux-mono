@@ -50,11 +50,13 @@ function buildMenuNormalizationRequest(
     sections: KitchenMenuDraftSection[]
   }
 ) {
+  // TODO(menu-ai): Indian Gourmet surfaced provider filter labels like "All Chicken".
+  // Flag these before the next production run; decide later if we auto-strip them.
   return {
     input: {
       sections: input.sections,
       instruction:
-        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Preserve optional extras, toppings, sides, and add-ons in add_ons. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, or ingredients. If names, section labels, variants, add-ons, or descriptions include translated duplicate text in multiple languages, keep only the default menu language text and remove secondary-language copies instead of joining them with slashes.',
+        'Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Keep or correct item_kind as "food" or "drink" for every item, and keep or correct is_deal as true only for bundled deals, meal deals, set menus, or offers. Flag storefront/filter section labels prefixed with "All " (for example "All Chicken", "All Dessert", or "All BBQ/Grill") in notes and changes for operator review before publishing. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Preserve optional extras, toppings, sides, and add-ons in add_ons. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, or ingredients. If names, section labels, variants, add-ons, or descriptions include translated duplicate text in multiple languages, keep only the default menu language text and remove secondary-language copies instead of joining them with slashes.',
     },
     context: {
       domain: 'restaurant_menu',
@@ -73,6 +75,8 @@ function buildMenuNormalizationRequest(
             {
               name: 'Clean dish name',
               description: 'Clean description or empty string',
+              item_kind: 'food',
+              is_deal: false,
               image_url: 'Existing image URL or empty string',
               price: 0,
               price_options: [

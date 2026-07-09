@@ -32,17 +32,8 @@
     </button>
 
     <MenuDetailKioskOrder
-      :basket="interaction.funnel.order"
       :mode="kioskMode"
       :view="interaction.detail.view"
-      @open-basket="interaction.funnel.open"
-      @select-item="interaction.detail.selectItem"
-      @add="interaction.detail.add"
-    />
-
-    <MenuDetailFunnel
-      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
-      :funnel="interaction.funnel"
     />
   </section>
 
@@ -115,9 +106,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
@@ -130,6 +122,12 @@ type OperatorPresenceWatch = {
   status: OperatorStatus
 }
 type KioskEntryMode = 'eat_in' | 'takeaway'
+type KioskStoredMode = 'start' | KioskEntryMode
+const kioskModeChoices = [
+  'start',
+  'eat_in',
+  'takeaway',
+] as const satisfies readonly KioskStoredMode[]
 
 const props = defineProps<{
   menu: MenuManifest
@@ -145,9 +143,25 @@ const interaction = useFunnel({
   kitchenSlug: () => props.kitchenSlug,
 })
 const { uid } = useAuth()
-const kioskStarted = ref(false)
-const kioskMode = ref<KioskEntryMode | ''>('')
 const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
+const kioskModeStorageKey = computed(() =>
+  [
+    'fireux:menu',
+    kitchenSlug.value || 'root',
+    props.menuId,
+    'kiosk',
+    'mode',
+  ].filter(Boolean).join(':')
+)
+const { selected: storedKioskMode } = useStoredChoice<KioskStoredMode>({
+  key: kioskModeStorageKey,
+  choices: kioskModeChoices,
+  fallback: 'start',
+})
+const kioskMode = computed<KioskEntryMode | ''>(() =>
+  storedKioskMode.value === 'start' ? '' : storedKioskMode.value
+)
+const kioskStarted = computed(() => storedKioskMode.value !== 'start')
 const { kitchen: rootKitchen } = useKitchenFetch(kitchenSlug, {
   hydrate: false,
 })
@@ -203,15 +217,19 @@ const kioskScreenStyle = computed(() =>
   })
 )
 function startKiosk(mode: KioskEntryMode) {
-  kioskMode.value = mode
+  storedKioskMode.value = mode
   interaction.detail.select(`order:${mode}`)
-  kioskStarted.value = true
 }
 
 function resetKiosk() {
-  kioskStarted.value = false
-  kioskMode.value = ''
+  storedKioskMode.value = 'start'
 }
+
+watch(kioskMode, (mode) => {
+  if (!isKioskContext.value || !mode) return
+
+  interaction.detail.select(`order:${mode}`)
+}, { immediate: true })
 
 watch((): OperatorPresenceWatch => ({
   orderType: String(activeOrderType.value || ''),
@@ -232,8 +250,8 @@ watch((): OperatorPresenceWatch => ({
 .menu-kiosk-screen {
   position: relative;
   display: block;
-  min-height: 100svh;
-  padding: 1rem;
+  height: 100svh;
+  padding: 0;
   overflow: hidden;
   background-image:
     linear-gradient(rgb(0 0 0 / 28%), rgb(0 0 0 / 42%)),
@@ -263,13 +281,13 @@ watch((): OperatorPresenceWatch => ({
 }
 
 .menu-kiosk-screen__close {
-  position: sticky;
-  top: 1rem;
-  z-index: 2;
+  position: fixed;
+  top: clamp(1rem, 2.4svh, 2rem);
+  right: clamp(1rem, 2.4vw, 2rem);
+  z-index: 4;
   display: grid;
   width: 4.5rem;
   height: 4.5rem;
-  margin-left: auto;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
   border-radius: 999px;

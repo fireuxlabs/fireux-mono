@@ -6,6 +6,8 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, unref, type Ref } from 'vue'
 import {
   DishStorage,
+  normalizeDishDealFlag,
+  normalizeDishItemKind,
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/kitchen/dish.model'
@@ -15,6 +17,8 @@ import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKit
 type DishCreateDraft = {
   name: string
   description?: string
+  item_kind?: string
+  is_deal?: boolean
   image_url?: string
 }
 
@@ -38,6 +42,8 @@ function buildDishPayload(
     name,
     slug: dishId,
     description,
+    item_kind: normalizeDishItemKind(draft.item_kind),
+    is_deal: normalizeDishDealFlag(draft.is_deal),
     image_url: imageUrl,
     kitchen_id: kitchenId,
   }

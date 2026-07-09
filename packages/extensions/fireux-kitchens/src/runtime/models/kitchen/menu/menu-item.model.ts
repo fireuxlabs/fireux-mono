@@ -1,6 +1,7 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { DishItemKind } from '../dish.model'
 
 /**
  * Family: App-scoped Kitchen Menu Section child record.
@@ -111,6 +112,8 @@ export const MenuItemModel = {
   menu_id: '' as string,
   section_id: '' as string,
   dish_id: '' as string,
+  item_kind: 'food' as DishItemKind,
+  is_deal: false as boolean,
   image_url: '' as string,
   price: 0 as number,
   price_options: [] as MenuItemPriceOption[],

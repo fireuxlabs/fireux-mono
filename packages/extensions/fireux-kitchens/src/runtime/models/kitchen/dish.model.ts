@@ -22,11 +22,31 @@ export const DishStorage = {
   idParam: 'dishId',
 } as const
 
+export type DishItemKind = 'food' | 'drink'
+
+export const readDishItemKind = (value: unknown): DishItemKind | '' => {
+  const kind = String(value ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_')
+
+  if (kind === 'food' || kind === 'drink') return kind
+  if (kind === 'drinks') return 'drink'
+
+  return ''
+}
+
+export const normalizeDishItemKind = (value: unknown): DishItemKind =>
+  readDishItemKind(value) || 'food'
+
+export const normalizeDishDealFlag = (value: unknown) =>
+  value === true ||
+  ['true', 'yes', '1'].includes(String(value ?? '').trim().toLowerCase())
+
 export const DishModel = {
   id: '' as string,
   name: '' as string,
   slug: '' as string,
   description: '' as string,
+  item_kind: 'food' as DishItemKind,
+  is_deal: false as boolean,
   image_url: '' as string,
   kitchen_id: '' as string,
   created: {
@@ -68,6 +88,8 @@ export function normalizeDish(value: unknown): Dish {
     name: pickString(source.name),
     slug: pickString(source.slug),
     description: pickString(source.description),
+    item_kind: normalizeDishItemKind(source.item_kind),
+    is_deal: normalizeDishDealFlag(source.is_deal),
     image_url: pickString(source.image_url),
     kitchen_id: pickString(source.kitchen_id),
     created,

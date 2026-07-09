@@ -3,11 +3,17 @@ import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../../models/kitchen/menu/menu-item.model'
+import {
+  normalizeDishDealFlag,
+  normalizeDishItemKind,
+} from '../../../models/kitchen/dish.model'
 import { defaultMenuLanguageText } from '../language/default-text'
 
 export type KitchenMenuDraftItem = {
   name: string
   description: string
+  item_kind: ReturnType<typeof normalizeDishItemKind>
+  is_deal: boolean
   image_url: string
   price: number
   add_ons: unknown[]
@@ -75,6 +81,8 @@ export function normalizeKitchenMenuDraftSections(
             return {
               name: defaultMenuLanguageText(row.name),
               description: defaultMenuLanguageText(row.description),
+              item_kind: normalizeDishItemKind(row.item_kind),
+              is_deal: normalizeDishDealFlag(row.is_deal),
               image_url: readString(row.image_url),
               price: money(row.price),
               add_ons: Array.isArray(row.add_ons) ? cleanAddOns(row.add_ons) : [],
