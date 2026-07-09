@@ -195,9 +195,7 @@ const isKioskContext = computed(() =>
   props.menu.behaviour.context === 'kiosk' || props.menuContext === 'kiosk'
 )
 const showKioskStart = computed(() =>
-  isKioskContext.value &&
-    !kioskStarted.value &&
-    !interaction.funnel.show
+  isKioskContext.value && !kioskStarted.value
 )
 const showKioskBrowse = computed(() =>
   isKioskContext.value && kioskStarted.value
