@@ -1,27 +1,29 @@
 <template>
-  <MenuDetailKioskStart
+  <MenuDetailKioskBackground
     v-if="showKioskStart"
+    aria-label="Kiosk start screen"
     :background-image-url="kioskStartBackgroundImageUrl"
     :kitchen-name="props.menu.presentation.kitchenName"
     :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
     :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
     :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
-    :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
-    @start="startKiosk"
-  />
-
-  <section
-    v-else-if="showKioskBrowse"
-    class="menu-kiosk-screen"
-    :style="kioskScreenStyle"
   >
-    <img
-      v-if="props.menu.presentation.kitchenLogoImageUrl"
-      class="menu-kiosk-screen__logo"
-      :src="props.menu.presentation.kitchenLogoImageUrl"
-      :alt="props.menu.presentation.kitchenName || ''"
-    >
+    <MenuDetailKioskStart
+      :kitchen-name="props.menu.presentation.kitchenName"
+      :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
+      @start="startKiosk"
+    />
+  </MenuDetailKioskBackground>
 
+  <MenuDetailKioskBackground
+    v-else-if="showKioskBrowse"
+    aria-label="Kiosk browse screen"
+    :background-image-url="kioskStartBackgroundImageUrl"
+    :kitchen-name="props.menu.presentation.kitchenName"
+    :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
+    :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
+    :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
+  >
     <button
       type="button"
       class="menu-kiosk-screen__close"
@@ -35,7 +37,7 @@
       :view="interaction.detail.view"
       @add="interaction.detail.add"
     />
-  </section>
+  </MenuDetailKioskBackground>
 
   <template v-else>
     <MenuDetailContent
@@ -203,20 +205,6 @@ const showKioskBrowse = computed(() =>
 const { backgroundImageUrl: kioskStartBackgroundImageUrl } = useKioskSkinBackground({
   skin: () => props.menu.presentation.kioskSkin,
 })
-const kioskScreenStyle = computed(() =>
-  ({
-    ...(kioskStartBackgroundImageUrl.value
-      ? {
-          '--kiosk-background-image':
-            `url('${kioskStartBackgroundImageUrl.value}')`,
-        }
-      : {}),
-    '--kiosk-primary':
-      props.menu.presentation.kioskSkin?.primaryColor || '#ff7912',
-    '--kiosk-secondary':
-      props.menu.presentation.kioskSkin?.secondaryColor || '#050505',
-  })
-)
 function startKiosk(mode: KioskEntryMode) {
   storedKioskMode.value = mode
   interaction.detail.select(`order:${mode}`)
@@ -248,42 +236,6 @@ watch((): OperatorPresenceWatch => ({
 </script>
 
 <style scoped>
-.menu-kiosk-screen {
-  --kiosk-logo-size: min(25.5vw, 17.25rem);
-  --kiosk-logo-top: 12.75svh;
-
-  position: relative;
-  display: block;
-  height: 100svh;
-  padding: 0;
-  overflow: hidden;
-  background-image:
-    linear-gradient(rgb(0 0 0 / 28%), rgb(0 0 0 / 42%)),
-    var(
-      --kiosk-background-image,
-      linear-gradient(145deg, #111, #2a1204)
-    );
-  background-color: var(--kiosk-secondary, #050505);
-  background-position: center, center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%, auto 100%;
-  color: white;
-}
-
-.menu-kiosk-screen__logo {
-  position: absolute;
-  inset-inline: 0;
-  top: var(--kiosk-logo-top);
-  z-index: 0;
-  width: var(--kiosk-logo-size);
-  height: auto;
-  max-height: var(--kiosk-logo-size);
-  margin-inline: auto;
-  object-fit: contain;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
 .menu-kiosk-screen__close {
   position: fixed;
   top: clamp(1rem, 2.4svh, 2rem);
@@ -317,11 +269,6 @@ watch((): OperatorPresenceWatch => ({
 }
 
 @media (max-width: 900px) {
-  .menu-kiosk-screen {
-    --kiosk-logo-size: min(22vw, 10.8rem);
-    --kiosk-logo-top: 14.6svh;
-  }
-
   .menu-kiosk-screen__close {
     width: 3.6rem;
     height: 3.6rem;
@@ -334,11 +281,6 @@ watch((): OperatorPresenceWatch => ({
 }
 
 @media (max-width: 560px) {
-  .menu-kiosk-screen {
-    --kiosk-logo-size: min(25vw, 6.25rem);
-    --kiosk-logo-top: 11.5svh;
-  }
-
   .menu-kiosk-screen__close {
     width: 3.25rem;
     height: 3.25rem;

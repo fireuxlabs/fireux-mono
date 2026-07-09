@@ -1,16 +1,8 @@
 <template>
   <section
     class="kiosk-start"
-    :style="backgroundStyle"
-    aria-label="Kiosk start screen"
+    aria-label="Kiosk choices"
   >
-    <img
-      v-if="logoImageUrl"
-      class="kiosk-start__logo"
-      :src="logoImageUrl"
-      :alt="kitchenName || ''"
-    >
-
     <div class="kiosk-start__actions">
       <img
         v-if="wordmarkImageUrl"
@@ -39,35 +31,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{
-  backgroundImageUrl?: string
+defineProps<{
   kitchenName?: string
-  logoImageUrl?: string
-  primaryColor?: string
-  secondaryColor?: string
   wordmarkImageUrl?: string
 }>()
 
 defineEmits<{
   (event: 'start', mode: 'eat_in' | 'takeaway'): void
 }>()
-
-const backgroundStyle = computed(() => {
-  const url = String(props.backgroundImageUrl || '').trim()
-
-  return url
-    ? {
-        '--kiosk-background-image': `url('${url}')`,
-        '--kiosk-primary': props.primaryColor || '#ff7912',
-        '--kiosk-secondary': props.secondaryColor || '#050505',
-      }
-    : {
-        '--kiosk-primary': props.primaryColor || '#ff7912',
-        '--kiosk-secondary': props.secondaryColor || '#050505',
-      }
-})
 </script>
 
 <style scoped>
@@ -76,24 +47,11 @@ const backgroundStyle = computed(() => {
   --kiosk-start-actions-width: min(100%, 44rem);
   --kiosk-start-button-height: 7rem;
   --kiosk-start-wordmark-width: min(96%, 42rem);
-  --kiosk-logo-size: min(25.5vw, 17.25rem);
-  --kiosk-logo-top: 12.75svh;
 
   position: relative;
   display: grid;
-  min-height: 100svh;
-  overflow: hidden;
+  height: 100svh;
   place-items: center;
-  background-image:
-    linear-gradient(rgb(0 0 0 / 22%), rgb(0 0 0 / 34%)),
-    var(
-      --kiosk-background-image,
-      linear-gradient(145deg, #111, #2a1204)
-    );
-  background-color: var(--kiosk-secondary, #050505);
-  background-position: center, center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%, auto 100%;
   color: white;
 }
 
@@ -103,20 +61,6 @@ const backgroundStyle = computed(() => {
   display: grid;
   width: var(--kiosk-start-actions-width);
   gap: var(--kiosk-start-actions-gap);
-}
-
-.kiosk-start__logo {
-  position: absolute;
-  inset-inline: 0;
-  top: var(--kiosk-logo-top);
-  z-index: 0;
-  width: var(--kiosk-logo-size);
-  height: auto;
-  max-height: var(--kiosk-logo-size);
-  margin-inline: auto;
-  object-fit: contain;
-  pointer-events: none;
-  transform: translateY(-50%);
 }
 
 .kiosk-start__button {
@@ -167,8 +111,6 @@ const backgroundStyle = computed(() => {
   .kiosk-start {
     --kiosk-start-actions-width: min(100%, 34rem);
     --kiosk-start-button-height: 5.75rem;
-    --kiosk-logo-size: min(22vw, 10.8rem);
-    --kiosk-logo-top: 14.6svh;
 
     padding: 16svh 1.25rem 2rem;
   }
@@ -179,8 +121,6 @@ const backgroundStyle = computed(() => {
     --kiosk-start-actions-gap: 0.85rem;
     --kiosk-start-button-height: 5rem;
     --kiosk-start-wordmark-width: min(100%, 24rem);
-    --kiosk-logo-size: min(25vw, 6.25rem);
-    --kiosk-logo-top: 11.5svh;
   }
 }
 </style>
