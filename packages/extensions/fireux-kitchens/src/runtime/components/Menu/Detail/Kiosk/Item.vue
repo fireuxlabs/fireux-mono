@@ -91,8 +91,11 @@ function addItem() {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  box-sizing: border-box;
+  padding: clamp(0.35rem, 1.8%, 0.65rem);
+  object-fit: contain;
   object-position: center center;
+  transform: scale(1.95);
 }
 
 .kiosk-item__media :deep(.iconify) {
