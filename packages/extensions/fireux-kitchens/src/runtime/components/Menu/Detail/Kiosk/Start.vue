@@ -44,6 +44,7 @@ defineEmits<{
 <style scoped>
 .kiosk-start {
   --kiosk-start-actions-gap: 1.25rem;
+  --kiosk-start-actions-offset: 0;
   --kiosk-start-actions-width: min(100%, 44rem);
   --kiosk-start-button-height: 7rem;
   --kiosk-start-wordmark-width: min(96%, 42rem);
@@ -61,6 +62,7 @@ defineEmits<{
   display: grid;
   width: var(--kiosk-start-actions-width);
   gap: var(--kiosk-start-actions-gap);
+  transform: translateY(var(--kiosk-start-actions-offset));
 }
 
 .kiosk-start__button {
@@ -119,6 +121,7 @@ defineEmits<{
 @media (max-width: 560px) {
   .kiosk-start {
     --kiosk-start-actions-gap: 0.85rem;
+    --kiosk-start-actions-offset: -4.5svh;
     --kiosk-start-button-height: 5rem;
     --kiosk-start-wordmark-width: min(100%, 24rem);
   }

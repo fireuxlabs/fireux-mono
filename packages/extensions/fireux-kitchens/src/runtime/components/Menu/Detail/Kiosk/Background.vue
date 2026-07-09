@@ -99,7 +99,7 @@ const backgroundStyle = computed(() => {
 @media (max-width: 560px) {
   .kiosk-background {
     --kiosk-logo-size: min(25vw, 6.25rem);
-    --kiosk-logo-top: 11.5svh;
+    --kiosk-logo-top: 12.4svh;
   }
 }
 </style>
