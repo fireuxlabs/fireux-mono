@@ -37,6 +37,16 @@
       :view="interaction.detail.view"
       @add="interaction.detail.add"
     />
+
+    <MenuDetailFunnel
+      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+      :funnel="interaction.funnel"
+    />
+
+    <MenuDetailFunnelTrigger
+      v-else-if="interaction.funnel.show"
+      :funnel="interaction.funnel"
+    />
   </MenuDetailKioskBackground>
 
   <template v-else>

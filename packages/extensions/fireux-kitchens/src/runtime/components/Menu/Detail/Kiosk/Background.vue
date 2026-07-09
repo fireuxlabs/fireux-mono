@@ -49,6 +49,12 @@ const backgroundStyle = computed(() => {
 .kiosk-background {
   --kiosk-logo-size: min(24vw, 16.25rem);
   --kiosk-logo-top: 12.6svh;
+  --menu-bg: var(--kiosk-secondary, #050505);
+  --menu-muted: rgb(255 255 255 / 72%);
+  --menu-primary: var(--menu-theme-primary, var(--kiosk-primary, #ff7912));
+  --menu-primary-source: var(--menu-theme-primary, var(--kiosk-primary, #ff7912));
+  --menu-text: white;
+  --menu-title: white;
 
   position: relative;
   display: block;

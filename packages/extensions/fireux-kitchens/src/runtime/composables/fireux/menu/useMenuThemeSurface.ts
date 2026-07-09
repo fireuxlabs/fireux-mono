@@ -31,6 +31,7 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
   const className = computed(() => `menu-theme--${activeColorMode.value}`)
   const styleVars = computed(() => {
     const style = resolvedPageStyle.value
+    const sourceStyle = toValue(options.pageStyle)
     const vars: Record<string, string> = {}
     const backgroundLight = color(style.background_color_light)
     const backgroundDark = color(style.background_color_dark)
@@ -40,6 +41,8 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
     const titleDark = color(style.title_color_dark)
     const primary = color(style.primary_color)
     const secondary = color(style.secondary_color)
+    const customPrimary = color(sourceStyle?.primary_color)
+    const customSecondary = color(sourceStyle?.secondary_color)
 
     if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
     if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
@@ -49,6 +52,8 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
     if (titleDark) vars['--menu-title-dark'] = titleDark
     if (primary) vars['--menu-primary-source'] = primary
     if (secondary) vars['--menu-secondary'] = secondary
+    if (customPrimary) vars['--menu-theme-primary'] = customPrimary
+    if (customSecondary) vars['--menu-theme-secondary'] = customSecondary
     vars['--menu-font'] = resolvedFont.value.cssFamily
     vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
 
