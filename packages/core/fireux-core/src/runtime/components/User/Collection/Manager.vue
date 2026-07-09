@@ -205,7 +205,6 @@ const collection = computed<User[]>(() =>
     bio: user.bio,
     profiles: Array.isArray(user.profiles) ? user.profiles : [],
     projects: [],
-    myKitchens: [],
     userOf: [],
     adminOf: [],
     notifications: [],

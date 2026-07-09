@@ -20,6 +20,7 @@ import type {
   User,
 } from '../../../../../../models/core/user.model'
 import {
+  AppUserConsoleTargetsModel,
   AppUserStorage,
   UserStorage,
 } from '../../../../../../models/core/user.model'
@@ -90,7 +91,6 @@ export async function createCoreUserDocument(
     if (typeof (data as any)?.bio !== 'string') patch.bio = ''
     if (!Array.isArray((data as any)?.profiles)) patch.profiles = []
     if (!Array.isArray((data as any)?.projects)) patch.projects = []
-    if (!Array.isArray((data as any)?.myKitchens)) patch.myKitchens = []
     if (!Array.isArray((data as any)?.userOf)) patch.userOf = []
     if (!Array.isArray((data as any)?.adminOf)) patch.adminOf = []
     if (!Array.isArray((data as any)?.notifications)) patch.notifications = []
@@ -130,7 +130,6 @@ export async function createCoreUserDocument(
     bio: '',
     profiles: [],
     projects: [],
-    myKitchens: [],
     userOf: [],
     adminOf: [],
     notifications: [],
@@ -198,8 +197,20 @@ export async function createUserAppMembership(
     if (typeof (current as any)?.console_enabled !== 'boolean') {
       patch.console_enabled = membershipRole === 'admin'
     }
-    if (!Array.isArray((current as any)?.console_scopes)) {
-      patch.console_scopes = []
+    const currentTargets =
+      (current as any)?.console_targets &&
+      typeof (current as any).console_targets === 'object' &&
+      !Array.isArray((current as any).console_targets)
+        ? (current as any).console_targets
+        : {}
+    const needsConsoleTargets = Object.keys(AppUserConsoleTargetsModel).some(
+      (field) => !Array.isArray(currentTargets[field])
+    )
+    if (needsConsoleTargets) {
+      patch.console_targets = {
+        ...AppUserConsoleTargetsModel,
+        ...currentTargets,
+      }
     }
 
     if (Object.keys(patch).length) {
@@ -218,7 +229,7 @@ export async function createUserAppMembership(
         role: membershipRole,
         is_premium: false,
         console_enabled: membershipRole === 'admin',
-        console_scopes: [],
+        console_targets: AppUserConsoleTargetsModel,
         notifications: [],
         created: {
           at: serverTimestamp(),

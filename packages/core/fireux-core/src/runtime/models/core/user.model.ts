@@ -36,6 +36,39 @@ export const AppUserStorage = {
   idParam: 'userId',
 } as const
 
+export const AppUserConsoleTargetFields = {
+  kitchen: 'kitchen_ids',
+  supplier: 'supplier_ids',
+  property: 'property_ids',
+  portfolio: 'portfolio_ids',
+  project: 'project_ids',
+  blank: 'blank_ids',
+} as const
+
+export type AppUserConsoleTargetField =
+  (typeof AppUserConsoleTargetFields)[keyof typeof AppUserConsoleTargetFields]
+
+export type AppUserConsoleTargets = Record<AppUserConsoleTargetField, string[]> &
+  Record<string, string[]>
+
+export const AppUserConsoleTargetsModel = {
+  kitchen_ids: [] as string[],
+  supplier_ids: [] as string[],
+  property_ids: [] as string[],
+  portfolio_ids: [] as string[],
+  project_ids: [] as string[],
+  blank_ids: [] as string[],
+} satisfies Record<AppUserConsoleTargetField, string[]>
+
+export function resolveAppUserConsoleTargetField(family: unknown): string {
+  const key = String(family ?? '').trim().toLowerCase()
+  if (!key) return ''
+
+  return (
+    (AppUserConsoleTargetFields as Record<string, string>)[key] || `${key}_ids`
+  )
+}
+
 export const UserNotificationStorage = {
   shape: 'scoped',
   path: 'users/{userId}/notifications/{notificationId}',
@@ -54,7 +87,6 @@ export const UserModel = {
   bio: '',
   profiles: [] as string[],
   projects: [] as string[],
-  myKitchens: [] as string[],
   userOf: [] as string[],
   adminOf: [] as string[],
   notifications: [] as UserNotification[],
@@ -78,7 +110,6 @@ export interface User {
   bio: string
   profiles: string[]
   projects: string[]
-  myKitchens: string[]
   userOf: string[]
   adminOf: string[]
   notifications: UserNotification[]
@@ -95,7 +126,7 @@ export const AppUserModel = {
   role: 'user' as 'user' | 'admin',
   is_premium: false,
   console_enabled: false,
-  console_scopes: [] as string[],
+  console_targets: AppUserConsoleTargetsModel as AppUserConsoleTargets,
   notifications: [] as UserNotification[],
 
   created: {
@@ -114,7 +145,7 @@ export interface AppUser {
   role: 'user' | 'admin'
   is_premium: boolean
   console_enabled: boolean
-  console_scopes: string[]
+  console_targets: AppUserConsoleTargets
   notifications: UserNotification[]
   created: typeof AppUserModel.created
   updated: typeof AppUserModel.updated

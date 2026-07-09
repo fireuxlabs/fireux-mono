@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-03
+// last_used: 2026-07-09
 // usage_note: baseline after scripts cleanup; update when run.
 /*
   Firestore migration runner (generic)
@@ -64,6 +64,7 @@ if (help) {
   console.log('  - profile-app-overlays-backfill')
   console.log('  - console-entity-teams')
   console.log('  - console-entity-operators')
+  console.log('  - console-targets-rebuild')
   console.log('  - kitchen-storage-normalize')
   console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
@@ -1084,6 +1085,20 @@ function normalizeAppUserRole(value) {
   return asString(value, '').trim().toLowerCase() === 'admin' ? 'admin' : 'user'
 }
 
+function normalizeAppUserConsoleTargets(value) {
+  const source = asRecord(value)
+  const targets = {}
+
+  for (const [field, ids] of Object.entries(source)) {
+    if (!field.endsWith('_ids')) continue
+
+    const nextIds = sortedUniqueStrings(ids)
+    if (nextIds.length) targets[field] = nextIds
+  }
+
+  return targets
+}
+
 function buildCanonicalAppUser(docId, data, appId) {
   const createdAt =
     resolveTimestamp(data?.created?.at) ??
@@ -1111,15 +1126,20 @@ function buildCanonicalAppUser(docId, data, appId) {
   if (createdBy) created.by = createdBy
   if (updatedBy) updated.by = updatedBy
 
-  return {
+  const canonical = {
     role: normalizeAppUserRole(data.role),
     is_premium: asBoolean(data.is_premium ?? data.isPremium, false),
     console_enabled: asBoolean(data.console_enabled ?? data.consoleEnabled, false),
-    console_scopes: asStringArray(data.console_scopes ?? data.consoleScopes),
     notifications: normalizeUserNotificationArray(data.notifications, createdAt),
     created,
     updated,
   }
+  const consoleTargets = normalizeAppUserConsoleTargets(data.console_targets)
+  if (Object.keys(consoleTargets).length) {
+    canonical.console_targets = consoleTargets
+  }
+
+  return canonical
 }
 
 function needsAppUserRewrite(data, canonical) {
@@ -2836,6 +2856,136 @@ async function runConsoleEntityTeams() {
   })
 }
 
+async function runConsoleTargetsRebuild() {
+  console.log('[migrate] console-targets-rebuild start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    app: targetAppId || '(all)',
+  })
+
+  const familyFields = {
+    kitchens: 'kitchen_ids',
+    suppliers: 'supplier_ids',
+    properties: 'property_ids',
+    portfolios: 'portfolio_ids',
+    projects: 'project_ids',
+  }
+  const appDocs = targetAppId
+    ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
+    : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
+
+  let processedApps = 0
+  let processedTargets = 0
+  let processedUsers = 0
+  let updatedUsers = 0
+  let skippedUsers = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const appDoc of appDocs) {
+    processedApps += 1
+    const targetsByUser = new Map()
+
+    for (const [family, targetField] of Object.entries(familyFields)) {
+      const snap = await appDoc.ref.collection(family).get()
+
+      for (const targetDoc of snap.docs) {
+        processedTargets += 1
+        const data = targetDoc.data() || {}
+        const operatorIds = sortedUniqueStrings([
+          ...asStringArray(data.operator_ids),
+          ...asStringArray(data.team_ids),
+        ])
+
+        for (const operatorId of operatorIds) {
+          if (!targetsByUser.has(operatorId)) targetsByUser.set(operatorId, {})
+          const targetMap = targetsByUser.get(operatorId)
+          if (!targetMap[targetField]) targetMap[targetField] = new Set()
+          targetMap[targetField].add(targetDoc.id)
+        }
+      }
+    }
+
+    for (const [operatorId, targetMap] of targetsByUser.entries()) {
+      processedUsers += 1
+      const appUserRef = appDoc.ref.collection('users').doc(operatorId)
+      const appUserSnap = await appUserRef.get()
+      const data = appUserSnap.exists ? appUserSnap.data() || {} : {}
+      const currentTargets =
+        data.console_targets &&
+        typeof data.console_targets === 'object' &&
+        !Array.isArray(data.console_targets)
+          ? data.console_targets
+          : {}
+      const nextConsoleTargets = { ...currentTargets }
+      const patch = {
+        console_enabled: true,
+        updated: {
+          by: 'system:console-targets-rebuild',
+          at: FieldValue.serverTimestamp(),
+        },
+      }
+      let needs = !data.console_enabled
+
+      for (const [targetField, targetIds] of Object.entries(targetMap)) {
+        const nextIds = sortedUniqueStrings([...targetIds])
+        const currentIds = sortedUniqueStrings(currentTargets[targetField])
+        if (!valuesEqual(currentIds, nextIds)) {
+          nextConsoleTargets[targetField] = nextIds
+          patch.console_targets = nextConsoleTargets
+          needs = true
+        }
+      }
+
+      if (!appUserSnap.exists) {
+        patch.role = 'user'
+        patch.is_premium = false
+        patch.notifications = []
+        patch.created = {
+          by: 'system:console-targets-rebuild',
+          app_id: appDoc.id,
+          at: FieldValue.serverTimestamp(),
+        }
+      }
+
+      if (!needs) {
+        skippedUsers += 1
+        continue
+      }
+
+      updatedUsers += 1
+
+      if (commit) {
+        batch.set(appUserRef, patch, { merge: true })
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', appUserRef.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] console-targets-rebuild done', {
+    processedApps,
+    processedTargets,
+    processedUsers,
+    updatedUsers,
+    skippedUsers,
+    commit,
+  })
+}
+
 async function runKitchenStorageNormalize() {
   if (!targetAppId) {
     console.error('kitchen-storage-normalize requires --app <appId>.')
@@ -3186,6 +3336,7 @@ const recipes = {
   'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
   'console-entity-teams': runConsoleEntityTeams,
   'console-entity-operators': runConsoleEntityTeams,
+  'console-targets-rebuild': runConsoleTargetsRebuild,
   'kitchen-storage-normalize': runKitchenStorageNormalize,
   'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,

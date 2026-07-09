@@ -11,12 +11,20 @@ import {
 } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import {
+  AppUserStorage,
+  resolveAppUserConsoleTargetField,
+} from 'fireux-core/runtime/models/core/user.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
 
-export type ConsoleEntityType = 'kitchen' | 'portfolio' | 'supplier' | 'project'
+export type ConsoleEntityType =
+  | 'kitchen'
+  | 'portfolio'
+  | 'property'
+  | 'supplier'
+  | 'project'
 export type ConsoleCreateMode = 'public' | 'console'
 
 export type ConsoleCreateResult = {
@@ -44,6 +52,7 @@ type ConsoleCreateOptions<TOverlay> = {
 const consoleCollectionByType: Record<ConsoleEntityType, string> = {
   kitchen: 'kitchens',
   portfolio: 'portfolios',
+  property: 'properties',
   supplier: 'suppliers',
   project: 'projects',
 }
@@ -191,16 +200,50 @@ export function useConsoleCreate() {
     const currentUid = normalizeId(uid.value)
     if (currentUid) {
       await setDoc(
-        doc(
-          db,
-          AppStorage.collection,
-          currentAppId,
-          AppUserStorage.collection,
-          currentUid
-        ),
+        overlayRef,
         {
+          operator_ids: arrayUnion(currentUid),
+          team_ids: arrayUnion(currentUid),
+          updated: {
+            at: serverTimestamp(),
+            by: currentUid,
+          },
+        },
+        { merge: true }
+      )
+
+      const appUserRef = doc(
+        db,
+        AppStorage.collection,
+        currentAppId,
+        AppUserStorage.collection,
+        currentUid
+      )
+      const appUserSnap = await getDoc(appUserRef)
+      const targetField = resolveAppUserConsoleTargetField(options.type)
+      await setDoc(
+        appUserRef,
+        {
+          ...(!appUserSnap.exists()
+            ? {
+                role: 'user',
+                is_premium: false,
+                notifications: [],
+                created: {
+                  at: serverTimestamp(),
+                  by: currentUid,
+                  app_id: currentAppId,
+                },
+              }
+            : {}),
           console_enabled: true,
-          console_scopes: arrayUnion(`${options.type}:${id}`),
+          ...(targetField
+            ? {
+                console_targets: {
+                  [targetField]: arrayUnion(resolvedOverlayId),
+                },
+              }
+            : {}),
           updated: {
             at: serverTimestamp(),
             by: currentUid,

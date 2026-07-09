@@ -1,17 +1,37 @@
+import {
+  collection,
+  query as fsq,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { readRuntimeSimulationFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeSimulationFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 import type { KitchenFetchSource } from './useKitchenFetch'
+import { composeKitchenScopedSurface } from '../../../../../utils/kitchen-spine'
 
 type KitchenCollectionDoc = KitchenSurface
+type KitchenCollectionFilterValue = string | number | null | undefined
+export type KitchenCollectionFilter = {
+  ids?: KitchenCollectionFilterValue[] | null | undefined
+  operatorId?: KitchenCollectionFilterValue
+  teamId?: KitchenCollectionFilterValue
+}
 
 type UseKitchenCollectionOptions = {
   ids?: string[] | Ref<string[] | null | undefined>
   source?: KitchenFetchSource | Ref<KitchenFetchSource>
+  filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined>
 }
 
 const normalize = (value: unknown) => String(value ?? '').trim()
@@ -28,11 +48,18 @@ const normalizeSource = (value: unknown): KitchenFetchSource => {
  * console/operator seams, not this collection.
  */
 export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) {
+  const db = useFirestore()
   const { surface } = useKitchenInterface()
+  const { appId } = useFireUXConfig()
   const liveRead = useFirestoreRead()
   const sourceRef = computed<KitchenFetchSource>(() =>
     normalizeSource(isRef(options.source) ? options.source.value : options.source)
   )
+  const resolvedAppId = computed(() => normalize(appId))
+  const resolvedFilter = computed<KitchenCollectionFilter | undefined>(() => {
+    if (isRef(options.filter)) return options.filter.value ?? undefined
+    return options.filter ?? undefined
+  })
   const simulationDatabaseId = computed(() =>
     sourceRef.value === 'test'
       ? readRuntimeSimulationFirestoreDatabaseId() || ''
@@ -41,15 +68,27 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idSet = computed(() => {
     const ids = isRef(options.ids) ? options.ids.value : options.ids
-    return new Set((ids ?? []).map((id) => normalize(id)).filter(Boolean))
+    return new Set(
+      [
+        ...(ids ?? []),
+        ...(resolvedFilter.value?.ids ?? []),
+      ].map((id) => normalize(id)).filter(Boolean)
+    )
   })
   const hasIdFilter = computed(() => {
     const ids = isRef(options.ids) ? options.ids.value : options.ids
-    return Array.isArray(ids)
+    return Array.isArray(ids) || Array.isArray(resolvedFilter.value?.ids)
   })
   const idList = computed(() => Array.from(idSet.value))
+  const filterOperatorId = computed(() =>
+    normalize(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
+  )
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
+  )
   const rootCollectionPath = computed(() =>
-    sourceRef.value === 'live' && !hasIdFilter.value
+    sourceRef.value === 'live' && !hasIdFilter.value && !hasOperatorFilter.value
       ? KitchenStorage.rootCollection
       : ''
   )
@@ -63,6 +102,60 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   const rootSource = liveRead.firestoreFetchCollection<KitchenCollectionDoc>(
     rootCollectionPath
   )
+  const overlayOperatorQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
+    if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
+      where('operator_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<KitchenCollectionDoc>
+  })
+  const overlayTeamQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
+    if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    return fsq(
+      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
+      where('team_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<KitchenCollectionDoc>
+  })
+  const overlayOperatorSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
+    overlayOperatorQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
+        : ''
+    )
+  )
+  const overlayTeamSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
+    overlayTeamQuery,
+    undefined,
+    computed(() =>
+      resolvedAppId.value
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
+        : ''
+    )
+  )
+  const overlaySource = computed<KitchenCollectionDoc[]>(() => {
+    const byId = new Map<string, KitchenCollectionDoc>()
+
+    for (const overlay of [
+      ...(overlayOperatorSource.value ?? []),
+      ...(overlayTeamSource.value ?? []),
+    ]) {
+      const id = normalize(overlay?.id)
+      if (id) byId.set(id, { ...overlay, id })
+    }
+
+    return [...byId.values()]
+  })
+  const allowedKitchenIds = computed(() =>
+    overlaySource.value
+      .map((kitchen) => normalize(kitchen?.id))
+      .filter(Boolean)
+  )
   const exactRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
     collectionPath: computed(() =>
       sourceRef.value === 'live' && hasIdFilter.value
@@ -70,6 +163,14 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         : ''
     ),
     ids: idList,
+  })
+  const overlayRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
+    collectionPath: computed(() =>
+      sourceRef.value === 'live' && hasOperatorFilter.value
+        ? KitchenStorage.rootCollection
+        : ''
+    ),
+    ids: allowedKitchenIds,
   })
   const testSource = simulationRead.firestoreFetchCollection<KitchenCollectionDoc>(
     testCollectionPath
@@ -108,6 +209,11 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         ? hasIdFilter.value
           ? exactTestSource.docs.value ?? []
           : testSource.value ?? []
+        : hasOperatorFilter.value
+          ? mergeRootAndOverlay(
+              overlayRootSource.docs.value ?? [],
+              overlaySource.value
+            )
         : hasIdFilter.value
           ? exactRootSource.docs.value ?? []
           : rootSource.value ?? []
@@ -118,6 +224,10 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         const id = normalize(kitchen?.id)
         if (!id) return null
         if (hasIdFilter.value && !idSet.value.has(id)) return null
+        if (hasOperatorFilter.value) {
+          if (!filterOperatorId.value) return null
+          if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
+        }
 
         return surface({
           kitchen: {
@@ -136,6 +246,16 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   const pending = computed(() => {
     if (sourceRef.value === 'demo') return false
     if (sourceRef.value === 'test' && !simulationDatabaseId.value) return false
+    if (sourceRef.value === 'live' && hasOperatorFilter.value) {
+      if (!filterOperatorId.value) return false
+
+      return (
+        overlayRootSource.docs.value === undefined ||
+        overlayRootSource.pending.value ||
+        overlayOperatorSource.value === undefined ||
+        overlayTeamSource.value === undefined
+      )
+    }
 
     const rootPending = hasIdFilter.value
       ? sourceRef.value === 'test'
@@ -152,4 +272,34 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     count,
     pending,
   }
+}
+
+function mergeRootAndOverlay(
+  rootDocs: KitchenCollectionDoc[],
+  overlayDocs: KitchenCollectionDoc[]
+) {
+  const rootById = new Map<string, KitchenCollectionDoc>()
+  const overlayById = new Map<string, KitchenCollectionDoc>()
+  const seen = new Set<string>()
+  const merged: KitchenCollectionDoc[] = []
+
+  for (const root of rootDocs) {
+    const id = normalize(root?.id)
+    if (id) rootById.set(id, { ...root, id })
+  }
+
+  for (const overlay of overlayDocs) {
+    const id = normalize(overlay?.id)
+    if (id) overlayById.set(id, { ...overlay, id })
+  }
+
+  for (const id of [...rootById.keys(), ...overlayById.keys()]) {
+    if (seen.has(id)) continue
+    seen.add(id)
+
+    const item = composeKitchenScopedSurface(rootById.get(id), overlayById.get(id))
+    if (item) merged.push({ ...item, id } as KitchenCollectionDoc)
+  }
+
+  return merged
 }

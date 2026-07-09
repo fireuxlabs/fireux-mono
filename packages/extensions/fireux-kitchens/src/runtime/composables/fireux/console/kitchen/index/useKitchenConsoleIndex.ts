@@ -1,36 +1,31 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useKitchenCollection } from '../../../firestore/kitchen/fetch/useKitchenCollection'
+import {
+  useKitchenCollection,
+  type KitchenCollectionFilter,
+} from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenFetchSource } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 
 export function useKitchenConsoleIndex() {
-  const { coreUser, pending: userPending } = useUser()
   const {
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = useKitchenConsole()
-  const myKitchenIds = computed(() =>
-    Array.isArray(coreUser.value?.myKitchens) ? coreUser.value.myKitchens : []
+  const consoleTargets = useConsoleTargets({ family: 'kitchen' })
+  const targetFilter = computed<KitchenCollectionFilter>(() =>
+    consoleTargets.filter({})
   )
-  const consoleTargets = useConsoleTargets({
-    family: 'kitchen',
-    globalTargetIds: myKitchenIds,
-  })
-  const targetIds = consoleTargets.targetIds
-  const targetCollection = useKitchenCollection({ ids: targetIds })
+  const targetCollection = useKitchenCollection({ filter: targetFilter })
   const demoCollection = useKitchenCollection({
     source: 'demo',
   })
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.kitchens.value)
   const targetPending = computed(() =>
-    consoleTargets.isTenant
-      ? targetCollection.pending.value
-      : Boolean(userPending.value || targetCollection.pending.value)
+    Boolean(consoleTargets.pending.value || targetCollection.pending.value)
   )
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
@@ -39,7 +34,7 @@ export function useKitchenConsoleIndex() {
   }))
   const isTenantSingleTarget = computed(
     () =>
-      consoleTargets.isSingleTenantTarget &&
+      consoleTargets.isSingleTenantTarget.value &&
       Boolean(consoleSelection.kitchen.value)
   )
   const autoSelectTargetId = consoleTargets.singleTargetId

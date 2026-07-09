@@ -215,7 +215,6 @@ const adminDebug = computed(() => ({
     id: appUser.value?.id ?? null,
     role: appUser.value?.role ?? null,
     console_enabled: appUser.value?.console_enabled ?? null,
-    console_scopes: appUser.value?.console_scopes ?? [],
   },
   app: {
     path: appId.value ? `apps/${appId.value}` : null,

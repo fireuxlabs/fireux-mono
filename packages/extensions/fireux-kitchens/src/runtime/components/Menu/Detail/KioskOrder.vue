@@ -1,7 +1,16 @@
 <template>
-  <section v-if="view" class="kiosk-order" aria-label="Kiosk layout">
-    <aside class="kiosk-order__menu" aria-label="Menu">
-      <p class="kiosk-order__mode">{{ modeLabel }}</p>
+  <section
+    v-if="view"
+    class="kiosk-order"
+    aria-label="Kiosk layout"
+  >
+    <aside
+      class="kiosk-order__menu"
+      aria-label="Menu"
+    >
+      <p class="kiosk-order__mode">
+        {{ modeLabel }}
+      </p>
 
       <div class="kiosk-order__groups" aria-label="Menu groups">
         <button
@@ -10,11 +19,9 @@
           type="button"
           class="kiosk-order__group"
           :class="{ 'kiosk-order__group--active': group.id === activeGroupId }"
-          :disabled="!group.count"
           @click="chooseGroup(group.id)"
         >
           <span>{{ group.label }}</span>
-          <small>{{ group.count }}</small>
         </button>
       </div>
 
@@ -35,8 +42,9 @@
     <main class="kiosk-order__content" aria-label="Dishes">
       <section v-if="activeSection" class="kiosk-order__dish-section">
         <header class="kiosk-order__content-header">
-          <h2>{{ activeSection.label }}</h2>
-          <span>{{ activeSection.items.length }}</span>
+          <h2>
+            {{ activeSection.label }}
+          </h2>
         </header>
 
         <div class="kiosk-order__dishes">
@@ -45,9 +53,25 @@
             :key="item.id"
             class="kiosk-order__dish"
           >
+            <img
+              v-if="item.imageUrl"
+              :src="item.imageUrl"
+              :alt="item.name"
+              class="kiosk-order__dish-image"
+            >
+            <div
+              v-else
+              class="kiosk-order__dish-image kiosk-order__dish-image--empty"
+              aria-hidden="true"
+            />
+
             <div class="kiosk-order__dish-copy">
-              <h3>{{ item.name }}</h3>
-              <p v-if="item.description">{{ item.description }}</p>
+              <h3>
+                {{ item.name }}
+              </h3>
+              <p v-if="item.description">
+                {{ item.description }}
+              </p>
             </div>
 
             <p v-if="itemPrice(item)" class="kiosk-order__dish-price">
@@ -59,7 +83,9 @@
     </main>
   </section>
 
-  <p v-else class="kiosk-order__empty">Menu unavailable.</p>
+  <p v-else class="kiosk-order__empty">
+    Menu unavailable.
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -95,17 +121,19 @@ const itemGroup = (item: MenuManifestItem): KioskGroupId => {
   return item.itemKind === 'drink' ? 'drink' : 'food'
 }
 const groups = computed<KioskGroup[]>(() =>
-  groupOrder.map((group) => {
-    const sections = (props.view?.menu.content.sections ?? [])
-      .map((section) => ({
-        ...section,
-        items: section.items.filter((item) => itemGroup(item) === group.id),
-      }))
-      .filter((section) => section.items.length)
-    const count = sections.reduce((total, section) => total + section.items.length, 0)
+  groupOrder
+    .map((group) => {
+      const sections = (props.view?.menu.content.sections ?? [])
+        .map((section) => ({
+          ...section,
+          items: section.items.filter((item) => itemGroup(item) === group.id),
+        }))
+        .filter((section) => section.items.length)
+      const count = sections.reduce((total, section) => total + section.items.length, 0)
 
-    return { ...group, count, sections }
-  })
+      return { ...group, count, sections }
+    })
+    .filter((group) => group.count)
 )
 const activeGroup = computed(() =>
   groups.value.find((group) => group.id === activeGroupId.value) ??
@@ -155,63 +183,57 @@ watch(activeSections, (sections) => {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr);
-  gap: clamp(1rem, 2.2vw, 2rem);
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: 1.5rem;
   width: 100%;
   height: 100svh;
   min-height: 0;
+  padding: 30svh 2rem 2rem 0;
   overflow: hidden;
-  padding: clamp(6rem, 9svh, 8rem) clamp(1.25rem, 3vw, 3rem) clamp(1.25rem, 3svh, 3rem);
-  background: rgb(0 0 0 / 18%);
+  background: rgb(0 0 0 / 20%);
 }
 
 .kiosk-order__menu,
 .kiosk-order__content {
   min-height: 0;
-  border-radius: 0.9rem;
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 24%);
+  overflow: hidden;
 }
 
 .kiosk-order__menu {
   display: flex;
-  height: 100%;
   flex-direction: column;
   gap: 1rem;
-  overflow: hidden;
-  padding: 1.1rem;
-  background: rgb(10 10 10 / 82%);
+  padding: 1rem;
+  background: rgb(0 0 0 / 68%);
+  color: white;
 }
 
-.kiosk-order__content {
-  height: 100%;
-  padding: clamp(1rem, 1.8vw, 1.6rem);
-  background: rgb(244 244 245 / 94%);
-  color: #151515;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-color: color-mix(in srgb, var(--kiosk-primary) 78%, black) transparent;
+.kiosk-order__mode,
+.kiosk-order__dish-copy h3,
+.kiosk-order__dish-copy p,
+.kiosk-order__dish-price,
+.kiosk-order__content-header h2 {
+  margin: 0;
 }
 
 .kiosk-order__mode {
-  margin: 0;
-  color: color-mix(in srgb, var(--kiosk-primary) 78%, white);
-  font-size: 0.82rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
+  color: rgb(255 255 255 / 70%);
+  font-size: 0.85rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .kiosk-order__groups,
 .kiosk-order__sections,
-.kiosk-order__dishes {
+.kiosk-order__dishes,
+.kiosk-order__dish-section {
   display: grid;
   gap: 0.75rem;
 }
 
-.kiosk-order__sections {
-  min-height: 0;
+.kiosk-order__sections,
+.kiosk-order__content {
   overflow-y: auto;
-  padding-right: 0.15rem;
 }
 
 .kiosk-order__group,
@@ -222,135 +244,100 @@ watch(activeSections, (sections) => {
   color: white;
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: 800;
   text-align: left;
 }
 
 .kiosk-order__group {
-  display: flex;
-  min-height: 5.4rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 1.15rem;
+  min-height: 4rem;
+  padding: 0.9rem 1rem;
   font-size: 1.25rem;
 }
 
-.kiosk-order__group:disabled {
-  cursor: default;
-  opacity: 0.42;
-}
-
-.kiosk-order__group small {
-  color: color-mix(in srgb, white 68%, transparent);
-  font-size: 0.85rem;
-  font-weight: 900;
-}
-
 .kiosk-order__section {
-  min-height: 3.25rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 0.9rem;
-  color: color-mix(in srgb, white 82%, transparent);
+  min-height: 3.5rem;
+  padding: 0.75rem;
+  color: rgb(255 255 255 / 76%);
 }
 
 .kiosk-order__group--active,
 .kiosk-order__section--active {
-  border-color: color-mix(in srgb, var(--kiosk-primary) 76%, white);
-  background: color-mix(in srgb, var(--kiosk-primary) 28%, rgb(0 0 0 / 30%));
+  border-color: var(--kiosk-primary);
+  background: rgb(255 255 255 / 16%);
   color: white;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
 }
 
-.kiosk-order__dish-section {
-  display: grid;
-  gap: 1.2rem;
+.kiosk-order__content {
+  padding: 1.5rem;
+  background: rgb(255 255 255 / 90%);
+  color: #18181b;
 }
 
 .kiosk-order__content-header {
   position: sticky;
   top: 0;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   padding-bottom: 1rem;
-  background: linear-gradient(rgb(244 244 245), rgb(244 244 245 / 0));
+  background: rgb(255 255 255 / 90%);
 }
 
 .kiosk-order__content-header h2 {
-  margin: 0;
-  color: #151515;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 950;
-  line-height: 1;
-}
-
-.kiosk-order__content-header span {
-  display: grid;
-  min-width: 3rem;
-  height: 3rem;
-  border: 1px solid rgb(0 0 0 / 10%);
-  border-radius: 999px;
-  background: white;
-  color: #151515;
-  font-size: 1.2rem;
+  color: #18181b;
+  font-size: 2.5rem;
   font-weight: 900;
-  place-items: center;
-}
-
-.kiosk-order__dishes {
-  gap: 0.65rem;
 }
 
 .kiosk-order__dish {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 8rem minmax(0, 1fr) auto;
   gap: 1rem;
   align-items: center;
-  min-height: 5.75rem;
-  padding: 1rem 1.1rem;
-  border: 1px solid rgb(0 0 0 / 8%);
-  border-radius: 0.8rem;
+  min-height: 7rem;
+  padding: 1rem;
+  border: 1px solid rgb(0 0 0 / 10%);
   background: white;
-  color: #151515;
+}
+
+.kiosk-order__dish-image {
+  width: 8rem;
+  height: 6rem;
+  background: #f4f4f5;
+  object-fit: cover;
 }
 
 .kiosk-order__dish-copy {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.25rem;
   min-width: 0;
 }
 
-.kiosk-order__dish-copy h3,
-.kiosk-order__dish-copy p {
-  margin: 0;
-}
-
 .kiosk-order__dish-copy h3 {
-  font-size: clamp(1.05rem, 1.5vw, 1.45rem);
-  font-weight: 950;
-  line-height: 1.1;
+  color: #18181b;
+  font-size: 1.45rem;
+  font-weight: 900;
 }
 
 .kiosk-order__dish-copy p {
-  color: #52525b;
   display: -webkit-box;
-  line-height: 1.35;
   overflow: hidden;
+  color: #52525b;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
 
 .kiosk-order__dish-price {
-  margin: 0;
-  color: color-mix(in srgb, var(--kiosk-primary) 72%, #151515);
-  font-size: 1.12rem;
-  font-weight: 950;
+  color: #18181b;
+  font-size: 1.2rem;
+  font-weight: 900;
   white-space: nowrap;
 }
 
-.kiosk-order__empty { position: relative; z-index: 1; margin: 0; color: white; font-size: 2rem; font-weight: 900; }
+.kiosk-order__empty {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: white;
+  font-size: 2rem;
+  font-weight: 900;
+}
 </style>

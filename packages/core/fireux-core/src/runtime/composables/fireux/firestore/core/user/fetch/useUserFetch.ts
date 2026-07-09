@@ -7,10 +7,12 @@ import {
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import type {
+    AppUserConsoleTargets,
     AppUser,
     User,
 } from '../../../../../../models/core/user.model'
 import {
+  AppUserConsoleTargetsModel,
   AppUserStorage,
   UserStorage,
 } from '../../../../../../models/core/user.model'
@@ -20,6 +22,23 @@ import { useFireUXConfig } from '../../../../app/FireUXConfig'
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return value.filter((v): v is string => typeof v === 'string' && v.length > 0)
+}
+
+function normalizeConsoleTargets(value: unknown): AppUserConsoleTargets {
+  const raw =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? value as Record<string, unknown>
+      : {}
+  const targets: Record<string, string[]> = {
+    ...AppUserConsoleTargetsModel,
+  }
+
+  for (const [key, targetIds] of Object.entries(raw)) {
+    if (!key.endsWith('_ids')) continue
+    targets[key] = asStringArray(targetIds)
+  }
+
+  return targets as AppUserConsoleTargets
 }
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
@@ -34,7 +53,6 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     bio: (raw as any).bio ?? '',
     profiles: asStringArray(anyRaw.profiles),
     projects: asStringArray(anyRaw.projects),
-    myKitchens: asStringArray(anyRaw.myKitchens),
     userOf: asStringArray(anyRaw.userOf),
     adminOf: asStringArray(anyRaw.adminOf),
   }
@@ -54,7 +72,7 @@ function normalizeAppUser(raw: AppUser, fallbackId: string): AppUser {
       typeof anyRaw.console_enabled === 'boolean'
         ? anyRaw.console_enabled
         : false,
-    console_scopes: asStringArray(anyRaw.console_scopes),
+    console_targets: normalizeConsoleTargets(anyRaw.console_targets),
     notifications: Array.isArray(anyRaw.notifications)
       ? anyRaw.notifications
       : [],

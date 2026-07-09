@@ -360,11 +360,8 @@ const demoUserSeedList = [
     created: demoUserStamp(),
     updated: demoUserStamp(),
   },
-] satisfies Array<Omit<User, 'myKitchens'>>
+]
 
-export const demoUserList: User[] = demoUserSeedList.map((user) => ({
-  ...user,
-  myKitchens: [],
-}))
+export const demoUserList: User[] = demoUserSeedList
 
 export const demoUser = demoUserList[0]
