@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-07-08
+# last_used: 2026-07-09
 # usage_note: baseline after scripts cleanup; update when run.
 set -euo pipefail
 
@@ -91,14 +91,17 @@ dev_server_running() {
   [[ "$status" == "2" ]]
 }
 
-skip_push_if_dev_server_running() {
+push_current_branch() {
   if dev_server_running; then
-    echo "[gitsave] Dev server is running; saved locally and skipped push so artifact cleanup does not interrupt it." >&2
-    echo "[gitsave] Stop the dev server and rerun pnpm gitsave to push. Live dev artifacts were left untouched." >&2
-    cleanup_git_refs "$current_branch"
-    print_repo_state "end"
-    exit 0
+    echo "[gitsave] Dev server is running; pushing committed tree without local artifact cleanup/guard." >&2
+    echo "[gitsave] Live dev artifacts stay untouched and local pre-push guard is skipped for this save." >&2
+    git push --no-verify origin "$current_branch"
+    return 0
   fi
+
+  run_required_pre_push_clean
+  echo "[gitsave] Pushing ${current_branch} to origin..." >&2
+  git push origin "$current_branch"
 }
 
 cleanup_git_refs() {
@@ -206,7 +209,7 @@ usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
   echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
-  echo "Dev server default: save locally and skip push rather than deleting live Nuxt artifacts. Stop dev and rerun to push." >&2
+  echo "Dev server default: push committed tree without local artifact cleanup/guard so live Nuxt artifacts stay untouched." >&2
   echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
@@ -424,10 +427,7 @@ if git diff --cached --quiet; then
     ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
     if [[ "${ahead_count}" != "0" ]]; then
       echo "No changes to commit; branch is ahead by ${ahead_count}." >&2
-      skip_push_if_dev_server_running
-      run_required_pre_push_clean
-      echo "[gitsave] Pushing ${current_branch} to origin..." >&2
-      git push origin "$current_branch"
+      push_current_branch
       cleanup_git_refs "$current_branch"
       echo "Saved: pushed $current_branch to origin." >&2
       print_repo_state "end"
@@ -497,9 +497,7 @@ if ! git commit -m "$commit_message"; then
 fi
 
 # Push to the matching branch on origin.
-skip_push_if_dev_server_running
-run_required_pre_push_clean
-git push origin "$current_branch"
+push_current_branch
 cleanup_git_refs "$current_branch"
 
 echo "Saved: committed to $current_branch and pushed to origin."
