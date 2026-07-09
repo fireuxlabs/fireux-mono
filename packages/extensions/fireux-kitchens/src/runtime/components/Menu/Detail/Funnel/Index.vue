@@ -38,7 +38,7 @@
       />
 
       <MenuDetailFunnelKiosk
-        v-else-if="isKioskOrder"
+        v-else-if="isKioskFunnel"
         :funnel="funnel"
         :step="step"
         @update:ready="setScreenReady"
@@ -97,7 +97,7 @@ const isTakeAwayOrder = computed(() =>
     props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
   )
 )
-const isKioskOrder = computed(() =>
+const isKioskFunnel = computed(() =>
   kioskOrderTypes.includes(
     props.funnel.order.orderType as typeof kioskOrderTypes[number]
   )
@@ -105,7 +105,7 @@ const isKioskOrder = computed(() =>
 const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
 const funnelStepCount = computed(() => {
   if (isTakeAwayOrder.value || isPreOrder.value) return 6
-  if (isKioskOrder.value) return 4
+  if (isKioskFunnel.value) return 4
 
   return 4
 })
@@ -127,7 +127,7 @@ const shouldSubmitOrderRequest = computed(() => {
   if (props.funnel.sending.sent_order) return false
 
   if (isPreOrder.value) return step.value === 4
-  if (isKioskOrder.value) return step.value === 3
+  if (isKioskFunnel.value) return step.value === 3
 
   return isTakeAwayOrder.value
     ? step.value === 3
@@ -143,7 +143,7 @@ const continueLabel = computed(() => {
 
 watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
   if (orderId) return
-  if (!isTakeAwayOrder.value && !isPreOrder.value && !isKioskOrder.value) return
+  if (!isTakeAwayOrder.value && !isPreOrder.value && !isKioskFunnel.value) return
   if (step.value <= 3) return
 
   step.value = 3

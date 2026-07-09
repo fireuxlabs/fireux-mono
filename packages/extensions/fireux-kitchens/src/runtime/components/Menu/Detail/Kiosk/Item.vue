@@ -27,8 +27,8 @@
 import type {
   MenuFoodItem,
   MenuFoodOrderItem,
-} from '../../../models/kitchen/menu/menu-food.model'
-import { useItem } from '../../../composables/fireux/menu/detail/useItem'
+} from '../../../../models/kitchen/menu/menu-food.model'
+import { useItem } from '../../../../composables/fireux/menu/detail/useItem'
 
 const props = defineProps<{
   item: MenuFoodItem

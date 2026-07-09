@@ -1,37 +1,37 @@
 <template>
   <section
     v-if="view"
-    class="kiosk-order"
-    aria-label="Kiosk layout"
+    class="kiosk-browse"
+    aria-label="Kiosk browse"
   >
     <aside
-      class="kiosk-order__menu"
+      class="kiosk-browse__menu"
       aria-label="Menu"
     >
-      <p class="kiosk-order__mode">
+      <p class="kiosk-browse__mode">
         {{ modeLabel }}
       </p>
 
-      <div class="kiosk-order__groups" aria-label="Menu groups">
+      <div class="kiosk-browse__groups" aria-label="Menu groups">
         <button
           v-for="group in groups"
           :key="group.id"
           type="button"
-          class="kiosk-order__group"
-          :class="{ 'kiosk-order__group--active': group.id === activeGroupId }"
+          class="kiosk-browse__group"
+          :class="{ 'kiosk-browse__group--active': group.id === activeGroupId }"
           @click="chooseGroup(group.id)"
         >
           <span>{{ group.label }}</span>
         </button>
       </div>
 
-      <div class="kiosk-order__sections" aria-label="Sections">
+      <div class="kiosk-browse__sections" aria-label="Sections">
         <button
           v-for="section in activeSections"
           :key="section.id"
           type="button"
-          class="kiosk-order__section"
-          :class="{ 'kiosk-order__section--active': section.id === activeSectionId }"
+          class="kiosk-browse__section"
+          :class="{ 'kiosk-browse__section--active': section.id === activeSectionId }"
           @click="activeSectionId = section.id"
         >
           {{ section.label }}
@@ -39,15 +39,15 @@
       </div>
     </aside>
 
-    <main class="kiosk-order__content" aria-label="Dishes">
-      <section v-if="activeSection" class="kiosk-order__dish-section">
-        <header class="kiosk-order__content-header">
+    <main class="kiosk-browse__content" aria-label="Dishes">
+      <section v-if="activeSection" class="kiosk-browse__dish-section">
+        <header class="kiosk-browse__content-header">
           <h2>
             {{ activeSection.label }}
           </h2>
         </header>
 
-        <div class="kiosk-order__dishes">
+        <div class="kiosk-browse__dishes">
           <MenuDetailKioskItem
             v-for="item in activeSection.items"
             :key="item.id"
@@ -59,7 +59,7 @@
     </main>
   </section>
 
-  <p v-else class="kiosk-order__empty">
+  <p v-else class="kiosk-browse__empty">
     Menu unavailable.
   </p>
 </template>
@@ -69,11 +69,11 @@ import { computed, ref, watch } from 'vue'
 import type {
   MenuDetailOrderItem,
   MenuDetailView,
-} from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
+} from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type {
   MenuManifestItem,
   MenuManifestSection,
-} from '../../../models/kitchen/menu/menu-detail.model'
+} from '../../../../models/kitchen/menu/menu-detail.model'
 
 type KioskGroupId = 'food' | 'drink' | 'deal'
 type KioskGroup = {
@@ -157,7 +157,7 @@ watch(activeSections, (sections) => {
 </script>
 
 <style scoped>
-.kiosk-order {
+.kiosk-browse {
   position: relative;
   z-index: 1;
   display: grid;
@@ -166,18 +166,18 @@ watch(activeSections, (sections) => {
   width: 100%;
   height: 100svh;
   min-height: 0;
-  padding: 30svh 2rem 2rem 0;
+  padding: 24svh 2rem 2rem 0;
   overflow: hidden;
   background: rgb(0 0 0 / 20%);
 }
 
-.kiosk-order__menu,
-.kiosk-order__content {
+.kiosk-browse__menu,
+.kiosk-browse__content {
   min-height: 0;
   overflow: hidden;
 }
 
-.kiosk-order__menu {
+.kiosk-browse__menu {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -186,38 +186,38 @@ watch(activeSections, (sections) => {
   color: white;
 }
 
-.kiosk-order__mode,
-.kiosk-order__content-header h2 {
+.kiosk-browse__mode,
+.kiosk-browse__content-header h2 {
   margin: 0;
 }
 
-.kiosk-order__mode {
+.kiosk-browse__mode {
   color: rgb(255 255 255 / 70%);
   font-size: 0.85rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.kiosk-order__groups,
-.kiosk-order__sections,
-.kiosk-order__dishes,
-.kiosk-order__dish-section {
+.kiosk-browse__groups,
+.kiosk-browse__sections,
+.kiosk-browse__dishes,
+.kiosk-browse__dish-section {
   display: grid;
   gap: 0.75rem;
 }
 
-.kiosk-order__dishes {
+.kiosk-browse__dishes {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   align-items: start;
 }
 
-.kiosk-order__sections,
-.kiosk-order__content {
+.kiosk-browse__sections,
+.kiosk-browse__content {
   overflow-y: auto;
 }
 
-.kiosk-order__group,
-.kiosk-order__section {
+.kiosk-browse__group,
+.kiosk-browse__section {
   width: 100%;
   border: 1px solid rgb(255 255 255 / 18%);
   background: rgb(255 255 255 / 8%);
@@ -228,32 +228,32 @@ watch(activeSections, (sections) => {
   text-align: left;
 }
 
-.kiosk-order__group {
+.kiosk-browse__group {
   min-height: 4rem;
   padding: 0.9rem 1rem;
   font-size: 1.25rem;
 }
 
-.kiosk-order__section {
+.kiosk-browse__section {
   min-height: 3.5rem;
   padding: 0.75rem;
   color: rgb(255 255 255 / 76%);
 }
 
-.kiosk-order__group--active,
-.kiosk-order__section--active {
+.kiosk-browse__group--active,
+.kiosk-browse__section--active {
   border-color: var(--kiosk-primary);
   background: rgb(255 255 255 / 16%);
   color: white;
 }
 
-.kiosk-order__content {
+.kiosk-browse__content {
   padding: 1.5rem;
   background: transparent;
   color: white;
 }
 
-.kiosk-order__content-header {
+.kiosk-browse__content-header {
   position: sticky;
   top: 0;
   z-index: 1;
@@ -264,14 +264,14 @@ watch(activeSections, (sections) => {
   );
 }
 
-.kiosk-order__content-header h2 {
+.kiosk-browse__content-header h2 {
   color: white;
   font-size: 2.5rem;
   font-weight: 900;
   text-shadow: 0 0.35rem 1rem rgb(0 0 0 / 38%);
 }
 
-.kiosk-order__empty {
+.kiosk-browse__empty {
   position: relative;
   z-index: 1;
   margin: 0;

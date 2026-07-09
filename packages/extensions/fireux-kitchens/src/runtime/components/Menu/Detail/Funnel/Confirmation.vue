@@ -92,12 +92,12 @@ const orderStatus = computed(() =>
 const fireState = computed(() =>
   text(order.value.fire_state || props.funnel.processing.fire_state)
 )
-const isKioskOrder = computed(() =>
+const isKioskFunnel = computed(() =>
   ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
 )
 const customerName = computed(() => text(customer.value.name))
 const readyForCounter = computed(() =>
-  isKioskOrder.value &&
+  isKioskFunnel.value &&
     (
       ['ready', 'on_pass'].includes(orderStatus.value) ||
       fireState.value === 'ready_to_fire'
@@ -113,7 +113,7 @@ const detailStatus = computed(() => {
       ? `${customerName.value}, your order is ready. Please collect from the counter.`
       : 'Your order is ready. Please collect from the counter.'
   }
-  if (isKioskOrder.value && customerName.value) {
+  if (isKioskFunnel.value && customerName.value) {
     return `${customerName.value}, we will call you when it is ready.`
   }
   if (paymentAccepted.value) return 'Payment accepted. The kitchen has the order details.'
@@ -129,7 +129,7 @@ const confirmationLabel = computed(() => {
       ? `${customerName.value}, your order is ready.`
       : 'Your order is ready.'
   }
-  if (isKioskOrder.value) {
+  if (isKioskFunnel.value) {
     return orderNumber
       ? `Order ${orderNumber} is with the kitchen.`
       : 'Your order is with the kitchen.'

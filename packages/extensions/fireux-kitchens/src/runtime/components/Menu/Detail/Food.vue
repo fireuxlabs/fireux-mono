@@ -11,7 +11,7 @@
   />
 
   <section
-    v-else-if="showKioskOrder"
+    v-else-if="showKioskBrowse"
     class="menu-kiosk-screen"
     :style="kioskScreenStyle"
   >
@@ -31,7 +31,7 @@
       <UIcon name="i-lucide-x" aria-hidden="true" />
     </button>
 
-    <MenuDetailKioskOrder
+    <MenuDetailKioskBrowse
       :mode="kioskMode"
       :view="interaction.detail.view"
       @add="interaction.detail.add"
@@ -197,7 +197,7 @@ const showKioskStart = computed(() =>
     !kioskStarted.value &&
     !interaction.funnel.show
 )
-const showKioskOrder = computed(() =>
+const showKioskBrowse = computed(() =>
   isKioskContext.value && kioskStarted.value
 )
 const kioskStartBackgroundImageUrl = computed(() =>
