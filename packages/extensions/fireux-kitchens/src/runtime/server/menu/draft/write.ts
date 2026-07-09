@@ -10,6 +10,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import type { normalizeKitchenMenuDraftSections } from './sections'
+import { ensureKitchenMenuRootEntry } from './root-entry'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 
@@ -74,7 +75,7 @@ export async function writeKitchenMenuDraft(input: {
   const dishIds = new Set<string>()
   let itemCount = 0
 
-  writeBatch.set(menuRef, {
+  const menuData = {
     id: input.menuId,
     kitchen_id: input.kitchenId,
     name: text(existing.name) || titleFromId(input.menuId) || input.menuId,
@@ -83,7 +84,9 @@ export async function writeKitchenMenuDraft(input: {
     sort_order: Number(existing.sort_order || 0),
     created: record(existing.created).at ? existing.created : stamp,
     updated: stamp,
-  })
+  }
+
+  writeBatch.set(menuRef, menuData)
 
   input.sections.forEach((section, sectionIndex) => {
     const sectionId = uniqueSlug(
@@ -163,9 +166,20 @@ export async function writeKitchenMenuDraft(input: {
   })
 
   await writeBatch.commit()
+  // Public menu index seam: scoped menu content must also have a root /menus row.
+  const root = await ensureKitchenMenuRootEntry(db, {
+    appId: input.appId,
+    kitchenId: input.kitchenId,
+    kitchenPath: input.kitchenPath,
+    menuId: input.menuId,
+    menuData,
+    stamp,
+  })
 
   return {
     menu_written: true,
+    root_menu_id: root.id,
+    root_menu_path: root.path,
     action: menuSnap.exists ? 'replaced-draft' : 'created-draft',
     status,
     sections_count: input.sections.length,

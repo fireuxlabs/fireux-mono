@@ -98,6 +98,7 @@ async function save() {
   error.value = ''
 
   try {
+    // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
     await $fetch('/api/console/kitchen/menus/source-url', {
       method: 'POST',
       headers: {

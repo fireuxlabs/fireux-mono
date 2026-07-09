@@ -68,6 +68,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const kitchenPath = kitchenMenuUploadKitchenPath(appId, kitchenId)
+  // Confirm is the commit point: before this, the upload is only a review source.
   const write = await writeKitchenMenuDraft({
     appId,
     kitchenId,

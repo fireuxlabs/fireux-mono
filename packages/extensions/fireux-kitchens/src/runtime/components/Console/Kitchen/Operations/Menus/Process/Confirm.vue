@@ -123,6 +123,7 @@ async function confirmDraft() {
   pending.value = true
 
   try {
+    // Creation stage 3: apply the reviewed draft into dishes, sections, items, and the public root menu row.
     const response = await fetch('/api/console/kitchen/menus/confirm', {
       method: 'POST',
       headers: {

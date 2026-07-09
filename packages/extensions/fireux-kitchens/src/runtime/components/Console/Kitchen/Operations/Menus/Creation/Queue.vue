@@ -117,6 +117,7 @@ const processLabel = (source: {
   status?: MenuSourceUploadStatus
   source_url?: string
 }) => {
+  // Creation queue language: uploaded means "needs AI"; draft means "needs operator confirm".
   if (source.status === 'draft') return 'Confirm draft'
   return sourceKind(source) === 'url' ? 'Review and process URL' : 'Review and process'
 }

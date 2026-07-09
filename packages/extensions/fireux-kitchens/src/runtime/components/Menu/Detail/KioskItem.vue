@@ -57,7 +57,7 @@ function addItem() {
   gap: 0.75rem;
   aspect-ratio: 1;
   min-width: 0;
-  color: #18181b;
+  color: white;
 }
 
 .kiosk-item h3,
@@ -68,10 +68,11 @@ function addItem() {
 .kiosk-item h3 {
   display: -webkit-box;
   overflow: hidden;
-  color: #18181b;
+  color: white;
   font-size: 1.35rem;
   font-weight: 900;
   line-height: 1.05;
+  text-shadow: 0 0.25rem 0.85rem rgb(0 0 0 / 42%);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -80,27 +81,29 @@ function addItem() {
   display: grid;
   min-height: 0;
   overflow: hidden;
-  background: #f4f4f5;
+  background: rgb(0 0 0 / 30%);
   place-items: center;
 }
 
 .kiosk-item__media img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center center;
 }
 
 .kiosk-item__media :deep(.iconify) {
   width: 3rem;
   height: 3rem;
-  color: #a1a1aa;
+  color: rgb(255 255 255 / 64%);
 }
 
 .kiosk-item__description {
   display: -webkit-box;
   min-height: 2.6rem;
   overflow: hidden;
-  color: #52525b;
+  color: rgb(255 255 255 / 78%);
   font-size: 0.95rem;
   line-height: 1.3;
   -webkit-box-orient: vertical;

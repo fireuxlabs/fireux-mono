@@ -249,8 +249,8 @@ watch(activeSections, (sections) => {
 
 .kiosk-order__content {
   padding: 1.5rem;
-  background: rgb(255 255 255 / 90%);
-  color: #18181b;
+  background: transparent;
+  color: white;
 }
 
 .kiosk-order__content-header {
@@ -258,13 +258,17 @@ watch(activeSections, (sections) => {
   top: 0;
   z-index: 1;
   padding-bottom: 1rem;
-  background: rgb(255 255 255 / 90%);
+  background: linear-gradient(
+    rgb(0 0 0 / 28%),
+    rgb(0 0 0 / 0%)
+  );
 }
 
 .kiosk-order__content-header h2 {
-  color: #18181b;
+  color: white;
   font-size: 2.5rem;
   font-weight: 900;
+  text-shadow: 0 0.35rem 1rem rgb(0 0 0 / 38%);
 }
 
 .kiosk-order__empty {
