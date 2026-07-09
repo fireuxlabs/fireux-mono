@@ -121,7 +121,7 @@ defineEmits<{
 @media (max-width: 560px) {
   .kiosk-start {
     --kiosk-start-actions-gap: 0.85rem;
-    --kiosk-start-actions-offset: -4.5svh;
+    --kiosk-start-actions-offset: -11svh;
     --kiosk-start-button-height: 5rem;
     --kiosk-start-wordmark-width: min(100%, 24rem);
   }
