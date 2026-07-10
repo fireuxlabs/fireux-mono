@@ -83,6 +83,15 @@
       >
         {{ scheduleSelection.label }}
       </p>
+
+      <p
+        v-if="scheduleSelection.available && !noticeSelection.available"
+        class="menu-order-placeholder"
+      >
+        {{ noticeSelection.noticeHours > 0
+          ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
+          : 'Choose a future date and time.' }}
+      </p>
     </section>
 
     <div class="menu-order-dispatch__divider" />
@@ -108,6 +117,7 @@ import type { MenuOrderingFunnelController } from '../../../../../models/kitchen
 import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/order/funnel/PreOrder/usePreOrderFunnel'
 import {
   formatWeekdayTimeText,
+  readWeekdayTimeNoticeState,
   readWeekdayTimeSelectionState,
 } from '../../../../../utils/weekday-time'
 
@@ -166,8 +176,17 @@ const scheduleSelection = computed(() =>
     scheduledTime.value
   )
 )
+const noticeSelection = computed(() =>
+  readWeekdayTimeNoticeState(
+    serviceHours.value,
+    scheduleSelection.value.requested_for,
+    props.funnel.order.policy?.notice_hours
+  )
+)
 const requestedFor = computed(() =>
-  scheduleSelection.value.available ? scheduleSelection.value.requested_for : ''
+  scheduleSelection.value.available && noticeSelection.value.available
+    ? scheduleSelection.value.requested_for
+    : ''
 )
 const partySizeNumber = computed(() => {
   const value = Math.floor(Number(partySize.value || 0))
@@ -175,7 +194,9 @@ const partySizeNumber = computed(() => {
   return Number.isFinite(value) && value > 0 ? value : 0
 })
 const ready = computed(() =>
-  scheduleSelection.value.available && partySizeNumber.value > 0
+  scheduleSelection.value.available &&
+    noticeSelection.value.available &&
+    partySizeNumber.value > 0
 )
 
 async function openCalendar() {

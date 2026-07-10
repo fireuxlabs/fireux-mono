@@ -43,7 +43,10 @@ const depositAmount = (
 }
 
 export const statusAfterPayment = (orderType: KitchenOrderType) =>
-  orderType === 'delivery' || orderType === 'collection' || orderType === 'pre_order'
+  orderType === 'delivery' ||
+    orderType === 'collection' ||
+    orderType === 'pre_order' ||
+    orderType === 'room_service'
     ? 'pending_acceptance'
     : 'open'
 
@@ -60,14 +63,6 @@ export function resolveMenuOrderPayment(
     throw new Error('Kitchen currency code is required')
   }
 
-  if (!method) {
-    return {
-      required: false,
-      status: 'not_required',
-      currency_code: currencyCode,
-    }
-  }
-
   if (deposit) {
     const amount = money(depositAmount(deposit, input))
 
@@ -80,6 +75,14 @@ export function resolveMenuOrderPayment(
         currency_code: currencyCode,
         reason: deposit.label || 'Deposit',
       }
+    }
+  }
+
+  if (!method) {
+    return {
+      required: false,
+      status: 'not_required',
+      currency_code: currencyCode,
     }
   }
 

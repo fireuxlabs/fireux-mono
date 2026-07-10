@@ -16,7 +16,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'menu',
-  name: 'MenuPage',
 })
 </script>
 

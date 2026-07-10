@@ -213,9 +213,6 @@ function kitchenCustomer(
     ...(intake.preOrder?.party_size
       ? { party_size: intake.preOrder.party_size }
       : {}),
-    ...(intake.roomService?.guestName
-      ? { name: intake.roomService.guestName }
-      : {}),
     ...(intake.catering?.partySize
       ? { party_size: intake.catering.partySize }
       : {}),
@@ -232,7 +229,7 @@ function kitchenFulfilment(intake: MenuOrderingKitchenIntake) {
   if (intake.table) {
     return {
       type: 'table',
-      table_number: intake.table.tableNumber,
+      table_number: intake.table.number,
     }
   }
   if (intake.kiosk) {

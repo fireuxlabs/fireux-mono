@@ -1,20 +1,32 @@
 <template>
-  <MenuDetailFunnelBasket
+  <MenuDetailFunnelBasketStep
     v-if="step === 1"
-    :order="funnel.order"
+    :funnel="funnel"
   />
 
   <ClientOnly v-else-if="step === 2">
     <MenuDetailFunnelAllergen v-model="allergenAccepted" />
   </ClientOnly>
 
+  <MenuDetailFunnelDineIn
+    v-else-if="step === 3 && funnel.order.orderType === 'dine_in'"
+    :funnel="funnel"
+    @update:ready="$emit('update:ready', $event)"
+  />
+
+  <MenuDetailFunnelRoomService
+    v-else-if="step === 3 && funnel.order.orderType === 'room_service'"
+    :funnel="funnel"
+    @update:ready="$emit('update:ready', $event)"
+  />
+
   <MenuDetailFunnelPayment
-    v-else-if="step === 3"
+    v-else-if="step === 4"
     :funnel="funnel"
   />
 
   <MenuDetailFunnelConfirmation
-    v-else-if="step === 4"
+    v-else-if="step === 5"
     :funnel="funnel"
   />
 </template>
@@ -42,7 +54,11 @@ const allergenAccepted = computed({
 })
 
 watch([() => props.step, allergenAccepted], () => {
-  emit('update:ready', props.step !== 2 || allergenAccepted.value)
+  if (props.step === 2) {
+    emit('update:ready', allergenAccepted.value)
+    return
+  }
+  if (props.step !== 3) emit('update:ready', true)
 }, {
   immediate: true,
 })

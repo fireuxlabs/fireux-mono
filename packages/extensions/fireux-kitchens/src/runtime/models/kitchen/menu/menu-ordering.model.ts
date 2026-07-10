@@ -4,6 +4,7 @@ import type {
 } from './menu.model'
 import type {
   KitchenOrderCustomer,
+  KitchenOrderChannel,
   KitchenOrderFireState,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
@@ -29,9 +30,12 @@ export type CreatedMenuOrderReceipt = {
   id: string
   order_number: string
   order_type: KitchenOrderType
+  channel?: KitchenOrderChannel
   status?: string
   created_at: string
   collection?: MenuOrderingCollectionState
+  room_service?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
   requested_for?: string
   currency: string
   subtotal_chf: number
@@ -54,8 +58,11 @@ export type CreatedMenuOrder = {
   order_number: string
   status?: string
   order_type: KitchenOrderType
+  channel?: KitchenOrderChannel
   fire_state?: KitchenOrderFireState
   collection?: MenuOrderingCollectionState
+  room_service?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
   requested_for?: string
   payment?: KitchenOrderPayment
   receipt?: CreatedMenuOrderReceipt
@@ -96,7 +103,7 @@ export type MenuOrderingCollectionState = {
 }
 
 export type MenuOrderingTableState = {
-  tableNumber: string
+  number: string
 }
 
 export type MenuOrderingKioskState = {
@@ -113,7 +120,6 @@ export type MenuOrderingPreOrderState = {
 
 export type MenuOrderingRoomServiceState = {
   room: string
-  guestName?: string
 }
 
 export type MenuOrderingCateringState = {
@@ -165,12 +171,16 @@ export type MenuOrderingSubmitItem = {
 }
 
 export type MenuOrderingSubmitBody = {
+  idempotency_key?: string
+  channel?: KitchenOrderChannel
   order_type: KitchenOrderType
   items: MenuOrderingSubmitItem[]
   collection?: MenuOrderingCollectionState
   requested_for?: string
   payment_method?: KitchenOrderPaymentMethod
   customer?: KitchenOrderCustomer
+  table?: MenuOrderingTableState
+  room_service?: MenuOrderingRoomServiceState
 }
 
 export type MenuOrderingSubmission = {
@@ -205,7 +215,10 @@ export type MenuOrderingIncoming = {
   delivery?: MenuOrderingDeliveryState
   customer?: KitchenOrderCustomer
   operator?: MenuOrderingOperatorPresence
+  payment_method?: KitchenOrderPaymentMethod
   pre_order?: MenuOrderingPreOrderState
+  room_service?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
   choice?: Record<string, unknown>
 }
 
@@ -219,6 +232,7 @@ export type MenuOrderingProcessing = {
   total_chf: number
   estimated_ready_minutes?: number
   estimated_ready_at?: string
+  driver_watching_count?: number
   order?: CreatedMenuOrder | null
 }
 
@@ -246,6 +260,7 @@ export type MenuOrderingFunnelState = {
   accepted: boolean
   awaitingAcceptance: boolean
   currencyCode: string
+  channel: KitchenOrderChannel
   panelOpen: boolean
   items: MenuOrderingBasketItem[]
   message: string
@@ -261,10 +276,13 @@ export type MenuOrderingFunnelState = {
 }
 
 export type MenuOrderingSubmitPayload = {
+  channel?: KitchenOrderChannel
   collection?: MenuOrderingCollectionState
   customer?: KitchenOrderCustomer
   payment_method?: KitchenOrderPaymentMethod
   requested_for?: string
+  room_service?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
 }
 
 export type MenuOrderingSessionConflict = {

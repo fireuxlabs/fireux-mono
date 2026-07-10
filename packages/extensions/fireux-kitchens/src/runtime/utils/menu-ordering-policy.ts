@@ -24,7 +24,6 @@ const paymentMethods = [
   'card_at_pickup',
   'card_to_driver',
   'online_card',
-  'deposit',
 ] as const satisfies readonly MenuPaymentMethod[]
 
 const depositTypes = [

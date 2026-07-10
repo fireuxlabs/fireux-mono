@@ -11,33 +11,52 @@
         :alt="kitchenName || ''"
       >
 
-      <button
-        type="button"
-        class="kiosk-start__button"
-        @click="$emit('start', 'eat_in')"
-      >
-        Eat in
-      </button>
+      <template v-for="mode in modes" :key="mode.mode">
+        <NuxtLink
+          v-if="mode.to"
+          :to="mode.to"
+          class="kiosk-start__button"
+        >
+          {{ mode.label }}
+        </NuxtLink>
 
-      <button
-        type="button"
-        class="kiosk-start__button"
-        @click="$emit('start', 'takeaway')"
-      >
-        Takeaway
-      </button>
+        <button
+          v-else
+          type="button"
+          class="kiosk-start__button"
+          @click="$emit('start', mode.mode)"
+        >
+          {{ mode.label }}
+        </button>
+      </template>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  kitchenName?: string
-  wordmarkImageUrl?: string
-}>()
+type KioskEntryMode = 'eat_in' | 'takeaway'
+type KioskModeOption = {
+  mode: KioskEntryMode
+  label: string
+  to?: string
+}
+
+withDefaults(
+  defineProps<{
+    kitchenName?: string
+    modes?: KioskModeOption[]
+    wordmarkImageUrl?: string
+  }>(),
+  {
+    modes: () => [
+      { mode: 'eat_in', label: 'Eat in' },
+      { mode: 'takeaway', label: 'Takeaway' },
+    ],
+  }
+)
 
 defineEmits<{
-  (event: 'start', mode: 'eat_in' | 'takeaway'): void
+  (event: 'start', mode: KioskEntryMode): void
 }>()
 </script>
 

@@ -5,12 +5,12 @@
     </h2>
 
     <p class="menu-order-step-label">
-      Kitchen operator {{ operatorStatus }}
+      Kitchen confirmation required
     </p>
 
     <section class="menu-order-dispatch__section">
       <UIcon
-        :name="operatorOnline ? 'i-lucide-chef-hat' : 'i-lucide-mail'"
+        name="i-lucide-mail"
         class="menu-order-dispatch__icon"
         aria-hidden="true"
       />
@@ -21,10 +21,7 @@
       </div>
     </section>
 
-    <label
-      v-if="!operatorOnline"
-      class="menu-order-field"
-    >
+    <label class="menu-order-field">
       Email for confirmation
       <input
         v-model="email"
@@ -60,7 +57,6 @@ import { usePreOrderFunnel } from '../../../../../composables/fireux/kitchen/ord
 
 const props = defineProps<{
   funnel: MenuOrderingFunnelController
-  operatorOnline?: boolean
 }>()
 const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
@@ -68,25 +64,16 @@ const emit = defineEmits<{
 
 const {
   kitchenStatus,
-  operatorStatus,
   timingStatus,
-} = usePreOrderFunnel(() => props.funnel.order, {
-  operatorOnline: () => props.operatorOnline,
-})
+} = usePreOrderFunnel(() => props.funnel.order)
 const email = ref(String(props.funnel.incoming.customer?.email ?? '').trim())
 const emailReady = computed(() =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())
 )
-const ready = computed(() =>
-  props.operatorOnline === true || emailReady.value
-)
+const ready = computed(() => emailReady.value)
 
 watchEffect(() => {
   props.funnel.collect({
-    operator: {
-      role: 'kitchen_operator',
-      status: props.operatorOnline ? 'online' : 'offline',
-    },
     customer: {
       email: email.value.trim(),
     },

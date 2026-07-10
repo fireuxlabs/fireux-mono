@@ -4,15 +4,10 @@ import {
   getQuery,
   getRouterParam,
 } from 'h3'
-import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
-import {
-  buildMenuPayload,
-  readMenuSourceMenu,
-} from '../../menu/payload/build.ts'
+import { buildMenuPayload } from '../../menu/payload/build.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import {
   menuOwnerAppApiTo,
@@ -26,48 +21,26 @@ import {
   parseMenuRouteTarget,
 } from '../../../utils/menu-context.ts'
 import {
-  menuKitchenFulfilment,
-  menuKitchenIdentity,
-  menuKitchenOperationHours,
-  readAppMenuKitchenData,
-  readMenuKitchenBySlug,
-  readRootMenuKitchenScope,
-  resolveSourceAppId,
-} from '../../menu/ownership/kitchen-scope.ts'
+  currentPublicMenuAppId,
+  resolvePublicMenuTarget,
+  type RootPublicMenuTarget,
+  type ScopedPublicMenuTarget,
+} from '../../menu/ownership/public-target.ts'
 import { resolveMenuPageStyle } from '../../menu/payload/page-style.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-const currentAppId = () => {
-  const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
-  return text(fireux.id)
-}
-
 async function readKitchenMenu(
-  menuId: string,
-  kitchenSlug: string,
+  target: ScopedPublicMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>
 ) {
   const db = getRuntimeFirestore()
-  const kitchen = await readMenuKitchenBySlug(kitchenSlug)
-
-  if (!kitchen) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Kitchen not found.',
-    })
-  }
-
-  const kitchenAppId = resolveSourceAppId(kitchen.data, currentAppId())
-  const [appKitchenData, ownerAppView] = await Promise.all([
-    readAppMenuKitchenData(kitchenAppId, kitchen.id),
-    readMenuOwnerAppView({
-      ownerAppId: kitchenAppId,
-      currentAppId: currentAppId(),
-      kitchenSlug,
-      menuId,
-    }),
-  ])
+  const ownerAppView = await readMenuOwnerAppView({
+    ownerAppId: target.appId,
+    currentAppId: currentPublicMenuAppId(),
+    kitchenSlug: target.kitchenSlug,
+    menuId: target.sourceMenuId,
+  })
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
   )
@@ -75,87 +48,50 @@ async function readKitchenMenu(
     page_style: ownerPageStyle,
     ...ownerMenuPayload
   } = ownerPayload as Record<string, unknown>
-  const identity = menuKitchenIdentity(kitchen.data, appKitchenData)
-  const menuSnap = await db
-    .collection(`apps/${kitchenAppId}/kitchens/${kitchen.id}/menus`)
-    .doc(menuId)
-    .get()
-
-  if (!menuSnap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const data = menuSnap.data() || {}
-  if (readRecordString(data, 'status') !== 'published') {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
+  const data = target.menuData
   const [sections, choices] = await Promise.all([
     readKitchenMenuSections(db, {
-      appId: kitchenAppId,
-      kitchenId: kitchen.id,
-      menuId,
+      appId: target.appId,
+      kitchenId: target.kitchenId,
+      menuId: target.sourceMenuId,
     }),
     readKitchenMenuChoices(db, {
-      appId: kitchenAppId,
-      kitchenId: kitchen.id,
-      kitchenSlug,
-      currentMenuId: menuId,
+      appId: target.appId,
+      kitchenId: target.kitchenId,
+      kitchenSlug: target.kitchenSlug,
+      currentMenuId: target.sourceMenuId,
+      routeKind: target.kind,
     }),
   ])
 
-  return await buildMenuPayload(menuId, data, {
-    kitchenId: kitchen.id,
-    kitchenImageUrl: identity.imageUrl,
-    kitchenLogoImageUrl: identity.logoImageUrl,
-    kitchenSlug,
-    kitchenName: identity.name,
-    kitchenWordmarkImageUrl: identity.wordmarkImageUrl,
-    kitchenAppId,
-    kitchenMenuId: menuId,
-    currencyCode: identity.currencyCode,
+  return await buildMenuPayload(target.routeMenuId, data, {
+    ...target.scope,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
     page_style: resolveMenuPageStyle(
       { source: 'tenant-owner-api', style: ownerPageStyle },
-      { source: 'app-kitchen', style: identity.page_style }
+      { source: 'app-kitchen', style: target.scope.page_style }
     ),
     sections,
     choices,
-    fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
-    kitchen_operation_hours: menuKitchenOperationHours(kitchen.data, appKitchenData),
     ...ownerAppView,
     ...ownerMenuPayload,
   })
 }
 
 async function readRootMenuDetail(
-  menuId: string,
+  target: RootPublicMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>
 ) {
   const db = getRuntimeFirestore()
-  const snap = await db.collection(MenuStorage.rootCollection).doc(menuId).get()
-
-  if (!snap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const data = snap.data() || {}
-  const kitchenScope = await readRootMenuKitchenScope(data, currentAppId())
+  const data = target.rootMenuData
+  const kitchenScope = target.scope
   const source = menuSourceFromData(data, kitchenScope)
   const ownerAppView = await readMenuOwnerAppView({
     ownerAppId: source.app_id || '',
-    currentAppId: currentAppId(),
+    currentAppId: currentPublicMenuAppId(),
     kitchenSlug: source.kitchen_slug || '',
-    menuId: source.menu_id || menuId,
+    menuId: source.menu_id || target.routeMenuId,
   })
   const ownerPayload = await menuSourcePayloadFromApi(
     menuOwnerAppApiTo(ownerAppView)
@@ -164,7 +100,7 @@ async function readRootMenuDetail(
     page_style: ownerPageStyle,
     ...ownerMenuPayload
   } = ownerPayload as Record<string, unknown>
-  const sourceMenu = await readMenuSourceMenu(source)
+  const sourceMenu = target.sourceMenuData
   const [sourceSections, choices] =
     source.app_id && source.kitchen_id && source.menu_id && source.kitchen_slug
       ? await Promise.all([
@@ -182,7 +118,7 @@ async function readRootMenuDetail(
         ])
       : [[], []]
 
-  return await buildMenuPayload(menuId, data, {
+  return await buildMenuPayload(target.routeMenuId, data, {
     ...kitchenScope,
     sourceMenu,
     menuContext,
@@ -218,9 +154,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (kitchenSlug) {
-    return readKitchenMenu(menuId, kitchenSlug, menuContext)
+  const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
+  if (publicTarget.kind !== 'root-doorway') {
+    return readKitchenMenu(publicTarget, menuContext)
   }
 
-  return readRootMenuDetail(menuId, menuContext)
+  return readRootMenuDetail(publicTarget, menuContext)
 })

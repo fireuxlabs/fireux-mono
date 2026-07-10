@@ -43,18 +43,10 @@
       <OrderingFunnelStage number="4" order-type="pre_order" total="6">
         <MenuDetailFunnelPreOrderKitchen
           :funnel="funnel"
-          :operator-online="operatorOnline"
         />
 
         <section
-          v-if="!operatorOnline"
-          class="mt-3 rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-muted"
-        >
-          The request waits until a kitchen operator or team member is online.
-        </section>
-
-        <section
-          v-else-if="kitchenOutcome?.status === 'rejected'"
+          v-if="kitchenOutcome?.status === 'rejected'"
           class="mt-3 grid gap-3 rounded-lg border border-error/20 bg-error/5 p-3"
         >
           <div class="grid gap-1">
@@ -83,26 +75,17 @@
       />
     </article>
 
-    <OrderingKitchenReceiving
-      v-if="operatorOnline && !depositPaid"
-      :key="kitchenReceivingResetKey"
-      :receiving="kitchenReceiving"
-      title="kitchen receives pre-order request"
-      @update:outcome="updateKitchenOutcome"
-    />
-
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="5" order-type="pre_order" total="6">
         <MenuDetailFunnelPayment
-          v-if="kitchenAccepted"
           :funnel="funnel"
         />
 
         <section
-          v-else
+          v-if="!depositPaid"
           class="rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-muted"
         >
-          The deposit appears after a kitchen operator accepts the request.
+          The deposit is paid before the kitchen receives the pre-order for acceptance.
         </section>
       </OrderingFunnelStage>
 
@@ -111,6 +94,14 @@
         :data="screenShapes.withDeposit"
       />
     </article>
+
+    <OrderingKitchenReceiving
+      v-if="operatorOnline && depositPaid && !kitchenAccepted"
+      :key="kitchenReceivingResetKey"
+      :receiving="kitchenReceiving"
+      title="kitchen receives paid pre-order request"
+      @update:outcome="updateKitchenOutcome"
+    />
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="6" order-type="pre_order" total="6">

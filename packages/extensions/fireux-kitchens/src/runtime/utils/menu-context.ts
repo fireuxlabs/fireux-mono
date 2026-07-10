@@ -1,17 +1,18 @@
 import type {
-  FulfilmentMode,
+  KitchenOrderChannel,
   KitchenOrderType,
 } from '../models/kitchen/order.model'
 import {
   MenuRouteContexts,
   type MenuRouteContext,
-  type OrderingSurface,
+  type MenuSurface,
 } from '../models/kitchen/menu/menu-context.model'
 
 export type MenuContextProfile = {
   context: MenuRouteContext
-  surface?: OrderingSurface
-  fulfilmentModes?: FulfilmentMode[]
+  surface: MenuSurface
+  label: string
+  icon: string
   visibleOrderTypes: KitchenOrderType[]
   defaultOrderType?: KitchenOrderType
   locked: boolean
@@ -28,21 +29,44 @@ const contextSet = new Set<string>(MenuRouteContexts)
 const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   generic: {
     context: 'generic',
+    surface: 'generic',
+    label: '',
+    icon: 'i-lucide-book-open',
     visibleOrderTypes: [],
     locked: false,
   },
   home: {
     context: 'home',
-    surface: 'homeDelivery',
-    fulfilmentModes: ['delivery', 'collection'],
+    surface: 'home',
+    label: 'Home',
+    icon: 'i-lucide-house',
     visibleOrderTypes: ['delivery', 'collection'],
     defaultOrderType: 'delivery',
     locked: false,
   },
+  delivery: {
+    context: 'delivery',
+    surface: 'home',
+    label: 'Delivery',
+    icon: 'i-lucide-bike',
+    visibleOrderTypes: ['delivery'],
+    defaultOrderType: 'delivery',
+    locked: true,
+  },
+  collection: {
+    context: 'collection',
+    surface: 'home',
+    label: 'Collection',
+    icon: 'i-lucide-shopping-bag',
+    visibleOrderTypes: ['collection'],
+    defaultOrderType: 'collection',
+    locked: true,
+  },
   table: {
     context: 'table',
-    surface: 'tableQr',
-    fulfilmentModes: ['dineIn'],
+    surface: 'dine_in',
+    label: 'Dine in',
+    icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
     locked: true,
@@ -50,50 +74,75 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   kiosk: {
     context: 'kiosk',
     surface: 'kiosk',
-    fulfilmentModes: ['eatIn', 'takeaway'],
+    label: 'Kiosk',
+    icon: 'i-lucide-monitor',
     visibleOrderTypes: ['eat_in', 'takeaway'],
     defaultOrderType: 'eat_in',
     locked: false,
   },
   staff_pos: {
     context: 'staff_pos',
-    surface: 'staffPos',
-    fulfilmentModes: ['eatIn', 'takeaway'],
+    surface: 'staff_pos',
+    label: 'Staff POS',
+    icon: 'i-lucide-monitor',
     visibleOrderTypes: ['eat_in', 'takeaway'],
     defaultOrderType: 'eat_in',
     locked: false,
   },
   dine_in: {
     context: 'dine_in',
+    surface: 'dine_in',
+    label: 'Dine in',
+    icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
     locked: true,
   },
   eat_in: {
     context: 'eat_in',
+    surface: 'kiosk',
+    label: 'Eat in',
+    icon: 'i-lucide-utensils',
     visibleOrderTypes: ['eat_in'],
     defaultOrderType: 'eat_in',
     locked: true,
   },
   takeaway: {
     context: 'takeaway',
+    surface: 'kiosk',
+    label: 'Takeaway',
+    icon: 'i-lucide-shopping-bag',
     visibleOrderTypes: ['takeaway'],
     defaultOrderType: 'takeaway',
     locked: true,
   },
   pre_order: {
     context: 'pre_order',
+    surface: 'pre_order',
+    label: 'Pre-order',
+    icon: 'i-lucide-calendar-clock',
     visibleOrderTypes: ['pre_order'],
     defaultOrderType: 'pre_order',
     locked: true,
   },
   room_service: {
     context: 'room_service',
+    surface: 'room_service',
+    label: 'Room service',
+    icon: 'i-lucide-concierge-bell',
     visibleOrderTypes: ['room_service'],
     defaultOrderType: 'room_service',
     locked: true,
   },
 }
+
+export const publicMenuSurfaceProfiles = [
+  profiles.home,
+  profiles.dine_in,
+  profiles.kiosk,
+  profiles.pre_order,
+  profiles.room_service,
+] as const
 
 export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
   const context = text(value)
@@ -103,6 +152,41 @@ export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
 
 export function menuContextProfile(value: unknown): MenuContextProfile {
   return profiles[normalizeMenuRouteContext(value)]
+}
+
+export function menuOrderChannelForContext(
+  value: unknown
+): KitchenOrderChannel {
+  const surface = menuContextProfile(value).surface
+  if (surface === 'dine_in') return 'table_qr'
+  if (surface === 'kiosk') return 'kiosk'
+  if (surface === 'room_service') return 'room_service'
+  if (surface === 'staff_pos') return 'staff_pos'
+
+  return 'menu'
+}
+
+export const menuContextualMenuId = (
+  menuId: unknown,
+  context: MenuRouteContext
+) => {
+  const id = text(menuId)
+
+  return !id || context === 'generic' ? id : `${id}.${context}`
+}
+
+export function menuChoiceContextForOrderType(
+  type: KitchenOrderType
+): MenuRouteContext {
+  if (type === 'delivery') return 'delivery'
+  if (type === 'collection') return 'collection'
+  if (type === 'eat_in') return 'eat_in'
+  if (type === 'takeaway') return 'takeaway'
+  if (type === 'dine_in') return 'dine_in'
+  if (type === 'pre_order') return 'pre_order'
+  if (type === 'room_service') return 'room_service'
+
+  return 'generic'
 }
 
 export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {

@@ -228,10 +228,15 @@ const contextOrderTypeConfigs = (
 
 const contextChoices = (
   choices: MenuChoice[],
-  types: KitchenOrderType[]
+  contextValue: unknown
 ) => {
+  const profile = menuContextProfile(contextValue)
+
   return choices.filter((choice) =>
-    choice.order_type && types.includes(choice.order_type)
+    choice.order_type && (
+      profile.context === 'generic' ||
+      profile.visibleOrderTypes.includes(choice.order_type)
+    )
   )
 }
 
@@ -246,6 +251,7 @@ const serviceProfile = (
   )
   const context = normalizeMenuRouteContext(scope.menuContext)
   const orderTypeConfigs = contextOrderTypeConfigs(ordering, context)
+  const availableOrderTypes = unique(ordering.order_types.map((type) => type.type))
   const orderTypes = unique(orderTypeConfigs.map((type) => type.type))
   const contextOrdering = {
     ...ordering,
@@ -259,9 +265,11 @@ const serviceProfile = (
 
   return {
     context,
+    surface: menuContextProfile(context).surface,
     ordering: contextOrdering,
     orderingEnabled: isMenuOrderingEnabled(contextOrdering),
     orderTypes,
+    availableOrderTypes,
     ...(defaultType
       ? {
           defaultOrderType: defaultType,
@@ -271,7 +279,7 @@ const serviceProfile = (
             ),
         }
       : {}),
-    choices: contextChoices(choices, orderTypes),
+    choices: contextChoices(choices, context),
   }
 }
 
@@ -319,6 +327,12 @@ export async function buildMenuManifestPayload(
           }
         : {}),
       pageStyle: readMenuPageStyle(scope.page_style),
+    },
+    source: {
+      appId: source.app_id || '',
+      kitchenId: source.kitchen_id || '',
+      menuId: source.menu_id || menuId,
+      kitchenSlug: source.kitchen_slug || '',
     },
   }
 

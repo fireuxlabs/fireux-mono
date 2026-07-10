@@ -4,20 +4,11 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../../models/kitchen/menu/menu-ordering.model'
+import { menuOrderDepositLabel } from '../../../../../../utils/menu-ordering-ui'
 import { readWeekdayTimeNextOpeningText } from '../../../../../../utils/weekday-time-next'
 
-const preOrderDepositPerPerson = 10
-const money = (amount: number, currencyCode: string) =>
-  new Intl.NumberFormat('de-CH', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount)
-
 export function usePreOrderFunnel(
-  order: MaybeRefOrGetter<MenuOrderingFunnelState>,
-  options: {
-    operatorOnline?: MaybeRefOrGetter<boolean>
-  } = {}
+  order: MaybeRefOrGetter<MenuOrderingFunnelState>
 ) {
   const currentOrder = computed(() => toValue(order))
   const currencyCode = computed(() =>
@@ -27,9 +18,11 @@ export function usePreOrderFunnel(
     Math.max(0, Number(currentOrder.value.policy?.notice_hours || 24))
   )
   const depositLabel = computed(() =>
-    `${money(preOrderDepositPerPerson, currencyCode.value)} deposit per person`
+    menuOrderDepositLabel(
+      currentOrder.value.policy?.fulfilment?.deposit,
+      currencyCode.value
+    )
   )
-  const operatorOnline = computed(() => toValue(options.operatorOnline) !== false)
   const nextOpening = computed(() =>
     readWeekdayTimeNextOpeningText(currentOrder.value.serviceHours?.operation_hours)
   )
@@ -37,17 +30,12 @@ export function usePreOrderFunnel(
     `For large groups, we appreciate a pre-order. Choose an arrival time during serving hours and send it at least ${noticeHours.value} hours before you arrive.`
   )
   const kitchenStatus = computed(() =>
-    operatorOnline.value
-      ? 'A kitchen operator is online to receive this request.'
-      : 'No kitchen operator is online right now. Leave an email and the team will confirm that they have your request.'
+    'Leave an email so the kitchen can confirm this pre-order request.'
   )
   const depositStatus = computed(() =>
     depositLabel.value
-      ? `Once confirmed, we will ask for a ${depositLabel.value}.`
-      : 'Once confirmed, the kitchen will send the next step.'
-  )
-  const operatorStatus = computed(() =>
-    operatorOnline.value ? 'online' : 'offline'
+      ? `Secure payment for the ${depositLabel.value} is required before the kitchen can accept this pre-order.`
+      : 'No online deposit is required for this pre-order.'
   )
   const timingStatus = computed(() =>
     nextOpening.value
@@ -60,7 +48,6 @@ export function usePreOrderFunnel(
     depositStatus,
     detailsStatus,
     kitchenStatus,
-    operatorStatus,
     ready,
     timingStatus,
   }

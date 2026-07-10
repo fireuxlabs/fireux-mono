@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import type {
+  KitchenOrderChannel,
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
@@ -13,6 +14,13 @@ const orderTypes = new Set<KitchenOrderType>([
   'delivery',
   'pre_order',
   'room_service',
+])
+const orderChannels = new Set<KitchenOrderChannel>([
+  'menu',
+  'table_qr',
+  'kiosk',
+  'room_service',
+  'staff_pos',
 ])
 
 export const text = (value: unknown) => String(value ?? '').trim()
@@ -54,7 +62,10 @@ export const normalizeOrderType = (
     return requested
   }
 
-  return allowedModes[0] || 'dine_in'
+  throw createError({
+    statusCode: 400,
+    statusMessage: 'Choose a valid order type.',
+  })
 }
 
 export const normalizePaymentMethod = (
@@ -73,13 +84,150 @@ export const normalizePaymentMethod = (
   })
 }
 
+export const normalizeOrderChannel = (
+  value: unknown,
+  orderType: KitchenOrderType
+): KitchenOrderChannel => {
+  const fallback: KitchenOrderChannel = orderType === 'dine_in'
+    ? 'table_qr'
+    : orderType === 'eat_in' || orderType === 'takeaway'
+      ? 'kiosk'
+      : orderType === 'room_service'
+        ? 'room_service'
+        : 'menu'
+  const channel = (text(value) || fallback) as KitchenOrderChannel
+  const valid = orderChannels.has(channel) && (
+    (channel === 'menu' && ['collection', 'delivery', 'pre_order'].includes(orderType)) ||
+    (channel === 'table_qr' && orderType === 'dine_in') ||
+    (channel === 'kiosk' && ['eat_in', 'takeaway'].includes(orderType)) ||
+    (channel === 'staff_pos' && ['eat_in', 'takeaway'].includes(orderType)) ||
+    (channel === 'room_service' && orderType === 'room_service')
+  )
+  if (!valid) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Order channel does not match this order type.',
+    })
+  }
+
+  return channel
+}
+
+const requiredLocationLabel = (value: unknown, label: string) => {
+  const result = text(value)
+  if (!result) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `${label} is required.`,
+    })
+  }
+  if (result.length > 64 || /[\u0000-\u001f\u007f]/.test(result)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `${label} is not valid.`,
+    })
+  }
+
+  return result
+}
+
+const customerText = (
+  value: unknown,
+  label: string,
+  maxLength: number,
+  options: { multiline?: boolean } = {}
+) => {
+  const result = text(value)
+  if (!result) return ''
+
+  const invalidControls = options.multiline
+    ? /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/
+    : /[\u0000-\u001f\u007f]/
+  if (result.length > maxLength || invalidControls.test(result)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `${label} is not valid.`,
+    })
+  }
+
+  return result
+}
+
+const customerPartySize = (value: unknown) => {
+  if (value === undefined || value === null || value === '') return 0
+
+  const result = Number(value)
+  if (!Number.isSafeInteger(result) || result < 1 || result > 500) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Party size must be a whole number between 1 and 500.',
+    })
+  }
+
+  return result
+}
+
+export const readOrderTable = (
+  value: unknown,
+  orderType: KitchenOrderType
+) => {
+  if (orderType !== 'dine_in') {
+    if (value !== undefined && value !== null) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Table destination does not match this order type.',
+      })
+    }
+
+    return undefined
+  }
+
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+
+  return {
+    number: requiredLocationLabel(
+      source.number,
+      'Table'
+    ),
+  }
+}
+
+export const readOrderRoomService = (
+  value: unknown,
+  orderType: KitchenOrderType
+) => {
+  if (orderType !== 'room_service') {
+    if (value !== undefined && value !== null) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Room destination does not match this order type.',
+      })
+    }
+
+    return undefined
+  }
+
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+
+  return {
+    room: requiredLocationLabel(source.room, 'Room'),
+  }
+}
+
 export const statusForOrderType = (
   orderType: KitchenOrderType,
   paymentRequired = false
 ) =>
   paymentRequired
     ? 'pending_payment'
-    : orderType === 'delivery' || orderType === 'collection' || orderType === 'pre_order'
+    : orderType === 'delivery' ||
+        orderType === 'collection' ||
+        orderType === 'pre_order' ||
+        orderType === 'room_service'
       ? 'pending_acceptance'
       : 'open'
 
@@ -88,14 +236,24 @@ export const readCustomer = (value: unknown): KitchenOrderCustomer => {
     ? value as Record<string, unknown>
     : {}
   const customer = {
-    name: text(source.name),
-    email: text(source.email),
-    phone: text(source.phone),
-    address: text(source.address),
-    address_place_id: text(source.address_place_id),
-    allergy_note: text(source.allergy_note),
-    notes: text(source.notes),
-    party_size: numberValue(source.party_size),
+    name: customerText(source.name, 'Customer name', 120),
+    email: customerText(source.email, 'Customer email', 254),
+    phone: customerText(source.phone, 'Customer phone', 64),
+    address: customerText(source.address, 'Delivery address', 500, {
+      multiline: true,
+    }),
+    address_place_id: customerText(
+      source.address_place_id,
+      'Delivery place identifier',
+      256
+    ),
+    allergy_note: customerText(source.allergy_note, 'Allergy note', 2000, {
+      multiline: true,
+    }),
+    notes: customerText(source.notes, 'Customer notes', 2000, {
+      multiline: true,
+    }),
+    party_size: customerPartySize(source.party_size),
   }
 
   return Object.fromEntries(

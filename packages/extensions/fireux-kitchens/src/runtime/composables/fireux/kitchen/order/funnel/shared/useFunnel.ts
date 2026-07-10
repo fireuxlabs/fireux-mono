@@ -10,20 +10,27 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   menuOrderBasketActionLabel,
   menuOrderTypeLabel,
 } from '../../../../../../utils/menu-ordering-ui'
+import { readWeekdayTimeOpenState } from '../../../../../../utils/weekday-time'
 import {
+  menuContextualMenuId,
   menuContextProfile,
+  menuOrderChannelForContext,
   normalizeMenuRouteContext,
+  publicMenuSurfaceProfiles,
 } from '../../../../../../utils/menu-context'
 import {
   notifyOrderSessionChanged,
   orderSessionStorageKey,
   useOrderSessionConflict,
 } from './useOrderSession'
+import { useOrderIdempotency } from './useOrderIdempotency'
 import type {
+  KitchenOrderChannel,
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
@@ -45,9 +52,11 @@ import type {
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingPayment,
+  MenuOrderingRoomServiceState,
   MenuOrderingSending,
   MenuOrderingFunnelState,
   MenuOrderingSubmitPayload,
+  MenuOrderingTableState,
 } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 
 export type MenuChoiceValue = string
@@ -81,8 +90,10 @@ export type MenuDetailView = {
 type UseKitchenOrderFunnelOptions = {
   menu: MaybeRefOrGetter<MenuManifest | null>
   menuId: MaybeRefOrGetter<string>
+  sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  sessionKitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
 type PanelState = 'closed' | 'open'
 
@@ -101,54 +112,6 @@ const defaultMenuChoice = (): MenuChoiceOption => ({
   value: 'menu',
   label: 'Menu',
 })
-const surfaceContexts = [
-  {
-    context: 'home',
-    label: 'Home',
-    orderTypes: ['delivery', 'collection'],
-  },
-  {
-    context: 'dine_in',
-    label: 'Dine in',
-    orderTypes: ['dine_in'],
-  },
-  {
-    context: 'kiosk',
-    label: 'Kiosk',
-    orderTypes: ['eat_in', 'takeaway'],
-  },
-  {
-    context: 'staff_pos',
-    label: 'Staff POS',
-    orderTypes: ['eat_in', 'takeaway'],
-  },
-  {
-    context: 'pre_order',
-    label: 'Pre-order',
-    orderTypes: ['pre_order'],
-  },
-  {
-    context: 'room_service',
-    label: 'Room service',
-    orderTypes: ['room_service'],
-  },
-] as const satisfies readonly {
-  context: MenuRouteContext
-  label: string
-  orderTypes: readonly KitchenOrderType[]
-}[]
-const contextLabels = {
-  generic: '',
-  home: 'Home',
-  table: 'Table',
-  kiosk: 'Kiosk',
-  staff_pos: 'Staff POS',
-  dine_in: 'Dine in',
-  eat_in: 'Eat in',
-  takeaway: 'Takeaway',
-  pre_order: 'Pre-order',
-  room_service: 'Room service',
-} as const satisfies Record<MenuRouteContext, string>
 const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
   `order:${type}`
 const orderType = (value: unknown): KitchenOrderType | undefined =>
@@ -186,7 +149,7 @@ const contextualMenuPath = (
 ) => {
   const contextualMenuId = context === 'generic'
     ? menuId
-    : `${menuId}.${context}`
+    : menuContextualMenuId(menuId, context)
 
   return kitchenSlug
     ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
@@ -200,11 +163,20 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     normalizeMenuRouteContext(toValue(options.menuContext) || behaviour.value?.context)
   )
   const contextProfile = computed(() => menuContextProfile(menuContext.value))
+  const orderChannel = computed(() =>
+    menuOrderChannelForContext(menuContext.value)
+  )
   const visibleOrderTypes = computed(() => contextProfile.value.visibleOrderTypes)
   const menuId = computed(() => text(toValue(options.menuId)))
+  const sourceMenuId = computed(() =>
+    text(toValue(options.sourceMenuId)) || menuId.value
+  )
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const sessionKitchenSlug = computed(() =>
+    text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
+  )
   const menuStorageScope = computed(() => {
-    const slug = text(toValue(options.kitchenSlug))
+    const slug = sessionKitchenSlug.value
     const id = text(toValue(options.menuId))
     const scope = slug ? `${slug}:${id}` : id
 
@@ -212,6 +184,11 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   })
   const orderTypes = computed<KitchenOrderType[]>(() =>
     Array.isArray(behaviour.value?.orderTypes) ? behaviour.value.orderTypes : []
+  )
+  const availableMenuOrderTypes = computed<KitchenOrderType[]>(() =>
+    Array.isArray(behaviour.value?.availableOrderTypes)
+      ? behaviour.value.availableOrderTypes
+      : orderTypes.value
   )
   const availableOrderTypes = computed<KitchenOrderType[]>(() =>
     visibleOrderTypes.value.filter((type) => orderTypes.value.includes(type))
@@ -232,7 +209,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   )
   const isVisibleChoice = (option: MenuChoiceOption) =>
     option.orderType
-      ? availableOrderTypes.value.includes(option.orderType)
+      ? visibleOrderTypes.value.includes(option.orderType) &&
+        (Boolean(option.to) || availableOrderTypes.value.includes(option.orderType))
       : menuContext.value === 'generic'
   const sortChoiceOptions = (options: MenuChoiceOption[]) =>
     [...options].sort((left, right) =>
@@ -319,13 +297,24 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   )
   const sessionGuard = useOrderSessionConflict({
     enabled: orderChoiceActive,
-    kitchenSlug,
+    kitchenSlug: sessionKitchenSlug,
     context: menuContext,
     menuId,
     orderType: selectedOrderType,
   })
+  const immediateServiceAvailable = computed(() => {
+    if (['collection', 'pre_order'].includes(selectedOrderType.value)) return true
+
+    const state = readWeekdayTimeOpenState(
+      behaviour.value?.ordering.service_hours?.operation_hours
+    )
+
+    return !state.known || state.open
+  })
   const canAddToSession = computed(() =>
-    canOrder.value && !sessionGuard.hasConflict.value
+    canOrder.value &&
+      immediateServiceAvailable.value &&
+      !sessionGuard.hasConflict.value
   )
   const selectedOrderTypeConfig = computed(() =>
     orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
@@ -357,12 +346,13 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const selectedItemId = ref('')
   const draft = useDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
+    menuContext,
     canOrder: canAddToSession,
     orderType: selectedOrderType,
-    sourceMenuId: options.menuId,
+    sourceMenuId,
     storageKey: computed(() =>
       orderSessionStorageKey({
-        kitchenSlug: kitchenSlug.value,
+        kitchenSlug: sessionKitchenSlug.value,
         menuId: menuId.value,
         orderType: selectedOrderType.value,
       })
@@ -375,25 +365,62 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       : {}
   )
   const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
-    if (!menuId.value || !orderTypes.value.length) return []
+    if (!menuId.value) return []
 
-    const surfaces = surfaceContexts.filter((surface) =>
-      surface.orderTypes.some((type) => orderTypes.value.includes(type))
+    const choices = Array.isArray(behaviour.value?.choices)
+      ? behaviour.value.choices
+          .map(menuChoiceOption)
+          .filter((choice): choice is MenuChoiceOption => Boolean(choice))
+      : []
+    const surfaceOrderTypes = Array.from(new Set([
+      ...availableMenuOrderTypes.value,
+      ...choices
+        .map((choice) => choice.orderType)
+        .filter((type): type is KitchenOrderType => Boolean(type)),
+    ]))
+
+    const surfaces = publicMenuSurfaceProfiles.filter((surface) =>
+      surface.visibleOrderTypes.some((type) =>
+        surfaceOrderTypes.includes(type)
+      )
     )
 
-    return surfaces.map((surface) => ({
-      value: surface.context,
-      label: surface.label,
-      to: contextualMenuPath(menuId.value, kitchenSlug.value, surface.context),
-      active: menuContext.value === surface.context,
-    }))
+    return surfaces.map((surface) => {
+      const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
+        availableMenuOrderTypes.value.includes(type)
+      )
+      const linkedChoice = choices.find((choice) =>
+        Boolean(choice.to) &&
+          Boolean(choice.menuId) &&
+          Boolean(choice.orderType) &&
+          surface.visibleOrderTypes.includes(choice.orderType as KitchenOrderType)
+      )
+      const linkedMarker = '/menus/'
+      const linkedIndex = linkedChoice?.to?.indexOf(linkedMarker) ?? -1
+      const linkedSurfacePath =
+        linkedChoice?.to && linkedChoice.menuId && linkedIndex >= 0
+          ? `${linkedChoice.to.slice(0, linkedIndex + linkedMarker.length)}${encodeURIComponent(
+              menuContextualMenuId(linkedChoice.menuId, surface.context)
+            )}`
+          : linkedChoice?.to || ''
+
+      return {
+        value: surface.context,
+        label: surface.label,
+        to: hasLocalOrderType
+          ? contextualMenuPath(menuId.value, kitchenSlug.value, surface.context)
+          : linkedSurfacePath,
+        active: contextProfile.value.surface === surface.surface,
+      }
+    }).filter((surface) => Boolean(surface.to))
   })
-  const surfaceLabel = computed(() => contextLabels[menuContext.value])
+  const surfaceLabel = computed(() => contextProfile.value.label)
   const orderEndpoint = computed(() => {
     if (!menuId.value) return ''
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(menuId.value)}/orders${qs ? `?${qs}` : ''}`
@@ -438,18 +465,22 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       exists: Boolean(order),
       order_id: order?.id || '',
       order_number: order?.order_number || '',
-      status: order?.status || '',
-      fire_state: order?.fire_state || '',
+      status: draft.trackedStatus.value?.status || order?.status || '',
+      fire_state: draft.trackedStatus.value?.fire_state || order?.fire_state || '',
       items: order?.receipt?.items || draft.items.value,
       total_chf: order?.receipt?.total_chf || total,
-      estimated_ready_minutes: 0,
-      estimated_ready_at: '',
+      estimated_ready_minutes:
+        draft.trackedStatus.value?.estimated_ready_minutes || 0,
+      estimated_ready_at: draft.trackedStatus.value?.estimated_ready_at || '',
+      driver_watching_count:
+        draft.trackedStatus.value?.driver_watching_count || 0,
       order: order || null,
     }
   })
   const sending = computed<MenuOrderingSending>(() => ({
     endpoint: orderEndpoint.value,
     body: {
+      channel: orderChannel.value,
       order_type: selectedOrderType.value,
       items: draft.items.value.map((item) => ({
         itemId: item.id,
@@ -461,8 +492,17 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ...(collectedIncoming.value.collection
         ? { collection: collectedIncoming.value.collection }
         : {}),
+      ...(collectedIncoming.value.payment_method
+        ? { payment_method: collectedIncoming.value.payment_method }
+        : {}),
       ...(Object.keys(deliveryCustomer.value).length
         ? { customer: deliveryCustomer.value }
+        : {}),
+      ...(collectedIncoming.value.table
+        ? { table: collectedIncoming.value.table }
+        : {}),
+      ...(collectedIncoming.value.room_service
+        ? { room_service: collectedIncoming.value.room_service }
         : {}),
     },
     pending: draft.creatingItemId.value === 'order',
@@ -485,6 +525,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       accepted: draft.acceptedOrder.value,
       awaitingAcceptance: draft.awaitingAcceptance.value,
       currencyCode,
+      channel: orderChannel.value,
       panelOpen: panelOpen.value,
       items: draft.items.value,
       message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
@@ -514,6 +555,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     selectedChoice.value = value
   }
 
+  function selectOrderType(type: KitchenOrderType) {
+    const choice = localChoiceOptions.value.find((option) =>
+      option.orderType === type
+    )
+    if (!choice) return false
+
+    selectedChoice.value = choice.value
+    return true
+  }
+
   function selectItem(item: MenuFoodItem) {
     const id = text(item.id)
     if (!id) return
@@ -528,8 +579,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   function openSession() {
     const conflict = sessionGuard.conflict.value
     if (!conflict) return
+    if (!selectOrderType(conflict.orderType)) return
 
-    selectedChoice.value = orderChoiceValue(conflict.orderType)
     panelOpen.value = true
   }
 
@@ -546,6 +597,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
     return draft.place({
       ...payload,
+      channel: orderChannel.value,
       ...(Object.keys(customer).length ? { customer } : {}),
     })
   }
@@ -577,6 +629,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       view: detailView,
       add: draft.add,
       select: setSelectedChoice,
+      selectOrderType,
       selectItem,
     }),
     funnel: proxyRefs({
@@ -632,6 +685,7 @@ type MenuOrderDraftItem = MenuOrderItem & {
 
 type MenuOrderDraftOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
   canOrder?: MaybeRefOrGetter<boolean>
   orderType?: MaybeRefOrGetter<KitchenOrderType>
   sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
@@ -655,15 +709,19 @@ type MenuOrderVariantInput = {
 
 type CreateMenuOrderInput = {
   items: MenuOrderLineInput[]
+  channel?: KitchenOrderChannel
   order_type?: KitchenOrderType
   collection?: MenuOrderingCollectionState
   payment_method?: KitchenOrderPaymentMethod
   requested_for?: string
+  room_service?: MenuOrderingRoomServiceState
+  table?: MenuOrderingTableState
   customer?: KitchenOrderCustomer
 }
 
 type UseMenuOrderCreateOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
 }
 
 type KitchenOrderFunnelStatus = {
@@ -674,6 +732,7 @@ type KitchenOrderFunnelStatus = {
   fire_state: string
   estimated_ready_minutes: number
   estimated_ready_at: string
+  driver_watching_count: number
 }
 
 type UseMenuOrderStatusOptions = {
@@ -802,6 +861,7 @@ function useDraft(
     createCheckoutSession,
   } = useCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
+    menuContext: options.menuContext,
   })
   const {
     status: trackedOrderStatus,
@@ -967,10 +1027,13 @@ function useDraft(
         ...(item.addOns?.length ? { addOns: item.addOns } : {}),
         ...(item.variant ? { variant: item.variant } : {}),
       })),
+      channel: input?.channel,
       order_type: orderType.value,
       collection: input?.collection,
       payment_method: input?.payment_method,
       requested_for: input?.requested_for,
+      room_service: input?.room_service,
+      table: input?.table,
       customer: input?.customer,
     })
     if (!created) return null
@@ -978,7 +1041,9 @@ function useDraft(
     const isWaitingForAcceptance = created.status === 'pending_acceptance'
     const nextAwaitingAcceptance =
       isWaitingForAcceptance &&
-        ['collection', 'delivery', 'pre_order'].includes(orderType.value)
+        ['collection', 'delivery', 'pre_order', 'room_service'].includes(
+          orderType.value
+        )
     trackedOrder.value = created
     acceptedOrder.value = false
     awaitingAcceptance.value = nextAwaitingAcceptance
@@ -1018,6 +1083,7 @@ function useDraft(
     message,
     error,
     payment,
+    trackedStatus: trackedOrderStatus,
     add,
     remove,
     clear,
@@ -1030,17 +1096,23 @@ function useCreate(
   menuId: MaybeRefOrGetter<string>,
   options: UseMenuOrderCreateOptions = {}
 ) {
+  const { currentUser } = useAuth()
   const id = computed(() => text(toValue(menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const menuContext = computed(() =>
+    normalizeMenuRouteContext(toValue(options.menuContext))
+  )
   const endpoint = computed(() => {
     if (!id.value) return ''
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}/orders${qs ? `?${qs}` : ''}`
   })
+  const idempotency = useOrderIdempotency(endpoint)
   const creatingItemId = ref('')
   const message = ref('')
   const error = ref('')
@@ -1070,21 +1142,39 @@ function useCreate(
     error.value = ''
 
     try {
+      const body = {
+        items,
+        channel: input.channel,
+        order_type: input.order_type,
+        collection: input.collection,
+        payment_method: input.payment_method,
+        ...(input.requested_for ? { requested_for: input.requested_for } : {}),
+        ...(input.room_service ? { room_service: input.room_service } : {}),
+        ...(input.table ? { table: input.table } : {}),
+        customer: cleanCustomer(input.customer),
+      }
+      const authToken = input.channel === 'staff_pos'
+        ? await currentUser.value?.getIdToken()
+        : ''
+      if (input.channel === 'staff_pos' && !authToken) {
+        throw new Error('Sign in before using Staff POS.')
+      }
+      const idempotencyKey = await idempotency.keyFor(body)
       const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
         method: 'POST',
+        ...(authToken
+          ? { headers: { Authorization: `Bearer ${authToken}` } }
+          : {}),
         body: {
-          items,
-          order_type: input.order_type,
-          collection: input.collection,
-          payment_method: input.payment_method,
-          ...(input.requested_for ? { requested_for: input.requested_for } : {}),
-          customer: cleanCustomer(input.customer),
+          ...body,
+          idempotency_key: idempotencyKey,
         },
       })
 
       if (created.payment?.required && created.payment.status !== 'paid') {
         message.value = 'Starting secure payment...'
         await createCheckoutSession(created.id)
+        idempotency.complete()
         return created
       }
 
@@ -1092,6 +1182,7 @@ function useCreate(
         message.value = created.order_number
           ? `Order ${created.order_number} sent. Waiting for kitchen acceptance.`
           : 'Order sent. Waiting for kitchen acceptance.'
+        idempotency.complete()
         return created
       }
 
@@ -1099,12 +1190,14 @@ function useCreate(
         ? `Order ${created.order_number} sent to the kitchen.`
         : 'Order sent to the kitchen.'
 
+      idempotency.complete()
       return created
     } catch (err) {
       const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
         ? text((err as { statusMessage?: unknown }).statusMessage)
         : ''
-      error.value = statusMessage || 'Order could not be sent.'
+      const causeMessage = err instanceof Error ? err.message : ''
+      error.value = statusMessage || causeMessage || 'Order could not be sent.'
 
       return null
     } finally {
@@ -1122,6 +1215,7 @@ function useCreate(
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
     const qs = query.toString()
     try {
       const response = await $fetch<{ url?: string }>(
@@ -1210,6 +1304,7 @@ function useStatus(
           fire_state: '',
           estimated_ready_minutes: 0,
           estimated_ready_at: '',
+          driver_watching_count: 0,
         }
         return status.value
       }

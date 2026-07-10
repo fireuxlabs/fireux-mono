@@ -6,6 +6,7 @@ import {
   getRouterParam,
   type H3Event,
 } from 'h3'
+import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
@@ -13,21 +14,34 @@ import type { KitchenOrderType } from '../../../../../../models/kitchen/order.mo
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
 import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
+import {
+  menuContextualMenuId,
+  normalizeMenuRouteContext,
+} from '../../../../../../utils/menu-context.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
-const numberValue = (value: unknown) => {
-  const number = Number(value)
-
-  return Number.isFinite(number) ? number : 0
-}
 const safeSegment = (value: string) =>
   Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
-const amountMinor = (value: unknown) =>
-  Math.max(0, Math.round(Number(value || 0) * 100))
+const amountMinor = (value: unknown) => {
+  const amount = Number(value)
+
+  return Number.isFinite(amount) && amount > 0
+    ? Math.round(amount * 100)
+    : 0
+}
+const checkoutIdempotencyKey = (input: {
+  appId: string
+  kitchenId: string
+  orderId: string
+  amountMinor: number
+  currencyCode: string
+}) => `menu-order-checkout-${createHash('sha256')
+  .update(JSON.stringify(input))
+  .digest('hex')}`
 const baseUrlFromEvent = (event: H3Event) => {
   const configured = process.env.APP_DOMAIN?.trim()
   const url = getRequestURL(event)
@@ -47,6 +61,7 @@ export default defineEventHandler(async (event) => {
   const menuId = text(getRouterParam(event, 'menuId'))
   const orderId = text(getRouterParam(event, 'orderId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
+  const menuContext = normalizeMenuRouteContext(getQuery(event).context)
   if (!safeSegment(menuId) || !safeSegment(orderId)) {
     throw createError({
       statusCode: 400,
@@ -73,8 +88,25 @@ export default defineEventHandler(async (event) => {
   }
 
   const order = orderSnap.data() || {}
+  if (text(order.menu_id) !== context.menuId) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Order not found.',
+    })
+  }
   const orderType = text(order.order_type) as KitchenOrderType
-  const payment = resolveCheckoutPayment(order, currencyCode)
+  const payment = resolveCheckoutPayment(order)
+  const orderStatus = text(order.status).toLowerCase()
+  const paymentStatus = text(payment.status).toLowerCase()
+  if (
+    ['cancelled', 'canceled', 'deleted', 'trashed', 'refunded'].includes(orderStatus) ||
+    paymentStatus === 'refunded'
+  ) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This order can no longer be paid.',
+    })
+  }
   if (!payment.required) {
     throw createError({
       statusCode: 400,
@@ -97,9 +129,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const baseUrl = baseUrlFromEvent(event)
+  const contextualMenuId = menuContextualMenuId(menuId, menuContext)
   const menuPath = kitchenSlug
-    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
-    : `/menus/${encodeURIComponent(menuId)}`
+    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
+    : `/menus/${encodeURIComponent(contextualMenuId)}`
   const orderNumber = text(order.order_number) || orderId
   const reason = text(payment.reason) || 'Kitchen order payment'
   const resumeStatus = text(payment.resume_status) ||
@@ -114,36 +147,48 @@ export default defineEventHandler(async (event) => {
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
   const stripe = getMenuStripe()
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    line_items: [
-      {
-        price_data: {
-          currency: paymentCurrencyCode,
-          product_data: {
-            name: `${reason} · ${orderNumber}`,
-            metadata: {
-              appId: context.appId,
-              kitchenId: context.kitchenId,
-              menuId: context.menuId,
-              orderId,
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: paymentCurrencyCode,
+            product_data: {
+              name: `${reason} · ${orderNumber}`,
+              metadata: {
+                appId: context.appId,
+                kitchenId: context.kitchenId,
+                menuId: context.menuId,
+                orderId,
+              },
             },
+            unit_amount: minor,
           },
-          unit_amount: minor,
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      success_url: `${baseUrl}/customers?order=${encodeURIComponent(orderId)}&payment=success`,
+      cancel_url: `${baseUrl}${menuPath}?order=${encodeURIComponent(orderId)}&payment=cancelled`,
+      metadata: {
+        appId: context.appId,
+        kitchenId: context.kitchenId,
+        menuId: context.menuId,
+        orderId,
+        flow: 'kitchen_order_payment',
       },
-    ],
-    success_url: `${baseUrl}/customers?order=${encodeURIComponent(orderId)}&payment=success`,
-    cancel_url: `${baseUrl}${menuPath}?order=${encodeURIComponent(orderId)}&payment=cancelled`,
-    metadata: {
-      appId: context.appId,
-      kitchenId: context.kitchenId,
-      menuId: context.menuId,
-      orderId,
-      flow: 'kitchen_order_payment',
     },
-  })
+    {
+      idempotencyKey: checkoutIdempotencyKey({
+        appId: context.appId,
+        kitchenId: context.kitchenId,
+        orderId,
+        amountMinor: minor,
+        currencyCode: paymentCurrencyCode,
+      }),
+    }
+  )
 
   await orderRef.set(
     {
@@ -171,34 +216,16 @@ export default defineEventHandler(async (event) => {
 })
 
 function resolveCheckoutPayment(
-  order: Record<string, unknown>,
-  currencyCode: string
-) {
+  order: Record<string, unknown>
+): Record<string, unknown> & { required: boolean } {
   const current = record(order.payment)
-  if (current.required === true) {
-    return {
-      ...current,
-      resume_status: resumeStatusForOrder(order, current),
-    }
-  }
-
-  const status = text(order.status)
-  if (!['open', 'on_pass'].includes(status)) {
+  if (current.required !== true || amountMinor(current.amount_chf) <= 0) {
     return { required: false }
   }
 
-  const amount = orderTotal(order)
-  if (amount <= 0) return { required: false }
-
   return {
+    ...current,
     required: true,
-    status: 'requires_payment',
-    method: 'online_card',
-    amount_chf: amount,
-    currency_code: currencyCode,
-    reason: text(order.order_type) === 'delivery'
-      ? 'Delivery order payment'
-      : 'Order payment',
     resume_status: resumeStatusForOrder(order, current),
   }
 }
@@ -214,21 +241,4 @@ function resumeStatusForOrder(
   if (status && status !== 'pending_payment') return status
 
   return statusAfterPayment(text(order.order_type) as KitchenOrderType)
-}
-
-function orderTotal(order: Record<string, unknown>) {
-  const items = Array.isArray(order.items) ? order.items : []
-  const subtotal = items.reduce((sum, item) => {
-    const row = record(item)
-    const unitPrice = numberValue(row.unit_price || row.unit_price_chf)
-    const quantity = Math.max(1, Number(row.quantity || 1) || 1)
-
-    return sum + unitPrice * quantity
-  }, 0)
-  const match = record(order.fulfilment_match)
-
-  return Math.max(
-    0,
-    Math.round((subtotal + numberValue(match.fee_chf)) * 100) / 100
-  )
 }

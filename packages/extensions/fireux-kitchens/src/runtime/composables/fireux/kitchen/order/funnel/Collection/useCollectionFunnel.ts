@@ -12,7 +12,10 @@ import type {
   MenuOrderingIncoming,
 } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 import { useMenuServiceComputed } from '../../../../firestore/menu/useMenu'
-import { readWeekdayTimeSelectionState } from '../../../../../../utils/weekday-time'
+import {
+  readWeekdayTimeNoticeState,
+  readWeekdayTimeSelectionState,
+} from '../../../../../../utils/weekday-time'
 
 export type CollectionMode = 'queue' | 'scheduled'
 
@@ -81,8 +84,17 @@ export function useCollectionFunnel(
       scheduledTime.value
     )
   })
+  const noticeSelection = computed(() =>
+    readWeekdayTimeNoticeState(
+      serviceHours.value,
+      scheduleSelection.value.requested_for,
+      toValue(order).policy?.notice_hours
+    )
+  )
   const requestedFor = computed(() =>
-    mode.value === 'scheduled' && scheduleSelection.value.available
+    mode.value === 'scheduled' &&
+      scheduleSelection.value.available &&
+      noticeSelection.value.available
       ? scheduleSelection.value.requested_for
       : ''
   )
@@ -92,7 +104,7 @@ export function useCollectionFunnel(
   }))
   const requestReady = computed(() =>
     mode.value === 'queue' ||
-      scheduleSelection.value.available
+      (scheduleSelection.value.available && noticeSelection.value.available)
   )
   const ready = computed(() => canContinue(Number(toValue(step)) || 1))
   const options = computed(() =>
@@ -161,6 +173,7 @@ export function useCollectionFunnel(
     collection,
     dateInputOpen,
     mode,
+    noticeSelection,
     openDateInput,
     options,
     ready,

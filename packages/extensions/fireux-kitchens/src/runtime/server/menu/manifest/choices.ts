@@ -5,6 +5,10 @@ import type {
 } from '../../../models/kitchen/menu/menu.model.ts'
 import { menuOrderTypeLabel } from '../../../utils/menu-ordering-ui.ts'
 import {
+  menuChoiceContextForOrderType,
+  menuContextualMenuId,
+} from '../../../utils/menu-context.ts'
+import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
 } from '../ordering/config.ts'
@@ -14,6 +18,7 @@ type MenuChoiceInput = {
   kitchenId: string
   kitchenSlug: string
   currentMenuId: string
+  routeKind?: 'tenant-menu' | 'directory-menu'
 }
 
 const numberValue = (value: unknown) => {
@@ -21,22 +26,45 @@ const numberValue = (value: unknown) => {
 
   return Number.isFinite(number) ? number : 0
 }
-const menuPath = (kitchenSlug: string, menuId: string) =>
-  `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuId)}`
+const menuPath = (
+  kitchenSlug: string,
+  menuId: string,
+  orderType: Parameters<typeof menuChoiceContextForOrderType>[0],
+  routeKind: MenuChoiceInput['routeKind']
+) => {
+  const contextualMenuId = menuContextualMenuId(
+    menuId,
+    menuChoiceContextForOrderType(orderType)
+  )
+
+  if (routeKind === 'tenant-menu') {
+    return `/menus/${encodeURIComponent(contextualMenuId)}`
+  }
+
+  return `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
+}
 function menuChoices(input: {
   data: Record<string, unknown>
   menuId: string
   kitchenSlug: string
   currentMenuId: string
+  routeKind?: MenuChoiceInput['routeKind']
 }): MenuChoice[] {
   const ordering = readMenuOrderingConfig(input.data)
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const isCurrent = input.menuId === input.currentMenuId
-  const to = isCurrent ? '' : menuPath(input.kitchenSlug, input.menuId)
   const choices: MenuChoice[] = []
 
   if (orderingEnabled) {
     ordering.order_types.forEach((orderType) => {
+      const to = isCurrent
+        ? ''
+        : menuPath(
+            input.kitchenSlug,
+            input.menuId,
+            orderType.type,
+            input.routeKind
+          )
       choices.push({
         value: `order:${input.menuId}:${orderType.type}`,
         label: menuOrderTypeLabel(orderType.type),
@@ -55,7 +83,12 @@ export async function readKitchenMenuChoices(
   db: Firestore,
   input: MenuChoiceInput
 ): Promise<MenuChoice[]> {
-  if (!input.appId || !input.kitchenId || !input.kitchenSlug || !input.currentMenuId) {
+  if (
+    !input.appId ||
+    !input.kitchenId ||
+    !input.currentMenuId ||
+    (input.routeKind !== 'tenant-menu' && !input.kitchenSlug)
+  ) {
     return []
   }
 
@@ -80,6 +113,7 @@ export async function readKitchenMenuChoices(
       menuId: row.id,
       kitchenSlug: input.kitchenSlug,
       currentMenuId: input.currentMenuId,
+      routeKind: input.routeKind,
     })
   )
 }

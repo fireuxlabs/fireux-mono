@@ -54,7 +54,7 @@ const shapeTrack = createOrderingFunnelShapeTrack({
   modeLabel: 'table',
   mode: {
     table: {
-      tableNumber: '12',
+      number: 'Table 12',
     },
   },
   submission: {

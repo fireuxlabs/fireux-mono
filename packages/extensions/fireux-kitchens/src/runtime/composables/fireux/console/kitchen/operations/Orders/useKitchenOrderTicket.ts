@@ -28,6 +28,8 @@ export function useKitchenOrderTicket(
   const copied = ref(false)
   const orderRecord = computed(() => props.order as Record<string, unknown>)
   const collectionRecord = computed(() => record(orderRecord.value.collection))
+  const tableRecord = computed(() => record(orderRecord.value.table))
+  const roomServiceRecord = computed(() => record(orderRecord.value.room_service))
   const orderStatus = computed(() => normalizeString(props.order.status))
   const orderId = computed(() => normalizeString(props.order.id))
   const placedMs = computed(
@@ -89,6 +91,8 @@ export function useKitchenOrderTicket(
         ? 'i-lucide-bike'
         : serviceMode.value === 'pre_order'
           ? 'i-lucide-calendar-clock'
+        : serviceMode.value === 'room_service'
+          ? 'i-lucide-concierge-bell'
         : serviceMode.value === 'dine_in' || serviceMode.value === 'eat_in'
           ? 'i-lucide-utensils'
           : serviceMode.value === 'takeaway'
@@ -114,7 +118,14 @@ export function useKitchenOrderTicket(
         : 'Pre-order'
     }
 
-    if (serviceMode.value === 'dine_in') return 'Dine in'
+    if (serviceMode.value === 'dine_in') {
+      const table = normalizeString(tableRecord.value.number)
+      return table ? `Dine in · ${table}` : 'Dine in'
+    }
+    if (serviceMode.value === 'room_service') {
+      const room = normalizeString(roomServiceRecord.value.room)
+      return room ? `Room service · ${room}` : 'Room service'
+    }
     if (serviceMode.value === 'eat_in') return 'Eat in'
     if (serviceMode.value === 'takeaway') return 'Takeaway'
 
@@ -179,6 +190,8 @@ export function useKitchenOrderTicket(
         : ''
 
     return [
+      normalizeString(tableRecord.value.number),
+      normalizeString(roomServiceRecord.value.room),
       normalizeString(customer.name),
       normalizeString(customer.phone),
       normalizeString(customer.address),

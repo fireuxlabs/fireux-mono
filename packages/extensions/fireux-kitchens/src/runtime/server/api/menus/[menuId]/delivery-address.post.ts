@@ -10,6 +10,7 @@ import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryCoordinates,
   checkMenuDeliveryPlaceId,
+  resolveMenuDeliveryOrigin,
 } from '../../../menu/ordering/delivery-address.ts'
 import { readMenuOrderContext } from '../../../menu/ordering/context.ts'
 import {
@@ -43,7 +44,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
-  const ordering = readMenuOrderingConfig(context.menuData, context.fulfilment)
+  const ordering = readMenuOrderingConfig(
+    context.menuData,
+    context.fulfilment,
+    context.operationHours
+  )
   const deliveryPolicy = ordering.order_types.find((type) =>
     type.type === 'delivery'
   )
@@ -55,15 +60,19 @@ export default defineEventHandler(async (event) => {
   }
 
   const zones = deliveryPolicy.fulfilment?.delivery_zones || []
+  const origin = await resolveMenuDeliveryOrigin(
+    context.kitchenPlaceId || context.kitchenId,
+    zones
+  )
   if (placeId) {
-    return checkMenuDeliveryPlaceId(placeId, zones)
+    return checkMenuDeliveryPlaceId(placeId, zones, origin)
   }
 
   const lat = Number(body?.lat)
   const lng = Number(body?.lng)
   if (Number.isFinite(lat) && Number.isFinite(lng)) {
-    return checkMenuDeliveryCoordinates(lat, lng, zones)
+    return checkMenuDeliveryCoordinates(lat, lng, zones, origin)
   }
 
-  return checkMenuDeliveryAddress(address, zones)
+  return checkMenuDeliveryAddress(address, zones, origin)
 })

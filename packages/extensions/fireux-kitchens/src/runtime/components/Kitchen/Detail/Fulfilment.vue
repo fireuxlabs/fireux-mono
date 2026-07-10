@@ -31,6 +31,7 @@
           <KitchenDetailDeliveryZonesMap
             :zones="deliveryZones"
             :currency-code="currencyCode"
+            :center="deliveryCenter"
           />
         </ClientOnly>
       </UCard>
@@ -57,4 +58,12 @@ const deliveryZones = computed(() =>
   readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
 const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
+const deliveryCenter = computed(() => {
+  const lat = Number(props.kitchen?.lat)
+  const lng = Number(props.kitchen?.lng)
+
+  return Number.isFinite(lat) && Number.isFinite(lng)
+    ? { lat, lng }
+    : undefined
+})
 </script>

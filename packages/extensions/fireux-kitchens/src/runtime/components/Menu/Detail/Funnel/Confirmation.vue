@@ -73,6 +73,8 @@ const record = (value: unknown): Record<string, unknown> =>
 const requestLabel = computed(() => {
   if (props.funnel.order.orderType === 'collection') return 'Collection request'
   if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
+  if (props.funnel.order.orderType === 'dine_in') return 'Dine-in order'
+  if (props.funnel.order.orderType === 'room_service') return 'Room-service order'
   if (['eat_in', 'takeaway'].includes(props.funnel.order.orderType)) return 'Kiosk order'
 
   return 'Order'
@@ -96,6 +98,16 @@ const isKioskFunnel = computed(() =>
   ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
 )
 const customerName = computed(() => text(customer.value.name))
+const destinationLabel = computed(() => {
+  const table = record(order.value.table || receipt.value.table)
+  const roomService = record(
+    order.value.room_service || receipt.value.room_service
+  )
+  if (text(table.number)) return text(table.number)
+  if (text(roomService.room)) return text(roomService.room)
+
+  return ''
+})
 const readyForCounter = computed(() =>
   isKioskFunnel.value &&
     (
@@ -118,6 +130,7 @@ const detailStatus = computed(() => {
   }
   if (paymentAccepted.value) return 'Payment accepted. The kitchen has the order details.'
   if (text(payment.value.status) === 'pending') return 'Payment is in progress.'
+  if (destinationLabel.value) return `${destinationLabel.value}. The kitchen has the order details.`
 
   return 'The kitchen has the order details.'
 })

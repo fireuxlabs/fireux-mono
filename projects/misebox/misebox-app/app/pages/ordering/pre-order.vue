@@ -108,24 +108,24 @@ const preOrderCollectionDiff = {
   same: [
     'basket',
     'allergen',
-    'kitchen can accept or reject',
+    'kitchen can accept or reject after any required payment',
     'one kitchen order shape',
   ],
   collection: {
     timing: 'queue or scheduled pickup',
-    payment: 'full order after kitchen accepts ETA or pickup time',
-    kitchen_receives: 'before payment',
+    payment: 'configured online payment before kitchen acceptance',
+    kitchen_receives: 'after required payment',
     mode_key: 'collection',
   },
   pre_order: {
     timing: 'requested_for is required',
-    payment: 'deposit after kitchen accepts the request',
-    kitchen_receives: 'before deposit payment',
+    payment: 'deposit before kitchen acceptance',
+    kitchen_receives: 'after the deposit is paid',
     mode_key: 'preOrder',
     needs: [
       'notice_hours',
       'party_size',
-      'operator online or offline',
+      'confirmation email',
     ],
   },
 }
@@ -134,6 +134,7 @@ const preOrderOrder: MenuOrderingFunnelState = {
   accepted: false,
   awaitingAcceptance: false,
   currencyCode: 'CHF',
+  channel: 'menu',
   panelOpen: true,
   items: basketItems,
   message: '',
@@ -209,7 +210,7 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
   exists: true,
   order_id: 'demo-pre-order',
   order_number: 'P-104',
-  status: 'pending_acceptance',
+  status: 'pending_payment',
   fire_state: 'held',
   items: basketItems,
   total_chf: basketTotal,
@@ -217,7 +218,7 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
     id: 'demo-pre-order',
     order_number: 'P-104',
     order_type: 'pre_order',
-    status: 'pending_acceptance',
+    status: 'pending_payment',
     requested_for: preOrderDetails.requested_for,
     payment: preOrderPayment,
   },
@@ -237,7 +238,7 @@ const preOrderSending = reactive<MenuOrderingSending>({
   },
   pending: false,
   expected_result: {
-    status: 'pending_acceptance',
+    status: 'pending_payment',
     fire_state: 'held',
   },
   sent_order: preOrderProcessing.order,
@@ -278,11 +279,11 @@ const preOrderFunnel: MenuOrderingFunnelController = {
     const acceptDeposit = () => {
       preOrderPaymentState.pending = false
       preOrderPaymentState.message = 'Deposit accepted.'
-      preOrderProcessing.status = 'open'
+      preOrderProcessing.status = 'pending_acceptance'
       preOrderProcessing.fire_state = 'held'
       if (!preOrderProcessing.order) return
 
-      preOrderProcessing.order.status = 'open'
+      preOrderProcessing.order.status = 'pending_acceptance'
       preOrderProcessing.order.fire_state = 'held'
       preOrderProcessing.order.payment = {
         ...preOrderPayment,

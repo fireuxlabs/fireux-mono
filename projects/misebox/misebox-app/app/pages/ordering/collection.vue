@@ -110,6 +110,7 @@ const collectionOrder: MenuOrderingFunnelState = {
   accepted: false,
   awaitingAcceptance: false,
   currencyCode: 'CHF',
+  channel: 'menu',
   panelOpen: true,
   items: basketItems,
   message: '',

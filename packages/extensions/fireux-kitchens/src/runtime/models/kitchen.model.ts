@@ -117,7 +117,6 @@ export type KitchenFulfilmentPaymentMethod =
   | 'card_at_pickup'
   | 'card_to_driver'
   | 'online_card'
-  | 'deposit'
 
 export type KitchenFulfilmentConfig = {
   delivery_zones: KitchenDeliveryZone[]

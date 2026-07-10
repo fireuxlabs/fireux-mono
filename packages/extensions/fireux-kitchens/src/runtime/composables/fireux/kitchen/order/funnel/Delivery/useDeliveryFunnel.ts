@@ -5,11 +5,6 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import { doc } from 'firebase/firestore'
-import {
-  useDocument,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
@@ -48,14 +43,8 @@ type DeliveryAddressCheckInput =
 
 type UseDeliveryOptions = {
   delivery?: MaybeRefOrGetter<MenuOrderingDeliveryState | null | undefined>
-  orderPath?: MaybeRefOrGetter<string | null | undefined>
-}
-
-type FulfilmentOrder = {
-  id?: string
-  driver_responses?: Record<string, {
-    status?: string
-  }>
+  driverWatchingCount?: MaybeRefOrGetter<number | null | undefined>
+  orderId?: MaybeRefOrGetter<string | null | undefined>
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -138,30 +127,10 @@ export function useDeliveryFunnel(
 
     return `${zoneLabel(matchedZone.value)} · minimum order ${chf(minimum.value)} · fee ${chf(fee.value)}`
   })
-  const db = useFirestore()
-  const resolvedOrderPath = computed(() => text(toValue(options.orderPath)))
-  const orderRef = computed(() =>
-    resolvedOrderPath.value ? doc(db, resolvedOrderPath.value) : null
-  )
-  const { data: activeOrder } = useDocument(orderRef, {
-    ssrKey: computed(() =>
-      resolvedOrderPath.value
-        ? `menu-delivery-order-${resolvedOrderPath.value}`
-        : undefined
-    ),
-    transform: (docSnap: any) => {
-      if (!docSnap?.exists?.()) return undefined
-      return { id: docSnap.id, ...(docSnap.data() ?? {}) } as FulfilmentOrder
-    },
-  } as any)
-  const activeDriverResponses = computed(() =>
-    ((activeOrder.value as FulfilmentOrder | undefined)?.driver_responses || {})
-  )
   const watchingCount = computed(() =>
-    Object.values(activeDriverResponses.value)
-      .filter((response) => text(response?.status) === 'watching')
-      .length
+    Math.max(0, Number(toValue(options.driverWatchingCount)) || 0)
   )
+  const resolvedOrderId = computed(() => text(toValue(options.orderId)))
   const kitchen = computed(() => {
     if (toValue(order).orderType !== 'delivery') {
       return {
@@ -182,7 +151,7 @@ export function useDeliveryFunnel(
     if (!toValue(options.delivery)?.ready) {
       return 'Waiting for a checked delivery address.'
     }
-    if (!resolvedOrderPath.value) return 'Waiting for the order to be created.'
+    if (!resolvedOrderId.value) return 'Waiting for the order to be created.'
     if (watchingCount.value > 0) {
       return `${watchingCount.value} driver${watchingCount.value === 1 ? '' : 's'} watching.`
     }

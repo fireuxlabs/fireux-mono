@@ -42,6 +42,7 @@ import type { KitchenOrderType } from '../../../../../../models/kitchen/order.mo
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
+import { publicMenuSurfaceProfiles } from '../../../../../../utils/menu-context'
 import ConsoleKitchenOperationsMenusQRMenuPanel from './MenuPanel.vue'
 import type { MenuQrPanel, MenuQrTarget } from './types'
 
@@ -107,55 +108,17 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
   })
 
   const enabledTypes = enabledOrderTypes(menu)
-
-  if (enabledTypes.includes('delivery') || enabledTypes.includes('collection')) {
-    const homeModes = enabledTypes
-      .filter((type) => type === 'delivery' || type === 'collection')
-      .map((type) => menuOrderTypeLabel(type))
-      .join(', ')
-
-    addMenuContextTarget(targets, {
-      menuId,
-      context: 'home',
-      label: 'Home Delivery',
-      description: homeModes || 'Delivery and collection.',
-    })
-  }
-
-  if (enabledTypes.includes('dine_in')) {
-    addMenuContextTarget(targets, {
-      menuId,
-      context: 'dine_in',
-      label: 'Dine in',
-      description: 'Dine in.',
-    })
-  }
-
-  if (enabledTypes.includes('eat_in') || enabledTypes.includes('takeaway')) {
-    const kioskModes = enabledTypes
-      .filter((type) => type === 'eat_in' || type === 'takeaway')
-      .map((type) => menuOrderTypeLabel(type))
-      .join(', ')
+  publicMenuSurfaceProfiles.forEach((surface) => {
+    const surfaceTypes = surface.visibleOrderTypes.filter((type) =>
+      enabledTypes.includes(type)
+    )
+    if (!surfaceTypes.length) return
 
     addMenuContextTarget(targets, {
       menuId,
-      context: 'kiosk',
-      label: 'Kiosk Ordering',
-      description: kioskModes || 'Eat in and takeaway.',
-    })
-  }
-
-  ;([
-    'pre_order',
-    'room_service',
-  ] as const).forEach((type) => {
-    if (!enabledTypes.includes(type)) return
-
-    addMenuContextTarget(targets, {
-      menuId,
-      context: type,
-      label: menuOrderTypeLabel(type),
-      description: `${menuOrderTypeLabel(type)} funnel.`,
+      context: surface.context,
+      label: surface.label,
+      description: surfaceTypes.map(menuOrderTypeLabel).join(', '),
     })
   })
 

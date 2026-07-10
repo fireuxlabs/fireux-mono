@@ -1,6 +1,28 @@
 import type { KitchenOrderCustomer, KitchenOrderType } from '../models/kitchen/order.model'
+import type { MenuOrderDepositPolicy } from '../models/kitchen/menu/menu.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
+
+export const menuOrderDepositLabel = (
+  policy: MenuOrderDepositPolicy | null | undefined,
+  fallbackCurrencyCode: string
+) => {
+  if (!policy || !Number.isFinite(Number(policy.amount)) || Number(policy.amount) <= 0) {
+    return ''
+  }
+  if (policy.type === 'percent') return `${Number(policy.amount)}% deposit`
+
+  const currencyCode = text(policy.currency_code || fallbackCurrencyCode).toUpperCase()
+  if (!currencyCode) return ''
+  const amount = new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(Number(policy.amount))
+
+  return policy.type === 'fixed_per_person'
+    ? `${amount} deposit per person`
+    : `${amount} deposit`
+}
 
 export const menuOrderTypeLabel = (type: KitchenOrderType) => {
   const labels: Record<KitchenOrderType, string> = {

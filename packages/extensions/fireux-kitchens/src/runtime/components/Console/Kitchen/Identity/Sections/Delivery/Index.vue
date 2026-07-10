@@ -42,6 +42,7 @@
             class="delivery-zone-map-preview"
             :zones="mapZones"
             :currency-code="currencyCode"
+            :center="deliveryCenter"
             :can-edit="canWrite"
             :editable-mode="activeBoundaryMode"
             :editable-zone-index="activeZoneIndex"
@@ -245,6 +246,14 @@ const deliveryZones = computed<KitchenDeliveryZone[]>(
   () => fulfilment.value.delivery_zones
 )
 const paymentMethods = computed(() => fulfilment.value.payment_methods || [])
+const deliveryCenter = computed(() => {
+  const lat = Number(props.kitchen?.lat)
+  const lng = Number(props.kitchen?.lng)
+
+  return Number.isFinite(lat) && Number.isFinite(lng)
+    ? { lat, lng }
+    : undefined
+})
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberText = (value: unknown) => {

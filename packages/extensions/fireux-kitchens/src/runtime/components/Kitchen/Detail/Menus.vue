@@ -71,6 +71,7 @@ import KitchenDetailMenuLink from './MenuLink.vue'
 import type { Menu } from '../../../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { publicMenuSurfaceProfiles } from '../../../utils/menu-context'
 
 const props = defineProps<{
   kitchen: KitchenSurface
@@ -149,40 +150,12 @@ const menuEntries = (menu: Menu) => [
     to: menuLink(menu.id),
     icon: 'i-lucide-book-open',
   },
-  ...(hasOrderType(menu, ['delivery', 'collection'])
-    ? [{
-        label: 'Home',
-        to: contextualMenuLink(menu, 'home'),
-        icon: 'i-lucide-house',
-      }]
-    : []),
-  ...(hasOrderType(menu, ['pre_order'])
-    ? [{
-        label: 'Pre-order',
-        to: contextualMenuLink(menu, 'pre_order'),
-        icon: 'i-lucide-calendar-clock',
-      }]
-    : []),
-  ...(hasOrderType(menu, ['dine_in'])
-    ? [{
-        label: 'Dine in',
-        to: contextualMenuLink(menu, 'dine_in'),
-        icon: 'i-lucide-utensils',
-      }]
-    : []),
-  ...(hasOrderType(menu, ['eat_in', 'takeaway'])
-    ? [{
-        label: 'Kiosk',
-        to: contextualMenuLink(menu, 'kiosk'),
-        icon: 'i-lucide-monitor',
-      }]
-    : []),
-  ...(hasOrderType(menu, ['room_service'])
-    ? [{
-        label: 'Room service',
-        to: contextualMenuLink(menu, 'room_service'),
-        icon: 'i-lucide-concierge-bell',
-      }]
-    : []),
+  ...publicMenuSurfaceProfiles
+    .filter((surface) => hasOrderType(menu, [...surface.visibleOrderTypes]))
+    .map((surface) => ({
+      label: surface.label,
+      to: contextualMenuLink(menu, surface.context),
+      icon: surface.icon,
+    })),
 ].filter((entry) => entry.to)
 </script>

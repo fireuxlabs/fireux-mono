@@ -45,12 +45,14 @@ const acceptedByKitchen = computed(() =>
 )
 const paymentBeforeKitchen = computed(() =>
   orderStatus.value === 'pending_payment' &&
-    Boolean(payment.value?.required) &&
+    payment.value?.required === true &&
     payment.value?.status !== 'paid'
 )
-const paymentAmount = computed(() =>
-  Number(payment.value?.amount_chf || props.funnel.processing.total_chf || 0)
-)
+const paymentAmount = computed(() => {
+  const amount = Number(payment.value?.amount_chf)
+
+  return Number.isFinite(amount) && amount > 0 ? amount : 0
+})
 const currencyCode = computed(() =>
   props.funnel.order.currencyCode.trim().toUpperCase()
 )
@@ -62,6 +64,7 @@ const totalLabel = computed(() =>
 )
 const canStartPayment = computed(() =>
   props.funnel.processing.exists &&
+    payment.value?.required === true &&
     (acceptedByKitchen.value || paymentBeforeKitchen.value) &&
     payment.value?.status !== 'paid' &&
     orderStatus.value !== 'cancelled' &&
@@ -70,6 +73,12 @@ const canStartPayment = computed(() =>
 const paymentLabel = computed(() => {
   if (!props.funnel.processing.exists) return 'Waiting for kitchen timing first.'
   if (orderStatus.value === 'cancelled') return 'The kitchen could not accept this order.'
+  if (payment.value?.required !== true) {
+    return 'No online payment is required for this order.'
+  }
+  if (paymentAmount.value <= 0) {
+    return 'Online payment is not available for this order.'
+  }
   if (payment.value?.status === 'paid') {
     return props.funnel.payment.message || 'Payment accepted.'
   }

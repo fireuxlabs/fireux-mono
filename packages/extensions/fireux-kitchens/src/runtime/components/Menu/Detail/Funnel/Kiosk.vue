@@ -1,7 +1,7 @@
 <template>
-  <MenuDetailFunnelBasket
+  <MenuDetailFunnelBasketStep
     v-if="step === 1"
-    :order="funnel.order"
+    :funnel="funnel"
   />
 
   <ClientOnly v-else-if="step === 2">

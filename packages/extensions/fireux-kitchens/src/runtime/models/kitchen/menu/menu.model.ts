@@ -7,7 +7,7 @@ import type {
 } from '../../kitchen.model'
 import type { KitchenOrderType } from '../order.model'
 import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
-import type { MenuRouteContext } from './menu-context.model'
+import type { MenuRouteContext, MenuSurface } from './menu-context.model'
 
 /**
  * Family: Menu.
@@ -105,9 +105,11 @@ export type MenuChoice = {
 
 export type MenuServiceProfile = {
   context: MenuRouteContext
+  surface: MenuSurface
   ordering: MenuOrderingConfig
   orderingEnabled: boolean
   orderTypes: KitchenOrderType[]
+  availableOrderTypes: KitchenOrderType[]
   defaultOrderType?: KitchenOrderType
   defaultOrderTypeConfig?: MenuOrderTypeConfig
   choices: MenuChoice[]

@@ -75,17 +75,13 @@
       <div class="menu-pre-order-notice__copy">
         <strong>Pre-order for large groups</strong>
         <span>{{ preOrderNotice }}</span>
-        <span>{{ preOrderDepositNotice }}</span>
+        <span v-if="preOrderDepositNotice">{{ preOrderDepositNotice }}</span>
       </div>
 
       <span
-        class="menu-header-chip menu-pre-order-notice__status"
-        :class="{
-          'menu-pre-order-notice__status--online': preOrderOperatorOnline,
-          'menu-pre-order-notice__status--offline': !preOrderOperatorOnline,
-        }"
+        class="menu-header-chip menu-pre-order-notice__status menu-pre-order-notice__status--offline"
       >
-        {{ preOrderOperatorLabel }}
+        Kitchen confirmation
       </span>
     </section>
   </header>
@@ -99,14 +95,13 @@ import type {
   MenuSurfaceOption,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
-import type { MenuOrderingOperatorPresence } from '../../../models/kitchen/menu/menu-ordering.model'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
+import { menuOrderDepositLabel } from '../../../utils/menu-ordering-ui'
 
 const props = defineProps<{
   menu: MenuManifest
   modelValue: MenuChoiceValue
   choices: MenuChoiceOption[]
-  preOrderOperatorStatus?: MenuOrderingOperatorPresence['status']
   surfaceOptions: MenuSurfaceOption[]
   surfaceLabel: string
 }>()
@@ -124,7 +119,7 @@ const orderType = computed(() =>
     : undefined
 )
 const showSurfaceRail = computed(() =>
-  props.menu.behaviour.context === 'generic' && props.surfaceOptions.length > 1
+  props.menu.behaviour.surface === 'generic' && props.surfaceOptions.length > 0
 )
 const { menuServiceChip: derivedMenuServiceTimes } =
   useMenuServiceComputed(menuServiceTimes, { orderType })
@@ -143,22 +138,18 @@ const preOrderDepositCurrency = computed(() =>
   props.menu.presentation.currencyCode.trim().toUpperCase()
 )
 const preOrderDepositLabel = computed(() =>
-  new Intl.NumberFormat('de-CH', {
-    style: 'currency',
-    currency: preOrderDepositCurrency.value,
-  }).format(10)
+  menuOrderDepositLabel(
+    preOrderPolicy.value?.fulfilment?.deposit,
+    preOrderDepositCurrency.value
+  )
 )
 const preOrderNotice = computed(() =>
   `For large groups, we appreciate a pre-order. Please send it at least ${preOrderNoticeHours.value} hours before you arrive.`
 )
 const preOrderDepositNotice = computed(() =>
-  `Once confirmed, we will ask for a ${preOrderDepositLabel.value} deposit per person.`
-)
-const preOrderOperatorOnline = computed(() =>
-  props.preOrderOperatorStatus === 'online'
-)
-const preOrderOperatorLabel = computed(() =>
-  preOrderOperatorOnline.value ? 'Operator online' : 'Operator offline'
+  preOrderDepositLabel.value
+    ? `Secure payment for the ${preOrderDepositLabel.value} is required before the kitchen can accept this pre-order.`
+    : ''
 )
 </script>
 

@@ -8,34 +8,28 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { readKitchenMenuSections } from '../../../menu/manifest/sections.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
+  resolveMenuDeliveryOrigin,
   type MenuDeliveryAddressResult,
 } from '../../../menu/ordering/delivery-address.ts'
+import { readMenuOrderContext } from '../../../menu/ordering/context.ts'
+import { isMenuOrderingEnabled, readMenuOrderingConfig } from '../../../menu/ordering/config.ts'
 import {
-  currentMenuOrderAppId,
-  readMenuOrderContext,
-} from '../../../menu/ordering/context.ts'
-import {
-  isMenuOrderingEnabled,
-  readMenuOrderingConfig,
-} from '../../../menu/ordering/config.ts'
-import {
-  resolveMenuOrderPayment,
-} from '../../../menu/ordering/payment.ts'
-import {
-  readRequestedMenuOrderItems,
-  resolveMenuOrderAddOns,
-  resolveMenuOrderVariant,
-  type CreateMenuOrderBody,
-} from '../../../menu/ordering/lines.ts'
-import {
-  readWeekdayTimeSelectionState,
-} from '../../../../utils/weekday-time.ts'
+  commitMenuOrderIdempotently,
+  menuOrderReservationResponse,
+  readMenuOrderIdempotentResponse,
+  readMenuOrderIdempotencyKey,
+} from '../../../menu/ordering/idempotency.ts'
+import { resolveMenuOrderPayment } from '../../../menu/ordering/payment.ts'
+import { requireMenuOrderOperator } from '../../../menu/ordering/operator-access.ts'
+import { readRequestedMenuOrderItems, type CreateMenuOrderBody } from '../../../menu/ordering/lines.ts'
+import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
+import { validateMenuOrderSchedule } from '../../../menu/ordering/schedule.ts'
 import {
   money,
+  normalizeOrderChannel,
   normalizeOrderType,
   normalizePaymentMethod,
   numberValue,
@@ -43,30 +37,23 @@ import {
   orderNumber,
   readCollection,
   readCustomer,
+  readOrderRoomService,
+  readOrderTable,
   statusForOrderType,
   text,
 } from '../../../menu/ordering/order-request.ts'
 
-const safeSegment = (value: string) =>
-  Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
-const requestedForParts = (value: unknown) => {
-  const [date = '', time = ''] = text(value).split('T')
-
-  return {
-    date,
-    time: time.slice(0, 5),
-  }
-}
-
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['POST', 'OPTIONS'],
+    headers: ['content-type', 'authorization'],
   })
 
   const menuId = text(getRouterParam(event, 'menuId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   const body = (await readBody(event)) as CreateMenuOrderBody | null
   const requestedItems = readRequestedMenuOrderItems(body)
+  const idempotencyKey = readMenuOrderIdempotencyKey(body?.idempotency_key)
   if (!menuId) {
     throw createError({
       statusCode: 400,
@@ -88,7 +75,11 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Kitchen currency code is required before creating orders.',
     })
   }
-  const ordering = readMenuOrderingConfig(context.menuData, context.fulfilment)
+  const ordering = readMenuOrderingConfig(
+    context.menuData,
+    context.fulfilment,
+    context.operationHours
+  )
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   if (!isMenuOrderingEnabled(ordering)) {
     throw createError({
@@ -98,133 +89,134 @@ export default defineEventHandler(async (event) => {
   }
 
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
+  const channel = normalizeOrderChannel(body?.channel, orderType)
+  const actorId = channel === 'staff_pos'
+    ? await requireMenuOrderOperator(event, context)
+    : 'menu'
   const orderTypeConfig = ordering.order_types.find((type) =>
     type.type === orderType
   )
-  const paymentMethod = normalizePaymentMethod(body?.payment_method, [
-    'online_card',
-  ])
+  const configuredPaymentMethods =
+    orderTypeConfig?.fulfilment?.payment_methods || []
+  const allowedPaymentMethods = orderTypeConfig?.fulfilment?.deposit
+    ? ['deposit' as const]
+    : configuredPaymentMethods
+  const requestedPaymentMethod = normalizePaymentMethod(
+    body?.payment_method,
+    allowedPaymentMethods
+  )
+  const paymentMethod = requestedPaymentMethod ||
+    (orderTypeConfig?.fulfilment?.deposit
+      ? 'deposit'
+      : allowedPaymentMethods.length === 1
+        ? allowedPaymentMethods[0]
+        : undefined)
+  if (allowedPaymentMethods.length && !paymentMethod) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose a payment method.',
+    })
+  }
   const requestedFor = text(body?.requested_for)
   const collection = readCollection(body?.collection, orderType)
-  const customer = readCustomer(body?.customer)
-  if (orderType === 'pre_order') {
-    if (!requestedFor) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Choose when you would like to eat.',
-      })
-    }
-
-    const hours = ordering.service_hours?.operation_hours
-    if (hours?.windows.length) {
-      const selected = requestedForParts(requestedFor)
-      const selection = readWeekdayTimeSelectionState(
-        hours,
-        selected.date,
-        selected.time
-      )
-      if (!selection.available) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Choose a time during pre-order serving hours.',
-        })
-      }
-    }
+  let customer = readCustomer(body?.customer)
+  const table = readOrderTable(body?.table, orderType)
+  const roomService = readOrderRoomService(body?.room_service, orderType)
+  const depositPolicy = orderTypeConfig?.fulfilment?.deposit
+  const depositCurrencyCode = text(depositPolicy?.currency_code).toUpperCase()
+  if (depositCurrencyCode && depositCurrencyCode !== currencyCode.toUpperCase()) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Deposit currency must match the kitchen currency.',
+    })
   }
+  if (
+    depositPolicy?.type === 'fixed_per_person' &&
+    !Number(customer.party_size)
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Party size is required for this deposit.',
+    })
+  }
+  const idempotencyRequest = {
+    channel,
+    ...(actorId !== 'menu' ? { creator_id: actorId } : {}),
+    order_type: orderType,
+    items: requestedItems.map((item) => ({
+      item_id: item.itemId,
+      menu_id: item.menuId || context.menuId,
+      quantity: item.quantity,
+      variant: item.variant
+        ? {
+            id: text(item.variant.id),
+            label: text(item.variant.label),
+          }
+        : null,
+      add_ons: item.addOns.map((addOn) => ({
+        id: text(addOn.id),
+        label: text(addOn.label),
+      })),
+    })),
+    ...(collection ? { collection } : {}),
+    ...(requestedFor ? { requested_for: requestedFor } : {}),
+    ...(paymentMethod ? { payment_method: paymentMethod } : {}),
+    ...(Object.keys(customer).length ? { customer } : {}),
+    ...(table ? { table } : {}),
+    ...(roomService ? { room_service: roomService } : {}),
+  }
+  const db = getRuntimeFirestore()
+  if (idempotencyKey) {
+    const replay = await readMenuOrderIdempotentResponse(db, {
+      appId: context.appId,
+      kitchenId: context.kitchenId,
+      menuId: context.menuId,
+      key: idempotencyKey,
+      request: idempotencyRequest,
+    })
+    if (replay) return replay
+  }
+  validateMenuOrderSchedule({
+    collection,
+    hours: ordering.service_hours?.operation_hours,
+    noticeHours: orderTypeConfig?.notice_hours,
+    orderType,
+    requestedFor,
+  })
   let deliveryAddressResult: MenuDeliveryAddressResult | null = null
   if (orderType === 'delivery') {
     const zones = orderTypeConfig?.fulfilment?.delivery_zones || []
+    const origin = await resolveMenuDeliveryOrigin(
+      context.kitchenPlaceId || context.kitchenId,
+      zones
+    )
     deliveryAddressResult = customer.address_place_id
-      ? await checkMenuDeliveryPlaceId(customer.address_place_id, zones)
-      : await checkMenuDeliveryAddress(customer.address || '', zones)
+      ? await checkMenuDeliveryPlaceId(customer.address_place_id, zones, origin)
+      : await checkMenuDeliveryAddress(customer.address || '', zones, origin)
     if (!deliveryAddressResult.deliverable) {
       throw createError({
         statusCode: 400,
         statusMessage: deliveryAddressResult.reason || 'This address is outside the delivery area.',
       })
     }
-  }
-  const sourceMenuIds = Array.from(new Set(
-    requestedItems.map((item) => text(item.menuId) || context.menuId)
-  ))
-  if (!sourceMenuIds.every(safeSegment)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Menu item source is invalid.',
-    })
-  }
 
-  const db = getRuntimeFirestore()
-  const rowsByMenuId = new Map(
-    await Promise.all(sourceMenuIds.map(async (sourceMenuId) => {
-      const rows = await readKitchenMenuSections(db, {
-        appId: context.appId,
-        kitchenId: context.kitchenId,
-        menuId: sourceMenuId,
-      })
-
-      return [
-        sourceMenuId,
-        new Map(
-          rows.flatMap((section) =>
-            section.items.map((item) => [item.id, item])
-          )
-        ),
-      ] as const
-    }))
-  )
-  const orderItems = requestedItems.map((requestedItem, index) => {
-    const sourceMenuId = text(requestedItem.menuId) || context.menuId
-    const item = rowsByMenuId.get(sourceMenuId)?.get(requestedItem.itemId)
-    if (!item?.dish_id) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Menu item not found.',
-      })
+    const verifiedAddress = deliveryAddressResult.address
+    if (verifiedAddress?.formatted) {
+      customer = {
+        ...customer,
+        address: verifiedAddress.formatted,
+        ...(verifiedAddress.place_id
+          ? { address_place_id: verifiedAddress.place_id }
+          : {}),
+      }
+      if (!verifiedAddress.place_id) delete customer.address_place_id
     }
-    const variant = resolveMenuOrderVariant(item.priceOptions, requestedItem.variant)
-    const addOns = resolveMenuOrderAddOns(item.addOns || [], requestedItem.addOns)
-    const addOnsTotal = addOns.reduce(
-      (sum, addOn) => sum + numberValue(addOn.price),
-      0
-    )
-    const basePrice = variant
-      ? numberValue(variant.price)
-      : numberValue(item.price)
-    const unitPrice = basePrice + addOnsTotal
-    const labelParts = [
-      item.name,
-      variant?.label,
-    ].filter(Boolean)
-
-    return {
-      id: `item-${index + 1}`,
-      menu_id: sourceMenuId,
-      dish_id: item.dish_id,
-      label: labelParts.join(' · '),
-      quantity: requestedItem.quantity,
-      unit_price: unitPrice,
-      ...(addOns.length ? { add_ons: addOns } : {}),
-      ...(variant
-        ? {
-            variant_id: text(variant.id),
-            variant_label: variant.label,
-          }
-        : {}),
-      checked: false,
-    }
+  }
+  const { items: orderItems, subtotal } = await resolveMenuOrderItems(db, {
+    context,
+    orderType,
+    requestedItems,
   })
-  if (!orderItems.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Menu item is required.',
-    })
-  }
-  const subtotal = orderItems.reduce(
-    (sum, item) =>
-      sum + numberValue(item.unit_price) * Math.max(1, Number(item.quantity || 1) || 1),
-    0
-  )
   const deliveryMinimum = numberValue(
     deliveryAddressResult?.zone?.min_order_chf
   )
@@ -283,6 +275,8 @@ export default defineEventHandler(async (event) => {
       ? { requested_for: requestedFor }
       : {}),
     ...(collection ? { collection } : {}),
+    ...(table ? { table } : {}),
+    ...(roomService ? { room_service: roomService } : {}),
     estimated_ready_minutes: 0,
     estimated_ready_at: '',
     ...(Object.keys(customer).length ? { customer } : {}),
@@ -291,7 +285,7 @@ export default defineEventHandler(async (event) => {
           fulfilment_match: {
             type: 'delivery_zone',
             zone: deliveryAddressResult.zone,
-            address: deliveryAddressResult.address,
+            delivery_address: deliveryAddressResult.address,
             subtotal_chf: subtotal,
             fee_chf: numberValue(deliveryAddressResult.zone.fee_chf),
             min_order_chf: deliveryMinimum,
@@ -314,41 +308,46 @@ export default defineEventHandler(async (event) => {
           },
         }
       : {}),
-    channel: 'menu',
+    channel,
+    ...(actorId !== 'menu' ? { creator_id: actorId } : {}),
     items: orderItems,
     payment,
     created_at: now,
     updated_at: now,
     created: {
       at: now,
-      by: 'menu',
-      app_id: currentMenuOrderAppId(),
+      by: actorId,
+      app_id: context.appId,
     },
     updated: {
       at: now,
-      by: 'menu',
+      by: actorId,
     },
   }
 
-  await db.doc(path).set(payload)
-
-  return {
+  const response = {
     id,
     path,
     order_number: number,
     status: nextStatus,
     order_type: orderType,
+    channel,
     ...(collection ? { collection } : {}),
+    ...(table ? { table } : {}),
+    ...(roomService ? { room_service: roomService } : {}),
     receipt: {
       id,
       order_number: number,
       order_type: orderType,
+      channel,
       status: nextStatus,
       created_at: receiptCreatedAt,
       ...(orderType !== 'collection' && requestedFor
         ? { requested_for: requestedFor }
         : {}),
       ...(collection ? { collection } : {}),
+      ...(table ? { table } : {}),
+      ...(roomService ? { room_service: roomService } : {}),
       currency: currencyCode,
       subtotal_chf: subtotal,
       ...(deliveryFee ? { delivery_fee_chf: deliveryFee } : {}),
@@ -365,4 +364,26 @@ export default defineEventHandler(async (event) => {
     },
     payment,
   }
+  const reservationResponse = menuOrderReservationResponse(response)
+
+  if (idempotencyKey) {
+    const committed = await commitMenuOrderIdempotently(db, {
+      appId: context.appId,
+      kitchenId: context.kitchenId,
+      menuId: context.menuId,
+      key: idempotencyKey,
+      request: idempotencyRequest,
+      orderId: id,
+      orderPath: path,
+      payload,
+      response,
+      reservationResponse,
+    })
+
+    return committed.response
+  }
+
+  await db.doc(path).set(payload)
+
+  return response
 })

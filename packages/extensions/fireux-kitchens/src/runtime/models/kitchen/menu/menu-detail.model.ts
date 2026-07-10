@@ -57,10 +57,18 @@ export type MenuManifestPresentation = {
   pageStyle?: Partial<PageStyle>
 }
 
+export type MenuManifestSource = {
+  appId: string
+  kitchenId: string
+  menuId: string
+  kitchenSlug: string
+}
+
 export type MenuManifest = {
   content: MenuManifestContent
   behaviour: MenuManifestBehaviour
   presentation: MenuManifestPresentation
+  source: MenuManifestSource
 }
 
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'

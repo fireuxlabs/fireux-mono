@@ -44,7 +44,8 @@ import { useDeliveryFunnel } from '../../../../../composables/fireux/kitchen/ord
 const props = defineProps<{
   order: MenuOrderingFunnelState
   delivery?: MenuOrderingDeliveryState | null
-  orderPath?: string
+  driverWatchingCount?: number
+  orderId?: string
 }>()
 
 const {
@@ -52,6 +53,7 @@ const {
   kitchen,
 } = useDeliveryFunnel(() => props.order, {
   delivery: () => props.delivery,
-  orderPath: () => props.orderPath,
+  driverWatchingCount: () => props.driverWatchingCount,
+  orderId: () => props.orderId,
 })
 </script>

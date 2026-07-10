@@ -56,7 +56,7 @@
         :class="{ 'menu-order-footer--single': isFirstStep }"
       >
         <button
-          v-if="!isFirstStep"
+          v-if="!isFirstStep && !orderSent"
           type="button"
           class="menu-order-secondary"
           @click="goBack"
@@ -89,9 +89,13 @@ import type { MenuOrderingFunnelController } from '../../../../models/kitchen/me
 const props = defineProps<{
   funnel: MenuOrderingFunnelController
 }>()
+const emit = defineEmits<{
+  (event: 'done'): void
+}>()
 
 const takeAwayOrderTypes = ['collection', 'delivery'] as const
 const kioskOrderTypes = ['eat_in', 'takeaway'] as const
+const destinationOrderTypes = ['dine_in', 'room_service'] as const
 const isTakeAwayOrder = computed(() =>
   takeAwayOrderTypes.includes(
     props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
@@ -102,10 +106,16 @@ const isKioskFunnel = computed(() =>
     props.funnel.order.orderType as typeof kioskOrderTypes[number]
   )
 )
+const hasDestinationStep = computed(() =>
+  destinationOrderTypes.includes(
+    props.funnel.order.orderType as typeof destinationOrderTypes[number]
+  )
+)
 const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
 const funnelStepCount = computed(() => {
   if (isTakeAwayOrder.value || isPreOrder.value) return 6
   if (isKioskFunnel.value) return 4
+  if (hasDestinationStep.value) return 5
 
   return 4
 })
@@ -128,6 +138,7 @@ const shouldSubmitOrderRequest = computed(() => {
 
   if (isPreOrder.value) return step.value === 4
   if (isKioskFunnel.value) return step.value === 3
+  if (hasDestinationStep.value) return step.value === 3
 
   return isTakeAwayOrder.value
     ? step.value === 3
@@ -136,6 +147,7 @@ const shouldSubmitOrderRequest = computed(() => {
 const continueBlocked = computed(() =>
   continueDisabled.value || submittingStep.value
 )
+const orderSent = computed(() => Boolean(props.funnel.sending.sent_order))
 const continueLabel = computed(() => {
   if (submittingStep.value) return 'Sending...'
   return isLastStep.value && !continueBlocked.value ? 'Done' : 'Continue'
@@ -151,6 +163,12 @@ watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
 
 async function continueFunnel() {
   if (continueBlocked.value) return
+  if (isLastStep.value) {
+    props.funnel.clear()
+    props.funnel.close()
+    emit('done')
+    return
+  }
 
   if (shouldSubmitOrderRequest.value) {
     submittingStep.value = true
@@ -159,6 +177,9 @@ async function continueFunnel() {
       const customer = props.funnel.incoming.customer || {}
       const hasCustomer = Object.keys(customer).length > 0
       const created = await props.funnel.submit({
+        ...(props.funnel.incoming.payment_method
+          ? { payment_method: props.funnel.incoming.payment_method }
+          : {}),
         ...(props.funnel.incoming.order_type === 'collection'
           ? { collection: props.funnel.incoming.collection }
           : {}),
@@ -172,6 +193,12 @@ async function continueFunnel() {
                 ...(preOrder?.party_size ? { party_size: preOrder.party_size } : {}),
               },
             }
+          : {}),
+        ...(props.funnel.incoming.table
+          ? { table: props.funnel.incoming.table }
+          : {}),
+        ...(props.funnel.incoming.room_service
+          ? { room_service: props.funnel.incoming.room_service }
           : {}),
         ...(!isPreOrder.value && hasCustomer ? { customer } : {}),
       })

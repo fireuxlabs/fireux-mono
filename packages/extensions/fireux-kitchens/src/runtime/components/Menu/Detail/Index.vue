@@ -44,6 +44,7 @@ import { computed } from 'vue'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import { menuContextProfile } from '../../../utils/menu-context'
 
 const props = defineProps<{
   menuId: string
@@ -67,21 +68,29 @@ const {
 const documentKitchenName = computed(() =>
   documentMenu.value?.kitchenName || ''
 )
-const documentUrl = computed(() =>
-  documentMenu.value?.file?.url || ''
-)
+const documentUrl = computed(() => {
+  const file = documentMenu.value?.file
+  if (file?.url) return file.url
+  if (!file?.storage_path || !menuId.value) return ''
+
+  const query = new URLSearchParams()
+  if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+  const qs = query.toString()
+
+  return `/api/menus/${encodeURIComponent(menuId.value)}/file${qs ? `?${qs}` : ''}`
+})
 const pageStyle = computed(() =>
   detailMenu.value?.presentation.pageStyle ||
   documentMenu.value?.pageStyle ||
   null
 )
 const isKioskMenu = computed(() =>
-  menuContext.value === 'kiosk' ||
-    detailMenu.value?.behaviour.context === 'kiosk'
+  menuContextProfile(menuContext.value).surface === 'kiosk' ||
+    detailMenu.value?.behaviour.surface === 'kiosk'
 )
 const isStaffPosMenu = computed(() =>
-  menuContext.value === 'staff_pos' ||
-    detailMenu.value?.behaviour.context === 'staff_pos'
+  menuContextProfile(menuContext.value).surface === 'staff_pos' ||
+    detailMenu.value?.behaviour.surface === 'staff_pos'
 )
 const {
   className: themeClassName,

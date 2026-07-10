@@ -5,7 +5,14 @@ export type KitchenMenuRouteMode =
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
 
-export function kitchenMenuRouteMode(appKitchenCount: number) {
+export function kitchenMenuRouteMode(
+  appKitchenCount: number,
+  appRole?: unknown
+) {
+  const role = text(appRole).toLowerCase()
+  if (role === 'tenant') return 'single-kitchen-app'
+  if (role === 'global' || role === 'standalone') return 'kitchen-directory'
+
   return appKitchenCount === 1 ? 'single-kitchen-app' : 'kitchen-directory'
 }
 

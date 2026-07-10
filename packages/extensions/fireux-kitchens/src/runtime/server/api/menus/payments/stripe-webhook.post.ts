@@ -17,6 +17,13 @@ import {
 const text = (value: unknown) => String(value ?? '').trim()
 const safeSegment = (value: string) =>
   Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
+const amountMinor = (value: unknown) => {
+  const amount = Number(value)
+
+  return Number.isFinite(amount) && amount > 0
+    ? Math.round(amount * 100)
+    : 0
+}
 
 function readKitchenOrderPaymentMetadata(session: any) {
   const metadata = session?.metadata || {}
@@ -98,8 +105,38 @@ export default defineEventHandler(async (event: H3Event) => {
   const payment = (order.payment && typeof order.payment === 'object')
     ? order.payment as Record<string, unknown>
     : {}
+  const expectedSessionId = text(payment.stripe_checkout_session_id)
+  const expectedAmount = amountMinor(payment.amount_chf)
+  const expectedCurrency = text(payment.currency_code).toLowerCase()
+  const receivedAmount = Number(session?.amount_total)
+  const receivedCurrency = text(session?.currency).toLowerCase()
+  const paymentStatus = text(session?.payment_status).toLowerCase()
+  if (
+    text(order.menu_id) !== metadata.menuId ||
+    paymentStatus !== 'paid' ||
+    !expectedSessionId ||
+    expectedSessionId !== metadata.checkoutSessionId ||
+    expectedAmount <= 0 ||
+    receivedAmount !== expectedAmount ||
+    !expectedCurrency ||
+    receivedCurrency !== expectedCurrency
+  ) {
+    console.warn('[fireux-kitchens] Ignoring unverified Stripe payment completion', {
+      orderId: metadata.orderId,
+      paymentStatus,
+      sessionMatches: expectedSessionId === metadata.checkoutSessionId,
+      amountMatches: receivedAmount === expectedAmount,
+      currencyMatches: receivedCurrency === expectedCurrency,
+      menuMatches: text(order.menu_id) === metadata.menuId,
+    })
+    return { received: true }
+  }
   const orderType = text(order.order_type) as KitchenOrderType
-  const paidStatus = text(payment.resume_status) || statusAfterPayment(orderType)
+  const currentStatus = text(order.status).toLowerCase()
+  const paidStatus = ['cancelled', 'canceled', 'deleted', 'trashed', 'refunded']
+    .includes(currentStatus)
+      ? currentStatus
+      : text(payment.resume_status) || statusAfterPayment(orderType)
   const now = FieldValue.serverTimestamp()
 
   await orderRef.set(

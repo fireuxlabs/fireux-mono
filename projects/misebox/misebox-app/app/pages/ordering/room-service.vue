@@ -55,7 +55,6 @@ const shapeTrack = createOrderingFunnelShapeTrack({
   mode: {
     roomService: {
       room: '204',
-      guestName: 'Guest booking',
     },
   },
   submission: {

@@ -1,6 +1,7 @@
 import {
   createError,
   defineEventHandler,
+  getQuery,
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
@@ -8,12 +9,11 @@ import {
   readRecord,
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
   downloadStorageFile,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
-import { MenuStorage } from '../../../../models/kitchen/menu/menu.model.ts'
+import { resolvePublicMenuTarget } from '../../../menu/ownership/public-target.ts'
 
 export default defineEventHandler(async (event) => {
   const menuId = String(getRouterParam(event, 'menuId') || '').trim()
@@ -24,19 +24,19 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const snap = await getRuntimeFirestore()
-    .collection(MenuStorage.rootCollection)
-    .doc(menuId)
-    .get()
-
-  if (!snap.exists) {
+  const target = await resolvePublicMenuTarget(
+    menuId,
+    getQuery(event).kitchenSlug
+  )
+  const data = target.kind === 'root-doorway'
+    ? target.rootMenuData
+    : target.menuData
+  if (readRecordString(data, 'status') !== 'published') {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found.',
     })
   }
-
-  const data = snap.data() || {}
   const file = readRecord(data.file)
   const objectPath = readRecordString(file, 'storage_path')
   const contentType =

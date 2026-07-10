@@ -1,7 +1,7 @@
 <template>
-  <MenuDetailFunnelBasket
+  <MenuDetailFunnelBasketStep
     v-if="step === 1"
-    :order="funnel.order"
+    :funnel="funnel"
   />
 
   <ClientOnly v-else-if="step === 2">
@@ -18,7 +18,8 @@
     v-else-if="step === 4"
     :order="funnel.order"
     :delivery="funnel.incoming.delivery"
-    :order-path="orderPath"
+    :driver-watching-count="funnel.processing.driver_watching_count"
+    :order-id="funnel.processing.order_id"
   />
 
   <MenuDetailFunnelPayment
@@ -62,12 +63,6 @@ const allergenAccepted = computed({
 const deliveryReady = computed(() =>
   Boolean(props.funnel.incoming.delivery?.ready)
 )
-const orderPath = computed(() =>
-  props.funnel.sending.sent_order?.path ||
-    props.funnel.processing.order?.path ||
-    ''
-)
-
 function setDelivery(delivery: MenuOrderingDeliveryState) {
   props.funnel.collect({ delivery })
 }

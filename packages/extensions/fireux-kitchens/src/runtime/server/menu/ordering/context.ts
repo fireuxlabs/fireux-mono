@@ -1,115 +1,34 @@
 import { createError } from 'h3'
-import { useRuntimeConfig } from '#imports'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
-  menuKitchenFulfilment,
-  menuKitchenIdentity,
-  readAppMenuKitchenData,
-  readMenuKitchenBySlug,
-  readRootMenuKitchenScope,
-  resolveSourceAppId,
-} from '../ownership/kitchen-scope.ts'
-import {
-  MenuStorage,
-  type MenuOrderFulfilmentPolicy,
-} from '../../../models/kitchen/menu/menu.model.ts'
+  currentPublicMenuAppId,
+  resolvePublicMenuTarget,
+} from '../ownership/public-target.ts'
+import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 
 export type MenuOrderContext = {
   appId: string
   kitchenId: string
+  kitchenPlaceId?: string
   kitchenSlug?: string
   kitchenName?: string
   currencyCode?: string
   menuId: string
   menuData: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
+  operationHours?: WeekdayTimeWindowsConfig
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export const currentMenuOrderAppId = () => {
-  const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
-
-  return text(fireux.id)
-}
-
-const readMenuDoc = async (
-  appId: string,
-  kitchenId: string,
-  menuId: string
-) => {
-  const db = getRuntimeFirestore()
-  const snap = await db
-    .collection(`apps/${appId}/kitchens/${kitchenId}/menus`)
-    .doc(menuId)
-    .get()
-
-  if (!snap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const menuData = snap.data() || {}
-  if (readRecordString(menuData, 'status') !== 'published') {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  return menuData
-}
+export const currentMenuOrderAppId = currentPublicMenuAppId
 
 export const readMenuOrderContext = async (
   menuId: string,
   kitchenSlug: string
 ): Promise<MenuOrderContext> => {
-  if (kitchenSlug) {
-    const kitchen = await readMenuKitchenBySlug(kitchenSlug)
-    if (!kitchen) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
-
-    const appId = resolveSourceAppId(kitchen.data, currentMenuOrderAppId())
-    const [menuData, appKitchenData] = await Promise.all([
-      readMenuDoc(appId, kitchen.id, menuId),
-      readAppMenuKitchenData(appId, kitchen.id),
-    ])
-    const identity = menuKitchenIdentity(kitchen.data, appKitchenData)
-
-    return {
-      appId,
-      kitchenId: kitchen.id,
-      kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
-      kitchenName: identity.name,
-      currencyCode: identity.currencyCode,
-      menuId,
-      menuData,
-      fulfilment: menuKitchenFulfilment(kitchen.data, appKitchenData),
-    }
-  }
-
-  const db = getRuntimeFirestore()
-  const rootSnap = await db.collection(MenuStorage.rootCollection).doc(menuId).get()
-  if (!rootSnap.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    })
-  }
-
-  const rootData = rootSnap.data() || {}
-  const scope = await readRootMenuKitchenScope(rootData, currentMenuOrderAppId())
-  const appId = text(scope.kitchenAppId)
-  const kitchenId = text(scope.kitchenId)
-  const scopedMenuId = text(scope.kitchenMenuId) || menuId
-  if (!appId || !kitchenId || !scopedMenuId) {
+  const target = await resolvePublicMenuTarget(menuId, kitchenSlug)
+  if (!target.appId || !target.kitchenId || !target.sourceMenuId) {
     throw createError({
       statusCode: 400,
       statusMessage: 'This menu cannot accept orders yet.',
@@ -117,13 +36,17 @@ export const readMenuOrderContext = async (
   }
 
   return {
-    appId,
-    kitchenId,
-    kitchenSlug: text(scope.kitchenSlug),
-    kitchenName: text(scope.kitchenName),
-    currencyCode: text(scope.currencyCode),
-    menuId: scopedMenuId,
-    menuData: await readMenuDoc(appId, kitchenId, scopedMenuId),
-    fulfilment: scope.fulfilment,
+    appId: target.appId,
+    kitchenId: target.kitchenId,
+    kitchenPlaceId: text(target.scope.kitchenPlaceId) || target.kitchenId,
+    kitchenSlug: target.kitchenSlug,
+    kitchenName: text(target.scope.kitchenName),
+    currencyCode: text(target.scope.currencyCode),
+    menuId: target.sourceMenuId,
+    menuData: target.kind === 'root-doorway'
+      ? target.sourceMenuData
+      : target.menuData,
+    fulfilment: target.scope.fulfilment,
+    operationHours: target.scope.kitchen_operation_hours,
   }
 }

@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import type {
+  KitchenOrderChannel,
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
 } from '../../../models/kitchen/order.model.ts'
@@ -12,6 +13,8 @@ export type MenuOrderVariantInput = {
 }
 
 export type CreateMenuOrderBody = {
+  idempotency_key?: string
+  channel?: KitchenOrderChannel | string
   itemId?: string
   menuId?: string
   menu_id?: string
@@ -36,9 +39,23 @@ export type CreateMenuOrderBody = {
   }
   requested_for?: string
   customer?: KitchenOrderCustomer
+  table?: {
+    number?: unknown
+  }
+  room_service?: {
+    room?: unknown
+  }
 }
 
-type MenuOption = {
+export type RequestedMenuOrderItem = {
+  itemId: string
+  menuId: string
+  quantity: number
+  addOns: MenuOrderVariantInput[]
+  variant: MenuOrderVariantInput | null
+}
+
+export type MenuOrderOption = {
   id?: string
   label: string
   price: number
@@ -46,8 +63,19 @@ type MenuOption = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
-const quantity = (value: unknown) =>
-  Math.max(1, Number(value || 1) || 1)
+const quantity = (value: unknown) => {
+  if (value === undefined || value === null || value === '') return 1
+
+  const parsed = Number(value)
+  if (!Number.isSafeInteger(parsed) || parsed < 1 || parsed > 99) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Item quantity must be a whole number between 1 and 99.',
+    })
+  }
+
+  return parsed
+}
 const variantKey = (value: unknown) =>
   text(value).toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
@@ -76,7 +104,7 @@ const readAddOns = (value: unknown) =>
 
 export const readRequestedMenuOrderItems = (
   body: CreateMenuOrderBody | null
-) => {
+): RequestedMenuOrderItem[] => {
   const items = Array.isArray(body?.items)
     ? body.items
     : [{
@@ -99,18 +127,16 @@ export const readRequestedMenuOrderItems = (
 }
 
 export const resolveMenuOrderVariant = (
-  options: MenuOption[],
+  options: MenuOrderOption[],
   requested: MenuOrderVariantInput | null
 ) => {
   if (!options.length) {
-    return requested?.label
-      ? {
-          id: requested.id,
-          label: requested.label,
-          price: Number(requested.price || 0) || 0,
-          priceLabel: requested.priceLabel,
-        }
-      : null
+    if (!requested) return null
+
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Selected item variant is not available.',
+    })
   }
   if (!requested && options.length === 1) return options[0]
   if (!requested) {
@@ -144,18 +170,15 @@ export const resolveMenuOrderVariant = (
 }
 
 export const resolveMenuOrderAddOns = (
-  options: MenuOption[],
+  options: MenuOrderOption[],
   requested: MenuOrderVariantInput[]
 ) => {
   if (!requested.length) return []
   if (!options.length) {
-    return requested
-      .filter((addOn) => text(addOn.label))
-      .map((addOn) => ({
-        id: text(addOn.id) || variantKey(addOn.label),
-        label: text(addOn.label),
-        price: Number(addOn.price || 0) || 0,
-      }))
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Selected item add-on is not available.',
+    })
   }
 
   return requested.map((requestedAddOn) => {

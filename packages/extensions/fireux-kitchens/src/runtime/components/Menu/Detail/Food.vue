@@ -16,6 +16,7 @@
       >
         <MenuDetailKioskStart
           :kitchen-name="props.menu.presentation.kitchenName"
+          :modes="kioskModeOptions"
           :wordmark-image-url="props.menu.presentation.kitchenWordmarkImageUrl"
           @start="startKiosk"
         />
@@ -30,7 +31,7 @@
           type="button"
           class="menu-kiosk-screen__close"
           aria-label="Go back"
-          @click="resetKiosk"
+          @click="leaveKiosk"
         >
           <UIcon name="i-lucide-x" aria-hidden="true" />
         </button>
@@ -43,6 +44,7 @@
         <MenuDetailFunnel
           v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
           :funnel="interaction.funnel"
+          @done="resetKiosk"
         />
 
         <MenuDetailFunnelTrigger
@@ -54,27 +56,40 @@
   </MenuDetailKioskBackground>
 
   <template v-else-if="isStaffPosContext">
-    <MenuDetailStaffPos
-      :view="interaction.detail.view"
-      @update:selected-choice="interaction.detail.select"
-      @add="interaction.detail.add"
-    />
+    <template v-if="canUseStaffPos">
+      <MenuDetailStaffPos
+        :view="interaction.detail.view"
+        @update:selected-choice="interaction.detail.select"
+        @add="interaction.detail.add"
+      />
 
-    <MenuDetailFunnel
-      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
-      :funnel="interaction.funnel"
-    />
+      <MenuDetailFunnel
+        v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+        :funnel="interaction.funnel"
+      />
 
-    <MenuDetailFunnelTrigger
-      v-else-if="interaction.funnel.show"
-      :funnel="interaction.funnel"
+      <MenuDetailFunnelTrigger
+        v-else-if="interaction.funnel.show"
+        :funnel="interaction.funnel"
+      />
+    </template>
+
+    <UAlert
+      v-else
+      class="mx-auto mt-8 w-full max-w-2xl"
+      :color="staffAccessPending ? 'neutral' : 'error'"
+      variant="soft"
+      :icon="staffAccessPending ? 'i-lucide-loader-circle' : 'i-lucide-shield-alert'"
+      :title="staffAccessPending ? 'Checking operator access' : 'Staff POS access required'"
+      :description="staffAccessPending
+        ? 'Confirming your kitchen role.'
+        : 'Sign in with a kitchen operator account to use this surface.'"
     />
   </template>
 
   <template v-else>
     <MenuDetailContent
       :view="interaction.detail.view"
-      :pre-order-operator-status="preOrderOperatorStatus"
       @update:selected-choice="interaction.detail.select"
       @select-item="interaction.detail.selectItem"
       @add="interaction.detail.add"
@@ -141,28 +156,25 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { useFunnel } from '../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKioskSkinBackground } from '../../../composables/fireux/menu/detail/useKioskSkinBackground'
-import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
+import { useMenuStaffPosAccess } from '../../../composables/fireux/menu/detail/useMenuStaffPosAccess'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import { menuContextProfile } from '../../../utils/menu-context'
 
-type OperatorStatus = 'online' | 'offline'
-type OperatorPresenceWatch = {
-  orderType: string
-  status: OperatorStatus
-}
 type KioskEntryMode = 'eat_in' | 'takeaway'
 type KioskStoredMode = 'start' | KioskEntryMode
-const kioskModeChoices = [
-  'start',
+type KioskModeOption = {
+  mode: KioskEntryMode
+  label: string
+  to?: string
+}
+const kioskEntryModes = [
   'eat_in',
   'takeaway',
-] as const satisfies readonly KioskStoredMode[]
+] as const satisfies readonly KioskEntryMode[]
 
 const props = defineProps<{
   menu: MenuManifest
@@ -174,11 +186,37 @@ const props = defineProps<{
 const interaction = useFunnel({
   menu: () => props.menu,
   menuId: () => props.menuId,
+  sourceMenuId: () => props.menu.source.menuId,
   menuContext: () => props.menuContext,
   kitchenSlug: () => props.kitchenSlug,
+  sessionKitchenSlug: () => props.menu.source.kitchenSlug,
 })
-const { uid } = useAuth()
-const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
+const kitchenSlug = computed(() =>
+  String(props.kitchenSlug || props.menu.source.kitchenSlug || '').trim()
+)
+const kioskModeOptions = computed<KioskModeOption[]>(() =>
+  kioskEntryModes.flatMap((mode) => {
+    const choice = (interaction.detail.view?.choices ?? []).find((option) =>
+      option.orderType === mode
+    )
+    if (!choice) return []
+
+    return [{
+      mode,
+      label: choice.label,
+      ...(choice.to ? { to: choice.to } : {}),
+    }]
+  })
+)
+const availableKioskModes = computed<KioskEntryMode[]>(() =>
+  kioskModeOptions.value
+    .filter((option) => !option.to)
+    .map((option) => option.mode)
+)
+const kioskModeChoices = computed<KioskStoredMode[]>(() => [
+  'start',
+  ...availableKioskModes.value,
+])
 const kioskModeStorageKey = computed(() =>
   [
     'fireux:menu',
@@ -197,38 +235,18 @@ const kioskMode = computed<KioskEntryMode | ''>(() =>
   storedKioskMode.value === 'start' ? '' : storedKioskMode.value
 )
 const kioskStarted = computed(() => storedKioskMode.value !== 'start')
-const { kitchen: rootKitchen } = useKitchenFetch(kitchenSlug, {
-  hydrate: false,
-})
-const scopedKitchenId = computed(() =>
-  String(rootKitchen.value?.id || '').trim()
-)
-const scopedKitchenAppId = computed(() => {
-  const kitchen = rootKitchen.value as Record<string, unknown> | null
-
-  return String(kitchen?.app_scope_app_id || kitchen?.app_id || '').trim()
-})
-const scopedKitchenCollectionPath = computed(() =>
-  scopedKitchenAppId.value
-    ? resolveKitchenScopeCollectionPath(scopedKitchenAppId.value)
-    : ''
-)
-const { kitchen: scopedKitchen } = useKitchenFetch(scopedKitchenId, {
-  collectionPath: scopedKitchenCollectionPath,
-  hydrate: false,
-})
-const preOrderOperatorStatus = computed(() =>
-  targetHasOperator(scopedKitchen.value, String(uid.value || '').trim())
-    ? 'online' as const
-    : 'offline' as const
-)
-const activeOrderType = computed(() => interaction.funnel.order.orderType)
 const isKioskContext = computed(() =>
-  props.menu.behaviour.context === 'kiosk' || props.menuContext === 'kiosk'
+  props.menu.behaviour.surface === 'kiosk' ||
+    menuContextProfile(props.menuContext).surface === 'kiosk'
 )
 const isStaffPosContext = computed(() =>
-  props.menu.behaviour.context === 'staff_pos' || props.menuContext === 'staff_pos'
+  props.menu.behaviour.surface === 'staff_pos' ||
+    menuContextProfile(props.menuContext).surface === 'staff_pos'
 )
+const { canUseStaffPos, staffAccessPending } = useMenuStaffPosAccess({
+  enabled: isStaffPosContext,
+  menu: () => props.menu,
+})
 const showKioskStart = computed(() =>
   isKioskContext.value && !kioskStarted.value
 )
@@ -236,33 +254,30 @@ const { backgroundImageUrl: kioskStartBackgroundImageUrl } = useKioskSkinBackgro
   skin: () => props.menu.presentation.kioskSkin,
 })
 function startKiosk(mode: KioskEntryMode) {
+  if (!interaction.detail.selectOrderType(mode)) return
+
   storedKioskMode.value = mode
-  interaction.detail.select(`order:${mode}`)
 }
 
 function resetKiosk() {
+  interaction.funnel.clear()
+  interaction.funnel.close()
+  storedKioskMode.value = 'start'
+}
+
+function leaveKiosk() {
+  interaction.funnel.close()
   storedKioskMode.value = 'start'
 }
 
 watch(kioskMode, (mode: KioskEntryMode | '') => {
   if (!isKioskContext.value || !mode) return
 
-  interaction.detail.select(`order:${mode}`)
+  if (!interaction.detail.selectOrderType(mode)) {
+    storedKioskMode.value = 'start'
+  }
 }, { immediate: true })
 
-watch((): OperatorPresenceWatch => ({
-  orderType: String(activeOrderType.value || ''),
-  status: preOrderOperatorStatus.value,
-}), ({ orderType, status }: OperatorPresenceWatch) => {
-  if (orderType !== 'pre_order') return
-
-  interaction.funnel.collect({
-    operator: {
-      role: 'kitchen_operator',
-      status,
-    },
-  })
-}, { immediate: true })
 </script>
 
 <style scoped>

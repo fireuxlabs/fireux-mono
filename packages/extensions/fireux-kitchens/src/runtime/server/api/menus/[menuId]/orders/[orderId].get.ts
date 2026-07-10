@@ -55,6 +55,15 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = snap.data() || {}
+  if (text(data.menu_id) !== context.menuId) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Order not found.',
+    })
+  }
+  const driverResponses = data.driver_responses && typeof data.driver_responses === 'object'
+    ? data.driver_responses as Record<string, { status?: unknown }>
+    : {}
 
   return {
     id: orderId,
@@ -64,5 +73,8 @@ export default defineEventHandler(async (event) => {
     fire_state: text(data.fire_state),
     estimated_ready_minutes: numberValue(data.estimated_ready_minutes),
     estimated_ready_at: timestampIso(data.estimated_ready_at),
+    driver_watching_count: Object.values(driverResponses)
+      .filter((response) => text(response?.status) === 'watching')
+      .length,
   }
 })

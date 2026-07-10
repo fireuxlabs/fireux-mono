@@ -80,6 +80,15 @@
       >
         {{ scheduleSelection.label }}
       </p>
+
+      <p
+        v-if="scheduleSelection.available && !noticeSelection.available"
+        class="menu-order-placeholder"
+      >
+        {{ noticeSelection.noticeHours > 0
+          ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
+          : 'Choose a future date and time.' }}
+      </p>
     </section>
   </div>
 </template>
@@ -95,6 +104,7 @@ const props = defineProps<{
 const {
   dateInputOpen,
   mode,
+  noticeSelection,
   openDateInput,
   options,
   scheduleSelection,

@@ -61,19 +61,19 @@ export function useKitchenMenuUrl(options: {
   const singleKitchenId = computed(() =>
     appKitchenCount.value === 1 ? appKitchenIds.value[0] ?? '' : ''
   )
+  const appRecord = computed<Record<string, unknown>>(() =>
+    app.value && typeof app.value === 'object'
+      ? app.value as Record<string, unknown>
+      : {}
+  )
   const routeMode = computed(() =>
-    kitchenMenuRouteMode(appKitchenCount.value)
+    kitchenMenuRouteMode(appKitchenCount.value, appRecord.value.role)
   )
   const menuIndexPath = computed(() =>
     kitchenMenuIndexPath({
       mode: routeMode.value,
       kitchenSlug: kitchenSlug.value,
     })
-  )
-  const appRecord = computed<Record<string, unknown>>(() =>
-    app.value && typeof app.value === 'object'
-      ? app.value as Record<string, unknown>
-      : {}
   )
   const socialLinks = computed<Record<string, unknown>>(() => {
     const links = appRecord.value.social_links

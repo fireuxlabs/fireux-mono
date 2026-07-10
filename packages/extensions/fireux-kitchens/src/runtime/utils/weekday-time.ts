@@ -256,6 +256,17 @@ const zonedDateText = (date: Date, timezone: string) => {
   return year && month && day ? `${year}-${month}-${day}` : ''
 }
 
+const zonedDateTimeText = (date: Date, timezone: string) => {
+  const dateText = zonedDateText(date, timezone)
+  const { minutes } = zonedDayTime(date, timezone)
+  if (!dateText || minutes < 0) return ''
+
+  const hour = String(Math.floor(minutes / 60)).padStart(2, '0')
+  const minute = String(minutes % 60).padStart(2, '0')
+
+  return `${dateText}T${hour}:${minute}`
+}
+
 const inputDateText = (
   value: unknown,
   timezone: string
@@ -338,6 +349,53 @@ export const readWeekdayTimeSelectionState = (
         : available
           ? 'Collection time available.'
           : 'Choose a time during collection hours.',
+  }
+}
+
+export const readWeekdayTimeNoticeState = (
+  value: unknown,
+  requestedForValue: unknown,
+  noticeHoursValue: unknown,
+  now = new Date()
+) => {
+  const hours = readWeekdayTimeWindowsConfig(value)
+  const requestedForInput = text(requestedForValue)
+  const match = requestedForInput.match(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/
+  )
+  const year = Number(match?.[1])
+  const month = Number(match?.[2])
+  const day = Number(match?.[3])
+  const hour = Number(match?.[4])
+  const minute = Number(match?.[5])
+  const second = Number(match?.[6] || 0)
+  const date = match
+    ? new Date(Date.UTC(year, month - 1, day, hour, minute, second))
+    : null
+  const complete = Boolean(
+    match &&
+      date &&
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day &&
+      date.getUTCHours() === hour &&
+      date.getUTCMinutes() === minute &&
+      date.getUTCSeconds() === second
+  )
+  const requestedFor = complete
+    ? `${match?.[1]}-${match?.[2]}-${match?.[3]}T${match?.[4]}:${match?.[5]}`
+    : ''
+  const noticeHours = Math.max(0, Number(noticeHoursValue) || 0)
+  const minimum = zonedDateTimeText(
+    new Date(now.getTime() + noticeHours * 60 * 60 * 1000),
+    hours.timezone
+  )
+
+  return {
+    complete,
+    available: Boolean(complete && minimum && requestedFor >= minimum),
+    minimum,
+    noticeHours,
   }
 }
 

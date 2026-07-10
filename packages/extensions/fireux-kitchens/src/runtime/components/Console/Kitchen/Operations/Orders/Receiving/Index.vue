@@ -193,6 +193,7 @@ const orderId = computed(() => normalize(props.order.id))
 const orderType = computed(() => normalize(props.order.order_type))
 const orderStatus = computed(() => normalize(props.order.status))
 const collection = computed(() => record(orderRecord.value.collection))
+const roomService = computed(() => record(orderRecord.value.room_service))
 const isTerminal = computed(() =>
   ['cancelled', 'canceled', 'closed', 'rejected'].includes(orderStatus.value)
 )
@@ -200,6 +201,7 @@ const isPaymentPending = computed(() => orderStatus.value === 'pending_payment')
 const isCollectionOrder = computed(() => orderType.value === 'collection')
 const isDeliveryOrder = computed(() => orderType.value === 'delivery')
 const isPreOrder = computed(() => orderType.value === 'pre_order')
+const isRoomService = computed(() => orderType.value === 'room_service')
 const requestedFor = computed(() => normalize(collection.value.requested_for))
 const isScheduledCollection = computed(() =>
   isCollectionOrder.value &&
@@ -210,6 +212,7 @@ const incomingIcon = computed(() => {
   if (isDeliveryOrder.value) return 'i-lucide-bike'
   if (isCollectionOrder.value) return 'i-lucide-shopping-bag'
   if (isPreOrder.value) return 'i-lucide-calendar-clock'
+  if (isRoomService.value) return 'i-lucide-concierge-bell'
   return ''
 })
 const incomingTitle = computed(() => {
@@ -218,6 +221,10 @@ const incomingTitle = computed(() => {
   if (isPaymentPending.value && isPreOrder.value) return 'Pre-order deposit'
   if (isPaymentPending.value) return 'Cooking time accepted'
   if (isPreOrder.value) return 'Pre-order request'
+  if (isRoomService.value) {
+    const room = normalize(roomService.value.room)
+    return room ? `Room service · ${room}` : 'Room service request'
+  }
   if (isScheduledCollection.value) return 'Confirm collection time'
   if (isCollectionOrder.value) return 'Collection timing request'
   return 'Set cooking time'

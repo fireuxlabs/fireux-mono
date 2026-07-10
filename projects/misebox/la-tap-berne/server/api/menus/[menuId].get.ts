@@ -10,6 +10,10 @@ import { buildMenuPayload } from 'fireux-kitchens/runtime/server/menu/payload/bu
 import { readKitchenMenuChoices } from 'fireux-kitchens/runtime/server/menu/manifest/choices.ts'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections.ts'
 import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/utils/menu-context.ts'
+import {
+  readKitchenFulfilmentConfig,
+  readKitchenOperationHours,
+} from 'fireux-kitchens/runtime/utils/kitchen-spine.ts'
 import kitchenConfig from '../../../app/config/kitchen.config'
 import { laTapBerneMenuTheme } from '../../data/menu-theme'
 
@@ -70,6 +74,7 @@ export default defineEventHandler(async (event) => {
     kitchenId,
     kitchenSlug,
     currentMenuId: menuId,
+    routeKind: 'tenant-menu',
   })
 
   return buildMenuPayload(menuId, menu, {
@@ -84,5 +89,7 @@ export default defineEventHandler(async (event) => {
     page_style: laTapBerneMenuTheme,
     sections,
     choices,
+    fulfilment: readKitchenFulfilmentConfig(kitchen),
+    kitchen_operation_hours: readKitchenOperationHours(kitchen),
   })
 })

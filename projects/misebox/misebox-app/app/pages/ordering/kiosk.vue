@@ -150,6 +150,7 @@ const kioskOrder: MenuOrderingFunnelState = {
   accepted: true,
   awaitingAcceptance: false,
   currencyCode: 'CHF',
+  channel: 'kiosk',
   panelOpen: true,
   items: basketItems,
   message: '',

@@ -120,6 +120,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { navigateTo } from '#imports'
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
@@ -173,6 +174,7 @@ const homeSelectOptions = computed(() =>
   homeOptions.value.map((option) => ({
     label: methodOptionLabel(option),
     value: option.value,
+    to: option.to,
   }))
 )
 const useHomeSelector = computed(() =>
@@ -282,7 +284,15 @@ function selectOption(option: MenuChoiceOption) {
 
 function selectValue(value: unknown) {
   const nextValue = String(value ?? '')
-  if (nextValue) emit('update:modelValue', nextValue)
+  if (!nextValue) return
+
+  const option = homeOptions.value.find((entry) => entry.value === nextValue)
+  if (option?.to) {
+    void navigateTo(option.to)
+    return
+  }
+
+  emit('update:modelValue', nextValue)
 }
 </script>
 

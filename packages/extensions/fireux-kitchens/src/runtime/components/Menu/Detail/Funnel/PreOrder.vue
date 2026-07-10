@@ -1,7 +1,7 @@
 <template>
-  <MenuDetailFunnelBasket
+  <MenuDetailFunnelBasketStep
     v-if="step === 1"
-    :order="funnel.order"
+    :funnel="funnel"
   />
 
   <ClientOnly v-else-if="step === 2">
@@ -17,7 +17,6 @@
   <MenuDetailFunnelPreOrderKitchen
     v-else-if="step === 4"
     :funnel="funnel"
-    :operator-online="operatorOnline"
     @update:ready="$emit('update:ready', $event)"
   />
 
@@ -44,10 +43,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
-const operatorOnline = computed(() =>
-  props.funnel.incoming.operator?.status === 'online'
-)
-
 const allergenAccepted = computed({
   get: () => Boolean(props.funnel.incoming.allergen_checked),
   set: (accepted: boolean) => {

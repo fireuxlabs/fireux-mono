@@ -187,7 +187,7 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'table.tableNumber',
+      'table.number',
     ],
   },
   {
@@ -249,7 +249,7 @@ const orderingSurfaces: OrderingSurface[] = [
     ],
     unsharedProps: [
       'roomService.room',
-      'roomService.guestName',
+      'customer.name',
     ],
   },
   {
