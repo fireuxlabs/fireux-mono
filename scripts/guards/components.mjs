@@ -70,7 +70,10 @@ function scan(dir, violations, repoRoot) {
     const stat = statSync(fullPath)
 
     if (stat.isDirectory()) {
-      if (fullPath.endsWith(path.join('src', 'runtime', 'components', 'organisms'))) {
+      if (
+        entry.toLowerCase() === 'organisms' &&
+        isComponentTreePath(fullPath)
+      ) {
         violations.push(path.relative(repoRoot, fullPath))
         continue
       }
@@ -114,6 +117,10 @@ function validateRelativeImports(filePath, source, violations, repoRoot) {
 }
 
 function isComponentSourceFile(filePath) {
+  return isComponentTreePath(filePath)
+}
+
+function isComponentTreePath(filePath) {
   const normalized = filePath.split(path.sep).join('/')
   return COMPONENT_PATH_MARKERS.some((marker) => normalized.includes(marker))
 }

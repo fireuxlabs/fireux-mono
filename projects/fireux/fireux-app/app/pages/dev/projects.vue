@@ -94,7 +94,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectConsoleSelection } from '../../composables/fireux/console/project/core/useProjectConsoleSelection'
+import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import type { AppProject, Project } from 'fireux-core/runtime/models/system/project.model'

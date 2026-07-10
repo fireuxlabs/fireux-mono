@@ -19,13 +19,10 @@ type UseProjectConsoleOptions = {
 /**
  * FireUX stack family: Console-backed root entity.
  * Entity: Project.
- * Canon:
- * - docs/fireux-canon.md
- * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
  * This file adapts root Project authority sources into the private /console/project selected runtime.
-   * Project stored truth lives at projects/{projectId}; operator/team ids on that root record are console authority.
- * Project console can manage related App and Ecosystem surfaces as facades over their own stored truth.
+ * Project stored truth lives at projects/{projectId}; operator/team ids on that root record are console authority.
+ * Project console can manage related App and Ecosystem surfaces without redefining their stored identity.
  * It should not redefine generic Project collection reads, app-local project ownership, or related entity identities.
  */
 export function useProjectConsole(

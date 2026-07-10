@@ -291,6 +291,12 @@ Use these mental buckets:
 
 If a domain behavior should work across apps, put it in the owning package, not in a single project app.
 
+Package ownership is checked by `scripts/guards/ownership.mjs`.
+
+- Apps may own pages and app-specific composition for a package-owned console family.
+- Apps must not recreate `components/Console/<Family>` or `composables/fireux/console/<family>` when a package already owns that family.
+- A console family with no package owner may remain app-local while its entity-ness and reuse boundary are still being established.
+
 ## Working Rules
 
 - Keep changes small and localized.

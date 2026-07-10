@@ -21,6 +21,7 @@ import { run as runRoot } from './guards/root.mjs'
 import { run as runDevWorkspace } from './guards/dev-workspace.mjs'
 import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
+import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCore } from './guards/core.mjs'
@@ -43,6 +44,7 @@ const guards = [
   { key: 'dev-workspace', run: runDevWorkspace },
   { key: 'secrets', run: runSecrets },
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
+  { key: 'ownership', run: runOwnership },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
   { key: 'core', run: runCore },

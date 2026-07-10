@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 
@@ -33,6 +33,15 @@ export const APP_REGISTRY = {
     workspace: './projects/fireux/fireux-app',
     port: 3000,
     consoles: ['project'],
+    smokeRoutes: [
+      ...SHARED_ROUTES,
+      ...consoleRoutes(['project']),
+      '/console/project/identity',
+      '/console/project/overview',
+      '/console/project/team',
+      '/console/project/apps',
+      '/console/project/ecosystem',
+    ],
     launchOrder: 1,
   },
   misebox: {
