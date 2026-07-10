@@ -12,7 +12,7 @@ definePageMeta({
     icon: 'i-lucide-receipt-text',
     position: 'top',
     requiresSelection: true,
-    order: 7,
+    order: 8,
     desktop: true,
     mobile: true,
     layouts: ['console'],

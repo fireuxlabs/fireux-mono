@@ -10,6 +10,7 @@ import { useKitchenConsoleOrders } from '../operations/Orders/useKitchenConsoleO
 import { useKitchenConsoleRecipes } from '../operations/Recipes/useKitchenConsoleRecipes'
 import { useKitchenConsoleStations } from '../operations/Stations/useKitchenConsoleStations'
 import { useKitchenConsoleSuppliers } from '../operations/Suppliers/useKitchenConsoleSuppliers'
+import { useKitchenConsoleTables } from '../operations/Tables/useKitchenConsoleTables'
 import { readKitchenCurrencyCode } from '../../../../../utils/kitchen-spine'
 
 type DetailItem = {
@@ -54,6 +55,7 @@ export function useKitchenConsoleOverview() {
   const stationState = useKitchenConsoleStations()
   const miseState = useKitchenConsoleMise()
   const orderState = useKitchenConsoleOrders()
+  const tableState = useKitchenConsoleTables()
 
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
@@ -238,6 +240,15 @@ export function useKitchenConsoleOverview() {
       count: count(recipeState.recipes.value),
       pending: Boolean(recipeState.pending.value),
       to: '/console/kitchen/recipes',
+    },
+    {
+      key: 'tables',
+      label: 'Tables',
+      detail: 'Open table tabs, staged rounds, and billing.',
+      icon: 'i-lucide-layout-grid',
+      count: count(tableState.activeTabs.value),
+      pending: Boolean(tableState.pending.value),
+      to: '/console/kitchen/tables',
     },
     {
       key: 'orders',

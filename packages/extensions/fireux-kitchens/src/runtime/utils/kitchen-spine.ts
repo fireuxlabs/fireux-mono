@@ -215,6 +215,14 @@ export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
   return text(source.currency_code).toUpperCase()
 }
 
+export const readKitchenTableCount = (value: KitchenSpineRecord) => {
+  const count = Number(record(value).tables && record(record(value).tables).count)
+
+  return Number.isSafeInteger(count) && count > 0
+    ? Math.min(count, 500)
+    : 0
+}
+
 export const readKitchenFulfilmentConfig = (
   value: KitchenSpineRecord
 ): KitchenFulfilmentConfig => {

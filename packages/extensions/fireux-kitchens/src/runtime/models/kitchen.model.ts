@@ -61,6 +61,7 @@ export const KitchenStorage = {
     'stations',
     'suppliers',
     'team',
+    'tables',
     'orders',
     'devices',
   ],
@@ -95,6 +96,10 @@ export type KitchenOrdersConfig = {
   printing: {
     ticket_device_id: string
   }
+}
+
+export type KitchenTablesConfig = {
+  count: number
 }
 
 export type KitchenDeliveryZone = {
@@ -179,6 +184,12 @@ export const KitchenModel = {
       ticket_device_id: '',
     },
   } as KitchenOrdersConfig,
+
+  // Front-of-house table numbering. Individual table records can be added
+  // later if tables gain names, zones, capacities, or independent lifecycle.
+  tables: {
+    count: 0,
+  } as KitchenTablesConfig,
 
   // Kitchen-level fulfilment rules. Menus opt into delivery/collection/etc.;
   // the Kitchen owns the actual delivery zones, default payment methods, and
