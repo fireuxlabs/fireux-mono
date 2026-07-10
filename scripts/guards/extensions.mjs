@@ -17,8 +17,7 @@ import path from 'node:path'
  * Opinionated + strict.
  *
  * NOTE:
- * - dist is NOT allowed (delete before commit)
- * - node_modules + tsconfig.tsbuildinfo are tolerated local noise
+ * - generated output is tolerated locally but must remain untracked
  */
 const REQUIRED_L1 = [
   'package.json',
@@ -29,7 +28,7 @@ const REQUIRED_L1 = [
 ]
 
 const ALLOWED_L1 = ['docs']
-const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
+const ALLOWED_NOISE = ['node_modules', 'dist', 'tsconfig.tsbuildinfo', '.DS_Store']
 const KITCHEN_MENU_FILE_LIMIT = 400
 
 export async function run(ctx) {
@@ -148,7 +147,7 @@ function checkExtensionPackage(pkgPath) {
     `- Extension packages MUST expose required L1: ${REQUIRED_L1.join(', ')}`,
     `- Optional L1 entries: ${ALLOWED_L1.join(', ')}`,
     '- Move implementation details into /src',
-    '- Delete dist/ and other build output before committing'
+    '- Keep generated output ignored and untracked'
   )
 
   return lines.join('\n')

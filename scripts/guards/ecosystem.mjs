@@ -15,7 +15,7 @@ const REQUIRED_L1 = [
   '.firebaserc',
 ]
 
-const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
+const ALLOWED_NOISE = ['node_modules', 'dist', 'tsconfig.tsbuildinfo', '.DS_Store']
 
 // Ecosystem config contract (inside each ecosystem package)
 const REQUIRED_CONFIG_DIR = path.join('src', 'config')

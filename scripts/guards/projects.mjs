@@ -67,7 +67,7 @@ function isAllowedDotfile(name) {
   return false
 }
 
-const FORBIDDEN_L1 = [
+const LOCAL_GENERATED_NOISE_L1 = [
   'dist',
   '.nuxt',
   '.output',
@@ -76,11 +76,15 @@ const FORBIDDEN_L1 = [
   '.data',
   'tsconfig.tsbuildinfo',
   '.firebase',
+  'firebase-debug.log',
+]
+
+const HARD_FORBIDDEN_L1 = [
   '.firebaserc',
 ]
 
 const STATIC_HARNESS_FORBIDDEN_L1 = [
-  ...FORBIDDEN_L1,
+  ...HARD_FORBIDDEN_L1,
   'app',
   'server',
   'package.json',
@@ -91,7 +95,7 @@ const STATIC_HARNESS_FORBIDDEN_L1 = [
 
 // pnpm workspaces create per-app node_modules. We allow them locally,
 // but they should never be committed (gitignored).
-const ALLOWED_NOISE_L1 = ['node_modules']
+const ALLOWED_NOISE_L1 = ['node_modules', ...LOCAL_GENERATED_NOISE_L1]
 
 // Public image library baseline expected in every app.
 // Extras are allowed (e.g. fireux-app has additional `img/app/stack/*`).
@@ -167,11 +171,11 @@ function checkProjectApp(appPath) {
     .map((e) => e.name)
 
   const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
-  const forbiddenFound = entries.filter((e) => FORBIDDEN_L1.includes(e))
+  const forbiddenFound = entries.filter((e) => HARD_FORBIDDEN_L1.includes(e))
 
   const allowed = new Set([...REQUIRED_L1, ...ALLOWED_L1])
   const unexpected = entries.filter((e) => {
-    if (FORBIDDEN_L1.includes(e)) return false
+    if (HARD_FORBIDDEN_L1.includes(e)) return false
     if (allowed.has(e)) return false
     if (ALLOWED_NOISE_L1.includes(e)) return false
     if (e.startsWith('.') && isAllowedDotfile(e)) return false
@@ -210,7 +214,7 @@ function checkProjectApp(appPath) {
     `  Required: ${REQUIRED_L1.join(', ')}`,
     `  Allowed: ${ALLOWED_L1.join(', ') || '(none)'}`,
     `  Allowed dotfiles: .env, .env.*`,
-    `- Delete build output (.nuxt/.output/dist/etc) before saving`,
+    `- Keep generated output ignored and untracked`,
     `- Move implementation details into /app or /server`,
     `- Do NOT commit Firebase CLI artifacts (.firebase) or app-level project selectors (.firebaserc)`
   )
@@ -271,7 +275,7 @@ function checkStaticProjectHarness(appPath) {
     '[guard] Fix:',
     '- Static project harnesses are plain external-site tests, not FireUX apps.',
     `- Required: ${STATIC_HARNESS_REQUIRED_L1.join(', ')}`,
-    '- Do not add Nuxt, FireUX runtime, app config, server, env, or build output.'
+    '- Do not add Nuxt, FireUX runtime, app config, server, or env source.'
   )
 
   return lines.join('\n')

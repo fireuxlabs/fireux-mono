@@ -13,7 +13,7 @@ const REQUIRED_L1 = [
   'tsconfig.json',
 ]
 
-const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
+const ALLOWED_NOISE = ['node_modules', 'dist', 'tsconfig.tsbuildinfo', '.DS_Store']
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -81,7 +81,7 @@ function checkCorePackage(pkgPath) {
     '[guard] Fix:',
     `- Core packages MUST match L1 exactly: ${REQUIRED_L1.join(', ')}`,
     '- Move implementation into /src',
-    '- Delete build output (dist) and other junk before committing'
+    '- Keep generated output ignored and untracked'
   )
 
   return lines.join('\n')

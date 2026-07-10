@@ -19,6 +19,7 @@ import process from 'node:process'
 import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import { run as runRoot } from './guards/root.mjs'
 import { run as runSecrets } from './guards/secrets.mjs'
+import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCore } from './guards/core.mjs'
@@ -38,6 +39,7 @@ try {
 const guards = [
   { key: 'root', run: runRoot },
   { key: 'secrets', run: runSecrets },
+  { key: 'generated-artifacts', run: runGeneratedArtifacts },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
   { key: 'core', run: runCore },

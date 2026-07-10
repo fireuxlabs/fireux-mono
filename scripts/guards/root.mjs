@@ -30,6 +30,7 @@ const ALLOWED_ROOT_DIRS = new Set([
 
   // Local-only (ignored, but tolerated)
   'node_modules',
+  '.pnpm-store',
   'demo',
 ])
 

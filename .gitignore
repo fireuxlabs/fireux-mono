@@ -2,6 +2,7 @@
 **/.firebase/**
 # Node modules
 node_modules/
+.pnpm-store/
 
 # Logs
 logs/

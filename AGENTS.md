@@ -140,8 +140,16 @@ Project app shape is controlled by `scripts/guards/projects.mjs`.
 
 - Required L1: `app`, `public`, `server`, `package.json`, `nuxt.config.ts`, `tsconfig.json`, `firebase.json`, `.env`.
 - Allowed L1 extras: `docs`, `content.config.ts`.
-- Forbidden L1: build output, `.firebase`, `.firebaserc`, `.nuxt`, `.output`, `dist`, `tsconfig.tsbuildinfo`.
+- `.firebaserc` remains forbidden at app L1 because ecosystem packages own Firebase project selection.
+- Known generated output such as `.firebase`, `.nuxt`, `.output`, `.data`, `dist`, and `tsconfig.tsbuildinfo` is tolerated locally but must never be tracked.
 - Every app must include the baseline public image library under `public/img/app`.
+
+Generated-artifact containment is controlled by `scripts/guards/generated-artifacts.mjs`.
+
+- Guards enforce authored source shape separately from disposable local output.
+- Known build, cache, coverage, Firebase CLI, and TypeScript build artifacts may exist while development tools are running.
+- Those artifacts must remain ignored and untracked; the generated-artifacts guard checks the Git index.
+- Use `pnpm pre-guard-clean` when an intentionally artifact-free filesystem is needed. Do not require it merely to validate authored source shape.
 
 ## Runtime Package Spine
 

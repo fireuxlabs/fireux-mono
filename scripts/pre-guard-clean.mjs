@@ -3,8 +3,9 @@
 // last_used: 2026-07-08
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/pre-guard-clean.mjs
-// Removes local build artifacts that violate FireUX guard L1 shape rules.
-// Intentionally conservative: only removes known-forbidden directories at known locations.
+// Removes local build artifacts when an intentionally artifact-free filesystem is needed.
+// Guards validate authored source shape separately and reject generated files only when tracked.
+// Intentionally conservative: only removes known generated paths at known locations.
 
 import { existsSync } from 'node:fs'
 import { rm, readdir } from 'node:fs/promises'
