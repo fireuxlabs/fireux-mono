@@ -129,16 +129,16 @@ const chooseGroup = (groupId: KioskGroupId) => {
   activeSectionId.value = ''
 }
 
-watch(groups, (nextGroups) => {
-  const current = nextGroups.find((group) => group.id === activeGroupId.value)
+watch(groups, (nextGroups: KioskGroup[]) => {
+  const current = nextGroups.find((group: KioskGroup) => group.id === activeGroupId.value)
   if (current?.count) return
 
-  const firstAvailable = nextGroups.find((group) => group.count)
+  const firstAvailable = nextGroups.find((group: KioskGroup) => group.count)
   if (firstAvailable) activeGroupId.value = firstAvailable.id
 }, { immediate: true })
 
-watch(activeSections, (sections) => {
-  if (sections.some((section) => section.id === activeSectionId.value)) return
+watch(activeSections, (sections: MenuManifestSection[]) => {
+  if (sections.some((section: MenuManifestSection) => section.id === activeSectionId.value)) return
 
   activeSectionId.value = sections[0]?.id || ''
 }, { immediate: true })

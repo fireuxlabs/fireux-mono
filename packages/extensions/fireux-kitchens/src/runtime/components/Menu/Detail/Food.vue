@@ -53,6 +53,24 @@
     </Transition>
   </MenuDetailKioskBackground>
 
+  <template v-else-if="isStaffPosContext">
+    <MenuDetailStaffPos
+      :view="interaction.detail.view"
+      @update:selected-choice="interaction.detail.select"
+      @add="interaction.detail.add"
+    />
+
+    <MenuDetailFunnel
+      v-if="interaction.funnel.show && interaction.funnel.order.panelOpen"
+      :funnel="interaction.funnel"
+    />
+
+    <MenuDetailFunnelTrigger
+      v-else-if="interaction.funnel.show"
+      :funnel="interaction.funnel"
+    />
+  </template>
+
   <template v-else>
     <MenuDetailContent
       :view="interaction.detail.view"
@@ -208,6 +226,9 @@ const activeOrderType = computed(() => interaction.funnel.order.orderType)
 const isKioskContext = computed(() =>
   props.menu.behaviour.context === 'kiosk' || props.menuContext === 'kiosk'
 )
+const isStaffPosContext = computed(() =>
+  props.menu.behaviour.context === 'staff_pos' || props.menuContext === 'staff_pos'
+)
 const showKioskStart = computed(() =>
   isKioskContext.value && !kioskStarted.value
 )
@@ -223,7 +244,7 @@ function resetKiosk() {
   storedKioskMode.value = 'start'
 }
 
-watch(kioskMode, (mode) => {
+watch(kioskMode, (mode: KioskEntryMode | '') => {
   if (!isKioskContext.value || !mode) return
 
   interaction.detail.select(`order:${mode}`)

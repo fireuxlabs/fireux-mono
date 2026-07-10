@@ -118,6 +118,11 @@ const surfaceContexts = [
     orderTypes: ['eat_in', 'takeaway'],
   },
   {
+    context: 'staff_pos',
+    label: 'Staff POS',
+    orderTypes: ['eat_in', 'takeaway'],
+  },
+  {
     context: 'pre_order',
     label: 'Pre-order',
     orderTypes: ['pre_order'],
@@ -137,6 +142,7 @@ const contextLabels = {
   home: 'Home',
   table: 'Table',
   kiosk: 'Kiosk',
+  staff_pos: 'Staff POS',
   dine_in: 'Dine in',
   eat_in: 'Eat in',
   takeaway: 'Takeaway',
@@ -314,6 +320,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const sessionGuard = useOrderSessionConflict({
     enabled: orderChoiceActive,
     kitchenSlug,
+    context: menuContext,
     menuId,
     orderType: selectedOrderType,
   })

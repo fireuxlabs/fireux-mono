@@ -254,25 +254,19 @@ const orderingSurfaces: OrderingSurface[] = [
   },
   {
     title: 'Staff POS',
-    description: 'Operator enters an order for a guest. This is not a public menu context yet.',
+    description: 'Operator enters an in-store order quickly from the menu.',
     icon: 'i-lucide-monitor',
-    parked: true,
+    to: '/ordering/staff-pos',
     modes: [
-      {
-        label: 'Dine in',
-        orderType: 'dine_in',
-      },
       {
         label: 'Eat in',
         orderType: 'eat_in',
+        to: '/ordering/staff-pos',
       },
       {
         label: 'Takeaway',
         orderType: 'takeaway',
-      },
-      {
-        label: 'Collection',
-        orderType: 'collection',
+        to: '/ordering/staff-pos',
       },
     ],
     unsharedProps: [

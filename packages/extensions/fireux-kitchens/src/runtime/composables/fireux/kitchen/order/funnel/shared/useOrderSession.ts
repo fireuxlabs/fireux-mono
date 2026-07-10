@@ -9,6 +9,7 @@ import {
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
+import { menuContextProfile } from '../../../../../../utils/menu-context'
 
 type StoredSessionLine = {
   id?: string
@@ -39,6 +40,7 @@ type UseOrderSessionConflictOptions = {
   kitchenSlug: MaybeRefOrGetter<string | null | undefined>
   menuId: MaybeRefOrGetter<string | null | undefined>
   orderType: MaybeRefOrGetter<KitchenOrderType>
+  context?: MaybeRefOrGetter<MenuRouteContext | null | undefined>
 }
 
 const orderTypes = [
@@ -186,6 +188,7 @@ export function useOrderSessionConflict(
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const menuId = computed(() => text(toValue(options.menuId)))
   const orderType = computed(() => toValue(options.orderType))
+  const currentContext = computed(() => toValue(options.context))
   const enabled = computed(() => toValue(options.enabled) === true)
   const summaries = useOrderSessionSummaries(kitchenSlug)
   const conflictingSession = computed<MenuOrderSessionSummary | null>(() =>
@@ -201,6 +204,10 @@ export function useOrderSessionConflict(
     if (!hasConflict.value || !session) return null
 
     const conflictMenuId = session.firstMenuId || menuId.value
+    const profile = menuContextProfile(currentContext.value)
+    const context = profile.visibleOrderTypes.includes(session.orderType)
+      ? profile.context
+      : orderSessionContextForOrderType(session.orderType)
 
     return {
       currentLabel: menuOrderTypeLabel(orderType.value),
@@ -208,7 +215,7 @@ export function useOrderSessionConflict(
       orderType: session.orderType,
       quantity: session.quantity,
       to: orderSessionMenuPath({
-        context: orderSessionContextForOrderType(session.orderType),
+        context,
         kitchenSlug: kitchenSlug.value,
         menuId: conflictMenuId,
       }),

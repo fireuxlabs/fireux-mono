@@ -55,6 +55,14 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     defaultOrderType: 'eat_in',
     locked: false,
   },
+  staff_pos: {
+    context: 'staff_pos',
+    surface: 'staffPos',
+    fulfilmentModes: ['eatIn', 'takeaway'],
+    visibleOrderTypes: ['eat_in', 'takeaway'],
+    defaultOrderType: 'eat_in',
+    locked: false,
+  },
   dine_in: {
     context: 'dine_in',
     visibleOrderTypes: ['dine_in'],

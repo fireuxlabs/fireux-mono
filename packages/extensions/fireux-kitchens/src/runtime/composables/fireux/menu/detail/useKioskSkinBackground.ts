@@ -8,6 +8,7 @@ import {
 } from 'vue'
 import type {
   MenuKioskSkin,
+  MenuKioskSkinBackground,
   MenuKioskSkinBackgroundKey,
 } from '../../../../models/kitchen/menu/kiosk-skin.model'
 
@@ -50,9 +51,13 @@ export function useKioskSkinBackground(options: UseKioskSkinBackgroundOptions) {
 
   const backgroundImageUrl = computed(() => {
     const skin = toValue(options.skin)
-    const backgrounds = skin?.backgrounds ?? {}
+    const backgrounds: Partial<
+      Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>
+    > = skin?.backgrounds ?? {}
     const key = backgroundFallbacks[backgroundKey.value]
-      .find((fallbackKey) => backgrounds[fallbackKey]?.imageUrl)
+      .find((fallbackKey: MenuKioskSkinBackgroundKey) =>
+        backgrounds[fallbackKey]?.imageUrl
+      )
 
     return key
       ? backgrounds[key]?.imageUrl || ''

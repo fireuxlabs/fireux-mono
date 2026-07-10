@@ -55,7 +55,8 @@
   --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
 }
 
-.fireux-menu-detail.menu-detail--kiosk {
+.fireux-menu-detail.menu-detail--kiosk,
+.fireux-menu-detail.menu-detail--staff-pos {
   gap: 0;
   width: 100%;
   min-height: 100vh;
@@ -63,6 +64,9 @@
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #000;
   text-align: initial;
+}
+
+.fireux-menu-detail.menu-detail--kiosk {
+  background: #000;
 }
