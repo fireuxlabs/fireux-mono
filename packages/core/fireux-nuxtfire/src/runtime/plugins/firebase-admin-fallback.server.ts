@@ -114,9 +114,6 @@ export default defineNuxtPlugin(async () => {
     event.context.firebaseApp = firebaseAdminApp
   }
 
-  return {
-    provide: {
-      firebaseAdminApp,
-    },
-  }
+  // nuxt-vuefire's Admin plugin runs after this prepended initializer. It sees
+  // the named app above and owns the single `$firebaseAdminApp` Nuxt injection.
 })

@@ -108,13 +108,14 @@ export default defineNuxtModule({
       )
     }
 
-    // nuxt-vuefire assumes every GOOGLE_APPLICATION_CREDENTIALS file is a
-    // service-account key and may log inline JSON. Hide the variable only
-    // while its module installs; FireUX initializes Admin at runtime with
-    // the Firebase SDK's full ADC support.
+    // nuxt-vuefire uses GOOGLE_APPLICATION_CREDENTIALS only as a boolean
+    // signal while registering its SSR plugins, but later assumes the value is
+    // a service-account key and may log inline JSON. Give registration a safe,
+    // non-secret sentinel, then restore the real ADC environment. FireUX's
+    // prepended server plugin owns Admin initialization before VueFire runs.
     const googleApplicationCredentials =
       process.env.GOOGLE_APPLICATION_CREDENTIALS
-    delete process.env.GOOGLE_APPLICATION_CREDENTIALS
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = '{"fireux_managed":true}'
     try {
       await installModule('nuxt-vuefire')
     } finally {
