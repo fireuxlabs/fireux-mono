@@ -1,7 +1,6 @@
 {
   "projectId": "misebox-78f9c",
   "databaseId": "misebox",
-  "serviceAccount": "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json",
   "kitchenPath": "kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0",
   "menuPath": "kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menus/main",
   "outputDir": "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne",

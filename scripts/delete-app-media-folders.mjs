@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * Deletes ALL Firebase Storage objects under apps/{appId}/media/**
@@ -21,6 +21,10 @@ import process from 'node:process'
 import admin from 'firebase-admin'
 
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 import { listBucketObjects } from './_lib/firebase-storage.mjs'
 
 const workspaceRoot = process.cwd()
@@ -35,6 +39,9 @@ async function main() {
 Deletes ALL objects under apps/{appId}/media/** for each audited app.
 
 By default this is a dry-run. Pass --apply to actually delete.
+
+Credential sources, in precedence order:
+${firebaseAdminCredentialHelp().map((line) => `- ${line}`).join('\n')}
 `)
     process.exit(0)
   }
@@ -69,16 +76,9 @@ By default this is a dry-run. Pass --apply to actually delete.
     const eco = ecosystems[ecoId]
     const projectId = eco?.projectId
     const bucketName = eco?.bucket
-    const serviceAccountRel = eco?.serviceAccount
 
-    if (!projectId || !bucketName || !serviceAccountRel) {
-      console.warn(`[skip] ${ecoId}: missing projectId/bucket/serviceAccount in audit report`)
-      continue
-    }
-
-    const serviceAccountPath = path.join(workspaceRoot, serviceAccountRel)
-    if (!fs.existsSync(serviceAccountPath)) {
-      console.warn(`[skip] ${ecoId}: missing service account at ${serviceAccountRel}`)
+    if (!projectId || !bucketName) {
+      console.warn(`[skip] ${ecoId}: missing projectId/bucket in audit report`)
       continue
     }
 
@@ -91,11 +91,15 @@ By default this is a dry-run. Pass --apply to actually delete.
       continue
     }
 
+    const auth = await resolveFirebaseAdminCredential({
+      args,
+      scope: ecoId || projectId,
+      projectId,
+    })
+
     const app = admin.initializeApp(
       {
-        credential: admin.credential.cert(
-          JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'))
-        ),
+        credential: auth.credential,
         projectId,
         storageBucket: bucketName,
       },

@@ -79,16 +79,20 @@
 
             <div v-if="isFirebaseAdminCredentialError" class="space-y-3">
               <p class="text-sm font-medium text-gray-900 dark:text-white">
-                Firebase admin credentials are misconfigured.
+                Firebase Admin could not initialize credentials.
               </p>
               <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 <li class="flex gap-2">
                   <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>Point <code>GOOGLE_APPLICATION_CREDENTIALS</code> at a valid Firebase service-account JSON file.</span>
+                  <span>If this runtime uses Application Default Credentials, verify its workload identity or default service account and Firebase IAM access.</span>
                 </li>
                 <li class="flex gap-2">
                   <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>Or set <code>FIREBASE_PROJECT_ID</code>, <code>FIREBASE_CLIENT_EMAIL</code>, and <code>FIREBASE_PRIVATE_KEY</code>.</span>
+                  <span>Otherwise configure <code>GOOGLE_APPLICATION_CREDENTIALS</code>, <code>FIREBASE_SERVICE_ACCOUNT_FILE</code>, inline service-account JSON, or the split <code>FIREBASE_*</code> keys.</span>
+                </li>
+                <li class="flex gap-2">
+                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span>Local ADC that mints custom tokens may also need <code>FIREBASE_SERVICE_ACCOUNT_ID</code> and IAM <code>signBlob</code> permission.</span>
                 </li>
               </ul>
             </div>
@@ -204,7 +208,10 @@ const isFirebaseAdminCredentialError = computed(() => {
   return (
     message.includes('Service account object must contain a string "private_key"') ||
     message.includes('private_key is missing in GOOGLE_APPLICATION_CREDENTIALS') ||
-    message.includes('Failed to parse service account')
+    message.includes('Failed to parse service account') ||
+    message.includes('Could not load the default credentials') ||
+    message.includes('Unable to detect a Project Id') ||
+    message.includes('Unable to detect a Project ID')
   )
 })
 
@@ -225,7 +232,7 @@ const authAction = computed(() => {
 
 const supportCopy = computed(() => {
   if (isFirebaseAdminCredentialError.value) {
-    return 'The app is running, but the server-side Firebase credentials are incomplete.'
+    return 'The app is running, but Firebase Admin could not initialize from explicit credentials or the runtime ADC environment.'
   }
 
   if (statusCode.value === 401 || statusCode.value === 403) {

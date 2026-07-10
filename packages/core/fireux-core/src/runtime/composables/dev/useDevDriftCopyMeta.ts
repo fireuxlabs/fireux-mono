@@ -10,7 +10,6 @@ export interface DevDriftCopyMeta {
     appConfigPath: string
     firebaseConfigDir: string
     ecosystemConfigPath: string
-    serviceAccountPath: string
   }
 }
 
@@ -33,7 +32,6 @@ export function useDevDriftCopyMeta(): DevDriftCopyMeta {
       appConfigPath: `projects/${ecosystem}/${appId}/nuxt.config.ts`,
       firebaseConfigDir,
       ecosystemConfigPath: `${firebaseConfigDir}/ecosystem.config.ts`,
-      serviceAccountPath: `${firebaseConfigDir}/service-account.json`,
     },
   }
 }

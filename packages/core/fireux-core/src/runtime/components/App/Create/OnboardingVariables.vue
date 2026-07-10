@@ -26,8 +26,8 @@
           Optional (client): {{ summaryOptionalClient }}
         </UBadge>
         <UBadge :color="adminBadgeColor" variant="soft">
-          Admin SDK:
-          {{ envData.server?.adminAuth?.configured ? 'configured' : 'missing' }}
+          Explicit Admin auth:
+          {{ envData.server?.adminAuth?.configured ? 'detected' : 'ADC unprobed' }}
         </UBadge>
         <UBadge :color="brandBadgeColor" variant="soft">
           Brand assets: {{ summaryBrand }}
@@ -271,13 +271,12 @@ const hasRequiredIssues = computed(() => missingRequiredCount.value > 0)
 const hasBrandIssues = computed(() =>
   brandAssets.value.some((asset) => asset.ok === false)
 )
-const adminConfigured = computed(
+const explicitAdminConfigured = computed(
   () => envData.value?.server?.adminAuth?.configured ?? false
 )
-const hasAdminIssues = computed(() => !adminConfigured.value)
 const overallValid = computed(
   () =>
-    !hasRequiredIssues.value && !hasBrandIssues.value && !hasAdminIssues.value
+    !hasRequiredIssues.value && !hasBrandIssues.value
 )
 
 const status = computed(() => {
@@ -303,21 +302,12 @@ const status = computed(() => {
     }
   }
 
-  if (hasAdminIssues.value) {
-    return {
-      color: 'error' as const,
-      icon: 'i-ph-warning',
-      title: 'Firebase Admin SDK missing',
-      description:
-        'Add FIREBASE_SERVICE_ACCOUNT (or file) so server features and onboarding can run.',
-    }
-  }
-
   return {
     color: 'success' as const,
     icon: 'i-ph-check-circle',
-    title: 'Ready to create app',
-    description: 'All required variables and assets look good.',
+    title: 'Configuration checks passed',
+    description:
+      'Required variables and assets look good. ADC is resolved only when Firebase Admin initializes.',
   }
 })
 
@@ -328,7 +318,7 @@ const brandBadgeColor = computed(() =>
   hasBrandIssues.value ? 'error' : 'success'
 )
 const adminBadgeColor = computed(() =>
-  adminConfigured.value ? 'success' : 'error'
+  explicitAdminConfigured.value ? 'success' : 'neutral'
 )
 
 const assetPreviewSrc = (asset: { path: string }) => {

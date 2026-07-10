@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -123,19 +123,30 @@ function updateTsProjectRefs(repoRoot, slug) {
   }
 }
 
-function ensureGenericServiceAccountException(repoRoot) {
+function ensureServiceAccountIgnoreContract(repoRoot) {
   const file = path.join(repoRoot, '.gitignore')
   const raw = readFileSync(file, 'utf8')
-  const line = '!packages/ecosystem/**/src/config/firebase/service-account.json'
-  if (raw.includes(line)) return
-  writeFileSync(file, `${raw.trimEnd()}\n${line}\n`, 'utf8')
+  const unsafeException =
+    '!packages/ecosystem/**/src/config/firebase/service-account.json'
+  const requiredLines = [
+    '**/service-account.json',
+    '**/*service-account*.json',
+    '!packages/ecosystem/**/src/config/firebase/service-account.example.json',
+  ]
+  const lines = raw
+    .split(/\r?\n/)
+    .filter((line) => line.trim() !== unsafeException)
+
+  for (const line of requiredLines) {
+    if (!lines.includes(line)) lines.push(line)
+  }
+
+  writeFileSync(file, `${lines.join('\n').trimEnd()}\n`, 'utf8')
 }
 
 function makeFiles({ slug, pkgName, displayName, description, firebaseProject, ssrRegion, team }) {
   const authDomain = `${firebaseProject}.firebaseapp.com`
   const storageBucket = `${firebaseProject}.firebasestorage.app`
-  const safeSlug = slug.replace(/[^a-z0-9-]/g, '')
-
   return [
     ['package.json', `{
   "name": "${pkgName}",
@@ -286,17 +297,17 @@ export const ecosystemConfig = {
   ssrRegion: '${ssrRegion}',
 } as const satisfies FireuxEcosystemConfig
 `],
-    ['src/config/firebase/service-account.json', `{
+    ['src/config/firebase/service-account.example.json', `{
   "type": "service_account",
-  "project_id": "${firebaseProject}",
-  "private_key_id": "replace_me",
+  "project_id": "REPLACE_WITH_FIREBASE_PROJECT_ID",
+  "private_key_id": "",
   "private_key": "",
-  "client_email": "firebase-adminsdk-${safeSlug}@${firebaseProject}.iam.gserviceaccount.com",
-  "client_id": "000000000000000000000",
+  "client_email": "REPLACE_WITH_FIREBASE_CLIENT_EMAIL",
+  "client_id": "",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-${safeSlug}%40${firebaseProject}.iam.gserviceaccount.com"
+  "client_x509_cert_url": ""
 }
 `],
     ['src/config/module/components-config.ts', `import type { Resolver } from '@nuxt/kit'
@@ -504,13 +515,13 @@ function main() {
 
   updateTsconfigBase(repoRoot, pkgName)
   updateTsProjectRefs(repoRoot, slug)
-  ensureGenericServiceAccountException(repoRoot)
+  ensureServiceAccountIgnoreContract(repoRoot)
 
   console.log(`Scaffolded ecosystem package: ${pkgName}`)
   console.log(`Path: packages/ecosystem/${pkgName}`)
   console.log('Next steps:')
   console.log(`  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`)
-  console.log(`  2. Replace service-account placeholder in packages/ecosystem/${pkgName}/src/config/firebase/service-account.json`)
+  console.log(`  2. Keep service-account.example.json inert; supply real Admin credentials through environment/application-default credentials`)
   console.log('  3. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
   console.log('  4. In Firebase Auth authorized domains, add localhost, Hosting domains, and any custom domains')
   console.log(`  5. Run: pnpm install --lockfile-only && pnpm guard`)

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * Syncs app media from local /public/img/app/* into Firebase Storage and Firestore.
@@ -9,7 +9,7 @@
  * - Storage objects: apps/{appId}/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
  * - Firestore fields: media.{thumbnail_url|logo_url|wordmark_light_url|wordmark_dark_url|cover_url}
  *
- * Uses per-ecosystem service accounts from temp/app-media-audit.json.
+ * Reads project targets from temp/app-media-audit.json.
  *
  * Usage:
  *   pnpm sync:app-media-from-public
@@ -26,6 +26,10 @@ import admin from 'firebase-admin'
 import { getFirestore } from 'firebase-admin/firestore'
 
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const workspaceRoot = process.cwd()
 const auditPath = path.join(workspaceRoot, 'temp', 'app-media-audit.json')
@@ -156,6 +160,9 @@ async function main() {
 
 Dry-run by default; pass --apply to upload and write Firestore.
 Reads targets from temp/app-media-audit.json.
+
+Credential sources, in precedence order:
+${firebaseAdminCredentialHelp().map((line) => `- ${line}`).join('\n')}
 `)
     process.exit(0)
   }
@@ -208,16 +215,9 @@ Reads targets from temp/app-media-audit.json.
         ? eco.databaseId
         : ''
     const bucketName = eco?.bucket
-    const serviceAccountRel = eco?.serviceAccount
 
-    if (!projectId || !bucketName || !serviceAccountRel) {
-      console.warn(`[skip] ${ecoId}: missing projectId/bucket/serviceAccount in audit report`)
-      continue
-    }
-
-    const serviceAccountPath = path.join(workspaceRoot, serviceAccountRel)
-    if (!fs.existsSync(serviceAccountPath)) {
-      console.warn(`[skip] ${ecoId}: missing service account at ${serviceAccountRel}`)
+    if (!projectId || !bucketName) {
+      console.warn(`[skip] ${ecoId}: missing projectId/bucket in audit report`)
       continue
     }
 
@@ -230,11 +230,15 @@ Reads targets from temp/app-media-audit.json.
       continue
     }
 
+    const auth = await resolveFirebaseAdminCredential({
+      args,
+      scope: ecoId || projectId,
+      projectId,
+    })
+
     const app = admin.initializeApp(
       {
-        credential: admin.credential.cert(
-          JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'))
-        ),
+        credential: auth.credential,
         projectId,
         storageBucket: bucketName,
       },

@@ -89,6 +89,7 @@ interface AdminAuthStatus {
     FIREBASE_PRIVATE_KEY: boolean
   }
   file: boolean
+  /** Explicit credential env detected; standard ADC is not probed here. */
   configured: boolean
 }
 interface BrandAssetCheck {
@@ -322,7 +323,8 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     },
   ]
 
-  // Admin auth detection (either JSON blob or split keys)
+  // Detect explicit Admin credential configuration only. Standard ADC can be
+  // available without env vars and is resolved when the Admin SDK initializes.
   const serverAuthJson = !!env.FIREBASE_SERVICE_ACCOUNT
   const serverAuthSplit =
     !!env.FIREBASE_PROJECT_ID &&
@@ -355,7 +357,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     return false
   })
 
-  const serverAuthConfigured =
+  const explicitAdminAuthConfigured =
     serverAuthJson || serverAuthSplit || serverAuthFile
 
   // Compute presence
@@ -390,9 +392,9 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
 
   // Build warnings
   const warnings: string[] = []
-  if (!serverAuthConfigured) {
+  if (!explicitAdminAuthConfigured) {
     warnings.push(
-      'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT, split keys, FIREBASE_SERVICE_ACCOUNT_FILE, or GOOGLE_APPLICATION_CREDENTIALS). SSR/admin features will be limited.'
+      'No explicit Firebase Admin credential env was detected. Standard ADC is not probed by this check and may still initialize Admin at runtime.'
     )
   }
   // Stripe warnings removed for core onboarding; handled in products module.
@@ -406,8 +408,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
 
   const isValid =
     missingRequired.length === 0 &&
-    passedBrandCount === brandAssets.length &&
-    serverAuthConfigured
+    passedBrandCount === brandAssets.length
 
   return {
     isValid,
@@ -424,7 +425,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
           FIREBASE_PRIVATE_KEY: !!env.FIREBASE_PRIVATE_KEY,
         },
         file: serverAuthFile,
-        configured: serverAuthConfigured,
+        configured: explicitAdminAuthConfigured,
       },
     },
 
@@ -445,9 +446,9 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
       'Runtime config and env values are fixed and non-editable via UI.',
       'Brand asset validation checks this app only: public/img/app/. Shared core or ecosystem assets do not count.',
       ...(detectedServiceAccountPath
-        ? [`Service account file detected at ${detectedServiceAccountPath}.`]
+        ? [`Explicit credential file detected at ${detectedServiceAccountPath}.`]
         : [
-            'Admin SDK detection checks only explicit configuration: FIREBASE_SERVICE_ACCOUNT, split keys, FIREBASE_SERVICE_ACCOUNT_FILE, or GOOGLE_APPLICATION_CREDENTIALS.',
+            'Admin SDK detection checks only explicit credential env vars. Standard ADC may exist without env vars and is resolved only when the Admin SDK initializes.',
           ]),
     ],
 

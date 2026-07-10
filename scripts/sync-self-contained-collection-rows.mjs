@@ -1,36 +1,47 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-03
+// last_used: 2026-07-10
 // usage_note: sync denormalized list/card snapshots so collection rows are self-contained.
 
-import { cert, initializeApp } from 'firebase-admin/app'
+import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
-import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveEcosystemFirebaseTarget,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 
-const serviceAccountPath = String(
-  args['service-account'] ||
-    'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
-).trim()
 const explicitProjectId = String(args.project || '').trim()
 const explicitDatabaseId = String(args.database || 'misebox').trim()
 const commit = args.commit === true
 const summaryOnly = args.summary === true
 const actor = String(args.actor || 'system:sync-self-contained-collection-rows').trim()
 
-const rawServiceAccount = await readFile(serviceAccountPath, 'utf8')
-const serviceAccount = JSON.parse(rawServiceAccount)
-const projectId = explicitProjectId || String(serviceAccount.project_id || '').trim()
+if (args.help) {
+  printUsage()
+  process.exit(0)
+}
+
+const ecosystemTarget = await resolveEcosystemFirebaseTarget('fireux-misebox')
+const projectIdHint = explicitProjectId || ecosystemTarget.projectId
+const auth = await resolveFirebaseAdminCredential({
+  args,
+  scope: ecosystemTarget.ecosystemId || 'fireux-misebox',
+  projectId: projectIdHint,
+})
+const projectId = projectIdHint || auth.projectId
 
 if (!projectId) {
-  console.error('Could not resolve project id from --project or service account.')
-  process.exit(1)
+  throw new Error(
+    'Could not resolve the Misebox project id. Pass --project or configure packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts.'
+  )
 }
 
 const app = initializeApp({
-  credential: cert(serviceAccount),
+  credential: auth.credential,
   projectId,
 })
 const db = explicitDatabaseId
@@ -377,3 +388,15 @@ console.log(JSON.stringify({
   patches: summaryOnly ? patches.slice(0, 20) : patches,
   truncated: summaryOnly && patches.length > 20,
 }, null, 2))
+
+function printUsage() {
+  console.log(
+    [
+      'Usage:',
+      '  node scripts/sync-self-contained-collection-rows.mjs [--service-account <path>] [--project <projectId>] [--database <databaseId>] [--commit] [--summary]',
+      '',
+      'Credential sources, in precedence order:',
+      ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),
+    ].join('\n')
+  )
+}

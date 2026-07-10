@@ -12,6 +12,7 @@ export type AdminAuthStatus = {
     FIREBASE_PRIVATE_KEY: boolean
   }
   file?: boolean
+  /** Explicit credential env detected; standard ADC is not probed here. */
   configured: boolean
 }
 

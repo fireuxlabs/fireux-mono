@@ -150,7 +150,8 @@
           <div class="flex flex-col gap-1">
             <h2>🔥 Firebase Admin SDK</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Server-side credentials detected via env or service-account file.
+              Explicit server-side credential configuration. ADC may also be
+              available at runtime.
             </p>
           </div>
           <div class="flex items-center gap-2">
@@ -192,7 +193,7 @@
             </span>
           </li>
           <li class="flex items-center justify-between gap-3">
-            <span class="font-medium">Service-account file</span>
+            <span class="font-medium">Credential file env</span>
             <span>{{ adminAuth?.file ? 'detected' : 'not found' }}</span>
           </li>
         </ul>
@@ -268,12 +269,12 @@ const {
 } = await useAppEnvCheck()
 
 const adminAuth = computed(() => envData.value?.server?.adminAuth ?? null)
-const adminConfigured = computed(() => adminAuth.value?.configured ?? false)
+const explicitAdminConfigured = computed(() => adminAuth.value?.configured ?? false)
 
 const adminNotes = computed(() => {
   const notes = envData.value?.notes ?? []
   return notes.filter((note: string) =>
-    note.toLowerCase().includes('service account')
+    /admin sdk|credential|adc/i.test(note)
   )
 })
 
@@ -286,8 +287,10 @@ const adminStatus = computed(() => {
     }
   }
 
-  if (adminConfigured.value) {
-    let source = 'Detected via service-account file.'
+  if (explicitAdminConfigured.value) {
+    let source = adminAuth.value?.file
+      ? 'Using an explicit credential file environment variable.'
+      : 'Explicit credential configuration detected.'
     if (adminAuth.value?.json) {
       source = 'Using FIREBASE_SERVICE_ACCOUNT JSON.'
     } else if (
@@ -300,16 +303,16 @@ const adminStatus = computed(() => {
 
     return {
       color: 'success' as const,
-      label: 'configured',
+      label: 'explicit config',
       description: source,
     }
   }
 
   return {
-    color: 'warning' as const,
-    label: 'missing',
+    color: 'neutral' as const,
+    label: 'ADC unprobed',
     description:
-      'Add FIREBASE_SERVICE_ACCOUNT JSON, split keys, or service-account.json under packages/ecosystem/<ecosystem>/config/.',
+      'No explicit credential env was detected. Standard ADC may still initialize Firebase Admin at runtime.',
   }
 })
 

@@ -1,41 +1,50 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
+// last_used: 2026-07-10
 // usage_note: reusable Firestore tree inspection; update when run.
 
-import { cert, initializeApp } from 'firebase-admin/app'
+import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
-import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  firebaseCredentialScope,
+  resolveEcosystemFirebaseTarget,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 
-const serviceAccountPath = String(args['service-account'] || '').trim()
 const explicitProjectId = String(args.project || '').trim()
+const ecosystem = String(args.ecosystem || '').trim()
 const explicitDatabaseId = String(args.database || '').trim()
 const limit = Math.max(1, Number(args.limit || 20))
 const depth = Math.max(1, Number(args.depth || 2))
 
-if (!serviceAccountPath) {
-  console.error(
-    'Usage: node scripts/inspect-firestore-tree.mjs --service-account <path> [--project <projectId>] [--database <databaseId>] [--limit 20] [--depth 2]'
-  )
-  process.exit(1)
+if (args.help) {
+  printUsage()
+  process.exit(0)
 }
 
-const rawServiceAccount = await readFile(serviceAccountPath, 'utf8')
-const serviceAccount = JSON.parse(rawServiceAccount)
-const projectId =
-  explicitProjectId ||
-  String(serviceAccount.project_id || '').trim()
+const ecosystemTarget = await resolveEcosystemFirebaseTarget(ecosystem)
+const projectIdHint = explicitProjectId || ecosystemTarget.projectId
+const scope = ecosystemTarget.ecosystemId || ecosystem || projectIdHint
+const auth = await resolveFirebaseAdminCredential({
+  args,
+  scope,
+  projectId: projectIdHint,
+})
+const projectId = projectIdHint || auth.projectId
 
 if (!projectId) {
-  console.error('Could not resolve project id from --project or service account.')
-  process.exit(1)
+  const envScope = firebaseCredentialScope(scope || 'ecosystem')
+  throw new Error(
+    `Could not resolve a project id. Pass --ecosystem or --project, use a credential containing project_id, or set FIREBASE_PROJECT_ID__${envScope}.`
+  )
 }
 
 const adminApp = initializeApp({
-  credential: cert(serviceAccount),
+  credential: auth.credential,
   projectId,
 })
 
@@ -152,3 +161,15 @@ console.log(
     2
   )
 )
+
+function printUsage() {
+  console.log(
+    [
+      'Usage:',
+      '  node scripts/inspect-firestore-tree.mjs [--ecosystem <id>] [--project <projectId>] [--database <databaseId>] [--service-account <path>] [--limit 20] [--depth 2]',
+      '',
+      'Credential sources, in precedence order:',
+      ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),
+    ].join('\n')
+  )
+}

@@ -2,6 +2,8 @@ import { createHash, createSign } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
+import { GoogleAuth } from 'google-auth-library'
+import { useRuntimeConfig } from '#imports'
 
 export type SproochliServiceAccount = {
   project_id?: string
@@ -14,9 +16,9 @@ export type SproochliServiceAccount = {
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const TOKEN_SCOPE = 'https://www.googleapis.com/auth/cloud-translation'
-const METADATA_URL = 'http://metadata.google.internal/computeMetadata/v1'
 
 let cachedToken: { token: string; expiresAt: number } | null = null
+let cachedGoogleAuth: GoogleAuth | null = null
 
 export const normalizeSproochliText = (value: unknown) => String(value ?? '').trim()
 
@@ -61,9 +63,7 @@ export async function resolveSproochliServiceAccount() {
     normalizeSproochliText(process.env.SPROOCHLI_FIREBASE_SERVICE_ACCOUNT) ||
     normalizeSproochliText(process.env.FIREBASE_SERVICE_ACCOUNT)
   const file =
-    normalizeSproochliText(process.env.SPROOCHLI_GOOGLE_APPLICATION_CREDENTIALS) ||
     normalizeSproochliText(process.env.SPROOCHLI_FIREBASE_SERVICE_ACCOUNT_FILE) ||
-    normalizeSproochliText(process.env.GOOGLE_APPLICATION_CREDENTIALS) ||
     normalizeSproochliText(process.env.FIREBASE_SERVICE_ACCOUNT_FILE)
   const account = inline
     ? parseInlineServiceAccount(inline)
@@ -86,6 +86,20 @@ export async function resolveSproochliServiceAccount() {
   return account
 }
 
+function getApplicationDefaultAuth() {
+  if (cachedGoogleAuth) return cachedGoogleAuth
+
+  const keyFilename = normalizeSproochliText(
+    process.env.SPROOCHLI_GOOGLE_APPLICATION_CREDENTIALS
+  )
+  cachedGoogleAuth = new GoogleAuth({
+    scopes: [TOKEN_SCOPE],
+    ...(keyFilename ? { keyFilename: resolveCredentialPath(keyFilename) } : {}),
+  })
+
+  return cachedGoogleAuth
+}
+
 function parseFirebaseConfigProjectId() {
   const raw = normalizeSproochliText(process.env.FIREBASE_CONFIG)
   if (!raw) return ''
@@ -98,64 +112,45 @@ function parseFirebaseConfigProjectId() {
   }
 }
 
-async function readMetadata(path: string) {
-  const response = await fetch(`${METADATA_URL}/${path}`, {
-    headers: { 'Metadata-Flavor': 'Google' },
-    signal: AbortSignal.timeout(2000),
-  })
-
-  if (!response.ok) return ''
-  return normalizeSproochliText(await response.text())
+function runtimeFirebaseProjectId() {
+  try {
+    const runtime = useRuntimeConfig()
+    return normalizeSproochliText(
+      runtime.public?.firebaseEcosystem?.firebase?.projectId
+    )
+  } catch {
+    return ''
+  }
 }
 
 async function resolveSproochliProjectId(account: SproochliServiceAccount | null) {
-  return serviceAccountField(account || {}, 'project_id', 'projectId') ||
+  const configuredProjectId = serviceAccountField(account || {}, 'project_id', 'projectId') ||
     normalizeSproochliText(process.env.SPROOCHLI_GOOGLE_PROJECT_ID) ||
+    runtimeFirebaseProjectId() ||
     normalizeSproochliText(process.env.GOOGLE_CLOUD_PROJECT) ||
     normalizeSproochliText(process.env.GCLOUD_PROJECT) ||
     normalizeSproochliText(process.env.GCP_PROJECT) ||
-    parseFirebaseConfigProjectId() ||
-    await readMetadata('project/project-id')
-}
+    parseFirebaseConfigProjectId()
+  if (configuredProjectId) return configuredProjectId
 
-async function getMetadataAccessToken() {
-  const tokenResponse = await fetch(
-    `${METADATA_URL}/instance/service-accounts/default/token`,
-    {
-      headers: { 'Metadata-Flavor': 'Google' },
-      signal: AbortSignal.timeout(2000),
-    }
-  )
-  const tokenData = await tokenResponse.json().catch(() => ({})) as {
-    access_token?: string
-    expires_in?: number
-    error?: string
-    error_description?: string
-  }
-
-  if (!tokenResponse.ok || !tokenData.access_token) {
-    throw new Error(
-      tokenData.error_description ||
-      tokenData.error ||
-      'Google metadata auth failed'
-    )
-  }
-
-  cachedToken = {
-    token: tokenData.access_token,
-    expiresAt:
-      Date.now() + Math.max(Number(tokenData.expires_in || 3600) - 60, 60) * 1000,
-  }
-
-  return cachedToken.token
+  return normalizeSproochliText(await getApplicationDefaultAuth().getProjectId())
 }
 
 async function getGoogleAccessToken(account: SproochliServiceAccount | null) {
+  if (!account) {
+    const token = normalizeSproochliText(
+      await getApplicationDefaultAuth().getAccessToken()
+    )
+    if (!token) {
+      throw new Error('Google application default credentials returned no access token')
+    }
+
+    return token
+  }
+
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) {
     return cachedToken.token
   }
-
-  if (!account) return await getMetadataAccessToken()
 
   const clientEmail = serviceAccountField(account, 'client_email', 'clientEmail')
   const privateKey = serviceAccountField(account, 'private_key', 'privateKey')

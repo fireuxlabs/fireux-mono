@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * Clears one or more fields on a Firestore apps/{appId} doc.
- * Uses the per-ecosystem service account from temp/app-media-audit.json.
+ * Reads project targets from temp/app-media-audit.json.
  *
  * Example:
  *   pnpm clear:app-fields -- --ecosystem fireux --app fireux-app --fields wordmark_url
@@ -15,24 +15,28 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import admin from 'firebase-admin'
+import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const workspaceRoot = process.cwd()
 const auditPath = path.join(workspaceRoot, 'temp', 'app-media-audit.json')
 
-const argv = process.argv.slice(2)
-const flagValue = (name) => {
-  const idx = argv.indexOf(name)
-  if (idx === -1) return null
-  return argv[idx + 1] ?? null
+const args = parseArgs(process.argv.slice(2))
+const ecosystemId = String(args.ecosystem || '').trim()
+const appId = String(args.app || '').trim()
+const fieldsRaw = String(args.fields || '').trim()
+const shouldDelete = args.delete === true
+
+if (args.help) {
+  printUsage()
+  process.exit(0)
 }
 
-const ecosystemId = flagValue('--ecosystem')
-const appId = flagValue('--app')
-const fieldsRaw = flagValue('--fields')
-const shouldDelete = argv.includes('--delete')
-
 if (!ecosystemId || !appId || !fieldsRaw) {
-  console.error('Usage: --ecosystem <id> --app <appId> --fields <comma-separated>')
+  printUsage()
   process.exit(1)
 }
 
@@ -49,17 +53,16 @@ if (!eco) {
 }
 
 const projectId = eco.projectId
-const serviceAccountRel = eco.serviceAccount
-if (!projectId || !serviceAccountRel) {
-  console.error(`Ecosystem ${ecosystemId} missing projectId/serviceAccount in audit report.`)
+if (!projectId) {
+  console.error(`Ecosystem ${ecosystemId} is missing projectId in the audit report.`)
   process.exit(1)
 }
 
-const serviceAccountPath = path.join(workspaceRoot, serviceAccountRel)
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error(`Missing service account: ${serviceAccountRel}`)
-  process.exit(1)
-}
+const auth = await resolveFirebaseAdminCredential({
+  args,
+  scope: ecosystemId || projectId,
+  projectId,
+})
 
 const fields = fieldsRaw
   .split(',')
@@ -68,9 +71,7 @@ const fields = fieldsRaw
 
 const app = admin.initializeApp(
   {
-    credential: admin.credential.cert(
-      JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'))
-    ),
+    credential: auth.credential,
     projectId,
   },
   `clear-${ecosystemId}-${appId}`
@@ -88,3 +89,15 @@ await firestore.collection('apps').doc(appId).set(patch, { merge: true })
 console.log(
   `Updated apps/${appId} in ${ecosystemId}: ${shouldDelete ? 'deleted' : 'cleared'} ${fields.join(', ')}`
 )
+
+function printUsage() {
+  console.log(
+    [
+      'Usage:',
+      '  node scripts/clear-app-firestore-fields.mjs --ecosystem <id> --app <appId> --fields <comma-separated> [--delete] [--service-account <path>]',
+      '',
+      'Credential sources, in precedence order:',
+      ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),
+    ].join('\n')
+  )
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-08
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guard.mjs
 //
@@ -18,6 +18,7 @@ import process from 'node:process'
 
 import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import { run as runRoot } from './guards/root.mjs'
+import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCore } from './guards/core.mjs'
@@ -36,6 +37,7 @@ try {
 
 const guards = [
   { key: 'root', run: runRoot },
+  { key: 'secrets', run: runSecrets },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
   { key: 'core', run: runCore },

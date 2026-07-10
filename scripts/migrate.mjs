@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-09
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /*
   Firestore migration runner (generic)
@@ -11,15 +11,18 @@
 
   Auth (one required):
     - --service-account <path>
-    - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)
-    - FIREBASE_SERVICE_ACCOUNT (JSON string)
-    - Or Google ADC (gcloud): application-default login
+    - Scoped or global Firebase credential env
+    - Google Application Default Credentials
 */
 
-import { applicationDefault, cert, initializeApp } from 'firebase-admin/app'
+import { initializeApp } from 'firebase-admin/app'
 import { FieldPath, FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 function asString(value, fallback = '') {
   if (typeof value === 'string') return value
@@ -36,9 +39,6 @@ const limit = args.limit ? Number(args.limit) : null
 const targetAppId = typeof args.app === 'string' ? args.app : null
 const recipe = typeof args.recipe === 'string' ? args.recipe : null
 const databaseId = typeof args.database === 'string' ? args.database.trim() : ''
-const serviceAccountPath = typeof args['service-account'] === 'string'
-  ? args['service-account'].trim()
-  : ''
 const payloadArg = typeof args.payload === 'string' ? args.payload : null
 const payloadFile = typeof args.payloadFile === 'string' ? args.payloadFile : null
 
@@ -74,10 +74,7 @@ if (help) {
   console.log('  - ingredients-upsert-payload')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
-  console.log('  - --service-account <path>')
-  console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
-  console.log('  - FIREBASE_SERVICE_ACCOUNT (JSON string)')
-  console.log('  - Or Google ADC (gcloud): application-default login')
+  firebaseAdminCredentialHelp().forEach((line) => console.log(`  - ${line}`))
   process.exit(0)
 }
 
@@ -91,27 +88,12 @@ if (!recipe) {
   process.exit(1)
 }
 
-async function resolveCredential() {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    const json = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    return cert(json)
-  }
-
-  if (serviceAccountPath) {
-    const raw = await readFile(serviceAccountPath, 'utf8')
-    return cert(JSON.parse(raw))
-  }
-
-  const saPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
-  if (saPath) {
-    const raw = await readFile(saPath, 'utf8')
-    return cert(JSON.parse(raw))
-  }
-
-  return applicationDefault()
-}
-
-const adminApp = initializeApp({ credential: await resolveCredential(), projectId })
+const auth = await resolveFirebaseAdminCredential({
+  args,
+  scope: args.ecosystem || projectId,
+  projectId,
+})
+const adminApp = initializeApp({ credential: auth.credential, projectId })
 const db = databaseId ? getFirestore(adminApp, databaseId) : getFirestore(adminApp)
 
 async function runAppMediaFlatten() {

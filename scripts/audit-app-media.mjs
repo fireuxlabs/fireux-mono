@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
-import { initializeApp, cert } from 'firebase-admin/app'
+import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 
 import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 function repoRoot() {
   return process.cwd()
@@ -55,8 +59,6 @@ function discoverEcosystemFirebaseConfigs() {
     const text = tryReadText(filePath)
     if (!text) continue
 
-    const serviceAccountPath = path.join(path.dirname(filePath), 'service-account.json')
-
     const id =
       extractFirst(text, /\bid\s*:\s*'([^']+)'/) ??
       extractFirst(text, /\bid\s*:\s*"([^"]+)"/)
@@ -81,103 +83,11 @@ function discoverEcosystemFirebaseConfigs() {
       projectId,
       databaseId: databaseId || '',
       storageBucket,
-      serviceAccountPath: fs.existsSync(serviceAccountPath)
-        ? serviceAccountPath
-        : null,
       sourceFile: path.relative(repoRoot(), filePath),
     })
   }
 
   return results
-}
-
-function readJsonFile(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf8')
-  return JSON.parse(raw)
-}
-
-function resolveServiceAccount(args) {
-  if (args['service-account']) {
-    const filePath = path.resolve(String(args['service-account']))
-    return readJsonFile(filePath)
-  }
-
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_FILE) {
-    const filePath = path.resolve(String(process.env.FIREBASE_SERVICE_ACCOUNT_FILE))
-    return readJsonFile(filePath)
-  }
-
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    } catch {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT is set but not valid JSON')
-    }
-  }
-
-  const projectId = process.env.FIREBASE_PROJECT_ID
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY
-  if (projectId && clientEmail && privateKey) {
-    return {
-      project_id: projectId,
-      client_email: clientEmail,
-      private_key: privateKey.replace(/\\n/g, '\n'),
-    }
-  }
-
-  throw new Error(
-    'Missing Firebase Admin credentials. Provide --service-account path/to/service-account.json or set FIREBASE_SERVICE_ACCOUNT(_FILE) or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.'
-  )
-}
-
-function normaliseKeySegment(value) {
-  return String(value)
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_')
-}
-
-function resolveServiceAccountForProject(args, projectId, ecosystemId) {
-  // First: if the caller passed an explicit service account file, always use it.
-  if (args['service-account']) return resolveServiceAccount(args)
-
-  const candidates = []
-  if (ecosystemId) candidates.push(normaliseKeySegment(ecosystemId))
-  if (projectId) candidates.push(normaliseKeySegment(projectId))
-
-  for (const segment of candidates) {
-    const fileKey = `FIREBASE_SERVICE_ACCOUNT_FILE__${segment}`
-    const jsonKey = `FIREBASE_SERVICE_ACCOUNT__${segment}`
-
-    if (process.env[fileKey]) {
-      const filePath = path.resolve(String(process.env[fileKey]))
-      return readJsonFile(filePath)
-    }
-    if (process.env[jsonKey]) {
-      try {
-        return JSON.parse(String(process.env[jsonKey]))
-      } catch {
-        throw new Error(`${jsonKey} is set but not valid JSON`)
-      }
-    }
-  }
-
-  return resolveServiceAccount(args)
-}
-
-function resolveServiceAccountForTarget(args, target) {
-  // Canon convention in this repo: service account json next to ecosystem.config.ts
-  if (!args['service-account'] && target?.serviceAccountPath) {
-    return readJsonFile(target.serviceAccountPath)
-  }
-
-  return resolveServiceAccountForProject(args, target?.projectId, target?.ecosystemId)
-}
-
-function defaultBucketFromProjectId(projectId) {
-  if (!projectId) return ''
-  return `${projectId}.appspot.com`
 }
 
 function urlIncludesEncodedPath(url, objectPath) {
@@ -205,10 +115,8 @@ Reads apps from Firestore collection 'apps' and checks Firebase Storage objects 
 
 Also validates Firestore URL fields match the expected object path.
 
-Env options (alternatives to --service-account):
-- FIREBASE_SERVICE_ACCOUNT (JSON)
-- FIREBASE_SERVICE_ACCOUNT_FILE (path)
-- FIREBASE_PROJECT_ID + FIREBASE_CLIENT_EMAIL + FIREBASE_PRIVATE_KEY
+Credential sources, in precedence order:
+${firebaseAdminCredentialHelp().map((line) => `- ${line}`).join('\n')}
 
 Options:
 - --bucket: storage bucket name (default: <projectId>.appspot.com)
@@ -283,11 +191,16 @@ Options:
   ]
 
   for (const target of targets) {
-    const serviceAccount = resolveServiceAccountForTarget(args, target)
+    const auth = await resolveFirebaseAdminCredential({
+      args,
+      scope: target.ecosystemId || target.projectId,
+      projectId: target.projectId,
+    })
 
     const app = initializeApp(
       {
-        credential: cert(serviceAccount),
+        credential: auth.credential,
+        projectId: target.projectId,
         storageBucket: target.storageBucket,
       },
       `audit:${target.projectId}`
@@ -304,9 +217,6 @@ Options:
       projectId: target.projectId,
       databaseId: target.databaseId || '(default)',
       bucket: target.storageBucket,
-      serviceAccount: target.serviceAccountPath
-        ? path.relative(repoRoot(), target.serviceAccountPath)
-        : 'env/args',
       appCount: appsSnap.size,
       apps: {},
       totals: {

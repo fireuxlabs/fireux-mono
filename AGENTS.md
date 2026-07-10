@@ -130,7 +130,9 @@ Extension package shape is controlled by `scripts/guards/extensions.mjs`.
 Ecosystem package shape is controlled by `scripts/guards/ecosystem.mjs`.
 
 - Required L1: `package.json`, `registry.json`, `README.md`, `src`, `tsconfig.json`, `docs`, `.firebaserc`.
-- Required config: `src/config/firebase/ecosystem.config.ts` and `src/config/firebase/service-account.json`.
+- Required tracked config: `src/config/firebase/ecosystem.config.ts` and the inert placeholder `src/config/firebase/service-account.example.json`.
+- Real Firebase Admin credentials must never live inside the repository, tracked or untracked. Use application-default credentials or an external credential file referenced by environment.
+- Local ADC flows that mint Firebase custom tokens may also require `FIREBASE_SERVICE_ACCOUNT_ID` plus `iam.serviceAccounts.signBlob`; the service-account email is identity metadata, not a private key.
 - Required public assets surface: `src/runtime/public`.
 - Implementation belongs in `src`.
 

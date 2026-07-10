@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-06-30
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guards/ecosystem.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
@@ -25,7 +25,10 @@ const CONFIG_ALLOWED_NOISE = ['.DS_Store']
 
 // Firebase config contract (inside each ecosystem package)
 const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
-const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.json']
+const REQUIRED_FIREBASE_FILES = [
+  'ecosystem.config.ts',
+  'service-account.example.json',
+]
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
 // Ecosystem runtime contract
@@ -122,14 +125,15 @@ function checkEcosystemPackage(pkgPath) {
     '',
     '[guard] Fix:',
     `- Ecosystem packages MUST match L1 exactly: ${REQUIRED_L1.join(', ')}`,
-    '- Move implementation into /src (including ecosystem config + secrets wiring)',
-    '- docs/ is required for ecosystems (this is where the canonical docs live)',
+    '- Move implementation into /src (including ecosystem config and credential wiring; never credential files)',
+    '- docs/ is required for ecosystem package shape; it is not implementation canon by default',
     '- .firebaserc is required for ecosystems (this is where Firebase project binding lives)',
     `- Ecosystems MUST ship runtime public assets at /${REQUIRED_RUNTIME_PUBLIC_DIR}`,
     `- Config MUST live at /${REQUIRED_CONFIG_DIR} and include /firebase (and optional /module)`,
-    `- Firebase MUST live at /${REQUIRED_FIREBASE_DIR} with exactly: ${REQUIRED_FIREBASE_FILES.join(
+    `- Firebase tracked config MUST live at /${REQUIRED_FIREBASE_DIR} with: ${REQUIRED_FIREBASE_FILES.join(
       ', '
-    )} (no index files)`
+    )} (no index files)`,
+    '- Real credentials must stay outside the repository and be supplied through environment/application-default credentials'
   )
 
   return lines.join('\n')
@@ -257,7 +261,9 @@ function checkFirebaseShape(pkgPath) {
   const missing = REQUIRED_FIREBASE_FILES.filter((f) => !entries.includes(f))
 
   const unexpected = entries.filter(
-    (e) => !REQUIRED_FIREBASE_FILES.includes(e) && !FIREBASE_ALLOWED_NOISE.includes(e)
+    (e) =>
+      !REQUIRED_FIREBASE_FILES.includes(e) &&
+      !FIREBASE_ALLOWED_NOISE.includes(e)
   )
 
   if (!missing.length && !unexpected.length) return null
@@ -273,7 +279,7 @@ function checkFirebaseShape(pkgPath) {
   }
 
   if (unexpected.length) {
-    lines.push('    Unexpected (no index, no extras):')
+    lines.push('    Unexpected (only tracked public config and inert credential example; no local credential or index):')
     unexpected
       .slice()
       .sort((a, b) => a.localeCompare(b))

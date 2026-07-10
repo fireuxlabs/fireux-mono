@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * Deletes non-canonical app media objects listed in temp/app-media-trash.json.
@@ -21,9 +21,20 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import admin from 'firebase-admin'
+import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const workspaceRoot = process.cwd()
 const trashPath = path.join(workspaceRoot, 'temp', 'app-media-trash.json')
+const args = parseArgs(process.argv.slice(2))
+
+if (args.help) {
+  printUsage()
+  process.exit(0)
+}
 
 if (!fs.existsSync(trashPath)) {
   console.error(`Missing ${trashPath}. Run pnpm list:app-media-trash first.`)
@@ -32,19 +43,11 @@ if (!fs.existsSync(trashPath)) {
 
 const data = JSON.parse(fs.readFileSync(trashPath, 'utf8'))
 
-const argv = process.argv.slice(2)
-const hasFlag = (f) => argv.includes(f)
-const flagValue = (name) => {
-  const idx = argv.indexOf(name)
-  if (idx === -1) return null
-  return argv[idx + 1] ?? null
-}
-
-const targetEco = flagValue('--ecosystem')
-const targetApp = flagValue('--app')
-const apply = hasFlag('--apply')
-const force = hasFlag('--force')
-const all = hasFlag('--all')
+const targetEco = String(args.ecosystem || '').trim()
+const targetApp = String(args.app || '').trim()
+const apply = args.apply === true
+const force = args.force === true
+const all = args.all === true
 
 if (!all && !targetEco) {
   console.error('Provide --ecosystem <id> or --all')
@@ -110,22 +113,21 @@ async function main() {
 
     const projectId = eco.projectId
     const bucketName = eco.bucket
-    const saRel = eco.serviceAccountPath
 
-    if (!projectId || !bucketName || !saRel) {
-      console.warn(`[skip] ${ecoId}: missing projectId/bucket/serviceAccountPath in temp/app-media-trash.json`)
+    if (!projectId || !bucketName) {
+      console.warn(`[skip] ${ecoId}: missing projectId/bucket in temp/app-media-trash.json`)
       continue
     }
 
-    const saPath = path.join(workspaceRoot, saRel)
-    if (!fs.existsSync(saPath)) {
-      console.warn(`[skip] ${ecoId}: missing service account at ${saRel}`)
-      continue
-    }
+    const auth = await resolveFirebaseAdminCredential({
+      args,
+      scope: ecoId || projectId,
+      projectId,
+    })
 
     const app = admin.initializeApp(
       {
-        credential: admin.credential.cert(JSON.parse(fs.readFileSync(saPath, 'utf8'))),
+        credential: auth.credential,
         projectId,
         storageBucket: bucketName,
       },
@@ -186,6 +188,18 @@ async function main() {
   if (!apply) {
     console.log('Re-run with --apply to actually delete.')
   }
+}
+
+function printUsage() {
+  console.log(
+    [
+      'Usage:',
+      '  node scripts/delete-app-media-trash.mjs (--ecosystem <id> | --all) [--app <appId>] [--apply] [--force] [--service-account <path>]',
+      '',
+      'Credential sources, in precedence order:',
+      ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),
+    ].join('\n')
+  )
 }
 
 main().catch((err) => {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * Lists Firebase Storage objects that are NOT part of the canonical app media layout.
@@ -19,15 +19,14 @@ import path from 'node:path'
 import process from 'node:process'
 
 import admin from 'firebase-admin'
+import { parseArgs } from './_lib/args.mjs'
+import {
+  firebaseAdminCredentialHelp,
+  resolveFirebaseAdminCredential,
+} from './_lib/firebase-admin-credentials.mjs'
 
 const workspaceRoot = process.cwd()
 const reportPath = path.join(workspaceRoot, 'temp', 'app-media-audit.json')
-if (!fs.existsSync(reportPath)) {
-  console.error(`Missing ${reportPath}. Run pnpm audit:app-media first.`)
-  process.exit(1)
-}
-
-const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'))
 
 function stableJson(value) {
   return JSON.stringify(value, null, 2) + '\n'
@@ -84,6 +83,20 @@ function classify(appId, objectNames) {
 }
 
 async function main() {
+  const args = parseArgs(process.argv.slice(2))
+
+  if (args.help) {
+    printUsage()
+    process.exit(0)
+  }
+
+  if (!fs.existsSync(reportPath)) {
+    console.error(`Missing ${reportPath}. Run pnpm audit:app-media first.`)
+    process.exit(1)
+  }
+
+  const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+  const requestedEcosystem = String(args.ecosystem || '').trim()
   const out = {
     generatedAt: new Date().toISOString(),
     sourceAudit: path.relative(workspaceRoot, reportPath),
@@ -91,25 +104,26 @@ async function main() {
   }
 
   for (const [ecoId, eco] of Object.entries(report.ecosystems ?? {})) {
+    if (requestedEcosystem && ecoId !== requestedEcosystem) continue
+
     const projectId = eco?.projectId
     const bucketName = eco?.bucket
     const ecosystemConfigPath = eco?.sourceFile
-    const serviceAccountPath = eco?.serviceAccount
 
-    if (!projectId || !bucketName || !serviceAccountPath) {
-      console.warn(`[skip] ${ecoId}: missing projectId/bucket/serviceAccount in audit report`)
+    if (!projectId || !bucketName) {
+      console.warn(`[skip] ${ecoId}: missing projectId/bucket in audit report`)
       continue
     }
 
-    const saPath = path.join(workspaceRoot, serviceAccountPath)
-    if (!fs.existsSync(saPath)) {
-      console.warn(`[skip] ${ecoId}: missing service account at ${serviceAccountPath}`)
-      continue
-    }
+    const auth = await resolveFirebaseAdminCredential({
+      args,
+      scope: ecoId || projectId,
+      projectId,
+    })
 
     const app = admin.initializeApp(
       {
-        credential: admin.credential.cert(JSON.parse(fs.readFileSync(saPath, 'utf8'))),
+        credential: auth.credential,
         projectId,
         storageBucket: bucketName,
       },
@@ -122,7 +136,6 @@ async function main() {
       projectId,
       bucket: bucketName,
       sourceFile: ecosystemConfigPath ?? null,
-      serviceAccountPath: path.relative(workspaceRoot, saPath),
       apps: {},
     }
 
@@ -152,6 +165,18 @@ async function main() {
 
   console.log(`Wrote: ${path.relative(workspaceRoot, outPath)}`)
   console.log(`Total trash objects: ${totalTrash}`)
+}
+
+function printUsage() {
+  console.log(
+    [
+      'Usage:',
+      '  node scripts/list-app-media-trash.mjs [--ecosystem <id>] [--service-account <path>]',
+      '',
+      'Credential sources, in precedence order:',
+      ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),
+    ].join('\n')
+  )
 }
 
 main().catch((err) => {
