@@ -165,9 +165,15 @@ See: `docs/concepts/spine.md`
 - `src/runtime/server`
 - `src/runtime/utils`
 
-Module setup generally uses `configureFireuxModule` from `fireux-core/config/module/module-wiring` and package-specific `configureComponents`, `configureComposables`, `configurePages`, `configureModels`, `configureServer`, etc.
+Module setup generally uses `configureFireuxModule` from `fireux-core/config/module/module-wiring` and package-specific `configureComponents`, `configureComposables`, `configurePages`, `configureServer`, etc. Models remain explicit imports unless a package has a real registration mechanism for them.
 
 Do not add runtime surfaces without checking module registration.
+
+Extension component/composable registration is checked by `scripts/guards/runtime-registration.mjs`.
+
+- Runtime `components` and `composables` must be registered through `configureFireuxModule` or an intentional Nuxt runtime layer.
+- Models, types, info helpers, and utilities are explicit-import libraries; they do not need fake no-op registration hooks.
+- A runtime asset imported by a component is bundled through that import. Add an assets hook only for global CSS or other module-level asset behavior.
 
 ## App Config Spine
 

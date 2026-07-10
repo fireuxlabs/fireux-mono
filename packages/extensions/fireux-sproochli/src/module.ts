@@ -1,5 +1,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configureComponents } from './config/module/components-config'
+import { configureComposables } from './config/module/composables-config'
 
 export type FireuxSproochliModuleOptions = {
   enabled?: boolean
@@ -35,6 +37,8 @@ export default defineNuxtModule<FireuxSproochliModuleOptions>({
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => setSproochliRuntime(nuxt, options),
+      composables: configureComposables,
+      components: configureComponents,
     })
   },
 })
