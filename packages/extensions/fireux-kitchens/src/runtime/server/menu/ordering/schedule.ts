@@ -7,6 +7,7 @@ import {
   readWeekdayTimeOpenState,
   readWeekdayTimeSelectionState,
 } from '../../../utils/weekday-time.ts'
+import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const requestedForParts = (value: unknown) => {
@@ -22,12 +23,14 @@ export function validateMenuOrderSchedule(input: {
   orderType: KitchenOrderType
   requestedFor: string
 }) {
-  const scheduledFor = input.orderType === 'pre_order'
+  const strategy = menuOrderTypeStrategy(input.orderType)
+  const scheduledFor = strategy.schedule === 'requested_for'
     ? input.requestedFor
-    : input.collection?.mode === 'scheduled'
+    : strategy.schedule === 'collection' &&
+        input.collection?.mode === 'scheduled'
       ? input.collection.requested_for || ''
       : ''
-  if (input.orderType === 'pre_order' && !scheduledFor) {
+  if (strategy.schedule === 'requested_for' && !scheduledFor) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Choose when you would like to eat.',

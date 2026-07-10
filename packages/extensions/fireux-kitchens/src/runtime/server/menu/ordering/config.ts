@@ -9,6 +9,7 @@ import {
   readMenuOrderTypeConfig,
   readMenuServiceHoursConfig,
 } from '../../../utils/menu-ordering-policy.ts'
+import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const list = (value: unknown) => Array.isArray(value) ? value : []
@@ -39,7 +40,7 @@ const mergeFulfilmentPolicy = (
 ): MenuOrderFulfilmentPolicy | undefined => {
   if (!menuPolicy && !kitchenPolicy) return undefined
 
-  const deliveryZones = orderType === 'delivery'
+  const deliveryZones = menuOrderTypeStrategy(orderType).resolvesDelivery
     ? menuPolicy?.delivery_zones?.length
       ? menuPolicy.delivery_zones
       : kitchenPolicy?.delivery_zones || []

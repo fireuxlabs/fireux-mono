@@ -1,27 +1,14 @@
 import { createError } from 'h3'
 import type {
-  KitchenOrderChannel,
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../models/kitchen/order.model.ts'
+import { menuOrderTypeStrategiesList } from './order-types/index.ts'
 
-const orderTypes = new Set<KitchenOrderType>([
-  'dine_in',
-  'eat_in',
-  'takeaway',
-  'collection',
-  'delivery',
-  'pre_order',
-  'room_service',
-])
-const orderChannels = new Set<KitchenOrderChannel>([
-  'menu',
-  'table_qr',
-  'kiosk',
-  'room_service',
-  'staff_pos',
-])
+const orderTypes = new Set<KitchenOrderType>(
+  menuOrderTypeStrategiesList().map((strategy) => strategy.type)
+)
 
 export const text = (value: unknown) => String(value ?? '').trim()
 
@@ -84,53 +71,6 @@ export const normalizePaymentMethod = (
   })
 }
 
-export const normalizeOrderChannel = (
-  value: unknown,
-  orderType: KitchenOrderType
-): KitchenOrderChannel => {
-  const fallback: KitchenOrderChannel = orderType === 'dine_in'
-    ? 'table_qr'
-    : orderType === 'eat_in' || orderType === 'takeaway'
-      ? 'kiosk'
-      : orderType === 'room_service'
-        ? 'room_service'
-        : 'menu'
-  const channel = (text(value) || fallback) as KitchenOrderChannel
-  const valid = orderChannels.has(channel) && (
-    (channel === 'menu' && ['collection', 'delivery', 'pre_order'].includes(orderType)) ||
-    (channel === 'table_qr' && orderType === 'dine_in') ||
-    (channel === 'kiosk' && ['eat_in', 'takeaway'].includes(orderType)) ||
-    (channel === 'staff_pos' && ['eat_in', 'takeaway'].includes(orderType)) ||
-    (channel === 'room_service' && orderType === 'room_service')
-  )
-  if (!valid) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Order channel does not match this order type.',
-    })
-  }
-
-  return channel
-}
-
-const requiredLocationLabel = (value: unknown, label: string) => {
-  const result = text(value)
-  if (!result) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `${label} is required.`,
-    })
-  }
-  if (result.length > 64 || /[\u0000-\u001f\u007f]/.test(result)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `${label} is not valid.`,
-    })
-  }
-
-  return result
-}
-
 const customerText = (
   value: unknown,
   label: string,
@@ -167,70 +107,6 @@ const customerPartySize = (value: unknown) => {
   return result
 }
 
-export const readOrderTable = (
-  value: unknown,
-  orderType: KitchenOrderType
-) => {
-  if (orderType !== 'dine_in') {
-    if (value !== undefined && value !== null) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Table destination does not match this order type.',
-      })
-    }
-
-    return undefined
-  }
-
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-
-  return {
-    number: requiredLocationLabel(
-      source.number,
-      'Table'
-    ),
-  }
-}
-
-export const readOrderRoomService = (
-  value: unknown,
-  orderType: KitchenOrderType
-) => {
-  if (orderType !== 'room_service') {
-    if (value !== undefined && value !== null) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Room destination does not match this order type.',
-      })
-    }
-
-    return undefined
-  }
-
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-
-  return {
-    room: requiredLocationLabel(source.room, 'Room'),
-  }
-}
-
-export const statusForOrderType = (
-  orderType: KitchenOrderType,
-  paymentRequired = false
-) =>
-  paymentRequired
-    ? 'pending_payment'
-    : orderType === 'delivery' ||
-        orderType === 'collection' ||
-        orderType === 'pre_order' ||
-        orderType === 'room_service'
-      ? 'pending_acceptance'
-      : 'open'
-
 export const readCustomer = (value: unknown): KitchenOrderCustomer => {
   const source = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -259,42 +135,4 @@ export const readCustomer = (value: unknown): KitchenOrderCustomer => {
   return Object.fromEntries(
     Object.entries(customer).filter(([, entry]) => entry)
   ) as KitchenOrderCustomer
-}
-
-export const readCollection = (
-  value: unknown,
-  orderType: KitchenOrderType
-) => {
-  if (orderType !== 'collection') return null
-
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-  const mode = text(source.mode)
-  const requestedFor = text(source.requested_for)
-
-  if (mode === 'scheduled') {
-    if (!requestedFor) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Choose a collection time.',
-      })
-    }
-
-    return {
-      mode: 'scheduled' as const,
-      requested_for: requestedFor,
-    }
-  }
-
-  if (requestedFor) {
-    return {
-      mode: 'scheduled' as const,
-      requested_for: requestedFor,
-    }
-  }
-
-  return {
-    mode: 'queue' as const,
-  }
 }

@@ -1,3 +1,4 @@
+import { createError } from 'h3'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model.ts'
 import type {
   KitchenOrderCustomer,
@@ -5,6 +6,19 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../models/kitchen/order.model.ts'
+import { normalizePaymentMethod, text } from './order-request.ts'
+import { menuOrderTypeStrategy } from './order-types/index.ts'
+
+type ResolveMenuOrderPaymentMethodInput = {
+  orderTypeConfig?: MenuOrderTypeConfig
+  requestedPaymentMethod: unknown
+}
+
+type ValidateMenuOrderDepositPolicyInput = {
+  orderTypeConfig?: MenuOrderTypeConfig
+  customer: KitchenOrderCustomer
+  currencyCode: string
+}
 
 type ResolveMenuOrderPaymentInput = {
   orderType: KitchenOrderType
@@ -23,6 +37,62 @@ const numberValue = (value: unknown) => {
 }
 
 const money = (value: number) => Math.max(0, Math.round(value * 100) / 100)
+
+export function resolveMenuOrderPaymentMethod(
+  input: ResolveMenuOrderPaymentMethodInput
+): KitchenOrderPaymentMethod | undefined {
+  const configuredPaymentMethods =
+    input.orderTypeConfig?.fulfilment?.payment_methods || []
+  const allowedPaymentMethods: KitchenOrderPaymentMethod[] =
+    input.orderTypeConfig?.fulfilment?.deposit
+      ? ['deposit']
+      : configuredPaymentMethods
+  const requestedPaymentMethod = normalizePaymentMethod(
+    input.requestedPaymentMethod,
+    allowedPaymentMethods
+  )
+  const paymentMethod = requestedPaymentMethod ||
+    (input.orderTypeConfig?.fulfilment?.deposit
+      ? 'deposit'
+      : allowedPaymentMethods.length === 1
+        ? allowedPaymentMethods[0]
+        : undefined)
+
+  if (allowedPaymentMethods.length && !paymentMethod) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose a payment method.',
+    })
+  }
+
+  return paymentMethod
+}
+
+export function validateMenuOrderDepositPolicy(
+  input: ValidateMenuOrderDepositPolicyInput
+) {
+  const depositPolicy = input.orderTypeConfig?.fulfilment?.deposit
+  const depositCurrencyCode = text(depositPolicy?.currency_code).toUpperCase()
+
+  if (
+    depositCurrencyCode &&
+    depositCurrencyCode !== input.currencyCode.toUpperCase()
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Deposit currency must match the kitchen currency.',
+    })
+  }
+  if (
+    depositPolicy?.type === 'fixed_per_person' &&
+    !Number(input.customer.party_size)
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Party size is required for this deposit.',
+    })
+  }
+}
 
 const depositAmount = (
   deposit: NonNullable<MenuOrderTypeConfig['fulfilment']>['deposit'],
@@ -43,12 +113,7 @@ const depositAmount = (
 }
 
 export const statusAfterPayment = (orderType: KitchenOrderType) =>
-  orderType === 'delivery' ||
-    orderType === 'collection' ||
-    orderType === 'pre_order' ||
-    orderType === 'room_service'
-    ? 'pending_acceptance'
-    : 'open'
+  menuOrderTypeStrategy(orderType).initialStatus
 
 export function resolveMenuOrderPayment(
   input: ResolveMenuOrderPaymentInput
@@ -96,7 +161,7 @@ export function resolveMenuOrderPayment(
         method: 'online_card',
         amount_chf: amount,
         currency_code: currencyCode,
-        reason: input.orderType === 'delivery'
+        reason: menuOrderTypeStrategy(input.orderType).resolvesDelivery
           ? 'Delivery order payment'
           : 'Order payment',
       }
