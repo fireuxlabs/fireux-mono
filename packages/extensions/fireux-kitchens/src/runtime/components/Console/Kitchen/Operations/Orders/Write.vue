@@ -161,9 +161,9 @@ type MenuOption = {
 }
 
 const modes: { value: KitchenOrderType, label: string, icon: string }[] = [
-  { value: 'dine_in', label: 'Dine in', icon: 'i-lucide-qr-code' },
-  { value: 'eat_in', label: 'Eat in', icon: 'i-lucide-utensils' },
-  { value: 'takeaway', label: 'Takeaway', icon: 'i-lucide-shopping-bag' },
+  { value: 'dine_in', label: 'Table service', icon: 'i-lucide-qr-code' },
+  { value: 'eat_in', label: 'Eat here', icon: 'i-lucide-utensils' },
+  { value: 'takeaway', label: 'Take away', icon: 'i-lucide-shopping-bag' },
 ]
 const {
   menus,

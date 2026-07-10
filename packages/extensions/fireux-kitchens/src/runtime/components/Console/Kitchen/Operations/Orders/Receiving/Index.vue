@@ -219,7 +219,7 @@ const incomingTitle = computed(() => {
   if (isTerminal.value) return 'Kitchen response'
   if (isPaymentPending.value && isCollectionOrder.value) return 'Collection timing request'
   if (isPaymentPending.value && isPreOrder.value) return 'Pre-order deposit'
-  if (isPaymentPending.value) return 'Cooking time accepted'
+  if (isPaymentPending.value) return 'Awaiting customer payment'
   if (isPreOrder.value) return 'Pre-order request'
   if (isRoomService.value) {
     const room = normalize(roomService.value.room)

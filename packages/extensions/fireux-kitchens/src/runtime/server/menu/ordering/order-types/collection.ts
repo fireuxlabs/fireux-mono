@@ -6,7 +6,7 @@ export const collectionOrderType = {
   defaultChannel: 'menu',
   destination: 'collection',
   schedule: 'collection',
-  initialStatus: 'pending_acceptance',
+  requiresAcceptance: true,
   resolvesDelivery: false,
   recordsRequestedFor: false,
 } as const satisfies MenuOrderTypeStrategy

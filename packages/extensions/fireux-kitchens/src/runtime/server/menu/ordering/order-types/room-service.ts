@@ -6,7 +6,7 @@ export const roomServiceOrderType = {
   defaultChannel: 'room_service',
   destination: 'room_service',
   schedule: 'none',
-  initialStatus: 'pending_acceptance',
+  requiresAcceptance: true,
   resolvesDelivery: false,
   recordsRequestedFor: false,
 } as const satisfies MenuOrderTypeStrategy

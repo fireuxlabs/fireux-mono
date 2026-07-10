@@ -49,8 +49,8 @@ withDefaults(
   }>(),
   {
     modes: () => [
-      { mode: 'eat_in', label: 'Eat in' },
-      { mode: 'takeaway', label: 'Takeaway' },
+      { mode: 'eat_in', label: 'Eat here' },
+      { mode: 'takeaway', label: 'Take away' },
     ],
   }
 )

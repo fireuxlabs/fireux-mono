@@ -65,7 +65,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   table: {
     context: 'table',
     surface: 'dine_in',
-    label: 'Dine in',
+    label: 'Table service',
     icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
@@ -85,14 +85,14 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     surface: 'staff_pos',
     label: 'Staff POS',
     icon: 'i-lucide-monitor',
-    visibleOrderTypes: ['eat_in', 'takeaway'],
+    visibleOrderTypes: ['dine_in', 'eat_in', 'takeaway'],
     defaultOrderType: 'eat_in',
     locked: false,
   },
   dine_in: {
     context: 'dine_in',
     surface: 'dine_in',
-    label: 'Dine in',
+    label: 'Table service',
     icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
@@ -101,7 +101,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   eat_in: {
     context: 'eat_in',
     surface: 'kiosk',
-    label: 'Eat in',
+    label: 'Eat here',
     icon: 'i-lucide-utensils',
     visibleOrderTypes: ['eat_in'],
     defaultOrderType: 'eat_in',
@@ -110,7 +110,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   takeaway: {
     context: 'takeaway',
     surface: 'kiosk',
-    label: 'Takeaway',
+    label: 'Take away',
     icon: 'i-lucide-shopping-bag',
     visibleOrderTypes: ['takeaway'],
     defaultOrderType: 'takeaway',

@@ -27,6 +27,9 @@ export function useKitchenOrderTicket(
 ) {
   const copied = ref(false)
   const orderRecord = computed(() => props.order as Record<string, unknown>)
+  const fulfilmentMatch = computed(() =>
+    record(orderRecord.value.fulfilment_match)
+  )
   const collectionRecord = computed(() => record(orderRecord.value.collection))
   const tableRecord = computed(() => record(orderRecord.value.table))
   const roomServiceRecord = computed(() => record(orderRecord.value.room_service))
@@ -53,6 +56,9 @@ export function useKitchenOrderTicket(
     )
   )
   const serviceMode = computed(() => resolveServiceMode(props.order))
+  const fulfilmentReference = computed(() =>
+    normalizeString(fulfilmentMatch.value.reference)
+  )
   const collectionMode = computed(() =>
     normalizeString(collectionRecord.value.mode)
   )
@@ -119,15 +125,25 @@ export function useKitchenOrderTicket(
     }
 
     if (serviceMode.value === 'dine_in') {
-      const table = normalizeString(tableRecord.value.number)
-      return table ? `Dine in · ${table}` : 'Dine in'
+      const table = fulfilmentReference.value || normalizeString(tableRecord.value.number)
+      if (!table) return 'Table service'
+
+      return /^table\b/i.test(table) ? table : `Table ${table}`
     }
     if (serviceMode.value === 'room_service') {
       const room = normalizeString(roomServiceRecord.value.room)
       return room ? `Room service · ${room}` : 'Room service'
     }
-    if (serviceMode.value === 'eat_in') return 'Eat in'
-    if (serviceMode.value === 'takeaway') return 'Takeaway'
+    if (serviceMode.value === 'eat_in') {
+      return fulfilmentReference.value
+        ? `Eat here · ${fulfilmentReference.value}`
+        : 'Eat here'
+    }
+    if (serviceMode.value === 'takeaway') {
+      return fulfilmentReference.value
+        ? `Take away · ${fulfilmentReference.value}`
+        : 'Take away'
+    }
 
     return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'
   })
@@ -264,6 +280,14 @@ export function useKitchenOrderTicket(
     touchStatus,
     trashOrder,
   }
+}
+
+export function kitchenOrderHandoffActionLabel(order: KitchenOrder) {
+  const serviceMode = resolveServiceMode(order)
+  if (serviceMode === 'dine_in') return 'Delivered'
+  if (serviceMode === 'eat_in' || serviceMode === 'takeaway') return 'Collected'
+
+  return 'Send'
 }
 
 function normalizeString(value: unknown) {

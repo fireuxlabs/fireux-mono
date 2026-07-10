@@ -75,12 +75,16 @@ const requestLabel = computed(() => {
   if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
   if (props.funnel.order.orderType === 'dine_in') return 'Dine-in order'
   if (props.funnel.order.orderType === 'room_service') return 'Room-service order'
-  if (['eat_in', 'takeaway'].includes(props.funnel.order.orderType)) return 'Kiosk order'
+  if (props.funnel.order.orderType === 'eat_in') return 'Eat-here order'
+  if (props.funnel.order.orderType === 'takeaway') return 'Take-away order'
 
   return 'Order'
 })
 const order = computed(() => record(props.funnel.processing.order))
 const receipt = computed(() => record(order.value.receipt))
+const fulfilmentMatch = computed(() =>
+  record(order.value.fulfilment_match || receipt.value.fulfilment_match)
+)
 const customer = computed(() =>
   record(order.value.customer || receipt.value.customer)
 )
@@ -98,7 +102,23 @@ const isKioskFunnel = computed(() =>
   ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
 )
 const customerName = computed(() => text(customer.value.name))
+const fulfilmentReference = computed(() =>
+  text(fulfilmentMatch.value.reference)
+)
+const counterReference = computed(() =>
+  text(fulfilmentMatch.value.type) === 'counter'
+    ? fulfilmentReference.value
+    : ''
+)
 const destinationLabel = computed(() => {
+  if (
+    text(fulfilmentMatch.value.type) === 'table' &&
+    fulfilmentReference.value
+  ) {
+    return /^table\b/i.test(fulfilmentReference.value)
+      ? fulfilmentReference.value
+      : `Table ${fulfilmentReference.value}`
+  }
   const table = record(order.value.table || receipt.value.table)
   const roomService = record(
     order.value.room_service || receipt.value.room_service
@@ -116,14 +136,22 @@ const readyForCounter = computed(() =>
     )
 )
 const detailTitle = computed(() => {
+  if (counterReference.value) {
+    return props.funnel.order.orderType === 'eat_in'
+      ? `Eat here · ${counterReference.value}`
+      : `Take away · ${counterReference.value}`
+  }
   const orderNumber = props.funnel.processing.order_number
   return orderNumber ? `Order ${orderNumber}` : requestLabel.value
 })
 const detailStatus = computed(() => {
   if (readyForCounter.value) {
-    return customerName.value
-      ? `${customerName.value}, your order is ready. Please collect from the counter.`
+    return counterReference.value
+      ? `${counterReference.value} is ready. Please collect from the counter.`
       : 'Your order is ready. Please collect from the counter.'
+  }
+  if (isKioskFunnel.value && counterReference.value) {
+    return `We will call ${counterReference.value} when it is ready.`
   }
   if (isKioskFunnel.value && customerName.value) {
     return `${customerName.value}, we will call you when it is ready.`
@@ -143,6 +171,9 @@ const confirmationLabel = computed(() => {
       : 'Your order is ready.'
   }
   if (isKioskFunnel.value) {
+    if (counterReference.value) {
+      return `Your counter number is ${counterReference.value}. The kitchen has your order.`
+    }
     return orderNumber
       ? `Order ${orderNumber} is with the kitchen.`
       : 'Your order is with the kitchen.'

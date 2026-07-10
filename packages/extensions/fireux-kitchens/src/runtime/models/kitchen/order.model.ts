@@ -115,6 +115,20 @@ export type KitchenOrderCollection = {
   requested_for?: string | FirebaseTimestamp
 }
 
+export type KitchenOrderTable = {
+  number?: string
+}
+
+export type KitchenOrderRoomService = {
+  room?: string
+}
+
+export type KitchenOrderFulfilmentMatch = Record<string, unknown> & {
+  type?: 'table' | 'counter' | 'delivery_zone' | 'room_service'
+  reference?: string
+  handoff?: 'table_service' | 'tray' | 'bag'
+}
+
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -124,6 +138,8 @@ export const KitchenOrderModel = {
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,
   collection: {} as KitchenOrderCollection,
+  table: {} as KitchenOrderTable,
+  room_service: {} as KitchenOrderRoomService,
   estimated_ready_minutes: 0 as number,
   estimated_ready_at: '' as string | FirebaseTimestamp,
   fire_state: 'fired' as KitchenOrderFireState,
@@ -133,7 +149,7 @@ export const KitchenOrderModel = {
   // Fulfilment can evolve later without rewriting historical tickets.
   fulfilment_policy: {} as Record<string, unknown>,
   // Snapshot of the concrete fulfilment match, such as the delivery zone found for an address.
-  fulfilment_match: {} as Record<string, unknown>,
+  fulfilment_match: {} as KitchenOrderFulfilmentMatch,
   // Driver interest/tender state is attached to the order, not a parallel collection.
   driver_responses: {} as Record<string, KitchenOrderDriverResponse>,
   customer: {} as KitchenOrderCustomer,

@@ -8,6 +8,8 @@ import {
   type KitchenOrderCustomer,
   type KitchenOrderFireState,
   type KitchenOrderItem,
+  type KitchenOrderRoomService,
+  type KitchenOrderTable,
   type KitchenOrderType,
 } from '../../../../../../../models/kitchen/order.model'
 
@@ -26,6 +28,8 @@ type CreateKitchenOrderInput = {
   app_id?: string
   creator_id?: string
   customer?: KitchenOrderCustomer
+  room_service?: KitchenOrderRoomService
+  table?: KitchenOrderTable
   kitchen_note?: string
 }
 
@@ -123,6 +127,8 @@ export function useKitchenOrderCreate() {
       order_type: orderType,
       requested_for: (orderType === 'collection' ? '' : requestedFor) as any,
       collection,
+      table: input.table || {},
+      room_service: input.room_service || {},
       estimated_ready_minutes: 0,
       estimated_ready_at: '' as any,
       fire_state: fireState,

@@ -26,9 +26,9 @@ export const menuOrderDepositLabel = (
 
 export const menuOrderTypeLabel = (type: KitchenOrderType) => {
   const labels: Record<KitchenOrderType, string> = {
-    dine_in: 'Dine in',
-    eat_in: 'Eat in',
-    takeaway: 'Takeaway',
+    dine_in: 'Table service',
+    eat_in: 'Eat here',
+    takeaway: 'Take away',
     collection: 'Collection',
     delivery: 'Delivery',
     pre_order: 'Pre-order',
@@ -70,11 +70,11 @@ export const menuOrderSubmitLabel = (type: KitchenOrderType) => {
   const labels: Record<KitchenOrderType, string> = {
     delivery: 'Send delivery order',
     collection: 'Send collection order',
-    eat_in: 'Send eat-in order',
-    takeaway: 'Send takeaway order',
+    eat_in: 'Send eat-here order',
+    takeaway: 'Send take-away order',
     pre_order: 'Send pre-order',
     room_service: 'Send room service order',
-    dine_in: 'Send order',
+    dine_in: 'Send table order',
   }
 
   return labels[type] || 'Send order'

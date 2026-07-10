@@ -118,7 +118,7 @@ const orderTypeOptions: OrderTypeOption[] = [
     key: 'kiosk',
     types: ['eat_in', 'takeaway'],
     label: 'Kiosk',
-    description: 'Shared in-store terminal. Eat in means tray; takeaway means bag.',
+    description: 'Shared in-store terminal. Eat here means tray; take away means bag.',
     route: '/menus/{menuId}.kiosk',
   },
   {

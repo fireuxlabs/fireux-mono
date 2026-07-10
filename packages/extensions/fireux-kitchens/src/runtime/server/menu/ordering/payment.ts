@@ -113,7 +113,9 @@ const depositAmount = (
 }
 
 export const statusAfterPayment = (orderType: KitchenOrderType) =>
-  menuOrderTypeStrategy(orderType).initialStatus
+  menuOrderTypeStrategy(orderType).requiresAcceptance
+    ? 'pending_acceptance'
+    : 'open'
 
 export function resolveMenuOrderPayment(
   input: ResolveMenuOrderPaymentInput

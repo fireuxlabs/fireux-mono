@@ -26,6 +26,18 @@ const timestampIso = (value: unknown) => {
   const parsed = Date.parse(text(value))
   return Number.isFinite(parsed) ? new Date(parsed).toISOString() : ''
 }
+const fulfilmentMatch = (value: unknown) => {
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+  const type = text(source.type)
+  const reference = text(source.reference)
+  const handoff = text(source.handoff)
+
+  if (!type || !reference || !handoff) return undefined
+
+  return { type, reference, handoff }
+}
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -64,12 +76,14 @@ export default defineEventHandler(async (event) => {
   const driverResponses = data.driver_responses && typeof data.driver_responses === 'object'
     ? data.driver_responses as Record<string, { status?: unknown }>
     : {}
+  const match = fulfilmentMatch(data.fulfilment_match)
 
   return {
     id: orderId,
     order_number: text(data.order_number),
     status: text(data.status),
     order_type: text(data.order_type),
+    ...(match ? { fulfilment_match: match } : {}),
     fire_state: text(data.fire_state),
     estimated_ready_minutes: numberValue(data.estimated_ready_minutes),
     estimated_ready_at: timestampIso(data.estimated_ready_at),

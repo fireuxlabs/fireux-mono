@@ -90,8 +90,8 @@
             :key="ticket.id"
             :order="ticket"
             header-action-label="Move order back to queue"
-            :status-action-label="sendLabel(ticket.id)"
-            :status-action-aria-label="sendAriaLabel(ticket.id)"
+            :status-action-label="sendLabel(ticket)"
+            :status-action-aria-label="sendAriaLabel(ticket)"
             @touch-header="moveToQueue"
             @touch-status="sendOrder"
           />
@@ -120,8 +120,8 @@
             v-for="ticket in queueOrders"
             :key="ticket.id"
             :order="ticket"
-            header-action-label="Move order to pass"
-            body-action-label="Move order to pass"
+            header-action-label="Mark order ready"
+            body-action-label="Mark order ready"
             @touch-header="passOrder"
             @touch-body="passOrder"
           />
@@ -165,6 +165,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenConsoleOrders'
+import { kitchenOrderHandoffActionLabel } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderTicket'
+import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
 
 const clearConfirm = ref(false)
 const clearingOrders = ref(false)
@@ -220,14 +222,17 @@ const clearButtonLabel = computed(() => {
   return 'Trash'
 })
 
-function sendLabel(orderId: string) {
-  return sendReadyOrderId.value === normalizeId(orderId) ? 'send' : 'on pass'
+function sendLabel(order: KitchenOrder) {
+  return sendReadyOrderId.value === normalizeId(order.id)
+    ? 'Confirm'
+    : kitchenOrderHandoffActionLabel(order)
 }
 
-function sendAriaLabel(orderId: string) {
-  return sendReadyOrderId.value === normalizeId(orderId)
-    ? 'Send order'
-    : 'Confirm send order'
+function sendAriaLabel(order: KitchenOrder) {
+  const action = kitchenOrderHandoffActionLabel(order)
+  return sendReadyOrderId.value === normalizeId(order.id)
+    ? `Confirm ${action.toLowerCase()}`
+    : action
 }
 
 function moveToQueue(orderId: string) {

@@ -6,7 +6,7 @@ export const preOrderOrderType = {
   defaultChannel: 'menu',
   destination: 'none',
   schedule: 'requested_for',
-  initialStatus: 'pending_acceptance',
+  requiresAcceptance: true,
   resolvesDelivery: false,
   recordsRequestedFor: true,
 } as const satisfies MenuOrderTypeStrategy

@@ -10,10 +10,10 @@
 
   <div v-else-if="step === 3" class="menu-order-dispatch">
     <h2 class="menu-order-screen-title">
-      Kiosk
+      Counter order
     </h2>
 
-    <UFormField label="Name for the counter call">
+    <UFormField label="Name for the counter call (optional)">
       <UInput
         v-model="callName"
         autocomplete="given-name"
@@ -89,7 +89,7 @@ const modeIcon = computed(() =>
   isEatIn.value ? 'i-lucide-utensils' : 'i-lucide-shopping-bag'
 )
 const modeLabel = computed(() =>
-  isEatIn.value ? 'Eat in' : 'Takeaway'
+  isEatIn.value ? 'Eat here' : 'Take away'
 )
 const handoffLabel = computed(() =>
   isEatIn.value
@@ -103,7 +103,7 @@ watchEffect(() => {
     return
   }
   if (props.step === 3) {
-    emit('update:ready', Boolean(callName.value))
+    emit('update:ready', true)
     return
   }
 

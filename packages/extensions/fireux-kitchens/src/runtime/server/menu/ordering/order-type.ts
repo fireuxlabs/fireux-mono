@@ -14,7 +14,7 @@ export type MenuOrderScheduleKind =
   | 'collection'
   | 'requested_for'
 
-export type MenuOrderInitialStatus = 'open' | 'pending_acceptance'
+export type MenuOrderHandoffKind = 'table_service' | 'tray' | 'bag'
 
 export type MenuOrderTypeStrategy = {
   type: KitchenOrderType
@@ -22,7 +22,8 @@ export type MenuOrderTypeStrategy = {
   defaultChannel: KitchenOrderChannel
   destination: MenuOrderDestinationKind
   schedule: MenuOrderScheduleKind
-  initialStatus: MenuOrderInitialStatus
+  requiresAcceptance: boolean
+  handoff?: MenuOrderHandoffKind
   resolvesDelivery: boolean
   recordsRequestedFor: boolean
 }

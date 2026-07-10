@@ -231,14 +231,18 @@ const campOptions = computed<CampOption[]>(() => {
   if (selectedDineInOption.value) {
     options.push({
       value: 'dine_in',
-      label: 'Dine in',
+      label: dineInOptions.value.some((option) =>
+        ['pre_order', 'room_service'].includes(String(option.orderType || ''))
+      ) ? 'Dining / room' : 'Table service',
       option: selectedDineInOption.value,
     })
   }
   if (selectedTakeAwayOption.value) {
     options.push({
       value: 'takeaway',
-      label: 'Takeaway',
+      label: takeAwayOptions.value.some((option) =>
+        ['collection', 'delivery'].includes(String(option.orderType || ''))
+      ) ? 'Collection / delivery' : 'Counter order',
       option: selectedTakeAwayOption.value,
     })
   }
@@ -269,10 +273,10 @@ const hasKioskModes = computed(() =>
 )
 const methodSelectorLabel = computed(() => {
   if (activeCamp.value === 'takeaway') {
-    return hasKioskModes.value ? 'Kiosk fulfilment' : 'Fulfilment method'
+    return hasKioskModes.value ? 'Counter handoff' : 'Fulfilment method'
   }
 
-  return 'Dine in service'
+  return 'Service method'
 })
 function methodOptionLabel(option: MenuChoiceOption) {
   return option.label

@@ -109,7 +109,9 @@ export async function resolveMenuOrderFulfilment(input: {
   const paymentRequired = payment.required && payment.status !== 'paid'
   const status = paymentRequired
     ? 'pending_payment'
-    : strategy.initialStatus
+    : strategy.requiresAcceptance
+      ? 'pending_acceptance'
+      : 'open'
   const policySnapshot = command.orderTypeConfig
     ? {
         order_type: command.orderTypeConfig.type,

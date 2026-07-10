@@ -6,6 +6,7 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderChannel,
   KitchenOrderFireState,
+  KitchenOrderFulfilmentMatch,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
@@ -36,6 +37,7 @@ export type CreatedMenuOrderReceipt = {
   collection?: MenuOrderingCollectionState
   room_service?: MenuOrderingRoomServiceState
   table?: MenuOrderingTableState
+  fulfilment_match?: KitchenOrderFulfilmentMatch
   requested_for?: string
   currency: string
   subtotal_chf: number
@@ -63,6 +65,7 @@ export type CreatedMenuOrder = {
   collection?: MenuOrderingCollectionState
   room_service?: MenuOrderingRoomServiceState
   table?: MenuOrderingTableState
+  fulfilment_match?: KitchenOrderFulfilmentMatch
   requested_for?: string
   payment?: KitchenOrderPayment
   receipt?: CreatedMenuOrderReceipt

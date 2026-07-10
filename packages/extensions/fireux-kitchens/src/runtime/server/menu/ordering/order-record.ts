@@ -1,8 +1,10 @@
 import { FieldValue } from 'firebase-admin/firestore'
+import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import type { ResolvedMenuOrderItem } from './order-items.ts'
 import type { ResolvedMenuOrderFulfilment } from './order-fulfilment.ts'
+import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 import {
   numberValue,
@@ -26,6 +28,40 @@ export function createMenuOrderRecordIdentity(): MenuOrderRecordIdentity {
   }
 }
 
+function counterReference(identity: MenuOrderRecordIdentity) {
+  const fragment = identity.id
+    .split('-')
+    .pop()
+    ?.replace(/[^a-z0-9]/gi, '')
+    .slice(0, 4)
+    .toUpperCase()
+
+  return fragment || identity.number.slice(-4).toUpperCase()
+}
+
+function simpleFulfilmentMatch(
+  command: MenuOrderCommand,
+  strategy: MenuOrderTypeStrategy,
+  identity: MenuOrderRecordIdentity
+): KitchenOrderFulfilmentMatch | undefined {
+  if (strategy.handoff === 'table_service' && command.table?.number) {
+    return {
+      type: 'table',
+      reference: command.table.number,
+      handoff: 'table_service',
+    }
+  }
+  if (strategy.handoff === 'tray' || strategy.handoff === 'bag') {
+    return {
+      type: 'counter',
+      reference: counterReference(identity),
+      handoff: strategy.handoff,
+    }
+  }
+
+  return undefined
+}
+
 export function assembleMenuOrderRecord(input: {
   command: MenuOrderCommand
   context: MenuOrderContext
@@ -42,6 +78,11 @@ export function assembleMenuOrderRecord(input: {
     identity,
   } = input
   const strategy = menuOrderTypeStrategy(command.orderType)
+  const fulfilmentMatch = fulfilment.matchSnapshot || simpleFulfilmentMatch(
+    command,
+    strategy,
+    identity
+  )
   const path =
     `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
   const receiptItems = input.items.map((item) => ({
@@ -76,8 +117,8 @@ export function assembleMenuOrderRecord(input: {
     ...(Object.keys(fulfilment.customer).length
       ? { customer: fulfilment.customer }
       : {}),
-    ...(fulfilment.matchSnapshot
-      ? { fulfilment_match: fulfilment.matchSnapshot }
+    ...(fulfilmentMatch
+      ? { fulfilment_match: fulfilmentMatch }
       : {}),
     ...(fulfilment.policySnapshot
       ? { fulfilment_policy: fulfilment.policySnapshot }
@@ -112,6 +153,7 @@ export function assembleMenuOrderRecord(input: {
     ...(command.roomService
       ? { room_service: command.roomService }
       : {}),
+    ...(fulfilmentMatch ? { fulfilment_match: fulfilmentMatch } : {}),
     receipt: {
       id: identity.id,
       order_number: identity.number,
@@ -127,6 +169,7 @@ export function assembleMenuOrderRecord(input: {
       ...(command.roomService
         ? { room_service: command.roomService }
         : {}),
+      ...(fulfilmentMatch ? { fulfilment_match: fulfilmentMatch } : {}),
       currency: input.currencyCode,
       subtotal_chf: input.subtotal,
       ...(fulfilment.deliveryFee
