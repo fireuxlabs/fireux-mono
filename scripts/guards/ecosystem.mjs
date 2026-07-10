@@ -4,18 +4,16 @@
 // FILE: scripts/guards/ecosystem.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import {
+  COMMON_PACKAGE_REQUIRED_L1,
+  inspectLevelOne,
+} from './_lib/filesystem-policy.mjs'
 
 const REQUIRED_L1 = [
-  'package.json',
-  'registry.json',
-  'README.md',
-  'src',
-  'tsconfig.json',
+  ...COMMON_PACKAGE_REQUIRED_L1,
   'docs',
   '.firebaserc',
 ]
-
-const ALLOWED_NOISE = ['node_modules', 'dist', 'tsconfig.tsbuildinfo', '.DS_Store']
 
 // Ecosystem config contract (inside each ecosystem package)
 const REQUIRED_CONFIG_DIR = path.join('src', 'config')
@@ -66,10 +64,9 @@ export async function run(ctx) {
 function checkEcosystemPackage(pkgPath) {
   const entries = readdirSync(pkgPath).filter((n) => n !== '.DS_Store')
 
-  const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
-  const unexpected = entries.filter(
-    (e) => !REQUIRED_L1.includes(e) && !ALLOWED_NOISE.includes(e)
-  )
+  const { missing, unexpected } = inspectLevelOne(entries, {
+    required: REQUIRED_L1,
+  })
 
   const configViolations = checkConfigShape(pkgPath)
   const firebaseShapeViolations = checkFirebaseShape(pkgPath)

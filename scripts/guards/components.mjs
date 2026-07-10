@@ -6,9 +6,10 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const SOURCE_ROOTS = ['packages', 'projects']
-const SKIP_DIRS = new Set(['node_modules', '.nuxt', '.output', 'dist'])
+const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const COMPONENT_PATH_MARKERS = ['/src/runtime/components/', '/app/components/']
 const IMPORT_EXTENSIONS = [
   '',

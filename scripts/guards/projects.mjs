@@ -11,6 +11,10 @@
 
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import {
+  inspectLevelOne,
+  LOCAL_GENERATED_NOISE_NAMES,
+} from './_lib/filesystem-policy.mjs'
 
 const REQUIRED_L1 = [
   'app',
@@ -67,18 +71,6 @@ function isAllowedDotfile(name) {
   return false
 }
 
-const LOCAL_GENERATED_NOISE_L1 = [
-  'dist',
-  '.nuxt',
-  '.output',
-  '.nitro',
-  '.cache',
-  '.data',
-  'tsconfig.tsbuildinfo',
-  '.firebase',
-  'firebase-debug.log',
-]
-
 const HARD_FORBIDDEN_L1 = [
   '.firebaserc',
 ]
@@ -93,10 +85,8 @@ const STATIC_HARNESS_FORBIDDEN_L1 = [
   '.env',
 ]
 
-// pnpm workspaces create per-app node_modules. We allow them locally,
-// but they should never be committed (gitignored).
-const ALLOWED_NOISE_L1 = ['node_modules', ...LOCAL_GENERATED_NOISE_L1]
-
+// Known generated entries are shared local noise. The generated-artifacts
+// guard rejects them if they ever enter the Git index.
 // Public image library baseline expected in every app.
 // Extras are allowed (e.g. fireux-app has additional `img/app/stack/*`).
 const REQUIRED_PUBLIC_ASSETS = [
@@ -170,16 +160,16 @@ function checkProjectApp(appPath) {
     .filter((e) => e.name !== '.DS_Store')
     .map((e) => e.name)
 
-  const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
-  const forbiddenFound = entries.filter((e) => HARD_FORBIDDEN_L1.includes(e))
-
-  const allowed = new Set([...REQUIRED_L1, ...ALLOWED_L1])
-  const unexpected = entries.filter((e) => {
-    if (HARD_FORBIDDEN_L1.includes(e)) return false
-    if (allowed.has(e)) return false
-    if (ALLOWED_NOISE_L1.includes(e)) return false
-    if (e.startsWith('.') && isAllowedDotfile(e)) return false
-    return true
+  const {
+    missing,
+    forbidden: forbiddenFound,
+    unexpected,
+  } = inspectLevelOne(entries, {
+    required: REQUIRED_L1,
+    allowed: ALLOWED_L1,
+    forbidden: HARD_FORBIDDEN_L1,
+    noise: LOCAL_GENERATED_NOISE_NAMES,
+    isAllowed: (entry) => entry.startsWith('.') && isAllowedDotfile(entry),
   })
 
   if (!missing.length && !forbiddenFound.length && !unexpected.length) return null
@@ -227,17 +217,14 @@ function checkStaticProjectHarness(appPath) {
     .filter((e) => e.name !== '.DS_Store')
     .map((e) => e.name)
 
-  const missing = STATIC_HARNESS_REQUIRED_L1.filter((r) => !entries.includes(r))
-  const forbiddenFound = entries.filter((e) =>
-    STATIC_HARNESS_FORBIDDEN_L1.includes(e)
-  )
-
-  const allowed = new Set(STATIC_HARNESS_REQUIRED_L1)
-  const unexpected = entries.filter((e) => {
-    if (STATIC_HARNESS_FORBIDDEN_L1.includes(e)) return false
-    if (allowed.has(e)) return false
-    if (ALLOWED_NOISE_L1.includes(e)) return false
-    return true
+  const {
+    missing,
+    forbidden: forbiddenFound,
+    unexpected,
+  } = inspectLevelOne(entries, {
+    required: STATIC_HARNESS_REQUIRED_L1,
+    forbidden: STATIC_HARNESS_FORBIDDEN_L1,
+    noise: LOCAL_GENERATED_NOISE_NAMES,
   })
 
   if (!missing.length && !forbiddenFound.length && !unexpected.length) {

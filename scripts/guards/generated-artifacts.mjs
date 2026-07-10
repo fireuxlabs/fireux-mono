@@ -5,37 +5,7 @@
 
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
-
-const GENERATED_DIR_SEGMENTS = new Set([
-  '.cache',
-  '.data',
-  '.firebase',
-  '.nitro',
-  '.nuxt',
-  '.nyc_output',
-  '.output',
-  '.pnpm-store',
-  'build',
-  'coverage',
-  'dist',
-  'node_modules',
-])
-
-const GENERATED_FILE_NAMES = new Set([
-  '.DS_Store',
-  'firebase-debug.log',
-])
-
-function isGeneratedArtifact(file) {
-  const segments = file.split('/')
-  const fileName = segments.at(-1) ?? ''
-
-  return (
-    segments.some((segment) => GENERATED_DIR_SEGMENTS.has(segment)) ||
-    GENERATED_FILE_NAMES.has(fileName) ||
-    fileName.endsWith('.tsbuildinfo')
-  )
-}
+import { isGeneratedArtifactPath } from './_lib/filesystem-policy.mjs'
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -54,7 +24,7 @@ export async function run(ctx) {
     .split('\0')
     .filter(Boolean)
     .map((file) => file.split(path.sep).join('/'))
-    .filter(isGeneratedArtifact)
+    .filter(isGeneratedArtifactPath)
     .sort((a, b) => a.localeCompare(b))
 
   if (trackedGenerated.length) {

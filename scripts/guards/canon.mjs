@@ -14,20 +14,10 @@
 
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import path from 'node:path'
+import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const SKIP_DIRS = new Set([
-  'node_modules',
-  'dist',
-  'build',
-  '.cache',
-  '.data',
-  '.firebase',
-  '.nitro',
-  '.nuxt',
-  '.nyc_output',
-  '.output',
-  '.pnpm-store',
-  'coverage',
+  ...GENERATED_DIRECTORY_NAMES,
   '.git',
   '.turbo',
   '.next',
@@ -260,7 +250,6 @@ function shouldSkipKitchenBucketScan(repoRoot, absPath) {
 function findAllMatches(text, re) {
   const matches = []
   let m
-  // eslint-disable-next-line no-cond-assign
   while ((m = re.exec(text))) {
     matches.push({ index: m.index, match: m[0] })
   }

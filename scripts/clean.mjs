@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-08
+// last_used: 2026-07-10
 // usage_note: baseline after scripts cleanup; update when run.
 /**
  * scripts/clean.mjs
@@ -32,7 +32,7 @@ const GENERATED_REMOVE_DIRS = new Set(['dist', '.nuxt', '.output', '.nitro', '.c
 const PROJECT_APP_GENERATED_DIRS = new Set(['.nuxt'])
 const ALWAYS_REMOVE_FILES = new Set(['tsconfig.tsbuildinfo'])
 const PROJECT_ONLY_REMOVE_DIRS = new Set(['.firebase'])
-const PROJECT_ONLY_REMOVE_FILES = new Set(['firebase-debug.log', '.firebaserc'])
+const PROJECT_ONLY_REMOVE_FILES = new Set(['firebase-debug.log'])
 
 let removedCount = 0
 let removedNuxtArtifacts = false

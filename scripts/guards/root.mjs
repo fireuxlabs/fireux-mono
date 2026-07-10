@@ -4,7 +4,7 @@
 // FILE: scripts/guards/root.mjs
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { syncDevWorkspace } from '../sync-dev-workspace.mjs'
+import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const ALLOWED_ROOT_DIRS = new Set([
   // VCS / tooling
@@ -29,8 +29,7 @@ const ALLOWED_ROOT_DIRS = new Set([
   'mirror',
 
   // Local-only (ignored, but tolerated)
-  'node_modules',
-  '.pnpm-store',
+  ...GENERATED_DIRECTORY_NAMES,
   'demo',
 ])
 
@@ -55,8 +54,6 @@ const ALLOWED_ROOT_FILES = new Set([
   // Linting
   'eslint.config.js',
 
-  // Temporary root docs exceptions (guard-specific allowlist)
-  'fulfillment.md',
 ])
 
 const ALLOWED_ROOT_DOTFILES = new Set([
@@ -130,8 +127,6 @@ export async function run(ctx) {
       ].join('\n')
     )
   }
-
-  await syncDevWorkspace({ check: true, silent: true })
 
   console.log('[guard] ✅ Repo root is clean')
 }

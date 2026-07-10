@@ -18,6 +18,7 @@ import process from 'node:process'
 
 import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import { run as runRoot } from './guards/root.mjs'
+import { run as runDevWorkspace } from './guards/dev-workspace.mjs'
 import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
 import { run as runCanon } from './guards/canon.mjs'
@@ -25,6 +26,7 @@ import { run as runComponents } from './guards/components.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
+import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
@@ -38,6 +40,7 @@ try {
 
 const guards = [
   { key: 'root', run: runRoot },
+  { key: 'dev-workspace', run: runDevWorkspace },
   { key: 'secrets', run: runSecrets },
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
   { key: 'canon', run: runCanon },
@@ -45,6 +48,7 @@ const guards = [
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },
+  { key: 'kitchen-menu-size', run: runKitchenMenuSize },
   { key: 'projects', run: runProjects },
 ]
 

@@ -109,7 +109,7 @@ Do not scan the whole repo by default. Scan broadly only when the user asks for 
 
 Root shape is controlled by `scripts/guards/root.mjs`.
 
-- Allowed root dirs include `.github`, `.vscode`, `docs`, `packages`, `projects`, `scripts`, `templates`, `tools`, `types`, `temp`, `mirror`, `node_modules`, and `demo`.
+- Allowed authored root dirs include `.github`, `.vscode`, `docs`, `figma-export`, `packages`, `projects`, `scripts`, `templates`, `tools`, `types`, `temp`, `mirror`, and `demo`; known generated directories are tolerated locally but must remain untracked.
 - Allowed root files include `AGENTS.md`, `README.md`, package manager files, TypeScript config, lint config, and deploy ignore files.
 - `mirror/README.md` is guard-required in the old shape, though docs are currently culled.
 
@@ -125,7 +125,7 @@ Extension package shape is controlled by `scripts/guards/extensions.mjs`.
 - Required L1: `package.json`, `registry.json`, `README.md`, `src`, `tsconfig.json`.
 - Optional L1: `docs`.
 - Implementation belongs in `src`.
-- Kitchen/Menu runtime files over 400 lines are guard failures.
+- Kitchen/Menu runtime files over 400 lines are checked separately by `scripts/guards/kitchen-menu-size.mjs`; this domain complexity rule is not part of extension folder shape.
 
 Ecosystem package shape is controlled by `scripts/guards/ecosystem.mjs`.
 

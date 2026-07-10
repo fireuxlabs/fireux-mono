@@ -4,16 +4,12 @@
 // FILE: scripts/guards/core.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import {
+  COMMON_PACKAGE_REQUIRED_L1,
+  inspectLevelOne,
+} from './_lib/filesystem-policy.mjs'
 
-const REQUIRED_L1 = [
-  'package.json',
-  'registry.json',
-  'README.md',
-  'src',
-  'tsconfig.json',
-]
-
-const ALLOWED_NOISE = ['node_modules', 'dist', 'tsconfig.tsbuildinfo', '.DS_Store']
+const REQUIRED_L1 = COMMON_PACKAGE_REQUIRED_L1
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -44,10 +40,9 @@ export async function run(ctx) {
 function checkCorePackage(pkgPath) {
   const entries = readdirSync(pkgPath).filter((n) => n !== '.DS_Store')
 
-  const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
-  const unexpected = entries.filter(
-    (e) => !REQUIRED_L1.includes(e) && !ALLOWED_NOISE.includes(e)
-  )
+  const { missing, unexpected } = inspectLevelOne(entries, {
+    required: REQUIRED_L1,
+  })
 
   const exportViolations = checkPackageExports(pkgPath)
 
