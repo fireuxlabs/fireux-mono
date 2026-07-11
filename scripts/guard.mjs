@@ -25,6 +25,7 @@ import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
+import { run as runConsolePages } from './guards/console-pages.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
@@ -49,6 +50,7 @@ const guards = [
   { key: 'runtime-registration', run: runRuntimeRegistration },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
+  { key: 'console-pages', run: runConsolePages },
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },

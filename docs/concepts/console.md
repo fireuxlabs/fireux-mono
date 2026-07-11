@@ -1,6 +1,6 @@
 Console spine map
-Updated: 2026-06-26
-Ref: e5a94ed3f
+Updated: 2026-07-10
+Ref: 9bbc2bdf2
 Role: map, not canon
 
 Purpose:
@@ -24,6 +24,26 @@ Shared core:
 - `useConsoleOverview`
 - `useConsoleSelection`
 - `useConsoleTeam`
+
+Page surface vocabulary:
+- `browse`: an operation collection or operational summary at `/<operation>`.
+- `detail`: one record at `/<operation>/[recordId]`.
+- `create`: a form at `/<operation>/create`.
+- `edit`: a record form at `/<operation>/[recordId]/edit`, or persistent operation settings at `/<operation>/edit`.
+- `workflow`: a resumable process at `/<operation>/workflows/<name>/[runId?]`.
+- `live`: a real-time command surface at the operation root; it may use an immersive domain layout.
+
+Shared page rules:
+- The page directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header slot, and a body slot. Do not hide that route shell in a generic component.
+- The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
+- Back navigation and page actions stay in the navbar right slot.
+- Create and edit share form behavior. Small primitives such as `ConsoleFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
+- New and adopted route access visibility and selection requirements live at top-level page meta; navigation metadata only describes navigation presentation.
+- A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
+- Route pages stay thin. Domain components own data, permissions, states, and mutations.
+- Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
+- The console-pages guard enforces the explicit panel/navbar/body contract for visible leaf pages. Only redirects, nested routers, and live layouts are structurally exempt; the guard does not constrain body geometry.
+- Tables is the first operation-level edit reference: `/console/kitchen/tables` and `/console/kitchen/tables/edit`.
 
 Allowed domain buckets:
 - `core`
@@ -52,8 +72,9 @@ Index pattern:
 Operations:
 - Operations are child surfaces inside a selected console target.
 - Operations must not leak into Firestore entity root folders.
-- The default operation component spine is entry, optional tools seam, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
-- The entry composes tools first, then `Read.vue` for current state, then a collapsed write lane for selected-target mutation.
+- The default operation component spine is entry, optional tools seam, `Read.vue`, optional `Write.vue`, and optional `Detail.vue`.
+- A browse entry composes tools first and `Read.vue` for current state. A collapsed write lane is only for a small add/create action that belongs in browse context.
+- Persistent operation settings use the operation-level edit route and `consoleSurface: 'edit'`; do not hide configuration inside a browse-page dropdown.
 - `Read.vue` lists current records and should link each record to detail when the operation owns record identity.
 - `Detail.vue` is justified for operations; it can start as a small selected-record surface and grow detail-level read/write children.
 - The matching operation composable is `useXConsoleOperation`; it owns selected target, child collection path, pending/write permissions, and debug wiring.

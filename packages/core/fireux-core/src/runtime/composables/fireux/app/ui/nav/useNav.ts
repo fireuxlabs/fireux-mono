@@ -1,7 +1,12 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
-import type { NavItem, NavMeta, NavPosition } from '../../nav.types'
+import type {
+  NavItem,
+  NavMeta,
+  NavPosition,
+  NavVisibility,
+} from '../../nav.types'
 import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 
 const DEFAULT_LAYOUT = 'default'
@@ -13,7 +18,9 @@ type TargetLayouts = string | string[]
 
 type RouteMetaLike = {
   nav?: NavMeta
+  visibility?: NavVisibility
   requiresAuth?: boolean
+  requiresSelection?: boolean
   roles?: unknown
   tenant?: unknown
   title?: unknown
@@ -87,7 +94,9 @@ function normaliseRoles(value: unknown): string[] | undefined {
 function buildNavItem(
   route: RouteRecordNormalized,
   nav: NavMeta,
-  targetLayouts: string[]
+  targetLayouts: string[],
+  routeVisibility?: NavVisibility,
+  routeRequiresSelection?: boolean
 ): NavItem | null {
   if (nav.hidden === true) return null
 
@@ -112,16 +121,18 @@ function buildNavItem(
     layouts,
     requiresAuth: Boolean((route.meta as RouteMetaLike).requiresAuth),
     requiresSelection:
-      typeof nav.requiresSelection === 'boolean'
-        ? nav.requiresSelection
-        : undefined,
+      typeof routeRequiresSelection === 'boolean'
+        ? routeRequiresSelection
+        : typeof nav.requiresSelection === 'boolean'
+          ? nav.requiresSelection
+          : undefined,
     parked: nav.parked === true ? true : undefined,
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
     tenant:
       typeof (route.meta as RouteMetaLike).tenant === 'string'
         ? ((route.meta as RouteMetaLike).tenant as string)
         : undefined,
-    visibility: normaliseNavVisibility(nav.visibility),
+    visibility: normaliseNavVisibility(routeVisibility ?? nav.visibility),
   }
 }
 
@@ -161,7 +172,13 @@ export function useNav(
       const meta = route.meta as RouteMetaLike
       if (!isNavMeta(meta.nav)) continue
 
-      const item = buildNavItem(route, meta.nav, wanted.value)
+      const item = buildNavItem(
+        route,
+        meta.nav,
+        wanted.value,
+        meta.visibility,
+        meta.requiresSelection
+      )
       if (!item) continue
 
       const dedupeKey = item.key ?? item.to ?? item.label

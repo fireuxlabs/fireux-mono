@@ -29,20 +29,13 @@
         />
       </UFormField>
 
-      <div class="flex items-center gap-3">
-        <UButton
-          type="submit"
-          icon="i-lucide-save"
-          :loading="saving"
-          :disabled="Boolean(validationMessage) || saving"
-        >
-          Save table count
-        </UButton>
-
-        <span v-if="saveMessage" class="text-xs font-semibold text-muted">
-          {{ saveMessage }}
-        </span>
-      </div>
+      <ConsoleFormActions
+        submit-label="Save table count"
+        cancel-to="/console/kitchen/tables"
+        :status="saveMessage"
+        :loading="saving"
+        :disabled="Boolean(validationMessage)"
+      />
     </form>
   </UCard>
 </template>
