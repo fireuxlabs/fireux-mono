@@ -25,6 +25,7 @@ const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
 type UseKitchenIngredientsOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
+  enabled?: boolean | Ref<boolean | null | undefined>
 }
 
 export type KitchenIngredientRecord = Partial<Ingredient> & {
@@ -42,21 +43,24 @@ export function useKitchenIngredients(
     databaseId: options.databaseId,
   })
   const { appId } = useFireUXConfig()
+  const isEnabled = computed(() => unref(options.enabled) !== false)
 
   const resolvedKitchenId = computed(() =>
     String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
   )
 
   const kitchenCollectionPath = computed(() =>
-    resolveKitchenChildCollectionBasePath({
-      kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: KitchenIngredientStorage.collection,
-      appId,
-    })
+    isEnabled.value
+      ? resolveKitchenChildCollectionBasePath({
+          kitchenCollectionPath: unref(options.kitchenCollectionPath),
+          collectionName: KitchenIngredientStorage.collection,
+          appId,
+        })
+      : ''
   )
 
   const collectionPath = computed(() =>
-    resolvedKitchenId.value
+    isEnabled.value && resolvedKitchenId.value
       ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
@@ -85,7 +89,10 @@ export function useKitchenIngredients(
     ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
     : (kitchenBinding as any).data as Ref<KitchenIngredient[] | undefined>
 
-  const globalIngredients = firestoreFetchCollection<Ingredient>(IngredientStorage.collection)
+  const globalCollectionPath = computed(() =>
+    isEnabled.value ? IngredientStorage.collection : ''
+  )
+  const globalIngredients = firestoreFetchCollection<Ingredient>(globalCollectionPath)
 
   const ingredientById = computed(() => {
     const map = new Map<string, Ingredient>()
@@ -133,7 +140,7 @@ export function useKitchenIngredients(
 
   const count = computed(() => ingredients.value.length)
   const pending = computed(() => {
-    if (!resolvedKitchenId.value) return false
+    if (!isEnabled.value || !resolvedKitchenId.value) return false
 
     return (
       kitchenItems.value === undefined ||

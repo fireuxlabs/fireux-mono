@@ -17,7 +17,7 @@
         <UInput
           v-model="menuName"
           placeholder="main, delivery, drinks"
-          :disabled="pending"
+          :disabled="pending || !canWrite"
         />
       </UFormField>
 
@@ -26,7 +26,7 @@
           v-model="sourceUrl"
           placeholder="https://example.com/order"
           type="url"
-          :disabled="pending"
+          :disabled="pending || !canWrite"
         />
       </UFormField>
 
@@ -62,6 +62,7 @@ import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/con
 
 const {
   activeKitchenAppId,
+  canWrite,
   currencyCode,
   kitchenId,
 } = useKitchenConsoleMenus()
@@ -76,7 +77,8 @@ const error = ref('')
 const uploadId = computed(() => normalizeSlug(menuName.value))
 const canSave = computed(() =>
   Boolean(
-    activeKitchenAppId.value &&
+    canWrite.value &&
+      activeKitchenAppId.value &&
       kitchenId.value &&
       currencyCode.value &&
       uploadId.value &&

@@ -15,6 +15,7 @@ export function useKitchenConsoleIdentity() {
   const selectedConsoleKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
+  const source = runtime.source
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const selectedKitchen = computed(() => selectedConsoleKitchen.value)
@@ -60,6 +61,7 @@ export function useKitchenConsoleIdentity() {
     selectedKitchen,
     kitchenId,
     rootCollection,
+    source,
     readOnly,
     canWrite,
     clearSelectedKitchen: actions.clearSelectedKitchen,

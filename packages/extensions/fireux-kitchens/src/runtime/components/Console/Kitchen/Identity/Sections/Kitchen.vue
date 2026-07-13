@@ -35,6 +35,8 @@
                 :firebase-value="name"
                 placeholder="Kitchen display name"
                 :maxlength="120"
+                :disabled="!canWrite"
+                disabled-message="This kitchen is read-only."
                 :update-function="handleName"
               />
             </div>
@@ -44,6 +46,8 @@
               :firebase-value="slug"
               placeholder="luna-piccante"
               :maxlength="80"
+              :disabled="!canWrite"
+              disabled-message="This kitchen is read-only."
               :validation-function="validateSlugField"
               :formatting-function="formatSlugField"
               :update-function="handleSlug"
@@ -55,6 +59,8 @@
                 :firebase-value="tagline"
                 placeholder="Short service tagline"
                 :maxlength="120"
+                :disabled="!canWrite"
+                disabled-message="This kitchen is read-only."
                 :update-function="handleTagline"
               />
             </div>
@@ -64,6 +70,8 @@
               :firebase-value="currencyCode"
               placeholder="ISO code"
               :maxlength="3"
+              :disabled="!canWrite"
+              disabled-message="This kitchen is read-only."
               :validation-function="validateCurrencyCode"
               :formatting-function="formatCurrencyCode"
               :update-function="handleCurrencyCode"

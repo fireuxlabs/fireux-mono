@@ -22,7 +22,7 @@ export function useKitchenConsoleMenu() {
   )
   const sectionMenuId = computed(() => menu.value ? menuId.value : '')
   const sectionState = useMenuSectionCollection(
-    state.kitchenId,
+    state.storageKitchenId,
     sectionMenuId,
     {
       kitchenCollectionPath: state.rootCollection,

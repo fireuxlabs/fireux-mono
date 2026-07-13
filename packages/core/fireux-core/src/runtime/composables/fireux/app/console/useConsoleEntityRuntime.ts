@@ -10,7 +10,7 @@ import type {
   ConsoleEntityScopeTarget,
 } from '../../firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { targetHasOperator } from './useConsoleAccess'
-import { useConsole } from './useConsole'
+import { normalizeConsoleSource, useConsole } from './useConsole'
 import { useConsoleSelection } from './useConsoleSelection'
 
 type ValueRef<T> = MaybeRef<T>
@@ -34,6 +34,12 @@ export function useConsoleEntityRuntime<TTarget>(
   options: UseConsoleEntityRuntimeOptions<TTarget>
 ) {
   const consoleRoot = useConsole(options.family)
+  const source = computed(() => {
+    const explicitMode = normalizeString(unref(options.mode))
+    return explicitMode
+      ? normalizeConsoleSource(explicitMode)
+      : consoleRoot.source.value
+  })
   const { uid } = useAuth()
   const userId = computed(
     () => normalizeString(unref(options.userId)) || normalizeString(uid.value)
@@ -61,12 +67,14 @@ export function useConsoleEntityRuntime<TTarget>(
     appId: computed(
       () => normalizeString(unref(options.appId)) || consoleRoot.appId
     ),
-    mode: options.mode,
+    mode: source,
     explicitPath: options.explicitPath,
     testCollectionPath: options.testCollectionPath,
     useAppOverlay: options.useAppOverlay,
   })
-  const readOnly = computed(() => Boolean(unref(options.readOnly)))
+  const readOnly = computed(
+    () => source.value === 'demo' || Boolean(unref(options.readOnly))
+  )
   const canWrite = computed(
     () =>
       !readOnly.value &&
@@ -93,6 +101,7 @@ export function useConsoleEntityRuntime<TTarget>(
       scopedCollection: firestore.scopedCollection,
       usesAppOverlay: firestore.usesAppOverlay,
       writeCollection: firestore.writeCollection,
+      source,
       readOnly,
       canWrite,
     },

@@ -12,6 +12,7 @@ import {
 type UseMenuKioskSkinCollectionOptions = {
   appId?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
+  enabled?: boolean | Ref<boolean | null | undefined>
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -25,8 +26,9 @@ export function useMenuKioskSkinCollection(
   const { firestoreFetchCollection } = useFirestoreRead({
     databaseId: options.databaseId,
   })
+  const enabled = computed(() => unref(options.enabled) !== false)
   const resolvedAppId = computed(() =>
-    clean(unref(options.appId)) || clean(appId)
+    enabled.value ? clean(unref(options.appId)) || clean(appId) : ''
   )
   const collectionPath = computed(() =>
     resolvedAppId.value

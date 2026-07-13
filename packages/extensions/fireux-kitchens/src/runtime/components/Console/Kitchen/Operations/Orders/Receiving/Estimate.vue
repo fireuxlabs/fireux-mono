@@ -16,6 +16,7 @@
       max="90"
       step="5"
       :value="minutes"
+      :disabled="!canInteract"
       @input="setEstimate(($event.target as HTMLInputElement).value)"
     >
 
@@ -23,7 +24,7 @@
       <UButton
         color="neutral"
         variant="soft"
-        :disabled="!orderId"
+        :disabled="!canInteract || !orderId"
         @click="nudge(-5)"
       >
         -5
@@ -32,7 +33,7 @@
       <UButton
         color="primary"
         block
-        :disabled="!orderId"
+        :disabled="!canInteract || !orderId"
         :loading="accepting"
         @click="accept"
       >
@@ -42,7 +43,7 @@
       <UButton
         color="neutral"
         variant="soft"
-        :disabled="!orderId"
+        :disabled="!canInteract || !orderId"
         @click="nudge(5)"
       >
         +5
@@ -55,12 +56,14 @@
 const props = withDefaults(
   defineProps<{
     accepting?: boolean
+    canInteract?: boolean
     label?: string
     minutes: number
     orderId: string
   }>(),
   {
     accepting: false,
+    canInteract: true,
     label: 'Cooking time',
   }
 )
@@ -71,7 +74,7 @@ const emit = defineEmits<{
 }>()
 
 function accept() {
-  if (!props.orderId) return
+  if (!props.canInteract || !props.orderId) return
   emit('accept', {
     id: props.orderId,
     estimatedMinutes: props.minutes,
@@ -79,7 +82,7 @@ function accept() {
 }
 
 function nudge(amount: number) {
-  if (!props.orderId) return
+  if (!props.canInteract || !props.orderId) return
   emit('nudge-estimate', {
     id: props.orderId,
     amount,
@@ -87,7 +90,7 @@ function nudge(amount: number) {
 }
 
 function setEstimate(value: unknown) {
-  if (!props.orderId) return
+  if (!props.canInteract || !props.orderId) return
   emit('set-estimate', {
     id: props.orderId,
     minutes: Number(value),

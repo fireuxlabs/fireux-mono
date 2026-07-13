@@ -1,5 +1,9 @@
 import { computed, isRef } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import {
+  useConsole,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
@@ -38,6 +42,7 @@ type UsePortfolioConsoleOptions = {
  * It should not own Portfolio child operation records; those live under console/portfolio/operations.
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
+  const consoleRoot = useConsole('portfolio')
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
   const { pill } = usePortfolioInterface()
@@ -46,7 +51,10 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       ? (options.filter.value ?? {})
       : (options.filter ?? {})
 
-    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+    if (
+      consoleRoot.source.value !== 'live' ||
+      Array.isArray(explicitFilter.ids)
+    ) return explicitFilter
 
     return {
       ...explicitFilter,
@@ -54,6 +62,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     }
   })
   const { portfolios: targetPortfolios, pending: targetsPending } = usePortfolioCollection({
+    source: consoleRoot.source,
     filter: targetFilter,
   })
 
@@ -64,6 +73,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     targetPending: targetsPending,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
+    mode: consoleRoot.source,
     userId: normalizedUid,
   })
 
@@ -96,8 +106,9 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
 
   const selectPortfolio = (
     portfolioId: string,
+    source: ConsoleSource = consoleRoot.source.value
   ) => {
-    entity.actions.selectTarget(portfolioId)
+    entity.actions.selectTarget(portfolioId, source)
   }
   const portfolios = {
     targets: targetPortfolios,

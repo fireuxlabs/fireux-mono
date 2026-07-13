@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import type { App } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useProjectConsole } from '../../core/useProjectConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -12,6 +13,7 @@ export function useProjectConsoleApps() {
     runtime,
   } = useProjectConsole()
   const ecosystemId = computed(() => {
+    if (runtime.source.value !== 'live') return ''
     const project = selection.project.value
     return normalizeString(
       project && 'ecosystem_id' in project ? project.ecosystem_id : ''
@@ -19,13 +21,17 @@ export function useProjectConsoleApps() {
   })
 
   const appId = computed(() => {
+    if (runtime.source.value !== 'live') return ''
     const project = selection.project.value
     if (!project) return ''
     return normalizeString('app_id' in project ? project.app_id : '')
   })
 
   const { app, pending } = useAppFetch(appId)
-  const { apps: appCollection } = useAppCollection()
+  const appCollectionPath = computed(() =>
+    runtime.source.value === 'live' ? AppStorage.collection : ''
+  )
+  const { apps: appCollection } = useAppCollection(appCollectionPath)
   const apps = computed<App[]>(() => {
     const currentEcosystemId = ecosystemId.value
     const currentProjectId = selection.projectId.value

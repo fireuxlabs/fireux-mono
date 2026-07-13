@@ -26,6 +26,7 @@
   <ConsoleKitchenOperationsOrdersReceivingEstimate
     v-else
     :accepting="accepting"
+    :can-interact="canInteract"
     :minutes="estimateMinutes"
     :order-id="orderId"
     @accept="$emit('accept', $event)"
@@ -41,12 +42,14 @@ import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 const props = withDefaults(
   defineProps<{
     accepting?: boolean
+    canInteract?: boolean
     estimateMinutes: number
     order: KitchenOrder
     orderId: string
   }>(),
   {
     accepting: false,
+    canInteract: true,
   }
 )
 const emit = defineEmits<{
@@ -85,7 +88,7 @@ const requestedDateTimeLabel = computed(() => {
   return `${dateLabel}, ${timeLabel}`
 })
 const canAcceptRequested = computed(() =>
-  Boolean(props.orderId && requestedFor.value)
+  props.canInteract && Boolean(props.orderId && requestedFor.value)
 )
 
 function relativeDateLabel(value: number) {

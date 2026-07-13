@@ -99,6 +99,7 @@ const {
 } = useMenuKioskSkinCollection({
   appId: activeKitchenAppId,
   databaseId,
+  enabled: canWrite,
 })
 
 const selectedSkinId = computed(() => String(menu.value?.kiosk_skin_id || '').trim())

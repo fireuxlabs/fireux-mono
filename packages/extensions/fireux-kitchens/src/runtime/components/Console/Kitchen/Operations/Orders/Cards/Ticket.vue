@@ -37,7 +37,7 @@
             size="xs"
             color="neutral"
             variant="ghost"
-            :disabled="statusActionPending"
+            :disabled="!canUseStatusAction || statusActionPending"
             :loading="statusActionPending"
             :aria-label="statusActionAriaLabel || statusActionLabel"
             @click.stop="touchStatus"
@@ -58,7 +58,7 @@
             color="error"
             variant="ghost"
             icon="i-lucide-trash-2"
-            :disabled="!orderId"
+            :disabled="!interactive || !orderId"
             aria-label="Move order to trash"
             @click.stop="trashOrder"
           />
@@ -149,6 +149,7 @@ const props = withDefaults(
   defineProps<KitchenOrderTicketProps>(),
   {
     trashMode: false,
+    interactive: true,
     headerActionLabel: '',
     bodyActionLabel: '',
     statusActionLabel: '',
@@ -165,6 +166,7 @@ const emit = defineEmits<{
 
 const {
   canShowStatusAction,
+  canUseStatusAction,
   canTouchBody,
   canTouchHeader,
   copied,

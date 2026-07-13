@@ -11,6 +11,7 @@ export function useProjectConsoleEcosystem() {
   } = useProjectConsole()
 
   const ecosystemId = computed(() => {
+    if (runtime.source.value !== 'live') return ''
     const project = selection.project.value
     if (!project) return ''
     return normalizeString('ecosystem_id' in project ? project.ecosystem_id : '')

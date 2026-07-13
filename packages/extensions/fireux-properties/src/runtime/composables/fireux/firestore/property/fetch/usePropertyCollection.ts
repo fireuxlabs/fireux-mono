@@ -10,6 +10,7 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
 
 type PropertyCollectionDoc = Partial<Property> & {
@@ -24,6 +25,7 @@ type AppPropertyOverlay = PropertyCollectionDoc & {
 }
 
 const DEFAULT_COLLECTION_PATH = PropertyStorage.rootCollection
+const TEST_COLLECTION_PATH = 'test-properties'
 
 export type PropertyCollectionFilterValue = string | number | null | undefined
 export type PropertyCollectionFilter = {
@@ -32,8 +34,13 @@ export type PropertyCollectionFilter = {
   teamId?: PropertyCollectionFilterValue
 }
 export type PropertyCollectionShape = 'root' | 'overlay' | 'both'
+export type PropertyCollectionSource = ConsoleSource
 
 type UsePropertyCollectionOptions = {
+  source?:
+    | PropertyCollectionSource
+    | Ref<PropertyCollectionSource | null | undefined>
+    | null
   shape?:
     | PropertyCollectionShape
     | Ref<PropertyCollectionShape | null | undefined>
@@ -57,6 +64,16 @@ export function usePropertyCollection(
   const { appId } = useFireUXConfig()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
+  const sourceMode = computed<PropertyCollectionSource>(() => {
+    if (isRef(options.source)) return options.source.value ?? 'live'
+    return options.source ?? 'live'
+  })
+  const rootCollectionPath = computed(() => {
+    if (sourceMode.value === 'demo') return ''
+    return sourceMode.value === 'test'
+      ? TEST_COLLECTION_PATH
+      : DEFAULT_COLLECTION_PATH
+  })
 
   const resolvedFilter = computed<PropertyCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
@@ -87,10 +104,11 @@ export function usePropertyCollection(
       )
   )
 
-  const liveRootSource = firestoreFetchCollection<PropertyCollectionDoc>(
-    DEFAULT_COLLECTION_PATH
+  const rootSource = firestoreFetchCollection<PropertyCollectionDoc>(
+    rootCollectionPath
   )
   const overlayOperatorQuery = computed<Query<AppPropertyOverlay> | null>(() => {
+    if (sourceMode.value !== 'live') return null
     if (!resolvedAppId.value) return null
     if (resolvedShape.value === 'root') return null
     if (hasOperatorFilter.value && !filterOperatorId.value) return null
@@ -109,6 +127,7 @@ export function usePropertyCollection(
       : fsq(baseCollection) as Query<AppPropertyOverlay>
   })
   const overlayTeamQuery = computed<Query<AppPropertyOverlay> | null>(() => {
+    if (sourceMode.value !== 'live') return null
     if (!resolvedAppId.value) return null
     if (resolvedShape.value === 'root') return null
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
@@ -160,13 +179,17 @@ export function usePropertyCollection(
       .filter(Boolean)
   )
   const liveRootDocs = firestoreLoadDocsByIds<PropertyCollectionDoc>({
-    collectionPath: DEFAULT_COLLECTION_PATH,
+    collectionPath: computed(() =>
+      sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
+    ),
     ids: allowedPropertyIds,
   })
   const targetItems = computed<PropertyCollectionDoc[]>(() => {
-    if (resolvedShape.value === 'root') return liveRootSource.value ?? []
+    if (sourceMode.value === 'demo') return []
+    if (sourceMode.value === 'test') return rootSource.value ?? []
+    if (resolvedShape.value === 'root') return rootSource.value ?? []
     if (resolvedShape.value === 'overlay') return overlaySource.value ?? []
-    if (!hasOperatorFilter.value) return liveRootSource.value ?? []
+    if (!hasOperatorFilter.value) return rootSource.value ?? []
 
     const rootById = new Map<string, PropertyCollectionDoc>()
     const overlayById = new Map<string, AppPropertyOverlay>()
@@ -241,11 +264,13 @@ export function usePropertyCollection(
   )
   const count = computed(() => properties.value.length)
   const pending = computed(() => {
-    if (resolvedShape.value === 'root') return liveRootSource.value === undefined
+    if (sourceMode.value === 'demo') return false
+    if (sourceMode.value === 'test') return rootSource.value === undefined
+    if (resolvedShape.value === 'root') return rootSource.value === undefined
     if (resolvedShape.value === 'overlay') {
       return overlayOperatorSource.value === undefined
     }
-    if (!hasOperatorFilter.value) return liveRootSource.value === undefined
+    if (!hasOperatorFilter.value) return rootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||

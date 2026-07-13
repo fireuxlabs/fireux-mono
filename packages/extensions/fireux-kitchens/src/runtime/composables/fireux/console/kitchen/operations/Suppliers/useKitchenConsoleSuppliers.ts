@@ -16,13 +16,17 @@ export function useKitchenConsoleSuppliers() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const enabled = computed(() => runtime.source.value !== 'demo')
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    rootCollection.value && runtime.storageKitchenId.value
+      ? runtime.storageKitchenId.value
+      : ''
   )
   const { suppliers, pending: suppliersPending, collectionPath } =
     useKitchenSupplierFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
+      enabled,
     })
   const typedSuppliers = computed<SupplierSurface[]>(() => suppliers.value as SupplierSurface[])
   const page = useKitchenConsoleReadPage<SupplierSurface>({

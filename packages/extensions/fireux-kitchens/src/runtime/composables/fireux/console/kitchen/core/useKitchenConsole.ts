@@ -1,4 +1,3 @@
-import { useCookie } from '#imports'
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -77,16 +76,9 @@ export function useKitchenConsole() {
   )
   const { selectedId, selectTarget, clearSelection } =
     useConsoleSelection<KitchenSurface>('kitchen')
-  const sourceState = useCookie<KitchenFetchSource>(
-    'fireux-console-kitchen-source',
-    {
-      default: () => 'live',
-      sameSite: 'lax',
-    }
-  )
   const kitchenId = computed(() => normalizeString(selectedId.value))
   const kitchenSource = computed<KitchenFetchSource>(() =>
-    normalizeSource(sourceState.value)
+    normalizeSource(consoleRoot.source.value)
   )
   const { kitchen: publicKitchen } = useKitchenFetch(kitchenId, {
     source: kitchenSource,
@@ -131,23 +123,23 @@ export function useKitchenConsole() {
           )
         : selectedPublicKitchen.value
   )
-  const readOnly = computed(() => kitchenSource.value === 'demo')
+  const storageKitchenId = computed(() =>
+    kitchenSource.value === 'demo' ? '' : kitchenId.value
+  )
+  const readOnly = computed(() => consoleRoot.readOnly.value)
   const autoSelectSingle = computed(
     () => consoleRoot.isTenant && configKitchenIds.value.length === 1
   )
   const canWrite = computed(() =>
     !readOnly.value && Boolean(selectedKitchen.value)
   )
-  const clearSelectedKitchen = () => {
-    sourceState.value = 'live'
-    clearSelection()
-  }
+  const clearSelectedKitchen = () => clearSelection()
   const selectKitchen = (
     kitchenId: string,
     source: KitchenFetchSource = 'live'
   ) => {
-    sourceState.value = normalizeSource(source)
-    selectTarget(kitchenId)
+    const resolvedSource = normalizeSource(source)
+    selectTarget(kitchenId, resolvedSource)
   }
   watch(
     configKitchenIds,
@@ -164,7 +156,7 @@ export function useKitchenConsole() {
     kitchenId,
     (id: string) => {
       if (id) return
-      sourceState.value = 'live'
+      consoleRoot.resetSource()
     },
     { immediate: true }
   )
@@ -182,6 +174,7 @@ export function useKitchenConsole() {
     isTenantOwned: firestore.isTenantOwned,
     kitchenCollectionPath,
     rootCollection: kitchenCollectionPath,
+    storageKitchenId,
     scopeState: firestore.scopeState,
     scopedCollection: firestore.scopedCollection,
     usesAppOverlay: firestore.usesAppOverlay,

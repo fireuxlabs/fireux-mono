@@ -1,5 +1,9 @@
 import { computed, isRef } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import {
+  useConsole,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
@@ -26,6 +30,7 @@ type UsePropertyConsoleOptions = {
  * It should not become a Portfolio management seam or a public property info page helper.
  */
 export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
+  const consoleRoot = useConsole('property')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<PropertyCollectionFilter>(() => {
@@ -33,7 +38,10 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       ? options.filter.value ?? {}
       : options.filter ?? {}
 
-    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+    if (
+      consoleRoot.source.value !== 'live' ||
+      Array.isArray(explicitFilter.ids)
+    ) return explicitFilter
 
     return {
       ...explicitFilter,
@@ -41,6 +49,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     }
   })
   const { properties: targetProperties, pending: targetsPending } = usePropertyCollection({
+    source: consoleRoot.source,
     shape: 'both',
     filter: targetFilter,
   })
@@ -51,6 +60,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     targetItems: targetProperties,
     targetPending: targetsPending,
     getId: (property) => normalizeString(property?.id),
+    mode: consoleRoot.source,
     userId,
   })
 
@@ -63,8 +73,11 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     entity.actions.clearSelection()
   }
 
-  const selectProperty = (propertyId: string) => {
-    entity.actions.selectTarget(propertyId)
+  const selectProperty = (
+    propertyId: string,
+    source: ConsoleSource = consoleRoot.source.value
+  ) => {
+    entity.actions.selectTarget(propertyId, source)
   }
   const properties = {
     targets: targetProperties,

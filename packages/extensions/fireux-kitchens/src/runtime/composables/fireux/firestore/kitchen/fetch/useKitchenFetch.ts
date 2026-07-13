@@ -128,7 +128,7 @@ export function useKitchenFetch(
 
       return {
         id: scenario.id,
-        place_id: scenario.id,
+        place_id: place?.id ?? '',
         slug: place?.slug ?? scenario.id,
         name: scenario.name,
         display_name: scenario.name,

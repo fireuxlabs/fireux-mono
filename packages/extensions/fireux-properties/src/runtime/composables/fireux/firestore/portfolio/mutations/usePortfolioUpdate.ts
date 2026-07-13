@@ -13,7 +13,7 @@ export function usePortfolioUpdate() {
   const updatePortfolio = async (
     portfolioId: string,
     patch: PortfolioUpdateInput,
-    collectionPath = COLLECTION_PATH
+    collectionPath: string = COLLECTION_PATH
   ) => {
     const id = String(portfolioId ?? '').trim()
     if (!id) throw new Error('Portfolio id is required')

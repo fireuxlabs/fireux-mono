@@ -102,6 +102,7 @@
     <ConsoleKitchenOperationsOrdersReceivingCollection
       v-else-if="isCollectionOrder"
       :accepting="accepting"
+      :can-interact="canInteract"
       :estimate-minutes="estimateMinutes"
       :order="order"
       :order-id="orderId"
@@ -113,6 +114,7 @@
     <ConsoleKitchenOperationsOrdersReceivingPreOrder
       v-else-if="isPreOrder"
       :accepting="accepting"
+      :can-interact="canInteract"
       :order="order"
       :order-id="orderId"
       @accept="$emit('accept', $event)"
@@ -121,6 +123,7 @@
     <ConsoleKitchenOperationsOrdersReceivingEstimate
       v-else
       :accepting="accepting"
+      :can-interact="canInteract"
       :minutes="estimateMinutes"
       :order-id="orderId"
       @accept="$emit('accept', $event)"
@@ -132,6 +135,7 @@
       v-if="!isPaymentPending && !isTerminal"
       :order-id="orderId"
       :rejecting="rejecting"
+      :can-interact="canInteract"
       @reject="$emit('reject', $event)"
     />
   </article>
@@ -147,12 +151,14 @@ import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 const props = withDefaults(
   defineProps<{
     accepting?: boolean
+    canInteract?: boolean
     estimateMinutes: number
     order: KitchenOrder
     rejecting?: boolean
   }>(),
   {
     accepting: false,
+    canInteract: true,
     rejecting: false,
   }
 )

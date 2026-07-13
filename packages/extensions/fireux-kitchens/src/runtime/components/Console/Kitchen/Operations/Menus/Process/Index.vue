@@ -161,7 +161,7 @@
                 :kitchen-id="kitchenId"
                 :menu-id="menuId"
                 :auth-token="authToken"
-                :blocked="Boolean(pendingMode)"
+                :blocked="!canWrite || Boolean(pendingMode)"
               />
             </div>
           </template>
@@ -190,6 +190,7 @@ const {
   menuId,
   kitchenId,
   activeKitchenAppId,
+  canWrite,
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
 const authToken = ref('')
@@ -236,7 +237,8 @@ const statusMessage = computed(() => {
 })
 const canProcess = computed(() =>
   Boolean(
-    source.value &&
+    canWrite.value &&
+      source.value &&
       activeKitchenAppId.value &&
       kitchenId.value &&
       menuId.value &&

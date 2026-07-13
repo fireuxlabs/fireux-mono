@@ -68,7 +68,8 @@ export function useKitchenConsoleMenuUploadPayload(
   )
   const canUseTool = computed(() =>
     Boolean(
-      kitchenConsole.runtime.appId.value &&
+      kitchenConsole.runtime.canWrite.value &&
+        kitchenConsole.runtime.appId.value &&
         kitchenConsole.selection.kitchenId.value &&
         currencyCode.value &&
         menuPath.value &&

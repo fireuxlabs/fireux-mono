@@ -52,7 +52,7 @@
             :key="section.id"
             :section="section"
             :menu-id="selectedMenuId"
-            :kitchen-id="kitchenId"
+            :kitchen-id="storageKitchenId"
             :kitchen-collection-path="rootCollection"
             :database-id="databaseId"
             :dishes="dishes"
@@ -168,6 +168,7 @@ const modes: { value: KitchenOrderType, label: string, icon: string }[] = [
 const {
   menus,
   kitchenId,
+  storageKitchenId,
   rootCollection,
   databaseId,
   canWrite,
@@ -192,7 +193,7 @@ const menuOptions = computed<MenuOption[]>(() =>
     value: menu.id,
   }))
 )
-const sectionState = useMenuSectionCollection(kitchenId, selectedMenuId, {
+const sectionState = useMenuSectionCollection(storageKitchenId, selectedMenuId, {
   kitchenCollectionPath: rootCollection,
   databaseId,
 })

@@ -70,6 +70,8 @@ export function useConsoleEntityFirestore(
     return appScopedCollection(family.value, appId.value)
   })
   const collectionPath = computed(() => {
+    if (mode.value === 'demo') return ''
+
     const explicitPath = text(unref(options.explicitPath))
     if (explicitPath) return explicitPath
     if (mode.value !== 'live') return rootCollection.value

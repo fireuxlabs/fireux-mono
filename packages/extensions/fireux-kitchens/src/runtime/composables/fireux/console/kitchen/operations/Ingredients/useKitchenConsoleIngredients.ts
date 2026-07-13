@@ -16,13 +16,17 @@ export function useKitchenConsoleIngredients() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const enabled = computed(() => runtime.source.value !== 'demo')
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    rootCollection.value && runtime.storageKitchenId.value
+      ? runtime.storageKitchenId.value
+      : ''
   )
   const { ingredients, pending: ingredientsPending, collectionPath } =
     useKitchenIngredients(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
+      enabled,
   })
   const page = useKitchenConsoleReadPage<IngredientInterfaceItem>({
     collectionName: IngredientStorage.collection,

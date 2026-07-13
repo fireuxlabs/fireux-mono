@@ -27,10 +27,11 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 
 export function useKitchenConsoleMenus() {
   const kitchenConsole = useKitchenConsole()
+  const storageKitchenId = kitchenConsole.runtime.storageKitchenId
   const fetchKitchenId = computed(() =>
     kitchenConsole.runtime.rootCollection.value &&
-    kitchenConsole.selection.kitchenId.value
-      ? kitchenConsole.selection.kitchenId.value
+    storageKitchenId.value
+      ? storageKitchenId.value
       : ''
   )
   const {
@@ -54,7 +55,7 @@ export function useKitchenConsoleMenus() {
   })
   const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
     MenuSourceUploadStorage.collection,
-    kitchenConsole.selection.kitchenId,
+    storageKitchenId,
     {
       kitchenCollectionPath: kitchenConsole.runtime.rootCollection,
       databaseId: kitchenConsole.runtime.databaseId,
@@ -69,14 +70,18 @@ export function useKitchenConsoleMenus() {
   const canCreateMenu = computed(() =>
     kitchenConsole.runtime.canWrite.value && Boolean(currencyCode.value)
   )
-  const menuCreateBlockedMessage = computed(() =>
-    currencyCode.value
+  const menuCreateBlockedMessage = computed(() => {
+    if (!kitchenConsole.runtime.canWrite.value) {
+      return 'This kitchen is read-only.'
+    }
+
+    return currencyCode.value
       ? ''
       : 'Select a kitchen currency code before creating menus.'
-  )
+  })
 
   async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
-    if (!currencyCode.value) {
+    if (!canCreateMenu.value) {
       throw new Error(menuCreateBlockedMessage.value)
     }
 
@@ -86,6 +91,7 @@ export function useKitchenConsoleMenus() {
   return {
     selectedKitchen: kitchenConsole.selection.kitchen,
     kitchenId: kitchenConsole.selection.kitchenId,
+    storageKitchenId,
     activeKitchenAppId: kitchenConsole.runtime.appId,
     rootCollection: kitchenConsole.runtime.rootCollection,
     databaseId: kitchenConsole.runtime.databaseId,

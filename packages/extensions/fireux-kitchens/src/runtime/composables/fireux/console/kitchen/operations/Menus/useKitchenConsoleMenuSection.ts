@@ -46,9 +46,9 @@ export function useKitchenConsoleMenuSection() {
       null
   )
   const itemState = useMenuItemCollection(
-    menuState.kitchenId,
-    menuState.menuId,
-    sectionId,
+    menuState.storageKitchenId,
+    computed(() => menuState.menu.value ? menuState.menuId.value : ''),
+    computed(() => section.value ? sectionId.value : ''),
     {
       kitchenCollectionPath: menuState.rootCollection,
       databaseId: menuState.databaseId,

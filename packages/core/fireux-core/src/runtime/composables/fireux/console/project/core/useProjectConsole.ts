@@ -1,13 +1,17 @@
 import { computed, isRef } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import {
+  useConsole,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useProjectCollection,
   type ProjectCollectionFilter,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { ProjectStorage } from 'fireux-core/runtime/models/system/project.model'
 import type { Ref } from 'vue'
 
 type ProjectConsoleEntity = ProjectSurface
@@ -28,6 +32,7 @@ type UseProjectConsoleOptions = {
 export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {
+  const consoleRoot = useConsole('project')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<ProjectCollectionFilter>(() => {
@@ -35,7 +40,10 @@ export function useProjectConsole(
       ? options.filter.value ?? {}
       : options.filter ?? {}
 
-    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+    if (
+      consoleRoot.source.value !== 'live' ||
+      Array.isArray(explicitFilter.ids)
+    ) return explicitFilter
 
     return {
       ...explicitFilter,
@@ -43,27 +51,32 @@ export function useProjectConsole(
     }
   })
   const { projects: targetProjects, pending: targetsPending } = useProjectCollection({
+    source: consoleRoot.source,
     filter: targetFilter,
   })
-  const { selectedTarget, selectTarget, clearSelection } =
-    useConsoleSelection<ProjectSurface>('project', {
+  const entity = useConsoleEntityRuntime<ProjectSurface>({
+    family: 'project',
+    storageFamily: ProjectStorage.rootCollection,
     targetItems: targetProjects,
+    targetPending: targetsPending,
     getId: (project) => normalizeString(project?.id),
+    mode: consoleRoot.source,
+    userId,
   })
-  const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedTarget.value)
-  const projectId = computed(() => normalizeString(selectedProject.value?.id))
-  const rootCollection = computed(() => 'projects')
-  const readOnly = computed(() => false)
-  const canWrite = computed(() =>
-    !readOnly.value && targetHasOperator(selectedProject.value, userId.value)
+  const selectedProject = computed<ProjectConsoleEntity | null>(
+    () => entity.selection.selectedTarget.value
   )
+  const projectId = entity.selection.entityId
 
   const clearSelectedProject = () => {
-    clearSelection()
+    entity.actions.clearSelection()
   }
 
-  const selectProject = (projectId: string) => {
-    selectTarget(projectId)
+  const selectProject = (
+    projectId: string,
+    source: ConsoleSource = consoleRoot.source.value
+  ) => {
+    entity.actions.selectTarget(projectId, source)
   }
   const projects = {
     targets: targetProjects,
@@ -76,9 +89,7 @@ export function useProjectConsole(
     hasSelection: computed(() => Boolean(projectId.value)),
   }
   const runtime = {
-    rootCollection,
-    readOnly,
-    canWrite,
+    ...entity.runtime,
   }
   const actions = {
     selectProject,

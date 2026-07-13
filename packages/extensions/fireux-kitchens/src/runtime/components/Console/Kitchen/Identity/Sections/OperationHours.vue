@@ -65,7 +65,7 @@
             </p>
 
             <PlaceGoogleHours
-              v-if="placeId"
+              v-if="placeId && source === 'live'"
               :place-id="placeId"
               auto-load
               button-label="Refresh Google hours"
@@ -74,7 +74,9 @@
               v-else
               class="text-sm text-dimmed"
             >
-              Link this kitchen to a Place before inheriting Place hours.
+              {{ source === 'live'
+                ? 'Link this kitchen to a Place before inheriting Place hours.'
+                : 'Place hours are not loaded from live data in this read-only source.' }}
             </p>
           </div>
 
@@ -186,6 +188,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import PlaceGoogleHours from 'fireux-places/runtime/components/Place/GoogleHours.vue'
 import { computed, ref } from 'vue'
+import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   WeekdayTimeDay,
@@ -207,6 +210,7 @@ const props = defineProps<{
 }>()
 
 const collectionPath = computed(() => props.collectionPath)
+const { source } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const toast = useToastify()
 const error = ref('')

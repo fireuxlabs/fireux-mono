@@ -40,11 +40,13 @@ import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 const props = withDefaults(
   defineProps<{
     accepting?: boolean
+    canInteract?: boolean
     order: KitchenOrder
     orderId: string
   }>(),
   {
     accepting: false,
+    canInteract: true,
   }
 )
 const emit = defineEmits<{
@@ -80,7 +82,7 @@ const requestedDateTimeLabel = computed(() => {
   return `${dateLabel}, ${timeLabel}`
 })
 const canAcceptRequested = computed(() =>
-  Boolean(props.orderId && requestedFor.value)
+  props.canInteract && Boolean(props.orderId && requestedFor.value)
 )
 
 function relativeDateLabel(value: number) {

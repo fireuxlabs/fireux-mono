@@ -11,17 +11,26 @@
 
     <form class="space-y-4" @submit.prevent="save">
       <UFormField label="Title">
-        <UInput v-model="title" placeholder="Missing mise title" />
+        <UInput
+          v-model="title"
+          placeholder="Missing mise title"
+          :disabled="!canEditMise"
+        />
       </UFormField>
 
       <UFormField label="Description">
-        <UTextarea v-model="description" :rows="3" />
+        <UTextarea
+          v-model="description"
+          :rows="3"
+          :disabled="!canEditMise"
+        />
       </UFormField>
 
       <div class="grid gap-4 sm:grid-cols-2">
         <UFormField label="Type">
           <select
             v-model="type"
+            :disabled="!canEditMise"
             class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
           >
             <option value="food">Food</option>
@@ -30,7 +39,11 @@
         </UFormField>
 
         <UFormField label="Station / responsibility">
-          <UInput v-model="station" placeholder="Station" />
+          <UInput
+            v-model="station"
+            placeholder="Station"
+            :disabled="!canEditMise"
+          />
         </UFormField>
       </div>
 

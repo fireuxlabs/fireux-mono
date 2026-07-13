@@ -10,6 +10,7 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   PortfolioStorage,
   type Portfolio,
@@ -35,7 +36,7 @@ export type PortfolioCollectionFilter = {
   operatorId?: PortfolioCollectionFilterValue
   teamId?: PortfolioCollectionFilterValue
 }
-export type PortfolioCollectionSource = 'live' | 'demo' | 'test'
+export type PortfolioCollectionSource = ConsoleSource
 
 type UsePortfolioCollectionOptions = {
   source?:
@@ -65,7 +66,15 @@ export function usePortfolioCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(TEST_COLLECTION_PATH)
+  const testCollectionPath = computed(() =>
+    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
+  )
+  const liveCollectionPath = computed(() =>
+    sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
+  )
+  const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(
+    testCollectionPath
+  )
   const resolvedAppId = computed(() => normalizeString(appId))
   const overlayOperatorQuery = computed<Query<AppPortfolioOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
@@ -144,10 +153,10 @@ export function usePortfolioCollection(
       .filter(Boolean)
   )
   const liveRootSource = firestoreFetchCollection<PortfolioCollectionDoc>(
-    DEFAULT_COLLECTION_PATH
+    liveCollectionPath
   )
   const liveRootDocs = firestoreLoadDocsByIds<PortfolioCollectionDoc>({
-    collectionPath: DEFAULT_COLLECTION_PATH,
+    collectionPath: liveCollectionPath,
     ids: allowedPortfolioIds,
   })
 

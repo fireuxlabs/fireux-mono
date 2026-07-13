@@ -46,7 +46,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
       ...configDevTargetIds,
     ])
   })
-  const canCreate = consoleRoot.canCreateTarget()
+  const canCreate = computed(() => consoleRoot.canCreateTarget())
   const isTenant = mode === 'tenant'
   const isSingleTarget = computed(() => targetIds.value.length === 1)
   const isSingleTenantTarget = computed(() => isTenant && isSingleTarget.value)
@@ -67,7 +67,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     globalTargetIds: globalTargetIds.value,
     targetIds: targetIds.value,
     userPending: userPending.value,
-    canCreate,
+    canCreate: canCreate.value,
     isSingleTarget: isSingleTarget.value,
     isSingleTenantTarget: isSingleTenantTarget.value,
   }))

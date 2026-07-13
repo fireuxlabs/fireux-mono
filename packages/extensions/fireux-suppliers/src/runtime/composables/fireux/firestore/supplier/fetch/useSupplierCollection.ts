@@ -10,6 +10,7 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   SupplierStorage,
   type Supplier,
@@ -37,7 +38,7 @@ export type SupplierCollectionFilter = {
   operatorId?: SupplierCollectionFilterValue
   teamId?: SupplierCollectionFilterValue
 }
-export type SupplierCollectionSource = 'live' | 'demo' | 'test'
+export type SupplierCollectionSource = ConsoleSource
 
 type UseSupplierCollectionOptions = {
   source?:
@@ -81,7 +82,15 @@ export function useSupplierCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const testSource = firestoreFetchCollection<SupplierCollectionDoc>(TEST_COLLECTION_PATH)
+  const testCollectionPath = computed(() =>
+    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
+  )
+  const liveCollectionPath = computed(() =>
+    sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
+  )
+  const testSource = firestoreFetchCollection<SupplierCollectionDoc>(
+    testCollectionPath
+  )
   const resolvedAppId = computed(() => normalizeString(appId))
   const overlayOperatorQuery = computed<Query<AppSupplierOverlay> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
@@ -158,7 +167,7 @@ export function useSupplierCollection(
     getDemoSuppliers().map(toDemoSupplierSurface)
   )
   const liveRootSource = firestoreFetchCollection<SupplierCollectionDoc>(
-    DEFAULT_COLLECTION_PATH
+    liveCollectionPath
   )
   const allowedSupplierIds = computed(() =>
     (overlaySource.value ?? [])
@@ -166,7 +175,7 @@ export function useSupplierCollection(
       .filter(Boolean)
   )
   const liveRootDocs = firestoreLoadDocsByIds<SupplierCollectionDoc>({
-    collectionPath: DEFAULT_COLLECTION_PATH,
+    collectionPath: liveCollectionPath,
     ids: allowedSupplierIds,
   })
 

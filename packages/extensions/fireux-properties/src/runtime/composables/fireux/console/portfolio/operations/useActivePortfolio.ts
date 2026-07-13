@@ -1,4 +1,5 @@
 import { computed, type ComputedRef } from 'vue'
+import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   resolvePortfolioConsoleCollectionPath,
   resolveRuntimePortfolioPath,
@@ -10,7 +11,8 @@ import {
 import { usePortfolioConsoleSelection } from '../core/usePortfolioConsoleSelection'
 
 export type ActivePortfolioRuntime = {
-  mode: ComputedRef<'live' | 'demo'>
+  source: ComputedRef<ConsoleSource>
+  mode: ComputedRef<ConsoleSource>
   isDemo: ComputedRef<boolean>
   scenario: ComputedRef<Record<string, unknown> | null>
   id: ComputedRef<string>
@@ -37,13 +39,18 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   const collectionPath = computed(() => {
     if (!id.value) return ''
 
-    return resolvePortfolioConsoleCollectionPath(runtime.appId.value)
+    return resolvePortfolioConsoleCollectionPath(
+      runtime.appId.value,
+      runtime.source.value
+    )
   })
-  const mode = computed<'live' | 'demo'>(() => 'live')
-  const isDemo = computed(() => mode.value === 'demo')
+  const source = runtime.source
+  const mode = source
+  const isDemo = computed(() => source.value === 'demo')
   const scenario = computed<Record<string, unknown> | null>(() => null)
 
   return {
+    source,
     mode,
     isDemo,
     scenario,

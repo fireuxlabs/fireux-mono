@@ -84,7 +84,9 @@
       color="neutral"
       variant="soft"
       title="No menus yet"
-      description="Create a menu from a URL, photo, or PDF source."
+      :description="readOnly
+        ? 'No menus are available in this read-only source.'
+        : 'Create a menu from a URL, photo, or PDF source.'"
     />
   </UCard>
 </template>
@@ -100,6 +102,7 @@ const {
   kitchenId,
   menus,
   pending,
+  readOnly,
   canWrite,
   publishMenu,
 } = useKitchenConsoleMenus()

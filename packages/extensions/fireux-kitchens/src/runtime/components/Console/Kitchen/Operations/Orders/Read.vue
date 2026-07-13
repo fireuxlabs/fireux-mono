@@ -6,7 +6,7 @@
           Order intake
         </p>
         <h1 class="m-0 text-2xl font-black leading-none text-highlighted">
-          Live board
+          {{ readOnly ? 'Demo board' : 'Live board' }}
         </h1>
       </div>
 
@@ -57,6 +57,7 @@
             :key="ticket.id"
             :accepting="acceptingOrderId === normalizeId(ticket.id)"
             :estimate-minutes="estimateMinutes(ticket)"
+            :can-interact="canOperate"
             :order="ticket"
             :rejecting="rejectingOrderId === normalizeId(ticket.id)"
             @accept="acceptIncomingOrder"
@@ -89,6 +90,7 @@
             v-for="ticket in passOrders"
             :key="ticket.id"
             :order="ticket"
+            :interactive="canOperate"
             header-action-label="Move order back to queue"
             :status-action-label="sendLabel(ticket)"
             :status-action-aria-label="sendAriaLabel(ticket)"
@@ -120,6 +122,7 @@
             v-for="ticket in queueOrders"
             :key="ticket.id"
             :order="ticket"
+            :interactive="canOperate"
             header-action-label="Mark order ready"
             body-action-label="Mark order ready"
             @touch-header="passOrder"
@@ -220,6 +223,7 @@ const {
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
+const canOperate = computed(() => canWrite.value && !readOnly.value)
 const railCounts = computed(() => [
   {
     label: 'Incoming',
@@ -268,6 +272,7 @@ function sendAriaLabel(order: KitchenOrder) {
 }
 
 function moveToQueue(orderId: string) {
+  if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   if (sendReadyOrderId.value === resolvedOrderId) sendReadyOrderId.value = ''
   queueOrder(resolvedOrderId)
@@ -277,7 +282,7 @@ async function acceptIncomingOrder(
   payload: { id: string; estimatedMinutes: number | null }
 ) {
   const resolvedOrderId = normalizeId(payload.id)
-  if (!resolvedOrderId || acceptingOrderId.value) return
+  if (!canOperate.value || !resolvedOrderId || acceptingOrderId.value) return
 
   acceptingOrderId.value = resolvedOrderId
   try {
@@ -290,7 +295,7 @@ async function acceptIncomingOrder(
 async function rejectIncomingOrder(payload: { id: string; note: string }) {
   const resolvedOrderId = normalizeId(payload.id)
   const note = payload.note.trim()
-  if (!resolvedOrderId || !note || rejectingOrderId.value) return
+  if (!canOperate.value || !resolvedOrderId || !note || rejectingOrderId.value) return
 
   rejectingOrderId.value = resolvedOrderId
   try {
@@ -310,6 +315,7 @@ function estimateMinutesForId(orderId: string, fallback = 0) {
 }
 
 function setEstimateMinutes(orderId: string, value: unknown) {
+  if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   if (!resolvedOrderId) return
   estimatesByOrderId.value = {
@@ -319,6 +325,7 @@ function setEstimateMinutes(orderId: string, value: unknown) {
 }
 
 function nudgeEstimateMinutes(orderId: string, amount: number) {
+  if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   setEstimateMinutes(
     resolvedOrderId,
@@ -332,6 +339,7 @@ function clampEstimate(value: number) {
 }
 
 function sendOrder(orderId: string) {
+  if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   if (!resolvedOrderId) return
   if (sendReadyOrderId.value !== resolvedOrderId) {

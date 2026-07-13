@@ -118,6 +118,7 @@ const {
   menuId,
   kitchenId,
   activeKitchenAppId,
+  canWrite,
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
 const estimate = ref<Record<string, unknown> | null>(null)
@@ -165,7 +166,7 @@ const canSelect = computed(() =>
 )
 
 watch(
-  [currentUser, source, activeKitchenAppId, kitchenId, menuId],
+  [currentUser, source, activeKitchenAppId, kitchenId, menuId, canWrite],
   refreshEstimate,
   { immediate: true }
 )
@@ -177,6 +178,7 @@ async function refreshEstimate() {
 
   if (
     !import.meta.client ||
+      !canWrite.value ||
       !currentUser.value ||
       !source.value ||
       !activeKitchenAppId.value ||

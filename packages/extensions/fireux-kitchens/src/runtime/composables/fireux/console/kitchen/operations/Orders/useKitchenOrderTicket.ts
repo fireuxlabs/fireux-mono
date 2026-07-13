@@ -7,6 +7,7 @@ import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 export interface KitchenOrderTicketProps {
   bodyActionLabel?: string
   headerActionLabel?: string
+  interactive?: boolean
   order: KitchenOrder
   statusActionAriaLabel?: string
   statusActionLabel?: string
@@ -82,13 +83,18 @@ export function useKitchenOrderTicket(
     orderStatus.value === 'pending_acceptance'
   )
   const canTouchHeader = computed(() =>
-    Boolean(orderId.value && props.headerActionLabel)
+    props.interactive !== false &&
+      Boolean(orderId.value && props.headerActionLabel)
   )
   const canTouchBody = computed(() =>
-    Boolean(orderId.value && props.bodyActionLabel)
+    props.interactive !== false &&
+      Boolean(orderId.value && props.bodyActionLabel)
   )
   const canShowStatusAction = computed(() =>
     Boolean(orderId.value && props.statusActionLabel)
+  )
+  const canUseStatusAction = computed(() =>
+    props.interactive !== false && canShowStatusAction.value
   )
   const headerIcon = computed(() =>
     serviceMode.value === 'collection'
@@ -221,7 +227,7 @@ export function useKitchenOrderTicket(
   })
 
   function trashOrder() {
-    if (!orderId.value) return
+    if (props.interactive === false || !orderId.value) return
     emit('trash', orderId.value)
   }
 
@@ -236,7 +242,7 @@ export function useKitchenOrderTicket(
   }
 
   function touchStatus() {
-    if (!canShowStatusAction.value || props.statusActionPending) return
+    if (!canUseStatusAction.value || props.statusActionPending) return
     emit('touch-status', orderId.value)
   }
 
@@ -263,6 +269,7 @@ export function useKitchenOrderTicket(
 
   return {
     canShowStatusAction,
+    canUseStatusAction,
     canTouchBody,
     canTouchHeader,
     copied,

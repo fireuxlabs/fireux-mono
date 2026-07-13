@@ -1,4 +1,6 @@
-export type ConsoleEntityRuntimeMode = 'live' | 'test' | 'demo'
+import type { ConsoleSource } from '../../../../app/console/useConsole'
+
+export type ConsoleEntityRuntimeMode = ConsoleSource
 
 export type ConsoleEntityCollectionFamily =
   | 'kitchens'
@@ -82,14 +84,14 @@ export function consoleEntityUsesAppScope(
 export function resolveConsoleEntityCollectionPath(
   options: ResolveConsoleEntityCollectionPathOptions
 ) {
+  const mode = options.mode ?? 'live'
+  if (mode === 'demo') return ''
+
   const explicitPath = normalizePathPart(options.explicitPath)
   if (explicitPath) return explicitPath
 
   const family = normalizePathPart(options.family)
   if (!family) return ''
-
-  const mode = options.mode ?? 'live'
-  if (mode === 'demo') return ''
 
   if (mode === 'test') {
     return resolveTestCollectionPath(family)

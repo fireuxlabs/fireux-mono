@@ -135,9 +135,9 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
+import { useKitchenConsolePlace } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   KitchenImageShade,
@@ -160,7 +160,7 @@ const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
-const { place, pending } = usePlaceFetch(placeId)
+const { place, pending } = useKitchenConsolePlace()
 const imageShade = computed(() => {
   const placeShade = String(place.value?.image_shade ?? '').trim()
   return (placeShade || readKitchenIdentity(props.kitchen).imageShade) as KitchenImageShade
@@ -226,6 +226,8 @@ const updateKitchenProjection = async (
 }
 
 const handleImageShade = async (value: KitchenImageShade) => {
+  if (!props.canWrite) return
+
   if (placeId.value) {
     await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
       image_shade: value,

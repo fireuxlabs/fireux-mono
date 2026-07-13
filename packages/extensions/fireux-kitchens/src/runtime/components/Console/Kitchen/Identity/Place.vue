@@ -46,21 +46,28 @@
           variant="soft"
           color="neutral"
           icon="i-lucide-map-pin"
-          :to="`/places/${encodeURIComponent(placeId)}/edit`"
+          :to="canWrite ? `/places/${encodeURIComponent(placeId)}/edit` : undefined"
+          :disabled="!canWrite"
         >
           Full Place editor
         </UButton>
       </div>
 
-      <PlaceEdit :place="place" />
+      <PlaceEdit v-if="canWrite" :place="place" />
+      <UAlert
+        v-else
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-eye"
+        title="Read-only Place preview"
+        description="Demo data cannot update the shared Place record."
+      />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
-import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { useKitchenConsolePlace } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 
-const { placeId } = useKitchenConsoleIdentity()
-const { place, pending } = usePlaceFetch(placeId)
+const { placeId, canWrite, place, pending } = useKitchenConsolePlace()
 </script>

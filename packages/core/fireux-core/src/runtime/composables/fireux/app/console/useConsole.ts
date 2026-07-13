@@ -1,8 +1,10 @@
-import { useRuntimeConfig } from '#imports'
+import { useCookie, useRuntimeConfig } from '#imports'
+import { computed, ref } from 'vue'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
+export type ConsoleSource = 'live' | 'test' | 'demo'
 export type ConsoleFamilyConfig = {
   canCreate?: boolean
   targetIds?: string[]
@@ -14,6 +16,12 @@ type AnyRecord = Record<string, unknown>
 
 export function normalizeConsoleFamily(value: unknown) {
   return normalizeString(value).toLowerCase()
+}
+
+export function normalizeConsoleSource(value: unknown): ConsoleSource {
+  const source = normalizeString(value).toLowerCase()
+  if (source === 'demo' || source === 'test') return source
+  return 'live'
 }
 
 function fireuxRuntime(): AnyRecord {
@@ -63,6 +71,20 @@ function readConsoleConfig(): ConsoleConfig {
 
 export function useConsole(family = '') {
   const fireux = useFireUXConfig()
+  const normalizedFamily = normalizeConsoleFamily(family)
+  const sourceState = normalizedFamily
+    ? useCookie<ConsoleSource>(
+        `fireux-console-${normalizedFamily}-source`,
+        {
+          default: () => 'live',
+          sameSite: 'lax',
+        }
+      )
+    : ref<ConsoleSource>('live')
+  const source = computed<ConsoleSource>(() =>
+    normalizeConsoleSource(sourceState.value)
+  )
+  const readOnly = computed(() => source.value === 'demo')
   const mode: ConsoleAppMode = fireux.isTenant
     ? 'tenant'
     : fireux.isStandalone
@@ -77,6 +99,9 @@ export function useConsole(family = '') {
   }
 
   const canCreateTarget = (targetFamily = family) => {
+    const key = normalizeConsoleFamily(targetFamily)
+    if (key === normalizedFamily && readOnly.value) return false
+
     const cfg = configFor(targetFamily)
     if (typeof cfg?.canCreate === 'boolean') return cfg.canCreate
 
@@ -92,6 +117,11 @@ export function useConsole(family = '') {
     return import.meta.dev ? uniqueStrings(cfg?.devTargetIds) : []
   }
 
+  const setSource = (value: ConsoleSource = 'live') => {
+    sourceState.value = normalizeConsoleSource(value)
+  }
+  const resetSource = () => setSource('live')
+
   return {
     appId: fireux.appId,
     ecosystem: fireux.ecosystem,
@@ -100,11 +130,18 @@ export function useConsole(family = '') {
     isTenant: mode === 'tenant',
     isGlobal: mode === 'global',
     isStandalone: mode === 'standalone',
+    source,
+    isLive: computed(() => source.value === 'live'),
+    isTest: computed(() => source.value === 'test'),
+    isDemo: computed(() => source.value === 'demo'),
+    readOnly,
     families,
     config,
     configFor,
     canCreateTarget,
     targetIds,
     devTargetIds,
+    setSource,
+    resetSource,
   }
 }

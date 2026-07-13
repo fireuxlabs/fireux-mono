@@ -5,7 +5,7 @@
       color="error"
       variant="soft"
       block
-      :disabled="!orderId"
+      :disabled="!canInteract || !orderId"
       @click="open = true"
     >
       Reject
@@ -16,6 +16,7 @@
         v-model="note"
         :rows="3"
         placeholder="Tell the guest why this order cannot be accepted."
+        :disabled="!canInteract"
       />
 
       <div class="grid grid-cols-2 gap-2">
@@ -52,9 +53,11 @@ import {
 const props = withDefaults(
   defineProps<{
     orderId: string
+    canInteract?: boolean
     rejecting?: boolean
   }>(),
   {
+    canInteract: true,
     rejecting: false,
   }
 )
@@ -66,11 +69,11 @@ const open = ref(false)
 const note = ref('')
 const cleanNote = computed(() => note.value.trim())
 const canReject = computed(() =>
-  Boolean(props.orderId && cleanNote.value && !props.rejecting)
+  Boolean(props.canInteract && props.orderId && cleanNote.value && !props.rejecting)
 )
 
 function cancel() {
-  if (props.rejecting) return
+  if (!props.canInteract || props.rejecting) return
   open.value = false
   note.value = ''
 }

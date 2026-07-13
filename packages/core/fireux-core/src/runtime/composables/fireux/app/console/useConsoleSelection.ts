@@ -1,7 +1,11 @@
 import { useCookie } from '#imports'
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../../utils/string'
-import { normalizeConsoleFamily } from './useConsole'
+import {
+  normalizeConsoleFamily,
+  useConsole,
+  type ConsoleSource,
+} from './useConsole'
 
 type ConsoleSelectionState = {
   selectedId: string
@@ -22,6 +26,7 @@ export function useConsoleSelection<TTarget = never>(
   options?: UseConsoleSelectionOptions<TTarget>
 ) {
   const normalizedFamily = normalizeConsoleFamily(family)
+  const consoleRoot = useConsole(normalizedFamily)
   // Keep selection unset until there is a real target; tenant auto-select should
   // not write an empty cookie before writing the configured target.
   const state = useCookie<ConsoleSelectionState | null>(
@@ -39,13 +44,17 @@ export function useConsoleSelection<TTarget = never>(
     options?.targetPending ? Boolean(unref(options.targetPending)) : false
   )
 
-  const selectTarget = (id: string) => {
+  const selectTarget = (
+    id: string,
+    source: ConsoleSource = consoleRoot.source.value
+  ) => {
     const nextId = normalizeString(id)
     if (!nextId) {
       clearSelection()
       return
     }
 
+    consoleRoot.setSource(source)
     state.value = {
       selectedId: nextId,
     }
@@ -53,6 +62,7 @@ export function useConsoleSelection<TTarget = never>(
 
   const clearSelection = () => {
     state.value = null
+    consoleRoot.resetSource()
   }
 
   const getTargetId = (item: TTarget | null | undefined) => {
@@ -87,6 +97,7 @@ export function useConsoleSelection<TTarget = never>(
 
   return {
     family: normalizedFamily,
+    source: consoleRoot.source,
     selectedId,
     selectedTarget,
     selectTarget,

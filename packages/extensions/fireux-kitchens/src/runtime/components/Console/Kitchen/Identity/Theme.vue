@@ -58,8 +58,8 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import { useKitchenMenuCollection } from '../../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useMenu } from '../../../../composables/fireux/menu/useMenu'
 import {
   compactMenuPageStyle,
@@ -77,12 +77,11 @@ const {
   selectedKitchen,
   kitchenId,
   rootCollection,
+  source,
   canWrite,
 } = useKitchenConsoleIdentity()
 const { updateKitchen } = useKitchenUpdate({ collectionPath: rootCollection })
-const { publishedMenus } = useKitchenMenuCollection(kitchenId, {
-  kitchenCollectionPath: rootCollection,
-})
+const { menus } = useKitchenConsoleMenus()
 const toast = useToastify()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
@@ -122,7 +121,9 @@ const kitchenName = computed(() =>
 )
 const kitchenSlug = computed(() => normalizeString(kitchen.value?.slug))
 const selectedPreviewMenuId = ref('')
-const previewMenus = computed(() => publishedMenus.value)
+const previewMenus = computed(() =>
+  menus.value.filter((menu) => menu.status === 'published')
+)
 const fallbackPreviewMenu = computed(() =>
   previewMenus.value.find((menu) => normalizeString(menu.id) === 'main') ??
   previewMenus.value[0] ??
@@ -133,7 +134,10 @@ const previewMenu = computed(() =>
   fallbackPreviewMenu.value
 )
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
-const previewMenuDetail = useMenu(previewMenuId, { kitchenSlug })
+const livePreviewMenuId = computed(() =>
+  source.value === 'live' ? previewMenuId.value : ''
+)
+const previewMenuDetail = useMenu(livePreviewMenuId, { kitchenSlug })
 const previewSections = computed(() => {
   // Console preview dogfoods the menu manifest, then crops to the first useful section/item.
   const sections = previewMenuDetail.manifest.value?.content.sections ?? []
@@ -151,7 +155,7 @@ const previewSections = computed(() => {
   ]
 })
 const menuUrl = computed(() => {
-  if (!kitchenSlug.value) return ''
+  if (source.value !== 'live' || !kitchenSlug.value) return ''
 
   const menuId = previewMenuId.value
   const menuIndexUrl = `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`

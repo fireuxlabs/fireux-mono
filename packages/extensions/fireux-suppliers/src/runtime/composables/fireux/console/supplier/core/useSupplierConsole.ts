@@ -1,5 +1,9 @@
 import { computed, isRef } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import {
+  useConsole,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
@@ -29,6 +33,7 @@ type UseSupplierConsoleOptions = {
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
+  const consoleRoot = useConsole('supplier')
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<SupplierCollectionFilter>(() => {
@@ -36,7 +41,10 @@ export function useSupplierConsole(
       ? options.filter.value ?? {}
       : options.filter ?? {}
 
-    if (Array.isArray(explicitFilter.ids)) return explicitFilter
+    if (
+      consoleRoot.source.value !== 'live' ||
+      Array.isArray(explicitFilter.ids)
+    ) return explicitFilter
 
     return {
       ...explicitFilter,
@@ -44,6 +52,7 @@ export function useSupplierConsole(
     }
   })
   const { suppliers: targetSuppliers, pending: targetsPending } = useSupplierCollection({
+    source: consoleRoot.source,
     filter: targetFilter,
   })
 
@@ -53,6 +62,7 @@ export function useSupplierConsole(
     targetItems: targetSuppliers,
     targetPending: targetsPending,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
+    mode: consoleRoot.source,
     userId,
   })
 
@@ -65,8 +75,11 @@ export function useSupplierConsole(
     entity.actions.clearSelection()
   }
 
-  const selectSupplier = (supplierId: string) => {
-    entity.actions.selectTarget(supplierId)
+  const selectSupplier = (
+    supplierId: string,
+    source: ConsoleSource = consoleRoot.source.value
+  ) => {
+    entity.actions.selectTarget(supplierId, source)
   }
   const suppliers = {
     targets: targetSuppliers,

@@ -89,7 +89,8 @@
               <UButton
                 v-for="field in missingIdentityFields"
                 :key="field.key"
-                :to="field.to"
+                :to="readOnly ? undefined : field.to"
+                :disabled="readOnly"
                 color="neutral"
                 variant="soft"
                 size="xs"
@@ -121,7 +122,8 @@
                   </UBadge>
                   <UButton
                     v-if="!field.complete && field.to"
-                    :to="field.to"
+                    :to="readOnly ? undefined : field.to"
+                    :disabled="readOnly"
                     size="xs"
                     color="neutral"
                     variant="ghost"
@@ -193,6 +195,7 @@ const {
   publicBadgeLabel,
   publicBadgeColor,
   identityPercent,
+  readOnly,
   missingIdentityFields,
   priorityIdentityFields,
   operationCards,

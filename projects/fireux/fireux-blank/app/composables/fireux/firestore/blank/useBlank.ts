@@ -4,8 +4,12 @@ import {
   doc,
 } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
+import {
+  normalizeConsoleSource,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
@@ -28,6 +32,9 @@ type CreateBlankInput = {
   name?: string
 }
 type BlankIdInput = string[] | Ref<string[]>
+type UseBlankCollectionOptions = {
+  source?: ConsoleSource | Ref<ConsoleSource | null | undefined> | null
+}
 
 export function blankAppCollectionPath(appId: string) {
   const resolvedAppId = text(appId)
@@ -36,13 +43,21 @@ export function blankAppCollectionPath(appId: string) {
   return `${AppStorage.collection}/${resolvedAppId}/${BlankStorage.appCollection}`
 }
 
-export function useBlankCollection() {
+export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const { appId } = useFireUXConfig()
-  const { coreUser, pending: userPending } = useUser()
+  const { uid } = useAuth()
   const { firestoreFetchCollection, firestoreLoadDocsByIds } = useFirestoreRead()
-  const appCollectionPath = computed(() => blankAppCollectionPath(appId))
+  const source = computed(() =>
+    normalizeConsoleSource(unref(options.source) ?? 'live')
+  )
+  const rootCollectionPath = computed(() =>
+    source.value === 'live' ? BlankStorage.rootCollection : ''
+  )
+  const appCollectionPath = computed(() =>
+    source.value === 'live' ? blankAppCollectionPath(appId) : ''
+  )
   const appBlanks = firestoreFetchCollection<AppBlank>(appCollectionPath)
-  const userId = computed(() => text(coreUser.value?.id))
+  const userId = computed(() => text(uid.value))
   const authorisedAppBlanks = computed(() =>
     (appBlanks.value ?? []).filter((blank) => {
       const operators = textList(blank.operator_ids)
@@ -60,7 +75,7 @@ export function useBlankCollection() {
       .filter(Boolean)
   )
   const rootBlanks = firestoreLoadDocsByIds<Blank>({
-    collectionPath: BlankStorage.rootCollection,
+    collectionPath: rootCollectionPath,
     ids: blankIds,
   })
   const blanks = computed<Blank[]>(() => {
@@ -85,16 +100,20 @@ export function useBlankCollection() {
     })
   })
   const pending = computed(
-    () =>
-      userPending.value ||
-      appBlanks.value === undefined ||
-      rootBlanks.pending.value
+    () => {
+      if (source.value !== 'live') return false
+
+      return (
+        appBlanks.value === undefined ||
+        rootBlanks.pending.value
+      )
+    }
   )
 
   return {
     blanks,
     pending,
-    rootCollectionPath: BlankStorage.rootCollection,
+    rootCollectionPath,
     appCollectionPath,
   }
 }

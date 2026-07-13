@@ -1,8 +1,12 @@
 import { computed } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import {
+  useConsole,
+  type ConsoleSource,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
-import type { Blank } from '../../../../../models/blank.model'
+import { BlankStorage, type Blank } from '../../../../../models/blank.model'
 
 /**
  * Blank console harness.
@@ -11,33 +15,36 @@ import type { Blank } from '../../../../../models/blank.model'
  * tested without domain operations or child records.
  */
 export function useBlankConsole() {
+  const consoleRoot = useConsole('blank')
   const {
     blanks: blankRecords,
     pending,
-    rootCollectionPath,
     appCollectionPath,
   } =
-    useBlankCollection()
+    useBlankCollection({ source: consoleRoot.source })
   const targetBlanks = computed(() => blankRecords.value)
-  const {
-    selectedTarget,
-    selectTarget,
-    clearSelection,
-  } = useConsoleSelection<Blank>('blank', {
+  const entity = useConsoleEntityRuntime<Blank>({
+    family: 'blank',
+    storageFamily: BlankStorage.rootCollection,
     targetItems: targetBlanks,
+    targetPending: pending,
     getId: (target) => normalizeString(target?.id),
+    mode: consoleRoot.source,
+    readOnly: true,
   })
-  const selectedBlank = computed<Blank | null>(() => selectedTarget.value)
-  const blankId = computed(() => normalizeString(selectedBlank.value?.id))
-  const rootCollection = computed(() => rootCollectionPath)
+  const selectedBlank = computed<Blank | null>(
+    () => entity.selection.selectedTarget.value
+  )
+  const blankId = entity.selection.entityId
   const hasTargets = computed(() => targetBlanks.value.length > 0)
-  const readOnly = computed(() => true)
-  const canWrite = computed(() => false)
-  const selectBlank = (blankId: string) => {
-    selectTarget(blankId)
+  const selectBlank = (
+    blankId: string,
+    source: ConsoleSource = consoleRoot.source.value
+  ) => {
+    entity.actions.selectTarget(blankId, source)
   }
   const clearSelectedBlank = () => {
-    clearSelection()
+    entity.actions.clearSelection()
   }
 
   const blanks = {
@@ -49,13 +56,11 @@ export function useBlankConsole() {
   const selection = {
     blank: selectedBlank,
     blankId,
-    hasSelection: computed(() => Boolean(blankId.value)),
+    hasSelection: entity.selection.hasSelection,
   }
   const runtime = {
-    rootCollection,
+    ...entity.runtime,
     appCollectionPath,
-    readOnly,
-    canWrite,
   }
   const actions = {
     selectBlank,
