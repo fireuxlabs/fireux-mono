@@ -1,8 +1,10 @@
 import { computed } from 'vue'
 import { useKitchenOrdersFetch } from './fetch/useKitchenOrdersFetch'
 import {
+  deriveKitchenOrderBoardStage,
   KitchenOrderStorage,
   type KitchenOrder,
+  type KitchenOrderBoardStage,
 } from '../../../../../../models/kitchen/order.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
@@ -64,23 +66,24 @@ export function useKitchenConsoleOrders() {
       : ordersPath.value
   )
   const visibleOrders = computed(() =>
-    consoleOrders.value.filter((order) => getOrderStatus(order) !== 'trashed')
-  )
-  const incomingOrders = computed(() =>
-    sortOrders(visibleOrders.value.filter(isIncomingOrder))
-  )
-  const queueOrders = computed(() =>
-    sortOrders(
-      visibleOrders.value.filter((order) =>
-        !isIncomingOrder(order) && !isArchivedOrder(order) && !isPassOrder(order)
-      )
+    consoleOrders.value.filter(
+      (order) => deriveKitchenOrderBoardStage(order) !== 'trash'
     )
   )
-  const passOrders = computed(() =>
-    sortOrders(visibleOrders.value.filter(isPassOrder))
+  const incomingOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'incoming')
   )
-  const archiveOrders = computed(() =>
-    sortOrders(visibleOrders.value.filter(isArchivedOrder))
+  const queueOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'queue')
+  )
+  const passOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'pass')
+  )
+  const recentOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'recent')
+  )
+  const unmappedOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'unmapped')
   )
   const ticketOrders = computed(() =>
     sortOrders(visibleOrders.value)
@@ -120,7 +123,8 @@ export function useKitchenConsoleOrders() {
     incoming: incomingOrders.value.map(debugOrder),
     queue: queueOrders.value.map(debugOrder),
     pass: passOrders.value.map(debugOrder),
-    archive: archiveOrders.value.map(debugOrder),
+    recent: recentOrders.value.map(debugOrder),
+    unmapped: unmappedOrders.value.map(debugOrder),
   }))
   const debugCount = (match: (order: KitchenOrder) => boolean) =>
     consoleOrders.value.filter(match).length
@@ -159,7 +163,8 @@ export function useKitchenConsoleOrders() {
       incomingCount: incomingOrders.value.length,
       queueCount: queueOrders.value.length,
       passCount: passOrders.value.length,
-      archiveCount: archiveOrders.value.length,
+      recentCount: recentOrders.value.length,
+      unmappedCount: unmappedOrders.value.length,
       openCount: debugCount((order) => order.status === 'open'),
       preOrderCount: debugCount((order) => order.order_type === 'pre_order'),
       heldCount: debugCount((order) => order.fire_state === 'held'),
@@ -184,7 +189,8 @@ export function useKitchenConsoleOrders() {
     incomingOrders,
     queueOrders,
     passOrders,
-    archiveOrders,
+    recentOrders,
+    unmappedOrders,
     pending,
     acceptOrder,
     rejectOrder,
@@ -281,23 +287,12 @@ const getServiceMode = (order: KitchenOrder) => {
   return value
 }
 
-const getOrderStatus = (order: KitchenOrder) =>
-  String(order.status || '').trim().toLowerCase()
-
-const getFireState = (order: KitchenOrder) =>
-  String(order.fire_state || '').trim().toLowerCase()
-
-const isArchivedOrder = (order: KitchenOrder) =>
-  ['archived', 'cancelled', 'canceled', 'closed', 'rejected']
-    .includes(getOrderStatus(order))
-
-// Menu ordering spine: incoming tickets wait for kitchen acceptance before queue.
-const isIncomingOrder = (order: KitchenOrder) =>
-  ['pending_payment', 'pending_acceptance', 'incoming', 'new'].includes(getOrderStatus(order))
-
-const isPassOrder = (order: KitchenOrder) =>
-  ['on_pass', 'pass'].includes(getOrderStatus(order)) ||
-  getFireState(order) === 'ready_to_fire'
+const ordersAtStage = (
+  orders: KitchenOrder[],
+  stage: KitchenOrderBoardStage
+) => sortOrders(
+  orders.filter((order) => deriveKitchenOrderBoardStage(order) === stage)
+)
 
 const sortOrders = (orders: KitchenOrder[]) =>
   [...orders].sort((a, b) => {

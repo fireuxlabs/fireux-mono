@@ -270,7 +270,6 @@ async function submitOrder() {
       kitchenCollectionPath: rootCollection.value,
       currency_code: currencyCode.value,
       order_type: orderType.value,
-      channel: 'staff_pos',
       creator_id: uid,
       customer: customerName.value.trim()
         ? { name: customerName.value.trim() }

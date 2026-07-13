@@ -138,16 +138,16 @@
             Recent
           </h2>
           <UBadge color="neutral" variant="soft">
-            {{ archiveOrders.length }}
+            {{ recentOrders.length }}
           </UBadge>
         </div>
 
         <div
-          v-if="archiveOrders.length"
+          v-if="recentOrders.length"
           class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
           <ConsoleKitchenOperationsOrdersCardsTicket
-            v-for="ticket in archiveOrders"
+            v-for="ticket in recentOrders"
             :key="ticket.id"
             :order="ticket"
           />
@@ -156,6 +156,33 @@
         <p v-else class="m-0 text-sm font-semibold text-muted">
           No recent orders yet.
         </p>
+      </section>
+
+      <section
+        v-if="unmappedOrders.length"
+        class="grid gap-4 rounded-lg border border-warning/40 bg-warning/5 p-4"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <h2 class="m-0 text-sm font-extrabold text-highlighted">
+              Needs mapping
+            </h2>
+            <p class="m-0 text-xs font-semibold text-muted">
+              These orders have a status the board does not recognise.
+            </p>
+          </div>
+          <UBadge color="warning" variant="soft">
+            {{ unmappedOrders.length }}
+          </UBadge>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <ConsoleKitchenOperationsOrdersCardsTicket
+            v-for="ticket in unmappedOrders"
+            :key="ticket.id"
+            :order="ticket"
+          />
+        </div>
       </section>
     </div>
 
@@ -179,7 +206,8 @@ const {
   incomingOrders,
   queueOrders,
   passOrders,
-  archiveOrders,
+  recentOrders,
+  unmappedOrders,
   pending,
   readOnly,
   canWrite,
@@ -207,14 +235,18 @@ const railCounts = computed(() => [
   },
   {
     label: 'Recent',
-    count: archiveOrders.value.length,
+    count: recentOrders.value.length,
   },
+  ...(unmappedOrders.value.length
+    ? [{ label: 'Needs mapping', count: unmappedOrders.value.length }]
+    : []),
 ])
 const allVisibleOrders = computed(() => [
   ...incomingOrders.value,
   ...passOrders.value,
   ...queueOrders.value,
-  ...archiveOrders.value,
+  ...recentOrders.value,
+  ...unmappedOrders.value,
 ])
 const clearButtonLabel = computed(() => {
   if (clearingOrders.value) return 'Clearing...'

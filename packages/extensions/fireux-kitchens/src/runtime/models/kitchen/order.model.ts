@@ -2,17 +2,14 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
- *
  * Family: App-scoped Kitchen operation
  * Storage: scoped operational record
  * Path: apps/{appId}/kitchens/{kitchenId}/orders/{orderId}
  * Owner app scope: Kitchen within an app runtime
  *
  * Decision note:
- * - KitchenOrder is the kitchen-owned operational order record.
- * - Keep it distinct from the generic order engine model until the broader order canon is deliberately reconciled.
- * - If that changes later, update the models README first, then this file.
+ * - KitchenOrder is the active kitchen-owned operational order record.
+ * - Shared order contracts may be composed later without moving Kitchen storage or lifecycle out of this model.
  */
 export const KitchenOrderStorage = {
   shape: 'scoped',
@@ -59,6 +56,23 @@ export type KitchenOrderFireState =
   | 'ready_to_fire'
   | 'held'
   | 'fired'
+
+export type KitchenOrderStatus =
+  | 'pending_payment'
+  | 'pending_acceptance'
+  | 'open'
+  | 'on_pass'
+  | 'closed'
+  | 'cancelled'
+  | 'trashed'
+
+export type KitchenOrderBoardStage =
+  | 'incoming'
+  | 'queue'
+  | 'pass'
+  | 'recent'
+  | 'trash'
+  | 'unmapped'
 
 export type KitchenOrderCustomer = {
   name?: string
@@ -134,7 +148,7 @@ export const KitchenOrderModel = {
   kitchen_id: '' as string,
 
   order_number: '' as string,
-  status: 'open' as string,
+  status: 'open' as KitchenOrderStatus,
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,
   collection: {} as KitchenOrderCollection,
@@ -161,7 +175,7 @@ export const KitchenOrderModel = {
   } as KitchenOrderPayment,
 
   // Flat order index fields used by console and customer route surfaces.
-  channel: '' as string,
+  channel: '' as KitchenOrderChannel,
   app_id: '' as string,
   creator_id: '' as string,
   created_at: {} as FirebaseTimestamp,
@@ -180,6 +194,36 @@ export const KitchenOrderModel = {
 
 export type KitchenOrder = {
   [K in keyof typeof KitchenOrderModel]: (typeof KitchenOrderModel)[K]
+}
+
+export function deriveKitchenOrderBoardStage(order: {
+  status?: unknown
+  fire_state?: unknown
+}): KitchenOrderBoardStage {
+  const status = String(order.status ?? '').trim().toLowerCase()
+  const fireState = String(order.fire_state ?? '').trim().toLowerCase()
+
+  if (['trashed', 'deleted'].includes(status)) return 'trash'
+  if (
+    ['archived', 'cancelled', 'canceled', 'closed', 'rejected', 'refunded']
+      .includes(status)
+  ) {
+    return 'recent'
+  }
+  if (
+    ['pending_payment', 'pending_acceptance', 'incoming', 'new']
+      .includes(status)
+  ) {
+    return 'incoming'
+  }
+  if (
+    ['on_pass', 'pass', 'ready'].includes(status) ||
+    fireState === 'ready_to_fire'
+  ) {
+    return 'pass'
+  }
+  if (['open', 'firing'].includes(status)) return 'queue'
+  return 'unmapped'
 }
 
 export type KitchenOrderCreateInput = Omit<KitchenOrder, 'created' | 'updated'>

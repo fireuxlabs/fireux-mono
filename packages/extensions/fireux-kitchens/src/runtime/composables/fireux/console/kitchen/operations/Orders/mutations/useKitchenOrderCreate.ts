@@ -22,7 +22,6 @@ type CreateKitchenOrderInput = {
   order_type?: KitchenOrderType
   requested_for?: string
   fire_state?: KitchenOrderFireState
-  channel?: string
   currency_code?: string
   kitchenCollectionPath?: string
   app_id?: string
@@ -86,7 +85,7 @@ export function useKitchenOrderCreate() {
       normalizeString(input.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
 
     const orderId = makeOrderId()
-    const orderType = normalizeOrderType(input.order_type || input.channel)
+    const orderType = normalizeOrderType(input.order_type)
     const fireState = normalizeFireState(input.fire_state)
     const requestedFor = normalizeString(input.requested_for)
     const collection = orderType === 'collection'
@@ -147,7 +146,7 @@ export function useKitchenOrderCreate() {
 
       app_id: (input.app_id || appId || '') as any,
       creator_id: (input.creator_id || '') as any,
-      channel: normalizeString(input.channel) || orderType,
+      channel: 'staff_pos',
       created_at: serverTimestamp() as any,
       updated_at: serverTimestamp() as any,
       created: {
