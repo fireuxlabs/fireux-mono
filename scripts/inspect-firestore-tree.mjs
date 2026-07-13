@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-11
 // usage_note: reusable Firestore tree inspection; update when run.
 
 import { initializeApp } from 'firebase-admin/app'

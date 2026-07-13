@@ -36,7 +36,6 @@
     "fireux-suppliers": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
-    "fireux-orders": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-products": "workspace:*",

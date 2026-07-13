@@ -1,6 +1,6 @@
 Order processing and kitchen fulfilment spine
-Updated: 2026-07-05
-Ref: b57b4f38f
+Updated: 2026-07-13
+Ref: 59610f7ad
 Role: map, not canon
 
 Purpose:
@@ -29,7 +29,7 @@ Entity checkpoint:
 - It is not a root public index entity.
 - FulfilmentPolicy and FulfilmentMatch are order snapshot shapes, not entities.
 - DeliveryZone is fulfilment configuration owned by Kitchen, not a standalone entity.
-- The generic `fireux-orders` package is an adjacent order engine, not the kitchen fulfilment canon until a deliberate reconciliation pass happens.
+- KitchenOrder is the active Order canon for menu ordering and kitchen processing.
 
 Core split:
 - Menu content is readable by default; no stored view marker is needed.
@@ -93,7 +93,7 @@ Guardrails:
 - Do not infer delivery, collection, or opening rules from Place hours.
 - Do not force KitchenOrder into root entity ceremony without a fresh entity decision.
 - Do not mix console operation folders into Firestore entity buckets.
-- Do not reconcile `fireux-orders` and KitchenOrder opportunistically inside a feature patch.
+- Do not introduce a parallel root Order engine while KitchenOrder remains the operational canon.
 
 Open questions:
 - Whether customer-visible cancellation/refund states need a separate public status vocabulary.

@@ -144,11 +144,6 @@ const sourceMeta = {
           ],
         },
         {
-          name: 'fireux-orders',
-          summary: 'Order flow model for customer and service orders.',
-          entities: ['Order'],
-        },
-        {
           name: 'fireux-jobs',
           summary: 'Hiring and profile module for talent matching.',
           entities: ['Job', 'Professional', 'Agent'],

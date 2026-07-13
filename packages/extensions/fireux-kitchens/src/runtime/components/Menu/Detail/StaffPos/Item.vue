@@ -18,6 +18,28 @@
 
       <UIcon name="i-lucide-plus" aria-hidden="true" />
     </button>
+
+    <div
+      v-if="variantOptions.length > 1 || addOnOptions.length"
+      class="staff-pos-item__options"
+    >
+      <MenuDetailItemOptions
+        v-if="variantOptions.length > 1"
+        :label="`${item.name} variants`"
+        :options="variantOptions"
+        :selected-ids="selectedVariant ? [selectedVariant.id] : []"
+        @toggle="selectedVariantId = $event"
+      />
+
+      <MenuDetailItemOptions
+        v-if="addOnOptions.length"
+        :label="`${item.name} add-ons`"
+        :options="addOnOptions"
+        :selected-ids="selectedAddOnIds"
+        prefix="+ "
+        @toggle="toggleAddOn"
+      />
+    </div>
   </article>
 </template>
 
@@ -36,7 +58,16 @@ const emit = defineEmits<{
   (event: 'add', item: MenuFoodOrderItem): void
 }>()
 
-const { displayPrice, orderItem } = useItem({
+const {
+  addOnOptions,
+  displayPrice,
+  orderItem,
+  selectedAddOnIds,
+  selectedVariant,
+  selectedVariantId,
+  toggleAddOn,
+  variantOptions,
+} = useItem({
   item: () => props.item,
 })
 
@@ -46,6 +77,11 @@ function addItem() {
 </script>
 
 <style scoped>
+.staff-pos-item {
+  display: grid;
+  gap: 0.5rem;
+}
+
 .staff-pos-item__button {
   display: grid;
   grid-template-columns: 4.25rem minmax(0, 1fr) auto;
@@ -61,6 +97,12 @@ function addItem() {
   cursor: pointer;
   font: inherit;
   text-align: left;
+}
+
+.staff-pos-item__options {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0 0.2rem 0.2rem;
 }
 
 .staff-pos-item__button:hover,

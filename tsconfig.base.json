@@ -116,15 +116,6 @@
       "fireux-places/runtime/*": [
         "./packages/extensions/fireux-places/src/runtime/*"
       ],
-      "fireux-orders": [
-        "./packages/extensions/fireux-orders/src/module.ts"
-      ],
-      "fireux-orders/*": [
-        "./packages/extensions/fireux-orders/src/*"
-      ],
-      "fireux-orders/runtime/*": [
-        "./packages/extensions/fireux-orders/src/runtime/*"
-      ],
       "fireux-products": [
         "./packages/extensions/fireux-products/src/module.ts"
       ],
@@ -223,9 +214,6 @@
       ],
       "@fireux-places/*": [
         "./packages/extensions/fireux-places/src/*"
-      ],
-      "@fireux-orders/*": [
-        "./packages/extensions/fireux-orders/src/*"
       ],
       "@fireux-products/*": [
         "./packages/extensions/fireux-products/src/*"

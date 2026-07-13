@@ -266,6 +266,7 @@ function resetKiosk() {
 }
 
 function leaveKiosk() {
+  interaction.funnel.clear()
   interaction.funnel.close()
   storedKioskMode.value = 'start'
 }

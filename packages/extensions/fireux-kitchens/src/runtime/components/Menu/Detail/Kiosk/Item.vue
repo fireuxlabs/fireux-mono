@@ -1,5 +1,10 @@
 <template>
-  <article class="kiosk-item">
+  <article
+    class="kiosk-item"
+    :class="{
+      'kiosk-item--with-options': variantOptions.length > 1 || addOnOptions.length,
+    }"
+  >
     <h3>{{ item.name }}</h3>
 
     <div class="kiosk-item__media">
@@ -15,6 +20,23 @@
     <p v-if="item.description" class="kiosk-item__description">
       {{ item.description }}
     </p>
+
+    <MenuDetailItemOptions
+      v-if="variantOptions.length > 1"
+      :label="`${item.name} variants`"
+      :options="variantOptions"
+      :selected-ids="selectedVariant ? [selectedVariant.id] : []"
+      @toggle="selectedVariantId = $event"
+    />
+
+    <MenuDetailItemOptions
+      v-if="addOnOptions.length"
+      :label="`${item.name} add-ons`"
+      :options="addOnOptions"
+      :selected-ids="selectedAddOnIds"
+      prefix="+ "
+      @toggle="toggleAddOn"
+    />
 
     <button type="button" class="kiosk-item__add" @click="addItem">
       <span class="kiosk-item__add-label">
@@ -42,8 +64,14 @@ const emit = defineEmits<{
 }>()
 
 const {
+  addOnOptions,
   displayPrice,
   orderItem,
+  selectedAddOnIds,
+  selectedVariant,
+  selectedVariantId,
+  toggleAddOn,
+  variantOptions,
 } = useItem({
   item: () => props.item,
 })
@@ -64,6 +92,12 @@ function addItem() {
   aspect-ratio: 1;
   min-width: 0;
   color: white;
+}
+
+.kiosk-item--with-options {
+  min-height: 34rem;
+  aspect-ratio: auto;
+  grid-template-rows: auto minmax(12rem, 1.35fr) auto auto auto auto;
 }
 
 .kiosk-item h3,

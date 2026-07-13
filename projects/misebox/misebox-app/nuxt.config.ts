@@ -21,7 +21,6 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-go-qr',
     'fireux-kitchens',
     'fireux-sproochli',
-    'fireux-orders',
     'fireux-suppliers',
     ['fireux-jobs', { workplaces: ['kitchen', 'ship', 'truck'] }],
     'fireux-ai',
