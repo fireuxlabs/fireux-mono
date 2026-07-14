@@ -43,20 +43,36 @@ export const baerenRinggenbergContent = {
     },
   },
   pages: {
-    index: {
-      seoTitle: 'Hotel Bären Ringgenberg',
-      seoDescription: 'Public menu and venue page for Hotel Bären Ringgenberg.',
-    },
     home: {
-      title: 'Pizza, snacks and drinks in Ringgenberg.',
-      subtitle:
-        'Hotel, restaurant and bar on the north shore of Lake Brienz.',
-      copy: [
-        'Browse the existing Bären menu for pizza, snacks and drinks, with collection and delivery options shown when available.',
+      title: 'Hotel Bären Ringgenberg',
+      intro:
+        'Hotel, restaurant and bar in Ringgenberg. Browse the existing Bären menu or find the venue.',
+      actions: [
+        { label: 'Hotel', to: '/hotel', icon: 'i-lucide-bed-double', color: 'primary', variant: 'solid' },
+        { label: 'Menu', to: '/menu', icon: 'i-lucide-utensils', color: 'neutral', variant: 'solid' },
+        { label: 'Events', to: '/events', icon: 'i-lucide-calendar-days', color: 'neutral', variant: 'solid' },
+        { label: 'Location', to: '/location', icon: 'i-lucide-map-pin', color: 'neutral', variant: 'solid' },
       ],
-      seoTitle: 'Hotel Bären Ringgenberg | Home',
-      seoDescription:
-        'Pizza, snacks, drinks, collection, and delivery at Hotel Bären Ringgenberg.',
+      highlights: [
+        {
+          title: 'Hotel',
+          description: '37 guest rooms close to Lake Brienz and Interlaken.',
+          to: '/hotel',
+          icon: 'i-lucide-bed-double',
+        },
+        {
+          title: 'Restaurant and bar',
+          description: 'Regional cooking, pizza, snacks and drinks.',
+          to: '/menu',
+          icon: 'i-lucide-utensils',
+        },
+        {
+          title: 'Events',
+          description: 'Weddings, celebrations, meetings and live events.',
+          to: '/events',
+          icon: 'i-lucide-calendar-days',
+        },
+      ],
     },
     gallery: {
       title: 'Gallery.',
