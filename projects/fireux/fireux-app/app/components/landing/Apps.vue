@@ -1,7 +1,7 @@
 <template>
   <div class="landing-index-section">
     <div class="mb-6 text-center">
-      <h2 class="text-2xl lg:text-3xl font-bold">Our Apps</h2>
+      <h2 class="text-2xl lg:text-3xl font-bold">Apps Powered by FireUX</h2>
     </div>
 
     <div v-if="appsPending" class="flex flex-wrap gap-2">

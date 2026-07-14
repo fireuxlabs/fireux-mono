@@ -1,9 +1,9 @@
 <template>
   <div class="landing-index-section">
     <div class="mb-6 space-y-2 text-center">
-      <h2 class="text-2xl lg:text-3xl font-bold">FireUX Features</h2>
+      <h2 class="text-2xl lg:text-3xl font-bold">What FireUX Gives You</h2>
       <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
-        Opinionated tooling that ships real products.
+        Build, launch, and run applications on one platform.
       </p>
     </div>
 
@@ -42,38 +42,38 @@ const defaults: FeatureItem[] = [
   {
     key: 'pwa',
     icon: 'i-lucide-smartphone',
-    title: 'PWA First',
-    description: 'Installable apps with notifications, no stores.',
+    title: 'Installable Anywhere',
+    description: 'Use your app across phones and computers without waiting for an app store.',
   },
   {
     key: 'templates',
     icon: 'i-lucide-square-dashed',
-    title: 'Pre-built Templates',
-    description: 'UI kits with data wiring: less glue, more ship.',
+    title: 'Proven Starting Points',
+    description: 'Begin with working FireUX foundations instead of paying for a blank-sheet build.',
   },
   {
     key: 'saas',
     icon: 'i-lucide-cloud',
-    title: 'SaaS Solutions',
-    description: 'Managed subscriptions, billing, and growth.',
+    title: 'Managed for You',
+    description: 'We keep the platform, hosting, and shared foundations moving forward.',
   },
   {
     key: 'whitelabel',
     icon: 'i-lucide-layers-2',
-    title: 'White-Label',
-    description: 'Rebrand and launch tenant apps with shared theming.',
+    title: 'Your Brand',
+    description: 'Launch a focused customer-facing app with your own identity and content.',
   },
   {
     key: 'low-code',
     icon: 'i-lucide-code',
-    title: 'Low-Code Core',
-    description: 'Composable modules for speed and safety.',
+    title: 'Built to Grow',
+    description: 'Add capabilities when the business proves it needs them, not before.',
   },
   {
     key: 'console',
     icon: 'i-lucide-terminal',
-    title: 'Console-Driven',
-    description: 'Clear, data-first layouts and controls.',
+    title: 'One Control Centre',
+    description: 'Manage the work, people, and connected apps from a consistent console.',
   },
   {
     key: 'authpay',

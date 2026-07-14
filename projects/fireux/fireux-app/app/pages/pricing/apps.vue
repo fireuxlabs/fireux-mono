@@ -2,7 +2,7 @@
   <div class="space-y-16 pb-20">
     <section class="py-16">
       <UContainer class="space-y-6">
-        <UBadge color="primary" variant="soft">App ignition</UBadge>
+        <UBadge color="primary" variant="soft">App launches</UBadge>
 
         <div class="space-y-2">
           <AppBrandWordmark
@@ -31,13 +31,13 @@
     <section>
       <UContainer class="max-w-xl">
         <UPricingPlan
-          title="Console users"
-          description="All end users are free. Only operational console users are billed."
-          price="$5"
+          title="Additional console users"
+          description="Your first operator is included. Add paid console seats only when the operating team grows."
+          price="$3"
           billing-cycle="/month per seat"
           :features="[
-            'Discounted seats for app operators',
-            'Billed only when a console exists',
+            'First operator included',
+            'End users remain free',
           ]"
         />
       </UContainer>
@@ -49,20 +49,20 @@
 const appPlans = [
   {
     id: 'join-ecosystem',
-    title: 'Join an ecosystem',
-    description: 'Launch inside an ecosystem operated by FireUX.',
-    price: '$600',
+    title: 'Starter launch',
+    description: 'Launch one focused workflow inside the nearest FireUX ecosystem.',
+    price: '$150',
     billingPeriod: 'setup',
     features: [
-      'Maintenance: $50/month',
+      'Maintenance: $15/month',
       'Hosting included',
-      'Operated ecosystem infrastructure',
+      'Brand and first operator included',
     ],
     highlight: true,
     scale: true,
     button: {
-      label: 'View ecosystems',
-      to: '/ecosystems/pricing',
+      label: 'Ask about this launch',
+      to: 'mailto:fire@fireux.app?subject=FireUX%20starter%20launch',
       color: 'neutral' as const,
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
@@ -70,18 +70,18 @@ const appPlans = [
   },
   {
     id: 'fireux-hosted',
-    title: 'FireUX hosted',
-    description: 'Launch a new domain without creating an ecosystem yet.',
-    price: '$700',
+    title: 'Managed launch',
+    description: 'Launch a branded app directly with FireUX when no existing ecosystem fits.',
+    price: '$250',
     billingPeriod: 'setup',
     features: [
-      'Maintenance: $60/month',
+      'Maintenance: $25/month',
       'Hosted inside FireUX',
-      'Managed platform operations',
+      'Brand, first operator, and launch support included',
     ],
     button: {
-      label: 'Get started',
-      to: '/get-started',
+      label: 'Ask about this launch',
+      to: 'mailto:fire@fireux.app?subject=FireUX%20managed%20launch',
       color: 'neutral' as const,
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
@@ -89,18 +89,18 @@ const appPlans = [
   },
   {
     id: 'self-hosted',
-    title: 'Self hosted',
-    description: 'Client owns Firebase, hosting, and infrastructure.',
-    price: '$400',
+    title: 'Own infrastructure',
+    description: 'Use the FireUX app foundation while owning Firebase and hosting yourself.',
+    price: '$200',
     billingPeriod: 'setup',
     features: [
-      'Maintenance: $30/month',
+      'Maintenance: $15/month',
       'Client-managed infrastructure',
-      'Lower monthly platform fee',
+      'Best for customers with technical ownership',
     ],
     button: {
-      label: 'Get started',
-      to: '/get-started',
+      label: 'Ask about this launch',
+      to: 'mailto:fire@fireux.app?subject=FireUX%20own%20infrastructure%20launch',
       color: 'neutral' as const,
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
@@ -111,16 +111,16 @@ const appPlans = [
 const appTableTiers = [
   {
     id: 'join-ecosystem',
-    title: 'Join an ecosystem',
+    title: 'Starter launch',
     highlight: true,
   },
   {
     id: 'fireux-hosted',
-    title: 'FireUX hosted',
+    title: 'Managed launch',
   },
   {
     id: 'self-hosted',
-    title: 'Self hosted',
+    title: 'Own infrastructure',
   },
 ]
 
@@ -131,17 +131,17 @@ const appTableSections = [
       {
         title: 'Setup',
         tiers: {
-          'join-ecosystem': '$600',
-          'fireux-hosted': '$700',
-          'self-hosted': '$400',
+          'join-ecosystem': '$150',
+          'fireux-hosted': '$250',
+          'self-hosted': '$200',
         },
       },
       {
         title: 'Maintenance',
         tiers: {
-          'join-ecosystem': '$50/month',
-          'fireux-hosted': '$60/month',
-          'self-hosted': '$30/month',
+          'join-ecosystem': '$15/month',
+          'fireux-hosted': '$25/month',
+          'self-hosted': '$15/month',
         },
       },
     ],
@@ -183,6 +183,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'App Pricing · FireUX',
-  description: 'Start with an app. Choose ecosystem-hosted, FireUX-hosted, or self-hosted.',
+  description: 'Launch a focused FireUX app from $150 setup with maintenance from $15 per month.',
 })
 </script>

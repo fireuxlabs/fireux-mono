@@ -1,12 +1,16 @@
 <template>
   <PublicPricingPage
     title="Ecosystem pricing"
-    description="Create a branded FireUX ecosystem, then add tenant apps as the ecosystem grows."
+    description="Create a branded FireUX ecosystem, then add customer apps as it grows."
     :plan-groups="planGroups"
   >
     <template #actions>
-      <UButton to="/get-started" color="primary" icon="i-lucide-sparkles">
-        Start an ecosystem
+      <UButton
+        href="mailto:fire@fireux.app?subject=FireUX%20ecosystem%20launch"
+        color="primary"
+        icon="i-lucide-mail"
+      >
+        Ask about an ecosystem
       </UButton>
       <UButton to="/ecosystems" color="neutral" variant="soft" icon="i-lucide-orbit">
         View ecosystems
@@ -27,7 +31,7 @@ const setupPlans = [
     id: 'ecosystem-setup',
     title: 'Ecosystem setup',
     description: 'Create your own branded FireUX ecosystem.',
-    price: '$1,000',
+    price: '$400',
     billingPeriod: 'setup',
     features: [
       'Ecosystem identity',
@@ -36,15 +40,15 @@ const setupPlans = [
     ],
     button: {
       ...detailButton,
-      label: 'Start',
-      to: '/get-started',
+      label: 'Ask about this launch',
+      to: 'mailto:fire@fireux.app?subject=FireUX%20ecosystem%20launch',
     },
   },
   {
     id: 'tenant-app-setup',
     title: 'Tenant app setup',
     description: 'Add customer apps inside your ecosystem.',
-    price: '$300',
+    price: '$100',
     billingPeriod: 'per app setup',
     features: [
       'Customer app shell',
@@ -64,7 +68,7 @@ const runningPlans = [
     id: 'tenant-maintenance',
     title: 'Maintenance',
     description: 'Keep each tenant app hosted and maintained.',
-    price: '$25',
+    price: '$10',
     billingCycle: '/month',
     billingPeriod: 'per tenant app',
     features: [
@@ -77,7 +81,7 @@ const runningPlans = [
     id: 'console-seats',
     title: 'Console seats',
     description: 'For admins and operators using the console.',
-    price: '$5',
+    price: '$3',
     billingCycle: '/month',
     billingPeriod: 'per seat',
     features: [
@@ -108,6 +112,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Ecosystem Pricing · FireUX',
   description:
-    'Create a branded FireUX ecosystem from $1,000 setup, then add tenant apps from $300 setup with simple monthly maintenance.',
+    'Create a branded FireUX ecosystem from $400 setup, then add tenant apps from $100 setup with simple monthly maintenance.',
 })
 </script>

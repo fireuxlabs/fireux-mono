@@ -23,25 +23,25 @@ const sourceMeta = {
     ],
     rightPanelItems: [
       {
-        title: 'Modules',
-        description: 'Wire Nuxt + Firebase with ready composables.',
-        icon: 'i-lucide-puzzle',
+        title: 'Choose',
+        description: 'Use an existing app or start a focused new one.',
+        icon: 'i-lucide-layout-grid',
       },
       {
-        title: 'Tenant theming',
-        description: 'White-label overrides from one config.',
-        icon: 'i-lucide-palette',
-      },
-      {
-        title: 'Automation',
-        description: 'PWA, CI presets, and deploy pipelines.',
+        title: 'Launch',
+        description: 'We configure the brand, users, workflow, and hosting.',
         icon: 'i-lucide-rocket',
+      },
+      {
+        title: 'Run',
+        description: 'Manage the app, team access, and future changes.',
+        icon: 'i-lucide-gauge',
       },
     ],
     seo: {
-      title: 'FireUX — Vue.js Development Ecosystem',
+      title: 'FireUX — Powerful Applications',
       description:
-        'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
+        'Build, launch, and run branded applications with FireUX.',
     },
   },
   about: {
@@ -263,86 +263,31 @@ StitchRequest
     },
   },
   getStarted: {
-    hero: {
-      eyebrow: 'Get live fast',
-      title: 'Launch production-ready apps from one core',
-      description:
-        'FireUX gives your team one low-code operating core for modules, ecosystems, automation, subscriptions, and app launch.',
-      primaryAction: {
-        label: 'Explore modules',
-        to: '/modules',
-      },
-      secondaryAction: {
-        label: 'Open ecosystems',
-        to: '/ecosystems',
-      },
-    },
-    snapshotTitle: 'Rollout snapshot',
-    snapshotTicks: [
-      'Core runtime configured with modules and shared UI',
-      'Auth, data, and automation paths connected',
-      'Ecosystem and app boundaries locked for scale',
-      'Production release checklist ready for handover',
+    eyebrow: 'FireUX App',
+    title: 'Ignition',
+    description: 'We configure and launch a FireUX app for your business.',
+    setupPrice: '$150',
+    monthlyPrice: '$15/month',
+    included: [
+      'Your branding',
+      'Web app and installable PWA',
+      'User accounts',
+      'Operator console',
+      'Hosting and deployment',
+      'One job for the app to do',
     ],
-    stepsHeading: {
-      eyebrow: 'Three steps',
-      title: 'A practical rollout in three steps',
-      description: 'Structure the core, activate modules, and launch with operational clarity.',
-    },
-    steps: [
-      {
-        badge: 'Step 1',
-        title: 'Core baseline',
-        copy: 'Define runtime boundaries, environments, and operating ownership for your app portfolio.',
-        items: ['Core config and env map', 'Role and access model', 'Release checklist defined'],
-      },
-      {
-        badge: 'Step 2',
-        title: 'Module activation',
-        copy: 'Enable the modules you need and validate data paths, auth rules, and console flows.',
-        items: ['Modules enabled', 'Data + auth paths validated', 'Console routes verified'],
-      },
-      {
-        badge: 'Step 3',
-        title: 'Production launch',
-        copy: 'Run the launch playbook and move to steady-state operations with clear ownership.',
-        items: ['Preflight and QA sign-off', 'Deployment and monitoring', 'Post-launch review'],
-      },
+    requirements: [
+      'Business name, logo, and colours',
+      'What the app needs to do',
+      'Who needs access',
     ],
-    afterSetup: {
-      title: 'What happens after setup starts',
-      faqs: [
-        {
-          title: 'Environment setup',
-          copy: 'Configure project, credentials, and runtime variables once, then reuse across apps.',
-        },
-        {
-          title: 'Module strategy',
-          copy: 'Start with essential modules, then add capabilities without breaking core consistency.',
-        },
-        {
-          title: 'Production readiness',
-          copy: 'Use guardrails for auth, data, and release validation before every production push.',
-        },
-      ],
-      card: {
-        eyebrow: 'Need a faster launch?',
-        title:
-          'Use the accelerated path when you need to move from structure to production with minimal rework.',
-        bullets: [
-          'Daily implementation checkpoints.',
-          'Parallel configuration and validation tracks.',
-          'Operator handover with production guardrails.',
-        ],
-        action: {
-          label: 'Open projects',
-          to: '/projects',
-        },
-      },
+    action: {
+      label: 'Start Ignition',
+      to: 'mailto:fire@fireux.app?subject=FireUX%20App%20Ignition',
     },
     seo: {
-      title: 'Get Started · FireUX',
-      description: 'Set up FireUX core, modules, and ecosystems for production rollout.',
+      title: 'FireUX App Ignition',
+      description: 'FireUX App Ignition costs $150 setup and $15 per month.',
     },
   },
   roadmap: {
@@ -417,13 +362,10 @@ export const metaContent = defineFireuxMeta({
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
     highlight_terms: [
-      'console architecture',
-      'responsive',
-      'scalable',
-      'data-driven',
-      'Nuxt 4',
-      'Firebase',
-      'extensible core',
+      'focused business apps',
+      'Misebox',
+      'Cleanbox',
+      'connected FireUX account',
     ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
@@ -435,20 +377,20 @@ export const metaContent = defineFireuxMeta({
     title: appMeta.seoHome.title,
     description: appMeta.seoHome.description,
     keywords: [
-      'nuxt firebase platform',
-      'low-code app ecosystem',
-      'console architecture',
-      'multi-tenant app framework',
-      'firebase app builder',
-      'nuxt 4 firebase',
+      'FireUX business app',
+      'branded business app',
+      'managed web app',
+      'hospitality app',
+      'cleaning business app',
+      'small business software',
     ],
-    audience: ['developers', 'product teams', 'operators', 'founders'],
+    audience: ['small businesses', 'operators', 'founders', 'partners'],
     categories: [
-      'app platform',
-      'console architecture',
-      'firebase framework',
+      'business apps',
+      'managed software',
+      'industry platforms',
     ],
-    primary_topic: 'nuxt firebase app platform',
+    primary_topic: 'managed business applications',
   },
   cta: {
     primary: {

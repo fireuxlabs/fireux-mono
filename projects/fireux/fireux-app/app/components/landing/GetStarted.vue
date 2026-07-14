@@ -8,50 +8,50 @@
 
 <script setup lang="ts">
 const title = 'Get started'
-const subtitle = 'Ship faster with platform primitives built for modern Vue teams.'
+const subtitle = 'Choose an existing app or launch one for your own workflow.'
 
 const items = [
   {
-    title: 'Products',
-    description: 'Hosted tools ready to deploy without provisioning.',
-    to: '/products',
-    cta: 'Explore',
-    icon: 'i-lucide-package',
+    title: 'Starter app',
+    description: 'Launch a focused, branded business app from $150 setup and $15/month.',
+    to: '/pricing/apps',
+    cta: 'Compare offers',
+    icon: 'i-lucide-rocket',
   },
   {
-    title: 'White-label',
-    description: 'Rebrand FireUX apps with tenant-aware theming.',
-    to: '/whitelabel',
-    cta: 'Partner',
-    icon: 'i-lucide-badge-check',
+    title: 'Misebox',
+    description: 'Explore our hospitality ecosystem for kitchens, menus, teams, and daily operations.',
+    to: 'https://misebox.app',
+    cta: 'Explore hospitality',
+    icon: 'i-lucide-chef-hat',
   },
   {
-    title: 'SaaS',
-    description: 'Managed subscriptions with billing and auth baked in.',
-    to: '/saas',
-    cta: 'See plans',
-    icon: 'i-lucide-zap',
+    title: 'Cleanbox',
+    description: 'Explore our cleaning ecosystem for customers, teams, jobs, and service delivery.',
+    to: 'https://cleanbox.web.app',
+    cta: 'Explore cleaning',
+    icon: 'i-lucide-sparkles',
   },
   {
-    title: 'Templates',
-    description: 'Starter kits for founders and internal tooling teams.',
-    to: '/templates',
-    cta: 'Browse',
-    icon: 'i-lucide-layers-2',
+    title: 'Your own ecosystem',
+    description: 'Turn a repeatable industry workflow into a branded parent app with customer apps beneath it.',
+    to: '/ecosystems/pricing',
+    cta: 'See ecosystem pricing',
+    icon: 'i-lucide-network',
   },
   {
-    title: 'API-first',
-    description: 'Composable endpoints to extend existing stacks.',
-    to: '/api',
-    cta: 'Docs',
-    icon: 'i-lucide-code-xml',
+    title: 'Browse the app family',
+    description: 'See the apps already connected to FireUX and find the closest starting point.',
+    to: '/apps',
+    cta: 'Browse apps',
+    icon: 'i-lucide-layout-grid',
   },
   {
-    title: 'Automation',
-    description: 'No-code workflows, webhooks, and scheduled jobs.',
-    to: '/automation',
-    cta: 'Set up',
-    icon: 'i-lucide-bot',
+    title: 'Talk to FireUX',
+    description: 'Tell us what the app needs to do and who needs to use it.',
+    to: 'mailto:fire@fireux.app?subject=FireUX%20starter%20app',
+    cta: 'Email us',
+    icon: 'i-lucide-mail',
   },
 ]
 </script>

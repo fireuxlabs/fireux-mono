@@ -37,21 +37,21 @@
         />
 
         <UPricingPlan
-          title="Upgrade"
-          description="Operator-level access for private workflow and paid assets."
-          price="$10"
+          title="Operator access"
+          description="For people who manage a FireUX app, team, or private workflow."
+          price="$5"
           billing-cycle="/month"
           highlight
           scale
           :features="[
-            'Access all FireUX templates and paid resources',
             'Use the FireUX console',
-            'Launch support via FireUX blog',
-            'Backlink from FireUX',
+            'Manage your app and team access',
+            'Launch support',
+            'One account across connected apps',
           ]"
           :button="{
-            label: 'Upgrade',
-            to: '/product/upgrade',
+            label: 'Create account',
+            to: '/auth',
             color: 'primary',
             variant: 'soft',
             trailingIcon: 'i-lucide-arrow-right',
@@ -69,6 +69,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'User Pricing · FireUX',
-  description: 'FireUX accounts are free. Console seats are billed only for operational access.',
+  description: 'FireUX accounts are free. Operator access is $5 per month when you need to manage an app or workflow.',
 })
 </script>

@@ -1,8 +1,22 @@
 <template>
   <PublicPricingPage
-    description="Navigate FireUX pricing for users, apps, and ecosystems with clear setup and maintenance models."
+    title="FireUX pricing"
+    description="Choose an app, ecosystem, or operator plan."
     :plans="hubPlans"
-  />
+  >
+    <template #actions>
+      <UButton
+        href="mailto:fire@fireux.app?subject=FireUX%20starter%20app"
+        color="primary"
+        icon="i-lucide-mail"
+      >
+        Ask about a starter app
+      </UButton>
+      <UButton to="/pricing/apps" color="neutral" variant="soft" icon="i-lucide-rocket">
+        Compare app launches
+      </UButton>
+    </template>
+  </PublicPricingPage>
 </template>
 
 <script setup lang="ts">
@@ -16,10 +30,10 @@ const hubPlans = [
   {
     id: 'users',
     title: 'Users',
-    description: 'Join for free or upgrade.',
-    price: '$10',
+    description: 'Join free or add operator access.',
+    price: '$5',
     billingCycle: '/month',
-    features: ['Upgrade access'],
+    features: ['Free account available', 'Operator access when you need it'],
     button: {
       ...detailButton,
       label: 'Details',
@@ -29,10 +43,10 @@ const hubPlans = [
   {
     id: 'apps',
     title: 'Apps',
-    description: 'Launch your app.',
-    price: 'From $400',
+    description: 'Launch one focused workflow.',
+    price: 'From $150',
     billingPeriod: 'setup',
-    features: ['Maintenance from $30/month'],
+    features: ['Maintenance from $15/month', 'Branding and hosting included'],
     highlight: true,
     scale: true,
     button: {
@@ -44,10 +58,10 @@ const hubPlans = [
   {
     id: 'ecosystems',
     title: 'Ecosystems',
-    description: 'Run your own ecosystem.',
-    price: '$1,000',
+    description: 'Build a home for repeatable customer apps.',
+    price: '$400',
     billingPeriod: 'setup',
-    features: ['Tenant apps from $300 setup'],
+    features: ['Tenant apps from $100 setup', 'Best for repeatable industry workflows'],
     button: {
       ...detailButton,
       label: 'Details',
@@ -73,6 +87,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · FireUX',
   description:
-    'Navigate FireUX pricing for users, apps, and ecosystems with clear setup and maintenance models.',
+    'FireUX pricing for apps, ecosystems, and operator access.',
 })
 </script>

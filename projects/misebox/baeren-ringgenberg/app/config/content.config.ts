@@ -7,11 +7,11 @@ export const baerenRinggenbergContent = {
   },
   assets: {
     backdrop: {
-      src: '/img/brand/baeren-mark.svg',
-      alt: 'Bären Ringgenberg mark',
+      src: '/img/app/background.png',
+      alt: 'Ringgenberg and Lake Brienz at sunset',
     },
     galleryPreview: {
-      src: '/img/brand/baeren-mark.svg',
+      src: '/img/app/logo.png',
       alt: 'Bären Ringgenberg mark',
     },
     miseboxWordmark: {
