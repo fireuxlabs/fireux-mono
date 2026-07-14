@@ -31,22 +31,68 @@
 
 .menu-order-basket {
   display: grid;
-  width: 4.2rem;
-  height: 4.2rem;
-  place-items: center;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  min-height: 4.2rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem 0.5rem 0.55rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);
   background: var(--menu-primary);
   color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  font-size: 1.5rem;
   box-shadow: 0 1rem 2.5rem color-mix(in srgb, var(--menu-text) 22%, transparent);
+  text-align: left;
 }
 
 .menu-order-basket:disabled {
   cursor: not-allowed;
   opacity: 0.62;
+}
+
+.menu-order-basket__icon {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--menu-bg) 16%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--menu-bg) 10%, transparent);
+}
+
+.menu-order-basket__icon .iconify {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.menu-order-basket__copy {
+  display: grid;
+  min-width: 4.7rem;
+  gap: 0.1rem;
+}
+
+.menu-order-basket__label {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.menu-order-basket__count {
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.menu-order-basket__total {
+  justify-self: end;
+  font-size: 1rem;
+  font-weight: 950;
+  white-space: nowrap;
 }
 
 .menu-order-card {

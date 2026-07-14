@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
   setSproochliToolHeaders(event)
 
   const body = (await readBody(event).catch(() => null)) as MenuTranslateBody | null
-  const sourceLanguage = normalizeSproochliLanguageCode(body?.sourceLanguage || 'en')
+  const sourceLanguage = normalizeSproochliLanguageCode(body?.sourceLanguage || 'auto')
   const targetLanguages = uniqueLanguages(body?.targetLanguages)
   const glossaryVersion =
     normalizeSproochliText(body?.glossaryVersion) || DEFAULT_GLOSSARY_VERSION

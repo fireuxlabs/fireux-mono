@@ -243,7 +243,9 @@ export async function translateSproochliTextBatch(
       body: JSON.stringify({
         contents: input.texts,
         mimeType: 'text/plain',
-        sourceLanguageCode: input.sourceLanguage,
+        ...(input.sourceLanguage && input.sourceLanguage !== 'auto'
+          ? { sourceLanguageCode: input.sourceLanguage }
+          : {}),
         targetLanguageCode: input.targetLanguage,
       }),
     }

@@ -1,0 +1,64 @@
+@layer base {
+  :root {
+    /* Light mode: warm light glass with dark ink. */
+    --baeren-glass-bg: rgb(var(--brand-canvas-rgb, 242 232 216) / 72%);
+    --baeren-glass-bg-hover: rgb(var(--brand-canvas-rgb, 242 232 216) / 86%);
+    --baeren-glass-fg: var(--brand-ink, #171717);
+    --baeren-glass-border: rgb(var(--brand-ink-rgb, 23 23 23) / 34%);
+    --baeren-glass-border-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 52%);
+    --baeren-glass-shadow: rgb(var(--brand-ink-rgb, 23 23 23) / 18%);
+    --baeren-glass-shadow-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 24%);
+  }
+
+  :root.dark {
+    /* Dark mode: smoked glass with warm light ink. */
+    --baeren-glass-bg: rgb(var(--brand-ink-rgb, 23 23 23) / 34%);
+    --baeren-glass-bg-hover: rgb(var(--brand-ink-rgb, 23 23 23) / 46%);
+    --baeren-glass-fg: var(--brand-canvas, #f2e8d8);
+    --baeren-glass-border: rgb(var(--brand-canvas-rgb, 242 232 216) / 42%);
+    --baeren-glass-border-hover: rgb(var(--brand-canvas-rgb, 242 232 216) / 66%);
+    --baeren-glass-shadow: rgb(0 0 0 / 32%);
+    --baeren-glass-shadow-hover: rgb(0 0 0 / 42%);
+  }
+}
+
+@layer components {
+  .baeren-glass {
+    /* One light/dark surface shared by the Bären landing CTA and nav icons. */
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid var(--baeren-glass-border) !important;
+    background: var(--baeren-glass-bg);
+    color: var(--baeren-glass-fg) !important;
+    box-shadow: 0 0.85rem 2rem var(--baeren-glass-shadow);
+    backdrop-filter: blur(16px);
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .baeren-glass:hover,
+  .baeren-glass.router-link-active,
+  .baeren-glass[aria-current='page'] {
+    border-color: var(--baeren-glass-border-hover) !important;
+    background: var(--baeren-glass-bg-hover);
+    box-shadow: 0 0.85rem 2rem var(--baeren-glass-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .baeren-glass.misebox-menu-close {
+    --misebox-menu-close-bg: var(--baeren-glass-bg);
+    --misebox-menu-close-border: var(--baeren-glass-border);
+    --misebox-menu-close-fg: var(--baeren-glass-fg);
+    --misebox-menu-close-shadow: var(--baeren-glass-shadow);
+  }
+
+  .baeren-glass.misebox-menu-close:hover {
+    --misebox-menu-close-bg: var(--baeren-glass-bg-hover);
+    --misebox-menu-close-border: var(--baeren-glass-border-hover);
+    --misebox-menu-close-shadow: var(--baeren-glass-shadow-hover);
+  }
+}

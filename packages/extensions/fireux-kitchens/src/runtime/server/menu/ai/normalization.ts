@@ -126,6 +126,11 @@ export async function normalizeMenuExtractionWithAi(
   if (!currencyCode) throw new Error('Kitchen currency code is required')
 
   const ai = useFireuxAi(event)
+  console.info('[kitchen-menu-ai-normalization] normalizing extraction', {
+    menuId: input.menuId,
+    model: input.model,
+    sections: input.sections.length,
+  })
   const response = await ai.generateJson<NormalizedMenu>({
     appId: input.appId,
     task: 'extract_structured_data',
@@ -139,6 +144,10 @@ export async function normalizeMenuExtractionWithAi(
   })
 
   if (!response.ok) {
+    console.warn('[kitchen-menu-ai-normalization] normalization failed', {
+      menuId: input.menuId,
+      reason: response.reason,
+    })
     return {
       status: 'failed',
       reason: response.reason || 'AI normalization failed.',
@@ -153,9 +162,16 @@ export async function normalizeMenuExtractionWithAi(
 
   const sections = normalizeKitchenMenuDraftSections(response.data)
   const changes = record(response.data).changes
+  const status = sections.length ? 'complete' : 'empty'
+
+  console.info('[kitchen-menu-ai-normalization] normalization complete', {
+    menuId: input.menuId,
+    status,
+    sections: sections.length,
+  })
 
   return {
-    status: sections.length ? 'complete' : 'empty',
+    status,
     provider: response.provider,
     model: response.model,
     usage: response.usage,

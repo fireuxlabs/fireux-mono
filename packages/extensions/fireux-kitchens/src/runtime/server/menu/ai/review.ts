@@ -1,4 +1,5 @@
 import { createError, type H3Event } from 'h3'
+import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
@@ -8,10 +9,15 @@ import {
   menuAiModelPlan,
 } from './cost'
 import {
+  MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
   MENU_SOURCE_EXTRACTION_PROMPT_VERSION,
-  extractMenuWithAi,
+  cachedMenuExtraction,
+  checkpointedMenuExtraction,
+  extractMenuSourceWithAi,
+  menuAiExtractionCacheKey,
   type MenuAiExtractionResult,
 } from './extraction'
+import { normalizeMenuExtractionWithAi } from './normalization'
 import { writeKitchenMenuAiUsage } from './usage'
 import {
   kitchenMenuBaselineFlags,
@@ -28,7 +34,6 @@ import {
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
 } from '../source/uploads'
-
 export type ProcessKitchenMenuAiReviewInput = {
   event: H3Event
   appId: string
@@ -41,80 +46,17 @@ export type ProcessKitchenMenuAiReviewInput = {
   limit?: number
   force?: boolean
 }
-
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
-
 const countExtractedItems = (
   sections: ReturnType<typeof normalizeKitchenMenuDraftSections>
 ) => countKitchenMenuDraftItems(sections)
-
-const sourceFileSignature = (files: ReturnType<typeof sourceRows>) =>
-  files.map((file) => ({
-    id: readString(file.id),
-    name: readString(file.file_name),
-    type: readString(file.file_type),
-    kind: readString(file.file_kind),
-    path: readString(file.storage_path),
-  }))
-
-const kitchenMenuAiReviewCacheKey = (input: {
-  files: ReturnType<typeof sourceRows>
-  model: string
-  normalizationModel: string
-  quality: string
-}) => JSON.stringify({
-  version: MENU_SOURCE_EXTRACTION_PROMPT_VERSION,
-  model: input.model,
-  normalizationModel: input.normalizationModel,
-  quality: input.quality,
-  files: sourceFileSignature(input.files),
-})
-
-const cachedKitchenMenuDraftSections = (
-  source: Record<string, unknown>,
-  cacheKey: string
-) => {
-  const draft = record(source.ai_draft)
-  const cache = record(draft.cache)
-
-  if (readString(cache.key) !== cacheKey) return []
-
-  return normalizeKitchenMenuDraftSections({ sections: draft.sections })
-}
-
-function cachedKitchenMenuExtraction(input: {
-  files: ReturnType<typeof sourceRows>
-  model: string
-  normalizationModel: string
-  sections: ReturnType<typeof normalizeKitchenMenuDraftSections>
-}): MenuAiExtractionResult {
-  return {
-    ok: true,
-    provider: 'cache',
-    model: input.model,
-    files: input.files.map((file) => ({
-      id: file.id,
-      file_name: file.file_name,
-      status: 'complete' as const,
-      reason: 'cached',
-      sections_count: input.sections.length,
-      items_count: countKitchenMenuDraftItems(input.sections),
-    })),
-    data: { sections: input.sections, notes: ['cached extraction'] },
-    normalized: {
-      status: 'complete' as const,
-      provider: 'cache',
-      model: input.normalizationModel,
-      sections: input.sections,
-      notes: ['cached normalization'],
-      changes: [],
-    },
-  }
-}
-
+const errorMessage = (value: unknown) =>
+  value instanceof Error ? value.message : 'Menu AI processing failed.'
+const checkpointValue = (value: MenuAiExtractionResult) =>
+  JSON.parse(JSON.stringify(value)) as MenuAiExtractionResult
 export async function processKitchenMenuAiReview(
   input: ProcessKitchenMenuAiReviewInput
 ) {
@@ -129,7 +71,6 @@ export async function processKitchenMenuAiReview(
       statusMessage: 'Upload a source document before processing this menu.',
     })
   }
-
   const source = record({ ...(sourceSnap.data() || {}), id: sourceSnap.id })
   const kitchenPath = kitchenMenuUploadKitchenPath(input.appId, input.kitchenId)
   const sourceIsUrl = Boolean(
@@ -145,16 +86,25 @@ export async function processKitchenMenuAiReview(
   const model = modelPlan.extraction_model
   const normalizationModel = modelPlan.normalization_model
   const estimatedCost = estimateMenuAiCost({ files, quality })
-  const cacheKey = kitchenMenuAiReviewCacheKey({
+  const cacheKey = menuAiExtractionCacheKey({
     files,
     model,
     normalizationModel,
     quality,
   })
-  const cachedDraftSections = input.force
-    ? []
-    : cachedKitchenMenuDraftSections(source, cacheKey)
-  const cacheHit = cachedDraftSections.length > 0
+  const cachedExtraction = input.force
+    ? null
+    : cachedMenuExtraction({
+        source,
+        cacheKey,
+        files,
+        model,
+        normalizationModel,
+      })
+  const checkpointedExtraction = cachedExtraction
+    ? null
+    : checkpointedMenuExtraction(source, cacheKey)
+  const cacheHit = Boolean(cachedExtraction)
   const current = await readKitchenMenuCurrentShape(kitchenPath, input.menuId)
   const currentItemCount = current.sections.reduce(
     (count, section) => count + section.items.length,
@@ -166,27 +116,83 @@ export async function processKitchenMenuAiReview(
     currentSectionsCount: current.sections.length,
     currentItemsCount: currentItemCount,
   })
-  const extraction = cacheHit
-    ? cachedKitchenMenuExtraction({
-        files,
-        model,
-        normalizationModel,
-        sections: cachedDraftSections,
+  let extraction = cachedExtraction || checkpointedExtraction
+  try {
+    if (!extraction) {
+      const extractingStamp = serverAuditStamp({
+        by: input.uid,
+        appId: input.appId,
       })
-    : await extractMenuWithAi(input.event, {
+      await sourceSnap.ref.set({
+        status: 'extracting',
+        menu_id: input.menuId,
+        ai_process: {
+          stage: 'extracting',
+          key: cacheKey,
+          quality,
+          model,
+          normalization_model: normalizationModel,
+          checkpoint: FieldValue.delete(),
+          updated: extractingStamp,
+        },
+        updated: extractingStamp,
+      }, { merge: true })
+      extraction = await extractMenuSourceWithAi(input.event, {
         appId: input.appId,
         menuId: input.menuId,
         currencyCode: input.currencyCode,
         sourceFiles: files,
         model,
-        normalizationModel,
       })
+      if (extraction.ok) {
+        const checkpointStamp = serverAuditStamp({
+          by: input.uid,
+          appId: input.appId,
+        })
+        await sourceSnap.ref.set({
+          status: 'extracting',
+          ai_process: {
+            stage: 'normalizing',
+            key: cacheKey,
+            checkpoint: checkpointValue(extraction),
+            updated: checkpointStamp,
+          },
+          updated: checkpointStamp,
+        }, { merge: true })
+      }
+    }
+    if (extraction.ok && !extraction.normalized) {
+      const sections = normalizeKitchenMenuDraftSections(extraction.data)
+      extraction = {
+        ...extraction,
+        normalized: await normalizeMenuExtractionWithAi(input.event, {
+          appId: input.appId,
+          menuId: input.menuId,
+          currencyCode: input.currencyCode,
+          model: normalizationModel,
+          timeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
+          sections,
+        }),
+      }
+    }
+  } catch (cause) {
+    const failedStamp = serverAuditStamp({ by: input.uid, appId: input.appId })
+    await sourceSnap.ref.set({
+      status: normalizeKitchenMenuDraftSections(record(source.ai_draft)).length ? 'draft' : 'uploaded',
+      ai_process: {
+        stage: 'failed',
+        key: cacheKey,
+        reason: errorMessage(cause),
+        updated: failedStamp,
+      },
+      updated: failedStamp,
+    }, { merge: true }).catch(() => undefined)
+    throw cause
+  }
   const extractionData = extraction.ok ? extraction.data : undefined
-  const extractedSections = cacheHit
-    ? cachedDraftSections
-    : extraction.ok
-      ? normalizeKitchenMenuDraftSections(extractionData)
-      : []
+  const extractedSections = extraction.ok
+    ? normalizeKitchenMenuDraftSections(extractionData)
+    : []
   const normalizedSections = extraction.normalized?.status === 'complete'
     ? extraction.normalized.sections
     : []
@@ -322,6 +328,15 @@ export async function processKitchenMenuAiReview(
     sourceUpdate: {
       status: canWriteDraft ? 'draft' : 'uploaded',
       menu_id: input.menuId,
+      ai_process: {
+        stage: extraction.ok ? 'complete' : 'failed',
+        key: cacheKey,
+        ...(extraction.ok ? {} : {
+          reason: extraction.reason || 'AI extraction failed.',
+        }),
+        checkpoint: FieldValue.delete(),
+        updated: stamp,
+      },
       ai_draft: {
         status: extractedStatus,
         source: normalizedSections.length ? 'normalized' : 'extracted',
@@ -340,14 +355,13 @@ export async function processKitchenMenuAiReview(
       updated: stamp,
     },
   })
-
   return {
     ok: true,
     mode: 'ai-process',
     message: processMessage,
     source: {
       id: sourceSnap.id,
-      status: readString(source.status),
+      status: canWriteDraft ? 'draft' : 'uploaded',
       file_kind: readString(source.file_kind) || 'document',
       files_total_count: sourceFiles.length,
       files_count: files.length,

@@ -2,6 +2,7 @@ export {
   isSproochliRtlLanguage,
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
+  resolveSproochliLanguageState,
   resolveSproochliTranslatedText,
   SPROOCHLI_LANGUAGE_OPTIONS,
   type SproochliLanguageCode,

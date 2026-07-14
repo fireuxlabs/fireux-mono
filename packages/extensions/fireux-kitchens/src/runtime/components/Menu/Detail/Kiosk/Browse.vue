@@ -6,21 +6,8 @@
   >
     <aside
       class="kiosk-browse__menu"
-      aria-label="Menu"
+      aria-label="Menu sections"
     >
-      <div class="kiosk-browse__groups" aria-label="Menu groups">
-        <button
-          v-for="group in groups"
-          :key="group.id"
-          type="button"
-          class="kiosk-browse__group"
-          :class="{ 'kiosk-browse__group--active': group.id === activeGroupId }"
-          @click="chooseGroup(group.id)"
-        >
-          <span>{{ group.label }}</span>
-        </button>
-      </div>
-
       <div class="kiosk-browse__sections" aria-label="Sections">
         <button
           v-for="section in activeSections"
@@ -66,18 +53,7 @@ import type {
   MenuDetailOrderItem,
   MenuDetailView,
 } from '../../../../composables/fireux/kitchen/order/funnel/shared/useFunnel'
-import type {
-  MenuManifestItem,
-  MenuManifestSection,
-} from '../../../../models/kitchen/menu/menu-detail.model'
-
-type KioskGroupId = 'food' | 'drink' | 'deal'
-type KioskGroup = {
-  id: KioskGroupId
-  label: string
-  count: number
-  sections: MenuManifestSection[]
-}
+import type { MenuManifestSection } from '../../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
   view: MenuDetailView | null
@@ -87,55 +63,15 @@ const emit = defineEmits<{
   (event: 'add', item: MenuDetailOrderItem): void
 }>()
 
-const groupOrder: Array<{ id: KioskGroupId, label: string }> = [
-  { id: 'food', label: 'Food' },
-  { id: 'drink', label: 'Drinks' },
-  { id: 'deal', label: 'Deals' },
-]
-const activeGroupId = ref<KioskGroupId>('food')
 const activeSectionId = ref('')
-const itemGroup = (item: MenuManifestItem): KioskGroupId => {
-  if (item.isDeal) return 'deal'
-  return item.itemKind === 'drink' ? 'drink' : 'food'
-}
-const groups = computed<KioskGroup[]>(() =>
-  groupOrder
-    .map((group) => {
-      const sections = (props.view?.menu.content.sections ?? [])
-        .map((section) => ({
-          ...section,
-          items: section.items.filter((item) => itemGroup(item) === group.id),
-        }))
-        .filter((section) => section.items.length)
-      const count = sections.reduce((total, section) => total + section.items.length, 0)
-
-      return { ...group, count, sections }
-    })
-    .filter((group) => group.count)
+const activeSections = computed<MenuManifestSection[]>(() =>
+  (props.view?.menu.content.sections ?? []).filter((section) => section.items.length)
 )
-const activeGroup = computed(() =>
-  groups.value.find((group) => group.id === activeGroupId.value) ??
-    groups.value.find((group) => group.count) ??
-    groups.value[0]
-)
-const activeSections = computed(() => activeGroup.value?.sections ?? [])
 const activeSection = computed(() =>
   activeSections.value.find((section) => section.id === activeSectionId.value) ??
     activeSections.value[0] ??
     null
 )
-const chooseGroup = (groupId: KioskGroupId) => {
-  activeGroupId.value = groupId
-  activeSectionId.value = ''
-}
-
-watch(groups, (nextGroups: KioskGroup[]) => {
-  const current = nextGroups.find((group: KioskGroup) => group.id === activeGroupId.value)
-  if (current?.count) return
-
-  const firstAvailable = nextGroups.find((group: KioskGroup) => group.count)
-  if (firstAvailable) activeGroupId.value = firstAvailable.id
-}, { immediate: true })
 
 watch(activeSections, (sections: MenuManifestSection[]) => {
   if (sections.some((section: MenuManifestSection) => section.id === activeSectionId.value)) return
@@ -184,7 +120,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   margin: 0;
 }
 
-.kiosk-browse__groups,
 .kiosk-browse__sections,
 .kiosk-browse__dishes,
 .kiosk-browse__dish-section {
@@ -209,7 +144,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   -webkit-overflow-scrolling: touch;
 }
 
-.kiosk-browse__group,
 .kiosk-browse__section {
   width: 100%;
   max-width: 9.75rem;
@@ -225,25 +159,12 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   text-align: left;
 }
 
-.kiosk-browse__group {
-  min-height: 2.75rem;
-  padding: 0.55rem 0.65rem 0.55rem 0.78rem;
-  font-size: 0.92rem;
-}
-
 .kiosk-browse__section {
   min-height: 2.7rem;
   padding: 0.58rem 0.65rem 0.58rem 0.78rem;
   background: rgb(0 0 0 / 28%);
   color: rgb(255 255 255 / 78%);
   font-size: 0.9rem;
-}
-
-.kiosk-browse__group--active {
-  border-color: var(--kiosk-primary);
-  background: var(--kiosk-primary);
-  box-shadow: 0 0.65rem 1.4rem rgb(0 0 0 / 18%);
-  color: white;
 }
 
 .kiosk-browse__section--active {
@@ -289,7 +210,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
     --kiosk-dish-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
   }
 
-  .kiosk-browse__group,
   .kiosk-browse__section {
     max-width: 8.85rem;
   }
@@ -303,7 +223,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
     --kiosk-dish-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .kiosk-browse__group,
   .kiosk-browse__section {
     max-width: 7.85rem;
   }
@@ -324,7 +243,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
     overflow: visible;
   }
 
-  .kiosk-browse__groups,
   .kiosk-browse__sections {
     display: flex;
     gap: 0.5rem;
@@ -334,7 +252,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
     scrollbar-width: none;
   }
 
-  .kiosk-browse__groups::-webkit-scrollbar,
   .kiosk-browse__sections::-webkit-scrollbar {
     display: none;
   }
@@ -343,17 +260,11 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
     margin-top: 0.15rem;
   }
 
-  .kiosk-browse__group,
   .kiosk-browse__section {
     flex: 0 0 auto;
     width: auto;
     max-width: none;
     white-space: nowrap;
-  }
-
-  .kiosk-browse__group {
-    min-height: 2.75rem;
-    padding: 0.55rem 0.8rem;
   }
 
   .kiosk-browse__section {

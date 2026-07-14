@@ -5,10 +5,7 @@ import {
   type FireuxAiDocumentSourceFile,
 } from 'fireux-ai/runtime/server/utils/document-ai.server.ts'
 import { MENU_EXTRACTION_JSON_SCHEMA } from './schema'
-import {
-  normalizeMenuExtractionWithAi,
-  type MenuAiNormalizationResult,
-} from './normalization'
+import type { MenuAiNormalizationResult } from './normalization'
 import {
   normalizeKitchenMenuDraftSections,
   type KitchenMenuDraftSection,
@@ -52,7 +49,7 @@ export const MENU_SOURCE_NORMALIZATION_MODEL =
 const MENU_SOURCE_IMAGE_DETAIL = (
   text(process.env.FIREUX_AI_MENU_IMAGE_DETAIL) || 'auto'
 ) as 'low' | 'high' | 'auto'
-const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
+export const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
 const MENU_SOURCE_URL_TEXT_LIMIT =
   numberValue(process.env.FIREUX_AI_MENU_URL_TEXT_LIMIT) || 80_000
@@ -72,6 +69,75 @@ const notesFrom = (value: unknown) => {
 
 const countItems = (sections: KitchenMenuDraftSection[]) =>
   sections.reduce((count, section) => count + section.items.length, 0)
+
+export const menuAiExtractionCacheKey = (input: {
+  files: FireuxAiDocumentSourceFile[]
+  model: string
+  normalizationModel: string
+  quality: string
+}) => JSON.stringify({
+  version: MENU_SOURCE_EXTRACTION_PROMPT_VERSION,
+  model: input.model,
+  normalizationModel: input.normalizationModel,
+  quality: input.quality,
+  files: input.files.map((file) => ({
+    id: text(file.id),
+    name: text(file.file_name),
+    type: text(file.file_type),
+    kind: text(file.file_kind),
+    path: text((file as FireuxAiDocumentSourceFile & { storage_path?: string }).storage_path),
+  })),
+})
+
+export function cachedMenuExtraction(input: {
+  source: Record<string, unknown>
+  cacheKey: string
+  files: FireuxAiDocumentSourceFile[]
+  model: string
+  normalizationModel: string
+}): MenuAiExtractionResult | null {
+  const draft = record(input.source.ai_draft)
+  if (text(record(draft.cache).key) !== input.cacheKey) return null
+  const sections = normalizeKitchenMenuDraftSections({ sections: draft.sections })
+  if (!sections.length) return null
+  const itemsCount = countItems(sections)
+
+  return {
+    ok: true,
+    provider: 'cache',
+    model: input.model,
+    files: input.files.map((file) => ({
+      id: file.id,
+      file_name: file.file_name,
+      status: 'complete',
+      reason: 'cached',
+      sections_count: sections.length,
+      items_count: itemsCount,
+    })),
+    data: { sections, notes: ['cached extraction'] },
+    normalized: {
+      status: 'complete',
+      provider: 'cache',
+      model: input.normalizationModel,
+      sections,
+      notes: ['cached normalization'],
+      changes: [],
+    },
+  }
+}
+
+export function checkpointedMenuExtraction(
+  source: Record<string, unknown>,
+  cacheKey: string
+): MenuAiExtractionResult | null {
+  const process = record(source.ai_process)
+  const checkpoint = record(process.checkpoint)
+  if (text(process.key) !== cacheKey || checkpoint.ok !== true) return null
+  if (!Array.isArray(checkpoint.files)) return null
+  const sections = normalizeKitchenMenuDraftSections(record(checkpoint.data))
+  if (!sections.length) return null
+  return checkpoint as unknown as MenuAiExtractionResult
+}
 
 function annotateSections(
   sections: KitchenMenuDraftSection[],
@@ -267,7 +333,7 @@ function buildMenuSourceExtractionRequest(
   }
 }
 
-export async function extractMenuWithAi(
+export async function extractMenuSourceWithAi(
   event: H3Event,
   input: {
     appId: string
@@ -275,16 +341,13 @@ export async function extractMenuWithAi(
     currencyCode: string
     sourceFiles: FireuxAiDocumentSourceFile[]
     model?: string
-    normalizationModel?: string
   }
 ): Promise<MenuAiExtractionResult> {
   const model = text(input.model) || MENU_SOURCE_EXTRACTION_MODEL
   const currencyCode = text(input.currencyCode).toUpperCase()
   if (!currencyCode) throw new Error('Kitchen currency code is required')
-  const normalizationModel =
-    text(input.normalizationModel) || MENU_SOURCE_NORMALIZATION_MODEL
   const sourceFiles = await Promise.all(input.sourceFiles.map(withUrlText))
-  const extraction = await runFireuxAiDocumentExtraction<
+  return runFireuxAiDocumentExtraction<
     KitchenMenuDraftSection[],
     ExtractedMenu
   >({
@@ -323,21 +386,4 @@ export async function extractMenuWithAi(
       notes: notes.length ? notes : ['no visible menu items'],
     }),
   })
-
-  if (!extraction.ok) return extraction
-
-  const sections = normalizeKitchenMenuDraftSections(extraction.data)
-  const normalized = await normalizeMenuExtractionWithAi(event, {
-    appId: input.appId,
-    menuId: input.menuId,
-    currencyCode,
-    model: normalizationModel,
-    timeoutMs: MENU_SOURCE_EXTRACTION_TIMEOUT_MS,
-    sections,
-  })
-
-  return {
-    ...extraction,
-    normalized,
-  }
 }

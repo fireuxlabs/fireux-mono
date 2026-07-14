@@ -9,6 +9,8 @@
       },
     ]"
     :style="themeStyleVars"
+    :dir="translation.direction.value"
+    :lang="translation.selectedLanguage.value || undefined"
   >
     <p v-if="pending" class="menu-detail__state">
       Loading menu...
@@ -25,13 +27,34 @@
       :document-url="documentUrl"
     />
 
-    <MenuDetailFood
-      v-else-if="detailMenu"
-      :menu="detailMenu"
-      :menu-id="menuId"
-      :menu-context="menuContext"
-      :kitchen-slug="kitchenSlug"
-    />
+    <template v-else-if="detailMenu">
+      <div
+        v-if="translation.enabled.value"
+        class="menu-detail__translation"
+      >
+        <SproochliLanguageTrigger
+          :language-options="translation.languageOptions.value"
+          :selected-language="translation.selectedLanguage.value"
+        />
+        <span v-if="translation.translating.value" class="menu-detail__translation-state">
+          Translating menu…
+        </span>
+        <span
+          v-else-if="translation.translationError.value"
+          class="menu-detail__translation-state menu-detail__translation-state--error"
+        >
+          Translation unavailable. Showing original.
+        </span>
+      </div>
+
+      <MenuDetailFood
+        v-if="translation.menu.value"
+        :menu="translation.menu.value"
+        :menu-id="menuId"
+        :menu-context="menuContext"
+        :kitchen-slug="kitchenSlug"
+      />
+    </template>
 
     <p v-else class="menu-detail__state">
       Menu unavailable.
@@ -43,6 +66,7 @@
 import { computed } from 'vue'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import { menuContextProfile } from '../../../utils/menu-context'
 
@@ -65,6 +89,7 @@ const {
   menuContext,
   kitchenSlug,
 })
+const translation = useSproochliMenuTranslation({ menu: detailMenu })
 const documentKitchenName = computed(() =>
   documentMenu.value?.kitchenName || ''
 )
@@ -105,5 +130,37 @@ const {
   font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
+}
+
+.menu-detail__translation {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem 0;
+}
+
+.menu-detail__translation-state {
+  color: var(--menu-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.menu-detail__translation-state--error {
+  color: var(--ui-color-error-600);
+}
+
+.menu-detail--kiosk .menu-detail__translation {
+  position: absolute;
+  z-index: 20;
+  inset-block-start: 1rem;
+  inset-inline-start: 1rem;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.menu-detail--kiosk .menu-detail__translation-state {
+  color: rgb(255 255 255 / 78%);
 }
 </style>

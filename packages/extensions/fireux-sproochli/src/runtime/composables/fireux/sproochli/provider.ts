@@ -16,7 +16,7 @@ export type SproochliMenuTranslationField = {
 }
 
 export type SproochliMenuTranslateRequest = {
-  sourceLanguage: string
+  sourceLanguage?: string
   targetLanguages: string[]
   fields: SproochliMenuTranslationField[]
 }
