@@ -43,37 +43,6 @@ export const baerenRinggenbergContent = {
     },
   },
   pages: {
-    home: {
-      title: 'Hotel Bären Ringgenberg',
-      intro:
-        'Hotel, restaurant and bar in Ringgenberg. Browse the existing Bären menu or find the venue.',
-      actions: [
-        { label: 'Hotel', to: '/hotel', icon: 'i-lucide-bed-double', color: 'primary', variant: 'solid' },
-        { label: 'Menu', to: '/menu', icon: 'i-lucide-utensils', color: 'neutral', variant: 'solid' },
-        { label: 'Events', to: '/events', icon: 'i-lucide-calendar-days', color: 'neutral', variant: 'solid' },
-        { label: 'Location', to: '/location', icon: 'i-lucide-map-pin', color: 'neutral', variant: 'solid' },
-      ],
-      highlights: [
-        {
-          title: 'Hotel',
-          description: '37 guest rooms close to Lake Brienz and Interlaken.',
-          to: '/hotel',
-          icon: 'i-lucide-bed-double',
-        },
-        {
-          title: 'Restaurant and bar',
-          description: 'Regional cooking, pizza, snacks and drinks.',
-          to: '/menu',
-          icon: 'i-lucide-utensils',
-        },
-        {
-          title: 'Events',
-          description: 'Weddings, celebrations, meetings and live events.',
-          to: '/events',
-          icon: 'i-lucide-calendar-days',
-        },
-      ],
-    },
     gallery: {
       title: 'Gallery.',
       subtitle: 'The Bären mark from the existing Misebox kitchen record.',

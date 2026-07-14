@@ -1,5 +1,5 @@
 <template>
-  <BaerenHome />
+  <BaerenHomeHero />
 </template>
 
 <script setup lang="ts">
