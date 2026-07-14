@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-14
 // usage_note: baseline after scripts cleanup; update when run.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 
@@ -259,6 +259,19 @@ export const APP_REGISTRY = {
     consoles: ['kitchen'],
     launchOrder: 14,
   },
+  'baeren-ringgenberg': {
+    key: 'baeren-ringgenberg',
+    name: 'Bären Ringgenberg',
+    appId: 'baeren-ringgenberg',
+    ecosystem: 'misebox',
+    databaseId: 'misebox',
+    role: 'tenant',
+    workspace: './projects/misebox/baeren-ringgenberg',
+    port: 3017,
+    consoles: ['kitchen'],
+    smokeRoutes: ['/', '/menu', '/location', '/info'],
+    launchOrder: 17,
+  },
   'bangin-coffee': {
     key: 'bangin-coffee',
     name: 'Bangin Coffee',
@@ -278,7 +291,7 @@ export const APP_REGISTRY = {
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne', 'bangin-coffee'],
+  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne', 'bangin-coffee', 'baeren-ringgenberg'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

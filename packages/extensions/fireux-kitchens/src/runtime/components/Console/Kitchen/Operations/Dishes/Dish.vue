@@ -1,7 +1,5 @@
 <template>
   <section class="console-surface space-y-6">
-    <UBreadcrumb :items="breadcrumbItems" />
-
     <UAlert
       v-if="!dish"
       color="neutral"
@@ -39,19 +37,6 @@ const {
   pending,
   debug,
 } = useKitchenConsoleDish()
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const breadcrumbItems = computed(() => [
-  {
-    label: 'Dishes',
-    icon: 'i-lucide-utensils',
-    to: '/console/kitchen/dishes',
-  },
-  {
-    label: normalizeString(dish.value?.name) || 'Dish details',
-    icon: 'i-lucide-circle-dot',
-  },
-])
 
 const fireuxDebugData = computed(() => ({
   ...debug.value,

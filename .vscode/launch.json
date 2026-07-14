@@ -208,6 +208,17 @@
       }
     },
     {
+      "name": "Bären Ringgenberg dev (3017)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:baeren-ringgenberg",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 17
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -382,6 +393,17 @@
         "group": "Dev Servers",
         "order": 116
       }
+    },
+    {
+      "name": "Kill Bären Ringgenberg dev (3017)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:baeren-ringgenberg",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 117
+      }
     }
   ],
   "compounds": [
@@ -421,7 +443,8 @@
         "Granite dev (3007)",
         "La Tap Berne dev (3008)",
         "FireUX Blank dev (3015)",
-        "Bangin Coffee dev (3016)"
+        "Bangin Coffee dev (3016)",
+        "Bären Ringgenberg dev (3017)"
       ]
     }
   ]

@@ -851,6 +851,18 @@ function activate(context) {
       tooltip: 'Start La Tap Berne dev (port 3008)',
       url: 'http://localhost:3008',
     },
+    {
+      key: 'baeren-ringgenberg',
+      name: 'Bären Ringgenberg',
+      icon: '$(tag)',
+      port: 3017,
+      commandId: 'fireuxToolbar.startBaerenRinggenberg',
+      taskLabel: 'pnpm dev:baeren-ringgenberg',
+      terminalName: 'Bären Ringgenberg (3017)',
+      pnpmCommand: 'pnpm dev:baeren-ringgenberg --host',
+      tooltip: 'Start Bären Ringgenberg dev (port 3017)',
+      url: 'http://localhost:3017',
+    },
   ]
 
   const appByKey = new Map(apps.map((app) => [app.key, app]))

@@ -1,12 +1,20 @@
 <template>
-  <BaerenRinggenbergPage>
-    <BaerenRinggenbergHero
-      :title="pageTitle"
-      :subtitle="pageSubtitle"
-    >
-      <BaerenRinggenbergMap />
-    </BaerenRinggenbergHero>
-  </BaerenRinggenbergPage>
+  <div class="space-y-8 py-12">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-bold text-highlighted">{{ pageTitle }}</h1>
+      <p class="text-muted">{{ pageSubtitle }}</p>
+    </div>
+
+    <UCard :ui="{ body: 'p-0 sm:p-0' }" class="overflow-hidden">
+      <iframe
+        title="Map to Hotel Bären Ringgenberg"
+        :src="baerenRinggenbergContent.links.googleMapEmbed"
+        class="block aspect-video w-full border-0"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      />
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +26,15 @@ const pageTitle = page.title
 const pageSubtitle = baerenRinggenbergContent.brand.address
 
 definePageMeta({
-  layout: 'baeren-default',
+  layout: 'default',
+  nav: {
+    key: 'location',
+    label: 'Location',
+    icon: 'i-lucide-map-pin',
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
 })
 
 useSeoMeta({

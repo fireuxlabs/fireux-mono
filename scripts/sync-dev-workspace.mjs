@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-14
 // usage_note: baseline after scripts cleanup; update when run.
 
 import { readFile, writeFile } from 'node:fs/promises'

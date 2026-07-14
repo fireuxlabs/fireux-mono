@@ -1,18 +1,20 @@
 <template>
-  <BaerenRinggenbergPage>
-    <BaerenRinggenbergHero
-      :title="pageTitle"
-      :subtitle="pageSubtitle"
-    >
-      <BaerenRinggenbergCopy>
-        <p>{{ formattedAddress }}</p>
-        <p v-if="phone">Call {{ phone }}</p>
-        <p v-if="website">{{ websiteLabel }}</p>
-      </BaerenRinggenbergCopy>
+  <div class="max-w-3xl space-y-8 py-12">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-bold text-highlighted">Information</h1>
+      <p class="text-muted">{{ pageSubtitle }}</p>
+    </div>
 
-      <BaerenRinggenbergMiseboxLink />
-    </BaerenRinggenbergHero>
-  </BaerenRinggenbergPage>
+    <UCard>
+      <div class="space-y-3 text-toned">
+        <p>{{ formattedAddress }}</p>
+        <p v-if="phone">{{ phone }}</p>
+        <UButton v-if="website" :to="website" target="_blank" color="neutral" variant="outline">
+          {{ websiteLabel }}
+        </UButton>
+      </div>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -40,7 +42,15 @@ const websiteLabel = computed(() =>
 )
 
 definePageMeta({
-  layout: 'baeren-default',
+  layout: 'default',
+  nav: {
+    key: 'info',
+    label: 'Information',
+    icon: 'i-lucide-info',
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
 })
 
 useSeoMeta({

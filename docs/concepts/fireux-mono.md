@@ -1,6 +1,6 @@
 FireUX Mono concept map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-07-14
+Ref: 6c128ef52
 Role: map, not canon
 
 Purpose:
@@ -39,6 +39,13 @@ Working notes:
 - `scripts/guard.mjs` is the single guard entrypoint.
 - `pnpm guard` is the repo shape signal.
 - Project apps should not own shared package truth.
+
+New project app completion:
+- Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
+- Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
+- Add the app to the app list in `tools/vscode-fireux-toolbar/extension.js` so VS Code exposes the standard start control and running spinner.
+- A new app is not complete until its root dev command, kill command, VS Code task/launch entry, toolbar spinner, and focused smoke route exist.
+- Run `pnpm guard` after the workspace sync.
 
 Open questions:
 - Whether `mirror` remains useful is scheduled for later review.

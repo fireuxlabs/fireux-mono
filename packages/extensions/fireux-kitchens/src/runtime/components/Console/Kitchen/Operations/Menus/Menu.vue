@@ -1,6 +1,5 @@
 <template>
   <section class="console-surface space-y-6">
-    <UBreadcrumb :items="breadcrumbItems" />
     <ConsoleKitchenOperationsMenusCardsProfile
       :menu="menu"
       :sections-count="sections.length"
@@ -86,17 +85,6 @@ const {
   menuId,
   sections,
 } = useKitchenConsoleMenu()
-const breadcrumbItems = computed(() => [
-  {
-    label: 'Menus',
-    icon: 'i-lucide-book-open',
-    to: '/console/kitchen/menus',
-  },
-  {
-    label: String(menu.value?.name || source.value?.id || 'Menu details').trim(),
-    icon: 'i-lucide-list-tree',
-  },
-])
 const sourceLabel = computed(() =>
   String(source.value?.source_url ? 'menu URL' : 'menu source')
 )

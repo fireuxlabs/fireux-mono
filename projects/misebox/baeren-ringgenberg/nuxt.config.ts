@@ -23,6 +23,4 @@ const fireuxConfig = defineFireuxConfig({
   modules: ['fireux-places', 'fireux-go-qr', 'fireux-kitchens', 'fireux-sproochli'],
 })
 
-export default withFireuxNuxtConfig(fireuxConfig, {
-  css: ['@/assets/styles/main.css'],
-})
+export default withFireuxNuxtConfig(fireuxConfig, {})

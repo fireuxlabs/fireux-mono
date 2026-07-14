@@ -1,9 +1,11 @@
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import {
   BlogPostStorage,
   type BlogPost,
 } from '../../../../../models/blogPost.model'
+import { isBlogPostInRuntimeScope } from '../utils/blogScope'
 
 const timestampToMillis = (value: unknown): number => {
   if (!value) return 0
@@ -18,11 +20,14 @@ const timestampToMillis = (value: unknown): number => {
 }
 
 export function useBlogCollection() {
+  const fireux = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
   const source = firestoreFetchCollection<BlogPost>(BlogPostStorage.collection)
 
   const collection = computed(() => {
-    const posts = source.value ?? []
+    const posts = (source.value ?? []).filter(post =>
+      isBlogPostInRuntimeScope(post, fireux)
+    )
     return posts.slice().sort((a, b) => {
       const createdA = timestampToMillis(a.created?.at)
       const createdB = timestampToMillis(b.created?.at)

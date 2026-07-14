@@ -9,14 +9,7 @@
 
       <UPageBody class="pagebody">
         <div class="mb-6 space-y-3">
-          <UButton
-            to="/"
-            label="FireUX Home"
-            icon="i-lucide-house"
-            size="sm"
-            color="primary"
-            variant="soft"
-          />
+          <LayoutsSharedBreadcrumbs />
 
           <div class="space-y-1">
             <p class="text-sm font-medium">FireUX Docs</p>
