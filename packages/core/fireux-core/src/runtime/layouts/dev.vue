@@ -14,7 +14,6 @@
 
       <div class="w-full h-screen overflow-y-auto bg-elevated/50">
         <div class="min-h-full p-0 lg:p-4">
-          <LayoutsSharedBreadcrumbs class="mb-4" />
           <NuxtPage />
         </div>
       </div>

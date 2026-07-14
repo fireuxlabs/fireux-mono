@@ -1,5 +1,7 @@
 <template>
   <UPage>
+    <UBreadcrumb :items="breadcrumbItems" class="mb-4" />
+
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
       <BlogCTA />
@@ -12,7 +14,18 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
-const { appName } = useFireUXConfig()
+const { appName, appShortName } = useFireUXConfig()
+
+const breadcrumbItems = [
+  {
+    label: appShortName,
+    icon: 'i-lucide-house',
+    to: '/',
+  },
+  {
+    label: 'Blog',
+  },
+]
 
 const pageTitle = 'Blog'
 const pageDescription = 'Read updates, releases, and stories.'

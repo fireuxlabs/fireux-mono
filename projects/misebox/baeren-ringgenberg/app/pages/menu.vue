@@ -5,10 +5,6 @@
       to="/"
     />
 
-    <UContainer class="pt-4 pr-16 sm:pr-24">
-      <LayoutsSharedBreadcrumbs current-label="Menu" />
-    </UContainer>
-
     <MenuDetail
       menu-id="pizza-snacks-drinks"
       kitchen-slug="baeren-ringgenberg"

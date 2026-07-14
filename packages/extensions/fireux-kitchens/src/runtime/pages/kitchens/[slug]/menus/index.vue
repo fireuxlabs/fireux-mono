@@ -1,5 +1,7 @@
 <template>
   <main class="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
+    <UBreadcrumb :items="breadcrumbItems" />
+
     <UPageHeader
       class="pageheader"
       :title="kitchenName"
@@ -60,6 +62,7 @@ import { computed } from 'vue'
 import { useKitchenMenu } from '../../../../composables/fireux/kitchen/menu/useKitchenMenu'
 
 const {
+  kitchenSlug,
   kitchen,
   menus,
   pending,
@@ -68,4 +71,18 @@ const {
 const kitchenName = computed(
   () => String(kitchen.value?.display_name || kitchen.value?.name || 'Kitchen menus')
 )
+const kitchenPath = computed(() =>
+  kitchenSlug.value
+    ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}`
+    : '/kitchens'
+)
+const breadcrumbItems = computed(() => [
+  {
+    label: kitchenName.value,
+    to: kitchenPath.value,
+  },
+  {
+    label: 'Menus',
+  },
+])
 </script>

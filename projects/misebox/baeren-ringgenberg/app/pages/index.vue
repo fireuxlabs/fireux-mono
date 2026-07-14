@@ -22,7 +22,7 @@
 
       <div class="flex flex-wrap gap-3">
         <UButton to="/menu" size="xl" icon="i-lucide-utensils">View menu</UButton>
-        <UButton to="/news" size="xl" color="neutral" variant="outline" icon="i-lucide-newspaper">News</UButton>
+        <UButton to="/blog" size="xl" color="neutral" variant="outline" icon="i-lucide-newspaper">Blog</UButton>
         <UButton to="/info" size="xl" color="neutral" variant="outline" icon="i-lucide-info">Information</UButton>
         <UButton to="/location" size="xl" color="neutral" variant="ghost" icon="i-lucide-map-pin">Location</UButton>
       </div>

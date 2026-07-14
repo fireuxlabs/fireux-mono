@@ -1,5 +1,7 @@
 <template>
   <section class="console-surface space-y-4">
+    <UBreadcrumb :items="breadcrumbItems" />
+
     <UAlert
       v-if="!source && !menuSourcesPending"
       color="neutral"
@@ -174,6 +176,22 @@ const isPhoto = computed(() => source.value?.file_kind === 'photo')
 const sourceLink = computed(() =>
   text(source.value?.source_url) || text(source.value?.file_url)
 )
+const breadcrumbItems = computed(() => [
+  {
+    label: 'Menus',
+    icon: 'i-lucide-book-open',
+    to: '/console/kitchen/menus',
+  },
+  {
+    label: 'Menu sources',
+    icon: 'i-lucide-file-up',
+    to: '/console/kitchen/menus',
+  },
+  {
+    label: source.value?.id || 'Source detail',
+    icon: 'i-lucide-file-search',
+  },
+])
 const statusColor = computed(() => {
   const status = source.value?.status as MenuSourceUploadStatus | undefined
   if (status === 'published') return 'success'

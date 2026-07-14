@@ -5,7 +5,6 @@
 
     <main class="layout-main">
       <UContainer>
-        <LayoutsSharedBreadcrumbs class="mb-4" />
         <NuxtPage />
       </UContainer>
     </main>

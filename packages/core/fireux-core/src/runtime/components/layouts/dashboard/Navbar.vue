@@ -1,9 +1,5 @@
 <template>
   <UDashboardNavbar :title="title" :ui="ui ?? { right: 'gap-3' }">
-    <template #title>
-      <LayoutsSharedBreadcrumbs :current-label="title" />
-    </template>
-
     <template #leading>
       <UDashboardSidebarCollapse />
     </template>
