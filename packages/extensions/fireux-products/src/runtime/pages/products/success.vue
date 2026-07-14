@@ -1,22 +1,22 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Purchase received"
-      description="Template access is delivered after payment."
+      title="Purchase confirmed"
+      description="Your checkout has been received."
     />
     <UPageBody class="space-y-4">
       <UAlert
         color="success"
         variant="soft"
         title="Thank you"
-        description="We’ll email repository access shortly."
+        description="Your purchase has been confirmed."
       />
 
       <UAlert
         color="primary"
         variant="subtle"
-        title="Delivery status"
-        :description="deliveryMessage"
+        title="Payment status"
+        :description="paymentMessage"
       />
 
       <DevJson
@@ -49,13 +49,16 @@ const { data, error } = await useFetch('/api/stripe/checkout-session', {
 })
 
 const sessionPayload = computed(() => data.value || null)
-const deliveryMessage = computed(() => {
+const paymentMessage = computed(() => {
   if (error.value) {
-    return 'Payment was received. Access will still be delivered manually.'
+    return 'We could not verify this checkout session. Please check your payment provider.'
   }
   if (!sessionId) {
-    return 'If you completed payment, access is queued for manual invite.'
+    return 'No checkout session was provided.'
   }
-  return 'Payment confirmed. Access is queued and will be delivered soon.'
+  if (sessionPayload.value?.payment_status === 'paid') {
+    return 'Payment confirmed.'
+  }
+  return 'Checkout received. Payment confirmation is still pending.'
 })
 </script>

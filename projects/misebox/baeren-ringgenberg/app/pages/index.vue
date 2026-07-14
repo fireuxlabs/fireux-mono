@@ -9,8 +9,6 @@
         >
       </div>
 
-      <UBadge color="primary" variant="subtle">Misebox tenant</UBadge>
-
       <div class="space-y-3">
         <h1 class="text-4xl font-bold tracking-tight text-highlighted sm:text-6xl">
           Hotel Bären Ringgenberg
@@ -21,26 +19,17 @@
       </div>
 
       <div class="flex flex-wrap gap-3">
-        <UButton to="/menu" size="xl" icon="i-lucide-utensils">View menu</UButton>
-        <UButton to="/blog" size="xl" color="neutral" variant="outline" icon="i-lucide-newspaper">Blog</UButton>
-        <UButton to="/info" size="xl" color="neutral" variant="outline" icon="i-lucide-info">Information</UButton>
+        <UButton to="/hotel" size="xl" icon="i-lucide-bed-double">Hotel</UButton>
+        <UButton to="/menu" size="xl" color="neutral" variant="outline" icon="i-lucide-utensils">Menu</UButton>
+        <UButton to="/events" size="xl" color="neutral" variant="outline" icon="i-lucide-calendar-days">Events</UButton>
         <UButton to="/location" size="xl" color="neutral" variant="ghost" icon="i-lucide-map-pin">Location</UButton>
       </div>
     </section>
 
     <div class="grid gap-4 md:grid-cols-3">
-      <UCard>
-        <template #header><strong>Existing kitchen</strong></template>
-        The app uses the established Bären kitchen in Misebox.
-      </UCard>
-      <UCard>
-        <template #header><strong>Published menu</strong></template>
-        Pizza, snacks and drinks come from the live menu record.
-      </UCard>
-      <UCard>
-        <template #header><strong>Ringgenberg</strong></template>
-        Hauptstrasse 128, 3852 Ringgenberg.
-      </UCard>
+      <UPageCard title="Hotel" description="37 guest rooms close to Lake Brienz and Interlaken." to="/hotel" icon="i-lucide-bed-double" />
+      <UPageCard title="Restaurant and bar" description="Regional cooking, pizza, snacks and drinks." to="/menu" icon="i-lucide-utensils" />
+      <UPageCard title="Events" description="Weddings, celebrations, meetings and live events." to="/events" icon="i-lucide-calendar-days" />
     </div>
   </div>
 </template>

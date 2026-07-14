@@ -283,7 +283,6 @@ export default defineEventHandler(async (event: H3Event) => {
       appId,
       productId,
       slug,
-      flow: 'template_access',
     },
   })
 

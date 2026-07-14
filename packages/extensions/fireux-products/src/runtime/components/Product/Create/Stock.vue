@@ -14,10 +14,10 @@
 
     <!-- Stock management for Digital products (optional) -->
     <template v-else-if="product.product_type === 'digital'">
-      <UFormField label="License Management">
+      <UFormField label="Download Limits">
         <USwitch
           v-model="product.track_stock"
-          label="Limit available licenses/downloads"
+          label="Limit available downloads"
         />
       </UFormField>
 
@@ -25,8 +25,8 @@
         v-if="product.track_stock"
         v-model="product.stock"
         placeholder="Enter limit"
-        label="Available Licenses"
-        description="Maximum number of licenses or downloads allowed"
+        label="Download Limit"
+        description="Maximum number of downloads available"
         :min="1"
       />
     </template>

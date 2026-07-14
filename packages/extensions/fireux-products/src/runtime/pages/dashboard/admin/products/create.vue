@@ -1,47 +1,53 @@
-<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/admin/products/create.vue -->
+<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/dashboard/admin/products/create.vue -->
 <template>
-  <UPage>
-    <UPageHeader
-      title="Create Product"
-      description="Add a new product to the catalog for this runtime."
-    />
+  <UDashboardPanel id="dashboard-admin-products-create">
+    <template #header>
+      <LayoutsDashboardNavbar title="Admin · Create Product" />
+    </template>
 
-    <UPageBody class="pagebody">
-      <div v-if="permissionsPending" class="space-y-3">
-        <USkeleton v-for="n in 3" :key="n" class="h-20" />
+    <template #body>
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
+        <UPage>
+          <UPageBody class="pagebody">
+            <div v-if="permissionsPending" class="space-y-3">
+              <USkeleton v-for="n in 3" :key="n" class="h-20" />
+            </div>
+
+            <UAlert
+              v-else-if="!canManageProducts"
+              color="amber"
+              title="Admins only"
+              description="Only admins can publish products for this runtime."
+            />
+
+            <MoleculesCreateShell
+              v-else
+              :loading="isCreating"
+              submit-label="Create product"
+              @submit="handleCreate"
+              @clear="handleClear"
+            >
+              <template #write>
+                <ProductCreateWrite />
+              </template>
+              <template #preview>
+                <ProductCreatePreview />
+              </template>
+            </MoleculesCreateShell>
+
+            <div class="mt-6">
+              <DevJson
+                :title="'Create Product (JSON)'"
+                context="dashboard/admin/products/create"
+                :data="devCreateJson"
+                :default-open="false"
+              />
+            </div>
+          </UPageBody>
+        </UPage>
       </div>
-
-      <UAlert
-        v-else-if="!canManageProducts"
-        color="amber"
-        title="Admins only"
-        description="Only admins can publish products for this runtime."
-      />
-
-  <MoleculesCreateShell
-    v-else
-    :loading="isCreating"
-    submit-label="Create product"
-    @submit="handleCreate"
-    @clear="handleClear"
-  >
-        <template #write>
-          <ProductCreateWrite />
-        </template>
-        <template #preview>
-          <ProductCreatePreview />
-        </template>
-      </MoleculesCreateShell>
-      <div class="mt-6">
-        <DevJson
-          :title="'Create Product (JSON)'"
-          context="admin/products/create"
-          :data="devCreateJson"
-          :default-open="false"
-        />
-      </div>
-    </UPageBody>
-  </UPage>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
@@ -49,17 +55,17 @@ import { useStorage } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProductPermissions } from '../../../composables/useProductPermissions'
+import { useProductPermissions } from '../../../../composables/useProductPermissions'
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useProductCreate } from '../../../composables/fireux/firestore/product/mutations/useProductCreate'
-import { useCreatePricesState } from '../../../composables/fireux/product/create/useCreatePricesState'
-import { useCreateProductState } from '../../../composables/fireux/product/create/useCreateProductState'
-import type { StripePriceInput } from '../../../models/product.model'
+import { useProductCreate } from '../../../../composables/fireux/firestore/product/mutations/useProductCreate'
+import { useCreatePricesState } from '../../../../composables/fireux/product/create/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/product/create/useCreateProductState'
+import type { StripePriceInput } from '../../../../models/product.model'
 
 definePageMeta({
-  layout: 'console',
+  layout: 'dashboard',
   title: 'Create Product',
   requiresAuth: true,
   roles: ['admin'],
@@ -95,7 +101,7 @@ async function handleCreate() {
       let demoList: any[] = []
       try {
         const mod = await import(
-          '../../../../../../../../demo/product.demo'
+          '../../../../../../../../../demo/product.demo'
         )
         demoList = Array.isArray(mod?.demoProductList)
           ? mod.demoProductList
@@ -136,7 +142,7 @@ async function handleCreate() {
       }
 
       if (successCount > 0) {
-        await router.push('/admin/products')
+        await router.push('/dashboard/admin/products')
       }
 
       if (failed.length) {
@@ -169,7 +175,7 @@ async function handleCreate() {
         icon: 'i-heroicons-check-circle',
         color: 'green',
       })
-    await router.push('/admin/products')
+    await router.push('/dashboard/admin/products')
   } finally {
     isCreating.value = false
   }

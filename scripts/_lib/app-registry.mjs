@@ -269,7 +269,7 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/baeren-ringgenberg',
     port: 3017,
     consoles: ['kitchen'],
-    smokeRoutes: ['/', '/menu', '/location', '/info'],
+    smokeRoutes: ['/', '/hotel', '/menu', '/events', '/about', '/jobs', '/location'],
     launchOrder: 17,
   },
   'bangin-coffee': {

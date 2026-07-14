@@ -4,13 +4,9 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import '../models/core/user.ext'
 
 export function useBlogPermissions() {
-  const { isAdmin, appUser } = useUser()
+  const { isAdmin } = useUser()
 
-  // Allow global/tenant admin only.
-  const canPublishBlog = computed(() => {
-    const blogAccess = appUser.value as { canPost?: boolean } | null
-    return isAdmin.value === true || blogAccess?.canPost === true
-  })
+  const canPublishBlog = computed(() => isAdmin.value === true)
 
   return { canPublishBlog }
 }

@@ -14,12 +14,11 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
-const { appName, appShortName } = useFireUXConfig()
+const { appName } = useFireUXConfig()
 
 const breadcrumbItems = [
   {
-    label: appShortName,
-    icon: 'i-lucide-house',
+    label: 'Home',
     to: '/',
   },
   {

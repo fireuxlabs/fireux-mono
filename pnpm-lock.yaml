@@ -1286,12 +1286,18 @@ importers:
       fireux-blogs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-blogs
+      fireux-companies:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-companies
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
       fireux-go-qr:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-go-qr
+      fireux-jobs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-jobs
       fireux-kitchens:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-kitchens

@@ -20,6 +20,7 @@ definePageMeta({
     key: 'menu',
     label: 'Menu',
     icon: 'i-lucide-utensils',
+    order: 20,
     desktop: true,
     mobile: true,
     layouts: ['default'],

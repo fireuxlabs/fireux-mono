@@ -27,7 +27,7 @@ const actions = computed(() => {
     items.unshift({
       label: 'Create',
       cta: 'Create product',
-      to: '/admin/products/create',
+      to: '/dashboard/admin/products/create',
       icon: 'i-lucide-plus',
     })
   }

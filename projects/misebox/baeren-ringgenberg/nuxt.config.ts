@@ -19,8 +19,15 @@ const fireuxConfig = defineFireuxConfig({
       targetIds: [...kitchenConfig.kitchens],
     },
   },
-  navHiddenKeys: ['kitchens', 'places'],
-  modules: ['fireux-places', 'fireux-go-qr', 'fireux-kitchens', 'fireux-sproochli'],
+  navHiddenKeys: ['kitchens', 'places', 'companies', 'agents', 'professionals'],
+  modules: [
+    'fireux-places',
+    'fireux-companies',
+    'fireux-go-qr',
+    'fireux-kitchens',
+    'fireux-sproochli',
+    ['fireux-jobs', { workplaces: ['hotel', 'restaurant', 'bar', 'kitchen'] }],
+  ],
 })
 
 export default withFireuxNuxtConfig(fireuxConfig, {})

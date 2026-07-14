@@ -31,6 +31,7 @@ definePageMeta({
     key: 'location',
     label: 'Location',
     icon: 'i-lucide-map-pin',
+    order: 55,
     desktop: true,
     mobile: true,
     layouts: ['default'],
