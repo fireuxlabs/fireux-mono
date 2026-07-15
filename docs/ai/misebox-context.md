@@ -36,5 +36,20 @@ context, cached repository snapshots, and remembered implementations are not
 authority. If current files cannot be read, say the Misebox context could not
 be refreshed.
 
+## Living context
+
+Treat this file as the living entrypoint for the dedicated Misebox chat.
+
+- Re-check it whenever Misebox package ownership, app boundaries, domain
+  families, or required concept maps change.
+- Update this file in the same repository change when a stable Misebox change
+  makes its scope, boundaries, or refresh instructions incomplete or wrong.
+- Update `docs/ai/gpt-context.md` instead when the change applies to all FireUX
+  chats; update both only when both layers genuinely change.
+- Keep temporary task status, chat summaries, migration progress, and product
+  ideas out of this file. It should contain durable routing and authority.
+- If an update is needed but the current task cannot edit the repository, state
+  exactly what has become stale and which current source proves it.
+
 When discussing canon, spine, alignment, family, or drift, state what must
 match, what may differ, the nearest working sibling, and the affected files.

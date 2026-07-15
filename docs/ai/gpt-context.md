@@ -25,5 +25,20 @@ Before each task:
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
 
+## Living context
+
+Treat this file as a living repository document, not a frozen prompt.
+
+- Re-check it against current code, guards, `AGENTS.md`, and concept maps when
+  repository structure, authority, ownership, or working conventions change.
+- Update this file in the same repository change when a stable repo-wide change
+  makes any instruction here incomplete or incorrect.
+- Keep it concise and durable. Do not add temporary task state, chat history,
+  speculative plans, or implementation details already owned by source code.
+- Preserve this file as the single external-GPT entrypoint. Link to current
+  sources instead of copying large instructions into it.
+- If an update is needed but the current task cannot edit the repository, state
+  exactly what in this file has become stale.
+
 When discussing canon, spine, alignment, family, or drift, state what must
 match, what may differ, the nearest working sibling, and the affected files.
