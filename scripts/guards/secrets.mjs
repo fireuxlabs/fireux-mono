@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-15
 // usage_note: guard worktree and staged files against credential material; Git history is out of scope.
 // FILE: scripts/guards/secrets.mjs
 

@@ -30,4 +30,6 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-export default withFireuxNuxtConfig(fireuxConfig, {})
+export default withFireuxNuxtConfig(fireuxConfig, {
+  css: ['@/assets/styles/main.css'],
+})

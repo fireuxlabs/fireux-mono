@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
+  layout: 'baeren-default',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-house',
     desktop: true,
     mobile: true,
-    layouts: ['default'],
+    layouts: ['baeren-default'],
   },
 })
 

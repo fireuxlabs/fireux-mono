@@ -5,10 +5,10 @@ import type {
 import type {
   KitchenOrderCustomer,
   KitchenOrderChannel,
-  KitchenOrderFireState,
   KitchenOrderFulfilmentMatch,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
+  KitchenOrderStatus,
   KitchenOrderType,
 } from '../order.model'
 
@@ -32,7 +32,7 @@ export type CreatedMenuOrderReceipt = {
   order_number: string
   order_type: KitchenOrderType
   channel?: KitchenOrderChannel
-  status?: string
+  status: KitchenOrderStatus
   created_at: string
   collection?: MenuOrderingCollectionState
   room_service?: MenuOrderingRoomServiceState
@@ -58,10 +58,9 @@ export type CreatedMenuOrder = {
   id: string
   path?: string
   order_number: string
-  status?: string
+  status: KitchenOrderStatus
   order_type: KitchenOrderType
   channel?: KitchenOrderChannel
-  fire_state?: KitchenOrderFireState
   collection?: MenuOrderingCollectionState
   room_service?: MenuOrderingRoomServiceState
   table?: MenuOrderingTableState
@@ -162,14 +161,14 @@ export type MenuOrderingOptionInput = {
   id?: string
   label?: string
   price?: number
-  priceLabel?: string
+  price_label?: string
 }
 
 export type MenuOrderingSubmitItem = {
-  itemId: string
-  menuId?: string
+  item_id: string
+  menu_id?: string
   quantity: number
-  addOns?: MenuOrderingOptionInput[]
+  add_ons?: MenuOrderingOptionInput[]
   variant?: MenuOrderingOptionInput
 }
 
@@ -229,8 +228,7 @@ export type MenuOrderingProcessing = {
   exists: boolean
   order_id: string
   order_number: string
-  status: string
-  fire_state: string
+  status: KitchenOrderStatus | ''
   items: Array<CreatedMenuOrderReceiptLine | MenuOrderingBasketItem>
   total_chf: number
   estimated_ready_minutes?: number
@@ -244,8 +242,7 @@ export type MenuOrderingSending = {
   body: MenuOrderingSubmitBody
   pending: boolean
   expected_result: {
-    status: string
-    fire_state?: KitchenOrderFireState
+    status: KitchenOrderStatus
   }
   message?: string
   error?: string

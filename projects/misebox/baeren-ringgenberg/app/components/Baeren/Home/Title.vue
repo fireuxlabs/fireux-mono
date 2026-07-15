@@ -1,50 +1,75 @@
 <template>
-  <h1
-    data-baeren-home-title
-    class="baeren-home-scroll__title"
-  >
-    <span>Hotel Bären</span>
-    <span>Berner Oberland</span>
-    <span class="baeren-home-scroll__title-subtitle">
-      Ihr Hotel am Brienzersee in Ringgenberg
-    </span>
-  </h1>
+  <header class="baeren-home-title">
+    <p class="baeren-home-title__eyebrow">{{ home.eyebrow }}</p>
+    <h1 id="baeren-home-title">
+      <span v-for="line in home.titleLines" :key="line">{{ line }}</span>
+    </h1>
+    <p class="baeren-home-title__subtitle">{{ home.subtitle }}</p>
+  </header>
 </template>
 
 <script setup lang="ts">
+import { baerenRinggenbergContent } from '../../../config/content.config'
+
 defineOptions({ name: 'BaerenHomeTitle' })
+
+const home = baerenRinggenbergContent.pages.home
 </script>
 
 <style scoped>
-.baeren-home-scroll__title {
-  position: sticky;
-  top: 6rem;
-  z-index: 2;
+.baeren-home-title {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 52rem;
+}
+
+.baeren-home-title__eyebrow,
+.baeren-home-title__subtitle,
+.baeren-home-title h1 {
+  margin: 0;
+}
+
+.baeren-home-title__eyebrow {
+  color: rgb(var(--baeren-on-dark-rgb) / 72%);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.baeren-home-title h1 {
   display: flex;
-  width: fit-content;
-  max-width: calc(100vw - 2rem);
   flex-direction: column;
-  color: white;
-  font-size: clamp(2.5rem, 7vw, 6rem);
-  font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  text-shadow: 0 0.2rem 1.5rem rgb(0 0 0 / 70%);
+  color: var(--baeren-on-dark);
+  font-size: clamp(2.15rem, 10.8vw, 3rem);
+  font-weight: 900;
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
 }
 
-.baeren-home-scroll__title-subtitle {
-  max-width: 32rem;
-  margin-block-start: 0.8rem;
-  font-size: clamp(1rem, 2vw, 1.45rem);
+.baeren-home-title__subtitle {
+  max-width: 31rem;
+  color: rgb(var(--baeren-on-dark-rgb) / 86%);
+  font-size: clamp(0.98rem, 4.6vw, 1.15rem);
   font-weight: 650;
-  line-height: 1.25;
-  letter-spacing: 0;
+  line-height: 1.4;
 }
 
-@media (max-width: 640px) {
-  .baeren-home-scroll__title {
-    width: 100%;
-    max-width: none;
+@media (min-width: 56rem) {
+  .baeren-home-title {
+    gap: 0.9rem;
+  }
+
+  .baeren-home-title h1 {
+    font-size: clamp(4rem, 6.4vw, 5.5rem);
+    line-height: 0.88;
+    text-shadow: 0 0.25rem 2rem rgb(0 0 0 / 46%);
+  }
+
+  .baeren-home-title__subtitle {
+    font-size: 1.3rem;
+    text-shadow: 0 0.2rem 1rem rgb(0 0 0 / 56%);
   }
 }
 </style>

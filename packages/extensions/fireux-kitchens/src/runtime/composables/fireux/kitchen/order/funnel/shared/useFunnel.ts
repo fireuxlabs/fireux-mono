@@ -1,337 +1,88 @@
 import {
   computed,
-  onBeforeUnmount,
-  onMounted,
   proxyRefs,
   ref,
   shallowRef,
   toValue,
   watch,
-  type MaybeRefOrGetter,
 } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  menuOrderBasketActionLabel,
-  menuOrderTypeLabel,
-} from '../../../../../../utils/menu-ordering-ui'
+import { menuOrderBasketActionLabel } from '../../../../../../utils/menu-ordering-ui'
 import { readWeekdayTimeOpenState } from '../../../../../../utils/weekday-time'
+import type { MenuFoodItem } from '../../../../../../models/kitchen/menu/menu-food.model'
+import type {
+  MenuOrderingFunnelState,
+  MenuOrderingIncoming,
+  MenuOrderingProcessing,
+  MenuOrderingSending,
+  MenuOrderingSubmitPayload,
+} from '../../../../../../models/kitchen/menu/menu-ordering.model'
 import {
-  menuContextualMenuId,
-  menuContextProfile,
-  menuOrderChannelForContext,
-  normalizeMenuRouteContext,
-  publicMenuSurfaceProfiles,
-} from '../../../../../../utils/menu-context'
-import {
-  notifyOrderSessionChanged,
   orderSessionStorageKey,
   useOrderSessionConflict,
 } from './useOrderSession'
-import { useOrderIdempotency } from './useOrderIdempotency'
+import { useMenuChoiceState } from './useMenuChoiceState'
+import { useOrderDraft } from './useOrderDraft'
+import {
+  customerFromDelivery,
+  text,
+} from './order-input'
 import type {
-  KitchenOrderChannel,
-  KitchenOrderCustomer,
-  KitchenOrderPaymentMethod,
-  KitchenOrderType,
-} from '../../../../../../models/kitchen/order.model'
-import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
-import type { MenuManifest } from '../../../../../../models/kitchen/menu/menu-detail.model'
-import type {
-  MenuFoodItem,
-  MenuFoodOrderItem,
-} from '../../../../../../models/kitchen/menu/menu-food.model'
-import type {
-  MenuOrderTypeConfig,
-  MenuChoice,
-} from '../../../../../../models/kitchen/menu/menu.model'
-import type {
-  CreatedMenuOrder,
-  MenuOrderingCollectionState,
-  MenuOrderingDeliveryState,
-  MenuOrderingIncoming,
-  MenuOrderingProcessing,
-  MenuOrderingPayment,
-  MenuOrderingRoomServiceState,
-  MenuOrderingSending,
-  MenuOrderingFunnelState,
-  MenuOrderingSubmitPayload,
-  MenuOrderingTableState,
-} from '../../../../../../models/kitchen/menu/menu-ordering.model'
+  MenuDetailView,
+  PanelState,
+  UseKitchenOrderFunnelOptions,
+} from './types'
 
-export type MenuChoiceValue = string
-export type MenuChoiceOption = {
-  value: MenuChoiceValue
-  label: string
-  menuId?: string
-  to?: string
-  orderType?: KitchenOrderType
-  message?: string
-}
-export type MenuSurfaceOption = {
-  value: MenuRouteContext
-  label: string
-  to: string
-  active: boolean
-}
-export type MenuDetailItem = MenuFoodItem
-export type MenuDetailOrderItem = MenuFoodOrderItem
-export type MenuDetailView = {
-  menu: MenuManifest
-  choices: MenuChoiceOption[]
-  surfaceOptions: MenuSurfaceOption[]
-  surfaceLabel: string
-  selectedChoice: MenuChoiceValue
-  selectedItemId: string
-  orderMode: boolean
-  dimmed: boolean
-}
+export type {
+  MenuChoiceOption,
+  MenuChoiceValue,
+  MenuDetailItem,
+  MenuDetailOrderItem,
+  MenuDetailView,
+  MenuSurfaceOption,
+} from './types'
 
-type UseKitchenOrderFunnelOptions = {
-  menu: MaybeRefOrGetter<MenuManifest | null>
-  menuId: MaybeRefOrGetter<string>
-  sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
-  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
-  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
-  sessionKitchenSlug?: MaybeRefOrGetter<string | null | undefined>
-}
-type PanelState = 'closed' | 'open'
-
-const text = (value: unknown) => String(value ?? '').trim()
 const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
-const supportedOrderTypes = [
-  'dine_in',
-  'eat_in',
-  'takeaway',
-  'collection',
-  'delivery',
-  'pre_order',
-  'room_service',
-] as const satisfies readonly KitchenOrderType[]
-const defaultMenuChoice = (): MenuChoiceOption => ({
-  value: 'menu',
-  label: 'Menu',
-})
-const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
-  `order:${type}`
-const orderType = (value: unknown): KitchenOrderType | undefined =>
-  supportedOrderTypes.includes(value as KitchenOrderType)
-    ? value as KitchenOrderType
-    : undefined
-const orderTypeIndex = (
-  visibleOrderTypes: KitchenOrderType[],
-  option: MenuChoiceOption
-) => option.orderType ? visibleOrderTypes.indexOf(option.orderType) : -1
 
-const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
-  const type = orderType(choice.order_type)
-
-  if (
-    !choice.value ||
-    !choice.label
-  ) {
-    return null
-  }
-
-  return {
-    value: choice.value,
-    label: choice.label,
-    ...(choice.menu_id ? { menuId: choice.menu_id } : {}),
-    ...(choice.to ? { to: choice.to } : {}),
-    ...(type ? { orderType: type } : {}),
-    ...(choice.message ? { message: choice.message } : {}),
-  }
-}
-const contextualMenuPath = (
-  menuId: string,
-  kitchenSlug: string,
-  context: MenuRouteContext
-) => {
-  const contextualMenuId = context === 'generic'
-    ? menuId
-    : menuContextualMenuId(menuId, context)
-
-  return kitchenSlug
-    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
-    : `/menus/${encodeURIComponent(contextualMenuId)}`
-}
-
-// Order funnel spine: Menu/Detail composes the menu layer; this seam owns order draft and funnel state.
+// Order funnel spine: keep this file as the small public controller assembly.
 export function useFunnel(options: UseKitchenOrderFunnelOptions) {
-  const behaviour = computed(() => toValue(options.menu)?.behaviour)
-  const menuContext = computed(() =>
-    normalizeMenuRouteContext(toValue(options.menuContext) || behaviour.value?.context)
-  )
-  const contextProfile = computed(() => menuContextProfile(menuContext.value))
-  const orderChannel = computed(() =>
-    menuOrderChannelForContext(menuContext.value)
-  )
-  const visibleOrderTypes = computed(() => contextProfile.value.visibleOrderTypes)
-  const menuId = computed(() => text(toValue(options.menuId)))
-  const sourceMenuId = computed(() =>
-    text(toValue(options.sourceMenuId)) || menuId.value
-  )
-  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
-  const sessionKitchenSlug = computed(() =>
-    text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
-  )
-  const menuStorageScope = computed(() => {
-    const slug = sessionKitchenSlug.value
-    const id = text(toValue(options.menuId))
-    const scope = slug ? `${slug}:${id}` : id
-
-    return [scope, menuContext.value].filter(Boolean).join(':')
-  })
-  const orderTypes = computed<KitchenOrderType[]>(() =>
-    Array.isArray(behaviour.value?.orderTypes) ? behaviour.value.orderTypes : []
-  )
-  const availableMenuOrderTypes = computed<KitchenOrderType[]>(() =>
-    Array.isArray(behaviour.value?.availableOrderTypes)
-      ? behaviour.value.availableOrderTypes
-      : orderTypes.value
-  )
-  const availableOrderTypes = computed<KitchenOrderType[]>(() =>
-    visibleOrderTypes.value.filter((type) => orderTypes.value.includes(type))
-  )
-  const defaultOrderType = computed<KitchenOrderType>(() => {
-    const preferred = contextProfile.value.defaultOrderType
-    if (preferred && orderTypes.value.includes(preferred)) return preferred
-
-    return availableOrderTypes.value[0] || orderTypes.value[0] || 'dine_in'
-  })
-  const orderTypeConfigs = computed<MenuOrderTypeConfig[]>(() => {
-    const rows = behaviour.value?.ordering?.order_types
-
-    return Array.isArray(rows) ? rows : []
-  })
-  const canOrder = computed(() =>
-    Boolean(behaviour.value?.orderingEnabled && availableOrderTypes.value.length)
-  )
-  const isVisibleChoice = (option: MenuChoiceOption) =>
-    option.orderType
-      ? visibleOrderTypes.value.includes(option.orderType) &&
-        (Boolean(option.to) || availableOrderTypes.value.includes(option.orderType))
-      : menuContext.value === 'generic'
-  const sortChoiceOptions = (options: MenuChoiceOption[]) =>
-    [...options].sort((left, right) =>
-      orderTypeIndex(visibleOrderTypes.value, left) -
-        orderTypeIndex(visibleOrderTypes.value, right)
-    )
-  const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    if (!canOrder.value) return [defaultMenuChoice()]
-
-    const choices = availableOrderTypes.value
-      .map((type) => {
-        const config = orderTypeConfigs.value.find((row) => row.type === type)
-
-        return {
-          value: orderChoiceValue(type),
-          label: menuOrderTypeLabel(type),
-          orderType: type,
-          ...(config?.message ? { message: config.message } : {}),
-        }
-      })
-
-    return choices.length ? choices : [defaultMenuChoice()]
-  })
-  const menuChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = Array.isArray(behaviour.value?.choices)
-      ? behaviour.value.choices
-          .map(menuChoiceOption)
-          .filter((choice): choice is MenuChoiceOption => Boolean(choice))
-      : []
-
-    const visibleChoices = sortChoiceOptions(choices.filter(isVisibleChoice))
-
-    return visibleChoices.length > 1 && visibleChoices.some((choice) => !choice.to)
-      ? visibleChoices
-      : []
-  })
-  const choiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = sortChoiceOptions((menuChoiceOptions.value.length
-      ? menuChoiceOptions.value
-      : generatedChoiceOptions.value).filter(isVisibleChoice))
-
-    return choices.length ? choices : [defaultMenuChoice()]
-  })
-  const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
-    const local = sortChoiceOptions(
-      choiceOptions.value.filter((option) => !option.to && isVisibleChoice(option))
-    )
-    const generated = sortChoiceOptions(
-      generatedChoiceOptions.value.filter(isVisibleChoice)
-    )
-
-    return local.length ? local : generated.length ? generated : [defaultMenuChoice()]
-  })
-  const choiceValues = computed<MenuChoiceValue[]>(() =>
-    localChoiceOptions.value.map((option) => option.value)
-  )
-  const preferredChoice = computed<MenuChoiceValue>(() => {
-    const preferred = contextProfile.value.defaultOrderType
-      ? localChoiceOptions.value.find((option) =>
-          option.orderType === contextProfile.value.defaultOrderType
-        )
-      : undefined
-
-    return preferred?.value || choiceValues.value[0] || defaultMenuChoice().value
-  })
-  const { selected: selectedChoice } = useStoredChoice<MenuChoiceValue>({
-    key: computed(() => `fireux:menu:${menuStorageScope.value}:choice`),
-    choices: choiceValues,
-    fallback: preferredChoice,
-  })
-  const selectedChoiceOption = computed<MenuChoiceOption>(() =>
-    localChoiceOptions.value.find((option) =>
-      option.value === selectedChoice.value
-    ) ||
-    localChoiceOptions.value[0] ||
-    defaultMenuChoice()
-  )
-  const selectedOrderType = computed<KitchenOrderType>(() =>
-    selectedChoiceOption.value.orderType || 'dine_in'
-  )
+  const choice = useMenuChoiceState(options)
   const orderChoiceActive = computed(() =>
-    canOrder.value &&
-      Boolean(selectedChoiceOption.value.orderType)
+    choice.canOrder.value &&
+    Boolean(choice.selectedChoiceOption.value.orderType)
   )
   const sessionGuard = useOrderSessionConflict({
     enabled: orderChoiceActive,
-    kitchenSlug: sessionKitchenSlug,
-    context: menuContext,
-    menuId,
-    orderType: selectedOrderType,
+    kitchenSlug: choice.sessionKitchenSlug,
+    context: choice.menuContext,
+    menuId: choice.menuId,
+    orderType: choice.selectedOrderType,
   })
   const immediateServiceAvailable = computed(() => {
-    if (['collection', 'pre_order'].includes(selectedOrderType.value)) return true
+    if (['collection', 'pre_order'].includes(choice.selectedOrderType.value)) return true
 
     const state = readWeekdayTimeOpenState(
-      behaviour.value?.ordering.service_hours?.operation_hours
+      choice.behaviour.value?.ordering.service_hours?.operation_hours
     )
 
     return !state.known || state.open
   })
   const canAddToSession = computed(() =>
-    canOrder.value &&
-      immediateServiceAvailable.value &&
-      !sessionGuard.hasConflict.value
-  )
-  const selectedOrderTypeConfig = computed(() =>
-    orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
-    orderTypeConfigs.value.find((type) => type.type === defaultOrderType.value) ||
-    orderTypeConfigs.value[0]
+    choice.canOrder.value &&
+    immediateServiceAvailable.value &&
+    !sessionGuard.hasConflict.value
   )
   const isOrderMode = computed(() =>
     canAddToSession.value &&
-      Boolean(selectedChoiceOption.value.orderType)
+    Boolean(choice.selectedChoiceOption.value.orderType)
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
     key: computed(() =>
       [
         'fireux:menu',
-        menuStorageScope.value,
+        choice.menuStorageScope.value,
         'funnel',
-        selectedOrderType.value,
+        choice.selectedOrderType.value,
       ].filter(Boolean).join(':')
     ),
     choices: panelStates,
@@ -344,86 +95,35 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     },
   })
   const selectedItemId = ref('')
-  const draft = useDraft(options.menuId, {
+  const draft = useOrderDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
-    menuContext,
+    menuContext: choice.menuContext,
     canOrder: canAddToSession,
-    orderType: selectedOrderType,
-    sourceMenuId,
+    orderType: choice.selectedOrderType,
+    sourceMenuId: choice.sourceMenuId,
     storageKey: computed(() =>
       orderSessionStorageKey({
-        kitchenSlug: sessionKitchenSlug.value,
-        menuId: menuId.value,
-        orderType: selectedOrderType.value,
+        kitchenSlug: choice.sessionKitchenSlug.value,
+        menuId: choice.menuId.value,
+        orderType: choice.selectedOrderType.value,
       })
     ),
   })
   const collectedIncoming = shallowRef<Partial<MenuOrderingIncoming>>({})
   const deliveryCustomer = computed(() =>
-    selectedOrderType.value === 'delivery'
+    choice.selectedOrderType.value === 'delivery'
       ? customerFromDelivery(collectedIncoming.value.delivery)
       : {}
   )
-  const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
-    if (!menuId.value) return []
-
-    const choices = Array.isArray(behaviour.value?.choices)
-      ? behaviour.value.choices
-          .map(menuChoiceOption)
-          .filter((choice): choice is MenuChoiceOption => Boolean(choice))
-      : []
-    const surfaceOrderTypes = Array.from(new Set([
-      ...availableMenuOrderTypes.value,
-      ...choices
-        .map((choice) => choice.orderType)
-        .filter((type): type is KitchenOrderType => Boolean(type)),
-    ]))
-
-    const surfaces = publicMenuSurfaceProfiles.filter((surface) =>
-      surface.visibleOrderTypes.some((type) =>
-        surfaceOrderTypes.includes(type)
-      )
-    )
-
-    return surfaces.map((surface) => {
-      const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
-        availableMenuOrderTypes.value.includes(type)
-      )
-      const linkedChoice = choices.find((choice) =>
-        Boolean(choice.to) &&
-          Boolean(choice.menuId) &&
-          Boolean(choice.orderType) &&
-          surface.visibleOrderTypes.includes(choice.orderType as KitchenOrderType)
-      )
-      const linkedMarker = '/menus/'
-      const linkedIndex = linkedChoice?.to?.indexOf(linkedMarker) ?? -1
-      const linkedSurfacePath =
-        linkedChoice?.to && linkedChoice.menuId && linkedIndex >= 0
-          ? `${linkedChoice.to.slice(0, linkedIndex + linkedMarker.length)}${encodeURIComponent(
-              menuContextualMenuId(linkedChoice.menuId, surface.context)
-            )}`
-          : linkedChoice?.to || ''
-
-      return {
-        value: surface.context,
-        label: surface.label,
-        to: hasLocalOrderType
-          ? contextualMenuPath(menuId.value, kitchenSlug.value, surface.context)
-          : linkedSurfacePath,
-        active: contextProfile.value.surface === surface.surface,
-      }
-    }).filter((surface) => Boolean(surface.to))
-  })
-  const surfaceLabel = computed(() => contextProfile.value.label)
   const orderEndpoint = computed(() => {
-    if (!menuId.value) return ''
+    if (!choice.menuId.value) return ''
 
     const query = new URLSearchParams()
-    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
+    if (choice.kitchenSlug.value) query.set('kitchenSlug', choice.kitchenSlug.value)
+    if (choice.menuContext.value !== 'generic') query.set('context', choice.menuContext.value)
 
     const qs = query.toString()
-    return `/api/menus/${encodeURIComponent(menuId.value)}/orders${qs ? `?${qs}` : ''}`
+    return `/api/menus/${encodeURIComponent(choice.menuId.value)}/orders${qs ? `?${qs}` : ''}`
   })
   const detailView = computed<MenuDetailView | null>(() => {
     const menu = toValue(options.menu)
@@ -431,29 +131,27 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
     return {
       menu,
-      choices: choiceOptions.value,
-      surfaceOptions: surfaceOptions.value,
-      surfaceLabel: surfaceLabel.value,
-      selectedChoice: selectedChoice.value,
+      choices: choice.choiceOptions.value,
+      surfaceOptions: choice.surfaceOptions.value,
+      surfaceLabel: choice.surfaceLabel.value,
+      selectedChoice: choice.selectedChoice.value,
       selectedItemId: selectedItemId.value,
       orderMode: isOrderMode.value,
       dimmed: panelOpen.value,
     }
   })
-  const incoming = computed<MenuOrderingIncoming>(() => {
-    return {
-      order_type: selectedOrderType.value,
-      basket: draft.items.value.map((item) => ({
-        item_id: item.id,
-        ...(item.menuId ? { menu_id: item.menuId } : {}),
-        ...(item.lineId && item.lineId !== item.id ? { line_id: item.lineId } : {}),
-        name: item.name,
-        quantity: item.quantity,
-        ...(item.unitPrice ? { unit_price_chf: item.unitPrice } : {}),
-      })),
-      ...collectedIncoming.value,
-    }
-  })
+  const incoming = computed<MenuOrderingIncoming>(() => ({
+    order_type: choice.selectedOrderType.value,
+    basket: draft.items.value.map((item) => ({
+      item_id: item.id,
+      ...(item.menuId ? { menu_id: item.menuId } : {}),
+      ...(item.lineId && item.lineId !== item.id ? { line_id: item.lineId } : {}),
+      name: item.name,
+      quantity: item.quantity,
+      ...(item.unitPrice ? { unit_price_chf: item.unitPrice } : {}),
+    })),
+    ...collectedIncoming.value,
+  }))
   const processing = computed<MenuOrderingProcessing>(() => {
     const order = draft.sentOrder.value
     const total = draft.items.value.reduce(
@@ -466,74 +164,81 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       order_id: order?.id || '',
       order_number: order?.order_number || '',
       status: draft.trackedStatus.value?.status || order?.status || '',
-      fire_state: draft.trackedStatus.value?.fire_state || order?.fire_state || '',
       items: order?.receipt?.items || draft.items.value,
       total_chf: order?.receipt?.total_chf || total,
-      estimated_ready_minutes:
-        draft.trackedStatus.value?.estimated_ready_minutes || 0,
+      estimated_ready_minutes: draft.trackedStatus.value?.estimated_ready_minutes || 0,
       estimated_ready_at: draft.trackedStatus.value?.estimated_ready_at || '',
-      driver_watching_count:
-        draft.trackedStatus.value?.driver_watching_count || 0,
+      driver_watching_count: draft.trackedStatus.value?.driver_watching_count || 0,
       order: order || null,
     }
   })
   const sending = computed<MenuOrderingSending>(() => ({
     endpoint: orderEndpoint.value,
     body: {
-      channel: orderChannel.value,
-      order_type: selectedOrderType.value,
+      channel: choice.orderChannel.value,
+      order_type: choice.selectedOrderType.value,
       items: draft.items.value.map((item) => ({
-        itemId: item.id,
-        ...(item.menuId ? { menuId: item.menuId } : {}),
+        item_id: item.id,
+        ...(item.menuId ? { menu_id: item.menuId } : {}),
         quantity: item.quantity,
-        ...(item.addOns?.length ? { addOns: item.addOns } : {}),
-        ...(item.variant ? { variant: item.variant } : {}),
+        ...(item.addOns?.length
+          ? {
+              add_ons: item.addOns.map((addOn) => ({
+                id: addOn.id,
+                label: addOn.label,
+                ...(addOn.price ? { price: addOn.price } : {}),
+                ...(addOn.priceLabel ? { price_label: addOn.priceLabel } : {}),
+              })),
+            }
+          : {}),
+        ...(item.variant
+          ? {
+              variant: {
+                id: item.variant.id,
+                label: item.variant.label,
+                ...(item.variant.price ? { price: item.variant.price } : {}),
+                ...(item.variant.priceLabel
+                  ? { price_label: item.variant.priceLabel }
+                  : {}),
+              },
+            }
+          : {}),
       })),
-      ...(collectedIncoming.value.collection
-        ? { collection: collectedIncoming.value.collection }
-        : {}),
-      ...(collectedIncoming.value.payment_method
-        ? { payment_method: collectedIncoming.value.payment_method }
-        : {}),
-      ...(Object.keys(deliveryCustomer.value).length
-        ? { customer: deliveryCustomer.value }
-        : {}),
-      ...(collectedIncoming.value.table
-        ? { table: collectedIncoming.value.table }
-        : {}),
-      ...(collectedIncoming.value.room_service
-        ? { room_service: collectedIncoming.value.room_service }
-        : {}),
+      ...(collectedIncoming.value.collection ? { collection: collectedIncoming.value.collection } : {}),
+      ...(collectedIncoming.value.payment_method ? { payment_method: collectedIncoming.value.payment_method } : {}),
+      ...(Object.keys(deliveryCustomer.value).length ? { customer: deliveryCustomer.value } : {}),
+      ...(collectedIncoming.value.table ? { table: collectedIncoming.value.table } : {}),
+      ...(collectedIncoming.value.room_service ? { room_service: collectedIncoming.value.room_service } : {}),
     },
     pending: draft.creatingItemId.value === 'order',
     expected_result: {
-      status: ['collection', 'delivery'].includes(selectedOrderType.value)
+      status: ['collection', 'delivery', 'pre_order', 'room_service']
+        .includes(choice.selectedOrderType.value)
         ? 'pending_acceptance'
-        : 'open',
+        : 'accepted',
     },
     ...(draft.message.value ? { message: draft.message.value } : {}),
     ...(draft.error.value ? { error: draft.error.value } : {}),
     ...(draft.sentOrder.value ? { sent_order: draft.sentOrder.value } : {}),
   }))
   const funnelView = computed<MenuOrderingFunnelState>(() => {
-    const policy = selectedOrderTypeConfig.value
-    const serviceHours = behaviour.value?.ordering.service_hours
+    const serviceHours = choice.behaviour.value?.ordering.service_hours
     const currencyCode = text(toValue(options.menu)?.presentation.currencyCode)
 
     return {
-      actionLabel: menuOrderBasketActionLabel(selectedOrderType.value),
+      actionLabel: menuOrderBasketActionLabel(choice.selectedOrderType.value),
       accepted: draft.acceptedOrder.value,
       awaitingAcceptance: draft.awaitingAcceptance.value,
       currencyCode,
-      channel: orderChannel.value,
+      channel: choice.orderChannel.value,
       panelOpen: panelOpen.value,
       items: draft.items.value,
       message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
-      menuId: menuId.value,
-      kitchenSlug: kitchenSlug.value,
-      orderType: selectedOrderType.value,
+      menuId: choice.menuId.value,
+      kitchenSlug: choice.kitchenSlug.value,
+      orderType: choice.selectedOrderType.value,
       pending: draft.creatingItemId.value === 'order',
-      ...(policy ? { policy } : {}),
+      ...(choice.selectedOrderTypeConfig.value ? { policy: choice.selectedOrderTypeConfig.value } : {}),
       quantity: draft.quantity.value,
       ...(serviceHours ? { serviceHours } : {}),
       selection: {
@@ -545,31 +250,12 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   })
   const showFunnel = computed(() =>
     isOrderMode.value &&
-      (
-        draft.quantity.value > 0 ||
-        Boolean(draft.sentOrder.value)
-      )
+    (draft.quantity.value > 0 || Boolean(draft.sentOrder.value))
   )
-
-  function setSelectedChoice(value: MenuChoiceValue) {
-    selectedChoice.value = value
-  }
-
-  function selectOrderType(type: KitchenOrderType) {
-    const choice = localChoiceOptions.value.find((option) =>
-      option.orderType === type
-    )
-    if (!choice) return false
-
-    selectedChoice.value = choice.value
-    return true
-  }
 
   function selectItem(item: MenuFoodItem) {
     const id = text(item.id)
-    if (!id) return
-
-    selectedItemId.value = selectedItemId.value === id ? '' : id
+    if (id) selectedItemId.value = selectedItemId.value === id ? '' : id
   }
 
   function openPanel() {
@@ -578,9 +264,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
   function openSession() {
     const conflict = sessionGuard.conflict.value
-    if (!conflict) return
-    if (!selectOrderType(conflict.orderType)) return
-
+    if (!conflict || !choice.selectOrderType(conflict.orderType)) return
     panelOpen.value = true
   }
 
@@ -589,15 +273,14 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   }
 
   function submit(payload: MenuOrderingSubmitPayload) {
-    const fallbackCustomer = deliveryCustomer.value
     const customer = {
-      ...fallbackCustomer,
+      ...deliveryCustomer.value,
       ...(payload.customer || {}),
     }
 
     return draft.place({
       ...payload,
-      channel: orderChannel.value,
+      channel: choice.orderChannel.value,
       ...(Object.keys(customer).length ? { customer } : {}),
     })
   }
@@ -611,746 +294,38 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
   watch(draft.quantity, (quantity: number) => {
     if (!quantity && !draft.sentOrder.value) closePanel()
+    if (!quantity) collectedIncoming.value = {}
   })
 
-  watch(draft.quantity, (quantity: number) => {
-    if (quantity) return
-
-    collectedIncoming.value = {}
-  })
-
-  watch(selectedOrderType, () => {
+  watch(choice.selectedOrderType, () => {
     collectedIncoming.value = {}
     selectedItemId.value = ''
   })
 
   return {
     detail: proxyRefs({
-      view: detailView,
       add: draft.add,
-      select: setSelectedChoice,
-      selectOrderType,
+      select: choice.setSelectedChoice,
       selectItem,
+      selectOrderType: choice.selectOrderType,
+      view: detailView,
     }),
     funnel: proxyRefs({
-      show: showFunnel,
-      order: funnelView,
       clear: draft.clear,
-      collect,
       close: closePanel,
+      collect,
       incoming,
       open: openPanel,
       openSession,
+      order: funnelView,
       pay: draft.pay,
       payment: draft.payment,
       processing,
       restartSession: sessionGuard.restart,
       sending,
       sessionConflict: sessionGuard.conflict,
+      show: showFunnel,
       submit,
     }),
-  }
-}
-
-type MenuOrderItem = {
-  id: string
-  name: string
-  addOns?: MenuOrderAddOn[]
-  lineId?: string
-  menuId?: string
-  price?: number
-  variant?: MenuOrderVariant
-}
-
-type MenuOrderAddOn = {
-  id: string
-  label: string
-  price?: number
-  priceLabel?: string
-}
-
-type MenuOrderVariant = {
-  id: string
-  label: string
-  price?: number
-  priceLabel?: string
-}
-
-type MenuOrderDraftItem = MenuOrderItem & {
-  lineId: string
-  menuId?: string
-  quantity: number
-  unitPrice: number
-}
-
-type MenuOrderDraftOptions = {
-  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
-  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
-  canOrder?: MaybeRefOrGetter<boolean>
-  orderType?: MaybeRefOrGetter<KitchenOrderType>
-  sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
-  storageKey?: MaybeRefOrGetter<string | null | undefined>
-}
-
-type MenuOrderLineInput = {
-  itemId: string
-  menuId?: string
-  quantity: number
-  addOns?: MenuOrderVariantInput[]
-  variant?: MenuOrderVariantInput
-}
-
-type MenuOrderVariantInput = {
-  id?: string
-  label?: string
-  price?: number
-  priceLabel?: string
-}
-
-type CreateMenuOrderInput = {
-  items: MenuOrderLineInput[]
-  channel?: KitchenOrderChannel
-  order_type?: KitchenOrderType
-  collection?: MenuOrderingCollectionState
-  payment_method?: KitchenOrderPaymentMethod
-  requested_for?: string
-  room_service?: MenuOrderingRoomServiceState
-  table?: MenuOrderingTableState
-  customer?: KitchenOrderCustomer
-}
-
-type UseMenuOrderCreateOptions = {
-  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
-  menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
-}
-
-type KitchenOrderFunnelStatus = {
-  id: string
-  order_number: string
-  status: string
-  order_type: string
-  fire_state: string
-  estimated_ready_minutes: number
-  estimated_ready_at: string
-  driver_watching_count: number
-}
-
-type UseMenuOrderStatusOptions = {
-  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
-  enabled?: MaybeRefOrGetter<boolean>
-}
-
-const numberValue = (value: unknown) => {
-  const number = Number(value)
-
-  return Number.isFinite(number) ? number : 0
-}
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-const normalizeVariant = (value: unknown): MenuOrderVariant | undefined => {
-  const source = record(value)
-  const id = text(source.id)
-  const label = text(source.label)
-  const price = numberValue(source.price)
-  const priceLabel = text(source.priceLabel || source.price_label)
-  if (!id && !label) return undefined
-
-  return {
-    id,
-    label,
-    ...(price ? { price } : {}),
-    ...(priceLabel ? { priceLabel } : {}),
-  }
-}
-const normalizeAddOns = (value: unknown): MenuOrderAddOn[] => {
-  if (!Array.isArray(value)) return []
-
-  return value
-    .map(normalizeVariant)
-    .filter((addOn): addOn is MenuOrderAddOn => Boolean(addOn))
-}
-const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
-
-  const item = value as Partial<MenuOrderDraftItem>
-  return Boolean(
-    text(item.id) &&
-    text(item.name) &&
-    text(item.lineId || item.id) &&
-    Number(item.quantity) > 0
-  )
-}
-const cleanVariant = (variant: MenuOrderVariantInput | undefined) => {
-  const id = text(variant?.id)
-  const label = text(variant?.label)
-  const price = numberValue(variant?.price)
-  const priceLabel = text(variant?.priceLabel)
-  if (!id && !label) return undefined
-
-  return {
-    id,
-    label,
-    ...(price ? { price } : {}),
-    ...(priceLabel ? { priceLabel } : {}),
-  }
-}
-const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
-  Array.isArray(addOns)
-    ? addOns.map(cleanVariant).filter((addOn): addOn is NonNullable<ReturnType<typeof cleanVariant>> => Boolean(addOn))
-    : []
-const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
-  const clean = {
-    name: text(customer?.name),
-    email: text(customer?.email),
-    phone: text(customer?.phone),
-    address: text(customer?.address),
-    address_place_id: text(customer?.address_place_id),
-    allergy_note: text(customer?.allergy_note),
-    notes: text(customer?.notes),
-    party_size: Math.max(0, Math.floor(numberValue(customer?.party_size))),
-  }
-
-  return Object.fromEntries(
-    Object.entries(clean).filter(([, value]) => value)
-  )
-}
-const customerFromDelivery = (
-  delivery: MenuOrderingDeliveryState | undefined
-): KitchenOrderCustomer => {
-  const address = delivery?.address
-
-  return cleanCustomer({
-    address: text(address?.formatted || address?.input),
-    address_place_id: text(address?.place_id),
-  })
-}
-const isClearedOrderStatus = (status: unknown) =>
-  ['trashed', 'deleted', 'cancelled', 'canceled'].includes(text(status))
-
-function useDraft(
-  menuId: MaybeRefOrGetter<string>,
-  options: MenuOrderDraftOptions = {}
-) {
-  const key = computed(() => text(toValue(options.storageKey)))
-  const canOrder = computed(() => toValue(options.canOrder) === true)
-  const orderType = computed<KitchenOrderType>(() =>
-    toValue(options.orderType) || 'dine_in'
-  )
-  const sourceMenuId = computed(() => text(toValue(options.sourceMenuId)))
-  const draft = ref<Record<string, MenuOrderDraftItem>>({})
-  const hasMounted = ref(false)
-  const awaitingAcceptance = ref(false)
-  const acceptedOrder = ref(false)
-  const trackedOrder = ref<CreatedMenuOrder | null>(null)
-  const items = computed<MenuOrderDraftItem[]>(() =>
-    Object.values(draft.value)
-  )
-  const quantity = computed(() =>
-    items.value.reduce((total, item) => total + item.quantity, 0)
-  )
-  const {
-    creatingItemId,
-    message,
-    error,
-    createOrder,
-    checkoutError,
-    checkoutMessage,
-    checkoutPending,
-    createCheckoutSession,
-  } = useCreate(menuId, {
-    kitchenSlug: options.kitchenSlug,
-    menuContext: options.menuContext,
-  })
-  const {
-    status: trackedOrderStatus,
-  } = useStatus(
-    menuId,
-    computed(() => trackedOrder.value?.id || ''),
-    {
-      kitchenSlug: options.kitchenSlug,
-      enabled: computed(() => awaitingAcceptance.value),
-    }
-  )
-  const awaitingMessage = computed(() => {
-    const status = trackedOrderStatus.value
-    if (message.value) return message.value
-    if (!trackedOrder.value) return ''
-
-    if (!acceptedOrder.value) {
-      return ''
-    }
-
-    const minutes = Number(status?.estimated_ready_minutes || 0)
-    if (minutes > 0) {
-      return `Accepted. Estimated ready in ${minutes} minutes.`
-    }
-
-    return 'Accepted. The kitchen is preparing your order.'
-  })
-  const payment = computed<MenuOrderingPayment>(() => ({
-    pending: checkoutPending.value,
-    ...(checkoutMessage.value ? { message: checkoutMessage.value } : {}),
-    ...(checkoutError.value ? { error: checkoutError.value } : {}),
-  }))
-
-  function restoreDraft(nextKey: string) {
-    if (!import.meta.client || !nextKey) return
-
-    try {
-      const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
-
-      draft.value = Object.values(parsed)
-        .filter(isDraftItem)
-        .reduce<Record<string, MenuOrderDraftItem>>((map, item) => {
-          const lineId = text(item.lineId || item.id)
-          const menuId = text(item.menuId) || sourceMenuId.value
-          const variant = normalizeVariant(item.variant)
-          const addOns = normalizeAddOns(item.addOns)
-
-          map[lineId] = {
-            id: text(item.id),
-            lineId,
-            ...(menuId ? { menuId } : {}),
-            name: text(item.name),
-            quantity: Number(item.quantity),
-            unitPrice: numberValue(item.unitPrice),
-            ...(addOns.length ? { addOns } : {}),
-            ...(variant ? { variant } : {}),
-          }
-          return map
-        }, {})
-    } catch {
-      draft.value = {}
-    }
-  }
-
-  onMounted(() => {
-    hasMounted.value = true
-    restoreDraft(key.value)
-  })
-
-  watch(key, (nextKey: string) => {
-    if (!hasMounted.value) return
-    restoreDraft(nextKey)
-  })
-
-  watch(draft, (nextDraft: Record<string, MenuOrderDraftItem>) => {
-    if (!import.meta.client || !key.value) return
-
-    if (!Object.keys(nextDraft).length) {
-      window.localStorage.removeItem(key.value)
-      notifyOrderSessionChanged()
-      return
-    }
-
-    window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
-    notifyOrderSessionChanged()
-  }, { deep: true })
-
-  function add(item: MenuOrderItem) {
-    if (!canOrder.value) return
-    awaitingAcceptance.value = false
-    acceptedOrder.value = false
-    trackedOrder.value = null
-
-    const id = text(item.id)
-    const menuId = text(item.menuId) || sourceMenuId.value
-    const rawLineId = text(item.lineId) || id
-    const lineId = [menuId, rawLineId].filter(Boolean).join(':')
-    if (!id) return
-
-    const variant = normalizeVariant(item.variant)
-    const addOns = normalizeAddOns(item.addOns)
-    const current = draft.value[lineId]
-    const addOnsPrice = addOns.reduce(
-      (total, addOn) => total + numberValue(addOn.price),
-      0
-    )
-    const basePrice = numberValue(variant?.price) || numberValue(item.price)
-    const unitPrice = basePrice + addOnsPrice
-    const suffix = [
-      variant?.label,
-      addOns.length
-        ? `+ ${addOns.map((addOn) => addOn.label).join(', ')}`
-        : '',
-    ].filter(Boolean).join(' · ')
-    draft.value = {
-      ...draft.value,
-      [lineId]: {
-        id,
-        lineId,
-        ...(menuId ? { menuId } : {}),
-        name: suffix ? `${text(item.name)} · ${suffix}` : text(item.name),
-        unitPrice,
-        ...(addOns.length ? { addOns } : {}),
-        ...(variant ? { variant } : {}),
-        quantity: (current?.quantity || 0) + 1,
-      },
-    }
-  }
-
-  function remove(item: MenuOrderItem) {
-    const lineId = text(item.lineId) || text(item.id)
-    const current = draft.value[lineId]
-    if (!lineId || !current) return
-
-    const next = { ...draft.value }
-    if (current.quantity <= 1) {
-      delete next[lineId]
-    } else {
-      next[lineId] = {
-        ...current,
-        quantity: current.quantity - 1,
-      }
-    }
-    draft.value = next
-  }
-
-  function clear() {
-    draft.value = {}
-    awaitingAcceptance.value = false
-    acceptedOrder.value = false
-    trackedOrder.value = null
-  }
-
-  async function place(input?: MenuOrderingSubmitPayload) {
-    if (!canOrder.value || !items.value.length) return null
-
-    const created = await createOrder({
-      items: items.value.map((item) => ({
-        itemId: item.id,
-        ...(item.menuId ? { menuId: item.menuId } : {}),
-        quantity: item.quantity,
-        ...(item.addOns?.length ? { addOns: item.addOns } : {}),
-        ...(item.variant ? { variant: item.variant } : {}),
-      })),
-      channel: input?.channel,
-      order_type: orderType.value,
-      collection: input?.collection,
-      payment_method: input?.payment_method,
-      requested_for: input?.requested_for,
-      room_service: input?.room_service,
-      table: input?.table,
-      customer: input?.customer,
-    })
-    if (!created) return null
-
-    const isWaitingForAcceptance = created.status === 'pending_acceptance'
-    const nextAwaitingAcceptance =
-      isWaitingForAcceptance &&
-        ['collection', 'delivery', 'pre_order', 'room_service'].includes(
-          orderType.value
-        )
-    trackedOrder.value = created
-    acceptedOrder.value = false
-    awaitingAcceptance.value = nextAwaitingAcceptance
-
-    return created
-  }
-
-  async function pay() {
-    const orderId = text(trackedOrder.value?.id)
-    if (!orderId) return
-
-    await createCheckoutSession(orderId)
-  }
-
-  watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
-    if (!status || !awaitingAcceptance.value) return
-    if (isClearedOrderStatus(status.status)) {
-      trackedOrder.value = null
-      awaitingAcceptance.value = false
-      acceptedOrder.value = false
-      message.value = ''
-      return
-    }
-    if (status.status === 'pending_acceptance') return
-
-    acceptedOrder.value = true
-  })
-
-  return {
-    awaitingAcceptance,
-    acceptedOrder,
-    sentOrder: trackedOrder,
-    awaitingMessage,
-    items,
-    quantity,
-    creatingItemId,
-    message,
-    error,
-    payment,
-    trackedStatus: trackedOrderStatus,
-    add,
-    remove,
-    clear,
-    pay,
-    place,
-  }
-}
-
-function useCreate(
-  menuId: MaybeRefOrGetter<string>,
-  options: UseMenuOrderCreateOptions = {}
-) {
-  const { currentUser } = useAuth()
-  const id = computed(() => text(toValue(menuId)))
-  const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
-  const menuContext = computed(() =>
-    normalizeMenuRouteContext(toValue(options.menuContext))
-  )
-  const endpoint = computed(() => {
-    if (!id.value) return ''
-
-    const query = new URLSearchParams()
-    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
-
-    const qs = query.toString()
-    return `/api/menus/${encodeURIComponent(id.value)}/orders${qs ? `?${qs}` : ''}`
-  })
-  const idempotency = useOrderIdempotency(endpoint)
-  const creatingItemId = ref('')
-  const message = ref('')
-  const error = ref('')
-  const checkoutPending = ref(false)
-  const checkoutMessage = ref('')
-  const checkoutError = ref('')
-
-  const createOrder = async (input: CreateMenuOrderInput) => {
-    const items = input.items
-      .map((item) => {
-        const addOns = cleanAddOns(item.addOns)
-        const variant = cleanVariant(item.variant)
-
-        return {
-          itemId: text(item.itemId),
-          ...(item.menuId ? { menuId: text(item.menuId) } : {}),
-          quantity: Math.max(1, Number(item.quantity || 1) || 1),
-          ...(addOns.length ? { addOns } : {}),
-          ...(variant ? { variant } : {}),
-        }
-      })
-      .filter((item) => item.itemId)
-    if (!endpoint.value || !items.length) return null
-
-    creatingItemId.value = 'order'
-    message.value = ''
-    error.value = ''
-
-    try {
-      const body = {
-        items,
-        channel: input.channel,
-        order_type: input.order_type,
-        collection: input.collection,
-        payment_method: input.payment_method,
-        ...(input.requested_for ? { requested_for: input.requested_for } : {}),
-        ...(input.room_service ? { room_service: input.room_service } : {}),
-        ...(input.table ? { table: input.table } : {}),
-        customer: cleanCustomer(input.customer),
-      }
-      const authToken = input.channel === 'staff_pos'
-        ? await currentUser.value?.getIdToken()
-        : ''
-      if (input.channel === 'staff_pos' && !authToken) {
-        throw new Error('Sign in before using Staff POS.')
-      }
-      const idempotencyKey = await idempotency.keyFor(body)
-      const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
-        method: 'POST',
-        ...(authToken
-          ? { headers: { Authorization: `Bearer ${authToken}` } }
-          : {}),
-        body: {
-          ...body,
-          idempotency_key: idempotencyKey,
-        },
-      })
-
-      if (created.payment?.required && created.payment.status !== 'paid') {
-        message.value = 'Starting secure payment...'
-        await createCheckoutSession(created.id)
-        idempotency.complete()
-        return created
-      }
-
-      if (created.status === 'pending_acceptance') {
-        message.value = created.order_number
-          ? `Order ${created.order_number} sent. Waiting for kitchen acceptance.`
-          : 'Order sent. Waiting for kitchen acceptance.'
-        idempotency.complete()
-        return created
-      }
-
-      message.value = created.order_number
-        ? `Order ${created.order_number} sent to the kitchen.`
-        : 'Order sent to the kitchen.'
-
-      idempotency.complete()
-      return created
-    } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
-      const causeMessage = err instanceof Error ? err.message : ''
-      error.value = statusMessage || causeMessage || 'Order could not be sent.'
-
-      return null
-    } finally {
-      creatingItemId.value = ''
-    }
-  }
-
-  const createCheckoutSession = async (orderId: string) => {
-    const orderPath = text(orderId)
-    if (!id.value || !orderPath) return
-
-    checkoutPending.value = true
-    checkoutMessage.value = 'Opening secure payment...'
-    checkoutError.value = ''
-
-    const query = new URLSearchParams()
-    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
-    const qs = query.toString()
-    try {
-      const response = await $fetch<{ url?: string }>(
-        `/api/menus/${encodeURIComponent(id.value)}/orders/${encodeURIComponent(orderPath)}/checkout-session${qs ? `?${qs}` : ''}`,
-        {
-          method: 'POST',
-        }
-      )
-      const checkoutUrl = text(response?.url)
-      if (!checkoutUrl) {
-        throw new Error('Payment checkout could not be started.')
-      }
-
-      checkoutMessage.value = 'Redirecting to Stripe...'
-      if (import.meta.client) {
-        window.location.href = checkoutUrl
-      }
-    } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
-      checkoutError.value = statusMessage || 'Payment checkout could not be started.'
-      throw err
-    } finally {
-      checkoutPending.value = false
-    }
-  }
-
-  return {
-    creatingItemId,
-    message,
-    error,
-    checkoutError,
-    checkoutMessage,
-    checkoutPending,
-    createOrder,
-    createCheckoutSession,
-  }
-}
-
-function useStatus(
-  menuId: MaybeRefOrGetter<string>,
-  orderId: MaybeRefOrGetter<string | null | undefined>,
-  options: UseMenuOrderStatusOptions = {}
-) {
-  const status = ref<KitchenOrderFunnelStatus | null>(null)
-  const pending = ref(false)
-  const error = ref('')
-  let timer: number | null = null
-
-  const endpoint = computed(() => {
-    const id = text(toValue(menuId))
-    const order = text(toValue(orderId))
-    if (!id || !order) return ''
-
-    const query = new URLSearchParams()
-    const kitchenSlug = text(toValue(options.kitchenSlug))
-    if (kitchenSlug) query.set('kitchenSlug', kitchenSlug)
-
-    const qs = query.toString()
-    return `/api/menus/${encodeURIComponent(id)}/orders/${encodeURIComponent(order)}${qs ? `?${qs}` : ''}`
-  })
-  const enabled = computed(() =>
-    toValue(options.enabled) !== false && Boolean(endpoint.value)
-  )
-
-  async function refresh() {
-    if (!enabled.value) return null
-
-    pending.value = true
-    error.value = ''
-    try {
-      const nextStatus = await $fetch<KitchenOrderFunnelStatus>(endpoint.value)
-      status.value = nextStatus
-      return nextStatus
-    } catch (err) {
-      const statusCode = err && typeof err === 'object' && 'statusCode' in err
-        ? Number((err as { statusCode?: unknown }).statusCode)
-        : 0
-      if (statusCode === 404) {
-        status.value = {
-          id: text(toValue(orderId)),
-          order_number: '',
-          status: 'deleted',
-          order_type: '',
-          fire_state: '',
-          estimated_ready_minutes: 0,
-          estimated_ready_at: '',
-          driver_watching_count: 0,
-        }
-        return status.value
-      }
-
-      error.value = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : 'Order status could not be checked.'
-      return null
-    } finally {
-      pending.value = false
-    }
-  }
-
-  function stop() {
-    if (!timer) return
-    window.clearTimeout(timer)
-    timer = null
-  }
-
-  function schedule() {
-    stop()
-    if (!import.meta.client || !enabled.value) return
-    timer = window.setTimeout(async () => {
-      await refresh()
-      schedule()
-    }, 2500)
-  }
-
-  watch(enabled, (isEnabled: boolean) => {
-    if (!isEnabled) {
-      stop()
-      status.value = null
-      return
-    }
-
-    refresh()
-    schedule()
-  }, { immediate: true })
-
-  onBeforeUnmount(stop)
-
-  return {
-    status,
-    pending,
-    error,
-    refresh,
-    stop,
   }
 }

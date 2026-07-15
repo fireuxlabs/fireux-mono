@@ -7,6 +7,10 @@ import {
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
+import {
+  isKitchenOrderStatus,
+  isKitchenOrderType,
+} from '../../../../../models/kitchen/order.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {
@@ -77,14 +81,21 @@ export default defineEventHandler(async (event) => {
     ? data.driver_responses as Record<string, { status?: unknown }>
     : {}
   const match = fulfilmentMatch(data.fulfilment_match)
+  const status = text(data.status)
+  const orderType = text(data.order_type)
+  if (!isKitchenOrderStatus(status) || !isKitchenOrderType(orderType)) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Order lifecycle is invalid.',
+    })
+  }
 
   return {
     id: orderId,
     order_number: text(data.order_number),
-    status: text(data.status),
-    order_type: text(data.order_type),
+    status,
+    order_type: orderType,
     ...(match ? { fulfilment_match: match } : {}),
-    fire_state: text(data.fire_state),
     estimated_ready_minutes: numberValue(data.estimated_ready_minutes),
     estimated_ready_at: timestampIso(data.estimated_ready_at),
     driver_watching_count: Object.values(driverResponses)

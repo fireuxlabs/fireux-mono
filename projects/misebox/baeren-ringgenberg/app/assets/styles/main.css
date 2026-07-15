@@ -1,0 +1,53 @@
+@layer base {
+  :root {
+    /* Nuxt UI primary palette: Bären terracotta. */
+    --color-theme-50: #f7efed;
+    --color-theme-100: #f0e0dc;
+    --color-theme-200: #e5c8c1;
+    --color-theme-300: #d8ada1;
+    --color-theme-400: #ba7866;
+    --color-theme-500: #a13b23;
+    --color-theme-600: #8e3420;
+    --color-theme-700: #7a2d1b;
+    --color-theme-800: #612315;
+    --color-theme-900: #471a0f;
+    --color-theme-950: #34130b;
+
+    --ui-primary: var(--color-theme-500);
+    --ui-primary-hover: var(--color-theme-600);
+    --ui-primary-active: var(--color-theme-700);
+
+    /* Stable Bären brand primitives. */
+    --baeren-canvas: #f2ecdf;
+    --baeren-canvas-rgb: 242 236 223;
+    --baeren-surface-rgb: 255 252 245;
+    --baeren-nav-surface-rgb: 255 250 239;
+    --baeren-ink: #211a15;
+    --baeren-ink-rgb: 33 26 21;
+    --baeren-ink-muted: #665a50;
+    --baeren-nav-ink: #594b40;
+    --baeren-forest: #1d2923;
+    --baeren-forest-raised: #26352c;
+    --baeren-on-dark: #fff8e9;
+    --baeren-on-dark-rgb: 255 248 233;
+    --baeren-accent: var(--color-theme-500);
+    --baeren-accent-rgb: 161 59 35;
+    --baeren-event: #ddbd7d;
+    --baeren-event-ink: #2b2119;
+    --baeren-border: #ded2c1;
+    --baeren-border-hover: #b99476;
+    --baeren-card-shadow-rgb: 68 47 32;
+    --baeren-action-shadow-rgb: 18 9 5;
+    --baeren-nav-border-rgb: 63 48 37;
+    --baeren-nav-shadow-rgb: 29 21 16;
+
+    /* Shared Misebox tenant chrome consumes the generic brand seam. */
+    --brand-canvas: var(--baeren-canvas);
+    --brand-canvas-rgb: var(--baeren-canvas-rgb);
+    --brand-ink: var(--baeren-ink);
+    --brand-ink-rgb: var(--baeren-ink-rgb);
+    --brand-primary: var(--baeren-accent);
+    --brand-accent: var(--baeren-accent);
+    --brand-accent-rgb: var(--baeren-accent-rgb);
+  }
+}

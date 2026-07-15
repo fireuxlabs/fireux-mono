@@ -7,7 +7,11 @@ import {
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import type { KitchenOrderType } from '../../../../models/kitchen/order.model.ts'
+import {
+  isKitchenOrderStatus,
+  type KitchenOrderStatus,
+  type KitchenOrderType,
+} from '../../../../models/kitchen/order.model.ts'
 import { statusAfterPayment } from '../../../menu/ordering/payment.ts'
 import {
   allowUnsignedStripeWebhook,
@@ -133,10 +137,24 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   const orderType = text(order.order_type) as KitchenOrderType
   const currentStatus = text(order.status).toLowerCase()
-  const paidStatus = ['cancelled', 'canceled', 'deleted', 'trashed', 'refunded']
-    .includes(currentStatus)
+  const terminalStatus: KitchenOrderStatus | null =
+    currentStatus === 'cancelled' ||
+    currentStatus === 'completed' ||
+    currentStatus === 'trashed'
       ? currentStatus
-      : text(payment.resume_status) || statusAfterPayment(orderType)
+      : null
+  const resumeStatus = text(payment.resume_status)
+  if (resumeStatus && !isKitchenOrderStatus(resumeStatus)) {
+    console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid resume state', {
+      orderId: metadata.orderId,
+      resumeStatus,
+    })
+    return { received: true }
+  }
+  const resumableStatus = isKitchenOrderStatus(resumeStatus)
+    ? resumeStatus
+    : null
+  const paidStatus = terminalStatus || resumableStatus || statusAfterPayment(orderType)
   const now = FieldValue.serverTimestamp()
 
   await orderRef.set(

@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-15
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guards/components.mjs
 // Component registration guard.

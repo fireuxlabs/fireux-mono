@@ -3,6 +3,7 @@ import type { MenuOrderingConfig } from '../../../models/kitchen/menu/menu.model
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
+  KitchenOrderStatus,
 } from '../../../models/kitchen/order.model.ts'
 import {
   checkMenuDeliveryAddress,
@@ -27,7 +28,7 @@ export type ResolvedMenuOrderFulfilment = {
   matchSnapshot?: Record<string, unknown>
   payment: KitchenOrderPayment
   policySnapshot?: Record<string, unknown>
-  status: string
+  status: KitchenOrderStatus
   total: number
 }
 
@@ -111,7 +112,7 @@ export async function resolveMenuOrderFulfilment(input: {
     ? 'pending_payment'
     : strategy.requiresAcceptance
       ? 'pending_acceptance'
-      : 'open'
+      : 'accepted'
   const policySnapshot = command.orderTypeConfig
     ? {
         order_type: command.orderTypeConfig.type,

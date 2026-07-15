@@ -95,9 +95,6 @@ const paymentAccepted = computed(() =>
 const orderStatus = computed(() =>
   text(order.value.status || props.funnel.processing.status)
 )
-const fireState = computed(() =>
-  text(order.value.fire_state || props.funnel.processing.fire_state)
-)
 const isKioskFunnel = computed(() =>
   ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
 )
@@ -129,11 +126,7 @@ const destinationLabel = computed(() => {
   return ''
 })
 const readyForCounter = computed(() =>
-  isKioskFunnel.value &&
-    (
-      ['ready', 'on_pass'].includes(orderStatus.value) ||
-      fireState.value === 'ready_to_fire'
-    )
+  isKioskFunnel.value && orderStatus.value === 'ready'
 )
 const detailTitle = computed(() => {
   if (counterReference.value) {

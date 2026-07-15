@@ -4,6 +4,7 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
+  KitchenOrderStatus,
   KitchenOrderType,
 } from '../../../models/kitchen/order.model.ts'
 import { normalizePaymentMethod, text } from './order-request.ts'
@@ -112,10 +113,12 @@ const depositAmount = (
   return 0
 }
 
-export const statusAfterPayment = (orderType: KitchenOrderType) =>
+export const statusAfterPayment = (
+  orderType: KitchenOrderType
+): KitchenOrderStatus =>
   menuOrderTypeStrategy(orderType).requiresAcceptance
     ? 'pending_acceptance'
-    : 'open'
+    : 'accepted'
 
 export function resolveMenuOrderPayment(
   input: ResolveMenuOrderPaymentInput

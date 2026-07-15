@@ -9,25 +9,16 @@ export type MenuOrderVariantInput = {
   id?: string
   label?: string
   price?: number
-  priceLabel?: string
+  price_label?: string
 }
 
 export type CreateMenuOrderBody = {
   idempotency_key?: string
   channel?: KitchenOrderChannel | string
-  itemId?: string
-  menuId?: string
-  menu_id?: string
-  quantity?: number
-  addOns?: MenuOrderVariantInput[]
-  add_ons?: MenuOrderVariantInput[]
-  variant?: MenuOrderVariantInput
   items?: Array<{
-    itemId?: string
-    menuId?: string
+    item_id?: string
     menu_id?: string
     quantity?: number
-    addOns?: MenuOrderVariantInput[]
     add_ons?: MenuOrderVariantInput[]
     variant?: MenuOrderVariantInput
   }>
@@ -86,14 +77,14 @@ const readVariant = (value: unknown): MenuOrderVariantInput | null => {
   const id = text(source.id)
   const label = text(source.label)
   const price = Number(source.price)
-  const priceLabel = text(source.priceLabel || source.price_label)
+  const priceLabel = text(source.price_label)
   if (!id && !label) return null
 
   return {
     id,
     label,
     ...(Number.isFinite(price) && price > 0 ? { price } : {}),
-    ...(priceLabel ? { priceLabel } : {}),
+    ...(priceLabel ? { price_label: priceLabel } : {}),
   }
 }
 
@@ -105,22 +96,14 @@ const readAddOns = (value: unknown) =>
 export const readRequestedMenuOrderItems = (
   body: CreateMenuOrderBody | null
 ): RequestedMenuOrderItem[] => {
-  const items = Array.isArray(body?.items)
-    ? body.items
-    : [{
-        itemId: body?.itemId,
-        menuId: body?.menuId || body?.menu_id,
-        quantity: body?.quantity,
-        addOns: body?.addOns || body?.add_ons,
-        variant: body?.variant,
-      }]
+  const items = Array.isArray(body?.items) ? body.items : []
 
   return items
     .map((item) => ({
-      itemId: text(item.itemId),
-      menuId: text(item.menuId || item.menu_id),
+      itemId: text(item.item_id),
+      menuId: text(item.menu_id),
       quantity: quantity(item.quantity),
-      addOns: readAddOns(item.addOns || item.add_ons),
+      addOns: readAddOns(item.add_ons),
       variant: readVariant(item.variant),
     }))
     .filter((item) => item.itemId)

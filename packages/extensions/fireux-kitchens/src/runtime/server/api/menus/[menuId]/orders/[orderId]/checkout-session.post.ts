@@ -10,7 +10,10 @@ import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model.ts'
+import {
+  isKitchenOrderStatus,
+  type KitchenOrderType,
+} from '../../../../../../models/kitchen/order.model.ts'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
 import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
@@ -99,7 +102,7 @@ export default defineEventHandler(async (event) => {
   const orderStatus = text(order.status).toLowerCase()
   const paymentStatus = text(payment.status).toLowerCase()
   if (
-    ['cancelled', 'canceled', 'deleted', 'trashed', 'refunded'].includes(orderStatus) ||
+    ['cancelled', 'completed', 'trashed'].includes(orderStatus) ||
     paymentStatus === 'refunded'
   ) {
     throw createError({
@@ -235,10 +238,22 @@ function resumeStatusForOrder(
   payment: Record<string, unknown>
 ) {
   const stored = text(payment.resume_status)
-  if (stored) return stored
+  if (stored) {
+    if (isKitchenOrderStatus(stored)) return stored
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Order payment resume state is invalid.',
+    })
+  }
 
   const status = text(order.status)
-  if (status && status !== 'pending_payment') return status
+  if (status && status !== 'pending_payment') {
+    if (isKitchenOrderStatus(status)) return status
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Order lifecycle is invalid.',
+    })
+  }
 
   return statusAfterPayment(text(order.order_type) as KitchenOrderType)
 }

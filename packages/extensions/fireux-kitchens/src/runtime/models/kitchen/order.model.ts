@@ -36,14 +36,17 @@ export type KitchenOrderItem = {
   checked: boolean
 }
 
-export type KitchenOrderType =
-  | 'dine_in'
-  | 'eat_in'
-  | 'takeaway'
-  | 'collection'
-  | 'delivery'
-  | 'pre_order'
-  | 'room_service'
+export const KitchenOrderTypes = [
+  'dine_in',
+  'eat_in',
+  'takeaway',
+  'collection',
+  'delivery',
+  'pre_order',
+  'room_service',
+] as const
+
+export type KitchenOrderType = (typeof KitchenOrderTypes)[number]
 
 export type KitchenOrderChannel =
   | 'menu'
@@ -52,19 +55,25 @@ export type KitchenOrderChannel =
   | 'room_service'
   | 'staff_pos'
 
-export type KitchenOrderFireState =
-  | 'ready_to_fire'
-  | 'held'
-  | 'fired'
+export const KitchenOrderStatuses = [
+  'pending_payment',
+  'pending_acceptance',
+  'accepted',
+  'ready',
+  'completed',
+  'cancelled',
+  'trashed',
+] as const
 
-export type KitchenOrderStatus =
-  | 'pending_payment'
-  | 'pending_acceptance'
-  | 'open'
-  | 'on_pass'
-  | 'closed'
-  | 'cancelled'
-  | 'trashed'
+export type KitchenOrderStatus = (typeof KitchenOrderStatuses)[number]
+
+export type KitchenOrderTransition =
+  | 'accept'
+  | 'reject'
+  | 'mark_ready'
+  | 'return_to_queue'
+  | 'complete'
+  | 'trash'
 
 export type KitchenOrderBoardStage =
   | 'incoming'
@@ -110,7 +119,7 @@ export type KitchenOrderPayment = {
   amount_chf?: number
   currency_code?: string
   reason?: string
-  resume_status?: string
+  resume_status?: KitchenOrderStatus
   stripe_checkout_session_id?: string
   stripe_payment_intent_id?: string
   paid_at?: string | FirebaseTimestamp
@@ -148,7 +157,7 @@ export const KitchenOrderModel = {
   kitchen_id: '' as string,
 
   order_number: '' as string,
-  status: 'open' as KitchenOrderStatus,
+  status: 'pending_acceptance' as KitchenOrderStatus,
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,
   collection: {} as KitchenOrderCollection,
@@ -156,8 +165,6 @@ export const KitchenOrderModel = {
   room_service: {} as KitchenOrderRoomService,
   estimated_ready_minutes: 0 as number,
   estimated_ready_at: '' as string | FirebaseTimestamp,
-  fire_state: 'fired' as KitchenOrderFireState,
-
   items: [] as KitchenOrderItem[],
   // Snapshot of the selected menu order-type policy at order time.
   // Fulfilment can evolve later without rewriting historical tickets.
@@ -198,32 +205,25 @@ export type KitchenOrder = {
 
 export function deriveKitchenOrderBoardStage(order: {
   status?: unknown
-  fire_state?: unknown
 }): KitchenOrderBoardStage {
-  const status = String(order.status ?? '').trim().toLowerCase()
-  const fireState = String(order.fire_state ?? '').trim().toLowerCase()
+  const status = String(order.status ?? '').trim()
 
-  if (['trashed', 'deleted'].includes(status)) return 'trash'
-  if (
-    ['archived', 'cancelled', 'canceled', 'closed', 'rejected', 'refunded']
-      .includes(status)
-  ) {
-    return 'recent'
-  }
-  if (
-    ['pending_payment', 'pending_acceptance', 'incoming', 'new']
-      .includes(status)
-  ) {
+  if (status === 'trashed') return 'trash'
+  if (status === 'completed' || status === 'cancelled') return 'recent'
+  if (status === 'pending_payment' || status === 'pending_acceptance') {
     return 'incoming'
   }
-  if (
-    ['on_pass', 'pass', 'ready'].includes(status) ||
-    fireState === 'ready_to_fire'
-  ) {
-    return 'pass'
-  }
-  if (['open', 'firing'].includes(status)) return 'queue'
+  if (status === 'ready') return 'pass'
+  if (status === 'accepted') return 'queue'
   return 'unmapped'
+}
+
+export function isKitchenOrderStatus(value: unknown): value is KitchenOrderStatus {
+  return KitchenOrderStatuses.includes(value as KitchenOrderStatus)
+}
+
+export function isKitchenOrderType(value: unknown): value is KitchenOrderType {
+  return KitchenOrderTypes.includes(value as KitchenOrderType)
 }
 
 export type KitchenOrderCreateInput = Omit<KitchenOrder, 'created' | 'updated'>

@@ -8,12 +8,17 @@
     <MenuDetail
       menu-id="pizza-snacks-drinks"
       kitchen-slug="baeren-ringgenberg"
-      menu-context="pre_order"
+      :menu-context="menuContext"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
+const menuContext = computed<'pre_order' | 'delivery'>(() =>
+  route.query.context === 'delivery' ? 'delivery' : 'pre_order',
+)
+
 definePageMeta({
   layout: 'menu',
   nav: {

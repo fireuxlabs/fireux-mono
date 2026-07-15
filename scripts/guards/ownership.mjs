@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-15
 // usage_note: prevents project apps from re-owning package-owned console families.
 // FILE: scripts/guards/ownership.mjs
 

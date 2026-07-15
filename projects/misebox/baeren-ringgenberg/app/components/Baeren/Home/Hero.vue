@@ -1,224 +1,170 @@
 <template>
-  <section ref="scrollRoot" class="baeren-home-scroll">
-    <div class="baeren-home-scroll__photo" aria-hidden="true" />
+  <main class="baeren-home">
+    <section class="baeren-home__hero" aria-labelledby="baeren-home-title">
+      <BaerenHomeBackdrop />
 
-    <div class="baeren-home-scroll__stages">
-      <BaerenHomeTitle />
-      <BaerenHomeSurfaces />
-    </div>
-  </section>
+      <div class="baeren-home__hero-content">
+        <BaerenHomeTitle />
+
+        <div class="baeren-home__actions" aria-label="Direkt auswählen">
+          <UButton
+            :to="content.links.booking"
+            target="_blank"
+            rel="noopener noreferrer"
+            label="Zimmer buchen"
+            icon="i-lucide-calendar-check"
+            color="neutral"
+            size="lg"
+            block
+            class="baeren-home__action baeren-home__action--primary"
+          />
+          <UButton
+            to="/menu"
+            label="Speisekarte"
+            icon="i-lucide-utensils"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            block
+            class="baeren-home__action baeren-home__action--secondary"
+          />
+          <UButton
+            to="/menu?context=delivery"
+            label="Lieferung bestellen"
+            icon="i-lucide-bike"
+            color="primary"
+            size="lg"
+            block
+            class="baeren-home__action baeren-home__action--delivery"
+          />
+          <UButton
+            to="/location"
+            label="Route"
+            icon="i-lucide-map-pin"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            block
+            class="baeren-home__action baeren-home__action--utility"
+          />
+          <UButton
+            :to="hotelPhoneHref"
+            label="Anrufen"
+            icon="i-lucide-phone"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            block
+            class="baeren-home__action baeren-home__action--utility"
+          />
+        </div>
+      </div>
+    </section>
+
+    <BaerenHomeSurfaces />
+  </main>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { baerenRinggenbergContent } from '../../../config/content.config'
 
-const scrollRoot = ref<HTMLElement | null>(null)
-let maskFrame: number | undefined
-let landingAssistTimer: number | undefined
-let landingAssistFrame: number | undefined
+defineOptions({ name: 'BaerenHomeHero' })
 
-const landingAssistEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown'] as const
-const landingElementsDuration = 2800
-const landingTitleDuration = 900
-const landingTitleSpeed = landingElementsDuration / landingTitleDuration
-
-const getTitleElement = () =>
-  (scrollRoot.value?.querySelector('[data-baeren-home-title]') as HTMLElement | null) ?? null
-
-const getSurfaceElements = () =>
-  Array.from(
-    scrollRoot.value?.querySelectorAll('[data-baeren-home-surface]') ?? []
-  ) as HTMLElement[]
-
-function removeLandingAssistListeners() {
-  landingAssistEvents.forEach((eventName) => {
-    window.removeEventListener(eventName, cancelLandingAssist)
-  })
-}
-
-function clearLandingTitleLead() {
-  getTitleElement()?.style.removeProperty('transform')
-}
-
-function settleEvenSurfaces() {
-  getSurfaceElements().forEach((surface) => {
-    if (surface.dataset.pairPosition === 'even') {
-      surface.dataset.landingSettled = 'true'
-    }
-  })
-}
-
-function cancelLandingAssist() {
-  if (landingAssistTimer !== undefined) {
-    window.clearTimeout(landingAssistTimer)
-    landingAssistTimer = undefined
-  }
-
-  if (landingAssistFrame !== undefined) {
-    window.cancelAnimationFrame(landingAssistFrame)
-    landingAssistFrame = undefined
-  }
-
-  removeLandingAssistListeners()
-  clearLandingTitleLead()
-}
-
-function runLandingAssist() {
-  landingAssistTimer = undefined
-
-  if (
-    window.scrollY > 4
-    || window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
-    removeLandingAssistListeners()
-    return
-  }
-
-  const title = getTitleElement()
-  const [firstSurface] = getSurfaceElements()
-  if (!title || !firstSurface) {
-    removeLandingAssistListeners()
-    return
-  }
-
-  const stickyTop = Number.parseFloat(window.getComputedStyle(title).top) || 0
-  const startTop = window.scrollY
-  const titleStartTop = title.getBoundingClientRect().top
-  const titleTravel = Math.max(0, titleStartTop - stickyTop)
-  const targetTop = startTop + firstSurface.getBoundingClientRect().top - stickyTop
-
-  if (targetTop <= startTop) {
-    removeLandingAssistListeners()
-    return
-  }
-
-  const travel = targetTop - startTop
-  const pixelsPerMillisecond = travel / landingElementsDuration
-  let currentTop = startTop
-  let previousFrame: number | undefined
-
-  const animate = (now: number) => {
-    if (previousFrame === undefined) {
-      previousFrame = now
-      landingAssistFrame = window.requestAnimationFrame(animate)
-      return
-    }
-
-    const frameDuration = Math.min(now - previousFrame, 32)
-    previousFrame = now
-    currentTop = Math.min(targetTop, currentTop + pixelsPerMillisecond * frameDuration)
-    window.scrollTo(0, currentTop)
-
-    const currentTravel = currentTop - startTop
-    const scrollProgress = currentTravel / travel
-    const titleProgress = Math.min(scrollProgress * landingTitleSpeed, 1)
-    const naturalTitleTop = Math.max(stickyTop, titleStartTop - currentTravel)
-    const targetTitleTop = titleStartTop - titleTravel * titleProgress
-    const titleOffset = targetTitleTop - naturalTitleTop
-    title.style.transform = `translate3d(0, ${titleOffset}px, 0)`
-
-    if (currentTop < targetTop) {
-      landingAssistFrame = window.requestAnimationFrame(animate)
-      return
-    }
-
-    landingAssistFrame = undefined
-    removeLandingAssistListeners()
-    clearLandingTitleLead()
-    settleEvenSurfaces()
-  }
-
-  landingAssistFrame = window.requestAnimationFrame(animate)
-}
-
-function updateSurfaceMasks() {
-  maskFrame = undefined
-
-  const title = getTitleElement()
-  if (!title) return
-
-  const maskEverySurface = window.matchMedia('(max-width: 640px)').matches
-  const boundary = title.getBoundingClientRect().bottom + 20
-
-  getSurfaceElements().forEach((surface) => {
-    const shouldMask = maskEverySurface || surface.dataset.side === 'left'
-
-    if (!shouldMask) {
-      surface.removeAttribute('data-clipping')
-      surface.style.removeProperty('--baeren-surface-clip')
-      return
-    }
-
-    const rect = surface.getBoundingClientRect()
-    const clip = Math.max(0, Math.min(rect.height + 24, boundary - rect.top))
-
-    if (clip <= 0) {
-      surface.removeAttribute('data-clipping')
-      surface.style.removeProperty('--baeren-surface-clip')
-      return
-    }
-
-    surface.dataset.clipping = 'true'
-    surface.style.setProperty('--baeren-surface-clip', `${clip}px`)
-  })
-}
-
-function scheduleSurfaceMasks() {
-  if (maskFrame !== undefined) return
-  maskFrame = window.requestAnimationFrame(updateSurfaceMasks)
-}
-
-onMounted(() => {
-  scheduleSurfaceMasks()
-  window.addEventListener('scroll', scheduleSurfaceMasks, { passive: true })
-  window.addEventListener('resize', scheduleSurfaceMasks)
-
-  landingAssistEvents.forEach((eventName) => {
-    window.addEventListener(eventName, cancelLandingAssist, { passive: true })
-  })
-  landingAssistTimer = window.setTimeout(runLandingAssist, 650)
-})
-
-onBeforeUnmount(() => {
-  if (landingAssistTimer !== undefined) window.clearTimeout(landingAssistTimer)
-  if (landingAssistFrame !== undefined) window.cancelAnimationFrame(landingAssistFrame)
-  removeLandingAssistListeners()
-  clearLandingTitleLead()
-  window.removeEventListener('scroll', scheduleSurfaceMasks)
-  window.removeEventListener('resize', scheduleSurfaceMasks)
-  if (maskFrame !== undefined) window.cancelAnimationFrame(maskFrame)
-})
+const content = baerenRinggenbergContent
+const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
 </script>
 
 <style scoped>
-.baeren-home-scroll {
+.baeren-home {
+  min-height: 100svh;
+  background: var(--baeren-canvas);
+  color: var(--baeren-ink);
+}
+
+.baeren-home__hero {
   position: relative;
-  display: grid;
-  width: 100vw;
-  margin-block-start: calc(0px - var(--ui-header-height));
-  margin-inline-start: calc(50% - 50vw);
+  isolation: isolate;
+  display: flex;
+  min-height: max(39rem, 100svh);
+  flex-direction: column;
+  background: var(--baeren-forest);
+  color: var(--baeren-on-dark);
 }
 
-.baeren-home-scroll__photo {
-  grid-area: 1 / 1;
-  position: sticky;
-  top: 0;
-  align-self: start;
-  height: 100svh;
-  background-image: url('/img/app/background.png');
-  background-position: center;
-  background-size: cover;
-}
-
-.baeren-home-scroll__stages {
-  grid-area: 1 / 1;
+.baeren-home__hero-content {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10svh;
-  padding-block: 100svh 32svh;
-  padding-inline: max(1rem, calc((100vw - 80rem) / 2));
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 1.25rem;
+  padding: 1.35rem 1rem calc(6.75rem + env(safe-area-inset-bottom));
+}
+
+.baeren-home__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+:deep(.baeren-home__action) {
+  min-height: 3rem;
+  justify-content: center;
+  border-radius: 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+:deep(.baeren-home__action--primary) {
+  background: var(--baeren-on-dark);
+  color: var(--baeren-ink);
+}
+
+:deep(.baeren-home__action--secondary) {
+  border-color: rgb(var(--baeren-on-dark-rgb) / 62%);
+  background: rgb(var(--baeren-on-dark-rgb) / 8%);
+  color: var(--baeren-on-dark);
+}
+
+:deep(.baeren-home__action--delivery) {
+  grid-column: 1 / -1;
+  color: var(--baeren-on-dark);
+  box-shadow: 0 0.75rem 1.75rem rgb(var(--baeren-action-shadow-rgb) / 24%);
+}
+
+:deep(.baeren-home__action--utility) {
+  border-color: rgb(var(--baeren-on-dark-rgb) / 38%);
+  background: rgb(var(--baeren-on-dark-rgb) / 12%);
+  color: var(--baeren-on-dark);
+}
+
+@media (max-width: 55.999rem) {
+  .baeren-home__hero-content {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .baeren-home__actions {
+    align-self: center;
+  }
+}
+
+@media (min-width: 56rem) {
+  .baeren-home__hero {
+    display: grid;
+    min-height: 100svh;
+  }
+
+  .baeren-home__hero-content {
+    grid-area: 1 / 1;
+    width: min(46rem, calc(100% - 4rem));
+    min-height: 100svh;
+    align-content: end;
+    margin-inline: max(2rem, calc((100vw - 80rem) / 2));
+    padding: 10rem 0 8rem;
+  }
+
+  .baeren-home__actions {
+    width: min(32rem, 100%);
+  }
 }
 </style>
