@@ -107,7 +107,10 @@ import {
 } from 'vue'
 import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
-import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
+import {
+  KitchenOrderModel,
+  type KitchenOrder,
+} from 'fireux-kitchens/runtime/models/kitchen/order.model'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelController,
@@ -186,15 +189,14 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
   order_id: 'demo-kiosk-order',
   order_number: 'K-104',
   status: 'ready',
-  fire_state: 'ready_to_fire',
   items: basketItems,
   total_chf: basketTotal,
   order: {
     id: 'demo-kiosk-order',
     order_number: 'K-104',
     order_type: 'takeaway',
+    channel: 'kiosk',
     status: 'ready',
-    fire_state: 'ready_to_fire',
     payment: {
       required: false,
       status: 'not_required',
@@ -204,6 +206,7 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
       id: 'demo-kiosk-order',
       order_number: 'K-104',
       order_type: 'takeaway',
+      channel: 'kiosk',
       status: 'ready',
       created_at: new Date().toISOString(),
       currency: 'CHF',
@@ -225,9 +228,10 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
 const kioskSending = reactive<MenuOrderingSending>({
   endpoint: '/api/menus/pizza-snacks-drinks/orders',
   body: {
+    channel: 'kiosk',
     order_type: 'takeaway',
     items: basketItems.map((item) => ({
-      itemId: item.id,
+      item_id: item.id,
       quantity: item.quantity,
     })),
     customer: {
@@ -235,9 +239,6 @@ const kioskSending = reactive<MenuOrderingSending>({
     },
   },
   pending: false,
-  expected_result: {
-    status: 'open',
-  },
   sent_order: kioskProcessing.order,
 })
 const kioskFunnel: MenuOrderingFunnelController = {
@@ -319,21 +320,26 @@ const screenShapes = computed(() => {
       ...withSubmission,
       given: {
         status: 'ready',
-        fire_state: 'ready_to_fire',
         message: `${kioskIncoming.customer?.name || 'Guest'}, your order is ready. Please collect from the counter.`,
       },
     },
   }
 })
 const kioskTicket = computed<KitchenOrder>(() => ({
+  ...KitchenOrderModel,
   id: kioskProcessing.order_id,
   kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
   menu_id: kioskOrder.menuId,
   order_number: kioskProcessing.order_number,
-  status: kioskProcessing.status,
+  status: 'ready',
   order_type: kioskOrder.orderType,
-  fire_state: kioskProcessing.fire_state,
-  customer: kioskIncoming.customer,
+  channel: 'kiosk',
+  customer: kioskIncoming.customer || {},
+  fulfilment_match: {
+    type: 'counter',
+    reference: kioskProcessing.order_number,
+    handoff: 'bag',
+  },
   items: basketItems.map((item, index) => ({
     id: `item-${index + 1}`,
     dish_id: item.id,
@@ -347,7 +353,7 @@ const kioskTicket = computed<KitchenOrder>(() => ({
     status: 'not_required',
     currency_code: 'CHF',
   },
-}) as unknown as KitchenOrder)
+}))
 const allergenAccepted = computed({
   get: () => Boolean(kioskIncoming.allergen_checked),
   set: (accepted: boolean) => {

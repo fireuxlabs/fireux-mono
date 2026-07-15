@@ -9,6 +9,7 @@ import type {
 } from '../../../models/kitchen/order.model.ts'
 import { resolveKitchenOrderPostPaymentStatus } from '../../../models/kitchen/order.model.ts'
 import { normalizePaymentMethod, text } from './order-request.ts'
+import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 type ResolveMenuOrderPaymentMethodInput = {
   orderTypeConfig?: MenuOrderTypeConfig

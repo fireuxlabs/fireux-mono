@@ -1,229 +1,193 @@
 <template>
-  <div class="space-y-16 pb-20">
-    <section
-      class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40"
-    >
-      <UContainer class="grid gap-10 md:grid-cols-2">
-        <div class="space-y-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            {{ appMeta.aboutLabel }}
-          </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
-            {{ appSpec.tagline }}
+  <div class="overflow-hidden pb-20">
+    <section class="relative border-b border-default py-20 sm:py-28">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(171,182,132,0.22),transparent_42%)]" />
+      <UContainer class="relative grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div class="max-w-3xl">
+          <UBadge color="primary" variant="soft">About Misebox</UBadge>
+          <h1 class="mt-6 text-5xl font-semibold tracking-tight text-highlighted sm:text-6xl lg:text-7xl">
+            A shared operating system for the people behind every service.
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
-            {{ appSpec.description }}
+          <p class="mt-7 max-w-2xl text-lg leading-8 text-muted sm:text-xl">
+            Misebox turns menus, kitchen knowledge, daily preparation, people, and suppliers into one connected workspace. It helps hospitality teams spend less time reconstructing information and more time running a great service.
           </p>
-          <p class="text-sm text-gray-600 dark:text-gray-300">
-            {{ appMeta.aboutSupportingCopy }}
-          </p>
-          <div class="flex flex-wrap gap-3">
-            <UButton :to="appMeta.aboutPrimaryAction.to" color="primary" size="lg">
-              {{ appMeta.aboutPrimaryAction.label }}
+          <div class="mt-9 flex flex-wrap gap-3">
+            <UButton to="/get-started" size="lg" trailing-icon="i-lucide-arrow-right">
+              Get started
             </UButton>
-            <UButton :to="appMeta.aboutSecondaryAction.to" color="neutral" variant="ghost" size="lg">
-              {{ appMeta.aboutSecondaryAction.label }}
+            <UButton to="/road-map" color="neutral" variant="soft" size="lg" icon="i-lucide-map">
+              See the road map
             </UButton>
           </div>
         </div>
 
-        <div
-          class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
-        >
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em]">
-            {{ appMeta.aboutPanelTitle }}
+        <div class="rounded-3xl border border-default bg-default/80 p-6 shadow-xl shadow-primary/5 backdrop-blur sm:p-8">
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">The idea</p>
+          <p class="mt-4 text-2xl font-semibold leading-tight text-highlighted">
+            The menu should not be the end product. It should be the front door to how a kitchen works.
           </p>
-          <ul class="space-y-3">
-            <li
-              v-for="tick in appMeta.aboutPanelTicks"
-              :key="tick"
-              class="flex items-start gap-3"
-            >
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>{{ tick }}</span>
-            </li>
-          </ul>
-        </div>
-      </UContainer>
-    </section>
-
-    <section>
-      <UContainer>
-        <UCard>
-          <div class="space-y-4">
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              {{ appMeta.aboutSections.keyConceptsTitle }}
-            </h2>
-            <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-              <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
-                <span class="font-semibold text-gray-900 dark:text-white">{{ index + 1 }}. {{ concept.title }}</span><br>
-                {{ concept.description }}
-              </li>
-            </ol>
+          <div class="mt-7 grid grid-cols-2 gap-3">
+            <div v-for="item in ideaItems" :key="item.label" class="rounded-2xl bg-muted/60 p-4">
+              <UIcon :name="item.icon" class="size-5 text-primary" />
+              <p class="mt-3 text-sm font-medium text-highlighted">{{ item.label }}</p>
+            </div>
           </div>
-        </UCard>
+        </div>
       </UContainer>
     </section>
 
-    <section>
+    <section class="py-20">
       <UContainer>
-        <div class="mb-10 space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            {{ appMeta.aboutSections.modulesEyebrow }}
-          </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            {{ appMeta.aboutSections.modulesTitle }}
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Why Misebox exists</p>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+            Kitchen knowledge is valuable. Too often, it is also fragmented.
           </h2>
-          <p class="text-gray-600 dark:text-gray-300">
-            {{ appMeta.aboutSections.modulesDescription }}
+          <p class="mt-5 text-lg leading-8 text-muted">
+            A service depends on hundreds of details, but those details are commonly split between paper, PDFs, spreadsheets, chat threads, supplier messages, and the memories of experienced people.
           </p>
         </div>
 
-        <UCard>
-          <UAccordion type="multiple" class="space-y-2">
-            <UAccordionItem
-              v-for="(module, index) in appSpec.modules"
-              :key="module.name"
-              :value="`module-${index}`"
-              :title="module.name"
-            >
-              <template #body>
-                <div class="space-y-3 text-sm">
-                  <p class="text-gray-600 dark:text-gray-300">{{ module.summary }}</p>
-                  <div class="flex flex-wrap gap-2">
-                    <UBadge
-                      v-for="entityName in module.entities"
-                      :key="`${module.name}-${entityName}`"
-                      color="neutral"
-                      variant="soft"
-                    >
-                      {{ entityName }}
-                    </UBadge>
-                  </div>
-                </div>
-              </template>
-            </UAccordionItem>
-          </UAccordion>
-        </UCard>
-      </UContainer>
-    </section>
-
-    <section>
-      <UContainer>
-        <div class="mb-10 space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            {{ appMeta.aboutSections.entitiesEyebrow }}
-          </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            {{ appMeta.aboutSections.entitiesTitle }}
-          </h2>
-        </div>
-
-        <div class="grid gap-6 md:grid-cols-2">
-          <article
-            v-for="entity in appSpec.entities"
-            :key="entity.name"
-            class="rounded-2xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60"
-          >
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ entity.name }}
-            </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              {{ entity.purpose }}
-            </p>
-            <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">
-              <span class="font-semibold text-gray-900 dark:text-white">Key fields:</span>
-              {{ entity.keyFields.join(', ') }}
-            </p>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              <span class="font-semibold text-gray-900 dark:text-white">Links to:</span>
-              {{ entity.linksTo.join(', ') }}
-            </p>
+        <div class="mt-12 grid gap-5 md:grid-cols-3">
+          <article v-for="problem in problems" :key="problem.title" class="rounded-3xl border border-default bg-default p-6">
+            <div class="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <UIcon :name="problem.icon" class="size-5" />
+            </div>
+            <h3 class="mt-5 text-lg font-semibold text-highlighted">{{ problem.title }}</h3>
+            <p class="mt-2 text-sm leading-6 text-muted">{{ problem.copy }}</p>
           </article>
         </div>
       </UContainer>
     </section>
 
-    <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
-      <UContainer class="space-y-8">
-        <div class="space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            {{ appMeta.aboutSections.structureEyebrow }}
-          </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            {{ appMeta.aboutSections.structureTitle }}
-          </h2>
-        </div>
-
-        <UCard>
-          <pre class="overflow-x-auto rounded bg-default p-4 text-xs leading-6">{{ relationshipMap }}</pre>
-        </UCard>
-
-        <div class="space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            {{ appMeta.aboutSections.examplesEyebrow }}
-          </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            {{ appMeta.aboutSections.examplesTitle }}
-          </h2>
-        </div>
-
-        <UCard>
-          <UAccordion type="multiple" class="space-y-2">
-            <UAccordionItem
-              v-for="(sample, index) in appSpec.samples"
-              :key="`${sample.entity}-${index}`"
-              :value="`sample-${index}`"
-              :title="sample.entity"
-            >
-              <template #body>
-                <pre class="overflow-x-auto rounded bg-default p-4 text-xs leading-6">{{ jsonOf(sample.example) }}</pre>
-              </template>
-            </UAccordionItem>
-          </UAccordion>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ appMeta.aboutSections.routesTitle }}
-            </h3>
-          </template>
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              v-for="route in appSpec.routes"
-              :key="route.path"
-              :to="route.path"
-              :icon="route.kind === 'console' ? 'i-lucide-terminal' : 'i-lucide-link'"
-              :color="route.kind === 'console' ? 'primary' : 'neutral'"
-              variant="soft"
-            >
-              {{ route.label }} · {{ route.path }}
-            </UButton>
+    <section class="border-y border-default bg-muted/30 py-20">
+      <UContainer>
+        <div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">One connected loop</p>
+            <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+              From what you serve to how you deliver it.
+            </h2>
+            <p class="mt-5 leading-7 text-muted">
+              Misebox gives each operational object a proper place, then connects it to the next decision. The result is a system that becomes more useful as the team uses it.
+            </p>
           </div>
-        </UCard>
+
+          <ol class="grid gap-4 sm:grid-cols-2">
+            <li v-for="(step, index) in operatingLoop" :key="step.title" class="rounded-3xl border border-default bg-default p-6">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-primary">0{{ index + 1 }}</span>
+                <UIcon :name="step.icon" class="size-5 text-dimmed" />
+              </div>
+              <h3 class="mt-8 text-lg font-semibold text-highlighted">{{ step.title }}</h3>
+              <p class="mt-2 text-sm leading-6 text-muted">{{ step.copy }}</p>
+            </li>
+          </ol>
+        </div>
+      </UContainer>
+    </section>
+
+    <section class="py-20">
+      <UContainer>
+        <div class="max-w-2xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Built around real roles</p>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+            One system, different views of the same truth.
+          </h2>
+        </div>
+        <div class="mt-10 grid gap-5 lg:grid-cols-3">
+          <article v-for="audience in audiences" :key="audience.title" class="group rounded-3xl border border-default p-7 transition hover:border-primary/40 hover:bg-primary/5">
+            <UIcon :name="audience.icon" class="size-7 text-primary" />
+            <h3 class="mt-6 text-xl font-semibold text-highlighted">{{ audience.title }}</h3>
+            <p class="mt-3 text-sm leading-6 text-muted">{{ audience.copy }}</p>
+            <UButton :to="audience.to" color="neutral" variant="link" class="mt-5 px-0" trailing-icon="i-lucide-arrow-right">
+              {{ audience.action }}
+            </UButton>
+          </article>
+        </div>
+      </UContainer>
+    </section>
+
+    <section class="py-20">
+      <UContainer>
+        <div class="rounded-[2rem] bg-gray-950 px-6 py-12 text-white sm:px-10 lg:px-14 dark:bg-gray-900">
+          <div class="grid gap-12 lg:grid-cols-2">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-300">How we build</p>
+              <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+                Useful on day one. Connected for what comes next.
+              </h2>
+              <p class="mt-5 leading-7 text-gray-300">
+                Misebox starts with practical tools such as public menus and kitchen workspaces, then grows into deeper operational coordination without forcing teams into an all-or-nothing rollout.
+              </p>
+            </div>
+            <ul class="space-y-5">
+              <li v-for="principle in principles" :key="principle.title" class="flex gap-4">
+                <div class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-primary/20 text-primary-200">
+                  <UIcon name="i-lucide-check" class="size-4" />
+                </div>
+                <div>
+                  <p class="font-semibold">{{ principle.title }}</p>
+                  <p class="mt-1 text-sm leading-6 text-gray-400">{{ principle.copy }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </UContainer>
+    </section>
+
+    <section class="pt-8">
+      <UContainer class="text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">The direction</p>
+        <h2 class="mx-auto mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+          Better kitchen systems create calmer services, stronger teams, and more resilient hospitality businesses.
+        </h2>
+        <p class="mx-auto mt-5 max-w-2xl leading-7 text-muted">
+          That is what Misebox is about: making the knowledge behind hospitality easier to use, share, and improve.
+        </p>
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <UButton to="/kitchens" size="lg" icon="i-lucide-chef-hat">Explore kitchens</UButton>
+          <UButton to="/solutions" color="neutral" variant="soft" size="lg">Explore solutions</UButton>
+        </div>
       </UContainer>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { appMeta } from '../meta'
+const ideaItems = [
+  { label: 'Menus and dishes', icon: 'i-lucide-notebook-tabs' },
+  { label: 'Recipes and prep', icon: 'i-lucide-list-checks' },
+  { label: 'People and roles', icon: 'i-lucide-users' },
+  { label: 'Suppliers and sourcing', icon: 'i-lucide-truck' },
+] as const
 
-type AppSpec = {
-  name: string
-  tagline: string
-  description: string
-  modules: ReadonlyArray<{ name: string; summary: string; entities: readonly string[] }>
-  entities: ReadonlyArray<{
-    name: string
-    purpose: string
-    keyFields: readonly string[]
-    linksTo: readonly string[]
-  }>
-  samples: ReadonlyArray<{ entity: string; example: Record<string, any> }>
-  routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'console' }>
-}
+const problems = [
+  { title: 'Information drifts', copy: 'The public menu, kitchen notes, allergen records, and team knowledge stop matching each other.', icon: 'i-lucide-files' },
+  { title: 'Experience walks out', copy: 'When knowledge lives in memory, every absence and staff change creates avoidable operational risk.', icon: 'i-lucide-brain' },
+  { title: 'Tools stay disconnected', copy: 'Point solutions add screens but rarely connect the menu, the work, the people, and the supply chain.', icon: 'i-lucide-unplug' },
+] as const
+
+const operatingLoop = [
+  { title: 'Publish', copy: 'Turn kitchen-owned information into clear public menus and useful customer surfaces.', icon: 'i-lucide-qr-code' },
+  { title: 'Structure', copy: 'Connect dishes to recipes, ingredients, allergens, prices, and supplier knowledge.', icon: 'i-lucide-network' },
+  { title: 'Prepare', copy: 'Translate the menu into practical prep, station, and service work for the team.', icon: 'i-lucide-clipboard-check' },
+  { title: 'Improve', copy: 'Keep the operational record current so the next menu and service start from better information.', icon: 'i-lucide-refresh-cw' },
+] as const
+
+const audiences = [
+  { title: 'Kitchen operators', copy: 'Create a dependable workspace for menus, recipes, prep, suppliers, team access, and daily execution.', action: 'Explore kitchens', to: '/kitchens', icon: 'i-lucide-chef-hat' },
+  { title: 'Hospitality professionals', copy: 'Build a profile around real experience and connect with kitchens and roles across the ecosystem.', action: 'Browse professionals', to: '/professionals', icon: 'i-lucide-user-round' },
+  { title: 'Suppliers and partners', copy: 'Connect products and services to the kitchens, ingredients, and operating needs they support.', action: 'Explore suppliers', to: '/suppliers', icon: 'i-lucide-handshake' },
+] as const
+
+const principles = [
+  { title: 'Start with real operational objects.', copy: 'Features attach to menus, dishes, recipes, ingredients, prep tasks, kitchens, people, or suppliers.' },
+  { title: 'Keep ownership clear.', copy: 'Kitchens own their operational truth while public surfaces present the right part of it.' },
+  { title: 'Make the simple path valuable.', copy: 'A team can begin with one useful surface and grow into the wider system at its own pace.' },
+  { title: 'Build an ecosystem, not a data silo.', copy: 'Profiles, jobs, suppliers, and specialist apps connect around the kitchen without losing their own identity.' },
+] as const
 
 definePageMeta({
   layout: 'landing',
@@ -240,20 +204,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: appMeta.seoAbout.title,
-  description: appMeta.seoAbout.description,
+  title: 'About Misebox · The operating system for kitchen teams',
+  description: 'Misebox connects menus, recipes, prep, people, suppliers, and public kitchen experiences in one hospitality operating system.',
+  ogTitle: 'About Misebox',
+  ogDescription: 'A shared operating system for the people behind every service.',
 })
-
-const appSpec: AppSpec = {
-  name: appMeta.name,
-  tagline: appMeta.tagline,
-  description: appMeta.description,
-  modules: appMeta.modules,
-  entities: appMeta.entities,
-  samples: appMeta.samples,
-  routes: appMeta.routes,
-}
-const relationshipMap = appMeta.relationshipMap
-
-const jsonOf = (value: Record<string, any>) => JSON.stringify(value, null, 2)
 </script>

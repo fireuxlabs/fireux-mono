@@ -166,8 +166,13 @@ type MenuOption = {
   label: string
   value: string
 }
+type StaffPosMode = {
+  value: KitchenOrderType
+  label: string
+  icon: string
+}
 
-const modes: { value: KitchenOrderType, label: string, icon: string }[] = [
+const modes: StaffPosMode[] = [
   { value: 'dine_in', label: 'Table service', icon: 'i-lucide-qr-code' },
   { value: 'eat_in', label: 'Eat here', icon: 'i-lucide-utensils' },
   { value: 'takeaway', label: 'Take away', icon: 'i-lucide-shopping-bag' },
@@ -192,7 +197,7 @@ const error = ref('')
 const selectedMenu = computed(() =>
   menus.value.find((menu) => menu.id === selectedMenuId.value) ?? null
 )
-const availableModes = computed(() => {
+const availableModes = computed<StaffPosMode[]>(() => {
   const ordering = selectedMenu.value?.ordering
   if (!ordering?.enabled) return []
 
@@ -250,8 +255,8 @@ watch(menuOptions, (options: MenuOption[]) => {
   selectedMenuId.value = options[0].value
 }, { immediate: true })
 
-watch(availableModes, (nextModes) => {
-  if (nextModes.some((mode) => mode.value === orderType.value)) return
+watch(availableModes, (nextModes: StaffPosMode[]) => {
+  if (nextModes.some((mode: StaffPosMode) => mode.value === orderType.value)) return
   if (nextModes[0]) orderType.value = nextModes[0].value
 }, { immediate: true })
 

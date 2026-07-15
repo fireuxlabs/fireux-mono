@@ -1,6 +1,6 @@
 Order processing and kitchen fulfilment spine
 Updated: 2026-07-15
-Ref: 4ab8c0226
+Ref: 97fe95697
 Role: map, not canon
 
 Purpose:
@@ -49,6 +49,14 @@ Creation flow:
 8. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
 9. Public status reads expose only small customer-safe state.
 10. Kitchen console sends authenticated transition commands; it does not patch order lifecycle fields directly.
+
+Intake contract:
+- `KitchenOrderIntakePolicies` is the exhaustive order-type matrix for allowed channels, default channel, and automatic versus operator acceptance.
+- Payment is the first gate. An unpaid required payment produces `pending_payment`.
+- After payment, dine-in, eat-in, and takeaway produce `accepted` and derive Queue.
+- After payment, collection, delivery, pre-order, and room service produce `pending_acceptance` and require Accept or Reject.
+- Payment resume state is limited to `accepted` or `pending_acceptance`; it cannot skip forward to Ready/Completed or restore a terminal order.
+- Public ordering maps and kitchen ticket examples consume the same shared intake policy instead of restating status strings.
 
 Working vocabulary:
 - `order_type`: customer-facing service promise such as delivery, collection, dine-in, pre-order, or room service.

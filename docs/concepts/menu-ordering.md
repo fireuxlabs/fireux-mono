@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-15
-Ref: 4ab8c0226
+Ref: 97fe95697
 Role: map, not canon
 
 Purpose:
@@ -45,6 +45,7 @@ ordering: {
 Efficient matrix:
 - `type`: the customer order type.
 - Optional policy fields: constraints on that order type, only added when needed.
+- `KitchenOrderIntakePolicies`: shared channel and acceptance policy for every canonical order type.
 
 Why this is efficient:
 - It avoids a premature second axis.
@@ -142,6 +143,8 @@ Public order funnel spine:
 - `server/api/menus/[menuId]/orders.post.ts`: canonical KitchenOrder creation
   route for public and authenticated Staff POS channels. It writes records under
   `apps/<appId>/kitchens/<kitchenId>/orders`.
+- Initial status is resolved once from payment plus the shared intake policy:
+  `pending_payment`, otherwise `pending_acceptance` or `accepted`.
 - Do not create a second client-side generic `Order` record from the public
   funnel unless the generic order engine and kitchen order console are
   deliberately reconciled first.
