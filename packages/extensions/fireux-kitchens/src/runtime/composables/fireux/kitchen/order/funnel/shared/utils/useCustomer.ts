@@ -5,8 +5,6 @@ import type {
   CustomerSavedAddress,
 } from '../../../../../../../models/customer.model'
 
-type CustomerAvatarLike = { avatar?: string }
-
 const text = (value: unknown) => String(value ?? '').trim()
 const customerPrivate = (
   source: { private?: Partial<CustomerPrivate> } | null | undefined
@@ -33,10 +31,6 @@ export function useCustomer() {
     const user = coreUser.value
     const appPrivate = customerPrivate(app)
     const profilePrivate = customerPrivate(profile)
-    const profileAvatar = text(
-      (app as CustomerAvatarLike | null)?.avatar ||
-        (profile as CustomerAvatarLike | null)?.avatar
-    )
     const savedAddress =
       firstDefaultSavedAddress(appPrivate.saved_addresses) ||
       firstDefaultSavedAddress(profilePrivate.saved_addresses)
@@ -48,8 +42,6 @@ export function useCustomer() {
           profile?.title ||
           user?.display_name
       ),
-      avatar: profileAvatar,
-      avatar_url: text(profileAvatar || user?.avatar),
       phone: text(appPrivate.phone || profilePrivate.phone),
       address: text(
         savedAddress?.address ||

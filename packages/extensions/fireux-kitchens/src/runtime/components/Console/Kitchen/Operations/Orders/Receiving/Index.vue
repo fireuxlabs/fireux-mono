@@ -201,7 +201,7 @@ const orderStatus = computed(() => normalize(props.order.status))
 const collection = computed(() => record(orderRecord.value.collection))
 const roomService = computed(() => record(orderRecord.value.room_service))
 const isTerminal = computed(() =>
-  ['cancelled', 'canceled', 'closed', 'rejected'].includes(orderStatus.value)
+  ['cancelled', 'completed'].includes(orderStatus.value)
 )
 const isPaymentPending = computed(() => orderStatus.value === 'pending_payment')
 const isCollectionOrder = computed(() => orderType.value === 'collection')
@@ -265,9 +265,9 @@ const collectionTimingTimeLabel = computed(() => {
   return isScheduledCollection.value ? 'time needed' : acceptedTimingLabel.value
 })
 const terminalLabel = computed(() =>
-  ['cancelled', 'canceled', 'rejected'].includes(orderStatus.value)
+  orderStatus.value === 'cancelled'
     ? 'Order rejected.'
-    : 'Order closed.'
+    : 'Order completed.'
 )
 const terminalNote = computed(() =>
   normalize(orderRecord.value.kitchen_note)

@@ -55,6 +55,52 @@ export type KitchenOrderChannel =
   | 'room_service'
   | 'staff_pos'
 
+export type KitchenOrderAcceptancePolicy = 'automatic' | 'operator'
+
+export type KitchenOrderIntakePolicy = {
+  acceptance: KitchenOrderAcceptancePolicy
+  channels: readonly KitchenOrderChannel[]
+  default_channel: KitchenOrderChannel
+}
+
+export const KitchenOrderIntakePolicies = {
+  dine_in: {
+    acceptance: 'automatic',
+    channels: ['table_qr', 'staff_pos'],
+    default_channel: 'table_qr',
+  },
+  eat_in: {
+    acceptance: 'automatic',
+    channels: ['kiosk', 'staff_pos'],
+    default_channel: 'kiosk',
+  },
+  takeaway: {
+    acceptance: 'automatic',
+    channels: ['kiosk', 'staff_pos'],
+    default_channel: 'kiosk',
+  },
+  collection: {
+    acceptance: 'operator',
+    channels: ['menu'],
+    default_channel: 'menu',
+  },
+  delivery: {
+    acceptance: 'operator',
+    channels: ['menu'],
+    default_channel: 'menu',
+  },
+  pre_order: {
+    acceptance: 'operator',
+    channels: ['menu'],
+    default_channel: 'menu',
+  },
+  room_service: {
+    acceptance: 'operator',
+    channels: ['room_service'],
+    default_channel: 'room_service',
+  },
+} as const satisfies Record<KitchenOrderType, KitchenOrderIntakePolicy>
+
 export const KitchenOrderStatuses = [
   'pending_payment',
   'pending_acceptance',
@@ -67,13 +113,26 @@ export const KitchenOrderStatuses = [
 
 export type KitchenOrderStatus = (typeof KitchenOrderStatuses)[number]
 
-export type KitchenOrderTransition =
-  | 'accept'
-  | 'reject'
-  | 'mark_ready'
-  | 'return_to_queue'
-  | 'complete'
-  | 'trash'
+export type KitchenOrderInitialStatus = Extract<
+  KitchenOrderStatus,
+  'pending_payment' | 'pending_acceptance' | 'accepted'
+>
+
+export type KitchenOrderPostPaymentStatus = Extract<
+  KitchenOrderStatus,
+  'pending_acceptance' | 'accepted'
+>
+
+export const KitchenOrderTransitions = [
+  'accept',
+  'reject',
+  'mark_ready',
+  'return_to_queue',
+  'complete',
+  'trash',
+] as const
+
+export type KitchenOrderTransition = (typeof KitchenOrderTransitions)[number]
 
 export type KitchenOrderBoardStage =
   | 'incoming'
@@ -85,8 +144,6 @@ export type KitchenOrderBoardStage =
 
 export type KitchenOrderCustomer = {
   name?: string
-  avatar?: string
-  avatar_url?: string
   email?: string
   phone?: string
   address?: string
@@ -119,7 +176,7 @@ export type KitchenOrderPayment = {
   amount_chf?: number
   currency_code?: string
   reason?: string
-  resume_status?: KitchenOrderStatus
+  resume_status?: KitchenOrderPostPaymentStatus
   stripe_checkout_session_id?: string
   stripe_payment_intent_id?: string
   paid_at?: string | FirebaseTimestamp
@@ -155,6 +212,7 @@ export type KitchenOrderFulfilmentMatch = Record<string, unknown> & {
 export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
+  menu_id: '' as string,
 
   order_number: '' as string,
   status: 'pending_acceptance' as KitchenOrderStatus,
@@ -181,12 +239,8 @@ export const KitchenOrderModel = {
     currency_code: '',
   } as KitchenOrderPayment,
 
-  // Flat order index fields used by console and customer route surfaces.
+  // Order source; actor and app identity live in the canonical creation stamp.
   channel: '' as KitchenOrderChannel,
-  app_id: '' as string,
-  creator_id: '' as string,
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -222,8 +276,43 @@ export function isKitchenOrderStatus(value: unknown): value is KitchenOrderStatu
   return KitchenOrderStatuses.includes(value as KitchenOrderStatus)
 }
 
+export function kitchenOrderIntakePolicy(
+  orderType: KitchenOrderType
+): KitchenOrderIntakePolicy {
+  return KitchenOrderIntakePolicies[orderType]
+}
+
+export function resolveKitchenOrderIntakeStatus(input: {
+  orderType: KitchenOrderType
+  paymentPending: boolean
+}): KitchenOrderInitialStatus {
+  if (input.paymentPending) return 'pending_payment'
+
+  return resolveKitchenOrderPostPaymentStatus(input.orderType)
+}
+
+export function resolveKitchenOrderPostPaymentStatus(
+  orderType: KitchenOrderType
+): KitchenOrderPostPaymentStatus {
+  return kitchenOrderIntakePolicy(orderType).acceptance === 'operator'
+    ? 'pending_acceptance'
+    : 'accepted'
+}
+
+export function isKitchenOrderPostPaymentStatus(
+  value: unknown
+): value is KitchenOrderPostPaymentStatus {
+  return value === 'pending_acceptance' || value === 'accepted'
+}
+
 export function isKitchenOrderType(value: unknown): value is KitchenOrderType {
   return KitchenOrderTypes.includes(value as KitchenOrderType)
+}
+
+export function isKitchenOrderTransition(
+  value: unknown
+): value is KitchenOrderTransition {
+  return KitchenOrderTransitions.includes(value as KitchenOrderTransition)
 }
 
 export type KitchenOrderCreateInput = Omit<KitchenOrder, 'created' | 'updated'>

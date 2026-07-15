@@ -8,7 +8,7 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
-  isKitchenOrderStatus,
+  isKitchenOrderPostPaymentStatus,
   type KitchenOrderStatus,
   type KitchenOrderType,
 } from '../../../../models/kitchen/order.model.ts'
@@ -144,14 +144,14 @@ export default defineEventHandler(async (event: H3Event) => {
       ? currentStatus
       : null
   const resumeStatus = text(payment.resume_status)
-  if (resumeStatus && !isKitchenOrderStatus(resumeStatus)) {
+  if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
     console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid resume state', {
       orderId: metadata.orderId,
       resumeStatus,
     })
     return { received: true }
   }
-  const resumableStatus = isKitchenOrderStatus(resumeStatus)
+  const resumableStatus = isKitchenOrderPostPaymentStatus(resumeStatus)
     ? resumeStatus
     : null
   const paidStatus = terminalStatus || resumableStatus || statusAfterPayment(orderType)
@@ -170,7 +170,6 @@ export default defineEventHandler(async (event: H3Event) => {
           : {}),
         paid_at: now,
       },
-      updated_at: now,
       updated: {
         at: now,
         by: 'stripe-webhook',

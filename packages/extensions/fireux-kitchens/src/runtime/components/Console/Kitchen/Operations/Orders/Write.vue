@@ -25,7 +25,7 @@
           <UFormField label="Mode">
             <UButtonGroup>
               <UButton
-                v-for="mode in modes"
+                v-for="mode in availableModes"
                 :key="mode.value"
                 :color="orderType === mode.value ? 'primary' : 'neutral'"
                 :variant="orderType === mode.value ? 'solid' : 'soft'"
@@ -44,6 +44,14 @@
           variant="soft"
           title="No menu selected"
           description="Confirm a menu draft or select a menu before using Staff POS."
+        />
+
+        <UAlert
+          v-else-if="!availableModes.length"
+          color="neutral"
+          variant="soft"
+          title="Staff POS is not enabled"
+          description="Add dine-in, eat-in, or takeaway ordering to this menu first."
         />
 
         <div v-else class="space-y-5">
@@ -139,7 +147,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
 import { useMenuSectionCollection } from '../../../../../composables/fireux/firestore/menu/fetch/useMenuSectionCollection'
@@ -167,16 +174,14 @@ const modes: { value: KitchenOrderType, label: string, icon: string }[] = [
 ]
 const {
   menus,
-  kitchenId,
+  selectedKitchen,
   storageKitchenId,
   rootCollection,
   databaseId,
   canWrite,
-  currencyCode,
 } = useKitchenConsoleMenus()
 const { dishes } = useKitchenConsoleDishes()
 const { createOrder } = useKitchenOrderCreate()
-const { currentUser } = useAuth()
 const selectedMenuId = ref('')
 const orderType = ref<KitchenOrderType>('eat_in')
 const customerName = ref('')
@@ -187,11 +192,23 @@ const error = ref('')
 const selectedMenu = computed(() =>
   menus.value.find((menu) => menu.id === selectedMenuId.value) ?? null
 )
+const availableModes = computed(() => {
+  const ordering = selectedMenu.value?.ordering
+  if (!ordering?.enabled) return []
+
+  const configured = new Set(
+    (ordering.order_types || []).map((entry) => entry.type)
+  )
+  return modes.filter((mode) => configured.has(mode.value))
+})
 const menuOptions = computed<MenuOption[]>(() =>
   menus.value.map((menu) => ({
     label: menu.name || menu.id,
     value: menu.id,
   }))
+)
+const kitchenSlug = computed(() =>
+  String(selectedKitchen.value?.slug || '').trim()
 )
 const sectionState = useMenuSectionCollection(storageKitchenId, selectedMenuId, {
   kitchenCollectionPath: rootCollection,
@@ -211,7 +228,7 @@ const total = computed<number>(() =>
   )
 )
 const nameLabel = computed(() =>
-  orderType.value === 'dine_in' ? 'Table or guest' : 'Counter name'
+  orderType.value === 'dine_in' ? 'Table' : 'Counter name'
 )
 const namePlaceholder = computed(() =>
   orderType.value === 'dine_in' ? 'Table 7' : 'Daniel'
@@ -219,10 +236,11 @@ const namePlaceholder = computed(() =>
 const canSubmit = computed(() =>
   Boolean(
     canWrite.value &&
-      kitchenId.value &&
+      kitchenSlug.value &&
       selectedMenuId.value &&
-      currencyCode.value &&
+      availableModes.value.some((mode) => mode.value === orderType.value) &&
       basket.value.length &&
+      (orderType.value !== 'dine_in' || customerName.value.trim()) &&
       !submitting.value
   )
 )
@@ -230,6 +248,11 @@ const canSubmit = computed(() =>
 watch(menuOptions, (options: MenuOption[]) => {
   if (selectedMenuId.value || !options[0]?.value) return
   selectedMenuId.value = options[0].value
+}, { immediate: true })
+
+watch(availableModes, (nextModes) => {
+  if (nextModes.some((mode) => mode.value === orderType.value)) return
+  if (nextModes[0]) orderType.value = nextModes[0].value
 }, { immediate: true })
 
 function addItem(row: StaffPosItemRow) {
@@ -265,30 +288,25 @@ async function submitOrder() {
   error.value = ''
 
   try {
-    const uid = currentUser.value?.uid || ''
-    const orderId = await createOrder({
-      kitchenId: kitchenId.value,
-      kitchenCollectionPath: rootCollection.value,
-      currency_code: currencyCode.value,
+    const created = await createOrder({
+      menuId: selectedMenuId.value,
+      kitchenSlug: kitchenSlug.value,
       order_type: orderType.value,
-      creator_id: uid,
-      customer: customerName.value.trim()
-        ? { name: customerName.value.trim() }
-        : {},
-      items: basket.value.map((line: BasketLine, index: number) => ({
-        id: `item-${index + 1}`,
+      ...(orderType.value === 'dine_in'
+        ? { table: { number: customerName.value.trim() } }
+        : customerName.value.trim()
+          ? { customer: { name: customerName.value.trim() } }
+          : {}),
+      items: basket.value.map((line: BasketLine) => ({
+        item_id: line.lineId,
         menu_id: line.menuId,
-        dish_id: line.dishId,
-        label: line.label,
-        unit_price: line.price,
         quantity: line.quantity,
-        checked: false,
       })),
     })
 
     basket.value = []
     customerName.value = ''
-    message.value = `Order ${orderId} sent.`
+    message.value = `Order ${created.order_number || created.id} sent.`
   } catch (cause) {
     error.value = cause instanceof Error
       ? cause.message

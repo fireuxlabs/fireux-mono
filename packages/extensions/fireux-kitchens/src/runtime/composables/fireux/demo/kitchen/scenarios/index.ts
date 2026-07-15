@@ -1243,9 +1243,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1042',
         kitchen_id: 'deanos',
         order_number: '1042',
-        status: 'open',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'deanos-classic',
@@ -1283,7 +1282,7 @@ const scenarios: DemoKitchenScenario[] = [
             checked: false,
           },
         ],
-        notes: ['One Deanos Classic no pickles'],
+        kitchen_note: 'One Deanos Classic no pickles',
         created: { at: { seconds: 1777800000, nanoseconds: 0 } },
         updated: { at: { seconds: 1777800000, nanoseconds: 0 } },
       },
@@ -1291,9 +1290,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1043',
         kitchen_id: 'deanos',
         order_number: '1043',
-        status: 'open',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'hot-honey-chicken-extra-hot-honey',
@@ -1324,9 +1322,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1044',
         kitchen_id: 'deanos',
         order_number: '1044',
-        status: 'open',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'lil-dinos-beef-plain',
@@ -1350,7 +1347,7 @@ const scenarios: DemoKitchenScenario[] = [
             checked: false,
           },
         ],
-        notes: ['Kids burger plain', 'Sauce on side'],
+        kitchen_note: 'Kids burger plain. Sauce on side.',
         created: { at: { seconds: 1777800120, nanoseconds: 0 } },
         updated: { at: { seconds: 1777800120, nanoseconds: 0 } },
       },
@@ -1358,9 +1355,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1045',
         kitchen_id: 'deanos',
         order_number: '1045',
-        status: 'firing',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'mock-duck-bao',
@@ -1391,7 +1387,7 @@ const scenarios: DemoKitchenScenario[] = [
             checked: false,
           },
         ],
-        notes: ['Vegan order separate handling'],
+        kitchen_note: 'Vegan order separate handling',
         created: { at: { seconds: 1777800180, nanoseconds: 0 } },
         updated: { at: { seconds: 1777800180, nanoseconds: 0 } },
       },
@@ -1399,9 +1395,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1046',
         kitchen_id: 'deanos',
         order_number: '1046',
-        status: 'open',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'hot-honey-chicken',
@@ -1432,7 +1427,7 @@ const scenarios: DemoKitchenScenario[] = [
             checked: false,
           },
         ],
-        notes: ['One Hot Honey Chicken no slaw'],
+        kitchen_note: 'One Hot Honey Chicken no slaw',
         created: { at: { seconds: 1777800240, nanoseconds: 0 } },
         updated: { at: { seconds: 1777800240, nanoseconds: 0 } },
       },
@@ -1440,9 +1435,8 @@ const scenarios: DemoKitchenScenario[] = [
         id: 'order-1047',
         kitchen_id: 'deanos',
         order_number: '1047',
-        status: 'open',
+        status: 'accepted',
         order_type: 'dine_in',
-        fire_state: 'fired',
         items: [
           {
             id: 'deanos-classic',
@@ -1466,7 +1460,7 @@ const scenarios: DemoKitchenScenario[] = [
             checked: false,
           },
         ],
-        notes: ['Question at counter'],
+        kitchen_note: 'Question at counter',
         created: { at: { seconds: 1777800300, nanoseconds: 0 } },
         updated: { at: { seconds: 1777800300, nanoseconds: 0 } },
       },

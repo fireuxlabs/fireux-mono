@@ -11,7 +11,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
-  isKitchenOrderStatus,
+  isKitchenOrderPostPaymentStatus,
   type KitchenOrderType,
 } from '../../../../../../models/kitchen/order.model.ts'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
@@ -202,7 +202,6 @@ export default defineEventHandler(async (event) => {
         resume_status: resumeStatus,
         stripe_checkout_session_id: session.id,
       },
-      updated_at: FieldValue.serverTimestamp(),
       updated: {
         at: FieldValue.serverTimestamp(),
         by: 'stripe-checkout',
@@ -239,7 +238,7 @@ function resumeStatusForOrder(
 ) {
   const stored = text(payment.resume_status)
   if (stored) {
-    if (isKitchenOrderStatus(stored)) return stored
+    if (isKitchenOrderPostPaymentStatus(stored)) return stored
     throw createError({
       statusCode: 500,
       statusMessage: 'Order payment resume state is invalid.',
@@ -248,7 +247,7 @@ function resumeStatusForOrder(
 
   const status = text(order.status)
   if (status && status !== 'pending_payment') {
-    if (isKitchenOrderStatus(status)) return status
+    if (isKitchenOrderPostPaymentStatus(status)) return status
     throw createError({
       statusCode: 500,
       statusMessage: 'Order lifecycle is invalid.',

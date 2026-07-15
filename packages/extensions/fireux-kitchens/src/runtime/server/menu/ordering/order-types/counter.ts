@@ -5,11 +5,8 @@ const counterOrderType = (
   handoff: 'tray' | 'bag'
 ): MenuOrderTypeStrategy => ({
   type,
-  allowedChannels: ['kiosk', 'staff_pos'],
-  defaultChannel: 'kiosk',
   destination: 'none',
   schedule: 'none',
-  requiresAcceptance: false,
   handoff,
   resolvesDelivery: false,
   recordsRequestedFor: false,

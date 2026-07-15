@@ -31,7 +31,7 @@
           </h1>
           <p class="m-0 max-w-3xl text-base leading-7 text-muted">
             These customer orders skip the kitchen acceptance step. They are
-            created as open orders and go directly to Queue.
+            created as accepted orders and go directly to Queue.
           </p>
         </div>
 
@@ -45,7 +45,7 @@
             </UBadge>
             <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
             <UBadge color="neutral" variant="soft" class="font-mono">
-              status: open
+              status: accepted
             </UBadge>
             <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
             <UBadge color="primary" variant="soft">
@@ -77,7 +77,7 @@
               </div>
 
               <UBadge color="success" variant="soft">
-                Queue
+                {{ boardStageLabel(ticket.order) }}
               </UBadge>
             </div>
 
@@ -133,9 +133,13 @@
 
 <script setup lang="ts">
 import {
+  deriveKitchenOrderBoardStage,
   KitchenOrderModel,
+  resolveKitchenOrderIntakeStatus,
   type KitchenOrder,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
+
+type AutomaticOrderType = 'dine_in' | 'eat_in' | 'takeaway'
 
 type AutomaticTicket = {
   description: string
@@ -160,11 +164,11 @@ const automaticTickets = [
       ...KitchenOrderModel,
       id: 'ticket-table-12',
       kitchen_id: 'garden-room',
+      menu_id: 'garden-room-main',
       order_number: 'T-012',
-      status: 'open',
+      status: automaticStatus('dine_in'),
       order_type: 'dine_in',
       channel: 'table_qr',
-      fire_state: 'fired',
       table: {
         number: '12',
       },
@@ -208,11 +212,11 @@ const automaticTickets = [
       ...KitchenOrderModel,
       id: 'ticket-kiosk-eat-in',
       kitchen_id: 'garden-room',
+      menu_id: 'garden-room-main',
       order_number: 'A105',
-      status: 'open',
+      status: automaticStatus('eat_in'),
       order_type: 'eat_in',
       channel: 'kiosk',
-      fire_state: 'fired',
       fulfilment_match: {
         type: 'counter',
         reference: 'A105',
@@ -264,11 +268,11 @@ const automaticTickets = [
       ...KitchenOrderModel,
       id: 'ticket-kiosk-takeaway',
       kitchen_id: 'deanos',
+      menu_id: 'deanos-main',
       order_number: 'B106',
-      status: 'open',
+      status: automaticStatus('takeaway'),
       order_type: 'takeaway',
       channel: 'kiosk',
-      fire_state: 'fired',
       fulfilment_match: {
         type: 'counter',
         reference: 'B106',
@@ -312,6 +316,19 @@ const automaticTickets = [
     },
   },
 ] satisfies AutomaticTicket[]
+
+function automaticStatus(orderType: AutomaticOrderType) {
+  return resolveKitchenOrderIntakeStatus({
+    orderType,
+    paymentPending: false,
+  })
+}
+
+function boardStageLabel(order: KitchenOrder) {
+  const stage = deriveKitchenOrderBoardStage(order)
+
+  return stage === 'queue' ? 'Queue' : stage
+}
 
 definePageMeta({
   layout: 'landing',

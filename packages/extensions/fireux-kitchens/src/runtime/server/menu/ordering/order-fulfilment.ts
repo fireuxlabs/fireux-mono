@@ -5,6 +5,7 @@ import type {
   KitchenOrderPayment,
   KitchenOrderStatus,
 } from '../../../models/kitchen/order.model.ts'
+import { resolveKitchenOrderIntakeStatus } from '../../../models/kitchen/order.model.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
@@ -108,11 +109,10 @@ export async function resolveMenuOrderFulfilment(input: {
     totalChf: total,
   })
   const paymentRequired = payment.required && payment.status !== 'paid'
-  const status = paymentRequired
-    ? 'pending_payment'
-    : strategy.requiresAcceptance
-      ? 'pending_acceptance'
-      : 'accepted'
+  const status = resolveKitchenOrderIntakeStatus({
+    orderType: command.orderType,
+    paymentPending: paymentRequired,
+  })
   const policySnapshot = command.orderTypeConfig
     ? {
         order_type: command.orderTypeConfig.type,

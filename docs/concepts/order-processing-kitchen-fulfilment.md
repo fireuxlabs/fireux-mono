@@ -1,6 +1,6 @@
 Order processing and kitchen fulfilment spine
-Updated: 2026-07-13
-Ref: 59610f7ad
+Updated: 2026-07-15
+Ref: 4ab8c0226
 Role: map, not canon
 
 Purpose:
@@ -39,35 +39,40 @@ Core split:
 - `Console/Kitchen/Operations/Orders`: operator board and ticket actions.
 
 Creation flow:
-1. Public menu route resolves the source app, kitchen, and scoped menu.
-2. Menu ordering config is read and merged with Kitchen fulfilment where appropriate.
-3. Guest basket/funnel input chooses an `order_type` and supplies required customer/contact fields.
-4. Server validates menu items, variants, add-ons, and delivery constraints.
-5. Server writes a KitchenOrder under the selected Kitchen operations path.
-6. Created KitchenOrder copies the selected order-type policy into `fulfilment_policy`.
-7. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
-8. Public status reads expose only small customer-safe state.
-9. Kitchen console moves the ticket through operator stages.
+1. Every order source submits through the server-owned menu order route; Staff POS is an authenticated channel, not a direct Firestore writer.
+2. The route resolves the source app, kitchen, and scoped menu.
+3. Menu ordering config is read and merged with Kitchen fulfilment where appropriate.
+4. Source input chooses an `order_type` and supplies its required customer/destination fields.
+5. Server validates menu items, variants, add-ons, schedule, payment, and delivery constraints.
+6. Server writes a KitchenOrder under the selected Kitchen operations path.
+7. Created KitchenOrder copies the selected order-type policy into `fulfilment_policy`.
+8. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
+9. Public status reads expose only small customer-safe state.
+10. Kitchen console sends authenticated transition commands; it does not patch order lifecycle fields directly.
 
 Working vocabulary:
 - `order_type`: customer-facing service promise such as delivery, collection, dine-in, pre-order, or room service.
 - `fulfilment_policy`: rules the customer ordered under, copied for audit history.
 - `fulfilment_match`: concrete resolved result, such as the matched delivery zone and fee.
-- `status`: lifecycle state for order processing and customer status.
-- `fire_state`: kitchen timing state for whether the order is held, fired, or ready to fire.
+- `status`: the single lifecycle state for order processing and customer status.
 - `board_stage`: console rail derived from stored order state, not a separate truth source.
 
 Current V1 order states:
-- Incoming: `status` is `pending_acceptance`, `incoming`, or `new`.
-- Queue: accepted/open orders that are not incoming, pass, archived, or trashed.
-- Pass: `status` is `on_pass` or `pass`, or `fire_state` is `ready_to_fire`.
-- Closed/archive: `status` is `closed` or `archived`.
-- Trash: `status` is `trashed`.
+- `pending_payment`: payment must finish before the order can continue.
+- `pending_acceptance`: the kitchen must accept or reject the request.
+- `accepted`: the kitchen owns the order; the board derives Queue.
+- `ready`: preparation is complete; the board derives Pass.
+- `completed`: handoff is complete; the board derives Recent.
+- `cancelled`: the order will not be fulfilled; the board derives Recent.
+- `trashed`: explicit cleanup; the board excludes the order.
 
-Current V1 fire states:
-- `held`: accepted but not fired, or waiting for requested time/service timing.
-- `fired`: active in production or sent from the pass.
-- `ready_to_fire`: ready for a kitchen action, currently also used by the pass rail.
+Current V1 operator transitions:
+- `accept`: `pending_acceptance` to `accepted`.
+- `reject`: `pending_acceptance` to `cancelled` with a reason.
+- `mark_ready`: `accepted` to `ready`.
+- `return_to_queue`: `ready` to `accepted`.
+- `complete`: `ready` to `completed`.
+- `trash`: any stored order to `trashed`.
 
 Fulfilment ownership:
 - Kitchen owns reusable fulfilment defaults.
@@ -83,8 +88,7 @@ Accepted deltas:
 - Fulfilment setup may sit under Kitchen Identity while it is venue setup; move daily pause/load controls into Operations only when those controls become real work.
 
 Next seam if this grows:
-- Add typed `KitchenOrderStatus` and `KitchenOrderBoardStage` helpers before more UI files hardcode state strings.
-- Add a focused order-state transition helper if acceptance, preparation, pass, cancellation, and customer status start diverging.
+- Add a distinct preparation transition only when the operator board gains a real start/hold cooking action.
 - Add operational fulfilment availability only when there is a real pause/window/load control; do not promote static delivery zones into daily operations by default.
 
 Guardrails:
@@ -97,5 +101,4 @@ Guardrails:
 
 Open questions:
 - Whether customer-visible cancellation/refund states need a separate public status vocabulary.
-- Whether `ready_to_fire` should continue to mean pass-ready, or whether pass should become a clearer order status.
 - When payment capture becomes real, whether payment state lives on KitchenOrder or in a separate payment record owned by the order.

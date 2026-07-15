@@ -46,6 +46,7 @@
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 
 const shapeTrack = createOrderingFunnelShapeTrack({
+  channel: 'room_service',
   route: {
     menuId: 'pizza-snacks-drinks',
     kitchenSlug: 'baeren-ringgenberg',

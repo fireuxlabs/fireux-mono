@@ -44,7 +44,7 @@
         <MenuDetailFunnelCollectionKitchen :funnel="funnel" />
 
         <section
-          v-if="kitchenOutcome?.status === 'rejected'"
+          v-if="kitchenOutcome?.status === 'cancelled'"
           class="mt-3 grid gap-3 rounded-lg border border-error/20 bg-error/5 p-3"
         >
           <div class="grid gap-1">
@@ -141,7 +141,7 @@ type KitchenOutcome =
       estimatedMinutes: number | null
     }
   | {
-      status: 'rejected'
+      status: 'cancelled'
       note: string
     }
 
@@ -184,10 +184,8 @@ function returnToCollectionRequest() {
   kitchenOutcome.value = null
   kitchenReceivingResetKey.value += 1
   props.funnel.processing.status = 'pending_acceptance'
-  props.funnel.processing.fire_state = 'held'
   if (props.funnel.processing.order) {
     props.funnel.processing.order.status = 'pending_acceptance'
-    props.funnel.processing.order.fire_state = 'held'
   }
 
   if (!import.meta.client) return
@@ -200,24 +198,20 @@ function updateKitchenOutcome(outcome: KitchenOutcome | null) {
   kitchenOutcome.value = outcome
   if (!outcome) return
 
-  if (outcome.status === 'rejected') {
+  if (outcome.status === 'cancelled') {
     props.funnel.processing.status = 'cancelled'
-    props.funnel.processing.fire_state = 'held'
     if (props.funnel.processing.order) {
       const order = props.funnel.processing.order as Record<string, unknown>
       props.funnel.processing.order.status = 'cancelled'
-      props.funnel.processing.order.fire_state = 'held'
       order.kitchen_note = outcome.note
     }
     return
   }
 
-  props.funnel.processing.status = 'open'
-  props.funnel.processing.fire_state = 'held'
+  props.funnel.processing.status = 'accepted'
   props.funnel.order.accepted = true
   if (props.funnel.processing.order) {
-    props.funnel.processing.order.status = 'open'
-    props.funnel.processing.order.fire_state = 'held'
+    props.funnel.processing.order.status = 'accepted'
     if (outcome.estimatedMinutes !== null) {
       const order = props.funnel.processing.order as Record<string, unknown>
       const estimatedReadyAt = etaAt(outcome.estimatedMinutes)

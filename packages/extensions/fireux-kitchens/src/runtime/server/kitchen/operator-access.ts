@@ -7,14 +7,12 @@ const ids = (value: unknown) =>
     ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
     : []
 
-export async function requireMenuOrderOperator(
+export async function requireKitchenOperator(
   event: H3Event,
-  input: { appId: string; kitchenId: string }
+  input: { appId: string; kitchenId: string },
+  message = 'Kitchen operator access is required.'
 ) {
-  const user = await requireFirebaseBearerUser(
-    event,
-    'Sign in before using Staff POS.'
-  )
+  const user = await requireFirebaseBearerUser(event, message)
   const snap = await getRuntimeFirestore()
     .doc(`apps/${input.appId}/kitchens/${input.kitchenId}`)
     .get()

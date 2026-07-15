@@ -29,7 +29,7 @@ import {
   readRequestedMenuOrderItems,
   type CreateMenuOrderBody,
 } from '../../../menu/ordering/lines.ts'
-import { requireMenuOrderOperator } from '../../../menu/ordering/operator-access.ts'
+import { requireKitchenOperator } from '../../../kitchen/operator-access.ts'
 import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
 import { text } from '../../../menu/ordering/order-request.ts'
 
@@ -72,7 +72,11 @@ export default defineEventHandler(async (event) => {
   )
   const selection = readMenuOrderSelection(body, ordering)
   const actorId = selection.channel === 'staff_pos'
-    ? await requireMenuOrderOperator(event, context)
+    ? await requireKitchenOperator(
+        event,
+        context,
+        'Sign in before using Staff POS.'
+      )
     : 'menu'
   const command = prepareMenuOrderCommand({
     actorId,

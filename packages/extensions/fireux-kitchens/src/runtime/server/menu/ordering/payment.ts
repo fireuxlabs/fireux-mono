@@ -4,11 +4,11 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
-  KitchenOrderStatus,
+  KitchenOrderPostPaymentStatus,
   KitchenOrderType,
 } from '../../../models/kitchen/order.model.ts'
+import { resolveKitchenOrderPostPaymentStatus } from '../../../models/kitchen/order.model.ts'
 import { normalizePaymentMethod, text } from './order-request.ts'
-import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 type ResolveMenuOrderPaymentMethodInput = {
   orderTypeConfig?: MenuOrderTypeConfig
@@ -115,10 +115,8 @@ const depositAmount = (
 
 export const statusAfterPayment = (
   orderType: KitchenOrderType
-): KitchenOrderStatus =>
-  menuOrderTypeStrategy(orderType).requiresAcceptance
-    ? 'pending_acceptance'
-    : 'accepted'
+): KitchenOrderPostPaymentStatus =>
+  resolveKitchenOrderPostPaymentStatus(orderType)
 
 export function resolveMenuOrderPayment(
   input: ResolveMenuOrderPaymentInput

@@ -46,6 +46,7 @@
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 
 const shapeTrack = createOrderingFunnelShapeTrack({
+  channel: 'menu',
   route: {
     menuId: 'la-tapberne-main',
     kitchenSlug: 'la-tapberne',

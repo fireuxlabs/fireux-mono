@@ -31,7 +31,7 @@ export type CreatedMenuOrderReceipt = {
   id: string
   order_number: string
   order_type: KitchenOrderType
-  channel?: KitchenOrderChannel
+  channel: KitchenOrderChannel
   status: KitchenOrderStatus
   created_at: string
   collection?: MenuOrderingCollectionState
@@ -60,7 +60,7 @@ export type CreatedMenuOrder = {
   order_number: string
   status: KitchenOrderStatus
   order_type: KitchenOrderType
-  channel?: KitchenOrderChannel
+  channel: KitchenOrderChannel
   collection?: MenuOrderingCollectionState
   room_service?: MenuOrderingRoomServiceState
   table?: MenuOrderingTableState
@@ -174,7 +174,7 @@ export type MenuOrderingSubmitItem = {
 
 export type MenuOrderingSubmitBody = {
   idempotency_key?: string
-  channel?: KitchenOrderChannel
+  channel: KitchenOrderChannel
   order_type: KitchenOrderType
   items: MenuOrderingSubmitItem[]
   collection?: MenuOrderingCollectionState
@@ -241,9 +241,6 @@ export type MenuOrderingSending = {
   endpoint: string
   body: MenuOrderingSubmitBody
   pending: boolean
-  expected_result: {
-    status: KitchenOrderStatus
-  }
   message?: string
   error?: string
   sent_order?: CreatedMenuOrder | null

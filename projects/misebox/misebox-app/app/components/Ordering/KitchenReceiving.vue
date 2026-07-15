@@ -6,6 +6,7 @@
       </h2>
 
       <ConsoleKitchenOperationsOrdersReceiving
+        v-if="awaitingDecision"
         :accepting="false"
         :estimate-minutes="estimateMinutes"
         :order="displayOrder"
@@ -15,6 +16,19 @@
         @reject="reject"
         @set-estimate="setEstimate($event.minutes)"
       />
+
+      <div v-else class="grid gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge color="neutral" variant="soft" class="font-mono">
+            {{ displayOrder.status }}
+          </UBadge>
+          <UBadge color="primary" variant="soft">
+            {{ boardStageLabel }}
+          </UBadge>
+        </div>
+
+        <ConsoleKitchenOperationsOrdersCardsTicket :order="displayOrder" />
+      </div>
     </div>
 
     <OrderingObjectShape
@@ -31,6 +45,10 @@ import {
   watch,
 } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
+import {
+  deriveKitchenOrderBoardStage,
+  type KitchenOrder,
+} from 'fireux-kitchens/runtime/models/kitchen/order.model'
 
 type KitchenReceivingOutcome =
   | {
@@ -38,7 +56,7 @@ type KitchenReceivingOutcome =
       estimatedMinutes: number | null
     }
   | {
-      status: 'rejected'
+      status: 'cancelled'
       note: string
     }
 
@@ -53,43 +71,55 @@ const emit = defineEmits<{
 const defaultEstimateMinutes = 45
 const estimateMinutes = ref(defaultEstimateMinutes)
 const accepted = ref<{ estimatedMinutes: number | null } | null>(null)
-const rejected = ref<{ note: string } | null>(null)
-const displayOrder = computed(() => {
-  if (rejected.value) {
+const cancelled = ref<{ note: string } | null>(null)
+const awaitingDecision = computed(() =>
+  props.receiving.order.status === 'pending_acceptance' &&
+    !accepted.value &&
+    !cancelled.value
+)
+const displayOrder = computed((): KitchenOrder => {
+  if (cancelled.value) {
     return {
       ...props.receiving.order,
       status: 'cancelled',
-      fire_state: 'held',
-      kitchen_note: rejected.value.note,
-    } as typeof props.receiving.order
+      kitchen_note: cancelled.value.note,
+    }
   }
 
   if (!accepted.value) return props.receiving.order
 
   return {
     ...props.receiving.order,
-    status: 'open',
-    fire_state: 'held',
+    status: 'accepted',
     ...(accepted.value.estimatedMinutes === null
       ? {}
       : {
           estimated_ready_minutes: accepted.value.estimatedMinutes,
           estimated_ready_at: etaAt(accepted.value.estimatedMinutes),
         }),
-  } as typeof props.receiving.order
+  }
+})
+const boardStageLabel = computed(() => {
+  const stage = deriveKitchenOrderBoardStage(displayOrder.value)
+
+  return stage === 'queue'
+    ? 'Queue'
+    : stage === 'incoming'
+      ? 'Incoming'
+      : stage === 'recent'
+        ? 'Recent'
+        : stage
 })
 const displayShape = computed(() => ({
   ...props.receiving.shape,
-  given: rejected.value
+  given: cancelled.value
     ? {
         status: 'cancelled',
-        fire_state: 'held',
-        kitchen_note: rejected.value.note,
+        kitchen_note: cancelled.value.note,
       }
     : accepted.value
       ? {
-          status: 'open',
-          fire_state: 'held',
+          status: 'accepted',
           ...(accepted.value.estimatedMinutes === null
             ? {}
             : {
@@ -101,7 +131,7 @@ const displayShape = computed(() => ({
 }))
 
 function accept(payload: { estimatedMinutes: number | null }) {
-  rejected.value = null
+  cancelled.value = null
   accepted.value = {
     estimatedMinutes: payload.estimatedMinutes,
   }
@@ -114,11 +144,11 @@ function accept(payload: { estimatedMinutes: number | null }) {
 function reject(payload: { id: string; note: string }) {
   const note = payload.note.trim()
   accepted.value = null
-  rejected.value = {
+  cancelled.value = {
     note,
   }
   emit('update:outcome', {
-    status: 'rejected',
+    status: 'cancelled',
     note,
   })
 }
@@ -147,7 +177,7 @@ watch(
   ],
   () => {
     accepted.value = null
-    rejected.value = null
+    cancelled.value = null
     estimateMinutes.value = defaultEstimateMinutes
     emit('update:outcome', null)
   }

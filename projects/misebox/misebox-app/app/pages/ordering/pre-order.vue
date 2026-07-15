@@ -66,6 +66,7 @@ import type {
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
 import type { MenuOrderDepositPolicy } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
+import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {
@@ -175,10 +176,11 @@ const preOrderPayment = {
   amount_chf: depositTotal,
   currency_code: 'CHF',
   reason: depositPolicy.label || 'Deposit',
-  resume_status: 'open',
+  resume_status: resolveKitchenOrderPostPaymentStatus('pre_order'),
 }
 const preOrderShapeTrack = computed(() =>
   createOrderingFunnelShapeTrack({
+    channel: 'menu',
     route: {
       menuId: 'la-tapberne-main',
       kitchenSlug: 'la-tapberne',
@@ -211,13 +213,13 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
   order_id: 'demo-pre-order',
   order_number: 'P-104',
   status: 'pending_payment',
-  fire_state: 'held',
   items: basketItems,
   total_chf: basketTotal,
   order: {
     id: 'demo-pre-order',
     order_number: 'P-104',
     order_type: 'pre_order',
+    channel: 'menu',
     status: 'pending_payment',
     requested_for: preOrderDetails.requested_for,
     payment: preOrderPayment,
@@ -226,9 +228,10 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
 const preOrderSending = reactive<MenuOrderingSending>({
   endpoint: '/api/menus/la-tapberne-main/orders',
   body: {
+    channel: 'menu',
     order_type: 'pre_order',
     items: basketItems.map((item) => ({
-      itemId: item.id,
+      item_id: item.id,
       quantity: item.quantity,
     })),
     requested_for: preOrderDetails.requested_for,
@@ -237,10 +240,6 @@ const preOrderSending = reactive<MenuOrderingSending>({
     },
   },
   pending: false,
-  expected_result: {
-    status: 'pending_payment',
-    fire_state: 'held',
-  },
   sent_order: preOrderProcessing.order,
 })
 const preOrderPaymentState = reactive({
@@ -280,11 +279,9 @@ const preOrderFunnel: MenuOrderingFunnelController = {
       preOrderPaymentState.pending = false
       preOrderPaymentState.message = 'Deposit accepted.'
       preOrderProcessing.status = 'pending_acceptance'
-      preOrderProcessing.fire_state = 'held'
       if (!preOrderProcessing.order) return
 
       preOrderProcessing.order.status = 'pending_acceptance'
-      preOrderProcessing.order.fire_state = 'held'
       preOrderProcessing.order.payment = {
         ...preOrderPayment,
         status: 'paid',

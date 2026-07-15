@@ -62,7 +62,10 @@ export function useOrderDraft(
     kitchenSlug: options.kitchenSlug,
     menuContext: options.menuContext,
   })
-  const { status: trackedOrderStatus } = useOrderStatus(
+  const {
+    error: trackedOrderStatusError,
+    status: trackedOrderStatus,
+  } = useOrderStatus(
     menuId,
     computed(() => trackedOrder.value?.id || ''),
     {
@@ -72,6 +75,7 @@ export function useOrderDraft(
   )
   const awaitingMessage = computed(() => {
     const status = trackedOrderStatus.value
+    if (trackedOrderStatusError.value) return trackedOrderStatusError.value
     if (message.value) return message.value
     if (!trackedOrder.value || !acceptedOrder.value) return ''
 
@@ -201,6 +205,7 @@ export function useOrderDraft(
 
   async function place(input?: MenuOrderingSubmitPayload) {
     if (!canOrder.value || !items.value.length) return null
+    if (!input?.channel) throw new Error('Order channel is required.')
 
     const created = await createOrder({
       items: items.value.map((item) => ({
@@ -210,7 +215,7 @@ export function useOrderDraft(
         ...(item.addOns?.length ? { addOns: item.addOns } : {}),
         ...(item.variant ? { variant: item.variant } : {}),
       })),
-      channel: input?.channel,
+      channel: input.channel,
       order_type: orderType.value,
       collection: input?.collection,
       payment_method: input?.payment_method,

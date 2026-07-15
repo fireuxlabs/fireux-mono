@@ -116,9 +116,7 @@ export function menuOrderIdempotencyRequest(
 ) {
   return {
     channel: command.channel,
-    ...(command.actorId !== 'menu'
-      ? { creator_id: command.actorId }
-      : {}),
+    ...(command.actorId !== 'menu' ? { actor_id: command.actorId } : {}),
     order_type: command.orderType,
     items: command.requestedItems.map((item) => ({
       item_id: item.itemId,

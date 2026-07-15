@@ -94,8 +94,8 @@
             header-action-label="Move order back to queue"
             :status-action-label="sendLabel(ticket)"
             :status-action-aria-label="sendAriaLabel(ticket)"
-            @touch-header="moveToQueue"
-            @touch-status="sendOrder"
+            @touch-header="returnToQueue"
+            @touch-status="completeReadyOrder"
           />
         </div>
 
@@ -125,8 +125,8 @@
             :interactive="canOperate"
             header-action-label="Mark order ready"
             body-action-label="Mark order ready"
-            @touch-header="passOrder"
-            @touch-body="passOrder"
+            @touch-header="markOrderReady"
+            @touch-body="markOrderReady"
           />
         </div>
 
@@ -216,9 +216,9 @@ const {
   canWrite,
   acceptOrder,
   rejectOrder,
-  queueOrder,
-  passOrder,
-  archiveOrder,
+  returnOrderToQueue,
+  markOrderReady,
+  completeOrder,
   trashOrder,
 } = useKitchenConsoleOrders()
 
@@ -271,11 +271,11 @@ function sendAriaLabel(order: KitchenOrder) {
     : action
 }
 
-function moveToQueue(orderId: string) {
+function returnToQueue(orderId: string) {
   if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   if (sendReadyOrderId.value === resolvedOrderId) sendReadyOrderId.value = ''
-  queueOrder(resolvedOrderId)
+  returnOrderToQueue(resolvedOrderId)
 }
 
 async function acceptIncomingOrder(
@@ -338,7 +338,7 @@ function clampEstimate(value: number) {
   return Math.min(90, Math.max(5, minutes))
 }
 
-function sendOrder(orderId: string) {
+function completeReadyOrder(orderId: string) {
   if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
   if (!resolvedOrderId) return
@@ -348,7 +348,7 @@ function sendOrder(orderId: string) {
   }
 
   sendReadyOrderId.value = ''
-  archiveOrder(resolvedOrderId)
+  completeOrder(resolvedOrderId)
 }
 
 async function clearOrders() {

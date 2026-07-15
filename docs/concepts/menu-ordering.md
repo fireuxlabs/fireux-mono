@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-07-07
-Ref: 935094ef1
+Updated: 2026-07-15
+Ref: 4ab8c0226
 Role: map, not canon
 
 Purpose:
@@ -139,8 +139,8 @@ Public order funnel spine:
   backed by the single `useDeliveryFunnel` seam until a screen earns its own
   extra composable.
 - `funnel/Collection`: collection-only timing/rendezvous with the kitchen.
-- `server/api/menus/[menuId]/orders.post.ts`: canonical public menu order
-  creation route for now. It writes `KitchenOrder` records under
+- `server/api/menus/[menuId]/orders.post.ts`: canonical KitchenOrder creation
+  route for public and authenticated Staff POS channels. It writes records under
   `apps/<appId>/kitchens/<kitchenId>/orders`.
 - Do not create a second client-side generic `Order` record from the public
   funnel unless the generic order engine and kitchen order console are

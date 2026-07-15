@@ -211,12 +211,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       ...(collectedIncoming.value.room_service ? { room_service: collectedIncoming.value.room_service } : {}),
     },
     pending: draft.creatingItemId.value === 'order',
-    expected_result: {
-      status: ['collection', 'delivery', 'pre_order', 'room_service']
-        .includes(choice.selectedOrderType.value)
-        ? 'pending_acceptance'
-        : 'accepted',
-    },
     ...(draft.message.value ? { message: draft.message.value } : {}),
     ...(draft.error.value ? { error: draft.error.value } : {}),
     ...(draft.sentOrder.value ? { sent_order: draft.sentOrder.value } : {}),

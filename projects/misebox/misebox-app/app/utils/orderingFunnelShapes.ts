@@ -9,10 +9,17 @@ import type {
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
 import type {
   KitchenOrder,
+  KitchenOrderChannel,
   KitchenOrderCustomer,
+  KitchenOrderFulfilmentMatch,
   KitchenOrderItem,
   KitchenOrderPayment,
+  KitchenOrderStatus,
   KitchenOrderType,
+} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+import {
+  KitchenOrderModel,
+  resolveKitchenOrderIntakeStatus,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 
 type DraftModePatch = Partial<
@@ -47,12 +54,13 @@ export type OrderingKitchenReceiving = {
 }
 
 export type OrderingKitchenReceivingGiven = {
-  status: string
+  status: KitchenOrderStatus
   [key: string]: unknown
 }
 
 export type OrderingFunnelShapeOptions = {
   basket?: MenuOrderingBasket
+  channel: KitchenOrderChannel
   mode: DraftModePatch
   modeLabel: string
   orderType: KitchenOrderType
@@ -110,7 +118,11 @@ export function createOrderingFunnelShapeTrack(
     ...(options.operator ? { operator: options.operator } : {}),
     submission: options.submission,
   }
-  const kitchen = createKitchenReceiving(withSubmission, options.payment)
+  const kitchen = createKitchenReceiving(
+    withSubmission,
+    options.channel,
+    options.payment
+  )
 
   return {
     basket,
@@ -132,6 +144,7 @@ export function createOrderingFunnelShapeTrack(
 
 function createKitchenReceiving(
   intake: MenuOrderingKitchenIntake,
+  channel: KitchenOrderChannel,
   paymentOverride?: KitchenOrderPayment
 ): OrderingKitchenReceiving {
   const customer = kitchenCustomer(intake)
@@ -143,46 +156,35 @@ function createKitchenReceiving(
     currency_code: 'CHF',
   }
   const items = kitchenItems(intake.basket)
-  const order = {
+  const status = resolveKitchenOrderIntakeStatus({
+    orderType: intake.orderType,
+    paymentPending: payment.required && payment.status !== 'paid',
+  })
+  const order: KitchenOrder = {
+    ...KitchenOrderModel,
     id: intake.submission.id,
     kitchen_id: intake.submission.kitchen_id,
     menu_id: intake.submission.menu_id,
     order_number: intake.submission.order_number,
-    status: 'pending_acceptance',
+    status,
     order_type: intake.orderType,
     ...(requestedFor ? { requested_for: requestedFor } : {}),
     ...(intake.collection ? { collection: intake.collection } : {}),
-    estimated_ready_minutes: 0,
-    estimated_ready_at: '',
-    fire_state: 'held',
+    ...(intake.table ? { table: intake.table } : {}),
+    ...(intake.roomService ? { room_service: intake.roomService } : {}),
     items,
-    fulfilment_policy: {},
-    fulfilment_match: fulfilment,
-    driver_responses: {},
+    ...(fulfilment ? { fulfilment_match: fulfilment } : {}),
     ...(Object.keys(customer).length ? { customer } : {}),
     payment,
-    channel: 'menu',
-    app_id: 'misebox-app',
-    creator_id: 'menu',
-    created_at: '',
-    updated_at: '',
-    created: {
-      at: '',
-      by: 'menu',
-      app_id: 'misebox-app',
-    },
-    updated: {
-      at: '',
-      by: 'menu',
-    },
-  } as unknown as KitchenOrder
+    channel,
+  }
 
   return {
     order,
     shape: {
       ...intake,
       given: {
-        status: 'pending_acceptance',
+        status,
         ...(intake.operator ? { operator: intake.operator } : {}),
       },
     },
@@ -219,48 +221,35 @@ function kitchenCustomer(
   }
 }
 
-function kitchenFulfilment(intake: MenuOrderingKitchenIntake) {
+function kitchenFulfilment(
+  intake: MenuOrderingKitchenIntake
+): KitchenOrderFulfilmentMatch | undefined {
   if (intake.delivery) {
     return {
-      type: 'delivery',
+      type: 'delivery_zone',
       zone: intake.delivery.zone || {},
     }
   }
   if (intake.table) {
     return {
       type: 'table',
-      table_number: intake.table.number,
+      reference: intake.table.number,
+      handoff: 'table_service',
     }
   }
   if (intake.kiosk) {
     return {
-      type: 'kiosk',
-      mode: intake.kiosk.mode,
+      type: 'counter',
+      reference: intake.kiosk.queueArea || intake.submission.order_number,
       handoff: intake.kiosk.handoff,
-      ...(intake.kiosk.queueArea ? { queue_area: intake.kiosk.queueArea } : {}),
     }
   }
   if (intake.roomService) {
     return {
       type: 'room_service',
-      room: intake.roomService.room,
-    }
-  }
-  if (intake.preOrder) {
-    return {
-      type: 'pre_order',
-      requested_for: intake.preOrder.requested_for,
-      notice_hours: intake.preOrder.notice_hours,
-    }
-  }
-  if (intake.catering) {
-    return {
-      type: 'catering',
-      event_date: intake.catering.eventDate,
-      location: intake.catering.location,
-      party_size: intake.catering.partySize,
+      reference: intake.roomService.room,
     }
   }
 
-  return {}
+  return undefined
 }

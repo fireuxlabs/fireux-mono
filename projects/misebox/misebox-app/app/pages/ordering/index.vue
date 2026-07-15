@@ -12,7 +12,7 @@
 
       <section class="grid gap-3">
         <p class="m-0 text-sm font-bold uppercase tracking-[0.18em] text-muted">
-          Shared order spine
+          Canonical KitchenOrder
         </p>
 
         <div class="flex flex-wrap gap-2">
@@ -25,6 +25,27 @@
           >
             {{ prop }}
           </UBadge>
+        </div>
+      </section>
+
+      <section class="grid gap-3 border-y border-default py-5">
+        <p class="m-0 text-sm font-bold uppercase tracking-[0.18em] text-muted">
+          Intake decision
+        </p>
+
+        <div class="grid gap-3 md:grid-cols-3">
+          <div
+            v-for="step in intakeSteps"
+            :key="step.status"
+            class="flex min-w-0 items-center justify-between gap-3 border-l-2 border-primary/40 pl-3"
+          >
+            <span class="text-sm font-semibold text-highlighted">
+              {{ step.condition }}
+            </span>
+            <UBadge color="neutral" variant="soft" class="shrink-0 font-mono">
+              {{ step.status }}
+            </UBadge>
+          </div>
         </div>
       </section>
 
@@ -50,6 +71,15 @@
                 </h2>
 
                 <UBadge
+                  v-if="surface.channel"
+                  color="neutral"
+                  variant="subtle"
+                  class="font-mono"
+                >
+                  {{ surface.channel }}
+                </UBadge>
+
+                <UBadge
                   v-if="surface.parked"
                   color="neutral"
                   variant="subtle"
@@ -71,17 +101,30 @@
 
           <div>
             <div class="flex flex-wrap gap-2">
-              <UButton
+              <div
                 v-for="mode in surface.modes"
-                :key="mode.orderType"
-                :trailing-icon="mode.to ? 'i-lucide-arrow-right' : undefined"
-                color="neutral"
-                size="xs"
-                :variant="mode.to ? 'soft' : 'subtle'"
-                @click.stop="openMode(mode)"
+                :key="mode.label"
+                class="flex items-center gap-1.5"
               >
-                {{ mode.label }}
-              </UButton>
+                <UButton
+                  :trailing-icon="mode.to ? 'i-lucide-arrow-right' : undefined"
+                  color="neutral"
+                  size="xs"
+                  :variant="mode.to ? 'soft' : 'subtle'"
+                  @click.stop="openMode(mode)"
+                >
+                  {{ mode.label }}
+                </UButton>
+
+                <UBadge
+                  v-if="mode.orderType"
+                  :color="modeInitialStatus(mode) === 'accepted' ? 'success' : 'warning'"
+                  variant="soft"
+                  class="font-mono"
+                >
+                  {{ modeInitialStatus(mode) }}
+                </UBadge>
+              </div>
             </div>
           </div>
 
@@ -105,9 +148,16 @@
 </template>
 
 <script setup lang="ts">
+import {
+  resolveKitchenOrderIntakeStatus,
+  type KitchenOrderChannel,
+  type KitchenOrderInitialStatus,
+  type KitchenOrderType,
+} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+
 type OrderingMode = {
   label: string
-  orderType: string
+  orderType?: KitchenOrderType
   to?: string
 }
 
@@ -115,6 +165,7 @@ type OrderingSurface = {
   title: string
   description: string
   icon: string
+  channel?: KitchenOrderChannel
   modes: OrderingMode[]
   parked?: boolean
   to?: string
@@ -122,16 +173,24 @@ type OrderingSurface = {
 }
 
 const sharedProps = [
-  'route.menuId',
-  'route.kitchenSlug',
-  'orderType',
-  'basket.items[]',
-  'basket.quantity',
-  'allergen.checked',
-  'submission.id',
-  'submission.kitchen_id',
-  'submission.menu_id',
-  'submission.order_number',
+  'id',
+  'kitchen_id',
+  'menu_id',
+  'order_number',
+  'order_type',
+  'channel',
+  'status',
+  'items[]',
+  'payment.status',
+]
+
+const intakeSteps: Array<{
+  condition: string
+  status: KitchenOrderInitialStatus
+}> = [
+  { condition: 'Payment outstanding', status: 'pending_payment' },
+  { condition: 'Operator approval', status: 'pending_acceptance' },
+  { condition: 'Automatic acceptance', status: 'accepted' },
 ]
 
 const orderingSurfaces: OrderingSurface[] = [
@@ -142,7 +201,6 @@ const orderingSurfaces: OrderingSurface[] = [
     modes: [
       {
         label: 'Browse',
-        orderType: 'none',
       },
     ],
     unsharedProps: [
@@ -153,6 +211,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'From home',
     description: 'Customer starts away from the venue. Delivery is biased; collection can sit beside it.',
     icon: 'i-lucide-house',
+    channel: 'menu',
     to: '/ordering/delivery',
     modes: [
       {
@@ -167,17 +226,17 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'delivery.ready',
-      'delivery.address',
-      'delivery.zone',
+      'customer.address',
       'collection.mode',
-      'collection.requested_for',
+      'requested_for',
+      'fulfilment_match',
     ],
   },
   {
     title: 'Table QR',
     description: 'Customer is already seated. The table number is carried into the order.',
     icon: 'i-lucide-qr-code',
+    channel: 'table_qr',
     to: '/ordering/dine-in',
     modes: [
       {
@@ -188,12 +247,15 @@ const orderingSurfaces: OrderingSurface[] = [
     ],
     unsharedProps: [
       'table.number',
+      'fulfilment_match.reference',
+      'fulfilment_match.handoff',
     ],
   },
   {
     title: 'Kiosk',
     description: 'Shared in-store terminal. Eat in means tray; takeaway means bag.',
     icon: 'i-lucide-tablet',
+    channel: 'kiosk',
     to: '/ordering/kiosk',
     modes: [
       {
@@ -208,17 +270,17 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'kiosk.mode',
-      'kiosk.handoff',
-      'kiosk.queueArea',
       'customer.name',
-      'payment_method',
+      'fulfilment_match.reference',
+      'fulfilment_match.handoff',
+      'payment.method',
     ],
   },
   {
     title: 'Pre-order',
     description: 'Timing-first request. The kitchen confirms before deposit or final preparation.',
     icon: 'i-lucide-calendar-clock',
+    channel: 'menu',
     to: '/ordering/pre-order',
     modes: [
       {
@@ -228,17 +290,17 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'preOrder.requested_for',
-      'preOrder.notice_hours',
-      'preOrder.party_size',
-      'operator.status',
-      'payment.deposit',
+      'requested_for',
+      'fulfilment_policy.notice_hours',
+      'customer.party_size',
+      'payment',
     ],
   },
   {
     title: 'Room service',
     description: 'Internal delivery to a room inside a hotel, aparthotel, or venue.',
     icon: 'i-lucide-concierge-bell',
+    channel: 'room_service',
     to: '/ordering/room-service',
     modes: [
       {
@@ -248,7 +310,7 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'roomService.room',
+      'room_service.room',
       'customer.name',
     ],
   },
@@ -256,6 +318,7 @@ const orderingSurfaces: OrderingSurface[] = [
     title: 'Staff POS',
     description: 'Operator enters an in-store order quickly from the menu.',
     icon: 'i-lucide-monitor',
+    channel: 'staff_pos',
     to: '/ordering/staff-pos',
     modes: [
       {
@@ -270,8 +333,9 @@ const orderingSurfaces: OrderingSurface[] = [
       },
     ],
     unsharedProps: [
-      'operator.id',
-      'service.target',
+      'created.by',
+      'table.number',
+      'fulfilment_match.handoff',
       'payment.method',
     ],
   },
@@ -287,6 +351,15 @@ function openMode(mode: OrderingMode) {
   if (!mode.to) return
 
   navigateTo(mode.to)
+}
+
+function modeInitialStatus(mode: OrderingMode): KitchenOrderInitialStatus | '' {
+  if (!mode.orderType) return ''
+
+  return resolveKitchenOrderIntakeStatus({
+    orderType: mode.orderType,
+    paymentPending: false,
+  })
 }
 
 /*

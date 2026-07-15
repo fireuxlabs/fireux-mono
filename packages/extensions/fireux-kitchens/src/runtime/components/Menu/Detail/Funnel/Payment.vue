@@ -41,7 +41,7 @@ const orderStatus = computed(() =>
 )
 const acceptedByKitchen = computed(() =>
   props.funnel.order.accepted ||
-    ['open', 'on_pass'].includes(orderStatus.value)
+    ['accepted', 'ready'].includes(orderStatus.value)
 )
 const paymentBeforeKitchen = computed(() =>
   orderStatus.value === 'pending_payment' &&
@@ -67,7 +67,7 @@ const canStartPayment = computed(() =>
     payment.value?.required === true &&
     (acceptedByKitchen.value || paymentBeforeKitchen.value) &&
     payment.value?.status !== 'paid' &&
-    orderStatus.value !== 'cancelled' &&
+    !['cancelled', 'completed', 'trashed'].includes(orderStatus.value) &&
     paymentAmount.value > 0
 )
 const paymentLabel = computed(() => {

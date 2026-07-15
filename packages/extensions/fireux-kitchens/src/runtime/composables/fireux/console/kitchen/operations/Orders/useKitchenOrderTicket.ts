@@ -38,25 +38,16 @@ export function useKitchenOrderTicket(
   const orderId = computed(() => normalizeString(props.order.id))
   const placedMs = computed(
     () =>
-      timestampMs((props.order as any).created?.at) ||
-      timestampMs((props.order as any).created_at) ||
-      timestampMs((props.order as any).updated?.at) ||
-      timestampMs((props.order as any).updated_at)
+      timestampMs(props.order.created.at) ||
+      timestampMs(props.order.updated.at)
   )
   const pickupMs = computed(() =>
     timestampMs(
-      collectionRequestedFor(props.order) ||
-        orderValue(props.order, [
-          'requested_for',
-          'pickup_at',
-          'pickup_time',
-          'collection_at',
-          'due_at',
-        ]),
+      collectionRequestedFor(props.order) || props.order.requested_for,
       placedMs.value
     )
   )
-  const serviceMode = computed(() => resolveServiceMode(props.order))
+  const orderType = computed(() => resolveOrderType(props.order))
   const fulfilmentReference = computed(() =>
     normalizeString(fulfilmentMatch.value.reference)
   )
@@ -64,7 +55,7 @@ export function useKitchenOrderTicket(
     normalizeString(collectionRecord.value.mode)
   )
   const isScheduledCollection = computed(() =>
-    serviceMode.value === 'collection' &&
+    orderType.value === 'collection' &&
       collectionMode.value === 'scheduled' &&
       Boolean(pickupMs.value)
   )
@@ -97,55 +88,55 @@ export function useKitchenOrderTicket(
     props.interactive !== false && canShowStatusAction.value
   )
   const headerIcon = computed(() =>
-    serviceMode.value === 'collection'
+    orderType.value === 'collection'
       ? 'i-lucide-shopping-bag'
-      : serviceMode.value === 'delivery'
+      : orderType.value === 'delivery'
         ? 'i-lucide-bike'
-        : serviceMode.value === 'pre_order'
+        : orderType.value === 'pre_order'
           ? 'i-lucide-calendar-clock'
-        : serviceMode.value === 'room_service'
+        : orderType.value === 'room_service'
           ? 'i-lucide-concierge-bell'
-        : serviceMode.value === 'dine_in' || serviceMode.value === 'eat_in'
+        : orderType.value === 'dine_in' || orderType.value === 'eat_in'
           ? 'i-lucide-utensils'
-          : serviceMode.value === 'takeaway'
+          : orderType.value === 'takeaway'
             ? 'i-lucide-shopping-bag'
             : 'i-lucide-clock'
   )
   const headerLabel = computed(() => {
-    if (serviceMode.value === 'collection') {
+    if (orderType.value === 'collection') {
       if (isScheduledCollection.value) return `Scheduled pickup ${formatTime(pickupMs.value)}`
 
       return 'Queue collection'
     }
 
-    if (serviceMode.value === 'delivery') {
+    if (orderType.value === 'delivery') {
       return pickupMs.value
         ? `Deliver ${formatTime(pickupMs.value)}`
         : 'Delivery'
     }
 
-    if (serviceMode.value === 'pre_order') {
+    if (orderType.value === 'pre_order') {
       return pickupMs.value
         ? `Pre-order ${formatTime(pickupMs.value)}`
         : 'Pre-order'
     }
 
-    if (serviceMode.value === 'dine_in') {
+    if (orderType.value === 'dine_in') {
       const table = fulfilmentReference.value || normalizeString(tableRecord.value.number)
       if (!table) return 'Table service'
 
       return /^table\b/i.test(table) ? table : `Table ${table}`
     }
-    if (serviceMode.value === 'room_service') {
+    if (orderType.value === 'room_service') {
       const room = normalizeString(roomServiceRecord.value.room)
       return room ? `Room service · ${room}` : 'Room service'
     }
-    if (serviceMode.value === 'eat_in') {
+    if (orderType.value === 'eat_in') {
       return fulfilmentReference.value
         ? `Eat here · ${fulfilmentReference.value}`
         : 'Eat here'
     }
-    if (serviceMode.value === 'takeaway') {
+    if (orderType.value === 'takeaway') {
       return fulfilmentReference.value
         ? `Take away · ${fulfilmentReference.value}`
         : 'Take away'
@@ -156,20 +147,20 @@ export function useKitchenOrderTicket(
   const statusLabel = computed(() => {
     if (orderStatus.value === 'pending_payment') return 'payment pending'
     if (orderStatus.value === 'pending_acceptance') return 'waiting'
-    if (orderStatus.value === 'open' && serviceMode.value === 'pre_order') return 'confirmed'
+    if (orderStatus.value === 'accepted' && orderType.value === 'pre_order') {
+      return 'confirmed'
+    }
 
-    if (orderStatus.value === 'open' && estimatedReadyMs.value) {
+    if (orderStatus.value === 'accepted' && estimatedReadyMs.value) {
       return `eta ${formatTime(estimatedReadyMs.value)}`
     }
 
-    if (orderStatus.value === 'open' && estimatedReadyMinutes.value > 0) {
+    if (orderStatus.value === 'accepted' && estimatedReadyMinutes.value > 0) {
       return `eta ${estimatedReadyMinutes.value} min`
     }
 
-    const fireState = normalizeString((props.order as any).fire_state)
-    if (fireState === 'held') return 'held'
-    if (fireState === 'ready_to_fire') return 'ready'
-    if (!orderStatus.value || orderStatus.value === 'open') return ''
+    if (orderStatus.value === 'ready') return 'ready'
+    if (!orderStatus.value || orderStatus.value === 'accepted') return ''
 
     return orderStatus.value.replace(/[_-]+/g, ' ')
   })
@@ -256,7 +247,7 @@ export function useKitchenOrderTicket(
       label: orderLabel.value,
       header: headerLabel.value,
       status: statusLabel.value,
-      service_mode: serviceMode.value,
+      order_type: orderType.value,
       lines: lines.value,
       customer_lines: customerLines.value,
       order: orderRecord.value,
@@ -290,9 +281,9 @@ export function useKitchenOrderTicket(
 }
 
 export function kitchenOrderHandoffActionLabel(order: KitchenOrder) {
-  const serviceMode = resolveServiceMode(order)
-  if (serviceMode === 'dine_in') return 'Delivered'
-  if (serviceMode === 'eat_in' || serviceMode === 'takeaway') return 'Collected'
+  const orderType = resolveOrderType(order)
+  if (orderType === 'dine_in') return 'Delivered'
+  if (orderType === 'eat_in' || orderType === 'takeaway') return 'Collected'
 
   return 'Send'
 }
@@ -337,15 +328,6 @@ function formatTime(value: number) {
   }).format(new Date(value))
 }
 
-function orderValue(order: KitchenOrder, keys: string[]) {
-  const source = order as Record<string, unknown>
-  for (const key of keys) {
-    const value = source[key]
-    if (value !== undefined && value !== null && value !== '') return value
-  }
-  return null
-}
-
 function collectionRequestedFor(order: KitchenOrder) {
   const collection = (order as Record<string, unknown>).collection
   if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
@@ -355,44 +337,6 @@ function collectionRequestedFor(order: KitchenOrder) {
   return normalizeString((collection as Record<string, unknown>).requested_for)
 }
 
-function resolveServiceMode(order: KitchenOrder) {
-  const value = normalizeString(
-    orderValue(order, [
-      'order_type',
-      'service_mode',
-      'serviceMode',
-      'fulfilment_type',
-      'fulfillment_type',
-      'channel',
-    ])
-  ).toLowerCase()
-
-  if (
-    ['collection', 'collect', 'pickup', 'pick_up'].includes(value) ||
-    value.includes('collection') ||
-    value.includes('pickup')
-  ) {
-    return 'collection'
-  }
-  if (['delivery', 'deliver'].includes(value) || value.includes('delivery')) {
-    return 'delivery'
-  }
-  if (['pre_order', 'pre-order', 'preorder'].includes(value) || value.includes('pre order')) {
-    return 'pre_order'
-  }
-  if (['dine_in', 'dine-in', 'table'].includes(value) || value.includes('dine')) {
-    return 'dine_in'
-  }
-  if (['eat_in', 'eat-in'].includes(value) || value.includes('eat in')) {
-    return 'eat_in'
-  }
-  if (
-    ['takeaway', 'take-away'].includes(value) ||
-    value.includes('takeaway') ||
-    value.includes('take away')
-  ) {
-    return 'takeaway'
-  }
-
-  return value
+function resolveOrderType(order: KitchenOrder) {
+  return normalizeString(order.order_type)
 }

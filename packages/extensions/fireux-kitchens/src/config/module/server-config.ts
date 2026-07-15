@@ -7,6 +7,11 @@ import {
 
 const baseServerHandlers = [
   {
+    route: '/api/console/kitchen/orders/transition',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/orders/transition.post',
+  },
+  {
     route: '/api/console/kitchen/menus/upload',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/menus/upload.post',
@@ -26,6 +31,37 @@ const baseServerHandlers = [
     method: 'options',
     handler:
       './runtime/server/api/console/kitchen/menus/upload/availability.options',
+  },
+  {
+    route: '/api/menus/:menuId/delivery-address',
+    method: 'post',
+    handler: './runtime/server/api/menus/[menuId]/delivery-address.post',
+  },
+  {
+    route: '/api/menus/:menuId/orders',
+    method: 'post',
+    handler: './runtime/server/api/menus/[menuId]/orders.post',
+  },
+  {
+    route: '/api/menus/:menuId/orders',
+    method: 'options',
+    handler: './runtime/server/api/menus/[menuId]/orders.options',
+  },
+  {
+    route: '/api/menus/:menuId/orders/:orderId',
+    method: 'get',
+    handler: './runtime/server/api/menus/[menuId]/orders/[orderId].get',
+  },
+  {
+    route: '/api/menus/:menuId/orders/:orderId/checkout-session',
+    method: 'post',
+    handler:
+      './runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post',
+  },
+  {
+    route: '/api/menus/payments/stripe-webhook',
+    method: 'post',
+    handler: './runtime/server/api/menus/payments/stripe-webhook.post',
   },
 ] satisfies FireuxServerHandler[]
 

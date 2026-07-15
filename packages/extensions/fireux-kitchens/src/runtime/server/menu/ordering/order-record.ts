@@ -124,13 +124,8 @@ export function assembleMenuOrderRecord(input: {
       ? { fulfilment_policy: fulfilment.policySnapshot }
       : {}),
     channel: command.channel,
-    ...(command.actorId !== 'menu'
-      ? { creator_id: command.actorId }
-      : {}),
     items: input.items,
     payment: fulfilment.payment,
-    created_at: identity.timestamp,
-    updated_at: identity.timestamp,
     created: {
       at: identity.timestamp,
       by: command.actorId,
