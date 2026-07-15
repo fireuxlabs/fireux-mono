@@ -84,7 +84,7 @@ const kitchenAppScope = computed(() => readKitchenAppScope(rootKitchen.value))
 const scopedKitchenAppId = computed(() => {
   const state = kitchenAppScope.value.state
   const scopedAppId = kitchenAppScope.value.appId
-  if ((state === 'parent_app' || state === 'dedicated_app') && scopedAppId) {
+  if ((state === 'parent_app' || state === 'tenant_app') && scopedAppId) {
     return scopedAppId
   }
 

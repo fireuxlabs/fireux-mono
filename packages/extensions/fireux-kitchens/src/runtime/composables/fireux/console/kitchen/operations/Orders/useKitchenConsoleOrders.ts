@@ -37,9 +37,12 @@ export function useKitchenConsoleOrders() {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })
-  const { transitionKitchenOrder } = useKitchenOrderTransition({
-    appId,
-  })
+  const {
+    error: transitionError,
+    isTransitioning: isOrderTransitioning,
+    pendingCount: transitioningCount,
+    transitionKitchenOrder,
+  } = useKitchenOrderTransition({ appId })
   const page = useKitchenConsoleReadPage<KitchenOrder>({
     collectionName: KitchenOrderStorage.collection,
     selectedKitchen,
@@ -81,6 +84,15 @@ export function useKitchenConsoleOrders() {
   const unmappedOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'unmapped')
   )
+  const railCounts = computed(() => [
+    { label: 'Incoming', count: incomingOrders.value.length },
+    { label: 'Queue', count: queueOrders.value.length },
+    { label: 'Pass', count: passOrders.value.length },
+    { label: 'Recent', count: recentOrders.value.length },
+    ...(unmappedOrders.value.length
+      ? [{ label: 'Needs mapping', count: unmappedOrders.value.length }]
+      : []),
+  ])
   const ticketOrders = computed(() =>
     sortOrders(visibleOrders.value)
   )
@@ -171,13 +183,18 @@ export function useKitchenConsoleOrders() {
     readOnly,
     canWrite,
     orders: consoleOrders,
+    visibleOrders,
     ticketOrders,
     incomingOrders,
     queueOrders,
     passOrders,
     recentOrders,
     unmappedOrders,
+    railCounts,
     pending,
+    transitionError,
+    transitioningCount,
+    isOrderTransitioning,
     acceptOrder,
     rejectOrder,
     returnOrderToQueue,

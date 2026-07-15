@@ -14,9 +14,11 @@
 </template>
 
 <script setup lang="ts">
+import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/utils/menu-context'
+
 const route = useRoute()
-const menuContext = computed<'pre_order' | 'delivery'>(() =>
-  route.query.context === 'delivery' ? 'delivery' : 'pre_order',
+const menuContext = computed(() =>
+  normalizeMenuRouteContext(route.query.context),
 )
 
 definePageMeta({

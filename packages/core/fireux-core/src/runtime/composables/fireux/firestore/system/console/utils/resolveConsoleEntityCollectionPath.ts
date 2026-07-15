@@ -1,4 +1,8 @@
 import type { ConsoleSource } from '../../../../app/console/useConsole'
+import {
+  normalizeFireuxAppScopeState,
+  type FireuxAppScopeState,
+} from '../../../../../../models/core/meta.model'
 
 export type ConsoleEntityRuntimeMode = ConsoleSource
 
@@ -21,9 +25,7 @@ export type ResolveConsoleEntityCollectionPathOptions = {
 
 export type ConsoleEntityScopeState =
   | ''
-  | 'root_only'
-  | 'parent_app'
-  | 'dedicated_app'
+  | FireuxAppScopeState
 
 export type ConsoleEntityScopeTarget = {
   app_scope?: unknown
@@ -60,25 +62,17 @@ export function resolveConsoleEntityScopeState(
   target?: ConsoleEntityScopeTarget | null
 ): ConsoleEntityScopeState {
   const appScope = record(target?.app_scope)
-  const state = normalizePathPart(appScope.state) ||
-    normalizePathPart(target?.app_scope_state)
-
-  if (
-    state === 'root_only' ||
-    state === 'parent_app' ||
-    state === 'dedicated_app'
-  ) {
-    return state
-  }
-
-  return ''
+  return normalizeFireuxAppScopeState(
+    normalizePathPart(appScope.state) ||
+      normalizePathPart(target?.app_scope_state)
+  )
 }
 
 export function consoleEntityUsesAppScope(
   target?: ConsoleEntityScopeTarget | null
 ) {
   const state = resolveConsoleEntityScopeState(target)
-  return state === 'parent_app' || state === 'dedicated_app'
+  return state === 'parent_app' || state === 'tenant_app'
 }
 
 export function resolveConsoleEntityCollectionPath(

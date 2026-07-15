@@ -53,7 +53,7 @@ export function useConsoleEntityFirestore(
   const isAppScoped = computed(() =>
     consoleEntityUsesAppScope(target.value)
   )
-  const isTenantOwned = computed(() => scopeState.value === 'dedicated_app')
+  const isTenantOwned = computed(() => scopeState.value === 'tenant_app')
   const shouldUseAppScope = computed(
     () => Boolean(unref(options.useAppOverlay)) || isAppScoped.value
   )

@@ -282,10 +282,19 @@ export function useKitchenOrderTicket(
 
 export function kitchenOrderHandoffActionLabel(order: KitchenOrder) {
   const orderType = resolveOrderType(order)
-  if (orderType === 'dine_in') return 'Delivered'
-  if (orderType === 'eat_in' || orderType === 'takeaway') return 'Collected'
+  if (orderType === 'dine_in') return 'Served'
+  if (
+    orderType === 'eat_in' ||
+    orderType === 'takeaway' ||
+    orderType === 'collection' ||
+    orderType === 'pre_order'
+  ) {
+    return 'Collected'
+  }
+  if (orderType === 'delivery') return 'Dispatched'
+  if (orderType === 'room_service') return 'Delivered'
 
-  return 'Send'
+  return 'Complete'
 }
 
 function normalizeString(value: unknown) {

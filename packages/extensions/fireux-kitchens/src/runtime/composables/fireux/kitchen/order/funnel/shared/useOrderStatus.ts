@@ -88,7 +88,6 @@ export function useOrderStatus(
   watch(enabled, (isEnabled: boolean) => {
     if (!isEnabled) {
       stop()
-      status.value = null
       return
     }
 
@@ -97,6 +96,8 @@ export function useOrderStatus(
   }, { immediate: true })
 
   watch(endpoint, () => {
+    status.value = null
+    error.value = ''
     available.value = true
   })
 

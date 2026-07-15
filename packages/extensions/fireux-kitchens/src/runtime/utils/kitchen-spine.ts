@@ -1,6 +1,8 @@
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import {
+  normalizeFireuxAppScopeState,
+} from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type {
   KitchenFulfilmentConfig,
   KitchenImageShade,
@@ -130,14 +132,15 @@ export const readKitchenAppScope = (
 ) => {
   const source = record(value)
   const appScope = record(source.app_scope)
-  const state =
-    (text(appScope.state) || text(source.app_scope_state)) as FireuxAppScopeState | ''
+  const state = normalizeFireuxAppScopeState(
+    text(appScope.state) || text(source.app_scope_state)
+  )
   const appId = text(appScope.app_id) || text(source.app_scope_app_id) || text(fallbackAppId)
 
   return {
     state,
     appId,
-    hasTenantApp: state === 'dedicated_app' && Boolean(appId),
+    hasTenantApp: state === 'tenant_app' && Boolean(appId),
   }
 }
 

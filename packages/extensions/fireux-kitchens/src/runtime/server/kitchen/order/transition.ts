@@ -2,25 +2,15 @@ import { createError } from 'h3'
 import { Timestamp } from 'firebase-admin/firestore'
 import {
   isKitchenOrderStatus,
+  kitchenOrderTransitionRule,
   type KitchenOrder,
-  type KitchenOrderStatus,
   type KitchenOrderTransition,
 } from '../../../models/kitchen/order.model.ts'
 
 export type KitchenOrderTransitionOptions = {
   estimatedMinutes?: number | null
   note?: string
-}
-
-const allowedFrom: Record<
-  Exclude<KitchenOrderTransition, 'trash'>,
-  KitchenOrderStatus
-> = {
-  accept: 'pending_acceptance',
-  reject: 'pending_acceptance',
-  mark_ready: 'accepted',
-  return_to_queue: 'ready',
-  complete: 'ready',
+  nowMs?: number
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -38,11 +28,18 @@ export function buildKitchenOrderTransitionPatch(
   }
 
   if (transition === 'trash') {
+    if (order.status === 'trashed') {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Order is already trashed.',
+      })
+    }
+
     return { status: 'trashed' }
   }
 
-  const expectedStatus = allowedFrom[transition]
-  if (order.status !== expectedStatus) {
+  const rule = kitchenOrderTransitionRule(transition)
+  if (order.status !== rule.from) {
     throw createError({
       statusCode: 409,
       statusMessage:
@@ -51,16 +48,19 @@ export function buildKitchenOrderTransitionPatch(
   }
 
   if (transition === 'accept') {
-    const estimatedMinutes = options.estimatedMinutes === null
-      ? 0
-      : Math.max(1, Number(options.estimatedMinutes || 45) || 45)
+    const estimatedMinutes = readEstimatedMinutes(options.estimatedMinutes)
+    const nowMs = Number.isFinite(options.nowMs)
+      ? Number(options.nowMs)
+      : Date.now()
 
     return {
-      status: 'accepted',
+      status: rule.to,
       estimated_ready_minutes: estimatedMinutes,
       estimated_ready_at: estimatedMinutes
-        ? Timestamp.fromMillis(Date.now() + estimatedMinutes * 60_000) as any
-        : '' as any,
+        ? Timestamp.fromMillis(
+            nowMs + estimatedMinutes * 60_000
+          ) as unknown as KitchenOrder['estimated_ready_at']
+        : '',
     }
   }
 
@@ -74,12 +74,38 @@ export function buildKitchenOrderTransitionPatch(
     }
 
     return {
-      status: 'cancelled',
+      status: rule.to,
       kitchen_note: note,
     }
   }
 
-  if (transition === 'mark_ready') return { status: 'ready' }
-  if (transition === 'return_to_queue') return { status: 'accepted' }
-  return { status: 'completed' }
+  if (transition === 'return_to_queue') {
+    return {
+      status: rule.to,
+      estimated_ready_minutes: 0,
+      estimated_ready_at: '',
+    }
+  }
+
+  return { status: rule.to }
+}
+
+function readEstimatedMinutes(value: number | null | undefined) {
+  if (value === null) return 0
+  if (value === undefined) return 45
+
+  const minutes = Number(value)
+  if (
+    !Number.isInteger(minutes) ||
+    minutes < 5 ||
+    minutes > 90 ||
+    minutes % 5 !== 0
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Estimated minutes must be 5 to 90 in five-minute steps.',
+    })
+  }
+
+  return minutes
 }

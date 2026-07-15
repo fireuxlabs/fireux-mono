@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-15
-Ref: 97fe95697
+Ref: 624c7b638
 Role: map, not canon
 
 Purpose:
@@ -22,6 +22,18 @@ Core split:
 - `ordering` describes what kind of order the public menu can create.
 - `Order` records describe what a customer actually sent to the kitchen.
 - `Fulfilment` is not the same as Menu; it is the later operational promise and handoff layer.
+
+Public route hierarchy:
+- `/menus/<menuId>` is Browse. It renders the published menu and creates no Order.
+- `/menus/<menuId>.home` is the From-home chooser surface.
+- Home may offer `delivery`, `collection`, or both, according to the menu's enabled order types.
+- `/menus/<menuId>.delivery` and `.collection` are direct locked entries into those choices.
+- `home` is never stored as `KitchenOrder.order_type`; it resolves to `delivery` or `collection` before submission.
+- `.pre_order`, `.room_service`, `.dine_in`, and `.kiosk` remain purpose-specific surfaces.
+- Kiosk has one public route: `/menus/<menuId>.kiosk`.
+- `eat_in` and `takeaway` are choices inside Kiosk, not separate public surfaces or route suffixes.
+- The selected kiosk choice remains on the Order as the preparation, handoff, and future tax-treatment flag.
+- A surface groups or preselects customer intent; the resulting canonical order type is what reaches kitchen intake.
 
 Current display rule:
 - Do not store a public view marker on menus.

@@ -27,34 +27,42 @@
             Kitchen destination
           </p>
           <h1 class="m-0 text-4xl font-black tracking-tight text-highlighted sm:text-5xl">
-            Automatically accepted tickets
+            Kitchen execution tickets
           </h1>
           <p class="m-0 max-w-3xl text-base leading-7 text-muted">
-            These customer orders skip the kitchen acceptance step. They are
-            created as accepted orders and go directly to Queue.
+            Automatic orders start in Queue, then the same stored status moves
+            every ticket through Pass and Recent.
           </p>
         </div>
 
         <div class="rounded-lg border border-primary/30 bg-default p-4 shadow-sm">
           <p class="m-0 text-xs font-bold uppercase tracking-[0.18em] text-muted">
-            Intake contract
+            Execution contract
           </p>
           <div class="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-highlighted">
-            <UBadge color="neutral" variant="soft">
-              Customer submits
-            </UBadge>
-            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
-            <UBadge color="neutral" variant="soft" class="font-mono">
-              status: accepted
-            </UBadge>
-            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
             <UBadge color="primary" variant="soft">
               Queue
             </UBadge>
+            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
+            <UBadge color="neutral" variant="soft" class="font-mono">
+              mark_ready
+            </UBadge>
+            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
+            <UBadge color="primary" variant="soft">
+              Pass
+            </UBadge>
+            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
+            <UBadge color="neutral" variant="soft" class="font-mono">
+              complete
+            </UBadge>
+            <UIcon name="i-lucide-arrow-right" class="size-4 text-muted" />
+            <UBadge color="primary" variant="soft">
+              Recent
+            </UBadge>
           </div>
           <p class="mb-0 mt-3 text-xs leading-5 text-muted">
-            No Accept or Reject decision is required at intake. The kitchen still
-            prepares and completes the ticket afterwards.
+            Queue, Pass, and Recent are derived views. The order stores only its
+            canonical lifecycle status.
           </p>
         </div>
       </section>
@@ -76,7 +84,7 @@
                 </h2>
               </div>
 
-              <UBadge color="success" variant="soft">
+              <UBadge color="primary" variant="soft">
                 {{ boardStageLabel(ticket.order) }}
               </UBadge>
             </div>
@@ -108,23 +116,50 @@
             <ConsoleKitchenOperationsOrdersCardsTicket :order="ticket.order" />
           </div>
 
-          <p class="m-0 flex items-center gap-2 text-xs font-semibold text-success">
-            <UIcon name="i-lucide-circle-check" class="size-4 shrink-0" />
-            No separate acceptance required
+          <p class="m-0 flex items-center gap-2 text-xs font-semibold text-primary">
+            <UIcon :name="boardStageIcon(ticket.order)" class="size-4 shrink-0" />
+            {{ boardStageCopy(ticket.order) }}
           </p>
         </article>
       </section>
 
+      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+        <h2 class="m-0 text-base font-black text-highlighted">
+          A surface resolves before a ticket exists
+        </h2>
+        <p class="mb-0 mt-2 text-sm leading-6 text-muted">
+          Browse creates no order. Home is a chooser, so a submitted ticket is
+          always Delivery or Collection—never an order with type Home.
+        </p>
+
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="entry in surfaceResolutions"
+            :key="entry.surface"
+            class="rounded-md border border-default bg-muted/40 p-3"
+          >
+            <p class="m-0 text-sm font-bold text-highlighted">
+              {{ entry.surface }}
+            </p>
+            <UBadge color="neutral" variant="soft" class="mt-2 font-mono">
+              {{ entry.result }}
+            </UBadge>
+            <p class="mb-0 mt-2 text-xs leading-5 text-muted">
+              {{ entry.description }}
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section class="rounded-lg border border-default bg-elevated/70 p-5">
         <h2 class="m-0 text-base font-black text-highlighted">
-          Deliberately not included yet
+          Incoming remains the intake gate
         </h2>
         <p class="mb-0 mt-2 text-sm leading-6 text-muted">
           Collection, delivery, pre-order and room service begin in Incoming
-          because the kitchen must accept them. Staff POS is shown as an origin
-          above, but it does not need duplicate tickets because its resulting
-          dine-in, eat-in and takeaway shapes are the same. Prep Yard currently
-          has no menu or dishes, so this page does not invent an order for it.
+          because the kitchen must accept them. Once accepted, they join this
+          same Queue to Pass to Recent loop. No second lifecycle is created for
+          those order types or for Staff POS.
         </p>
       </section>
     </UContainer>
@@ -139,8 +174,6 @@ import {
   type KitchenOrder,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 
-type AutomaticOrderType = 'dine_in' | 'eat_in' | 'takeaway'
-
 type AutomaticTicket = {
   description: string
   handoff: string
@@ -150,6 +183,34 @@ type AutomaticTicket = {
   surface: string
   title: string
 }
+
+const surfaceResolutions = [
+  {
+    surface: 'Browse',
+    result: 'no KitchenOrder',
+    description: 'The published menu remains readable without starting a funnel.',
+  },
+  {
+    surface: 'From home',
+    result: 'delivery | collection',
+    description: 'The customer chooses one fulfilment type before submission.',
+  },
+  {
+    surface: 'Kiosk',
+    result: 'eat_in | takeaway',
+    description: 'One kiosk surface sets the preparation, handoff, and tax flag.',
+  },
+  {
+    surface: 'Pre-order',
+    result: 'pre_order',
+    description: 'The timing-first surface submits its own canonical order type.',
+  },
+  {
+    surface: 'Room service',
+    result: 'room_service',
+    description: 'The room destination travels with the room-service ticket.',
+  },
+] as const
 
 const automaticTickets = [
   {
@@ -166,7 +227,10 @@ const automaticTickets = [
       kitchen_id: 'garden-room',
       menu_id: 'garden-room-main',
       order_number: 'T-012',
-      status: automaticStatus('dine_in'),
+      status: resolveKitchenOrderIntakeStatus({
+        orderType: 'dine_in',
+        paymentPending: false,
+      }),
       order_type: 'dine_in',
       channel: 'table_qr',
       table: {
@@ -214,7 +278,7 @@ const automaticTickets = [
       kitchen_id: 'garden-room',
       menu_id: 'garden-room-main',
       order_number: 'A105',
-      status: automaticStatus('eat_in'),
+      status: 'ready',
       order_type: 'eat_in',
       channel: 'kiosk',
       fulfilment_match: {
@@ -270,7 +334,7 @@ const automaticTickets = [
       kitchen_id: 'deanos',
       menu_id: 'deanos-main',
       order_number: 'B106',
-      status: automaticStatus('takeaway'),
+      status: 'completed',
       order_type: 'takeaway',
       channel: 'kiosk',
       fulfilment_match: {
@@ -317,17 +381,31 @@ const automaticTickets = [
   },
 ] satisfies AutomaticTicket[]
 
-function automaticStatus(orderType: AutomaticOrderType) {
-  return resolveKitchenOrderIntakeStatus({
-    orderType,
-    paymentPending: false,
-  })
-}
-
 function boardStageLabel(order: KitchenOrder) {
   const stage = deriveKitchenOrderBoardStage(order)
 
-  return stage === 'queue' ? 'Queue' : stage
+  if (stage === 'queue') return 'Queue'
+  if (stage === 'pass') return 'Pass'
+  if (stage === 'recent') return 'Recent'
+
+  return stage
+}
+
+function boardStageCopy(order: KitchenOrder) {
+  const stage = deriveKitchenOrderBoardStage(order)
+  if (stage === 'queue') return 'Accepted. The kitchen owns preparation.'
+  if (stage === 'pass') return 'Ready for the fulfilment handoff.'
+  if (stage === 'recent') return 'Handoff complete.'
+
+  return 'Outside the execution loop.'
+}
+
+function boardStageIcon(order: KitchenOrder) {
+  const stage = deriveKitchenOrderBoardStage(order)
+  if (stage === 'queue') return 'i-lucide-list-ordered'
+  if (stage === 'pass') return 'i-lucide-bell-ring'
+
+  return 'i-lucide-circle-check'
 }
 
 definePageMeta({
@@ -336,8 +414,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Automatically Accepted Tickets · Misebox',
+  title: 'Kitchen Execution Tickets · Misebox',
   description:
-    'Kitchen ticket shapes that skip acceptance and go directly to the order queue.',
+    'Kitchen tickets moving through the canonical Queue, Pass, and Recent execution loop.',
 })
 </script>

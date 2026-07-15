@@ -134,6 +134,42 @@ export const KitchenOrderTransitions = [
 
 export type KitchenOrderTransition = (typeof KitchenOrderTransitions)[number]
 
+export type KitchenOrderStateTransition = Exclude<
+  KitchenOrderTransition,
+  'trash'
+>
+
+export type KitchenOrderTransitionRule = {
+  from: KitchenOrderStatus
+  to: KitchenOrderStatus
+}
+
+export const KitchenOrderTransitionRules = {
+  accept: {
+    from: 'pending_acceptance',
+    to: 'accepted',
+  },
+  reject: {
+    from: 'pending_acceptance',
+    to: 'cancelled',
+  },
+  mark_ready: {
+    from: 'accepted',
+    to: 'ready',
+  },
+  return_to_queue: {
+    from: 'ready',
+    to: 'accepted',
+  },
+  complete: {
+    from: 'ready',
+    to: 'completed',
+  },
+} as const satisfies Record<
+  KitchenOrderStateTransition,
+  KitchenOrderTransitionRule
+>
+
 export type KitchenOrderBoardStage =
   | 'incoming'
   | 'queue'
@@ -313,6 +349,12 @@ export function isKitchenOrderTransition(
   value: unknown
 ): value is KitchenOrderTransition {
   return KitchenOrderTransitions.includes(value as KitchenOrderTransition)
+}
+
+export function kitchenOrderTransitionRule(
+  transition: KitchenOrderStateTransition
+): KitchenOrderTransitionRule {
+  return KitchenOrderTransitionRules[transition]
 }
 
 export type KitchenOrderCreateInput = Omit<KitchenOrder, 'created' | 'updated'>

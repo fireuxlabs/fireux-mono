@@ -4,16 +4,7 @@
   >
     <div class="divide-y divide-default">
       <div
-        :class="[
-          'flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted',
-          canTouchHeader && 'cursor-pointer hover:bg-muted/40',
-        ]"
-        :role="canTouchHeader ? 'button' : undefined"
-        :tabindex="canTouchHeader ? 0 : undefined"
-        :aria-label="headerActionLabel || undefined"
-        @click="touchHeader"
-        @keydown.enter.prevent="touchHeader"
-        @keydown.space.prevent="touchHeader"
+        class="flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted"
       >
         <span class="flex min-w-0 items-center gap-2">
           <UIcon :name="headerIcon" class="size-4 shrink-0" />
@@ -32,6 +23,16 @@
           </span>
         </span>
         <span class="flex shrink-0 items-center gap-2">
+          <UButton
+            v-if="canTouchHeader"
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-undo-2"
+            :aria-label="headerActionLabel"
+            @click.stop="touchHeader"
+          />
+
           <UButton
             v-if="canShowStatusAction"
             size="xs"

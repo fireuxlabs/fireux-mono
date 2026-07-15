@@ -1,6 +1,9 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../app/FireUXConfig'
-import type { FireuxAppScopeState } from '../../../../models/core/meta.model'
+import {
+  normalizeFireuxAppScopeState,
+  type FireuxAppScopeState,
+} from '../../../../models/core/meta.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
@@ -42,10 +45,10 @@ export function resolvePublicAppScopedSource(
   fallbackAppId?: unknown
 ): PublicAppScopedSource {
   const appScope = record(target?.app_scope)
-  const state = (
+  const state = normalizeFireuxAppScopeState(
     text(appScope.state) ||
     text(target?.app_scope_state)
-  ) as FireuxAppScopeState | ''
+  )
   const sourceAppId =
     text(appScope.app_id) ||
     text(target?.app_scope_app_id) ||
@@ -54,7 +57,7 @@ export function resolvePublicAppScopedSource(
   return {
     state,
     sourceAppId,
-    hasTenantApp: state === 'dedicated_app',
+    hasTenantApp: state === 'tenant_app',
   }
 }
 

@@ -104,5 +104,5 @@ export const customerFromDelivery = (
   })
 }
 
-export const isClearedOrderStatus = (status: unknown) =>
+export const isTerminalOrderStatus = (status: unknown) =>
   ['completed', 'cancelled', 'trashed'].includes(text(status))

@@ -1,6 +1,6 @@
 Tenant/global family map
-Updated: 2026-06-24
-Ref: db6ab1842
+Updated: 2026-07-15
+Ref: 624c7b638
 Role: map, not canon
 
 Purpose:
@@ -38,6 +38,21 @@ Different:
 - Global app needs user/permission-aware target lists.
 - Public URLs may differ: tenant root routes can be shorter than global directory routes.
 
+App-scope vocabulary:
+- App role is `tenant`; the corresponding entity scope state is `tenant_app`.
+- `parent_app` means an entity's operational overlay is owned by the ecosystem/global app.
+- `tenant_app` means the operational overlay is owned by the tenant app.
+- `root_only` means there is no app-owned operational overlay.
+- `dedicated_app` is legacy stored input only while existing records are migrated; new writes use `tenant_app`.
+
+Tenant target ownership:
+- Creating an App record does not silently transfer a pinned entity from its current app.
+- A new tenant-owned entity can be written directly as `tenant_app`.
+- Attaching an existing root that belongs to another app must stop and use an explicit transfer that moves scoped records before repointing the root.
+- Cross-app protection applies to global and tenant callers; neither may silently reclaim a root owned by another app.
+- Writers preserve each entity family's current nested or flat app-scope representation until that family is deliberately migrated.
+- Tenant creation should present attach-versus-transfer as an explicit workflow step; target pinning alone is not ownership migration.
+
 Tenant page composition:
 - Reference-in-progress: `projects/misebox/la-tap-berne/app`.
 - A tenant page should compose visible layers explicitly instead of hiding all chrome in one large wrapper.
@@ -53,6 +68,7 @@ Tenant page composition:
 - Existing tenants are not assumed migrated. When touching a tenant, compare against La Tap, then decide whether the same page composition applies or whether the tenant has a legitimate delta.
 
 Open questions:
+- Standalone app ownership semantics remain undecided. Do not silently treat standalone apps as either `parent_app` or `tenant_app`.
 - Data migration from global app scope to tenant app scope needs a deliberate workflow.
 - Tenant public menu URL rules need to stay separate from provider tool preview URLs.
 - Shared tenant page primitives may be extracted only after at least two tenants use the same layer shape cleanly.

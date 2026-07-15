@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import {
   AppUserStorage,
   resolveAppUserConsoleTargetField,
@@ -58,20 +59,29 @@ const consoleCollectionByType: Record<ConsoleEntityType, string> = {
 }
 
 const normalizeId = (value: unknown) => String(value || '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 
-function resolveAppScopeState(rootData: Record<string, unknown>, rootId: string, appId: string) {
-  const runtimeAppId = normalizeId(rootData.app_id)
-  if (runtimeAppId === appId || appId === `${rootId}-app`) {
-    return 'dedicated_app'
+const resolveAppScopeState = (role: unknown) =>
+  role === 'tenant' ? 'tenant_app' as const : 'parent_app' as const
+
+function readAppScope(rootData: Record<string, unknown>) {
+  const appScope = record(rootData.app_scope)
+
+  return {
+    state: normalizeFireuxAppScopeState(
+      appScope.state || rootData.app_scope_state
+    ),
+    appId: normalizeId(appScope.app_id || rootData.app_scope_app_id),
   }
-
-  return 'parent_app'
 }
 
 export function useConsoleCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { appId } = useFireUXConfig()
+  const { appId, role } = useFireUXConfig()
   const { uid } = useAuth()
 
   async function assertCanCreateAdditionalConsole(
@@ -122,6 +132,7 @@ export function useConsoleCreate() {
     let id = ''
     let createdRoot = false
     let createdOverlay = false
+    let existingRootData: Record<string, unknown> | null = null
 
     const existingRootId = normalizeId(options.existingRootId)
 
@@ -136,6 +147,7 @@ export function useConsoleCreate() {
       }
 
       id = existingRootId
+      existingRootData = rootSnap.data() ?? {}
     } else {
       if (!options.createRoot) {
         throw new Error(
@@ -163,6 +175,21 @@ export function useConsoleCreate() {
         id,
         createdRoot,
         createdOverlay: false,
+      }
+    }
+
+    if (existingRootData) {
+      const existingScope = readAppScope(existingRootData)
+      const belongsToAnotherApp =
+        (existingScope.state === 'parent_app' ||
+          existingScope.state === 'tenant_app') &&
+        Boolean(existingScope.appId) &&
+        existingScope.appId !== currentAppId
+
+      if (belongsToAnotherApp) {
+        throw new Error(
+          `[console:${options.type}] Root record "${id}" belongs to app "${existingScope.appId}". Transfer its app-scoped records before assigning it to app "${currentAppId}".`
+        )
       }
     }
 
@@ -257,19 +284,34 @@ export function useConsoleCreate() {
     const rootSnap = await getDoc(rootRef)
     if (rootSnap.exists()) {
       const rootData = rootSnap.data() ?? {}
-      const appScopeState = resolveAppScopeState(rootData, id, currentAppId)
+      const currentScope = readAppScope(rootData)
+      const appScopeState = resolveAppScopeState(role)
       const appScopeAppId = currentAppId
 
       if (
-        rootData.app_scope_state !== appScopeState ||
-        rootData.app_scope_app_id !== appScopeAppId
+        currentScope.state !== appScopeState ||
+        currentScope.appId !== appScopeAppId
       ) {
         const currentUid = normalizeId(uid.value)
+        const usesNestedAppScope = Boolean(
+          rootData.app_scope &&
+          typeof rootData.app_scope === 'object' &&
+          !Array.isArray(rootData.app_scope)
+        )
         await setDoc(
           rootRef,
           {
-            app_scope_state: appScopeState,
-            app_scope_app_id: appScopeAppId,
+            ...(usesNestedAppScope
+              ? {
+                  app_scope: {
+                    state: appScopeState,
+                    app_id: appScopeAppId,
+                  },
+                }
+              : {
+                  app_scope_state: appScopeState,
+                  app_scope_app_id: appScopeAppId,
+                }),
             updated: {
               at: serverTimestamp(),
               ...(currentUid ? { by: currentUid } : {}),

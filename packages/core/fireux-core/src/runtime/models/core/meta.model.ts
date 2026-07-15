@@ -73,7 +73,30 @@ export type FireuxRootScope = {
 export type FireuxAppScopeState =
   | 'root_only'
   | 'parent_app'
-  | 'dedicated_app'
+  | 'tenant_app'
+
+/**
+ * Normalizes stored scope state into the current vocabulary.
+ *
+ * `dedicated_app` remains read-only migration input until existing Firestore
+ * records have been rewritten. New models and writers must use `tenant_app`.
+ */
+export function normalizeFireuxAppScopeState(
+  value: unknown
+): FireuxAppScopeState | '' {
+  const state = String(value ?? '').trim()
+
+  if (state === 'dedicated_app') return 'tenant_app'
+  if (
+    state === 'root_only' ||
+    state === 'parent_app' ||
+    state === 'tenant_app'
+  ) {
+    return state
+  }
+
+  return ''
+}
 
 export const FireuxAppScope = {
   app_scope_state: 'root_only' as FireuxAppScopeState,

@@ -98,24 +98,6 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     defaultOrderType: 'dine_in',
     locked: true,
   },
-  eat_in: {
-    context: 'eat_in',
-    surface: 'kiosk',
-    label: 'Eat here',
-    icon: 'i-lucide-utensils',
-    visibleOrderTypes: ['eat_in'],
-    defaultOrderType: 'eat_in',
-    locked: true,
-  },
-  takeaway: {
-    context: 'takeaway',
-    surface: 'kiosk',
-    label: 'Take away',
-    icon: 'i-lucide-shopping-bag',
-    visibleOrderTypes: ['takeaway'],
-    defaultOrderType: 'takeaway',
-    locked: true,
-  },
   pre_order: {
     context: 'pre_order',
     surface: 'pre_order',
@@ -180,8 +162,7 @@ export function menuChoiceContextForOrderType(
 ): MenuRouteContext {
   if (type === 'delivery') return 'delivery'
   if (type === 'collection') return 'collection'
-  if (type === 'eat_in') return 'eat_in'
-  if (type === 'takeaway') return 'takeaway'
+  if (type === 'eat_in' || type === 'takeaway') return 'kiosk'
   if (type === 'dine_in') return 'dine_in'
   if (type === 'pre_order') return 'pre_order'
   if (type === 'room_service') return 'room_service'

@@ -3,7 +3,7 @@
     <header class="flex flex-col gap-4 rounded-lg border border-default bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="grid min-w-36 gap-0.5">
         <p class="m-0 text-xs font-extrabold uppercase text-muted">
-          Order intake
+          Kitchen execution
         </p>
         <h1 class="m-0 text-2xl font-black leading-none text-highlighted">
           {{ readOnly ? 'Demo board' : 'Live board' }}
@@ -26,12 +26,21 @@
         color="error"
         :variant="clearConfirm ? 'solid' : 'soft'"
         :icon="clearConfirm ? 'i-lucide-trash-2' : 'i-lucide-trash'"
-        :disabled="readOnly || !canWrite || clearingOrders || !allVisibleOrders.length"
+        :disabled="readOnly || !canWrite || clearingOrders || transitioningCount || !visibleOrders.length"
         @click="clearOrders"
       >
         {{ clearButtonLabel }}
       </UButton>
     </header>
+
+    <UAlert
+      v-if="transitionError"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      title="Order action failed"
+      :description="transitionError"
+    />
 
     <p v-if="pending" class="m-0 text-sm font-semibold text-muted">
       Loading orders...
@@ -57,7 +66,7 @@
             :key="ticket.id"
             :accepting="acceptingOrderId === normalizeId(ticket.id)"
             :estimate-minutes="estimateMinutes(ticket)"
-            :can-interact="canOperate"
+            :can-interact="canInteractWith(ticket)"
             :order="ticket"
             :rejecting="rejectingOrderId === normalizeId(ticket.id)"
             @accept="acceptIncomingOrder"
@@ -69,38 +78,6 @@
 
         <p v-else class="m-0 text-sm font-semibold text-muted">
           No incoming orders waiting for acceptance.
-        </p>
-      </section>
-
-      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="m-0 text-sm font-extrabold text-highlighted">
-            Pass
-          </h2>
-          <UBadge color="neutral" variant="soft">
-            {{ passOrders.length }}
-          </UBadge>
-        </div>
-
-        <div
-          v-if="passOrders.length"
-          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          <ConsoleKitchenOperationsOrdersCardsTicket
-            v-for="ticket in passOrders"
-            :key="ticket.id"
-            :order="ticket"
-            :interactive="canOperate"
-            header-action-label="Move order back to queue"
-            :status-action-label="sendLabel(ticket)"
-            :status-action-aria-label="sendAriaLabel(ticket)"
-            @touch-header="returnToQueue"
-            @touch-status="completeReadyOrder"
-          />
-        </div>
-
-        <p v-else class="m-0 text-sm font-semibold text-muted">
-          Nothing on the pass.
         </p>
       </section>
 
@@ -122,16 +99,49 @@
             v-for="ticket in queueOrders"
             :key="ticket.id"
             :order="ticket"
-            :interactive="canOperate"
-            header-action-label="Mark order ready"
-            body-action-label="Mark order ready"
-            @touch-header="markOrderReady"
-            @touch-body="markOrderReady"
+            :interactive="canInteractWith(ticket)"
+            status-action-label="Ready"
+            status-action-aria-label="Mark order ready"
+            :status-action-pending="isOrderTransitioning(ticket.id)"
+            @touch-status="markOrderReady"
           />
         </div>
 
         <p v-else class="m-0 text-sm font-semibold text-muted">
           No queued orders.
+        </p>
+      </section>
+
+      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="m-0 text-sm font-extrabold text-highlighted">
+            Pass
+          </h2>
+          <UBadge color="neutral" variant="soft">
+            {{ passOrders.length }}
+          </UBadge>
+        </div>
+
+        <div
+          v-if="passOrders.length"
+          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+        >
+          <ConsoleKitchenOperationsOrdersCardsTicket
+            v-for="ticket in passOrders"
+            :key="ticket.id"
+            :order="ticket"
+            :interactive="canInteractWith(ticket)"
+            header-action-label="Move order back to queue"
+            :status-action-label="sendLabel(ticket)"
+            :status-action-aria-label="sendAriaLabel(ticket)"
+            :status-action-pending="isOrderTransitioning(ticket.id)"
+            @touch-header="returnToQueue"
+            @touch-status="completeReadyOrder"
+          />
+        </div>
+
+        <p v-else class="m-0 text-sm font-semibold text-muted">
+          Nothing on the pass.
         </p>
       </section>
 
@@ -211,50 +221,27 @@ const {
   passOrders,
   recentOrders,
   unmappedOrders,
+  visibleOrders,
+  railCounts,
   pending,
   readOnly,
   canWrite,
+  transitionError,
+  transitioningCount,
+  isOrderTransitioning: isOrderTransitioningFromConsole,
   acceptOrder,
   rejectOrder,
   returnOrderToQueue,
-  markOrderReady,
+  markOrderReady: markOrderReadyFromConsole,
   completeOrder,
   trashOrder,
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
 const canOperate = computed(() => canWrite.value && !readOnly.value)
-const railCounts = computed(() => [
-  {
-    label: 'Incoming',
-    count: incomingOrders.value.length,
-  },
-  {
-    label: 'Pass',
-    count: passOrders.value.length,
-  },
-  {
-    label: 'Queue',
-    count: queueOrders.value.length,
-  },
-  {
-    label: 'Recent',
-    count: recentOrders.value.length,
-  },
-  ...(unmappedOrders.value.length
-    ? [{ label: 'Needs mapping', count: unmappedOrders.value.length }]
-    : []),
-])
-const allVisibleOrders = computed(() => [
-  ...incomingOrders.value,
-  ...passOrders.value,
-  ...queueOrders.value,
-  ...recentOrders.value,
-  ...unmappedOrders.value,
-])
 const clearButtonLabel = computed(() => {
   if (clearingOrders.value) return 'Clearing...'
-  if (clearConfirm.value) return `Clear ${allVisibleOrders.value.length}`
+  if (clearConfirm.value) return `Clear ${visibleOrders.value.length}`
   return 'Trash'
 })
 
@@ -271,11 +258,10 @@ function sendAriaLabel(order: KitchenOrder) {
     : action
 }
 
-function returnToQueue(orderId: string) {
-  if (!canOperate.value) return
+async function returnToQueue(orderId: string) {
   const resolvedOrderId = normalizeId(orderId)
   if (sendReadyOrderId.value === resolvedOrderId) sendReadyOrderId.value = ''
-  returnOrderToQueue(resolvedOrderId)
+  await runOrderAction(() => returnOrderToQueue(resolvedOrderId))
 }
 
 async function acceptIncomingOrder(
@@ -286,7 +272,9 @@ async function acceptIncomingOrder(
 
   acceptingOrderId.value = resolvedOrderId
   try {
-    await acceptOrder(resolvedOrderId, payload.estimatedMinutes)
+    await runOrderAction(() =>
+      acceptOrder(resolvedOrderId, payload.estimatedMinutes)
+    )
   } finally {
     if (acceptingOrderId.value === resolvedOrderId) acceptingOrderId.value = ''
   }
@@ -299,7 +287,7 @@ async function rejectIncomingOrder(payload: { id: string; note: string }) {
 
   rejectingOrderId.value = resolvedOrderId
   try {
-    await rejectOrder(resolvedOrderId, note)
+    await runOrderAction(() => rejectOrder(resolvedOrderId, note))
   } finally {
     if (rejectingOrderId.value === resolvedOrderId) rejectingOrderId.value = ''
   }
@@ -338,22 +326,27 @@ function clampEstimate(value: number) {
   return Math.min(90, Math.max(5, minutes))
 }
 
-function completeReadyOrder(orderId: string) {
+async function markOrderReady(orderId: string) {
+  const resolvedOrderId = normalizeId(orderId)
+  await runOrderAction(() => markOrderReadyFromConsole(resolvedOrderId))
+}
+
+async function completeReadyOrder(orderId: string) {
   if (!canOperate.value) return
   const resolvedOrderId = normalizeId(orderId)
-  if (!resolvedOrderId) return
+  if (!resolvedOrderId || isOrderTransitioning(resolvedOrderId)) return
   if (sendReadyOrderId.value !== resolvedOrderId) {
     sendReadyOrderId.value = resolvedOrderId
     return
   }
 
   sendReadyOrderId.value = ''
-  completeOrder(resolvedOrderId)
+  await runOrderAction(() => completeOrder(resolvedOrderId))
 }
 
 async function clearOrders() {
   if (readOnly.value || !canWrite.value || clearingOrders.value) return
-  const orderIds = allVisibleOrders.value
+  const orderIds = visibleOrders.value
     .map((order) => normalizeId(order.id))
     .filter(Boolean)
   if (!orderIds.length) return
@@ -366,9 +359,28 @@ async function clearOrders() {
   clearingOrders.value = true
   try {
     await Promise.all(orderIds.map((orderId) => trashOrder(orderId)))
+  } catch {
+    // The transition mutation exposes the display error.
   } finally {
     clearingOrders.value = false
     clearConfirm.value = false
+  }
+}
+
+function canInteractWith(order: KitchenOrder) {
+  return canOperate.value && !isOrderTransitioning(order.id)
+}
+
+function isOrderTransitioning(orderId: unknown) {
+  return isOrderTransitioningFromConsole(normalizeId(orderId))
+}
+
+async function runOrderAction(action: () => Promise<unknown> | unknown) {
+  if (!canOperate.value) return
+  try {
+    await action()
+  } catch {
+    // The transition mutation exposes the display error.
   }
 }
 </script>

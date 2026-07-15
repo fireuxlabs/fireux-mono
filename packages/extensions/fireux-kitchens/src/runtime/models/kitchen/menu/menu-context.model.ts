@@ -7,8 +7,6 @@ export const MenuRouteContexts = [
   'kiosk',
   'staff_pos',
   'dine_in',
-  'eat_in',
-  'takeaway',
   'pre_order',
   'room_service',
 ] as const

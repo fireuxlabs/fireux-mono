@@ -45,7 +45,7 @@
             variant="outline"
             size="lg"
             block
-            class="baeren-home__action baeren-home__action--utility"
+            class="baeren-home__action baeren-home__action--route"
           />
           <UButton
             :to="hotelPhoneHref"
@@ -55,7 +55,7 @@
             variant="outline"
             size="lg"
             block
-            class="baeren-home__action baeren-home__action--utility"
+            class="baeren-home__action baeren-home__action--phone"
           />
         </div>
       </div>
@@ -116,26 +116,33 @@ const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
 }
 
 :deep(.baeren-home__action--primary) {
-  background: var(--baeren-on-dark);
-  color: var(--baeren-ink);
+  border: 1px solid rgb(var(--baeren-on-dark-rgb) / 48%);
+  background: var(--baeren-forest-raised);
+  color: var(--baeren-on-dark);
+  box-shadow: 0 0.5rem 1.25rem rgb(var(--baeren-action-shadow-rgb) / 22%);
 }
 
 :deep(.baeren-home__action--secondary) {
-  border-color: rgb(var(--baeren-on-dark-rgb) / 62%);
-  background: rgb(var(--baeren-on-dark-rgb) / 8%);
+  border: 1px solid rgb(var(--baeren-on-dark-rgb) / 42%);
+  background: var(--baeren-accent);
   color: var(--baeren-on-dark);
+  box-shadow: 0 0.5rem 1.25rem rgb(var(--baeren-action-shadow-rgb) / 22%);
 }
 
 :deep(.baeren-home__action--delivery) {
   grid-column: 1 / -1;
-  color: var(--baeren-on-dark);
+  border: 1px solid rgb(var(--baeren-ink-rgb) / 22%);
+  background: var(--baeren-event);
+  color: var(--baeren-event-ink);
   box-shadow: 0 0.75rem 1.75rem rgb(var(--baeren-action-shadow-rgb) / 24%);
 }
 
-:deep(.baeren-home__action--utility) {
-  border-color: rgb(var(--baeren-on-dark-rgb) / 38%);
-  background: rgb(var(--baeren-on-dark-rgb) / 12%);
-  color: var(--baeren-on-dark);
+:deep(.baeren-home__action--route),
+:deep(.baeren-home__action--phone) {
+  border: 1px solid var(--baeren-border-hover);
+  background: rgb(var(--baeren-surface-rgb) / 92%);
+  color: var(--baeren-ink);
+  box-shadow: 0 0.5rem 1.25rem rgb(var(--baeren-action-shadow-rgb) / 18%);
 }
 
 @media (max-width: 55.999rem) {
@@ -156,7 +163,7 @@ const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
 
   .baeren-home__hero-content {
     grid-area: 1 / 1;
-    width: min(46rem, calc(100% - 4rem));
+    width: min(62rem, calc(100% - 4rem));
     min-height: 100svh;
     align-content: end;
     margin-inline: max(2rem, calc((100vw - 80rem) / 2));

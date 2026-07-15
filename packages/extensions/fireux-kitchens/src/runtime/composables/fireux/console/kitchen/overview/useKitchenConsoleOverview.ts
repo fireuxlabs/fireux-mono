@@ -11,7 +11,10 @@ import { useKitchenConsoleRecipes } from '../operations/Recipes/useKitchenConsol
 import { useKitchenConsoleStations } from '../operations/Stations/useKitchenConsoleStations'
 import { useKitchenConsoleSuppliers } from '../operations/Suppliers/useKitchenConsoleSuppliers'
 import { useKitchenConsoleTables } from '../operations/Tables/useKitchenConsoleTables'
-import { readKitchenCurrencyCode } from '../../../../../utils/kitchen-spine'
+import {
+  readKitchenAppScope,
+  readKitchenCurrencyCode,
+} from '../../../../../utils/kitchen-spine'
 
 type DetailItem = {
   key: string
@@ -92,13 +95,10 @@ export function useKitchenConsoleOverview() {
   const publicBadgeColor = computed(() =>
     kitchenSource.value.show === true ? 'success' as const : 'neutral' as const
   )
-  const appScopeState = computed(() =>
-    normalizeString(kitchenSource.value.app_scope_state)
-  )
-  const appScopeAppId = computed(() =>
-    normalizeString(kitchenSource.value.app_scope_app_id)
-  )
-  const hasTenantApp = computed(() => appScopeState.value === 'dedicated_app')
+  const appScope = computed(() => readKitchenAppScope(kitchenSource.value))
+  const appScopeState = computed(() => appScope.value.state)
+  const appScopeAppId = computed(() => appScope.value.appId)
+  const hasTenantApp = computed(() => appScope.value.hasTenantApp)
   const operatorIds = computed(() =>
     Array.from(
       new Set(

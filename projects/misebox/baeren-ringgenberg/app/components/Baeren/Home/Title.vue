@@ -20,7 +20,7 @@ const home = baerenRinggenbergContent.pages.home
 .baeren-home-title {
   display: grid;
   gap: 0.7rem;
-  max-width: 52rem;
+  max-width: 60rem;
 }
 
 .baeren-home-title__eyebrow,
@@ -61,14 +61,18 @@ const home = baerenRinggenbergContent.pages.home
     gap: 0.9rem;
   }
 
+  .baeren-home-title__eyebrow {
+    font-size: 1.05rem;
+  }
+
   .baeren-home-title h1 {
-    font-size: clamp(4rem, 6.4vw, 5.5rem);
+    font-size: clamp(5.5rem, 7.8vw, 7rem);
     line-height: 0.88;
     text-shadow: 0 0.25rem 2rem rgb(0 0 0 / 46%);
   }
 
   .baeren-home-title__subtitle {
-    font-size: 1.3rem;
+    font-size: 1.7rem;
     text-shadow: 0 0.2rem 1rem rgb(0 0 0 / 56%);
   }
 }

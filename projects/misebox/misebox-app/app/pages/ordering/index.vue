@@ -8,6 +8,10 @@
         <h1 class="mt-2 text-4xl font-black tracking-tight text-highlighted sm:text-5xl">
           Ordering
         </h1>
+        <p class="mb-0 mt-3 max-w-3xl text-base leading-7 text-muted">
+          A menu surface decides where the customer starts. The selected order
+          type—not the surface—is stored on the KitchenOrder.
+        </p>
       </section>
 
       <section class="grid gap-3">
@@ -99,6 +103,13 @@
             {{ surface.description }}
           </p>
 
+          <code
+            v-if="surface.publicPath"
+            class="w-fit break-all rounded bg-muted px-2 py-1 text-xs font-bold text-muted"
+          >
+            {{ surface.publicPath }}
+          </code>
+
           <div>
             <div class="flex flex-wrap gap-2">
               <div
@@ -124,6 +135,13 @@
                 >
                   {{ modeInitialStatus(mode) }}
                 </UBadge>
+
+                <code
+                  v-if="mode.publicPath"
+                  class="break-all rounded bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
+                >
+                  {{ mode.publicPath }}
+                </code>
               </div>
             </div>
           </div>
@@ -158,6 +176,7 @@ import {
 type OrderingMode = {
   label: string
   orderType?: KitchenOrderType
+  publicPath?: string
   to?: string
 }
 
@@ -168,6 +187,7 @@ type OrderingSurface = {
   channel?: KitchenOrderChannel
   modes: OrderingMode[]
   parked?: boolean
+  publicPath?: string
   to?: string
   unsharedProps: string[]
 }
@@ -195,9 +215,10 @@ const intakeSteps: Array<{
 
 const orderingSurfaces: OrderingSurface[] = [
   {
-    title: 'Default menu',
-    description: 'Readable menu. No funnel is attached until a surface is selected.',
+    title: 'Browse',
+    description: 'The published base menu remains readable and creates no KitchenOrder.',
     icon: 'i-lucide-book-open',
+    publicPath: '/menus/{menuId}',
     modes: [
       {
         label: 'Browse',
@@ -209,19 +230,21 @@ const orderingSurfaces: OrderingSurface[] = [
   },
   {
     title: 'From home',
-    description: 'Customer starts away from the venue. Delivery is biased; collection can sit beside it.',
+    description: 'A chooser surface that offers Delivery, Collection, or whichever of the two the kitchen enables.',
     icon: 'i-lucide-house',
     channel: 'menu',
-    to: '/ordering/delivery',
+    publicPath: '/menus/{menuId}.home',
     modes: [
       {
         label: 'Delivery',
         orderType: 'delivery',
+        publicPath: '/menus/{menuId}.delivery',
         to: '/ordering/delivery',
       },
       {
         label: 'Collection',
         orderType: 'collection',
+        publicPath: '/menus/{menuId}.collection',
         to: '/ordering/collection',
       },
     ],
@@ -237,11 +260,13 @@ const orderingSurfaces: OrderingSurface[] = [
     description: 'Customer is already seated. The table number is carried into the order.',
     icon: 'i-lucide-qr-code',
     channel: 'table_qr',
+    publicPath: '/menus/{menuId}.dine_in',
     to: '/ordering/dine-in',
     modes: [
       {
         label: 'Dine in',
         orderType: 'dine_in',
+        publicPath: '/menus/{menuId}.dine_in',
         to: '/ordering/dine-in',
       },
     ],
@@ -253,9 +278,10 @@ const orderingSurfaces: OrderingSurface[] = [
   },
   {
     title: 'Kiosk',
-    description: 'Shared in-store terminal. Eat in means tray; takeaway means bag.',
+    description: 'One terminal surface. Eat here and Take away are internal preparation, handoff, and tax flags.',
     icon: 'i-lucide-tablet',
     channel: 'kiosk',
+    publicPath: '/menus/{menuId}.kiosk',
     to: '/ordering/kiosk',
     modes: [
       {
@@ -281,11 +307,13 @@ const orderingSurfaces: OrderingSurface[] = [
     description: 'Timing-first request. The kitchen confirms before deposit or final preparation.',
     icon: 'i-lucide-calendar-clock',
     channel: 'menu',
+    publicPath: '/menus/{menuId}.pre_order',
     to: '/ordering/pre-order',
     modes: [
       {
         label: 'Pre-order',
         orderType: 'pre_order',
+        publicPath: '/menus/{menuId}.pre_order',
         to: '/ordering/pre-order',
       },
     ],
@@ -301,11 +329,13 @@ const orderingSurfaces: OrderingSurface[] = [
     description: 'Internal delivery to a room inside a hotel, aparthotel, or venue.',
     icon: 'i-lucide-concierge-bell',
     channel: 'room_service',
+    publicPath: '/menus/{menuId}.room_service',
     to: '/ordering/room-service',
     modes: [
       {
         label: 'Room service',
         orderType: 'room_service',
+        publicPath: '/menus/{menuId}.room_service',
         to: '/ordering/room-service',
       },
     ],
@@ -319,6 +349,7 @@ const orderingSurfaces: OrderingSurface[] = [
     description: 'Operator enters an in-store order quickly from the menu.',
     icon: 'i-lucide-monitor',
     channel: 'staff_pos',
+    publicPath: '/menus/{menuId}.staff_pos',
     to: '/ordering/staff-pos',
     modes: [
       {

@@ -1,6 +1,6 @@
 Order processing and kitchen fulfilment spine
 Updated: 2026-07-15
-Ref: 97fe95697
+Ref: 624c7b638
 Role: map, not canon
 
 Purpose:
@@ -81,6 +81,17 @@ Current V1 operator transitions:
 - `return_to_queue`: `ready` to `accepted`.
 - `complete`: `ready` to `completed`.
 - `trash`: any stored order to `trashed`.
+
+Execution loop:
+1. Accepted orders enter Queue.
+2. `mark_ready` moves an order to Ready and therefore Pass.
+3. The Pass action uses fulfilment-specific wording such as Served, Collected, Dispatched, or Delivered, but every action applies the same `complete` transition.
+4. Completed orders enter Recent.
+5. `return_to_queue` is the single correction from Pass to Queue and clears the previous ready estimate.
+6. The server validates every transition against the exhaustive shared rule map inside the authenticated transaction.
+7. Public order status keeps observing automatic and operator-accepted orders through Ready to a terminal state.
+
+There is no stored Preparing state in V1. Queue already means the kitchen owns the work; add another state only when a real start/hold preparation action exists.
 
 Fulfilment ownership:
 - Kitchen owns reusable fulfilment defaults.

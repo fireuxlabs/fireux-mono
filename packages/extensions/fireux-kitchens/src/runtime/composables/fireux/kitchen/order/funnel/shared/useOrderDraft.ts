@@ -16,8 +16,8 @@ import { notifyOrderSessionChanged } from './useOrderSession'
 import { useOrderCreate } from './useOrderCreate'
 import { useOrderStatus } from './useOrderStatus'
 import {
-  isClearedOrderStatus,
   isDraftItem,
+  isTerminalOrderStatus,
   normalizeAddOns,
   normalizeVariant,
   numberValue,
@@ -44,6 +44,7 @@ export function useOrderDraft(
   const hasMounted = ref(false)
   const awaitingAcceptance = ref(false)
   const acceptedOrder = ref(false)
+  const trackingOrderStatus = ref(false)
   const trackedOrder = ref<CreatedMenuOrder | null>(null)
   const items = computed<MenuOrderDraftItem[]>(() => Object.values(draft.value))
   const quantity = computed(() =>
@@ -70,19 +71,36 @@ export function useOrderDraft(
     computed(() => trackedOrder.value?.id || ''),
     {
       kitchenSlug: options.kitchenSlug,
-      enabled: computed(() => awaitingAcceptance.value),
+      enabled: computed(() => trackingOrderStatus.value),
     }
   )
   const awaitingMessage = computed(() => {
     const status = trackedOrderStatus.value
+    if (!trackedOrder.value) return ''
     if (trackedOrderStatusError.value) return trackedOrderStatusError.value
-    if (message.value) return message.value
-    if (!trackedOrder.value || !acceptedOrder.value) return ''
+
+    const currentStatus = status?.status || trackedOrder.value.status
+    if (currentStatus === 'pending_payment') {
+      return 'Payment is required before the kitchen can process this order.'
+    }
+    if (currentStatus === 'pending_acceptance') {
+      return message.value || 'Waiting for the kitchen to accept your order.'
+    }
+    if (currentStatus === 'ready') return 'Your order is ready.'
+    if (currentStatus === 'completed') return 'Your order is complete.'
+    if (currentStatus === 'cancelled') {
+      return 'The kitchen could not accept this order.'
+    }
+    if (currentStatus === 'trashed') return 'Order status is no longer available.'
 
     const minutes = Number(status?.estimated_ready_minutes || 0)
-    return minutes > 0
-      ? `Accepted. Estimated ready in ${minutes} minutes.`
-      : 'Accepted. The kitchen is preparing your order.'
+    if (currentStatus === 'accepted') {
+      return minutes > 0
+        ? `Accepted. Estimated ready in ${minutes} minutes.`
+        : 'Accepted. The kitchen is preparing your order.'
+    }
+
+    return message.value
   })
   const payment = computed<MenuOrderingPayment>(() => ({
     pending: checkoutPending.value,
@@ -149,6 +167,7 @@ export function useOrderDraft(
     if (!canOrder.value) return
     awaitingAcceptance.value = false
     acceptedOrder.value = false
+    trackingOrderStatus.value = false
     trackedOrder.value = null
 
     const id = text(item.id)
@@ -200,6 +219,7 @@ export function useOrderDraft(
     draft.value = {}
     awaitingAcceptance.value = false
     acceptedOrder.value = false
+    trackingOrderStatus.value = false
     trackedOrder.value = null
   }
 
@@ -226,12 +246,10 @@ export function useOrderDraft(
     })
     if (!created) return null
 
-    const isWaitingForAcceptance = created.status === 'pending_acceptance'
-    awaitingAcceptance.value =
-      isWaitingForAcceptance &&
-      ['collection', 'delivery', 'pre_order', 'room_service'].includes(orderType.value)
     trackedOrder.value = created
-    acceptedOrder.value = false
+    awaitingAcceptance.value = created.status === 'pending_acceptance'
+    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(created.status)
+    trackingOrderStatus.value = !isTerminalOrderStatus(created.status)
 
     return created
   }
@@ -242,17 +260,11 @@ export function useOrderDraft(
   }
 
   watch(trackedOrderStatus, (status: KitchenOrderFunnelStatus | null) => {
-    if (!status || !awaitingAcceptance.value) return
-    if (isClearedOrderStatus(status.status)) {
-      trackedOrder.value = null
-      awaitingAcceptance.value = false
-      acceptedOrder.value = false
-      message.value = ''
-      return
-    }
-    if (status.status === 'pending_acceptance') return
+    if (!status || !trackedOrder.value) return
 
-    acceptedOrder.value = true
+    awaitingAcceptance.value = status.status === 'pending_acceptance'
+    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(status.status)
+    if (isTerminalOrderStatus(status.status)) trackingOrderStatus.value = false
   })
 
   return {

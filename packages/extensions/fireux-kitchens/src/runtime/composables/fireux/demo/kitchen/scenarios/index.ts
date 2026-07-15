@@ -1242,9 +1242,17 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1042',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1042',
         status: 'accepted',
         order_type: 'dine_in',
+        channel: 'staff_pos',
+        table: { number: '12' },
+        fulfilment_match: {
+          type: 'table',
+          reference: 'Table 12',
+          handoff: 'table_service',
+        },
         items: [
           {
             id: 'deanos-classic',
@@ -1289,9 +1297,12 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1043',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1043',
-        status: 'accepted',
-        order_type: 'dine_in',
+        status: 'pending_acceptance',
+        order_type: 'collection',
+        channel: 'menu',
+        collection: { mode: 'queue' },
         items: [
           {
             id: 'hot-honey-chicken-extra-hot-honey',
@@ -1321,9 +1332,16 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1044',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1044',
-        status: 'accepted',
-        order_type: 'dine_in',
+        status: 'ready',
+        order_type: 'takeaway',
+        channel: 'kiosk',
+        fulfilment_match: {
+          type: 'counter',
+          reference: '1044',
+          handoff: 'bag',
+        },
         items: [
           {
             id: 'lil-dinos-beef-plain',
@@ -1354,9 +1372,16 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1045',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1045',
-        status: 'accepted',
-        order_type: 'dine_in',
+        status: 'completed',
+        order_type: 'eat_in',
+        channel: 'kiosk',
+        fulfilment_match: {
+          type: 'counter',
+          reference: '1045',
+          handoff: 'tray',
+        },
         items: [
           {
             id: 'mock-duck-bao',
@@ -1394,9 +1419,17 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1046',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1046',
         status: 'accepted',
         order_type: 'dine_in',
+        channel: 'staff_pos',
+        table: { number: '8' },
+        fulfilment_match: {
+          type: 'table',
+          reference: 'Table 8',
+          handoff: 'table_service',
+        },
         items: [
           {
             id: 'hot-honey-chicken',
@@ -1434,9 +1467,16 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'order-1047',
         kitchen_id: 'deanos',
+        menu_id: 'deanos-main',
         order_number: '1047',
         status: 'accepted',
-        order_type: 'dine_in',
+        order_type: 'eat_in',
+        channel: 'kiosk',
+        fulfilment_match: {
+          type: 'counter',
+          reference: '1047',
+          handoff: 'tray',
+        },
         items: [
           {
             id: 'deanos-classic',

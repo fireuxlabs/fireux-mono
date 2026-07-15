@@ -93,7 +93,7 @@ const paymentAccepted = computed(() =>
   text(payment.value.status) === 'paid'
 )
 const orderStatus = computed(() =>
-  text(order.value.status || props.funnel.processing.status)
+  text(props.funnel.processing.status || order.value.status)
 )
 const isKioskFunnel = computed(() =>
   ['eat_in', 'takeaway'].includes(props.funnel.order.orderType)
@@ -120,14 +120,19 @@ const destinationLabel = computed(() => {
   const roomService = record(
     order.value.room_service || receipt.value.room_service
   )
-  if (text(table.number)) return text(table.number)
-  if (text(roomService.room)) return text(roomService.room)
+  if (text(table.number)) {
+    return /^table\b/i.test(text(table.number))
+      ? text(table.number)
+      : `Table ${text(table.number)}`
+  }
+  if (text(roomService.room)) {
+    return /^room\b/i.test(text(roomService.room))
+      ? text(roomService.room)
+      : `Room ${text(roomService.room)}`
+  }
 
   return ''
 })
-const readyForCounter = computed(() =>
-  isKioskFunnel.value && orderStatus.value === 'ready'
-)
 const detailTitle = computed(() => {
   if (counterReference.value) {
     return props.funnel.order.orderType === 'eat_in'
@@ -137,11 +142,46 @@ const detailTitle = computed(() => {
   const orderNumber = props.funnel.processing.order_number
   return orderNumber ? `Order ${orderNumber}` : requestLabel.value
 })
+const readyDetail = computed(() => {
+  const orderType = props.funnel.order.orderType
+  if (orderType === 'dine_in') {
+    return destinationLabel.value
+      ? `${destinationLabel.value} is ready for service.`
+      : 'Your order is ready for service.'
+  }
+  if (orderType === 'delivery') return 'Your order is ready for dispatch.'
+  if (orderType === 'room_service') {
+    return destinationLabel.value
+      ? `${destinationLabel.value} is ready for delivery.`
+      : 'Your room-service order is ready for delivery.'
+  }
+
+  return counterReference.value
+    ? `${counterReference.value} is ready. Please collect from the counter.`
+    : 'Your order is ready for collection.'
+})
+const completedDetail = computed(() => {
+  const orderType = props.funnel.order.orderType
+  if (orderType === 'dine_in') return 'Your order has been served.'
+  if (orderType === 'delivery') return 'Your order has been dispatched.'
+  if (orderType === 'room_service') return 'Your order has been delivered.'
+
+  return 'Your order has been collected.'
+})
 const detailStatus = computed(() => {
-  if (readyForCounter.value) {
-    return counterReference.value
-      ? `${counterReference.value} is ready. Please collect from the counter.`
-      : 'Your order is ready. Please collect from the counter.'
+  if (orderStatus.value === 'trashed') {
+    return 'Order status is no longer available.'
+  }
+  if (orderStatus.value === 'cancelled') {
+    return 'The kitchen could not accept this order.'
+  }
+  if (orderStatus.value === 'completed') return completedDetail.value
+  if (orderStatus.value === 'ready') return readyDetail.value
+  if (orderStatus.value === 'pending_payment') {
+    return 'Payment is required before the kitchen can process this order.'
+  }
+  if (orderStatus.value === 'pending_acceptance') {
+    return 'Waiting for the kitchen to accept your order.'
   }
   if (isKioskFunnel.value && counterReference.value) {
     return `We will call ${counterReference.value} when it is ready.`
@@ -158,18 +198,34 @@ const detailStatus = computed(() => {
 const confirmationLabel = computed(() => {
   const orderNumber = props.funnel.processing.order_number
   if (!props.funnel.processing.exists) return `${requestLabel.value} is not sent yet.`
-  if (readyForCounter.value) {
+  if (orderStatus.value === 'trashed') return 'Order status is no longer available.'
+  if (orderStatus.value === 'cancelled') return 'This order was not accepted.'
+  if (orderStatus.value === 'completed') return completedDetail.value
+  if (orderStatus.value === 'ready') {
     return customerName.value
       ? `${customerName.value}, your order is ready.`
       : 'Your order is ready.'
+  }
+  if (orderStatus.value === 'pending_payment') {
+    return 'Complete payment to send this order to the kitchen.'
+  }
+  if (orderStatus.value === 'pending_acceptance') {
+    return orderNumber
+      ? `Order ${orderNumber} is waiting for kitchen confirmation.`
+      : 'Your order is waiting for kitchen confirmation.'
   }
   if (isKioskFunnel.value) {
     if (counterReference.value) {
       return `Your counter number is ${counterReference.value}. The kitchen has your order.`
     }
     return orderNumber
-      ? `Order ${orderNumber} is with the kitchen.`
-      : 'Your order is with the kitchen.'
+      ? `Order ${orderNumber} is in the kitchen queue.`
+      : 'Your order is in the kitchen queue.'
+  }
+  if (orderStatus.value === 'accepted') {
+    return orderNumber
+      ? `${requestLabel.value} ${orderNumber} was accepted.`
+      : `${requestLabel.value} was accepted.`
   }
   if (paymentAccepted.value) {
     return orderNumber

@@ -41,7 +41,7 @@ const orderStatus = computed(() =>
 )
 const acceptedByKitchen = computed(() =>
   props.funnel.order.accepted ||
-    ['accepted', 'ready'].includes(orderStatus.value)
+    ['accepted', 'ready', 'completed'].includes(orderStatus.value)
 )
 const paymentBeforeKitchen = computed(() =>
   orderStatus.value === 'pending_payment' &&
