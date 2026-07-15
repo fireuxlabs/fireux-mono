@@ -77,7 +77,7 @@ export const baerenRinggenbergContent = {
         {
           key: 'menu',
           label: 'Restaurant & Bar',
-          to: '/menu',
+          to: '/menus',
           icon: 'i-lucide-utensils',
           title: 'Essen und trinken im Herzen von Ringgenberg.',
           copy: 'Regionale Küche, Pizza, Snacks und Getränke aus dem Bären Restaurant und der Bar.',

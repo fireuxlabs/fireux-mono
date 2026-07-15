@@ -10,7 +10,7 @@
 <script setup lang="ts">
 const items = [
   { label: 'Hotel', to: '/hotel', icon: 'i-lucide-bed-double' },
-  { label: 'Menu', to: '/menu', icon: 'i-lucide-utensils' },
+  { label: 'Menu', to: '/menus', icon: 'i-lucide-utensils' },
   { label: 'Events', to: '/events', icon: 'i-lucide-calendar-days' },
   { label: 'Route', to: '/location', icon: 'i-lucide-map-pin' },
 ] as const

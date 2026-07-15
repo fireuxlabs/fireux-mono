@@ -137,10 +137,9 @@ const toast = useToastify()
 
 const orderSurfaceOptions: OrderSurfaceOption[] = [
   {
-    key: 'from-home',
-    label: 'From home',
-    description: 'A chooser surface for customers away from the venue. Enable Delivery, Collection, or both.',
-    route: '/menus/{menuId}.home',
+    key: 'home-options',
+    label: 'Home options',
+    description: 'A grouping for customers away from the venue. Delivery and Collection are separate surfaces.',
     choices: [
       {
         type: 'delivery',

@@ -5,15 +5,21 @@ export type KitchenMenuRouteMode =
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
 
-export function kitchenMenuRouteMode(
-  appKitchenCount: number,
-  appRole?: unknown
-) {
-  const role = text(appRole).toLowerCase()
-  if (role === 'tenant') return 'single-kitchen-app'
-  if (role === 'global' || role === 'standalone') return 'kitchen-directory'
+export function normalizeKitchenMenuRouteMode(
+  value: unknown,
+  fallback: KitchenMenuRouteMode = 'single-kitchen-app'
+): KitchenMenuRouteMode {
+  const mode = text(value)
 
-  return appKitchenCount === 1 ? 'single-kitchen-app' : 'kitchen-directory'
+  return mode === 'single-kitchen-app' || mode === 'kitchen-directory'
+    ? mode
+    : fallback
+}
+
+export function kitchenMenuRouteMode(appRole?: unknown): KitchenMenuRouteMode {
+  const role = text(appRole).toLowerCase()
+
+  return role === 'tenant' ? 'single-kitchen-app' : 'kitchen-directory'
 }
 
 export function kitchenMenuIndexPath(options: {

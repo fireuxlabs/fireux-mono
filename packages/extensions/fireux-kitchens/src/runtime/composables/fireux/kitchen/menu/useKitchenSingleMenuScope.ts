@@ -1,11 +1,12 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
 import { useKitchenMenuCollection } from '../../firestore/menu/useMenu'
 import type { Menu } from '../../../../models/kitchen/menu/menu.model'
-import { useKitchenMenuUrl } from './useKitchenMenuUrl'
+import { kitchenMenuPath } from '../../../../utils/kitchen-menu-route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
@@ -18,13 +19,16 @@ const menuDebug = (menu: Menu) => ({
 export function useKitchenSingleMenuScope() {
   const route = useRoute()
   const fireux = useFireUXConfig()
+  const kitchenConsole = useConsole('kitchen')
   const appId = computed(() => fireux.appId)
   const menuId = computed(() => text(route.params.menuId))
-  const menuRoute = useKitchenMenuUrl({
-    appId,
-    kitchenSlug: computed(() => ''),
-  })
-  const kitchenId = computed(() => menuRoute.singleKitchenId.value)
+  const configuredKitchenIds = kitchenConsole.targetIds()
+  const kitchenId = computed(() =>
+    fireux.isTenant && configuredKitchenIds.length === 1
+      ? configuredKitchenIds[0] ?? ''
+      : ''
+  )
+  const menuRouteMode = computed(() => 'single-kitchen-app' as const)
   const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenId)
   const kitchenCollectionPath = computed(() =>
     appId.value ? `apps/${appId.value}/kitchens` : ''
@@ -41,7 +45,6 @@ export function useKitchenSingleMenuScope() {
   })
   const pending = computed(
     () =>
-      menuRoute.pending.value ||
       kitchenPending.value ||
       (Boolean(kitchenId.value) && publishedMenus.pending.value)
   )
@@ -49,13 +52,12 @@ export function useKitchenSingleMenuScope() {
     route: {
       menuId: menuId.value || null,
     },
-    appKitchenLookup: {
+    tenantKitchenScope: {
       appId: appId.value,
-      collectionPath: menuRoute.debug.value.appKitchenCollectionPath,
-      count: menuRoute.appKitchenCount.value,
-      singleKitchenId: kitchenId.value,
-      routeMode: menuRoute.routeMode.value,
-      pending: menuRoute.pending.value,
+      appRole: fireux.role,
+      configuredKitchenIds,
+      kitchenId: kitchenId.value,
+      routeMode: menuRouteMode.value,
     },
     kitchen: kitchen.value
       ? {
@@ -87,7 +89,12 @@ export function useKitchenSingleMenuScope() {
     kitchenCollectionPath,
     menuCollectionPath: menuRead.collectionPath,
     pending,
-    menuLink: (id: Menu['id']) => `/menus/${encodeURIComponent(text(id))}`,
+    menuRouteMode,
+    menuLink: (id: Menu['id']) => kitchenMenuPath({
+      mode: menuRouteMode.value,
+      kitchenSlug: '',
+      menuId: text(id),
+    }),
     debug,
   }
 }

@@ -8,6 +8,7 @@ import type {
 } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuManifest } from '../../../../../../models/kitchen/menu/menu-detail.model'
+import type { KitchenMenuRouteMode } from '../../../../../../utils/kitchen-menu-route'
 import type {
   MenuFoodItem,
   MenuFoodOrderItem,
@@ -55,6 +56,7 @@ export type UseKitchenOrderFunnelOptions = {
   menuId: MaybeRefOrGetter<string>
   sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+  menuRouteMode?: MaybeRefOrGetter<KitchenMenuRouteMode | null | undefined>
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
   sessionKitchenSlug?: MaybeRefOrGetter<string | null | undefined>
 }
@@ -95,6 +97,7 @@ export type MenuOrderDraftItem = MenuOrderItem & {
 export type MenuOrderDraftOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+  menuRouteMode?: MaybeRefOrGetter<KitchenMenuRouteMode | null | undefined>
   canOrder?: MaybeRefOrGetter<boolean>
   orderType?: MaybeRefOrGetter<KitchenOrderType>
   sourceMenuId?: MaybeRefOrGetter<string | null | undefined>
@@ -131,6 +134,7 @@ export type CreateMenuOrderInput = {
 export type UseMenuOrderCreateOptions = {
   kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+  menuRouteMode?: MaybeRefOrGetter<KitchenMenuRouteMode | null | undefined>
 }
 
 export type KitchenOrderFunnelStatus = {

@@ -52,6 +52,7 @@
         :menu="translation.menu.value"
         :menu-id="menuId"
         :menu-context="menuContext"
+        :menu-route-mode="props.menuRouteMode"
         :kitchen-slug="kitchenSlug"
       />
     </template>
@@ -68,13 +69,20 @@ import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import type { KitchenMenuRouteMode } from '../../../utils/kitchen-menu-route'
 import { menuContextProfile } from '../../../utils/menu-context'
 
-const props = defineProps<{
-  menuId: string
-  menuContext?: MenuRouteContext
-  kitchenSlug?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    menuId: string
+    menuContext?: MenuRouteContext
+    menuRouteMode?: KitchenMenuRouteMode
+    kitchenSlug?: string
+  }>(),
+  {
+    menuRouteMode: 'single-kitchen-app',
+  }
+)
 
 const menuId = computed(() => props.menuId)
 const menuContext = computed(() => props.menuContext)

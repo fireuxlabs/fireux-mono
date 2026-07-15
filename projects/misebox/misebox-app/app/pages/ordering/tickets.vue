@@ -125,11 +125,11 @@
 
       <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
         <h2 class="m-0 text-base font-black text-highlighted">
-          A surface resolves before a ticket exists
+          An ordering choice resolves before a ticket exists
         </h2>
         <p class="mb-0 mt-2 text-sm leading-6 text-muted">
-          Browse creates no order. Home is a chooser, so a submitted ticket is
-          always Delivery or Collection—never an order with type Home.
+          Browse creates no order. Home options only groups Delivery and
+          Collection; each has its own surface and canonical order type.
         </p>
 
         <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -191,9 +191,9 @@ const surfaceResolutions = [
     description: 'The published menu remains readable without starting a funnel.',
   },
   {
-    surface: 'From home',
+    surface: 'Home options',
     result: 'delivery | collection',
-    description: 'The customer chooses one fulfilment type before submission.',
+    description: 'A grouping of two separate surfaces; Home is not submitted or routed.',
   },
   {
     surface: 'Kiosk',

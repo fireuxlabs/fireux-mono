@@ -1,15 +1,6 @@
 <template>
-  <UPage>
-    <!-- Index map: docs/concepts/family-public-index.md · family: Menu index -->
-    <UPageHeader
-      :title="pageTitle"
-      description="Browse live Misebox kitchen menus and order where online ordering is available."
-    />
-    <UPageBody>
-      <MenuCTA />
-      <MenuCollectionManager id="live-menus" />
-    </UPageBody>
-  </UPage>
+  <!-- Index map: docs/concepts/family-public-index.md · family: Menu index -->
+  <MenuIndex />
 </template>
 
 <script setup lang="ts">

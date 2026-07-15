@@ -43,6 +43,13 @@ export type RootPublicMenuTarget = {
 
 export type PublicMenuTarget = ScopedPublicMenuTarget | RootPublicMenuTarget
 
+export type TenantPublicMenuScope = {
+  appId: string
+  kitchenId: string
+  kitchenSlug: string
+  rootKitchenData: Record<string, unknown>
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -56,15 +63,37 @@ const runtimeApp = () =>
 
 export const currentPublicMenuAppId = () => text(runtimeApp().id)
 
+export const isTenantPublicMenuApp = () => text(runtimeApp().role) === 'tenant'
+
 const tenantKitchenId = () => {
   const app = runtimeApp()
-  if (text(app.role) !== 'tenant') return ''
+  if (!isTenantPublicMenuApp()) return ''
 
   const consoleConfig = record(app.consoleConfig)
   const kitchen = record(consoleConfig.kitchen)
   const targetIds = strings(kitchen.targetIds)
 
   return targetIds.length === 1 ? targetIds[0] : ''
+}
+
+export async function resolveTenantPublicMenuScope(): Promise<TenantPublicMenuScope | null> {
+  const kitchenId = tenantKitchenId()
+  if (!kitchenId) return null
+
+  const rootKitchenSnap = await getRuntimeFirestore()
+    .collection('kitchens')
+    .doc(kitchenId)
+    .get()
+  const rootKitchenData = rootKitchenSnap.exists
+    ? rootKitchenSnap.data() || {}
+    : {}
+
+  return {
+    appId: resolveSourceAppId(rootKitchenData, currentPublicMenuAppId()),
+    kitchenId,
+    kitchenSlug: readRecordString(rootKitchenData, 'slug'),
+    rootKitchenData,
+  }
 }
 
 const publishedMenuData = async (
@@ -166,21 +195,13 @@ export async function resolvePublicMenuTarget(
     })
   }
 
-  const configuredKitchenId = tenantKitchenId()
-  if (configuredKitchenId) {
-    const rootKitchenSnap = await getRuntimeFirestore()
-      .collection('kitchens')
-      .doc(configuredKitchenId)
-      .get()
-    const rootKitchenData = rootKitchenSnap.exists
-      ? rootKitchenSnap.data() || {}
-      : {}
-
+  const tenantScope = await resolveTenantPublicMenuScope()
+  if (tenantScope) {
     return scopedTarget('tenant-menu', menuId, {
-      appId: currentPublicMenuAppId(),
-      kitchenId: configuredKitchenId,
-      kitchenSlug: readRecordString(rootKitchenData, 'slug'),
-      rootKitchenData,
+      appId: tenantScope.appId,
+      kitchenId: tenantScope.kitchenId,
+      kitchenSlug: tenantScope.kitchenSlug,
+      rootKitchenData: tenantScope.rootKitchenData,
     })
   }
 

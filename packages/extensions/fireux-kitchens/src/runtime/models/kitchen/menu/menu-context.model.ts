@@ -1,6 +1,5 @@
 export const MenuRouteContexts = [
   'generic',
-  'home',
   'delivery',
   'collection',
   'table',
@@ -15,7 +14,8 @@ export type MenuRouteContext = typeof MenuRouteContexts[number]
 
 export const MenuSurfaces = [
   'generic',
-  'home',
+  'delivery',
+  'collection',
   'dine_in',
   'kiosk',
   'pre_order',

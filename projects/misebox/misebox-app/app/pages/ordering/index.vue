@@ -9,8 +9,8 @@
           Ordering
         </h1>
         <p class="mb-0 mt-3 max-w-3xl text-base leading-7 text-muted">
-          A menu surface decides where the customer starts. The selected order
-          type—not the surface—is stored on the KitchenOrder.
+          A menu surface decides where the customer starts. Groups only organise
+          related surfaces; the selected order type is stored on the KitchenOrder.
         </p>
       </section>
 
@@ -229,11 +229,9 @@ const orderingSurfaces: OrderingSurface[] = [
     ],
   },
   {
-    title: 'From home',
-    description: 'A chooser surface that offers Delivery, Collection, or whichever of the two the kitchen enables.',
+    title: 'Home options',
+    description: 'A grouping for the separate Delivery and Collection surfaces. Home is not itself a surface.',
     icon: 'i-lucide-house',
-    channel: 'menu',
-    publicPath: '/menus/{menuId}.home',
     modes: [
       {
         label: 'Delivery',

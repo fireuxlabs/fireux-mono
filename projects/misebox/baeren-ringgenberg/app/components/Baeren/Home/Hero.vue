@@ -19,7 +19,7 @@
             class="baeren-home__action baeren-home__action--primary"
           />
           <UButton
-            to="/menu"
+            to="/menus"
             label="Speisekarte"
             icon="i-lucide-utensils"
             color="neutral"
@@ -29,7 +29,7 @@
             class="baeren-home__action baeren-home__action--secondary"
           />
           <UButton
-            to="/menu?context=delivery"
+            to="/menus/pizza-snacks-drinks.delivery"
             label="Lieferung bestellen"
             icon="i-lucide-bike"
             color="primary"

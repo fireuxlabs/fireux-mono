@@ -1,13 +1,6 @@
-import { collection, limit as fsLimit, query as fsQuery, type Query } from 'firebase/firestore'
-import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
+import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
-import {
-  useCollection,
-  useFirestoreResolver,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { KitchenStorage } from '../../../../models/kitchen.model'
 import {
   kitchenMenuIndexPath,
   kitchenMenuPath,
@@ -24,50 +17,19 @@ export function useKitchenMenuUrl(options: {
   kitchenSlug: MaybeRef<string | null | undefined>
 }) {
   const fireux = useFireUXConfig()
-  const db = useFirestoreResolver()
   const appId = computed(() => text(unref(options.appId)))
   const kitchenSlug = computed(() => text(unref(options.kitchenSlug)))
-  const { app } = useAppFetch(appId)
-  const appKitchenCollectionPath = computed(() =>
-    appId.value
-      ? `${AppStorage.collection}/${appId.value}/${KitchenStorage.scopeCollection}`
-      : ''
-  )
-  const appKitchenQuery = computed<Query<Record<string, unknown>> | null>(() => {
-    if (import.meta.server || !appKitchenCollectionPath.value) return null
-
-    return fsQuery(
-      collection(db(), appKitchenCollectionPath.value),
-      fsLimit(2)
-    ) as Query<Record<string, unknown>>
-  })
-  const appKitchenState = import.meta.server
-    ? {
-        data: ref<Record<string, unknown>[]>([]),
-        pending: ref(false),
-      }
-    : useCollection<Record<string, unknown>>(appKitchenQuery as any, {
-        transform: (docSnap: any) => ({
-          ...(docSnap.data() as Record<string, unknown>),
-          id: docSnap.id,
-        }),
-      } as any)
-  const appKitchenCount = computed(() => appKitchenState.data.value?.length ?? 0)
-  const appKitchenIds = computed(() =>
-    (appKitchenState.data.value ?? [])
-      .map((kitchen: Record<string, unknown>) => text(kitchen.id))
-      .filter(Boolean)
-  )
-  const singleKitchenId = computed(() =>
-    appKitchenCount.value === 1 ? appKitchenIds.value[0] ?? '' : ''
-  )
+  const { app, pending } = useAppFetch(appId)
   const appRecord = computed<Record<string, unknown>>(() =>
     app.value && typeof app.value === 'object'
       ? app.value as Record<string, unknown>
       : {}
   )
+  const appRole = computed(() =>
+    appId.value === fireux.appId ? fireux.role : appRecord.value.role
+  )
   const routeMode = computed(() =>
-    kitchenMenuRouteMode(appKitchenCount.value, appRecord.value.role)
+    kitchenMenuRouteMode(appRole.value)
   )
   const menuIndexPath = computed(() =>
     kitchenMenuIndexPath({
@@ -106,29 +68,23 @@ export function useKitchenMenuUrl(options: {
   const debug = computed(() => ({
     appId: appId.value,
     kitchenSlug: kitchenSlug.value,
-    appKitchenCollectionPath: appKitchenCollectionPath.value,
-    appKitchenCount: appKitchenCount.value,
-    appKitchenIds: appKitchenIds.value,
-    singleKitchenId: singleKitchenId.value,
+    appRole: text(appRole.value),
     routeMode: routeMode.value,
     menuIndexPath: menuIndexPath.value,
     menuIndexUrl: menuIndexUrl.value,
     appOrigin: appOrigin.value,
-    pending: appKitchenState.pending.value,
+    pending: pending.value,
   }))
 
   return {
     appId,
     kitchenSlug,
-    appKitchenCount,
-    appKitchenIds,
-    singleKitchenId,
     routeMode,
     menuIndexPath,
     menuIndexUrl,
     menuPath,
     menuUrl,
-    pending: appKitchenState.pending,
+    pending,
     debug,
   }
 }

@@ -3,39 +3,66 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
+import { kitchenMenuPath } from '../../../utils/kitchen-menu-route.ts'
+import {
+  isTenantPublicMenuApp,
+  resolveTenantPublicMenuScope,
+  type TenantPublicMenuScope,
+} from '../../menu/ownership/public-target.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
+const publicMenuIndexItem = (
+  id: string,
+  data: Record<string, unknown>,
+  tenantScope?: TenantPublicMenuScope | null
+) => {
+  const status = readRecordString(data, 'status')
+  if (status !== 'published') return null
+
+  const path = kitchenMenuPath({
+    mode: 'single-kitchen-app',
+    kitchenSlug: '',
+    menuId: id,
+  })
+  const source = tenantScope
+    ? menuSourceFromData(data, {
+        kitchenAppId: tenantScope.appId,
+        kitchenId: tenantScope.kitchenId,
+        kitchenSlug: tenantScope.kitchenSlug,
+        kitchenMenuId: id,
+      })
+    : menuSourceFromData(data)
+
+  return {
+    id,
+    slug: text(data.slug) || id,
+    name: readRecordString(data, 'name') || id,
+    description: readRecordString(data, 'description'),
+    status,
+    path,
+    qr_path: tenantScope ? `${path}/qr` : text(data.qr_path) || `${path}/qr`,
+    source_kind:
+      readRecordString(data, 'source_kind') ||
+      (tenantScope ? 'kitchen-menu' : readRecordString(data, 'kind')),
+    source,
+    image_url: readRecordString(data, 'image_url'),
+    image_shade: readRecordString(data, 'image_shade'),
+  }
+}
+
 export default defineEventHandler(async () => {
   const db = getRuntimeFirestore()
-  const snap = await db
-    .collection(MenuStorage.rootCollection)
-    .limit(100)
-    .get()
+  const tenantScope = await resolveTenantPublicMenuScope()
+  if (isTenantPublicMenuApp() && !tenantScope) return []
 
-  const menus = snap.docs.map((doc) => {
-    const data = doc.data()
-    const status = readRecordString(data, 'status')
-    const source = menuSourceFromData(data)
-
-    if (status !== 'published') return null
-
-    const path = text(data.path) || `/menus/${encodeURIComponent(doc.id)}`
-
-    return {
-      id: doc.id,
-      slug: text(data.slug) || doc.id,
-      name: readRecordString(data, 'name') || doc.id,
-      description: readRecordString(data, 'description'),
-      status,
-      path,
-      qr_path: text(data.qr_path) || `${path}/qr`,
-      source_kind: readRecordString(data, 'source_kind') || readRecordString(data, 'kind'),
-      source,
-      image_url: readRecordString(data, 'image_url'),
-      image_shade: readRecordString(data, 'image_shade'),
-    }
-  }).filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
+  const collectionPath = tenantScope
+    ? `apps/${tenantScope.appId}/kitchens/${tenantScope.kitchenId}/${MenuStorage.scopeCollection}`
+    : MenuStorage.rootCollection
+  const snap = await db.collection(collectionPath).limit(100).get()
+  const menus = snap.docs
+    .map((doc) => publicMenuIndexItem(doc.id, doc.data(), tenantScope))
+    .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
 
   return menus.sort((a, b) => a.name.localeCompare(b.name))
 })

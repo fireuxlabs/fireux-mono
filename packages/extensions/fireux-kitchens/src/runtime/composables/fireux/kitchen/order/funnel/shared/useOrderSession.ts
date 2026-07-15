@@ -9,7 +9,15 @@ import {
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
-import { menuContextProfile } from '../../../../../../utils/menu-context'
+import {
+  menuContextProfile,
+  menuContextualMenuId,
+} from '../../../../../../utils/menu-context'
+import {
+  kitchenMenuPath,
+  normalizeKitchenMenuRouteMode,
+  type KitchenMenuRouteMode,
+} from '../../../../../../utils/kitchen-menu-route'
 
 type StoredSessionLine = {
   id?: string
@@ -39,6 +47,7 @@ type UseOrderSessionConflictOptions = {
   enabled: MaybeRefOrGetter<boolean>
   kitchenSlug: MaybeRefOrGetter<string | null | undefined>
   menuId: MaybeRefOrGetter<string | null | undefined>
+  menuRouteMode: MaybeRefOrGetter<KitchenMenuRouteMode | null | undefined>
   orderType: MaybeRefOrGetter<KitchenOrderType>
   context?: MaybeRefOrGetter<MenuRouteContext | null | undefined>
 }
@@ -74,7 +83,6 @@ const readStoredLines = (value: unknown): StoredSessionLine[] =>
 export const orderSessionContextForOrderType = (
   orderType: KitchenOrderType
 ): MenuRouteContext => {
-  if (orderType === 'delivery' || orderType === 'collection') return 'home'
   if (orderType === 'eat_in' || orderType === 'takeaway') return 'kiosk'
 
   return orderType
@@ -89,18 +97,16 @@ const orderSessionMenuPath = (input: {
   context: MenuRouteContext
   kitchenSlug?: unknown
   menuId?: unknown
+  menuRouteMode?: unknown
 }) => {
   const menuId = text(input.menuId)
-  const kitchenSlug = text(input.kitchenSlug)
   if (!menuId) return ''
 
-  const contextualMenuId = input.context === 'generic'
-    ? menuId
-    : `${menuId}.${input.context}`
-
-  return kitchenSlug
-    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
-    : `/menus/${encodeURIComponent(contextualMenuId)}`
+  return kitchenMenuPath({
+    mode: normalizeKitchenMenuRouteMode(input.menuRouteMode),
+    kitchenSlug: input.kitchenSlug,
+    menuId: menuContextualMenuId(menuId, input.context),
+  })
 }
 
 export const orderSessionStorageKey = (input: {
@@ -187,6 +193,9 @@ export function useOrderSessionConflict(
 ) {
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const menuId = computed(() => text(toValue(options.menuId)))
+  const menuRouteMode = computed(() =>
+    normalizeKitchenMenuRouteMode(toValue(options.menuRouteMode))
+  )
   const orderType = computed(() => toValue(options.orderType))
   const currentContext = computed(() => toValue(options.context))
   const enabled = computed(() => toValue(options.enabled) === true)
@@ -218,6 +227,7 @@ export function useOrderSessionConflict(
         context,
         kitchenSlug: kitchenSlug.value,
         menuId: conflictMenuId,
+        menuRouteMode: menuRouteMode.value,
       }),
     }
   })

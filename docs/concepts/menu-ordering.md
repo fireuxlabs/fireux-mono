@@ -25,10 +25,9 @@ Core split:
 
 Public route hierarchy:
 - `/menus/<menuId>` is Browse. It renders the published menu and creates no Order.
-- `/menus/<menuId>.home` is the From-home chooser surface.
-- Home may offer `delivery`, `collection`, or both, according to the menu's enabled order types.
-- `/menus/<menuId>.delivery` and `.collection` are direct locked entries into those choices.
-- `home` is never stored as `KitchenOrder.order_type`; it resolves to `delivery` or `collection` before submission.
+- Home options is a UI grouping, not a surface, route context, or `KitchenOrder.order_type`.
+- `/menus/<menuId>.delivery` and `.collection` are separate direct surfaces.
+- A menu may enable `delivery`, `collection`, or both inside the Home options grouping.
 - `.pre_order`, `.room_service`, `.dine_in`, and `.kiosk` remain purpose-specific surfaces.
 - Kiosk has one public route: `/menus/<menuId>.kiosk`.
 - `eat_in` and `takeaway` are choices inside Kiosk, not separate public surfaces or route suffixes.

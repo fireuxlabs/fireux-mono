@@ -162,6 +162,7 @@ import { useKioskSkinBackground } from '../../../composables/fireux/menu/detail/
 import { useMenuStaffPosAccess } from '../../../composables/fireux/menu/detail/useMenuStaffPosAccess'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import type { KitchenMenuRouteMode } from '../../../utils/kitchen-menu-route'
 import { menuContextProfile } from '../../../utils/menu-context'
 
 type KioskEntryMode = 'eat_in' | 'takeaway'
@@ -176,18 +177,25 @@ const kioskEntryModes = [
   'takeaway',
 ] as const satisfies readonly KioskEntryMode[]
 
-const props = defineProps<{
-  menu: MenuManifest
-  menuId: string
-  menuContext?: MenuRouteContext
-  kitchenSlug?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    menu: MenuManifest
+    menuId: string
+    menuContext?: MenuRouteContext
+    menuRouteMode?: KitchenMenuRouteMode
+    kitchenSlug?: string
+  }>(),
+  {
+    menuRouteMode: 'single-kitchen-app',
+  }
+)
 
 const interaction = useFunnel({
   menu: () => props.menu,
   menuId: () => props.menuId,
   sourceMenuId: () => props.menu.source.menuId,
   menuContext: () => props.menuContext,
+  menuRouteMode: () => props.menuRouteMode,
   kitchenSlug: () => props.kitchenSlug,
   sessionKitchenSlug: () => props.menu.source.kitchenSlug,
 })

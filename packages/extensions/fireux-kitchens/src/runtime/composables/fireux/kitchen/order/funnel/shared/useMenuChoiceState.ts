@@ -14,6 +14,12 @@ import {
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuChoice } from '../../../../../../models/kitchen/menu/menu.model'
+import {
+  kitchenMenuIndexPath,
+  kitchenMenuPath,
+  normalizeKitchenMenuRouteMode,
+  type KitchenMenuRouteMode,
+} from '../../../../../../utils/kitchen-menu-route'
 import { text } from './order-input'
 import type {
   MenuChoiceOption,
@@ -67,15 +73,18 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
 const contextualMenuPath = (
   menuId: string,
   kitchenSlug: string,
-  context: MenuRouteContext
+  context: MenuRouteContext,
+  routeMode: KitchenMenuRouteMode
 ) => {
   const contextualMenuId = context === 'generic'
     ? menuId
     : menuContextualMenuId(menuId, context)
 
-  return kitchenSlug
-    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
-    : `/menus/${encodeURIComponent(contextualMenuId)}`
+  return kitchenMenuPath({
+    mode: routeMode,
+    kitchenSlug,
+    menuId: contextualMenuId,
+  })
 }
 
 export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
@@ -93,6 +102,15 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     text(toValue(options.sourceMenuId)) || menuId.value
   )
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
+  const menuRouteMode = computed(() =>
+    normalizeKitchenMenuRouteMode(toValue(options.menuRouteMode))
+  )
+  const menuIndexPath = computed(() =>
+    kitchenMenuIndexPath({
+      mode: menuRouteMode.value,
+      kitchenSlug: kitchenSlug.value,
+    })
+  )
   const sessionKitchenSlug = computed(() =>
     text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
   )
@@ -247,13 +265,22 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
         linkedChoice?.to && linkedChoice.menuId && linkedIndex >= 0
           ? `${linkedChoice.to.slice(0, linkedIndex + linkedMarker.length)}${encodeURIComponent(menuContextualMenuId(linkedChoice.menuId, surface.context))}`
           : linkedChoice?.to || ''
+      const linkedRouteMatches = Boolean(
+        menuIndexPath.value &&
+        linkedSurfacePath.startsWith(`${menuIndexPath.value}/`)
+      )
 
       return {
         value: surface.context,
         label: surface.label,
         to: hasLocalOrderType
-          ? contextualMenuPath(menuId.value, kitchenSlug.value, surface.context)
-          : linkedSurfacePath,
+          ? contextualMenuPath(
+              menuId.value,
+              kitchenSlug.value,
+              surface.context,
+              menuRouteMode.value
+            )
+          : linkedRouteMatches ? linkedSurfacePath : '',
         active: contextProfile.value.surface === surface.surface,
       }
     }).filter((surface) => Boolean(surface.to))
@@ -285,6 +312,7 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     localChoiceOptions,
     menuContext,
     menuId,
+    menuRouteMode,
     menuStorageScope,
     orderChannel,
     orderTypeConfigs,

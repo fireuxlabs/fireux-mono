@@ -62,6 +62,7 @@ export function useOrderDraft(
   } = useOrderCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
     menuContext: options.menuContext,
+    menuRouteMode: options.menuRouteMode,
   })
   const {
     error: trackedOrderStatusError,

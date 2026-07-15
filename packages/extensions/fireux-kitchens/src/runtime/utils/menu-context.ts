@@ -35,18 +35,9 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
     visibleOrderTypes: [],
     locked: false,
   },
-  home: {
-    context: 'home',
-    surface: 'home',
-    label: 'Home',
-    icon: 'i-lucide-house',
-    visibleOrderTypes: ['delivery', 'collection'],
-    defaultOrderType: 'delivery',
-    locked: false,
-  },
   delivery: {
     context: 'delivery',
-    surface: 'home',
+    surface: 'delivery',
     label: 'Delivery',
     icon: 'i-lucide-bike',
     visibleOrderTypes: ['delivery'],
@@ -55,7 +46,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   },
   collection: {
     context: 'collection',
-    surface: 'home',
+    surface: 'collection',
     label: 'Collection',
     icon: 'i-lucide-shopping-bag',
     visibleOrderTypes: ['collection'],
@@ -119,7 +110,8 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
 }
 
 export const publicMenuSurfaceProfiles = [
-  profiles.home,
+  profiles.delivery,
+  profiles.collection,
   profiles.dine_in,
   profiles.kiosk,
   profiles.pre_order,

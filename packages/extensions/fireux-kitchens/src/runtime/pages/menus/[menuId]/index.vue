@@ -2,6 +2,7 @@
   <MenuDetail
     :menu-id="menuTarget.menuId"
     :menu-context="menuTarget.context"
+    menu-route-mode="single-kitchen-app"
   />
 </template>
 

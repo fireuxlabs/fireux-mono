@@ -1,6 +1,7 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import { kitchenMenuPath } from '../../../../../../utils/kitchen-menu-route'
 
 export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   id?: string
@@ -84,7 +85,6 @@ export function useMenuInterface() {
 
   function map(menu: MenuInterfaceSource): MenuCard.Card {
     const id = safeString(menu.id).trim()
-    const path = safeString(menu.path).trim()
     const name = safeString(menu.name).trim()
     const description = safeString(menu.description).trim()
     const imageUrl = safeString(menu.image_url || menu.imageUrl).trim()
@@ -93,7 +93,11 @@ export function useMenuInterface() {
     const createdByLabel = safeString(menu.created_by_label).trim()
     const status = safeString(menu.status).trim()
     const meta = status && status !== 'published' ? status : ''
-    const to = path || (id ? `/menus/${encodeURIComponent(id)}` : '')
+    const to = kitchenMenuPath({
+      mode: 'single-kitchen-app',
+      kitchenSlug: '',
+      menuId: id,
+    })
 
     return {
       id,

@@ -21,6 +21,10 @@ import {
   menuContextualMenuId,
   normalizeMenuRouteContext,
 } from '../../../../../../utils/menu-context.ts'
+import {
+  kitchenMenuPath,
+  normalizeKitchenMenuRouteMode,
+} from '../../../../../../utils/kitchen-menu-route.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -63,8 +67,10 @@ export default defineEventHandler(async (event) => {
 
   const menuId = text(getRouterParam(event, 'menuId'))
   const orderId = text(getRouterParam(event, 'orderId'))
-  const kitchenSlug = text(getQuery(event).kitchenSlug)
-  const menuContext = normalizeMenuRouteContext(getQuery(event).context)
+  const query = getQuery(event)
+  const kitchenSlug = text(query.kitchenSlug)
+  const menuContext = normalizeMenuRouteContext(query.context)
+  const menuRouteMode = normalizeKitchenMenuRouteMode(query.menuRouteMode)
   if (!safeSegment(menuId) || !safeSegment(orderId)) {
     throw createError({
       statusCode: 400,
@@ -133,9 +139,17 @@ export default defineEventHandler(async (event) => {
 
   const baseUrl = baseUrlFromEvent(event)
   const contextualMenuId = menuContextualMenuId(menuId, menuContext)
-  const menuPath = kitchenSlug
-    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
-    : `/menus/${encodeURIComponent(contextualMenuId)}`
+  const menuPath = kitchenMenuPath({
+    mode: menuRouteMode,
+    kitchenSlug,
+    menuId: contextualMenuId,
+  })
+  if (!menuPath) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Menu return path is unavailable.',
+    })
+  }
   const orderNumber = text(order.order_number) || orderId
   const reason = text(payment.reason) || 'Kitchen order payment'
   const resumeStatus = text(payment.resume_status) ||
