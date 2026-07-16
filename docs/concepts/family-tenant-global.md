@@ -59,6 +59,12 @@ Tenant target ownership:
 - Cross-app protection applies to global and tenant callers; neither may silently reclaim a root owned by another app.
 - Writers preserve each entity family's current nested or flat app-scope representation until that family is deliberately migrated.
 - Tenant creation should present attach-versus-transfer as an explicit workflow step; target pinning alone is not ownership migration.
+- The shared server transfer planner is dry-run only. Its fixed phase order is:
+  inspect the source tree, copy the complete overlay tree, verify the
+  destination tree, repoint the root, then delete the source tree last.
+- A transfer executor must never infer that copying the overlay document also
+  copied its Firestore subcollections; it must inventory and verify the full
+  descendant tree explicitly.
 - The public Menu family currently requires exactly one tenant Kitchen target.
   Missing, multiple, or nonexistent targets are configuration errors; they do
   not fall back to global data or render a misleading empty menu index.
@@ -80,6 +86,8 @@ Tenant page composition:
 - Existing tenants are not assumed migrated. When touching a tenant, compare against La Tap, then decide whether the same page composition applies or whether the tenant has a legitimate delta.
 
 Open questions:
-- Data migration from global app scope to tenant app scope needs a deliberate workflow.
+- The dry-run transfer contract exists, but an authenticated executor,
+  recursive inventory, backup gate, verification ledger, and recovery behavior
+  are still required before live migration.
 - Tenant public menu URL rules need to stay separate from provider tool preview URLs.
 - Shared tenant page primitives may be extracted only after at least two tenants use the same layer shape cleanly.
