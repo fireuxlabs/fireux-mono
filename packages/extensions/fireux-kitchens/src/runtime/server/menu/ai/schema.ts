@@ -31,7 +31,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                         type: 'number',
                         exclusiveMinimum: 0,
                         description:
-                          'Absolute full item price for this required variant, never a surcharge or delta.',
+                          'Absolute full item price for this required variant or included OR choice, never a surcharge or delta.',
                       },
                     },
                     required: ['label', 'price'],

@@ -108,6 +108,14 @@ Language/source note:
   local phrasing.
 - Sproochli/translation can split or infer language-specific fields later.
 
+Presentation/data boundary:
+- Currency belongs to Kitchen or its Place source and is resolved into the
+  public manifest; KitchenMenu does not own `currency_code`.
+- Browse surfaces use a short allergy/intolerance advisory near the top.
+  Ordering funnels may use a dedicated advisory popup. Allergy records and
+  structured allergen metadata are not part of the current MenuItem contract.
+- Icons, dietary metadata, and calories are intentionally deferred.
+
 Stored kind notes:
 - New quick uploads store `kind: doc`, `file_kind`, and `file`.
 - Structured root Menus store `kind: menu` and the minimal source pointer.
@@ -157,6 +165,8 @@ Structured item options:
 - `add_ons`: optional extras such as toppings, sides, sauces, or add-on
   modifiers. Their prices are incremental and may be zero for a labelled free
   option.
+- Selectable sizes, supplements, and add-on prices belong in these structured
+  fields, not embedded in Dish descriptions.
 - Public Browse, ordering surfaces, Staff POS, tickets, and confirmation must
   preserve the same option labels. Browse shows options read-only; ordering
   surfaces require a variant when several are available and let customers

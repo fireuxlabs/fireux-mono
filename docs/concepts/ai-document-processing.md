@@ -58,6 +58,10 @@ Menu example:
 - Menu extraction distinguishes required variants from optional extras:
   `price_options` are mutually exclusive sizes/choices, while `add_ons`
   are optional extras/toppings/sides that can be combined.
+- Included alternatives expressed with words such as `or`, `oder`, or
+  `choice of` are required `price_options` with the full item price repeated
+  for each choice. Explicitly optional, separately priced supplements remain
+  incremental `add_ons`. Missed alternative language is flagged for review.
 - Processing estimates cost first, then writes draft/review data after
   operator confirmation.
 - Kitchen records AI usage for later billing/invoicing.

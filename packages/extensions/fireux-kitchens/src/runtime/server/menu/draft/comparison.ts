@@ -5,6 +5,7 @@ import {
 } from '../../../models/kitchen/menu/menu-item.model'
 import type { KitchenMenuCurrentShape } from './current'
 import type { KitchenMenuDraftSection } from './sections'
+import { hasIncludedMenuChoiceCue } from '../ai/choices'
 
 export type KitchenMenuProcessFlag = {
   code: string
@@ -280,6 +281,15 @@ export function compareKitchenMenuDraftToCurrent(
   }
 
   for (const item of draftItems) {
+    if (
+      !item.price_options.length &&
+      hasIncludedMenuChoiceCue(item)
+    ) {
+      addFlag(flags, 'unstructured-choice-language', 'warning',
+        `${item.name} contains alternative wording but has no required variants. Check whether choices such as “fries or rice” should be price options.`,
+        item.name, item.section)
+    }
+
     if (!item.price_options.length) continue
 
     addFlag(flags, 'variants-found', 'info',
