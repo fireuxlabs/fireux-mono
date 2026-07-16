@@ -69,9 +69,15 @@ import {
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useOrderSession'
 import KitchenDetailMenuLink from './MenuLink.vue'
 import type { Menu } from '../../../models/kitchen/menu/menu.model'
+import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { publicMenuSurfaceProfiles } from '../../../utils/menu-context'
+import {
+  directoryMenuRouteScope,
+  menuRouteIndexPath,
+  menuRoutePath,
+} from '../../../utils/kitchen-menu-route'
 
 const props = defineProps<{
   kitchen: KitchenSurface
@@ -97,6 +103,7 @@ const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
   { kitchenCollectionPath }
 )
 const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
+const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
 
 const menusLoading = computed(() =>
   Boolean(kitchenId.value) && menusPending.value
@@ -111,23 +118,24 @@ const sortedMenus = computed(() =>
 )
 
 const menusIndexLink = computed(() => {
-  if (!kitchenSlug.value) return ''
-  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
+  return menuRouteIndexPath(menuRouteScope.value)
 })
 
 const menuLink = (menuIdRaw: unknown) => {
   const menuId = String(menuIdRaw || '').trim()
-  if (!kitchenSlug.value || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(menuId)}`
+  return menuRoutePath({
+    scope: menuRouteScope.value,
+    menuId,
+  })
 }
 const hasOrderType = (menu: Menu, types: KitchenOrderType[]) =>
   Boolean(menu.ordering?.order_types?.some((row) => types.includes(row.type)))
-const contextualMenuLink = (menu: Menu, context: string) => {
-  const base = menuLink(menu.id)
-  if (!base) return ''
-
-  return `${base}.${context}`
-}
+const contextualMenuLink = (menu: Menu, context: MenuRouteContext) =>
+  menuRoutePath({
+    scope: menuRouteScope.value,
+    menuId: menu.id,
+    context,
+  })
 const firstMenuForOrderType = (orderType: KitchenOrderType) =>
   sortedMenus.value.find((menu) => hasOrderType(menu, [orderType])) ||
     sortedMenus.value.find((menu) =>
@@ -139,10 +147,13 @@ const firstMenuForOrderType = (orderType: KitchenOrderType) =>
     )
 const sessionLink = (session: MenuOrderSessionSummary) => {
   const menuId = session.firstMenuId || firstMenuForOrderType(session.orderType)?.id
-  const base = menuLink(menuId)
   const context = orderSessionContextForOrderType(session.orderType)
 
-  return base && context !== 'generic' ? `${base}.${context}` : base
+  return menuRoutePath({
+    scope: menuRouteScope.value,
+    menuId,
+    context,
+  })
 }
 const menuEntries = (menu: Menu) => [
   {

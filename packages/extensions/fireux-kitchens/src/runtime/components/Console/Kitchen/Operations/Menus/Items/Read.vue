@@ -111,67 +111,12 @@
                   :update-function="(value) => saveDishDescription(row, value)"
                 />
 
-                <div v-if="row.priceOptions.length" class="grid gap-3">
-                  <p class="text-sm font-medium text-highlighted">
-                    Variant prices
-                  </p>
-
-                  <div
-                    v-for="(option, optionIndex) in row.priceOptions"
-                    :key="`${row.id}-${optionIndex}`"
-                    class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-2"
-                  >
-                    <MoleculesFormsFirestoreSimpleField
-                      label="Option label"
-                      :firebase-value="option.label"
-                      placeholder="Option label"
-                      :disabled="!canWrite"
-                      disabled-message="This menu is read-only."
-                      :update-function="(value) => saveOptionLabel(row, optionIndex, value)"
-                    />
-
-                    <MoleculesFormsFirestoreSimpleField
-                      label="Option price"
-                      type="number"
-                      :firebase-value="option.price"
-                      placeholder="0"
-                      :disabled="!canWrite"
-                      disabled-message="This menu is read-only."
-                      :update-function="(value) => saveOptionPrice(row, optionIndex, value)"
-                    />
-                  </div>
-                </div>
-
-                <div v-if="row.addOns.length" class="grid gap-3">
-                  <p class="text-sm font-medium text-highlighted">
-                    Add-ons
-                  </p>
-
-                  <div
-                    v-for="(addOn, addOnIndex) in row.addOns"
-                    :key="`${row.id}-add-on-${addOnIndex}`"
-                    class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-2"
-                  >
-                    <MoleculesFormsFirestoreSimpleField
-                      label="Add-on label"
-                      :firebase-value="addOn.label"
-                      placeholder="Add-on label"
-                      :disabled="!canWrite"
-                      disabled-message="This menu is read-only."
-                      :update-function="(value) => saveAddOnLabel(row, addOnIndex, value)"
-                    />
-
-                    <MoleculesFormsFirestoreSimpleField
-                      label="Add-on price"
-                      type="number"
-                      :firebase-value="addOn.price"
-                      placeholder="0"
-                      :disabled="!canWrite"
-                      disabled-message="This menu is read-only."
-                      :update-function="(value) => saveAddOnPrice(row, addOnIndex, value)"
-                    />
-                  </div>
-                </div>
+                <ItemsOptions
+                  :row="row"
+                  :can-write="canWrite"
+                  :update-price-options="updatePriceOptionsFor(row)"
+                  :update-add-ons="updateAddOnsFor(row)"
+                />
               </div>
             </template>
           </UCollapsible>
@@ -191,6 +136,7 @@ import {
   type MenuSectionItemRow,
   useKitchenConsoleMenuSection,
 } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuSection'
+import ItemsOptions from './Options.vue'
 
 const {
   kitchenId,
@@ -243,7 +189,6 @@ const validateDishName = (value: string) => ({
   isValid: Boolean(text(value)),
   message: text(value) ? '' : 'Dish name is required.',
 })
-
 async function saveItemPatch(
   row: MenuSectionItemRow,
   patch: Record<string, unknown>,
@@ -271,33 +216,13 @@ const saveDishDescription = (row: MenuSectionItemRow, value: string) =>
 const saveItemPrice = (row: MenuSectionItemRow, value: string) =>
   saveItemPatch(row, { price: money(value) }, 'Menu price saved')
 
-const saveOptionLabel = (row: MenuSectionItemRow, index: number, value: string) =>
-  saveItemPatch(row, {
-    price_options: row.priceOptions.map((option, optionIndex) =>
-      optionIndex === index ? { ...option, label: text(value) } : option
-    ),
-  }, 'Variant label saved')
+const updatePriceOptionsFor = (row: MenuSectionItemRow) =>
+  (priceOptions: MenuSectionItemRow['priceOptions'], title: string) =>
+    saveItemPatch(row, { price_options: priceOptions }, title)
 
-const saveOptionPrice = (row: MenuSectionItemRow, index: number, value: string) =>
-  saveItemPatch(row, {
-    price_options: row.priceOptions.map((option, optionIndex) =>
-      optionIndex === index ? { ...option, price: money(value) } : option
-    ),
-  }, 'Variant price saved')
-
-const saveAddOnLabel = (row: MenuSectionItemRow, index: number, value: string) =>
-  saveItemPatch(row, {
-    add_ons: row.addOns.map((addOn, addOnIndex) =>
-      addOnIndex === index ? { ...addOn, label: text(value) } : addOn
-    ),
-  }, 'Add-on label saved')
-
-const saveAddOnPrice = (row: MenuSectionItemRow, index: number, value: string) =>
-  saveItemPatch(row, {
-    add_ons: row.addOns.map((addOn, addOnIndex) =>
-      addOnIndex === index ? { ...addOn, price: money(value) } : addOn
-    ),
-  }, 'Add-on price saved')
+const updateAddOnsFor = (row: MenuSectionItemRow) =>
+  (addOns: MenuSectionItemRow['addOns'], title: string) =>
+    saveItemPatch(row, { add_ons: addOns }, title)
 
 async function archive(itemId: string) {
   try {

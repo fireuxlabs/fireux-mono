@@ -3,6 +3,8 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
+import { readKitchenAppScope } from '../../../utils/kitchen-spine.ts'
+import { menuSourceFromData } from '../payload/source.ts'
 import {
   menuKitchenFulfilment,
   menuKitchenIdentity,
@@ -10,7 +12,6 @@ import {
   readAppMenuKitchenData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
-  resolveSourceAppId,
   type MenuKitchenScope,
 } from './kitchen-scope.ts'
 
@@ -57,6 +58,10 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 const strings = (value: unknown) =>
   Array.isArray(value) ? value.map(text).filter(Boolean) : []
+const configurationError = (statusMessage: string) => createError({
+  statusCode: 500,
+  statusMessage,
+})
 
 const runtimeApp = () =>
   record((useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>)
@@ -65,34 +70,98 @@ export const currentPublicMenuAppId = () => text(runtimeApp().id)
 
 export const isTenantPublicMenuApp = () => text(runtimeApp().role) === 'tenant'
 
-const tenantKitchenId = () => {
+const tenantKitchenIds = () => {
   const app = runtimeApp()
-  if (!isTenantPublicMenuApp()) return ''
+  if (!isTenantPublicMenuApp()) return []
 
   const consoleConfig = record(app.consoleConfig)
   const kitchen = record(consoleConfig.kitchen)
-  const targetIds = strings(kitchen.targetIds)
+  return strings(kitchen.targetIds)
+}
 
-  return targetIds.length === 1 ? targetIds[0] : ''
+const explicitKitchenSourceAppId = (
+  kitchenData: Record<string, unknown>
+) => {
+  const scope = readKitchenAppScope(kitchenData)
+
+  return scope.state === 'parent_app' || scope.state === 'tenant_app'
+    ? text(scope.appId)
+    : ''
+}
+
+const requireKitchenSourceAppId = (
+  kitchenData: Record<string, unknown>
+) => {
+  const appId = explicitKitchenSourceAppId(kitchenData)
+  if (appId) return appId
+
+  throw configurationError('Kitchen menu source ownership is not configured.')
 }
 
 export async function resolveTenantPublicMenuScope(): Promise<TenantPublicMenuScope | null> {
-  const kitchenId = tenantKitchenId()
-  if (!kitchenId) return null
+  if (!isTenantPublicMenuApp()) return null
+
+  const targetIds = tenantKitchenIds()
+  if (targetIds.length !== 1) {
+    throw configurationError(
+      'Tenant menu scope must configure exactly one Kitchen target.'
+    )
+  }
+
+  const kitchenId = targetIds[0] || ''
 
   const rootKitchenSnap = await getRuntimeFirestore()
     .collection('kitchens')
     .doc(kitchenId)
     .get()
-  const rootKitchenData = rootKitchenSnap.exists
-    ? rootKitchenSnap.data() || {}
-    : {}
+  if (!rootKitchenSnap.exists) {
+    throw configurationError('Tenant menu Kitchen target was not found.')
+  }
+
+  const rootKitchenData = rootKitchenSnap.data() || {}
 
   return {
-    appId: resolveSourceAppId(rootKitchenData, currentPublicMenuAppId()),
+    appId: requireKitchenSourceAppId(rootKitchenData),
     kitchenId,
     kitchenSlug: readRecordString(rootKitchenData, 'slug'),
     rootKitchenData,
+  }
+}
+
+const requireRootMenuKitchen = async (
+  rootMenuData: Record<string, unknown>
+) => {
+  const source = menuSourceFromData(rootMenuData)
+  const isKitchenMenu =
+    readRecordString(rootMenuData, 'source_kind') === 'kitchen-menu' ||
+    readRecordString(rootMenuData, 'kind') === 'menu'
+  const hasSourcePointer = Boolean(
+    source.app_id ||
+    source.kitchen_id ||
+    source.kitchen_slug ||
+    source.menu_id
+  )
+
+  if (!isKitchenMenu && !hasSourcePointer) return
+  if ((!source.kitchen_id && !source.kitchen_slug) || !source.menu_id) {
+    throw configurationError('Root menu source pointer is incomplete.')
+  }
+
+  const db = getRuntimeFirestore()
+  const rootKitchen = source.kitchen_id
+    ? await db.collection('kitchens').doc(source.kitchen_id).get()
+    : (await db
+        .collection('kitchens')
+        .where('slug', '==', String(source.kitchen_slug).toLowerCase())
+        .limit(1)
+        .get()).docs[0]
+
+  if (!rootKitchen?.exists) {
+    throw configurationError('Root menu Kitchen source was not found.')
+  }
+
+  if (!source.app_id && !explicitKitchenSourceAppId(rootKitchen.data() || {})) {
+    throw configurationError('Root menu source ownership is not configured.')
   }
 }
 
@@ -178,6 +247,23 @@ export async function resolvePublicMenuTarget(
     })
   }
 
+  const tenantScope = await resolveTenantPublicMenuScope()
+  if (tenantScope) {
+    if (kitchenSlug) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Menu not found.',
+      })
+    }
+
+    return scopedTarget('tenant-menu', menuId, {
+      appId: tenantScope.appId,
+      kitchenId: tenantScope.kitchenId,
+      kitchenSlug: tenantScope.kitchenSlug,
+      rootKitchenData: tenantScope.rootKitchenData,
+    })
+  }
+
   if (kitchenSlug) {
     const kitchen = await readMenuKitchenBySlug(kitchenSlug)
     if (!kitchen) {
@@ -188,20 +274,10 @@ export async function resolvePublicMenuTarget(
     }
 
     return scopedTarget('directory-menu', menuId, {
-      appId: resolveSourceAppId(kitchen.data, currentPublicMenuAppId()),
+      appId: requireKitchenSourceAppId(kitchen.data),
       kitchenId: kitchen.id,
       kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
       rootKitchenData: kitchen.data,
-    })
-  }
-
-  const tenantScope = await resolveTenantPublicMenuScope()
-  if (tenantScope) {
-    return scopedTarget('tenant-menu', menuId, {
-      appId: tenantScope.appId,
-      kitchenId: tenantScope.kitchenId,
-      kitchenSlug: tenantScope.kitchenSlug,
-      rootKitchenData: tenantScope.rootKitchenData,
     })
   }
 
@@ -217,9 +293,10 @@ export async function resolvePublicMenuTarget(
     })
   }
 
+  await requireRootMenuKitchen(rootMenuData)
   const scope = await readRootMenuKitchenScope(
     rootMenuData,
-    currentPublicMenuAppId()
+    ''
   )
   const appId = text(scope.kitchenAppId)
   const kitchenId = text(scope.kitchenId)

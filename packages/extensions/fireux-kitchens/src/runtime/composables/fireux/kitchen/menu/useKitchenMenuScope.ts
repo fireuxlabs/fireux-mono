@@ -7,6 +7,10 @@ import {
 import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
 import { useKitchenMenuCollection } from '../../firestore/menu/useMenu'
 import type { Menu } from '../../../../models/kitchen/menu/menu.model'
+import {
+  directoryMenuRouteScope,
+  menuRoutePath,
+} from '../../../../utils/kitchen-menu-route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'
@@ -43,8 +47,14 @@ export function useKitchenMenuScope() {
       kitchenPending.value ||
       (Boolean(kitchenId.value) && publishedMenus.pending.value)
   )
+  const menuRouteScope = computed(() =>
+    directoryMenuRouteScope(kitchenSlug.value)
+  )
   const menuLink = (id: Menu['id']) =>
-    `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus/${encodeURIComponent(text(id))}`
+    menuRoutePath({
+      scope: menuRouteScope.value,
+      menuId: text(id),
+    })
   const debug = computed(() => ({
     route: {
       kitchenSlug: kitchenSlug.value,
@@ -88,6 +98,7 @@ export function useKitchenMenuScope() {
     kitchenCollectionPath,
     menuCollectionPath: menuRead.collectionPath,
     pending,
+    menuRouteScope,
     menuLink,
     debug,
   }

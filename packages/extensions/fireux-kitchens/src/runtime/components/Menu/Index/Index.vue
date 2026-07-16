@@ -1,43 +1,33 @@
 <template>
-  <UPage>
-    <UPageHeader
-      title="Menus"
-      :description="pageDescription"
+  <template v-if="isTenant">
+    <div
+      v-if="pending"
+      class="grid min-h-screen place-items-center px-4 text-center"
+    >
+      <p class="text-sm text-dimmed">Loading menus...</p>
+    </div>
+
+    <div
+      v-else-if="error"
+      class="grid min-h-screen place-items-center px-4 text-center"
+    >
+      <p class="text-sm text-dimmed">Menus unavailable.</p>
+    </div>
+
+    <MenuDetail
+      v-else-if="singleMenu"
+      :menu-id="String(singleMenu.id || '')"
+      :menu-route-scope="menuRouteScope"
     />
 
-    <UPageBody>
-      <template v-if="!isTenant">
-        <MenuCTA />
-        <MenuCollectionManager id="live-menus" />
-      </template>
+    <UPage v-else>
+      <UPageHeader
+        title="Menus"
+        :description="tenantPageDescription"
+      />
 
-      <template v-else>
-        <UPageCard v-if="pending" variant="subtle">
-          <p class="text-sm text-dimmed">Loading menus...</p>
-        </UPageCard>
-
-        <p v-else-if="error" class="text-sm text-dimmed">
-          Menus unavailable.
-        </p>
-
-        <template v-else-if="singleMenu">
-          <div class="flex justify-end">
-            <UButton
-              :to="menuLink(singleMenu.id)"
-              icon="i-lucide-arrow-right"
-              trailing
-            >
-              Open menu page
-            </UButton>
-          </div>
-
-          <MenuDetail
-            :menu-id="String(singleMenu.id || '')"
-            :menu-route-mode="menuRouteMode"
-          />
-        </template>
-
-        <div v-else-if="menus.length" class="space-y-3">
+      <UPageBody>
+        <div v-if="menus.length" class="space-y-3">
           <UPageCard
             v-for="menu in menus"
             :key="menu.id"
@@ -67,7 +57,19 @@
         <p v-else class="text-sm text-dimmed">
           No published menus.
         </p>
-      </template>
+      </UPageBody>
+    </UPage>
+  </template>
+
+  <UPage v-else>
+    <UPageHeader
+      title="Menus"
+      description="Browse live Misebox kitchen menus and order where online ordering is available."
+    />
+
+    <UPageBody>
+      <MenuCTA />
+      <MenuCollectionManager id="live-menus" />
     </UPageBody>
   </UPage>
 </template>
@@ -81,7 +83,7 @@ const fireux = useFireUXConfig()
 const isTenant = fireux.isTenant
 const {
   menus,
-  menuRouteMode,
+  menuRouteScope,
   pending,
   error,
   menuLink,
@@ -89,7 +91,5 @@ const {
 const singleMenu = computed(() =>
   menus.value.length === 1 ? menus.value[0] ?? null : null
 )
-const pageDescription = isTenant
-  ? `Browse ${fireux.appName}'s live menus and choose how you'd like to order.`
-  : 'Browse live Misebox kitchen menus and order where online ordering is available.'
+const tenantPageDescription = `Browse ${fireux.appName}'s live menus and choose how you'd like to order.`
 </script>

@@ -2,14 +2,17 @@
   <MenuDetail
     :menu-id="menuTarget.menuId"
     :menu-context="menuTarget.context"
-    menu-route-mode="single-kitchen-app"
+    :menu-route-scope="menuRouteScope"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { parseMenuRouteTarget } from '../../../utils/menu-context'
+import {
+  parseMenuRouteTarget,
+  rootMenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 
 definePageMeta({
   layout: 'menu',
@@ -18,4 +21,5 @@ definePageMeta({
 
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
+const menuRouteScope = rootMenuRouteScope()
 </script>

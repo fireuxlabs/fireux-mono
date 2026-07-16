@@ -164,7 +164,7 @@ export const resolveMenuOrderAddOns = (
     })
   }
 
-  return requested.map((requestedAddOn) => {
+  const resolved = requested.map((requestedAddOn) => {
     const requestedKeys = [
       variantKey(requestedAddOn.id),
       variantKey(requestedAddOn.label),
@@ -184,4 +184,15 @@ export const resolveMenuOrderAddOns = (
 
     return match
   })
+  const resolvedKeys = resolved.map((addOn) =>
+    variantKey(addOn.id) || variantKey(addOn.label)
+  )
+  if (new Set(resolvedKeys).size !== resolvedKeys.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose each item add-on only once.',
+    })
+  }
+
+  return resolved
 }

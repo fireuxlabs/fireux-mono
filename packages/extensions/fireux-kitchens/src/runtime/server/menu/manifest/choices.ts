@@ -4,10 +4,12 @@ import type {
   MenuChoice,
 } from '../../../models/kitchen/menu/menu.model.ts'
 import { menuOrderTypeLabel } from '../../../utils/menu-ordering-ui.ts'
+import { menuChoiceContextForOrderType } from '../../../utils/menu-context.ts'
 import {
-  menuChoiceContextForOrderType,
-  menuContextualMenuId,
-} from '../../../utils/menu-context.ts'
+  directoryMenuRouteScope,
+  menuRoutePath,
+  rootMenuRouteScope,
+} from '../../../utils/kitchen-menu-route.ts'
 import {
   isMenuOrderingEnabled,
   readMenuOrderingConfig,
@@ -32,16 +34,15 @@ const menuPath = (
   orderType: Parameters<typeof menuChoiceContextForOrderType>[0],
   routeKind: MenuChoiceInput['routeKind']
 ) => {
-  const contextualMenuId = menuContextualMenuId(
+  const scope = routeKind === 'tenant-menu'
+    ? rootMenuRouteScope()
+    : directoryMenuRouteScope(kitchenSlug)
+
+  return menuRoutePath({
+    scope,
     menuId,
-    menuChoiceContextForOrderType(orderType)
-  )
-
-  if (routeKind === 'tenant-menu') {
-    return `/menus/${encodeURIComponent(contextualMenuId)}`
-  }
-
-  return `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(contextualMenuId)}`
+    context: menuChoiceContextForOrderType(orderType),
+  })
 }
 function menuChoices(input: {
   data: Record<string, unknown>

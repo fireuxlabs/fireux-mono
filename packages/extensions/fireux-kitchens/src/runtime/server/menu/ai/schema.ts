@@ -27,7 +27,12 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                     type: 'object',
                     properties: {
                       label: { type: 'string' },
-                      price: { type: 'number' },
+                      price: {
+                        type: 'number',
+                        exclusiveMinimum: 0,
+                        description:
+                          'Absolute full item price for this required variant, never a surcharge or delta.',
+                      },
                     },
                     required: ['label', 'price'],
                   },
@@ -38,7 +43,12 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                     type: 'object',
                     properties: {
                       label: { type: 'string' },
-                      price: { type: 'number' },
+                      price: {
+                        type: 'number',
+                        minimum: 0,
+                        description:
+                          'Incremental add-on surcharge. Use zero for a labelled optional free add-on.',
+                      },
                     },
                     required: ['label', 'price'],
                   },

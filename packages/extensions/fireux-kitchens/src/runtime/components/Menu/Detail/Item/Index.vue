@@ -2,8 +2,8 @@
   <article
     :class="[
       'menu-item',
-      'menu-item--selectable',
-      selected && 'menu-item--selected',
+      orderMode && 'menu-item--selectable',
+      orderMode && selected && 'menu-item--selected',
     ]"
   >
     <div
@@ -11,9 +11,9 @@
         'menu-item__summary',
         item.imageUrl && 'menu-item__summary--with-image',
       ]"
-      role="button"
-      tabindex="0"
-      :aria-expanded="selected"
+      :role="orderMode ? 'button' : undefined"
+      :tabindex="orderMode ? 0 : undefined"
+      :aria-expanded="orderMode ? selected : undefined"
       @click="selectItem"
       @keydown.enter.prevent="selectItem"
       @keydown.space.prevent="selectItem"
@@ -51,7 +51,27 @@
     </div>
 
     <div
-      v-if="selected && hasInteraction"
+      v-if="!orderMode && hasOptions"
+      class="menu-item__interaction menu-item__interaction--read-only"
+    >
+      <MenuDetailItemOptions
+        v-if="variantOptions.length"
+        :label="`${item.name} variants`"
+        :options="variantOptions"
+        :interactive="false"
+      />
+
+      <MenuDetailItemOptions
+        v-if="addOnOptions.length"
+        :label="`${item.name} add-ons`"
+        :options="addOnOptions"
+        :interactive="false"
+        prefix="+ "
+      />
+    </div>
+
+    <div
+      v-if="orderMode && selected"
       class="menu-item__interaction"
       @click.stop
     >
@@ -118,13 +138,11 @@ const {
 })
 
 const hasOptions = computed(() =>
-  variantOptions.value.length > 1 || addOnOptions.value.length > 0
-)
-const hasInteraction = computed(() =>
-  Boolean(props.orderMode || hasOptions.value)
+  variantOptions.value.length > 0 || addOnOptions.value.length > 0
 )
 
 function selectItem() {
+  if (!props.orderMode) return
   emit('select', props.item)
 }
 
@@ -218,6 +236,10 @@ function addItem() {
   display: grid;
   gap: var(--menu-space-sm);
   padding-top: var(--menu-space-sm);
+}
+
+.menu-item__interaction--read-only {
+  gap: var(--menu-space-xs);
 }
 
 .menu-item__add {

@@ -32,7 +32,21 @@
         v-for="item in itemLines"
         :key="item.id"
       >
-        <span>{{ item.quantity }}x {{ item.label }}</span>
+        <span class="grid min-w-0 gap-0.5">
+          <span>{{ item.quantity }}x {{ item.label }}</span>
+          <small
+            v-if="item.variant"
+            class="text-xs text-dimmed"
+          >
+            {{ item.variant }}
+          </small>
+          <small
+            v-if="item.addOns.length"
+            class="text-xs text-dimmed"
+          >
+            + {{ item.addOns.join(', ') }}
+          </small>
+        </span>
         <strong v-if="item.totalLabel">{{ item.totalLabel }}</strong>
       </li>
     </ul>
@@ -70,6 +84,10 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
+const optionLabels = (value: unknown) =>
+  (Array.isArray(value) ? value : [])
+    .map((option) => text(record(option).label))
+    .filter(Boolean)
 const requestLabel = computed(() => {
   if (props.funnel.order.orderType === 'collection') return 'Collection request'
   if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
@@ -245,12 +263,25 @@ const itemLines = computed(() =>
       const unitPrice = numberValue(source.unitPrice || source.unit_price_chf)
       const total = numberValue(source.total_chf) || unitPrice * quantity
       const label = text(source.name || source.label) || 'Item'
+      const variant = text(
+        record(source.variant).label ||
+        source.variantLabel ||
+        source.variant_label
+      )
+      const hasDraftAddOns = Array.isArray(source.addOns)
+      const addOns = optionLabels(
+        hasDraftAddOns ? source.addOns : source.add_ons
+      ).filter((addOn) =>
+        !hasDraftAddOns || !label.includes(addOn)
+      )
 
       return {
         id: text(source.lineId || source.id) || `item-${index + 1}`,
+        addOns,
         label,
         quantity,
         totalLabel: total ? money(total) : '',
+        variant: variant && !label.includes(variant) ? variant : '',
       }
     })
 )

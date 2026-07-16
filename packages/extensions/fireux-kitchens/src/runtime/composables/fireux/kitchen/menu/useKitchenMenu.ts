@@ -2,10 +2,7 @@ export {
   useKitchenMenuScope,
   useKitchenMenuScope as useKitchenMenu,
 } from './useKitchenMenuScope'
-export {
-  useKitchenMenuDetail,
-  useKitchenSingleMenuDetail,
-} from './useKitchenMenuDetail'
+export { useKitchenMenuDetail } from './useKitchenMenuDetail'
 export type {
   KitchenMenuItemRow,
   KitchenMenuSectionRow,

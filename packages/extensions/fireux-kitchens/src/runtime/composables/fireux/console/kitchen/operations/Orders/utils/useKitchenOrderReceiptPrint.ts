@@ -50,7 +50,9 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
   ].filter(Boolean)
   const rows = receipt.items.map((item) => {
     const detailLines = [
-      item.variant_label,
+      item.variant_label && !item.label.includes(item.variant_label)
+        ? item.variant_label
+        : '',
       ...(item.add_ons || []).map((addOn) => `+ ${addOn.label}`),
     ].filter(Boolean)
 

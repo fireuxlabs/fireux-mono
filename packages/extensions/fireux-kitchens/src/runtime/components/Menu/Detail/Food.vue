@@ -162,7 +162,10 @@ import { useKioskSkinBackground } from '../../../composables/fireux/menu/detail/
 import { useMenuStaffPosAccess } from '../../../composables/fireux/menu/detail/useMenuStaffPosAccess'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
-import type { KitchenMenuRouteMode } from '../../../utils/kitchen-menu-route'
+import {
+  rootMenuRouteScope,
+  type MenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 import { menuContextProfile } from '../../../utils/menu-context'
 
 type KioskEntryMode = 'eat_in' | 'takeaway'
@@ -182,25 +185,29 @@ const props = withDefaults(
     menu: MenuManifest
     menuId: string
     menuContext?: MenuRouteContext
-    menuRouteMode?: KitchenMenuRouteMode
-    kitchenSlug?: string
+    menuRouteScope?: MenuRouteScope
   }>(),
   {
-    menuRouteMode: 'single-kitchen-app',
+    menuRouteScope: rootMenuRouteScope,
   }
 )
 
+const routeKitchenSlug = computed(() =>
+  props.menuRouteScope.kind === 'directory'
+    ? String(props.menuRouteScope.kitchenSlug || '').trim()
+    : ''
+)
 const interaction = useFunnel({
   menu: () => props.menu,
   menuId: () => props.menuId,
   sourceMenuId: () => props.menu.source.menuId,
   menuContext: () => props.menuContext,
-  menuRouteMode: () => props.menuRouteMode,
-  kitchenSlug: () => props.kitchenSlug,
+  menuRouteScope: () => props.menuRouteScope,
+  kitchenSlug: () => routeKitchenSlug.value,
   sessionKitchenSlug: () => props.menu.source.kitchenSlug,
 })
 const kitchenSlug = computed(() =>
-  String(props.kitchenSlug || props.menu.source.kitchenSlug || '').trim()
+  String(props.menu.source.kitchenSlug || '').trim()
 )
 const kioskModeOptions = computed<KioskModeOption[]>(() =>
   kioskEntryModes.flatMap((mode) => {

@@ -1,8 +1,14 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { unref, type Ref } from 'vue'
-import { MenuItemModel, type MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
+import {
+  MenuItemModel,
+  normalizeMenuItemAddOns,
+  normalizeMenuItemPriceOptions,
+  type MenuItem,
+} from '../../../../../models/kitchen/menu/menu-item.model'
 import { menuItemsPath } from '../utils/paths'
 
 type Options = {
@@ -12,6 +18,39 @@ type Options = {
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
+const unique = (values: string[]) => new Set(values).size === values.length
+const optionKey = (value: unknown) => normalizeSlug(value)
+
+const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
+  const normalized = { ...patch }
+
+  if (Object.hasOwn(patch, 'price_options')) {
+    const input = Array.isArray(patch.price_options) ? patch.price_options : []
+    const options = normalizeMenuItemPriceOptions(input)
+    if (
+      options.length !== input.length ||
+      !unique(options.map((option) => optionKey(option.label)))
+    ) {
+      throw new Error('Variants require unique labels and full prices greater than zero.')
+    }
+    normalized.price_options = options
+  }
+
+  if (Object.hasOwn(patch, 'add_ons')) {
+    const input = Array.isArray(patch.add_ons) ? patch.add_ons : []
+    const addOns = normalizeMenuItemAddOns(input)
+    if (
+      addOns.length !== input.length ||
+      !unique(addOns.map((addOn) => optionKey(addOn.id))) ||
+      !unique(addOns.map((addOn) => optionKey(addOn.label)))
+    ) {
+      throw new Error('Add-ons require unique labels and identifiers and a non-negative price.')
+    }
+    normalized.add_ons = addOns
+  }
+
+  return normalized
+}
 
 export function useMenuItemMutations(options: Options = {}) {
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
@@ -65,7 +104,7 @@ export function useMenuItemMutations(options: Options = {}) {
     const collectionPath = path(kitchenId, menuId, sectionId)
     const id = clean(itemId)
     if (!collectionPath || !id) throw new Error('Missing menu item')
-    await updateDocument<MenuItem>(collectionPath, id, patch)
+    await updateDocument<MenuItem>(collectionPath, id, normalizeItemPatch(patch))
   }
 
   const reorderItems = async (

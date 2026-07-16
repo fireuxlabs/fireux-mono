@@ -28,32 +28,33 @@
     />
 
     <template v-else-if="detailMenu">
-      <div
-        v-if="translation.enabled.value"
-        class="menu-detail__translation"
-      >
-        <SproochliLanguageTrigger
-          :language-options="translation.languageOptions.value"
-          :selected-language="translation.selectedLanguage.value"
-        />
-        <span v-if="translation.translating.value" class="menu-detail__translation-state">
-          Translating menu…
-        </span>
-        <span
-          v-else-if="translation.translationError.value"
-          class="menu-detail__translation-state menu-detail__translation-state--error"
+      <ClientOnly>
+        <div
+          v-if="translation.enabled.value"
+          class="menu-detail__translation"
         >
-          Translation unavailable. Showing original.
-        </span>
-      </div>
+          <SproochliLanguageTrigger
+            :language-options="translation.languageOptions.value"
+            :selected-language="translation.selectedLanguage.value"
+          />
+          <span v-if="translation.translating.value" class="menu-detail__translation-state">
+            Translating menu…
+          </span>
+          <span
+            v-else-if="translation.translationError.value"
+            class="menu-detail__translation-state menu-detail__translation-state--error"
+          >
+            Translation unavailable. Showing original.
+          </span>
+        </div>
+      </ClientOnly>
 
       <MenuDetailFood
         v-if="translation.menu.value"
         :menu="translation.menu.value"
         :menu-id="menuId"
         :menu-context="menuContext"
-        :menu-route-mode="props.menuRouteMode"
-        :kitchen-slug="kitchenSlug"
+        :menu-route-scope="props.menuRouteScope"
       />
     </template>
 
@@ -69,24 +70,31 @@ import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
-import type { KitchenMenuRouteMode } from '../../../utils/kitchen-menu-route'
+import {
+  rootMenuRouteScope,
+  type MenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 import { menuContextProfile } from '../../../utils/menu-context'
 
 const props = withDefaults(
   defineProps<{
     menuId: string
     menuContext?: MenuRouteContext
-    menuRouteMode?: KitchenMenuRouteMode
-    kitchenSlug?: string
+    menuRouteScope?: MenuRouteScope
   }>(),
   {
-    menuRouteMode: 'single-kitchen-app',
+    menuRouteScope: rootMenuRouteScope,
   }
 )
 
 const menuId = computed(() => props.menuId)
 const menuContext = computed(() => props.menuContext)
-const kitchenSlug = computed(() => props.kitchenSlug)
+const menuRouteScope = computed(() => props.menuRouteScope)
+const kitchenSlug = computed(() =>
+  menuRouteScope.value.kind === 'directory'
+    ? menuRouteScope.value.kitchenSlug
+    : ''
+)
 const {
   pending,
   error,
@@ -95,7 +103,7 @@ const {
   manifest: detailMenu,
 } = useMenu(menuId, {
   menuContext,
-  kitchenSlug,
+  routeScope: menuRouteScope,
 })
 const translation = useSproochliMenuTranslation({ menu: detailMenu })
 const documentKitchenName = computed(() =>

@@ -7,13 +7,17 @@
 
     <MenuDetail
       menu-id="main"
-      kitchen-slug="la-tapberne"
       menu-context="pre_order"
+      :menu-route-scope="menuRouteScope"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { rootMenuRouteScope } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
+
+const menuRouteScope = rootMenuRouteScope()
+
 definePageMeta({
   layout: 'menu',
 })

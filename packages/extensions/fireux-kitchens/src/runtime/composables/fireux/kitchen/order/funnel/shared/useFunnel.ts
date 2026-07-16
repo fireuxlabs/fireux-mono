@@ -56,7 +56,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     kitchenSlug: choice.sessionKitchenSlug,
     context: choice.menuContext,
     menuId: choice.menuId,
-    menuRouteMode: choice.menuRouteMode,
+    menuRouteScope: choice.menuRouteScope,
     orderType: choice.selectedOrderType,
   })
   const immediateServiceAvailable = computed(() => {
@@ -98,8 +98,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const selectedItemId = ref('')
   const draft = useOrderDraft(options.menuId, {
     kitchenSlug: options.kitchenSlug,
-    menuContext: choice.menuContext,
-    menuRouteMode: choice.menuRouteMode,
     canOrder: canAddToSession,
     orderType: choice.selectedOrderType,
     sourceMenuId: choice.sourceMenuId,
@@ -122,8 +120,6 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
     const query = new URLSearchParams()
     if (choice.kitchenSlug.value) query.set('kitchenSlug', choice.kitchenSlug.value)
-    if (choice.menuContext.value !== 'generic') query.set('context', choice.menuContext.value)
-    query.set('menuRouteMode', choice.menuRouteMode.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(choice.menuId.value)}/orders${qs ? `?${qs}` : ''}`

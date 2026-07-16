@@ -1,6 +1,6 @@
 Tenant/global family map
-Updated: 2026-07-15
-Ref: 624c7b638
+Updated: 2026-07-16
+Ref: de5f53b09
 Role: map, not canon
 
 Purpose:
@@ -36,7 +36,11 @@ Similar:
 Different:
 - Tenant app can auto-select a single configured target.
 - Global app needs user/permission-aware target lists.
-- Public URLs may differ: tenant root routes can be shorter than global directory routes.
+- Public route scope follows the explicit app role and surface, not configured
+  target count.
+- A tenant route may keep its configured target implicit while a directory
+  route makes that target explicit. URL shape does not change data ownership
+  scope.
 
 App-scope vocabulary:
 - App role is `tenant`; the corresponding entity scope state is `tenant_app`.
@@ -44,6 +48,9 @@ App-scope vocabulary:
 - `tenant_app` means the operational overlay is owned by the tenant app.
 - `root_only` means there is no app-owned operational overlay.
 - `dedicated_app` is legacy stored input only while existing records are migrated; new writes use `tenant_app`.
+- App-role mapping is explicit: `tenant` writes `tenant_app`; `global` and
+  `standalone` write `parent_app`. A standalone app directly owns its overlay;
+  unknown roles do not receive an ownership default.
 
 Tenant target ownership:
 - Creating an App record does not silently transfer a pinned entity from its current app.
@@ -52,6 +59,11 @@ Tenant target ownership:
 - Cross-app protection applies to global and tenant callers; neither may silently reclaim a root owned by another app.
 - Writers preserve each entity family's current nested or flat app-scope representation until that family is deliberately migrated.
 - Tenant creation should present attach-versus-transfer as an explicit workflow step; target pinning alone is not ownership migration.
+- The public Menu family currently requires exactly one tenant Kitchen target.
+  Missing, multiple, or nonexistent targets are configuration errors; they do
+  not fall back to global data or render a misleading empty menu index.
+- Tenant root routes omit the Kitchen slug. Directory routes carry it in their
+  explicit route scope; a client-provided slug cannot change tenant ownership.
 
 Tenant page composition:
 - Reference-in-progress: `projects/misebox/la-tap-berne/app`.
@@ -68,7 +80,6 @@ Tenant page composition:
 - Existing tenants are not assumed migrated. When touching a tenant, compare against La Tap, then decide whether the same page composition applies or whether the tenant has a legitimate delta.
 
 Open questions:
-- Standalone app ownership semantics remain undecided. Do not silently treat standalone apps as either `parent_app` or `tenant_app`.
 - Data migration from global app scope to tenant app scope needs a deliberate workflow.
 - Tenant public menu URL rules need to stay separate from provider tool preview URLs.
 - Shared tenant page primitives may be extracted only after at least two tenants use the same layer shape cleanly.

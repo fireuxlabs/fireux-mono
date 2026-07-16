@@ -98,6 +98,21 @@ export function normalizeFireuxAppScopeState(
   return ''
 }
 
+/**
+ * Maps an app runtime role to the ownership state written on root-plus-app
+ * entities. Standalone apps directly own their app overlay, so they use the
+ * same `parent_app` relationship as global apps. Unknown roles fail closed.
+ */
+export function resolveFireuxAppScopeStateForRole(
+  value: unknown
+): Exclude<FireuxAppScopeState, 'root_only'> | '' {
+  const role = String(value ?? '').trim()
+
+  if (role === 'tenant') return 'tenant_app'
+  if (role === 'global' || role === 'standalone') return 'parent_app'
+  return ''
+}
+
 export const FireuxAppScope = {
   app_scope_state: 'root_only' as FireuxAppScopeState,
   app_scope_app_id: '' as string,

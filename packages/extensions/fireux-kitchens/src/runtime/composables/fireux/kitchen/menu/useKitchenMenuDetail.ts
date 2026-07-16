@@ -5,14 +5,11 @@ import { useMenuSectionCollection } from '../../firestore/menu/fetch/useMenuSect
 import { useKitchenMenuItems } from './useKitchenMenuItems'
 import { useKitchenMenuRows } from './useKitchenMenuRows'
 import { useKitchenMenuScope } from './useKitchenMenuScope'
-import { useKitchenSingleMenuScope } from './useKitchenSingleMenuScope'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 function useKitchenMenuDetailFromScope(
-  state:
-    | ReturnType<typeof useKitchenMenuScope>
-    | ReturnType<typeof useKitchenSingleMenuScope>
+  state: ReturnType<typeof useKitchenMenuScope>
 ) {
   const kitchenId = computed(() => text(state.kitchen.value?.id))
   const resolvedMenuId = computed(() => text(state.menu.value?.id))
@@ -86,8 +83,4 @@ function useKitchenMenuDetailFromScope(
 
 export function useKitchenMenuDetail() {
   return useKitchenMenuDetailFromScope(useKitchenMenuScope())
-}
-
-export function useKitchenSingleMenuDetail() {
-  return useKitchenMenuDetailFromScope(useKitchenSingleMenuScope())
 }

@@ -3,9 +3,11 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
-import { kitchenMenuPath } from '../../../utils/kitchen-menu-route.ts'
 import {
-  isTenantPublicMenuApp,
+  menuRoutePath,
+  rootMenuRouteScope,
+} from '../../../utils/kitchen-menu-route.ts'
+import {
   resolveTenantPublicMenuScope,
   type TenantPublicMenuScope,
 } from '../../menu/ownership/public-target.ts'
@@ -20,9 +22,8 @@ const publicMenuIndexItem = (
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
 
-  const path = kitchenMenuPath({
-    mode: 'single-kitchen-app',
-    kitchenSlug: '',
+  const path = menuRoutePath({
+    scope: rootMenuRouteScope(),
     menuId: id,
   })
   const source = tenantScope
@@ -54,12 +55,15 @@ const publicMenuIndexItem = (
 export default defineEventHandler(async () => {
   const db = getRuntimeFirestore()
   const tenantScope = await resolveTenantPublicMenuScope()
-  if (isTenantPublicMenuApp() && !tenantScope) return []
 
   const collectionPath = tenantScope
     ? `apps/${tenantScope.appId}/kitchens/${tenantScope.kitchenId}/${MenuStorage.scopeCollection}`
     : MenuStorage.rootCollection
-  const snap = await db.collection(collectionPath).limit(100).get()
+  const snap = await db
+    .collection(collectionPath)
+    .where('status', '==', 'published')
+    .limit(100)
+    .get()
   const menus = snap.docs
     .map((doc) => publicMenuIndexItem(doc.id, doc.data(), tenantScope))
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))

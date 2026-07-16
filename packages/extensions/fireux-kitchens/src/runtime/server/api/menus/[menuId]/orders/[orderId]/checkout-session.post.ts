@@ -18,12 +18,10 @@ import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
 import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
 import {
-  menuContextualMenuId,
-  normalizeMenuRouteContext,
+  menuChoiceContextForOrderType,
 } from '../../../../../../utils/menu-context.ts'
 import {
-  kitchenMenuPath,
-  normalizeKitchenMenuRouteMode,
+  menuRoutePath,
 } from '../../../../../../utils/kitchen-menu-route.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -69,8 +67,6 @@ export default defineEventHandler(async (event) => {
   const orderId = text(getRouterParam(event, 'orderId'))
   const query = getQuery(event)
   const kitchenSlug = text(query.kitchenSlug)
-  const menuContext = normalizeMenuRouteContext(query.context)
-  const menuRouteMode = normalizeKitchenMenuRouteMode(query.menuRouteMode)
   if (!safeSegment(menuId) || !safeSegment(orderId)) {
     throw createError({
       statusCode: 400,
@@ -138,11 +134,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const baseUrl = baseUrlFromEvent(event)
-  const contextualMenuId = menuContextualMenuId(menuId, menuContext)
-  const menuPath = kitchenMenuPath({
-    mode: menuRouteMode,
-    kitchenSlug,
-    menuId: contextualMenuId,
+  const menuPath = menuRoutePath({
+    scope: context.routeScope,
+    menuId: context.routeMenuId,
+    context: menuChoiceContextForOrderType(orderType),
   })
   if (!menuPath) {
     throw createError({

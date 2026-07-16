@@ -38,12 +38,14 @@ export type MenuItemPriceOption = {
   label: string
   quantity: number
   unit: string
+  /** Absolute full item price for this required selection; always greater than zero. */
   price: number
 }
 
 export type MenuItemAddOnOption = {
   id: string
   label: string
+  /** Incremental surcharge; zero is valid for a labelled optional free add-on. */
   price: number
 }
 
@@ -51,6 +53,11 @@ const cleanText = (value: unknown) => String(value ?? '').trim()
 const cleanNumber = (value: unknown) => {
   const number = Number(value)
   return Number.isFinite(number) ? number : 0
+}
+const cleanNonNegativePrice = (value: unknown) => {
+  if (value === null || value === undefined || cleanText(value) === '') return -1
+  const number = Number(value)
+  return Number.isFinite(number) && number >= 0 ? number : -1
 }
 const quantityFromLabel = (label: string) => {
   const match = label.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZäöüÄÖÜ]+)?/)
@@ -100,10 +107,10 @@ export function normalizeMenuItemAddOns(value: unknown): MenuItemAddOnOption[] {
           label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
           `add-on-${optionIndex + 1}`,
         label,
-        price: cleanNumber(data.price),
+        price: cleanNonNegativePrice(data.price),
       }
     })
-    .filter((option) => option.id && option.label && option.price > 0)
+    .filter((option) => option.id && option.label && option.price >= 0)
 }
 
 export const MenuItemModel = {

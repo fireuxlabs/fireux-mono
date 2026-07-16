@@ -151,14 +151,12 @@ function addMenuContextTarget(targets: MenuQrTarget[], options: {
   label: string
   description: string
 }) {
-  const contextualMenuId = `${options.menuId}.${options.context}`
-
   addTarget(targets, {
     id: `${options.menuId}:${options.context}`,
     label: options.label,
     description: options.description,
-    path: menuUrlResolver.menuPath(contextualMenuId),
-    url: menuUrlResolver.menuUrl(contextualMenuId),
+    path: menuUrlResolver.menuPath(options.menuId, options.context),
+    url: menuUrlResolver.menuUrl(options.menuId, options.context),
   })
 }
 

@@ -1,10 +1,13 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
+import type { MenuRouteContext } from '../../../../models/kitchen/menu/menu-context.model'
 import {
-  kitchenMenuIndexPath,
-  kitchenMenuPath,
-  kitchenMenuRouteMode,
+  directoryMenuRouteScope,
+  menuRouteIndexPath,
+  menuRoutePath,
+  rootMenuRouteScope,
+  type MenuRouteScope,
 } from '../../../../utils/kitchen-menu-route'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
@@ -28,14 +31,14 @@ export function useKitchenMenuUrl(options: {
   const appRole = computed(() =>
     appId.value === fireux.appId ? fireux.role : appRecord.value.role
   )
-  const routeMode = computed(() =>
-    kitchenMenuRouteMode(appRole.value)
+  // This adapter may choose the app's default doorway. Storage ownership does not.
+  const routeScope = computed<MenuRouteScope>(() =>
+    text(appRole.value).toLowerCase() === 'tenant'
+      ? rootMenuRouteScope()
+      : directoryMenuRouteScope(kitchenSlug.value)
   )
   const menuIndexPath = computed(() =>
-    kitchenMenuIndexPath({
-      mode: routeMode.value,
-      kitchenSlug: kitchenSlug.value,
-    })
+    menuRouteIndexPath(routeScope.value)
   )
   const socialLinks = computed<Record<string, unknown>>(() => {
     const links = appRecord.value.social_links
@@ -54,14 +57,20 @@ export function useKitchenMenuUrl(options: {
     if (!menuIndexPath.value || !appOrigin.value) return menuIndexPath.value
     return new URL(menuIndexPath.value, appOrigin.value).toString()
   })
-  const menuPath = (menuId: unknown) =>
-    kitchenMenuPath({
-      mode: routeMode.value,
-      kitchenSlug: kitchenSlug.value,
+  const menuPath = (
+    menuId: unknown,
+    context: MenuRouteContext = 'generic'
+  ) =>
+    menuRoutePath({
+      scope: routeScope.value,
       menuId,
+      context,
     })
-  const menuUrl = (menuId: unknown) => {
-    const path = menuPath(menuId)
+  const menuUrl = (
+    menuId: unknown,
+    context: MenuRouteContext = 'generic'
+  ) => {
+    const path = menuPath(menuId, context)
     if (!path || !appOrigin.value) return path
     return new URL(path, appOrigin.value).toString()
   }
@@ -69,7 +78,7 @@ export function useKitchenMenuUrl(options: {
     appId: appId.value,
     kitchenSlug: kitchenSlug.value,
     appRole: text(appRole.value),
-    routeMode: routeMode.value,
+    routeScope: routeScope.value,
     menuIndexPath: menuIndexPath.value,
     menuIndexUrl: menuIndexUrl.value,
     appOrigin: appOrigin.value,
@@ -79,7 +88,7 @@ export function useKitchenMenuUrl(options: {
   return {
     appId,
     kitchenSlug,
-    routeMode,
+    routeScope,
     menuIndexPath,
     menuIndexUrl,
     menuPath,

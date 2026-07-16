@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-05
-Ref: b57b4f38f
+Updated: 2026-07-15
+Ref: de5f53b09
 Role: map, not canon
 
 Purpose:
@@ -18,15 +18,55 @@ Horizontal links:
 - console.md
 - family-tenant-global.md
 
+Current public menu doorways:
+- Menu routes use stable plural collection grammar. Menu count changes index
+  presentation, never the route shape.
+- Global public doorway: `misebox.app/menus` is the public index and
+  `misebox.app/menus/<globalMenuId>` opens one globally addressable doorway.
+  The global id may be a globally unique or vanity identity. The doorway points
+  to the original kitchen-owned menu source; it is not a copied Menu. Root
+  quick/photo/PDF/document menus may also use this family.
+- Misebox kitchen-directory doorway:
+  `misebox.app/kitchens/<kitchenSlug>/menus` is the kitchen index and
+  `misebox.app/kitchens/<kitchenSlug>/menus/<menuId>` opens one menu. This is
+  durable kitchen-scoped access whether or not a tenant app exists, and the
+  menu id only needs to be stable inside that kitchen namespace.
+- Tenant doorway: the tenant origin uses `/menus` as its index and
+  `/menus/<menuId>` as its detail. It is a branded projection whose configured
+  Kitchen ownership is implied by app scope and deliberately absent from the
+  URL.
+- Adding a tenant app is additive. It must not remove, stub, redirect away, or
+  replace either the global public doorway or the kitchen-directory doorway.
+- When a Kitchen menu has all three published projections, they resolve the
+  same underlying menu source and order system. A Kitchen menu need not have a
+  global doorway, and root quick/document menus need not have Kitchen or tenant
+  projections. Doorways are route projections, not copied entities. Data scope
+  and route scope are deliberately separate.
+- One published menu may be featured immediately on an index; multiple menus
+  are listed by the same index surface.
+- Ordering contexts append after the menu identity on every doorway, for
+  example `.delivery`, `.collection`, and `.kiosk`; see `menu-ordering.md`.
+- Premium global-id claim, reserve, renew, and enforcement policy remains
+  `to-confirm`; this map does not claim that enforcement is implemented.
+- Current route/source seams:
+  `src/runtime/utils/kitchen-menu-route.ts` and
+  `src/runtime/server/menu/ownership/public-target.ts` in `fireux-kitchens`.
+- `MenuRouteScope` owns URL projection as either `root` or `directory`; resolved
+  Firestore ownership remains a separate server concern.
+- Tenant menu resolution is fail-closed: exactly one configured Kitchen target,
+  an existing root Kitchen, and explicit `parent_app` or `tenant_app` ownership
+  are required. A tenant request never falls through to a global root menu and
+  never accepts a directory Kitchen slug.
+- Direct Firestore resolution is the sole menu-content authority. Public menu
+  rendering must not hydrate or override content from a mutable website URL or
+  another app's public API.
+
 Current concepts:
 - Root quick menu: starts at `/menus`, can be just a photo or PDF upload.
 - Kitchen menu: belongs to a selected kitchen/console and may become structured.
-- Public menu doorway: `/menus/<id>` should remain a stable public URL when possible.
-- Tenant menu: tenant apps may expose simpler routes like `/menus/main`.
-- Directory menu: global apps may expose `/kitchens/<slug>/menus/<menuId>`.
 
 Entity checkpoint:
-- Menu is marked `to-confirm` in code.
+- Menu is marked `confirmed` in code.
 - MenuSection is a record under Menu.
 - MenuItem is a record under MenuSection and points to Dish when structured.
 - MenuSourceUpload is a record under Kitchen.
@@ -71,9 +111,13 @@ No kitchen needed:
 - Invite owner to upgrade.
 
 Page composition note:
-- Root `/menus` uses a dedicated Menu CTA, not `EntityIndexCta`.
+- Shared `/menus` delegates to `MenuIndex`; the route page stays light.
+- The global/root branch uses a dedicated Menu CTA, not `EntityIndexCta`, and
+  lets `MenuCollectionManager` read the public menu collection by default.
 - The Menu CTA owns the Go QR upload tool because the tool is the product action, not generic index chrome.
-- Root `/menus` lets `MenuCollectionManager` read the public menu collection by default.
+- The tenant branch renders one published menu directly as the `MenuDetail`
+  surface or lists multiple published menus. Count changes presentation only;
+  it does not select a route family.
 - Kitchen-scoped menu pages should use kitchen/menu scoped surfaces, not `MenuCollectionManager` with passed scoped rows.
 - Smaller display pieces such as Menu cards/lists may still be shared underneath.
 
@@ -100,13 +144,26 @@ Component placement:
 Structured item options:
 - `price_options`: required or mutually exclusive choices such as sizes,
   pieces, grams, protein choices, or named variants.
+- Every `price_options[].price` is the absolute full item price for that
+  selection and must be greater than zero. Same-price required choices repeat
+  the full price; they are not zero-cost add-ons or price deltas.
 - `add_ons`: optional extras such as toppings, sides, sauces, or add-on
-  modifiers.
+  modifiers. Their prices are incremental and may be zero for a labelled free
+  option.
+- Public Browse, ordering surfaces, Staff POS, tickets, and confirmation must
+  preserve the same option labels. Browse shows options read-only; ordering
+  surfaces require a variant when several are available and let customers
+  toggle add-ons.
+- The canonical MenuItem editor supports adding, editing, and removing both
+  option families. Invalid or duplicate labels must not be written.
 - `image_url`: optional menu-row presentation image. For now this belongs to
   `MenuItem`, not `Dish`, so kitchens can use stock/provider images without
   promoting images into canonical dish truth too early.
 - AI menu processing should preserve both shapes before review/confirm so
   operators can correct them instead of rebuilding them manually.
+- Re-confirming an AI draft fails closed when a matched or omitted current
+  item would lose an existing variant or add-on. The server recomputes this
+  comparison at confirm time; persisted review flags are presentation only.
 
 Ordering note:
 - Menu ordering is mapped separately in `menu-ordering.md`.
@@ -117,3 +174,5 @@ Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.
 - Decide whether public doorway remains a record shape or makes Menu a true `both` entity.
 - Test a real `doc`/photo public menu after the next sample is seeded to verify the document renderer branch end to end.
+- Decide the canonical/SEO doorway when the same Kitchen menu has global,
+  directory, and tenant projections.

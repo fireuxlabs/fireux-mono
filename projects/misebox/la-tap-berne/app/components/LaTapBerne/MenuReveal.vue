@@ -36,7 +36,7 @@
 
         <MenuDetail
           menu-id="main"
-          kitchen-slug="la-tapberne"
+          :menu-route-scope="menuRouteScope"
         />
       </section>
     </Transition>
@@ -45,9 +45,11 @@
 
 <script setup lang="ts">
 import { useMiseboxTenantChrome } from 'fireux-misebox/runtime/composables/fireux/app/useMiseboxTenantChrome'
+import { rootMenuRouteScope } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 import { onBeforeUnmount, ref } from 'vue'
 
 const { setChromeHidden } = useMiseboxTenantChrome()
+const menuRouteScope = rootMenuRouteScope()
 const isOpen = ref(false)
 
 const openMenu = () => {

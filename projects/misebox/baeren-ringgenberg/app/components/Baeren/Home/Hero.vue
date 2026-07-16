@@ -29,7 +29,7 @@
             class="baeren-home__action baeren-home__action--secondary"
           />
           <UButton
-            to="/menus/pizza-snacks-drinks.delivery"
+            :to="deliveryMenuPath"
             label="Lieferung bestellen"
             icon="i-lucide-bike"
             color="primary"
@@ -66,11 +66,21 @@
 </template>
 
 <script setup lang="ts">
+import {
+  menuRoutePath,
+  rootMenuRouteScope,
+} from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 import { baerenRinggenbergContent } from '../../../config/content.config'
+import kitchenConfig from '../../../config/kitchen.config'
 
 defineOptions({ name: 'BaerenHomeHero' })
 
 const content = baerenRinggenbergContent
+const deliveryMenuPath = menuRoutePath({
+  scope: rootMenuRouteScope(),
+  menuId: kitchenConfig.primaryMenuId,
+  context: 'delivery',
+})
 const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
 </script>
 

@@ -1,44 +1,74 @@
-export type KitchenMenuRouteMode =
-  | 'single-kitchen-app'
-  | 'kitchen-directory'
+import {
+  MenuRouteContexts,
+  type MenuRouteContext,
+} from '../models/kitchen/menu/menu-context.model.ts'
+
+export type MenuRouteScope =
+  | { kind: 'root' }
+  | { kind: 'directory', kitchenSlug: string }
+
+export type MenuRouteTarget = {
+  menuId: string
+  context: MenuRouteContext
+}
 
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
+const contextSet = new Set<string>(MenuRouteContexts)
 
-export function normalizeKitchenMenuRouteMode(
-  value: unknown,
-  fallback: KitchenMenuRouteMode = 'single-kitchen-app'
-): KitchenMenuRouteMode {
-  const mode = text(value)
+export const rootMenuRouteScope = (): MenuRouteScope => ({ kind: 'root' })
 
-  return mode === 'single-kitchen-app' || mode === 'kitchen-directory'
-    ? mode
-    : fallback
-}
-
-export function kitchenMenuRouteMode(appRole?: unknown): KitchenMenuRouteMode {
-  const role = text(appRole).toLowerCase()
-
-  return role === 'tenant' ? 'single-kitchen-app' : 'kitchen-directory'
-}
-
-export function kitchenMenuIndexPath(options: {
-  mode: KitchenMenuRouteMode
+export const directoryMenuRouteScope = (
   kitchenSlug: unknown
-}) {
-  if (options.mode === 'single-kitchen-app') return '/menus'
+): MenuRouteScope => ({
+  kind: 'directory',
+  kitchenSlug: text(kitchenSlug),
+})
 
-  const kitchenSlug = segment(options.kitchenSlug)
+export function menuRouteIndexPath(scope: MenuRouteScope) {
+  if (scope.kind === 'root') return '/menus'
+
+  const kitchenSlug = segment(scope.kitchenSlug)
   return kitchenSlug ? `/kitchens/${kitchenSlug}/menus` : ''
 }
 
-export function kitchenMenuPath(options: {
-  mode: KitchenMenuRouteMode
-  kitchenSlug: unknown
+export const menuContextualMenuId = (
+  menuId: unknown,
+  context: MenuRouteContext = 'generic'
+) => {
+  const id = text(menuId)
+
+  return !id || context === 'generic' ? id : `${id}.${context}`
+}
+
+export function menuRoutePath(options: {
+  scope: MenuRouteScope
   menuId: unknown
+  context?: MenuRouteContext
 }) {
-  const indexPath = kitchenMenuIndexPath(options)
-  const menuId = segment(options.menuId)
+  const indexPath = menuRouteIndexPath(options.scope)
+  const menuId = segment(menuContextualMenuId(options.menuId, options.context))
 
   return indexPath && menuId ? `${indexPath}/${menuId}` : ''
+}
+
+export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {
+  const rawMenuId = text(value)
+  const [contextCandidate, ...menuParts] = rawMenuId
+    .split('.')
+    .reverse()
+  const hasContextSuffix =
+    contextSet.has(text(contextCandidate)) && menuParts.length > 0
+
+  if (!hasContextSuffix) {
+    return {
+      menuId: rawMenuId,
+      context: 'generic',
+    }
+  }
+
+  return {
+    menuId: menuParts.reverse().join('.'),
+    context: contextCandidate as MenuRouteContext,
+  }
 }

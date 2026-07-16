@@ -156,7 +156,7 @@ const itemAddOns = (item: Record<string, unknown>): MenuManifestAddOn[] =>
           (price ? String(price) : ''),
       }
     })
-    .filter((option) => option.label && option.priceLabel)
+    .filter((option) => option.label && option.price >= 0)
 
 const menuSections = (sections: unknown[]): MenuManifestSection[] =>
   sections.map((section, sectionIndex) => {

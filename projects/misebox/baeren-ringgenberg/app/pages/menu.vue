@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { kitchenMenuPath } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 import {
-  menuContextualMenuId,
-  normalizeMenuRouteContext,
-} from 'fireux-kitchens/runtime/utils/menu-context'
+  menuRouteIndexPath,
+  menuRoutePath,
+  rootMenuRouteScope,
+} from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
+import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/utils/menu-context'
+import kitchenConfig from '../config/kitchen.config'
 
 const route = useRoute()
 const context = normalizeMenuRouteContext(route.query.context)
-const menuId = context === 'generic'
-  ? ''
-  : menuContextualMenuId('pizza-snacks-drinks', context)
-const target = menuId
-  ? kitchenMenuPath({
-      mode: 'single-kitchen-app',
-      kitchenSlug: '',
-      menuId,
+const scope = rootMenuRouteScope()
+const target = context === 'generic'
+  ? menuRouteIndexPath(scope)
+  : menuRoutePath({
+      scope,
+      menuId: kitchenConfig.primaryMenuId,
+      context,
     })
-  : '/menus'
 
 await navigateTo(target, {
   redirectCode: 301,

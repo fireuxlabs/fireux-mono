@@ -5,6 +5,11 @@ import {
 } from '../ownership/public-target.ts'
 import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
+import {
+  directoryMenuRouteScope,
+  rootMenuRouteScope,
+  type MenuRouteScope,
+} from '../../../utils/kitchen-menu-route.ts'
 
 export type MenuOrderContext = {
   appId: string
@@ -14,6 +19,8 @@ export type MenuOrderContext = {
   kitchenName?: string
   currencyCode?: string
   menuId: string
+  routeMenuId: string
+  routeScope: MenuRouteScope
   menuData: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
   operationHours?: WeekdayTimeWindowsConfig
@@ -43,6 +50,10 @@ export const readMenuOrderContext = async (
     kitchenName: text(target.scope.kitchenName),
     currencyCode: text(target.scope.currencyCode),
     menuId: target.sourceMenuId,
+    routeMenuId: target.routeMenuId,
+    routeScope: target.kind === 'directory-menu'
+      ? directoryMenuRouteScope(target.kitchenSlug)
+      : rootMenuRouteScope(),
     menuData: target.kind === 'root-doorway'
       ? target.sourceMenuData
       : target.menuData,

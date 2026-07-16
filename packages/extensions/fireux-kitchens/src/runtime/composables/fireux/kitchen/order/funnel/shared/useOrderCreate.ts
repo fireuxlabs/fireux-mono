@@ -5,8 +5,6 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { normalizeMenuRouteContext } from '../../../../../../utils/menu-context'
-import { normalizeKitchenMenuRouteMode } from '../../../../../../utils/kitchen-menu-route'
 import type { CreatedMenuOrder } from '../../../../../../models/kitchen/menu/menu-ordering.model'
 import { useOrderIdempotency } from './useOrderIdempotency'
 import {
@@ -27,19 +25,11 @@ export function useOrderCreate(
   const { currentUser } = useAuth()
   const id = computed(() => text(toValue(menuId)))
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
-  const menuContext = computed(() =>
-    normalizeMenuRouteContext(toValue(options.menuContext))
-  )
-  const menuRouteMode = computed(() =>
-    normalizeKitchenMenuRouteMode(toValue(options.menuRouteMode))
-  )
   const endpoint = computed(() => {
     if (!id.value) return ''
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
-    query.set('menuRouteMode', menuRouteMode.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}/orders${qs ? `?${qs}` : ''}`
@@ -147,8 +137,6 @@ export function useOrderCreate(
 
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (menuContext.value !== 'generic') query.set('context', menuContext.value)
-    query.set('menuRouteMode', menuRouteMode.value)
     const qs = query.toString()
     try {
       const response = await $fetch<{ url?: string }>(

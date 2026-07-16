@@ -16,6 +16,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/core/meta.model'
 import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
@@ -140,7 +141,7 @@ export function useBlankDocsByIds(ids: BlankIdInput) {
 
 export function useBlankCreate() {
   const db = useFirestore()
-  const { appId } = useFireUXConfig()
+  const { appId, role } = useFireUXConfig()
   const { setDocument } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
 
@@ -152,12 +153,17 @@ export function useBlankCreate() {
       throw new Error('[blank] app id is required to create a console target')
     }
 
+    const appScopeState = resolveFireuxAppScopeStateForRole(role)
+    if (!appScopeState) {
+      throw new Error(`[blank] app role "${text(role)}" cannot own a console target`)
+    }
+
     const id = doc(collection(db, BlankStorage.rootCollection)).id
     const name = text(input.name) || 'Blank target'
     const slug = normalizeSlug(`${name}-${id.slice(0, 6)}`)
 
     const rootPayload: Blank = {
-      app_scope_state: 'parent_app',
+      app_scope_state: appScopeState,
       app_scope_app_id: resolvedAppId,
       name,
       slug,

@@ -30,7 +30,7 @@ export function readMenuPageStyle(value: unknown): Partial<PageStyle> {
 }
 
 type MenuPageStyleLayer = {
-  source: 'tenant-owner-api' | 'app-kitchen' | 'root-kitchen' | 'menu'
+  source: 'app-kitchen' | 'root-kitchen' | 'menu'
   style: unknown
 }
 

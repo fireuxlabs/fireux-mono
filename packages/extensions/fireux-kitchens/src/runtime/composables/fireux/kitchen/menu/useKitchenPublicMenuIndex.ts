@@ -2,7 +2,10 @@ import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { MenuInterfaceSource } from '../../firestore/menu/utils/view/useMenuInterface'
-import { kitchenMenuPath } from '../../../../utils/kitchen-menu-route'
+import {
+  menuRoutePath,
+  rootMenuRouteScope,
+} from '../../../../utils/kitchen-menu-route'
 
 export type KitchenPublicMenuIndexItem = MenuInterfaceSource & {
   id: string
@@ -12,7 +15,7 @@ export type KitchenPublicMenuIndexItem = MenuInterfaceSource & {
 
 export function useKitchenPublicMenuIndex() {
   const fireux = useFireUXConfig()
-  const menuRouteMode = 'single-kitchen-app' as const
+  const menuRouteScope = rootMenuRouteScope()
   const state = useAsyncData(
     `kitchen-public-menu-index-${fireux.appId || 'app'}`,
     () =>
@@ -27,10 +30,9 @@ export function useKitchenPublicMenuIndex() {
     pending: state.pending,
     error: state.error,
     refresh: state.refresh,
-    menuRouteMode,
-    menuLink: (menuId: string) => kitchenMenuPath({
-      mode: menuRouteMode,
-      kitchenSlug: '',
+    menuRouteScope,
+    menuLink: (menuId: string) => menuRoutePath({
+      scope: menuRouteScope,
       menuId,
     }),
   }

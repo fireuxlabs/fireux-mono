@@ -186,6 +186,22 @@ const addFlag = (
   section: string
 ) => flags.push({ code, level, message, item, section })
 
+const optionKey = (option: { id?: string; label: string }) =>
+  normalizeKey(option.label) || normalizeKey(option.id)
+
+const missingOptions = <T extends { id?: string; label: string }>(
+  current: T[],
+  draft: T[]
+) => {
+  const draftKeys = new Set(draft.map(optionKey).filter(Boolean))
+  return current.filter((option) => !draftKeys.has(optionKey(option)))
+}
+
+const optionWithKey = <T extends { id?: string; label: string }>(
+  options: T[],
+  key: string
+) => options.find((option) => optionKey(option) === key)
+
 export function compareKitchenMenuDraftToCurrent(
   current: KitchenMenuCurrentShape,
   draftSections: KitchenMenuDraftSection[]
@@ -219,6 +235,48 @@ export function compareKitchenMenuDraftToCurrent(
         `${current.name} price differs: current ${current.price}, AI ${draft.price}.`,
         current.name, current.section)
     }
+
+    const missingVariants = missingOptions(
+      current.price_options,
+      draft.price_options
+    )
+    if (missingVariants.length) {
+      addFlag(flags, 'variants-missing-in-extraction', 'error',
+        `${current.name} would lose variant(s): ${missingVariants.map((option) => option.label).join(', ')}.`,
+        current.name, current.section)
+    }
+    for (const currentOption of current.price_options) {
+      const draftOption = optionWithKey(
+        draft.price_options,
+        optionKey(currentOption)
+      )
+      if (
+        draftOption &&
+        Math.abs(currentOption.price - draftOption.price) >= 0.05
+      ) {
+        addFlag(flags, 'variant-price-diff', 'warning',
+          `${current.name} · ${currentOption.label} differs: current ${currentOption.price}, AI ${draftOption.price}.`,
+          current.name, current.section)
+      }
+    }
+
+    const missingAddOns = missingOptions(current.add_ons, draft.add_ons)
+    if (missingAddOns.length) {
+      addFlag(flags, 'add-ons-missing-in-extraction', 'error',
+        `${current.name} would lose add-on(s): ${missingAddOns.map((option) => option.label).join(', ')}.`,
+        current.name, current.section)
+    }
+    for (const currentOption of current.add_ons) {
+      const draftOption = optionWithKey(draft.add_ons, optionKey(currentOption))
+      if (
+        draftOption &&
+        Math.abs(currentOption.price - draftOption.price) >= 0.05
+      ) {
+        addFlag(flags, 'add-on-price-diff', 'warning',
+          `${current.name} · ${currentOption.label} differs: current ${currentOption.price}, AI ${draftOption.price}.`,
+          current.name, current.section)
+      }
+    }
   }
 
   for (const item of draftItems) {
@@ -239,8 +297,8 @@ export function compareKitchenMenuDraftToCurrent(
   for (const item of matched.missing) {
     if (!item.price_options.length) continue
 
-    addFlag(flags, 'variants-missing-in-extraction', 'warning',
-      `${item.name} has current menu variants, but the draft did not include variants.`,
+    addFlag(flags, 'variants-missing-in-extraction', 'error',
+      `${item.name} and its current menu variants are missing from the draft.`,
       item.name, item.section)
   }
 
@@ -262,8 +320,8 @@ export function compareKitchenMenuDraftToCurrent(
   for (const item of matched.missing) {
     if (!item.add_ons.length) continue
 
-    addFlag(flags, 'add-ons-missing-in-extraction', 'warning',
-      `${item.name} has current menu add-ons, but the draft did not include add-ons.`,
+    addFlag(flags, 'add-ons-missing-in-extraction', 'error',
+      `${item.name} and its current menu add-ons are missing from the draft.`,
       item.name, item.section)
   }
 

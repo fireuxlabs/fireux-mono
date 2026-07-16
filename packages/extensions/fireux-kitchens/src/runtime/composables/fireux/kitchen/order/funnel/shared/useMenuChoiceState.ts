@@ -5,7 +5,6 @@ import {
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
 import {
-  menuContextualMenuId,
   menuContextProfile,
   menuOrderChannelForContext,
   normalizeMenuRouteContext,
@@ -15,10 +14,8 @@ import type { KitchenOrderType } from '../../../../../../models/kitchen/order.mo
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuChoice } from '../../../../../../models/kitchen/menu/menu.model'
 import {
-  kitchenMenuIndexPath,
-  kitchenMenuPath,
-  normalizeKitchenMenuRouteMode,
-  type KitchenMenuRouteMode,
+  menuRoutePath,
+  type MenuRouteScope,
 } from '../../../../../../utils/kitchen-menu-route'
 import { text } from './order-input'
 import type {
@@ -72,20 +69,9 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
 
 const contextualMenuPath = (
   menuId: string,
-  kitchenSlug: string,
   context: MenuRouteContext,
-  routeMode: KitchenMenuRouteMode
-) => {
-  const contextualMenuId = context === 'generic'
-    ? menuId
-    : menuContextualMenuId(menuId, context)
-
-  return kitchenMenuPath({
-    mode: routeMode,
-    kitchenSlug,
-    menuId: contextualMenuId,
-  })
-}
+  routeScope: MenuRouteScope
+) => menuRoutePath({ scope: routeScope, menuId, context })
 
 export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
   const behaviour = computed(() => toValue(options.menu)?.behaviour)
@@ -102,15 +88,7 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     text(toValue(options.sourceMenuId)) || menuId.value
   )
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
-  const menuRouteMode = computed(() =>
-    normalizeKitchenMenuRouteMode(toValue(options.menuRouteMode))
-  )
-  const menuIndexPath = computed(() =>
-    kitchenMenuIndexPath({
-      mode: menuRouteMode.value,
-      kitchenSlug: kitchenSlug.value,
-    })
-  )
+  const menuRouteScope = computed(() => toValue(options.menuRouteScope))
   const sessionKitchenSlug = computed(() =>
     text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
   )
@@ -259,28 +237,16 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
         Boolean(choice.orderType) &&
         surface.visibleOrderTypes.includes(choice.orderType as KitchenOrderType)
       )
-      const linkedMarker = '/menus/'
-      const linkedIndex = linkedChoice?.to?.indexOf(linkedMarker) ?? -1
-      const linkedSurfacePath =
-        linkedChoice?.to && linkedChoice.menuId && linkedIndex >= 0
-          ? `${linkedChoice.to.slice(0, linkedIndex + linkedMarker.length)}${encodeURIComponent(menuContextualMenuId(linkedChoice.menuId, surface.context))}`
-          : linkedChoice?.to || ''
-      const linkedRouteMatches = Boolean(
-        menuIndexPath.value &&
-        linkedSurfacePath.startsWith(`${menuIndexPath.value}/`)
-      )
-
       return {
         value: surface.context,
         label: surface.label,
         to: hasLocalOrderType
           ? contextualMenuPath(
               menuId.value,
-              kitchenSlug.value,
               surface.context,
-              menuRouteMode.value
+              menuRouteScope.value
             )
-          : linkedRouteMatches ? linkedSurfacePath : '',
+          : linkedChoice?.to || '',
         active: contextProfile.value.surface === surface.surface,
       }
     }).filter((surface) => Boolean(surface.to))
@@ -312,7 +278,7 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     localChoiceOptions,
     menuContext,
     menuId,
-    menuRouteMode,
+    menuRouteScope,
     menuStorageScope,
     orderChannel,
     orderTypeConfigs,

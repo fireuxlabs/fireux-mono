@@ -18,11 +18,6 @@ export type MenuContextProfile = {
   locked: boolean
 }
 
-export type MenuRouteTarget = {
-  menuId: string
-  context: MenuRouteContext
-}
-
 const text = (value: unknown) => String(value ?? '').trim()
 const contextSet = new Set<string>(MenuRouteContexts)
 
@@ -140,15 +135,6 @@ export function menuOrderChannelForContext(
   return 'menu'
 }
 
-export const menuContextualMenuId = (
-  menuId: unknown,
-  context: MenuRouteContext
-) => {
-  const id = text(menuId)
-
-  return !id || context === 'generic' ? id : `${id}.${context}`
-}
-
 export function menuChoiceContextForOrderType(
   type: KitchenOrderType
 ): MenuRouteContext {
@@ -160,24 +146,4 @@ export function menuChoiceContextForOrderType(
   if (type === 'room_service') return 'room_service'
 
   return 'generic'
-}
-
-export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {
-  const rawMenuId = text(value)
-  const [contextCandidate, ...menuParts] = rawMenuId
-    .split('.')
-    .reverse()
-  const hasContextSuffix = contextSet.has(text(contextCandidate)) && menuParts.length
-
-  if (!hasContextSuffix) {
-    return {
-      menuId: rawMenuId,
-      context: 'generic',
-    }
-  }
-
-  return {
-    menuId: menuParts.reverse().join('.'),
-    context: normalizeMenuRouteContext(contextCandidate),
-  }
 }

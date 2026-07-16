@@ -11,7 +11,10 @@ import {
 } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  normalizeFireuxAppScopeState,
+  resolveFireuxAppScopeStateForRole,
+} from 'fireux-core/runtime/models/core/meta.model'
 import {
   AppUserStorage,
   resolveAppUserConsoleTargetField,
@@ -63,9 +66,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
-
-const resolveAppScopeState = (role: unknown) =>
-  role === 'tenant' ? 'tenant_app' as const : 'parent_app' as const
 
 function readAppScope(rootData: Record<string, unknown>) {
   const appScope = record(rootData.app_scope)
@@ -178,6 +178,13 @@ export function useConsoleCreate() {
       }
     }
 
+    const appScopeState = resolveFireuxAppScopeStateForRole(role)
+    if (!appScopeState) {
+      throw new Error(
+        `[console:${options.type}] App role "${normalizeId(role)}" cannot own an app-scoped console target`
+      )
+    }
+
     if (existingRootData) {
       const existingScope = readAppScope(existingRootData)
       const belongsToAnotherApp =
@@ -285,7 +292,6 @@ export function useConsoleCreate() {
     if (rootSnap.exists()) {
       const rootData = rootSnap.data() ?? {}
       const currentScope = readAppScope(rootData)
-      const appScopeState = resolveAppScopeState(role)
       const appScopeAppId = currentAppId
 
       if (

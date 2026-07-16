@@ -131,25 +131,16 @@
           </UCollapsible>
         </div>
 
-        <UCollapsible :default-open="true">
-          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-            Confirm dishes
-          </UButton>
-
-          <template #content>
-            <div class="mt-3">
-              <ConsoleKitchenOperationsMenusProcessConfirm
-                :source="source"
-                :result="result"
-                :app-id="activeKitchenAppId"
-                :kitchen-id="kitchenId"
-                :menu-id="menuId"
-                :auth-token="authToken"
-                :blocked="!canWrite || Boolean(pendingMode)"
-              />
-            </div>
-          </template>
-        </UCollapsible>
+        <ConsoleKitchenOperationsMenusProcessConfirmation
+          :source="source"
+          :result="result"
+          :app-id="activeKitchenAppId"
+          :kitchen-id="kitchenId"
+          :menu-id="menuId"
+          :auth-token="authToken"
+          :flags="flags"
+          :blocked="!canWrite || Boolean(pendingMode)"
+        />
       </div>
 
       <DevJson

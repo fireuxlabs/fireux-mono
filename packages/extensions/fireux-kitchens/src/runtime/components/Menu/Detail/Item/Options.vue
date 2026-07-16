@@ -4,19 +4,32 @@
     class="menu-item__choices"
     :aria-label="label"
   >
-    <button
-      v-for="option in options"
-      :key="option.id"
-      type="button"
-      :class="[
-        'menu-item__choice',
-        selectedIds.includes(option.id) && 'menu-item__choice--selected',
-      ]"
-      @click="$emit('toggle', option.id)"
-    >
-      <span>{{ prefix }}{{ option.label }}</span>
-      <small v-if="option.priceLabel">{{ option.priceLabel }}</small>
-    </button>
+    <template v-if="interactive">
+      <button
+        v-for="option in options"
+        :key="option.id"
+        type="button"
+        :class="[
+          'menu-item__choice',
+          selectedIds.includes(option.id) && 'menu-item__choice--selected',
+        ]"
+        @click="$emit('toggle', option.id)"
+      >
+        <span>{{ prefix }}{{ option.label }}</span>
+        <small v-if="option.priceLabel">{{ option.priceLabel }}</small>
+      </button>
+    </template>
+
+    <template v-else>
+      <span
+        v-for="option in options"
+        :key="option.id"
+        class="menu-item__choice menu-item__choice--read-only"
+      >
+        <span>{{ prefix }}{{ option.label }}</span>
+        <small v-if="option.priceLabel">{{ option.priceLabel }}</small>
+      </span>
+    </template>
   </div>
 </template>
 
@@ -32,11 +45,13 @@ withDefaults(
     options?: Array<MenuFoodAddOn | MenuFoodPriceOption>
     selectedIds?: string[]
     prefix?: string
+    interactive?: boolean
   }>(),
   {
     options: () => [],
     selectedIds: () => [],
     prefix: '',
+    interactive: true,
   }
 )
 
@@ -77,5 +92,12 @@ defineEmits<{
 .menu-item__choice--selected {
   border-color: var(--menu-primary);
   background: color-mix(in srgb, var(--menu-primary) 14%, transparent);
+}
+
+.menu-item__choice--read-only {
+  border-color: color-mix(in srgb, var(--menu-text) 18%, transparent);
+  background: color-mix(in srgb, var(--menu-text) 5%, transparent);
+  color: var(--menu-text);
+  cursor: default;
 }
 </style>

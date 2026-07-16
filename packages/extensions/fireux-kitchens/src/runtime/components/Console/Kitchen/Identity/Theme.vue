@@ -57,6 +57,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
@@ -72,6 +73,12 @@ import {
   readKitchenIdentity,
   readKitchenMenuStyle,
 } from '../../../../utils/kitchen-spine'
+import {
+  directoryMenuRouteScope,
+  menuRouteIndexPath,
+  menuRoutePath,
+  rootMenuRouteScope,
+} from '../../../../utils/kitchen-menu-route'
 
 const {
   selectedKitchen,
@@ -83,6 +90,7 @@ const {
 const { updateKitchen } = useKitchenUpdate({ collectionPath: rootCollection })
 const { menus } = useKitchenConsoleMenus()
 const toast = useToastify()
+const fireux = useFireUXConfig()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -137,7 +145,14 @@ const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
 const livePreviewMenuId = computed(() =>
   source.value === 'live' ? previewMenuId.value : ''
 )
-const previewMenuDetail = useMenu(livePreviewMenuId, { kitchenSlug })
+const previewMenuRouteScope = computed(() =>
+  fireux.isTenant
+    ? rootMenuRouteScope()
+    : directoryMenuRouteScope(kitchenSlug.value)
+)
+const previewMenuDetail = useMenu(livePreviewMenuId, {
+  routeScope: previewMenuRouteScope,
+})
 const previewSections = computed(() => {
   // Console preview dogfoods the menu manifest, then crops to the first useful section/item.
   const sections = previewMenuDetail.manifest.value?.content.sections ?? []
@@ -158,9 +173,11 @@ const menuUrl = computed(() => {
   if (source.value !== 'live' || !kitchenSlug.value) return ''
 
   const menuId = previewMenuId.value
-  const menuIndexUrl = `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
+  const routeScope = directoryMenuRouteScope(kitchenSlug.value)
 
-  return menuId ? `${menuIndexUrl}/${encodeURIComponent(menuId)}` : menuIndexUrl
+  return menuId
+    ? menuRoutePath({ scope: routeScope, menuId })
+    : menuRouteIndexPath(routeScope)
 })
 const pageStyle = computed(() => readKitchenMenuStyle(kitchen.value) ?? {})
 const storedPageStyle = computed(() => normalizePageStyle(pageStyle.value))

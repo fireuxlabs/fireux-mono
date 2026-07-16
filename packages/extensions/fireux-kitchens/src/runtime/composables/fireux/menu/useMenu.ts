@@ -6,22 +6,26 @@ import type {
   MenuManifest,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import type { MenuRouteScope } from '../../../utils/kitchen-menu-route'
 import { normalizeMenuRouteContext } from '../../../utils/menu-context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
 
 type UseMenuOptions = {
-  kitchenSlug?: MaybeRefOrGetter<string | null | undefined>
+  routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
 }
 
 export function useMenu(
   menuId: MaybeRefOrGetter<string>,
-  options: UseMenuOptions = {}
+  options: UseMenuOptions
 ) {
   const id = computed(() => String(toValue(menuId) || '').trim())
+  const routeScope = computed(() => toValue(options.routeScope))
   const kitchenSlug = computed(() =>
-    String(toValue(options.kitchenSlug) || '').trim()
+    routeScope.value.kind === 'directory'
+      ? String(routeScope.value.kitchenSlug || '').trim()
+      : ''
   )
   const menuContext = computed(() =>
     normalizeMenuRouteContext(toValue(options.menuContext))
@@ -66,6 +70,7 @@ export function useMenu(
 
   return {
     id,
+    routeScope,
     kitchenSlug,
     menuContext,
     menu: state.data,

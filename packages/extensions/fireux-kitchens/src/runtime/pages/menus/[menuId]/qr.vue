@@ -39,6 +39,10 @@
 import { createError } from '#imports'
 import { toDataURL } from 'qrcode'
 import type { MenuDetailPayload } from '../../../models/kitchen/menu/menu-detail.model'
+import {
+  menuRoutePath,
+  rootMenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 
 type WaitingMenu = {
   id: string
@@ -92,7 +96,12 @@ const titleCase = (value: string) =>
 const qrCentreLabel = computed(() => titleCase(menu.value.name || menuId))
 const menuUrl = computed(() => {
   const origin = import.meta.client ? window.location.origin : ''
-  return `${origin}/menus/${encodeURIComponent(menuId)}`
+  const path = menuRoutePath({
+    scope: rootMenuRouteScope(),
+    menuId,
+  })
+
+  return `${origin}${path}`
 })
 
 onMounted(async () => {

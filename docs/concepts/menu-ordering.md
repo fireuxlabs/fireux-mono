@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-15
-Ref: 624c7b638
+Ref: de5f53b09
 Role: map, not canon
 
 Purpose:
@@ -25,6 +25,11 @@ Core split:
 
 Public route hierarchy:
 - `/menus/<menuId>` is Browse. It renders the published menu and creates no Order.
+- Ordering contexts suffix the menu identity, not its collection base:
+  `/menus/<menuId>.<context>` or
+  `/kitchens/<kitchenSlug>/menus/<menuId>.<context>`.
+- Never generate `/menu.delivery`, root `/<menuId>`, or count-dependent route
+  grammar.
 - Home options is a UI grouping, not a surface, route context, or `KitchenOrder.order_type`.
 - `/menus/<menuId>.delivery` and `.collection` are separate direct surfaces.
 - A menu may enable `delivery`, `collection`, or both inside the Home options grouping.
@@ -33,6 +38,10 @@ Public route hierarchy:
 - `eat_in` and `takeaway` are choices inside Kiosk, not separate public surfaces or route suffixes.
 - The selected kiosk choice remains on the Order as the preparation, handoff, and future tax-treatment flag.
 - A surface groups or preselects customer intent; the resulting canonical order type is what reaches kitchen intake.
+- Order creation receives only the route menu identity and, for a directory
+  projection, its Kitchen slug. Checkout return URLs are derived server-side
+  from the resolved Menu target plus the stored Order type; clients do not send
+  a route-mode hint.
 
 Current display rule:
 - Do not store a public view marker on menus.
@@ -156,6 +165,10 @@ Public order funnel spine:
   `apps/<appId>/kitchens/<kitchenId>/orders`.
 - Initial status is resolved once from payment plus the shared intake policy:
   `pending_payment`, otherwise `pending_acceptance` or `accepted`.
+- Clients submit option identity, not trusted option prices. Order creation
+  resolves every selected variant and add-on again from the published
+  Kitchen-owned MenuItem, charges the variant's absolute price plus add-on
+  deltas, and rejects missing or unknown required choices.
 - Do not create a second client-side generic `Order` record from the public
   funnel unless the generic order engine and kitchen order console are
   deliberately reconciled first.
