@@ -3,6 +3,7 @@
     class="menu-browse-unavailable"
     data-menu-state="unavailable"
     aria-labelledby="menu-browse-unavailable-title"
+    role="alert"
   >
     <p class="menu-browse-unavailable__status">
       Error {{ failure.statusCode }}
@@ -51,7 +52,7 @@ defineProps<{
 }
 
 .menu-browse-unavailable__status {
-  color: var(--menu-secondary);
+  color: var(--menu-muted);
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.16em;

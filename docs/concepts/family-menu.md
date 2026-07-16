@@ -120,6 +120,10 @@ Presentation/data boundary:
   Kitchen name and text-only fallback. Missing or failed media is not a broken
   Menu state, and stored `kitchenImageShade` keeps generic Kitchen marks legible
   against light and dark Browse themes.
+- Document Browse uses the package-owned `Menu/Detail/Document/Viewer.vue` and
+  `PdfViewer.client.vue`. Stored objects are read through the same-origin public
+  Menu file endpoint, and photo, PDF, and generic document branches always keep
+  an explicit open-original fallback.
 - Browse surfaces use a short allergy/intolerance advisory near the top.
   Ordering funnels may use a dedicated advisory popup. Allergy records and
   structured allergen metadata are not part of the current MenuItem contract.
@@ -220,6 +224,5 @@ Ordering note:
 
 Open questions:
 - Exact migration behavior from root quick menu to kitchen menu needs a clear rule.
-- Test a real `doc`/photo public menu after the next sample is seeded to verify the document renderer branch end to end.
 - Decide the canonical/SEO doorway when the same Kitchen menu has global,
   directory, and tenant projections.

@@ -1,5 +1,8 @@
 <template>
-  <header class="menu-browse-identity" data-menu-identity="kitchen-menu">
+  <header
+    class="menu-browse-identity"
+    :data-menu-identity="identityKind"
+  >
     <div
       v-if="activeAsset"
       class="menu-browse-identity__asset"
@@ -46,6 +49,7 @@ type IdentityAsset = {
 }
 
 const props = withDefaults(defineProps<{
+  identityKind?: 'menu' | 'kitchen-menu'
   kitchenName?: string
   menuName: string
   description?: string
@@ -55,6 +59,7 @@ const props = withDefaults(defineProps<{
   logoImageUrl?: string
   wordmarkImageUrl?: string
 }>(), {
+  identityKind: 'kitchen-menu',
   kitchenName: '',
   description: '',
   currencyCode: '',
@@ -182,7 +187,7 @@ function useNextAsset() {
 .menu-browse-identity__kitchen,
 .menu-browse-identity__currency {
   margin: 0;
-  color: var(--menu-secondary);
+  color: var(--menu-muted);
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -216,7 +221,6 @@ function useNextAsset() {
 
 .menu-browse-identity__currency {
   margin-top: 1rem;
-  color: var(--menu-dimmed);
   letter-spacing: 0.06em;
 }
 

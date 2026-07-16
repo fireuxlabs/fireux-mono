@@ -1,14 +1,18 @@
 <template>
   <article
     class="menu-browse-item"
-    :class="{ 'menu-browse-item--with-image': item.imageUrl }"
+    :class="{ 'menu-browse-item--with-image': itemImageUrl }"
   >
     <img
-      v-if="item.imageUrl"
-      :src="item.imageUrl"
+      v-if="itemImageUrl"
+      :src="itemImageUrl"
       alt=""
       class="menu-browse-item__image"
+      width="80"
+      height="80"
       loading="lazy"
+      decoding="async"
+      @error="hideImage"
     >
 
     <div class="menu-browse-item__copy">
@@ -24,8 +28,8 @@
       </p>
 
       <div v-if="item.priceOptions.length" class="menu-browse-item__options">
-        <h4>Choose one</h4>
-        <ul>
+        <p class="menu-browse-item__options-label">Available options</p>
+        <ul aria-label="Available options">
           <li v-for="option in item.priceOptions" :key="option.id">
             <span>{{ option.label }}</span>
             <span>{{ formatPrice(option.price) }}</span>
@@ -34,8 +38,8 @@
       </div>
 
       <div v-if="item.addOns.length" class="menu-browse-item__options">
-        <h4>Optional extras</h4>
-        <ul>
+        <p class="menu-browse-item__options-label">Optional extras</p>
+        <ul aria-label="Optional extras">
           <li v-for="addOn in item.addOns" :key="addOn.id">
             <span>{{ addOn.label }}</span>
             <span>{{ addOnPrice(addOn.price) }}</span>
@@ -47,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 
@@ -56,9 +60,28 @@ const props = defineProps<{
   item: MenuManifestItem
 }>()
 
+const failedImageUrl = ref('')
+const itemImageUrl = computed(() => {
+  const url = String(props.item.imageUrl || '').trim()
+
+  return url && url !== failedImageUrl.value ? url : ''
+})
 const itemPrice = computed(() =>
-  props.item.priceOptions.length ? '' : formatPrice(props.item.price)
+  props.item.priceOptions.length || props.item.price <= 0
+    ? ''
+    : formatPrice(props.item.price)
 )
+
+watch(
+  () => props.item.imageUrl,
+  () => {
+    failedImageUrl.value = ''
+  }
+)
+
+function hideImage() {
+  failedImageUrl.value = itemImageUrl.value
+}
 
 function formatPrice(price: number) {
   return formatCurrencyAmount(price, {
@@ -68,7 +91,7 @@ function formatPrice(price: number) {
 }
 
 function addOnPrice(price: number) {
-  return price > 0 ? `+ ${formatPrice(price)}` : 'Included'
+  return price > 0 ? `+ ${formatPrice(price)}` : 'No extra charge'
 }
 </script>
 
@@ -86,6 +109,7 @@ function addOnPrice(price: number) {
 }
 
 .menu-browse-item__image {
+  display: block;
   width: 5rem;
   height: 5rem;
   border-radius: 0.75rem;
@@ -98,24 +122,28 @@ function addOnPrice(price: number) {
 
 .menu-browse-item__heading,
 .menu-browse-item__options li {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
   gap: 1rem;
+  align-items: baseline;
 }
 
 .menu-browse-item h3 {
+  min-width: 0;
   margin: 0;
   color: var(--menu-title);
   font-family: var(--menu-title-font);
   font-size: 1.05rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .menu-browse-item__price {
-  flex: 0 0 auto;
   color: var(--menu-text);
   font-size: 0.9rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .menu-browse-item__description {
@@ -123,6 +151,7 @@ function addOnPrice(price: number) {
   color: var(--menu-muted);
   font-size: 0.9rem;
   line-height: 1.55;
+  overflow-wrap: anywhere;
   white-space: pre-line;
 }
 
@@ -130,9 +159,9 @@ function addOnPrice(price: number) {
   margin-top: 0.9rem;
 }
 
-.menu-browse-item__options h4 {
+.menu-browse-item__options-label {
   margin: 0 0 0.35rem;
-  color: var(--menu-dimmed);
+  color: var(--menu-muted);
   font-size: 0.72rem;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -152,10 +181,16 @@ function addOnPrice(price: number) {
   font-size: 0.82rem;
 }
 
+.menu-browse-item__options li span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .menu-browse-item__options li span:last-child {
-  flex: 0 0 auto;
   color: var(--menu-text);
   font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 @media (max-width: 520px) {

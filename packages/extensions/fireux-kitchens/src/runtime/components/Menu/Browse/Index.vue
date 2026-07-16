@@ -24,6 +24,7 @@
       <MenuBrowseIdentity
         :currency-code="currencyCode"
         :description="menuDescription"
+        :identity-kind="documentMenu ? 'menu' : 'kitchen-menu'"
         :image-shade="kitchenImageShade"
         :image-url="kitchenImageUrl"
         :kitchen-name="kitchenName"
@@ -48,7 +49,7 @@
           :file-url="documentUrl"
         />
 
-        <p v-else class="menu-browse__state">
+        <p v-else class="menu-browse__state" role="alert">
           Menu document unavailable.
         </p>
       </template>
@@ -82,13 +83,13 @@
           </section>
         </div>
 
-        <p v-else class="menu-browse__state">
+        <p v-else class="menu-browse__state" role="status">
           No menu items are published yet.
         </p>
       </div>
     </template>
 
-    <p v-else class="menu-browse__state">
+    <p v-else class="menu-browse__state" role="alert">
       Menu unavailable.
     </p>
   </article>
@@ -182,8 +183,7 @@ const browseSections = computed<BrowseSection[]>(() =>
 )
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
-  if (file?.url) return file.url
-  if (!file?.storage_path || !menuId.value) return ''
+  if (!file?.storage_path || !menuId.value) return file?.url || ''
 
   const query = new URLSearchParams()
   if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
@@ -297,7 +297,7 @@ function browseSectionLinks(sections: MenuManifestSection[]) {
 
 .menu-browse__section h2 {
   margin: 0;
-  color: var(--menu-secondary);
+  color: var(--menu-muted);
   font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.16em;

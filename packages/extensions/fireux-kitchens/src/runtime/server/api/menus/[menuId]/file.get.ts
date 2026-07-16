@@ -41,7 +41,11 @@ export default defineEventHandler(async (event) => {
   const objectPath = readRecordString(file, 'storage_path')
   const contentType =
     readRecordString(file, 'type') || 'application/octet-stream'
-  const fileName = readRecordString(file, 'name') || `${menuId}.pdf`
+  const fileName = readRecordString(file, 'name') || menuId
+  const safeFileName = fileName
+    .replace(/[\r\n"]/g, '')
+    .trim()
+    .replace(/[^\x20-\x7E]/g, '_') || menuId
 
   if (!objectPath) {
     throw createError({
@@ -59,7 +63,7 @@ export default defineEventHandler(async (event) => {
 
   setResponseHeaders(event, {
     'Content-Type': contentType,
-    'Content-Disposition': `inline; filename="${fileName.replace(/"/g, '')}"`,
+    'Content-Disposition': `inline; filename="${safeFileName}"`,
     'Cache-Control': 'public, max-age=300',
   })
 

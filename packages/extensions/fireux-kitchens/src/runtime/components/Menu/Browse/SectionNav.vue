@@ -139,6 +139,11 @@ function requestTracking() {
   scrollFrame = window.requestAnimationFrame(trackActiveSection)
 }
 
+function handleResize() {
+  requestTracking()
+  nextTick(() => revealLink(activeAnchor.value))
+}
+
 function resetNavigation() {
   if (!import.meta.client) return
 
@@ -157,14 +162,14 @@ function resetNavigation() {
 onMounted(() => {
   resetNavigation()
   window.addEventListener('scroll', requestTracking, { passive: true })
-  window.addEventListener('resize', requestTracking)
+  window.addEventListener('resize', handleResize)
   window.addEventListener('hashchange', syncHash)
 })
 
 onBeforeUnmount(() => {
   if (scrollFrame) window.cancelAnimationFrame(scrollFrame)
   window.removeEventListener('scroll', requestTracking)
-  window.removeEventListener('resize', requestTracking)
+  window.removeEventListener('resize', handleResize)
   window.removeEventListener('hashchange', syncHash)
 })
 

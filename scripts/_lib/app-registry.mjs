@@ -22,6 +22,28 @@ const menuBrowseContract = (route, options = {}) => ({
   excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
 })
 
+const menuDocumentContract = (route, fileKind, fileRoute) => ({
+  ...menuBrowseContract(route),
+  includes: [
+    MENU_BROWSE_MARKER,
+    'data-menu-identity="menu"',
+    `data-menu-document-kind="${fileKind}"`,
+    fileRoute,
+    'Open original',
+  ],
+  excludes: [
+    MENU_UNAVAILABLE_MARKER,
+    MENU_JSON_MARKER,
+    'firebasestorage.googleapis.com',
+  ],
+})
+
+const menuDocumentFileContract = (route, contentType) => ({
+  route,
+  status: 200,
+  contentType,
+})
+
 const missingMenuBrowseContract = (route, excludes = []) => ({
   route,
   status: 404,
@@ -126,6 +148,20 @@ export const APP_REGISTRY = {
       '/console/supplier',
     ],
     httpContracts: [
+      menuDocumentContract(
+        '/menus/bergwelt-grindelwald-pdf',
+        'pdf',
+        '/api/menus/bergwelt-grindelwald-pdf/file'
+      ),
+      menuDocumentFileContract(
+        '/api/menus/bergwelt-grindelwald-pdf/file',
+        'application/pdf'
+      ),
+      menuBrowseContract('/menus/bergwelt-grindelwald-main'),
+      menuBrowseContract('/menus/la-tapberne-main'),
+      menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main'),
+      menuBrowseContract('/menus/luna-piccante-main-menu'),
+      menuBrowseContract('/menus/pizza-menu'),
       menuBrowseContract('/menus/pizza-snacks-drinks'),
       missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
       missingMenuBrowseContract('/menus/__fireux_route_contract_invalid__', [

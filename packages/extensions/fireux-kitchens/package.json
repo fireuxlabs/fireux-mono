@@ -28,7 +28,8 @@
     "fireux-core": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "fireux-translation": "workspace:*",
-    "fireux-suppliers": "workspace:*"
+    "fireux-suppliers": "workspace:*",
+    "pdfjs-dist": "^5.4.296"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

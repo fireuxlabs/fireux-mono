@@ -41,7 +41,6 @@
     "fireux-products": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "nuxt": "4.4.6",
-    "pdfjs-dist": "^5.4.296",
     "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",
     "stripe": "^22.1.1",

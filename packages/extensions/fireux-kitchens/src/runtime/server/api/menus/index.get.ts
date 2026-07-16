@@ -28,6 +28,9 @@ const publicMenuIndexItem = (
         kitchenMenuId: id,
       })
     : menuSourceFromData(data)
+  const hasSource = Boolean(
+    source.app_id && source.kitchen_id && source.menu_id
+  )
 
   return {
     id,
@@ -35,7 +38,7 @@ const publicMenuIndexItem = (
     name: readRecordString(data, 'name') || id,
     description: readRecordString(data, 'description'),
     status,
-    source,
+    ...(hasSource ? { source } : {}),
   }
 }
 
