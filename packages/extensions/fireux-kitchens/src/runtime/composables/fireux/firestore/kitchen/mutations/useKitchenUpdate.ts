@@ -4,11 +4,6 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed, unref, type Ref } from 'vue'
 import { KitchenStorage, type Kitchen, type KitchenUpdateInput } from '../../../../../models/kitchen.model'
-import { MenuStorage } from '../../../../../models/kitchen/menu/menu.model'
-import {
-  menuRootEntryPatchFromKitchen,
-  readMenuRootEntryDocs,
-} from '../../menu/utils/root-entry'
 
 type MaybeRef<T> = T | Ref<T>
 type UseKitchenUpdateOptions = {
@@ -275,32 +270,6 @@ export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
       prunedPatch
     )
 
-    await updateMenuRootEntries(id, prunedPatch)
-  }
-
-  const updateMenuRootEntries = async (
-    kitchenId: string,
-    patch: Partial<Kitchen>
-  ) => {
-    if (collectionPath.value !== KitchenStorage.rootCollection) return
-
-    const menuPatch = menuRootEntryPatchFromKitchen(patch as Record<string, unknown>)
-    if (!Object.keys(menuPatch).length) return
-
-    const rootMenuDocs = await readMenuRootEntryDocs({
-      db,
-      kitchenId,
-    })
-
-    await Promise.all(
-      rootMenuDocs.map((docSnap) =>
-        updateDocument<Record<string, unknown>>(
-          MenuStorage.rootCollection,
-          docSnap.id,
-          menuPatch
-        )
-      )
-    )
   }
 
   return { updateKitchen }

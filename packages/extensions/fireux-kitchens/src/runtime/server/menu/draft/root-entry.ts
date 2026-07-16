@@ -138,30 +138,19 @@ export async function ensureKitchenMenuRootEntry(
   const existingRootId = await readExistingRootMenuId(db, input)
   const rootId = existingRootId ||
     await availableRootMenuId(db, input, identity.slug)
-  const path = `/menus/${encodeURIComponent(rootId)}`
   const rootRef = db.collection(MenuStorage.rootCollection).doc(rootId)
   const rootSnap = await rootRef.get()
   const rootData = rootSnap.data() || {}
-  const sourcePath =
-    `${input.kitchenPath}/${MenuStorage.scopeCollection}/${input.menuId}`
 
   await rootRef.set({
     id: rootId,
-    slug: rootId,
-    path,
-    qr_path: `${path}/qr`,
-    source_kind: 'kitchen-menu',
-    source_path: sourcePath,
+    kind: 'menu',
     status: readRecordString(input.menuData, 'status') || 'draft',
     name: readRecordString(input.menuData, 'name') || input.menuId,
     description: readRecordString(input.menuData, 'description'),
-    ...(identity.imageUrl ? { image_url: identity.imageUrl } : {}),
-    ...(identity.imageShade ? { image_shade: identity.imageShade } : {}),
     source: {
       app_id: input.appId,
       kitchen_id: input.kitchenId,
-      kitchen_slug: identity.slug,
-      kitchen_name: identity.name,
       menu_id: input.menuId,
     },
     created: record(rootData.created).at ? rootData.created : input.stamp,
@@ -170,6 +159,6 @@ export async function ensureKitchenMenuRootEntry(
 
   return {
     id: rootId,
-    path,
+    path: `/menus/${encodeURIComponent(rootId)}`,
   }
 }

@@ -32,8 +32,6 @@ type MenuRootEntryFromSourceInput = {
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const cleanPatchText = (value: unknown) =>
-  typeof value === 'string' || typeof value === 'number' ? clean(value) : undefined
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -46,13 +44,11 @@ const kebabIdentifier = (value: unknown) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-function readPatchValue(source: Record<string, unknown>, dotted: string) {
-  if (hasOwn(source, dotted)) return source[dotted]
+const scopedMenuSource = (collectionPath: string, menuId: string) => {
+  const match = clean(collectionPath).match(/^apps\/([^/]+)\/kitchens\/([^/]+)\/menus$/)
+  if (!match) throw new Error(`Invalid scoped menu collection path: ${collectionPath}`)
 
-  return dotted.split('.').reduce<unknown>((value, key) => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
-    return (value as Record<string, unknown>)[key]
-  }, source)
+  return { app_id: match[1], kitchen_id: match[2], menu_id: clean(menuId) }
 }
 
 export const menuRootEntryPatch = (data: Record<string, unknown>) => {
@@ -60,8 +56,6 @@ export const menuRootEntryPatch = (data: Record<string, unknown>) => {
   if (hasOwn(data, 'name')) patch.name = clean(data.name)
   if (hasOwn(data, 'description')) patch.description = clean(data.description)
   if (hasOwn(data, 'status')) patch.status = clean(data.status)
-  if (hasOwn(data, 'ordering')) patch.ordering = data.ordering
-  if (hasOwn(data, 'kiosk_skin_id')) patch.kiosk_skin_id = clean(data.kiosk_skin_id)
 
   return patch
 }
@@ -70,16 +64,14 @@ export const menuRootEntryPatchFromSourceMenu = (
   input: MenuRootEntryFromSourceInput
 ) => ({
   ...menuRootEntryPatch(input.data),
-  'source.menu_id': clean(input.menuId),
-  source_path: `${clean(input.scopedMenuCollectionPath)}/${clean(input.menuId)}`,
+  source: scopedMenuSource(input.scopedMenuCollectionPath, input.menuId),
 })
 
 export const menuRootEntryMergePatchFromSourceMenu = (
-  input: MenuRootEntryFromSourceInput & { source?: unknown }
+  input: MenuRootEntryFromSourceInput
 ) => ({
   ...menuRootEntryPatch(input.data),
-  source: { ...record(input.source), menu_id: clean(input.menuId) },
-  source_path: `${clean(input.scopedMenuCollectionPath)}/${clean(input.menuId)}`,
+  source: scopedMenuSource(input.scopedMenuCollectionPath, input.menuId),
 })
 
 export const menuRootEntrySourceIsCurrent = (
@@ -90,10 +82,11 @@ export const menuRootEntrySourceIsCurrent = (
   }
 ) => {
   const source = record(data.source)
-  const menuId = clean(input.menuId)
-  const sourcePath = `${clean(input.scopedMenuCollectionPath)}/${menuId}`
+  const expected = scopedMenuSource(input.scopedMenuCollectionPath, input.menuId)
 
-  return clean(source.menu_id) === menuId && clean(data.source_path) === sourcePath
+  return clean(source.app_id) === expected.app_id &&
+    clean(source.kitchen_id) === expected.kitchen_id &&
+    clean(source.menu_id) === expected.menu_id
 }
 
 export const menuRootEntryId = (menuId: unknown) => kebabIdentifier(menuId)
@@ -102,35 +95,6 @@ export const menuRootEntryIdentifierPatch = (rootMenuId: string) => ({
   id: rootMenuId,
 })
 
-export const menuRootEntryPatchFromKitchen = (
-  data: Record<string, unknown>
-) => {
-  const patch: Record<string, unknown> = {}
-  const displayName =
-    readPatchValue(data, 'identity.display_name') ??
-    readPatchValue(data, 'display_name') ??
-    readPatchValue(data, 'name')
-  const slug = readPatchValue(data, 'slug')
-  const imageUrl =
-    readPatchValue(data, 'identity.image_url') ??
-    readPatchValue(data, 'display_image_url') ??
-    readPatchValue(data, 'image_url')
-  const imageShade =
-    readPatchValue(data, 'identity.image_shade') ??
-    readPatchValue(data, 'image_shade')
-
-  const displayNameText = cleanPatchText(displayName)
-  const slugText = cleanPatchText(slug)
-  const imageUrlText = cleanPatchText(imageUrl)
-  const imageShadeText = cleanPatchText(imageShade)
-
-  if (displayNameText !== undefined) patch['source.kitchen_name'] = displayNameText
-  if (slugText !== undefined) patch['source.kitchen_slug'] = slugText
-  if (imageUrlText !== undefined) patch.image_url = imageUrlText
-  if (imageShadeText !== undefined) patch.image_shade = imageShadeText
-
-  return patch
-}
 
 export async function readMenuRootEntryDocs(
   input: ReadMenuRootEntryDocsInput

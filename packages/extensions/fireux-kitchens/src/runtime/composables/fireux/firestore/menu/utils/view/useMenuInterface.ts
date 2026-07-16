@@ -118,7 +118,7 @@ export function useMenuInterface() {
       itemCount: 0,
       isActiveNow: true,
       windowLabel: '',
-      sortOrder: Number(menu.sort_order ?? 0),
+      sortOrder: 0,
     }
   }
 

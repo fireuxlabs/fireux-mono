@@ -1,5 +1,5 @@
 import { DishStorage } from '../../../models/kitchen/dish.model'
-import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
+import { KitchenMenuStorage as MenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model'
 import {
   MenuItemModel,
   normalizeMenuItemAddOns,

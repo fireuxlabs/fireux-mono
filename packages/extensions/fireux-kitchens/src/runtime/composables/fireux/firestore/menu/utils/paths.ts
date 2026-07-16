@@ -4,7 +4,7 @@ import {
 } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { MenuItemStorage } from '../../../../../models/kitchen/menu/menu-item.model'
 import { MenuSectionStorage } from '../../../../../models/kitchen/menu/menu-section.model'
-import { MenuStorage } from '../../../../../models/kitchen/menu/menu.model'
+import { KitchenMenuStorage as MenuStorage } from '../../../../../models/kitchen/menu/kitchen-menu.model'
 
 type MenuPathOptions = {
   kitchenCollectionPath?: string | null | undefined

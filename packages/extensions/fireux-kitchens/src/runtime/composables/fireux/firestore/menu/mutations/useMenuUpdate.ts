@@ -37,7 +37,12 @@ const rootEntryDerivedKeys = [
   'qr_path',
   'url',
   'qr_url',
-  'source.menu_id',
+  'source_path',
+  'source_kind',
+  'image_url',
+  'image_shade',
+  'ordering',
+  'kiosk_skin_id',
   'views',
 ]
 const withoutId = <T extends Record<string, unknown>>(data: T, extraKeys: string[] = []) => {
@@ -308,7 +313,6 @@ export function useMenuUpdate(
           scopedMenuCollectionPath: path,
           menuId: nextId,
           data: rootMenuData,
-          source: move.data.source,
         }),
         updated,
       }, { merge: true })

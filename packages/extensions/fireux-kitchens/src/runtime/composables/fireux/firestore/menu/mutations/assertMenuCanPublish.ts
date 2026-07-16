@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore'
 import type { MenuItem } from '../../../../../models/kitchen/menu/menu-item.model'
 import type { MenuSection } from '../../../../../models/kitchen/menu/menu-section.model'
-import type { Menu } from '../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../../../models/kitchen/menu/kitchen-menu.model'
 import { menuItemsPath, menuSectionsPath } from '../utils/paths'
 
 const clean = (value: unknown) => String(value ?? '').trim()

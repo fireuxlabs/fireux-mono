@@ -3,11 +3,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
-import {
-  menuRoutePath,
-  menuRouteQrPath,
-  rootMenuRouteScope,
-} from '../../../utils/kitchen-menu-route.ts'
+import { KitchenMenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model.ts'
 import {
   resolveTenantPublicMenuScope,
   resolveDirectoryPublicMenuScope,
@@ -24,14 +20,6 @@ const publicMenuIndexItem = (
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
 
-  const path = menuRoutePath({
-    scope: rootMenuRouteScope(),
-    menuId: id,
-  })
-  const qrPath = menuRouteQrPath({
-    scope: rootMenuRouteScope(),
-    menuId: id,
-  })
   const source = tenantScope
     ? menuSourceFromData(data, {
         kitchenAppId: tenantScope.appId,
@@ -43,18 +31,11 @@ const publicMenuIndexItem = (
 
   return {
     id,
-    slug: text(data.slug) || id,
+    kind: tenantScope ? 'menu' : readRecordString(data, 'kind') || undefined,
     name: readRecordString(data, 'name') || id,
     description: readRecordString(data, 'description'),
     status,
-    path,
-    qr_path: tenantScope ? qrPath : text(data.qr_path) || qrPath,
-    source_kind:
-      readRecordString(data, 'source_kind') ||
-      (tenantScope ? 'kitchen-menu' : readRecordString(data, 'kind')),
     source,
-    image_url: readRecordString(data, 'image_url'),
-    image_shade: readRecordString(data, 'image_shade'),
   }
 }
 
@@ -74,7 +55,7 @@ export default defineEventHandler(async (event) => {
   const scopedKitchen = tenantScope || directoryScope
 
   const collectionPath = scopedKitchen
-    ? `apps/${scopedKitchen.appId}/kitchens/${scopedKitchen.kitchenId}/${MenuStorage.scopeCollection}`
+    ? `apps/${scopedKitchen.appId}/kitchens/${scopedKitchen.kitchenId}/${KitchenMenuStorage.collection}`
     : MenuStorage.rootCollection
   const snap = await db
     .collection(collectionPath)
