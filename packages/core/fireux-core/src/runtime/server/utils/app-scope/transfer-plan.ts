@@ -1,3 +1,4 @@
+import { AppStorage } from '../../../models/core/app.model'
 import type { FireuxAppScopeState } from '../../../models/core/meta.model'
 
 export type AppScopeRepresentation = 'flat' | 'nested'
@@ -86,8 +87,8 @@ export function buildAppScopeTransferPlan(
     dryRun: true,
     family,
     rootPath: `${rootCollection}/${rootId}`,
-    sourceOverlayPath: `apps/${sourceAppId}/${overlayCollection}/${rootId}`,
-    destinationOverlayPath: `apps/${destinationAppId}/${overlayCollection}/${rootId}`,
+    sourceOverlayPath: `${AppStorage.collection}/${sourceAppId}/${overlayCollection}/${rootId}`,
+    destinationOverlayPath: `${AppStorage.collection}/${destinationAppId}/${overlayCollection}/${rootId}`,
     destinationState: input.destinationState,
     rootPatch: input.representation === 'nested'
       ? { app_scope: ownership }
