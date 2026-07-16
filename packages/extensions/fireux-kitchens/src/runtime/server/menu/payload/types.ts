@@ -1,9 +1,11 @@
 import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import type { KitchenImageShade } from '../../../models/kitchen.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 
 export type MenuPayloadScope = {
   kitchenId?: string
+  kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenSlug?: string

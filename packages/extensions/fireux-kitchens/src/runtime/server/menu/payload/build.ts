@@ -44,6 +44,10 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 const unique = <T extends string>(values: T[]) =>
   values.filter((value, index, source) => source.indexOf(value) === index)
+const kitchenImageShade = (value: unknown) => {
+  const shade = text(value)
+  return shade === 'light' || shade === 'dark' ? shade : undefined
+}
 
 const readMenuSourceKind = (data: Record<string, unknown>): MenuPayloadSourceKind =>
   readRecordString(data, 'source_kind') === 'kitchen-menu' ||
@@ -60,9 +64,9 @@ const menuDataForManifest = (
   const sourceMenu = sourceMenuData(scope)
   if (!Object.keys(sourceMenu).length) return rootMenuData
 
-  const name = sourceMenu.name ?? rootMenuData.name
-  const description = sourceMenu.description ?? rootMenuData.description
-  const status = sourceMenu.status ?? rootMenuData.status
+  const name = rootMenuData.name ?? sourceMenu.name
+  const description = rootMenuData.description ?? sourceMenu.description
+  const status = rootMenuData.status ?? sourceMenu.status
   const ordering = sourceMenu.ordering ?? rootMenuData.ordering
   const kioskSkinId = sourceMenu.kiosk_skin_id ?? rootMenuData.kiosk_skin_id
 
@@ -291,11 +295,12 @@ export async function buildMenuManifestPayload(
   const menuData = menuDataForManifest(data, scope)
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
+  const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
   const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
   if (!currencyCode) {
     throw createError({
-      statusCode: 400,
+      statusCode: 500,
       statusMessage: 'Kitchen currency code is required before publishing menus.',
     })
   }
@@ -310,6 +315,7 @@ export async function buildMenuManifestPayload(
     behaviour: serviceProfile(menuData, scope),
     presentation: {
       currencyCode,
+      ...(imageShade ? { kitchenImageShade: imageShade } : {}),
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
         : {}),
@@ -349,6 +355,7 @@ export function buildMenuDocumentPayload(
 ): MenuDetailPayload {
   const file = readMenuFile(data)
   const source = menuSourceFromData(data, scope)
+  const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const fileKind = menuFileKind({
     file,
     storedKind: readMenuDocumentKind(data),
@@ -360,7 +367,20 @@ export function buildMenuDocumentPayload(
       id: menuId,
       name: readRecordString(data, 'name') || menuId,
       description: readRecordString(data, 'description'),
+      ...(text(scope.currencyCode)
+        ? { currencyCode: text(scope.currencyCode) }
+        : {}),
+      ...(imageShade ? { kitchenImageShade: imageShade } : {}),
+      ...(text(scope.kitchenImageUrl)
+        ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
+        : {}),
+      ...(text(scope.kitchenLogoImageUrl)
+        ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }
+        : {}),
       kitchenName: source.kitchen_name || '',
+      ...(text(scope.kitchenWordmarkImageUrl)
+        ? { kitchenWordmarkImageUrl: text(scope.kitchenWordmarkImageUrl) }
+        : {}),
       fileKind,
       ...(hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),
       pageStyle: readMenuPageStyle(scope.page_style),

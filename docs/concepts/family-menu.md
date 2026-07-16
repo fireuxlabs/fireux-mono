@@ -37,8 +37,8 @@ Current public menu doorways:
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
 - The public `/menus` route follows the public-index family: page header,
-  Menu CTA, and the root Menu collection manager. Detail and retained QR paths
-  remain on the JSON-first baseline while the customer-facing renderer is rebuilt.
+  Menu CTA, and the root Menu collection manager. Generic global, kitchen-directory,
+  and tenant detail routes all use the same context-free MenuBrowse projection.
 - Adding a tenant app is additive. It must not remove, stub, redirect away, or
   replace either the global public doorway or the kitchen-directory doorway.
 - When a Kitchen menu has all three published projections, they resolve the
@@ -111,6 +111,15 @@ Language/source note:
 Presentation/data boundary:
 - Currency belongs to Kitchen or its Place source and is resolved into the
   public manifest; KitchenMenu does not own `currency_code`.
+- `MenuKitchenPresentation` in `models/kitchen/menu/menu-detail.model.ts` is the
+  shared request-time Kitchen identity contract for structured and document
+  Menu payloads. The ownership resolver supplies current Kitchen name, optional
+  stored identity assets, image-shade metadata, currency, and menu page style;
+  the root Menu does not copy those fields.
+- `components/Menu/Browse/Identity.vue` renders that contract with a visible
+  Kitchen name and text-only fallback. Missing or failed media is not a broken
+  Menu state, and stored `kitchenImageShade` keeps generic Kitchen marks legible
+  against light and dark Browse themes.
 - Browse surfaces use a short allergy/intolerance advisory near the top.
   Ordering funnels may use a dedicated advisory popup. Allergy records and
   structured allergen metadata are not part of the current MenuItem contract.
@@ -130,11 +139,28 @@ No kitchen needed:
 
 Page composition note:
 - `/menus` renders `MenuIndex`; global scope browses published root Menus and
-  tenant scope uses its configured Kitchen target.
-- `/menus/<menuId>` and kitchen-directory detail routes read one resolved
-  published menu contract through the temporary JSON-first presentation.
-- No branded, document, food, kiosk, staff-POS, translation, or ordering UI is
-  part of this temporary public baseline.
+  tenant scope uses its configured Kitchen target. A tenant with one published
+  menu may feature that same MenuBrowse projection directly on the index.
+- Generic `/menus/<menuId>` and `/kitchens/<kitchenSlug>/menus/<menuId>` routes
+  read one resolved published menu contract through MenuBrowse. The server,
+  not the URL renderer, resolves global, directory, or tenant ownership.
+- Generic detail responses preserve that resolver truth: missing, unpublished,
+  or out-of-scope Menus return 404; configuration, payload, and Firestore
+  failures remain 5xx. Browse renders a safe noindex failure state without
+  exposing the underlying server message. A featured Menu on a tenant index
+  does not turn that collection route into a detail-response boundary.
+- Invalid Firestore document ids are rejected as not found before Firestore is
+  called. The public Menu endpoint replaces upstream error details with a safe
+  status message before the response can enter Nuxt SSR state.
+- `scripts/guards/menu-route-contract.mjs` locks the recognized suffix grammar.
+  The Misebox HTTP contracts in `scripts/_lib/app-registry.mjs` lock root,
+  directory, tenant, missing, wrong-scope, noindex, and diagnostic projections
+  whenever the normal app route smoke runs.
+- Browse detail includes kitchen/menu identity, a short allergy advisory,
+  section navigation, readable item rows, and read-only structured options.
+  MenuBrowse does not accept a menu context. Ordering, kiosk, and staff-POS
+  remain separate context-driven surfaces; current suffixed routes retain the
+  JSON diagnostic projection until that surface family is rebuilt separately.
 
 Kitchen needed:
 - Attach menu to a kitchen.
@@ -145,10 +171,15 @@ Kitchen needed:
 
 Component placement:
 - `components/Menu/Index/Index.vue` owns the public Menu index composition;
-  `components/Menu/Json.vue` remains the temporary detail renderer.
-- Previous public menu renderers may remain temporarily as dormant source when
-  console preview or ordering still imports their primitives; dormant code is
-  not authority for the replacement surface.
+  `components/Menu/Browse/Index.vue` owns context-free customer detail and its
+  small `Browse/Identity.vue` identity, `Browse/Item.vue` row,
+  `Browse/SectionNav.vue` section-navigation, and `Browse/Unavailable.vue` safe
+  failure seams. `components/Menu/Json.vue` remains the temporary renderer for
+  non-generic context diagnostics.
+- Root and kitchen-directory detail pages branch on the parsed menu context:
+  generic routes project MenuBrowse, while suffixed routes preserve the context
+  query for MenuJson. `middleware/menu-projection-layout.ts` chooses the layout
+  before render so the branch is hydration-safe.
 - Ordering components remain preserved and outside this public reset.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.

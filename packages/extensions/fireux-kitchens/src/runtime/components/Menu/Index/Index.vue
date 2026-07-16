@@ -17,10 +17,11 @@
       </p>
     </div>
 
-    <MenuDetail
+    <MenuBrowse
       v-else-if="singleMenu"
       :menu-id="String(singleMenu.id || '')"
       :menu-route-scope="menuRouteScope"
+      style="--menu-browse-nav-top: calc(var(--ui-header-height, 4rem) + 0.5rem);"
     />
 
     <UPage v-else>

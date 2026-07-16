@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useAsyncData } from '#imports'
+import { createError, useAsyncData } from '#imports'
 import type {
   MenuDetailPayload,
   MenuDocumentPayload,
@@ -11,9 +11,63 @@ import { normalizeMenuRouteContext } from '../../../utils/menu-context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
 
+export type MenuLoadFailure = {
+  statusCode: number
+  title: string
+  description: string
+}
+
 type UseMenuOptions = {
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+}
+
+type MenuRequestError = {
+  status?: number
+  statusCode?: number
+  data?: {
+    status?: number
+    statusCode?: number
+  }
+}
+
+function requestStatusCode(value: unknown) {
+  const error = value as MenuRequestError
+  const statusCode = Number(
+    error?.statusCode ||
+    error?.status ||
+    error?.data?.statusCode ||
+    error?.data?.status ||
+    500
+  )
+
+  return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
+    ? statusCode
+    : 500
+}
+
+function menuLoadFailure(statusCode: number): MenuLoadFailure {
+  if (statusCode === 404) {
+    return {
+      statusCode,
+      title: 'Menu not found',
+      description: 'This menu does not exist or is not publicly available.',
+    }
+  }
+
+  if (statusCode >= 500) {
+    return {
+      statusCode,
+      title: 'Menu temporarily unavailable',
+      description: 'This menu could not be loaded. Please try again shortly.',
+    }
+  }
+
+  return {
+    statusCode,
+    title: 'Menu unavailable',
+    description: 'This menu could not be opened.',
+  }
 }
 
 export function useMenu(
@@ -51,12 +105,24 @@ export function useMenu(
   })
   const state = useAsyncData(
     key,
-    () =>
-      endpoint.value
-        ? $fetch<MenuDetailPayload>(endpoint.value)
-        : null,
+    async () => {
+      if (!endpoint.value) return null
+
+      try {
+        return await $fetch<MenuDetailPayload>(endpoint.value)
+      } catch (error) {
+        const failure = menuLoadFailure(requestStatusCode(error))
+
+        throw createError({
+          statusCode: failure.statusCode,
+          statusMessage: failure.title,
+          message: failure.description,
+        })
+      }
+    },
     { watch: [endpoint] }
   )
+  const ready = state.then(() => undefined)
   const renderKind = computed<MenuRenderKind>(() => {
     if (!state.data.value) return 'unavailable'
     return state.data.value.kind === 'document' ? 'document' : 'structured'
@@ -67,6 +133,13 @@ export function useMenu(
   const manifest = computed<MenuManifest | null>(() =>
     state.data.value?.kind === 'manifest' ? state.data.value.manifest : null
   )
+  const failure = computed<MenuLoadFailure | null>(() => {
+    if (state.pending.value) return null
+    if (state.error.value) {
+      return menuLoadFailure(requestStatusCode(state.error.value))
+    }
+    return state.data.value ? null : menuLoadFailure(404)
+  })
 
   return {
     id,
@@ -77,7 +150,9 @@ export function useMenu(
     renderKind,
     document,
     manifest,
+    failure,
     pending: state.pending,
     error: state.error,
+    ready,
   }
 }

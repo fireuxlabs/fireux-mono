@@ -9,6 +9,7 @@ import {
   readKitchenCurrencyCode,
 } from '../../../utils/kitchen-spine'
 import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
+import type { KitchenImageShade } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
@@ -16,6 +17,7 @@ import { resolveMenuPageStyle } from '../payload/page-style.ts'
 export type MenuKitchenScope = {
   kitchenId?: string
   kitchenPlaceId?: string
+  kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenSlug?: string
@@ -60,6 +62,7 @@ export function menuKitchenIdentity(
   const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
   const rootIdentity = readKitchenIdentity(rootData)
   const appIdentity = readKitchenIdentity(appData)
+  const hasAppImage = Boolean(appIdentity.imageUrl)
   const currencyCode = readKitchenCurrencyCode(appData) ||
     readKitchenCurrencyCode(rootData)
 
@@ -67,6 +70,7 @@ export function menuKitchenIdentity(
   return {
     name: appIdentity.displayName || rootIdentity.displayName,
     imageUrl: appIdentity.imageUrl || rootIdentity.imageUrl,
+    imageShade: hasAppImage ? appIdentity.imageShade : rootIdentity.imageShade,
     logoImageUrl: appIdentity.logoImageUrl || rootIdentity.logoImageUrl,
     wordmarkImageUrl:
       appIdentity.wordmarkNoLogoImageUrl ||
@@ -168,6 +172,7 @@ export async function readRootMenuKitchenScope(
     kitchenId: resolvedKitchenId,
     kitchenPlaceId:
       readRecordString(kitchenData, 'place_id') || resolvedKitchenId,
+    kitchenImageShade: identity.imageShade,
     kitchenImageUrl: identity.imageUrl,
     kitchenLogoImageUrl: identity.logoImageUrl,
     kitchenSlug: resolvedKitchenSlug,

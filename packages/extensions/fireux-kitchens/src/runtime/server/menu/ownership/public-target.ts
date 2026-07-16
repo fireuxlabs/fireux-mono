@@ -52,6 +52,13 @@ export type TenantPublicMenuScope = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const isFirestoreDocumentId = (value: string) =>
+  Boolean(value) &&
+  value !== '.' &&
+  value !== '..' &&
+  !value.includes('/') &&
+  !(value.startsWith('__') && value.endsWith('__')) &&
+  new TextEncoder().encode(value).length <= 1_500
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -241,6 +248,7 @@ const scopedTarget = async (
       kitchenId: input.kitchenId,
       kitchenPlaceId:
         readRecordString(input.rootKitchenData, 'place_id') || input.kitchenId,
+      kitchenImageShade: identity.imageShade,
       kitchenImageUrl: identity.imageUrl,
       kitchenLogoImageUrl: identity.logoImageUrl,
       kitchenSlug:
@@ -271,6 +279,12 @@ export async function resolvePublicMenuTarget(
     throw createError({
       statusCode: 400,
       statusMessage: 'Menu path is required.',
+    })
+  }
+  if (!isFirestoreDocumentId(menuId)) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Menu not found.',
     })
   }
 

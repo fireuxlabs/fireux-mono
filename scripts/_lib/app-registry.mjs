@@ -1,7 +1,66 @@
 // @fireux-script
-// last_used: 2026-07-14
+// last_used: 2026-07-16
 // usage_note: baseline after scripts cleanup; update when run.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
+const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
+const MENU_UNAVAILABLE_MARKER = 'data-menu-state="unavailable"'
+const MENU_JSON_MARKER = 'data-menu-projection="diagnostic"'
+
+const menuIndexContract = (route) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
+})
+
+const menuBrowseContract = (route, options = {}) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  ...(options.assertNoindex === false ? {} : { noindex: false }),
+  includes: [MENU_BROWSE_MARKER],
+  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
+})
+
+const missingMenuBrowseContract = (route, excludes = []) => ({
+  route,
+  status: 404,
+  contentType: 'text/html',
+  noindex: true,
+  includes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER, 'Menu not found'],
+  excludes: [MENU_JSON_MARKER, ...excludes],
+})
+
+const menuJsonContract = (route, context, options = {}) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  ...(options.assertNoindex === false ? {} : { noindex: false }),
+  includes: [
+    MENU_JSON_MARKER,
+    `data-menu-context="${context}"`,
+    ...(options.kitchenSlug
+      ? [`data-kitchen-slug="${options.kitchenSlug}"`]
+      : []),
+  ],
+  excludes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER],
+})
+
+// AppShell currently owns tenant-wide noindex. Valid tenant Menu SEO is
+// intentionally left to the later canonical-route/SEO pass.
+const tenantMenuBrowseContract = (route) =>
+  menuBrowseContract(route, { assertNoindex: false })
+const tenantMenuJsonContract = (route, context) =>
+  menuJsonContract(route, context, { assertNoindex: false })
+
+const missingMenuJsonContract = (route) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  noindex: false,
+  includes: [MENU_JSON_MARKER, '&quot;error&quot;: true', 'Menu not found'],
+  excludes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER],
+})
 
 // Registry consoles are smoke-test route segments.
 // Console family keys and route segments are singular:
@@ -65,6 +124,40 @@ export const APP_REGISTRY = {
       '/console/kitchen/dishes',
       '/console/kitchen/recipes',
       '/console/supplier',
+    ],
+    httpContracts: [
+      menuBrowseContract('/menus/pizza-snacks-drinks'),
+      missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
+      missingMenuBrowseContract('/menus/__fireux_route_contract_invalid__', [
+        'INVALID_ARGUMENT',
+        'Resource id',
+        '@grpc',
+      ]),
+      missingMenuBrowseContract(
+        '/menus/__fireux%0Aroute_contract_invalid__',
+        ['INVALID_ARGUMENT', 'Resource id', '@grpc']
+      ),
+      menuBrowseContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
+      ),
+      missingMenuBrowseContract(
+        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing'
+      ),
+      missingMenuBrowseContract(
+        '/kitchens/bergwelt-grindelwald/menus/pizza-snacks-drinks'
+      ),
+      menuJsonContract('/menus/pizza-snacks-drinks.delivery', 'delivery'),
+      missingMenuJsonContract(
+        '/menus/fireux-route-contract-missing.delivery'
+      ),
+      menuJsonContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery',
+        'delivery',
+        { kitchenSlug: 'baeren-ringgenberg' }
+      ),
+      missingMenuJsonContract(
+        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.delivery'
+      ),
     ],
     launchOrder: 2,
   },
@@ -257,6 +350,13 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoles: ['kitchen'],
+    httpContracts: [
+      menuIndexContract('/menus'),
+      tenantMenuBrowseContract('/menus/main'),
+      missingMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      missingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
+      tenantMenuJsonContract('/menus/main.pre_order', 'pre_order'),
+    ],
     launchOrder: 14,
   },
   'baeren-ringgenberg': {
@@ -270,6 +370,18 @@ export const APP_REGISTRY = {
     port: 3017,
     consoles: ['kitchen'],
     smokeRoutes: ['/', '/hotel', '/menu', '/events', '/about', '/jobs', '/location'],
+    httpContracts: [
+      menuIndexContract('/menus'),
+      tenantMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      missingMenuBrowseContract('/menus/main'),
+      missingMenuBrowseContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
+      ),
+      tenantMenuJsonContract(
+        '/menus/pizza-snacks-drinks.delivery',
+        'delivery'
+      ),
+    ],
     launchOrder: 17,
   },
   'bangin-coffee': {

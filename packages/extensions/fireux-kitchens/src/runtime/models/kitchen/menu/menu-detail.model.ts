@@ -1,4 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { KitchenImageShade } from '../../kitchen.model'
 import type { DishItemKind } from '../dish.model'
 import type { MenuKioskSkin } from './kiosk-skin.model'
 import type { MenuChoice, MenuOrderingConfig, MenuServiceProfile } from './menu.model'
@@ -46,15 +47,20 @@ export type MenuManifestContent = {
 
 export type MenuManifestBehaviour = MenuServiceProfile
 
-export type MenuManifestPresentation = {
-  currencyCode: string
+export type MenuKitchenPresentation = {
+  currencyCode?: string
+  kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenName: string
   kitchenWordmarkImageUrl?: string
+  pageStyle?: Partial<PageStyle>
+}
+
+export type MenuManifestPresentation = MenuKitchenPresentation & {
+  currencyCode: string
   kioskSkin?: MenuKioskSkin
   kioskSkinId?: string
-  pageStyle?: Partial<PageStyle>
 }
 
 export type MenuManifestSource = {
@@ -73,11 +79,10 @@ export type MenuManifest = {
 
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'
 
-export type MenuDocumentPayload = {
+export type MenuDocumentPayload = MenuKitchenPresentation & {
   id: string
   name: string
   description: string
-  kitchenName: string
   fileKind: MenuDocumentFileKind
   file?: {
     url?: string
@@ -85,7 +90,6 @@ export type MenuDocumentPayload = {
     type?: string
     storage_path?: string
   }
-  pageStyle?: Partial<PageStyle>
 }
 
 export type MenuDetailPayload =

@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-08
+// last_used: 2026-07-16
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
 
@@ -79,10 +79,10 @@ export async function waitForAppReady(app) {
   throw new Error(`[smoke] ${app.name} did not become ready at ${app.baseUrl}`)
 }
 
-async function fetchRoute(url) {
+async function fetchRoute(url, options = {}) {
   const startedAt = performance.now()
   const response = await fetch(url, {
-    redirect: 'follow',
+    redirect: options.redirect ?? 'follow',
     signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
     headers: {
       'user-agent': 'fireux-smoke/1.0',
@@ -92,6 +92,93 @@ async function fetchRoute(url) {
   const durationMs = performance.now() - startedAt
 
   return { response, body, durationMs }
+}
+
+function routeContractFailures(contract, response, body) {
+  const failures = []
+
+  if (response.status !== contract.status) {
+    failures.push(`expected status ${contract.status}, received ${response.status}`)
+  }
+
+  if (contract.contentType) {
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.startsWith(contract.contentType)) {
+      failures.push(
+        `expected content-type ${contract.contentType}, received ${contentType || 'none'}`
+      )
+    }
+  }
+
+  if (typeof contract.noindex === 'boolean') {
+    const robotsHeader = response.headers.get('x-robots-tag') || ''
+    const robotsMeta = /<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b[^"']*["'])[^>]*>/i
+    const hasNoindex = /\bnoindex\b/i.test(robotsHeader) || robotsMeta.test(body)
+
+    if (hasNoindex !== contract.noindex) {
+      failures.push(
+        contract.noindex
+          ? 'expected a noindex response directive'
+          : 'found an unexpected noindex response directive'
+      )
+    }
+  }
+
+  for (const value of contract.includes ?? []) {
+    if (!body.includes(value)) failures.push(`missing body marker ${JSON.stringify(value)}`)
+  }
+
+  for (const value of contract.excludes ?? []) {
+    if (body.includes(value)) failures.push(`found forbidden body marker ${JSON.stringify(value)}`)
+  }
+
+  for (const value of FAILURE_MARKERS) {
+    if (body.includes(value)) failures.push(`found failure marker ${JSON.stringify(value)}`)
+  }
+
+  return failures
+}
+
+export async function runRouteContractsForApp(app, contracts) {
+  console.log(`[contract] ${app.name} -> route contracts on ${app.baseUrl}`)
+
+  const failures = []
+
+  for (const contract of contracts) {
+    const url = new URL(contract.route, app.baseUrl).toString()
+
+    try {
+      const { response, body, durationMs } = await fetchRoute(url, {
+        redirect: 'manual',
+      })
+      const reasons = routeContractFailures(contract, response, body)
+
+      if (!reasons.length) {
+        console.log(
+          `[contract] ✓ ${contract.route} ${response.status} ${formatMs(durationMs)}`
+        )
+        continue
+      }
+
+      failures.push({ contract, response, body, reasons })
+      console.error(
+        `[contract] ✗ ${contract.route} ${response.status}: ${reasons.join('; ')}`
+      )
+      console.error(`[contract]   ${preview(body)}`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      failures.push({ contract, response: null, body: message, reasons: [message] })
+      console.error(`[contract] ✗ ${contract.route} network error: ${message}`)
+    }
+  }
+
+  if (failures.length) {
+    throw new Error(
+      `[contract] ${app.name} failed ${failures.length} route contract(s)`
+    )
+  }
+
+  console.log(`[contract] PASS ${app.name} (${contracts.length} routes)`)
 }
 
 export async function runRouteSmokeForApp(app) {
@@ -147,4 +234,8 @@ export async function runRouteSmokeForApp(app) {
   }
 
   console.log(`[smoke] PASS ${app.name} (${app.smokeRoutes.length} routes)`)
+
+  if (app.httpContracts?.length) {
+    await runRouteContractsForApp(app, app.httpContracts)
+  }
 }

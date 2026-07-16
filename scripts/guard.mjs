@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-16
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guard.mjs
 //
@@ -30,6 +30,7 @@ import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
+import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
@@ -55,6 +56,7 @@ const guards = [
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },
   { key: 'kitchen-menu-size', run: runKitchenMenuSize },
+  { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'projects', run: runProjects },
 ]
 

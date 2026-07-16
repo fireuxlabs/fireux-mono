@@ -1,5 +1,10 @@
 <template>
-  <main class="mx-auto w-full max-w-6xl px-4 py-8">
+  <main
+    class="mx-auto w-full max-w-6xl px-4 py-8"
+    data-menu-projection="diagnostic"
+    :data-menu-context="props.query?.context || undefined"
+    :data-kitchen-slug="props.query?.kitchenSlug || undefined"
+  >
     <p v-if="pending">Loading menu JSON...</p>
     <pre v-else-if="error">{{ errorJson }}</pre>
     <template v-else>

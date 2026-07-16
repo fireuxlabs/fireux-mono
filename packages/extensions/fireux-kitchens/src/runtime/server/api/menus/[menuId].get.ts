@@ -23,6 +23,41 @@ import {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
+type MenuRequestError = {
+  status?: number
+  statusCode?: number
+  data?: {
+    status?: number
+    statusCode?: number
+  }
+}
+
+function menuRequestStatusCode(value: unknown) {
+  const error = value as MenuRequestError
+  const statusCode = Number(
+    error?.statusCode ||
+    error?.status ||
+    error?.data?.statusCode ||
+    error?.data?.status ||
+    500
+  )
+
+  return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
+    ? statusCode
+    : 500
+}
+
+function safePublicMenuError(value: unknown) {
+  const statusCode = menuRequestStatusCode(value)
+  const statusMessage = statusCode === 404
+    ? 'Menu not found.'
+    : statusCode >= 500
+      ? 'Menu temporarily unavailable.'
+      : 'Menu unavailable.'
+
+  return createError({ statusCode, statusMessage })
+}
+
 async function readKitchenMenu(
   target: ScopedPublicMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>
@@ -99,25 +134,29 @@ export default defineEventHandler(async (event) => {
     methods: ['GET'],
   })
 
-  const target = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
-  const query = getQuery(event)
-  const menuId = target.menuId
-  const kitchenSlug = text(query.kitchenSlug)
-  const menuContext = Object.hasOwn(query, 'context')
-    ? normalizeMenuRouteContext(query.context)
-    : target.context
+  try {
+    const target = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
+    const query = getQuery(event)
+    const menuId = target.menuId
+    const kitchenSlug = text(query.kitchenSlug)
+    const menuContext = Object.hasOwn(query, 'context')
+      ? normalizeMenuRouteContext(query.context)
+      : target.context
 
-  if (!menuId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Menu path is required.',
-    })
+    if (!menuId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Menu path is required.',
+      })
+    }
+
+    const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
+    if (publicTarget.kind !== 'root-doorway') {
+      return await readKitchenMenu(publicTarget, menuContext)
+    }
+
+    return await readRootMenuDetail(publicTarget, menuContext)
+  } catch (error) {
+    throw safePublicMenuError(error)
   }
-
-  const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
-  if (publicTarget.kind !== 'root-doorway') {
-    return readKitchenMenu(publicTarget, menuContext)
-  }
-
-  return readRootMenuDetail(publicTarget, menuContext)
 })

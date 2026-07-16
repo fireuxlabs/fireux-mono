@@ -1,5 +1,5 @@
 <template>
-  <div class="contents">
+  <div class="baeren-menu-layout contents">
     <MiseboxMenuClose
       :class="isKioskMenu
         ? 'fixed bottom-4 left-4 z-50 sm:bottom-8 sm:left-8'
@@ -21,3 +21,15 @@ const isKioskMenu = computed(() =>
   parseMenuRouteTarget(route.params.menuId).context === 'kiosk'
 )
 </script>
+
+<style scoped>
+.baeren-menu-layout {
+  --menu-browse-nav-inline-end: calc(var(--misebox-menu-close-size, 4.5rem) + 1rem);
+}
+
+@media (min-width: 70rem) {
+  .baeren-menu-layout {
+    --menu-browse-nav-inline-end: 0rem;
+  }
+}
+</style>

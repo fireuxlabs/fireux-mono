@@ -1,24 +1,35 @@
 <template>
-  <MenuJson :endpoint="endpoint" :query="query" />
+  <MenuBrowse
+    v-if="isBrowse"
+    :menu-id="menuTarget.menuId"
+    :menu-route-scope="menuRouteScope"
+    propagate-response-status
+  />
+
+  <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { parseMenuRouteTarget } from '../../../utils/kitchen-menu-route'
+import {
+  parseMenuRouteTarget,
+  rootMenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 
 definePageMeta({
-  name: 'MenuJsonPage',
+  middleware: 'menu-projection-layout',
+  name: 'MenuPage',
 })
 
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
+const menuRouteScope = rootMenuRouteScope()
+const isBrowse = computed(() => menuTarget.value.context === 'generic')
 const endpoint = computed(() =>
   `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
 )
 const query = computed(() =>
-  menuTarget.value.context === 'generic'
-    ? undefined
-    : { context: menuTarget.value.context }
+  isBrowse.value ? undefined : { context: menuTarget.value.context }
 )
 </script>
