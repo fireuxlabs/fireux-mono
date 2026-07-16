@@ -1,3 +1,7 @@
+<template>
+  <div />
+</template>
+
 <script setup lang="ts">
 import { menuRouteIndexPath, rootMenuRouteScope } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 

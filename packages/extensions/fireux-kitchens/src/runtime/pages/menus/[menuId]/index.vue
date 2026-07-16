@@ -1,25 +1,24 @@
 <template>
-  <MenuDetail
-    :menu-id="menuTarget.menuId"
-    :menu-context="menuTarget.context"
-    :menu-route-scope="menuRouteScope"
-  />
+  <MenuJson :endpoint="endpoint" :query="query" />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import {
-  parseMenuRouteTarget,
-  rootMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+import { parseMenuRouteTarget } from '../../../utils/kitchen-menu-route'
 
 definePageMeta({
-  layout: 'menu',
-  name: 'MenuPage',
+  name: 'MenuJsonPage',
 })
 
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const menuRouteScope = rootMenuRouteScope()
+const endpoint = computed(() =>
+  `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
+)
+const query = computed(() =>
+  menuTarget.value.context === 'generic'
+    ? undefined
+    : { context: menuTarget.value.context }
+)
 </script>

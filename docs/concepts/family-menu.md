@@ -35,9 +35,9 @@ Current public menu doorways:
   `/menus/<menuId>` as its detail. It is a branded projection whose configured
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
-- Root, tenant, and kitchen-directory menu projections expose their own
-  `<menu-detail-path>/qr` surface. A QR generated from one projection preserves
-  that projection instead of silently switching to a global doorway.
+- Public menu presentation is currently reset to a JSON-first baseline. Index,
+  detail, and retained QR paths expose the resolved published menu contract
+  without a customer-facing renderer while the public surface is rebuilt.
 - Adding a tenant app is additive. It must not remove, stub, redirect away, or
   replace either the global public doorway or the kitchen-directory doorway.
 - When a Kitchen menu has all three published projections, they resolve the
@@ -114,15 +114,12 @@ No kitchen needed:
 - Invite owner to upgrade.
 
 Page composition note:
-- Shared `/menus` delegates to `MenuIndex`; the route page stays light.
-- The global/root branch uses a dedicated Menu CTA, not `EntityIndexCta`, and
-  lets `MenuCollectionManager` read the public menu collection by default.
-- The Menu CTA owns the Go QR upload tool because the tool is the product action, not generic index chrome.
-- The tenant branch renders one published menu directly as the `MenuDetail`
-  surface or lists multiple published menus. Count changes presentation only;
-  it does not select a route family.
-- Kitchen-scoped menu pages should use kitchen/menu scoped surfaces, not `MenuCollectionManager` with passed scoped rows.
-- Smaller display pieces such as Menu cards/lists may still be shared underneath.
+- Public menu routes currently render `MenuJson` only.
+- `/menus` reads the published root or tenant index contract.
+- `/menus/<menuId>` and kitchen-directory detail routes read one resolved
+  published menu contract.
+- No branded, document, food, kiosk, staff-POS, translation, or ordering UI is
+  part of this temporary public baseline.
 
 Kitchen needed:
 - Attach menu to a kitchen.
@@ -132,12 +129,12 @@ Kitchen needed:
 - Route through tenant/global kitchen ownership.
 
 Component placement:
-- Root menu rendering and public menu collection pieces live under `components/Menu`.
-- The public detail entry is `components/Menu/Detail/Index.vue`, rendered as `MenuDetail` from public menu routes.
-- `MenuDetail` is the public detail switchboard: it resolves the manifest and theme, then routes by format.
-- Document/photo/PDF quick menus render through `MenuDetailDocument`; they are first-class fast-onboarding surfaces and should not initialize ordering.
-- Structured food menus render through `MenuDetailFood`; customer-facing ordering and `components/Menu/Detail/Funnel/*` live under this food renderer, not under document menus and not under console `Operations`.
-- This mirrors root public entity detail entries such as `components/Kitchen/Detail/Index.vue` when kitchen detail owns child slices.
+- `components/Menu/Json.vue` is the only active public menu renderer during the
+  reset.
+- Previous public menu renderers may remain temporarily as dormant source when
+  console preview or ordering still imports their primitives; dormant code is
+  not authority for the replacement surface.
+- Ordering components remain preserved and outside this public reset.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.

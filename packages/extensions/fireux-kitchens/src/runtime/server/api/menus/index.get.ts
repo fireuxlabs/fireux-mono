@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { createError, defineEventHandler, getQuery } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
@@ -10,6 +10,7 @@ import {
 } from '../../../utils/kitchen-menu-route.ts'
 import {
   resolveTenantPublicMenuScope,
+  resolveDirectoryPublicMenuScope,
   type TenantPublicMenuScope,
 } from '../../menu/ownership/public-target.ts'
 
@@ -57,12 +58,23 @@ const publicMenuIndexItem = (
   }
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   const db = getRuntimeFirestore()
   const tenantScope = await resolveTenantPublicMenuScope()
+  const kitchenSlug = text(getQuery(event).kitchenSlug)
+  if (tenantScope && kitchenSlug) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Menus not found.',
+    })
+  }
+  const directoryScope = !tenantScope && kitchenSlug
+    ? await resolveDirectoryPublicMenuScope(kitchenSlug)
+    : null
+  const scopedKitchen = tenantScope || directoryScope
 
-  const collectionPath = tenantScope
-    ? `apps/${tenantScope.appId}/kitchens/${tenantScope.kitchenId}/${MenuStorage.scopeCollection}`
+  const collectionPath = scopedKitchen
+    ? `apps/${scopedKitchen.appId}/kitchens/${scopedKitchen.kitchenId}/${MenuStorage.scopeCollection}`
     : MenuStorage.rootCollection
   const snap = await db
     .collection(collectionPath)
@@ -70,7 +82,7 @@ export default defineEventHandler(async () => {
     .limit(100)
     .get()
   const menus = snap.docs
-    .map((doc) => publicMenuIndexItem(doc.id, doc.data(), tenantScope))
+    .map((doc) => publicMenuIndexItem(doc.id, doc.data(), scopedKitchen))
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
 
   return menus.sort((a, b) => a.name.localeCompare(b.name))

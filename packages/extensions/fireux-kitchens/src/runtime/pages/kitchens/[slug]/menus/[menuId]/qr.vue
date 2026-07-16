@@ -1,24 +1,19 @@
 <template>
-  <MenuQR
-    :menu-id="menuId"
-    :menu-route-scope="menuRouteScope"
-  />
+  <MenuJson :endpoint="endpoint" :query="query" />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { directoryMenuRouteScope } from '../../../../../utils/kitchen-menu-route'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 definePageMeta({
-  layout: false,
   index: false,
   sitemap: false,
   robots: 'noindex, nofollow',
 })
 
-const route = useRoute()
-const menuId = computed(() => String(route.params.menuId || '').trim())
-const menuRouteScope = computed(() =>
-  directoryMenuRouteScope(route.params.slug)
-)
+const kitchenSlug = useRouteParam('slug')
+const menuId = useRouteParam('menuId')
+const endpoint = computed(() => `/api/menus/${encodeURIComponent(menuId.value)}`)
+const query = computed(() => ({ kitchenSlug: kitchenSlug.value }))
 </script>

@@ -128,6 +128,33 @@ export async function resolveTenantPublicMenuScope(): Promise<TenantPublicMenuSc
   }
 }
 
+export async function resolveDirectoryPublicMenuScope(
+  kitchenSlugValue: unknown
+): Promise<TenantPublicMenuScope> {
+  const kitchenSlug = text(kitchenSlugValue)
+  if (!kitchenSlug) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen path is required.',
+    })
+  }
+
+  const kitchen = await readMenuKitchenBySlug(kitchenSlug)
+  if (!kitchen) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Kitchen not found.',
+    })
+  }
+
+  return {
+    appId: requireKitchenSourceAppId(kitchen.data),
+    kitchenId: kitchen.id,
+    kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
+    rootKitchenData: kitchen.data,
+  }
+}
+
 const requireRootMenuKitchen = async (
   rootMenuData: Record<string, unknown>
 ) => {
@@ -265,19 +292,13 @@ export async function resolvePublicMenuTarget(
   }
 
   if (kitchenSlug) {
-    const kitchen = await readMenuKitchenBySlug(kitchenSlug)
-    if (!kitchen) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
+    const directoryScope = await resolveDirectoryPublicMenuScope(kitchenSlug)
 
     return scopedTarget('directory-menu', menuId, {
-      appId: requireKitchenSourceAppId(kitchen.data),
-      kitchenId: kitchen.id,
-      kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
-      rootKitchenData: kitchen.data,
+      appId: directoryScope.appId,
+      kitchenId: directoryScope.kitchenId,
+      kitchenSlug: directoryScope.kitchenSlug,
+      rootKitchenData: directoryScope.rootKitchenData,
     })
   }
 
