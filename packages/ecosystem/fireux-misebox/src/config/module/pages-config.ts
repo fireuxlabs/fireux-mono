@@ -6,5 +6,6 @@ export const configureModulePages = (resolver: Resolver, nuxt: Nuxt) => {
   configurePages(resolver, nuxt)
   filterPagesByGlob(nuxt, [
     '**/fireux-misebox/src/runtime/pages/companies/**',
+    '**/fireux-misebox/src/runtime/pages/menu.vue',
   ])
 }

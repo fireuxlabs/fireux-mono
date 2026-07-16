@@ -12,6 +12,9 @@
       class="grid min-h-screen place-items-center px-4 text-center"
     >
       <p class="text-sm text-dimmed">Menus unavailable.</p>
+      <p v-if="errorDetail" class="mt-2 max-w-xl text-xs text-muted">
+        {{ errorDetail }}
+      </p>
     </div>
 
     <MenuDetail
@@ -91,5 +94,14 @@ const {
 const singleMenu = computed(() =>
   menus.value.length === 1 ? menus.value[0] ?? null : null
 )
+const errorDetail = computed(() => {
+  if (!import.meta.dev || !error.value) return ''
+
+  const failure = error.value as Error & {
+    statusMessage?: string
+    data?: { statusMessage?: string }
+  }
+  return failure.data?.statusMessage || failure.statusMessage || failure.message
+})
 const tenantPageDescription = `Browse ${fireux.appName}'s live menus and choose how you'd like to order.`
 </script>

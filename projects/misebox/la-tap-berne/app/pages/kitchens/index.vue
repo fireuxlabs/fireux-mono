@@ -8,5 +8,5 @@ definePageMeta({
   },
 })
 
-await navigateTo('/menu', { replace: true })
+await navigateTo('/menus', { replace: true })
 </script>

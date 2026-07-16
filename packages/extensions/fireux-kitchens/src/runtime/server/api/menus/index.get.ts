@@ -5,6 +5,7 @@ import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import {
   menuRoutePath,
+  menuRouteQrPath,
   rootMenuRouteScope,
 } from '../../../utils/kitchen-menu-route.ts'
 import {
@@ -26,6 +27,10 @@ const publicMenuIndexItem = (
     scope: rootMenuRouteScope(),
     menuId: id,
   })
+  const qrPath = menuRouteQrPath({
+    scope: rootMenuRouteScope(),
+    menuId: id,
+  })
   const source = tenantScope
     ? menuSourceFromData(data, {
         kitchenAppId: tenantScope.appId,
@@ -42,7 +47,7 @@ const publicMenuIndexItem = (
     description: readRecordString(data, 'description'),
     status,
     path,
-    qr_path: tenantScope ? `${path}/qr` : text(data.qr_path) || `${path}/qr`,
+    qr_path: tenantScope ? qrPath : text(data.qr_path) || qrPath,
     source_kind:
       readRecordString(data, 'source_kind') ||
       (tenantScope ? 'kitchen-menu' : readRecordString(data, 'kind')),

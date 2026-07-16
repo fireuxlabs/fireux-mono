@@ -36,13 +36,23 @@
               </p>
             </div>
 
-            <UButton
-              :to="menuLink(menu.id)"
-              icon="i-lucide-arrow-right"
-              trailing
-            >
-              Open
-            </UButton>
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                :to="menuQrLink(menu.id)"
+                icon="i-lucide-qr-code"
+                color="neutral"
+                variant="soft"
+              >
+                QR
+              </UButton>
+              <UButton
+                :to="menuLink(menu.id)"
+                icon="i-lucide-arrow-right"
+                trailing
+              >
+                Open
+              </UButton>
+            </div>
           </div>
         </UPageCard>
       </template>
@@ -60,12 +70,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenMenu } from '../../../../composables/fireux/kitchen/menu/useKitchenMenu'
+import { menuRouteQrPath } from '../../../../utils/kitchen-menu-route'
 
 const {
   kitchenSlug,
   kitchen,
   menus,
   pending,
+  menuRouteScope,
   menuLink,
 } = useKitchenMenu()
 const kitchenName = computed(
@@ -76,6 +88,11 @@ const kitchenPath = computed(() =>
     ? `/kitchens/${encodeURIComponent(kitchenSlug.value)}`
     : '/kitchens'
 )
+const menuQrLink = (menuId: string) =>
+  menuRouteQrPath({
+    scope: menuRouteScope.value,
+    menuId,
+  })
 const breadcrumbItems = computed(() => [
   {
     label: kitchenName.value,

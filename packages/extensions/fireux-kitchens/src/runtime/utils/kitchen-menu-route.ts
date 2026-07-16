@@ -52,6 +52,14 @@ export function menuRoutePath(options: {
   return indexPath && menuId ? `${indexPath}/${menuId}` : ''
 }
 
+export function menuRouteQrPath(options: {
+  scope: MenuRouteScope
+  menuId: unknown
+}) {
+  const menuPath = menuRoutePath(options)
+  return menuPath ? `${menuPath}/qr` : ''
+}
+
 export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {
   const rawMenuId = text(value)
   const [contextCandidate, ...menuParts] = rawMenuId

@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-15
-Ref: de5f53b09
+Updated: 2026-07-16
+Ref: 0e929a31f
 Role: map, not canon
 
 Purpose:
@@ -35,6 +35,9 @@ Current public menu doorways:
   `/menus/<menuId>` as its detail. It is a branded projection whose configured
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
+- Root, tenant, and kitchen-directory menu projections expose their own
+  `<menu-detail-path>/qr` surface. A QR generated from one projection preserves
+  that projection instead of silently switching to a global doorway.
 - Adding a tenant app is additive. It must not remove, stub, redirect away, or
   replace either the global public doorway or the kitchen-directory doorway.
 - When a Kitchen menu has all three published projections, they resolve the
