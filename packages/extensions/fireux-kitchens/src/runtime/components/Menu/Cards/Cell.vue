@@ -11,7 +11,7 @@
       <div class="shrink-0">
         <UAvatar
           :src="imageUrl || undefined"
-          :alt="title"
+          alt=""
           icon="i-lucide-book-open-check"
           size="md"
           :class="avatarClass"
@@ -55,7 +55,7 @@
       <div class="shrink-0">
         <UAvatar
           :src="imageUrl || undefined"
-          :alt="title"
+          alt=""
           icon="i-lucide-book-open-check"
           size="md"
           :class="avatarClass"

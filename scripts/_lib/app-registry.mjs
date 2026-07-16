@@ -1,42 +1,92 @@
 // @fireux-script
-// last_used: 2026-07-16
+// last_used: 2026-07-17
 // usage_note: baseline after scripts cleanup; update when run.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
+const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
 const MENU_UNAVAILABLE_MARKER = 'data-menu-state="unavailable"'
 const MENU_JSON_MARKER = 'data-menu-projection="diagnostic"'
+const MENU_QR_MARKER = 'data-menu-projection="qr"'
 
-const menuIndexContract = (route) => ({
+const menuIndexContract = (route, options = {}) => ({
   route,
   status: 200,
   contentType: 'text/html',
-  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
-})
-
-const menuBrowseContract = (route, options = {}) => ({
-  route,
-  status: 200,
-  contentType: 'text/html',
-  ...(options.assertNoindex === false ? {} : { noindex: false }),
-  includes: [MENU_BROWSE_MARKER],
-  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
-})
-
-const menuDocumentContract = (route, fileKind, fileRoute) => ({
-  ...menuBrowseContract(route),
   includes: [
-    MENU_BROWSE_MARKER,
-    'data-menu-identity="menu"',
-    `data-menu-document-kind="${fileKind}"`,
-    fileRoute,
-    'Open original',
+    MENU_INDEX_MARKER,
+    ...(options.kind ? [`data-menu-index-kind="${options.kind}"`] : []),
+    ...(options.featuredPath
+      ? [
+          `data-menu-path="${options.featuredPath}"`,
+          `data-menu-qr-path="${options.featuredPath}/qr"`,
+          `href="${options.featuredPath}/qr"`,
+        ]
+      : []),
   ],
-  excludes: [
-    MENU_UNAVAILABLE_MARKER,
-    MENU_JSON_MARKER,
-    'firebasestorage.googleapis.com',
-  ],
+  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
 })
+
+const missingMenuIndexContract = (route) => ({
+  route,
+  status: 404,
+  contentType: 'text/html',
+  noindex: true,
+  includes: [MENU_INDEX_MARKER, MENU_UNAVAILABLE_MARKER, 'Menus unavailable'],
+  excludes: [MENU_BROWSE_MARKER, MENU_JSON_MARKER],
+})
+
+const menuBrowseContract = (route, options = {}) => {
+  const indexPath = route.slice(0, route.lastIndexOf('/'))
+  const menuId = route.slice(route.lastIndexOf('/') + 1)
+  const renderKind = options.renderKind || 'structured'
+
+  return {
+    route,
+    status: 200,
+    contentType: 'text/html',
+    ...(options.assertNoindex === false ? {} : { noindex: false }),
+    includes: [
+      MENU_BROWSE_MARKER,
+      `data-menu-id="${menuId}"`,
+      `data-menu-render-kind="${renderKind}"`,
+      `data-menu-index-path="${indexPath}"`,
+      `data-menu-path="${route}"`,
+      `data-menu-qr-path="${route}/qr"`,
+      'data-menu-action="index"',
+      'data-menu-action="qr"',
+      `href="${indexPath}"`,
+      `href="${route}/qr"`,
+      ...(renderKind === 'structured'
+        ? ['data-menu-identity="kitchen-menu"']
+        : []),
+    ],
+    excludes: [
+      MENU_UNAVAILABLE_MARKER,
+      MENU_JSON_MARKER,
+      ...(renderKind === 'structured' ? ['data-menu-document-kind='] : []),
+    ],
+  }
+}
+
+const menuDocumentContract = (route, fileKind, fileRoute) => {
+  const browse = menuBrowseContract(route, { renderKind: 'document' })
+
+  return {
+    ...browse,
+    includes: [
+      ...browse.includes,
+      'data-menu-identity="menu"',
+      `data-menu-document-kind="${fileKind}"`,
+      fileRoute,
+      'Open original',
+    ],
+    excludes: [
+      ...browse.excludes,
+      'data-menu-identity="kitchen-menu"',
+      'firebasestorage.googleapis.com',
+    ],
+  }
+}
 
 const menuDocumentFileContract = (route, contentType) => ({
   route,
@@ -51,6 +101,60 @@ const missingMenuBrowseContract = (route, excludes = []) => ({
   noindex: true,
   includes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER, 'Menu not found'],
   excludes: [MENU_JSON_MARKER, ...excludes],
+})
+
+const menuQrContract = (route, targetPath, options = {}) => {
+  const indexPath = targetPath.slice(0, targetPath.lastIndexOf('/'))
+  const menuId = targetPath.slice(targetPath.lastIndexOf('/') + 1)
+  const renderKind = options.renderKind || 'structured'
+
+  return {
+    route,
+    status: 200,
+    contentType: 'text/html',
+    noindex: true,
+    includes: [
+      MENU_QR_MARKER,
+      'data-menu-state="ready"',
+      `data-menu-id="${menuId}"`,
+      `data-menu-render-kind="${renderKind}"`,
+      `data-menu-target-path="${targetPath}"`,
+      'data-menu-action="index"',
+      'data-menu-action="menu"',
+      'data-menu-action="print"',
+      `href="${indexPath}"`,
+      `href="${targetPath}"`,
+      'Open menu',
+      'Print QR',
+    ],
+    excludes: [
+      MENU_UNAVAILABLE_MARKER,
+      MENU_BROWSE_MARKER,
+      MENU_JSON_MARKER,
+    ],
+  }
+}
+
+const missingMenuQrContract = (route, excludes = []) => ({
+  route,
+  status: 404,
+  contentType: 'text/html',
+  noindex: true,
+  includes: [
+    MENU_QR_MARKER,
+    MENU_UNAVAILABLE_MARKER,
+    'Menu not found',
+    'Back to menus',
+  ],
+  excludes: [
+    MENU_BROWSE_MARKER,
+    MENU_JSON_MARKER,
+    'data-menu-id=',
+    'data-menu-render-kind=',
+    'data-menu-target-path=',
+    'data-menu-qr-image',
+    ...excludes,
+  ],
 })
 
 const menuJsonContract = (route, context, options = {}) => ({
@@ -148,6 +252,7 @@ export const APP_REGISTRY = {
       '/console/supplier',
     ],
     httpContracts: [
+      menuIndexContract('/menus', { kind: 'collection' }),
       menuDocumentContract(
         '/menus/bergwelt-grindelwald-pdf',
         'pdf',
@@ -157,12 +262,21 @@ export const APP_REGISTRY = {
         '/api/menus/bergwelt-grindelwald-pdf/file',
         'application/pdf'
       ),
+      menuQrContract(
+        '/menus/bergwelt-grindelwald-pdf/qr',
+        '/menus/bergwelt-grindelwald-pdf',
+        { renderKind: 'document' }
+      ),
       menuBrowseContract('/menus/bergwelt-grindelwald-main'),
       menuBrowseContract('/menus/la-tapberne-main'),
       menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main'),
       menuBrowseContract('/menus/luna-piccante-main-menu'),
       menuBrowseContract('/menus/pizza-menu'),
       menuBrowseContract('/menus/pizza-snacks-drinks'),
+      menuQrContract(
+        '/menus/pizza-snacks-drinks/qr',
+        '/menus/pizza-snacks-drinks'
+      ),
       missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
       missingMenuBrowseContract('/menus/__fireux_route_contract_invalid__', [
         'INVALID_ARGUMENT',
@@ -173,14 +287,39 @@ export const APP_REGISTRY = {
         '/menus/__fireux%0Aroute_contract_invalid__',
         ['INVALID_ARGUMENT', 'Resource id', '@grpc']
       ),
+      missingMenuQrContract('/menus/fireux-route-contract-missing/qr'),
+      missingMenuQrContract('/menus/__fireux_route_contract_invalid__/qr', [
+        'INVALID_ARGUMENT',
+        'Resource id',
+        '@grpc',
+      ]),
+      missingMenuQrContract('/menus/pizza-snacks-drinks.delivery/qr'),
+      menuIndexContract('/kitchens/baeren-ringgenberg/menus', {
+        kind: 'featured',
+        featuredPath:
+          '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks',
+      }),
       menuBrowseContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
+      ),
+      menuQrContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks/qr',
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
       missingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing'
       ),
+      missingMenuQrContract(
+        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing/qr'
+      ),
       missingMenuBrowseContract(
         '/kitchens/bergwelt-grindelwald/menus/pizza-snacks-drinks'
+      ),
+      missingMenuQrContract(
+        '/kitchens/bergwelt-grindelwald/menus/pizza-snacks-drinks/qr'
+      ),
+      missingMenuQrContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery/qr'
       ),
       menuJsonContract('/menus/pizza-snacks-drinks.delivery', 'delivery'),
       missingMenuJsonContract(
@@ -387,10 +526,18 @@ export const APP_REGISTRY = {
     port: 3008,
     consoles: ['kitchen'],
     httpContracts: [
-      menuIndexContract('/menus'),
+      menuIndexContract('/menus', {
+        kind: 'featured',
+        featuredPath: '/menus/main',
+      }),
       tenantMenuBrowseContract('/menus/main'),
+      menuQrContract('/menus/main/qr', '/menus/main'),
+      missingMenuQrContract('/menus/main.pre_order/qr'),
       missingMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      missingMenuQrContract('/menus/pizza-snacks-drinks/qr'),
+      missingMenuIndexContract('/kitchens/la-tapberne/menus'),
       missingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
+      missingMenuQrContract('/kitchens/la-tapberne/menus/main/qr'),
       tenantMenuJsonContract('/menus/main.pre_order', 'pre_order'),
     ],
     launchOrder: 14,
@@ -407,9 +554,19 @@ export const APP_REGISTRY = {
     consoles: ['kitchen'],
     smokeRoutes: ['/', '/hotel', '/menu', '/events', '/about', '/jobs', '/location'],
     httpContracts: [
-      menuIndexContract('/menus'),
+      menuIndexContract('/menus', {
+        kind: 'featured',
+        featuredPath: '/menus/pizza-snacks-drinks',
+      }),
       tenantMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      menuQrContract(
+        '/menus/pizza-snacks-drinks/qr',
+        '/menus/pizza-snacks-drinks'
+      ),
+      missingMenuQrContract('/menus/pizza-snacks-drinks.delivery/qr'),
       missingMenuBrowseContract('/menus/main'),
+      missingMenuQrContract('/menus/main/qr'),
+      missingMenuIndexContract('/kitchens/baeren-ringgenberg/menus'),
       missingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),

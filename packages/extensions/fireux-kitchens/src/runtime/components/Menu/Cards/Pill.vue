@@ -9,7 +9,7 @@
       <div class="shrink-0">
         <UAvatar
           :src="imageUrl || undefined"
-          :alt="title || ''"
+          alt=""
           size="sm"
           icon="i-lucide-book-open-check"
           :class="avatarClass"
@@ -40,7 +40,7 @@
       <div class="shrink-0">
         <UAvatar
           :src="imageUrl || undefined"
-          :alt="title || ''"
+          alt=""
           size="sm"
           icon="i-lucide-book-open-check"
           :class="avatarClass"

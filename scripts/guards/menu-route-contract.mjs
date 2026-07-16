@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-16
+// last_used: 2026-07-17
 // usage_note: run through pnpm guard; locks the public Menu route grammar.
 
 import assert from 'node:assert/strict'
@@ -8,7 +8,9 @@ import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src
 import {
   directoryMenuRouteScope,
   menuContextualMenuId,
+  menuRouteIndexPath,
   menuRoutePath,
+  menuRouteQrPath,
   parseMenuRouteTarget,
   rootMenuRouteScope,
 } from '../../packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-menu-route.ts'
@@ -38,6 +40,16 @@ export async function run() {
   const rootScope = rootMenuRouteScope()
   const directoryScope = directoryMenuRouteScope(KITCHEN_SLUG)
 
+  assert.equal(menuRouteIndexPath(rootScope), '/menus')
+  assert.equal(
+    menuRouteIndexPath(directoryScope),
+    `/kitchens/${KITCHEN_SLUG}/menus`
+  )
+  assert.equal(menuRouteIndexPath(directoryMenuRouteScope('')), '')
+  assert.equal(
+    menuRouteIndexPath(directoryMenuRouteScope('café & bar')),
+    '/kitchens/caf%C3%A9%20%26%20bar/menus'
+  )
   assert.deepEqual(parseMenuRouteTarget(MENU_ID), {
     menuId: MENU_ID,
     context: 'generic',
@@ -46,6 +58,20 @@ export async function run() {
     `/menus/${MENU_ID}`)
   assert.equal(menuRoutePath({ scope: directoryScope, menuId: MENU_ID }),
     `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`)
+  assert.equal(
+    menuRouteQrPath({ scope: rootScope, menuId: MENU_ID }),
+    `/menus/${MENU_ID}/qr`
+  )
+  assert.equal(
+    menuRouteQrPath({ scope: directoryScope, menuId: MENU_ID }),
+    `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}/qr`
+  )
+  assert.equal(menuRouteQrPath({ scope: rootScope, menuId: '' }), '')
+  assert.equal(menuRoutePath({ scope: rootScope, menuId: '' }), '')
+  assert.equal(
+    menuRoutePath({ scope: rootScope, menuId: 'lunch & dinner' }),
+    '/menus/lunch%20%26%20dinner'
+  )
 
   for (const context of MenuRouteContexts.filter((value) => value !== 'generic')) {
     const contextualId = menuContextualMenuId(MENU_ID, context)

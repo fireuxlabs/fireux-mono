@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="props.searchPlaceholder"
+              aria-label="Search menus"
             />
 
             <UButton

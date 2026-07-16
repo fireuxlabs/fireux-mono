@@ -17,7 +17,7 @@
       class="menu-document-pdf__state"
       role="alert"
     >
-      PDF preview unavailable. Open the original file below.
+      PDF preview unavailable. Use Open original instead.
     </p>
 
     <div

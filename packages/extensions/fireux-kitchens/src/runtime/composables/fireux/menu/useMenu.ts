@@ -6,7 +6,12 @@ import type {
   MenuManifest,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
-import type { MenuRouteScope } from '../../../utils/kitchen-menu-route'
+import {
+  menuRouteIndexPath,
+  menuRoutePath,
+  menuRouteQrPath,
+  type MenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 import { normalizeMenuRouteContext } from '../../../utils/menu-context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
@@ -84,14 +89,30 @@ export function useMenu(
   const menuContext = computed(() =>
     normalizeMenuRouteContext(toValue(options.menuContext))
   )
+  const keyPart = (value: unknown) =>
+    encodeURIComponent(String(value ?? '').trim())
   const key = computed(
     () =>
       [
         'menu',
-        kitchenSlug.value || 'root',
-        id.value || 'none',
-        menuContext.value,
-      ].join('-')
+        `scope=${routeScope.value.kind}`,
+        `kitchen=${keyPart(kitchenSlug.value)}`,
+        `id=${keyPart(id.value)}`,
+        `context=${menuContext.value}`,
+      ].join('|')
+  )
+  const indexPath = computed(() => menuRouteIndexPath(routeScope.value))
+  const menuPath = computed(() =>
+    menuRoutePath({
+      scope: routeScope.value,
+      menuId: id.value,
+    })
+  )
+  const qrPath = computed(() =>
+    menuRouteQrPath({
+      scope: routeScope.value,
+      menuId: id.value,
+    })
   )
   const endpoint = computed(() => {
     if (!id.value) return ''
@@ -124,14 +145,20 @@ export function useMenu(
   )
   const ready = state.then(() => undefined)
   const renderKind = computed<MenuRenderKind>(() => {
-    if (!state.data.value) return 'unavailable'
+    if (state.pending.value || state.error.value || !state.data.value) {
+      return 'unavailable'
+    }
     return state.data.value.kind === 'document' ? 'document' : 'structured'
   })
   const document = computed<MenuDocumentPayload | null>(() =>
-    state.data.value?.kind === 'document' ? state.data.value.document : null
+    renderKind.value === 'document' && state.data.value?.kind === 'document'
+      ? state.data.value.document
+      : null
   )
   const manifest = computed<MenuManifest | null>(() =>
-    state.data.value?.kind === 'manifest' ? state.data.value.manifest : null
+    renderKind.value === 'structured' && state.data.value?.kind === 'manifest'
+      ? state.data.value.manifest
+      : null
   )
   const failure = computed<MenuLoadFailure | null>(() => {
     if (state.pending.value) return null
@@ -146,6 +173,9 @@ export function useMenu(
     routeScope,
     kitchenSlug,
     menuContext,
+    indexPath,
+    menuPath,
+    qrPath,
     menu: state.data,
     renderKind,
     document,

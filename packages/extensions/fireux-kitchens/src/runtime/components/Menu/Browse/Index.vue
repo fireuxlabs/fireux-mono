@@ -2,6 +2,11 @@
   <article
     class="fireux-menu-detail menu-browse"
     data-menu-projection="browse"
+    :data-menu-id="hasMenu ? menuId : undefined"
+    :data-menu-render-kind="hasMenu ? renderKind : undefined"
+    :data-menu-index-path="menuIndexPath || undefined"
+    :data-menu-path="hasMenu ? menuPath : undefined"
+    :data-menu-qr-path="hasMenu ? menuQrPath : undefined"
     :class="themeClassName"
     :style="themeStyleVars"
     :aria-labelledby="hasMenu
@@ -33,6 +38,12 @@
         :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
+      <MenuBrowseActions
+        :index-path="menuIndexPath"
+        :qr-path="menuQrPath"
+        :show-index-link="showIndexLink"
+      />
+
       <aside class="menu-browse__notice" aria-label="Allergy information">
         <strong>Allergies or intolerances?</strong>
         <span>
@@ -40,7 +51,7 @@
         </span>
       </aside>
 
-      <template v-if="documentMenu">
+      <template v-if="renderKind === 'document' && documentMenu">
         <MenuDetailDocumentViewer
           v-if="documentUrl"
           :menu="documentMenu"
@@ -54,7 +65,10 @@
         </p>
       </template>
 
-      <div v-else-if="detailMenu" class="menu-browse__body">
+      <div
+        v-else-if="renderKind === 'structured' && detailMenu"
+        class="menu-browse__body"
+      >
         <MenuBrowseSectionNav
           v-if="browseSections.length > 1"
           :sections="browseSections"
@@ -98,6 +112,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
+import MenuBrowseActions from './Actions.vue'
 import MenuBrowseIdentity from './Identity.vue'
 import MenuBrowseSectionNav from './SectionNav.vue'
 import MenuBrowseUnavailable from './Unavailable.vue'
@@ -105,7 +120,6 @@ import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import {
-  menuRouteIndexPath,
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
@@ -119,21 +133,22 @@ const props = withDefaults(defineProps<{
   menuId: string
   menuRouteScope?: MenuRouteScope
   propagateResponseStatus?: boolean
+  showIndexLink?: boolean
 }>(), {
   menuRouteScope: rootMenuRouteScope,
   propagateResponseStatus: false,
+  showIndexLink: true,
 })
 
 const menuId = computed(() => String(props.menuId || '').trim())
 const menuRouteScope = computed(() => props.menuRouteScope)
-const kitchenSlug = computed(() =>
-  menuRouteScope.value.kind === 'directory'
-    ? String(menuRouteScope.value.kitchenSlug || '').trim()
-    : ''
-)
-const menuIndexPath = computed(() => menuRouteIndexPath(menuRouteScope.value))
 const {
   pending,
+  kitchenSlug,
+  indexPath: menuIndexPath,
+  menuPath,
+  qrPath: menuQrPath,
+  renderKind,
   document: documentMenu,
   manifest: detailMenu,
   failure,
@@ -147,7 +162,7 @@ if (props.propagateResponseStatus) {
   }
 }
 
-const hasMenu = computed(() => Boolean(documentMenu.value || detailMenu.value))
+const hasMenu = computed(() => renderKind.value !== 'unavailable')
 const menuName = computed(() =>
   detailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
 )

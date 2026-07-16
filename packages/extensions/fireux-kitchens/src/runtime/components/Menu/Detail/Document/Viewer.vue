@@ -12,6 +12,7 @@
     >
       Open original
       <span aria-hidden="true">↗</span>
+      <span class="sr-only">(opens in a new tab)</span>
     </a>
 
     <div
@@ -28,7 +29,7 @@
       >
 
       <p v-else class="menu-document__preview-state" role="alert">
-        Image preview unavailable. Open the original file below.
+        Image preview unavailable. Use Open original instead.
       </p>
     </div>
 

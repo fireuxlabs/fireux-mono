@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-16
-Ref: 0e929a31f
+Updated: 2026-07-17
+Ref: 13670bb32
 Role: map, not canon
 
 Purpose:
@@ -55,6 +55,10 @@ Current public menu doorways:
 - Current route/source seams:
   `src/runtime/utils/kitchen-menu-route.ts` and
   `src/runtime/server/menu/ownership/public-target.ts` in `fireux-kitchens`.
+- `src/runtime/composables/fireux/menu/useMenu.ts` is the resolved public
+  projection seam. It owns one collision-safe request key, the structured or
+  document render decision, safe failure state, and the relative index, Menu,
+  and QR paths used by public renderers.
 - `MenuRouteScope` owns URL projection as either `root` or `directory`; resolved
   Firestore ownership remains a separate server concern.
 - Tenant menu resolution is fail-closed: exactly one configured Kitchen target,
@@ -145,9 +149,18 @@ Page composition note:
 - `/menus` renders `MenuIndex`; global scope browses published root Menus and
   tenant scope uses its configured Kitchen target. A tenant with one published
   menu may feature that same MenuBrowse projection directly on the index.
+- The kitchen-directory index also renders `MenuIndex` with directory scope;
+  it must not fall back to a diagnostic JSON projection. Index links open
+  Browse, Browse links back to the index and to QR, and QR links back to Browse
+  and the index. Document rendering inherits the Browse links and adds only its
+  open-original file action.
 - Generic `/menus/<menuId>` and `/kitchens/<kitchenSlug>/menus/<menuId>` routes
   read one resolved published menu contract through MenuBrowse. The server,
   not the URL renderer, resolves global, directory, or tenant ownership.
+- Printable QR doorways append `/qr` to those generic detail routes and encode
+  the corresponding absolute Browse URL on the same origin. They use the same
+  fail-closed ownership resolver, are always `noindex`, and render without app
+  chrome. Contextual ordering suffixes do not expose QR doorways.
 - Generic detail responses preserve that resolver truth: missing, unpublished,
   or out-of-scope Menus return 404; configuration, payload, and Firestore
   failures remain 5xx. Browse renders a safe noindex failure state without
