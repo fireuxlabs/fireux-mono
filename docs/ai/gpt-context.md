@@ -25,6 +25,28 @@ Before each task:
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
 
+## Firebase MCP targeting
+
+Firebase MCP is configured once in the user's Codex environment, not repeated
+inside each FireUX app.
+
+Before any remote Firebase operation:
+
+1. Identify the concrete app directory under `projects/*/*` and use its
+   `firebase.json` as the application deployment surface.
+2. Resolve the owning ecosystem package under `packages/ecosystem/*` and read
+   its `.firebaserc` for the Firebase project ID. Project apps must not own a
+   competing `.firebaserc`.
+3. Confirm the intended Firebase project and named database explicitly. Never
+   infer the database from the app name or Firebase project alone.
+4. Point the Firebase MCP environment at that app/project/database before using
+   remote tools, and report the resolved target.
+5. Default to read-only inspection. Deployments, data writes, migrations,
+   deletes, rules changes, and other remote mutations require explicit user
+   authorization and the relevant backup or verification gate.
+
+Do not add per-app MCP configuration files merely to expose Firebase to Codex.
+
 ## Living context
 
 Treat this file as a living repository document, not a frozen prompt.
