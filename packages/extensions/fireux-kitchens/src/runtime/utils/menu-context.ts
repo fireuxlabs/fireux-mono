@@ -8,6 +8,10 @@ import {
   type MenuSurface,
 } from '../models/kitchen/menu/menu-context.model'
 import type { MenuManifestBehaviour } from '../models/kitchen/menu/menu-detail.model'
+import {
+  menuRoutePath,
+  type MenuRouteScope,
+} from './kitchen-menu-route'
 
 export type MenuContextProfile = {
   context: MenuRouteContext
@@ -114,8 +118,75 @@ export const publicMenuSurfaceProfiles = [
   profiles.room_service,
 ] as const
 
+const privateEntryMenuContexts = new Set<MenuRouteContext>([
+  'dine_in',
+  'kiosk',
+  'room_service',
+])
+
 export const guestDiscoverableMenuSurfaceProfiles =
-  publicMenuSurfaceProfiles.filter(({ context }) => context !== 'kiosk')
+  publicMenuSurfaceProfiles.filter(
+    ({ context }) => !privateEntryMenuContexts.has(context)
+  )
+
+export type GuestMenuSurfaceOption = {
+  value: MenuRouteContext
+  label: string
+  to: string
+  active: boolean
+}
+
+export function guestMenuSurfaceOptions(options: {
+  behaviour?: MenuManifestBehaviour | null
+  menuId: string
+  routeScope: MenuRouteScope
+  activeContext?: MenuRouteContext
+}): GuestMenuSurfaceOption[] {
+  const behaviour = options.behaviour
+  const menuId = text(options.menuId)
+  if (!behaviour || !menuId) return []
+
+  const choices = Array.isArray(behaviour.choices) ? behaviour.choices : []
+  const availableOrderTypes = Array.isArray(behaviour.availableOrderTypes)
+    ? behaviour.availableOrderTypes
+    : []
+  const surfaceOrderTypes = new Set<KitchenOrderType>([
+    ...availableOrderTypes,
+    ...choices
+      .map((choice) => choice.order_type)
+      .filter((type): type is KitchenOrderType => Boolean(type)),
+  ])
+
+  return guestDiscoverableMenuSurfaceProfiles
+    .filter((surface) =>
+      surface.visibleOrderTypes.some((type) => surfaceOrderTypes.has(type))
+    )
+    .map((surface) => {
+      const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
+        availableOrderTypes.includes(type)
+      )
+      const linkedChoice = choices.find((choice) =>
+        Boolean(choice.to) &&
+        Boolean(choice.menu_id) &&
+        Boolean(choice.order_type) &&
+        surface.visibleOrderTypes.includes(choice.order_type as KitchenOrderType)
+      )
+
+      return {
+        value: surface.context,
+        label: surface.label,
+        to: hasLocalOrderType
+          ? menuRoutePath({
+              scope: options.routeScope,
+              menuId,
+              context: surface.context,
+            })
+          : linkedChoice?.to || '',
+        active: options.activeContext === surface.context,
+      }
+    })
+    .filter((surface) => Boolean(surface.to))
+}
 
 export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
   const context = text(value)

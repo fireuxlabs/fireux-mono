@@ -315,6 +315,8 @@ export async function buildMenuManifestPayload(
     behaviour: serviceProfile(menuData, scope),
     presentation: {
       currencyCode,
+      currencyFormat: scope.currencyFormat || 'dash',
+      showCurrency: scope.showCurrency !== false,
       ...(imageShade ? { kitchenImageShade: imageShade } : {}),
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
@@ -370,6 +372,8 @@ export function buildMenuDocumentPayload(
       ...(text(scope.currencyCode)
         ? { currencyCode: text(scope.currencyCode) }
         : {}),
+      currencyFormat: scope.currencyFormat || 'dash',
+      showCurrency: scope.showCurrency !== false,
       ...(imageShade ? { kitchenImageShade: imageShade } : {}),
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }

@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-17
-Ref: 94132eb72
+Ref: 5b5efbf76
 Role: map, not canon
 
 Purpose:
@@ -42,10 +42,13 @@ Public route hierarchy:
 - A menu's `.delivery` and `.collection` suffixes are separate direct surfaces.
 - A menu may enable `delivery`, `collection`, or both inside the Home options grouping.
 - `.pre_order`, `.room_service`, `.dine_in`, and `.kiosk` remain purpose-specific surfaces.
-- Kiosk has one addressable route per doorway, using the same identity suffix
-  rule, but it is an operator-distributed entry rather than guest-discoverable
-  navigation. Public Kitchen cards and customer choice rails do not advertise
-  Kiosk; console QR tooling remains its management doorway.
+- Dine-in/Table service, Kiosk, and Room Service each have an addressable route
+  per doorway, using the same identity suffix rule, but they are
+  operator-distributed entries rather than guest-discoverable navigation.
+  Public Kitchen cards and customer choice rails do not advertise them;
+  console QR tooling remains their management doorway. A later Room Service
+  pass may add room identity to each generated QR without changing this
+  discoverability boundary.
 - Any recognized contextual doorway may add `/qr` after the contextual menu
   identity. That QR encodes the exact context URL and is available only when
   the context-filtered Menu manifest resolves; it never silently falls back to

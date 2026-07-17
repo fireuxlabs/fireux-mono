@@ -1,4 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { KitchenImageShade } from '../../kitchen.model'
 import type { DishItemKind } from '../dish.model'
 import type { MenuKioskSkin } from './kiosk-skin.model'
@@ -49,6 +50,8 @@ export type MenuManifestBehaviour = MenuServiceProfile
 
 export type MenuKitchenPresentation = {
   currencyCode?: string
+  currencyFormat?: CurrencyDisplayFormat
+  showCurrency?: boolean
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string

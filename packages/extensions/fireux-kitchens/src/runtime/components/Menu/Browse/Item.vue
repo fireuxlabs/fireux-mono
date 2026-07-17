@@ -83,10 +83,13 @@
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue'
 import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
   currencyCode: string
+  currencyFormat: CurrencyDisplayFormat
+  showCurrency: boolean
   item: MenuManifestItem
 }>()
 
@@ -130,7 +133,8 @@ function hideImage() {
 function formatPrice(price: number) {
   return formatCurrencyAmount(price, {
     currencyCode: props.currencyCode,
-    format: 'code',
+    format: props.currencyFormat,
+    showCurrency: props.showCurrency,
   })
 }
 

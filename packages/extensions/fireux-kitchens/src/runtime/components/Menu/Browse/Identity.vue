@@ -31,7 +31,7 @@
         {{ description }}
       </p>
 
-      <p v-if="currencyCode" class="menu-browse-identity__currency">
+      <p v-if="showCurrency && currencyCode" class="menu-browse-identity__currency">
         Prices in {{ currencyCode }}
       </p>
     </div>
@@ -54,6 +54,7 @@ const props = withDefaults(defineProps<{
   menuName: string
   description?: string
   currencyCode?: string
+  showCurrency?: boolean
   imageShade?: 'light' | 'dark' | 'none'
   imageUrl?: string
   logoImageUrl?: string
@@ -63,6 +64,7 @@ const props = withDefaults(defineProps<{
   kitchenName: '',
   description: '',
   currencyCode: '',
+  showCurrency: true,
   imageShade: 'none',
   imageUrl: '',
   logoImageUrl: '',

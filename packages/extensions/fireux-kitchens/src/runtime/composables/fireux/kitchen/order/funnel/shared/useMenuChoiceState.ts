@@ -5,18 +5,15 @@ import {
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
 import {
+  guestMenuSurfaceOptions,
   menuContextProfile,
   menuOrderChannelForContext,
   normalizeMenuRouteContext,
-  guestDiscoverableMenuSurfaceProfiles,
 } from '../../../../../../utils/menu-context'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuChoice } from '../../../../../../models/kitchen/menu/menu.model'
-import {
-  menuRoutePath,
-  type MenuRouteScope,
-} from '../../../../../../utils/kitchen-menu-route'
+import type { MenuRouteScope } from '../../../../../../utils/kitchen-menu-route'
 import { text } from './order-input'
 import type {
   MenuChoiceOption,
@@ -66,12 +63,6 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
     ...(choice.message ? { message: choice.message } : {}),
   }
 }
-
-const contextualMenuPath = (
-  menuId: string,
-  context: MenuRouteContext,
-  routeScope: MenuRouteScope
-) => menuRoutePath({ scope: routeScope, menuId, context })
 
 export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
   const behaviour = computed(() => toValue(options.menu)?.behaviour)
@@ -210,46 +201,12 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     orderTypeConfigs.value[0]
   )
   const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
-    if (!menuId.value) return []
-
-    const choices = Array.isArray(behaviour.value?.choices)
-      ? behaviour.value.choices
-          .map(menuChoiceOption)
-          .filter((choice): choice is MenuChoiceOption => Boolean(choice))
-      : []
-    const surfaceOrderTypes = Array.from(new Set([
-      ...availableMenuOrderTypes.value,
-      ...choices
-        .map((choice) => choice.orderType)
-        .filter((type): type is KitchenOrderType => Boolean(type)),
-    ]))
-    const surfaces = guestDiscoverableMenuSurfaceProfiles.filter((surface) =>
-      surface.visibleOrderTypes.some((type) => surfaceOrderTypes.includes(type))
-    )
-
-    return surfaces.map((surface) => {
-      const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
-        availableMenuOrderTypes.value.includes(type)
-      )
-      const linkedChoice = choices.find((choice) =>
-        Boolean(choice.to) &&
-        Boolean(choice.menuId) &&
-        Boolean(choice.orderType) &&
-        surface.visibleOrderTypes.includes(choice.orderType as KitchenOrderType)
-      )
-      return {
-        value: surface.context,
-        label: surface.label,
-        to: hasLocalOrderType
-          ? contextualMenuPath(
-              menuId.value,
-              surface.context,
-              menuRouteScope.value
-            )
-          : linkedChoice?.to || '',
-        active: contextProfile.value.surface === surface.surface,
-      }
-    }).filter((surface) => Boolean(surface.to))
+    return guestMenuSurfaceOptions({
+      behaviour: behaviour.value,
+      menuId: menuId.value,
+      routeScope: menuRouteScope.value,
+      activeContext: menuContext.value,
+    })
   })
 
   function setSelectedChoice(value: MenuChoiceValue) {

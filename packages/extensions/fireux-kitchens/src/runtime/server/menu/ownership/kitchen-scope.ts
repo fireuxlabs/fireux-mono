@@ -5,12 +5,14 @@ import {
   readKitchenFulfilmentConfig,
   readKitchenIdentity,
   readKitchenOperationHours,
+  readKitchenMenusConfig,
   readKitchenMenuStyle,
   readKitchenCurrencyCode,
 } from '../../../utils/kitchen-spine'
 import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
 import type { KitchenImageShade } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
 
@@ -26,6 +28,8 @@ export type MenuKitchenScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string
+  currencyFormat?: CurrencyDisplayFormat
+  showCurrency?: boolean
   page_style?: Record<string, unknown>
   fulfilment?: MenuOrderFulfilmentPolicy
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
@@ -35,6 +39,15 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
+
+const hasKitchenMenuDisplayConfig = (value: Record<string, unknown>) => {
+  const menus = record(value.menus)
+
+  return Object.hasOwn(menus, 'currency_format') ||
+    Object.hasOwn(menus, 'show_currency') ||
+    Object.hasOwn(value, 'menu_currency_format') ||
+    Object.hasOwn(value, 'menu_show_currency')
+}
 
 export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>,
@@ -65,6 +78,11 @@ export function menuKitchenIdentity(
   const hasAppImage = Boolean(appIdentity.imageUrl)
   const currencyCode = readKitchenCurrencyCode(appData) ||
     readKitchenCurrencyCode(rootData)
+  const appMenuConfig = readKitchenMenusConfig(appData)
+  const rootMenuConfig = readKitchenMenusConfig(rootData)
+  const menuDisplay = isTenantOwned || hasKitchenMenuDisplayConfig(appData)
+    ? appMenuConfig
+    : rootMenuConfig
 
   // Menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
   return {
@@ -78,6 +96,8 @@ export function menuKitchenIdentity(
       appIdentity.wordmarkImageUrl ||
       rootIdentity.wordmarkImageUrl,
     currencyCode,
+    currencyFormat: menuDisplay.currencyFormat,
+    showCurrency: menuDisplay.showCurrency,
     page_style: resolveMenuPageStyle(
       { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
       {
@@ -181,6 +201,8 @@ export async function readRootMenuKitchenScope(
     kitchenAppId,
     kitchenMenuId: source.menu_id || '',
     currencyCode: identity.currencyCode,
+    currencyFormat: identity.currencyFormat,
+    showCurrency: identity.showCurrency,
     page_style: identity.page_style,
     fulfilment: menuKitchenFulfilment(kitchenData, appKitchenData),
     kitchen_operation_hours: menuKitchenOperationHours(kitchenData, appKitchenData),

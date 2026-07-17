@@ -1,6 +1,6 @@
 Menu family map
 Updated: 2026-07-17
-Ref: 94132eb72
+Ref: 5b5efbf76
 Role: map, not canon
 
 Purpose:
@@ -145,7 +145,10 @@ Language/source note:
 
 Presentation/data boundary:
 - Currency belongs to Kitchen or its Place source and is resolved into the
-  public manifest; KitchenMenu does not own `currency_code`.
+  public manifest; KitchenMenu does not own `currency_code`. Kitchen menu
+  display preferences (`currency_format` and `show_currency`) travel with that
+  request-time presentation contract so public Browse does not invent a price
+  format or force the currency code to be visible.
 - `MenuKitchenPresentation` in `models/kitchen/menu/menu-detail.model.ts` is the
   shared request-time Kitchen identity contract for structured and document
   Menu payloads. The ownership resolver supplies current Kitchen name, optional
@@ -198,9 +201,11 @@ Page composition note:
   and the index as a fallback. Document rendering inherits the detail-layout
   exit and adds only its open-original file action.
 - A public Kitchen profile lists Browse plus guest-discoverable ordering
-  contexts only. Kiosk remains addressable for operator-generated QR entry but
-  is not advertised by Kitchen cards or customer choice rails; its visible
-  management doorway belongs in the Kitchen console.
+  contexts only. Dine-in/Table service, Kiosk, and Room Service remain
+  addressable for operator-generated QR entry but are not advertised by
+  Kitchen cards or customer choice rails; their visible management doorway
+  belongs in the Kitchen console. Global, directory, and tenant Browse routes
+  all derive their public option rail from this same shared policy.
 - Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
   `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
   menu contract through MenuBrowse. The server, not the URL renderer, resolves

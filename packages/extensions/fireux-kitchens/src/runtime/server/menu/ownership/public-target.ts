@@ -259,6 +259,8 @@ const scopedTarget = async (
       kitchenAppId: input.appId,
       kitchenMenuId: menuId,
       currencyCode: identity.currencyCode,
+      currencyFormat: identity.currencyFormat,
+      showCurrency: identity.showCurrency,
       page_style: identity.page_style,
       fulfilment: menuKitchenFulfilment(input.rootKitchenData, appKitchenData),
       kitchen_operation_hours: menuKitchenOperationHours(

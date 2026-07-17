@@ -26,6 +26,7 @@
     <template v-else-if="hasMenu">
       <MenuBrowseIdentity
         :currency-code="currencyCode"
+        :show-currency="showCurrency"
         :description="menuDescription"
         :identity-kind="documentMenu ? 'menu' : 'kitchen-menu'"
         :image-shade="kitchenImageShade"
@@ -34,6 +35,11 @@
         :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
         :wordmark-image-url="kitchenWordmarkImageUrl"
+      />
+
+      <MenuBrowseSurfaceRail
+        v-if="surfaceOptions.length"
+        :options="surfaceOptions"
       />
 
       <aside class="menu-browse__notice" aria-label="Allergy information">
@@ -83,7 +89,9 @@
                 v-for="item in section.items"
                 :key="item.id"
                 :currency-code="currencyCode"
+                :currency-format="currencyFormat"
                 :item="item"
+                :show-currency="showCurrency"
               />
             </div>
           </section>
@@ -104,9 +112,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
-import MenuBrowseIdentity from './Identity.vue'
-import MenuBrowseSectionNav from './SectionNav.vue'
-import MenuBrowseUnavailable from './Unavailable.vue'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
@@ -114,6 +120,7 @@ import {
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
+import { guestMenuSurfaceOptions } from '../../../utils/menu-context'
 
 type BrowseSection = MenuManifestSection & {
   anchor: string
@@ -168,6 +175,14 @@ const kitchenName = computed(() =>
 const currencyCode = computed(() =>
   String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
 )
+const currencyFormat = computed<CurrencyDisplayFormat>(() => {
+  const format = menuPresentation.value?.currencyFormat
+
+  return format === 'symbol' || format === 'code' ? format : 'dash'
+})
+const showCurrency = computed(() =>
+  menuPresentation.value?.showCurrency !== false
+)
 const kitchenImageShade = computed(() =>
   menuPresentation.value?.kitchenImageShade || 'none'
 )
@@ -183,6 +198,11 @@ const kitchenWordmarkImageUrl = computed(() =>
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || null
 )
+const surfaceOptions = computed(() => guestMenuSurfaceOptions({
+  behaviour: detailMenu.value?.behaviour,
+  menuId: menuId.value,
+  routeScope: menuRouteScope.value,
+}))
 const browseSections = computed<BrowseSection[]>(() =>
   browseSectionLinks(detailMenu.value?.content.sections ?? [])
 )
@@ -304,13 +324,24 @@ function browseSectionLinks(sections: MenuManifestSection[]) {
 }
 
 .menu-browse__section h2 {
+  display: grid;
+  grid-template-columns: auto minmax(2rem, 1fr);
+  gap: var(--menu-space-sm);
+  align-items: center;
   margin: 0;
-  color: var(--menu-muted);
-  font-size: 0.82rem;
+  color: var(--menu-secondary);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
   font-weight: 900;
-  letter-spacing: 0.16em;
-  line-height: 1.3;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
   text-transform: uppercase;
+}
+
+.menu-browse__section h2::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);
 }
 
 .menu-browse__section h2:focus-visible {

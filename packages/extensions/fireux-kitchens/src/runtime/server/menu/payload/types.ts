@@ -2,6 +2,7 @@ import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/men
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import type { KitchenImageShade } from '../../../models/kitchen.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 
 export type MenuPayloadScope = {
   kitchenId?: string
@@ -14,6 +15,8 @@ export type MenuPayloadScope = {
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string
+  currencyFormat?: CurrencyDisplayFormat
+  showCurrency?: boolean
   sourceKind?: string
   menuContext?: MenuRouteContext
   page_style?: Record<string, unknown>
