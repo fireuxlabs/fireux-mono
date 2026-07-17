@@ -27,6 +27,7 @@
   --menu-space-sm: 0.75rem;
   --menu-space-md: 1rem;
   --menu-space-lg: 2rem;
+  --menu-section-nav-top: max(0.5rem, env(safe-area-inset-top));
 
   display: grid;
   gap: clamp(var(--menu-space-md), 3vw, var(--menu-space-lg));
@@ -69,4 +70,59 @@
 
 .fireux-menu-detail.menu-detail--kiosk {
   background: #000;
+}
+
+/* Standard structured Menu catalogue layout, shared by every applicable surface. */
+.menu-catalogue-sections,
+.menu-catalogue-section {
+  display: grid;
+}
+
+.menu-catalogue-sections {
+  gap: clamp(3rem, 7vw, 5rem);
+}
+
+.menu-catalogue-section {
+  gap: 1rem;
+  scroll-margin-block-start: calc(var(--menu-section-nav-top) + 4.25rem);
+}
+
+.menu-catalogue-section__heading {
+  display: grid;
+  grid-template-columns: auto minmax(2rem, 1fr);
+  gap: var(--menu-space-sm);
+  align-items: center;
+  margin: 0;
+  color: var(--menu-secondary);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.menu-catalogue-section__heading::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);
+}
+
+.menu-catalogue-section__heading:focus-visible {
+  border-radius: 0.2rem;
+  outline: 2px solid var(--menu-secondary);
+  outline-offset: 0.35rem;
+}
+
+@media (min-width: 920px) {
+  .menu-catalogue-sections {
+    display: block;
+    column-count: 2;
+    column-gap: clamp(var(--menu-space-lg), 4vw, 4rem);
+  }
+
+  .menu-catalogue-section {
+    break-inside: avoid;
+    margin-bottom: clamp(3rem, 7vw, 5rem);
+  }
 }

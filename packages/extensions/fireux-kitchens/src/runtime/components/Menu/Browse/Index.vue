@@ -37,7 +37,7 @@
         :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
-      <MenuBrowseSurfaceRail
+      <MenuSurfaceRail
         v-if="surfaceOptions.length"
         :options="surfaceOptions"
       />
@@ -67,20 +67,27 @@
         v-else-if="renderKind === 'structured' && detailMenu"
         class="menu-browse__body"
       >
-        <MenuBrowseSectionNav
+        <MenuSectionNav
           v-if="browseSections.length > 1"
           :sections="browseSections"
         />
 
-        <div v-if="browseSections.length" class="menu-browse__sections">
+        <div
+          v-if="browseSections.length"
+          class="menu-browse__sections menu-catalogue-sections"
+        >
           <section
             v-for="section in browseSections"
             :id="section.anchor"
             :key="section.anchor"
             :aria-labelledby="section.headingId"
-            class="menu-browse__section"
+            class="menu-browse__section menu-catalogue-section"
           >
-            <h2 :id="section.headingId" tabindex="-1">
+            <h2
+              :id="section.headingId"
+              class="menu-catalogue-section__heading"
+              tabindex="-1"
+            >
               {{ section.label }}
             </h2>
 
@@ -115,17 +122,12 @@ import { setResponseStatus, useSeoMeta } from '#imports'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
-import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import {
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 import { guestMenuSurfaceOptions } from '../../../utils/menu-context'
-
-type BrowseSection = MenuManifestSection & {
-  anchor: string
-  headingId: string
-}
+import { menuSectionLinks } from '../../../utils/menu-section-links'
 
 const props = withDefaults(defineProps<{
   menuId: string
@@ -203,8 +205,8 @@ const surfaceOptions = computed(() => guestMenuSurfaceOptions({
   menuId: menuId.value,
   routeScope: menuRouteScope.value,
 }))
-const browseSections = computed<BrowseSection[]>(() =>
-  browseSectionLinks(detailMenu.value?.content.sections ?? [])
+const browseSections = computed(() =>
+  menuSectionLinks(detailMenu.value?.content.sections ?? [])
 )
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
@@ -234,43 +236,10 @@ useSeoMeta({
   robots: () => failure.value ? 'noindex, nofollow' : undefined,
 })
 
-function sectionAnchor(section: MenuManifestSection, index: number) {
-  const slug = String(section.id || section.label || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-
-  return `menu-section-${slug || `section-${index + 1}`}`
-}
-
-function browseSectionLinks(sections: MenuManifestSection[]) {
-  const anchors = new Set<string>()
-
-  return sections.map((section, index) => {
-    const baseAnchor = sectionAnchor(section, index)
-    let anchor = baseAnchor
-    let collision = 2
-
-    while (anchors.has(anchor)) {
-      anchor = `${baseAnchor}-${collision}`
-      collision += 1
-    }
-    anchors.add(anchor)
-
-    return {
-      ...section,
-      anchor,
-      headingId: `${anchor}-title`,
-    }
-  })
-}
 </script>
 
 <style scoped>
 .menu-browse {
-  --menu-browse-nav-top: max(0.5rem, env(safe-area-inset-top));
-
   align-content: start;
 }
 
@@ -303,51 +272,13 @@ function browseSectionLinks(sections: MenuManifestSection[]) {
 .menu-browse__body {
   display: grid;
   gap: clamp(2rem, 5vw, 4rem);
-  width: min(100%, 54rem);
+  width: min(100%, 68rem);
   margin: 0 auto;
   text-align: left;
 }
 
-.menu-browse__sections,
-.menu-browse__section,
 .menu-browse__items {
   display: grid;
-}
-
-.menu-browse__sections {
-  gap: clamp(3rem, 7vw, 5rem);
-}
-
-.menu-browse__section {
-  gap: 1rem;
-  scroll-margin-block-start: calc(var(--menu-browse-nav-top) + 4.25rem);
-}
-
-.menu-browse__section h2 {
-  display: grid;
-  grid-template-columns: auto minmax(2rem, 1fr);
-  gap: var(--menu-space-sm);
-  align-items: center;
-  margin: 0;
-  color: var(--menu-secondary);
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-  font-weight: 900;
-  letter-spacing: 0.18em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.menu-browse__section h2::after {
-  content: "";
-  display: block;
-  height: 2px;
-  background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);
-}
-
-.menu-browse__section h2:focus-visible {
-  border-radius: 0.2rem;
-  outline: 2px solid var(--menu-secondary);
-  outline-offset: 0.35rem;
 }
 
 .menu-browse__items {

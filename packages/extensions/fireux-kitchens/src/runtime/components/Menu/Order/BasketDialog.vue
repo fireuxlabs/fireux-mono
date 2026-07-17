@@ -58,9 +58,29 @@
       </template>
 
       <template #footer>
-        <div class="menu-order-basket-dialog__footer-copy">
-          <span>{{ quantityLabel }}</span>
-          <strong>{{ totalLabel }}</strong>
+        <div class="menu-order-basket-dialog__footer-content">
+          <div class="menu-order-basket-dialog__footer-copy">
+            <span>{{ quantityLabel }}</span>
+            <strong>{{ totalLabel }}</strong>
+          </div>
+
+          <div
+            v-if="actionLabel"
+            class="menu-order-basket-dialog__next"
+          >
+            <span v-if="selectionLabel">
+              <UIcon name="i-lucide-clock-3" aria-hidden="true" />
+              {{ selectionLabel }}
+            </span>
+            <button
+              type="button"
+              data-menu-action="continue-basket"
+              @click="continueBasket"
+            >
+              {{ actionLabel }}
+              <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </template>
     </UModal>
@@ -73,9 +93,11 @@ import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.mode
 import type { MenuOrderBasketLine } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 
 const props = defineProps<{
+  actionLabel?: string
   currencyCode: string
   lines: MenuOrderBasketLine[]
   open: boolean
+  selectionLabel?: string
   totalLabel: string
 }>()
 
@@ -83,6 +105,7 @@ const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
   (event: 'quantity', lineId: string, quantity: number): void
   (event: 'remove', lineId: string): void
+  (event: 'continue', trigger: HTMLButtonElement): void
   (event: 'after-leave'): void
 }>()
 
@@ -112,6 +135,11 @@ function formatPrice(price: number) {
     currencyCode: props.currencyCode,
     format: 'code',
   })
+}
+
+function continueBasket(event: MouseEvent) {
+  const trigger = event.currentTarget
+  if (trigger instanceof HTMLButtonElement) emit('continue', trigger)
 }
 </script>
 
@@ -241,6 +269,12 @@ function formatPrice(price: number) {
   text-align: center;
 }
 
+.menu-order-basket-dialog__footer-content {
+  display: grid;
+  width: 100%;
+  gap: 0.8rem;
+}
+
 .menu-order-basket-dialog__footer-copy {
   display: flex;
   width: 100%;
@@ -254,6 +288,41 @@ function formatPrice(price: number) {
 .menu-order-basket-dialog__footer-copy strong {
   color: var(--menu-primary);
   font-variant-numeric: tabular-nums;
+}
+
+.menu-order-basket-dialog__next {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.menu-order-basket-dialog__next > span {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--menu-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.menu-order-basket-dialog__next button {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--menu-primary);
+  border-radius: var(--menu-radius-control);
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.menu-order-basket-dialog__next button:focus-visible {
+  outline: 2px solid var(--menu-primary);
+  outline-offset: 2px;
 }
 
 @media (max-width: 35rem) {

@@ -10,7 +10,7 @@
   <MenuOrder
     v-else-if="isOrder"
     :menu-id="menuTarget.menuId"
-    menu-context="collection"
+    :menu-context="orderContext"
     :menu-route-scope="menuRouteScope"
     page-canvas
     propagate-response-status
@@ -45,6 +45,13 @@ const menuRouteScope = fireux.isTenant
 const projection = computed(() => menuRouteProjection(menuTarget.value.context))
 const isBrowse = computed(() => projection.value === 'browse')
 const isOrder = computed(() => projection.value === 'order')
+const orderContext = computed(() => {
+  const context = menuTarget.value.context
+
+  return context === 'delivery' || context === 'pre_order'
+    ? context
+    : 'collection'
+})
 const endpoint = computed(() =>
   `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
 )

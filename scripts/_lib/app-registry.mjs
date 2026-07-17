@@ -131,6 +131,7 @@ const menuBrowseContract = (route, options = {}) => {
       'data-menu-order-basket=',
       'data-menu-action="review-basket"',
       'data-menu-item-mode="selectable"',
+      'data-menu-action="add-item"',
       'data-menu-action="configure-item"',
       'data-menu-action="add-to-basket"',
       ...(renderKind === 'structured'
@@ -266,9 +267,14 @@ const missingMenuQrContract = (route, excludes = []) => ({
 const menuOrderContract = (route, options = {}) => {
   const indexPath = options.indexPath ?? route.slice(0, route.lastIndexOf('/'))
   const contextualId = route.slice(route.lastIndexOf('/') + 1)
-  const menuId = contextualId.endsWith('.collection')
-    ? contextualId.slice(0, -'.collection'.length)
+  const context = options.context || 'collection'
+  const contextSuffix = `.${context}`
+  const menuId = contextualId.endsWith(contextSuffix)
+    ? contextualId.slice(0, -contextSuffix.length)
     : contextualId
+  const contextLabel = context === 'pre_order'
+    ? 'Pre-order'
+    : `${context[0].toUpperCase()}${context.slice(1)}`
   const exitKind = options.exitKind || 'back'
   const exitPath = options.exitPath || indexPath
 
@@ -280,10 +286,10 @@ const menuOrderContract = (route, options = {}) => {
     includes: [
       MENU_LAYOUT_MARKER,
       MENU_ORDER_MARKER,
-      'data-menu-context="collection"',
+      `data-menu-context="${context}"`,
       `data-menu-id="${menuId}"`,
       `data-menu-index-path="${indexPath}"`,
-      'data-menu-order-type="collection"',
+      `data-menu-order-type="${context}"`,
       'data-menu-ordering-enabled="true"',
       `data-menu-path="${route}"`,
       'data-menu-render-kind="structured"',
@@ -293,11 +299,11 @@ const menuOrderContract = (route, options = {}) => {
       'data-menu-action="exit"',
       `data-menu-exit-kind="${exitKind}"`,
       `href="${exitPath}"`,
-      'Collection ordering',
+      contextLabel,
       'data-menu-order-catalogue="selectable"',
       'data-menu-item="true"',
       'data-menu-item-mode="selectable"',
-      'data-menu-action="configure-item"',
+      'data-menu-action="add-item"',
       'data-menu-order-basket="local"',
       'data-menu-basket-persistence="none"',
       'data-menu-basket-state="empty"',
@@ -327,6 +333,7 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
   const indexPath = route.slice(0, route.lastIndexOf('/'))
   const exitKind = options.exitKind || 'back'
   const exitPath = options.exitPath || indexPath
+  const context = options.context || 'collection'
 
   return {
     route,
@@ -337,8 +344,8 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       MENU_LAYOUT_MARKER,
       MENU_ORDER_MARKER,
       MENU_UNAVAILABLE_MARKER,
-      'data-menu-context="collection"',
-      'data-menu-order-type="collection"',
+      `data-menu-context="${context}"`,
+      `data-menu-order-type="${context}"`,
       'data-menu-ordering-enabled="false"',
       'data-menu-surface-theme="app"',
       'data-menu-theme-canvas="true"',
@@ -427,21 +434,6 @@ const kitchenCollectionRecoveryContract = (route, kitchenPath, kitchenName) => (
   ],
 })
 
-const menuJsonContract = (route, context, options = {}) => ({
-  route,
-  status: 200,
-  contentType: 'text/html',
-  ...(options.assertNoindex === false ? {} : { noindex: false }),
-  includes: [
-    MENU_JSON_MARKER,
-    `data-menu-context="${context}"`,
-    ...(options.kitchenSlug
-      ? [`data-kitchen-slug="${options.kitchenSlug}"`]
-      : []),
-  ],
-  excludes: [MENU_BROWSE_MARKER, MENU_ORDER_MARKER, MENU_UNAVAILABLE_MARKER],
-})
-
 // AppShell currently owns tenant-wide noindex. Valid tenant Menu SEO is
 // intentionally left to the later canonical-route/SEO pass.
 const tenantMenuBrowseContract = (route) =>
@@ -456,30 +448,21 @@ const tenantMissingMenuBrowseContract = (route, excludes = []) =>
     exitKind: 'close',
     exitPath: '/',
   })
-const tenantMenuOrderContract = (route) =>
+const tenantMenuOrderContract = (route, options = {}) =>
   menuOrderContract(route, {
+    ...options,
     indexPath: '/menus',
     exitKind: 'close',
     exitPath: '/',
   })
-const tenantUnavailableMenuOrderContract = (route, title) =>
+const tenantUnavailableMenuOrderContract = (route, title, options = {}) =>
   unavailableMenuOrderContract(route, title, {
+    ...options,
     exitKind: 'close',
     exitPath: '/',
   })
-const tenantMenuJsonContract = (route, context) =>
-  menuJsonContract(route, context, { assertNoindex: false })
 const tenantMenuQrContract = (route, targetPath, options = {}) =>
   menuQrContract(route, targetPath, { ...options, indexPath: '/menus' })
-
-const missingMenuJsonContract = (route) => ({
-  route,
-  status: 200,
-  contentType: 'text/html',
-  noindex: false,
-  includes: [MENU_JSON_MARKER, '&quot;error&quot;: true', 'Menu not found'],
-  excludes: [MENU_BROWSE_MARKER, MENU_ORDER_MARKER, MENU_UNAVAILABLE_MARKER],
-})
 
 // Registry consoles are smoke-test route segments.
 // Console family keys and route segments are singular:
@@ -582,7 +565,7 @@ export const APP_REGISTRY = {
           'data-menu-item-price-kind="add-on"',
           'Optional extras',
           'Manchego',
-          '+ 2.50 CHF',
+          '+ 2.50',
         ],
       }),
       unavailableMenuOrderContract(
@@ -595,10 +578,9 @@ export const APP_REGISTRY = {
           'data-menu-item-price-kind="variant"',
           'Chicken breast',
           'Boneless chicken thigh',
-          'From',
-          '27 CHF',
+          '27.-',
         ],
-        itemExcludes: ['+ 27 CHF'],
+        itemExcludes: ['+ 27.-'],
       }),
       unavailableMenuOrderContract(
         '/menus/indian-gourmet-restaurant-pizzeria-main.collection',
@@ -700,17 +682,22 @@ export const APP_REGISTRY = {
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery',
         { context: 'delivery' }
       ),
-      menuJsonContract('/menus/pizza-snacks-drinks.delivery', 'delivery'),
-      missingMenuJsonContract(
-        '/menus/fireux-route-contract-missing.delivery'
+      menuOrderContract('/menus/pizza-snacks-drinks.delivery', {
+        context: 'delivery',
+      }),
+      unavailableMenuOrderContract(
+        '/menus/fireux-route-contract-missing.delivery',
+        'Menu not found',
+        { context: 'delivery', noRecovery: true }
       ),
-      menuJsonContract(
+      menuOrderContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery',
-        'delivery',
-        { kitchenSlug: 'baeren-ringgenberg' }
+        { context: 'delivery' }
       ),
-      missingMenuJsonContract(
-        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.delivery'
+      unavailableMenuOrderContract(
+        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.delivery',
+        'Menu not found',
+        { context: 'delivery', noRecovery: true }
       ),
     ],
     launchOrder: 2,
@@ -931,7 +918,9 @@ export const APP_REGISTRY = {
       missingMenuIndexContract('/kitchens/la-tapberne/menus'),
       tenantMissingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
       missingMenuQrContract('/kitchens/la-tapberne/menus/main/qr'),
-      tenantMenuJsonContract('/main.pre_order', 'pre_order'),
+      tenantMenuOrderContract('/main.pre_order', {
+        context: 'pre_order',
+      }),
     ],
     launchOrder: 14,
   },
@@ -1001,10 +990,9 @@ export const APP_REGISTRY = {
       tenantMissingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
-      tenantMenuJsonContract(
-        '/pizza-snacks-drinks.delivery',
-        'delivery'
-      ),
+      tenantMenuOrderContract('/pizza-snacks-drinks.delivery', {
+        context: 'delivery',
+      }),
     ],
     launchOrder: 17,
   },

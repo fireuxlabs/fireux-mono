@@ -41,9 +41,10 @@ Current public menu doorways:
   CTA, and the root Menu collection manager. Kitchen-directory and multi-menu
   tenant indexes use a smaller scoped list. Generic global, kitchen-directory,
   and tenant detail routes all use the same context-free MenuBrowse projection.
-- `.collection` is the first live context projection. It uses the same resolved
-  KitchenMenu manifest and theme through the package-owned MenuOrder shell,
-  while every other recognized context remains a diagnostic projection.
+- `.delivery`, `.collection`, and `.pre_order` are the guest-discoverable live
+  context projections. Each uses the same resolved KitchenMenu manifest,
+  Menu style, available-surface rail, catalogue, and transient basket through
+  the package-owned MenuOrder shell. Private contexts remain purpose-specific.
 - Adding a tenant app is additive. It must not remove, stub, redirect away, or
   replace either the global public doorway or the kitchen-directory doorway.
 - When a Kitchen menu has all three published projections, they resolve the
@@ -168,6 +169,10 @@ Presentation/data boundary:
 - Browse surfaces use a short allergy/intolerance advisory near the top.
   Ordering funnels may use a dedicated advisory popup. Allergy records and
   structured allergen metadata are not part of the current MenuItem contract.
+- The standard structured Menu style uses a balanced two-column section layout
+  on large screens and the compact sticky section selector wherever the shared
+  catalogue is rendered. Kitchen colours and typography remain
+  presentation deltas; projections and apps do not recreate this layout.
 - Icons, dietary metadata, and calories are intentionally deferred.
 
 Stored kind notes:
@@ -219,7 +224,7 @@ Page composition note:
   `/<menuId>.collection/qr` on a tenant. The QR resolves that context through
   the same manifest and encodes the exact contextual target; a disabled or
   unavailable context fails closed rather than falling back to Browse.
-- Generic and Collection detail responses preserve that resolver truth: missing, unpublished,
+- Generic and live order detail responses preserve that resolver truth: missing, unpublished,
   or out-of-scope Menus return 404; configuration, payload, and Firestore
   failures remain 5xx. Browse renders a safe noindex failure state without
   exposing the underlying server message. A tenant index redirect is emitted
@@ -230,18 +235,24 @@ Page composition note:
   status message before the response can enter Nuxt SSR state.
 - `scripts/guards/menu-route-contract.mjs` locks the recognized suffix grammar.
   The Misebox HTTP contracts in `scripts/_lib/app-registry.mjs` lock root,
-  directory, tenant, missing, wrong-scope, noindex, and diagnostic projections
+  directory, tenant, missing, wrong-scope, noindex, and private projections
   whenever the normal app route smoke runs.
 - Browse detail includes kitchen/menu identity, a short allergy advisory,
   section navigation, readable item rows, and read-only structured options.
-  MenuBrowse does not accept a menu context. `.collection` mounts a separate,
-  noindex MenuOrder shell only when the context-filtered manifest explicitly
-  enables Collection. MenuOrder renders selectable items, explicit variant,
-  add-on, and quantity controls, plus an in-memory basket count and total. The
+  MenuBrowse does not accept a menu context. `.delivery`, `.collection`, and
+  `.pre_order` mount the same noindex MenuOrder shell only when the
+  context-filtered manifest explicitly enables that order type. MenuOrder
+  renders selectable items, inline variant choices with the lowest valid price
+  selected initially, a direct plus for the selected/base item, and an add-on
+  dialog only when needed, plus an in-memory basket count and total. The
   basket review lets customers inspect configured lines, adjust quantities,
-  and remove lines. It has no submission, customer-details, payment, or
-  persistence path. Kiosk, staff-POS, and every other recognized suffix retain
-  the JSON diagnostic projection.
+  and remove lines. Collection alone can continue to a package-owned,
+  page-local pickup-time selector backed by the resolved Menu service hours:
+  immediate collection is offered only while service is open, and scheduled
+  choices must pass the shared hours and notice checks. It has no submission,
+  customer-details, payment, or persistence path. Delivery address, pre-order
+  scheduling, customer details, submission, and payment remain later explicit
+  stages.
 
 Kitchen needed:
 - Attach menu to a kitchen.
@@ -259,18 +270,20 @@ Component placement:
   package-owned `layouts/menu.vue` supplies its surface-aware exit destination
   for Browse and live order projections. `components/Menu/Browse/Index.vue` owns
   context-free customer detail and its
-  small `Browse/Identity.vue` identity, `Browse/Item.vue` row,
-  `Browse/SectionNav.vue` section-navigation, and `Browse/Unavailable.vue` safe
-  failure seams. `components/Menu/Order/Index.vue` owns Collection resolution
-  and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
+  small `Browse/Identity.vue` identity, `Browse/Item.vue` row, and
+  `Browse/Unavailable.vue` safe failure seams. `components/Menu/SectionNav.vue`
+  owns shared catalogue section navigation, while `Menu/SurfaceRail.vue` owns
+  the shared available-surface navigation. `components/Menu/Order/Index.vue`
+  owns public order
+  catalogue resolution and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
   `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the
   visible order seams. `composables/fireux/menu/order/useMenuOrderBasket.ts`
   owns transient basket arithmetic and validated line correction only.
-  `components/Menu/Json.vue` remains the temporary renderer for every other
-  non-generic context diagnostic.
+  `components/Menu/Json.vue` remains the temporary renderer for private or
+  operational contexts that do not yet own a dedicated public projection.
 - Global, tenant-alias, and kitchen-directory detail routes branch on the parsed menu context:
-  generic routes project MenuBrowse, Collection projects MenuOrder, and all
-  other suffixes preserve the context query for MenuJson. The shared route
+  generic routes project MenuBrowse; Delivery, Collection, and Pre-order
+  project MenuOrder; other suffixes preserve the context query for MenuJson. The shared route
   projection classifier also drives `middleware/menu-projection-layout.ts`, so
   the page branch and pre-render layout cannot drift.
 - The preserved ordering/funnel components remain disconnected reference
@@ -299,12 +312,14 @@ Structured item options:
   fields, not embedded in Dish descriptions.
 - Public Browse, ordering surfaces, Staff POS, tickets, and confirmation must
   preserve the same option labels. Browse shows options read-only; ordering
-  surfaces require a variant when several are available and let customers
-  toggle add-ons.
-- Public Browse shows an exact price for base-only items and `From` the
-  canonical item price when variants exist. Variant rows repeat their absolute
-  full prices without `+`; add-ons show their incremental `+` price or `No
-  extra charge`. A zero base price without variants remains unpriced.
+  surfaces preselect the lowest-priced valid variant (preserving declared order
+  when prices tie), let customers choose another, and let customers toggle
+  add-ons. The chosen variant identity remains explicit in the basket input.
+- Public Browse shows an exact price for base-only items and the lowest
+  canonical option price when variants exist, without a `From` prefix. Variant
+  rows repeat their absolute full prices without `+`; add-ons show their
+  incremental `+` price or `No extra charge`. A zero base price without
+  variants remains unpriced.
 - The canonical MenuItem editor supports adding, editing, and removing both
   option families. Invalid or duplicate labels must not be written.
 - `image_url`: optional menu-row presentation image. For now this belongs to

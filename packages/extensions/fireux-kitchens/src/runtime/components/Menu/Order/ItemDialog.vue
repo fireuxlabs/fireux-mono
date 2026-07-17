@@ -95,6 +95,7 @@ import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.mode
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuOrderBasketInput } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import {
+  defaultMenuOrderPriceOption,
   menuOrderPositivePrice,
   resolveMenuOrderAddOns,
   resolveMenuOrderPriceOptions,
@@ -102,6 +103,7 @@ import {
 
 const props = defineProps<{
   currencyCode: string
+  initialVariantId?: string
   item: MenuManifestItem
   open: boolean
 }>()
@@ -135,6 +137,9 @@ const resolvedVariantOptions = computed(() =>
 )
 const resolvedAddOnOptions = computed(() => resolveMenuOrderAddOns(props.item.addOns))
 const variantOptions = computed(() => resolvedVariantOptions.value || [])
+const defaultVariant = computed(() =>
+  defaultMenuOrderPriceOption(variantOptions.value)
+)
 const addOnOptions = computed(() => resolvedAddOnOptions.value || [])
 const orderDataValid = computed(() =>
   resolvedVariantOptions.value !== null && resolvedAddOnOptions.value !== null
@@ -176,11 +181,13 @@ const lineTotalLabel = computed(() =>
 )
 
 watch(
-  () => props.item,
+  () => [props.item, props.initialVariantId] as const,
   () => {
-    selectedVariantId.value = variantOptions.value.length === 1
-      ? variantOptions.value[0]?.id || ''
-      : ''
+    selectedVariantId.value = variantOptions.value.some(
+      ({ id }) => id === props.initialVariantId
+    )
+      ? props.initialVariantId || ''
+      : defaultVariant.value?.id || ''
     selectedAddOnIds.value = []
     quantity.value = 1
   },

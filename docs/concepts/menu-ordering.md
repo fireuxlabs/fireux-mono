@@ -63,14 +63,18 @@ Public route hierarchy:
 
 Current display rule:
 - Do not store a public view marker on menus.
-- A Collection projection exists only when the context-filtered manifest keeps
-  `ordering.enabled`, `orderingEnabled`, and a Collection order-type row true.
-- The Collection projection proves routing, resolution, authorization, theme,
-  and failure behavior, then renders selectable manifest items into a
-  page-local basket.
+- A Delivery, Collection, or Pre-order projection exists only when the
+  context-filtered manifest keeps `ordering.enabled`, `orderingEnabled`, and
+  the matching order-type row true.
+- Each live public order projection proves routing, resolution, authorization,
+  Menu style, surface navigation, and failure behavior, then renders the same
+  selectable manifest catalogue into a page-local basket.
 - That basket exists in memory only. It does not restore across navigation or
   refresh. Customers can review configured lines, adjust quantities, and
-  remove lines, but cannot submit an Order, enter customer details, or start
+  remove lines. Collection can then record a page-local queue or scheduled
+  pickup choice from the resolved service hours; missing hours fail closed and
+  scheduled choices share the server's hours and notice validation utilities.
+  Customers still cannot submit an Order, enter customer details, or start
   payment.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 
@@ -165,33 +169,42 @@ V1 fulfilment policy:
 Public order funnel spine:
 - Generic public routes currently render the package-owned `Menu/Browse`
   projection. It is context-free and read-only.
-- `.collection` renders the package-owned, noindex `Menu/Order` projection.
-  It resolves the context-filtered manifest through the same `useMenu` seam,
-  fails closed with 404 when Collection is disabled or the Menu is document-only,
-  and renders its sections as selectable items. A resolved-but-disabled
-  Collection page keeps that 404 response while offering the generic Browse
+- `.delivery`, `.collection`, and `.pre_order` render the package-owned,
+  noindex `Menu/Order` projection. Each resolves its context-filtered manifest
+  through the same `useMenu` seam, fails closed with 404 when that order type
+  is disabled or the Menu is document-only, and renders the standard Menu
+  catalogue as selectable items. A resolved-but-disabled order page keeps that
+  404 response while offering the generic Browse
   route and, when the resolved source has a Kitchen slug, its public Kitchen
   route; genuinely missing Menus do not emit guessed recovery links. This
   recovery state uses the host app's normal UI theme rather than presenting a
   disabled ordering context as if it were still the Kitchen's live Menu
-  surface. Required variants, optional add-ons, and quantity are configured
-  explicitly before adding a line to the local basket.
+  surface. The lowest-priced valid variant is selected initially (declared
+  order breaks price ties), the customer may choose another, and the chosen
+  variant identity and optional add-ons are configured before adding a line.
+  Variant choices render inline on the item row, with the lowest-priced valid
+  option selected initially; the plus adds that explicit selection. A true
+  base-price item plus also adds one immediately. Only add-on families open
+  configuration first, and quantity remains adjustable in basket review.
 - A resolvable Kitchen-scoped `.collection` mistake reuses the same human
   unavailable treatment but resolves only the current Kitchen name and Menu
   page style. Its circular exit and recovery action both return to the Kitchen
   profile. This is a themed 404 doorway, not a second Collection funnel or a
   shortcut to one of the Kitchen's Menus.
-- Every other recognized ordering suffix still renders `Menu/Json` as a
-  diagnostic projection. No public route mounts an ordering funnel yet.
+- Private and operational suffixes without a dedicated surface still render
+  `Menu/Json`. No public route mounts the preserved legacy funnel chain.
 - The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and
   `composables/fireux/kitchen/order/funnel/shared/useFunnel` chain is therefore
   disconnected implementation material, not the active public owner.
 - `MenuOrder` owns a transient basket seam that merges identical configurations,
   counts quantities, calculates variant absolute prices plus incremental
-  add-ons, and validates review-time quantity changes and removals. It does not
-  use the preserved funnel draft, storage, session, fetch, or order-creation
-  seams. Submission, payment, and the canonical order endpoint remain later
-  passes.
+  add-ons, and validates review-time quantity changes and removals. Its
+  Collection-only timing boundary also remains transient, clears with the
+  basket/source scope, offers queue collection only during current service,
+  and derives future half-hour choices from published service windows and
+  `notice_hours`. It does not use the preserved funnel draft, storage, session,
+  fetch, or order-creation seams. Customer details, submission, payment, and
+  the canonical order endpoint remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - Funnel composable naming should keep `useFunnel` as the shared root,

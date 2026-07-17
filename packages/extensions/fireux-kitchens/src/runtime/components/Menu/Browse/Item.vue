@@ -27,9 +27,6 @@
           class="menu-browse-item__price"
           :data-menu-item-price-kind="hasPriceOptions ? 'starting' : 'base'"
         >
-          <span v-if="hasPriceOptions" class="menu-browse-item__price-prefix">
-            From
-          </span>
           <span>{{ itemPrice }}</span>
         </span>
       </div>
@@ -196,14 +193,6 @@ function addOnPrice(price: number) {
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-.menu-browse-item__price-prefix {
-  color: var(--menu-muted);
-  font-size: 0.66rem;
-  font-weight: 850;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .menu-browse-item__description {

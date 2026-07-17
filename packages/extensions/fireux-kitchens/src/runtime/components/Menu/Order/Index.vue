@@ -20,7 +20,7 @@
         : 'menu-order-unavailable-title'"
   >
     <p v-if="pending" class="menu-order__state" role="status">
-      Loading collection menu…
+      Loading {{ contextProfile.label.toLowerCase() }} menu…
     </p>
 
     <MenuOrderUnavailable
@@ -39,7 +39,12 @@
         :description="menuDescription"
         :kitchen-name="kitchenName"
         :menu-name="menuName"
-        :message="collectionMessage"
+        :message="contextMessage"
+      />
+
+      <MenuSurfaceRail
+        v-if="surfaceOptions.length"
+        :options="surfaceOptions"
       />
 
       <MenuOrderCatalogue
@@ -59,12 +64,25 @@
 
       <MenuOrderBasketDialog
         v-model:open="basketOpen"
+        :action-label="collectionActionLabel"
         :currency-code="basket.currencyCode.value"
         :lines="basket.lines.value"
+        :selection-label="collectionTime?.label"
         :total-label="basket.totalLabel.value"
         @quantity="basket.setQuantity"
         @remove="basket.remove"
+        @continue="chooseCollectionTime"
         @after-leave="finishBasketDialog"
+      />
+
+      <MenuOrderCollectionTimeDialog
+        v-if="menuContext === 'collection'"
+        v-model:open="collectionTimeOpen"
+        :hours="collectionHours"
+        :notice-hours="contextConfig?.notice_hours"
+        :selection="collectionTime"
+        @select="setCollectionTime"
+        @after-leave="finishCollectionTimeDialog"
       />
     </div>
   </article>
@@ -76,19 +94,21 @@ import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import type { MenuOrderCollectionTimeSelection } from '../../../utils/menu-order-collection-time'
 import {
   menuRoutePath,
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 import {
+  guestMenuSurfaceOptions,
   menuContextProfile,
   menuManifestSupportsContext,
 } from '../../../utils/menu-context'
 
 const props = withDefaults(defineProps<{
   menuId: string
-  menuContext: 'collection'
+  menuContext: 'delivery' | 'collection' | 'pre_order'
   menuRouteScope?: MenuRouteScope
   pageCanvas?: boolean
   propagateResponseStatus?: boolean
@@ -119,9 +139,9 @@ const orderPath = computed(() => menuRoutePath({
   menuId: menuId.value,
   context: menuContext.value,
 }))
-const collectionConfig = computed(() =>
+const contextConfig = computed(() =>
   detailMenu.value?.behaviour.ordering.order_types.find(
-    ({ type }) => type === 'collection'
+    ({ type }) => type === menuContext.value
   ) || null
 )
 const orderAvailable = computed(() => {
@@ -145,9 +165,22 @@ const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
 const currencyCode = computed(() =>
   String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
 )
-const collectionMessage = computed(() =>
-  String(collectionConfig.value?.message || '').trim() ||
-  'This menu is available for collection.'
+const contextMessage = computed(() =>
+  String(contextConfig.value?.message || '').trim() ||
+  `This menu is available for ${contextProfile.value.label.toLowerCase()}.`
+)
+const collectionHours = computed(() =>
+  detailMenu.value?.behaviour.ordering.service_hours?.operation_hours
+)
+const surfaceOptions = computed(() => guestMenuSurfaceOptions({
+  behaviour: detailMenu.value?.behaviour,
+  menuId: menuId.value,
+  routeScope: menuRouteScope.value,
+  activeContext: menuContext.value,
+}))
+const contextOrderNoun = computed(() => menuContext.value === 'pre_order'
+  ? 'pre-orders'
+  : `${contextProfile.value.label.toLowerCase()} orders`
 )
 const resolvedSource = computed(() => detailMenu.value?.source || null)
 const sourceMenuId = computed(() => resolvedSource.value?.menuId || '')
@@ -159,9 +192,9 @@ const basketScopeKey = computed(() => JSON.stringify([
 ]))
 const unavailableFailure = computed(() => failure.value || {
   statusCode: 404,
-  title: 'Collection unavailable',
+  title: `${contextProfile.value.label} unavailable`,
   description:
-    'This kitchen is not accepting collection orders from this menu right now.',
+    `This kitchen is not accepting ${contextOrderNoun.value} from this menu right now.`,
 })
 const hasResolvedMenu = computed(() => Boolean(
   detailMenu.value || documentMenu.value
@@ -206,6 +239,16 @@ const basket = useMenuOrderBasket({
 })
 const basketOpen = ref(false)
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
+const collectionTimeOpen = ref(false)
+const collectionTime = ref<MenuOrderCollectionTimeSelection | null>(null)
+const openCollectionAfterBasket = ref(false)
+const collectionActionLabel = computed(() => {
+  if (menuContext.value !== 'collection') return ''
+
+  return collectionTime.value
+    ? 'Change collection time'
+    : 'Choose collection time'
+})
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
@@ -218,9 +261,18 @@ const {
 watch(
   () => basket.quantity.value,
   quantity => {
-    if (!quantity) basketOpen.value = false
+    if (quantity) return
+
+    basketOpen.value = false
+    collectionTimeOpen.value = false
+    collectionTime.value = null
   }
 )
+
+watch(basketScopeKey, () => {
+  collectionTimeOpen.value = false
+  collectionTime.value = null
+})
 
 function openBasket(trigger: HTMLButtonElement) {
   if (!basket.quantity.value) return
@@ -229,7 +281,24 @@ function openBasket(trigger: HTMLButtonElement) {
   basketOpen.value = true
 }
 
+function chooseCollectionTime() {
+  if (menuContext.value !== 'collection' || !basket.quantity.value) return
+
+  openCollectionAfterBasket.value = true
+  basketOpen.value = false
+}
+
+function setCollectionTime(selection: MenuOrderCollectionTimeSelection) {
+  collectionTime.value = selection
+}
+
 function finishBasketDialog() {
+  if (openCollectionAfterBasket.value) {
+    openCollectionAfterBasket.value = false
+    collectionTimeOpen.value = true
+    return
+  }
+
   const trigger = basketTrigger.value
   basketTrigger.value = null
 
@@ -240,9 +309,18 @@ function finishBasketDialog() {
     }
 
     document
-      .querySelector<HTMLButtonElement>('[data-menu-action="configure-item"]:not(:disabled)')
+      .querySelector<HTMLButtonElement>(
+        ':is([data-menu-action="add-item"], [data-menu-action="configure-item"]):not(:disabled)'
+      )
       ?.focus()
   })
+}
+
+function finishCollectionTimeDialog() {
+  const trigger = basketTrigger.value
+  basketTrigger.value = null
+
+  void nextTick(() => trigger?.focus())
 }
 
 if (props.propagateResponseStatus) {
@@ -258,16 +336,20 @@ if (props.propagateResponseStatus) {
 
 useSeoMeta({
   title: () => failure.value?.title ||
-    (orderAvailable.value ? `${menuName.value} · Collection` : 'Collection unavailable'),
+    (orderAvailable.value
+      ? `${menuName.value} · ${contextProfile.value.label}`
+      : `${contextProfile.value.label} unavailable`),
   description: () => failure.value?.description ||
     (orderAvailable.value
-      ? collectionMessage.value
+      ? contextMessage.value
       : unavailableFailure.value.description),
   ogTitle: () => failure.value?.title ||
-    (orderAvailable.value ? `${menuName.value} · Collection` : 'Collection unavailable'),
+    (orderAvailable.value
+      ? `${menuName.value} · ${contextProfile.value.label}`
+      : `${contextProfile.value.label} unavailable`),
   ogDescription: () => failure.value?.description ||
     (orderAvailable.value
-      ? collectionMessage.value
+      ? contextMessage.value
       : unavailableFailure.value.description),
   robots: 'noindex, nofollow',
 })
@@ -289,7 +371,7 @@ useSeoMeta({
   display: grid;
   align-content: start;
   gap: clamp(2rem, 6vw, 4rem);
-  width: min(100%, 54rem);
+  width: min(100%, 68rem);
   margin: 0 auto;
   padding-block: clamp(1rem, 4vw, 3rem);
 }

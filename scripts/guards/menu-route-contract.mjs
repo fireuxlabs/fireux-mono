@@ -33,13 +33,13 @@ const EXPECTED_CONTEXTS = [
 
 const EXPECTED_PROJECTIONS = {
   generic: 'browse',
-  delivery: 'diagnostic',
+  delivery: 'order',
   collection: 'order',
   table: 'diagnostic',
   kiosk: 'diagnostic',
   staff_pos: 'diagnostic',
   dine_in: 'diagnostic',
-  pre_order: 'diagnostic',
+  pre_order: 'order',
   room_service: 'diagnostic',
 }
 

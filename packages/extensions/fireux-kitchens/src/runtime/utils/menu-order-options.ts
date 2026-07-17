@@ -30,6 +30,18 @@ export function menuOrderNonNegativePrice(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0
 }
 
+export function defaultMenuOrderPriceOption(
+  value: MenuManifestPriceOption[]
+): MenuManifestPriceOption | null {
+  let selected = value[0] || null
+
+  for (const option of value.slice(1)) {
+    if (selected && option.price < selected.price) selected = option
+  }
+
+  return selected
+}
+
 function resolveMenuOrderOptions(
   value: unknown,
   validPrice: (value: unknown) => boolean

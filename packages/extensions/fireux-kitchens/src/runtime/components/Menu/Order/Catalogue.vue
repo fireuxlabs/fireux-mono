@@ -2,20 +2,29 @@
   <section
     class="menu-order-catalogue"
     data-menu-order-catalogue="selectable"
-    aria-labelledby="menu-order-catalogue-title"
+    aria-label="Menu items"
   >
-    <h2 id="menu-order-catalogue-title" class="menu-order-catalogue__title">
-      Choose your items
-    </h2>
+    <MenuSectionNav
+      v-if="catalogueSections.length > 1"
+      :sections="catalogueSections"
+    />
 
-    <div v-if="sections.length" class="menu-order-catalogue__sections">
+    <div
+      v-if="catalogueSections.length"
+      class="menu-order-catalogue__sections menu-catalogue-sections"
+    >
       <section
-        v-for="(section, sectionIndex) in sections"
-        :key="section.id"
-        class="menu-order-catalogue__section"
-        :aria-labelledby="sectionHeadingId(sectionIndex)"
+        v-for="section in catalogueSections"
+        :id="section.anchor"
+        :key="section.anchor"
+        class="menu-order-catalogue__section menu-catalogue-section"
+        :aria-labelledby="section.headingId"
       >
-        <h3 :id="sectionHeadingId(sectionIndex)">
+        <h3
+          :id="section.headingId"
+          class="menu-catalogue-section__heading"
+          tabindex="-1"
+        >
           {{ section.label }}
         </h3>
 
@@ -25,6 +34,7 @@
             :key="item.id"
             :currency-code="currencyCode"
             :item="item"
+            @add="addItem"
             @select="openItem(item, $event)"
           />
         </div>
@@ -32,13 +42,14 @@
     </div>
 
     <p v-else class="menu-order-catalogue__empty" role="status">
-      No items are currently available for collection.
+      No menu items are currently available.
     </p>
 
     <MenuOrderItemDialog
       v-if="activeItem"
       v-model:open="dialogOpen"
       :currency-code="currencyCode"
+      :initial-variant-id="activeVariantId"
       :item="activeItem"
       @add="addItem"
       @after-leave="finishDialog"
@@ -47,14 +58,20 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, shallowRef } from 'vue'
+import { computed, nextTick, ref, shallowRef } from 'vue'
 import type {
   MenuManifestItem,
   MenuManifestSection,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuOrderBasketInput } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
+import { menuSectionLinks } from '../../../utils/menu-section-links'
 
-defineProps<{
+type MenuOrderItemSelection = {
+  trigger: HTMLButtonElement
+  variantId?: string
+}
+
+const props = defineProps<{
   currencyCode: string
   sections: MenuManifestSection[]
 }>()
@@ -65,15 +82,14 @@ const emit = defineEmits<{
 
 const activeItem = shallowRef<MenuManifestItem | null>(null)
 const activeTrigger = shallowRef<HTMLButtonElement | null>(null)
+const activeVariantId = ref('')
 const dialogOpen = ref(false)
+const catalogueSections = computed(() => menuSectionLinks(props.sections))
 
-function sectionHeadingId(index: number) {
-  return `menu-order-section-${index + 1}`
-}
-
-function openItem(item: MenuManifestItem, trigger: HTMLButtonElement) {
+function openItem(item: MenuManifestItem, selection: MenuOrderItemSelection) {
   activeItem.value = item
-  activeTrigger.value = trigger
+  activeTrigger.value = selection.trigger
+  activeVariantId.value = selection.variantId || ''
   dialogOpen.value = true
 }
 
@@ -86,6 +102,7 @@ function finishDialog() {
   const trigger = activeTrigger.value
   activeItem.value = null
   activeTrigger.value = null
+  activeVariantId.value = ''
 
   void nextTick(() => trigger?.focus())
 }
@@ -93,8 +110,6 @@ function finishDialog() {
 
 <style scoped>
 .menu-order-catalogue,
-.menu-order-catalogue__sections,
-.menu-order-catalogue__section,
 .menu-order-catalogue__items {
   display: grid;
 }
@@ -102,32 +117,6 @@ function finishDialog() {
 .menu-order-catalogue {
   gap: 1.5rem;
   text-align: left;
-}
-
-.menu-order-catalogue__title {
-  margin: 0;
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  line-height: 1.1;
-}
-
-.menu-order-catalogue__sections {
-  gap: clamp(2.5rem, 6vw, 4.5rem);
-}
-
-.menu-order-catalogue__section {
-  gap: 1rem;
-}
-
-.menu-order-catalogue__section h3 {
-  margin: 0;
-  color: var(--menu-muted);
-  font-size: 0.82rem;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .menu-order-catalogue__items {

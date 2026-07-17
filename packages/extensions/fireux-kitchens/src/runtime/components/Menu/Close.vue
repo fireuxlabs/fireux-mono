@@ -47,16 +47,11 @@ withDefaults(defineProps<{
   color: var(--menu-close-fg, var(--menu-text, var(--ui-text, currentColor)));
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 0.85rem 2rem var(
-    --menu-close-shadow,
-    color-mix(in srgb, var(--menu-text, #000) 14%, transparent)
-  );
   text-decoration: none;
   transition:
     background 180ms ease,
     border-color 180ms ease,
     color 180ms ease,
-    box-shadow 180ms ease,
     transform 180ms ease;
 }
 

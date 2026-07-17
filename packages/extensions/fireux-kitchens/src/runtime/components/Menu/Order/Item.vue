@@ -9,13 +9,7 @@
     :data-menu-item-id="item.id"
     data-menu-item-mode="selectable"
   >
-    <button
-      type="button"
-      class="menu-order-item__button"
-      data-menu-action="configure-item"
-      :disabled="!canSelect"
-      @click="selectItem"
-    >
+    <div class="menu-order-item__row">
       <img
         v-if="itemImageUrl"
         :src="itemImageUrl"
@@ -31,15 +25,7 @@
       <span class="menu-order-item__copy">
         <span class="menu-order-item__heading">
           <strong>{{ item.name }}</strong>
-          <span
-            v-if="itemPrice"
-            class="menu-order-item__price"
-            :data-menu-item-price-kind="hasPriceOptions ? 'starting' : 'base'"
-          >
-            <small v-if="hasPriceOptions">From</small>
-            <span>{{ itemPrice }}</span>
-          </span>
-          <span v-else class="menu-order-item__unavailable-label">
+          <span v-if="!canSelect" class="menu-order-item__unavailable-label">
             Price unavailable
           </span>
         </span>
@@ -48,12 +34,52 @@
           {{ item.description }}
         </span>
 
-        <span v-if="canSelect" class="menu-order-item__prompt">
-          {{ choicePrompt }}
-          <UIcon name="i-lucide-chevron-right" aria-hidden="true" />
+        <span
+          v-if="priceOptions.length"
+          class="menu-order-item__variants"
+          role="radiogroup"
+          :aria-label="`${item.name} options`"
+        >
+          <button
+            v-for="variant in priceOptions"
+            :key="variant.id"
+            type="button"
+            class="menu-order-item__variant"
+            :class="{
+              'menu-order-item__variant--selected': selectedVariantId === variant.id,
+            }"
+            role="radio"
+            :aria-checked="selectedVariantId === variant.id"
+            @click="selectedVariantId = variant.id"
+          >
+            <span>{{ variant.label }}</span>
+            <strong>{{ formatPrice(variant.price) }}</strong>
+          </button>
         </span>
       </span>
-    </button>
+
+      <span class="menu-order-item__action">
+        <strong
+          v-if="actionPriceLabel"
+          class="menu-order-item__price"
+          :data-menu-item-price-kind="selectedVariant ? 'variant' : 'base'"
+        >
+          {{ actionPriceLabel }}
+        </strong>
+
+        <button
+          type="button"
+          class="menu-order-item__add"
+          :data-menu-action="requiresConfiguration ? 'configure-item' : 'add-item'"
+          :aria-label="actionLabel"
+          :title="actionLabel"
+          :disabled="!canSelect"
+          @click="activateItem"
+        >
+          <UIcon name="i-lucide-plus" aria-hidden="true" />
+        </button>
+      </span>
+    </div>
   </article>
 </template>
 
@@ -61,7 +87,9 @@
 import { computed, ref, watch } from 'vue'
 import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuOrderBasketInput } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import {
+  defaultMenuOrderPriceOption,
   menuOrderPositivePrice,
   resolveMenuOrderAddOns,
   resolveMenuOrderPriceOptions,
@@ -73,10 +101,17 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (event: 'select', trigger: HTMLButtonElement): void
+  (event: 'select', selection: MenuOrderItemSelection): void
+  (event: 'add', input: MenuOrderBasketInput): void
 }>()
 
+type MenuOrderItemSelection = {
+  trigger: HTMLButtonElement
+  variantId?: string
+}
+
 const failedImageUrl = ref('')
+const selectedVariantId = ref('')
 const itemImageUrl = computed(() => {
   const url = String(props.item.imageUrl || '').trim()
 
@@ -95,6 +130,9 @@ const itemIdentityValid = computed(() =>
   Boolean(String(props.item.id || '').trim() && String(props.item.name || '').trim())
 )
 const hasPriceOptions = computed(() => priceOptions.value.length > 0)
+const selectedVariant = computed(() => priceOptions.value.find(
+  ({ id }) => id === selectedVariantId.value
+) || null)
 const startingPrice = computed(() => {
   if (!orderDataValid.value) return 0
 
@@ -104,20 +142,23 @@ const startingPrice = computed(() => {
 
   return Math.min(...priceOptions.value.map(({ price }) => Number(price)))
 })
-const itemPrice = computed(() => formatPrice(startingPrice.value))
+const actionPriceLabel = computed(() => {
+  const price = selectedVariant.value?.price ?? startingPrice.value
+
+  return formatPrice(price)
+})
 const canSelect = computed(() =>
   orderDataValid.value && itemIdentityValid.value && startingPrice.value > 0
 )
-const choicePrompt = computed(() => {
-  const choices = priceOptions.value.length
-  const extras = addOns.value.length
-
-  if (choices && extras) return 'Choose an option and extras'
-  if (choices) return choices > 1 ? 'Choose an option' : 'View option'
-  if (extras) return 'Choose optional extras'
-
-  return 'Choose quantity'
-})
+const requiresConfiguration = computed(() =>
+  addOns.value.length > 0
+)
+const actionLabel = computed(() => requiresConfiguration.value
+  ? `Choose extras for ${props.item.name}`
+  : selectedVariant.value
+    ? `Add ${props.item.name}, ${selectedVariant.value.label}, to basket`
+    : `Add ${props.item.name} to basket`
+)
 
 watch(
   () => props.item.imageUrl,
@@ -126,11 +167,35 @@ watch(
   }
 )
 
-function selectItem(event: MouseEvent) {
+watch(
+  () => props.item,
+  () => {
+    selectedVariantId.value = defaultMenuOrderPriceOption(
+      priceOptions.value
+    )?.id || ''
+  },
+  { immediate: true }
+)
+
+function activateItem(event: MouseEvent) {
   if (!canSelect.value) return
   const trigger = event.currentTarget
+  if (!(trigger instanceof HTMLButtonElement)) return
 
-  if (trigger instanceof HTMLButtonElement) emit('select', trigger)
+  if (requiresConfiguration.value) {
+    emit('select', {
+      trigger,
+      ...(selectedVariant.value ? { variantId: selectedVariant.value.id } : {}),
+    })
+    return
+  }
+
+  emit('add', {
+    item: props.item,
+    ...(selectedVariant.value ? { variantId: selectedVariant.value.id } : {}),
+    addOnIds: [],
+    quantity: 1,
+  })
 }
 
 function hideImage() {
@@ -150,33 +215,16 @@ function formatPrice(price: number) {
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
 }
 
-.menu-order-item__button {
+.menu-order-item__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) max-content;
   gap: 1rem;
-  width: 100%;
+  align-items: center;
   padding: 1.25rem 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
 }
 
-.menu-order-item--with-image .menu-order-item__button {
-  grid-template-columns: 5rem minmax(0, 1fr);
-}
-
-.menu-order-item__button:focus-visible {
-  border-radius: 0.3rem;
-  outline: 2px solid var(--menu-primary);
-  outline-offset: 0.25rem;
-}
-
-.menu-order-item__button:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
+.menu-order-item--with-image .menu-order-item__row {
+  grid-template-columns: 5rem minmax(0, 1fr) max-content;
 }
 
 .menu-order-item__image {
@@ -195,9 +243,7 @@ function formatPrice(price: number) {
 
 .menu-order-item__heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 1rem;
-  align-items: baseline;
+  gap: 0.25rem;
 }
 
 .menu-order-item__heading > strong {
@@ -211,22 +257,11 @@ function formatPrice(price: number) {
 }
 
 .menu-order-item__price {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.3rem;
   color: var(--menu-primary);
-  font-size: 0.92rem;
+  font-size: 0.78rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-.menu-order-item__price small {
-  color: var(--menu-muted);
-  font-size: 0.66rem;
-  font-weight: 850;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .menu-order-item__description {
@@ -237,14 +272,90 @@ function formatPrice(price: number) {
   white-space: pre-line;
 }
 
-.menu-order-item__prompt {
-  display: inline-flex;
+.menu-order-item__variants {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.35rem;
+  margin-top: 0.1rem;
+}
+
+.menu-order-item__variant {
+  display: inline-flex;
+  min-height: 1.85rem;
   align-items: center;
-  margin-top: 0.15rem;
+  gap: 0.3rem;
+  padding: 0.28rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--menu-secondary) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--menu-secondary) 6%, var(--menu-bg));
+  color: var(--menu-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.menu-order-item__variant strong {
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.menu-order-item__variant--selected {
+  border-color: var(--menu-primary);
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+  box-shadow: 0 0.2rem 0.65rem color-mix(in srgb, var(--menu-primary) 18%, transparent);
+}
+
+.menu-order-item__variant:focus-visible {
+  outline: 2px solid var(--menu-primary);
+  outline-offset: 0.15rem;
+}
+
+.menu-order-item__action {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  align-self: center;
+}
+
+.menu-order-item__add {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--menu-primary) 42%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-primary);
-  font-size: 0.75rem;
-  font-weight: 850;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.menu-order-item__add:hover {
+  background: var(--menu-primary);
+  color: var(--menu-bg);
+  transform: translateY(-1px);
+}
+
+.menu-order-item__add:focus-visible {
+  outline: 2px solid var(--menu-primary);
+  outline-offset: 0.2rem;
+}
+
+.menu-order-item__add:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.menu-order-item__add :deep(svg) {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .menu-order-item__unavailable-label {
@@ -255,8 +366,8 @@ function formatPrice(price: number) {
 }
 
 @media (max-width: 520px) {
-  .menu-order-item--with-image .menu-order-item__button {
-    grid-template-columns: 4rem minmax(0, 1fr);
+  .menu-order-item--with-image .menu-order-item__row {
+    grid-template-columns: 4rem minmax(0, 1fr) max-content;
   }
 
   .menu-order-item__image {
@@ -265,14 +376,4 @@ function formatPrice(price: number) {
   }
 }
 
-@media (max-width: 420px) {
-  .menu-order-item--with-image .menu-order-item__heading {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.25rem;
-  }
-
-  .menu-order-item--with-image .menu-order-item__price {
-    justify-self: start;
-  }
-}
 </style>

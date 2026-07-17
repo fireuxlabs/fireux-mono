@@ -73,7 +73,11 @@ export function menuRouteProjection(
   context: MenuRouteContext
 ): MenuRouteProjection {
   if (context === 'generic') return 'browse'
-  if (context === 'collection') return 'order'
+  if (
+    context === 'delivery' ||
+    context === 'collection' ||
+    context === 'pre_order'
+  ) return 'order'
 
   return 'diagnostic'
 }

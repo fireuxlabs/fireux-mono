@@ -24,11 +24,8 @@
       </span>
 
       <div class="menu-order-intro__mode-copy">
-        <p class="menu-order-intro__eyebrow">
-          {{ contextLabel }}
-        </p>
         <h2 id="menu-order-mode-title">
-          Collection ordering
+          {{ contextLabel }}
         </h2>
         <p>{{ message }}</p>
       </div>
@@ -73,8 +70,7 @@ withDefaults(defineProps<{
 }
 
 .menu-order-intro__kitchen,
-.menu-order-intro__currency,
-.menu-order-intro__eyebrow {
+.menu-order-intro__currency {
   color: var(--menu-muted);
   font-size: 0.75rem;
   font-weight: 900;

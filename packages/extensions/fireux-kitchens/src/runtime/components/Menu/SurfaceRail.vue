@@ -1,14 +1,19 @@
 <template>
-  <nav class="menu-browse-surface-rail" aria-label="Order options">
+  <nav class="menu-surface-rail" aria-label="Menu options">
     <NuxtLink
       v-for="option in options"
       :key="option.value"
       :to="option.to"
-      class="menu-browse-surface-rail__link"
-      :data-menu-browse-option="option.value"
+      class="menu-surface-rail__link"
+      :class="{ 'menu-surface-rail__link--active': option.active }"
+      :aria-current="option.active ? 'page' : undefined"
+      :data-menu-surface-option="option.value"
     >
       {{ option.label }}
-      <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+      <UIcon
+        :name="option.active ? 'i-lucide-check' : 'i-lucide-arrow-right'"
+        aria-hidden="true"
+      />
     </NuxtLink>
   </nav>
 </template>
@@ -22,7 +27,7 @@ defineProps<{
 </script>
 
 <style scoped>
-.menu-browse-surface-rail {
+.menu-surface-rail {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -31,7 +36,7 @@ defineProps<{
   margin: 0 auto;
 }
 
-.menu-browse-surface-rail__link {
+.menu-surface-rail__link {
   display: inline-flex;
   min-height: 2.65rem;
   align-items: center;
@@ -52,25 +57,26 @@ defineProps<{
     transform 150ms ease;
 }
 
-.menu-browse-surface-rail__link:hover {
+.menu-surface-rail__link:hover,
+.menu-surface-rail__link--active {
   border-color: var(--menu-primary);
   background: var(--menu-primary);
   color: var(--menu-bg);
   transform: translateY(-1px);
 }
 
-.menu-browse-surface-rail__link:focus-visible {
+.menu-surface-rail__link:focus-visible {
   outline: 2px solid var(--menu-primary);
   outline-offset: 0.2rem;
 }
 
-.menu-browse-surface-rail__link :deep(svg) {
+.menu-surface-rail__link :deep(svg) {
   width: 0.9rem;
   height: 0.9rem;
 }
 
 @media (max-width: 30rem) {
-  .menu-browse-surface-rail__link {
+  .menu-surface-rail__link {
     flex: 1 1 calc(50% - 0.65rem);
   }
 }
