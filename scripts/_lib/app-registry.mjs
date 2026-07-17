@@ -60,6 +60,7 @@ const menuIndexApiContract = (route, scopeKind, options = {}) => ({
     '"items"',
     '"nextCursor"',
     ...(options.menuId ? [`"id": "${options.menuId}"`] : []),
+    ...(options.kitchenName ? ['"kitchen_name"'] : []),
   ],
 })
 
@@ -287,6 +288,7 @@ const menuOrderContract = (route, options = {}) => {
       `data-menu-path="${route}"`,
       'data-menu-render-kind="structured"',
       'data-menu-state="ready"',
+      'data-menu-surface-theme="menu"',
       'data-menu-theme-canvas="true"',
       'data-menu-action="exit"',
       `data-menu-exit-kind="${exitKind}"`,
@@ -338,11 +340,26 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       'data-menu-context="collection"',
       'data-menu-order-type="collection"',
       'data-menu-ordering-enabled="false"',
+      'data-menu-surface-theme="app"',
       'data-menu-theme-canvas="true"',
       'data-menu-action="exit"',
       `data-menu-exit-kind="${exitKind}"`,
       `href="${exitPath}"`,
       title,
+      ...(options.browsePath
+        ? [
+            'data-menu-action="browse"',
+            `href="${options.browsePath}"`,
+            'See other options',
+          ]
+        : []),
+      ...(options.kitchenPath
+        ? [
+            'data-menu-action="kitchen"',
+            `href="${options.kitchenPath}"`,
+            'Contact the kitchen',
+          ]
+        : []),
     ],
     excludes: [
       MENU_INDEX_MARKER,
@@ -363,9 +380,52 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       'menu-item__add',
       'type="submit"',
       '/orders',
+      'Error 404',
+      ...(options.noRecovery
+        ? [
+            'data-menu-action="browse"',
+            'data-menu-action="kitchen"',
+          ]
+        : []),
     ],
   }
 }
+
+const kitchenCollectionRecoveryContract = (route, kitchenPath, kitchenName) => ({
+  route,
+  status: 404,
+  contentType: 'text/html',
+  noindex: true,
+  includes: [
+    MENU_LAYOUT_MARKER,
+    MENU_UNAVAILABLE_MARKER,
+    'data-kitchen-projection="collection-unavailable"',
+    'data-menu-surface-theme="kitchen"',
+    'data-menu-theme-canvas="true"',
+    'data-menu-action="exit"',
+    'data-menu-exit-kind="back"',
+    'data-menu-action="browse"',
+    `href="${kitchenPath}"`,
+    kitchenName,
+    'Collection unavailable',
+    'See other options',
+  ],
+  excludes: [
+    MENU_INDEX_MARKER,
+    MENU_BROWSE_MARKER,
+    MENU_ORDER_MARKER,
+    MENU_JSON_MARKER,
+    MENU_QR_MARKER,
+    'data-menu-action="kitchen"',
+    'data-menu-state="ready"',
+    'data-menu-order-catalogue=',
+    'data-menu-order-basket=',
+    'type="submit"',
+    '/orders',
+    'Error 404',
+    'Kitchen not found',
+  ],
+})
 
 const menuJsonContract = (route, context, options = {}) => ({
   route,
@@ -486,7 +546,9 @@ export const APP_REGISTRY = {
     ],
     httpContracts: [
       menuIndexContract('/menus', { kind: 'collection' }),
-      menuIndexApiContract('/api/menus?limit=2', 'root'),
+      menuIndexApiContract('/api/menus?limit=2', 'root', {
+        kitchenName: true,
+      }),
       menuIndexApiContract(
         '/api/menus?kitchenSlug=baeren-ringgenberg&limit=1',
         'directory',
@@ -538,6 +600,19 @@ export const APP_REGISTRY = {
         ],
         itemExcludes: ['+ 27 CHF'],
       }),
+      unavailableMenuOrderContract(
+        '/menus/indian-gourmet-restaurant-pizzeria-main.collection',
+        'Collection unavailable',
+        {
+          browsePath: '/menus/indian-gourmet-restaurant-pizzeria-main',
+          kitchenPath: '/kitchens/indian-gourmet-restaurant-pizzeria',
+        }
+      ),
+      kitchenCollectionRecoveryContract(
+        '/kitchens/indian-gourmet-restaurant-pizzeria.collection',
+        '/kitchens/indian-gourmet-restaurant-pizzeria',
+        'Indian Gourmet Restaurant &amp; Pizzeria'
+      ),
       menuBrowseContract('/menus/luna-piccante-main-menu'),
       menuBrowseContract('/menus/pizza-menu'),
       menuBrowseContract('/menus/pizza-snacks-drinks', {
@@ -562,7 +637,8 @@ export const APP_REGISTRY = {
       missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
       unavailableMenuOrderContract(
         '/menus/fireux-route-contract-missing.collection',
-        'Menu not found'
+        'Menu not found',
+        { noRecovery: true }
       ),
       missingMenuBrowseContract('/menus/__fireux_route_contract_invalid__', [
         'INVALID_ARGUMENT',
@@ -607,7 +683,8 @@ export const APP_REGISTRY = {
       ),
       unavailableMenuOrderContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.collection',
-        'Menu not found'
+        'Menu not found',
+        { noRecovery: true }
       ),
       missingMenuQrContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing/qr'
@@ -887,6 +964,11 @@ export const APP_REGISTRY = {
         '/pizza-snacks-drinks.collection/qr',
         '/pizza-snacks-drinks.collection',
         { context: 'collection' }
+      ),
+      kitchenCollectionRecoveryContract(
+        '/kitchens/baeren-ringgenberg.collection',
+        '/kitchens/baeren-ringgenberg',
+        'Bären'
       ),
       tenantMenuIndexRedirectContract(
         '/menus/pizza-snacks-drinks',

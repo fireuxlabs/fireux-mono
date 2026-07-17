@@ -1,16 +1,28 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="text-sm font-semibold">{{ defaultChromeLabels.menus }}</div>
+  <section class="kitchen-menus" aria-labelledby="kitchen-menus-title">
+    <header class="kitchen-menus__header">
+      <div>
+        <p class="kitchen-menus__eyebrow">Explore</p>
+        <h2 id="kitchen-menus-title">{{ defaultChromeLabels.menus }}</h2>
       </div>
-    </template>
 
-    <div class="space-y-4">
+      <UButton
+        v-if="menusIndexLink && sortedMenus.length > 1"
+        size="sm"
+        variant="ghost"
+        color="neutral"
+        trailing-icon="i-lucide-arrow-right"
+        :to="menusIndexLink"
+      >
+        {{ defaultChromeLabels.openMenus }}
+      </UButton>
+    </header>
+
+    <div class="kitchen-menus__body">
       <ClientOnly>
         <div
           v-if="activeSessions.length"
-          class="flex flex-wrap gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3"
+          class="kitchen-menus__sessions"
         >
           <UButton
             v-for="session in activeSessions"
@@ -26,36 +38,26 @@
         </div>
       </ClientOnly>
 
-      <UButton
-        v-if="menusIndexLink"
-        size="sm"
-        variant="soft"
-        color="primary"
-        icon="i-lucide-book-open-check"
-        :to="menusIndexLink"
-      >
-        {{ defaultChromeLabels.openMenus }}
-      </UButton>
-
-      <div v-if="menusLoading" class="py-4 text-sm text-dimmed">
+      <div v-if="menusLoading" class="kitchen-menus__state">
+        <UIcon name="i-lucide-loader-circle" class="animate-spin" />
         {{ defaultChromeLabels.loadingMenus }}
       </div>
 
-      <div v-else-if="!sortedMenus.length" class="py-4 text-sm text-dimmed">
+      <div v-else-if="!sortedMenus.length" class="kitchen-menus__state">
+        <UIcon name="i-lucide-book-open" />
         {{ defaultChromeLabels.noMenusAvailable }}
       </div>
 
-      <div v-else class="grid gap-3 sm:grid-cols-2">
+      <div v-else class="kitchen-menus__grid">
         <KitchenDetailMenuLink
           v-for="menu in sortedMenus"
           :key="menu.id"
           :menu="menu"
           :entries="menuEntries(menu)"
-          :summary="defaultChromeLabels.openMenu"
         />
       </div>
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -72,7 +74,7 @@ import type { Menu } from '../../../models/kitchen/menu/menu.model'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { publicMenuSurfaceProfiles } from '../../../utils/menu-context'
+import { guestDiscoverableMenuSurfaceProfiles } from '../../../utils/menu-context'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
@@ -93,10 +95,9 @@ const kitchenCollectionPath = computed(() =>
 )
 const defaultChromeLabels = {
   menus: 'Menus',
-  openMenus: 'Open menus',
+  openMenus: 'See all menus',
   loadingMenus: 'Loading menus...',
   noMenusAvailable: 'No menus available',
-  openMenu: 'Open menu',
 }
 const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
   kitchenId,
@@ -157,16 +158,88 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 }
 const menuEntries = (menu: Menu) => [
   {
-    label: 'Browse',
+    label: 'View menu',
     to: menuLink(menu.id),
     icon: 'i-lucide-book-open',
+    primary: true,
   },
-  ...publicMenuSurfaceProfiles
+  ...guestDiscoverableMenuSurfaceProfiles
     .filter((surface) => hasOrderType(menu, [...surface.visibleOrderTypes]))
     .map((surface) => ({
       label: surface.label,
       to: contextualMenuLink(menu, surface.context),
       icon: surface.icon,
+      primary: false,
     })),
 ].filter((entry) => entry.to)
 </script>
+
+<style scoped>
+.kitchen-menus {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.kitchen-menus__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kitchen-menus__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--ui-text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.kitchen-menus h2 {
+  margin: 0;
+  color: var(--ui-text-highlighted);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.kitchen-menus__body {
+  display: grid;
+  gap: 1rem;
+}
+
+.kitchen-menus__sessions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--ui-primary) 7%, transparent);
+}
+
+.kitchen-menus__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
+  gap: 1rem;
+}
+
+.kitchen-menus__state {
+  display: flex;
+  min-height: 8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px dashed var(--ui-border);
+  border-radius: 1.25rem;
+  color: var(--ui-text-muted);
+  font-size: 0.9rem;
+}
+
+.kitchen-menus__state :deep(svg) {
+  width: 1rem;
+  height: 1rem;
+}
+</style>

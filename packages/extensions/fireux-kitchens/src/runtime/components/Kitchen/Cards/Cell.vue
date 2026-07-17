@@ -11,6 +11,7 @@
         :alt="name"
         size="md"
         icon="i-lucide-image"
+        class="kitchen-card-cell__avatar"
         :class="avatarShadeClass"
       />
 
@@ -48,6 +49,10 @@
         <div v-if="showTagline && prop" class="card__tagline">
           {{ prop }}
         </div>
+      </div>
+
+      <div v-if="directory" class="kitchen-card-cell__arrow" aria-hidden="true">
+        <UIcon name="i-lucide-arrow-up-right" />
       </div>
     </div>
   </NuxtLink>
@@ -64,6 +69,7 @@
         :alt="name"
         size="md"
         icon="i-lucide-image"
+        class="kitchen-card-cell__avatar"
         :class="avatarShadeClass"
       />
 
@@ -102,6 +108,10 @@
           {{ prop }}
         </div>
       </div>
+
+      <div v-if="directory" class="kitchen-card-cell__arrow" aria-hidden="true">
+        <UIcon name="i-lucide-arrow-up-right" />
+      </div>
     </div>
   </div>
 </template>
@@ -111,7 +121,7 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-type Props = Partial<Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'>> & {
+type Props = Partial<Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'shortAddress' | 'imageUrl' | 'imageShade'>> & {
   badges?: KitchenCard.Card['badges']
   prop?: string
   showSubtitle?: boolean
@@ -121,6 +131,7 @@ type Props = Partial<Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAdd
   action?: boolean
   disabled?: boolean
   selected?: boolean
+  directory?: boolean
 }
 
 const emit = defineEmits<{
@@ -131,7 +142,7 @@ const props = withDefaults(defineProps<Props>(), {
   id: '',
   to: '',
   name: '',
-  formattedAddress: '',
+  shortAddress: '',
   imageUrl: '',
   badges: () => [],
   prop: '',
@@ -142,9 +153,10 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
   disabled: false,
   selected: false,
+  directory: false,
 })
 
-const resolvedAddress = computed(() => props.formattedAddress || '')
+const resolvedAddress = computed(() => props.shortAddress || '')
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
 
@@ -163,6 +175,7 @@ const cardClass = computed(() => ({
   'cursor-pointer': props.action || (props.link && props.to),
   'cursor-not-allowed opacity-60': props.disabled,
   'kitchen-card-cell--selected': props.selected,
+  'kitchen-card-cell--directory': props.directory,
 }))
 
 const onClick = (event?: MouseEvent) => {
@@ -181,6 +194,80 @@ const onClick = (event?: MouseEvent) => {
 </script>
 
 <style scoped>
+.kitchen-card-cell--directory {
+  min-height: 9.5rem;
+  padding: 1.25rem;
+  border-color: color-mix(in srgb, var(--ui-primary) 13%, var(--ui-border));
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--ui-primary) 5%, var(--ui-bg)),
+      var(--ui-bg) 58%
+    );
+}
+
+.kitchen-card-cell--directory:hover {
+  border-color: color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--ui-primary) 9%, var(--ui-bg)),
+      var(--ui-bg) 68%
+    );
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.kitchen-card-cell--directory .card__media {
+  align-items: flex-start;
+  height: 100%;
+  gap: 1rem;
+}
+
+.kitchen-card-cell--directory .kitchen-card-cell__avatar {
+  width: 3.75rem;
+  height: 3.75rem;
+}
+
+.kitchen-card-cell--directory .card__stack {
+  gap: 0.55rem;
+}
+
+.kitchen-card-cell--directory .card__title {
+  font-size: 1.05rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+.kitchen-card-cell--directory .card__subtitle,
+.kitchen-card-cell--directory .card__tagline {
+  font-size: 0.8rem;
+  white-space: normal;
+  line-height: 1.45;
+}
+
+.kitchen-card-cell__arrow {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  color: var(--ui-text-muted);
+  transition: border-color 160ms ease, background-color 160ms ease,
+    color 160ms ease, transform 160ms ease;
+}
+
+.kitchen-card-cell--directory:hover .kitchen-card-cell__arrow {
+  border-color: var(--ui-primary);
+  background: var(--ui-primary);
+  color: var(--ui-bg);
+  transform: rotate(8deg);
+}
+
 .kitchen-card-cell--selected {
   border-color: color-mix(in srgb, var(--ui-primary) 52%, var(--ui-border));
   background:

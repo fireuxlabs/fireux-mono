@@ -16,6 +16,7 @@ import {
   resolveDirectoryPublicMenuScope,
   type TenantPublicMenuScope,
 } from '../../menu/ownership/public-target.ts'
+import { menuKitchenIdentity } from '../../menu/ownership/kitchen-scope.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isFirestoreDocumentId = (value: string) =>
@@ -53,7 +54,8 @@ const decodeCursor = (value: unknown) => {
 const publicMenuIndexItem = (
   id: string,
   data: Record<string, unknown>,
-  tenantScope?: TenantPublicMenuScope | null
+  tenantScope?: TenantPublicMenuScope | null,
+  kitchenName = ''
 ) => {
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
@@ -63,9 +65,10 @@ const publicMenuIndexItem = (
         kitchenAppId: tenantScope.appId,
         kitchenId: tenantScope.kitchenId,
         kitchenSlug: tenantScope.kitchenSlug,
+        kitchenName,
         kitchenMenuId: id,
       })
-    : menuSourceFromData(data)
+    : menuSourceFromData(data, { kitchenName })
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
@@ -78,6 +81,65 @@ const publicMenuIndexItem = (
     status,
     ...(hasSource ? { source } : {}),
   }
+}
+
+type MenuIndexDocument = {
+  id: string
+  data: Record<string, unknown>
+}
+
+const menuIndexKitchenNames = async (
+  db: ReturnType<typeof getRuntimeFirestore>,
+  documents: MenuIndexDocument[]
+) => {
+  const sources = documents.map(document => ({
+    document,
+    source: menuSourceFromData(document.data),
+  }))
+  const references = new Map<string, ReturnType<typeof db.doc>>()
+
+  for (const { source } of sources) {
+    if (!source.kitchen_id) continue
+
+    const rootRef = db.collection('kitchens').doc(source.kitchen_id)
+    references.set(rootRef.path, rootRef)
+
+    if (source.app_id) {
+      const appRef = db
+        .collection(`apps/${source.app_id}/kitchens`)
+        .doc(source.kitchen_id)
+      references.set(appRef.path, appRef)
+    }
+  }
+
+  if (!references.size) return new Map<string, string>()
+
+  // One bounded batch per cursor page keeps the global directory current
+  // without either copied Kitchen identity or per-Menu reads.
+  const snapshots = await db.getAll(...references.values())
+  const dataByPath = new Map(
+    snapshots.map(snapshot => [
+      snapshot.ref.path,
+      snapshot.exists ? snapshot.data() || {} : {},
+    ])
+  )
+
+  return new Map(
+    sources.map(({ document, source }) => {
+      if (!source.kitchen_id) return [document.id, ''] as const
+
+      const rootPath = `kitchens/${source.kitchen_id}`
+      const appPath = source.app_id
+        ? `apps/${source.app_id}/kitchens/${source.kitchen_id}`
+        : ''
+      const identity = menuKitchenIdentity(
+        dataByPath.get(rootPath) || {},
+        appPath ? dataByPath.get(appPath) || {} : {}
+      )
+
+      return [document.id, identity.name] as const
+    })
+  )
 }
 
 export default defineEventHandler(async (event) => {
@@ -124,8 +186,20 @@ export default defineEventHandler(async (event) => {
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs
+  const indexDocuments = pageDocs.map(doc => ({
+    id: doc.id,
+    data: doc.data(),
+  }))
+  const kitchenNames = scopedKitchen
+    ? new Map<string, string>()
+    : await menuIndexKitchenNames(db, indexDocuments)
   const items = pageDocs
-    .map((doc) => publicMenuIndexItem(doc.id, doc.data(), scopedKitchen))
+    .map((doc) => publicMenuIndexItem(
+      doc.id,
+      doc.data(),
+      scopedKitchen,
+      kitchenNames.get(doc.id)
+    ))
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
   const nextCursor = hasMore && pageDocs.length
     ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')

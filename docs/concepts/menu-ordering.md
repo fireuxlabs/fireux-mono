@@ -34,11 +34,18 @@ Public route hierarchy:
 - Never generate `/menu.delivery` or `/menus.<context>`. Tenant detail grammar
   remains root-based at every menu count; only `/menus` index presentation
   changes between redirect, empty, and list outcomes.
+- `/kitchens/<kitchenSlug>.collection` is not an ordering route because it has
+  no Menu identity. If the Kitchen resolves, it renders only a Kitchen-themed,
+  noindex 404 recovery surface whose actions return to that public Kitchen;
+  it never selects, redirects to, or creates an Order from a Menu implicitly.
 - Home options is a UI grouping, not a surface, route context, or `KitchenOrder.order_type`.
 - A menu's `.delivery` and `.collection` suffixes are separate direct surfaces.
 - A menu may enable `delivery`, `collection`, or both inside the Home options grouping.
 - `.pre_order`, `.room_service`, `.dine_in`, and `.kiosk` remain purpose-specific surfaces.
-- Kiosk has one public route per doorway, using the same identity suffix rule.
+- Kiosk has one addressable route per doorway, using the same identity suffix
+  rule, but it is an operator-distributed entry rather than guest-discoverable
+  navigation. Public Kitchen cards and customer choice rails do not advertise
+  Kiosk; console QR tooling remains its management doorway.
 - Any recognized contextual doorway may add `/qr` after the contextual menu
   identity. That QR encodes the exact context URL and is available only when
   the context-filtered Menu manifest resolves; it never silently falls back to
@@ -158,9 +165,19 @@ Public order funnel spine:
 - `.collection` renders the package-owned, noindex `Menu/Order` projection.
   It resolves the context-filtered manifest through the same `useMenu` seam,
   fails closed with 404 when Collection is disabled or the Menu is document-only,
-  and renders its sections as selectable items. Required variants, optional
-  add-ons, and quantity are configured explicitly before adding a line to the
-  local basket.
+  and renders its sections as selectable items. A resolved-but-disabled
+  Collection page keeps that 404 response while offering the generic Browse
+  route and, when the resolved source has a Kitchen slug, its public Kitchen
+  route; genuinely missing Menus do not emit guessed recovery links. This
+  recovery state uses the host app's normal UI theme rather than presenting a
+  disabled ordering context as if it were still the Kitchen's live Menu
+  surface. Required variants, optional add-ons, and quantity are configured
+  explicitly before adding a line to the local basket.
+- A resolvable Kitchen-scoped `.collection` mistake reuses the same human
+  unavailable treatment but resolves only the current Kitchen name and Menu
+  page style. Its circular exit and recovery action both return to the Kitchen
+  profile. This is a themed 404 doorway, not a second Collection funnel or a
+  shortcut to one of the Kitchen's Menus.
 - Every other recognized ordering suffix still renders `Menu/Json` as a
   diagnostic projection. No public route mounts an ordering funnel yet.
 - The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and

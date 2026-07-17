@@ -8,7 +8,7 @@ import {
   menuContextProfile,
   menuOrderChannelForContext,
   normalizeMenuRouteContext,
-  publicMenuSurfaceProfiles,
+  guestDiscoverableMenuSurfaceProfiles,
 } from '../../../../../../utils/menu-context'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
@@ -223,7 +223,7 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
         .map((choice) => choice.orderType)
         .filter((type): type is KitchenOrderType => Boolean(type)),
     ]))
-    const surfaces = publicMenuSurfaceProfiles.filter((surface) =>
+    const surfaces = guestDiscoverableMenuSurfaceProfiles.filter((surface) =>
       surface.visibleOrderTypes.some((type) => surfaceOrderTypes.includes(type))
     )
 

@@ -35,20 +35,37 @@ const kitchenSlug = computed(() => {
   const value = route.params.slug
   return String(Array.isArray(value) ? value[0] : value || '').trim()
 })
+const kitchenCollectionRecoverySlug = computed(() => {
+  if (route.params.menuId) return ''
+
+  const suffix = '.collection'
+  return kitchenSlug.value.endsWith(suffix)
+    ? kitchenSlug.value.slice(0, -suffix.length)
+    : ''
+})
 const routeScope = computed(() => {
-  if (kitchenSlug.value) return directoryMenuRouteScope(kitchenSlug.value)
+  const directorySlug = kitchenCollectionRecoverySlug.value || kitchenSlug.value
+  if (directorySlug) return directoryMenuRouteScope(directorySlug)
   return fireux.isTenant ? tenantMenuRouteScope() : rootMenuRouteScope()
 })
 const isKioskMenu = computed(() =>
   parseMenuRouteTarget(route.params.menuId).context === 'kiosk'
 )
-const exitPath = computed(() =>
-  fireux.isTenant ? '/' : menuRouteIndexPath(routeScope.value)
+const exitPath = computed(() => {
+  if (kitchenCollectionRecoverySlug.value) {
+    return `/kitchens/${encodeURIComponent(kitchenCollectionRecoverySlug.value)}`
+  }
+
+  return fireux.isTenant ? '/' : menuRouteIndexPath(routeScope.value)
+})
+const exitKind = computed(() =>
+  fireux.isTenant && !kitchenCollectionRecoverySlug.value ? 'close' : 'back'
 )
-const exitKind = computed(() => fireux.isTenant ? 'close' : 'back')
-const exitLabel = computed(() =>
-  fireux.isTenant ? 'Close menu' : 'Back to menus'
-)
+const exitLabel = computed(() => {
+  if (kitchenCollectionRecoverySlug.value) return 'Back to kitchen'
+
+  return fireux.isTenant ? 'Close menu' : 'Back to menus'
+})
 </script>
 
 <style scoped>

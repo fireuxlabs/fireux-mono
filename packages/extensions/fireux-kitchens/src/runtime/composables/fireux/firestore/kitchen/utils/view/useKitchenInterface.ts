@@ -3,6 +3,7 @@ import type {
   Place,
   PlaceImageShade,
 } from 'fireux-places/runtime/models/place.model'
+import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
@@ -153,7 +154,7 @@ export function useKitchenInterface() {
 
   type KitchenCell = Pick<
     KitchenCard.Card,
-    'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
+    'id' | 'to' | 'name' | 'shortAddress' | 'imageUrl' | 'imageShade'
   > & {
     prop?: string
   }
@@ -223,8 +224,10 @@ export function useKitchenInterface() {
     const identity = readKitchenIdentity(kitchen)
     const name = safeString(identity.displayName || kitchen.name)
     const shortName = safeString(kitchen.short_name)
-    const shortAddress = safeString(kitchen.short_address)
     const formattedAddress = safeString(kitchen.formatted_address)
+    const shortAddress = toShortAddress(
+      safeString(kitchen.short_address) || formattedAddress
+    )
     const imageUrl = safeString(identity.imageUrl || kitchen.image_url)
 
     const badges = kitchen.show === false ? ['Hidden'] : []
@@ -336,7 +339,7 @@ export function useKitchenInterface() {
       id: base.id,
       to: base.to,
       name: base.name,
-      formattedAddress: base.formattedAddress,
+      shortAddress: base.shortAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
       prop: (target as any)?.brand_tagline,

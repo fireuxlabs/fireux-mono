@@ -57,6 +57,10 @@ Current public menu doorways:
   remain lists, even when their current result contains one menu.
 - Ordering contexts append after the menu identity on every doorway, for
   example `.delivery`, `.collection`, and `.kiosk`; see `menu-ordering.md`.
+- A request shaped as `/kitchens/<kitchenSlug>.collection` has no Menu identity
+  and is therefore never a Collection projection. When the Kitchen resolves,
+  the package returns a Kitchen-themed, noindex 404 recovery surface linking
+  back to the public Kitchen profile; it does not choose a Menu implicitly.
 - Premium global-id claim, reserve, renew, and enforcement policy remains
   `to-confirm`; this map does not claim that enforcement is implemented.
 - Current route/source seams:
@@ -70,6 +74,9 @@ Current public menu doorways:
   and no index decision downloads an unbounded collection. Client-only search
   stays hidden while another cursor page exists so it never pretends to search
   the complete catalogue; a future large-catalogue search must be server-owned.
+  The global index resolves each page's current root/app Kitchen display names
+  in one bounded batch so Menu cards remain identifiable without copying
+  Kitchen identity onto root Menu records or issuing per-Menu reads.
 - `src/runtime/composables/fireux/menu/useMenu.ts` is the resolved public
   projection seam. It owns one collision-safe request key, the structured or
   document render decision, safe failure state, and the relative index, Menu,
@@ -190,6 +197,10 @@ Page composition note:
   printed or shared to become an entry into the Menu. QR links back to Browse
   and the index as a fallback. Document rendering inherits the detail-layout
   exit and adds only its open-original file action.
+- A public Kitchen profile lists Browse plus guest-discoverable ordering
+  contexts only. Kiosk remains addressable for operator-generated QR entry but
+  is not advertised by Kitchen cards or customer choice rails; its visible
+  management doorway belongs in the Kitchen console.
 - Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
   `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
   menu contract through MenuBrowse. The server, not the URL renderer, resolves
@@ -239,8 +250,8 @@ Component placement:
   its route-owned `usePublicMenuIndex` controller is passed explicitly into
   `Menu/Collection/Manager.vue` so one request state powers policy and display.
   This is not a raw provided collection or per-row hydration seam.
-  `components/Menu/Close.vue` owns the shared circular control, while each
-  concrete app's `layouts/menu.vue` supplies its surface-aware exit destination
+  `components/Menu/Close.vue` owns the shared circular control, while the
+  package-owned `layouts/menu.vue` supplies its surface-aware exit destination
   for Browse and live order projections. `components/Menu/Browse/Index.vue` owns
   context-free customer detail and its
   small `Browse/Identity.vue` identity, `Browse/Item.vue` row,

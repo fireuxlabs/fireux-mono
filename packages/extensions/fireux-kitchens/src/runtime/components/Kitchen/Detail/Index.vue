@@ -13,7 +13,7 @@
           variant="subtle"
         />
 
-        <div v-else class="space-y-4">
+        <div v-else class="kitchen-detail">
           <KitchenDetailIdentity :kitchen="kitchen" />
 
           <KitchenDetailMenus :kitchen="kitchen" />
@@ -124,3 +124,11 @@ const resolvedFulfilment = computed(() => fulfilmentData.value || emptyFulfilmen
 
 useKitchenSeo(seoKitchen)
 </script>
+
+<style scoped>
+.kitchen-detail {
+  display: grid;
+  gap: clamp(2.25rem, 5vw, 4rem);
+  padding-bottom: clamp(2rem, 6vw, 5rem);
+}
+</style>

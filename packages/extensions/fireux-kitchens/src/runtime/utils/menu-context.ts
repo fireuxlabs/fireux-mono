@@ -114,6 +114,9 @@ export const publicMenuSurfaceProfiles = [
   profiles.room_service,
 ] as const
 
+export const guestDiscoverableMenuSurfaceProfiles =
+  publicMenuSurfaceProfiles.filter(({ context }) => context !== 'kiosk')
+
 export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
   const context = text(value)
 

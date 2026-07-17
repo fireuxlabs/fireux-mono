@@ -10,6 +10,7 @@
     :data-menu-path="orderAvailable ? orderPath : undefined"
     :data-menu-render-kind="orderAvailable ? 'structured' : undefined"
     :data-menu-state="orderState"
+    :data-menu-surface-theme="orderAvailable ? 'menu' : 'app'"
     :class="themeClassName"
     :style="themeStyleVars"
     :aria-labelledby="pending
@@ -24,7 +25,10 @@
 
     <MenuOrderUnavailable
       v-else-if="!orderAvailable"
+      :browse-path="unavailableBrowsePath"
       :failure="unavailableFailure"
+      :kitchen-name="kitchenName"
+      :kitchen-path="unavailableKitchenPath"
     />
 
     <div v-else class="menu-order__shell">
@@ -156,10 +160,44 @@ const basketScopeKey = computed(() => JSON.stringify([
 const unavailableFailure = computed(() => failure.value || {
   statusCode: 404,
   title: 'Collection unavailable',
-  description: 'This menu is not currently accepting collection orders.',
+  description:
+    'This kitchen is not accepting collection orders from this menu right now.',
+})
+const hasResolvedMenu = computed(() => Boolean(
+  detailMenu.value || documentMenu.value
+))
+const unavailableBrowsePath = computed(() => hasResolvedMenu.value
+  ? menuRoutePath({
+      scope: menuRouteScope.value,
+      menuId: menuId.value,
+    })
+  : ''
+)
+const unavailableKitchenPath = computed(() => {
+  const kitchenSlug = String(resolvedSource.value?.kitchenSlug || '').trim()
+
+  return hasResolvedMenu.value && kitchenSlug
+    ? `/kitchens/${encodeURIComponent(kitchenSlug)}`
+    : ''
 })
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || documentMenu.value?.pageStyle || null
+)
+const appPageStyle = {
+  background_color_light: 'var(--ui-bg)',
+  background_color_dark: 'var(--ui-bg)',
+  font_color_light: 'var(--ui-text)',
+  font_color_dark: 'var(--ui-text)',
+  title_color_light: 'var(--ui-text-highlighted)',
+  title_color_dark: 'var(--ui-text-highlighted)',
+  primary_color: 'var(--ui-primary)',
+  secondary_color: 'var(--ui-text-muted)',
+} as const
+const surfacePageStyle = computed(() =>
+  orderAvailable.value ? pageStyle.value : appPageStyle
+)
+const surfaceColorMode = computed(() =>
+  orderAvailable.value ? null : 'light' as const
 )
 const basket = useMenuOrderBasket({
   currencyCode,
@@ -172,7 +210,8 @@ const {
   className: themeClassName,
   styleVars: themeStyleVars,
 } = useMenuThemeSurface({
-  pageStyle,
+  pageStyle: surfacePageStyle,
+  colorMode: surfaceColorMode,
   pageCanvas: computed(() => props.pageCanvas),
 })
 

@@ -16,6 +16,7 @@ export type PublicMenuIndexItem = {
     app_id?: string
     kitchen_id?: string
     kitchen_slug?: string
+    kitchen_name?: string
     menu_id?: string
   }
 }

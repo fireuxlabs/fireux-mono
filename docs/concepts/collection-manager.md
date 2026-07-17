@@ -1,6 +1,6 @@
 Collection manager map
 Updated: 2026-07-17
-Ref: f882d8a82
+Ref: 234f29beb
 Role: map, not canon
 
 Purpose:
@@ -88,6 +88,19 @@ Card handoff contract:
 - `XCollectionManager` passes cards into `XCardsPill` and `XCardsCell` with `v-bind="card"` plus `:link="linkEnabled"`.
 - `XCardsPill` and `XCardsCell` receive direct card fields, not a wrapped `card` prop.
 - `XCardsPill` and `XCardsCell` render real `<NuxtLink>` branches when `link && to`; action-only usage is the local delta.
+
+Visual convergence status:
+- The public Kitchen directory is the current visual prototype for a warmer,
+  clearer collection-manager hierarchy, richer default cards, and deliberate
+  loading/empty treatment.
+- This direction is promising but not finished canon. Do not copy its local
+  markup and CSS across managers one by one.
+- A future family pass should align manager hierarchy, controls, spacing,
+  view-language, and state treatment through the smallest honest shared seam.
+- Domain card content, actions, data source, and genuine scoped behavior remain
+  accepted deltas; visual convergence must not flatten domain meaning.
+- Until that pass is agreed, preserve the current Kitchen implementation as a
+  prototype and avoid opportunistic restyling of sibling managers.
 
 Debug contract:
 - Collection manager debug should separate `objects` from `derived`.
