@@ -1,7 +1,7 @@
 <template>
   <template v-if="isScopedIndex">
     <div
-      v-if="pending"
+      v-if="pending || outcome.kind === 'redirect'"
       class="grid min-h-screen place-items-center px-4 text-center"
       data-menu-projection="index"
       data-menu-index-kind="loading"
@@ -21,19 +21,6 @@
       <p v-if="errorDetail" class="mt-2 max-w-xl text-xs text-muted">
         {{ errorDetail }}
       </p>
-    </div>
-
-    <div
-      v-else-if="singleMenu"
-      class="contents"
-      data-menu-projection="index"
-      data-menu-index-kind="featured"
-    >
-      <MenuBrowse
-        :menu-id="String(singleMenu.id || '')"
-        :menu-route-scope="menuRouteScope"
-        style="--menu-browse-nav-top: calc(var(--ui-header-height, 4rem) + 0.5rem);"
-      />
     </div>
 
     <UPage
@@ -78,6 +65,22 @@
         <p v-else class="text-sm text-dimmed">
           No published menus.
         </p>
+
+        <div v-if="hasMore" class="flex justify-center pt-4">
+          <UButton
+            type="button"
+            variant="soft"
+            data-menu-action="load-more"
+            :loading="loadingMore"
+            @click="loadMore"
+          >
+            Load more menus
+          </UButton>
+        </div>
+
+        <p v-if="loadMoreError" class="text-sm text-error" role="alert">
+          More menus could not be loaded. Please try again.
+        </p>
       </UPageBody>
     </UPage>
   </template>
@@ -94,54 +97,36 @@
 
     <UPageBody>
       <MenuCTA />
-      <MenuCollectionManager id="live-menus" />
+      <MenuCollectionManager id="live-menus" :index="index" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { setResponseStatus, useSeoMeta } from '#imports'
+import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useKitchenPublicMenuIndex } from '../../../composables/fireux/kitchen/menu/useKitchenPublicMenuIndex'
-import {
-  rootMenuRouteScope,
-  type MenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+import type { PublicMenuIndexController } from '../../../composables/fireux/menu/usePublicMenuIndex'
 
-const props = withDefaults(defineProps<{
-  menuRouteScope?: MenuRouteScope
-  propagateResponseStatus?: boolean
-}>(), {
-  menuRouteScope: rootMenuRouteScope,
-  propagateResponseStatus: false,
-})
+const props = defineProps<{
+  index: PublicMenuIndexController
+}>()
 
 const fireux = useFireUXConfig()
 const isTenant = fireux.isTenant
-const requestedRouteScope = computed(() => props.menuRouteScope)
+const index = props.index
+const menus = computed(() => index.menus.value)
+const pending = computed(() => index.pending.value)
+const error = computed(() => index.error.value)
+const outcome = computed(() => index.outcome.value)
+const hasMore = computed(() => index.hasMore.value)
+const loadingMore = computed(() => index.loadingMore.value)
+const loadMoreError = computed(() => index.loadMoreError.value)
 const isScopedIndex = computed(() =>
-  isTenant || requestedRouteScope.value.kind === 'directory'
+  isTenant || index.routeScope.value.kind === 'directory'
 )
-const {
-  menus,
-  menuRouteScope,
-  pending,
-  error,
-  ready,
-  menuLink,
-} = useKitchenPublicMenuIndex({ routeScope: requestedRouteScope })
-
-if (props.propagateResponseStatus) {
-  await ready
-  if (import.meta.server && error.value) {
-    setResponseStatus(indexFailureStatus(error.value))
-  }
-}
-
-const singleMenu = computed(() =>
-  menus.value.length === 1 ? menus.value[0] ?? null : null
-)
+const menuLink = index.menuLink
+const loadMore = index.loadMore
 const errorDetail = computed(() => {
   if (!import.meta.dev || !error.value) return ''
 
@@ -158,23 +143,4 @@ const tenantPageDescription = isTenant
 useSeoMeta({
   robots: () => error.value ? 'noindex, nofollow' : undefined,
 })
-
-function indexFailureStatus(value: unknown) {
-  const failure = value as {
-    status?: number
-    statusCode?: number
-    data?: { status?: number; statusCode?: number }
-  }
-  const statusCode = Number(
-    failure?.statusCode ||
-    failure?.status ||
-    failure?.data?.statusCode ||
-    failure?.data?.status ||
-    500
-  )
-
-  return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
-    ? statusCode
-    : 500
-}
 </script>

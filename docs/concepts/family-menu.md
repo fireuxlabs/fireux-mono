@@ -36,8 +36,9 @@ Current public menu doorways:
   `/menus/<menuId>` as its detail. It is a branded projection whose configured
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
-- The public `/menus` route follows the public-index family: page header,
-  Menu CTA, and the root Menu collection manager. Generic global, kitchen-directory,
+- The global `/menus` route follows the public-index family: page header, Menu
+  CTA, and the root Menu collection manager. Kitchen-directory and multi-menu
+  tenant indexes use a smaller scoped list. Generic global, kitchen-directory,
   and tenant detail routes all use the same context-free MenuBrowse projection.
 - `.collection` is the first live context projection. It uses the same resolved
   KitchenMenu manifest and theme through the package-owned MenuOrder shell,
@@ -49,8 +50,10 @@ Current public menu doorways:
   have a root Menu, and root quick/document Menus need not have Kitchen or
   tenant projections. Route projections do not copy scoped content. Data scope
   and route scope are deliberately separate.
-- One published menu may be featured immediately on an index; multiple menus
-  are listed by the same index surface.
+- A tenant `/menus` request with exactly one published menu returns a temporary
+  redirect to `/menus/<menuId>`; zero menus render the empty index and two or
+  more render the tenant list. Global and kitchen-directory indexes always
+  remain lists, even when their current result contains one menu.
 - Ordering contexts append after the menu identity on every doorway, for
   example `.delivery`, `.collection`, and `.kiosk`; see `menu-ordering.md`.
 - Premium global-id claim, reserve, renew, and enforcement policy remains
@@ -58,6 +61,14 @@ Current public menu doorways:
 - Current route/source seams:
   `src/runtime/utils/kitchen-menu-route.ts` and
   `src/runtime/server/menu/ownership/public-target.ts` in `fireux-kitchens`.
+- `src/runtime/composables/fireux/menu/usePublicMenuIndex.ts` is the one public
+  index policy seam. It classifies loading, failure, empty, tenant redirect,
+  and list outcomes; owns links; and appends cursor pages. `/api/menus` resolves
+  ownership on the server and returns a bounded published page ordered by
+  document identity. The default page is 24 rows, the hard request cap is 50,
+  and no index decision downloads an unbounded collection. Client-only search
+  stays hidden while another cursor page exists so it never pretends to search
+  the complete catalogue; a future large-catalogue search must be server-owned.
 - `src/runtime/composables/fireux/menu/useMenu.ts` is the resolved public
   projection seam. It owns one collision-safe request key, the structured or
   document render decision, safe failure state, and the relative index, Menu,
@@ -128,8 +139,8 @@ Presentation/data boundary:
   Menu state, and stored `kitchenImageShade` keeps generic Kitchen marks legible
   against light and dark Browse themes.
 - Generic detail routes extend the resolved Menu page style to the full page
-  canvas, including outer large-screen margins and the circular exit. Featured
-  Menu index projections remain inside their host app theme.
+  canvas, including outer large-screen margins and the circular exit. Menu
+  index lists remain inside their host app theme.
 - Document Browse uses the package-owned `Menu/Detail/Document/Viewer.vue` and
   `PdfViewer.client.vue`. Stored objects are read through the same-origin public
   Menu file endpoint, and photo, PDF, and generic document branches always keep
@@ -153,11 +164,14 @@ No kitchen needed:
 
 Page composition note:
 - `/menus` renders `MenuIndex`; global scope browses published root Menus and
-  tenant scope uses its configured Kitchen target. A tenant with one published
-  menu may feature that same MenuBrowse projection directly on the index.
+  tenant scope uses its configured Kitchen target. The route page awaits the
+  shared index controller and executes its one-menu tenant redirect before any
+  index UI renders. This keeps detail layout and exit behavior on the detail
+  route rather than embedding MenuBrowse inside the tenant layout.
 - The kitchen-directory index also renders `MenuIndex` with directory scope;
-  it must not fall back to a diagnostic JSON projection. Index links open
-  Browse. The generic detail layout owns one circular X exit: tenant projections
+  it always remains a list and must not fall back to a diagnostic JSON
+  projection. Index links open Browse. The generic detail layout owns one
+  circular X exit: tenant projections
   close to the tenant home, while global and kitchen-directory projections go
   back to their Menu index. Browse does not promote QR generation: QR is a
   distribution surface reached from operator or management tooling, then
@@ -174,8 +188,9 @@ Page composition note:
 - Generic and Collection detail responses preserve that resolver truth: missing, unpublished,
   or out-of-scope Menus return 404; configuration, payload, and Firestore
   failures remain 5xx. Browse renders a safe noindex failure state without
-  exposing the underlying server message. A featured Menu on a tenant index
-  does not turn that collection route into a detail-response boundary.
+  exposing the underlying server message. A tenant index redirect is emitted
+  only after the bounded server result proves there is exactly one menu and no
+  next page.
 - Invalid Firestore document ids are rejected as not found before Firestore is
   called. The public Menu endpoint replaces upstream error details with a safe
   status message before the response can enter Nuxt SSR state.
@@ -187,9 +202,12 @@ Page composition note:
   section navigation, readable item rows, and read-only structured options.
   MenuBrowse does not accept a menu context. `.collection` mounts a separate,
   noindex MenuOrder shell only when the context-filtered manifest explicitly
-  enables Collection. That first shell has no item selection, basket,
-  submission, payment, or persistence. Kiosk, staff-POS, and every other
-  recognized suffix retain the JSON diagnostic projection.
+  enables Collection. MenuOrder renders selectable items, explicit variant,
+  add-on, and quantity controls, plus an in-memory basket count and total. The
+  basket review lets customers inspect configured lines, adjust quantities,
+  and remove lines. It has no submission, customer-details, payment, or
+  persistence path. Kiosk, staff-POS, and every other recognized suffix retain
+  the JSON diagnostic projection.
 
 Kitchen needed:
 - Attach menu to a kitchen.
@@ -200,23 +218,31 @@ Kitchen needed:
 
 Component placement:
 - `components/Menu/Index/Index.vue` owns the public Menu index composition;
+  its route-owned `usePublicMenuIndex` controller is passed explicitly into
+  `Menu/Collection/Manager.vue` so one request state powers policy and display.
+  This is not a raw provided collection or per-row hydration seam.
   `components/Menu/Close.vue` owns the shared circular control, while each
   concrete app's `layouts/menu.vue` supplies its surface-aware exit destination
   for Browse and live order projections. `components/Menu/Browse/Index.vue` owns
   context-free customer detail and its
   small `Browse/Identity.vue` identity, `Browse/Item.vue` row,
   `Browse/SectionNav.vue` section-navigation, and `Browse/Unavailable.vue` safe
-  failure seams. `components/Menu/Order/Index.vue` owns the Collection projection
-  shell. `components/Menu/Json.vue` remains the temporary renderer for every
-  other non-generic context diagnostic.
+  failure seams. `components/Menu/Order/Index.vue` owns Collection resolution
+  and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
+  `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the
+  visible order seams. `composables/fireux/menu/order/useMenuOrderBasket.ts`
+  owns transient basket arithmetic and validated line correction only.
+  `components/Menu/Json.vue` remains the temporary renderer for every other
+  non-generic context diagnostic.
 - Root and kitchen-directory detail pages branch on the parsed menu context:
   generic routes project MenuBrowse, Collection projects MenuOrder, and all
   other suffixes preserve the context query for MenuJson. The shared route
   projection classifier also drives `middleware/menu-projection-layout.ts`, so
   the page branch and pre-render layout cannot drift.
 - The preserved ordering/funnel components remain disconnected reference
-  material. MenuOrder currently resolves and authorizes Collection only; it
-  does not mount that chain or create client state.
+  material. MenuOrder does not mount that chain: its first client state is a
+  local basket with no storage, request, customer, submission, or payment
+  behavior.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.
@@ -232,6 +258,9 @@ Structured item options:
 - `add_ons`: optional extras such as toppings, sides, sauces, or add-on
   modifiers. Their prices are incremental and may be zero for a labelled free
   option.
+- Ordering validates each declared option family atomically. A malformed or
+  duplicate row makes the item unavailable; it must never be dropped in a way
+  that changes whether an explicit choice is required.
 - Selectable sizes, supplements, and add-on prices belong in these structured
   fields, not embedded in Dish descriptions.
 - Public Browse, ordering surfaces, Staff POS, tickets, and confirmation must

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-16
+// last_used: 2026-07-17
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guard.mjs
 //

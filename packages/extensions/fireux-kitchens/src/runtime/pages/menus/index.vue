@@ -1,10 +1,11 @@
 <template>
-  <MenuIndex />
+  <MenuIndex :index="menuIndex" />
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { navigateTo, setResponseStatus, useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { usePublicMenuIndex } from '../../composables/fireux/menu/usePublicMenuIndex'
 
 definePageMeta({
   tag: 'menus',
@@ -24,5 +25,20 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
+const menuIndex = usePublicMenuIndex()
+
+await menuIndex.ready
+if (import.meta.server && menuIndex.statusCode.value) {
+  setResponseStatus(menuIndex.statusCode.value)
+}
+
+const outcome = menuIndex.outcome.value
+if (outcome.kind === 'redirect' && outcome.path) {
+  await navigateTo(outcome.path, {
+    redirectCode: 302,
+    replace: true,
+  })
+}
+
 useHead({ title: `${appName} | Menus` })
 </script>

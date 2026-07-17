@@ -61,6 +61,22 @@
       {{ query ? 'No menus match your search.' : 'No menus found.' }}
     </p>
 
+    <div v-if="index.hasMore.value" class="mt-4 flex justify-center">
+      <UButton
+        type="button"
+        variant="soft"
+        data-menu-action="load-more"
+        :loading="index.loadingMore.value"
+        @click="index.loadMore"
+      >
+        Load more menus
+      </UButton>
+    </div>
+
+    <p v-if="index.loadMoreError.value" class="mt-3 text-sm text-error" role="alert">
+      More menus could not be loaded. Please try again.
+    </p>
+
     <DevJson
       :title="'Menus (JSON)'"
       context="collection manager · menus"
@@ -79,7 +95,7 @@ import {
   useMenuInterface,
   type MenuInterfaceSource,
 } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
-import { useMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useMenuCollection'
+import type { PublicMenuIndexController } from '../../../composables/fireux/menu/usePublicMenuIndex'
 
 const props = withDefaults(
   defineProps<{
@@ -91,6 +107,7 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    index: PublicMenuIndexController
   }>(),
   {
     title: 'Live menus',
@@ -109,19 +126,18 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useMenuInterface()
-const menuCollection = useMenuCollection()
 // Card handoff spine: pass v-bind="card" plus linkEnabled, matching sibling collection managers.
 const linkEnabled = computed(() => props.link !== false)
 
 const collection = computed(() =>
-  menuCollection.menus.value
+  props.index.menus.value
 )
 
 const { devJsonData } = useDevCollectionJson(collection)
 
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
-  () => props.showSearch && totalCount.value > 15
+  () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
@@ -152,7 +168,7 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
 const countLabel = computed(() =>
   showSearchInput.value && query.value
     ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}`
+    : `${totalCount.value}${props.index.hasMore.value ? '+' : ''}`
 )
 
 const devObjects = computed(() => ({
@@ -172,6 +188,7 @@ const devDerived = computed(() => ({
     variant: variant.value,
     linkEnabled: linkEnabled.value,
     showSearchInput: showSearchInput.value,
+    hasMore: props.index.hasMore.value,
   },
   counts: {
     total: totalCount.value,

@@ -36,6 +36,42 @@ const menuIndexContract = (route, options = {}) => ({
   ],
 })
 
+const tenantMenuIndexRedirectContract = (route, location) => ({
+  route,
+  status: 302,
+  location,
+  excludes: [
+    MENU_INDEX_MARKER,
+    MENU_BROWSE_MARKER,
+    MENU_ORDER_MARKER,
+    MENU_UNAVAILABLE_MARKER,
+    MENU_JSON_MARKER,
+  ],
+})
+
+const menuIndexApiContract = (route, scopeKind, options = {}) => ({
+  route,
+  status: 200,
+  contentType: 'application/json',
+  includes: [
+    '"scope"',
+    `"kind": "${scopeKind}"`,
+    '"items"',
+    '"nextCursor"',
+    ...(options.menuId ? [`"id": "${options.menuId}"`] : []),
+  ],
+})
+
+const invalidMenuIndexCursorContract = (route) => ({
+  route,
+  status: 400,
+  contentType: 'application/json',
+  includes: [
+    '"statusCode": 400',
+    '"statusMessage": "Menu cursor is invalid."',
+  ],
+})
+
 const missingMenuIndexContract = (route) => ({
   route,
   status: 404,
@@ -88,6 +124,12 @@ const menuBrowseContract = (route, options = {}) => {
       'View QR code',
       'menu-order-funnel',
       'menu-item__add',
+      'data-menu-order-catalogue=',
+      'data-menu-order-basket=',
+      'data-menu-action="review-basket"',
+      'data-menu-item-mode="selectable"',
+      'data-menu-action="configure-item"',
+      'data-menu-action="add-to-basket"',
       ...(renderKind === 'structured'
         ? ['data-menu-document-kind=']
         : ['data-menu-item="true"']),
@@ -238,6 +280,16 @@ const menuOrderContract = (route, options = {}) => {
       `data-menu-exit-kind="${exitKind}"`,
       `href="${exitPath}"`,
       'Collection ordering',
+      'data-menu-order-catalogue="selectable"',
+      'data-menu-item="true"',
+      'data-menu-item-mode="selectable"',
+      'data-menu-action="configure-item"',
+      'data-menu-order-basket="local"',
+      'data-menu-basket-persistence="none"',
+      'data-menu-basket-state="empty"',
+      'data-menu-basket-quantity="0"',
+      'data-menu-basket-total="0.00"',
+      'data-menu-action="review-basket"',
     ],
     excludes: [
       MENU_INDEX_MARKER,
@@ -246,12 +298,13 @@ const menuOrderContract = (route, options = {}) => {
       MENU_JSON_MARKER,
       MENU_QR_MARKER,
       'data-menu-document-kind=',
-      'data-menu-item="true"',
       'menu-order-funnel',
       'menu-item__add',
       'type="submit"',
       '/orders',
       'Checkout',
+      'data-menu-action="submit-order"',
+      'data-menu-action="checkout"',
     ],
   }
 }
@@ -288,6 +341,11 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       'data-menu-render-kind=',
       'data-menu-document-kind=',
       'data-menu-item="true"',
+      'data-menu-order-catalogue=',
+      'data-menu-order-basket=',
+      'data-menu-action="configure-item"',
+      'data-menu-action="add-to-basket"',
+      'data-menu-action="review-basket"',
       'menu-order-funnel',
       'menu-item__add',
       'type="submit"',
@@ -411,6 +469,15 @@ export const APP_REGISTRY = {
     ],
     httpContracts: [
       menuIndexContract('/menus', { kind: 'collection' }),
+      menuIndexApiContract('/api/menus?limit=2', 'root'),
+      menuIndexApiContract(
+        '/api/menus?kitchenSlug=baeren-ringgenberg&limit=1',
+        'directory',
+        { menuId: 'pizza-snacks-drinks' }
+      ),
+      invalidMenuIndexCursorContract(
+        '/api/menus?cursor=not-a-valid-menu-cursor%21'
+      ),
       menuDocumentContract(
         '/menus/bergwelt-grindelwald-pdf',
         'pdf',
@@ -492,9 +559,7 @@ export const APP_REGISTRY = {
       ]),
       missingMenuQrContract('/menus/pizza-snacks-drinks.delivery/qr'),
       menuIndexContract('/kitchens/baeren-ringgenberg/menus', {
-        kind: 'featured',
-        featuredPath:
-          '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks',
+        kind: 'list',
       }),
       menuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
@@ -730,10 +795,7 @@ export const APP_REGISTRY = {
     port: 3008,
     consoles: ['kitchen'],
     httpContracts: [
-      menuIndexContract('/menus', {
-        kind: 'featured',
-        featuredPath: '/menus/main',
-      }),
+      tenantMenuIndexRedirectContract('/menus', '/menus/main'),
       tenantMenuBrowseContract('/menus/main'),
       tenantUnavailableMenuOrderContract(
         '/menus/main.collection',
@@ -766,9 +828,12 @@ export const APP_REGISTRY = {
     consoles: ['kitchen'],
     smokeRoutes: ['/', '/hotel', '/menu', '/events', '/about', '/jobs', '/location'],
     httpContracts: [
-      menuIndexContract('/menus', {
-        kind: 'featured',
-        featuredPath: '/menus/pizza-snacks-drinks',
+      tenantMenuIndexRedirectContract(
+        '/menus',
+        '/menus/pizza-snacks-drinks'
+      ),
+      menuIndexApiContract('/api/menus?limit=24', 'tenant', {
+        menuId: 'pizza-snacks-drinks',
       }),
       tenantMenuBrowseContract('/menus/pizza-snacks-drinks'),
       tenantMenuOrderContract('/menus/pizza-snacks-drinks.collection'),

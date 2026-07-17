@@ -22,67 +22,55 @@
       Loading collection menu…
     </p>
 
-    <section
+    <MenuOrderUnavailable
       v-else-if="!orderAvailable"
-      class="menu-order__unavailable"
-      aria-labelledby="menu-order-unavailable-title"
-      role="alert"
-    >
-      <p class="menu-order__status">
-        Error {{ unavailableFailure.statusCode }}
-      </p>
-      <h1 id="menu-order-unavailable-title">
-        {{ unavailableFailure.title }}
-      </h1>
-      <p class="menu-order__description">
-        {{ unavailableFailure.description }}
-      </p>
-    </section>
+      :failure="unavailableFailure"
+    />
 
     <div v-else class="menu-order__shell">
-      <header class="menu-order__identity">
-        <p v-if="kitchenName" class="menu-order__kitchen">
-          {{ kitchenName }}
-        </p>
+      <MenuOrderIntro
+        :context-icon="contextProfile.icon"
+        :context-label="contextProfile.label"
+        :currency-code="currencyCode"
+        :description="menuDescription"
+        :kitchen-name="kitchenName"
+        :menu-name="menuName"
+        :message="collectionMessage"
+      />
 
-        <h1 id="menu-order-title">
-          {{ menuName }}
-        </h1>
+      <MenuOrderCatalogue
+        :key="basketScopeKey"
+        :currency-code="currencyCode"
+        :sections="menuSections"
+        @add="basket.add"
+      />
 
-        <p v-if="menuDescription" class="menu-order__description">
-          {{ menuDescription }}
-        </p>
+      <MenuOrderBasketSummary
+        :currency-code="basket.currencyCode.value"
+        :quantity="basket.quantity.value"
+        :total="basket.total.value"
+        :total-label="basket.totalLabel.value"
+        @review="openBasket"
+      />
 
-        <p v-if="currencyCode" class="menu-order__currency">
-          Prices in {{ currencyCode }}
-        </p>
-      </header>
-
-      <section class="menu-order__mode" aria-labelledby="menu-order-mode-title">
-        <span class="menu-order__mode-icon" aria-hidden="true">
-          <UIcon :name="contextProfile.icon" />
-        </span>
-
-        <div class="menu-order__mode-copy">
-          <p class="menu-order__eyebrow">
-            {{ contextProfile.label }}
-          </p>
-          <h2 id="menu-order-mode-title">
-            Collection ordering
-          </h2>
-          <p>
-            {{ collectionMessage }}
-          </p>
-        </div>
-      </section>
+      <MenuOrderBasketDialog
+        v-model:open="basketOpen"
+        :currency-code="basket.currencyCode.value"
+        :lines="basket.lines.value"
+        :total-label="basket.totalLabel.value"
+        @quantity="basket.setQuantity"
+        @remove="basket.remove"
+        @after-leave="finishBasketDialog"
+      />
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
+import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import {
   menuRoutePath,
@@ -150,6 +138,7 @@ const orderState = computed(() => {
 const menuPresentation = computed(() => detailMenu.value?.presentation || null)
 const menuName = computed(() => detailMenu.value?.content.name || 'Menu')
 const menuDescription = computed(() => detailMenu.value?.content.description || '')
+const menuSections = computed(() => detailMenu.value?.content.sections || [])
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
 const currencyCode = computed(() =>
   String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
@@ -158,6 +147,14 @@ const collectionMessage = computed(() =>
   String(collectionConfig.value?.message || '').trim() ||
   'This menu is available for collection.'
 )
+const resolvedSource = computed(() => detailMenu.value?.source || null)
+const sourceMenuId = computed(() => resolvedSource.value?.menuId || '')
+const basketScopeKey = computed(() => JSON.stringify([
+  orderPath.value,
+  resolvedSource.value?.appId || '',
+  resolvedSource.value?.kitchenId || '',
+  sourceMenuId.value,
+]))
 const unavailableFailure = computed(() => failure.value || {
   statusCode: 404,
   title: 'Collection unavailable',
@@ -166,6 +163,13 @@ const unavailableFailure = computed(() => failure.value || {
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || documentMenu.value?.pageStyle || null
 )
+const basket = useMenuOrderBasket({
+  currencyCode,
+  scopeKey: basketScopeKey,
+  sourceMenuId,
+})
+const basketOpen = ref(false)
+const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
@@ -173,6 +177,36 @@ const {
   pageStyle,
   pageCanvas: computed(() => props.pageCanvas),
 })
+
+watch(
+  () => basket.quantity.value,
+  quantity => {
+    if (!quantity) basketOpen.value = false
+  }
+)
+
+function openBasket(trigger: HTMLButtonElement) {
+  if (!basket.quantity.value) return
+
+  basketTrigger.value = trigger
+  basketOpen.value = true
+}
+
+function finishBasketDialog() {
+  const trigger = basketTrigger.value
+  basketTrigger.value = null
+
+  void nextTick(() => {
+    if (basket.quantity.value && trigger) {
+      trigger.focus()
+      return
+    }
+
+    document
+      .querySelector<HTMLButtonElement>('[data-menu-action="configure-item"]:not(:disabled)')
+      ?.focus()
+  })
+}
 
 if (props.propagateResponseStatus) {
   await ready
@@ -214,140 +248,18 @@ useSeoMeta({
   font-weight: 700;
 }
 
-.menu-order__unavailable {
-  display: grid;
-  min-height: min(34rem, 72vh);
-  place-content: center;
-  justify-items: center;
-  gap: 1rem;
-  width: min(100%, 38rem);
-  margin: auto;
-  text-align: center;
-}
-
-.menu-order__unavailable p,
-.menu-order__unavailable h1,
-.menu-order__identity p,
-.menu-order__identity h1,
-.menu-order__mode p,
-.menu-order__mode h2 {
-  margin: 0;
-}
-
-.menu-order__status,
-.menu-order__kitchen,
-.menu-order__currency,
-.menu-order__eyebrow {
-  color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.menu-order__unavailable h1,
-.menu-order__identity h1 {
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-  letter-spacing: -0.04em;
-  line-height: 1;
-}
-
-.menu-order__unavailable h1 {
-  font-size: clamp(2.2rem, 8vw, 4.5rem);
-}
-
-.menu-order__description {
-  max-width: 42rem;
-  color: var(--menu-muted);
-  line-height: 1.6;
-  white-space: pre-line;
-}
-
 .menu-order__shell {
   display: grid;
   align-content: start;
   gap: clamp(2rem, 6vw, 4rem);
-  width: min(100%, 48rem);
+  width: min(100%, 54rem);
   margin: 0 auto;
   padding-block: clamp(1rem, 4vw, 3rem);
-}
-
-.menu-order__identity {
-  display: grid;
-  justify-items: center;
-  gap: 0.85rem;
-  min-width: 0;
-  text-align: center;
-}
-
-.menu-order__identity h1 {
-  font-size: clamp(2.35rem, 8vw, 5rem);
-  overflow-wrap: anywhere;
-}
-
-.menu-order__kitchen {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
-.menu-order__currency {
-  letter-spacing: 0.06em;
-}
-
-.menu-order__mode {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
-  width: min(100%, 40rem);
-  margin: 0 auto;
-  padding: clamp(1rem, 3vw, 1.5rem);
-  border: 1px solid color-mix(in srgb, var(--menu-secondary) 30%, transparent);
-  border-radius: var(--menu-radius);
-  background: color-mix(in srgb, var(--menu-secondary) 7%, var(--menu-bg));
-  text-align: left;
-}
-
-.menu-order__mode-icon {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--menu-primary) 16%, var(--menu-bg));
-  color: var(--menu-primary);
-}
-
-.menu-order__mode-icon :deep(.iconify) {
-  width: 1.35rem;
-  height: 1.35rem;
-}
-
-.menu-order__mode-copy {
-  display: grid;
-  gap: 0.35rem;
-  min-width: 0;
-}
-
-.menu-order__mode h2 {
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  line-height: 1.15;
-}
-
-.menu-order__mode-copy > p:last-child {
-  color: var(--menu-muted);
-  line-height: 1.55;
 }
 
 @media (max-width: 35rem) {
   .menu-order__shell {
     padding-block-start: var(--menu-browse-identity-top-offset, 0rem);
-  }
-
-  .menu-order__mode {
-    grid-template-columns: 1fr;
   }
 }
 </style>

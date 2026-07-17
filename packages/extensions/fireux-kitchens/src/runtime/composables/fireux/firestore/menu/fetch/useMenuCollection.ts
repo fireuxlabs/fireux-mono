@@ -1,6 +1,6 @@
-import { useFetch } from '#imports'
 import { computed } from 'vue'
 import type { MenuInterfaceSource } from '../utils/view/useMenuInterface'
+import { usePublicMenuIndex } from '../../../menu/usePublicMenuIndex'
 
 export type MenuCollectionRow = MenuInterfaceSource
 
@@ -16,20 +16,20 @@ const sortMenus = (menus: MenuCollectionRow[]) =>
  * to the menu detail manifest, not the index list.
  */
 export function useMenuCollection() {
-  const { data, error, status } = useFetch<MenuCollectionRow[]>('/api/menus', {
-    key: 'public-root-menus',
-    default: () => [],
-  })
+  const index = usePublicMenuIndex()
   const menus = computed(() =>
-    sortMenus(data.value).filter((menu) => menu.status === 'published')
+    sortMenus(index.menus.value).filter((menu) => menu.status === 'published')
   )
   const count = computed(() => menus.value.length)
-  const pending = computed(() => status.value === 'pending')
 
   return {
     menus,
     count,
-    pending,
-    error,
+    pending: index.pending,
+    error: index.error,
+    hasMore: index.hasMore,
+    loadingMore: index.loadingMore,
+    loadMoreError: index.loadMoreError,
+    loadMore: index.loadMore,
   }
 }

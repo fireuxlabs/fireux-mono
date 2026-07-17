@@ -1,5 +1,5 @@
 Collection manager map
-Updated: 2026-06-30
+Updated: 2026-07-17
 Ref: f882d8a82
 Role: map, not canon
 
@@ -74,6 +74,11 @@ Source contract:
 - `XCollectionManager` belongs to `/xs` root/public browse surfaces.
 - Consumers mount `XCollectionManager` directly with no source params.
 - The manager fetches its own public/root collection and should not hydrate internally.
+- A route-policy controller is a narrow accepted delta when the route must use
+  the same bounded request to choose an HTTP outcome before rendering. The
+  Menu index passes `usePublicMenuIndex` explicitly for tenant redirect versus
+  list policy; it does not pass a raw `collection`, and the controller remains
+  the sole fetch/pagination owner.
 - If list/card truth lives elsewhere, copy a public snapshot onto the row through a sync seam.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
@@ -122,7 +127,7 @@ Root Simple Collection Managers
 | `App` | None in manager | Self | Root index manager fetches apps. |
 | `Ecosystem` | None in manager | Self | Root index manager fetches ecosystems. |
 | `Project` | None in manager | Self/filter | Root index manager fetches projects and can apply operator/team filters. |
-| `Menu` | None in manager | Self | Root index manager fetches public root doorway records from `menus`; detail manifest hydrates context later. |
+| `Menu` | Route-owned `/api/menus` controller | Self | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
 | `Blog` | None in manager | Self | Root index manager fetches blog posts. |
 | `Place` | None in manager | Self | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere. |
 | `Product` | None in manager | Self | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere. |

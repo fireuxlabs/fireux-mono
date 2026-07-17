@@ -47,8 +47,13 @@ Current display rule:
 - Do not store a public view marker on menus.
 - A Collection projection exists only when the context-filtered manifest keeps
   `ordering.enabled`, `orderingEnabled`, and a Collection order-type row true.
-- The first Collection shell proves routing, resolution, authorization, theme,
-  and failure behavior; it does not offer order controls yet.
+- The Collection projection proves routing, resolution, authorization, theme,
+  and failure behavior, then renders selectable manifest items into a
+  page-local basket.
+- That basket exists in memory only. It does not restore across navigation or
+  refresh. Customers can review configured lines, adjust quantities, and
+  remove lines, but cannot submit an Order, enter customer details, or start
+  payment.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 
 Current ordering shape:
@@ -145,15 +150,20 @@ Public order funnel spine:
 - `.collection` renders the package-owned, noindex `Menu/Order` projection.
   It resolves the context-filtered manifest through the same `useMenu` seam,
   fails closed with 404 when Collection is disabled or the Menu is document-only,
-  and currently renders only an inert identity and Collection status shell.
+  and renders its sections as selectable items. Required variants, optional
+  add-ons, and quantity are configured explicitly before adding a line to the
+  local basket.
 - Every other recognized ordering suffix still renders `Menu/Json` as a
   diagnostic projection. No public route mounts an ordering funnel yet.
 - The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and
   `composables/fireux/kitchen/order/funnel/shared/useFunnel` chain is therefore
   disconnected implementation material, not the active public owner.
-- The next Collection pass belongs inside MenuOrder: render selectable manifest
-  items and local basket state there without adding controls back into Browse.
-  Submission, payment, and the canonical order endpoint remain later passes.
+- `MenuOrder` owns a transient basket seam that merges identical configurations,
+  counts quantities, calculates variant absolute prices plus incremental
+  add-ons, and validates review-time quantity changes and removals. It does not
+  use the preserved funnel draft, storage, session, fetch, or order-creation
+  seams. Submission, payment, and the canonical order endpoint remain later
+  passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - Funnel composable naming should keep `useFunnel` as the shared root,

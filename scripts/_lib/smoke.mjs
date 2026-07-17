@@ -101,6 +101,15 @@ function routeContractFailures(contract, response, body) {
     failures.push(`expected status ${contract.status}, received ${response.status}`)
   }
 
+  if (contract.location) {
+    const location = response.headers.get('location') || ''
+    if (location !== contract.location) {
+      failures.push(
+        `expected location ${contract.location}, received ${location || 'none'}`
+      )
+    }
+  }
+
   if (contract.contentType) {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.startsWith(contract.contentType)) {

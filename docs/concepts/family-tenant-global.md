@@ -1,5 +1,5 @@
 Tenant/global family map
-Updated: 2026-07-16
+Updated: 2026-07-17
 Ref: de5f53b09
 Role: map, not canon
 
@@ -70,6 +70,11 @@ Tenant target ownership:
   not fall back to global data or render a misleading empty menu index.
 - Tenant root routes omit the Kitchen slug. Directory routes carry it in their
   explicit route scope; a client-provided slug cannot change tenant ownership.
+- Public Menu count changes the tenant index outcome, not its route grammar:
+  `/menus` temporarily redirects to `/menus/<menuId>` only when the bounded
+  server result proves there is exactly one published menu and no next page.
+  Zero menus render an empty index and multiple menus render a paginated list.
+  Ecosystem and explicit kitchen-directory indexes remain lists at every count.
 
 Tenant page composition:
 - Reference-in-progress: `projects/misebox/la-tap-berne/app`.
