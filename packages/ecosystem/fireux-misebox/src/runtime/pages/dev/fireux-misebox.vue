@@ -24,7 +24,7 @@
                 <div class="flex flex-col gap-1">
                   <h2 class="text-base font-semibold">Ecosystem status</h2>
                   <p class="text-sm text-gray-500">
-                    Misebox remains the app ecosystem. Supplier domain is now provided by Drop extension.
+                    Misebox provides ecosystem identity; apps select domain capabilities explicitly.
                   </p>
                 </div>
               </template>
@@ -74,9 +74,9 @@
               </template>
 
               <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                <li>Misebox ecosystem: app composition, ecosystem config, runtime identity.</li>
-                <li>Drop extension: suppliers pages, models, composables, and UI components.</li>
-                <li>Misebox ingredient create flow consumes Supplier APIs from Drop.</li>
+                <li>Misebox ecosystem: Firebase binding, runtime identity, public assets, and shared tenant chrome.</li>
+                <li>Extension packages: reusable domain routes, models, composables, and UI.</li>
+                <li>Project apps: capability selection, target configuration, content, and branding.</li>
               </ul>
             </UCard>
           </div>

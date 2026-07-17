@@ -6,19 +6,6 @@ const getJobsConfig = () => ({
   placeCollections: ['kitchens', 'companies'],
 })
 
-const getPublicMenuDefaults = (appId: string) => {
-  if (appId === 'la-tap-berne') {
-    return {
-      kitchenCollectionPath: 'apps/la-tap-berne/kitchens',
-      kitchenId: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-      menuId: 'default',
-      sproochli: true,
-    }
-  }
-
-  return {}
-}
-
 const asRecord = (value: unknown): Record<string, any> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, any>)
@@ -28,12 +15,17 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
+  const modules = new Set(
+    Array.isArray(fireux.modules)
+      ? fireux.modules.map((value: unknown) => String(value || '').trim())
+      : []
+  )
+  const hasModule = (name: string) => modules.has(name)
 
   const currentPlaces = fireux.places
   const currentJobs = fireux.jobs
   const currentProducts = fireux.products
   const currentBlogs = fireux.blogs
-  const currentMisebox = asRecord(fireux.misebox)
   const currentSproochli = asRecord(fireux.sproochli)
   const currentDesignPacks = asRecord(fireux.designPacks)
 
@@ -41,42 +33,45 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const jobDefaults = getJobsConfig()
   const productDefaults = { enabled: true }
   const blogDefaults = { enabled: true }
-  const publicMenuDefaults = getPublicMenuDefaults(String(fireux.id || '').trim())
-
-  fireux.places = currentPlaces && typeof currentPlaces === 'object'
-    ? { ...placeDefaults, ...currentPlaces }
-    : { ...placeDefaults }
-
-  fireux.jobs = currentJobs && typeof currentJobs === 'object'
-    ? { ...jobDefaults, ...currentJobs }
-    : { ...jobDefaults }
-
-  fireux.products = currentProducts && typeof currentProducts === 'object'
-    ? { ...productDefaults, ...currentProducts }
-    : { ...productDefaults }
-
-  fireux.blogs = currentBlogs && typeof currentBlogs === 'object'
-    ? { ...blogDefaults, ...currentBlogs }
-    : { ...blogDefaults }
-
-  fireux.sproochli = {
-    installed: true,
-    enabled: true,
-    ...currentSproochli,
+  if (hasModule('fireux-places')) {
+    fireux.places = currentPlaces && typeof currentPlaces === 'object'
+      ? { ...placeDefaults, ...currentPlaces }
+      : { ...placeDefaults }
   }
 
-  fireux.designPacks = {
-    publicMenu: {
-      preset: 'classic',
-    },
-    ...currentDesignPacks,
+  if (hasModule('fireux-jobs')) {
+    fireux.jobs = currentJobs && typeof currentJobs === 'object'
+      ? { ...jobDefaults, ...currentJobs }
+      : { ...jobDefaults }
   }
 
-  fireux.misebox = {
-    ...currentMisebox,
-    publicMenu: {
-      ...publicMenuDefaults,
-      ...asRecord(currentMisebox.publicMenu),
-    },
+  if (hasModule('fireux-products')) {
+    fireux.products = currentProducts && typeof currentProducts === 'object'
+      ? { ...productDefaults, ...currentProducts }
+      : { ...productDefaults }
+  }
+
+  if (hasModule('fireux-blogs')) {
+    fireux.blogs = currentBlogs && typeof currentBlogs === 'object'
+      ? { ...blogDefaults, ...currentBlogs }
+      : { ...blogDefaults }
+  }
+
+  if (hasModule('fireux-sproochli')) {
+    fireux.sproochli = {
+      installed: true,
+      enabled: true,
+      ...currentSproochli,
+    }
+  }
+
+  if (hasModule('fireux-kitchens')) {
+    fireux.designPacks = {
+      ...currentDesignPacks,
+      publicMenu: {
+        preset: 'classic',
+        ...asRecord(currentDesignPacks.publicMenu),
+      },
+    }
   }
 }

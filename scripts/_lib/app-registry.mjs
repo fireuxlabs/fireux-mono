@@ -8,6 +8,7 @@ const MENU_ORDER_MARKER = 'data-menu-projection="order"'
 const MENU_UNAVAILABLE_MARKER = 'data-menu-state="unavailable"'
 const MENU_JSON_MARKER = 'data-menu-projection="diagnostic"'
 const MENU_QR_MARKER = 'data-menu-projection="qr"'
+const MENU_LAYOUT_MARKER = 'data-menu-layout="package"'
 
 const menuIndexContract = (route, options = {}) => ({
   route,
@@ -94,6 +95,7 @@ const menuBrowseContract = (route, options = {}) => {
     contentType: 'text/html',
     ...(options.assertNoindex === false ? {} : { noindex: false }),
     includes: [
+      MENU_LAYOUT_MARKER,
       MENU_BROWSE_MARKER,
       `data-menu-id="${menuId}"`,
       `data-menu-render-kind="${renderKind}"`,
@@ -175,6 +177,7 @@ const missingMenuBrowseContract = (route, excludes = [], options = {}) => {
     contentType: 'text/html',
     noindex: true,
     includes: [
+      MENU_LAYOUT_MARKER,
       MENU_BROWSE_MARKER,
       MENU_UNAVAILABLE_MARKER,
       'Menu not found',
@@ -274,6 +277,7 @@ const menuOrderContract = (route, options = {}) => {
     contentType: 'text/html',
     noindex: true,
     includes: [
+      MENU_LAYOUT_MARKER,
       MENU_ORDER_MARKER,
       'data-menu-context="collection"',
       `data-menu-id="${menuId}"`,
@@ -328,6 +332,7 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
     contentType: 'text/html',
     noindex: true,
     includes: [
+      MENU_LAYOUT_MARKER,
       MENU_ORDER_MARKER,
       MENU_UNAVAILABLE_MARKER,
       'data-menu-context="collection"',

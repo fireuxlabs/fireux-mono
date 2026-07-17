@@ -8,7 +8,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Bangin Coffee',
   role: 'tenant',
   consoles: [],
-  modules: ['fireux-go-qr', 'fireux-misebox'],
+  modules: ['fireux-go-qr'],
 })
 
 export default withFireuxNuxtConfig(fireuxConfig, {

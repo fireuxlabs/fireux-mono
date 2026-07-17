@@ -25,6 +25,12 @@ Before each task:
   belong in `packages/ecosystem/fireux-misebox`.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
+- `defineFireuxConfig` loads `fireux-misebox` automatically from
+  `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
+  capabilities; the ecosystem package is not an umbrella dependency bundle.
+- The ecosystem package must not own tenant-id branches, Kitchen/Menu source
+  defaults, or a competing public Menu renderer. Public Menu routes, layout,
+  resolution, and ordering projections belong to `fireux-kitchens`.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
 - Tenant branding, content, routes, and genuine app-specific presentation may

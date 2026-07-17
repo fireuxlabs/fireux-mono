@@ -25,6 +25,11 @@ App pattern:
 - Import `withFireuxNuxtConfig`.
 - Build one `fireuxConfig`.
 - Export `withFireuxNuxtConfig(fireuxConfig, appOverrides)`.
+- `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
+  Do not repeat that package in `modules`.
+- `modules` lists explicit extension capabilities. The app package declares
+  those workspace dependencies directly; ecosystem packages do not bundle
+  domain extensions on the app's behalf.
 
 Important fields:
 - `ecosystem`

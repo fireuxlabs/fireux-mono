@@ -3,6 +3,8 @@
 // usage_note: run through pnpm guard; locks Menu route grammar and projections.
 
 import assert from 'node:assert/strict'
+import { existsSync, readdirSync } from 'node:fs'
+import path from 'node:path'
 
 import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-context.model.ts'
 import {
@@ -44,7 +46,31 @@ const EXPECTED_PROJECTIONS = {
 const MENU_ID = 'evening.menu'
 const KITCHEN_SLUG = 'baeren-ringgenberg'
 
+const appMenuLayouts = () => {
+  const projectsRoot = path.join(process.cwd(), 'projects')
+  if (!existsSync(projectsRoot)) return []
+
+  const layouts = []
+  for (const ecosystem of readdirSync(projectsRoot, { withFileTypes: true })) {
+    if (!ecosystem.isDirectory()) continue
+    const ecosystemRoot = path.join(projectsRoot, ecosystem.name)
+
+    for (const app of readdirSync(ecosystemRoot, { withFileTypes: true })) {
+      if (!app.isDirectory()) continue
+      const layout = path.join(ecosystemRoot, app.name, 'app/layouts/menu.vue')
+      if (existsSync(layout)) layouts.push(path.relative(process.cwd(), layout))
+    }
+  }
+
+  return layouts
+}
+
 export async function run() {
+  assert.deepEqual(
+    appMenuLayouts(),
+    [],
+    'Menu layout is package-owned; remove app-local app/layouts/menu.vue overrides.'
+  )
   assert.deepEqual(
     [...MenuRouteContexts],
     EXPECTED_CONTEXTS,

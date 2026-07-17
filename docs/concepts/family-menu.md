@@ -195,9 +195,11 @@ Page composition note:
   menu contract through MenuBrowse. The server, not the URL renderer, resolves
   global, directory, or tenant ownership.
 - Printable QR doorways append `/qr` to those generic detail routes and encode
-  the corresponding absolute Browse URL on the same origin. They use the same
-  fail-closed ownership resolver, are always `noindex`, and render without app
-  chrome. A recognized contextual identity may also append `/qr`, for example
+  the corresponding absolute Browse URL on the same origin. The package-owned
+  Menu layout derives close/back behavior from app role and route scope, so
+  apps do not recreate Menu chrome. QR routes use the same fail-closed
+  ownership resolver, are always `noindex`, and deliberately render without
+  Menu chrome. A recognized contextual identity may also append `/qr`, for example
   `/<menuId>.collection/qr` on a tenant. The QR resolves that context through
   the same manifest and encodes the exact contextual target; a disabled or
   unavailable context fails closed rather than falling back to Browse.

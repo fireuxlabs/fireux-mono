@@ -1,7 +1,7 @@
 {
   "name": "fireux-misebox",
   "version": "0.1.0",
-  "description": "Chef and Supplier marketplace system for FireUX apps",
+  "description": "Misebox ecosystem identity and shared runtime for FireUX apps",
   "private": true,
   "type": "module",
   "main": "./src/module.ts",
@@ -26,11 +26,7 @@
     "pnpm": "11.9.0"
   },
   "dependencies": {
-    "fireux-core": "workspace:*",
-    "fireux-kitchens": "workspace:*",
-    "fireux-places": "workspace:*",
-    "fireux-sproochli": "workspace:*",
-    "fireux-suppliers": "workspace:*"
+    "fireux-core": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

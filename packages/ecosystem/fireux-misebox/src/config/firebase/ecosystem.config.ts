@@ -3,7 +3,7 @@ import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 export const ecosystemConfig = {
   id: 'fireux-misebox',
   name: 'misebox',
-  description: 'FireUX MiseBox - Kitchen, Chef, Supplier Domain Package',
+  description: 'FireUX Misebox ecosystem identity and Firebase binding',
 
   firebase: {
     apiKey: 'AIzaSyBkWm7VONGZRx74pg2vFbnFyDKjruEwg6M',

@@ -48,12 +48,16 @@ When creating or changing a layout:
   `<slot />` pattern.
 - Do not move domain data fetching into layouts.
 - Do not hide route-specific behavior inside a layout.
+- A package-owned route family should also own its layout when the chrome can
+  be derived from app role and explicit route scope. Menu uses this shape:
+  `fireux-kitchens` owns the shared Menu layout, tenant routes close home, and
+  global or kitchen-directory routes return to their Menu index.
 
 Known examples:
 - Core default layout: `packages/core/fireux-core/src/runtime/layouts/default.vue`
 - Core console layout: `packages/core/fireux-core/src/runtime/layouts/console.vue`
 - Misebox tenant layout: `packages/ecosystem/fireux-misebox/src/runtime/layouts/misebox-tenant.vue`
-- Misebox app menu layout: `projects/misebox/misebox-app/app/layouts/menu.vue`
+- Kitchens Menu layout: `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
 - La Tap local layout: `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
 
 Open questions:
