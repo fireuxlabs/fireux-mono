@@ -3,6 +3,7 @@
     v-if="isBrowse"
     :menu-id="menuTarget.menuId"
     :menu-route-scope="menuRouteScope"
+    page-canvas
     propagate-response-status
   />
 

@@ -49,16 +49,4 @@
     transform: translateY(-2px);
   }
 
-  .latap-glass.misebox-menu-close {
-    --misebox-menu-close-bg: var(--latap-glass-bg);
-    --misebox-menu-close-border: var(--latap-glass-border);
-    --misebox-menu-close-fg: var(--latap-glass-fg);
-    --misebox-menu-close-shadow: var(--latap-glass-shadow);
-  }
-
-  .latap-glass.misebox-menu-close:hover {
-    --misebox-menu-close-bg: var(--latap-glass-bg-hover);
-    --misebox-menu-close-border: var(--latap-glass-border-hover);
-    --misebox-menu-close-shadow: var(--latap-glass-shadow-hover);
-  }
 }

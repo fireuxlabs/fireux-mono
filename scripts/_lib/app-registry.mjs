@@ -18,12 +18,20 @@ const menuIndexContract = (route, options = {}) => ({
     ...(options.featuredPath
       ? [
           `data-menu-path="${options.featuredPath}"`,
-          `data-menu-qr-path="${options.featuredPath}/qr"`,
-          `href="${options.featuredPath}/qr"`,
         ]
       : []),
   ],
-  excludes: [MENU_UNAVAILABLE_MARKER, MENU_JSON_MARKER],
+  excludes: [
+    MENU_UNAVAILABLE_MARKER,
+    MENU_JSON_MARKER,
+    'data-menu-theme-canvas="true"',
+    'data-menu-qr-path=',
+    'data-menu-action="qr"',
+    'View QR code',
+    ...(options.featuredPath
+      ? [`href="${options.featuredPath}/qr"`]
+      : []),
+  ],
 })
 
 const missingMenuIndexContract = (route) => ({
@@ -39,6 +47,8 @@ const menuBrowseContract = (route, options = {}) => {
   const indexPath = route.slice(0, route.lastIndexOf('/'))
   const menuId = route.slice(route.lastIndexOf('/') + 1)
   const renderKind = options.renderKind || 'structured'
+  const exitKind = options.exitKind || 'back'
+  const exitPath = options.exitPath || indexPath
 
   return {
     route,
@@ -51,19 +61,34 @@ const menuBrowseContract = (route, options = {}) => {
       `data-menu-render-kind="${renderKind}"`,
       `data-menu-index-path="${indexPath}"`,
       `data-menu-path="${route}"`,
-      `data-menu-qr-path="${route}/qr"`,
-      'data-menu-action="index"',
-      'data-menu-action="qr"',
-      `href="${indexPath}"`,
-      `href="${route}/qr"`,
+      'data-menu-theme-canvas="true"',
+      'data-menu-action="exit"',
+      `data-menu-exit-kind="${exitKind}"`,
+      `href="${exitPath}"`,
       ...(renderKind === 'structured'
-        ? ['data-menu-identity="kitchen-menu"']
+        ? [
+            'data-menu-identity="kitchen-menu"',
+            'data-menu-item="true"',
+            'data-menu-item-mode="read-only"',
+          ]
         : []),
+      ...(options.itemIncludes || []),
     ],
     excludes: [
       MENU_UNAVAILABLE_MARKER,
       MENU_JSON_MARKER,
-      ...(renderKind === 'structured' ? ['data-menu-document-kind='] : []),
+      'data-menu-qr-path=',
+      'data-menu-action="index"',
+      'data-menu-action="qr"',
+      `href="${route}/qr"`,
+      'menu-browse__back',
+      'View QR code',
+      'menu-order-funnel',
+      'menu-item__add',
+      ...(renderKind === 'structured'
+        ? ['data-menu-document-kind=']
+        : ['data-menu-item="true"']),
+      ...(options.itemExcludes || []),
     ],
   }
 }
@@ -94,14 +119,35 @@ const menuDocumentFileContract = (route, contentType) => ({
   contentType,
 })
 
-const missingMenuBrowseContract = (route, excludes = []) => ({
-  route,
-  status: 404,
-  contentType: 'text/html',
-  noindex: true,
-  includes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER, 'Menu not found'],
-  excludes: [MENU_JSON_MARKER, ...excludes],
-})
+const missingMenuBrowseContract = (route, excludes = [], options = {}) => {
+  const indexPath = route.slice(0, route.lastIndexOf('/'))
+  const exitKind = options.exitKind || 'back'
+  const exitPath = options.exitPath || indexPath
+
+  return {
+    route,
+    status: 404,
+    contentType: 'text/html',
+    noindex: true,
+    includes: [
+      MENU_BROWSE_MARKER,
+      MENU_UNAVAILABLE_MARKER,
+      'Menu not found',
+      'data-menu-theme-canvas="true"',
+      'data-menu-action="exit"',
+      `data-menu-exit-kind="${exitKind}"`,
+      `href="${exitPath}"`,
+    ],
+    excludes: [
+      MENU_JSON_MARKER,
+      'data-menu-qr-path=',
+      'data-menu-action="qr"',
+      `href="${route}/qr"`,
+      'View QR code',
+      ...excludes,
+    ],
+  }
+}
 
 const menuQrContract = (route, targetPath, options = {}) => {
   const indexPath = targetPath.slice(0, targetPath.lastIndexOf('/'))
@@ -175,7 +221,16 @@ const menuJsonContract = (route, context, options = {}) => ({
 // AppShell currently owns tenant-wide noindex. Valid tenant Menu SEO is
 // intentionally left to the later canonical-route/SEO pass.
 const tenantMenuBrowseContract = (route) =>
-  menuBrowseContract(route, { assertNoindex: false })
+  menuBrowseContract(route, {
+    assertNoindex: false,
+    exitKind: 'close',
+    exitPath: '/',
+  })
+const tenantMissingMenuBrowseContract = (route, excludes = []) =>
+  missingMenuBrowseContract(route, excludes, {
+    exitKind: 'close',
+    exitPath: '/',
+  })
 const tenantMenuJsonContract = (route, context) =>
   menuJsonContract(route, context, { assertNoindex: false })
 
@@ -268,11 +323,37 @@ export const APP_REGISTRY = {
         { renderKind: 'document' }
       ),
       menuBrowseContract('/menus/bergwelt-grindelwald-main'),
-      menuBrowseContract('/menus/la-tapberne-main'),
-      menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main'),
+      menuBrowseContract('/menus/la-tapberne-main', {
+        itemIncludes: [
+          'data-menu-item-price-kind="base"',
+          'data-menu-item-price-kind="add-on"',
+          'Optional extras',
+          'Manchego',
+          '+ 2.50 CHF',
+        ],
+      }),
+      menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main', {
+        itemIncludes: [
+          'data-menu-item-price-kind="starting"',
+          'data-menu-item-price-kind="variant"',
+          'Chicken breast',
+          'Boneless chicken thigh',
+          'From',
+          '27 CHF',
+        ],
+        itemExcludes: ['+ 27 CHF'],
+      }),
       menuBrowseContract('/menus/luna-piccante-main-menu'),
       menuBrowseContract('/menus/pizza-menu'),
-      menuBrowseContract('/menus/pizza-snacks-drinks'),
+      menuBrowseContract('/menus/pizza-snacks-drinks', {
+        itemIncludes: [
+          'data-menu-item-price-kind="base"',
+          'data-menu-item-price-kind="starting"',
+          'data-menu-item-price-kind="variant"',
+          '1.5 Liter',
+          '5.5 Liter',
+        ],
+      }),
       menuQrContract(
         '/menus/pizza-snacks-drinks/qr',
         '/menus/pizza-snacks-drinks'
@@ -533,10 +614,10 @@ export const APP_REGISTRY = {
       tenantMenuBrowseContract('/menus/main'),
       menuQrContract('/menus/main/qr', '/menus/main'),
       missingMenuQrContract('/menus/main.pre_order/qr'),
-      missingMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      tenantMissingMenuBrowseContract('/menus/pizza-snacks-drinks'),
       missingMenuQrContract('/menus/pizza-snacks-drinks/qr'),
       missingMenuIndexContract('/kitchens/la-tapberne/menus'),
-      missingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
+      tenantMissingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
       missingMenuQrContract('/kitchens/la-tapberne/menus/main/qr'),
       tenantMenuJsonContract('/menus/main.pre_order', 'pre_order'),
     ],
@@ -564,10 +645,10 @@ export const APP_REGISTRY = {
         '/menus/pizza-snacks-drinks'
       ),
       missingMenuQrContract('/menus/pizza-snacks-drinks.delivery/qr'),
-      missingMenuBrowseContract('/menus/main'),
+      tenantMissingMenuBrowseContract('/menus/main'),
       missingMenuQrContract('/menus/main/qr'),
       missingMenuIndexContract('/kitchens/baeren-ringgenberg/menus'),
-      missingMenuBrowseContract(
+      tenantMissingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
       tenantMenuJsonContract(

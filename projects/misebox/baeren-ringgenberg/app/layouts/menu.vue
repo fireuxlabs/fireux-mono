@@ -1,10 +1,11 @@
 <template>
   <div class="baeren-menu-layout contents">
-    <MiseboxMenuClose
+    <MenuClose
       :class="isKioskMenu
-        ? 'fixed bottom-4 left-4 z-50 sm:bottom-8 sm:left-8'
-        : 'fixed right-4 top-4 z-50 sm:right-8 sm:top-8'"
+        ? 'menu-close--bottom-left'
+        : 'menu-close--top-right'"
       :aria-label="isKioskMenu ? 'Kiosk verlassen' : 'Speisekarte schließen'"
+      kind="close"
       to="/"
     />
 
@@ -24,7 +25,8 @@ const isKioskMenu = computed(() =>
 
 <style scoped>
 .baeren-menu-layout {
-  --menu-browse-nav-inline-end: calc(var(--misebox-menu-close-size, 4.5rem) + 1rem);
+  --menu-browse-nav-inline-end: calc(var(--menu-close-size, 4.5rem) + 1rem);
+  --menu-browse-identity-top-offset: calc(var(--menu-close-size, 4.5rem) + 1rem + env(safe-area-inset-top));
 }
 
 @media (min-width: 70rem) {

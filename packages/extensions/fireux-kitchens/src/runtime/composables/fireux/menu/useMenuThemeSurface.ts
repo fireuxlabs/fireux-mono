@@ -11,6 +11,7 @@ import {
 type MenuThemeSurfaceOptions = {
   pageStyle?: MaybeRefOrGetter<Partial<PageStyle> | null | undefined>
   colorMode?: MaybeRefOrGetter<'system' | 'light' | 'dark' | null | undefined>
+  pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
 }
 
 const color = (value: unknown) => String(value ?? '').trim()
@@ -54,6 +55,18 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
     if (secondary) vars['--menu-secondary'] = secondary
     if (customPrimary) vars['--menu-theme-primary'] = customPrimary
     if (customSecondary) vars['--menu-theme-secondary'] = customSecondary
+    vars['--menu-bg'] = activeColorMode.value === 'dark'
+      ? 'var(--menu-bg-dark)'
+      : 'var(--menu-bg-light)'
+    vars['--menu-text'] = activeColorMode.value === 'dark'
+      ? 'var(--menu-text-dark)'
+      : 'var(--menu-text-light)'
+    vars['--menu-title'] = activeColorMode.value === 'dark'
+      ? 'var(--menu-title-dark)'
+      : 'var(--menu-title-light)'
+    vars['--menu-primary'] = activeColorMode.value === 'dark'
+      ? 'color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text))'
+      : 'var(--menu-primary-source)'
     vars['--menu-font'] = resolvedFont.value.cssFamily
     vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
 
@@ -76,6 +89,18 @@ export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
 
   useHead(computed(() => ({
     link: stylesheetLinks.value,
+    ...(toValue(options.pageCanvas)
+      ? {
+          bodyAttrs: {
+            'data-menu-theme-canvas': 'true',
+            style: {
+              ...styleVars.value,
+              'background-color': 'var(--menu-bg)',
+              color: 'var(--menu-text)',
+            },
+          },
+        }
+      : {}),
   })))
 
   onMounted(() => {

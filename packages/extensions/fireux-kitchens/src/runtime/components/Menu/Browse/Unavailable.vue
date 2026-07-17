@@ -14,14 +14,6 @@
     <p class="menu-browse-unavailable__description">
       {{ failure.description }}
     </p>
-    <NuxtLink
-      v-if="indexPath"
-      :to="indexPath"
-      class="menu-browse-unavailable__link"
-    >
-      Back to menus
-      <span aria-hidden="true">→</span>
-    </NuxtLink>
   </section>
 </template>
 
@@ -30,7 +22,6 @@ import type { MenuLoadFailure } from '../../../composables/fireux/menu/useMenu'
 
 defineProps<{
   failure: MenuLoadFailure
-  indexPath: string
 }>()
 </script>
 
@@ -73,26 +64,4 @@ defineProps<{
   line-height: 1.6;
 }
 
-.menu-browse-unavailable__link {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: var(--menu-radius-control);
-  background: var(--menu-primary);
-  color: var(--menu-bg);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.menu-browse-unavailable__link:hover {
-  filter: brightness(1.08);
-}
-
-.menu-browse-unavailable__link:focus-visible {
-  outline: 2px solid var(--menu-secondary);
-  outline-offset: 3px;
-}
 </style>

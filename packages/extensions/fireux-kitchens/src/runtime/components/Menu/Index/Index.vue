@@ -32,7 +32,6 @@
       <MenuBrowse
         :menu-id="String(singleMenu.id || '')"
         :menu-route-scope="menuRouteScope"
-        :show-index-link="false"
         style="--menu-browse-nav-top: calc(var(--ui-header-height, 4rem) + 0.5rem);"
       />
     </div>
@@ -90,7 +89,7 @@
   >
     <UPageHeader
       title="Menus"
-      description="Browse live Misebox kitchen menus and order where online ordering is available."
+      description="Browse live Misebox kitchen menus."
     />
 
     <UPageBody>

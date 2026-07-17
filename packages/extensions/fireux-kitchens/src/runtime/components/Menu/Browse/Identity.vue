@@ -109,6 +109,7 @@ function useNextAsset() {
 
 <style scoped>
 .menu-browse-identity {
+  box-sizing: border-box;
   display: grid;
   gap: 1rem;
   justify-items: center;
@@ -225,6 +226,10 @@ function useNextAsset() {
 }
 
 @media (max-width: 35rem) {
+  .menu-browse-identity {
+    padding-block-start: var(--menu-browse-identity-top-offset, 0rem);
+  }
+
   .menu-browse-identity__asset--wordmark {
     width: min(100%, 18rem);
   }

@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-07-15
-Ref: de5f53b09
+Updated: 2026-07-17
+Ref: 94132eb72
 Role: map, not canon
 
 Purpose:
@@ -74,16 +74,17 @@ Why this is efficient:
 - It lets the order system grow by adding small policy fields, not new one-off surfaces.
 
 Public choice rail:
-- The public menu endpoint may emit `public_choices`.
-- `public_choices` are derived from all published sibling menus for the same Kitchen.
+- The structured public manifest emits choices at `behaviour.choices`.
+- Those choices are derived from all published sibling menus for the same Kitchen.
 - Local choices switch the current menu between readable content and available order behaviour.
 - Linked choices route to another published sibling menu.
 - Owner copy for a mode belongs on the order type `message`; renderer fallbacks should stay boring.
 
-Current examples:
-- Luna: no `ordering`, so the menu renders as readable content only.
-- Bären: `ordering.order_types` includes dine-in, pre-order, room service, collection, and delivery.
-- La Tap: `ordering.order_types: [{ type: 'pre_order', notice_hours: 24 }]`.
+Configuration note:
+- Tenant ordering configuration is runtime data and may change during a
+  migration. Inspect the resolved KitchenMenu manifest before claiming that a
+  kitchen supports a particular order type; this map is not data authority.
+- A menu with no enabled order types still renders through Browse.
 
 Likely future `type` values:
 - `dine_in`: order for normal in-venue service.
@@ -131,22 +132,21 @@ V1 fulfilment policy:
 - Order creation copies the selected order-type policy to
   `Order.fulfilment_policy` so historical tickets retain the rules the
   customer ordered under.
-- Enforcement should wait for the relevant input UI. Example: do not enforce
-  `notice_hours` until the public order flow asks for `requested_for`.
+- Enforcement follows the relevant input UI. Current order creation validates
+  serving windows, future requested times, and `notice_hours` whenever the
+  selected strategy supplies a scheduled request.
 
 Public order funnel spine:
-- `Menu/Detail/Index`: public menu experience owner. It fetches the manifest,
-  applies the theme, and routes document menus away from ordering.
-- `Menu/Detail/Food`: structured food menu experience. It renders the readable
-  menu body and the order funnel for orderable menus.
-- `Menu/Detail/Content`: readable menu renderer. It receives a view model,
-  emits choice/add/remove events, and does not own checkout/order creation.
-- `Menu/Detail/Funnel/Index`: public order funnel shell. It owns the six visible
-  checkout steps, but calls the injected submit seam instead of creating orders
-  locally.
-- `composables/fireux/kitchen/order/funnel/shared/useFunnel`: state seam
-  between `MenuDetailFood` and the funnel. It owns selected public choice,
-  basket visibility, local draft persistence, and submit.
+- Generic public routes currently render the package-owned `Menu/Browse`
+  projection. It is context-free and read-only.
+- Recognized ordering suffixes currently render `Menu/Json` as a diagnostic
+  projection. The public route pages do not mount an ordering funnel yet.
+- The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and
+  `composables/fireux/kitchen/order/funnel/shared/useFunnel` chain is therefore
+  disconnected implementation material, not the active public owner.
+- Reconnecting ordering requires one package-owned order projection for the
+  suffixed routes. It should reuse the resolved manifest and canonical order
+  endpoint without adding basket or order controls back into Browse.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - Funnel composable naming should keep `useFunnel` as the shared root,
@@ -184,9 +184,10 @@ Customer funnel notes:
 - Public customer surfaces should not expose print-test actions; printing belongs
   after kitchen acceptance in order processing.
 
-Bären delivery policy reference:
-- Their current provider uses coloured delivery areas with different minimum
-  orders and fees.
+Bären delivery policy example (not data authority):
+- A prior provider reference used coloured delivery areas with different
+  minimum orders and fees. Verify the current Kitchen fulfilment data before
+  treating these values as live policy.
 - The visible rules are minimum CHF 15 / fee CHF 0, minimum CHF 20 / fee CHF 0,
   minimum CHF 30 / fee CHF 0, and minimum CHF 50 / fee CHF 10.
 - Treat this as fulfilment configuration, not as another menu mode.
@@ -210,6 +211,4 @@ Guardrails:
 - Keep the Menu component boring: it receives the resolved menu behaviour and renders available views.
 
 Open questions:
-- Should order creation enforce `notice_hours` immediately, or only after the requested-time UI exists?
-- Should selected ordering mode config be copied onto the created Order for audit history?
 - Where exactly should daily fulfilment availability live when delivery pauses, deposits, and table reservations become real?

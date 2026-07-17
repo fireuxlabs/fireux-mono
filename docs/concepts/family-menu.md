@@ -1,6 +1,6 @@
 Menu family map
 Updated: 2026-07-17
-Ref: 13670bb32
+Ref: 94132eb72
 Role: map, not canon
 
 Purpose:
@@ -124,6 +124,9 @@ Presentation/data boundary:
   Kitchen name and text-only fallback. Missing or failed media is not a broken
   Menu state, and stored `kitchenImageShade` keeps generic Kitchen marks legible
   against light and dark Browse themes.
+- Generic detail routes extend the resolved Menu page style to the full page
+  canvas, including outer large-screen margins and the circular exit. Featured
+  Menu index projections remain inside their host app theme.
 - Document Browse uses the package-owned `Menu/Detail/Document/Viewer.vue` and
   `PdfViewer.client.vue`. Stored objects are read through the same-origin public
   Menu file endpoint, and photo, PDF, and generic document branches always keep
@@ -151,9 +154,13 @@ Page composition note:
   menu may feature that same MenuBrowse projection directly on the index.
 - The kitchen-directory index also renders `MenuIndex` with directory scope;
   it must not fall back to a diagnostic JSON projection. Index links open
-  Browse, Browse links back to the index and to QR, and QR links back to Browse
-  and the index. Document rendering inherits the Browse links and adds only its
-  open-original file action.
+  Browse. The generic detail layout owns one circular X exit: tenant projections
+  close to the tenant home, while global and kitchen-directory projections go
+  back to their Menu index. Browse does not promote QR generation: QR is a
+  distribution surface reached from operator or management tooling, then
+  printed or shared to become an entry into the Menu. QR links back to Browse
+  and the index as a fallback. Document rendering inherits the detail-layout
+  exit and adds only its open-original file action.
 - Generic `/menus/<menuId>` and `/kitchens/<kitchenSlug>/menus/<menuId>` routes
   read one resolved published menu contract through MenuBrowse. The server,
   not the URL renderer, resolves global, directory, or tenant ownership.
@@ -188,7 +195,10 @@ Kitchen needed:
 
 Component placement:
 - `components/Menu/Index/Index.vue` owns the public Menu index composition;
-  `components/Menu/Browse/Index.vue` owns context-free customer detail and its
+  `components/Menu/Close.vue` owns the shared circular control, while each
+  concrete app's `layouts/menu.vue` supplies its surface-aware exit destination
+  for generic detail routes. `components/Menu/Browse/Index.vue` owns
+  context-free customer detail and its
   small `Browse/Identity.vue` identity, `Browse/Item.vue` row,
   `Browse/SectionNav.vue` section-navigation, and `Browse/Unavailable.vue` safe
   failure seams. `components/Menu/Json.vue` remains the temporary renderer for
@@ -219,6 +229,10 @@ Structured item options:
   preserve the same option labels. Browse shows options read-only; ordering
   surfaces require a variant when several are available and let customers
   toggle add-ons.
+- Public Browse shows an exact price for base-only items and `From` the
+  canonical item price when variants exist. Variant rows repeat their absolute
+  full prices without `+`; add-ons show their incremental `+` price or `No
+  extra charge`. A zero base price without variants remains unpriced.
 - The canonical MenuItem editor supports adding, editing, and removing both
   option families. Invalid or duplicate labels must not be written.
 - `image_url`: optional menu-row presentation image. For now this belongs to

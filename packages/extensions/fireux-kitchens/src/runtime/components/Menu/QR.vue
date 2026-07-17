@@ -102,8 +102,10 @@
 import { setResponseStatus, useRequestURL, useSeoMeta } from '#imports'
 import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useMenu } from '../../composables/fireux/menu/useMenu'
+import { useMenu, type MenuLoadFailure } from '../../composables/fireux/menu/useMenu'
 import type { MenuRouteScope } from '../../utils/kitchen-menu-route'
+
+type QrWatchState = readonly [string, MenuLoadFailure | null, boolean]
 
 const props = defineProps<{
   menuId: string
@@ -159,16 +161,19 @@ const headingId = computed(() => {
 })
 
 onMounted(() => generateQr(menuUrl.value))
-watch([menuUrl, failure, pending], ([url, menuFailure, isPending]) => {
-  if (isPending || menuFailure) {
-    qrGeneration += 1
-    qrDataUrl.value = ''
-    qrError.value = false
-    return
-  }
+watch(
+  () => [menuUrl.value, failure.value, pending.value] as const,
+  ([url, menuFailure, isPending]: QrWatchState) => {
+    if (isPending || menuFailure) {
+      qrGeneration += 1
+      qrDataUrl.value = ''
+      qrError.value = false
+      return
+    }
 
-  generateQr(url)
-})
+    generateQr(url)
+  }
+)
 
 async function generateQr(url: string) {
   const generation = ++qrGeneration

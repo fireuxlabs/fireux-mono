@@ -6,7 +6,6 @@
     :data-menu-render-kind="hasMenu ? renderKind : undefined"
     :data-menu-index-path="menuIndexPath || undefined"
     :data-menu-path="hasMenu ? menuPath : undefined"
-    :data-menu-qr-path="hasMenu ? menuQrPath : undefined"
     :class="themeClassName"
     :style="themeStyleVars"
     :aria-labelledby="hasMenu
@@ -22,7 +21,6 @@
     <MenuBrowseUnavailable
       v-else-if="failure"
       :failure="failure"
-      :index-path="menuIndexPath"
     />
 
     <template v-else-if="hasMenu">
@@ -36,12 +34,6 @@
         :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
         :wordmark-image-url="kitchenWordmarkImageUrl"
-      />
-
-      <MenuBrowseActions
-        :index-path="menuIndexPath"
-        :qr-path="menuQrPath"
-        :show-index-link="showIndexLink"
       />
 
       <aside class="menu-browse__notice" aria-label="Allergy information">
@@ -112,7 +104,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
-import MenuBrowseActions from './Actions.vue'
 import MenuBrowseIdentity from './Identity.vue'
 import MenuBrowseSectionNav from './SectionNav.vue'
 import MenuBrowseUnavailable from './Unavailable.vue'
@@ -132,12 +123,12 @@ type BrowseSection = MenuManifestSection & {
 const props = withDefaults(defineProps<{
   menuId: string
   menuRouteScope?: MenuRouteScope
+  pageCanvas?: boolean
   propagateResponseStatus?: boolean
-  showIndexLink?: boolean
 }>(), {
   menuRouteScope: rootMenuRouteScope,
+  pageCanvas: false,
   propagateResponseStatus: false,
-  showIndexLink: true,
 })
 
 const menuId = computed(() => String(props.menuId || '').trim())
@@ -147,7 +138,6 @@ const {
   kitchenSlug,
   indexPath: menuIndexPath,
   menuPath,
-  qrPath: menuQrPath,
   renderKind,
   document: documentMenu,
   manifest: detailMenu,
@@ -209,7 +199,10 @@ const documentUrl = computed(() => {
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
-} = useMenuThemeSurface({ pageStyle })
+} = useMenuThemeSurface({
+  pageStyle,
+  pageCanvas: computed(() => props.pageCanvas),
+})
 
 useSeoMeta({
   title: () => failure.value?.title || menuName.value,

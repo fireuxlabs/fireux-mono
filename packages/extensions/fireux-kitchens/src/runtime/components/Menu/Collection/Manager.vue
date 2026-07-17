@@ -94,7 +94,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Live menus',
-    description: 'Open a menu, browse dishes, or start an order from kitchens using Misebox.',
+    description: 'Open a live menu and browse its published dishes.',
     searchPlaceholder: 'Search menus...',
     showSearch: true,
     showVariantToggle: true,
