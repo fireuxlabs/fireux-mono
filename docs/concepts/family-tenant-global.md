@@ -71,10 +71,14 @@ Tenant target ownership:
 - Tenant root routes omit the Kitchen slug. Directory routes carry it in their
   explicit route scope; a client-provided slug cannot change tenant ownership.
 - Public Menu count changes the tenant index outcome, not its route grammar:
-  `/menus` temporarily redirects to `/menus/<menuId>` only when the bounded
+  `/menus` temporarily redirects to `/<menuId>` only when the bounded
   server result proves there is exactly one published menu and no next page.
   Zero menus render an empty index and multiple menus render a paginated list.
   Ecosystem and explicit kitchen-directory indexes remain lists at every count.
+- Tenant Menu details always remain at `/<menuId>`, including when the tenant
+  later gains more menus. The kitchens module aliases its existing Menu detail
+  page only for tenant apps; static tenant routes win, contextual variants
+  validate their generic root match, and index collisions fail closed.
 
 Tenant page composition:
 - Reference-in-progress: `projects/misebox/la-tap-berne/app`.

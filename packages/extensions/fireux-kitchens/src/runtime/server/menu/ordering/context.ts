@@ -8,6 +8,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 import {
   directoryMenuRouteScope,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route.ts'
 
@@ -53,7 +54,9 @@ export const readMenuOrderContext = async (
     routeMenuId: target.routeMenuId,
     routeScope: target.kind === 'directory-menu'
       ? directoryMenuRouteScope(target.kitchenSlug)
-      : rootMenuRouteScope(),
+      : target.kind === 'tenant-menu'
+        ? tenantMenuRouteScope()
+        : rootMenuRouteScope(),
     menuData: target.kind === 'root-doorway'
       ? target.sourceMenuData
       : target.menuData,

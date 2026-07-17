@@ -8,9 +8,11 @@ import {
 } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useRuntimeConfig } from '#imports'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/kitchen/dish.model'
@@ -59,7 +61,26 @@ export function useMenuUpdate(
 ) {
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const resolveDb = useFirestoreResolver(options.databaseId)
-  const { appId } = useFireUXConfig()
+  const fireux = useFireUXConfig()
+  const { appId } = fireux
+  const runtimeConfig = useRuntimeConfig()
+  const tenantReservedRouteKeys = () => {
+    const keys = runtimeConfig.public?.fireux?.reservedRouteKeys
+    return Array.isArray(keys) ? keys : []
+  }
+  const assertTenantMenuRoute = (menuId: string) => {
+    if (!fireux.isTenant) return
+
+    const validation = validatePublicSlug(menuId, {
+      label: 'Menu path',
+      namespace: 'this tenant app',
+      reservedScope: 'root',
+      runtimeReservedRouteKeys: tenantReservedRouteKeys(),
+    })
+    if (!validation.isValid) {
+      throw new Error(validation.message || 'Menu path is not available.')
+    }
+  }
 
   const collectionPath = (kitchenId: string) =>
     menuPath({
@@ -150,6 +171,7 @@ export function useMenuUpdate(
     const nextId = normalizeSlug(nextMenuId)
     if (!path || !oldId) throw new Error('Menu id is required')
     if (!nextId) throw new Error('New menu id is required')
+    assertTenantMenuRoute(nextId)
     if (nextId === oldId) return { id: oldId, changed: false }
 
     const db = resolveDb()
@@ -337,6 +359,7 @@ export function useMenuUpdate(
 
   async function setMenuStatus(kitchenId: string, menuId: string, status: MenuStatus) {
     if (status === 'published') {
+      assertTenantMenuRoute(clean(menuId))
       await assertMenuCanPublish({
         appId,
         db: resolveDb(),

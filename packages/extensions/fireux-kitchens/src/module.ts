@@ -44,7 +44,13 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRootRouteKeys(['kitchens', 'chefs', 'drivers', 'ingredients'])
+    registerReservedRootRouteKeys([
+      'menus',
+      'kitchens',
+      'chefs',
+      'drivers',
+      'ingredients',
+    ])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/kitchens')
       ctx.addHub('/chefs')

@@ -8,7 +8,7 @@ import { menuChoiceContextForOrderType } from '../../../utils/menu-context.ts'
 import {
   directoryMenuRouteScope,
   menuRoutePath,
-  rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from '../../../utils/kitchen-menu-route.ts'
 import {
   isMenuOrderingEnabled,
@@ -35,7 +35,7 @@ const menuPath = (
   routeKind: MenuChoiceInput['routeKind']
 ) => {
   const scope = routeKind === 'tenant-menu'
-    ? rootMenuRouteScope()
+    ? tenantMenuRouteScope()
     : directoryMenuRouteScope(kitchenSlug)
 
   return menuRoutePath({

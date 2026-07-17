@@ -7,6 +7,7 @@ import {
   menuRouteIndexPath,
   menuRoutePath,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
   type MenuRouteScope,
 } from '../../../../utils/kitchen-menu-route'
 
@@ -34,7 +35,7 @@ export function useKitchenMenuUrl(options: {
   // This adapter may choose the app's default doorway. Storage ownership does not.
   const routeScope = computed<MenuRouteScope>(() =>
     text(appRole.value).toLowerCase() === 'tenant'
-      ? rootMenuRouteScope()
+      ? tenantMenuRouteScope()
       : directoryMenuRouteScope(kitchenSlug.value)
   )
   const menuIndexPath = computed(() =>

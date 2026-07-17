@@ -1,6 +1,7 @@
 <template>
   <MenuQR
-    :menu-id="qrMenuId"
+    :menu-id="menuTarget.menuId"
+    :menu-context="menuTarget.context"
     :menu-route-scope="menuRouteScope"
   />
 </template>
@@ -8,22 +9,25 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   parseMenuRouteTarget,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 
 definePageMeta({
   layout: false,
+  middleware: 'menu-tenant-route',
   index: false,
   sitemap: false,
   robots: 'noindex, nofollow',
 })
 
+const fireux = useFireUXConfig()
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const qrMenuId = computed(() =>
-  menuTarget.value.context === 'generic' ? menuTarget.value.menuId : ''
-)
-const menuRouteScope = rootMenuRouteScope()
+const menuRouteScope = fireux.isTenant
+  ? tenantMenuRouteScope()
+  : rootMenuRouteScope()
 </script>

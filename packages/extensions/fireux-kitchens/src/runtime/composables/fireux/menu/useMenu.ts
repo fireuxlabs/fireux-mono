@@ -106,12 +106,14 @@ export function useMenu(
     menuRoutePath({
       scope: routeScope.value,
       menuId: id.value,
+      context: menuContext.value,
     })
   )
   const qrPath = computed(() =>
     menuRouteQrPath({
       scope: routeScope.value,
       menuId: id.value,
+      context: menuContext.value,
     })
   )
   const endpoint = computed(() => {

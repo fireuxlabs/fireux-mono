@@ -5,6 +5,7 @@ import {
 
 export type MenuRouteScope =
   | { kind: 'root' }
+  | { kind: 'tenant' }
   | { kind: 'directory', kitchenSlug: string }
 
 export type MenuRouteTarget = {
@@ -20,6 +21,8 @@ const contextSet = new Set<string>(MenuRouteContexts)
 
 export const rootMenuRouteScope = (): MenuRouteScope => ({ kind: 'root' })
 
+export const tenantMenuRouteScope = (): MenuRouteScope => ({ kind: 'tenant' })
+
 export const directoryMenuRouteScope = (
   kitchenSlug: unknown
 ): MenuRouteScope => ({
@@ -28,7 +31,7 @@ export const directoryMenuRouteScope = (
 })
 
 export function menuRouteIndexPath(scope: MenuRouteScope) {
-  if (scope.kind === 'root') return '/menus'
+  if (scope.kind === 'root' || scope.kind === 'tenant') return '/menus'
 
   const kitchenSlug = segment(scope.kitchenSlug)
   return kitchenSlug ? `/kitchens/${kitchenSlug}/menus` : ''
@@ -48,15 +51,19 @@ export function menuRoutePath(options: {
   menuId: unknown
   context?: MenuRouteContext
 }) {
-  const indexPath = menuRouteIndexPath(options.scope)
   const menuId = segment(menuContextualMenuId(options.menuId, options.context))
+  if (!menuId) return ''
+  if (options.scope.kind === 'tenant') return `/${menuId}`
 
-  return indexPath && menuId ? `${indexPath}/${menuId}` : ''
+  const indexPath = menuRouteIndexPath(options.scope)
+
+  return indexPath ? `${indexPath}/${menuId}` : ''
 }
 
 export function menuRouteQrPath(options: {
   scope: MenuRouteScope
   menuId: unknown
+  context?: MenuRouteContext
 }) {
   const menuPath = menuRoutePath(options)
   return menuPath ? `${menuPath}/qr` : ''

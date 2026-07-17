@@ -7,6 +7,7 @@ import {
   type MenuRouteContext,
   type MenuSurface,
 } from '../models/kitchen/menu/menu-context.model'
+import type { MenuManifestBehaviour } from '../models/kitchen/menu/menu-detail.model'
 
 export type MenuContextProfile = {
   context: MenuRouteContext
@@ -121,6 +122,32 @@ export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
 
 export function menuContextProfile(value: unknown): MenuContextProfile {
   return profiles[normalizeMenuRouteContext(value)]
+}
+
+export function menuManifestSupportsContext(
+  behaviour: MenuManifestBehaviour | null | undefined,
+  value: unknown
+) {
+  if (!behaviour) return false
+
+  const profile = menuContextProfile(value)
+  if (
+    behaviour.context !== profile.context ||
+    behaviour.surface !== profile.surface
+  ) {
+    return false
+  }
+
+  if (profile.context === 'generic') return true
+  if (!behaviour.ordering.enabled || !behaviour.orderingEnabled) return false
+
+  const configuredOrderTypes = new Set(
+    behaviour.ordering.order_types.map(({ type }) => type)
+  )
+
+  return profile.visibleOrderTypes.some((type) =>
+    behaviour.orderTypes.includes(type) && configuredOrderTypes.has(type)
+  )
 }
 
 export function menuOrderChannelForContext(

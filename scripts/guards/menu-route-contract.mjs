@@ -14,6 +14,7 @@ import {
   menuRouteQrPath,
   parseMenuRouteTarget,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from '../../packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-menu-route.ts'
 
 const EXPECTED_CONTEXTS = [
@@ -64,9 +65,11 @@ export async function run() {
   }
 
   const rootScope = rootMenuRouteScope()
+  const tenantScope = tenantMenuRouteScope()
   const directoryScope = directoryMenuRouteScope(KITCHEN_SLUG)
 
   assert.equal(menuRouteIndexPath(rootScope), '/menus')
+  assert.equal(menuRouteIndexPath(tenantScope), '/menus')
   assert.equal(
     menuRouteIndexPath(directoryScope),
     `/kitchens/${KITCHEN_SLUG}/menus`
@@ -82,11 +85,17 @@ export async function run() {
   })
   assert.equal(menuRoutePath({ scope: rootScope, menuId: MENU_ID }),
     `/menus/${MENU_ID}`)
+  assert.equal(menuRoutePath({ scope: tenantScope, menuId: MENU_ID }),
+    `/${MENU_ID}`)
   assert.equal(menuRoutePath({ scope: directoryScope, menuId: MENU_ID }),
     `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`)
   assert.equal(
     menuRouteQrPath({ scope: rootScope, menuId: MENU_ID }),
     `/menus/${MENU_ID}/qr`
+  )
+  assert.equal(
+    menuRouteQrPath({ scope: tenantScope, menuId: MENU_ID }),
+    `/${MENU_ID}/qr`
   )
   assert.equal(
     menuRouteQrPath({ scope: directoryScope, menuId: MENU_ID }),
@@ -112,8 +121,24 @@ export async function run() {
       `/menus/${MENU_ID}.${context}`
     )
     assert.equal(
+      menuRoutePath({ scope: tenantScope, menuId: MENU_ID, context }),
+      `/${MENU_ID}.${context}`
+    )
+    assert.equal(
       menuRoutePath({ scope: directoryScope, menuId: MENU_ID, context }),
       `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}.${context}`
+    )
+    assert.equal(
+      menuRouteQrPath({ scope: rootScope, menuId: MENU_ID, context }),
+      `/menus/${MENU_ID}.${context}/qr`
+    )
+    assert.equal(
+      menuRouteQrPath({ scope: tenantScope, menuId: MENU_ID, context }),
+      `/${MENU_ID}.${context}/qr`
+    )
+    assert.equal(
+      menuRouteQrPath({ scope: directoryScope, menuId: MENU_ID, context }),
+      `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}.${context}/qr`
     )
   }
 

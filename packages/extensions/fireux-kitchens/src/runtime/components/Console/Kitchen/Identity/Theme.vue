@@ -77,7 +77,7 @@ import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
   menuRoutePath,
-  rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from '../../../../utils/kitchen-menu-route'
 
 const {
@@ -147,7 +147,7 @@ const livePreviewMenuId = computed(() =>
 )
 const previewMenuRouteScope = computed(() =>
   fireux.isTenant
-    ? rootMenuRouteScope()
+    ? tenantMenuRouteScope()
     : directoryMenuRouteScope(kitchenSlug.value)
 )
 const previewMenuDetail = useMenu(livePreviewMenuId, {

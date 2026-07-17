@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import {
   menuRoutePath,
-  rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 import { baerenRinggenbergContent } from '../../../config/content.config'
 import kitchenConfig from '../../../config/kitchen.config'
@@ -77,7 +77,7 @@ defineOptions({ name: 'BaerenHomeHero' })
 
 const content = baerenRinggenbergContent
 const deliveryMenuPath = menuRoutePath({
-  scope: rootMenuRouteScope(),
+  scope: tenantMenuRouteScope(),
   menuId: kitchenConfig.primaryMenuId,
   context: 'delivery',
 })

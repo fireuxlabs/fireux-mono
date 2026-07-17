@@ -77,7 +77,10 @@ import {
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
-import { menuContextProfile } from '../../../utils/menu-context'
+import {
+  menuContextProfile,
+  menuManifestSupportsContext,
+} from '../../../utils/menu-context'
 
 const props = withDefaults(defineProps<{
   menuId: string
@@ -122,12 +125,7 @@ const orderAvailable = computed(() => {
 
   return Boolean(
     renderKind.value === 'structured' &&
-    behaviour?.context === 'collection' &&
-    behaviour.surface === 'collection' &&
-    behaviour.ordering.enabled &&
-    behaviour.orderingEnabled &&
-    behaviour.orderTypes.includes('collection') &&
-    collectionConfig.value
+    menuManifestSupportsContext(behaviour, menuContext.value)
   )
 })
 const orderState = computed(() => {

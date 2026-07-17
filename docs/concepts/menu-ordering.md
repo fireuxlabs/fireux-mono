@@ -24,17 +24,25 @@ Core split:
 - `Fulfilment` is not the same as Menu; it is the later operational promise and handoff layer.
 
 Public route hierarchy:
-- `/menus/<menuId>` is Browse. It renders the published menu and creates no Order.
+- Global `/menus/<menuId>`, tenant `/<menuId>`, and directory
+  `/kitchens/<kitchenSlug>/menus/<menuId>` are Browse. They render the
+  published menu and create no Order.
 - Ordering contexts suffix the menu identity, not its collection base:
   `/menus/<menuId>.<context>` or
-  `/kitchens/<kitchenSlug>/menus/<menuId>.<context>`.
-- Never generate `/menu.delivery`, root `/<menuId>`, or count-dependent route
-  grammar.
+  `/kitchens/<kitchenSlug>/menus/<menuId>.<context>`, while a tenant uses
+  `/<menuId>.<context>`.
+- Never generate `/menu.delivery` or `/menus.<context>`. Tenant detail grammar
+  remains root-based at every menu count; only `/menus` index presentation
+  changes between redirect, empty, and list outcomes.
 - Home options is a UI grouping, not a surface, route context, or `KitchenOrder.order_type`.
-- `/menus/<menuId>.delivery` and `.collection` are separate direct surfaces.
+- A menu's `.delivery` and `.collection` suffixes are separate direct surfaces.
 - A menu may enable `delivery`, `collection`, or both inside the Home options grouping.
 - `.pre_order`, `.room_service`, `.dine_in`, and `.kiosk` remain purpose-specific surfaces.
-- Kiosk has one public route: `/menus/<menuId>.kiosk`.
+- Kiosk has one public route per doorway, using the same identity suffix rule.
+- Any recognized contextual doorway may add `/qr` after the contextual menu
+  identity. That QR encodes the exact context URL and is available only when
+  the context-filtered Menu manifest resolves; it never silently falls back to
+  generic Browse.
 - `eat_in` and `takeaway` are choices inside Kiosk, not separate public surfaces or route suffixes.
 - The selected kiosk choice remains on the Order as the preparation, handoff, and future tax-treatment flag.
 - A surface groups or preselects customer intent; the resulting canonical order type is what reaches kitchen intake.

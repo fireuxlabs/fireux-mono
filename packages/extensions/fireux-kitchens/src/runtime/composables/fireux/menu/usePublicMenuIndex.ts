@@ -1,5 +1,5 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
-import { useAsyncData } from '#imports'
+import { useAsyncData, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
@@ -9,6 +9,7 @@ import {
 import {
   menuRoutePath,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 
@@ -26,8 +27,13 @@ type UsePublicMenuIndexOptions = {
 
 export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
   const fireux = useFireUXConfig()
+  const router = useRouter()
   const routeScope = computed(() =>
-    options.routeScope ? toValue(options.routeScope) : rootMenuRouteScope()
+    options.routeScope
+      ? toValue(options.routeScope)
+      : fireux.isTenant
+        ? tenantMenuRouteScope()
+        : rootMenuRouteScope()
   )
   const kitchenSlug = computed(() =>
     routeScope.value.kind === 'directory'
@@ -61,12 +67,28 @@ export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
   const menus = computed(() => state.data.value?.items ?? [])
   const nextCursor = computed(() => state.data.value?.nextCursor ?? null)
   const hasMore = computed(() => Boolean(nextCursor.value))
-  const redirectSingleTenant = computed(() =>
-    fireux.isTenant && routeScope.value.kind === 'root'
+  const tenantRouteCollisions = computed(() =>
+    routeScope.value.kind === 'tenant'
+      ? menus.value.filter((menu) => !router
+          .resolve(menuLink(menu.id))
+          .matched
+          .some(record => record.meta.menuProjection === true))
+      : []
   )
+  const routePolicyError = computed<Error | null>(() =>
+    tenantRouteCollisions.value.length
+      ? new Error(
+          `Tenant Menu ids collide with existing root routes: ${tenantRouteCollisions.value
+            .map(menu => menu.id)
+            .join(', ')}`
+        )
+      : null
+  )
+  const error = computed(() => state.error.value || routePolicyError.value)
+  const redirectSingleTenant = computed(() => routeScope.value.kind === 'tenant')
   const outcome = computed<PublicMenuIndexOutcome>(() => {
     if (state.pending.value) return { kind: 'loading' }
-    if (state.error.value || !state.data.value) return { kind: 'unavailable' }
+    if (error.value || !state.data.value) return { kind: 'unavailable' }
     if (!menus.value.length) return { kind: 'empty' }
 
     if (
@@ -82,7 +104,9 @@ export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
 
     return { kind: 'list' }
   })
-  const statusCode = computed(() => requestStatusCode(state.error.value))
+  const statusCode = computed(() =>
+    routePolicyError.value ? 500 : requestStatusCode(state.error.value)
+  )
 
   function menuLink(menuId: string) {
     return menuRoutePath({
@@ -124,7 +148,7 @@ export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
   return {
     menus,
     pending: state.pending,
-    error: state.error,
+    error,
     refresh: state.refresh,
     ready,
     routeScope,

@@ -10,7 +10,7 @@
     </div>
 
     <div
-      v-else-if="error"
+      v-else-if="outcome.kind === 'unavailable'"
       class="grid min-h-screen place-items-center px-4 text-center"
       data-menu-projection="index"
       data-menu-index-kind="unavailable"

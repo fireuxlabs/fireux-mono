@@ -32,8 +32,9 @@ Current public menu doorways:
   `misebox.app/kitchens/<kitchenSlug>/menus/<menuId>` opens one menu. This is
   durable kitchen-scoped access whether or not a tenant app exists, and the
   KitchenMenu id only needs to be stable inside that kitchen namespace.
-- Tenant doorway: the tenant origin uses `/menus` as its index and
-  `/menus/<menuId>` as its detail. It is a branded projection whose configured
+- Tenant doorway: `/<menuId>` is the stable detail route. `/menus` exists as
+  the tenant directory only when its result needs presentation; with exactly
+  one published menu it temporarily redirects to that root detail. Configured
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
 - The global `/menus` route follows the public-index family: page header, Menu
@@ -51,7 +52,7 @@ Current public menu doorways:
   tenant projections. Route projections do not copy scoped content. Data scope
   and route scope are deliberately separate.
 - A tenant `/menus` request with exactly one published menu returns a temporary
-  redirect to `/menus/<menuId>`; zero menus render the empty index and two or
+  redirect to `/<menuId>`; zero menus render the empty index and two or
   more render the tenant list. Global and kitchen-directory indexes always
   remain lists, even when their current result contains one menu.
 - Ordering contexts append after the menu identity on every doorway, for
@@ -73,8 +74,17 @@ Current public menu doorways:
   projection seam. It owns one collision-safe request key, the structured or
   document render decision, safe failure state, and the relative index, Menu,
   and QR paths used by public renderers.
-- `MenuRouteScope` owns URL projection as either `root` or `directory`; resolved
-  Firestore ownership remains a separate server concern.
+- `MenuRouteScope` owns URL projection as `root`, `tenant`, or `directory`.
+  Root means the global `/menus/<globalMenuId>` namespace; tenant means the
+  tenant origin's `/<menuId>` namespace; directory means the explicit Kitchen
+  namespace. Resolved Firestore ownership remains a separate server concern.
+- The kitchens module adds the existing root Menu page and QR page as dynamic
+  aliases only in tenant apps. Static tenant pages keep router precedence.
+  `menu-tenant-route` validates contextual and QR aliases against the generic
+  root match, fails closed on collisions, and temporarily redirects the older
+  tenant `/menus/<menuId>` form to the root canonical path. The index policy
+  treats any published id that resolves to a static tenant page as a
+  configuration failure rather than emitting a wrong link.
 - Tenant menu resolution is fail-closed: exactly one configured Kitchen target,
   an existing root Kitchen, and explicit `parent_app` or `tenant_app` ownership
   are required. A tenant request never falls through to a global root menu and
@@ -167,7 +177,9 @@ Page composition note:
   tenant scope uses its configured Kitchen target. The route page awaits the
   shared index controller and executes its one-menu tenant redirect before any
   index UI renders. This keeps detail layout and exit behavior on the detail
-  route rather than embedding MenuBrowse inside the tenant layout.
+  route rather than embedding MenuBrowse inside the tenant layout. A tenant
+  list also links to stable root `/<menuId>` details, so adding another menu
+  does not change an existing menu URL.
 - The kitchen-directory index also renders `MenuIndex` with directory scope;
   it always remains a list and must not fall back to a diagnostic JSON
   projection. Index links open Browse. The generic detail layout owns one
@@ -178,13 +190,17 @@ Page composition note:
   printed or shared to become an entry into the Menu. QR links back to Browse
   and the index as a fallback. Document rendering inherits the detail-layout
   exit and adds only its open-original file action.
-- Generic `/menus/<menuId>` and `/kitchens/<kitchenSlug>/menus/<menuId>` routes
-  read one resolved published menu contract through MenuBrowse. The server,
-  not the URL renderer, resolves global, directory, or tenant ownership.
+- Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
+  `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
+  menu contract through MenuBrowse. The server, not the URL renderer, resolves
+  global, directory, or tenant ownership.
 - Printable QR doorways append `/qr` to those generic detail routes and encode
   the corresponding absolute Browse URL on the same origin. They use the same
   fail-closed ownership resolver, are always `noindex`, and render without app
-  chrome. Contextual ordering suffixes do not expose QR doorways.
+  chrome. A recognized contextual identity may also append `/qr`, for example
+  `/<menuId>.collection/qr` on a tenant. The QR resolves that context through
+  the same manifest and encodes the exact contextual target; a disabled or
+  unavailable context fails closed rather than falling back to Browse.
 - Generic and Collection detail responses preserve that resolver truth: missing, unpublished,
   or out-of-scope Menus return 404; configuration, payload, and Firestore
   failures remain 5xx. Browse renders a safe noindex failure state without
@@ -234,7 +250,7 @@ Component placement:
   owns transient basket arithmetic and validated line correction only.
   `components/Menu/Json.vue` remains the temporary renderer for every other
   non-generic context diagnostic.
-- Root and kitchen-directory detail pages branch on the parsed menu context:
+- Global, tenant-alias, and kitchen-directory detail routes branch on the parsed menu context:
   generic routes project MenuBrowse, Collection projects MenuOrder, and all
   other suffixes preserve the context query for MenuJson. The shared route
   projection classifier also drives `middleware/menu-projection-layout.ts`, so

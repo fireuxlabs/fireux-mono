@@ -22,20 +22,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   menuRouteProjection,
   parseMenuRouteTarget,
   rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 
 definePageMeta({
-  middleware: 'menu-projection-layout',
+  middleware: ['menu-tenant-route', 'menu-projection-layout'],
+  menuProjection: true,
   name: 'MenuPage',
 })
 
+const fireux = useFireUXConfig()
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const menuRouteScope = rootMenuRouteScope()
+const menuRouteScope = fireux.isTenant
+  ? tenantMenuRouteScope()
+  : rootMenuRouteScope()
 const projection = computed(() => menuRouteProjection(menuTarget.value.context))
 const isBrowse = computed(() => projection.value === 'browse')
 const isOrder = computed(() => projection.value === 'order')

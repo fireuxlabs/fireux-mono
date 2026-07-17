@@ -1,6 +1,7 @@
 <template>
   <MenuQR
-    :menu-id="qrMenuId"
+    :menu-id="menuTarget.menuId"
+    :menu-context="menuTarget.context"
     :menu-route-scope="menuRouteScope"
   />
 </template>
@@ -23,8 +24,5 @@ definePageMeta({
 const kitchenSlug = useRouteParam('slug')
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const qrMenuId = computed(() =>
-  menuTarget.value.context === 'generic' ? menuTarget.value.menuId : ''
-)
 const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
 </script>

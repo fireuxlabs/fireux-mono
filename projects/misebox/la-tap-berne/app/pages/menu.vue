@@ -3,9 +3,9 @@
 </template>
 
 <script setup lang="ts">
-import { menuRouteIndexPath, rootMenuRouteScope } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
+import { menuRouteIndexPath, tenantMenuRouteScope } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 
-await navigateTo(menuRouteIndexPath(rootMenuRouteScope()), {
+await navigateTo(menuRouteIndexPath(tenantMenuRouteScope()), {
   redirectCode: 301,
   replace: true,
 })

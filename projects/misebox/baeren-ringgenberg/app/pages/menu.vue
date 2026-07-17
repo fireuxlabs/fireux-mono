@@ -6,14 +6,14 @@
 import {
   menuRouteIndexPath,
   menuRoutePath,
-  rootMenuRouteScope,
+  tenantMenuRouteScope,
 } from 'fireux-kitchens/runtime/utils/kitchen-menu-route'
 import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/utils/menu-context'
 import kitchenConfig from '../config/kitchen.config'
 
 const route = useRoute()
 const context = normalizeMenuRouteContext(route.query.context)
-const scope = rootMenuRouteScope()
+const scope = tenantMenuRouteScope()
 const target = context === 'generic'
   ? menuRouteIndexPath(scope)
   : menuRoutePath({
