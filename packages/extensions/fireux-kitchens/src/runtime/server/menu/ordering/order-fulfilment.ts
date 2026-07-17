@@ -42,11 +42,12 @@ export async function resolveMenuOrderFulfilment(input: {
 }): Promise<ResolvedMenuOrderFulfilment> {
   const { command } = input
   const strategy = menuOrderTypeStrategy(command.orderType)
+  const scheduleHours = command.orderTypeConfig?.service_hours?.operation_hours
   validateMenuOrderSchedule({
     collection: command.collection,
-    hours:
-      command.orderTypeConfig?.service_hours?.operation_hours ||
-      input.ordering.service_hours?.operation_hours,
+    hours: command.orderType === 'collection'
+      ? scheduleHours
+      : scheduleHours || input.ordering.service_hours?.operation_hours,
     noticeHours: command.orderTypeConfig?.notice_hours,
     orderType: command.orderType,
     requestedFor: command.requestedFor,

@@ -387,25 +387,4 @@ useSeoMeta({
 })
 </script>
 
-<style scoped>
-.menu-order {
-  align-content: start;
-}
-
-.menu-order__state {
-  margin: auto;
-  color: var(--menu-muted);
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.menu-order__shell {
-  display: grid;
-  align-content: start;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
-  width: min(100%, 68rem);
-  margin: 0 auto;
-  padding-block-end: clamp(1rem, 4vw, 3rem);
-}
-
-</style>
+<style scoped src="../../../assets/styles/menu-order.css"></style>

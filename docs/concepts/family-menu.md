@@ -258,9 +258,10 @@ Page composition note:
   dialog only when needed, plus an in-memory basket count and total. The
   basket review lets customers inspect configured lines, adjust quantities,
   and remove lines. Collection alone can continue to a package-owned,
-  page-local pickup-time selector backed by the resolved Menu service hours:
-  immediate collection is offered only while service is open, and scheduled
-  choices must pass the shared hours and notice checks. It has no submission,
+  page-local pickup-time selector backed by the resolved Collection order-type
+  policy: immediate collection is offered only when enabled and open, while
+  scheduled choices obey Collection hours, notice, interval, and horizon. It
+  has no submission,
   customer-details, payment, or persistence path. Delivery address, pre-order
   scheduling, customer details, submission, and payment remain later explicit
   stages.

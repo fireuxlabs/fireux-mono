@@ -32,6 +32,8 @@ const depositTypes = [
   'percent',
 ] as const satisfies readonly MenuOrderDepositPolicy['type'][]
 
+const collectionSlotIntervals = [15, 30, 45, 60] as const
+
 const text = (value: unknown) => String(value ?? '').trim()
 const list = (value: unknown) => Array.isArray(value) ? value : []
 const record = (value: unknown): Record<string, unknown> =>
@@ -168,8 +170,8 @@ export const readMenuOrderTypeConfig = (
   const asapEnabled = typeof row.asap_enabled === 'boolean'
     ? row.asap_enabled
     : undefined
-  const slotInterval = positiveNumber(row.slot_interval_minutes)
-  const scheduleHorizon = positiveNumber(row.schedule_horizon_days)
+  const slotInterval = Math.round(positiveNumber(row.slot_interval_minutes) || 0)
+  const scheduleHorizon = Math.round(positiveNumber(row.schedule_horizon_days) || 0)
   const fulfilment = readMenuOrderFulfilmentPolicy(row.fulfilment)
 
   if (!type) return null
@@ -180,11 +182,13 @@ export const readMenuOrderTypeConfig = (
     ...(message ? { message } : {}),
     ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(asapEnabled !== undefined ? { asap_enabled: asapEnabled } : {}),
-    ...(slotInterval
-      ? { slot_interval_minutes: Math.round(slotInterval) }
+    ...(collectionSlotIntervals.includes(
+      slotInterval as typeof collectionSlotIntervals[number]
+    )
+      ? { slot_interval_minutes: slotInterval }
       : {}),
-    ...(scheduleHorizon
-      ? { schedule_horizon_days: Math.round(scheduleHorizon) }
+    ...(scheduleHorizon >= 1 && scheduleHorizon <= 30
+      ? { schedule_horizon_days: scheduleHorizon }
       : {}),
     ...(fulfilment ? { fulfilment } : {}),
   }

@@ -68,17 +68,14 @@ const withKitchenFulfilment = (
     type.fulfilment,
     kitchenFulfilment
   )
+  const serviceHours = withInheritedOperationHours(
+    type.service_hours,
+    kitchenOperationHours
+  )
 
   return {
     ...type,
-    ...(withInheritedOperationHours(type.service_hours, kitchenOperationHours)
-      ? {
-          service_hours: withInheritedOperationHours(
-            type.service_hours,
-            kitchenOperationHours
-          ),
-        }
-      : {}),
+    ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(fulfilment ? { fulfilment } : {}),
   }
 }

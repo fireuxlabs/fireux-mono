@@ -72,8 +72,9 @@ Current display rule:
 - That basket exists in memory only. It does not restore across navigation or
   refresh. Customers can review configured lines, adjust quantities, and
   remove lines. Collection can then record a page-local queue or scheduled
-  pickup choice from the resolved service hours; missing hours fail closed and
-  scheduled choices share the server's hours and notice validation utilities.
+  pickup choice from the resolved Collection order-type policy; missing hours
+  fail closed, and scheduled choices share the server's hours and notice
+  validation utilities.
   Customers still cannot submit an Order, enter customer details, or start
   payment.
 - If ordering is absent or disabled, the same menu still renders as readable content.
@@ -84,13 +85,31 @@ ordering: {
   enabled: true,
   order_types: [
     {
-      type: 'pre_order',
-      notice_hours: 24,
-      message: 'Pre-orders need at least 24 hours notice.'
+      type: 'collection',
+      notice_hours: 0.5,
+      asap_enabled: true,
+      slot_interval_minutes: 30,
+      schedule_horizon_days: 7,
+      service_hours: {
+        inherit_kitchen_operation_hours: true
+      }
     }
   ]
 }
 ```
+
+Collection timing boundary:
+- Collection availability belongs to the `collection` order-type row, not to
+  generic Menu hours and not to the public route.
+- The row owns its optional customer message, immediate-collection flag,
+  minimum notice, slot interval, scheduling horizon, and inherited or custom
+  service hours.
+- The console edits this policy at `/console/kitchen/menus/<menuId>`; public
+  suffixes such as `.collection` are projections and are never console ids.
+- The public Collection surface labels current availability as `Open now`,
+  `Not open`, or `Collection hours unavailable`. Pickup choices read only the
+  resolved Collection row. Missing Collection hours fail closed at the timing
+  boundary rather than borrowing generic Menu or Kitchen hours silently.
 
 Efficient matrix:
 - `type`: the customer order type.
