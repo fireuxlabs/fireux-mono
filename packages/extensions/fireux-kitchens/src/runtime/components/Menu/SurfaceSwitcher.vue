@@ -6,7 +6,17 @@
       </span>
 
       <div class="menu-surface-switcher__copy">
-        <h2 :id="headingId">{{ label }}</h2>
+        <div class="menu-surface-switcher__heading">
+          <h2 :id="headingId">{{ label }}</h2>
+          <UBadge
+            v-if="statusLabel"
+            :color="statusColor"
+            size="sm"
+            variant="soft"
+          >
+            {{ statusLabel }}
+          </UBadge>
+        </div>
         <p>{{ message }}</p>
       </div>
     </div>
@@ -35,9 +45,13 @@ const props = withDefaults(defineProps<{
   label: string
   message: string
   options?: GuestMenuSurfaceOption[]
+  statusColor?: 'neutral' | 'success' | 'error'
+  statusLabel?: string
 }>(), {
   headingId: 'menu-surface-title',
   options: () => [],
+  statusColor: 'neutral',
+  statusLabel: '',
 })
 
 const otherOptions = computed(() =>
@@ -91,6 +105,13 @@ const otherOptions = computed(() =>
   display: grid;
   gap: 0.18rem;
   min-width: 0;
+}
+
+.menu-surface-switcher__heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .menu-surface-switcher h2 {

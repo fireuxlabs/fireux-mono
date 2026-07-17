@@ -7,7 +7,7 @@
       </div>
 
       <UButton
-        v-if="menusIndexLink && sortedMenus.length > 1"
+        v-if="menusIndexLink && (hasMoreMenus || sortedMenus.length > 1)"
         size="sm"
         variant="ghost"
         color="neutral"
@@ -43,6 +43,11 @@
         {{ defaultChromeLabels.loadingMenus }}
       </div>
 
+      <div v-else-if="menusUnavailable" class="kitchen-menus__state" role="alert">
+        <UIcon name="i-lucide-circle-alert" />
+        {{ defaultChromeLabels.menusUnavailable }}
+      </div>
+
       <div v-else-if="!sortedMenus.length" class="kitchen-menus__state">
         <UIcon name="i-lucide-book-open" />
         {{ defaultChromeLabels.noMenusAvailable }}
@@ -62,15 +67,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePublicAppScopedSource } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenMenuCollection } from '../../../composables/fireux/firestore/menu/fetch/useKitchenMenuCollection'
+import { usePublicMenuIndex } from '../../../composables/fireux/menu/usePublicMenuIndex'
 import {
   orderSessionContextForOrderType,
   useOrderSessionSummaries,
   type MenuOrderSessionSummary,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useOrderSession'
-import type { KitchenMenu as Menu } from '../../../models/kitchen/menu/kitchen-menu.model'
-import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import {
   directoryMenuRouteScope,
@@ -82,57 +84,37 @@ const props = defineProps<{
   kitchen: KitchenSurface
 }>()
 
-const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
-const appScope = usePublicAppScopedSource(computed(() => props.kitchen))
-const kitchenCollectionPath = computed(() =>
-  appScope.sourceAppId.value
-    ? `apps/${appScope.sourceAppId.value}/kitchens`
-    : ''
-)
 const defaultChromeLabels = {
   menus: 'Menus',
   openMenus: 'See all menus',
   loadingMenus: 'Loading menus...',
+  menusUnavailable: 'Menus are unavailable right now.',
   noMenusAvailable: 'No menus available',
 }
-const { publishedMenus, pending: menusPending } = useKitchenMenuCollection(
-  kitchenId,
-  { kitchenCollectionPath }
-)
 const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
 const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
+const menuIndex = usePublicMenuIndex({
+  routeScope: menuRouteScope,
+  pageSize: 4,
+})
 
-const menusLoading = computed(() =>
-  Boolean(kitchenId.value) && menusPending.value
+const menusLoading = computed(() => menuIndex.pending.value)
+const menusUnavailable = computed(() =>
+  menuIndex.outcome.value.kind === 'unavailable'
 )
-const sortedMenus = computed(() =>
-  [...publishedMenus.value].sort(
-    (a, b) =>
-      Number((a as any)?.sort_order || 0) -
-        Number((b as any)?.sort_order || 0) ||
-      String(a?.name || '').localeCompare(String(b?.name || ''))
-  )
-)
+const hasMoreMenus = computed(() => menuIndex.hasMore.value)
+const sortedMenus = computed(() => menuIndex.menus.value)
 
 const menusIndexLink = computed(() => {
   return menuRouteIndexPath(menuRouteScope.value)
 })
 
-const hasOrderType = (menu: Menu, types: KitchenOrderType[]) =>
-  Boolean(menu.ordering?.order_types?.some((row) => types.includes(row.type)))
-const firstMenuForOrderType = (orderType: KitchenOrderType) =>
-  sortedMenus.value.find((menu) => hasOrderType(menu, [orderType])) ||
-    sortedMenus.value.find((menu) =>
-      hasOrderType(menu, orderType === 'delivery' || orderType === 'collection'
-        ? ['delivery', 'collection']
-        : orderType === 'eat_in' || orderType === 'takeaway'
-          ? ['eat_in', 'takeaway']
-          : [orderType])
-    )
 const sessionLink = (session: MenuOrderSessionSummary) => {
-  const menuId = session.firstMenuId || firstMenuForOrderType(session.orderType)?.id
   const context = orderSessionContextForOrderType(session.orderType)
+  const menuId = session.firstMenuId || sortedMenus.value.find((menu) =>
+    menu.contexts?.includes(context)
+  )?.id
 
   return menuRoutePath({
     scope: menuRouteScope.value,

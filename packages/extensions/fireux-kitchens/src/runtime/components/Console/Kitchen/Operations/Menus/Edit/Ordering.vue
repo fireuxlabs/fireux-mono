@@ -97,12 +97,21 @@
           </div>
         </UFormField>
       </div>
+
+      <ConsoleKitchenOperationsMenusEditCollectionTiming
+        v-if="collectionConfig"
+        :config="collectionConfig"
+        :disabled="!canWrite"
+        :kitchen-hours="kitchenOperationHours"
+        :saving="collectionTimingSaving"
+        @save="saveCollectionTiming"
+      />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 import type {
@@ -111,6 +120,7 @@ import type {
   MenuUpdateInput,
 } from '../../../../../../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
+import { readKitchenOperationHours } from '../../../../../../utils/kitchen-spine'
 
 type OrderTypeChoice = {
   type: KitchenOrderType
@@ -129,11 +139,13 @@ type OrderSurfaceOption = {
 
 const {
   menu,
+  selectedKitchen,
   kitchenId,
   canWrite,
   updateMenu,
 } = useKitchenConsoleMenu()
 const toast = useToastify()
+const collectionTimingSaving = ref(false)
 
 const orderSurfaceOptions: OrderSurfaceOption[] = [
   {
@@ -248,6 +260,14 @@ const preOrderNoticeHours = computed(() =>
     orderTypeConfigs.value.find((type) => type.type === 'pre_order')?.notice_hours
   )
 )
+const collectionConfig = computed(() =>
+  orderTypeConfigs.value.find((type) => type.type === 'collection') || null
+)
+const kitchenOperationHours = computed(() =>
+  readKitchenOperationHours(
+    selectedKitchen.value as Record<string, unknown> | null
+  )
+)
 
 function orderTypeConfig(type: KitchenOrderType): MenuOrderTypeConfig {
   const existing = orderTypeConfigs.value.find((orderType) => orderType.type === type)
@@ -257,6 +277,16 @@ function orderTypeConfig(type: KitchenOrderType): MenuOrderTypeConfig {
     return {
       type,
       notice_hours: 24,
+    }
+  }
+
+  if (type === 'collection') {
+    return {
+      type,
+      notice_hours: 0.5,
+      asap_enabled: true,
+      slot_interval_minutes: 30,
+      schedule_horizon_days: 7,
     }
   }
 
@@ -337,5 +367,27 @@ async function setPreOrderNoticeHours(value: string | number) {
     enabled: nextOrderTypes.length > 0,
     order_types: nextOrderTypes,
   })
+}
+
+async function saveCollectionTiming(config: MenuOrderTypeConfig) {
+  if (!canWrite.value || collectionTimingSaving.value) return
+
+  collectionTimingSaving.value = true
+  try {
+    const nextOrderTypes = orderTypeConfigs.value.map((orderType) =>
+      orderType.type === 'collection' ? config : orderType
+    )
+    await updateOrdering({
+      enabled: nextOrderTypes.length > 0,
+      order_types: nextOrderTypes,
+    })
+    toast.add({
+      title: 'Collection timing updated',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+  } finally {
+    collectionTimingSaving.value = false
+  }
 }
 </script>

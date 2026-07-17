@@ -214,11 +214,14 @@ Page composition note:
   all derive their public option rail from this same shared policy.
 - Public Kitchen profiles and scoped Menu indexes render the same
   `Menu/PublicCard.vue`, which delegates Browse and guest-discoverable ordering
-  links to `Menu/Doorways.vue`. A Kitchen profile may additionally show the
-  live service badge when its KitchenMenu hydration includes service hours.
-  The scoped index response exposes only its bounded list of enabled public
-  contexts; it does not expose or duplicate the full KitchenMenu ordering
-  policy.
+  links to `Menu/Doorways.vue` and computes the same live service badge from
+  either hydrated KitchenMenu data or the scoped index's public service-hours
+  projection. The bounded index response exposes enabled public contexts and
+  service hours only; it does not expose or duplicate the full KitchenMenu
+  ordering policy, and it does not issue per-row requests.
+  The Kitchen profile consumes the same public index controller with a
+  four-row preview rather than opening an unbounded client-side Menu
+  collection; the scoped Menu index owns subsequent cursor pages.
 - Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
   `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
   menu contract through MenuBrowse. The server, not the URL renderer, resolves

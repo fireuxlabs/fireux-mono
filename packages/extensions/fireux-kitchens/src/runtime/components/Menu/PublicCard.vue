@@ -39,7 +39,10 @@
 import { computed } from 'vue'
 import { useMenuServiceComputed } from '../../composables/fireux/firestore/menu/useMenu'
 import type { MenuRouteContext } from '../../models/kitchen/menu/menu-context.model'
-import type { MenuOrderingConfig } from '../../models/kitchen/menu/kitchen-menu.model'
+import type {
+  MenuOrderingConfig,
+  MenuServiceHoursConfig,
+} from '../../models/kitchen/menu/kitchen-menu.model'
 import {
   guestDiscoverableMenuContexts,
 } from '../../utils/menu-context'
@@ -51,6 +54,7 @@ type PublicMenuCardSource = {
   description?: string
   contexts?: MenuRouteContext[]
   ordering?: MenuOrderingConfig
+  service_hours?: MenuServiceHoursConfig
 }
 
 const props = defineProps<{
@@ -65,6 +69,7 @@ const menuContexts = computed(() =>
   props.menu.contexts ?? guestDiscoverableMenuContexts(props.menu.ordering)
 )
 const serviceHours = computed(() =>
+  props.menu.service_hours?.operation_hours ||
   props.menu.ordering?.service_hours?.operation_hours
 )
 const { menuServiceChip } = useMenuServiceComputed(serviceHours)

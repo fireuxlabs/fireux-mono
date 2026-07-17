@@ -45,6 +45,8 @@
         :message="contextMessage"
         :show-currency="showCurrency"
         :surface-options="surfaceOptions"
+        :status-color="contextServiceChip.color"
+        :status-label="contextStatusLabel"
         :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
@@ -79,9 +81,12 @@
       <MenuOrderCollectionTimeDialog
         v-if="menuContext === 'collection'"
         v-model:open="collectionTimeOpen"
+        :asap-enabled="contextConfig?.asap_enabled"
         :hours="collectionHours"
         :notice-hours="contextConfig?.notice_hours"
+        :schedule-horizon-days="contextConfig?.schedule_horizon_days"
         :selection="collectionTime"
+        :slot-interval-minutes="contextConfig?.slot_interval_minutes"
         @select="setCollectionTime"
         @after-leave="finishCollectionTimeDialog"
       />
@@ -95,6 +100,7 @@ import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 import type { MenuOrderCollectionTimeSelection } from '../../../utils/menu-order-collection-time'
 import {
   menuRoutePath,
@@ -188,6 +194,16 @@ const contextMessage = computed(() =>
 const collectionHours = computed(() =>
   detailMenu.value?.behaviour.ordering.service_hours?.operation_hours
 )
+const { menuServiceChip: contextServiceChip } = useMenuServiceComputed(
+  collectionHours
+)
+const contextStatusLabel = computed(() => {
+  if (menuContext.value !== 'collection') return ''
+
+  return contextServiceChip.value.known
+    ? contextServiceChip.value.label
+    : 'Collection hours unavailable'
+})
 const surfaceOptions = computed(() => guestMenuSurfaceOptions({
   behaviour: detailMenu.value?.behaviour,
   menuId: menuId.value,

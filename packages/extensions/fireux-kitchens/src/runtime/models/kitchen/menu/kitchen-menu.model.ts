@@ -57,6 +57,10 @@ export type MenuOrderTypeConfig = {
   type: KitchenOrderType
   notice_hours?: number
   message?: string
+  service_hours?: MenuServiceHoursConfig
+  asap_enabled?: boolean
+  slot_interval_minutes?: number
+  schedule_horizon_days?: number
   fulfilment?: MenuOrderFulfilmentPolicy
 }
 

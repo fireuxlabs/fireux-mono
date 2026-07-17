@@ -125,10 +125,13 @@ import {
 } from '../../../utils/menu-order-collection-time'
 
 const props = defineProps<{
+  asapEnabled?: boolean
   hours?: WeekdayTimeWindowsConfig
   noticeHours?: number
   open: boolean
+  scheduleHorizonDays?: number
   selection: MenuOrderCollectionTimeSelection | null
+  slotIntervalMinutes?: number
 }>()
 
 const emit = defineEmits<{
@@ -154,6 +157,9 @@ const openModel = computed({
 const timing = computed(() => menuOrderCollectionTimeOptions({
   hours: props.hours,
   noticeHours: props.noticeHours,
+  asapEnabled: props.asapEnabled,
+  slotIntervalMinutes: props.slotIntervalMinutes,
+  scheduleHorizonDays: props.scheduleHorizonDays,
 }))
 const selectedValue = ref('')
 const activeDate = ref('')

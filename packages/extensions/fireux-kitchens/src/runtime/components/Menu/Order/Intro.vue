@@ -19,6 +19,8 @@
       :label="contextLabel"
       :message="message"
       :options="surfaceOptions"
+      :status-color="statusColor"
+      :status-label="statusLabel"
     />
   </div>
 </template>
@@ -40,6 +42,8 @@ const props = withDefaults(defineProps<{
   contextIcon: string
   message: string
   surfaceOptions?: GuestMenuSurfaceOption[]
+  statusColor?: 'neutral' | 'success' | 'error'
+  statusLabel?: string
 }>(), {
   description: '',
   kitchenName: '',
@@ -50,6 +54,8 @@ const props = withDefaults(defineProps<{
   logoImageUrl: '',
   wordmarkImageUrl: '',
   surfaceOptions: () => [],
+  statusColor: 'neutral',
+  statusLabel: '',
 })
 </script>
 

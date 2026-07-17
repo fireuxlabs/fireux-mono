@@ -147,6 +147,11 @@ const serviceProfile = (
     ...ordering,
     enabled: ordering.enabled && orderTypeConfigs.length > 0,
     order_types: orderTypeConfigs,
+    ...(context === 'generic'
+      ? {}
+      : {
+          service_hours: orderTypeConfigs[0]?.service_hours,
+        }),
   }
   const defaultType = defaultOrderType(orderTypes, context)
   const choices = Array.isArray(scope.choices)

@@ -164,6 +164,12 @@ export const readMenuOrderTypeConfig = (
   const type = readKitchenOrderType(row.type)
   const notice = readNoticeHours(row.notice_hours)
   const message = text(row.message)
+  const serviceHours = readMenuServiceHoursConfig(row.service_hours)
+  const asapEnabled = typeof row.asap_enabled === 'boolean'
+    ? row.asap_enabled
+    : undefined
+  const slotInterval = positiveNumber(row.slot_interval_minutes)
+  const scheduleHorizon = positiveNumber(row.schedule_horizon_days)
   const fulfilment = readMenuOrderFulfilmentPolicy(row.fulfilment)
 
   if (!type) return null
@@ -172,6 +178,14 @@ export const readMenuOrderTypeConfig = (
     type,
     ...(notice ? { notice_hours: notice } : {}),
     ...(message ? { message } : {}),
+    ...(serviceHours ? { service_hours: serviceHours } : {}),
+    ...(asapEnabled !== undefined ? { asap_enabled: asapEnabled } : {}),
+    ...(slotInterval
+      ? { slot_interval_minutes: Math.round(slotInterval) }
+      : {}),
+    ...(scheduleHorizon
+      ? { schedule_horizon_days: Math.round(scheduleHorizon) }
+      : {}),
     ...(fulfilment ? { fulfilment } : {}),
   }
 }

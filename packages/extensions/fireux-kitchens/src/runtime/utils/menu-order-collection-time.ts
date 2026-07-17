@@ -63,12 +63,17 @@ const timeText = (minutes: number) =>
 export function menuOrderCollectionTimeOptions(input: {
   hours: WeekdayTimeWindowsConfig | undefined
   noticeHours?: number
+  asapEnabled?: boolean
+  slotIntervalMinutes?: number
+  scheduleHorizonDays?: number
   now?: Date
 }) {
   const now = input.now || new Date()
   const hours = readWeekdayTimeWindowsConfig(input.hours)
   const known = hours.windows.length > 0
-  const queueAvailable = known && readWeekdayTimeOpenState(hours, now).open
+  const queueAvailable = input.asapEnabled !== false &&
+    known &&
+    readWeekdayTimeOpenState(hours, now).open
   if (!known) {
     return {
       known,
@@ -79,12 +84,25 @@ export function menuOrderCollectionTimeOptions(input: {
 
   const today = zonedDateText(now, hours.timezone)
   const days: MenuOrderCollectionTimeDay[] = []
+  const slotIntervalMinutes = [15, 30, 45, 60].includes(
+    Number(input.slotIntervalMinutes)
+  )
+    ? Number(input.slotIntervalMinutes)
+    : 30
+  const scheduleHorizonDays = Math.min(
+    30,
+    Math.max(1, Math.round(Number(input.scheduleHorizonDays) || 7))
+  )
 
-  for (let offset = 0; offset < 14 && days.length < 7; offset += 1) {
+  for (let offset = 0; offset < scheduleHorizonDays; offset += 1) {
     const date = addDays(today, offset)
     const slots: MenuOrderCollectionTimeSlot[] = []
 
-    for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
+    for (
+      let minutes = 0;
+      minutes < 24 * 60;
+      minutes += slotIntervalMinutes
+    ) {
       const time = timeText(minutes)
       const selection = readWeekdayTimeSelectionState(hours, date, time)
       if (!selection.available || !selection.requested_for) continue
@@ -114,4 +132,3 @@ export function menuOrderCollectionTimeOptions(input: {
 
   return { known, queueAvailable, days }
 }
-

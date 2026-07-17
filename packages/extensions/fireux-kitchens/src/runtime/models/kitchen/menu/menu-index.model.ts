@@ -1,4 +1,5 @@
 import type { MenuRouteContext } from './menu-context.model'
+import type { MenuServiceHoursConfig } from './kitchen-menu.model'
 import type { MenuKind, MenuSource } from './menu.model'
 
 export const PUBLIC_MENU_INDEX_PAGE_SIZE = 24
@@ -16,6 +17,7 @@ export type PublicMenuIndexItem = {
   description: string
   status: 'published'
   contexts?: MenuRouteContext[]
+  service_hours?: MenuServiceHoursConfig
   source?: MenuSource & {
     kitchen_slug?: string
     kitchen_name?: string

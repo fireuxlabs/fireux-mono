@@ -60,7 +60,8 @@ const mergeFulfilmentPolicy = (
 
 const withKitchenFulfilment = (
   type: MenuOrderTypeConfig,
-  kitchenFulfilment?: MenuOrderFulfilmentPolicy
+  kitchenFulfilment?: MenuOrderFulfilmentPolicy,
+  kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderTypeConfig => {
   const fulfilment = mergeFulfilmentPolicy(
     type.type,
@@ -70,6 +71,14 @@ const withKitchenFulfilment = (
 
   return {
     ...type,
+    ...(withInheritedOperationHours(type.service_hours, kitchenOperationHours)
+      ? {
+          service_hours: withInheritedOperationHours(
+            type.service_hours,
+            kitchenOperationHours
+          ),
+        }
+      : {}),
     ...(fulfilment ? { fulfilment } : {}),
   }
 }
@@ -108,7 +117,7 @@ export function readMenuOrderingConfig(
     return {
       enabled: ordering.enabled === true,
       order_types: orderTypes.map((type) =>
-        withKitchenFulfilment(type, kitchenFulfilment)
+        withKitchenFulfilment(type, kitchenFulfilment, kitchenOperationHours)
       ),
       ...(serviceHours ? { service_hours: serviceHours } : {}),
     }

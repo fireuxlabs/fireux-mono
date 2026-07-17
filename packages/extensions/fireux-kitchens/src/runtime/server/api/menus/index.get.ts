@@ -57,17 +57,17 @@ const decodeCursor = (value: unknown) => {
 const publicMenuIndexItem = (
   id: string,
   data: Record<string, unknown>,
-  tenantScope?: TenantPublicMenuScope | null,
+  scopedKitchen?: TenantPublicMenuScope | null,
   kitchenName = ''
 ): PublicMenuIndexItem | null => {
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
 
-  const source = tenantScope
+  const source = scopedKitchen
     ? menuSourceFromData(data, {
-        kitchenAppId: tenantScope.appId,
-        kitchenId: tenantScope.kitchenId,
-        kitchenSlug: tenantScope.kitchenSlug,
+        kitchenAppId: scopedKitchen.appId,
+        kitchenId: scopedKitchen.kitchenId,
+        kitchenSlug: scopedKitchen.kitchenSlug,
         kitchenName,
         kitchenMenuId: id,
       })
@@ -84,10 +84,9 @@ const publicMenuIndexItem = (
         ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
       }
     : null
-  const contexts = tenantScope
-    ? guestDiscoverableMenuContexts(readMenuOrderingConfig(data))
-    : []
-  const storedKind = tenantScope ? 'menu' : readRecordString(data, 'kind')
+  const ordering = scopedKitchen ? readMenuOrderingConfig(data) : null
+  const contexts = guestDiscoverableMenuContexts(ordering)
+  const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
   const kind = storedKind === 'menu' || storedKind === 'doc'
     ? storedKind
     : undefined
@@ -99,6 +98,9 @@ const publicMenuIndexItem = (
     description: readRecordString(data, 'description'),
     status: 'published' as const,
     ...(contexts.length ? { contexts } : {}),
+    ...(ordering?.service_hours
+      ? { service_hours: ordering.service_hours }
+      : {}),
     ...(publicSource ? { source: publicSource } : {}),
   }
 }

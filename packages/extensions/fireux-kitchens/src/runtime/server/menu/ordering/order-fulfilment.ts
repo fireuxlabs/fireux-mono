@@ -44,7 +44,9 @@ export async function resolveMenuOrderFulfilment(input: {
   const strategy = menuOrderTypeStrategy(command.orderType)
   validateMenuOrderSchedule({
     collection: command.collection,
-    hours: input.ordering.service_hours?.operation_hours,
+    hours:
+      command.orderTypeConfig?.service_hours?.operation_hours ||
+      input.ordering.service_hours?.operation_hours,
     noticeHours: command.orderTypeConfig?.notice_hours,
     orderType: command.orderType,
     requestedFor: command.requestedFor,
@@ -121,6 +123,18 @@ export async function resolveMenuOrderFulfilment(input: {
           : {}),
         ...(command.orderTypeConfig.message
           ? { message: command.orderTypeConfig.message }
+          : {}),
+        ...(command.orderTypeConfig.service_hours
+          ? { service_hours: command.orderTypeConfig.service_hours }
+          : {}),
+        ...(command.orderTypeConfig.asap_enabled !== undefined
+          ? { asap_enabled: command.orderTypeConfig.asap_enabled }
+          : {}),
+        ...(command.orderTypeConfig.slot_interval_minutes
+          ? { slot_interval_minutes: command.orderTypeConfig.slot_interval_minutes }
+          : {}),
+        ...(command.orderTypeConfig.schedule_horizon_days
+          ? { schedule_horizon_days: command.orderTypeConfig.schedule_horizon_days }
           : {}),
         ...(command.orderTypeConfig.fulfilment
           ? { ...command.orderTypeConfig.fulfilment }
