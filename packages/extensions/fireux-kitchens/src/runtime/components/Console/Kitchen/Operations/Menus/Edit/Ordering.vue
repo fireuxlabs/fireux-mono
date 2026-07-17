@@ -53,80 +53,60 @@
             <div
               v-for="choice in surface.choices"
               :key="choice.type"
-              class="flex items-start justify-between gap-3 rounded-md border border-default bg-default/80 p-3"
+              class="grid gap-2"
             >
-              <div class="min-w-0 space-y-1">
-                <p class="text-sm font-semibold text-highlighted">
-                  {{ choice.label }}
-                </p>
-                <p class="text-xs leading-5 text-dimmed">
-                  {{ choice.description }}
-                </p>
-                <code
-                  v-if="choice.route"
-                  class="inline-block break-all rounded bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
-                >
-                  {{ choice.route }}
-                </code>
+              <div class="flex items-start justify-between gap-3 rounded-md border border-default bg-default/80 p-3">
+                <div class="min-w-0 space-y-1">
+                  <p class="text-sm font-semibold text-highlighted">
+                    {{ choice.label }}
+                  </p>
+                  <p class="text-xs leading-5 text-dimmed">
+                    {{ choice.description }}
+                  </p>
+                  <code
+                    v-if="choice.route"
+                    class="inline-block break-all rounded bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
+                  >
+                    {{ choice.route }}
+                  </code>
+                </div>
+
+                <USwitch
+                  :model-value="hasOrderType(choice.type)"
+                  :disabled="!canWrite"
+                  @update:model-value="setOrderType(choice.type, Boolean($event))"
+                />
               </div>
 
-              <USwitch
-                :model-value="hasOrderType(choice.type)"
-                :disabled="!canWrite"
-                @update:model-value="setOrderType(choice.type, Boolean($event))"
-              />
+              <UButton
+                v-if="choice.settingsPath && hasOrderType(choice.type)"
+                :to="menuOrderingPath(choice.settingsPath)"
+                color="neutral"
+                variant="soft"
+                size="sm"
+                block
+                trailing-icon="i-lucide-chevron-right"
+              >
+                Configure {{ choice.label }}
+              </UButton>
             </div>
           </div>
         </div>
       </div>
-
-      <div
-        v-if="hasOrderType('pre_order')"
-        class="grid gap-3 md:grid-cols-2"
-      >
-        <UFormField label="Pre-order notice">
-          <div class="flex items-center gap-2">
-            <UInput
-              :model-value="preOrderNoticeHours"
-              type="number"
-              min="1"
-              :disabled="!canWrite"
-              @update:model-value="setPreOrderNoticeHours"
-            />
-            <span class="text-sm text-dimmed">hours</span>
-          </div>
-        </UFormField>
-      </div>
-
-      <ConsoleKitchenOperationsMenusEditCollectionTiming
-        v-if="collectionConfig"
-        :config="collectionConfig"
-        :disabled="!canWrite"
-        :kitchen-hours="kitchenOperationHours"
-        :saving="collectionTimingSaving"
-        @save="saveCollectionTiming"
-      />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import type {
-  MenuOrderingConfig,
-  MenuOrderTypeConfig,
-  MenuUpdateInput,
-} from '../../../../../../models/kitchen/menu/menu.model'
+import { useKitchenConsoleMenuOrdering } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuOrdering'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
-import { readKitchenOperationHours } from '../../../../../../utils/kitchen-spine'
 
 type OrderTypeChoice = {
   type: KitchenOrderType
   label: string
   description: string
   route?: string
+  settingsPath?: string
 }
 
 type OrderSurfaceOption = {
@@ -138,14 +118,13 @@ type OrderSurfaceOption = {
 }
 
 const {
-  menu,
-  selectedKitchen,
-  kitchenId,
   canWrite,
-  updateMenu,
-} = useKitchenConsoleMenu()
-const toast = useToastify()
-const collectionTimingSaving = ref(false)
+  hasOrderType,
+  menu,
+  menuId,
+  orderingEnabled,
+  setOrderType,
+} = useKitchenConsoleMenuOrdering()
 
 const orderSurfaceOptions: OrderSurfaceOption[] = [
   {
@@ -164,6 +143,7 @@ const orderSurfaceOptions: OrderSurfaceOption[] = [
         label: 'Collection',
         description: 'Prepare the order for customer collection.',
         route: '/menus/{menuId}.collection',
+        settingsPath: 'collection',
       },
     ],
   },
@@ -229,165 +209,11 @@ const orderSurfaceOptions: OrderSurfaceOption[] = [
   },
 ]
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeNoticeHours = (value: unknown) => {
-  const hours = Number(value)
-
-  return Number.isFinite(hours) && hours > 0 ? Math.round(hours) : 24
-}
-const ordering = computed<MenuOrderingConfig>(() => {
-  const current = menu.value?.ordering
-  const currentWithOldModes = current as
-    | (MenuOrderingConfig & { modes?: MenuOrderTypeConfig[] })
-    | undefined
-
-  return {
-    enabled: current?.enabled === true,
-    order_types: Array.isArray(current?.order_types)
-      ? current.order_types
-      : Array.isArray(currentWithOldModes?.modes)
-        ? currentWithOldModes.modes
-        : [],
-    ...(current?.service_hours ? { service_hours: current.service_hours } : {}),
-  }
-})
-const orderingEnabled = computed(() =>
-  ordering.value.enabled && ordering.value.order_types.length > 0
-)
-const orderTypeConfigs = computed(() => ordering.value.order_types)
-const preOrderNoticeHours = computed(() =>
-  normalizeNoticeHours(
-    orderTypeConfigs.value.find((type) => type.type === 'pre_order')?.notice_hours
-  )
-)
-const collectionConfig = computed(() =>
-  orderTypeConfigs.value.find((type) => type.type === 'collection') || null
-)
-const kitchenOperationHours = computed(() =>
-  readKitchenOperationHours(
-    selectedKitchen.value as Record<string, unknown> | null
-  )
-)
-
-function orderTypeConfig(type: KitchenOrderType): MenuOrderTypeConfig {
-  const existing = orderTypeConfigs.value.find((orderType) => orderType.type === type)
-  if (existing) return existing
-
-  if (type === 'pre_order') {
-    return {
-      type,
-      notice_hours: 24,
-    }
-  }
-
-  if (type === 'collection') {
-    return {
-      type,
-      notice_hours: 0.5,
-      asap_enabled: true,
-      slot_interval_minutes: 30,
-      schedule_horizon_days: 7,
-    }
-  }
-
-  return { type }
-}
-
-function hasOrderType(type: KitchenOrderType) {
-  return orderTypeConfigs.value.some((orderType) => orderType.type === type)
-}
-
 function hasSurfaceOrderType(surface: OrderSurfaceOption) {
   return surface.choices.some((choice) => hasOrderType(choice.type))
 }
 
-async function updateOrdering(nextOrdering: MenuOrderingConfig) {
-  if (!canWrite.value) throw new Error('This menu is read-only.')
-  const currentMenuId = normalizeString(menu.value?.id)
-  if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
-
-  const cleanOrderTypes = nextOrdering.order_types.filter((orderType) => orderType.type)
-  const enabled = nextOrdering.enabled && cleanOrderTypes.length > 0
-  const orderingPatch: MenuOrderingConfig = {
-    enabled,
-    order_types: cleanOrderTypes,
-    ...(ordering.value.service_hours
-      ? { service_hours: ordering.value.service_hours }
-      : {}),
-  }
-  const patch: MenuUpdateInput = {
-    ordering: orderingPatch,
-  }
-
-  try {
-    await updateMenu(kitchenId.value, currentMenuId, patch)
-  } catch (error) {
-    toast.add({
-      title: 'Could not update ordering',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-    throw error
-  }
-}
-
-async function setOrderType(type: KitchenOrderType, enabled: boolean) {
-  if (!canWrite.value) return
-  const currentlyEnabled = hasOrderType(type)
-  if (enabled === currentlyEnabled) return
-
-  const nextWithoutType = orderTypeConfigs.value.filter((orderType) =>
-    orderType.type !== type
-  )
-  const nextOrderTypes = enabled
-    ? [
-        ...nextWithoutType,
-        orderTypeConfig(type),
-      ]
-    : nextWithoutType
-  await updateOrdering({
-    enabled: nextOrderTypes.length > 0,
-    order_types: nextOrderTypes,
-  })
-}
-
-async function setPreOrderNoticeHours(value: string | number) {
-  const nextHours = normalizeNoticeHours(value)
-  const nextOrderTypes = orderTypeConfigs.value.map((orderType) =>
-    orderType.type === 'pre_order'
-      ? {
-          ...orderType,
-          notice_hours: nextHours,
-        }
-      : orderType
-  )
-
-  await updateOrdering({
-    enabled: nextOrderTypes.length > 0,
-    order_types: nextOrderTypes,
-  })
-}
-
-async function saveCollectionTiming(config: MenuOrderTypeConfig) {
-  if (!canWrite.value || collectionTimingSaving.value) return
-
-  collectionTimingSaving.value = true
-  try {
-    const nextOrderTypes = orderTypeConfigs.value.map((orderType) =>
-      orderType.type === 'collection' ? config : orderType
-    )
-    await updateOrdering({
-      enabled: nextOrderTypes.length > 0,
-      order_types: nextOrderTypes,
-    })
-    toast.add({
-      title: 'Collection timing updated',
-      color: 'success',
-      icon: 'i-lucide-check',
-    })
-  } finally {
-    collectionTimingSaving.value = false
-  }
+function menuOrderingPath(surface: string) {
+  return `/console/kitchen/menus/${encodeURIComponent(menuId.value)}/ordering/${surface}`
 }
 </script>

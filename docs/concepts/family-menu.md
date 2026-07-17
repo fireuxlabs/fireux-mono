@@ -265,6 +265,16 @@ Page composition note:
   customer-details, payment, or persistence path. Delivery address, pre-order
   scheduling, customer details, submission, and payment remain later explicit
   stages.
+- Console ordering configuration is layered beneath the Menu editor. The
+  parent enables surfaces; focused policy belongs under
+  `/console/kitchen/menus/<menuId>/ordering/<surface>`, beginning with
+  `collection`. This namespace must not collide with the existing Menu section
+  route.
+- The Kitchen Menu console is a small workspace rather than one long editor.
+  `/console/kitchen/menus/<menuId>` owns overview and guest-facing identity;
+  `content`, `ordering`, `publishing`, and `source` are explicit child routes
+  sharing one package-owned workspace header. Existing section detail remains
+  at the legacy child position until it can move atomically beneath `content`.
 
 Kitchen needed:
 - Attach menu to a kitchen.

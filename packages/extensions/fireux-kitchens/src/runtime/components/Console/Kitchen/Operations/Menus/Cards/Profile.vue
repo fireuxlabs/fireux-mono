@@ -33,13 +33,23 @@
           </div>
         </div>
       </div>
+
+      <UButton
+        v-if="menuStatus === 'published'"
+        :to="`/menus/${encodeURIComponent(String(menu?.id || ''))}`"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-external-link"
+      >
+        View public Menu
+      </UButton>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../../../../models/kitchen/menu/kitchen-menu.model'
 
 const props = withDefaults(
   defineProps<{

@@ -104,8 +104,12 @@ Collection timing boundary:
 - The row owns its optional customer message, immediate-collection flag,
   minimum notice, slot interval, scheduling horizon, and inherited or custom
   service hours.
-- The console edits this policy at `/console/kitchen/menus/<menuId>`; public
-  suffixes such as `.collection` are projections and are never console ids.
+- The Menu console keeps surface enablement at
+  `/console/kitchen/menus/<menuId>` and edits Collection policy on the focused
+  child route `/console/kitchen/menus/<menuId>/ordering/collection`. The
+  `/ordering/<surface>` namespace stays separate from Menu section ids and can
+  grow one explicit surface editor at a time. Public suffixes such as
+  `.collection` are projections and are never console ids.
 - The public Collection surface labels current availability as `Open now`,
   `Not open`, or `Collection hours unavailable`. Pickup choices read only the
   resolved Collection row. Missing Collection hours fail closed at the timing

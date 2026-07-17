@@ -1,78 +1,27 @@
 <template>
   <section class="console-surface space-y-6">
-    <UBreadcrumb :items="breadcrumbItems" />
-    <ConsoleKitchenOperationsMenusCardsProfile
-      :menu="menu"
-      :sections-count="sections.length"
+    <ConsoleKitchenOperationsMenusWorkspaceHeader />
+
+    <ConsoleKitchenOperationsMenusEditDetails v-if="menu" />
+
+    <UAlert
+      v-else-if="source"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-file-scan"
+      title="This source has not become a Menu yet"
+      description="Open Source to process the saved document into a review draft."
+      :actions="sourceActions"
     />
-    <ConsoleKitchenOperationsMenusEdit />
 
-    <UCard v-if="source && !menu">
-      <template #header>
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">
-            Process {{ sourceLabel }}
-          </h2>
-          <p class="text-sm text-dimmed">
-            Convert this saved source into a review draft.
-          </p>
-        </div>
-      </template>
-
-      <ConsoleKitchenOperationsMenusProcess />
-    </UCard>
-
-    <UCard v-else-if="menu || source">
-      <template #header>
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">
-            Source document and AI processing
-          </h2>
-          <p class="text-sm text-dimmed">
-            Upload the source menu, check storage, and convert it into a review draft.
-          </p>
-        </div>
-      </template>
-
-      <UCollapsible :default-open="false">
-        <UButton
-          block
-          color="neutral"
-          variant="soft"
-          trailing-icon="i-lucide-chevron-down"
-        >
-          Source tools
-        </UButton>
-
-        <template #content>
-          <div class="mt-4 space-y-6">
-            <section v-if="menu" class="space-y-3">
-              <div class="space-y-1">
-                <h3 class="text-sm font-semibold text-highlighted">
-                  Source document
-                </h3>
-                <p class="text-sm text-dimmed">
-                  Attach the original PDF or photo before comparing AI output to the current menu.
-                </p>
-              </div>
-
-              <ConsoleKitchenOperationsMenusCreationUpload
-                :upload-id="menuId"
-                :lock-slug="true"
-                :replace-existing="true"
-                title="Upload source document"
-                description="Upload the original source files so later AI passes can flag differences against this menu."
-                cta-label="Upload source"
-              />
-            </section>
-
-            <ConsoleKitchenOperationsMenusProcess />
-          </div>
-        </template>
-      </UCollapsible>
-    </UCard>
-    <ConsoleKitchenOperationsMenusSectionsRead />
-    <ConsoleKitchenOperationsMenusPublish />
+    <UAlert
+      v-else
+      color="warning"
+      variant="soft"
+      icon="i-lucide-triangle-alert"
+      title="Menu unavailable"
+      description="Return to Menus and choose an existing Menu."
+    />
   </section>
 </template>
 
@@ -84,20 +33,10 @@ const {
   menu,
   source,
   menuId,
-  sections,
 } = useKitchenConsoleMenu()
-const breadcrumbItems = computed(() => [
-  {
-    label: 'Menus',
-    icon: 'i-lucide-book-open',
-    to: '/console/kitchen/menus',
-  },
-  {
-    label: String(menu.value?.name || source.value?.id || 'Menu details').trim(),
-    icon: 'i-lucide-list-tree',
-  },
-])
-const sourceLabel = computed(() =>
-  String(source.value?.source_url ? 'menu URL' : 'menu source')
-)
+const sourceActions = computed(() => [{
+  label: 'Open Source',
+  icon: 'i-lucide-arrow-right',
+  to: `/console/kitchen/menus/${encodeURIComponent(menuId.value)}/source`,
+}])
 </script>

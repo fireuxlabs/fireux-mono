@@ -1,5 +1,5 @@
 <template>
-  <UCard v-if="showPublishAction">
+  <UCard v-if="menu">
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -14,7 +14,7 @@
 
     <div class="flex flex-wrap gap-2">
       <UButton
-        v-if="showPublishAction"
+        v-if="!isPublished"
         icon="i-lucide-send"
         color="success"
         :loading="busy"
@@ -24,6 +24,15 @@
         {{ actionLabel }}
       </UButton>
 
+      <UButton
+        v-else
+        :to="`/menus/${encodeURIComponent(menuId)}`"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-external-link"
+      >
+        Open public Menu
+      </UButton>
     </div>
   </UCard>
 </template>
@@ -45,11 +54,8 @@ const busy = ref(false)
 
 const isPublished = computed(() => menu.value?.status === 'published')
 const menuStatus = computed(() => menu.value?.status || 'draft')
-const showPublishAction = computed(
-  () => Boolean(menu.value) && !isPublished.value
-)
 const actionLabel = computed(() =>
-  isPublished.value ? 'Published' : 'Publish menu'
+  isPublished.value ? 'Published' : 'Publish Menu'
 )
 const statusColor = computed(() =>
   isPublished.value
@@ -59,15 +65,15 @@ const statusColor = computed(() =>
       : 'warning'
 )
 const title = computed(() => {
-  if (!isPublished.value) return 'Publish this menu'
-  return 'This menu has been published'
+  if (!isPublished.value) return 'Publish this Menu'
+  return 'This Menu is live'
 })
 const description = computed(() => {
   if (!isPublished.value) {
-    return 'Publishing makes this menu visible.'
+    return 'Publishing makes this Menu available through its public doorway.'
   }
 
-  return 'The menu is live.'
+  return 'Open the public Menu to check the current guest experience.'
 })
 
 async function publishOrRepublish() {
