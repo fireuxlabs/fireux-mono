@@ -45,7 +45,10 @@ Public route hierarchy:
 
 Current display rule:
 - Do not store a public view marker on menus.
-- If `ordering.enabled` and `ordering.order_types` are present, the renderer can offer order controls.
+- A Collection projection exists only when the context-filtered manifest keeps
+  `ordering.enabled`, `orderingEnabled`, and a Collection order-type row true.
+- The first Collection shell proves routing, resolution, authorization, theme,
+  and failure behavior; it does not offer order controls yet.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 
 Current ordering shape:
@@ -139,14 +142,18 @@ V1 fulfilment policy:
 Public order funnel spine:
 - Generic public routes currently render the package-owned `Menu/Browse`
   projection. It is context-free and read-only.
-- Recognized ordering suffixes currently render `Menu/Json` as a diagnostic
-  projection. The public route pages do not mount an ordering funnel yet.
+- `.collection` renders the package-owned, noindex `Menu/Order` projection.
+  It resolves the context-filtered manifest through the same `useMenu` seam,
+  fails closed with 404 when Collection is disabled or the Menu is document-only,
+  and currently renders only an inert identity and Collection status shell.
+- Every other recognized ordering suffix still renders `Menu/Json` as a
+  diagnostic projection. No public route mounts an ordering funnel yet.
 - The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and
   `composables/fireux/kitchen/order/funnel/shared/useFunnel` chain is therefore
   disconnected implementation material, not the active public owner.
-- Reconnecting ordering requires one package-owned order projection for the
-  suffixed routes. It should reuse the resolved manifest and canonical order
-  endpoint without adding basket or order controls back into Browse.
+- The next Collection pass belongs inside MenuOrder: render selectable manifest
+  items and local basket state there without adding controls back into Browse.
+  Submission, payment, and the canonical order endpoint remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - Funnel composable naming should keep `useFunnel` as the shared root,

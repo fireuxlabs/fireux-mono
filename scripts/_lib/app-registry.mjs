@@ -1,9 +1,10 @@
 // @fireux-script
 // last_used: 2026-07-17
-// usage_note: baseline after scripts cleanup; update when run.
+// usage_note: canonical app routes and HTTP smoke contracts.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
+const MENU_ORDER_MARKER = 'data-menu-projection="order"'
 const MENU_UNAVAILABLE_MARKER = 'data-menu-state="unavailable"'
 const MENU_JSON_MARKER = 'data-menu-projection="diagnostic"'
 const MENU_QR_MARKER = 'data-menu-projection="qr"'
@@ -22,6 +23,7 @@ const menuIndexContract = (route, options = {}) => ({
       : []),
   ],
   excludes: [
+    MENU_ORDER_MARKER,
     MENU_UNAVAILABLE_MARKER,
     MENU_JSON_MARKER,
     'data-menu-theme-canvas="true"',
@@ -40,7 +42,7 @@ const missingMenuIndexContract = (route) => ({
   contentType: 'text/html',
   noindex: true,
   includes: [MENU_INDEX_MARKER, MENU_UNAVAILABLE_MARKER, 'Menus unavailable'],
-  excludes: [MENU_BROWSE_MARKER, MENU_JSON_MARKER],
+  excludes: [MENU_BROWSE_MARKER, MENU_ORDER_MARKER, MENU_JSON_MARKER],
 })
 
 const menuBrowseContract = (route, options = {}) => {
@@ -75,6 +77,7 @@ const menuBrowseContract = (route, options = {}) => {
       ...(options.itemIncludes || []),
     ],
     excludes: [
+      MENU_ORDER_MARKER,
       MENU_UNAVAILABLE_MARKER,
       MENU_JSON_MARKER,
       'data-menu-qr-path=',
@@ -139,6 +142,7 @@ const missingMenuBrowseContract = (route, excludes = [], options = {}) => {
       `href="${exitPath}"`,
     ],
     excludes: [
+      MENU_ORDER_MARKER,
       MENU_JSON_MARKER,
       'data-menu-qr-path=',
       'data-menu-action="qr"',
@@ -174,6 +178,7 @@ const menuQrContract = (route, targetPath, options = {}) => {
       'Print QR',
     ],
     excludes: [
+      MENU_ORDER_MARKER,
       MENU_UNAVAILABLE_MARKER,
       MENU_BROWSE_MARKER,
       MENU_JSON_MARKER,
@@ -194,6 +199,7 @@ const missingMenuQrContract = (route, excludes = []) => ({
   ],
   excludes: [
     MENU_BROWSE_MARKER,
+    MENU_ORDER_MARKER,
     MENU_JSON_MARKER,
     'data-menu-id=',
     'data-menu-render-kind=',
@@ -202,6 +208,93 @@ const missingMenuQrContract = (route, excludes = []) => ({
     ...excludes,
   ],
 })
+
+const menuOrderContract = (route, options = {}) => {
+  const indexPath = route.slice(0, route.lastIndexOf('/'))
+  const contextualId = route.slice(route.lastIndexOf('/') + 1)
+  const menuId = contextualId.endsWith('.collection')
+    ? contextualId.slice(0, -'.collection'.length)
+    : contextualId
+  const exitKind = options.exitKind || 'back'
+  const exitPath = options.exitPath || indexPath
+
+  return {
+    route,
+    status: 200,
+    contentType: 'text/html',
+    noindex: true,
+    includes: [
+      MENU_ORDER_MARKER,
+      'data-menu-context="collection"',
+      `data-menu-id="${menuId}"`,
+      `data-menu-index-path="${indexPath}"`,
+      'data-menu-order-type="collection"',
+      'data-menu-ordering-enabled="true"',
+      `data-menu-path="${route}"`,
+      'data-menu-render-kind="structured"',
+      'data-menu-state="ready"',
+      'data-menu-theme-canvas="true"',
+      'data-menu-action="exit"',
+      `data-menu-exit-kind="${exitKind}"`,
+      `href="${exitPath}"`,
+      'Collection ordering',
+    ],
+    excludes: [
+      MENU_INDEX_MARKER,
+      MENU_BROWSE_MARKER,
+      MENU_UNAVAILABLE_MARKER,
+      MENU_JSON_MARKER,
+      MENU_QR_MARKER,
+      'data-menu-document-kind=',
+      'data-menu-item="true"',
+      'menu-order-funnel',
+      'menu-item__add',
+      'type="submit"',
+      '/orders',
+      'Checkout',
+    ],
+  }
+}
+
+const unavailableMenuOrderContract = (route, title, options = {}) => {
+  const indexPath = route.slice(0, route.lastIndexOf('/'))
+  const exitKind = options.exitKind || 'back'
+  const exitPath = options.exitPath || indexPath
+
+  return {
+    route,
+    status: 404,
+    contentType: 'text/html',
+    noindex: true,
+    includes: [
+      MENU_ORDER_MARKER,
+      MENU_UNAVAILABLE_MARKER,
+      'data-menu-context="collection"',
+      'data-menu-order-type="collection"',
+      'data-menu-ordering-enabled="false"',
+      'data-menu-theme-canvas="true"',
+      'data-menu-action="exit"',
+      `data-menu-exit-kind="${exitKind}"`,
+      `href="${exitPath}"`,
+      title,
+    ],
+    excludes: [
+      MENU_INDEX_MARKER,
+      MENU_BROWSE_MARKER,
+      MENU_JSON_MARKER,
+      MENU_QR_MARKER,
+      'data-menu-state="ready"',
+      'data-menu-id=',
+      'data-menu-render-kind=',
+      'data-menu-document-kind=',
+      'data-menu-item="true"',
+      'menu-order-funnel',
+      'menu-item__add',
+      'type="submit"',
+      '/orders',
+    ],
+  }
+}
 
 const menuJsonContract = (route, context, options = {}) => ({
   route,
@@ -215,7 +308,7 @@ const menuJsonContract = (route, context, options = {}) => ({
       ? [`data-kitchen-slug="${options.kitchenSlug}"`]
       : []),
   ],
-  excludes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER],
+  excludes: [MENU_BROWSE_MARKER, MENU_ORDER_MARKER, MENU_UNAVAILABLE_MARKER],
 })
 
 // AppShell currently owns tenant-wide noindex. Valid tenant Menu SEO is
@@ -231,6 +324,16 @@ const tenantMissingMenuBrowseContract = (route, excludes = []) =>
     exitKind: 'close',
     exitPath: '/',
   })
+const tenantMenuOrderContract = (route) =>
+  menuOrderContract(route, {
+    exitKind: 'close',
+    exitPath: '/',
+  })
+const tenantUnavailableMenuOrderContract = (route, title) =>
+  unavailableMenuOrderContract(route, title, {
+    exitKind: 'close',
+    exitPath: '/',
+  })
 const tenantMenuJsonContract = (route, context) =>
   menuJsonContract(route, context, { assertNoindex: false })
 
@@ -240,7 +343,7 @@ const missingMenuJsonContract = (route) => ({
   contentType: 'text/html',
   noindex: false,
   includes: [MENU_JSON_MARKER, '&quot;error&quot;: true', 'Menu not found'],
-  excludes: [MENU_BROWSE_MARKER, MENU_UNAVAILABLE_MARKER],
+  excludes: [MENU_BROWSE_MARKER, MENU_ORDER_MARKER, MENU_UNAVAILABLE_MARKER],
 })
 
 // Registry consoles are smoke-test route segments.
@@ -313,6 +416,10 @@ export const APP_REGISTRY = {
         'pdf',
         '/api/menus/bergwelt-grindelwald-pdf/file'
       ),
+      unavailableMenuOrderContract(
+        '/menus/bergwelt-grindelwald-pdf.collection',
+        'Collection unavailable'
+      ),
       menuDocumentFileContract(
         '/api/menus/bergwelt-grindelwald-pdf/file',
         'application/pdf'
@@ -332,6 +439,10 @@ export const APP_REGISTRY = {
           '+ 2.50 CHF',
         ],
       }),
+      unavailableMenuOrderContract(
+        '/menus/la-tapberne-main.collection',
+        'Collection unavailable'
+      ),
       menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main', {
         itemIncludes: [
           'data-menu-item-price-kind="starting"',
@@ -354,11 +465,16 @@ export const APP_REGISTRY = {
           '5.5 Liter',
         ],
       }),
+      menuOrderContract('/menus/pizza-snacks-drinks.collection'),
       menuQrContract(
         '/menus/pizza-snacks-drinks/qr',
         '/menus/pizza-snacks-drinks'
       ),
       missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
+      unavailableMenuOrderContract(
+        '/menus/fireux-route-contract-missing.collection',
+        'Menu not found'
+      ),
       missingMenuBrowseContract('/menus/__fireux_route_contract_invalid__', [
         'INVALID_ARGUMENT',
         'Resource id',
@@ -383,12 +499,19 @@ export const APP_REGISTRY = {
       menuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
+      menuOrderContract(
+        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.collection'
+      ),
       menuQrContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks/qr',
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
       missingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing'
+      ),
+      unavailableMenuOrderContract(
+        '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.collection',
+        'Menu not found'
       ),
       missingMenuQrContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing/qr'
@@ -612,9 +735,17 @@ export const APP_REGISTRY = {
         featuredPath: '/menus/main',
       }),
       tenantMenuBrowseContract('/menus/main'),
+      tenantUnavailableMenuOrderContract(
+        '/menus/main.collection',
+        'Collection unavailable'
+      ),
       menuQrContract('/menus/main/qr', '/menus/main'),
       missingMenuQrContract('/menus/main.pre_order/qr'),
       tenantMissingMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      tenantUnavailableMenuOrderContract(
+        '/menus/pizza-snacks-drinks.collection',
+        'Menu not found'
+      ),
       missingMenuQrContract('/menus/pizza-snacks-drinks/qr'),
       missingMenuIndexContract('/kitchens/la-tapberne/menus'),
       tenantMissingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
@@ -640,12 +771,17 @@ export const APP_REGISTRY = {
         featuredPath: '/menus/pizza-snacks-drinks',
       }),
       tenantMenuBrowseContract('/menus/pizza-snacks-drinks'),
+      tenantMenuOrderContract('/menus/pizza-snacks-drinks.collection'),
       menuQrContract(
         '/menus/pizza-snacks-drinks/qr',
         '/menus/pizza-snacks-drinks'
       ),
       missingMenuQrContract('/menus/pizza-snacks-drinks.delivery/qr'),
       tenantMissingMenuBrowseContract('/menus/main'),
+      tenantUnavailableMenuOrderContract(
+        '/menus/main.collection',
+        'Menu not found'
+      ),
       missingMenuQrContract('/menus/main/qr'),
       missingMenuIndexContract('/kitchens/baeren-ringgenberg/menus'),
       tenantMissingMenuBrowseContract(

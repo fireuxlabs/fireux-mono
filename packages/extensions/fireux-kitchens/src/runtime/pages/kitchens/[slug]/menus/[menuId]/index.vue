@@ -7,6 +7,15 @@
     propagate-response-status
   />
 
+  <MenuOrder
+    v-else-if="isOrder"
+    :menu-id="menuTarget.menuId"
+    menu-context="collection"
+    :menu-route-scope="menuRouteScope"
+    page-canvas
+    propagate-response-status
+  />
+
   <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>
 
@@ -15,6 +24,7 @@ import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import {
   directoryMenuRouteScope,
+  menuRouteProjection,
   parseMenuRouteTarget,
 } from '../../../../../utils/kitchen-menu-route'
 
@@ -26,15 +36,17 @@ definePageMeta({
 const kitchenSlug = useRouteParam('slug')
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const isBrowse = computed(() => menuTarget.value.context === 'generic')
+const projection = computed(() => menuRouteProjection(menuTarget.value.context))
+const isBrowse = computed(() => projection.value === 'browse')
+const isOrder = computed(() => projection.value === 'order')
 const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
 const endpoint = computed(() =>
   `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
 )
 const query = computed(() => ({
   kitchenSlug: kitchenSlug.value,
-  ...(menuTarget.value.context === 'generic'
-    ? {}
-    : { context: menuTarget.value.context }),
+  ...(projection.value === 'diagnostic'
+    ? { context: menuTarget.value.context }
+    : {}),
 }))
 </script>

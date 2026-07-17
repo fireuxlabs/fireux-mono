@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-07-17
-// usage_note: run through pnpm guard; locks the public Menu route grammar.
+// usage_note: run through pnpm guard; locks Menu route grammar and projections.
 
 import assert from 'node:assert/strict'
 
@@ -10,6 +10,7 @@ import {
   menuContextualMenuId,
   menuRouteIndexPath,
   menuRoutePath,
+  menuRouteProjection,
   menuRouteQrPath,
   parseMenuRouteTarget,
   rootMenuRouteScope,
@@ -27,6 +28,18 @@ const EXPECTED_CONTEXTS = [
   'room_service',
 ]
 
+const EXPECTED_PROJECTIONS = {
+  generic: 'browse',
+  delivery: 'diagnostic',
+  collection: 'order',
+  table: 'diagnostic',
+  kiosk: 'diagnostic',
+  staff_pos: 'diagnostic',
+  dine_in: 'diagnostic',
+  pre_order: 'diagnostic',
+  room_service: 'diagnostic',
+}
+
 const MENU_ID = 'evening.menu'
 const KITCHEN_SLUG = 'baeren-ringgenberg'
 
@@ -36,6 +49,19 @@ export async function run() {
     EXPECTED_CONTEXTS,
     'Menu route contexts changed without updating the public route contract.'
   )
+  assert.deepEqual(
+    Object.keys(EXPECTED_PROJECTIONS),
+    EXPECTED_CONTEXTS,
+    'Menu projection contexts changed without updating the route contract.'
+  )
+
+  for (const [context, projection] of Object.entries(EXPECTED_PROJECTIONS)) {
+    assert.equal(
+      menuRouteProjection(context),
+      projection,
+      `Unexpected public Menu projection for ${context}.`
+    )
+  }
 
   const rootScope = rootMenuRouteScope()
   const directoryScope = directoryMenuRouteScope(KITCHEN_SLUG)

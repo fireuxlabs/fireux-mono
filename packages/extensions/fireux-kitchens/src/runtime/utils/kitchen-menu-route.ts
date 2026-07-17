@@ -12,6 +12,8 @@ export type MenuRouteTarget = {
   context: MenuRouteContext
 }
 
+export type MenuRouteProjection = 'browse' | 'order' | 'diagnostic'
+
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
 const contextSet = new Set<string>(MenuRouteContexts)
@@ -58,6 +60,15 @@ export function menuRouteQrPath(options: {
 }) {
   const menuPath = menuRoutePath(options)
   return menuPath ? `${menuPath}/qr` : ''
+}
+
+export function menuRouteProjection(
+  context: MenuRouteContext
+): MenuRouteProjection {
+  if (context === 'generic') return 'browse'
+  if (context === 'collection') return 'order'
+
+  return 'diagnostic'
 }
 
 export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {

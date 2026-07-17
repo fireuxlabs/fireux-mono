@@ -39,6 +39,9 @@ Current public menu doorways:
 - The public `/menus` route follows the public-index family: page header,
   Menu CTA, and the root Menu collection manager. Generic global, kitchen-directory,
   and tenant detail routes all use the same context-free MenuBrowse projection.
+- `.collection` is the first live context projection. It uses the same resolved
+  KitchenMenu manifest and theme through the package-owned MenuOrder shell,
+  while every other recognized context remains a diagnostic projection.
 - Adding a tenant app is additive. It must not remove, stub, redirect away, or
   replace either the global public doorway or the kitchen-directory doorway.
 - When a Kitchen menu has all three published projections, they resolve the
@@ -168,7 +171,7 @@ Page composition note:
   the corresponding absolute Browse URL on the same origin. They use the same
   fail-closed ownership resolver, are always `noindex`, and render without app
   chrome. Contextual ordering suffixes do not expose QR doorways.
-- Generic detail responses preserve that resolver truth: missing, unpublished,
+- Generic and Collection detail responses preserve that resolver truth: missing, unpublished,
   or out-of-scope Menus return 404; configuration, payload, and Firestore
   failures remain 5xx. Browse renders a safe noindex failure state without
   exposing the underlying server message. A featured Menu on a tenant index
@@ -182,9 +185,11 @@ Page composition note:
   whenever the normal app route smoke runs.
 - Browse detail includes kitchen/menu identity, a short allergy advisory,
   section navigation, readable item rows, and read-only structured options.
-  MenuBrowse does not accept a menu context. Ordering, kiosk, and staff-POS
-  remain separate context-driven surfaces; current suffixed routes retain the
-  JSON diagnostic projection until that surface family is rebuilt separately.
+  MenuBrowse does not accept a menu context. `.collection` mounts a separate,
+  noindex MenuOrder shell only when the context-filtered manifest explicitly
+  enables Collection. That first shell has no item selection, basket,
+  submission, payment, or persistence. Kiosk, staff-POS, and every other
+  recognized suffix retain the JSON diagnostic projection.
 
 Kitchen needed:
 - Attach menu to a kitchen.
@@ -197,17 +202,21 @@ Component placement:
 - `components/Menu/Index/Index.vue` owns the public Menu index composition;
   `components/Menu/Close.vue` owns the shared circular control, while each
   concrete app's `layouts/menu.vue` supplies its surface-aware exit destination
-  for generic detail routes. `components/Menu/Browse/Index.vue` owns
+  for Browse and live order projections. `components/Menu/Browse/Index.vue` owns
   context-free customer detail and its
   small `Browse/Identity.vue` identity, `Browse/Item.vue` row,
   `Browse/SectionNav.vue` section-navigation, and `Browse/Unavailable.vue` safe
-  failure seams. `components/Menu/Json.vue` remains the temporary renderer for
-  non-generic context diagnostics.
+  failure seams. `components/Menu/Order/Index.vue` owns the Collection projection
+  shell. `components/Menu/Json.vue` remains the temporary renderer for every
+  other non-generic context diagnostic.
 - Root and kitchen-directory detail pages branch on the parsed menu context:
-  generic routes project MenuBrowse, while suffixed routes preserve the context
-  query for MenuJson. `middleware/menu-projection-layout.ts` chooses the layout
-  before render so the branch is hydration-safe.
-- Ordering components remain preserved and outside this public reset.
+  generic routes project MenuBrowse, Collection projects MenuOrder, and all
+  other suffixes preserve the context query for MenuJson. The shared route
+  projection classifier also drives `middleware/menu-projection-layout.ts`, so
+  the page branch and pre-render layout cannot drift.
+- The preserved ordering/funnel components remain disconnected reference
+  material. MenuOrder currently resolves and authorizes Collection only; it
+  does not mount that chain or create client state.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.
