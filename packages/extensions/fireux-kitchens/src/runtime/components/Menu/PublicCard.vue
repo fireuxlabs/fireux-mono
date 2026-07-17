@@ -1,15 +1,13 @@
 <template>
-  <article class="kitchen-menu-link">
-    <div class="kitchen-menu-link__content">
-      <div class="kitchen-menu-link__icon" aria-hidden="true">
+  <article class="menu-public-card" data-menu-public-card>
+    <div class="menu-public-card__content">
+      <div class="menu-public-card__icon" aria-hidden="true">
         <UIcon name="i-lucide-book-open-text" />
       </div>
 
-      <div class="kitchen-menu-link__copy">
-        <div class="kitchen-menu-link__heading">
-          <h3>
-            {{ menuName }}
-          </h3>
+      <div class="menu-public-card__copy">
+        <div class="menu-public-card__heading">
+          <h3>{{ menuName }}</h3>
 
           <ClientOnly>
             <UBadge
@@ -21,17 +19,15 @@
             </UBadge>
           </ClientOnly>
         </div>
-        <p
-          v-if="menuDescription"
-          class="kitchen-menu-link__description"
-        >
+
+        <p v-if="menuDescription" class="menu-public-card__description">
           {{ menuDescription }}
         </p>
       </div>
     </div>
 
     <MenuDoorways
-      :contexts="contexts"
+      :contexts="menuContexts"
       :menu-id="menu.id"
       :menu-name="menuName"
       :route-scope="routeScope"
@@ -41,28 +37,41 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenMenu as Menu } from '../../../models/kitchen/menu/kitchen-menu.model'
-import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
-import { useMenuComputed } from '../../../composables/fireux/firestore/menu/useMenu'
-import type { MenuRouteScope } from '../../../utils/kitchen-menu-route'
+import { useMenuServiceComputed } from '../../composables/fireux/firestore/menu/useMenu'
+import type { MenuRouteContext } from '../../models/kitchen/menu/menu-context.model'
+import type { MenuOrderingConfig } from '../../models/kitchen/menu/kitchen-menu.model'
+import {
+  guestDiscoverableMenuContexts,
+} from '../../utils/menu-context'
+import type { MenuRouteScope } from '../../utils/kitchen-menu-route'
+
+type PublicMenuCardSource = {
+  id: string
+  name: string
+  description?: string
+  contexts?: MenuRouteContext[]
+  ordering?: MenuOrderingConfig
+}
 
 const props = defineProps<{
-  contexts?: MenuRouteContext[]
-  menu: Menu
+  menu: PublicMenuCardSource
   routeScope: MenuRouteScope
 }>()
 
-const { menuServiceChip } = useMenuComputed(
-  computed(() => props.menu),
-  computed(() => false)
-)
 const text = (value: unknown) => String(value ?? '').trim()
 const menuName = computed(() => text(props.menu.name))
 const menuDescription = computed(() => text(props.menu.description))
+const menuContexts = computed(() =>
+  props.menu.contexts ?? guestDiscoverableMenuContexts(props.menu.ordering)
+)
+const serviceHours = computed(() =>
+  props.menu.ordering?.service_hours?.operation_hours
+)
+const { menuServiceChip } = useMenuServiceComputed(serviceHours)
 </script>
 
 <style scoped>
-.kitchen-menu-link {
+.menu-public-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.25rem, 3vw, 2rem);
@@ -85,20 +94,20 @@ const menuDescription = computed(() => text(props.menu.description))
     transform 160ms ease;
 }
 
-.kitchen-menu-link:hover {
+.menu-public-card:hover {
   border-color: color-mix(in srgb, var(--ui-primary) 36%, var(--ui-border));
   box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 9%);
   transform: translateY(-2px);
 }
 
-.kitchen-menu-link__content {
+.menu-public-card__content {
   display: flex;
   min-width: 0;
   align-items: flex-start;
   gap: 1rem;
 }
 
-.kitchen-menu-link__icon {
+.menu-public-card__icon {
   display: grid;
   flex: 0 0 auto;
   width: 2.75rem;
@@ -109,23 +118,23 @@ const menuDescription = computed(() => text(props.menu.description))
   color: var(--ui-primary);
 }
 
-.kitchen-menu-link__icon :deep(svg) {
+.menu-public-card__icon :deep(svg) {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.kitchen-menu-link__copy {
+.menu-public-card__copy {
   min-width: 0;
 }
 
-.kitchen-menu-link__heading {
+.menu-public-card__heading {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
   align-items: center;
 }
 
-.kitchen-menu-link h3 {
+.menu-public-card h3 {
   margin: 0;
   color: var(--ui-text-highlighted);
   font-size: clamp(1.1rem, 2vw, 1.35rem);
@@ -133,7 +142,7 @@ const menuDescription = computed(() => text(props.menu.description))
   letter-spacing: -0.015em;
 }
 
-.kitchen-menu-link__description {
+.menu-public-card__description {
   max-width: 58ch;
   margin: 0.55rem 0 0;
   color: var(--ui-text-muted);
@@ -142,7 +151,7 @@ const menuDescription = computed(() => text(props.menu.description))
 }
 
 @media (max-width: 44rem) {
-  .kitchen-menu-link {
+  .menu-public-card {
     grid-template-columns: 1fr;
   }
 }

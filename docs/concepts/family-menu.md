@@ -212,10 +212,13 @@ Page composition note:
   Kitchen cards or customer choice rails; their visible management doorway
   belongs in the Kitchen console. Global, directory, and tenant Browse routes
   all derive their public option rail from this same shared policy.
-- Public Kitchen profiles and scoped Menu indexes render those same Browse and
-  guest-discoverable ordering links through `Menu/Doorways.vue`. The scoped
-  index response exposes only its bounded list of enabled public contexts; it
-  does not expose or duplicate the full KitchenMenu ordering policy.
+- Public Kitchen profiles and scoped Menu indexes render the same
+  `Menu/PublicCard.vue`, which delegates Browse and guest-discoverable ordering
+  links to `Menu/Doorways.vue`. A Kitchen profile may additionally show the
+  live service badge when its KitchenMenu hydration includes service hours.
+  The scoped index response exposes only its bounded list of enabled public
+  contexts; it does not expose or duplicate the full KitchenMenu ordering
+  policy.
 - Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
   `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
   menu contract through MenuBrowse. The server, not the URL renderer, resolves

@@ -49,11 +49,10 @@
       </div>
 
       <div v-else class="kitchen-menus__grid">
-        <KitchenDetailMenuLink
+        <MenuPublicCard
           v-for="menu in sortedMenus"
           :key="menu.id"
           :menu="menu"
-          :contexts="guestDiscoverableMenuContexts(menu.ordering)"
           :route-scope="menuRouteScope"
         />
       </div>
@@ -70,11 +69,9 @@ import {
   useOrderSessionSummaries,
   type MenuOrderSessionSummary,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useOrderSession'
-import KitchenDetailMenuLink from './MenuLink.vue'
 import type { KitchenMenu as Menu } from '../../../models/kitchen/menu/kitchen-menu.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { guestDiscoverableMenuContexts } from '../../../utils/menu-context'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,

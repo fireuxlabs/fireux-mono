@@ -35,29 +35,12 @@
 
       <UPageBody>
         <div v-if="menus.length" class="space-y-3">
-          <UPageCard
+          <MenuPublicCard
             v-for="menu in menus"
             :key="menu.id"
-            variant="subtle"
-          >
-            <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-              <div class="min-w-0 space-y-1">
-                <h2 class="text-lg font-semibold text-highlighted">
-                  {{ menu.name }}
-                </h2>
-                <p v-if="menu.description" class="text-sm text-dimmed">
-                  {{ menu.description }}
-                </p>
-              </div>
-
-              <MenuDoorways
-                :contexts="menu.contexts"
-                :menu-id="menu.id"
-                :menu-name="menu.name"
-                :route-scope="index.routeScope.value"
-              />
-            </div>
-          </UPageCard>
+            :menu="menu"
+            :route-scope="index.routeScope.value"
+          />
         </div>
 
         <p v-else class="text-sm text-dimmed">
