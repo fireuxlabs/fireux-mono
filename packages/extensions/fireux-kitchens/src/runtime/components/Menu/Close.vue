@@ -55,7 +55,11 @@ withDefaults(defineProps<{
     transform 180ms ease;
 }
 
-.menu-close--top-right,
+.menu-close--top-right {
+  position: absolute;
+  z-index: 50;
+}
+
 .menu-close--bottom-left {
   position: fixed;
   z-index: 50;

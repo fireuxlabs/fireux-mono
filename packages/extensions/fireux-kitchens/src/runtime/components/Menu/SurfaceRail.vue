@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GuestMenuSurfaceOption } from '../../../utils/menu-context'
+import type { GuestMenuSurfaceOption } from '../../utils/menu-context'
 
 defineProps<{
   options: GuestMenuSurfaceOption[]

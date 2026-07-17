@@ -72,11 +72,11 @@ const exitLabel = computed(() => {
 .fireux-menu-layout {
   --menu-close-size: 3.5rem;
   --menu-close-icon-size: 2rem;
-  --menu-browse-nav-inline-end: calc(var(--menu-close-size, 4.5rem) + 1rem);
   --menu-browse-identity-top-offset: calc(var(--menu-close-size, 4.5rem) + 1rem + env(safe-area-inset-top));
 
   min-height: 100vh;
   min-height: 100svh;
+  position: relative;
   color: var(--menu-text, #0f172a);
   background: var(--menu-bg, #f8fafc);
 }
@@ -88,9 +88,4 @@ const exitLabel = computed(() => {
   }
 }
 
-@media (min-width: 70rem) {
-  .fireux-menu-layout {
-    --menu-browse-nav-inline-end: 0rem;
-  }
-}
 </style>
