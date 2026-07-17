@@ -78,22 +78,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
+  accessibilityId: string
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
   item: MenuManifestItem
 }>()
 
-const accessibilityId = useId()
-const itemNameId = `${accessibilityId}-name`
-const priceOptionsLabelId = `${accessibilityId}-options`
-const addOnsLabelId = `${accessibilityId}-add-ons`
+const itemNameId = computed(() => `${props.accessibilityId}-name`)
+const priceOptionsLabelId = computed(() => `${props.accessibilityId}-options`)
+const addOnsLabelId = computed(() => `${props.accessibilityId}-add-ons`)
 const failedImageUrl = ref('')
 const itemImageUrl = computed(() => {
   const url = String(props.item.imageUrl || '').trim()

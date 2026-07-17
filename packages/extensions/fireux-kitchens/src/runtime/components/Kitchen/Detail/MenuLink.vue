@@ -30,35 +30,26 @@
       </div>
     </div>
 
-    <div class="kitchen-menu-link__actions">
-      <UButton
-        v-for="entry in entries"
-        :key="entry.to"
-        :to="entry.to"
-        :icon="entry.icon"
-        :color="entry.primary ? 'primary' : 'neutral'"
-        :variant="entry.primary ? 'solid' : 'soft'"
-        size="md"
-      >
-        {{ entry.label }}
-      </UButton>
-    </div>
+    <MenuDoorways
+      :contexts="contexts"
+      :menu-id="menu.id"
+      :menu-name="menuName"
+      :route-scope="routeScope"
+    />
   </article>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Menu } from '../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../models/kitchen/menu/kitchen-menu.model'
+import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import { useMenuComputed } from '../../../composables/fireux/firestore/menu/useMenu'
+import type { MenuRouteScope } from '../../../utils/kitchen-menu-route'
 
 const props = defineProps<{
-  entries: Array<{
-    label: string
-    to: string
-    icon: string
-    primary?: boolean
-  }>
+  contexts?: MenuRouteContext[]
   menu: Menu
+  routeScope: MenuRouteScope
 }>()
 
 const { menuServiceChip } = useMenuComputed(
@@ -150,24 +141,9 @@ const menuDescription = computed(() => text(props.menu.description))
   line-height: 1.55;
 }
 
-.kitchen-menu-link__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
 @media (max-width: 44rem) {
   .kitchen-menu-link {
     grid-template-columns: 1fr;
-  }
-
-  .kitchen-menu-link__actions {
-    justify-content: flex-start;
-  }
-
-  .kitchen-menu-link__actions :deep(a) {
-    flex: 1 1 auto;
   }
 }
 </style>

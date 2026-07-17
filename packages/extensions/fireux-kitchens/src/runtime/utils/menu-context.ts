@@ -8,6 +8,7 @@ import {
   type MenuSurface,
 } from '../models/kitchen/menu/menu-context.model'
 import type { MenuManifestBehaviour } from '../models/kitchen/menu/menu-detail.model'
+import type { MenuOrderingConfig } from '../models/kitchen/menu/kitchen-menu.model'
 import {
   menuRoutePath,
   type MenuRouteScope,
@@ -30,7 +31,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   generic: {
     context: 'generic',
     surface: 'generic',
-    label: '',
+    label: 'Browse',
     icon: 'i-lucide-book-open',
     visibleOrderTypes: [],
     locked: false,
@@ -129,6 +130,22 @@ export const guestDiscoverableMenuSurfaceProfiles =
     ({ context }) => !privateEntryMenuContexts.has(context)
   )
 
+export function guestDiscoverableMenuContexts(
+  ordering?: MenuOrderingConfig | null
+): MenuRouteContext[] {
+  if (!ordering?.enabled) return []
+
+  const orderTypes = new Set(
+    ordering.order_types.map(({ type }) => type)
+  )
+
+  return guestDiscoverableMenuSurfaceProfiles
+    .filter(({ visibleOrderTypes }) =>
+      visibleOrderTypes.some(type => orderTypes.has(type))
+    )
+    .map(({ context }) => context)
+}
+
 export type GuestMenuSurfaceOption = {
   value: MenuRouteContext
   label: string
@@ -157,11 +174,24 @@ export function guestMenuSurfaceOptions(options: {
       .filter((type): type is KitchenOrderType => Boolean(type)),
   ])
 
-  return guestDiscoverableMenuSurfaceProfiles
+  return [profiles.generic, ...guestDiscoverableMenuSurfaceProfiles]
     .filter((surface) =>
+      surface.context === 'generic' ||
       surface.visibleOrderTypes.some((type) => surfaceOrderTypes.has(type))
     )
     .map((surface) => {
+      if (surface.context === 'generic') {
+        return {
+          value: surface.context,
+          label: surface.label,
+          to: menuRoutePath({
+            scope: options.routeScope,
+            menuId,
+          }),
+          active: options.activeContext === surface.context,
+        }
+      }
+
       const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
         availableOrderTypes.includes(type)
       )

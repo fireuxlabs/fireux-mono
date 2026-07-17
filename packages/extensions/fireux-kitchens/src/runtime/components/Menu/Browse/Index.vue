@@ -24,10 +24,11 @@
     />
 
     <template v-else-if="hasMenu">
-      <MenuBrowseIdentity
+      <MenuIdentity
         :currency-code="currencyCode"
         :show-currency="showCurrency"
         :description="menuDescription"
+        heading-id="menu-browse-title"
         :identity-kind="documentMenu ? 'menu' : 'kitchen-menu'"
         :image-shade="kitchenImageShade"
         :image-url="kitchenImageUrl"
@@ -37,8 +38,11 @@
         :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
-      <MenuSurfaceRail
+      <MenuSurfaceSwitcher
         v-if="surfaceOptions.length"
+        icon="i-lucide-book-open"
+        label="Browse"
+        message="View the menu or choose how you would like to order."
         :options="surfaceOptions"
       />
 
@@ -93,8 +97,9 @@
 
             <div class="menu-browse__items">
               <MenuBrowseItem
-                v-for="item in section.items"
+                v-for="(item, itemIndex) in section.items"
                 :key="item.id"
+                :accessibility-id="`${section.anchor}-item-${itemIndex + 1}`"
                 :currency-code="currencyCode"
                 :currency-format="currencyFormat"
                 :item="item"
@@ -204,6 +209,7 @@ const surfaceOptions = computed(() => guestMenuSurfaceOptions({
   behaviour: detailMenu.value?.behaviour,
   menuId: menuId.value,
   routeScope: menuRouteScope.value,
+  activeContext: 'generic',
 }))
 const browseSections = computed(() =>
   menuSectionLinks(detailMenu.value?.content.sections ?? [])

@@ -40,7 +40,7 @@
             :key="menu.id"
             variant="subtle"
           >
-            <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
               <div class="min-w-0 space-y-1">
                 <h2 class="text-lg font-semibold text-highlighted">
                   {{ menu.name }}
@@ -50,14 +50,12 @@
                 </p>
               </div>
 
-              <UButton
-                :to="menuLink(menu.id)"
-                icon="i-lucide-arrow-right"
-                trailing
-                :aria-label="`Open ${menu.name}`"
-              >
-                Open
-              </UButton>
+              <MenuDoorways
+                :contexts="menu.contexts"
+                :menu-id="menu.id"
+                :menu-name="menu.name"
+                :route-scope="index.routeScope.value"
+              />
             </div>
           </UPageCard>
         </div>
@@ -125,7 +123,6 @@ const loadMoreError = computed(() => index.loadMoreError.value)
 const isScopedIndex = computed(() =>
   isTenant || index.routeScope.value.kind === 'directory'
 )
-const menuLink = index.menuLink
 const loadMore = index.loadMore
 const errorDetail = computed(() => {
   if (!import.meta.dev || !error.value) return ''

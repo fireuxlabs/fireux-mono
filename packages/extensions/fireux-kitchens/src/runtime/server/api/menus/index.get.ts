@@ -8,6 +8,7 @@ import { KitchenMenuStorage } from '../../../models/kitchen/menu/kitchen-menu.mo
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,
+  type PublicMenuIndexItem,
   type PublicMenuIndexPage,
   type PublicMenuIndexScope,
 } from '../../../models/kitchen/menu/menu-index.model.ts'
@@ -17,6 +18,8 @@ import {
   type TenantPublicMenuScope,
 } from '../../menu/ownership/public-target.ts'
 import { menuKitchenIdentity } from '../../menu/ownership/kitchen-scope.ts'
+import { readMenuOrderingConfig } from '../../menu/ordering/config.ts'
+import { guestDiscoverableMenuContexts } from '../../../utils/menu-context.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isFirestoreDocumentId = (value: string) =>
@@ -56,7 +59,7 @@ const publicMenuIndexItem = (
   data: Record<string, unknown>,
   tenantScope?: TenantPublicMenuScope | null,
   kitchenName = ''
-) => {
+): PublicMenuIndexItem | null => {
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
 
@@ -72,14 +75,31 @@ const publicMenuIndexItem = (
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
+  const publicSource = hasSource
+    ? {
+        app_id: source.app_id || '',
+        kitchen_id: source.kitchen_id || '',
+        menu_id: source.menu_id || '',
+        ...(source.kitchen_slug ? { kitchen_slug: source.kitchen_slug } : {}),
+        ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
+      }
+    : null
+  const contexts = tenantScope
+    ? guestDiscoverableMenuContexts(readMenuOrderingConfig(data))
+    : []
+  const storedKind = tenantScope ? 'menu' : readRecordString(data, 'kind')
+  const kind = storedKind === 'menu' || storedKind === 'doc'
+    ? storedKind
+    : undefined
 
   return {
     id,
-    kind: tenantScope ? 'menu' : readRecordString(data, 'kind') || undefined,
+    kind,
     name: readRecordString(data, 'name') || id,
     description: readRecordString(data, 'description'),
-    status,
-    ...(hasSource ? { source } : {}),
+    status: 'published' as const,
+    ...(contexts.length ? { contexts } : {}),
+    ...(publicSource ? { source: publicSource } : {}),
   }
 }
 

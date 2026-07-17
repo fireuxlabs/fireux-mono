@@ -155,10 +155,11 @@ Presentation/data boundary:
   Menu payloads. The ownership resolver supplies current Kitchen name, optional
   stored identity assets, image-shade metadata, currency, and menu page style;
   the root Menu does not copy those fields.
-- `components/Menu/Browse/Identity.vue` renders that contract with a visible
-  Kitchen name and text-only fallback. Missing or failed media is not a broken
-  Menu state, and stored `kitchenImageShade` keeps generic Kitchen marks legible
-  against light and dark Browse themes.
+- `components/Menu/Identity.vue` renders that shared contract as the common
+  Browse and live-order title card. Kitchen media and the visible circular exit
+  sit inside that card; missing or failed media falls back to text, and stored
+  `kitchenImageShade` keeps generic Kitchen marks legible against light and dark
+  Menu themes.
 - Generic detail routes extend the resolved Menu page style to the full page
   canvas, including outer large-screen margins and the circular exit. Menu
   index lists remain inside their host app theme.
@@ -198,7 +199,7 @@ Page composition note:
 - The kitchen-directory index also renders `MenuIndex` with directory scope;
   it always remains a list and must not fall back to a diagnostic JSON
   projection. Index links open Browse. The generic detail layout owns one
-  circular X exit: tenant projections
+  circular X exit inside the shared identity card: tenant projections
   close to the tenant home, while global and kitchen-directory projections go
   back to their Menu index. Browse does not promote QR generation: QR is a
   distribution surface reached from operator or management tooling, then
@@ -211,6 +212,10 @@ Page composition note:
   Kitchen cards or customer choice rails; their visible management doorway
   belongs in the Kitchen console. Global, directory, and tenant Browse routes
   all derive their public option rail from this same shared policy.
+- Public Kitchen profiles and scoped Menu indexes render those same Browse and
+  guest-discoverable ordering links through `Menu/Doorways.vue`. The scoped
+  index response exposes only its bounded list of enabled public contexts; it
+  does not expose or duplicate the full KitchenMenu ordering policy.
 - Generic global `/menus/<menuId>`, tenant `/<menuId>`, and directory
   `/kitchens/<kitchenSlug>/menus/<menuId>` routes read one resolved published
   menu contract through MenuBrowse. The server, not the URL renderer, resolves
@@ -266,14 +271,18 @@ Component placement:
   its route-owned `usePublicMenuIndex` controller is passed explicitly into
   `Menu/Collection/Manager.vue` so one request state powers policy and display.
   This is not a raw provided collection or per-row hydration seam.
-  `components/Menu/Close.vue` owns the shared circular control, while the
-  package-owned `layouts/menu.vue` supplies its surface-aware exit destination
-  for Browse and live order projections. `components/Menu/Browse/Index.vue` owns
+  `components/Menu/Close.vue` owns the shared circular control, while
+  `composables/fireux/menu/useMenuExit.ts` supplies its surface-aware exit
+  destination. The identity card owns the normal visible control; the
+  package-owned `layouts/menu.vue` keeps the same control as a fallback for
+  failure surfaces without an identity card. `components/Menu/Browse/Index.vue` owns
   context-free customer detail and its
-  small `Browse/Identity.vue` identity, `Browse/Item.vue` row, and
+  shared `Menu/Identity.vue` identity, `Browse/Item.vue` row, and
   `Browse/Unavailable.vue` safe failure seams. `components/Menu/SectionNav.vue`
-  owns shared catalogue section navigation, while `Menu/SurfaceRail.vue` owns
-  the shared available-surface navigation. `components/Menu/Order/Index.vue`
+  owns shared catalogue section navigation, while `Menu/SurfaceSwitcher.vue`
+  identifies the current Browse or ordering projection and reveals the other
+  enabled public projections through `Menu/SurfaceRail.vue`.
+  `components/Menu/Order/Index.vue`
   owns public order
   catalogue resolution and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
   `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the

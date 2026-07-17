@@ -53,7 +53,8 @@
           v-for="menu in sortedMenus"
           :key="menu.id"
           :menu="menu"
-          :entries="menuEntries(menu)"
+          :contexts="guestDiscoverableMenuContexts(menu.ordering)"
+          :route-scope="menuRouteScope"
         />
       </div>
     </div>
@@ -70,11 +71,10 @@ import {
   type MenuOrderSessionSummary,
 } from '../../../composables/fireux/kitchen/order/funnel/shared/useOrderSession'
 import KitchenDetailMenuLink from './MenuLink.vue'
-import type { Menu } from '../../../models/kitchen/menu/menu.model'
-import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
+import type { KitchenMenu as Menu } from '../../../models/kitchen/menu/kitchen-menu.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { guestDiscoverableMenuSurfaceProfiles } from '../../../utils/menu-context'
+import { guestDiscoverableMenuContexts } from '../../../utils/menu-context'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
@@ -122,21 +122,8 @@ const menusIndexLink = computed(() => {
   return menuRouteIndexPath(menuRouteScope.value)
 })
 
-const menuLink = (menuIdRaw: unknown) => {
-  const menuId = String(menuIdRaw || '').trim()
-  return menuRoutePath({
-    scope: menuRouteScope.value,
-    menuId,
-  })
-}
 const hasOrderType = (menu: Menu, types: KitchenOrderType[]) =>
   Boolean(menu.ordering?.order_types?.some((row) => types.includes(row.type)))
-const contextualMenuLink = (menu: Menu, context: MenuRouteContext) =>
-  menuRoutePath({
-    scope: menuRouteScope.value,
-    menuId: menu.id,
-    context,
-  })
 const firstMenuForOrderType = (orderType: KitchenOrderType) =>
   sortedMenus.value.find((menu) => hasOrderType(menu, [orderType])) ||
     sortedMenus.value.find((menu) =>
@@ -156,22 +143,6 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
     context,
   })
 }
-const menuEntries = (menu: Menu) => [
-  {
-    label: 'View menu',
-    to: menuLink(menu.id),
-    icon: 'i-lucide-book-open',
-    primary: true,
-  },
-  ...guestDiscoverableMenuSurfaceProfiles
-    .filter((surface) => hasOrderType(menu, [...surface.visibleOrderTypes]))
-    .map((surface) => ({
-      label: surface.label,
-      to: contextualMenuLink(menu, surface.context),
-      icon: surface.icon,
-      primary: false,
-    })),
-].filter((entry) => entry.to)
 </script>
 
 <style scoped>

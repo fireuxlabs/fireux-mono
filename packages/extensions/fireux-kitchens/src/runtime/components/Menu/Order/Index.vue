@@ -37,14 +37,15 @@
         :context-label="contextProfile.label"
         :currency-code="currencyCode"
         :description="menuDescription"
+        :image-shade="kitchenImageShade"
+        :image-url="kitchenImageUrl"
         :kitchen-name="kitchenName"
+        :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
         :message="contextMessage"
-      />
-
-      <MenuSurfaceRail
-        v-if="surfaceOptions.length"
-        :options="surfaceOptions"
+        :show-currency="showCurrency"
+        :surface-options="surfaceOptions"
+        :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
       <MenuOrderCatalogue
@@ -164,6 +165,21 @@ const menuSections = computed(() => detailMenu.value?.content.sections || [])
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
 const currencyCode = computed(() =>
   String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
+)
+const showCurrency = computed(() =>
+  menuPresentation.value?.showCurrency !== false
+)
+const kitchenImageShade = computed(() =>
+  menuPresentation.value?.kitchenImageShade || 'none'
+)
+const kitchenImageUrl = computed(() =>
+  String(menuPresentation.value?.kitchenImageUrl || '').trim()
+)
+const kitchenLogoImageUrl = computed(() =>
+  String(menuPresentation.value?.kitchenLogoImageUrl || '').trim()
+)
+const kitchenWordmarkImageUrl = computed(() =>
+  String(menuPresentation.value?.kitchenWordmarkImageUrl || '').trim()
 )
 const contextMessage = computed(() =>
   String(contextConfig.value?.message || '').trim() ||
@@ -370,15 +386,10 @@ useSeoMeta({
 .menu-order__shell {
   display: grid;
   align-content: start;
-  gap: clamp(2rem, 6vw, 4rem);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   width: min(100%, 68rem);
   margin: 0 auto;
-  padding-block: clamp(1rem, 4vw, 3rem);
+  padding-block-end: clamp(1rem, 4vw, 3rem);
 }
 
-@media (max-width: 35rem) {
-  .menu-order__shell {
-    padding-block-start: var(--menu-browse-identity-top-offset, 0rem);
-  }
-}
 </style>
