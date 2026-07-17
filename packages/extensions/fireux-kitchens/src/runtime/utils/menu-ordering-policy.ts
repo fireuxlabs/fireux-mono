@@ -148,13 +148,17 @@ export const readMenuServiceHoursConfig = (
   value: unknown
 ): MenuServiceHoursConfig | undefined => {
   const row = record(value)
-  const inherit = row.inherit_kitchen_operation_hours === true
+  const inheritKitchen = row.inherit_kitchen_operation_hours === true
+  const inheritMenu = row.inherit_menu_service_hours === true
   const operationHours = readWeekdayTimeWindowsConfig(row.operation_hours)
 
-  if (!inherit && !operationHours.windows.length) return undefined
+  if (!inheritKitchen && !inheritMenu && !operationHours.windows.length) {
+    return undefined
+  }
 
   return compact({
-    inherit_kitchen_operation_hours: inherit,
+    inherit_kitchen_operation_hours: inheritKitchen || undefined,
+    inherit_menu_service_hours: inheritMenu || undefined,
     operation_hours: operationHours.windows.length ? operationHours : undefined,
   }) as MenuServiceHoursConfig
 }

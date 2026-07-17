@@ -4,6 +4,8 @@
 
     <ConsoleKitchenOperationsMenusEditDetails v-if="menu" />
 
+    <ConsoleKitchenOperationsMenusOrderingServiceHours v-if="menu" />
+
     <UAlert
       v-else-if="source"
       color="neutral"

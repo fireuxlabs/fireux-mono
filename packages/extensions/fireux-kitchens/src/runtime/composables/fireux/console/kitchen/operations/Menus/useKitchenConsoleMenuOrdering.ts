@@ -5,9 +5,11 @@ import type {
   KitchenMenuUpdateInput,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
+  MenuServiceHoursConfig,
 } from '../../../../../../models/kitchen/menu/kitchen-menu.model'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
 import { readKitchenOperationHours } from '../../../../../../utils/kitchen-spine'
+import { resolveMenuServiceHours } from '../../../../../../utils/menu-service-hours'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -47,9 +49,24 @@ export function useKitchenConsoleMenuOrdering() {
       menuState.selectedKitchen.value as Record<string, unknown> | null
     )
   )
+  const menuServiceHours = computed(() =>
+    resolveMenuServiceHours(
+      ordering.value.service_hours,
+      kitchenOperationHours.value
+    )?.operation_hours || {
+      source: 'custom' as const,
+      timezone: kitchenOperationHours.value.timezone,
+      windows: [],
+    }
+  )
 
   function defaultOrderTypeConfig(type: KitchenOrderType): MenuOrderTypeConfig {
-    if (type === 'pre_order') return { type, notice_hours: 24 }
+    const inheritedServiceHours = {
+      inherit_menu_service_hours: true,
+    }
+    if (type === 'pre_order') {
+      return { type, notice_hours: 24, service_hours: inheritedServiceHours }
+    }
     if (type === 'collection') {
       return {
         type,
@@ -57,10 +74,11 @@ export function useKitchenConsoleMenuOrdering() {
         asap_enabled: true,
         slot_interval_minutes: 30,
         schedule_horizon_days: 7,
+        service_hours: inheritedServiceHours,
       }
     }
 
-    return { type }
+    return { type, service_hours: inheritedServiceHours }
   }
 
   function hasOrderType(type: KitchenOrderType) {
@@ -77,8 +95,8 @@ export function useKitchenConsoleMenuOrdering() {
       ordering: {
         enabled: nextOrdering.enabled && orderTypes.length > 0,
         order_types: orderTypes,
-        ...(ordering.value.service_hours
-          ? { service_hours: ordering.value.service_hours }
+        ...(nextOrdering.service_hours || ordering.value.service_hours
+          ? { service_hours: nextOrdering.service_hours || ordering.value.service_hours }
           : {}),
       },
     }
@@ -130,15 +148,24 @@ export function useKitchenConsoleMenuOrdering() {
     })
   }
 
+  async function saveMenuServiceHours(serviceHours: MenuServiceHoursConfig) {
+    await updateOrdering({
+      ...ordering.value,
+      service_hours: serviceHours,
+    })
+  }
+
   return {
     ...menuState,
     collectionConfig,
     hasOrderType,
     kitchenOperationHours,
+    menuServiceHours,
     ordering,
     orderingEnabled,
     orderTypeConfigs,
     saveOrderTypeConfig,
+    saveMenuServiceHours,
     setOrderType,
     updateOrdering,
   }

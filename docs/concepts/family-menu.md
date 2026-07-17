@@ -270,8 +270,15 @@ Page composition note:
   `/console/kitchen/menus/<menuId>/ordering/<surface>`, beginning with
   `collection`. This namespace must not collide with the existing Menu section
   route.
+- Time defaults follow the same layers as ownership: Place business hours seed
+  a new Kitchen's operation hours, a new Menu inherits Kitchen operation
+  hours, and a newly enabled ordering surface inherits that Menu's service
+  hours. Each child may later become custom without changing its parent.
 - The Kitchen Menu console is a small workspace rather than one long editor.
   `/console/kitchen/menus/<menuId>` owns overview and guest-facing identity;
+  its Menu service-hours card chooses inherited Kitchen operation hours or a
+  custom Menu schedule without changing any surface policy. Collection timing
+  and payment-method policy remain on the focused Collection child route.
   `content`, `ordering`, `publishing`, and `source` are explicit child routes
   sharing one package-owned workspace header. Existing section detail remains
   at the legacy child position until it can move atomically beneath `content`.

@@ -25,7 +25,7 @@
         <UFormField label="Immediate collection">
           <USwitch
             v-model="draft.asapEnabled"
-            :disabled="disabled || saving"
+            :disabled="disabled"
             label="Allow ‘As soon as possible’ while collection is open"
           />
         </UFormField>
@@ -38,7 +38,8 @@
               min="0.25"
               max="168"
               step="0.25"
-              :disabled="disabled || saving"
+              :disabled="disabled"
+              @blur="queueSave(0)"
             />
             <span class="text-sm text-dimmed">hours</span>
           </div>
@@ -49,7 +50,7 @@
             v-model="draft.slotIntervalMinutes"
             :items="slotIntervalOptions"
             value-key="value"
-            :disabled="disabled || saving"
+            :disabled="disabled"
           />
         </UFormField>
 
@@ -61,7 +62,8 @@
               min="1"
               max="30"
               step="1"
-              :disabled="disabled || saving"
+              :disabled="disabled"
+              @blur="queueSave(0)"
             />
             <span class="text-sm text-dimmed">days</span>
           </div>
@@ -74,28 +76,29 @@
           :rows="2"
           :maxlength="240"
           placeholder="Collect from the counter during pickup hours."
-          :disabled="disabled || saving"
+          :disabled="disabled"
+          @blur="queueSave(0)"
         />
       </UFormField>
 
       <div class="space-y-3 rounded-lg border border-default p-4">
         <USwitch
-          v-model="draft.inheritKitchenHours"
-          :disabled="disabled || saving"
-          label="Use Kitchen operation hours"
+          v-model="draft.inheritMenuHours"
+          :disabled="disabled"
+          label="Use Menu service hours"
         />
 
         <UAlert
-          v-if="draft.inheritKitchenHours"
-          :color="kitchenHours.windows.length ? 'neutral' : 'warning'"
+          v-if="draft.inheritMenuHours"
+          :color="menuHours.windows.length ? 'neutral' : 'warning'"
           variant="soft"
           icon="i-lucide-clock"
-          :title="kitchenHours.windows.length
-            ? 'Collection follows Kitchen operation hours'
-            : 'Kitchen operation hours are missing'"
-          :description="kitchenHours.windows.length
+          :title="menuHours.windows.length
+            ? 'Collection follows Menu service hours'
+            : 'Menu service hours are missing'"
+          :description="menuHours.windows.length
             ? inheritedHoursSummary
-            : 'Add Kitchen operation hours or switch to custom collection hours.'"
+            : 'Add Menu service hours or switch to custom Collection hours.'"
         />
 
         <UFormField
@@ -107,7 +110,8 @@
             v-model="draft.hoursText"
             :rows="7"
             placeholder="Tuesday - Saturday 08:00 - 13:00"
-            :disabled="disabled || saving"
+            :disabled="disabled"
+            @blur="queueSave(0)"
           />
         </UFormField>
       </div>
@@ -116,23 +120,12 @@
         {{ validationError }}
       </p>
 
-      <div class="flex justify-end">
-        <UButton
-          type="button"
-          icon="i-lucide-save"
-          :disabled="disabled"
-          :loading="saving"
-          @click="save"
-        >
-          Save collection timing
-        </UButton>
-      </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../../../../models/kitchen/menu/menu.model'
 import type { WeekdayTimeWindowsConfig } from '../../../../../../models/shared/weekday-time.model'
 import {
@@ -143,8 +136,7 @@ import {
 const props = defineProps<{
   config: MenuOrderTypeConfig
   disabled?: boolean
-  kitchenHours: WeekdayTimeWindowsConfig
-  saving?: boolean
+  menuHours: WeekdayTimeWindowsConfig
 }>()
 
 const emit = defineEmits<{
@@ -154,7 +146,7 @@ const emit = defineEmits<{
 type TimingDraft = {
   asapEnabled: boolean
   hoursText: string
-  inheritKitchenHours: boolean
+  inheritMenuHours: boolean
   message: string
   noticeHours: string | number
   scheduleHorizonDays: string | number
@@ -164,38 +156,52 @@ type TimingDraft = {
 const draft = reactive<TimingDraft>({
   asapEnabled: true,
   hoursText: '',
-  inheritKitchenHours: true,
+  inheritMenuHours: true,
   message: '',
   noticeHours: 0.5,
   scheduleHorizonDays: 7,
   slotIntervalMinutes: 30,
 })
 const validationError = ref('')
+let syncingDraft = false
+let saveTimer: ReturnType<typeof setTimeout> | undefined
 const slotIntervalOptions = [15, 30, 45, 60].map(value => ({
   label: `${value} minutes`,
   value,
 }))
 const inheritedHoursSummary = computed(() =>
-  formatWeekdayTimeText(props.kitchenHours)
+  formatWeekdayTimeText(props.menuHours)
 )
 
 watch(
-  () => [props.config, props.kitchenHours] as const,
+  () => [props.config, props.menuHours] as const,
   () => {
+    syncingDraft = true
     const serviceHours = props.config.service_hours
     draft.asapEnabled = props.config.asap_enabled !== false
     draft.hoursText = formatWeekdayTimeText(
-      serviceHours?.operation_hours || props.kitchenHours
+      serviceHours?.operation_hours || props.menuHours
     )
-    draft.inheritKitchenHours =
-      serviceHours?.inherit_kitchen_operation_hours !== false
+    draft.inheritMenuHours =
+      serviceHours?.inherit_menu_service_hours !== false
     draft.message = String(props.config.message || '')
     draft.noticeHours = props.config.notice_hours || 0.5
     draft.scheduleHorizonDays = props.config.schedule_horizon_days || 7
     draft.slotIntervalMinutes = props.config.slot_interval_minutes || 30
     validationError.value = ''
+    queueMicrotask(() => {
+      syncingDraft = false
+    })
   },
   { immediate: true, deep: true }
+)
+
+watch(
+  draft,
+  () => {
+    if (!syncingDraft) queueSave()
+  },
+  { deep: true }
 )
 
 function boundedNumber(
@@ -210,6 +216,12 @@ function boundedNumber(
   }
 
   return number
+}
+
+function queueSave(delay = 450) {
+  if (props.disabled || syncingDraft) return
+  if (saveTimer) clearTimeout(saveTimer)
+  saveTimer = setTimeout(save, delay)
 }
 
 function save() {
@@ -233,15 +245,15 @@ function save() {
       throw new Error('Pickup interval must be 15, 30, 45, or 60 minutes.')
     }
 
-    const customHours = draft.inheritKitchenHours
+    const customHours = draft.inheritMenuHours
       ? null
-      : parseWeekdayTimeText(draft.hoursText, props.kitchenHours.timezone)
+      : parseWeekdayTimeText(draft.hoursText, props.menuHours.timezone)
     if (customHours && !customHours.windows.length) {
       throw new Error('Add at least one custom collection-hours range.')
     }
-    if (draft.inheritKitchenHours && !props.kitchenHours.windows.length) {
+    if (draft.inheritMenuHours && !props.menuHours.windows.length) {
       throw new Error(
-        'Kitchen operation hours are missing. Add them or use custom collection hours.'
+        'Menu service hours are missing. Add them or use custom Collection hours.'
       )
     }
 
@@ -253,7 +265,7 @@ function save() {
       slot_interval_minutes: slotIntervalMinutes,
       schedule_horizon_days: scheduleHorizonDays,
       service_hours: {
-        inherit_kitchen_operation_hours: draft.inheritKitchenHours,
+        inherit_menu_service_hours: draft.inheritMenuHours,
         ...(customHours ? { operation_hours: customHours } : {}),
       },
     })
@@ -263,4 +275,8 @@ function save() {
       : 'Collection timing is invalid.'
   }
 }
+
+onBeforeUnmount(() => {
+  if (saveTimer) clearTimeout(saveTimer)
+})
 </script>

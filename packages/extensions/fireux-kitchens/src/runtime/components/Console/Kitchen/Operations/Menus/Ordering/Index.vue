@@ -1,7 +1,7 @@
 <template>
   <section class="console-surface space-y-6">
     <ConsoleKitchenOperationsMenusWorkspaceHeader current-label="Ordering" />
-    <ConsoleKitchenOperationsMenusEditOrdering />
+    <ConsoleKitchenOperationsMenusOrderingTypes />
     <ConsoleKitchenOperationsMenusEditKioskSkin />
   </section>
 </template>

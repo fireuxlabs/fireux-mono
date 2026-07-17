@@ -65,7 +65,8 @@ export type MenuOrderTypeConfig = {
 }
 
 export type MenuServiceHoursConfig = {
-  inherit_kitchen_operation_hours: boolean
+  inherit_kitchen_operation_hours?: boolean
+  inherit_menu_service_hours?: boolean
   operation_hours?: WeekdayTimeWindowsConfig
 }
 

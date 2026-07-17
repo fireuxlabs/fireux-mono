@@ -91,7 +91,7 @@ ordering: {
       slot_interval_minutes: 30,
       schedule_horizon_days: 7,
       service_hours: {
-        inherit_kitchen_operation_hours: true
+        inherit_menu_service_hours: true
       }
     }
   ]
@@ -99,21 +99,32 @@ ordering: {
 ```
 
 Collection timing boundary:
+- Effective time follows one parent at each layer: Place business hours seed
+  Kitchen operation hours; Menu service hours inherit Kitchen by default; an
+  enabled ordering surface inherits its Menu by default. A surface override
+  never jumps past the Menu directly to the Kitchen.
 - Collection availability belongs to the `collection` order-type row, not to
   generic Menu hours and not to the public route.
 - The row owns its optional customer message, immediate-collection flag,
   minimum notice, slot interval, scheduling horizon, and inherited or custom
-  service hours.
+  service hours. Its `fulfilment.payment_methods` chooses cash at pickup, card
+  at pickup, or future online card payment without activating checkout or
+  payment processing on the current public Collection catalogue.
 - The Menu console keeps surface enablement at
-  `/console/kitchen/menus/<menuId>` and edits Collection policy on the focused
+  `/console/kitchen/menus/<menuId>/ordering` and keeps Menu service-hours
+  defaults on `/console/kitchen/menus/<menuId>`. It edits Collection policy on the focused
   child route `/console/kitchen/menus/<menuId>/ordering/collection`. The
   `/ordering/<surface>` namespace stays separate from Menu section ids and can
   grow one explicit surface editor at a time. Public suffixes such as
   `.collection` are projections and are never console ids.
+- Menu and Collection policy controls persist optimistically as they change,
+  using the same latest-value queue and visible save state as the Menu Theme
+  editor. Structured hours validate before persistence; there is no page-wide
+  save action.
 - The public Collection surface labels current availability as `Open now`,
   `Not open`, or `Collection hours unavailable`. Pickup choices read only the
-  resolved Collection row. Missing Collection hours fail closed at the timing
-  boundary rather than borrowing generic Menu or Kitchen hours silently.
+  resolved Collection row after Menu inheritance. Missing effective hours fail
+  closed rather than silently jumping to a grandparent layer.
 
 Efficient matrix:
 - `type`: the customer order type.

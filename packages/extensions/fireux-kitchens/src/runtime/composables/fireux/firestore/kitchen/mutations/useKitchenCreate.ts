@@ -17,7 +17,8 @@ import type {
   Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { KitchenModel, KitchenStorage } from '../../../../../models/kitchen.model'
+import { readWeekdayTimeWindowsConfig } from '../../../../../utils/weekday-time'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeStringArray = (value: unknown) =>
@@ -204,6 +205,11 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         ? menus.show_currency
         : input.menu_show_currency
     const compactStyle = compactRecord(style)
+    const placeHours = readWeekdayTimeWindowsConfig(place.operation_hours)
+    const inputHours = readWeekdayTimeWindowsConfig(
+      input.orders?.operation_hours
+    )
+    const inheritedHours = placeHours.windows.length ? placeHours : inputHours
 
     putString(identityPayload, 'tagline', tagline)
     putString(identityPayload, 'image_url', displayImageUrl)
@@ -218,6 +224,16 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const payload: Partial<Kitchen> = {
       app_scope: appScopePayload as Kitchen['app_scope'],
       identity: identityPayload as Kitchen['identity'],
+      orders: {
+        ...KitchenModel.orders,
+        ...input.orders,
+        operation_hours: {
+          source: placeId ? 'place' : inheritedHours.source,
+          timezone:
+            normalizeString(place.timezone) || inheritedHours.timezone,
+          windows: inheritedHours.windows,
+        },
+      },
     }
 
     if (Object.keys(menusPayload).length) {

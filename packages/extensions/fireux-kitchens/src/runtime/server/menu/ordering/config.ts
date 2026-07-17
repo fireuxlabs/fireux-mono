@@ -2,13 +2,16 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
-  MenuServiceHoursConfig,
 } from '../../../models/kitchen/menu/menu.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   readMenuOrderTypeConfig,
   readMenuServiceHoursConfig,
 } from '../../../utils/menu-ordering-policy.ts'
+import {
+  resolveMenuServiceHours,
+  resolveMenuSurfaceServiceHours,
+} from '../../../utils/menu-service-hours.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -61,6 +64,7 @@ const mergeFulfilmentPolicy = (
 const withKitchenFulfilment = (
   type: MenuOrderTypeConfig,
   kitchenFulfilment?: MenuOrderFulfilmentPolicy,
+  menuOperationHours?: WeekdayTimeWindowsConfig,
   kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderTypeConfig => {
   const fulfilment = mergeFulfilmentPolicy(
@@ -68,8 +72,9 @@ const withKitchenFulfilment = (
     type.fulfilment,
     kitchenFulfilment
   )
-  const serviceHours = withInheritedOperationHours(
+  const serviceHours = resolveMenuSurfaceServiceHours(
     type.service_hours,
+    menuOperationHours,
     kitchenOperationHours
   )
 
@@ -77,21 +82,6 @@ const withKitchenFulfilment = (
     ...type,
     ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(fulfilment ? { fulfilment } : {}),
-  }
-}
-
-const withInheritedOperationHours = (
-  serviceHours: MenuServiceHoursConfig | undefined,
-  kitchenOperationHours: WeekdayTimeWindowsConfig | undefined
-) => {
-  if (!serviceHours) return undefined
-  if (!serviceHours.inherit_kitchen_operation_hours) return serviceHours
-  if (serviceHours.operation_hours?.windows.length) return serviceHours
-  if (!kitchenOperationHours?.windows.length) return serviceHours
-
-  return {
-    ...serviceHours,
-    operation_hours: kitchenOperationHours,
   }
 }
 
@@ -105,7 +95,7 @@ export function readMenuOrderingConfig(
   const orderTypes = list(ordering.order_types)
     .map(orderingType)
     .filter((type): type is MenuOrderTypeConfig => Boolean(type))
-  const serviceHours = withInheritedOperationHours(
+  const serviceHours = resolveMenuServiceHours(
     readMenuServiceHoursConfig(ordering.service_hours),
     kitchenOperationHours
   )
@@ -114,7 +104,12 @@ export function readMenuOrderingConfig(
     return {
       enabled: ordering.enabled === true,
       order_types: orderTypes.map((type) =>
-        withKitchenFulfilment(type, kitchenFulfilment, kitchenOperationHours)
+        withKitchenFulfilment(
+          type,
+          kitchenFulfilment,
+          serviceHours?.operation_hours,
+          kitchenOperationHours
+        )
       ),
       ...(serviceHours ? { service_hours: serviceHours } : {}),
     }

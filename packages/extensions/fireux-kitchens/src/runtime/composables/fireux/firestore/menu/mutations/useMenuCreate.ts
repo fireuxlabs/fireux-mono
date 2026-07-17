@@ -35,6 +35,9 @@ function buildMenuPayload(
   const orderTypes = Array.isArray(input.ordering?.order_types)
     ? input.ordering.order_types
     : []
+  const serviceHours = input.ordering?.service_hours || {
+    inherit_kitchen_operation_hours: true,
+  }
 
   return {
     ...MenuModel,
@@ -50,10 +53,12 @@ function buildMenuPayload(
       ? {
           enabled: input.ordering.enabled === true,
           order_types: orderTypes,
+          service_hours: serviceHours,
         }
       : {
           enabled: false,
           order_types: [],
+          service_hours: serviceHours,
         },
   }
 }

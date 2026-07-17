@@ -265,6 +265,7 @@ export type KitchenCreateInput = Partial<
     | 'currency_code'
     | 'identity'
     | 'menus'
+    | 'orders'
   >
 >
 
