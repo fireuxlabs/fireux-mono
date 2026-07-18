@@ -71,7 +71,7 @@ const thumbStyle = {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: var(--radius-sm, 0.375rem);
+  border-radius: var(--ui-radius);
   background: transparent;
 }
 

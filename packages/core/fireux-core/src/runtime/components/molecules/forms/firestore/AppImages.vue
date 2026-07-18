@@ -370,7 +370,7 @@ async function onOverwrite(kind: SyncedImageKind) {
   overflow: hidden;
   height: 3rem;
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-sm, 0.25rem);
+  border-radius: var(--ui-radius);
   background: color-mix(in oklab, var(--ui-bg-muted) 45%, transparent);
 }
 

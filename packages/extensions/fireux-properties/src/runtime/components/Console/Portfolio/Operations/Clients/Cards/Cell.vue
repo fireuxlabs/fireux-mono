@@ -6,7 +6,7 @@
     @click="onClick"
   >
     <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+      class="fx-card--cell flex w-full items-start gap-3"
     >
       <UAvatar
         :src="record.imageUrl || undefined"

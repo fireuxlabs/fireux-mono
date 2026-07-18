@@ -23,7 +23,7 @@
 
     <section>
       <UContainer class="space-y-4">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Operating model comparison</h2>
+        <h2 class="text-xl font-semibold text-highlighted">Operating model comparison</h2>
         <UPricingTable :tiers="appTableTiers" :sections="appTableSections" />
       </UContainer>
     </section>

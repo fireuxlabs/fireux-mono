@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-12 pb-16">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Granite Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">Learn More</h1>
-        <p class="text-lg text-gray-600 dark:text-gray-300">
+        <h1 class="text-4xl font-semibold text-highlighted">Learn More</h1>
+        <p class="text-lg text-toned">
           Granite provides portfolio oversight with structured control across properties, compliance, documents, incidents, and financial signals.
         </p>
         <div class="flex flex-wrap gap-2">

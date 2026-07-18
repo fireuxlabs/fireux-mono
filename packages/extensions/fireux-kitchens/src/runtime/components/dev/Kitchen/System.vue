@@ -16,7 +16,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Kitchens collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Browse the hydrated public kitchen view for this runtime and filter by model drift.
             </p>
             <DevDriftToolbar
@@ -53,7 +53,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Kitchen storage inspector
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Inspect the full storage picture for one kitchen: root doc, place doc, app overlay, and known child collections.
           </p>
           <USelect

@@ -1,7 +1,7 @@
 <template>
   <UCard
     variant="subtle"
-    class="w-full rounded-[var(--radius-lg)] shadow-none ring-0"
+    class="w-full rounded-lg shadow-none ring-0"
   >
     <div class="space-y-5">
       <a

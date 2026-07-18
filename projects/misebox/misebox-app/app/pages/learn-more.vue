@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-12 pb-16">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Misebox Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">Learn More</h1>
-        <p class="text-lg text-gray-600 dark:text-gray-300">
+        <h1 class="text-4xl font-semibold text-highlighted">Learn More</h1>
+        <p class="text-lg text-toned">
           Misebox is the operating system for kitchens and professionals. This page maps the core routes and next actions.
         </p>
         <div class="flex flex-wrap gap-2">
@@ -20,10 +20,10 @@
       <UContainer class="space-y-6">
         <div class="max-w-3xl space-y-3">
           <UBadge color="primary" variant="soft">Business case</UBadge>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             Turn the menu into a working kitchen system.
           </h2>
-          <p class="text-base leading-7 text-gray-600 dark:text-gray-300">
+          <p class="text-base leading-7 text-toned">
             Hospitality teams already run complex operations across paper, WhatsApp, spreadsheets,
             PDFs, supplier messages, staff memory, and half-used back-office tools. Misebox turns
             that operational mess into structured, reusable kitchen knowledge.

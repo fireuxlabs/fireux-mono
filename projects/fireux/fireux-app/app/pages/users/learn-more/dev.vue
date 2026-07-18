@@ -25,11 +25,11 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/public/users</p>
             <p class="text-dimmed">Returns public user rows for the users index surface.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/users/[handle]</p>
             <p class="text-dimmed">Canonical public profile route resolved from the stored user handle.</p>
           </div>

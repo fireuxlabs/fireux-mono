@@ -27,19 +27,19 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/internal/landing/directory</p>
             <p class="text-dimmed">Aggregated ecosystem + app rows used by public directory surfaces.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/registry</p>
             <p class="text-dimmed">Reads registry collections: modules, apps, ecosystems.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">POST /api/registry</p>
             <p class="text-dimmed">Writes registry records (module, app, ecosystem) for controlled setup flows.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/docs-manifest</p>
             <p class="text-dimmed">Returns parsed docs manifest entries for operational documentation surfaces.</p>
           </div>

@@ -16,7 +16,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Places collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Browse places resolved for this runtime and filter by model drift.
             </p>
             <DevDriftToolbar

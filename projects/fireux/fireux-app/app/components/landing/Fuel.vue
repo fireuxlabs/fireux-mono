@@ -62,7 +62,7 @@ const stripeSrc = computed(() =>
   padding: var(--space-6);
   background-color: var(--ui-bg);
   transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
-  border-radius: var(--radius-xl);
+  border-radius: calc(var(--ui-radius) * 3);
   box-shadow: var(--shadow-sm);
 }
 

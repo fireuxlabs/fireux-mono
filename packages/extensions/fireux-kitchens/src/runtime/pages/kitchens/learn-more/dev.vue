@@ -25,15 +25,15 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/kitchens</p>
             <p class="text-dimmed">Public runtime index for kitchen records.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/console/kitchen</p>
             <p class="text-dimmed">Canonical kitchen console entry point.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/console/kitchen/&lt;page&gt;</p>
             <p class="text-dimmed">Scoped kitchen console pages such as menu, recipes, ingredients, and team.</p>
           </div>

@@ -11,7 +11,7 @@
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p
-                class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                class="text-xs font-semibold uppercase tracking-wide text-muted"
               >
                 Registry utilities
               </p>
@@ -44,7 +44,7 @@
           </div>
         </template>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-muted">
           Uses the <code>/api/registry</code> endpoint that powers scripts like
           <code>pnpm registry:backfill</code>. Need documentation instead of
           payloads? Visit
@@ -85,7 +85,7 @@
           :data="snapshot"
           :default-open="true"
         />
-        <p v-else class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <p v-else class="mt-4 text-sm text-muted">
           No registry data available. Run
           <code>pnpm registry:backfill</code>
           or
@@ -94,7 +94,7 @@
         </p>
 
         <template #footer>
-          <div class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="text-xs text-muted">
             <span>Last generated:</span>
             <span
               v-if="generatedAtText"

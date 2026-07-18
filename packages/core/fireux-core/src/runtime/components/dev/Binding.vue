@@ -6,7 +6,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Binding check (app ↔ users)
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Compares app users against ecosystem identity mirrors and admin lists.
             Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
           </p>
@@ -24,13 +24,13 @@
     </template>
 
     <div class="space-y-3 text-sm">
-      <div class="text-xs text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-muted">
         <span class="font-mono">scope</span>: {{ scopeLabel }} ·
         <span class="font-mono">app users</span>: {{ bindingAppUsersCount }} ·
         <span class="font-mono">admin_ids</span>: {{ bindingAdminIdsCount }}
       </div>
 
-      <div v-if="isPending" class="text-xs text-gray-500 dark:text-gray-400">
+      <div v-if="isPending" class="text-xs text-muted">
         Checking…
       </div>
 
@@ -42,35 +42,35 @@
         <div v-else class="space-y-3">
           <div v-if="binding.missingCore.length">
             <div class="text-sm font-medium">App users missing core user docs</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-muted">
               {{ binding.missingCore.join(', ') }}
             </div>
           </div>
 
           <div v-if="binding.missingUserOf.length">
             <div class="text-sm font-medium">Core users missing userOf mirror</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-muted">
               {{ binding.missingUserOf.join(', ') }}
             </div>
           </div>
 
           <div v-if="binding.missingAdminOf.length">
             <div class="text-sm font-medium">Admin app users missing adminOf mirror</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-muted">
               {{ binding.missingAdminOf.join(', ') }}
             </div>
           </div>
 
           <div v-if="binding.adminMissingAppUser.length">
             <div class="text-sm font-medium">Admin ids missing app user doc</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-muted">
               {{ binding.adminMissingAppUser.join(', ') }}
             </div>
           </div>
 
           <div v-if="binding.adminRoleMismatch.length">
             <div class="text-sm font-medium">Admin ids not marked admin in app users</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-muted">
               {{ binding.adminRoleMismatch.join(', ') }}
             </div>
           </div>

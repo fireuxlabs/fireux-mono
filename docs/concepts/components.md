@@ -1,6 +1,6 @@
 Components spine map
 Updated: 2026-07-18
-Ref: f4ddbda21
+Ref: 84c2b4dfa
 Role: map, not canon
 
 Purpose:
@@ -84,10 +84,16 @@ Working rules:
   replace long inline Tailwind strings with the same repeated design system in
   local CSS. When a touched surface has grown either way, move the shared
   primitive to its owning layer and keep the leaf component semantic.
+- `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine:
+  current Nuxt UI variables, semantic text and surface utilities, `--ui-radius`
+  authority through `rounded-*` utilities or direct calculations in authored CSS,
+  and retirement of the audited entity-card and inset-panel recipes. It does
+  not ban one-off Tailwind or intentional branded color.
 
 Guard warnings:
-- No `organisms` folders.
-- No `Organisms*` component names.
+- No component `organisms` folders or `Organisms*` component names.
+- `assets/styles/scss/organisms` is a CSS composition layer, not a component
+  bucket; keep it semantic and shared rather than using it as catch-all CSS.
 - Relative imports in component source must resolve.
 
 Open questions:

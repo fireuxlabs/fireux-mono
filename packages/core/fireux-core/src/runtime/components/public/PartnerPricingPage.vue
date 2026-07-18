@@ -4,15 +4,15 @@
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ ecosystemName }} Pricing</UBadge>
 
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-4xl font-semibold text-highlighted">
           {{ ecosystemName }} Partner
         </h1>
 
-        <p class="max-w-3xl text-lg text-gray-600 dark:text-gray-300">
+        <p class="max-w-3xl text-lg text-toned">
           Partners can bring customer apps into {{ ecosystemName }} and share setup and maintenance revenue.
         </p>
 
-        <p class="max-w-3xl text-gray-600 dark:text-gray-300">
+        <p class="max-w-3xl text-toned">
           Use Partner pricing for customer apps you bring into the ecosystem. Use Tenant App pricing when a business launches its own app.
         </p>
       </UContainer>
@@ -25,7 +25,7 @@
             <h2 class="text-lg font-semibold">{{ ecosystemName }} Partner</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             Partner pricing applies when you bring a customer business into the ecosystem.
           </p>
 
@@ -50,7 +50,7 @@
             <h2 class="text-lg font-semibold">Tenant App</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             Tenant App pricing is the normal path when a business launches its own app inside {{ ecosystemName }}.
           </p>
 
@@ -79,7 +79,7 @@
             <h2 class="text-lg font-semibold">Where it fits</h2>
           </template>
 
-          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul class="space-y-2 text-sm text-toned">
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>You introduce a new business to {{ ecosystemName }}</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>The business launches a tenant app in the ecosystem</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>You stay involved in setup, support, or maintenance</span></li>
@@ -91,7 +91,7 @@
             <h2 class="text-lg font-semibold">Simple rule</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             Partner pricing is the customer-app path for partners. Tenant App pricing is the direct launch path for a business.
           </p>
         </UCard>

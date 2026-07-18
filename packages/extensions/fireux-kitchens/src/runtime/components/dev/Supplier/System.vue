@@ -6,7 +6,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Suppliers ownership
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Supplier model + collection are currently owned by Misebox.
           </p>
         </div>
@@ -27,7 +27,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Supplier tools
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Open supplier dev/index pages in their owning module.
           </p>
         </div>

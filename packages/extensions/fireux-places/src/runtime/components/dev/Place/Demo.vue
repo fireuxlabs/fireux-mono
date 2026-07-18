@@ -6,7 +6,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Demo place surfaces
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Preview Pill, Cell, Preview, and Profile surfaces using a rich demo place.
           </p>
         </div>

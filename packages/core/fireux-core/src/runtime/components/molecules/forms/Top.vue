@@ -137,13 +137,13 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
   gap: 0.25rem;
   margin-left: 0.5rem;
   font-size: 0.75rem; /* text-xs */
-  color: var(--ui-color-primary, #2563eb);
+  color: var(--ui-primary);
 }
 .editing-indicator .dot {
   width: 6px;
   height: 6px;
   border-radius: 9999px;
-  background-color: var(--ui-color-primary, #2563eb);
+  background-color: var(--ui-primary);
 }
 .error-wrap {
   margin-top: 0.25rem;

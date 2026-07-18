@@ -17,20 +17,20 @@
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ item.name }}
           </h3>
-          <p v-if="item.role" class="text-sm text-gray-500 dark:text-gray-400">
+          <p v-if="item.role" class="text-sm text-muted">
             {{ item.role }}
           </p>
         </header>
 
         <p
           v-if="item.duration"
-          class="text-sm text-gray-500 dark:text-gray-400"
+          class="text-sm text-muted"
         >
           {{ item.duration }}
         </p>
         <p
           v-if="item.description"
-          class="text-sm text-gray-600 dark:text-gray-300"
+          class="text-sm text-toned"
         >
           {{ item.description }}
         </p>

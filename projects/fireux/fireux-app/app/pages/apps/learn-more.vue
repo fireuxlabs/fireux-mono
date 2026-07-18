@@ -25,15 +25,15 @@
         </template>
 
         <div class="grid gap-3 md:grid-cols-3">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="text-sm font-medium">Join an ecosystem</p>
             <p class="text-xs text-dimmed">Launch inside an ecosystem already operated by FireUX.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="text-sm font-medium">FireUX hosted</p>
             <p class="text-xs text-dimmed">Run a new domain under FireUX hosting and operations.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="text-sm font-medium">Self hosted</p>
             <p class="text-xs text-dimmed">You control infrastructure while FireUX supports the app runtime.</p>
           </div>

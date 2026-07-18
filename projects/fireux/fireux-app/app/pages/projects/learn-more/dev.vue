@@ -25,19 +25,19 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/projects</p>
             <p class="text-dimmed">Public project index sourced from <code>db.collections.projects</code>.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/console/project</p>
             <p class="text-dimmed">Project console home.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/console/project/ecosystem</p>
             <p class="text-dimmed">Project console section for ecosystems.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">/console/project/apps</p>
             <p class="text-dimmed">Project console section for apps.</p>
           </div>

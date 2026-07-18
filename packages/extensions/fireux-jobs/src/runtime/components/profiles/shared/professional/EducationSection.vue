@@ -30,7 +30,7 @@
               </h3>
               <p
                 v-if="item.degree && item.institution"
-                class="text-sm text-gray-500 dark:text-gray-400"
+                class="text-sm text-muted"
               >
                 {{ item.institution }}
               </p>
@@ -38,7 +38,7 @@
 
             <p
               v-if="item.duration"
-              class="text-sm text-gray-500 dark:text-gray-400"
+              class="text-sm text-muted"
             >
               {{ item.duration }}
             </p>

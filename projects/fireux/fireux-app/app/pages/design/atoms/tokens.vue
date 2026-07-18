@@ -105,31 +105,24 @@ const opacityTokens = [
 ]
 
 const radiusTokens = [
-  { name: '--radius-xs', value: 'var(--radius-xs)' },
-  { name: '--radius-sm', value: 'var(--radius-sm)' },
-  { name: '--radius-md', value: 'var(--radius-md)' },
-  { name: '--radius-lg', value: 'var(--radius-lg)' },
-  { name: '--radius-xl', value: 'var(--radius-xl)' },
-  { name: '--radius-2xl', value: 'var(--radius-2xl)' },
-  { name: '--radius-3xl', value: 'var(--radius-3xl)' },
-  { name: '--radius-4xl', value: 'var(--radius-4xl)' },
+  { name: 'rounded-xs', value: 'calc(var(--ui-radius) * 0.5)' },
+  { name: 'rounded-sm', value: 'var(--ui-radius)' },
+  { name: 'rounded-md', value: 'calc(var(--ui-radius) * 1.5)' },
+  { name: 'rounded-lg', value: 'calc(var(--ui-radius) * 2)' },
+  { name: 'rounded-xl', value: 'calc(var(--ui-radius) * 3)' },
+  { name: 'rounded-2xl', value: 'calc(var(--ui-radius) * 4)' },
+  { name: 'rounded-3xl', value: 'calc(var(--ui-radius) * 6)' },
 ]
 
 const spacingTokens = [
-  { name: '--space-0', value: 'var(--space-0)' },
   { name: '--space-1', value: 'var(--space-1)' },
   { name: '--space-2', value: 'var(--space-2)' },
   { name: '--space-3', value: 'var(--space-3)' },
   { name: '--space-4', value: 'var(--space-4)' },
-  { name: '--space-5', value: 'var(--space-5)' },
   { name: '--space-6', value: 'var(--space-6)' },
-  { name: '--space-7', value: 'var(--space-7)' },
   { name: '--space-8', value: 'var(--space-8)' },
-  { name: '--space-9', value: 'var(--space-9)' },
-  { name: '--space-10', value: 'var(--space-10)' },
   { name: '--space-12', value: 'var(--space-12)' },
   { name: '--space-16', value: 'var(--space-16)' },
-  { name: '--space-20', value: 'var(--space-20)' },
 ]
 </script>
 
@@ -168,7 +161,7 @@ h2 {
   padding: var(--space-2);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   text-align: center;
 }
 .shadow-block {

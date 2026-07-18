@@ -223,7 +223,7 @@ const can = (action: 'undo' | 'redo') => {
   width: 100%;
   height: auto;
   object-fit: contain;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   border: 1px solid var(--ui-border);
   margin: 0.75rem 0;
 }

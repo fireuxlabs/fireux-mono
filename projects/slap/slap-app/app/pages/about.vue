@@ -1,18 +1,18 @@
 <template>
   <div class="space-y-16 pb-20">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.about.label }}
           </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+          <h1 class="text-4xl font-semibold text-highlighted">
             {{ appMeta.about.tagline }}
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
+          <p class="text-lg text-toned">
             {{ appMeta.about.description }}
           </p>
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             {{ appMeta.about.supportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -48,13 +48,13 @@
         <article
           v-for="item in appMeta.heroPanelItems"
           :key="item.title"
-          class="rounded-2xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60"
+          class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
         >
           <UIcon :name="item.icon" class="text-2xl text-primary" />
-          <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 class="mt-4 text-lg font-semibold text-highlighted">
             {{ item.title }}
           </h2>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          <p class="mt-2 text-sm text-toned">
             {{ item.description }}
           </p>
         </article>

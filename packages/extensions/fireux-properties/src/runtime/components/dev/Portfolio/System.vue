@@ -32,7 +32,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Portfolio storage inspector
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Inspect one portfolio across root, app overlay, and known portfolio-scoped child collections.
           </p>
           <USelect

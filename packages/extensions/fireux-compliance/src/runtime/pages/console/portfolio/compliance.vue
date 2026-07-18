@@ -21,19 +21,19 @@
 
         <UCard>
           <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Total records</div>
               <div class="text-xl font-semibold">
                 {{ complianceSummary.total }}
               </div>
             </div>
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Due soon</div>
               <div class="text-xl font-semibold">
                 {{ complianceSummary.dueSoon }}
               </div>
             </div>
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Overdue</div>
               <div class="text-xl font-semibold">
                 {{ complianceSummary.overdue }}
@@ -51,7 +51,7 @@
             <div
               v-for="item in cards"
               :key="item.id"
-              class="rounded border border-default p-3"
+              class="fx-inset-panel"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">

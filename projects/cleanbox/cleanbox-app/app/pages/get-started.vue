@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-16 pb-20">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+          <h1 class="text-4xl font-semibold text-highlighted">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
+          <p class="text-lg text-toned">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -34,15 +34,15 @@
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{{ appMeta.getStarted.stepsHeading.eyebrow }}</p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">{{ appMeta.getStarted.stepsHeading.title }}</h2>
-          <p class="text-gray-600 dark:text-gray-300">{{ appMeta.getStarted.stepsHeading.description }}</p>
+          <h2 class="text-3xl font-semibold text-highlighted">{{ appMeta.getStarted.stepsHeading.title }}</h2>
+          <p class="text-toned">{{ appMeta.getStarted.stepsHeading.description }}</p>
         </div>
         <div class="grid gap-6 md:grid-cols-3">
-          <article v-for="step in steps" :key="step.title" class="rounded-2xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60">
+          <article v-for="step in steps" :key="step.title" class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{{ step.badge }}</p>
-            <h3 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">{{ step.title }}</h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ step.copy }}</p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <h3 class="mt-3 text-xl font-semibold text-highlighted">{{ step.title }}</h3>
+            <p class="mt-2 text-sm text-toned">{{ step.copy }}</p>
+            <ul class="mt-4 space-y-2 text-sm text-muted">
               <li v-for="item in step.items" :key="item" class="flex gap-2">
                 <UIcon name="i-lucide-arrow-right" class="mt-0.5 text-primary" />
                 <span>{{ item }}</span>

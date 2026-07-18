@@ -5,20 +5,20 @@
         Pass {{ passOrders.length }}
       </UBadge>
       <UBadge
-        v-if="pass.selectedOrders.value.length"
+        v-if="selectedOrders.length"
         color="success"
         variant="subtle"
         size="sm"
       >
-        {{ pass.selectedOrders.value.length }} selected
+        {{ selectedOrders.length }} selected
       </UBadge>
       <UButton
         size="sm"
         color="success"
         icon="i-lucide-send"
-        :disabled="!pass.canSend.value"
-        :loading="pass.sending.value"
-        @click="pass.send"
+        :disabled="!canSend"
+        :loading="sending"
+        @click="send"
       >
         Send
       </UButton>
@@ -32,6 +32,7 @@ import { useKitchenOrdersWorkspace } from '../../../../../composables/fireux/con
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersToolbar' })
 
 const { passOrders, pass } = useKitchenOrdersWorkspace()
+const { canSend, selectedOrders, send, sending } = pass
 </script>
 
 <style scoped>

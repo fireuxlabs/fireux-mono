@@ -47,7 +47,7 @@
     </div>
 
     <div class="mx-auto flex flex-col items-center gap-2">
-      <div class="rounded-2xl border border-[color:var(--ui-border-subtle)] bg-white p-4">
+      <div class="rounded-2xl border border-muted bg-white p-4">
         <img
           v-if="qrDataUrl"
           :src="qrDataUrl"

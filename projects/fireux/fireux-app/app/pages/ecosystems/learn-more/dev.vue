@@ -25,20 +25,20 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">Firestore collection: ecosystems</p>
             <p class="text-dimmed">
               Primary source for <code>/ecosystems</code> entity index.
             </p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/registry</p>
             <p class="text-dimmed">
               Reads registry docs (modules, apps, ecosystems) for audit/debug
               flows.
             </p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">POST /api/registry</p>
             <p class="text-dimmed">
               Creates/updates ecosystem registry rows in controlled setup flows.

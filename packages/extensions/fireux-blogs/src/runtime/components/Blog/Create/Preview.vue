@@ -150,7 +150,7 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .subdued {
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-size: 14px;
 }
 
@@ -163,9 +163,9 @@ const fallbackLogo = '/img/app/logo.png'
 .preview-shell {
   background: var(--ui-bg-elevated);
   border: 1px solid var(--ui-border);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   padding: var(--space-4);
-  color: var(--text-primary);
+  color: var(--ui-text);
 }
 
 .author-pill {
@@ -197,12 +197,12 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .author-handle {
-  color: var(--text-secondary);
+  color: var(--ui-text-muted);
   font-size: 0.85rem;
 }
 
 .author-role {
-  color: var(--text-secondary);
+  color: var(--ui-text-muted);
   font-size: 0.85rem;
 }
 
@@ -215,7 +215,7 @@ const fallbackLogo = '/img/app/logo.png'
   max-height: 320px;
   width: 100%;
   height: auto;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   margin: var(--space-3) 0;
   object-fit: contain;
 }
@@ -225,14 +225,14 @@ const fallbackLogo = '/img/app/logo.png'
   max-height: 360px;
   width: 100%;
   object-fit: cover;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
 }
 
 .preview-content :deep(p),
 .preview-content :deep(li),
 .preview-content :deep(h2),
 .preview-content :deep(h3) {
-  color: var(--text-primary);
+  color: var(--ui-text);
 }
 
 .preview-content :deep(code) {
@@ -250,7 +250,7 @@ const fallbackLogo = '/img/app/logo.png'
 .brand-tile {
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   padding: var(--space-3);
   display: flex;
   flex-direction: column;
@@ -262,7 +262,7 @@ const fallbackLogo = '/img/app/logo.png'
   width: 100%;
   height: auto;
   object-fit: contain;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
 }
 
 .brand-tile.logo img {
@@ -277,6 +277,6 @@ const fallbackLogo = '/img/app/logo.png'
 
 .brand-label {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--ui-text-muted);
 }
 </style>

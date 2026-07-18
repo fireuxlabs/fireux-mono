@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-16 pb-20">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+          <h1 class="text-4xl font-semibold text-highlighted">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
+          <p class="text-lg text-toned">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -26,15 +26,15 @@
           <article
             v-for="step in appMeta.getStarted.steps"
             :key="step.title"
-            class="rounded-2xl border border-gray-200/70 bg-white/80 p-5 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60"
+            class="rounded-2xl border border-default bg-default/80 p-5 shadow-sm"
           >
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               {{ step.badge }}
             </p>
-            <h2 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 class="mt-2 text-lg font-semibold text-highlighted">
               {{ step.title }}
             </h2>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            <p class="mt-2 text-sm text-toned">
               {{ step.copy }}
             </p>
           </article>

@@ -4,7 +4,7 @@
       <template #header>
         <div class="space-y-2">
           <div class="text-sm font-semibold">Menu stack (demo scenario)</div>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Canon kitchen scenario for mise, recipes, dishes, and menus.
           </p>
         </div>

@@ -86,7 +86,7 @@
       <template #fallback>
         <UCard
           variant="subtle"
-          class="rounded-[var(--radius-lg)]"
+          class="rounded-lg"
         >
           <p class="text-sm text-dimmed">
             Loading menu upload...

@@ -1,20 +1,20 @@
 <template>
   <div class="space-y-16 pb-20">
     <section
-      class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40"
+      class="border-b border-default bg-default/70 py-16"
     >
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.aboutLabel }}
           </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+          <h1 class="text-4xl font-semibold text-highlighted">
             {{ appSpec.tagline }}
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
+          <p class="text-lg text-toned">
             {{ appSpec.description }}
           </p>
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             {{ appMeta.aboutSupportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -51,12 +51,12 @@
       <UContainer>
         <UCard>
           <div class="space-y-4">
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-2xl font-semibold text-highlighted">
               {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
             <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
               <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
-                <span class="font-semibold text-gray-900 dark:text-white">{{ index + 1 }}. {{ concept.title }}</span><br>
+                <span class="font-semibold text-highlighted">{{ index + 1 }}. {{ concept.title }}</span><br>
                 {{ concept.description }}
               </li>
             </ol>
@@ -71,10 +71,10 @@
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             {{ appMeta.aboutSections.modulesTitle }}
           </h2>
-          <p class="text-gray-600 dark:text-gray-300">
+          <p class="text-toned">
             {{ appMeta.aboutSections.modulesDescription }}
           </p>
         </div>
@@ -89,7 +89,7 @@
             >
               <template #body>
                 <div class="space-y-3 text-sm">
-                  <p class="text-gray-600 dark:text-gray-300">{{ module.summary }}</p>
+                  <p class="text-toned">{{ module.summary }}</p>
                   <div class="flex flex-wrap gap-2">
                     <UBadge
                       v-for="entityName in module.entities"
@@ -114,7 +114,7 @@
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             {{ appMeta.aboutSections.entitiesTitle }}
           </h2>
         </div>
@@ -123,20 +123,20 @@
           <article
             v-for="entity in appSpec.entities"
             :key="entity.name"
-            class="rounded-2xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60"
+            class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
           >
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="text-lg font-semibold text-highlighted">
               {{ entity.name }}
             </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            <p class="mt-2 text-sm text-toned">
               {{ entity.purpose }}
             </p>
-            <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">
-              <span class="font-semibold text-gray-900 dark:text-white">Key fields:</span>
+            <p class="mt-3 text-sm text-toned">
+              <span class="font-semibold text-highlighted">Key fields:</span>
               {{ entity.keyFields.join(', ') }}
             </p>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              <span class="font-semibold text-gray-900 dark:text-white">Links to:</span>
+            <p class="mt-2 text-sm text-toned">
+              <span class="font-semibold text-highlighted">Links to:</span>
               {{ entity.linksTo.join(', ') }}
             </p>
           </article>
@@ -150,7 +150,7 @@
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.aboutSections.structureEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             {{ appMeta.aboutSections.structureTitle }}
           </h2>
         </div>
@@ -163,7 +163,7 @@
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.aboutSections.examplesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             {{ appMeta.aboutSections.examplesTitle }}
           </h2>
         </div>
@@ -185,7 +185,7 @@
 
         <UCard>
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ appMeta.aboutSections.routesTitle }}</h3>
+            <h3 class="text-lg font-semibold text-highlighted">{{ appMeta.aboutSections.routesTitle }}</h3>
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton

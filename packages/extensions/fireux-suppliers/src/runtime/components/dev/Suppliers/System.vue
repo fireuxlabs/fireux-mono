@@ -24,7 +24,7 @@
       <template #header>
         <div class="space-y-2">
           <div class="text-sm font-semibold">Suppliers</div>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Developer-selected supplier source. This is a scoped dev list, not the public supplier collection manager.
           </p>
         </div>
@@ -79,7 +79,7 @@
         <div class="space-y-3">
           <div class="space-y-1">
             <div class="text-sm font-semibold">Supplier ingredients</div>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Search every supplier ingredient link in the selected source.
             </p>
           </div>
@@ -173,7 +173,7 @@
           :key="row.key"
           class="rounded-lg border border-gray-200 p-3 text-sm dark:border-gray-800"
         >
-          <div class="font-mono text-xs text-gray-500 dark:text-gray-400">
+          <div class="font-mono text-xs text-muted">
             {{ row.ingredientId }}
           </div>
           <div class="mt-1 font-medium">
@@ -211,7 +211,7 @@
       <template #header>
         <div class="space-y-1">
           <div class="text-sm font-semibold">Linked ingredients</div>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Supplier-side ingredient links stay visible here without expanding the public collection manager.
           </p>
         </div>

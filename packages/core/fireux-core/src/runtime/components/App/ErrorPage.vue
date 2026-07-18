@@ -19,10 +19,10 @@
               <h1 class="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
                 {{ title }}
               </h1>
-              <p class="max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+              <p class="max-w-2xl text-lg text-toned">
                 {{ description }}
               </p>
-              <p class="max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+              <p class="max-w-2xl text-sm text-muted">
                 {{ supportCopy }}
               </p>
             </div>
@@ -78,10 +78,10 @@
             <USeparator />
 
             <div v-if="isFirebaseAdminCredentialError" class="space-y-3">
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-sm font-medium text-highlighted">
                 Firebase Admin could not initialize credentials.
               </p>
-              <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <ul class="space-y-2 text-sm text-toned">
                 <li class="flex gap-2">
                   <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
                   <span>If this runtime uses Application Default Credentials, verify its workload identity or default service account and Firebase IAM access.</span>
@@ -98,10 +98,10 @@
             </div>
 
             <div v-else class="space-y-3">
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-sm font-medium text-highlighted">
                 What you can do now
               </p>
-              <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <ul class="space-y-2 text-sm text-toned">
                 <li
                   v-for="step in recoverySteps"
                   :key="step"
@@ -126,14 +126,14 @@
 
       <section
         v-if="resolvedError?.message"
-        class="mt-8 rounded-3xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/70"
+        class="mt-8 rounded-3xl border border-default bg-default/80 p-6 shadow-sm"
       >
         <div class="space-y-3">
           <div class="space-y-1">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
               Technical details
             </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               Raw error output for debugging and support.
             </p>
           </div>

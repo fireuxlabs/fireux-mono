@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-16 pb-20">
     <section
-      class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40"
+      class="border-b border-default bg-default/70 py-16"
     >
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
-          <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+          <h1 class="text-4xl font-semibold text-highlighted">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300">
+          <p class="text-lg text-toned">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -45,10 +45,10 @@
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             {{ appMeta.getStarted.stepsHeading.eyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-semibold text-highlighted">
             {{ appMeta.getStarted.stepsHeading.title }}
           </h2>
-          <p class="text-gray-600 dark:text-gray-300">
+          <p class="text-toned">
             {{ appMeta.getStarted.stepsHeading.description }}
           </p>
         </div>
@@ -56,18 +56,18 @@
           <article
             v-for="step in steps"
             :key="step.title"
-            class="rounded-2xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/60"
+            class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
           >
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               {{ step.badge }}
             </p>
-            <h3 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">
+            <h3 class="mt-3 text-xl font-semibold text-highlighted">
               {{ step.title }}
             </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            <p class="mt-2 text-sm text-toned">
               {{ step.copy }}
             </p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <ul class="mt-4 space-y-2 text-sm text-muted">
               <li v-for="item in step.items" :key="item" class="flex gap-2">
                 <UIcon name="i-lucide-arrow-right" class="mt-0.5 text-primary" />
                 <span>{{ item }}</span>
@@ -81,14 +81,14 @@
     <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
       <UContainer class="grid gap-8 md:grid-cols-[2fr,1fr]">
         <div>
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-2xl font-semibold text-highlighted">
             {{ appMeta.getStarted.afterSetup.title }}
           </h2>
           <dl class="mt-8 space-y-6">
             <div
               v-for="faq in appMeta.getStarted.afterSetup.faqs"
               :key="faq.title"
-              class="rounded-2xl border border-gray-200/70 bg-white/80 p-5 dark:border-gray-800/70 dark:bg-gray-900/60"
+              class="rounded-2xl border border-default bg-default/80 p-5"
             >
               <dt
                 class="text-sm font-semibold uppercase tracking-[0.2em] text-primary"
@@ -102,14 +102,14 @@
           </dl>
         </div>
         <div
-          class="rounded-2xl border border-gray-200/70 bg-white/90 p-6 text-sm text-gray-600 shadow-lg dark:border-gray-800/70 dark:bg-gray-900/60 dark:text-gray-300"
+          class="rounded-2xl border border-gray-200/70 bg-white/90 p-6 text-sm text-gray-600 shadow-lg dark:text-gray-300"
         >
           <p
             class="text-xs font-semibold uppercase tracking-[0.3em] text-primary"
           >
             {{ appMeta.getStarted.afterSetup.card.eyebrow }}
           </p>
-          <p class="mt-3 text-lg font-semibold text-gray-900 dark:text-white">
+          <p class="mt-3 text-lg font-semibold text-highlighted">
             {{ appMeta.getStarted.afterSetup.card.title }}
           </p>
           <ul class="mt-5 space-y-2">

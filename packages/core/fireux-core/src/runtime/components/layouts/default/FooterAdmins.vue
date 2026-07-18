@@ -119,12 +119,12 @@ const isLoading = computed(() => Boolean(pending.value))
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ui-text-500, rgba(100, 116, 139, 1));
+  color: var(--ui-text-toned);
 }
 
 .footer-admins__context {
   font-size: 0.85rem;
-  color: var(--ui-text-400, rgba(100, 116, 139, 0.9));
+  color: var(--ui-text-muted);
 }
 
 .footer-admins__grid {
@@ -151,6 +151,6 @@ const isLoading = computed(() => Boolean(pending.value))
 
 .footer-admins__empty {
   font-size: 0.85rem;
-  color: var(--ui-text-400, rgba(100, 116, 139, 0.9));
+  color: var(--ui-text-muted);
 }
 </style>

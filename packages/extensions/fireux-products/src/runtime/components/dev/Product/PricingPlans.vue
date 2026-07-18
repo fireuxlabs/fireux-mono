@@ -5,7 +5,7 @@
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
           Pricing plans
         </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+        <p class="text-xs text-muted">
           Demo plans rendered from `demo/product.demo.ts` using Nuxt UI PricingPlan(s).
         </p>
       </div>

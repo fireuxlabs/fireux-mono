@@ -278,7 +278,7 @@ async function startCheckout() {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   background: transparent;
 }
 
@@ -353,7 +353,7 @@ async function startCheckout() {
   min-width: 14rem;
   padding: 1rem;
   border: 1px solid var(--ui-border);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   background: var(--ui-bg-elevated);
   text-align: left;
 }

@@ -149,7 +149,7 @@ const bannerClass = computed(() => ({
   height: 1.5rem;
   width: 1.5rem;
   animation: spin 1s linear infinite;
-  color: var(--ui-primary-500, rgb(79, 70, 229));
+  color: var(--ui-primary);
 }
 
 .fx-state-card__icon {

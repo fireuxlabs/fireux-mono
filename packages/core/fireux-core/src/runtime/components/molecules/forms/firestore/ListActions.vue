@@ -195,8 +195,8 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
   border-radius: 9999px;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.12));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+  background: var(--ui-bg-muted);
+  border: 1px solid var(--ui-border);
   min-width: 0;
   text-decoration: none;
   color: inherit;
@@ -204,7 +204,7 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 
 .list-pill__avatar {
   border-radius: 9999px;
-  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+  box-shadow: 0 0 0 1px var(--ui-border-accented) inset;
 }
 
 .list-pill__text {
@@ -226,7 +226,7 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 
 .list-pill__subtitle {
   font-size: 0.75rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+  color: var(--ui-text-muted);
   display: block;
   max-width: 20rem;
   overflow: hidden;

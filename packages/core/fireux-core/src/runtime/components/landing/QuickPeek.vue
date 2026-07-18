@@ -36,14 +36,14 @@ defineProps<{
 
 <style scoped>
 .peek {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--ui-border-subtle);
-  background: var(--ui-surface);
+  border-radius: calc(var(--ui-radius) * 3);
+  border: 1px solid var(--ui-border-muted);
+  background: var(--ui-bg);
   padding: clamp(1.5rem, 4vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: var(--ui-shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .peek__header {

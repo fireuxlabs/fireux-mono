@@ -20,15 +20,15 @@
 
         <UCard>
           <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Open</div>
               <div class="text-xl font-semibold">{{ summary.open }}</div>
             </div>
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">In progress</div>
               <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
             </div>
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Done</div>
               <div class="text-xl font-semibold">{{ summary.done }}</div>
             </div>
@@ -81,7 +81,7 @@
             <div
               v-for="item in cards"
               :key="item.id"
-              class="rounded border border-default p-3"
+              class="fx-inset-panel"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">

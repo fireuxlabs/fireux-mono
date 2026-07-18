@@ -5,7 +5,7 @@
     <template #header>
       <div class="space-y-1">
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Job card surfaces</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, preview, cell, and profile variants with a real-looking payload.</p>
+        <p class="text-xs text-muted">Pill, preview, cell, and profile variants with a real-looking payload.</p>
       </div>
     </template>
 

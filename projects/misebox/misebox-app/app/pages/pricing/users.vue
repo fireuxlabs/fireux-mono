@@ -4,15 +4,15 @@
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ appName }} Pricing</UBadge>
 
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-4xl font-semibold text-highlighted">
           Users
         </h1>
 
-        <p class="text-lg text-gray-600 dark:text-gray-300">
+        <p class="text-lg text-toned">
           Joining {{ appName }} is free.
         </p>
 
-        <p class="text-gray-600 dark:text-gray-300">
+        <p class="text-toned">
           People can create profiles and interact with the ecosystem. Operational access is billed only when someone uses the console.
         </p>
       </UContainer>
@@ -25,7 +25,7 @@
             <h2 class="text-lg font-semibold">Free access</h2>
           </template>
 
-          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul class="space-y-2 text-sm text-toned">
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create an account</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create profiles</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Browse public pages</span></li>
@@ -38,7 +38,7 @@
             <h2 class="text-lg font-semibold">Console seats</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             A console seat is required only when a user manages private operational records.
           </p>
 

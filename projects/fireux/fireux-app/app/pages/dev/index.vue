@@ -14,14 +14,14 @@
             >
               Registry + diagnostics
             </h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               These tools skip narration and expose raw payloads for seeding,
               parity checks, and incident response.
             </p>
           </div>
         </template>
 
-        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+        <div class="space-y-2 text-sm text-toned">
           <p>
             Run through this stack whenever you need Firestore-aligned JSON
             without touching the console. Everything here mirrors the nuxt dev
@@ -64,13 +64,13 @@
                   >
                     {{ tool.label }}
                   </p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-muted">
                     {{ tool.description }}
                   </p>
                 </div>
               </div>
               <div
-                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                class="flex items-center gap-2 text-sm text-muted"
               >
                 <span>Open tool</span>
                 <Icon

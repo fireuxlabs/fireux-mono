@@ -85,10 +85,10 @@ const steps = [
 }
 
 .fuel__card {
-  border-radius: var(--radius-xl);
-  border: 1px dashed var(--ui-border-subtle);
+  border-radius: calc(var(--ui-radius) * 3);
+  border: 1px dashed var(--ui-border-muted);
   padding: 1.25rem;
-  background: var(--ui-surface-subtle);
+  background: var(--ui-bg-muted);
 }
 
 .fuel__meter-head {

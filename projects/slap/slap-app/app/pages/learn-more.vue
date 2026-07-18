@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-12 pb-16">
-    <section class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40">
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Slap Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-4xl font-semibold text-highlighted">
           Learn More
         </h1>
-        <p class="text-lg text-gray-600 dark:text-gray-300">
+        <p class="text-lg text-toned">
           Slap wraps drops, stories, gallery thinking, and console-backed operations in lifestyle-commerce language.
         </p>
         <div class="flex flex-wrap gap-2">

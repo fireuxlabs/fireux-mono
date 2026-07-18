@@ -44,7 +44,7 @@
                   <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     Blogs collection
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <p class="text-xs text-muted">
                     Inspect model drift separately from the public blog collection manager.
                   </p>
                   <DevDriftToolbar

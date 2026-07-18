@@ -21,11 +21,11 @@
 
         <UCard>
           <div class="grid gap-3 sm:grid-cols-2">
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Documents</div>
               <div class="text-xl font-semibold">{{ documents.length }}</div>
             </div>
-            <div class="rounded border border-default p-3">
+            <div class="fx-inset-panel">
               <div class="text-xs text-dimmed">Links</div>
               <div class="text-xl font-semibold">{{ links.length }}</div>
             </div>
@@ -131,7 +131,7 @@
             <div
               v-for="item in cards"
               :key="item.id"
-              class="rounded border border-default p-3"
+              class="fx-inset-panel"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">

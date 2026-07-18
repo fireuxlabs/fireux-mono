@@ -81,9 +81,9 @@ const resolvedItems = computed(() =>
 }
 
 .solutions__item {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--ui-border-subtle);
-  background: var(--ui-surface);
+  border-radius: calc(var(--ui-radius) * 3);
+  border: 1px solid var(--ui-border-muted);
+  background: var(--ui-bg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;

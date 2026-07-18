@@ -30,7 +30,7 @@
               </h3>
               <p
                 v-if="item.issuer"
-                class="text-sm text-gray-500 dark:text-gray-400"
+                class="text-sm text-muted"
               >
                 {{ item.issuer }}
               </p>
@@ -38,7 +38,7 @@
 
             <p
               v-if="item.year"
-              class="text-sm text-gray-500 dark:text-gray-400"
+              class="text-sm text-muted"
             >
               Issued {{ item.year }}
             </p>

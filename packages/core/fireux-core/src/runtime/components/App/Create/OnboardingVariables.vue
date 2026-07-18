@@ -367,7 +367,7 @@ const summaryBrand = computed(
 .brand-preview {
   max-width: 100%;
   height: auto;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   border: 1px solid var(--ui-border);
   background: var(--ui-bg);
   padding: var(--space-2);

@@ -162,7 +162,7 @@ const displayAmount = computed<number>({
   gap: var(--space-4); /* Uses design system spacing */
   background-color: var(--ui-bg-muted); /* Uses existing design system color */
   padding: var(--space-6); /* Uses design system padding */
-  border-radius: var(--radius-md); /* Uses design system border radius */
+  border-radius: calc(var(--ui-radius) * 1.5); /* Uses design system border radius */
 }
 
 .input-row {

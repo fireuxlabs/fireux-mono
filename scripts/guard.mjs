@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-17
+// last_used: 2026-07-18
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/guard.mjs
 //
@@ -25,6 +25,7 @@ import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
+import { run as runCssSystem } from './guards/css-system.mjs'
 import { run as runConsolePages } from './guards/console-pages.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
@@ -51,6 +52,7 @@ const guards = [
   { key: 'runtime-registration', run: runRuntimeRegistration },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
+  { key: 'css-system', run: runCssSystem },
   { key: 'console-pages', run: runConsolePages },
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },

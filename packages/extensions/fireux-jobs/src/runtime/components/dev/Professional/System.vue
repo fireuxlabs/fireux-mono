@@ -16,7 +16,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Professionals collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Inspect model drift separately from the public professionals collection manager.
             </p>
             <DevDriftToolbar
@@ -37,7 +37,7 @@
 
         <div v-if="professionalPreviewCards.length" class="space-y-3">
           <p
-            class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+            class="text-xs font-semibold uppercase tracking-wide text-muted"
           >
             Preview cards
           </p>
@@ -52,7 +52,7 @@
 
         <div v-if="professionalProfileEntries.length" class="space-y-3">
           <p
-            class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+            class="text-xs font-semibold uppercase tracking-wide text-muted"
           >
             Profile cards
           </p>

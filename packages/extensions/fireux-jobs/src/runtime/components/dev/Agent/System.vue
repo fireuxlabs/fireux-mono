@@ -16,7 +16,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Agents collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Inspect model drift separately from the public agents collection manager.
             </p>
             <DevDriftToolbar
@@ -36,7 +36,7 @@
         <AgentCollectionManager />
 
         <div v-if="agentPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Preview cards
           </p>
           <div class="space-y-3">
@@ -49,7 +49,7 @@
         </div>
 
         <div v-if="agentProfileCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Profile cards
           </p>
           <div class="space-y-4">

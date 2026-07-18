@@ -286,12 +286,12 @@ async function processImage(
 .picker-label {
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: var(--text-primary);
+  color: var(--ui-text-highlighted);
 }
 
 .image-container {
   position: relative;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   overflow: hidden;
   border: 2px solid var(--ui-border);
   background: var(--ui-bg-elevated);
@@ -301,7 +301,7 @@ async function processImage(
   width: 100%;
   max-width: 100%;
   height: auto;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   object-fit: cover;
   display: block;
 }
@@ -315,7 +315,7 @@ async function processImage(
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  color: var(--text-secondary);
+  color: var(--ui-text-muted);
   font-size: 0.875rem;
 }
 
@@ -351,7 +351,7 @@ async function processImage(
   padding: var(--space-2);
   background: var(--color-red-50);
   border: 1px solid var(--color-red-200);
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   color: var(--color-red-700);
   font-size: 0.875rem;
 }

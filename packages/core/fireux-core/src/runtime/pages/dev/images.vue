@@ -11,18 +11,18 @@
           <template #header>
             <div class="space-y-1">
               <h2 class="text-base font-semibold">Firestore app images</h2>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm text-muted">
                 Shows canonical image URLs stored on <span class="font-mono">apps</span> docs.
               </p>
             </div>
           </template>
 
           <template v-if="firestorePending">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Loading Firestore apps…</p>
+            <p class="text-sm text-muted">Loading Firestore apps…</p>
           </template>
 
           <template v-else-if="!firestoreAppGroups.length">
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               No app images found (or you don’t have access to read the <span class="font-mono">apps</span> collection).
             </p>
           </template>
@@ -36,7 +36,7 @@
               >
                 <div class="space-y-0.5">
                   <div class="text-sm font-semibold">{{ app.name }}</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                  <div class="text-xs text-muted">
                     <span class="font-mono">{{ app.id }}</span>
                   </div>
                 </div>
@@ -67,7 +67,7 @@
         <template #header>
           <div class="space-y-1">
             <h2 class="text-base font-semibold">{{ group.title }}</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               <span class="font-mono">{{ group.rootDir }}</span>
             </p>
           </div>
@@ -86,7 +86,7 @@
 
               <div class="space-y-1 text-sm">
                 <code class="block">{{ img.urlPath }}</code>
-                <code class="block text-xs text-gray-500 dark:text-gray-400">
+                <code class="block text-xs text-muted">
                   {{ toPublicRelativePath(img.urlPath) }}
                 </code>
               </div>
@@ -94,7 +94,7 @@
           </ul>
         </template>
         <template v-else>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-muted">
             No images found under <span class="font-mono">{{ group.rootDir }}/img</span>.
           </p>
         </template>

@@ -40,7 +40,7 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 .asset-card {
   padding: 1rem;
   border: 1px solid var(--ui-border);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   background: var(--ui-bg);
 }
 

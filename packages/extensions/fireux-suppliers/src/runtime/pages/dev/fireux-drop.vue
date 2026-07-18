@@ -44,7 +44,7 @@
                   <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     Suppliers collection
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <p class="text-xs text-muted">
                     Filter suppliers by model drift (extra fields) before browsing records.
                   </p>
                   <DevDriftToolbar
@@ -83,7 +83,7 @@
           </div>
           <div v-show="openSections.storage" class="mt-4 space-y-4">
             <div class="space-y-3">
-              <p class="text-xs text-gray-500 dark:text-gray-400">
+              <p class="text-xs text-muted">
                 Inspect one supplier across root and app overlay to catch schema drift or missing console state.
               </p>
 

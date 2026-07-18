@@ -150,7 +150,7 @@ const filteredFeatures = computed(() => {
   gap: var(--space-4);
   padding: var(--space-4);
   text-align: left;
-  border-radius: var(--radius-lg);
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--color-gray-50);
   transition: background-color 0.2s ease;
 }

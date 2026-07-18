@@ -4,15 +4,15 @@
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ appName }} Pricing</UBadge>
 
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-4xl font-semibold text-highlighted">
           Apps
         </h1>
 
-        <p class="text-lg text-gray-600 dark:text-gray-300">
+        <p class="text-lg text-toned">
           You can launch your own app inside the {{ appName }} ecosystem.
         </p>
 
-        <p class="text-gray-600 dark:text-gray-300">
+        <p class="text-toned">
           This path is for teams that want to move fast inside an ecosystem that already exists.
         </p>
       </UContainer>
@@ -25,7 +25,7 @@
             <h2 class="text-lg font-semibold">Join this ecosystem</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             Your app runs inside {{ appName }}. The ecosystem layer is already operated here.
           </p>
 
@@ -46,7 +46,7 @@
             <h2 class="text-lg font-semibold">Console seats</h2>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-toned">
             Console seats are billed only for operators managing private records.
           </p>
 

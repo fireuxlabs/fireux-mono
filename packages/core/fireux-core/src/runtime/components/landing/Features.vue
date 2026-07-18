@@ -72,7 +72,7 @@ const resolvedFeatures = computed(() =>
 }
 
 .features--first {
-  border-top: 1px solid var(--ui-border-subtle);
+  border-top: 1px solid var(--ui-border-muted);
   padding-top: clamp(3rem, 7vw, 4rem);
 }
 
@@ -100,10 +100,10 @@ const resolvedFeatures = computed(() =>
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
-  border: 1px solid var(--ui-border-subtle);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--ui-border-muted);
+  border-radius: calc(var(--ui-radius) * 3);
   padding: 1rem;
-  background: var(--ui-surface);
+  background: var(--ui-bg);
 }
 
 .features__icon {

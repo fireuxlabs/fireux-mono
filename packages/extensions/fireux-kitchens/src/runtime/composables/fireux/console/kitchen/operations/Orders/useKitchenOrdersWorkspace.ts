@@ -40,14 +40,27 @@ function createKitchenOrdersWorkspace() {
     }
   }
 
+  async function markQueueOrderReady(orderId: string) {
+    if (!canOperate.value) return
+
+    try {
+      await orders.markOrderReady(normalizeId(orderId))
+    } catch {
+      // The transition mutation exposes the operator-facing error state.
+    }
+  }
+
   return {
     incomingOrders: orders.incomingOrders,
     passOrders: orders.passOrders,
+    queueOrders: orders.queueOrders,
     recentOrders: orders.recentOrders,
     acceptOrder: orders.acceptOrder,
     rejectOrder: orders.rejectOrder,
     canOperate,
     canInteract,
+    isOrderTransitioning,
+    markQueueOrderReady,
     normalizeId,
     pass,
     returnPassOrder,

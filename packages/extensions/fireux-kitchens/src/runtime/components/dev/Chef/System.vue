@@ -16,7 +16,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Chefs collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Inspect model drift separately from the public chefs collection manager.
             </p>
             <DevDriftToolbar
@@ -40,7 +40,7 @@
         <ChefCollectionManager />
 
         <div v-if="chefPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Preview cards
           </p>
           <div class="space-y-3">
@@ -58,7 +58,7 @@
         </div>
 
         <div v-if="filteredCollection.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Profile cards
           </p>
           <div class="space-y-4">

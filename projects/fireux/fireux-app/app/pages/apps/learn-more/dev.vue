@@ -25,11 +25,11 @@
         </template>
 
         <div class="space-y-2 text-sm">
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">GET /api/registry</p>
             <p class="text-dimmed">Read registry app rows for operational audits.</p>
           </div>
-          <div class="rounded border border-default p-3">
+          <div class="fx-inset-panel">
             <p class="font-mono">POST /api/registry</p>
             <p class="text-dimmed">Create/update app rows with type <code>app</code>.</p>
           </div>

@@ -6,7 +6,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Demo surfaces for chefs
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-muted">
             Demo surfaces for chefs.
           </p>
         </div>

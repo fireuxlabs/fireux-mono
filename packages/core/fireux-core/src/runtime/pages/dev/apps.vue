@@ -7,7 +7,7 @@
 
     <UPageBody class="pagebody">
       <UCard variant="subtle">
-        <div class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="text-xs text-muted">
           Mode:
           <span class="font-mono">
             {{ modeLabel }}
@@ -30,7 +30,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Apps collection
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Inspect model drift separately from the public apps collection manager.
             </p>
             <DevDriftToolbar

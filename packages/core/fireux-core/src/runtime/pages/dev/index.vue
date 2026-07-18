@@ -12,13 +12,13 @@
       <template #header>
         <div class="flex flex-col gap-1">
           <h1>Development Tools</h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-muted">
             Overview of diagnostics and inspection utilities available in the
             dev layout.
           </p>
         </div>
       </template>
-      <p class="text-sm text-gray-600 dark:text-gray-300">
+      <p class="text-sm text-toned">
         Use the navigation to open specific tools such as Apps, Users, or FireUX
         runtime data.
       </p>
@@ -32,7 +32,7 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <h2>⚙️ FireUX Runtime</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               Values resolved from Nuxt runtime config & env (demo).
             </p>
           </div>
@@ -64,34 +64,34 @@
       <ul class="space-y-2 text-sm">
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">ecosystem</span>
-          <span class="text-gray-500 dark:text-gray-400">
+          <span class="text-muted">
             {{ cfg.ecosystem }}
           </span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">role</span>
-          <span class="text-gray-500 dark:text-gray-400">{{ cfg.role }}</span>
+          <span class="text-muted">{{ cfg.role }}</span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">appId</span>
-          <span class="text-gray-500 dark:text-gray-400">{{ cfg.appId }}</span>
+          <span class="text-muted">{{ cfg.appId }}</span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">appName</span>
-          <span class="text-gray-500 dark:text-gray-400">{{
+          <span class="text-muted">{{
             cfg.appName
           }}</span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">modules</span>
-          <span class="text-gray-500 dark:text-gray-400">
+          <span class="text-muted">
             <!-- TODO(fallback-review): Investigate whether empty module arrays should surface errors instead of showing 'none' -->
             {{ (cfg.modules || []).join(', ') || 'none' }}
           </span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">devMode</span>
-          <span class="text-gray-500 dark:text-gray-400">{{
+          <span class="text-muted">{{
             String(cfg.devMode)
           }}</span>
         </li>
@@ -105,7 +105,7 @@
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
             />
-            <span class="text-gray-500 dark:text-gray-400">{{
+            <span class="text-muted">{{
               cfg.primaryColor
             }}</span>
           </div>
@@ -120,7 +120,7 @@
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
             />
-            <span class="text-gray-500 dark:text-gray-400">{{
+            <span class="text-muted">{{
               cfg.neutralColor
             }}</span>
           </div>
@@ -135,7 +135,7 @@
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
             />
-            <span class="text-gray-500 dark:text-gray-400">
+            <span class="text-muted">
               {{ cfg.secondaryColor }}
             </span>
           </div>
@@ -149,7 +149,7 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <h2>🔥 Firebase Admin SDK</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-muted">
               Explicit server-side credential configuration. ADC may also be
               available at runtime.
             </p>
@@ -171,7 +171,7 @@
         </div>
       </template>
 
-      <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+      <div class="space-y-3 text-sm text-toned">
         <p>
           {{ adminStatus.description }}
         </p>

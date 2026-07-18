@@ -144,7 +144,7 @@ defineExpose({
   position: relative;
   width: 100%;
   background: var(--ui-bg-elevated);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   border: 1px solid var(--ui-border);
   padding: var(--space-4);
   display: flex;
@@ -166,7 +166,7 @@ defineExpose({
 }
 
 .card-hint {
-  color: var(--text-secondary);
+  color: var(--ui-text-muted);
   font-size: 0.85rem;
 }
 
@@ -176,7 +176,7 @@ defineExpose({
 
 .image-card :deep(.image-container) {
   width: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
 }
 
 .image-card.featured :deep(.image-container) {
@@ -213,7 +213,7 @@ defineExpose({
   margin-top: var(--space-4);
   padding: var(--space-4);
   background: var(--ui-bg-elevated);
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--ui-radius) * 1.5);
   border: 1px solid var(--ui-border);
 }
 
@@ -221,7 +221,7 @@ defineExpose({
   margin: 0 0 var(--space-3) 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--ui-text-highlighted);
 }
 
 .uploading-spinner {
@@ -244,7 +244,7 @@ defineExpose({
   padding: var(--space-2);
   background: var(--color-red-50);
   border: 1px solid var(--color-red-200);
-  border-radius: var(--radius-sm);
+  border-radius: var(--ui-radius);
   color: var(--color-red-700);
   font-size: 0.875rem;
   margin-bottom: var(--space-2);

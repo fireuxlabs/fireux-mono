@@ -36,7 +36,7 @@
             <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Project storage inspector
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-muted">
               Inspect one project across root and app overlay. Project does not yet define a child-family matrix like kitchen or portfolio.
             </p>
             <USelect

@@ -3,7 +3,7 @@
     ref="toolFrame"
     :src="src"
     :title="title"
-    class="block w-full overflow-hidden rounded-[var(--radius-lg)]"
+    class="block w-full overflow-hidden rounded-lg"
     :style="{ height: `${toolHeight}px` }"
     @load="onToolFrameLoad"
   />

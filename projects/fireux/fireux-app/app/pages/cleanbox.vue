@@ -7,12 +7,12 @@
 
     <UPageBody class="pagebody">
       <UCard class="space-y-3">
-        <p class="text-sm text-gray-600 dark:text-gray-300">
+        <p class="text-sm text-toned">
           Cleanbox is the operational ecosystem for cleaning work. This route is
           the landing page for that domain.
         </p>
 
-        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+        <div class="space-y-2 text-sm text-toned">
           <p>Next: show Cleanbox apps and the primary entry points.</p>
           <p>
             If you're looking for the system-wide list of ecosystems, go to
