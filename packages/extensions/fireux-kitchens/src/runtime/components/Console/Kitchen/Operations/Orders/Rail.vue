@@ -6,7 +6,11 @@
   >
     <header class="flex min-h-7 items-center justify-between gap-3">
       <div class="flex min-w-0 items-center gap-2">
-        <span class="size-2 shrink-0 rounded-full" :class="dotClass" aria-hidden="true" />
+        <span
+          class="size-2 shrink-0 rounded-full"
+          :class="dotClass"
+          aria-hidden="true"
+        />
         <h2 class="m-0 truncate text-sm font-bold text-highlighted">
           {{ label }}
         </h2>

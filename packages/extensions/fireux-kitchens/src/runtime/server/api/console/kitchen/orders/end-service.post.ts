@@ -1,0 +1,28 @@
+import {
+  defineEventHandler,
+  readBody,
+  type H3Event,
+} from 'h3'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireKitchenOperator } from '../../../../../server/kitchen/operator-access.ts'
+import { endKitchenOrderService } from '../../../../../server/kitchen/order/service-sequence.ts'
+
+type EndKitchenOrderServiceBody = {
+  app_id?: string
+  kitchen_id?: string
+}
+
+export default defineEventHandler(async (event: H3Event) => {
+  const body = (await readBody(event)) as EndKitchenOrderServiceBody | null
+  const appId = requirePathSegment(body?.app_id, 'App id')
+  const kitchenId = requirePathSegment(body?.kitchen_id, 'Kitchen id')
+  const actorId = await requireKitchenOperator(event, { appId, kitchenId })
+  const service = await endKitchenOrderService(getRuntimeFirestore(), {
+    actorId,
+    appId,
+    kitchenId,
+  })
+
+  return { ok: true, service }
+})

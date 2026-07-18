@@ -12,6 +12,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/console/kitchen/orders/transition.post',
   },
   {
+    route: '/api/console/kitchen/orders/end-service',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/orders/end-service.post',
+  },
+  {
     route: '/api/console/kitchen/menus/upload',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/menus/upload.post',

@@ -156,6 +156,7 @@ import {
   ref,
 } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
+import { kitchenOrderOperatorLabel } from '../../../../../../utils/kitchen-order-label'
 
 const props = withDefaults(
   defineProps<{
@@ -206,8 +207,7 @@ const formatTime = (value: number) =>
 const orderRecord = computed(() => props.order as Record<string, unknown>)
 const orderId = computed(() => normalize(props.order.id))
 const orderNumber = computed(() => {
-  const number = normalize(props.order.order_number)
-  return number ? `Order #${number}` : orderId.value || 'Order'
+  return kitchenOrderOperatorLabel(orderRecord.value)
 })
 const orderType = computed(() => normalize(props.order.order_type))
 const orderStatus = computed(() => normalize(props.order.status))

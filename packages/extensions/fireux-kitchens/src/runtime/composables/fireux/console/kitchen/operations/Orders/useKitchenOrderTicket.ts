@@ -3,12 +3,15 @@ import {
   ref,
 } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
+import { kitchenOrderOperatorLabel } from '../../../../../../utils/kitchen-order-label'
 
 export interface KitchenOrderTicketProps {
   bodyActionLabel?: string
   headerActionLabel?: string
   interactive?: boolean
   order: KitchenOrder
+  prominent?: boolean
+  selected?: boolean
   statusActionAriaLabel?: string
   statusActionLabel?: string
   statusActionPending?: boolean
@@ -165,8 +168,7 @@ export function useKitchenOrderTicket(
     return orderStatus.value.replace(/[_-]+/g, ' ')
   })
   const orderLabel = computed(() => {
-    const number = normalizeString(props.order.order_number)
-    return number ? `Order #${number}` : orderId.value || 'Order'
+    return kitchenOrderOperatorLabel(orderRecord.value)
   })
   const lines = computed(() =>
     Array.isArray(props.order.items)
@@ -278,23 +280,6 @@ export function useKitchenOrderTicket(
     touchStatus,
     trashOrder,
   }
-}
-
-export function kitchenOrderHandoffActionLabel(order: KitchenOrder) {
-  const orderType = resolveOrderType(order)
-  if (orderType === 'dine_in') return 'Served'
-  if (
-    orderType === 'eat_in' ||
-    orderType === 'takeaway' ||
-    orderType === 'collection' ||
-    orderType === 'pre_order'
-  ) {
-    return 'Collected'
-  }
-  if (orderType === 'delivery') return 'Dispatched'
-  if (orderType === 'room_service') return 'Delivered'
-
-  return 'Complete'
 }
 
 function normalizeString(value: unknown) {

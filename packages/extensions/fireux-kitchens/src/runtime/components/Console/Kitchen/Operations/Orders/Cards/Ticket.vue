@@ -1,6 +1,11 @@
 <template>
   <div
-    class="w-full min-w-0 overflow-hidden rounded-md border border-default bg-default"
+    class="w-full min-w-0 overflow-hidden rounded-md border bg-default"
+    :class="selected
+      ? 'border-success ring-2 ring-success/35'
+      : prominent
+        ? 'border-success/45'
+        : 'border-default'"
   >
     <div class="divide-y divide-default">
       <div
@@ -35,9 +40,9 @@
 
           <UButton
             v-if="canShowStatusAction"
-            size="xs"
-            color="neutral"
-            variant="ghost"
+            :size="prominent ? 'sm' : 'xs'"
+            :color="prominent ? 'success' : 'neutral'"
+            :variant="prominent ? 'solid' : 'ghost'"
             :disabled="!canUseStatusAction || statusActionPending"
             :loading="statusActionPending"
             :aria-label="statusActionAriaLabel || statusActionLabel"
@@ -47,7 +52,7 @@
           </UButton>
 
           <span
-            v-else-if="statusLabel"
+            v-else-if="statusLabel && !prominent"
             class="text-xs font-medium text-dimmed"
           >
             {{ statusLabel }}
@@ -74,6 +79,7 @@
         :role="canTouchBody ? 'button' : undefined"
         :tabindex="canTouchBody ? 0 : undefined"
         :aria-label="bodyActionLabel || undefined"
+        :aria-pressed="canTouchBody ? selected : undefined"
         @click="touchBody"
         @keydown.enter.prevent="touchBody"
         @keydown.space.prevent="touchBody"
@@ -106,7 +112,7 @@
         </div>
 
         <div
-          v-if="customerLines.length"
+          v-if="customerLines.length && !prominent"
           class="mt-3 space-y-0.5 border-t border-default pt-3 text-xs text-dimmed"
         >
           <p
@@ -125,6 +131,7 @@
         </span>
 
         <UButton
+          v-if="!prominent"
           type="button"
           size="xs"
           color="neutral"
@@ -150,6 +157,8 @@ const props = withDefaults(
   {
     trashMode: false,
     interactive: true,
+    prominent: false,
+    selected: false,
     headerActionLabel: '',
     bodyActionLabel: '',
     statusActionLabel: '',

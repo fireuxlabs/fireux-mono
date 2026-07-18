@@ -253,6 +253,8 @@ export const KitchenOrderModel = {
   menu_id: '' as string,
 
   order_number: '' as string,
+  service_id: '' as string,
+  service_number: 0 as number,
   status: 'pending_acceptance' as KitchenOrderStatus,
   order_type: 'dine_in' as KitchenOrderType,
   requested_for: '' as string | FirebaseTimestamp,

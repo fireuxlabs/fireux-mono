@@ -11,6 +11,7 @@ import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import { getDemoKitchenCollection } from '../../../../demo/kitchen/scenarios'
 import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition'
+import { useKitchenOrderService } from './mutations/useKitchenOrderService'
 
 export function useKitchenConsoleOrders() {
   const {
@@ -43,6 +44,11 @@ export function useKitchenConsoleOrders() {
     pendingCount: transitioningCount,
     transitionKitchenOrder,
   } = useKitchenOrderTransition({ appId })
+  const {
+    endService,
+    error: serviceError,
+    pending: servicePending,
+  } = useKitchenOrderService({ appId, kitchenId })
   const page = useKitchenConsoleReadPage<KitchenOrder>({
     collectionName: KitchenOrderStorage.collection,
     selectedKitchen,
@@ -193,6 +199,8 @@ export function useKitchenConsoleOrders() {
     railCounts,
     pending,
     transitionError,
+    serviceError,
+    servicePending,
     transitioningCount,
     isOrderTransitioning,
     acceptOrder,
@@ -201,6 +209,7 @@ export function useKitchenConsoleOrders() {
     markOrderReady,
     completeOrder,
     trashOrder,
+    endService,
     debug,
   }
 }

@@ -32,6 +32,7 @@ import {
 import { requireKitchenOperator } from '../../../kitchen/operator-access.ts'
 import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
 import { text } from '../../../menu/ordering/order-request.ts'
+import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/order/service-sequence.ts'
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -144,7 +145,11 @@ export default defineEventHandler(async (event) => {
     return committed.response
   }
 
-  await db.doc(assembled.path).set(assembled.payload)
-
-  return assembled.response
+  return commitKitchenOrderWithServiceSequence(db, {
+    appId: context.appId,
+    kitchenId: context.kitchenId,
+    orderPath: assembled.path,
+    payload: assembled.payload,
+    response: assembled.response,
+  })
 })

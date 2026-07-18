@@ -1,5 +1,8 @@
 <template>
-  <div class="menu-order-checkout__host">
+  <div
+    class="menu-order-checkout__host"
+    data-menu-order-checkout="shared"
+  >
     <UModal
       v-model:open="openModel"
       description="Confirm the details before sending the order."
@@ -11,7 +14,6 @@
         <form
           id="menu-order-checkout-form"
           class="menu-order-checkout"
-          data-menu-order-checkout="test-pipeline"
           @submit.prevent="submit"
         >
           <div class="menu-order-checkout__summary">

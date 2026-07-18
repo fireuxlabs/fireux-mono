@@ -1,0 +1,111 @@
+import {
+  computed,
+  ref,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue'
+import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
+
+type KitchenOrderPassSelectionOptions = {
+  canOperate: MaybeRefOrGetter<boolean>
+  orders: MaybeRefOrGetter<KitchenOrder[]>
+  isTransitioning: (orderId: string) => boolean
+  completeOrder: (orderId: string) => Promise<unknown>
+  returnOrderToQueue: (orderId: string) => Promise<unknown>
+}
+
+const orderId = (value: unknown) => String(value ?? '').trim()
+
+export function useKitchenOrderPassSelection(
+  options: KitchenOrderPassSelectionOptions
+) {
+  const selectedOrderIds = ref<string[]>([])
+  const sending = ref(false)
+  const returning = ref(false)
+  const selectedOrders = computed(() => {
+    const selectedIds = new Set(selectedOrderIds.value)
+    return toValue(options.orders).filter((order) =>
+      selectedIds.has(orderId(order.id))
+    )
+  })
+  const canAct = computed(() =>
+    toValue(options.canOperate) &&
+      selectedOrders.value.length > 0 &&
+      !sending.value &&
+      !returning.value &&
+      !selectedOrders.value.some((order) =>
+        options.isTransitioning(orderId(order.id))
+      )
+  )
+
+  watch(
+    () => toValue(options.orders).map((order) => orderId(order.id)),
+    (currentOrderIds) => {
+      const currentIds = new Set(currentOrderIds)
+      selectedOrderIds.value = selectedOrderIds.value.filter((id) =>
+        currentIds.has(id)
+      )
+    }
+  )
+
+  function isSelected(value: unknown) {
+    return selectedOrderIds.value.includes(orderId(value))
+  }
+
+  function toggle(value: unknown) {
+    const id = orderId(value)
+    if (!toValue(options.canOperate) || !id || options.isTransitioning(id)) return
+
+    selectedOrderIds.value = isSelected(id)
+      ? selectedOrderIds.value.filter((selectedId) => selectedId !== id)
+      : [...selectedOrderIds.value, id]
+  }
+
+  async function send() {
+    if (!canAct.value) return
+
+    sending.value = true
+    try {
+      await transitionSelected(options.completeOrder)
+    } finally {
+      sending.value = false
+    }
+  }
+
+  async function returnToQueue() {
+    if (!canAct.value) return
+
+    returning.value = true
+    try {
+      await transitionSelected(options.returnOrderToQueue)
+    } finally {
+      returning.value = false
+    }
+  }
+
+  async function transitionSelected(
+    transition: (selectedOrderId: string) => Promise<unknown>
+  ) {
+    const ids = selectedOrders.value.map((order) => orderId(order.id))
+    const results = await Promise.allSettled(ids.map(transition))
+    const failedIds = new Set(
+      ids.filter((_, index) => results[index]?.status === 'rejected')
+    )
+    selectedOrderIds.value = selectedOrderIds.value.filter(
+      (id) => !ids.includes(id) || failedIds.has(id)
+    )
+  }
+
+  return {
+    canReturn: canAct,
+    canSend: canAct,
+    isSelected,
+    returning,
+    returnToQueue,
+    selectedOrders,
+    send,
+    sending,
+    toggle,
+  }
+}

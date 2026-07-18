@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-18
-Ref: d4c4aec54
+Ref: f4ddbda21
 Role: map, not canon
 
 Purpose:
@@ -75,7 +75,8 @@ Current display rule:
   pickup choice from the resolved Collection order-type policy; missing hours
   fail closed, and scheduled choices share the server's hours and notice
   validation utilities. Slot cadence starts at each configured service-window
-  opening rather than at an unrelated midnight grid. Collection alone has a first test submission path:
+  opening rather than at an unrelated midnight grid. Collection alone has the
+  first active submission path:
   optional name/mobile fields, configured Pay now or surface-aware Pay later choice, canonical Order
   creation, and live acceptance/ready/completed status. The active pipeline
   does not restore after refresh. Pay now uses the existing online-card checkout
@@ -255,9 +256,9 @@ Public order funnel spine:
   payment-timing selection to the canonical endpoint. The resolved handoff
   instructions remain visible through checkout and Collection status.
   It polls the existing order-status endpoint until the Kitchen accepts,
-  rejects, marks ready, or completes the order. The test path does not reuse
-  the preserved funnel draft/storage/session chain, persist tracking across a
-  refresh; configured Pay now hands off to the existing secure checkout.
+  rejects, marks ready, or completes the order. The active path does not reuse
+  the preserved funnel draft/storage/session chain or persist tracking across
+  a refresh; configured Pay now hands off to the existing secure checkout.
   Delivery and Pre-order submission remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
@@ -275,6 +276,15 @@ Public order funnel spine:
 - `server/api/menus/[menuId]/orders.post.ts`: canonical KitchenOrder creation
   route for public and authenticated Staff POS channels. It writes records under
   `apps/<appId>/kitchens/<kitchenId>/orders`.
+- Kitchen operators use a short service-local `Order N`, not the stored document
+  ID or a date-coded reference. Order creation advances
+  `order-service/current` in the same Firestore transaction as the Order write
+  and idempotency reservation. Ending a service rotates the service ID and
+  resets the next Order to 1; it must not overlap active Incoming, Queue, or Pass
+  work.
+- Collection tickets may prefix the short reference with the customer's first
+  name (`Sofia · Order 3`). Other surfaces retain `Order N`; table and room
+  identity remain fulfilment context rather than part of the sequence.
 - Initial status is resolved once from payment plus the shared intake policy:
   `pending_payment`, otherwise `pending_acceptance` or `accepted`.
 - Clients submit option identity, not trusted option prices. Order creation

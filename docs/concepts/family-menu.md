@@ -1,6 +1,6 @@
 Menu family map
 Updated: 2026-07-18
-Ref: d4c4aec54
+Ref: f4ddbda21
 Role: map, not canon
 
 Purpose:
@@ -261,7 +261,7 @@ Page composition note:
   page-local pickup-time selector backed by the resolved Collection order-type
   policy: immediate collection is offered only when enabled and open, while
   scheduled choices obey Collection hours, notice, interval, and horizon. The
-  first test pipeline offers name, mobile, and email fields with per-surface
+  first active pipeline offers name, mobile, and email fields with per-surface
   required-field policy, shows configured Collection handoff instructions,
   groups configured
   settlement methods into Pay now or a surface-aware Pay later choice, posts through the canonical Menu Order endpoint,

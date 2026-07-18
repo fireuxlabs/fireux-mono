@@ -4,6 +4,11 @@ import {
   type Firestore,
 } from 'firebase-admin/firestore'
 import { createError } from 'h3'
+import {
+  applyKitchenOrderServiceSequence,
+  applyKitchenOrderServiceSequenceToResponse,
+  nextKitchenOrderServiceSequence,
+} from '../../kitchen/order/service-sequence.ts'
 
 const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9._~-]{16,128}$/
@@ -185,19 +190,6 @@ export const commitMenuOrderIdempotently = async <
   const reservationRef = db.doc(reservationPath(scope, input.key))
   const orderRef = db.doc(input.orderPath)
   const nowMs = Date.now()
-  const reservation = {
-    id,
-    app_id: input.appId,
-    kitchen_id: input.kitchenId,
-    menu_id: input.menuId,
-    request_hash: requestHash,
-    order_id: input.orderId,
-    order_path: input.orderPath,
-    response: input.reservationResponse || input.response,
-    created_at: Timestamp.fromMillis(nowMs),
-    expires_at: Timestamp.fromMillis(nowMs + IDEMPOTENCY_WINDOW_MS),
-  }
-
   return db.runTransaction(async (transaction) => {
     const reservationSnap = await transaction.get(reservationRef)
     if (reservationSnap.exists) {
@@ -211,7 +203,34 @@ export const commitMenuOrderIdempotently = async <
       }
     }
 
-    transaction.create(orderRef, input.payload)
+    const now = Timestamp.fromMillis(nowMs)
+    const sequence = await nextKitchenOrderServiceSequence(transaction, db, {
+      appId: input.appId,
+      kitchenId: input.kitchenId,
+      now,
+    })
+    const numbered = applyKitchenOrderServiceSequence({
+      payload: input.payload,
+      response: input.response,
+      sequence,
+    })
+    const reservation = {
+      id,
+      app_id: input.appId,
+      kitchen_id: input.kitchenId,
+      menu_id: input.menuId,
+      request_hash: requestHash,
+      order_id: input.orderId,
+      order_path: input.orderPath,
+      response: applyKitchenOrderServiceSequenceToResponse(
+        input.reservationResponse || input.response,
+        sequence
+      ),
+      created_at: now,
+      expires_at: Timestamp.fromMillis(nowMs + IDEMPOTENCY_WINDOW_MS),
+    }
+
+    transaction.create(orderRef, numbered.payload)
     if (reservationSnap.exists) {
       transaction.set(reservationRef, reservation)
     } else {
@@ -219,7 +238,7 @@ export const commitMenuOrderIdempotently = async <
     }
 
     return {
-      response: input.response,
+      response: numbered.response,
       duplicate: false,
     }
   })

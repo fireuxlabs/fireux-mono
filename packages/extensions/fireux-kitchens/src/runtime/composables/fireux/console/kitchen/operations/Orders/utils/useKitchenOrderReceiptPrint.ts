@@ -159,7 +159,7 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
   <main class="receipt">
     <section class="header">
       <h1>Order ticket</h1>
-      <p class="meta">Order #${escapeHtml(receipt.order_number)}</p>
+      <p class="meta">Order ${escapeHtml(receipt.order_number)}</p>
       <p class="meta">${escapeHtml(orderTypeLabel(receipt.order_type))} · ${escapeHtml(formatCreatedAt(receipt.created_at))}</p>
     </section>
 
