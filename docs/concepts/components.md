@@ -1,6 +1,6 @@
 Components spine map
-Updated: 2026-06-26
-Ref: 2a3861666
+Updated: 2026-07-18
+Ref: f4ddbda21
 Role: map, not canon
 
 Purpose:
@@ -65,6 +65,18 @@ Working rules:
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
+- Shared visual primitives such as radius, borders, elevation, standard
+  spacing, surface backgrounds, and control geometry belong to Nuxt UI theme
+  configuration or a real reusable component/molecule. Domain components
+  compose those primitives; they do not redeclare them in every file.
+- Before adding CSS or another wrapper, use the complete Nuxt UI component
+  contract: variants, colors, sizes, slots, loading, disabled, and state
+  semantics. Wrapping a Nuxt UI component in a second local design layer is
+  duplication, not abstraction.
+- Component-scoped CSS is for genuine domain layout and state deltas. Do not
+  replace long inline Tailwind strings with the same repeated design system in
+  local CSS. When a touched surface has grown either way, move the shared
+  primitive to its owning layer and keep the leaf component semantic.
 
 Guard warnings:
 - No `organisms` folders.

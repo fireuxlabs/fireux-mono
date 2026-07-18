@@ -1,18 +1,27 @@
 <template>
   <div class="kitchen-orders-layout">
-    <header class="kitchen-orders-layout__header">
-      <NuxtLink to="/" class="kitchen-orders-layout__brand" aria-label="Home">
-        <AppBrandWordmark size="card" alt="Misebox" />
-      </NuxtLink>
+    <UDashboardNavbar
+      title="Orders"
+      :toggle="false"
+      class="kitchen-orders-layout__header"
+    >
+      <template #leading>
+        <NuxtLink to="/" aria-label="Home">
+          <AppBrandWordmark size="card" alt="Misebox" />
+        </NuxtLink>
+      </template>
 
-      <UButton
-        to="/console/kitchen"
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-x"
-        aria-label="Close orders"
-      />
-    </header>
+      <template #right>
+        <div id="kitchen-orders-actions" />
+        <UButton
+          to="/console/kitchen"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-x"
+          aria-label="Close orders"
+        />
+      </template>
+    </UDashboardNavbar>
 
     <main class="kitchen-orders-layout__main">
       <section v-if="selectionBlocked" class="kitchen-orders-layout__empty">
@@ -61,21 +70,8 @@ const selectionBlocked = computed(() =>
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 3.5rem;
-  padding: 0.5rem clamp(0.75rem, 2vw, 1.5rem);
-  border-bottom: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-bg) 92%, transparent);
   backdrop-filter: blur(16px);
-}
-
-.kitchen-orders-layout__brand {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
 }
 
 .kitchen-orders-layout__main {

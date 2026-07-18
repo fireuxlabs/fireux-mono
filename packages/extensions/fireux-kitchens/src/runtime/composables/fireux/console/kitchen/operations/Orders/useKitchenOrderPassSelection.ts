@@ -12,7 +12,6 @@ type KitchenOrderPassSelectionOptions = {
   orders: MaybeRefOrGetter<KitchenOrder[]>
   isTransitioning: (orderId: string) => boolean
   completeOrder: (orderId: string) => Promise<unknown>
-  returnOrderToQueue: (orderId: string) => Promise<unknown>
 }
 
 const orderId = (value: unknown) => String(value ?? '').trim()
@@ -22,7 +21,6 @@ export function useKitchenOrderPassSelection(
 ) {
   const selectedOrderIds = ref<string[]>([])
   const sending = ref(false)
-  const returning = ref(false)
   const selectedOrders = computed(() => {
     const selectedIds = new Set(selectedOrderIds.value)
     return toValue(options.orders).filter((order) =>
@@ -33,7 +31,6 @@ export function useKitchenOrderPassSelection(
     toValue(options.canOperate) &&
       selectedOrders.value.length > 0 &&
       !sending.value &&
-      !returning.value &&
       !selectedOrders.value.some((order) =>
         options.isTransitioning(orderId(order.id))
       )
@@ -73,17 +70,6 @@ export function useKitchenOrderPassSelection(
     }
   }
 
-  async function returnToQueue() {
-    if (!canAct.value) return
-
-    returning.value = true
-    try {
-      await transitionSelected(options.returnOrderToQueue)
-    } finally {
-      returning.value = false
-    }
-  }
-
   async function transitionSelected(
     transition: (selectedOrderId: string) => Promise<unknown>
   ) {
@@ -98,11 +84,8 @@ export function useKitchenOrderPassSelection(
   }
 
   return {
-    canReturn: canAct,
     canSend: canAct,
     isSelected,
-    returning,
-    returnToQueue,
     selectedOrders,
     send,
     sending,

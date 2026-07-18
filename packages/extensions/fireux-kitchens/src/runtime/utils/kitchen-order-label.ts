@@ -17,9 +17,9 @@ export function kitchenOrderOperatorLabel(order: Record<string, unknown>) {
   const number = kitchenOrderServiceNumber(order)
   if (!number) return 'Order'
 
-  const orderLabel = `Order ${number}`
+  const orderLabel = `Order: ${number}`
   if (text(order.order_type) !== 'collection') return orderLabel
 
   const customerName = text(record(order.customer).name).split(/\s+/u)[0]
-  return customerName ? `${customerName} · ${orderLabel}` : orderLabel
+  return customerName ? `${orderLabel}-${customerName}` : orderLabel
 }

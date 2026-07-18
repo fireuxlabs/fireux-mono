@@ -1,25 +1,15 @@
 <template>
-  <div class="grid gap-3" data-kitchen-orders-board>
+  <div class="orders-board" data-kitchen-orders-board>
     <ConsoleKitchenOperationsOrdersToolbar
-      :read-only="readOnly"
-      :visible-count="visibleOrders.length"
       :pass-count="passOrders.length"
       :selected-count="selectedPassOrders.length"
-      :can-return="canReturnSelectedPassOrders"
-      :returning="returningPassOrders"
       :can-send="canSendSelectedPassOrders"
       :sending="sendingPassOrders"
-      :can-clear="canClearOrders"
-      :clear-confirm="clearConfirm"
-      :clearing="clearingOrders"
-      :clear-label="clearButtonLabel"
       :can-end-service="canEndService"
       :end-service-confirm="endServiceConfirm"
       :ending-service="servicePending"
       :end-service-label="endServiceButtonLabel"
-      @return="returnSelectedPassOrders"
       @send="sendSelectedPassOrders"
-      @clear="clearOrders"
       @end-service="endCurrentService"
     />
 
@@ -32,17 +22,17 @@
       :description="transitionError || serviceError"
     />
 
-    <div
+    <UCard
       v-if="pending"
-      class="grid min-h-48 place-items-center rounded-lg border border-dashed border-default text-sm text-dimmed"
+      variant="subtle"
       role="status"
     >
-      Loading orders…
-    </div>
+      <div class="orders-board__loading">Loading orders…</div>
+    </UCard>
 
-    <div v-else class="grid items-start gap-3">
+    <div v-else class="orders-board__content">
       <div
-        class="flex min-w-0 gap-3 overflow-x-auto overscroll-x-contain border-b border-default pb-3 [&>*]:w-[min(20rem,82vw)] [&>*]:shrink-0 xl:[&>*]:w-80"
+        class="orders-board__pass"
         data-order-rail="pass"
       >
         <ConsoleKitchenOperationsOrdersCardsTicket
@@ -52,14 +42,16 @@
           :interactive="canInteractWith(ticket)"
           prominent
           :selected="isPassOrderSelected(ticket.id)"
+          :header-action-label="isPassOrderSelected(ticket.id) ? 'Return' : ''"
           :body-action-label="isPassOrderSelected(ticket.id)
             ? 'Remove order from send selection'
             : 'Select order to send'"
+          @touch-header="returnPassOrder"
           @touch-body="togglePassOrderSelection"
         />
       </div>
 
-      <div class="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div class="orders-board__lanes">
         <ConsoleKitchenOperationsOrdersRail
           label="Incoming"
           :count="incomingOrders.length"
@@ -118,7 +110,7 @@
         empty-label="No unmapped orders"
         accent="warning"
       >
-        <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="orders-board__unmapped">
           <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in unmappedOrders"
             :key="ticket.id"
@@ -136,8 +128,6 @@ import { useKitchenConsoleOrders } from '../../../../../composables/fireux/conso
 import { useKitchenOrderPassSelection } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderPassSelection'
 import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
 
-const clearConfirm = ref(false)
-const clearingOrders = ref(false)
 const endServiceConfirm = ref(false)
 const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
@@ -149,7 +139,6 @@ const {
   passOrders,
   recentOrders,
   unmappedOrders,
-  visibleOrders,
   pending,
   readOnly,
   canWrite,
@@ -163,18 +152,14 @@ const {
   returnOrderToQueue,
   markOrderReady: markOrderReadyFromConsole,
   completeOrder,
-  trashOrder,
   endService,
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
 const canOperate = computed(() => canWrite.value && !readOnly.value)
 const {
-  canReturn: canReturnSelectedPassOrders,
   canSend: canSendSelectedPassOrders,
   isSelected: isPassOrderSelected,
-  returning: returningPassOrders,
-  returnToQueue: returnSelectedPassOrders,
   selectedOrders: selectedPassOrders,
   send: sendSelectedPassOrders,
   sending: sendingPassOrders,
@@ -184,7 +169,6 @@ const {
   orders: passOrders,
   isTransitioning: isOrderTransitioning,
   completeOrder,
-  returnOrderToQueue,
 })
 const activeOrderCount = computed(() =>
   incomingOrders.value.length + queueOrders.value.length + passOrders.value.length
@@ -195,19 +179,10 @@ const canEndService = computed(() =>
     !servicePending.value &&
     !transitioningCount.value
 )
-const canClearOrders = computed(() =>
-  canOperate.value && !clearingOrders.value && !transitioningCount.value
-)
 const endServiceButtonLabel = computed(() => {
   if (servicePending.value) return 'Ending service…'
-  if (activeOrderCount.value) return `${activeOrderCount.value} active`
   if (endServiceConfirm.value) return 'Confirm end service'
   return 'End service'
-})
-const clearButtonLabel = computed(() => {
-  if (clearingOrders.value) return 'Clearing...'
-  if (clearConfirm.value) return `Trash ${visibleOrders.value.length} orders`
-  return 'Clear board'
 })
 
 async function acceptIncomingOrder(
@@ -277,27 +252,9 @@ async function markOrderReady(orderId: string) {
   await runOrderAction(() => markOrderReadyFromConsole(resolvedOrderId))
 }
 
-async function clearOrders() {
-  if (readOnly.value || !canWrite.value || clearingOrders.value) return
-  const orderIds = visibleOrders.value
-    .map((order) => normalizeId(order.id))
-    .filter(Boolean)
-  if (!orderIds.length) return
-
-  if (!clearConfirm.value) {
-    clearConfirm.value = true
-    return
-  }
-
-  clearingOrders.value = true
-  try {
-    await Promise.all(orderIds.map((orderId) => trashOrder(orderId)))
-  } catch {
-    // The transition mutation exposes the display error.
-  } finally {
-    clearingOrders.value = false
-    clearConfirm.value = false
-  }
+async function returnPassOrder(orderId: string) {
+  const resolvedOrderId = normalizeId(orderId)
+  await runOrderAction(() => returnOrderToQueue(resolvedOrderId))
 }
 
 async function endCurrentService() {
@@ -332,3 +289,71 @@ async function runOrderAction(action: () => Promise<unknown> | unknown) {
   }
 }
 </script>
+
+<style scoped>
+.orders-board,
+.orders-board__content,
+.orders-board__lanes,
+.orders-board__unmapped {
+  display: grid;
+}
+
+.orders-board,
+.orders-board__content,
+.orders-board__lanes {
+  gap: 0.75rem;
+}
+
+.orders-board__content,
+.orders-board__lanes {
+  align-items: start;
+}
+
+.orders-board__loading {
+  display: grid;
+  min-height: 12rem;
+  place-items: center;
+  color: var(--ui-text-dimmed);
+  font-size: 0.875rem;
+}
+
+.orders-board__pass {
+  display: flex;
+  min-width: 0;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.orders-board__pass > * {
+  flex: none;
+  width: min(20rem, 82vw);
+}
+
+.orders-board__unmapped {
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .orders-board__lanes,
+  .orders-board__unmapped {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .orders-board__lanes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .orders-board__unmapped {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .orders-board__pass > * {
+    width: 20rem;
+  }
+}
+</style>

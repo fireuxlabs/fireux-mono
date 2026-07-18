@@ -1,43 +1,34 @@
 <template>
-  <section
-    class="grid min-w-0 content-start gap-3 rounded-lg border bg-elevated/55 p-3"
-    :class="railClass"
+  <UCard
+    as="section"
+    variant="soft"
+    class="orders-rail"
     :data-order-rail="label.toLowerCase().replace(/\s+/g, '-')"
   >
-    <header class="flex min-h-7 items-center justify-between gap-3">
-      <div class="flex min-w-0 items-center gap-2">
-        <span
-          class="size-2 shrink-0 rounded-full"
-          :class="dotClass"
-          aria-hidden="true"
-        />
-        <h2 class="m-0 truncate text-sm font-bold text-highlighted">
-          {{ label }}
-        </h2>
-      </div>
+    <template #header>
+      <header class="orders-rail__header">
+        <div class="orders-rail__identity">
+          <h2 class="orders-rail__title">
+            {{ label }}
+          </h2>
+        </div>
 
-      <span class="tabular-nums text-sm font-bold text-muted">
-        {{ count }}
-      </span>
-    </header>
+        <UBadge :color="accent" variant="soft" size="sm">
+          {{ count }}
+        </UBadge>
+      </header>
+    </template>
 
-    <div v-if="count" class="grid min-w-0 gap-2">
+    <div v-if="count" class="orders-rail__content">
       <slot />
     </div>
 
-    <p
-      v-else
-      class="m-0 grid min-h-20 place-items-center rounded-md border border-dashed border-default px-3 text-center text-xs text-dimmed"
-    >
-      {{ emptyLabel }}
-    </p>
-  </section>
+    <UAlert v-else color="neutral" variant="soft" :title="emptyLabel" />
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   accent?: 'neutral' | 'primary' | 'success' | 'warning'
   count: number
   emptyLabel: string
@@ -46,16 +37,41 @@ const props = withDefaults(defineProps<{
   accent: 'neutral',
 })
 
-const railClass = computed(() => ({
-  neutral: 'border-default',
-  primary: 'border-primary/30',
-  success: 'border-success/30',
-  warning: 'border-warning/40',
-}[props.accent]))
-const dotClass = computed(() => ({
-  neutral: 'bg-muted',
-  primary: 'bg-primary',
-  success: 'bg-success',
-  warning: 'bg-warning',
-}[props.accent]))
 </script>
+
+<style scoped>
+.orders-rail {
+  min-width: 0;
+}
+
+.orders-rail__header,
+.orders-rail__identity {
+  display: flex;
+  align-items: center;
+}
+
+.orders-rail__header {
+  min-height: 1.75rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.orders-rail__identity {
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+.orders-rail__title {
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orders-rail__content {
+  display: grid;
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+</style>

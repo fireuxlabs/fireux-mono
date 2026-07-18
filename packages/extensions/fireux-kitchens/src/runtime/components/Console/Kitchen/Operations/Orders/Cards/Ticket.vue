@@ -1,33 +1,28 @@
 <template>
-  <div
-    class="w-full min-w-0 overflow-hidden rounded-md border bg-default"
-    :class="selected
-      ? 'border-success ring-2 ring-success/35'
-      : prominent
-        ? 'border-success/45'
-        : 'border-default'"
+  <UCard
+    class="order-ticket"
+    :class="{
+      'order-ticket--prominent': prominent,
+      'order-ticket--selected': selected,
+    }"
   >
-    <div class="divide-y divide-default">
-      <div
-        class="flex min-h-10 items-center justify-between gap-2 px-3 text-sm font-semibold text-highlighted"
-      >
-        <span class="flex min-w-0 items-center gap-2">
-          <UIcon :name="headerIcon" class="size-4 shrink-0" />
-          <span class="truncate">{{ headerLabel }}</span>
-          <span
+    <template #header>
+      <div class="order-ticket__header">
+        <span class="order-ticket__identity">
+          <UIcon :name="headerIcon" />
+          <strong class="order-ticket__header-label">{{ headerLabel }}</strong>
+          <UBadge
             v-if="isWaitingForAcceptance"
-            class="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-dimmed"
+            color="neutral"
+            variant="soft"
+            size="sm"
+            icon="i-lucide-loader-circle"
             aria-label="Waiting for kitchen acceptance"
           >
-            <UIcon
-              name="i-lucide-loader-circle"
-              class="size-3 animate-spin"
-              aria-hidden="true"
-            />
-            waiting
-          </span>
+            Waiting
+          </UBadge>
         </span>
-        <span class="flex shrink-0 items-center gap-2">
+        <span class="order-ticket__actions">
           <UButton
             v-if="canTouchHeader"
             size="xs"
@@ -36,7 +31,9 @@
             icon="i-lucide-undo-2"
             :aria-label="headerActionLabel"
             @click.stop="touchHeader"
-          />
+          >
+            <span v-if="prominent">{{ headerActionLabel }}</span>
+          </UButton>
 
           <UButton
             v-if="canShowStatusAction"
@@ -51,12 +48,14 @@
             {{ statusActionLabel }}
           </UButton>
 
-          <span
+          <UBadge
             v-else-if="statusLabel && !prominent"
-            class="text-xs font-medium text-dimmed"
+            color="neutral"
+            variant="soft"
+            size="sm"
           >
             {{ statusLabel }}
-          </span>
+          </UBadge>
 
           <UButton
             v-if="trashMode"
@@ -70,63 +69,66 @@
           />
         </span>
       </div>
+    </template>
 
+    <div
+      class="order-ticket__body"
+      :class="{ 'order-ticket__body--interactive': canTouchBody }"
+      :role="canTouchBody ? 'button' : undefined"
+      :tabindex="canTouchBody ? 0 : undefined"
+      :aria-label="bodyActionLabel || undefined"
+      :aria-pressed="canTouchBody ? selected : undefined"
+      @click="touchBody"
+      @keydown.enter.prevent="touchBody"
+      @keydown.space.prevent="touchBody"
+    >
       <div
-        :class="[
-          'space-y-1 p-3',
-          canTouchBody && 'cursor-pointer hover:bg-muted/40',
-        ]"
-        :role="canTouchBody ? 'button' : undefined"
-        :tabindex="canTouchBody ? 0 : undefined"
-        :aria-label="bodyActionLabel || undefined"
-        :aria-pressed="canTouchBody ? selected : undefined"
-        @click="touchBody"
-        @keydown.enter.prevent="touchBody"
-        @keydown.space.prevent="touchBody"
+        v-for="line in lines"
+        :key="line.id"
+        class="order-ticket__line"
       >
-        <div
-          v-for="line in lines"
-          :key="line.id"
-          class="flex items-start gap-2 text-sm"
-        >
-          <span class="w-6 shrink-0 font-semibold">{{ line.qty }}x</span>
-          <span class="min-w-0">
-            {{ line.label }}
-            <small
-              v-if="line.variant && !line.label.includes(line.variant)"
-              class="block text-xs text-dimmed"
-            >
-              {{ line.variant }}
-            </small>
-            <small
-              v-if="line.addOns.length"
-              class="block text-xs text-dimmed"
-            >
-              + {{ line.addOns.join(', ') }}
-            </small>
-          </span>
-        </div>
-
-        <div v-if="!lines.length" class="text-xs italic text-dimmed">
-          No items in this order.
-        </div>
-
-        <div
-          v-if="customerLines.length && !prominent"
-          class="mt-3 space-y-0.5 border-t border-default pt-3 text-xs text-dimmed"
-        >
-          <p
-            v-for="line in customerLines"
-            :key="line"
-            class="m-0"
+        <UBadge color="primary" variant="soft" size="sm">
+          {{ line.qty }}×
+        </UBadge>
+        <span class="order-ticket__line-content">
+          {{ line.label }}
+          <small
+            v-if="line.variant && !line.label.includes(line.variant)"
+            class="order-ticket__option"
           >
-            {{ line }}
-          </p>
-        </div>
+            {{ line.variant }}
+          </small>
+          <small
+            v-if="line.addOns.length"
+            class="order-ticket__option"
+          >
+            + {{ line.addOns.join(', ') }}
+          </small>
+        </span>
       </div>
 
-      <div class="flex min-h-10 items-center justify-between gap-2 px-3 text-xs font-medium text-dimmed">
-        <span class="min-w-0 truncate">
+      <div v-if="!lines.length" class="order-ticket__empty">
+        No items in this order.
+      </div>
+
+      <div
+        v-if="customerLines.length && !prominent"
+        class="order-ticket__customer"
+      >
+        <USeparator />
+        <p
+          v-for="line in customerLines"
+          :key="line"
+          class="order-ticket__customer-line"
+        >
+          {{ line }}
+        </p>
+      </div>
+    </div>
+
+    <template #footer>
+      <div class="order-ticket__footer">
+        <span class="order-ticket__order-label">
           {{ orderLabel }}
         </span>
 
@@ -142,8 +144,8 @@
           @click.stop="copyTicket"
         />
       </div>
-    </div>
-  </div>
+    </template>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -194,3 +196,103 @@ const {
   trashOrder,
 } = useKitchenOrderTicket(props, emit)
 </script>
+
+<style scoped>
+.order-ticket {
+  width: 100%;
+  min-width: 0;
+}
+
+.order-ticket--prominent {
+  outline: 1px solid color-mix(in srgb, var(--ui-success) 45%, transparent);
+}
+
+.order-ticket--selected {
+  outline: 3px solid color-mix(in srgb, var(--ui-success) 45%, transparent);
+}
+
+.order-ticket__header,
+.order-ticket__identity,
+.order-ticket__actions,
+.order-ticket__footer {
+  display: flex;
+  align-items: center;
+}
+
+.order-ticket__header {
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.order-ticket__identity {
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+.order-ticket__header-label,
+.order-ticket__order-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-ticket__actions {
+  flex: none;
+  gap: 0.5rem;
+}
+
+.order-ticket__empty,
+.order-ticket__customer {
+  color: var(--ui-text-dimmed);
+  font-size: 0.75rem;
+}
+
+.order-ticket__body--interactive {
+  cursor: pointer;
+}
+
+.order-ticket__body--interactive:hover {
+  background: color-mix(in srgb, var(--ui-bg-muted) 40%, transparent);
+}
+
+.order-ticket__line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.order-ticket__line + .order-ticket__line {
+  margin-top: 0.25rem;
+}
+
+.order-ticket__line-content,
+.order-ticket__order-label {
+  min-width: 0;
+}
+
+.order-ticket__option {
+  display: block;
+  color: var(--ui-text-muted);
+}
+
+.order-ticket__empty {
+  font-style: italic;
+}
+
+.order-ticket__customer {
+  margin-top: 0.75rem;
+}
+
+.order-ticket__customer-line {
+  margin-bottom: 0;
+}
+
+.order-ticket__footer {
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.order-ticket--prominent .order-ticket__footer {
+  font-weight: 700;
+}
+</style>

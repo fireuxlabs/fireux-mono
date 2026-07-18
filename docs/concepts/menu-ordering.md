@@ -282,8 +282,8 @@ Public order funnel spine:
   and idempotency reservation. Ending a service rotates the service ID and
   resets the next Order to 1; it must not overlap active Incoming, Queue, or Pass
   work.
-- Collection tickets may prefix the short reference with the customer's first
-  name (`Sofia · Order 3`). Other surfaces retain `Order N`; table and room
+- Collection tickets may suffix the short reference with the customer's first
+  name (`Order: 3-Sofia`). Other surfaces retain `Order: N`; table and room
   identity remain fulfilment context rather than part of the sequence.
 - Initial status is resolved once from payment plus the shared intake policy:
   `pending_payment`, otherwise `pending_acceptance` or `accepted`.
