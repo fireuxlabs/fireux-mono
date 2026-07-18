@@ -192,10 +192,7 @@ const jobCompanyId = computed(() => {
   const value = String(job.value?.company_id ?? '').trim()
   return value || null
 })
-const { company } = useCompanyFetch()
-const companyData = computed(() =>
-  jobCompanyId.value ? company(jobCompanyId.value).value : null
-)
+const { company: companyData } = useCompanyFetch(jobCompanyId)
 const companyCard = computed(() => companyInterface.pill(companyData.value))
 
 const saving = ref(false)

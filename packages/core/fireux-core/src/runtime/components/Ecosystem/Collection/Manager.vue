@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showCount && isSettled" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -41,8 +42,23 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="ecosystems"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="ecosystems"
+      state="error"
+      surface="bare"
+      description="Ecosystems could not be loaded. Please try again."
+    />
+
     <EcosystemCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -54,9 +70,16 @@
       </template>
     </EcosystemCollectionList>
 
-    <p v-else>
-      {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="ecosystems"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No ecosystems match your search' : 'No ecosystems yet'"
+      :description="query
+        ? 'Try a different search term.'
+        : 'Once ecosystem records are added, they will display here.'"
+    />
 
     <div>
       <DevJson
@@ -104,6 +127,10 @@ const props = withDefaults(
 
 const fetched = useEcosystemCollection()
 const rawCollection = computed<EcosystemInterfaceInput[]>(() => fetched.ecosystems.value)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Ecosystems'))
 const description = computed(() => String(props.description || '').trim())

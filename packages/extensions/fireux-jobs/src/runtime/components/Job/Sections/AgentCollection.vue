@@ -3,15 +3,23 @@
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <h2>Your job postings</h2>
-        <UBadge variant="soft">{{ total }}</UBadge>
+        <UBadge v-if="isSettled" variant="soft">{{ total }}</UBadge>
       </div>
       <p class="text-sm opacity-70">Manage jobs created by your account.</p>
     </template>
 
-    <div v-if="pending" class="space-y-3">
+    <div v-if="outcome === 'pending'" class="space-y-3">
       <USkeleton class="h-20 rounded-xl" />
       <USkeleton class="h-20 rounded-xl" />
     </div>
+
+    <UAlert
+      v-else-if="outcome === 'error'"
+      color="error"
+      variant="soft"
+      title="Jobs unavailable"
+      description="Your job postings could not be loaded. Please try again."
+    />
 
     <template v-else>
       <ul v-if="jobs.length" class="grid gap-4 md:grid-cols-2">
@@ -57,7 +65,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Job } from '../../../models/job.model'
 
-const { jobs: allJobs, pending: isPending } = useJobCollection()
+const { jobs: allJobs, outcome: sourceOutcome } = useJobCollection()
 const { coreUser } = useUser()
 const { uid: authUid } = useAuth()
 
@@ -67,7 +75,10 @@ const jobs = computed<Job[]>(() => {
   return (allJobs.value ?? []).filter((job) => job.created?.by === ownerId)
 })
 
-const pending = computed<boolean>(() => isPending.value)
+const outcome = computed(() => sourceOutcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const total = computed(() => jobs.value.length)
 
 const badgeColor = (status?: Job['status']) => {

@@ -21,22 +21,25 @@ export function usePropertyFetch(
   const collectionPath = computed(() => {
     if (normalizeString(options.collectionPath)) return normalizeString(options.collectionPath)
     if (options.shape === 'overlay') {
-      return `${AppStorage.collection}/${normalizeString(appId)}/${PropertyStorage.overlayCollection}`
+      const resolvedAppId = normalizeString(appId)
+      return resolvedAppId
+        ? `${AppStorage.collection}/${resolvedAppId}/${PropertyStorage.overlayCollection}`
+        : ''
     }
     return PropertyStorage.rootCollection
   })
-  const property = computed(() =>
-    resolvedPropertyId.value
-      ? firestoreFetchDoc<Property>(
-          collectionPath.value,
-          resolvedPropertyId.value
-        ).value
-      : undefined
+  const source = firestoreFetchDoc<Property>(
+    collectionPath,
+    resolvedPropertyId
   )
+  const property = computed(() => source.value)
 
   return {
     collectionPath,
     property,
     exists: computed(() => Boolean(property.value)),
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

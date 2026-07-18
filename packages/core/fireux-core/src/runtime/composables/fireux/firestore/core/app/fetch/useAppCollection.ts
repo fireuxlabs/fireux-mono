@@ -1,5 +1,6 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { AppStorage, type App } from '../../../../../../models/core/app.model'
+import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type AppCollectionDoc = Partial<App> & { id?: string }
@@ -13,7 +14,16 @@ export function useAppCollection(
   const apps = computed(() =>
     (source.value ?? []).filter((app) => String((app as any)?.status || '') !== 'retired')
   )
-  const count = computed(() => apps.value?.length ?? 0)
+  const count = computed(() => apps.value.length)
+  const pending = computed(() => source.pending.value)
+  const error = computed(() => source.error.value)
+  const active = computed(() => Boolean(path.value))
+  const { outcome } = useFirestoreCollectionState({
+    active,
+    count,
+    error,
+    pending,
+  })
 
-  return { apps, count }
+  return { apps, count, pending, error, outcome }
 }

@@ -111,10 +111,8 @@ const KitchenPill = defineComponent({
 const CompanyPill = defineComponent({
   props: { id: String },
   setup(props) {
-    const { company } = useCompanyFetch()
-    const companyData = computed(() =>
-      props.id ? company(props.id).value : null
-    )
+    const companyId = computed(() => String(props.id || '').trim())
+    const { company: companyData } = useCompanyFetch(companyId)
     const companyInterface = useCompanyInterface()
     const companyCard = computed(() => companyInterface.pill(companyData.value))
     return { companyCard }

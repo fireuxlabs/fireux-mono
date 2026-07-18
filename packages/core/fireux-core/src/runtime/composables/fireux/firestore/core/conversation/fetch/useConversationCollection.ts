@@ -4,6 +4,7 @@ import type {
   ConversationKind,
   ConversationStatus,
 } from '../../../../../../models/core/conversation.model'
+import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useConversationPaths } from '../utils/paths/useConversationPaths'
 
@@ -44,9 +45,7 @@ export function useConversationCollection(
         : ''
       : paths.collectionPath.value
   )
-  const firestoreSource = computed(() =>
-    firestoreFetchCollection<Conversation>(collectionPath.value)
-  )
+  const firestoreSource = firestoreFetchCollection<Conversation>(collectionPath)
 
   const conversations = computed<Conversation[]>(() => {
     const appId = clean(filter.value.appId)
@@ -55,7 +54,7 @@ export function useConversationCollection(
     const kind = clean(filter.value.kind)
     const status = clean(filter.value.status)
 
-    return (firestoreSource.value.value ?? []).filter((conversation) => {
+    return (firestoreSource.value ?? []).filter((conversation) => {
       if (!clean(conversation.id)) return false
       if (appId && conversation.app_id !== appId) return false
       if (kind && conversation.kind !== kind) return false
@@ -67,11 +66,20 @@ export function useConversationCollection(
   })
 
   const count = computed(() => conversations.value.length)
-  const pending = computed(() => firestoreSource.value.value === undefined)
+  const pending = firestoreSource.pending
+  const error = firestoreSource.error
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count,
+    error,
+    pending,
+  })
 
   return {
     conversations,
     count,
     pending,
+    error,
+    outcome,
   }
 }

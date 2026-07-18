@@ -1,4 +1,7 @@
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import {
+  useFirestoreRead,
+  type FirestoreReadOutcome,
+} from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
@@ -21,29 +24,13 @@ export function useCompanyFetch(): {
 export function useCompanyFetch(id: CompanyIdInput): {
   company: ComputedRef<CompanyHydrated | null>
   pending: ComputedRef<boolean>
+  error: Ref<unknown | undefined>
+  outcome: ComputedRef<FirestoreReadOutcome>
   fetchCompany: CompanyFetchFunction
 }
 export function useCompanyFetch(id?: CompanyIdInput) {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
-
-  // ✅ raw Firestore sources
-  const companiesCollection = firestoreFetchCollection<Company>(CompanyStorage.collection)
-  const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
-
-  // ✅ canonical hydration helpers (rename at call-site)
-  const hydrate = hydratePlaceCollection
   const hydrateDoc = hydratePlaceDoc
-
-  // ✅ hydrated collection (UI-ready)
-  const companies = hydrate(
-    computed(() => companiesCollection.value ?? []),
-    computed(() => placesCollection.value ?? []),
-    (entry, place): CompanyHydrated => ({
-      ...(place ?? {}),
-      ...entry,
-      id: entry.id,
-    })
-  )
 
   // ✅ hydrated single doc (UI-ready)
   const fetchCompany: CompanyFetchFunction = (companyId: string) => {
@@ -70,22 +57,55 @@ export function useCompanyFetch(id?: CompanyIdInput) {
     const companyId = isRef(id)
       ? computed(() => String(id.value ?? '').trim())
       : computed(() => String(id ?? '').trim())
-    const source = computed(() =>
-      companyId.value ? fetchCompany(companyId.value) : null
+    const companyDoc = firestoreFetchDoc<Company>(
+      CompanyStorage.collection,
+      companyId
+    )
+    const placeDoc = firestoreFetchDoc<Place>(
+      PlaceStorage.collection,
+      companyId
+    )
+    const hydratedCompany = hydrateDoc(
+      computed(() => companyDoc.value),
+      computed(() => placeDoc.value),
+      companyId,
+      (entry, place, docId): CompanyHydrated | undefined => {
+        if (!entry) return undefined
+
+        return {
+          ...(place ?? {}),
+          ...entry,
+          id: docId,
+        }
+      }
     )
     const company = computed<CompanyHydrated | null>(
-      () => source.value?.value ?? null
+      () => hydratedCompany.value ?? null
     )
-    const pending = computed(() =>
-      Boolean(companyId.value) && source.value?.value === undefined
-    )
+    const pending = computed(() => companyDoc.pending.value)
 
     return {
       company,
       pending,
+      error: companyDoc.error,
+      outcome: companyDoc.outcome,
       fetchCompany,
     }
   }
+
+  const companiesCollection = firestoreFetchCollection<Company>(
+    CompanyStorage.collection
+  )
+  const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
+  const companies = hydratePlaceCollection(
+    computed(() => companiesCollection.value ?? []),
+    computed(() => placesCollection.value ?? []),
+    (entry, place): CompanyHydrated => ({
+      ...(place ?? {}),
+      ...entry,
+      id: entry.id,
+    })
+  )
 
   return {
     companies,

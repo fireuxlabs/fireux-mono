@@ -22,6 +22,14 @@
       />
 
       <UAlert
+        v-else-if="failed"
+        color="error"
+        variant="soft"
+        title="Ecosystem unavailable"
+        description="This ecosystem could not be loaded. Please try again."
+      />
+
+      <UAlert
         v-else-if="!ecosystem"
         color="warning"
         variant="soft"
@@ -52,13 +60,18 @@ definePageMeta({
 
 const route = useRoute()
 const routeSlug = computed(() => String(route.params.slug || '').trim())
-const { ecosystems, pending } = useEcosystemCollection()
+const { ecosystems, outcome } = useEcosystemCollection()
 const { profile: makeProfile } = useEcosystemInterface()
 
 const ecosystem = computed(() =>
   ecosystems.value.find((entry) => String(entry.slug || '').trim() === routeSlug.value) ?? null
 )
-const loading = computed(() => Boolean(routeSlug.value) && pending.value)
+const loading = computed(() =>
+  Boolean(routeSlug.value) && outcome.value === 'pending'
+)
+const failed = computed(() =>
+  Boolean(routeSlug.value) && outcome.value === 'error'
+)
 const profile = computed(() => makeProfile(ecosystem.value))
 const pageTitle = computed(() => profile.value?.name || 'Ecosystem')
 const pageDescription = computed(() =>

@@ -32,23 +32,22 @@ export function useConversationFetch(
       : paths.collectionPath.value
   )
 
-  const firestoreSource = computed(() => {
-    if (!conversationId.value || !collectionPath.value) return null
-    return firestoreFetchDoc<Conversation>(collectionPath.value, conversationId.value)
-  })
+  const firestoreSource = firestoreFetchDoc<Conversation>(
+    collectionPath,
+    conversationId
+  )
 
   const conversation = computed<Conversation | null>(() => {
-    const entry = firestoreSource.value?.value
+    const entry = firestoreSource.value
     if (!entry?.id) return null
     return entry
   })
-  const pending = computed(() => {
-    if (!conversationId.value) return false
-    return firestoreSource.value?.value === undefined
-  })
+  const pending = computed(() => firestoreSource.pending.value)
 
   return {
     conversation,
     pending,
+    error: firestoreSource.error,
+    outcome: firestoreSource.outcome,
   }
 }

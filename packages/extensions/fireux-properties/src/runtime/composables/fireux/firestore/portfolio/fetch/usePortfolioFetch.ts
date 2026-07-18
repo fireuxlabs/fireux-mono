@@ -21,21 +21,21 @@ export function usePortfolioFetch(
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
   const { surface } = usePortfolioInterface()
-  const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const pathRef = isRef(options.collectionPath)
-    ? options.collectionPath
-    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
+  const idRef = computed(() =>
+    String(isRef(id) ? id.value || '' : id || '').trim()
+  )
+  const collectionPath = computed(() => {
+    const configuredPath = isRef(options.collectionPath)
+      ? options.collectionPath.value
+      : options.collectionPath
 
-  const source = computed(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return null
-    return firestoreFetchDoc<PortfolioFetchDoc>(collectionPath, docId)
+    return String(configuredPath || '').trim() || DEFAULT_COLLECTION_PATH
   })
+  const source = firestoreFetchDoc<PortfolioFetchDoc>(collectionPath, idRef)
 
   const portfolio = computed<PortfolioFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
-    const entry = source.value?.value
+    const entry = source.value
     if (!docId || !entry) return null
     return surface({
       portfolio: {
@@ -45,14 +45,12 @@ export function usePortfolioFetch(
     }) as PortfolioFetchDoc | null
   })
 
-  const pending = computed(() => {
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return false
-    return source.value?.value === undefined
-  })
+  const pending = computed(() => source.pending.value)
 
   return {
     portfolio,
     pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

@@ -1,6 +1,6 @@
 Firestore entity spine map
 Updated: 2026-07-18
-Ref: dd0401906
+Ref: 1fabff8be
 Role: map, not canon
 
 Purpose:
@@ -55,6 +55,14 @@ Read-state contract:
   `missing`; successful data is `ready`.
 - Reactive source changes reset stale rows. Exact-id batches expose the same
   pending/error/outcome distinction and do not turn failures into empty arrays.
+- Construct each live read once during setup and pass reactive collection-path,
+  document-path, document-id, or query inputs into that read. The shared read
+  owns source replacement and scope disposal; do not create live reads inside a
+  `computed`, `watch`, or render-time factory.
+- When a document combines authoritative data with optional enrichment, its
+  public pending/error/outcome state follows the authoritative source. Optional
+  enrichment may improve a ready record but must not turn it into a false error
+  or missing result.
 - Collection-family composables derive their public outcome after normalization
   and access filtering, then return `count`, `pending`, `error`, and `outcome`
   alongside the collection.

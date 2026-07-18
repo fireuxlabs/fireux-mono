@@ -6,6 +6,7 @@
           v-if="showSearchInput"
           v-model="query"
           :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
           icon="i-lucide-search"
           class="kitchen-directory__search"
         />
@@ -26,17 +27,32 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount" class="kitchen-directory__count">
+        <span v-if="showCount && isSettled" class="kitchen-directory__count">
           {{ countLabel }}
         </span>
       </template>
     </CollectionDirectoryHeader>
 
     <CollectionDirectoryState
-      v-if="pending"
+      v-if="outcome === 'pending'"
+      title="Loading kitchens"
       loading
       icon="i-lucide-loader-circle"
       description="Finding kitchens…"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
+    />
+
+    <CollectionDirectoryState
+      v-else-if="outcome === 'error'"
+      title="Kitchens unavailable"
+      description="Published kitchens could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     />
 
     <KitchenCollectionList
@@ -86,8 +102,6 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import {
   computed,
-  onMounted,
-  ref,
 } from 'vue'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -128,9 +142,9 @@ const fetched = useKitchenCollection()
 const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
-const hydrated = ref(false)
-const pending = computed(() =>
-  fetched.pending.value || (!hydrated.value && !collectionSurface.value.length)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
 )
 const { devJsonData } = useDevCollectionJson(collectionSurface)
 const title = computed(() => String(props.title || 'Kitchens'))
@@ -202,10 +216,6 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} of ${totalCount.value} kitchens`
     : `${totalCount.value} kitchen${totalCount.value === 1 ? '' : 's'}`
 )
-
-onMounted(() => {
-  hydrated.value = true
-})
 </script>
 
 <style scoped>

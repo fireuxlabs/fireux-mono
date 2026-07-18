@@ -22,20 +22,22 @@ export function usePropertyDocument(
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)
   )
 
-  const liveDoc = computed(() => {
-    const id = normalizedPropertyId.value
-    if (!propertiesPath.value || !id) return null
-    return firestoreFetchDoc<Property>(propertiesPath.value, id)
-  })
+  const liveDoc = firestoreFetchDoc<Property>(
+    propertiesPath,
+    normalizedPropertyId
+  )
 
   const document = computed<Property | null>(() => {
     if (!normalizedPropertyId.value) return null
-    return liveDoc.value?.value ?? null
+    return liveDoc.value ?? null
   })
 
   return {
     propertyId: normalizedPropertyId,
     collectionPath: propertiesPath,
     document,
+    pending: liveDoc.pending,
+    error: liveDoc.error,
+    outcome: liveDoc.outcome,
   }
 }

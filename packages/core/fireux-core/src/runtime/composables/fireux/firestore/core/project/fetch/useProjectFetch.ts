@@ -33,7 +33,9 @@ export function useProjectFetch(
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
   const { surface } = useProjectInterface()
-  const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
+  const idRef = computed(() =>
+    String(isRef(id) ? id.value || '' : id || '').trim()
+  )
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
       ? options.collectionPath.value
@@ -46,27 +48,25 @@ export function useProjectFetch(
     return DEFAULT_COLLECTION_PATH
   })
 
-  const firestoreSource = computed(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return null
-    return firestoreFetchDoc<ProjectFetchDoc>(collectionPath, docId)
-  })
+  const collectionPath = computed(() =>
+    String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+  )
+  const firestoreSource = firestoreFetchDoc<ProjectFetchDoc>(
+    collectionPath,
+    idRef
+  )
 
   const project = computed<ProjectFetchDoc | null>(() => {
-    const entry = firestoreSource.value?.value
+    const entry = firestoreSource.value
     return surface({ project: normalizeProject(entry) }) as ProjectFetchDoc | null
   })
 
-  const pending = computed(() => {
-    const docId = String(idRef.value || '').trim()
-
-    if (!docId) return false
-    return firestoreSource.value?.value === undefined
-  })
+  const pending = computed(() => firestoreSource.pending.value)
 
   return {
     project,
     pending,
+    error: firestoreSource.error,
+    outcome: firestoreSource.outcome,
   }
 }

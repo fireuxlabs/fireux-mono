@@ -5,7 +5,7 @@ import {
   where,
   type Query,
 } from 'firebase/firestore'
-import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -61,24 +61,19 @@ export function useSupplierFetch(
     return sourceRef.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
   })
 
-  const source = shallowRef(null) as ShallowRef<Ref<SupplierFetchDoc | undefined> | null>
-  watch(
-    [sourceRef, pathRef, idRef, keyRef],
-    ([nextSource, nextPath, nextId, nextKey]: [
-      SupplierFetchSource,
-      string,
-      string,
-      SupplierFetchKey,
-    ]) => {
-      const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
-      const docId = String(nextId || '').trim()
-
-      source.value =
-        nextSource === 'demo' || nextKey === 'slug' || !docId
-          ? null
-          : firestoreFetchDoc<SupplierFetchDoc>(collectionPath, docId)
-    },
-    { immediate: true }
+  const documentPath = computed(() =>
+    sourceRef.value === 'demo' || keyRef.value === 'slug'
+      ? ''
+      : String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+  )
+  const documentId = computed(() =>
+    sourceRef.value === 'demo' || keyRef.value === 'slug'
+      ? ''
+      : String(idRef.value || '').trim()
+  )
+  const source = firestoreFetchDoc<SupplierFetchDoc>(
+    documentPath,
+    documentId
   )
   const slugQuery = computed<Query<SupplierFetchDoc> | null>(() => {
     const slug = String(idRef.value || '').trim()
@@ -117,7 +112,7 @@ export function useSupplierFetch(
       return surface({ supplier: entry }) as SupplierFetchDoc | null
     }
 
-    const entry = source.value?.value
+    const entry = source.value
     if (!docId || !entry) return null
     return surface({
       supplier: {
@@ -131,12 +126,19 @@ export function useSupplierFetch(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
-    if (keyRef.value === 'slug') return slugSource.value === undefined
-    return source.value?.value === undefined
+    if (keyRef.value === 'slug') return slugSource.pending.value
+    return source.pending.value
+  })
+  const error = computed(() => {
+    if (sourceRef.value === 'demo') return undefined
+    return keyRef.value === 'slug'
+      ? slugSource.error.value
+      : source.error.value
   })
 
   return {
     supplier,
     pending,
+    error,
   }
 }

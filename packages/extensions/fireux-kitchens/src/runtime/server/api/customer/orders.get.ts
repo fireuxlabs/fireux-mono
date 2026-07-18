@@ -11,6 +11,7 @@ import type {
   CustomerOrderPage,
   CustomerOrderSummary,
 } from '../../../models/customer/order.model.ts'
+import { menuKitchenIdentity } from '../../menu/ownership/kitchen-scope.ts'
 
 const PAGE_SIZE = 24
 const ORDER_PATH = /^apps\/([^/]+)\/kitchens\/([^/]+)\/orders\/([^/]+)$/
@@ -61,11 +62,21 @@ export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
   const orderSnaps = candidates.length
     ? await db.getAll(...candidates.map(candidate => candidate.orderRef))
     : []
+  const kitchens = await customerKitchenHydration(
+    db,
+    candidates.map(candidate => candidate.link)
+  )
   const items = candidates.flatMap((candidate, index) => {
     const orderSnap = orderSnaps[index]
     if (!orderSnap?.exists) return []
 
-    const summary = customerOrderSummary(uid, candidate.linkId, candidate.link, orderSnap.data())
+    const summary = customerOrderSummary(
+      uid,
+      candidate.linkId,
+      candidate.link,
+      orderSnap.data(),
+      kitchens.get(kitchenKey(candidate.link))
+    )
     return summary ? [summary] : []
   })
 
@@ -81,7 +92,8 @@ function customerOrderSummary(
   customerUid: string,
   id: string,
   link: Record<string, unknown>,
-  order: Record<string, unknown> | undefined
+  order: Record<string, unknown> | undefined,
+  kitchen?: CustomerKitchenHydration
 ): CustomerOrderSummary | null {
   if (
     !order
@@ -117,7 +129,15 @@ function customerOrderSummary(
     ),
     kitchen: {
       id: text(link.kitchen_id),
-      name: text(link.kitchen_name) || 'Kitchen',
+      name: kitchen?.name || text(link.kitchen_name) || 'Kitchen',
+      ...(kitchen?.path ? { path: kitchen.path } : {}),
+      ...(kitchen?.logoImageUrl
+        ? { logo_image_url: kitchen.logoImageUrl }
+        : {}),
+      ...(kitchen?.imageUrl ? { image_url: kitchen.imageUrl } : {}),
+      ...(kitchen?.imageShade
+        ? { image_shade: kitchen.imageShade }
+        : {}),
     },
     menu: {
       id: text(link.menu_id),
@@ -139,6 +159,80 @@ function customerOrderSummary(
       status: paymentStatus,
     },
   }
+}
+
+type CustomerKitchenHydration = {
+  name: string
+  path: string
+  logoImageUrl: string
+  imageUrl: string
+  imageShade?: 'light' | 'dark' | 'none'
+}
+
+async function customerKitchenHydration(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  links: Record<string, unknown>[]
+) {
+  const references = new Map<string, ReturnType<typeof db.doc>>()
+
+  for (const link of links) {
+    const kitchenId = text(link.kitchen_id)
+    const appId = text(link.app_id)
+    if (!kitchenId) continue
+
+    const rootRef = db.doc(`kitchens/${kitchenId}`)
+    references.set(rootRef.path, rootRef)
+    if (appId) {
+      const appRef = db.doc(`apps/${appId}/kitchens/${kitchenId}`)
+      references.set(appRef.path, appRef)
+    }
+  }
+
+  if (!references.size) return new Map<string, CustomerKitchenHydration>()
+
+  const snapshots = await db.getAll(...references.values())
+  const dataByPath = new Map(
+    snapshots.map(snapshot => [
+      snapshot.ref.path,
+      snapshot.exists ? snapshot.data() || {} : {},
+    ])
+  )
+
+  return new Map(
+    links.flatMap((link) => {
+      const kitchenId = text(link.kitchen_id)
+      if (!kitchenId) return []
+
+      const appId = text(link.app_id)
+      const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
+      const appData = appId
+        ? dataByPath.get(`apps/${appId}/kitchens/${kitchenId}`) || {}
+        : {}
+      const identity = menuKitchenIdentity(rootData, appData)
+      const slug = text(rootData.slug) || text(appData.slug)
+
+      return [[
+        kitchenKey(link),
+        {
+          name: identity.name,
+          path: safeKitchenPath(slug),
+          logoImageUrl: identity.logoImageUrl,
+          imageUrl: identity.imageUrl,
+          imageShade: identity.imageShade,
+        },
+      ] as const]
+    })
+  )
+}
+
+function kitchenKey(link: Record<string, unknown>) {
+  return `${text(link.app_id)}/${text(link.kitchen_id)}`
+}
+
+function safeKitchenPath(slug: string) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)
+    ? `/kitchens/${slug}`
+    : ''
 }
 
 function safeMenuPath(value: unknown) {

@@ -8,6 +8,7 @@ import {
   getDoc,
   orderBy,
   startAt,
+  type DocumentReference,
   type DocumentSnapshot,
   type Query,
   type QueryDocumentSnapshot,
@@ -21,6 +22,7 @@ import {
   type Ref,
 } from 'vue'
 import {
+  readRuntimeFirestoreDatabaseId,
   useCollection,
   useDocument,
   useFirestoreResolver,
@@ -32,6 +34,16 @@ type UseFirestoreReadOptions = {
 }
 
 type MaybeRef<T> = T | Ref<T>
+
+export type FirestoreDocSource =
+  | string
+  | Ref<string | null | undefined>
+  | null
+  | undefined
+
+export type FirestoreFetchDocOptions = {
+  ssrKey?: string
+}
 
 export type FirestoreReadOutcome =
   | 'idle'
@@ -66,25 +78,30 @@ function guardFirestorePromise(
     error?: Ref<unknown | undefined>
     promise?: Ref<Promise<unknown> | undefined>
   },
-  context: string
+  context: MaybeRef<string>
 ) {
+  const resolvedContext = () => String(unref(context) || 'read')
   const handled = new WeakSet<Promise<unknown>>()
   const guard = (promise: Promise<unknown> | undefined) => {
     if (!promise || typeof promise.catch !== 'function') return
     if (handled.has(promise)) return
     handled.add(promise)
     if (binding.error) binding.error.value = undefined
+    const promiseContext = resolvedContext()
 
     promise.catch((error) => {
       if (import.meta.dev) {
         if (isOfflineFirestoreError(error)) {
           console.warn(
-            `[useFirestoreRead] read unavailable while offline (${context})`,
+            `[useFirestoreRead] read unavailable while offline (${promiseContext})`,
             error
           )
           return
         }
-        console.error(`[useFirestoreRead] read failed (${context})`, error)
+        console.error(
+          `[useFirestoreRead] read failed (${promiseContext})`,
+          error
+        )
       }
     })
   }
@@ -201,29 +218,71 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
 
   /** Fetch a single document (reactive) */
   const firestoreFetchDoc = <T>(
-    collectionPath: string,
-    docId: string
+    collectionPath: FirestoreDocSource,
+    docId: FirestoreDocSource,
+    readOptions: FirestoreFetchDocOptions = {}
   ): FirestoreReadRef<T> => {
+    const resolvedCollectionPath = computed(() =>
+      String(unref(collectionPath) || '').trim()
+    )
+    const resolvedDocId = computed(() => String(unref(docId) || '').trim())
+    const active = computed(() =>
+      Boolean(resolvedCollectionPath.value && resolvedDocId.value)
+    )
+    const documentRef = computed<DocumentReference<T> | null>(() => {
+      const path = resolvedCollectionPath.value
+      const id = resolvedDocId.value
+      return path && id
+        ? doc(resolveDb(), path, id) as DocumentReference<T>
+        : null
+    })
+
     if (import.meta.server) {
-      return createServerFirestoreRead<T>(true, 'document')
+      return createServerFirestoreRead<T>(active, 'document')
     }
 
-    const docRef = doc(resolveDb(), collectionPath, docId)
-    const binding = useDocument(docRef, {
-      ssrKey: `${collectionPath}-${docId}`,
+    const initialCollectionPath = resolvedCollectionPath.value
+    const initialDocId = resolvedDocId.value
+    const initialDatabaseId = String(
+      unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
+    ).trim() || '(default)'
+    const initialSsrIdentity = readOptions.ssrKey
+      || (initialCollectionPath && initialDocId
+        ? `${initialCollectionPath}/${initialDocId}`
+        : '')
+    const ssrKey = initialSsrIdentity
+      ? `fireux-doc:${initialDatabaseId}:${initialSsrIdentity}`
+      : undefined
+    const binding = useDocument(documentRef, {
+      ...(ssrKey ? { ssrKey } : {}),
+      reset: () => undefined,
       transform: (docSnap: DocumentSnapshot<T>) => {
         const raw = docSnap.data()
         if (!raw) return undefined
         const value = { ...(raw as any), id: docSnap.id } as T & Record<string, unknown>
-        return attachDevCollectionMeta(value, collectionPath, docSnap.id) as T
+        return attachDevCollectionMeta(
+          value,
+          docSnap.ref.parent.path,
+          docSnap.id
+        ) as T
       },
     } as any)
+    const context = computed(() => {
+      const path = resolvedCollectionPath.value
+      const id = resolvedDocId.value
+      const databaseId = String(
+        unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
+      ).trim() || '(default)'
+      return path && id
+        ? `${databaseId}:${path}/${id}`
+        : `${databaseId}:document`
+    })
     guardFirestorePromise(
       binding as any,
-      `${collectionPath}/${docId}`
+      context
     )
     return enhanceFirestoreRead(binding as any, {
-      active: true,
+      active,
       kind: 'document',
     })
   }

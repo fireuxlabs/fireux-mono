@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type {
   CustomerOrderPage,
@@ -7,6 +7,7 @@ import type {
 
 export function useCustomerOrders() {
   const { currentUser } = useAuth()
+  let mounted = false
   const orders = ref<CustomerOrderSummary[]>([])
   const pending = ref(false)
   const loadingMore = ref(false)
@@ -57,10 +58,14 @@ export function useCustomerOrders() {
       orders.value = []
       nextCursor.value = null
       error.value = ''
-      if (user) void load()
-    },
-    { immediate: true }
+      if (mounted && user) void load()
+    }
   )
+
+  onMounted(() => {
+    mounted = true
+    if (currentUser.value) void load()
+  })
 
   return {
     error,

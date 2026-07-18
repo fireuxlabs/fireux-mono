@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -32,7 +33,7 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showCount && isSettled" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -40,8 +41,23 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="jobs"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="jobs"
+      state="error"
+      surface="bare"
+      description="Jobs could not be loaded. Please try again."
+    />
+
     <JobCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -53,9 +69,16 @@
       </template>
     </JobCollectionList>
 
-    <p v-else>
-      {{ query ? 'No jobs match your search.' : 'No jobs found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="jobs"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No jobs match your search' : 'No jobs yet'"
+      :description="query
+        ? 'Try a different search term.'
+        : 'Once job records are added, they will display here.'"
+    />
 
     <div>
       <DevJson
@@ -101,6 +124,10 @@ const props = withDefaults(
 
 const fetched = useJobCollection()
 const collection = computed<Job[]>(() => fetched.appJobs.value)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
 const description = computed(() =>

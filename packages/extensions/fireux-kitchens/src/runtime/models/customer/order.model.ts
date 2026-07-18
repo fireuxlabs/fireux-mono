@@ -25,6 +25,10 @@ export type CustomerOrderSummary = {
   kitchen: {
     id: string
     name: string
+    path?: string
+    logo_image_url?: string
+    image_url?: string
+    image_shade?: 'light' | 'dark' | 'none'
   }
   menu: {
     id: string

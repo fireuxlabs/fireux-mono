@@ -86,9 +86,11 @@ Current display rule:
   `customers/{userId}/orders/{orderId}` beside the Kitchen order. The link
   records only immutable source identity; the Kitchen order remains the sole
   lifecycle authority. The customer dashboard reads a bounded link page and
-  resolves those Kitchen orders in one bounded batch, so ready, completed, and
-  cancelled orders remain visible without a second mutable status copy or a
-  cross-Kitchen collection-group scan. Anonymous orders are not silently
+  resolves its Kitchen orders and deduplicated public Kitchen identities with
+  bounded batch reads. Ready, completed, and cancelled orders therefore remain
+  visible with current Kitchen branding, without a second mutable order-status
+  copy, per-card Kitchen reads, or a cross-Kitchen collection-group scan.
+  Anonymous orders are not silently
   claimed later; any future claim flow needs its own explicit identity proof.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 

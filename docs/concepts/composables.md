@@ -1,6 +1,6 @@
 Composables spine map
 Updated: 2026-07-18
-Ref: dd0401906
+Ref: 1fabff8be
 Role: map, not canon
 
 Purpose:
@@ -47,6 +47,13 @@ Naming notes:
 - `useXInterface`: map entity data into UI-ready surfaces.
 - `useXConsole`: selected console runtime for a domain.
 - `useXConsoleIndex`: index page adapter over shared `useConsoleIndex`.
+
+Reactive ownership:
+- A composable that exposes a live collection or document read constructs that
+  binding once during setup and passes reactive source inputs into it.
+- Static fetch factories are setup-time conveniences only. Do not invoke them
+  from `computed`, `watch`, templates, or render-time helpers; that creates
+  subscriptions without a stable owner.
 
 Avoid:
 - `facade`

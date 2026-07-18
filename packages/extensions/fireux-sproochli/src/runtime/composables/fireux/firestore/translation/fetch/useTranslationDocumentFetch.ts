@@ -27,19 +27,18 @@ export function useTranslationDocumentFetch(
         : translationDocumentId.value
     )
   )
-  const source = computed(() =>
-    documentId.value
-      ? firestoreFetchDoc<TranslationDocument>(
-          collectionPath.value,
-          documentId.value
-        )
-      : null
+  const source = firestoreFetchDoc<TranslationDocument>(
+    collectionPath,
+    documentId
   )
-  const translationDocument = computed(() => source.value?.value ?? null)
+  const translationDocument = computed(() => source.value ?? null)
 
   return {
     collectionPath,
     translationDocument,
     exists: computed(() => Boolean(translationDocument.value)),
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

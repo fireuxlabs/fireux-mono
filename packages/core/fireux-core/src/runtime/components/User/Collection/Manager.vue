@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showCount && isSettled" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -41,11 +42,20 @@
       </div>
     </template>
 
-    <p v-if="pending" class="text-sm text-dimmed">Loading people...</p>
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="people"
+      state="loading"
+      surface="bare"
+    />
 
-    <p v-else-if="errorMessage" class="text-sm text-error">
-      {{ errorMessage }}
-    </p>
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="people"
+      state="error"
+      surface="bare"
+      description="Public profiles are not available right now."
+    />
 
     <UserCollectionList
       v-else-if="cardsFiltered.length"
@@ -68,9 +78,16 @@
       </template>
     </UserCollectionList>
 
-    <p v-else>
-      {{ query ? 'No users match your search.' : 'No users found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="people"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No people match your search' : 'No people yet'"
+      :description="query
+        ? 'Try a different search term.'
+        : 'Public profiles will appear here once they are available.'"
+    />
 
     <div>
       <DevJson
@@ -111,6 +128,8 @@ type PublicUsersResponse = {
   items: PublicUserDto[]
   users: PublicUserDto[]
 }
+
+type UserCollectionOutcome = 'pending' | 'error' | 'empty' | 'ready'
 
 const props = withDefaults(
   defineProps<{
@@ -226,9 +245,13 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
-const pending = computed(() => fetched.pending.value)
-const errorMessage = computed(() =>
-  fetched.error.value ? 'Public profiles are not available right now.' : ''
+const outcome = computed<UserCollectionOutcome>(() => {
+  if (fetched.pending.value) return 'pending'
+  if (fetched.error.value) return 'error'
+  return totalCount.value > 0 ? 'ready' : 'empty'
+})
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
 )
 const {
   interface: makeCard,
@@ -277,7 +300,7 @@ const devJsonData = computed(() => ({
     variant: variant.value,
     query: query.value,
     link: linkEnabled.value,
-    pending: pending.value,
+    pending: fetched.pending.value,
     hasError: Boolean(fetched.error.value),
   },
 }))

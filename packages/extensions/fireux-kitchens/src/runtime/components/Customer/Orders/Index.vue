@@ -45,9 +45,29 @@
     <div v-else class="customer-orders__list">
       <UCard v-for="order in orders" :key="order.id" class="customer-orders__card">
         <div class="customer-orders__card-heading">
-          <div>
-            <p class="customer-orders__kitchen">{{ order.kitchen.name }}</p>
-            <h2>Order {{ order.order_number }}</h2>
+          <div class="customer-orders__identity">
+            <UAvatar
+              :src="kitchenImage(order) || undefined"
+              :alt="order.kitchen.name"
+              size="lg"
+              icon="i-lucide-chef-hat"
+              :class="kitchenAvatarClass(order)"
+            />
+
+            <div>
+              <UButton
+                v-if="order.kitchen.path"
+                :to="order.kitchen.path"
+                :label="order.kitchen.name"
+                color="neutral"
+                variant="link"
+                class="customer-orders__kitchen-link"
+              />
+              <p v-else class="customer-orders__kitchen">
+                {{ order.kitchen.name }}
+              </p>
+              <h2>Order {{ order.order_number }}</h2>
+            </div>
           </div>
 
           <UBadge :color="statusColor(order.status)" variant="soft">
@@ -98,6 +118,7 @@
 </template>
 
 <script setup lang="ts">
+import { useCustomerOrders } from '../../../composables/fireux/customer/useCustomerOrders'
 import type {
   CustomerOrderSummary,
 } from '../../../models/customer/order.model'
@@ -137,6 +158,16 @@ function statusColor(status: KitchenOrderStatus) {
   if (status === 'cancelled' || status === 'trashed') return 'error' as const
   if (status === 'pending_payment') return 'warning' as const
   return 'primary' as const
+}
+
+function kitchenImage(order: CustomerOrderSummary) {
+  return order.kitchen.logo_image_url || order.kitchen.image_url || ''
+}
+
+function kitchenAvatarClass(order: CustomerOrderSummary) {
+  if (order.kitchen.image_shade === 'light') return 'fx-avatar-shade--light'
+  if (order.kitchen.image_shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
 }
 
 function orderTypeLabel(type: KitchenOrderType) {
@@ -185,6 +216,13 @@ function formatDate(value?: string) {
   gap: calc(var(--spacing) * 4);
 }
 
+.customer-orders__identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: calc(var(--spacing) * 3);
+}
+
 .customer-orders__header h1,
 .customer-orders__card-heading h2,
 .customer-orders__header p,
@@ -195,6 +233,12 @@ function formatDate(value?: string) {
 .customer-orders__header p,
 .customer-orders__kitchen,
 .customer-orders__facts dt {
+  color: var(--ui-text-muted);
+}
+
+.customer-orders__kitchen-link {
+  min-height: auto;
+  padding: 0;
   color: var(--ui-text-muted);
 }
 

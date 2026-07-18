@@ -12,15 +12,17 @@ export function useModuleFetch(moduleId: string | Ref<string | null | undefined>
   const resolvedModuleId = computed(() =>
     normalizeString(typeof moduleId === 'string' ? moduleId : moduleId.value)
   )
-  const source = computed(() =>
-    resolvedModuleId.value
-      ? firestoreFetchDoc<Module>(ModuleStorage.collection, resolvedModuleId.value)
-      : null
+  const source = firestoreFetchDoc<Module>(
+    ModuleStorage.collection,
+    resolvedModuleId
   )
-  const module = computed(() => source.value?.value ?? null)
+  const module = computed(() => source.value ?? null)
 
   return {
     module,
     exists: computed(() => Boolean(module.value)),
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

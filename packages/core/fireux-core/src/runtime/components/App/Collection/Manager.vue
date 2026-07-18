@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showCount && isSettled" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -41,8 +42,23 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="apps"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="apps"
+      state="error"
+      surface="bare"
+      description="Apps could not be loaded. Please try again."
+    />
+
     <AppCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -54,9 +70,16 @@
       </template>
     </AppCollectionList>
 
-    <p v-else>
-      {{ query ? 'No apps match your search.' : 'No apps found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="apps"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No apps match your search' : 'No apps yet'"
+      :description="query
+        ? 'Try a different search term.'
+        : 'Once app records are added, they will display here.'"
+    />
 
     <div>
       <DevJson
@@ -105,6 +128,10 @@ const props = withDefaults(
 
 const fetched = useAppCollection()
 const collection = computed<AppModel[]>(() => fetched.apps.value as AppModel[])
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Apps'))
 const description = computed(() =>

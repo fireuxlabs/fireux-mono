@@ -8,6 +8,7 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -243,6 +244,9 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       .filter(Boolean) as KitchenCollectionDoc[]
   )
   const count = computed(() => kitchens.value.length)
+  const active = computed(() =>
+    sourceRef.value !== 'test' || Boolean(simulationDatabaseId.value)
+  )
   const pending = computed(() => {
     if (sourceRef.value === 'demo') return false
     if (sourceRef.value === 'test' && !simulationDatabaseId.value) return false
@@ -250,27 +254,54 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       if (!filterOperatorId.value) return false
 
       return (
-        overlayRootSource.docs.value === undefined ||
         overlayRootSource.pending.value ||
-        overlayOperatorSource.value === undefined ||
-        overlayTeamSource.value === undefined
+        overlayOperatorSource.pending.value ||
+        overlayTeamSource.pending.value
       )
     }
 
-    const rootPending = hasIdFilter.value
+    return hasIdFilter.value
       ? sourceRef.value === 'test'
         ? exactTestSource.pending.value
         : exactRootSource.pending.value
       : sourceRef.value === 'test'
-        ? testSource.value === undefined
-        : rootSource.value === undefined
-    return rootPending
+        ? testSource.pending.value
+        : rootSource.pending.value
+  })
+  const error = computed<unknown | undefined>(() => {
+    if (sourceRef.value === 'demo') return undefined
+    if (sourceRef.value === 'test' && !simulationDatabaseId.value) {
+      return undefined
+    }
+    if (sourceRef.value === 'live' && hasOperatorFilter.value) {
+      if (!filterOperatorId.value) return undefined
+
+      return overlayOperatorSource.error.value ??
+        overlayTeamSource.error.value ??
+        overlayRootSource.error.value
+    }
+    if (hasIdFilter.value) {
+      return sourceRef.value === 'test'
+        ? exactTestSource.error.value
+        : exactRootSource.error.value
+    }
+    return sourceRef.value === 'test'
+      ? testSource.error.value
+      : rootSource.error.value
+  })
+  const { outcome } = useFirestoreCollectionState({
+    active,
+    count,
+    error,
+    pending,
   })
 
   return {
     kitchens,
     count,
     pending,
+    error,
+    outcome,
   }
 }
 

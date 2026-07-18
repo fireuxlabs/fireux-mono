@@ -15,23 +15,23 @@ export function useConversationMessages(
   )
   const paths = useConversationPaths(options.appId)
   const collectionPath = paths.messageCollectionPath(id)
-  const firestoreSource = computed(() => {
-    if (!collectionPath.value) return null
-    return firestoreFetchCollection<ConversationMessage>(collectionPath.value)
-  })
+  const firestoreSource = firestoreFetchCollection<ConversationMessage>(
+    collectionPath
+  )
 
   const messages = computed<ConversationMessage[]>(() =>
-    firestoreSource.value?.value ?? []
+    firestoreSource.value ?? []
   )
   const count = computed(() => messages.value.length)
-  const pending = computed(() => {
-    if (!id.value) return false
-    return firestoreSource.value?.value === undefined
-  })
+  const pending = firestoreSource.pending
+  const error = firestoreSource.error
+  const outcome = firestoreSource.outcome
 
   return {
     messages,
     count,
     pending,
+    error,
+    outcome,
   }
 }
