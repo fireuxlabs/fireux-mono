@@ -12,6 +12,7 @@ export interface KitchenOrderTicketProps {
   order: KitchenOrder
   prominent?: boolean
   selected?: boolean
+  showCustomerDetails?: boolean
   statusActionAriaLabel?: string
   statusActionLabel?: string
   statusActionPending?: boolean

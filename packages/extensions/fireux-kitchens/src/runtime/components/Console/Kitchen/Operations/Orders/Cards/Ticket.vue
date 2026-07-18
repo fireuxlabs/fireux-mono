@@ -112,7 +112,7 @@
       </div>
 
       <div
-        v-if="customerLines.length && !prominent"
+        v-if="customerLines.length && showCustomerDetails"
         class="order-ticket__customer"
       >
         <USeparator />
@@ -161,6 +161,7 @@ const props = withDefaults(
     interactive: true,
     prominent: false,
     selected: false,
+    showCustomerDetails: true,
     headerActionLabel: '',
     bodyActionLabel: '',
     statusActionLabel: '',

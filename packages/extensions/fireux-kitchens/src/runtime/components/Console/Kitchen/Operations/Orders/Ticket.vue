@@ -2,7 +2,9 @@
   <ConsoleKitchenOperationsOrdersCardsTicket
     :order="order"
     :interactive="interactive"
+    prominent
     :selected="selected"
+    :show-customer-details="false"
     :header-action-label="isPass && selected ? 'Return' : ''"
     :body-action-label="isPass
       ? selected
