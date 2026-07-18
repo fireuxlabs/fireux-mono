@@ -1,33 +1,13 @@
 <template>
-  <UCollapsible :default-open="defaultOpen">
-    <UButton
-      class="group"
-      color="neutral"
-      variant="soft"
-      block
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <span class="grid min-w-0 text-left">
-        <span class="truncate">{{ title }}</span>
-        <span
-          v-if="description"
-          class="truncate text-xs font-normal text-dimmed"
-        >
-          {{ description }}
-        </span>
-      </span>
-    </UButton>
-
-    <template #content>
-      <div class="mt-4">
-        <slot />
-      </div>
-    </template>
-  </UCollapsible>
+  <MoleculesDisclosurePanel
+    :title="title"
+    :description="description"
+    :default-open="defaultOpen"
+  >
+    <div class="mt-4">
+      <slot />
+    </div>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

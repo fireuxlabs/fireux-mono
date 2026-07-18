@@ -76,7 +76,7 @@
 
 .menu-order-basket__label {
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.09em;
   line-height: 1;
   text-transform: uppercase;
@@ -84,14 +84,14 @@
 
 .menu-order-basket__count {
   font-size: 0.88rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   line-height: 1.2;
 }
 
 .menu-order-basket__total {
   justify-self: end;
-  font-size: 1rem;
-  font-weight: 950;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-black);
   white-space: nowrap;
 }
 
@@ -126,14 +126,14 @@
   margin: 0;
   color: var(--menu-title);
   font-size: clamp(1.4rem, 5vw, 2rem);
-  font-weight: 950;
-  letter-spacing: 0;
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-normal);
 }
 
 .menu-order-placeholder {
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   line-height: 1.45;
 }
 
@@ -161,7 +161,7 @@
   padding: var(--menu-space-sm) 0;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
   color: var(--menu-title);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-total {
@@ -173,20 +173,20 @@
 .menu-order-total span {
   color: var(--menu-muted);
   font-size: 0.76rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .menu-order-total strong {
   font-size: 1.3rem;
-  font-weight: 950;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-step-label {
   color: var(--menu-muted);
   font-size: 0.76rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -215,7 +215,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.88rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-primary,

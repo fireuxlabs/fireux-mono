@@ -10,8 +10,8 @@
         <template #header>
           <div class="section__header">
             <div class="section__copy">
-              <h3 class="text-base font-semibold">Binding check (app ↔ users)</h3>
-              <p class="text-xs text-dimmed">
+              <h3>Binding check (app ↔ users)</h3>
+              <p>
                 Compares app users against ecosystem identity mirrors and admin lists.
                 Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
               </p>
@@ -77,8 +77,8 @@
         <template #header>
           <div class="section__header">
             <div class="section__copy">
-              <h3 class="text-base font-semibold">Field ownership</h3>
-              <p class="text-xs text-dimmed">
+              <h3>Field ownership</h3>
+              <p>
                 Admin runs the app. Developer builds and checks it. App
                 Control changes where it belongs. System owns calculated fields.
               </p>
@@ -164,8 +164,8 @@
         <template #header>
           <div class="section__header">
             <div class="section__copy">
-              <h3 class="text-base font-semibold">Model</h3>
-              <p class="text-xs text-dimmed">Full app document.</p>
+              <h3>Model</h3>
+              <p>Full app document.</p>
             </div>
           </div>
         </template>

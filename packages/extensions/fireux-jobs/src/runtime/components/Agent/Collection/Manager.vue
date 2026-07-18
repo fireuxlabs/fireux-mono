@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showSettledCount" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -41,8 +42,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="agents"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="agents"
+      state="error"
+      surface="bare"
+    />
+
     <AgentCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -54,9 +69,17 @@
       </template>
     </AgentCollectionList>
 
-    <p v-else>
-      {{ query ? 'No agents match your search.' : 'No agents found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      state="empty"
+      surface="bare"
+      :title="query ? 'No agents match your search.' : 'No agents found.'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Agent profiles will appear here once they are available.'
+      "
+    />
 
     <div>
       <DevJson
@@ -103,6 +126,7 @@ const props = withDefaults(
 )
 
 const fetched = useAgentFetch()
+const { outcome } = fetched
 const collection = computed<AgentEntry[]>(() =>
   [
     ...(fetched.appAgents.value ?? []),
@@ -121,6 +145,11 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
+const showSettledCount = computed(
+  () =>
+    showCount.value &&
+    (outcome.value === 'ready' || outcome.value === 'empty')
+)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15

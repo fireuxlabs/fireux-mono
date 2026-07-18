@@ -2,8 +2,22 @@
 <template>
   <div class="design">
     <UTabs :items="items" class="custom-tabs">
+      <template #roles>
+        <h2 class="fx-type-card-title">Semantic Roles</h2>
+        <div class="role-grid">
+          <div
+            v-for="role in semanticRoles"
+            :key="role.class"
+            class="role-item"
+          >
+            <p :class="role.class">{{ role.sample }}</p>
+            <code class="fx-type-code text-muted">{{ role.class }}</code>
+          </div>
+        </div>
+      </template>
+
       <template #fontSizes>
-        <h2>Font Sizes</h2>
+        <h2 class="fx-type-card-title">Font Sizes</h2>
         <div class="grid">
           <div
             v-for="size in fontSizes"
@@ -18,7 +32,7 @@
       </template>
 
       <template #fontWeights>
-        <h2>Font Weights</h2>
+        <h2 class="fx-type-card-title">Font Weights</h2>
         <div class="grid">
           <div
             v-for="weight in fontWeights"
@@ -33,7 +47,7 @@
       </template>
 
       <template #lineHeights>
-        <h2>Line Heights</h2>
+        <h2 class="fx-type-card-title">Line Heights</h2>
         <div class="grid">
           <div
             v-for="line in lineHeights"
@@ -48,7 +62,7 @@
       </template>
 
       <template #tracking>
-        <h2>Tracking</h2>
+        <h2 class="fx-type-card-title">Tracking</h2>
         <div class="grid">
           <div
             v-for="track in trackingTokens"
@@ -69,10 +83,26 @@
 definePageMeta({ layout: 'design' })
 
 const items = [
+  { icon: 'i-lucide-book-type', slot: 'roles' },
   { icon: 'i-lucide-type', slot: 'fontSizes' },
   { icon: 'i-lucide-bold', slot: 'fontWeights' },
   { icon: 'i-lucide-ruler', slot: 'lineHeights' },
   { icon: 'i-lucide-letter-spacing', slot: 'tracking' },
+]
+
+const semanticRoles = [
+  { class: 'fx-type-headline', sample: 'Page or section headline' },
+  { class: 'fx-type-display-title', sample: 'Landing display title' },
+  { class: 'fx-type-page-title', sample: 'Page title' },
+  { class: 'fx-type-section-title', sample: 'Section title' },
+  { class: 'fx-type-section-display', sample: 'Marketing section display' },
+  { class: 'fx-type-card-title', sample: 'Card title' },
+  { class: 'fx-type-card-heading', sample: 'Large card heading' },
+  { class: 'fx-type-description', sample: 'Page description copy' },
+  { class: 'fx-type-body', sample: 'Body copy for general reading.' },
+  { class: 'fx-type-caption', sample: 'Caption and supporting copy' },
+  { class: 'fx-type-label', sample: 'Metadata label' },
+  { class: 'fx-type-code', sample: 'const role = "code"' },
 ]
 
 const fontSizes = [
@@ -136,6 +166,17 @@ h2 {
   gap: calc(var(--spacing) * 4);
   padding: calc(var(--spacing) * 4);
 }
+.role-grid {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 4);
+}
+.role-item {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+  padding-bottom: calc(var(--spacing) * 4);
+  border-bottom: 1px solid var(--ui-border);
+}
 @media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
@@ -152,98 +193,8 @@ h2 {
   width: 100%;
 }
 .class-name {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: gray;
   margin-top: calc(var(--spacing) * 2);
-}
-.text-xs {
-  font-size: var(--text-xs);
-}
-.text-sm {
-  font-size: var(--text-sm);
-}
-.text-base {
-  font-size: var(--text-base);
-}
-.text-lg {
-  font-size: var(--text-lg);
-}
-.text-xl {
-  font-size: var(--text-xl);
-}
-.text-2xl {
-  font-size: var(--text-2xl);
-}
-.text-3xl {
-  font-size: var(--text-3xl);
-}
-.text-4xl {
-  font-size: var(--text-4xl);
-}
-.text-5xl {
-  font-size: var(--text-5xl);
-}
-.font-thin {
-  font-weight: var(--font-weight-thin);
-}
-.font-extralight {
-  font-weight: var(--font-weight-extralight);
-}
-.font-light {
-  font-weight: var(--font-weight-light);
-}
-.font-normal {
-  font-weight: var(--font-weight-normal);
-}
-.font-medium {
-  font-weight: var(--font-weight-medium);
-}
-.font-semibold {
-  font-weight: var(--font-weight-semibold);
-}
-.font-bold {
-  font-weight: var(--font-weight-bold);
-}
-.font-extrabold {
-  font-weight: var(--font-weight-extrabold);
-}
-.font-black {
-  font-weight: var(--font-weight-black);
-}
-.leading-none {
-  line-height: var(--text-xs--line-height);
-}
-.leading-tight {
-  line-height: var(--leading-tight);
-}
-.leading-snug {
-  line-height: var(--leading-snug);
-}
-.leading-normal {
-  line-height: var(--leading-normal);
-}
-.leading-relaxed {
-  line-height: var(--leading-relaxed);
-}
-.leading-loose {
-  line-height: var(--leading-loose);
-}
-.tracking-tighter {
-  letter-spacing: var(--tracking-tighter);
-}
-.tracking-tight {
-  letter-spacing: var(--tracking-tight);
-}
-.tracking-normal {
-  letter-spacing: var(--tracking-normal);
-}
-.tracking-wide {
-  letter-spacing: var(--tracking-wide);
-}
-.tracking-wider {
-  letter-spacing: var(--tracking-wider);
-}
-.tracking-widest {
-  letter-spacing: var(--tracking-widest);
 }
 </style>

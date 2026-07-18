@@ -75,9 +75,7 @@ export function useOrderCreate(
         ...(input.table ? { table: input.table } : {}),
         customer: cleanCustomer(input.customer),
       }
-      const authToken = input.channel === 'staff_pos'
-        ? await currentUser.value?.getIdToken()
-        : ''
+      const authToken = await currentUser.value?.getIdToken()
       if (input.channel === 'staff_pos' && !authToken) {
         throw new Error('Sign in before using Staff POS.')
       }

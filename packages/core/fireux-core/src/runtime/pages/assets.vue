@@ -17,7 +17,7 @@
             v-for="asset in assetItems"
             :key="asset.key"
             variant="subtle"
-            :ui="{ body: 'space-y-4' }"
+            :ui="{ body: 'fx-card-body-stack' }"
           >
             <div
               class="asset-frame"

@@ -4,11 +4,11 @@
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ appName }} Pricing</UBadge>
 
-        <h1 class="text-4xl font-semibold text-highlighted">
+        <h1 class="fx-type-page-title">
           Apps
         </h1>
 
-        <p class="text-lg text-toned">
+        <p class="fx-type-description text-toned">
           You can launch your own app inside the {{ appName }} ecosystem.
         </p>
 
@@ -22,10 +22,10 @@
       <UContainer class="grid gap-6 lg:grid-cols-2">
         <UCard class="border-primary/40 ring-1 ring-primary/20">
           <template #header>
-            <h2 class="text-lg font-semibold">Join this ecosystem</h2>
+            <h2 class="fx-type-card-heading">Join this ecosystem</h2>
           </template>
 
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption text-toned">
             Your app runs inside {{ appName }}. The ecosystem layer is already operated here.
           </p>
 
@@ -43,10 +43,10 @@
 
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Console seats</h2>
+            <h2 class="fx-type-card-heading">Console seats</h2>
           </template>
 
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption text-toned">
             Console seats are billed only for operators managing private records.
           </p>
 

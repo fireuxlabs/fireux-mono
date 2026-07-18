@@ -50,7 +50,12 @@ export function useProjectConsole(
       operatorId: userId.value,
     }
   })
-  const { projects: targetProjects, pending: targetsPending } = useProjectCollection({
+  const {
+    projects: targetProjects,
+    pending: targetsPending,
+    error: targetsError,
+    outcome: targetsOutcome,
+  } = useProjectCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
@@ -59,6 +64,7 @@ export function useProjectConsole(
     storageFamily: ProjectStorage.rootCollection,
     targetItems: targetProjects,
     targetPending: targetsPending,
+    targetError: targetsError,
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
     userId,
@@ -82,6 +88,7 @@ export function useProjectConsole(
     targets: targetProjects,
     count: computed(() => targetProjects.value.length),
     pending: targetsPending,
+    outcome: targetsOutcome,
   }
   const selection = {
     project: selectedProject,

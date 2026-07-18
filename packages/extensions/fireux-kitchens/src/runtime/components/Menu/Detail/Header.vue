@@ -187,13 +187,13 @@ const preOrderDepositNotice = computed(() =>
   background: var(--menu-header-chip-bg, transparent);
   color: var(--menu-header-chip-color, currentcolor);
   font-size: var(--menu-header-chip-size, 0.72rem);
-  font-weight: var(--menu-header-chip-weight, 950);
-  letter-spacing: var(--menu-header-chip-spacing, 0);
+  font-weight: var(--menu-header-chip-weight, var(--font-weight-black));
+  letter-spacing: var(--menu-header-chip-spacing, var(--tracking-normal));
   line-height: 1.1;
 }
 
 .menu-service-times-chip {
-  --menu-header-chip-spacing: 0.1em;
+  --menu-header-chip-spacing: var(--tracking-widest);
 
   text-transform: uppercase;
 }
@@ -229,7 +229,7 @@ const preOrderDepositNotice = computed(() =>
   --menu-header-chip-bg: color-mix(in srgb, var(--menu-bg) 90%, var(--menu-primary));
   --menu-header-chip-color: var(--menu-primary);
   --menu-header-chip-size: 0.76rem;
-  --menu-header-chip-weight: 900;
+  --menu-header-chip-weight: var(--font-weight-black);
 
   text-decoration: none;
 }
@@ -270,7 +270,7 @@ const preOrderDepositNotice = computed(() =>
 
 .menu-pre-order-notice__copy strong {
   font-size: 0.92rem;
-  font-weight: 950;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-pre-order-notice__status {

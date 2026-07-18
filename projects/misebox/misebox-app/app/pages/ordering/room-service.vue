@@ -11,10 +11,10 @@
       </UButton>
 
       <section class="space-y-3">
-        <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+        <p class="fx-type-headline">
           Hotel funnel
         </p>
-        <h1 class="text-4xl font-black tracking-tight text-highlighted">
+        <h1 class="fx-type-page-title text-4xl font-black tracking-tight">
           Room service ordering
         </h1>
         <p class="text-muted">
@@ -23,19 +23,16 @@
         </p>
       </section>
 
-      <UCard :ui="{ body: 'space-y-4' }">
-        <h2 class="text-2xl font-black tracking-tight">
-          Screen stack
-        </h2>
-        <ol class="list-decimal fx-list-stack text-muted">
-          <li>Basket</li>
-          <li>Allergy check</li>
-          <li>Room destination</li>
-          <li>Kitchen timing</li>
-          <li>Room charge or payment</li>
-          <li>Confirmation</li>
-        </ol>
-      </UCard>
+      <OrderingScreenStack
+        :steps="[
+          'Basket',
+          'Allergy check',
+          'Room destination',
+          'Kitchen timing',
+          'Room charge or payment',
+          'Confirmation',
+        ]"
+      />
 
       <OrderingFunnelShapeTrack :track="shapeTrack" />
     </UContainer>

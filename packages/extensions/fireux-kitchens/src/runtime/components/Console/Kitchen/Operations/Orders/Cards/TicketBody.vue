@@ -80,7 +80,7 @@ defineEmits<{
 .order-ticket-body__empty,
 .order-ticket-body__customer {
   color: var(--ui-text-dimmed);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .order-ticket-body__empty {

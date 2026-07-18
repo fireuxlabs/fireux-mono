@@ -95,8 +95,8 @@ defineEmits<{
   color: white;
   cursor: pointer;
   font: inherit;
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  font-weight: 950;
+  font-size: clamp(1.75rem, 5vw, var(--text-5xl));
+  font-weight: var(--font-weight-black);
   text-shadow: 0 0.25rem 0.9rem rgb(0 0 0 / 42%);
 }
 

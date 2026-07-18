@@ -109,7 +109,7 @@
                 </div>
                 <div class="space-y-1">
                   <h3 class="font-medium">{{ item.title }}</h3>
-                  <p class="text-sm text-[color:var(--ui-text-muted)]">
+                  <p class="text-sm text-muted">
                     {{ item.description }}
                   </p>
                 </div>

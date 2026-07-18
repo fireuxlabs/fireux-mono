@@ -115,15 +115,15 @@ const isLoading = computed(() => Boolean(pending.value))
 }
 
 .footer-admins__label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--ui-text-toned);
 }
 
 .footer-admins__context {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--ui-text-muted);
 }
 
@@ -150,7 +150,7 @@ const isLoading = computed(() => Boolean(pending.value))
 }
 
 .footer-admins__empty {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--ui-text-muted);
 }
 </style>

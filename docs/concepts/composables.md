@@ -1,6 +1,6 @@
 Composables spine map
-Updated: 2026-06-28
-Ref: bcee764fe
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -41,7 +41,9 @@ Naming notes:
   work is mostly Firestore data. See create.md before using it for upload or
   provider transactions.
 - `useXFetch`: fetch one entity or route-selected entity.
-- `useXCollection`: fetch a list/collection.
+- `useXCollection`: fetch a list/collection and expose normalized items,
+  `count`, `pending`, `error`, and `outcome`. Keep raw read state separate from
+  UI search/filter emptiness.
 - `useXInterface`: map entity data into UI-ready surfaces.
 - `useXConsole`: selected console runtime for a domain.
 - `useXConsoleIndex`: index page adapter over shared `useConsoleIndex`.

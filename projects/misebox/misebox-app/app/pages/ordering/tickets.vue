@@ -23,10 +23,10 @@
 
       <section class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
         <div class="space-y-3">
-          <p class="m-0 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+          <p class="fx-type-headline m-0">
             Kitchen destination
           </p>
-          <h1 class="m-0 text-4xl font-black tracking-tight text-highlighted sm:text-5xl">
+          <h1 class="fx-type-page-title m-0 text-4xl font-black tracking-tight sm:text-5xl">
             Kitchen execution tickets
           </h1>
           <p class="m-0 max-w-3xl text-base leading-7 text-muted">
@@ -36,7 +36,7 @@
         </div>
 
         <div class="rounded-lg border border-primary/30 bg-default p-4 shadow-sm">
-          <p class="m-0 text-xs font-bold uppercase tracking-[0.18em] text-muted">
+          <p class="fx-type-label m-0">
             Execution contract
           </p>
           <div class="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-highlighted">
@@ -76,7 +76,7 @@
           <header class="space-y-3">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <p class="m-0 text-xs font-bold uppercase tracking-[0.16em] text-muted">
+                <p class="fx-type-label m-0">
                   {{ ticket.surface }} · {{ ticket.kitchen }}
                 </p>
                 <h2 class="m-0 mt-1 text-xl font-black text-highlighted">

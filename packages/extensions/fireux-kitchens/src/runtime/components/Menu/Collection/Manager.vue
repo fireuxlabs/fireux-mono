@@ -1,101 +1,146 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ props.title }}</h2>
-          <p>{{ props.description }}</p>
-        </div>
-
-        <div
-          class="collection-manager__controls flex flex-1 items-center gap-2"
-        >
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="props.searchPlaceholder"
-              aria-label="Search menus"
-            />
-
-            <UButton
-              v-if="props.showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-
-            <UBadge v-if="props.showCount" variant="soft">
-              {{ countLabel }}
-            </UBadge>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MenuCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
+  <section class="menu-directory">
+    <CollectionDirectoryHeader
+      :title="props.title"
+      :description="props.description"
     >
-      <!-- Collection manager spine: docs/concepts/collection-manager.md. Keep aligned with App/Collection/Manager.vue and Kitchen/Collection/Manager.vue. -->
-      <template #pill="{ card }">
-        <MenuCardsPill v-bind="card" :link="linkEnabled" />
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="props.searchPlaceholder"
+          aria-label="Search menus"
+          class="menu-directory__search"
+          icon="i-lucide-search"
+        />
+
+        <UButton
+          v-if="props.showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variantIcon"
+          :aria-label="`Switch to ${nextVariantLabel} view`"
+          :title="`Switch to ${nextVariantLabel} view`"
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="props.showCount && isSettled"
+          class="menu-directory__count"
+        >
+          {{ countLabel }}
+        </span>
       </template>
+    </CollectionDirectoryHeader>
 
-      <template #cell="{ card }">
-        <MenuCardsCell v-bind="card" :link="linkEnabled" />
+    <MenuCollectionPicks v-model="selectedPicks" />
+
+    <CollectionDirectoryState
+      v-if="isLoading"
+      title="Loading menus"
+      description="Fetching the latest published menus…"
+      icon="i-lucide-loader-2"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
+    />
+
+    <CollectionDirectoryState
+      v-else-if="outcome.kind === 'unavailable'"
+      title="Menus unavailable"
+      description="Published menus could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    />
+
+    <div
+      v-else-if="visibleItems.length"
+      class="menu-directory__entries"
+      :class="`menu-directory__entries--${variant}`"
+    >
+      <template v-for="menu in visibleItems" :key="menu.id">
+        <MenuCardsPreview
+          v-if="variant === 'preview'"
+          :menu="menu"
+          :route-scope="rootMenuRouteScope()"
+        />
+
+        <MenuCardsCell
+          v-else-if="variant === 'cell'"
+          :menu="menu"
+          :route-scope="rootMenuRouteScope()"
+        />
+
+        <MenuCardsPill
+          v-else
+          :menu="menu"
+          :route-scope="rootMenuRouteScope()"
+        />
       </template>
-    </MenuCollectionList>
+    </div>
 
-    <p v-else class="text-sm text-dimmed">
-      {{ query ? 'No menus match your search.' : 'No menus found.' }}
-    </p>
+    <CollectionDirectoryState
+      v-else
+      icon="i-lucide-book-open-check"
+      :title="hasActiveFilters ? 'No matching menus' : 'No menus yet'"
+      :description="hasActiveFilters
+        ? 'Try a different menu or kitchen name.'
+        : 'Published menus will appear here when they are ready.'"
+    />
 
-    <div v-if="index.hasMore.value" class="mt-4 flex justify-center">
+    <div
+      v-if="outcome.kind === 'list' && index.hasMore.value"
+      class="menu-directory__more"
+    >
       <UButton
         type="button"
         variant="soft"
         data-menu-action="load-more"
         :loading="index.loadingMore.value"
-        @click="index.loadMore"
+        @click="loadMore"
       >
         Load more menus
       </UButton>
     </div>
 
-    <p v-if="index.loadMoreError.value" class="mt-3 text-sm text-error" role="alert">
+    <p
+      v-if="outcome.kind === 'list' && index.loadMoreError.value"
+      class="text-sm text-error"
+      role="alert"
+    >
       More menus could not be loaded. Please try again.
     </p>
 
     <DevJson
-      :title="'Menus (JSON)'"
+      title="Menus (JSON)"
       context="collection manager · menus"
       :objects="devObjects"
       :derived="devDerived"
       :default-open="false"
     />
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import {
   useMenuInterface,
-  type MenuInterfaceSource,
 } from '../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
 import type { PublicMenuIndexController } from '../../../composables/fireux/menu/usePublicMenuIndex'
+import type { PublicMenuIndexItem } from '../../../models/kitchen/menu/menu-index.model'
+import { useKitchenServiceNow } from '../../../composables/fireux/kitchen/useKitchenServiceNow'
+import {
+  menuMatchesCollectionPicks,
+  type MenuCollectionPick,
+} from '../../../utils/menu-collection-picks'
+import { rootMenuRouteScope } from '../../../utils/kitchen-menu-route'
 
 const props = withDefaults(
   defineProps<{
@@ -105,8 +150,7 @@ const props = withDefaults(
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
-    initialVariant?: 'pill' | 'cell'
-    link?: boolean
+    initialVariant?: 'pill' | 'cell' | 'preview'
     index: PublicMenuIndexController
   }>(),
   {
@@ -116,77 +160,96 @@ const props = withDefaults(
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
-    link: true,
+    initialVariant: 'preview',
   }
 )
 
-const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
-} = useMenuInterface()
-// Card handoff spine: pass v-bind="card" plus linkEnabled, matching sibling collection managers.
-const linkEnabled = computed(() => props.link !== false)
-
-const collection = computed(() =>
-  props.index.menus.value
+const { interface: makeMenuCard } = useMenuInterface()
+const collection = computed<PublicMenuIndexItem[]>(() => props.index.menus.value)
+const outcome = computed(() => props.index.outcome.value)
+const isLoading = computed(() =>
+  outcome.value.kind === 'loading' || outcome.value.kind === 'redirect'
 )
-
+const isSettled = computed(() =>
+  outcome.value.kind === 'list' || outcome.value.kind === 'empty'
+)
+const selectedPicks = ref<MenuCollectionPick[]>([])
+const { now: serviceNow } = useKitchenServiceNow()
+const pickedCollection = computed<PublicMenuIndexItem[]>(() =>
+  collection.value.filter((menu: PublicMenuIndexItem) =>
+    menuMatchesCollectionPicks(menu, selectedPicks.value, serviceNow.value)
+  )
+)
 const { devJsonData } = useDevCollectionJson(collection)
-
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15
 )
 
+const makeCard = (menu: PublicMenuIndexItem) => makeMenuCard({
+  ...menu,
+  image_url:
+    menu.kitchen?.logo_image_url ||
+    menu.kitchen?.image_url,
+  image_shade: menu.kitchen?.image_shade,
+})
+
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<MenuInterfaceSource, NonNullable<ReturnType<typeof makeCard>>>({
-    items: collection,
+  useCollectionSearch<
+    PublicMenuIndexItem,
+    NonNullable<ReturnType<typeof makeMenuCard>>,
+    'preview' | 'cell' | 'pill'
+  >({
+    items: pickedCollection,
     makeCard: (menu) => makeCard(menu),
     initialVariant: props.initialVariant,
+    variants: ['preview', 'cell', 'pill'],
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((menu) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(menu)
-        const cell = makeCell(menu)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      const pill = makePill(menu)
-      return pill
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
+const variantIcon = computed(() => {
+  if (variant.value === 'preview') return 'i-lucide-panels-top-left'
+  if (variant.value === 'cell') return 'i-lucide-list'
+  return 'i-lucide-layout-grid'
+})
+const nextVariantLabel = computed(() => {
+  if (variant.value === 'preview') return 'cell'
+  if (variant.value === 'cell') return 'pill'
+  return 'preview'
+})
+const hasActiveFilters = computed(() =>
+  Boolean(query.value.trim() || selectedPicks.value.length)
 )
 
 const countLabel = computed(() =>
-  showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}${props.index.hasMore.value ? '+' : ''}`
+  hasActiveFilters.value
+    ? `${visibleCount.value} of ${totalCount.value} menus`
+    : `${totalCount.value}${props.index.hasMore.value ? '+' : ''} menu${totalCount.value === 1 ? '' : 's'}`
 )
+const loadMore = async () => {
+  await props.index.loadMore()
+}
 
+const guestSurfaces = (contexts: PublicMenuIndexItem['contexts'] = []) => [
+  'browse',
+  ...contexts,
+]
 const devObjects = computed(() => ({
-  // Debug spine: keep root menu objects separate from interface-derived cards.
-  menus: devJsonData.value,
+  menus: devJsonData.value.map((menu, index) => ({
+    ...menu,
+    guest_surfaces: guestSurfaces(collection.value[index]?.contexts),
+  })),
 }))
-
 const devDerived = computed(() => ({
   family: 'Root Simple Collection Manager',
   source: {
     rootPath: 'menus',
     hydration:
-      'None here. Menu detail/manifest resolves kitchen, app, ordering, and theme context.',
+      'One bounded server batch per page resolves current Kitchen identity, effective service hours, and referenced KitchenMenu guest-ordering contexts. Detail resolves content and theme.',
   },
   controls: {
     query: query.value,
+    picks: selectedPicks.value,
     variant: variant.value,
-    linkEnabled: linkEnabled.value,
     showSearchInput: showSearchInput.value,
     hasMore: props.index.hasMore.value,
   },
@@ -194,14 +257,55 @@ const devDerived = computed(() => ({
     total: totalCount.value,
     visible: visibleCount.value,
   },
-  cards: cardsFiltered.value.map((card) => ({
-    id: card.id,
-    to: card.to,
-    title: card.title,
-    subtitle: card.subtitle,
-    meta: card.meta,
-    description: card.description,
-    active: card.active,
+  cards: visibleItems.value.map((menu) => ({
+    id: menu.id,
+    guestSurfaces: guestSurfaces(menu.contexts),
+    contexts: menu.contexts,
+    title: menu.name,
+    subtitle: menu.source?.kitchen_name,
+    description: menu.description,
   })),
 }))
 </script>
+
+<style scoped>
+.menu-directory {
+  display: grid;
+  gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
+}
+
+.menu-directory__search {
+  width: min(calc(var(--spacing) * 72), 65vw);
+}
+
+.menu-directory__count {
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  min-width: max-content;
+  padding-left: var(--spacing);
+}
+
+.menu-directory__more {
+  display: flex;
+  justify-content: center;
+}
+
+.menu-directory__entries {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+
+.menu-directory__entries--pill {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, calc(var(--spacing) * 80)), 1fr)
+  );
+}
+
+@media (max-width: 40rem) {
+  .menu-directory__count {
+    margin-left: auto;
+  }
+}
+</style>

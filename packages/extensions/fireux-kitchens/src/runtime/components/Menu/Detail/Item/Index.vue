@@ -256,7 +256,7 @@ function addItem() {
   cursor: pointer;
   font: inherit;
   font-size: 0.82rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-item__add:hover {
@@ -275,8 +275,8 @@ function addItem() {
 
 .menu-item h3 {
   font-size: 1.1rem;
-  font-weight: 850;
-  letter-spacing: 0;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-normal);
   color: var(--menu-title);
 }
 
@@ -289,7 +289,7 @@ function addItem() {
 .menu-item__price {
   color: var(--menu-primary);
   font-size: 0.95rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   white-space: nowrap;
 }
 

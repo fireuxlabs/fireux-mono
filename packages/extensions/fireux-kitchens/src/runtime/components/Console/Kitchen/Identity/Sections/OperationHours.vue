@@ -1,32 +1,10 @@
 <template>
-  <UCollapsible>
-    <UButton
-      class="group"
-      color="neutral"
-      variant="soft"
-      block
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <span class="flex min-w-0 items-start gap-3 text-left">
-        <UIcon
-          name="i-lucide-clock-3"
-          class="mt-0.5 size-4 shrink-0 text-muted"
-        />
-        <span class="grid min-w-0">
-          <span class="truncate">Operation hours</span>
-          <span class="truncate text-xs font-normal text-dimmed">
-            Use Google business hours or set kitchen opening times.
-          </span>
-        </span>
-      </span>
-    </UButton>
-
-    <template #content>
-      <UCard class="mt-4">
+  <MoleculesDisclosurePanel
+    title="Operation hours"
+    description="Use Google business hours or set kitchen opening times."
+    icon="i-lucide-clock-3"
+  >
+    <UCard class="mt-4">
         <div class="space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <UButtonGroup>
@@ -179,9 +157,8 @@
             {{ error }}
           </p>
         </div>
-      </UCard>
-    </template>
-  </UCollapsible>
+    </UCard>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

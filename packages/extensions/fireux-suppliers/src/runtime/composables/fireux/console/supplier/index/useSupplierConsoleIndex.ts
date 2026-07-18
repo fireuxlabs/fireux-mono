@@ -55,6 +55,7 @@ export function useSupplierConsoleIndex(
     runtime,
     targets: suppliers.targets,
     pending: suppliers.pending,
+    outcome: suppliers.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectSupplier(String(id ?? '').trim())
     },

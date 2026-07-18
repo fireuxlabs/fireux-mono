@@ -3,8 +3,8 @@
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Granite Dev Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-highlighted">Learn More: Dev</h1>
-        <p class="text-lg text-toned">
+        <h1 class="fx-type-display-title">Learn More: Dev</h1>
+        <p class="fx-type-description text-toned">
           Operator reference for Granite portfolio entities and implementation surfaces.
         </p>
         <div class="flex flex-wrap gap-2">
@@ -18,7 +18,7 @@
       <UContainer class="grid gap-6 md:grid-cols-2">
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Primary entities</h2>
+            <h2 class="fx-type-card-heading">Primary entities</h2>
           </template>
           <ul class="list-disc fx-list-stack text-sm">
             <li>Portfolio, Property, Unit, Client</li>
@@ -29,7 +29,7 @@
 
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Operational endpoints</h2>
+            <h2 class="fx-type-card-heading">Operational endpoints</h2>
           </template>
           <div class="space-y-2 text-sm">
             <div class="fx-inset-panel">

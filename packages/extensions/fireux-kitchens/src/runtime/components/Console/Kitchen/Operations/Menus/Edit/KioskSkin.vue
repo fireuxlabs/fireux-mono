@@ -19,6 +19,7 @@
       v-if="pending"
       entity="kiosk skins"
       kind="collection"
+      surface="bare"
       loading
     />
 

@@ -69,7 +69,7 @@ defineProps<{
 
 .receiving-summary__order {
   color: var(--ui-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .receiving-summary__actions {

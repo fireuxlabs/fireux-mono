@@ -9,6 +9,7 @@ import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,
   type PublicMenuIndexItem,
+  type PublicMenuIndexKitchen,
   type PublicMenuIndexPage,
   type PublicMenuIndexScope,
 } from '../../../models/kitchen/menu/menu-index.model.ts'
@@ -17,7 +18,10 @@ import {
   resolveDirectoryPublicMenuScope,
   type TenantPublicMenuScope,
 } from '../../menu/ownership/public-target.ts'
-import { menuKitchenIdentity } from '../../menu/ownership/kitchen-scope.ts'
+import {
+  menuKitchenIdentity,
+  menuKitchenOperationHours,
+} from '../../menu/ownership/kitchen-scope.ts'
 import { readMenuOrderingConfig } from '../../menu/ordering/config.ts'
 import { guestDiscoverableMenuContexts } from '../../../utils/menu-context.ts'
 
@@ -58,7 +62,7 @@ const publicMenuIndexItem = (
   id: string,
   data: Record<string, unknown>,
   scopedKitchen?: TenantPublicMenuScope | null,
-  kitchenName = ''
+  hydration: MenuIndexHydration = { kitchenName: '' }
 ): PublicMenuIndexItem | null => {
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
@@ -68,10 +72,10 @@ const publicMenuIndexItem = (
         kitchenAppId: scopedKitchen.appId,
         kitchenId: scopedKitchen.kitchenId,
         kitchenSlug: scopedKitchen.kitchenSlug,
-        kitchenName,
+        kitchenName: hydration.kitchenName,
         kitchenMenuId: id,
       })
-    : menuSourceFromData(data, { kitchenName })
+    : menuSourceFromData(data, { kitchenName: hydration.kitchenName })
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
@@ -84,7 +88,14 @@ const publicMenuIndexItem = (
         ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
       }
     : null
-  const ordering = scopedKitchen ? readMenuOrderingConfig(data) : null
+  const orderingData = scopedKitchen ? data : hydration.menuData
+  const ordering = orderingData
+    ? readMenuOrderingConfig(
+        orderingData,
+        undefined,
+        hydration.kitchenOperationHours
+      )
+    : null
   const contexts = guestDiscoverableMenuContexts(ordering)
   const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
   const kind = storedKind === 'menu' || storedKind === 'doc'
@@ -98,6 +109,7 @@ const publicMenuIndexItem = (
     description: readRecordString(data, 'description'),
     status: 'published' as const,
     ...(contexts.length ? { contexts } : {}),
+    ...(hydration.kitchen ? { kitchen: hydration.kitchen } : {}),
     ...(ordering?.service_hours
       ? { service_hours: ordering.service_hours }
       : {}),
@@ -110,7 +122,14 @@ type MenuIndexDocument = {
   data: Record<string, unknown>
 }
 
-const menuIndexKitchenNames = async (
+type MenuIndexHydration = {
+  kitchen?: PublicMenuIndexKitchen
+  kitchenName: string
+  kitchenOperationHours?: ReturnType<typeof menuKitchenOperationHours>
+  menuData?: Record<string, unknown>
+}
+
+const menuIndexHydration = async (
   db: ReturnType<typeof getRuntimeFirestore>,
   documents: MenuIndexDocument[]
 ) => {
@@ -131,10 +150,17 @@ const menuIndexKitchenNames = async (
         .collection(`apps/${source.app_id}/kitchens`)
         .doc(source.kitchen_id)
       references.set(appRef.path, appRef)
+
+      if (source.menu_id) {
+        const menuRef = appRef
+          .collection(KitchenMenuStorage.collection)
+          .doc(source.menu_id)
+        references.set(menuRef.path, menuRef)
+      }
     }
   }
 
-  if (!references.size) return new Map<string, string>()
+  if (!references.size) return new Map<string, MenuIndexHydration>()
 
   // One bounded batch per cursor page keeps the global directory current
   // without either copied Kitchen identity or per-Menu reads.
@@ -148,7 +174,9 @@ const menuIndexKitchenNames = async (
 
   return new Map(
     sources.map(({ document, source }) => {
-      if (!source.kitchen_id) return [document.id, ''] as const
+      if (!source.kitchen_id) {
+        return [document.id, { kitchenName: '' }] as const
+      }
 
       const rootPath = `kitchens/${source.kitchen_id}`
       const appPath = source.app_id
@@ -158,10 +186,82 @@ const menuIndexKitchenNames = async (
         dataByPath.get(rootPath) || {},
         appPath ? dataByPath.get(appPath) || {} : {}
       )
+      const kitchenOperationHours = menuKitchenOperationHours(
+        dataByPath.get(rootPath) || {},
+        appPath ? dataByPath.get(appPath) || {} : {}
+      )
+      const menuPath = appPath && source.menu_id
+        ? `${appPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
+        : ''
+      const menuData = menuPath ? dataByPath.get(menuPath) : undefined
+      const kitchen = identity.name
+        ? {
+            name: identity.name,
+            ...(identity.logoImageUrl
+              ? { logo_image_url: identity.logoImageUrl }
+              : {}),
+            ...(identity.imageUrl
+              ? { image_url: identity.imageUrl }
+              : {}),
+            ...(identity.imageShade
+              ? { image_shade: identity.imageShade }
+              : {}),
+          }
+        : undefined
 
-      return [document.id, identity.name] as const
+      return [
+        document.id,
+        {
+          ...(kitchen ? { kitchen } : {}),
+          kitchenName: identity.name,
+          ...(kitchenOperationHours.windows.length
+            ? { kitchenOperationHours }
+            : {}),
+          ...(menuData ? { menuData } : {}),
+        },
+      ] as const
     })
   )
+}
+
+const scopedMenuIndexHydration = async (
+  db: ReturnType<typeof getRuntimeFirestore>,
+  scope: TenantPublicMenuScope
+): Promise<MenuIndexHydration> => {
+  const appKitchenSnap = await db
+    .collection(`apps/${scope.appId}/kitchens`)
+    .doc(scope.kitchenId)
+    .get()
+  const appKitchenData = appKitchenSnap.exists
+    ? appKitchenSnap.data() || {}
+    : {}
+  const identity = menuKitchenIdentity(scope.rootKitchenData, appKitchenData)
+  const kitchenOperationHours = menuKitchenOperationHours(
+    scope.rootKitchenData,
+    appKitchenData
+  )
+  const kitchen = identity.name
+    ? {
+        name: identity.name,
+        ...(identity.logoImageUrl
+          ? { logo_image_url: identity.logoImageUrl }
+          : {}),
+        ...(identity.imageUrl
+          ? { image_url: identity.imageUrl }
+          : {}),
+        ...(identity.imageShade
+          ? { image_shade: identity.imageShade }
+          : {}),
+      }
+    : undefined
+
+  return {
+    ...(kitchen ? { kitchen } : {}),
+    kitchenName: identity.name,
+    ...(kitchenOperationHours.windows.length
+      ? { kitchenOperationHours }
+      : {}),
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -212,15 +312,18 @@ export default defineEventHandler(async (event) => {
     id: doc.id,
     data: doc.data(),
   }))
-  const kitchenNames = scopedKitchen
-    ? new Map<string, string>()
-    : await menuIndexKitchenNames(db, indexDocuments)
+  const hydration = scopedKitchen
+    ? new Map<string, MenuIndexHydration>()
+    : await menuIndexHydration(db, indexDocuments)
+  const scopedHydration = scopedKitchen
+    ? await scopedMenuIndexHydration(db, scopedKitchen)
+    : null
   const items = pageDocs
     .map((doc) => publicMenuIndexItem(
       doc.id,
       doc.data(),
       scopedKitchen,
-      kitchenNames.get(doc.id)
+      scopedHydration || hydration.get(doc.id)
     ))
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
   const nextCursor = hasMore && pageDocs.length

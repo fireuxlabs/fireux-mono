@@ -46,7 +46,7 @@ watch(localValue, (val: string) => {
   border: 1px solid #e5e7eb;
   border-radius: calc(var(--ui-radius) * 2);
   font: inherit;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
   resize: vertical;
 }
 

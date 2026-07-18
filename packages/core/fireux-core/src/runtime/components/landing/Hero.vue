@@ -90,19 +90,19 @@ const bullets = computed(() => props.bullets || [])
 
 .hero__title {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .hero__accent {
-  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
-  font-weight: 700;
+  font-size: clamp(var(--text-4xl), 4.5vw, 3.25rem);
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary-500);
 }
 
 .hero__paragraph {
   color: var(--ui-text-muted);
-  font-size: clamp(1rem, 2.4vw, 1.125rem);
-  line-height: 1.6;
+  font-size: clamp(var(--text-base), 2.4vw, var(--text-lg));
+  line-height: var(--leading-relaxed);
 }
 
 .hero__badges {
@@ -127,7 +127,7 @@ const bullets = computed(() => props.bullets || [])
   gap: calc(var(--spacing) * 3);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   color: var(--ui-text-muted);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 }
 
 .hero__bullets li {

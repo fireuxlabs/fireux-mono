@@ -1,17 +1,17 @@
 <template>
   <main class="registry-doc">
     <header>
-      <p class="eyebrow">Developer Docs</p>
-      <h1>Registry JSON Access</h1>
-      <p>
+      <p class="eyebrow fx-type-headline">Developer Docs</p>
+      <h1 class="fx-type-page-title">Registry JSON Access</h1>
+      <p class="fx-type-description">
         Narrative overview of how we expose registry payloads. This page keeps
         the human-readable context in the Developer stack, while the raw JSON
         remains in the Dev Tools area.
       </p>
     </header>
 
-    <section class="content">
-      <h2>Where to grab the data</h2>
+    <section class="content fx-type-body">
+      <h2 class="fx-type-card-title">Where to grab the data</h2>
       <p>
         Use the dedicated Dev Tool at
         <NuxtLink to="/dev/registry">/dev/registry</NuxtLink> to copy the
@@ -21,7 +21,7 @@
         formatted JSON block with a copy helper.
       </p>
 
-      <h2>Why split docs vs. tools?</h2>
+      <h2 class="fx-type-card-title">Why split docs vs. tools?</h2>
       <ul>
         <li>Developer pages stay focused on explanations and onboarding.</li>
         <li>
@@ -31,7 +31,7 @@
         <li>Linking the two keeps context close without mixing formats.</li>
       </ul>
 
-      <h2>Workflow reminder</h2>
+      <h2 class="fx-type-card-title">Workflow reminder</h2>
       <ol>
         <li>
           Sync each package&apos;s <code>registry.json</code> via
@@ -71,13 +71,9 @@ definePageMeta({
   gap: calc(var(--spacing) * 8);
 }
 .eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
 }
 header h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
   margin-bottom: calc(var(--spacing) * 2);
 }
 header p {
@@ -86,8 +82,6 @@ header p {
 .content {
   display: grid;
   gap: calc(var(--spacing) * 6);
-  font-size: 1rem;
-  line-height: 1.7;
 }
 .content ul,
 .content ol {
@@ -99,6 +93,8 @@ header p {
   background: rgba(148, 163, 184, 0.15);
   padding: 0.1em 0.3em;
   border-radius: var(--ui-radius);
+  font-family: var(--font-mono);
+  /* Inline code follows its surrounding prose with a deliberate optical trim. */
   font-size: 0.95em;
 }
 </style>

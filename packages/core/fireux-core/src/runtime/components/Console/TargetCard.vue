@@ -1,12 +1,9 @@
 <template>
-  <div
+  <MoleculesActionSurface
+    :action="action"
+    :disabled="disabled"
     class="pill"
-    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
-    :role="action && !disabled ? 'button' : undefined"
-    :tabindex="action && !disabled ? 0 : undefined"
-    @click="emitAction"
-    @keydown.enter.prevent="emitAction"
-    @keydown.space.prevent="emitAction"
+    @activate="emit('action')"
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
@@ -44,13 +41,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
 import type { ConsoleTargetCard } from './types'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     card: ConsoleTargetCard
     action?: boolean
@@ -69,10 +66,4 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'action'): void
 }>()
-
-function emitAction() {
-  if (props.disabled) return
-  if (!props.action) return
-  emit('action')
-}
 </script>

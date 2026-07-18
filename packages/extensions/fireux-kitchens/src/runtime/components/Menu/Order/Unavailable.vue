@@ -83,8 +83,8 @@ withDefaults(defineProps<{
 .menu-order-unavailable__kitchen {
   max-width: 100%;
   color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
   overflow-wrap: anywhere;
   text-transform: uppercase;
@@ -93,7 +93,7 @@ withDefaults(defineProps<{
 .menu-order-unavailable h1 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  font-size: clamp(2.2rem, 8vw, var(--text-7xl));
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -122,7 +122,7 @@ withDefaults(defineProps<{
   border-radius: var(--menu-radius);
   color: var(--menu-primary);
   font-size: 0.9rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   text-decoration: none;
 }
 

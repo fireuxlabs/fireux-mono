@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
             <UButton
               v-if="showVariantToggle"
@@ -31,7 +32,7 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge v-if="showCount && isSettled" variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -39,7 +40,20 @@
       </div>
     </template>
 
-    <p v-if="pending">Loading properties...</p>
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="properties"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="properties"
+      state="error"
+      surface="bare"
+      description="Properties could not be loaded. Please try again."
+    />
 
     <PropertyCollectionList
       v-else-if="cardsFiltered.length"
@@ -63,9 +77,16 @@
       </template>
     </PropertyCollectionList>
 
-    <p v-else>
-      {{ query ? 'No properties match your search.' : 'No properties found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="properties"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No matching properties' : 'No properties yet'"
+      :description="query
+        ? 'Try a different property name.'
+        : 'Properties will appear here when they are available.'"
+    />
 
     <div>
       <DevJson
@@ -126,7 +147,10 @@ const {
 
 const fetched = usePropertyCollection()
 const rawCollection = computed(() => fetched.properties.value)
-const pending = computed(() => fetched.pending.value)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Properties'))
 const description = computed(() => String(props.description || '').trim())

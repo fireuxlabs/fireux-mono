@@ -10,11 +10,24 @@
             <p>Select the Project console target you want to work on.</p>
           </div>
 
-          <UBadge variant="soft">{{ cards.length }}</UBadge>
+          <UBadge v-if="isSettled" variant="soft">{{ cards.length }}</UBadge>
         </div>
       </template>
 
-      <p v-if="pending" class="text-sm text-dimmed">Loading projects...</p>
+      <MoleculesStateCard
+        v-if="resolvedOutcome === 'pending'"
+        entity="project targets"
+        state="loading"
+        surface="bare"
+      />
+
+      <MoleculesStateCard
+        v-else-if="resolvedOutcome === 'error'"
+        entity="project targets"
+        state="error"
+        surface="bare"
+        description="Project targets could not be loaded. Please try again."
+      />
 
       <div v-else-if="cards.length" class="space-y-3">
         <ProjectCardsCell
@@ -28,15 +41,21 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No Project targets found.
-      </p>
+      <MoleculesStateCard
+        v-else-if="isSettled"
+        entity="project targets"
+        state="empty"
+        surface="bare"
+        title="No Project targets found"
+        description="Projects you can access will appear here."
+      />
     </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
@@ -44,6 +63,7 @@ const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
     pending?: boolean
+    outcome?: ConsoleTargetOutcome
   }>(),
   {
     collection: () => [],
@@ -68,6 +88,14 @@ const cards = computed(() =>
     .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
       Boolean(card)
     )
+)
+const resolvedOutcome = computed<ConsoleTargetOutcome>(() => {
+  if (props.outcome) return props.outcome
+  if (props.pending) return 'pending'
+  return cards.value.length ? 'ready' : 'empty'
+})
+const isSettled = computed(() =>
+  resolvedOutcome.value === 'ready' || resolvedOutcome.value === 'empty'
 )
 
 function selectProject(id: string) {

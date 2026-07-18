@@ -7,6 +7,11 @@ const sections = [
     icon: 'i-lucide-box',
     pages: ['colors', 'img', 'tokens', 'typography'],
   },
+  {
+    name: 'Components',
+    icon: 'i-lucide-panels-top-left',
+    pages: ['contracts'],
+  },
 ]
 const getPagePath = (section: string, page: string) =>
   `/design/${section.toLowerCase()}/${page}`
@@ -15,9 +20,9 @@ const getPagePath = (section: string, page: string) =>
 <template>
   <div class="design-layout">
     <aside class="sidebar">
-      <h2>Design System</h2>
+      <h2 class="fx-type-card-title text-xl">Design System</h2>
       <nav v-for="section in sections" :key="section.name">
-        <h3><UIcon :name="section.icon" class="icon" /> {{ section.name }}</h3>
+        <h3 class="fx-type-card-heading"><UIcon :name="section.icon" class="icon" /> {{ section.name }}</h3>
         <ul>
           <li v-for="page in section.pages" :key="page">
             <NuxtLink :to="getPagePath(section.name, page)">
@@ -52,7 +57,6 @@ const getPagePath = (section: string, page: string) =>
 }
 .sidebar h3 {
   margin-top: calc(var(--spacing) * 4);
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
 }
@@ -69,7 +73,7 @@ li {
 li a {
   text-decoration: none;
   color: var(--ui-text);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 li a:hover {
   color: var(--ui-primary);

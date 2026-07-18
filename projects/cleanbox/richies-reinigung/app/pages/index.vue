@@ -95,8 +95,8 @@ useSeoMeta({
 }
 
 .lede {
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
   color: rgba(248, 250, 252, 0.9);
 }
 
@@ -113,7 +113,7 @@ useSeoMeta({
   justify-content: center;
   padding: 0.85rem 1.8rem;
   border-radius: 9999px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   border: 1px solid transparent;
   transition: all 0.2s ease;
 }

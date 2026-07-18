@@ -420,8 +420,8 @@ function debugOrder(order: DriverOrder) {
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg-elevated) 92%, var(--ui-text));
   color: var(--ui-text);
-  font-size: 0.75rem;
-  line-height: 1.45;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
   text-align: left;
 }
 

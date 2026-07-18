@@ -19,6 +19,7 @@
       v-else-if="pending"
       entity="linked place"
       kind="document"
+      surface="bare"
       loading
     />
 

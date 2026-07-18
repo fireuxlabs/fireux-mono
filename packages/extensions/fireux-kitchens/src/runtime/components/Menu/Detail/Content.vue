@@ -77,6 +77,6 @@ defineEmits<{
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 </style>

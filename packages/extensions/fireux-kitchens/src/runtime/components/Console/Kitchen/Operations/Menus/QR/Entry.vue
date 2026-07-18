@@ -144,7 +144,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   background: var(--ui-bg-muted);
   color: var(--ui-text-highlighted);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   padding: var(--spacing) 0.45rem;
 }
 </style>

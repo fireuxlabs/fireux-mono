@@ -9,6 +9,7 @@ import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
@@ -144,15 +145,30 @@ export function useProjectCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorSource.value === undefined || teamSource.value === undefined
+      return operatorSource.pending.value || teamSource.pending.value
     }
     if (hasOperatorFilter.value) return false
-    return firestoreSource.value?.value === undefined
+    return rootSource.pending.value
+  })
+  const error = computed<unknown | undefined>(() => {
+    if (sourceMode.value === 'demo') return undefined
+    if (hasOperatorFilter.value && filterOperatorId.value) {
+      return operatorSource.error.value ?? teamSource.error.value
+    }
+    if (hasOperatorFilter.value) return undefined
+    return rootSource.error.value
+  })
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
   })
 
   return {
     projects,
     count,
     pending,
+    error,
+    outcome,
   }
 }

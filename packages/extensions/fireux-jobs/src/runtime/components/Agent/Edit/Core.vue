@@ -210,12 +210,3 @@ const handleContactPhone = async (value: string) =>
 const handleWebsiteUrl = async (value: string) =>
   wrap(() => updateWebsiteUrl(value), 'Website updated', 'Failed to update website')
 </script>
-
-<style scoped>
-.profile-edit__section-header {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  font-weight: 600;
-}
-</style>

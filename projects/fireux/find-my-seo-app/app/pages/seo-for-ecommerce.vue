@@ -8,7 +8,7 @@
     <UPageBody class="space-y-6">
       <UCard>
         <div class="space-y-4">
-          <p class="text-sm uppercase tracking-[0.18em] text-dimmed">Why this page exists</p>
+          <p class="fx-type-headline text-dimmed">Why this page exists</p>
           <h2 class="text-2xl font-semibold">eCommerce SEO needs category thinking, not generic traffic promises</h2>
           <p class="leading-7 text-toned">
             Good eCommerce SEO connects search demand to category structure, internal linking, merchandising, and commercial priorities.

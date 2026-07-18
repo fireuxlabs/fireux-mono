@@ -34,23 +34,23 @@ Plugin surfaces:
 
 .fx-plugin-surface__title {
 	margin: 0;
-	font-size: 1.5rem;
-	line-height: 1.18;
-	font-weight: 600;
-	letter-spacing: 0;
+	font-size: var(--text-2xl);
+	line-height: var(--leading-tight);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-normal);
 	color: var(--ui-text-highlighted, var(--ui-text));
 }
 
 @media (min-width: 640px) {
 	.fx-plugin-surface__title {
-		font-size: 1.875rem;
+		font-size: var(--text-3xl);
 	}
 }
 
 .fx-plugin-surface__description {
 	margin: 0;
-	font-size: 1rem;
-	line-height: 1.6;
+	font-size: var(--text-base);
+	line-height: var(--leading-relaxed);
 	color: var(--ui-text-muted, var(--ui-text));
 }
 

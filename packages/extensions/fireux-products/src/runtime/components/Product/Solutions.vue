@@ -3,7 +3,7 @@
     <template #header>
       <div class="space-y-1">
         <h2 class="text-lg font-semibold">Solutions</h2>
-        <p class="text-sm text-muted-foreground">
+        <p class="text-sm text-muted">
           Jump to dedicated pages for selected FireUX offers.
         </p>
       </div>

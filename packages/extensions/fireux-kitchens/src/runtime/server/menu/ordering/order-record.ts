@@ -1,5 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
+import { menuRoutePath } from '../../../utils/kitchen-menu-route.ts'
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import type { ResolvedMenuOrderItem } from './order-items.ts'
@@ -104,6 +106,7 @@ export function assembleMenuOrderRecord(input: {
     order_number: identity.number,
     status: fulfilment.status,
     order_type: command.orderType,
+    ...(command.customerUid ? { customer_uid: command.customerUid } : {}),
     ...(strategy.recordsRequestedFor && command.requestedFor
       ? { requested_for: command.requestedFor }
       : {}),
@@ -136,6 +139,25 @@ export function assembleMenuOrderRecord(input: {
       by: command.actorId,
     },
   }
+  const customerOrderLink = command.customerUid
+    ? {
+        path: `customers/${command.customerUid}/orders/${identity.id}`,
+        payload: {
+          id: identity.id,
+          order_path: path,
+          app_id: context.appId,
+          kitchen_id: context.kitchenId,
+          kitchen_name: context.kitchenName || '',
+          menu_id: context.menuId,
+          menu_name: readRecordString(context.menuData, 'name') || context.menuId,
+          menu_path: menuRoutePath({
+            scope: context.routeScope,
+            menuId: context.routeMenuId,
+          }),
+          created_at: identity.timestamp,
+        },
+      }
+    : undefined
   const response = {
     id: identity.id,
     path,
@@ -191,5 +213,6 @@ export function assembleMenuOrderRecord(input: {
     path,
     payload,
     response,
+    customerOrderLink,
   }
 }

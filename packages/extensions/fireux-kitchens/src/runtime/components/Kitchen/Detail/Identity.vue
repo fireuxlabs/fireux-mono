@@ -241,7 +241,7 @@ const hasSurface = computed(() =>
   margin: 0 0 calc(var(--spacing) * 2);
   color: var(--ui-text-muted);
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -250,8 +250,8 @@ const hasSurface = computed(() =>
   max-width: 26ch;
   margin: 0;
   color: var(--ui-text-highlighted);
-  font-size: clamp(1.7rem, 4vw, 3rem);
-  font-weight: 700;
+  font-size: clamp(1.7rem, 4vw, var(--text-5xl));
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.035em;
   line-height: 1.05;
   text-wrap: balance;
@@ -273,7 +273,7 @@ const hasSurface = computed(() =>
   margin: 0.85rem 0 0;
   color: var(--ui-text-muted);
   font-size: 0.88rem;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .kitchen-identity__address :deep(svg) {

@@ -1,8 +1,8 @@
 <template>
   <section class="landing-index-section">
     <div class="section-header">
-      <h2>Why Choose CleanBox?</h2>
-      <p>
+      <h2 class="fx-type-section-title">Why Choose CleanBox?</h2>
+      <p class="fx-type-description">
         Built specifically for cleaning professionals who want to grow their
         business
       </p>
@@ -15,8 +15,8 @@
       >
         <UIcon :name="feature.icon" class="feature-icon" />
         <div class="feature-content">
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
+          <h3 class="fx-type-card-heading">{{ feature.title }}</h3>
+          <p class="fx-type-body">{{ feature.description }}</p>
         </div>
       </div>
     </div>
@@ -129,13 +129,10 @@ const filteredFeatures = computed(() => {
 }
 
 .section-header h2 {
-  font-size: var(--text-3xl);
-  font-weight: 700;
   margin-bottom: calc(var(--spacing) * 3);
 }
 
 .section-header p {
-  font-size: var(--text-lg);
   color: var(--color-gray-600);
 }
 
@@ -183,13 +180,10 @@ const filteredFeatures = computed(() => {
 }
 
 .feature-content h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
   margin-bottom: calc(var(--spacing) * 2);
 }
 
 .feature-content p {
   color: var(--color-gray-600);
-  line-height: 1.5;
 }
 </style>

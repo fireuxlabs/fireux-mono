@@ -200,7 +200,7 @@ const onCopy = async () => {
   padding: 1px 7px;
   color: var(--fx-debug-ink);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -209,12 +209,12 @@ const onCopy = async () => {
   margin: 6px 0 0;
   color: var(--fx-debug-ink);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .jsonpanel-context {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--fx-debug-yellow-muted);
 }
 
@@ -248,12 +248,12 @@ const onCopy = async () => {
 }
 
 .jsonpanel-object-key {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
 }
 
 .jsonpanel-object-value {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--ui-text-muted);
 }
 

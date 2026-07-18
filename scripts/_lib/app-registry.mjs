@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-17
+// last_used: 2026-07-18
 // usage_note: canonical app routes and HTTP smoke contracts.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'

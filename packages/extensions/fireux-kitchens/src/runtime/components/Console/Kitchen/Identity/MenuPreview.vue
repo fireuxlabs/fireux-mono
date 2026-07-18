@@ -81,20 +81,13 @@
         />
       </section>
 
-      <UCollapsible>
-        <UButton
-          color="neutral"
-          variant="soft"
-          size="sm"
-          trailing-icon="i-lucide-chevron-down"
-        >
-          Theme snapshot
-        </UButton>
-
-        <template #content>
-          <pre class="mt-3 overflow-auto rounded-lg border border-default bg-muted p-3 text-xs text-highlighted">{{ snapshotJson }}</pre>
-        </template>
-      </UCollapsible>
+      <MoleculesDisclosurePanel
+        title="Theme snapshot"
+        size="sm"
+        :block="false"
+      >
+        <pre class="mt-3 overflow-auto rounded-lg border border-default bg-muted p-3 text-xs text-highlighted">{{ snapshotJson }}</pre>
+      </MoleculesDisclosurePanel>
     </div>
   </UCard>
 </template>
@@ -180,7 +173,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
   --menu-title: var(--menu-title-light);
   --menu-muted: color-mix(in srgb, var(--menu-text) 72%, var(--menu-bg));
   --menu-secondary: #64748b;
-  --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-font: var(--font-sans);
   --menu-title-font: var(--menu-font);
 
   padding: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 12));

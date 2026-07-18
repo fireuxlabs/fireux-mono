@@ -2,7 +2,7 @@
   <div class="menu-order-basket-dialog__host">
     <UModal
       v-model:open="openModel"
-      description="Review quantities and optional choices."
+      description="Review your items and choices."
       :portal="false"
       title="Your basket"
       :ui="modalUi"
@@ -20,8 +20,15 @@
             class="menu-order-basket-dialog__line"
             :data-menu-basket-line="line.itemId"
           >
+            <strong
+              class="menu-order-basket-dialog__quantity"
+              :aria-label="`Quantity ${line.quantity}`"
+            >
+              {{ line.quantity }}×
+            </strong>
+
             <div class="menu-order-basket-dialog__identity">
-              <h3>{{ line.name }}</h3>
+              <h3 class="fx-type-card-title">{{ line.name }}</h3>
               <p v-if="line.variant">{{ line.variant.label }}</p>
               <ul v-if="line.addOns.length">
                 <li v-for="addOn in line.addOns" :key="addOn.id">
@@ -34,11 +41,6 @@
               {{ formatPrice(line.unitPrice * line.quantity) }}
             </strong>
 
-            <MenuOrderQuantity
-              :model-value="line.quantity"
-              @update:model-value="$emit('quantity', line.id, $event)"
-            />
-
             <button
               type="button"
               class="menu-order-basket-dialog__remove"
@@ -47,7 +49,6 @@
               @click="$emit('remove', line.id)"
             >
               <UIcon name="i-lucide-trash-2" aria-hidden="true" />
-              <span>Remove</span>
             </button>
           </article>
 
@@ -103,7 +104,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
-  (event: 'quantity', lineId: string, quantity: number): void
   (event: 'remove', lineId: string): void
   (event: 'continue', trigger: HTMLButtonElement): void
   (event: 'after-leave'): void
@@ -193,11 +193,19 @@ function continueBasket(event: MouseEvent) {
 
 .menu-order-basket-dialog__line {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  gap: calc(var(--spacing) * 4);
+  grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
+  gap: calc(var(--spacing) * 3);
+  align-items: start;
   padding: calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: var(--menu-radius-control);
+}
+
+.menu-order-basket-dialog__quantity {
+  min-width: 2ch;
+  color: var(--menu-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .menu-order-basket-dialog__identity {
@@ -215,7 +223,7 @@ function continueBasket(event: MouseEvent) {
 .menu-order-basket-dialog__identity h3 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: 1rem;
+  font-size: var(--text-base);
   overflow-wrap: anywhere;
 }
 
@@ -237,24 +245,23 @@ function continueBasket(event: MouseEvent) {
   white-space: nowrap;
 }
 
-.menu-order-basket-dialog__line :deep(.menu-order-quantity) {
-  grid-column: 1 / -1;
-}
-
 .menu-order-basket-dialog__remove {
-  display: inline-flex;
-  grid-column: 1 / -1;
-  justify-self: start;
-  gap: 0.4rem;
-  align-items: center;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
   padding: 0;
   border: 0;
+  border-radius: var(--ui-radius);
   background: transparent;
   color: var(--menu-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
+}
+
+.menu-order-basket-dialog__remove:hover {
+  background: color-mix(in srgb, var(--menu-primary) 8%, transparent);
+  color: var(--menu-primary);
 }
 
 .menu-order-basket-dialog__remove:focus-visible {
@@ -282,7 +289,7 @@ function continueBasket(event: MouseEvent) {
   gap: calc(var(--spacing) * 4);
   color: var(--menu-muted);
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-basket-dialog__footer-copy strong {
@@ -301,7 +308,7 @@ function continueBasket(event: MouseEvent) {
   align-items: center;
   color: var(--menu-muted);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-basket-dialog__next button {
@@ -317,7 +324,7 @@ function continueBasket(event: MouseEvent) {
   color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-basket-dialog__next button:focus-visible {
@@ -329,6 +336,19 @@ function continueBasket(event: MouseEvent) {
   :deep(.menu-order-basket-dialog__content) {
     width: calc(100vw - 1rem);
     max-height: calc(100dvh - 1rem);
+  }
+
+  .menu-order-basket-dialog__line {
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+  }
+
+  .menu-order-basket-dialog__line-total {
+    grid-column: 2;
+  }
+
+  .menu-order-basket-dialog__remove {
+    grid-column: 3;
+    grid-row: 1;
   }
 }
 </style>

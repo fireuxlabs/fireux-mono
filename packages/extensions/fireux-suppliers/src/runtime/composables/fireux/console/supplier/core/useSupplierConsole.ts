@@ -51,7 +51,12 @@ export function useSupplierConsole(
       operatorId: userId.value,
     }
   })
-  const { suppliers: targetSuppliers, pending: targetsPending } = useSupplierCollection({
+  const {
+    suppliers: targetSuppliers,
+    pending: targetsPending,
+    error: targetsError,
+    outcome: targetsOutcome,
+  } = useSupplierCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
@@ -61,6 +66,7 @@ export function useSupplierConsole(
     storageFamily: SupplierStorage.rootCollection,
     targetItems: targetSuppliers,
     targetPending: targetsPending,
+    targetError: targetsError,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
     mode: consoleRoot.source,
     userId,
@@ -85,6 +91,7 @@ export function useSupplierConsole(
     targets: targetSuppliers,
     count: computed(() => targetSuppliers.value.length),
     pending: targetsPending,
+    outcome: targetsOutcome,
   }
   const selection = {
     supplier: selectedSupplier,

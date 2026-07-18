@@ -144,7 +144,7 @@ const {
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 
@@ -159,8 +159,8 @@ const {
 
 .menu-detail__translation-state {
   color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
 }
 
 .menu-detail__translation-state--error {

@@ -1,13 +1,7 @@
 <template>
   <section class="kitchen-directory">
-    <div class="kitchen-directory__header">
-      <div class="kitchen-directory__title">
-        <p class="kitchen-directory__eyebrow">Browse</p>
-        <h2>{{ title }}</h2>
-        <p v-if="description">{{ description }}</p>
-      </div>
-
-      <div class="kitchen-directory__controls">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
         <UInput
           v-if="showSearchInput"
           v-model="query"
@@ -35,13 +29,15 @@
         <span v-if="showCount" class="kitchen-directory__count">
           {{ countLabel }}
         </span>
-      </div>
-    </div>
+      </template>
+    </CollectionDirectoryHeader>
 
-    <div v-if="pending" class="kitchen-directory__state">
-      <UIcon name="i-lucide-loader-circle" class="animate-spin" />
-      <p>Finding kitchens…</p>
-    </div>
+    <CollectionDirectoryState
+      v-if="pending"
+      loading
+      icon="i-lucide-loader-circle"
+      description="Finding kitchens…"
+    />
 
     <KitchenCollectionList
       v-else-if="cardsFiltered.length"
@@ -65,17 +61,14 @@
       </template>
     </KitchenCollectionList>
 
-    <div v-else class="kitchen-directory__state">
-      <UIcon name="i-lucide-utensils" />
-      <div>
-        <h3>{{ query ? 'No matching kitchens' : 'No kitchens yet' }}</h3>
-        <p>
-          {{ query
-            ? 'Try a different kitchen name or location.'
-            : 'Published kitchens will appear here when they are ready.' }}
-        </p>
-      </div>
-    </div>
+    <CollectionDirectoryState
+      v-else
+      icon="i-lucide-utensils"
+      :title="query ? 'No matching kitchens' : 'No kitchens yet'"
+      :description="query
+        ? 'Try a different kitchen name or location.'
+        : 'Published kitchens will appear here when they are ready.'"
+    />
 
     <div>
       <DevJson
@@ -221,50 +214,6 @@ onMounted(() => {
   gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
 }
 
-.kitchen-directory__header {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 6) calc(var(--spacing) * 12);
-  flex-wrap: wrap;
-}
-
-.kitchen-directory__title {
-  max-width: 40rem;
-}
-
-.kitchen-directory__eyebrow {
-  margin: 0 0 0.6rem;
-  color: var(--ui-primary);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.kitchen-directory__title h2 {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: clamp(2rem, 5vw, 3.75rem);
-  font-weight: 650;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.kitchen-directory__title > p:last-child {
-  margin: calc(var(--spacing) * 4) 0 0;
-  color: var(--ui-text-muted);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.kitchen-directory__controls {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  min-height: 2.5rem;
-}
-
 .kitchen-directory__search {
   width: min(18rem, 65vw);
 }
@@ -273,44 +222,8 @@ onMounted(() => {
   min-width: max-content;
   padding-left: 0.35rem;
   color: var(--ui-text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.kitchen-directory__state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--spacing) * 4);
-  min-height: 13rem;
-  padding: calc(var(--spacing) * 8);
-  border: 1px dashed color-mix(in srgb, var(--ui-primary) 28%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 6);
-  background: color-mix(in srgb, var(--ui-primary) 3%, var(--ui-bg));
-  color: var(--ui-text-muted);
-  text-align: left;
-}
-
-.kitchen-directory__state > svg {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex: 0 0 auto;
-  color: var(--ui-primary);
-}
-
-.kitchen-directory__state h3,
-.kitchen-directory__state p {
-  margin: 0;
-}
-
-.kitchen-directory__state h3 {
-  color: var(--ui-text-highlighted);
-  font-weight: 650;
-}
-
-.kitchen-directory__state p {
-  margin-top: var(--spacing);
-  font-size: 0.875rem;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .kitchen-directory :deep(.collection-stack) {
@@ -319,15 +232,6 @@ onMounted(() => {
 }
 
 @media (max-width: 640px) {
-  .kitchen-directory__header,
-  .kitchen-directory__controls {
-    align-items: flex-start;
-  }
-
-  .kitchen-directory__controls {
-    width: 100%;
-  }
-
   .kitchen-directory__count {
     margin-left: auto;
     align-self: center;

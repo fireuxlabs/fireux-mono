@@ -1,8 +1,8 @@
 <template>
   <section class="solutions">
     <header class="solutions__header">
-      <h2 class="solutions__title">{{ resolvedTitle }}</h2>
-      <p v-if="resolvedSubtitle" class="solutions__subtitle">{{ resolvedSubtitle }}</p>
+      <h2 class="solutions__title fx-type-section-display">{{ resolvedTitle }}</h2>
+      <p v-if="resolvedSubtitle" class="solutions__subtitle fx-type-body">{{ resolvedSubtitle }}</p>
     </header>
 
     <ul class="solutions__grid">
@@ -63,14 +63,7 @@ const resolvedItems = computed(() =>
   gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
 }
 
-.solutions__title {
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 700;
-}
-
 .solutions__subtitle {
-  color: var(--ui-text-muted);
-  font-size: 1rem;
   max-width: 40rem;
 }
 
@@ -101,12 +94,12 @@ const resolvedItems = computed(() =>
 }
 
 .solutions__item-title {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .solutions__item-copy {
   color: var(--ui-text-muted);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   flex-grow: 1;
 }
 </style>

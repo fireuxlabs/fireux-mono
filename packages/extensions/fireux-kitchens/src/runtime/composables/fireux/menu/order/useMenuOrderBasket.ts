@@ -106,25 +106,6 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     lineSequence = 0
   }
 
-  function setQuantity(lineId: string, nextQuantity: number) {
-    const id = canonicalText(lineId)
-    if (
-      !id ||
-      typeof nextQuantity !== 'number' ||
-      !Number.isInteger(nextQuantity) ||
-      nextQuantity < 1 ||
-      nextQuantity > 99
-    ) {
-      return false
-    }
-
-    const line = lines.value.find(candidate => candidate.id === id)
-    if (!line) return false
-
-    line.quantity = nextQuantity
-    return true
-  }
-
   function remove(lineId: string) {
     const id = canonicalText(lineId)
     if (!id) return false
@@ -237,7 +218,6 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     totalLabel,
     add,
     clear,
-    setQuantity,
     remove,
   }
 }

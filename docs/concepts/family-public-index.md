@@ -1,6 +1,6 @@
 Public index family map
-Updated: 2026-06-18
-Ref: 37fb262f0
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -24,9 +24,12 @@ Similar:
 - Should keep route/meta shell light.
 
 Known pattern:
-- `UPage`
-- `UPageHeader`
-- `UPageBody`
+- Root/global discovery pages may use core `PublicIndexSurface` for the shared hero,
+  page rhythm, icon mark, and secondary domain doorway.
+- Scoped and tenant indexes may keep the smaller `UPage`, `UPageHeader`, and
+  `UPageBody` composition when the global discovery hero would be misleading.
+- Root collection managers use core `CollectionDirectoryHeader` and
+  `CollectionDirectoryState` for shared hierarchy and loading/empty treatment.
 - one domain CTA or intro component when useful, named `XCTA`
 - one collection manager or equivalent list component
 - dev debug only when actively needed
@@ -36,6 +39,8 @@ Lasagne rule:
 - Reuse the domain components.
 - Keep data cooking below the page.
 - Shared primitives may live inside domain components.
+- Shared public-index presentation lives in `fireux-core`; domain managers keep
+  fetching, cards, routes, actions, and copy in their owning package.
 - Avoid generic config blobs in the page.
 
 Differences:

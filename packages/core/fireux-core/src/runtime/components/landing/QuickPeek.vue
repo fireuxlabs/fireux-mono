@@ -53,8 +53,8 @@ defineProps<{
 }
 
 .peek__title {
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-lg);
 }
 
 .peek__items {
@@ -79,13 +79,13 @@ defineProps<{
 }
 
 .peek__item-title {
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-base);
 }
 
 .peek__item-copy {
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .peek__footer {

@@ -1,6 +1,18 @@
-import { computed, isRef, type Ref } from 'vue'
+import {
+  computed,
+  isRef,
+  toValue,
+  type MaybeRefOrGetter,
+  type Ref,
+} from 'vue'
 
 export type FirestoreCollectionSource = 'live' | 'test' | 'demo'
+export type FirestoreCollectionOutcome =
+  | 'idle'
+  | 'pending'
+  | 'error'
+  | 'empty'
+  | 'ready'
 export type FirestoreCollectionFilterValue = string | number | null | undefined
 type FirestoreCollectionFilterInput = FirestoreCollectionFilterValue[] | null | undefined
 
@@ -15,6 +27,28 @@ type UseFirestoreCollectionModesOptions = {
   source?: FirestoreCollectionSource | Ref<FirestoreCollectionSource>
   defaultCollectionPath: string
   testCollectionPath: string
+}
+
+type UseFirestoreCollectionStateOptions = {
+  active?: MaybeRefOrGetter<boolean>
+  count: MaybeRefOrGetter<number>
+  error: MaybeRefOrGetter<unknown | undefined>
+  pending: MaybeRefOrGetter<boolean>
+}
+
+export function useFirestoreCollectionState(
+  options: UseFirestoreCollectionStateOptions
+) {
+  const outcome = computed<FirestoreCollectionOutcome>(() => {
+    if (options.active !== undefined && !toValue(options.active)) return 'idle'
+    if (toValue(options.pending)) return 'pending'
+    if (toValue(options.error)) return 'error'
+    return toValue(options.count) > 0 ? 'ready' : 'empty'
+  })
+
+  return {
+    outcome,
+  }
 }
 
 export function resolveFirestoreCollectionOption<T>(

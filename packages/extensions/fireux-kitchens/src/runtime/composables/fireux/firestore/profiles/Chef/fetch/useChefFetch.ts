@@ -6,7 +6,7 @@ import type { Chef } from '../../../../../../models/chef.model'
 
 // Chef profiles for UI use. Public user summaries live on the profile rows.
 export function useChefFetch() {
-  const { globalProfiles, localProfiles } =
+  const { globalProfiles, localProfiles, pending, error, outcome } =
     useProfileCollection<Chef>(chefConfig)
 
   const coreChefs = computed(() => globalProfiles.value ?? [])
@@ -14,16 +14,13 @@ export function useChefFetch() {
   const { byId: coreChef } = useCollectionById(coreChefs)
   const { byId: appChef } = useCollectionById(appChefs)
 
-  const pending = computed(() =>
-    globalProfiles.value === undefined ||
-    Boolean(localProfiles && localProfiles.value === undefined)
-  )
-
   return {
     coreChefs,
     appChefs,
     coreChef,
     appChef,
     pending,
+    error,
+    outcome,
   }
 }

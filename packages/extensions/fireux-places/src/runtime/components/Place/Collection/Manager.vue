@@ -38,6 +38,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -54,7 +55,9 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge
+              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+              variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -62,8 +65,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="places"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="places"
+      state="error"
+      surface="bare"
+    />
+
     <PlaceCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -75,9 +92,22 @@
       </template>
     </PlaceCollectionList>
 
-    <p v-else>
-      {{ query ? 'No places match your search.' : 'No places found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="places"
+      state="empty"
+      surface="bare"
+      :title="
+        query || activeEntityFamily !== 'all'
+          ? 'No places match your filters'
+          : 'No places yet'
+      "
+      :description="
+        query || activeEntityFamily !== 'all'
+          ? 'Try changing the search or entity-family filter.'
+          : 'Once place records are added, they will display here.'
+      "
+    />
 
     <div>
       <DevJson
@@ -127,6 +157,7 @@ const props = withDefaults(
 
 const fetched = usePlaceCollection()
 const collection = computed(() => fetched.collection.value)
+const outcome = computed(() => fetched.outcome.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(() =>

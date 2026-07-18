@@ -62,7 +62,7 @@
           :key="item.label"
           class="grid gap-0.5"
         >
-          <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
+          <div class="fx-type-label">
             {{ item.label }}
           </div>
           <div class="truncate">

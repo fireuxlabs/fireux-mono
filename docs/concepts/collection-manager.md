@@ -1,6 +1,6 @@
 Collection manager map
-Updated: 2026-07-17
-Ref: 234f29beb
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -82,6 +82,21 @@ Source contract:
 - If list/card truth lives elsewhere, copy a public snapshot onto the row through a sync seam.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
+Data-state contract:
+- A manager consumes the collection composable/controller outcome; rendered
+  card count must never decide whether the source is loading or failed.
+- Primary branch order is `pending` -> `error` -> list -> filtered empty ->
+  settled collection empty.
+- `empty` is valid only after a successful settled read. Pending, offline,
+  permission, and other read failures must not collapse into empty copy.
+- Counts are shown only for settled `ready` or `empty` outcomes. Search-empty
+  copy is local presentation and remains distinct from an empty source.
+- Use the shared bare `MoleculesStateCard` for conventional manager states.
+  Domain directory presentations may use their established state component but
+  keep the same ordering and live-region semantics.
+- Do not expose raw backend errors on public surfaces. A retained valid page may
+  show a non-fatal pagination error without replacing the existing list.
+
 Card handoff contract:
 - `XCollectionManager` maps records through `useXInterface()`.
 - `XCollectionManager` computes `linkEnabled = computed(() => props.link !== false)`.
@@ -90,17 +105,15 @@ Card handoff contract:
 - `XCardsPill` and `XCardsCell` render real `<NuxtLink>` branches when `link && to`; action-only usage is the local delta.
 
 Visual convergence status:
-- The public Kitchen directory is the current visual prototype for a warmer,
-  clearer collection-manager hierarchy, richer default cards, and deliberate
-  loading/empty treatment.
-- This direction is promising but not finished canon. Do not copy its local
-  markup and CSS across managers one by one.
-- A future family pass should align manager hierarchy, controls, spacing,
-  view-language, and state treatment through the smallest honest shared seam.
+- The public Kitchen directory established the warmer, clearer root-manager
+  hierarchy now shared with Menu through core `CollectionDirectoryHeader` and
+  `CollectionDirectoryState`.
+- Root/global discovery pages may share core `PublicIndexSurface`; this is page
+  presentation only and does not move domain collection ownership into core.
 - Domain card content, actions, data source, and genuine scoped behavior remain
   accepted deltas; visual convergence must not flatten domain meaning.
-- Until that pass is agreed, preserve the current Kitchen implementation as a
-  prototype and avoid opportunistic restyling of sibling managers.
+- Converge additional root managers deliberately through these small seams;
+  do not copy Kitchen/Menu markup and CSS into each manager.
 
 Debug contract:
 - Collection manager debug should separate `objects` from `derived`.

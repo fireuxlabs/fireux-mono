@@ -141,7 +141,7 @@ watch(displayUrl, () => {
 .menu-document__kind {
   color: var(--menu-muted);
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -152,7 +152,7 @@ watch(displayUrl, () => {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
   font-size: clamp(1.35rem, 4vw, 2rem);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   overflow-wrap: anywhere;
 }
 
@@ -172,7 +172,7 @@ watch(displayUrl, () => {
   border-radius: var(--menu-radius-control);
   background: var(--menu-primary);
   color: var(--menu-bg);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   text-decoration: none;
 }
 

@@ -3,10 +3,10 @@
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Slap Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-highlighted">
+        <h1 class="fx-type-display-title">
           Learn More
         </h1>
-        <p class="text-lg text-toned">
+        <p class="fx-type-description text-toned">
           Slap wraps drops, stories, gallery thinking, and console-backed operations in lifestyle-commerce language.
         </p>
         <div class="flex flex-wrap gap-2">

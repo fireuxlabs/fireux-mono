@@ -6,6 +6,7 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { KitchenOrderStatus } from '../../../../models/kitchen/order.model'
 import type { CreatedMenuOrder } from '../../../../models/kitchen/menu/menu-ordering.model'
 import type { MenuOrderCollectionTimeSelection } from '../../../../utils/menu-order-collection-time'
@@ -49,6 +50,7 @@ const terminalStatuses = new Set<KitchenOrderStatus>([
 ])
 
 export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
+  const { currentUser } = useAuth()
   const sentOrder = ref<CreatedMenuOrder | null>(null)
   const status = ref<MenuCollectionOrderStatus | null>(null)
   const pending = ref(false)
@@ -101,8 +103,12 @@ export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
 
     pending.value = true
     try {
+      const authToken = await currentUser.value?.getIdToken()
       const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
         method: 'POST',
+        ...(authToken
+          ? { headers: { Authorization: `Bearer ${authToken}` } }
+          : {}),
         body: {
           ...body,
           idempotency_key: requestKey,

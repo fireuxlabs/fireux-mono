@@ -1,32 +1,10 @@
 <template>
-  <UCollapsible>
-    <UButton
-      class="group"
-      color="neutral"
-      variant="soft"
-      block
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <span class="flex min-w-0 items-start gap-3 text-left">
-        <UIcon
-          name="i-lucide-store"
-          class="mt-0.5 size-4 shrink-0 text-muted"
-        />
-        <span class="grid min-w-0">
-          <span class="truncate">Kitchen</span>
-          <span class="truncate text-xs font-normal text-dimmed">
-            Name, slug, tagline, and menu theme.
-          </span>
-        </span>
-      </span>
-    </UButton>
-
-    <template #content>
-      <div class="mt-4 space-y-4">
+  <MoleculesDisclosurePanel
+    title="Kitchen"
+    description="Name, slug, tagline, and menu theme."
+    icon="i-lucide-store"
+  >
+    <div class="mt-4 space-y-4">
         <UCard>
           <div class="grid gap-4 md:grid-cols-2">
             <div class="md:col-span-2">
@@ -137,9 +115,8 @@
             </div>
           </div>
         </UCard>
-      </div>
-    </template>
-  </UCollapsible>
+    </div>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

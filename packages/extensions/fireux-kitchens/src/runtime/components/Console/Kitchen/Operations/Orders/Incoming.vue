@@ -21,6 +21,7 @@
       :estimate-for="estimateMinutes"
       :now-ms="currentTimeMs"
       @accept="acceptIncomingOrder"
+      @accept-many="acceptIncomingOrders"
       @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
       @reject="rejectIncomingOrder"
       @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
@@ -94,10 +95,24 @@ async function acceptIncomingOrder(
   }
 }
 
+async function acceptIncomingOrders(
+  payloads: Array<{ id: string; estimatedMinutes: number | null }>
+) {
+  for (const payload of payloads) {
+    await acceptIncomingOrder(payload)
+  }
+}
+
 async function rejectIncomingOrder(payload: { id: string; note: string }) {
   const orderId = normalizeId(payload.id)
   const note = payload.note.trim()
-  if (!canOperate.value || !orderId || !note || rejectingOrderId.value) return
+  if (
+    !canOperate.value ||
+    !orderId ||
+    !note ||
+    rejectingOrderId.value ||
+    acceptingOrderId.value
+  ) return
 
   rejectingOrderId.value = orderId
   try {

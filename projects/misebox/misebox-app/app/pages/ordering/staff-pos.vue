@@ -14,15 +14,15 @@
         <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
           <div class="space-y-4">
             <div>
-              <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+              <p class="fx-type-label">
                 Operator surface
               </p>
-              <h1 class="mt-1 text-3xl font-black tracking-tight text-highlighted">
+              <h1 class="fx-type-page-title mt-1 text-3xl font-black tracking-tight">
                 Staff POS
               </h1>
             </div>
 
-            <p class="max-w-2xl text-sm leading-6 text-muted">
+            <p class="fx-type-caption max-w-2xl leading-6">
               Same basket and kitchen ticket spine as kiosk. The surface is faster,
               denser, and starts inside the menu.
             </p>

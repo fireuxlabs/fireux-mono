@@ -147,7 +147,7 @@ function addItem() {
 .staff-pos-item__body strong {
   overflow: hidden;
   font-size: 0.98rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -156,7 +156,7 @@ function addItem() {
 .staff-pos-item__body span {
   color: var(--menu-primary);
   font-size: 0.92rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .staff-pos-item__button > :deep(.iconify) {

@@ -45,7 +45,7 @@ withDefaults(
   margin: 0;
   color: var(--menu-primary);
   font-size: 0.78rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -56,8 +56,8 @@ withDefaults(
   color: var(--menu-title);
   font-family: var(--menu-title-font);
   font-size: clamp(3.5rem, 9vw, 7rem);
-  font-weight: 900;
-  letter-spacing: 0;
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-normal);
   line-height: 0.86;
 }
 
@@ -69,7 +69,7 @@ withDefaults(
   margin: 0;
   color: var(--menu-secondary);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .menu-detail-heading--start .menu-detail-heading__description {

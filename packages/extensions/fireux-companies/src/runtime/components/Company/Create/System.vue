@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-4">
-    <UCard :ui="{ body: 'space-y-4' }">
+    <MoleculesCreateCard>
       <template #header>
         <div class="space-y-1">
           <div class="font-medium">Select a place</div>
@@ -30,7 +30,7 @@
       <div v-if="error" class="text-sm text-red-600">
         {{ error }}
       </div>
-    </UCard>
+    </MoleculesCreateCard>
   </section>
 </template>
 

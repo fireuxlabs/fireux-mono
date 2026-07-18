@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -32,7 +33,9 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge
+              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+              variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -40,8 +43,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="companies"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="companies"
+      state="error"
+      surface="bare"
+    />
+
     <CompanyCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -53,9 +70,18 @@
       </template>
     </CompanyCollectionList>
 
-    <p v-else>
-      {{ query ? 'No companies match your search.' : 'No companies found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="companies"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No companies match your search' : 'No companies yet'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Once company records are added, they will display here.'
+      "
+    />
 
     <div>
       <DevJson
@@ -101,6 +127,7 @@ const props = withDefaults(
 
 const fetched = useCompanyCollection<CompanyHydrated>()
 const collection = computed<CompanyHydrated[]>(() => fetched.collection.value ?? [])
+const outcome = computed(() => fetched.outcome.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>

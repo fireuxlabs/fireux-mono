@@ -5,16 +5,16 @@
     >
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.aboutLabel }}
           </p>
-          <h1 class="text-4xl font-semibold text-highlighted">
+          <h1 class="fx-type-display-title">
             {{ appSpec.tagline }}
           </h1>
-          <p class="text-lg text-toned">
+          <p class="fx-type-description text-toned">
             {{ appSpec.description }}
           </p>
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption text-toned">
             {{ appMeta.aboutSupportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -30,7 +30,7 @@
         <div
           class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
         >
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em]">
+          <p class="fx-type-label mb-4 text-primary">
             {{ appMeta.aboutPanelTitle }}
           </p>
           <ul class="space-y-3">
@@ -68,10 +68,10 @@
     <section>
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.aboutSections.modulesTitle }}
           </h2>
           <p class="text-toned">
@@ -111,10 +111,10 @@
     <section>
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.aboutSections.entitiesTitle }}
           </h2>
         </div>
@@ -125,17 +125,17 @@
             :key="entity.name"
             class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
           >
-            <h3 class="text-lg font-semibold text-highlighted">
+            <h3 class="fx-type-card-heading">
               {{ entity.name }}
             </h3>
-            <p class="mt-2 text-sm text-toned">
+            <p class="fx-type-caption mt-2 text-toned">
               {{ entity.purpose }}
             </p>
-            <p class="mt-3 text-sm text-toned">
+            <p class="fx-type-caption mt-3 text-toned">
               <span class="font-semibold text-highlighted">Key fields:</span>
               {{ entity.keyFields.join(', ') }}
             </p>
-            <p class="mt-2 text-sm text-toned">
+            <p class="fx-type-caption mt-2 text-toned">
               <span class="font-semibold text-highlighted">Links to:</span>
               {{ entity.linksTo.join(', ') }}
             </p>
@@ -147,10 +147,10 @@
     <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
       <UContainer class="space-y-8">
         <div class="space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.aboutSections.structureEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.aboutSections.structureTitle }}
           </h2>
         </div>
@@ -160,10 +160,10 @@
         </UCard>
 
         <div class="space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.aboutSections.examplesEyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.aboutSections.examplesTitle }}
           </h2>
         </div>
@@ -185,7 +185,7 @@
 
         <UCard>
           <template #header>
-            <h3 class="text-lg font-semibold text-highlighted">{{ appMeta.aboutSections.routesTitle }}</h3>
+            <h3 class="fx-type-card-heading">{{ appMeta.aboutSections.routesTitle }}</h3>
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton

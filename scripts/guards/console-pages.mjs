@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-18
 // usage_note: keeps console page composition explicit and surface metadata valid.
 // FILE: scripts/guards/console-pages.mjs
 

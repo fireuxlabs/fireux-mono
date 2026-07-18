@@ -251,7 +251,7 @@ function formatPrice(price: number) {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
   font-size: 1.075rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -259,7 +259,7 @@ function formatPrice(price: number) {
 .menu-order-item__price {
   color: var(--menu-primary);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -292,7 +292,7 @@ function formatPrice(price: number) {
   cursor: pointer;
   font: inherit;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   line-height: 1.2;
 }
 
@@ -360,8 +360,8 @@ function formatPrice(price: number) {
 
 .menu-order-item__unavailable-label {
   color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-extrabold);
   white-space: nowrap;
 }
 

@@ -1,6 +1,6 @@
 Components spine map
 Updated: 2026-07-18
-Ref: 84c2b4dfa
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -76,10 +76,39 @@ Working rules:
   spacing, surface backgrounds, and control geometry belong to Nuxt UI theme
   configuration or a real reusable component/molecule. Domain components
   compose those primitives; they do not redeclare them in every file.
+- Tailwind's installed font families, type sizes, weights, line heights, and
+  tracking values are the numeric typography authority. Templates may compose
+  named Tailwind utilities for local presentation; authored CSS derives
+  ordinary values from the corresponding Tailwind theme variables.
+- Repeated semantic typography uses the core `.fx-type-*` roles in
+  `assets/styles/scss/atoms/typography.scss`. Those roles mirror Nuxt UI's page
+  vocabulary rather than creating a second scale: headline, page title,
+  display title, section title/display, card title/heading, description, body,
+  caption, label, and code. Headline is page/section eyebrow copy; label is
+  compact metadata or field/status copy. Display title owns the recurring
+  FireUX landing H1 recipe; section-display and card-heading are the larger
+  marketing/card variants rather than repeated utility overlays.
+- Domain-owned display type, print/output geometry, debug microtype, artwork,
+  and responsive optical type may stay exact when they are a real local delta.
+  They must not become a parallel general-purpose type scale.
 - Before adding CSS or another wrapper, use the complete Nuxt UI component
   contract: variants, colors, sizes, slots, loading, disabled, and state
   semantics. Wrapping a Nuxt UI component in a second local design layer is
   duplication, not abstraction.
+- Shared molecules exist for repeated multi-element contracts that Nuxt UI
+  does not own by itself. `MoleculesDisclosurePanel` owns the standard
+  collapsible trigger and open-state chevron; `MoleculesCreateCard` owns the
+  recurring create-workflow card header and body rhythm; and
+  `MoleculesActionSurface` owns the linked, action-button, or static root of an
+  entity card. These components do not own domain copy or domain card content.
+- Disabled interactive cards must use the action-surface contract. Styling a
+  `NuxtLink` or clickable `div` with reduced opacity does not disable
+  navigation, provide button semantics, or remove it from keyboard operation.
+- `MoleculesStateCard` represents an explicit `loading`, `empty`, `missing`, or
+  `error` outcome and can render as a standalone card or a bare state inside an
+  existing card. Missing data and failed reads are different outcomes. Use
+  `UAlert` for compact notices and actionable errors, and use `USkeleton` when
+  the loading state needs to preserve the shape of real content.
 - Component-scoped CSS is for genuine domain layout and state deltas. Do not
   replace long inline Tailwind strings with the same repeated design system in
   local CSS. When a touched surface has grown either way, move the shared
@@ -87,7 +116,9 @@ Working rules:
 - `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine:
   current Nuxt UI variables, semantic text and surface utilities, `--ui-radius`
   authority through `rounded-*` utilities or direct calculations in authored
-  CSS, and retirement of the audited entity-card and inset-panel recipes.
+  CSS, Tailwind-owned ordinary typography and spacing values, and retirement
+  of the audited entity-card, inset-panel, raw disclosure, repeated card-stack,
+  and visual-only disabled recipes.
 - Ordinary rectangular UI uses the installed Nuxt UI `xs` through `3xl`
   radius scale. Do not add a parallel radius step or an arbitrary numeric
   radius. True circles and pills, explicitly approved percentage artwork, and

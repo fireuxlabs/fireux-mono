@@ -110,16 +110,16 @@ const handleCreate = async () => {
 }
 
 .eyebrow {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-widest);
   color: var(--ui-text-400, #94a3b8);
   margin: 0;
 }
 
 .header h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
 }
 
 .lede {
@@ -145,7 +145,7 @@ const handleCreate = async () => {
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 3);
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   color: var(--ui-text-600, #475569);
 }
 
@@ -167,6 +167,6 @@ const handleCreate = async () => {
 .error {
   margin: 0;
   color: #dc2626;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 </style>

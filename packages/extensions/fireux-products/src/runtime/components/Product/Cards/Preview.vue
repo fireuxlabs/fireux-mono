@@ -27,16 +27,16 @@
 
         <div
           v-if="showSubtitle && card.subtitle"
-          class="preview__subtitle text-sm text-muted-foreground"
+          class="preview__subtitle text-sm text-muted"
         >
           {{ card.subtitle }}
         </div>
 
         <div v-if="showBody" class="preview__body space-y-2 text-sm">
-          <div v-if="card.description" class="preview__line text-muted-foreground">
+          <div v-if="card.description" class="preview__line text-muted">
             {{ card.description }}
           </div>
-          <div v-if="contentSnippet" class="preview__line text-muted-foreground">
+          <div v-if="contentSnippet" class="preview__line text-muted">
             {{ contentSnippet }}
           </div>
           <div v-if="features.length" class="preview__meta flex flex-wrap gap-1">
@@ -50,7 +50,7 @@
               {{ feature }}
             </UBadge>
           </div>
-          <div class="preview__line text-xs uppercase tracking-wide text-muted-foreground">
+          <div class="preview__line fx-type-label">
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
           </div>

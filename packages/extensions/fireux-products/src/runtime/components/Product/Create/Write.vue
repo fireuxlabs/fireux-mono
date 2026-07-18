@@ -160,7 +160,7 @@ const productTypeOptions = computed(() =>
 
 .tooltip-section {
   margin-bottom: calc(var(--spacing) * 2);
-  line-height: 1.4;
+  line-height: var(--leading-snug);
 }
 
 .tooltip-section strong {

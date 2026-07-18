@@ -4,7 +4,7 @@
       <div class="flex items-start justify-between gap-4">
         <div class="space-y-1">
           <h2 class="text-2xl font-semibold">{{ title }}</h2>
-          <p v-if="subtitle" class="text-sm text-[color:var(--ui-text-muted)]">
+          <p v-if="subtitle" class="text-sm text-muted">
             {{ subtitle }}
           </p>
         </div>
@@ -26,12 +26,12 @@
             <h3 class="font-medium">{{ item.title }}</h3>
             <p
               v-if="item.subtitle"
-              class="text-sm text-[color:var(--ui-text-muted)]"
+              class="text-sm text-muted"
             >
               {{ item.subtitle }}
             </p>
           </div>
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p class="text-sm text-muted">
             {{ item.description }}
           </p>
         </div>
@@ -45,7 +45,7 @@
       >
         <div class="space-y-1">
           <p class="font-medium">{{ footer.title }}</p>
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p class="text-sm text-muted">
             {{ footer.subtitle }}
           </p>
         </div>

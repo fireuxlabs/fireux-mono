@@ -3,8 +3,8 @@
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Misebox Guide</UBadge>
-        <h1 class="text-4xl font-semibold text-highlighted">Learn More</h1>
-        <p class="text-lg text-toned">
+        <h1 class="fx-type-display-title">Learn More</h1>
+        <p class="fx-type-description text-toned">
           Misebox is the operating system for kitchens and professionals. This page maps the core routes and next actions.
         </p>
         <div class="flex flex-wrap gap-2">
@@ -20,7 +20,7 @@
       <UContainer class="space-y-6">
         <div class="max-w-3xl space-y-3">
           <UBadge color="primary" variant="soft">Business case</UBadge>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             Turn the menu into a working kitchen system.
           </h2>
           <p class="text-base leading-7 text-toned">
@@ -85,7 +85,7 @@
       <UContainer class="grid gap-6 md:grid-cols-2">
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Core concepts</h2>
+            <h2 class="fx-type-card-heading">Core concepts</h2>
           </template>
           <ul class="list-disc fx-list-stack text-sm">
             <li>Kitchen operations: menus, dishes, recipes, prep, and service readiness.</li>
@@ -96,7 +96,7 @@
 
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Primary surfaces</h2>
+            <h2 class="fx-type-card-heading">Primary surfaces</h2>
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton to="/console/kitchen" color="primary" variant="soft" icon="i-lucide-terminal">Kitchen console</UButton>

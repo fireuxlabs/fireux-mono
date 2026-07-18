@@ -8,7 +8,7 @@
     <UPageBody class="space-y-6">
       <UCard>
         <div class="space-y-4">
-          <p class="text-sm uppercase tracking-[0.18em] text-dimmed">Why this page exists</p>
+          <p class="fx-type-headline text-dimmed">Why this page exists</p>
           <h2 class="text-2xl font-semibold">SaaS SEO usually fails when traffic and pipeline get separated</h2>
           <p class="leading-7 text-toned">
             The best SaaS SEO providers understand buyer journeys, commercial intent, technical complexity, and the need to report beyond sessions.

@@ -1,10 +1,10 @@
 <template>
-  <component
-    :is="link && props.to ? 'NuxtLink' : 'div'"
+  <MoleculesActionSurface
     :to="link && props.to ? props.to : undefined"
+    :action="action"
+    :disabled="disabled"
     class="block w-full"
-    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
-    @click="onClick"
+    @activate="emit('action')"
   >
     <div
       class="fx-card--cell flex w-full items-start gap-3"
@@ -33,11 +33,10 @@
         </div>
       </div>
     </div>
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import type { PropertyCard } from '../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
 type Props = Pick<
@@ -62,17 +61,4 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
   disabled: false,
 })
-
-const onClick = (event?: MouseEvent) => {
-  if (props.disabled) return
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

@@ -297,7 +297,7 @@ function roundCoordinate(value: number) {
   background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
   color: var(--ui-text);
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .delivery-zone-map-editor__error {

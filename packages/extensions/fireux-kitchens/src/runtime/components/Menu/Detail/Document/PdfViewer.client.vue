@@ -179,7 +179,7 @@ async function loadPdf() {
   padding: calc(var(--spacing) * 8);
   color: #475569;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 

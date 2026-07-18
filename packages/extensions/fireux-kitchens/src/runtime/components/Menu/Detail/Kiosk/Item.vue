@@ -110,7 +110,7 @@ function addItem() {
   overflow: hidden;
   color: white;
   font-size: var(--kiosk-item-title-size);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   line-height: 1.05;
   text-shadow: 0 0.25rem 0.85rem rgb(0 0 0 / 42%);
   -webkit-box-orient: vertical;
@@ -179,7 +179,7 @@ function addItem() {
   cursor: pointer;
   font: inherit;
   font-size: 0.98rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-shadow: 0 0.2rem 0.7rem rgb(0 0 0 / 34%);
   transition:
     background 160ms ease,
@@ -223,7 +223,7 @@ function addItem() {
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 44%, transparent);
   border-radius: calc(var(--ui-radius) * 2);
   background: color-mix(in srgb, var(--kiosk-primary) 20%, transparent);
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1;
 }
 

@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
   ProductStorage,
   type FirebaseProduct,
@@ -18,6 +19,14 @@ export function useProductCollection() {
 
     return records.filter((product) => product.source_app_id === fireux.appId)
   })
-  const pending = computed(() => source.value === undefined)
-  return { products, pending }
+  const count = computed(() => products.value.length)
+  const pending = computed(() => source.pending.value)
+  const error = computed(() => source.error.value)
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
+  })
+
+  return { products, count, pending, error, outcome }
 }

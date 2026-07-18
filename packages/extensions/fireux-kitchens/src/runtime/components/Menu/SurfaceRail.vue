@@ -48,7 +48,7 @@ defineProps<{
   background: color-mix(in srgb, var(--menu-bg) 90%, var(--menu-primary));
   color: var(--menu-primary);
   font-size: 0.82rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-decoration: none;
   transition:
     border-color 150ms ease,

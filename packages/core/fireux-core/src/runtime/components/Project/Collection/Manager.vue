@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">
+            <UBadge v-if="showCount && isSettled" variant="soft">
               {{ countLabel }}
             </UBadge>
           </div>
@@ -41,7 +42,20 @@
       </div>
     </template>
 
-    <p v-if="pending">Loading projects...</p>
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="projects"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="projects"
+      state="error"
+      surface="bare"
+      description="Projects could not be loaded. Please try again."
+    />
 
     <ProjectCollectionList
       v-else-if="cardsFiltered.length"
@@ -66,9 +80,16 @@
       </template>
     </ProjectCollectionList>
 
-    <p v-else>
-      {{ query ? 'No projects match your search.' : 'No projects found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="projects"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No matching projects' : 'No projects yet'"
+      :description="query
+        ? 'Try a different project name.'
+        : 'Projects will appear here when they are available.'"
+    />
 
     <div>
       <DevJson
@@ -123,7 +144,10 @@ const props = withDefaults(
 
 const fetched = useProjectCollection()
 const rawCollection = computed(() => fetched.projects.value)
-const pending = computed(() => fetched.pending.value)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Projects'))
 const description = computed(() =>

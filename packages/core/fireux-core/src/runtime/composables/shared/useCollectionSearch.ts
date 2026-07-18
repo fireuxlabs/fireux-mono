@@ -1,17 +1,22 @@
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 
-type Variant = 'pill' | 'cell'
+export type CollectionVariant = 'pill' | 'cell' | 'preview'
 
 type Searcher<TRaw> = (item: TRaw) => string
 
 type MakeCard<TRaw, TCard> = (item: TRaw) => TCard | null | undefined
 
-type UseCollectionSearchOptions<TRaw, TCard> = {
+type UseCollectionSearchOptions<
+  TRaw,
+  TCard,
+  TVariant extends CollectionVariant,
+> = {
   items: Ref<TRaw[] | undefined> | ComputedRef<TRaw[] | undefined>
   searchText?: Searcher<TRaw>
   makeCard: MakeCard<TRaw, TCard>
   initialQuery?: string
-  initialVariant?: Variant
+  initialVariant?: TVariant
+  variants?: readonly TVariant[]
 }
 
 const collectSearchParts = (value: unknown): string[] => {
@@ -28,14 +33,25 @@ const collectSearchParts = (value: unknown): string[] => {
   return []
 }
 
-export const useCollectionSearch = <TRaw, TCard>(
-  options: UseCollectionSearchOptions<TRaw, TCard>
+export const useCollectionSearch = <
+  TRaw,
+  TCard,
+  TVariant extends CollectionVariant = 'pill' | 'cell',
+>(
+  options: UseCollectionSearchOptions<TRaw, TCard, TVariant>
 ) => {
   const query = ref(options.initialQuery ?? '')
-  const variant = ref<Variant>(options.initialVariant ?? 'pill')
+  const variants: TVariant[] = options.variants?.length
+    ? [...options.variants]
+    : ['pill', 'cell'] as TVariant[]
+  const initialVariant = options.initialVariant && variants.includes(options.initialVariant)
+    ? options.initialVariant
+    : variants[0]
+  const variant = ref<TVariant>(initialVariant ?? variants[0] ?? 'pill' as TVariant)
 
   const toggleVariant = () => {
-    variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+    const currentIndex = variants.indexOf(variant.value)
+    variant.value = variants[(currentIndex + 1) % variants.length] ?? variants[0] ?? 'pill'
   }
 
   const normalizedItems = computed<TRaw[]>(() => options.items.value ?? [])

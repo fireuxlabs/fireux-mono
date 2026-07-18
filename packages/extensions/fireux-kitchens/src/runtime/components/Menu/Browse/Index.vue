@@ -43,6 +43,7 @@
         icon="i-lucide-book-open"
         label="Browse"
         message="View the menu or choose how you would like to order."
+        open-by-default
         :options="surfaceOptions"
       />
 
@@ -253,7 +254,7 @@ useSeoMeta({
   margin: auto;
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 
@@ -267,7 +268,7 @@ useSeoMeta({
   background: color-mix(in srgb, var(--menu-secondary) 7%, transparent);
   color: var(--menu-muted);
   font-size: 0.84rem;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
   text-align: left;
 }
 

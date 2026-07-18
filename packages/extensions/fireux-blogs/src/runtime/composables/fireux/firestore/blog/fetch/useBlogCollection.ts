@@ -1,4 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import {
@@ -35,6 +36,13 @@ export function useBlogCollection() {
     })
   })
   const count = computed(() => collection.value.length)
+  const pending = computed(() => source.pending.value)
+  const error = computed(() => source.error.value)
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
+  })
 
-  return { collection, count }
+  return { collection, count, pending, error, outcome }
 }

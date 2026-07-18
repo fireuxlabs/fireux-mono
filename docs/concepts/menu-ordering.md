@@ -1,6 +1,6 @@
 Menu ordering map
 Updated: 2026-07-18
-Ref: f4ddbda21
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -70,8 +70,9 @@ Current display rule:
   Menu style, surface navigation, and failure behavior, then renders the same
   selectable manifest catalogue into a page-local basket.
 - That basket exists in memory only. It does not restore across navigation or
-  refresh. Customers can review configured lines, adjust quantities, and
-  remove lines. Collection can then record a page-local queue or scheduled
+  refresh. Customers can review configured lines with read-only quantities and
+  remove a line; adding the same configuration again increments its quantity.
+  Collection can then record a page-local queue or scheduled
   pickup choice from the resolved Collection order-type policy; missing hours
   fail closed, and scheduled choices share the server's hours and notice
   validation utilities. Slot cadence starts at each configured service-window
@@ -81,6 +82,14 @@ Current display rule:
   creation, and live acceptance/ready/completed status. The active pipeline
   does not restore after refresh. Pay now uses the existing online-card checkout
   only when that method is configured.
+- A signed-in guest order atomically creates a lightweight link at
+  `customers/{userId}/orders/{orderId}` beside the Kitchen order. The link
+  records only immutable source identity; the Kitchen order remains the sole
+  lifecycle authority. The customer dashboard reads a bounded link page and
+  resolves those Kitchen orders in one bounded batch, so ready, completed, and
+  cancelled orders remain visible without a second mutable status copy or a
+  cross-Kitchen collection-group scan. Anonymous orders are not silently
+  claimed later; any future claim flow needs its own explicit identity proof.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 
 Current ordering shape:
@@ -233,7 +242,7 @@ Public order funnel spine:
   Variant choices render inline on the item row, with the lowest-priced valid
   option selected initially; the plus adds that explicit selection. A true
   base-price item plus also adds one immediately. Only add-on families open
-  configuration first, and quantity remains adjustable in basket review.
+  configuration first, where quantity may be chosen before adding.
 - A resolvable Kitchen-scoped `.collection` mistake reuses the same human
   unavailable treatment but resolves only the current Kitchen name and Menu
   page style. Its circular exit and recovery action both return to the Kitchen
@@ -246,7 +255,8 @@ Public order funnel spine:
   disconnected implementation material, not the active public owner.
 - `MenuOrder` owns a transient basket seam that merges identical configurations,
   counts quantities, calculates variant absolute prices plus incremental
-  add-ons, and validates review-time quantity changes and removals. Its
+  add-ons, and supports review-time line removal without a second quantity
+  editor. Its
   Collection-only timing boundary also remains transient, clears with the
   basket/source scope, offers queue collection only during current service,
   and derives future half-hour choices from published service windows and
@@ -307,6 +317,9 @@ Public order funnel spine:
   resolves every selected variant and add-on again from the published
   Kitchen-owned MenuItem, charges the variant's absolute price plus add-on
   deltas, and rejects missing or unknown required choices.
+- Each resolved KitchenOrder line snapshots its published `item_kind` as
+  `food` or `drink`. Kitchen receiving views may therefore show quantity totals
+  by production kind without rehydrating mutable Dish or MenuItem records.
 - Do not create a second client-side generic `Order` record from the public
   funnel unless the generic order engine and kitchen order console are
   deliberately reconciled first.

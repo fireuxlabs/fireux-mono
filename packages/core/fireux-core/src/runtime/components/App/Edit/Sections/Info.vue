@@ -3,8 +3,8 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">App info</h3>
-          <p class="text-xs text-dimmed">
+          <h3>App info</h3>
+          <p>
             View the basic details for this app.
           </p>
         </div>

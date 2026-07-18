@@ -4,6 +4,8 @@ import {
   useCollection,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+import { computed } from 'vue'
 import type {
   ProfileBase,
   ProfileConfig,
@@ -34,8 +36,26 @@ export function useProfileCollection<
         )
       : null
 
+  const pending = computed(() =>
+    globalProfiles.pending.value || Boolean(localProfiles?.pending.value)
+  )
+  const error = computed<unknown | undefined>(() =>
+    globalProfiles.error.value ?? localProfiles?.error.value
+  )
+  const count = computed(() =>
+    (globalProfiles.value?.length ?? 0) + (localProfiles?.value?.length ?? 0)
+  )
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
+  })
+
   return {
     globalProfiles,
     localProfiles,
+    pending,
+    error,
+    outcome,
   }
 }

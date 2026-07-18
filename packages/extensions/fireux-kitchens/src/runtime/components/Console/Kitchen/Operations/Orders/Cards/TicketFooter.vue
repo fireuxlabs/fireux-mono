@@ -56,7 +56,7 @@ defineEmits<{
 }
 
 .order-ticket-footer--prominent {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .order-ticket-footer__identity {

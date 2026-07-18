@@ -1,18 +1,31 @@
 <template>
-  <section class="grid gap-2 border-t border-default pt-3">
+  <section class="receiving-reject">
     <UButton
       v-if="!open"
-      color="error"
+      color="neutral"
       variant="ghost"
       block
       size="sm"
+      icon="i-lucide-x"
+      label="Cannot accept this order"
       :disabled="!canInteract || !orderId"
       @click="open = true"
-    >
-      Reject
-    </UButton>
+    />
 
-    <template v-else>
+    <div v-else class="receiving-reject__form">
+      <header class="receiving-reject__header">
+        <strong>Reject order</strong>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-lucide-x"
+          aria-label="Close rejection form"
+          :disabled="rejecting"
+          @click="cancel"
+        />
+      </header>
+
       <UTextarea
         v-model="note"
         :rows="3"
@@ -20,28 +33,18 @@
         :disabled="!canInteract"
       />
 
-      <div class="grid grid-cols-2 gap-2">
-        <UButton
-          color="neutral"
-          variant="soft"
-          block
-          :disabled="rejecting"
-          @click="cancel"
-        >
-          Cancel
-        </UButton>
-
+      <div class="receiving-reject__actions">
         <UButton
           color="error"
           block
+          icon="i-lucide-send"
+          label="Send rejection"
           :disabled="!canReject"
           :loading="rejecting"
           @click="reject"
-        >
-          Send rejection
-        </UButton>
+        />
       </div>
-    </template>
+    </div>
   </section>
 </template>
 
@@ -87,3 +90,27 @@ function reject() {
   })
 }
 </script>
+
+<style scoped>
+.receiving-reject {
+  border-top: 1px solid var(--ui-border-accented);
+  margin-top: calc(var(--spacing) * 4);
+  padding-top: calc(var(--spacing) * 2);
+}
+
+.receiving-reject__form {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+}
+
+.receiving-reject__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.receiving-reject__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

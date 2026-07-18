@@ -35,7 +35,7 @@
 
       <UPageBody>
         <div v-if="menus.length" class="space-y-3">
-          <MenuPublicCard
+          <MenuCardsPreview
             v-for="menu in menus"
             :key="menu.id"
             :menu="menu"
@@ -66,21 +66,23 @@
     </UPage>
   </template>
 
-  <UPage
+  <PublicIndexSurface
     v-else
     data-menu-projection="index"
     data-menu-index-kind="collection"
+    :data-menu-index-state="outcome.kind"
+    eyebrow="Discover"
+    title="Menus"
+    description="Browse live Misebox kitchen menus and discover what is being served."
+    icon="i-lucide-book-open-check"
+    secondary-label="Menu tools"
   >
-    <UPageHeader
-      title="Menus"
-      description="Browse live Misebox kitchen menus."
-    />
+    <MenuCollectionManager id="live-menus" :index="index" />
 
-    <UPageBody>
+    <template #secondary>
       <MenuCTA />
-      <MenuCollectionManager id="live-menus" :index="index" />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
@@ -106,7 +108,9 @@ const loadMoreError = computed(() => index.loadMoreError.value)
 const isScopedIndex = computed(() =>
   isTenant || index.routeScope.value.kind === 'directory'
 )
-const loadMore = index.loadMore
+const loadMore = async () => {
+  await index.loadMore()
+}
 const errorDetail = computed(() => {
   if (!import.meta.dev || !error.value) return ''
 

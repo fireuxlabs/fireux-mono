@@ -284,7 +284,7 @@ async function processImage(
 }
 
 .picker-label {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing);
   color: var(--ui-text-highlighted);
 }
@@ -316,26 +316,26 @@ async function processImage(
   align-items: baseline;
   gap: calc(var(--spacing) * 2);
   color: var(--ui-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .file-name {
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .file-size {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   opacity: 0.8;
 }
 
 .validation-error {
   color: var(--color-red-400);
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .upload-controls {
@@ -353,7 +353,7 @@ async function processImage(
   border: 1px solid var(--color-red-200);
   border-radius: var(--ui-radius);
   color: var(--color-red-700);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 /* Color mode spine: docs/concepts/color-mode.md */

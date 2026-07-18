@@ -143,21 +143,21 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--tracking-wider);
   color: #6b7280;
 }
 
 .subdued {
   color: var(--ui-text-muted);
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 .warning {
   color: #b91c1c;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 .preview-shell {
@@ -193,17 +193,17 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .author-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .author-handle {
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .author-role {
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .preview-content {
@@ -276,7 +276,7 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .brand-label {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--ui-text-muted);
 }
 </style>

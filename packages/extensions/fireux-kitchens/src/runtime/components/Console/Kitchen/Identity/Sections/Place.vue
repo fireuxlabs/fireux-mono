@@ -1,32 +1,10 @@
 <template>
-  <UCollapsible>
-    <UButton
-      class="group"
-      color="neutral"
-      variant="soft"
-      block
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <span class="flex min-w-0 items-start gap-3 text-left">
-        <UIcon
-          name="i-lucide-map-pin"
-          class="mt-0.5 size-4 shrink-0 text-muted"
-        />
-        <span class="grid min-w-0">
-          <span class="truncate">Place</span>
-          <span class="truncate text-xs font-normal text-dimmed">
-            Logo, location, and public details.
-          </span>
-        </span>
-      </span>
-    </UButton>
-
-    <template #content>
-      <div class="mt-4 space-y-4">
+  <MoleculesDisclosurePanel
+    title="Place"
+    description="Logo, location, and public details."
+    icon="i-lucide-map-pin"
+  >
+    <div class="mt-4 space-y-4">
         <UCard>
           <UAlert
             v-if="!placeId"
@@ -40,6 +18,7 @@
             v-else-if="pending"
             entity="linked place"
             kind="document"
+            surface="bare"
             loading
           />
 
@@ -126,9 +105,8 @@
             </div>
           </div>
         </UCard>
-      </div>
-    </template>
-  </UCollapsible>
+    </div>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

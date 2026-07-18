@@ -18,7 +18,7 @@
   --menu-dimmed: color-mix(in srgb, var(--menu-text) 54%, var(--menu-bg));
   --menu-secondary: #64748b;
   --menu-accent: var(--menu-secondary);
-  --menu-font: ui-sans-serif, system-ui, sans-serif;
+  --menu-font: var(--font-sans);
   --menu-title-font: var(--menu-font);
   --menu-radius: calc(var(--ui-radius) * 4);
   --menu-radius-control: calc(var(--ui-radius) * 2);
@@ -94,8 +94,8 @@
   align-items: center;
   margin: 0;
   color: var(--menu-secondary);
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-  font-weight: 900;
+  font-size: clamp(1.05rem, 1.6vw, var(--text-xl));
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.18em;
   line-height: 1.2;
   text-transform: uppercase;

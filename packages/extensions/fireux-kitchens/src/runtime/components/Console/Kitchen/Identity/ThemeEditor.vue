@@ -15,18 +15,8 @@
     </template>
 
     <div class="space-y-3">
-      <UCollapsible :default-open="false">
-        <UButton
-          color="neutral"
-          variant="soft"
-          block
-          trailing-icon="i-lucide-chevron-down"
-        >
-          Fonts
-        </UButton>
-
-        <template #content>
-          <div class="mt-3 grid gap-4 lg:grid-cols-2">
+      <MoleculesDisclosurePanel title="Fonts" :default-open="false">
+        <div class="mt-3 grid gap-4 lg:grid-cols-2">
             <UFormField label="Main title font">
               <div class="grid gap-2">
                 <UButton
@@ -94,33 +84,17 @@
                 </UButton>
               </div>
             </UFormField>
-          </div>
-        </template>
-      </UCollapsible>
+        </div>
+      </MoleculesDisclosurePanel>
 
-      <UCollapsible
+      <MoleculesDisclosurePanel
         v-for="group in colorGroups"
         :key="group.title"
+        :title="group.title"
+        :description="group.description"
         :default-open="false"
       >
-        <UButton
-          color="neutral"
-          variant="soft"
-          block
-          trailing-icon="i-lucide-chevron-down"
-        >
-          <span class="grid min-w-0 text-left">
-            <span class="truncate">
-              {{ group.title }}
-            </span>
-            <span class="truncate text-xs font-normal text-dimmed">
-              {{ group.description }}
-            </span>
-          </span>
-        </UButton>
-
-        <template #content>
-          <section class="mt-3 grid gap-3 rounded-md border border-default p-3">
+        <section class="mt-3 grid gap-3 rounded-md border border-default p-3">
             <div
               v-for="field in group.fields"
               :key="field.key"
@@ -170,9 +144,8 @@
                 />
               </div>
             </div>
-          </section>
-        </template>
-      </UCollapsible>
+        </section>
+      </MoleculesDisclosurePanel>
 
       <UAlert
         v-if="!canWrite"

@@ -103,7 +103,7 @@ const copyDebug = async () => {
   background:
     linear-gradient(135deg, var(--fx-debug-yellow-bg), transparent 44%),
     var(--ui-bg);
-  font-size: 12px;
+  font-size: var(--text-xs);
 }
 
 .fireux-debug-panel__header {
@@ -129,7 +129,7 @@ const copyDebug = async () => {
   padding: 1px 7px;
   color: var(--fx-debug-ink);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -156,7 +156,7 @@ const copyDebug = async () => {
 .fireux-debug-panel__title {
   color: var(--fx-debug-ink);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .fireux-debug-panel__json {

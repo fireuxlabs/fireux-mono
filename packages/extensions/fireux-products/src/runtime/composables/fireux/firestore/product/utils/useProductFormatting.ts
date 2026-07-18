@@ -10,7 +10,7 @@ import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePubli
 
 export function useProductFormatting() {
   const { uploadImage } = useImageStorage()
-  const { firestoreFetchDoc } = useFirestoreManager()
+  const { firestoreGetDoc } = useFirestoreManager()
 
   function formatProductData(
     product: Partial<FirebaseProduct>
@@ -58,7 +58,7 @@ export function useProductFormatting() {
     }
 
     const slug = validation.slug
-    const existing = await firestoreFetchDoc(collectionName, slug)
+    const existing = await firestoreGetDoc(collectionName, slug)
     if (existing) {
       return { success: false, message: `Slug "${slug}" is already taken.` }
     }

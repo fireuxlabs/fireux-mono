@@ -1,5 +1,6 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { DishItemKind } from './dish.model'
 
 /**
  * Family: App-scoped Kitchen operation
@@ -23,6 +24,7 @@ export type KitchenOrderItem = {
   id: string
   menu_id?: string
   dish_id: string
+  item_kind?: DishItemKind
   label: string
   add_ons?: Array<{
     id: string
@@ -296,6 +298,8 @@ export const KitchenOrderModel = {
 
 export type KitchenOrder = {
   [K in keyof typeof KitchenOrderModel]: (typeof KitchenOrderModel)[K]
+} & {
+  customer_uid?: string
 }
 
 export function deriveKitchenOrderBoardStage(order: {

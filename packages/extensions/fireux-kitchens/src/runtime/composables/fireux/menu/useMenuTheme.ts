@@ -19,7 +19,7 @@ export const menuThemeFontOptions: MenuThemeFontOption[] = [
     description: 'Use the app font.',
     source: 'system',
     family: '',
-    fallback: 'ui-sans-serif, system-ui, sans-serif',
+    fallback: 'var(--font-sans)',
   },
   {
     id: 'playfair-display',
@@ -51,7 +51,7 @@ export const menuThemeFontOptions: MenuThemeFontOption[] = [
     description: 'Clean modern sans.',
     source: 'google',
     family: 'Inter',
-    fallback: 'ui-sans-serif, system-ui, sans-serif',
+    fallback: 'var(--font-sans)',
   },
   {
     id: 'nunito-sans',
@@ -59,7 +59,7 @@ export const menuThemeFontOptions: MenuThemeFontOption[] = [
     description: 'Friendly rounded sans.',
     source: 'google',
     family: 'Nunito Sans',
-    fallback: 'ui-sans-serif, system-ui, sans-serif',
+    fallback: 'var(--font-sans)',
   },
   {
     id: 'oswald',
@@ -67,7 +67,7 @@ export const menuThemeFontOptions: MenuThemeFontOption[] = [
     description: 'Condensed menu-board style.',
     source: 'google',
     family: 'Oswald',
-    fallback: 'ui-sans-serif, system-ui, sans-serif',
+    fallback: 'var(--font-sans)',
   },
 ]
 

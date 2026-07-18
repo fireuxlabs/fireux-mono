@@ -48,7 +48,12 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       operatorId: userId.value,
     }
   })
-  const { properties: targetProperties, pending: targetsPending } = usePropertyCollection({
+  const {
+    properties: targetProperties,
+    pending: targetsPending,
+    error: targetsError,
+    outcome: targetsOutcome,
+  } = usePropertyCollection({
     source: consoleRoot.source,
     shape: 'both',
     filter: targetFilter,
@@ -59,6 +64,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     storageFamily: PropertyStorage.rootCollection,
     targetItems: targetProperties,
     targetPending: targetsPending,
+    targetError: targetsError,
     getId: (property) => normalizeString(property?.id),
     mode: consoleRoot.source,
     userId,
@@ -83,6 +89,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     targets: targetProperties,
     count: computed(() => targetProperties.value.length),
     pending: targetsPending,
+    outcome: targetsOutcome,
   }
   const selection = {
     property: selectedProperty,

@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-18
 // usage_note: guard entrypoint; checks the Git index, not disposable local output.
 // FILE: scripts/guards/generated-artifacts.mjs
 

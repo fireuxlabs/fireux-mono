@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-17
+// last_used: 2026-07-18
 // usage_note: explicit domain complexity check, separate from extension folder shape.
 // FILE: scripts/guards/kitchen-menu-size.mjs
 

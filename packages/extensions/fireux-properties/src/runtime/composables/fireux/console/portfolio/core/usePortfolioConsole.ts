@@ -61,7 +61,12 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       operatorId: normalizedUid.value,
     }
   })
-  const { portfolios: targetPortfolios, pending: targetsPending } = usePortfolioCollection({
+  const {
+    portfolios: targetPortfolios,
+    pending: targetsPending,
+    error: targetsError,
+    outcome: targetsOutcome,
+  } = usePortfolioCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
@@ -71,6 +76,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     storageFamily: PortfolioStorage.rootCollection,
     targetItems: targetPortfolios,
     targetPending: targetsPending,
+    targetError: targetsError,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
     mode: consoleRoot.source,
@@ -114,6 +120,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     targets: targetPortfolios,
     count: computed(() => targetPortfolios.value.length),
     pending: targetsPending,
+    outcome: targetsOutcome,
   }
   const selection = {
     portfolio: selectedPortfolio,

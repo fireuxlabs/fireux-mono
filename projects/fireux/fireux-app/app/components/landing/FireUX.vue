@@ -8,7 +8,7 @@
       >
         <UIcon :name="feature.icon" class="size-8" />
         <div class="feature-content">
-          <h3>{{ feature.title }}</h3>
+          <h3 class="fx-type-card-title">{{ feature.title }}</h3>
           <p>{{ feature.description }}</p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import {
   readBody,
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   menuOrderIdempotencyRequest,
@@ -72,6 +73,9 @@ export default defineEventHandler(async (event) => {
     context.operationHours
   )
   const selection = readMenuOrderSelection(body, ordering)
+  const customerUser = selection.channel === 'menu'
+    ? await firebaseBearerUser(event)
+    : null
   const actorId = selection.channel === 'staff_pos'
     ? await requireKitchenOperator(
         event,
@@ -81,6 +85,7 @@ export default defineEventHandler(async (event) => {
     : 'menu'
   const command = prepareMenuOrderCommand({
     actorId,
+    customerUid: customerUser?.uid,
     body,
     currencyCode,
     requestedItems,
@@ -140,6 +145,7 @@ export default defineEventHandler(async (event) => {
       payload: assembled.payload,
       response: assembled.response,
       reservationResponse,
+      linkedRecord: assembled.customerOrderLink,
     })
 
     return committed.response
@@ -151,5 +157,6 @@ export default defineEventHandler(async (event) => {
     orderPath: assembled.path,
     payload: assembled.payload,
     response: assembled.response,
+    linkedRecord: assembled.customerOrderLink,
   })
 })

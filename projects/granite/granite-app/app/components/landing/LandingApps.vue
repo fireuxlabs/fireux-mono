@@ -5,7 +5,7 @@
         <h2 class="text-3xl font-semibold">
           Built for branch operations.
         </h2>
-        <p class="text-[color:var(--ui-text-muted)]">
+        <p class="text-muted">
           One console per branch. Manage many client portfolios with consistent structure and audit-ready records.
         </p>
       </div>
@@ -14,7 +14,7 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div class="space-y-1">
             <p class="text-sm font-semibold">Ready to run Granite?</p>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               Start with portfolios, then use the console as your control surface.
             </p>
           </div>

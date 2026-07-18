@@ -1,6 +1,6 @@
 <template>
   <div class="fx-segmented-toggle">
-    <div v-if="label" class="fx-segmented-toggle__label">
+    <div v-if="label" class="fx-segmented-toggle__label fx-type-label">
       {{ label }}
     </div>
 
@@ -49,10 +49,6 @@ defineEmits<{
 }
 
 .fx-segmented-toggle__label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ui-text-dimmed);
 }
 

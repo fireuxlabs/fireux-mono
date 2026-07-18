@@ -1,27 +1,15 @@
 <template>
-  <section
+  <ConsoleKitchenOperationsOrdersReceivingScheduled
     v-if="isScheduledMode"
-    class="grid gap-3 rounded-lg border border-default bg-muted/40 p-3"
-  >
-    <div class="flex items-center justify-between gap-3 text-sm">
-      <span class="font-semibold text-muted">
-        Requested pickup
-      </span>
-      <strong class="text-base font-black text-highlighted">
-        {{ requestedDateTimeLabel }}
-      </strong>
-    </div>
-
-    <UButton
-      color="primary"
-      block
-      :disabled="!canAcceptRequested"
-      :loading="accepting"
-      @click="acceptRequested"
-    >
-      {{ canAcceptRequested ? 'Accept pickup time' : 'Waiting for pickup time' }}
-    </UButton>
-  </section>
+    label="Requested pickup"
+    :date-time-label="requestedDateTimeLabel"
+    :detail="requestedDistanceLabel"
+    accept-label="Accept pickup time"
+    waiting-label="Waiting for pickup time"
+    :can-accept="canAcceptRequested"
+    :accepting="accepting"
+    @accept="acceptRequested"
+  />
 
   <ConsoleKitchenOperationsOrdersReceivingEstimate
     v-else
@@ -38,6 +26,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
+import {
+  formatKitchenOrderRequestedTime,
+  kitchenOrderTimestampMs,
+} from '../../../../../../utils/kitchen-order-time'
 
 const props = withDefaults(
   defineProps<{
@@ -69,47 +61,17 @@ const collection = computed(() =>
 const isScheduledMode = computed(() =>
   normalize(collection.value.mode) === 'scheduled'
 )
-const requestedFor = computed(() =>
-  normalize(collection.value.requested_for)
+const requestedFor = computed(() => collection.value.requested_for)
+const requestedTime = computed(() =>
+  formatKitchenOrderRequestedTime(requestedFor.value)
 )
-const requestedDateTimeLabel = computed(() => {
-  if (!requestedFor.value) return 'time needed'
-
-  const parsed = Date.parse(requestedFor.value)
-  if (!Number.isFinite(parsed)) return requestedFor.value
-
-  const dateLabel = relativeDateLabel(parsed)
-  const timeLabel = new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(new Date(parsed))
-
-  return `${dateLabel}, ${timeLabel}`
-})
+const requestedDateTimeLabel = computed(() => requestedTime.value.dateTime)
+const requestedDistanceLabel = computed(() => requestedTime.value.distance)
 const canAcceptRequested = computed(() =>
-  props.canInteract && Boolean(props.orderId && requestedFor.value)
+  props.canInteract && Boolean(
+    props.orderId && kitchenOrderTimestampMs(requestedFor.value)
+  )
 )
-
-function relativeDateLabel(value: number) {
-  const date = startOfLocalDay(new Date(value))
-  const today = startOfLocalDay(new Date())
-  const days = Math.round((date.getTime() - today.getTime()) / 86_400_000)
-
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  if (days === -1) return 'Yesterday'
-
-  return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-  }).format(new Date(value))
-}
-
-function startOfLocalDay(value: Date) {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate())
-}
 
 function acceptRequested() {
   if (!canAcceptRequested.value) return

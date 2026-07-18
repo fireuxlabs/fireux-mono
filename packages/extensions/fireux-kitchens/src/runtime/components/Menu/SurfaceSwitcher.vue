@@ -24,6 +24,7 @@
     <details
       v-if="otherOptions.length"
       class="menu-surface-switcher__change"
+      :open="openByDefault"
     >
       <summary>
         Change
@@ -44,11 +45,13 @@ const props = withDefaults(defineProps<{
   icon: string
   label: string
   message: string
+  openByDefault?: boolean
   options?: GuestMenuSurfaceOption[]
   statusColor?: 'neutral' | 'success' | 'error'
   statusLabel?: string
 }>(), {
   headingId: 'menu-surface-title',
+  openByDefault: false,
   options: () => [],
   statusColor: 'neutral',
   statusLabel: '',
@@ -117,7 +120,7 @@ const otherOptions = computed(() =>
 .menu-surface-switcher h2 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1.15;
 }
 
@@ -139,7 +142,7 @@ const otherOptions = computed(() =>
   color: var(--menu-primary);
   cursor: pointer;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   list-style: none;
 }
 

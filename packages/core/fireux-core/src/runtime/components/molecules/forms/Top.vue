@@ -119,8 +119,8 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
   min-width: 0;
 }
 .field-label {
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 600; /* semibold */
+  font-size: var(--text-sm); /* text-sm */
+  font-weight: var(--font-weight-semibold); /* semibold */
   color: inherit;
   white-space: nowrap;
   overflow: hidden;
@@ -136,7 +136,7 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
   align-items: center;
   gap: var(--spacing);
   margin-left: calc(var(--spacing) * 2);
-  font-size: 0.75rem; /* text-xs */
+  font-size: var(--text-xs); /* text-xs */
   color: var(--ui-primary);
 }
 .editing-indicator .dot {
@@ -152,7 +152,7 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
   margin-top: var(--spacing);
 }
 .disabled-message {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--ui-text-muted, rgb(107 114 128));
 }
 </style>

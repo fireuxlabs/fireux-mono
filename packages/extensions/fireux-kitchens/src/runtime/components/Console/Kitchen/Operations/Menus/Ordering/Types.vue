@@ -44,7 +44,7 @@
     <MoleculesStateCard
       v-else-if="pending"
       entity="Menu ordering"
-      kind="detail"
+      kind="document"
       loading
     />
 

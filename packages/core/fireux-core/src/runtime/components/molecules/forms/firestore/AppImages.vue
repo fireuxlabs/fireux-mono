@@ -4,14 +4,13 @@
       <template #header>
         <div class="section__header">
           <div class="section__copy">
-            <h3 class="text-base font-semibold">Images</h3>
-            <p class="text-xs text-dimmed">
+            <h3>Images</h3>
+            <p>
               Firestore + Storage URLs are canonical. Local public assets are the files served from
               <span class="font-mono">/public/img/app</span>.
             </p>
             <p
               v-if="isDev"
-              class="text-xs text-dimmed"
             >
               In dev, local assets can be used as a display backup. Use Sync to Storage when the local file should become the app record media.
             </p>
@@ -31,7 +30,7 @@
           <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
             <div>
               <div class="text-xs font-medium text-default">Syncable media</div>
-              <div class="text-[11px] text-dimmed">Compact previews only; dimensions are enforced by checks.</div>
+              <div class="text-xs text-dimmed">Compact previews only; dimensions are enforced by checks.</div>
             </div>
             <UBadge color="primary" variant="soft" size="sm">Storage</UBadge>
           </div>
@@ -58,7 +57,7 @@
                       loading="lazy"
                       decoding="async"
                     />
-                    <span v-else class="text-[9px] text-dimmed">-</span>
+                    <span v-else class="text-xs text-dimmed">-</span>
                   </div>
                   <div
                     class="asset-preview-frame"
@@ -87,8 +86,8 @@
                       {{ item.url ? 'Synced' : 'Missing' }}
                     </UBadge>
                   </div>
-                  <div class="text-[11px] text-dimmed" v-html="item.requirements" />
-                  <div class="hidden truncate text-[10px] text-dimmed md:block">
+                  <div class="text-xs text-dimmed" v-html="item.requirements" />
+                  <div class="hidden truncate text-xs text-dimmed md:block">
                     <span class="font-mono">{{ item.field }}</span>
                     <span class="px-1">-></span>
                     <span class="font-mono">{{ item.storagePath || 'storage unavailable' }}</span>
@@ -134,7 +133,7 @@
           <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
             <div>
               <div class="text-xs font-medium text-default">Local-only files</div>
-              <div class="text-[11px] text-dimmed">Required browser/install assets.</div>
+              <div class="text-xs text-dimmed">Required browser/install assets.</div>
             </div>
             <UBadge color="neutral" variant="soft" size="sm">Local</UBadge>
           </div>
@@ -160,7 +159,7 @@
 
                 <div class="min-w-0">
                   <div class="text-sm font-medium">{{ item.label }}</div>
-                  <div class="text-[11px] text-dimmed" v-html="item.requirements" />
+                  <div class="text-xs text-dimmed" v-html="item.requirements" />
                 </div>
               </div>
 

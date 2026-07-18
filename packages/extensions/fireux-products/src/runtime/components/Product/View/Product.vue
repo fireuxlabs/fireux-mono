@@ -261,7 +261,7 @@ async function startCheckout() {
 <style scoped>
 .missing {
   color: red;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .product-cell {
@@ -295,19 +295,19 @@ async function startCheckout() {
 
 .cell-title {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-align: left;
 }
 
 .cell-description {
   color: #6b7280;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   margin-top: var(--spacing);
 }
 
 .cell-price {
   margin-top: calc(var(--spacing) * 2);
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .purchase-buttons {
@@ -334,13 +334,13 @@ async function startCheckout() {
 
 .product-kicker {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
+  letter-spacing: var(--tracking-widest);
+  font-size: var(--text-xs);
   color: #6b7280;
 }
 
 .product-title {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   margin: var(--spacing) 0 calc(var(--spacing) * 2);
 }
 
@@ -360,20 +360,20 @@ async function startCheckout() {
 
 .price-label {
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: #6b7280;
 }
 
 .price-value {
   display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
   margin: var(--spacing) 0;
 }
 
 .product-section h2 {
   margin: 0 0 calc(var(--spacing) * 3);
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
 }
 
 </style>

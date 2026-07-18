@@ -1,56 +1,49 @@
 <template>
-  <section class="grid gap-3">
-    <div class="flex items-center justify-between gap-3 text-sm">
-      <span class="font-semibold text-muted">
-        {{ label }}
+  <section class="receiving-estimate">
+    <header class="receiving-estimate__header">
+      <span class="receiving-estimate__copy">
+        <span>{{ label }}</span>
+        <strong>{{ minutes }} minutes</strong>
       </span>
-      <strong class="text-base font-black text-highlighted">
-        {{ minutes }} min
-      </strong>
-    </div>
+      <UIcon name="i-lucide-clock-3" aria-hidden="true" />
+    </header>
 
-    <input
-      class="w-full"
-      type="range"
-      min="5"
-      max="90"
-      step="5"
-      :value="minutes"
-      :disabled="!canInteract"
-      @input="setEstimate(($event.target as HTMLInputElement).value)"
-    >
-
-    <div class="grid grid-cols-[2.25rem_1fr_2.25rem] gap-2">
+    <div class="receiving-estimate__adjustment" aria-label="Adjust preparation time">
       <UButton
-        size="sm"
+        size="lg"
         color="neutral"
         variant="soft"
         icon="i-lucide-minus"
+        label="5"
         :disabled="!canInteract || !orderId"
         aria-label="Reduce estimate by five minutes"
         @click="nudge(-5)"
       />
 
-      <UButton
-        color="primary"
-        block
-        :disabled="!canInteract || !orderId"
-        :loading="accepting"
-        @click="accept"
-      >
-        Accept · {{ minutes }} min
-      </UButton>
+      <strong>{{ minutes }}</strong>
 
       <UButton
-        size="sm"
+        size="lg"
         color="neutral"
         variant="soft"
         icon="i-lucide-plus"
+        label="5"
         :disabled="!canInteract || !orderId"
         aria-label="Increase estimate by five minutes"
         @click="nudge(5)"
       />
     </div>
+
+    <UButton
+      size="xl"
+      color="primary"
+      block
+      icon="i-lucide-check"
+      :disabled="!canInteract || !orderId"
+      :loading="accepting"
+      :label="`Accept · ${minutes} min`"
+      @click="accept"
+    />
   </section>
 </template>
 
@@ -91,11 +84,50 @@ function nudge(amount: number) {
   })
 }
 
-function setEstimate(value: unknown) {
-  if (!props.canInteract || !props.orderId) return
-  emit('set-estimate', {
-    id: props.orderId,
-    minutes: Number(value),
-  })
-}
 </script>
+
+<style scoped>
+.receiving-estimate {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+
+.receiving-estimate__header,
+.receiving-estimate__adjustment {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.receiving-estimate__header {
+  color: var(--ui-text-muted);
+}
+
+.receiving-estimate__header > svg {
+  font-size: var(--text-2xl);
+}
+
+.receiving-estimate__copy {
+  display: grid;
+}
+
+.receiving-estimate__copy span {
+  font-size: var(--text-xs);
+}
+
+.receiving-estimate__copy strong {
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-2xl);
+}
+
+.receiving-estimate__adjustment {
+  background: var(--ui-bg-muted);
+  border-radius: var(--ui-radius);
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 2);
+}
+
+.receiving-estimate__adjustment > strong {
+  font-size: var(--text-xl);
+}
+</style>

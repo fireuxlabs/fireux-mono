@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center justify-between">
         <span
-          class="uppercase tracking-wide text-xs text-[color:var(--ui-text-muted)]"
+          class="text-xs uppercase tracking-wide text-muted"
           >Quick peek</span
         >
         <UBadge variant="subtle" color="neutral">At a glance</UBadge>
@@ -19,7 +19,7 @@
         </div>
         <div>
           <h3 class="font-medium">{{ item.title }}</h3>
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p class="text-sm text-muted">
             {{ item.copy }}
           </p>
         </div>

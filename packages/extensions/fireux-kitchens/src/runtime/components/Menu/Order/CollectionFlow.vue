@@ -33,7 +33,6 @@
       :lines="basket.lines.value"
       :selection-label="collectionTime?.label"
       :total-label="basket.totalLabel.value"
-      @quantity="basket.setQuantity"
       @remove="basket.remove"
       @continue="continueFromBasket"
       @after-leave="finishBasketDialog"

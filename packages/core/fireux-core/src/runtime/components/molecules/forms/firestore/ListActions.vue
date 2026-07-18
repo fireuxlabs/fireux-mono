@@ -215,8 +215,8 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 }
 
 .list-pill__title {
-  font-weight: 600;
-  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
   display: block;
   max-width: 20rem;
   overflow: hidden;
@@ -225,7 +225,7 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 }
 
 .list-pill__subtitle {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--ui-text-muted);
   display: block;
   max-width: 20rem;

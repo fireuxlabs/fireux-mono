@@ -7,6 +7,11 @@ import {
 
 const baseServerHandlers = [
   {
+    route: '/api/customer/orders',
+    method: 'get',
+    handler: './runtime/server/api/customer/orders.get',
+  },
+  {
     route: '/api/console/kitchen/orders/transition',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/orders/transition.post',

@@ -42,7 +42,7 @@ defineProps<{
 }
 
 .menu-icon {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
 }
 
 .menu-link {

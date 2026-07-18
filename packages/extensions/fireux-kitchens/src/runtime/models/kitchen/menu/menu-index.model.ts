@@ -10,6 +10,13 @@ export type PublicMenuIndexScope =
   | { kind: 'tenant', kitchenSlug: string }
   | { kind: 'directory', kitchenSlug: string }
 
+export type PublicMenuIndexKitchen = {
+  name: string
+  logo_image_url?: string
+  image_url?: string
+  image_shade?: 'light' | 'dark' | 'none'
+}
+
 export type PublicMenuIndexItem = {
   id: string
   kind?: MenuKind
@@ -17,6 +24,7 @@ export type PublicMenuIndexItem = {
   description: string
   status: 'published'
   contexts?: MenuRouteContext[]
+  kitchen?: PublicMenuIndexKitchen
   service_hours?: MenuServiceHoursConfig
   source?: MenuSource & {
     kitchen_slug?: string

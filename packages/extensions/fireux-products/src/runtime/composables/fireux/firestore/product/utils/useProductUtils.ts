@@ -5,7 +5,7 @@ import { ProductStorage } from '../../../../../models/product.model'
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()
-  const { firestoreFetchDoc } = useFirestoreManager()
+  const { firestoreGetDoc } = useFirestoreManager()
 
   async function buildSlugIfUnique(
     title: string,
@@ -29,7 +29,7 @@ export function useProductUtils() {
 
     const slug = validation.slug
 
-    const existing = await firestoreFetchDoc(collectionName, slug)
+    const existing = await firestoreGetDoc(collectionName, slug)
     if (existing) {
       return { success: false, message: 'Slug taken' }
     }

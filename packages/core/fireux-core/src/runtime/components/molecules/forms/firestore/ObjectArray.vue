@@ -3,7 +3,7 @@
   <div class="object-array">
     <USeparator />
     <div class="object-array__header">
-      <h3 v-if="label">{{ label }}</h3>
+      <h3 v-if="label" class="fx-type-card-title">{{ label }}</h3>
       <div v-if="editingIndex === null" class="object-array__actions">
         <slot name="create" :push="push" />
       </div>
@@ -86,7 +86,9 @@
                     class="object-array__item-header"
                   >
                     <div class="object-array__item-title">
-                      <h3 v-if="getItemTitle(item, index)">{{ getItemTitle(item, index) }}</h3>
+                      <h3 v-if="getItemTitle(item, index)" class="fx-type-card-title">
+                        {{ getItemTitle(item, index) }}
+                      </h3>
                     </div>
                     <div class="object-array__item-actions">
                       <UBadge

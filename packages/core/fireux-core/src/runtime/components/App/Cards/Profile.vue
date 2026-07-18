@@ -94,7 +94,7 @@
         v-if="showTagline && card.tagline"
         class="rounded-2xl border border-default bg-muted/30 p-4"
       >
-        <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+        <div class="fx-type-label">
           Tagline
         </div>
         <div class="mt-2 text-base text-default">
@@ -103,7 +103,7 @@
       </section>
 
       <section v-if="showDescription" class="space-y-2">
-        <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+        <div class="fx-type-label">
           Description
         </div>
         <div class="text-sm leading-6 text-toned">
@@ -121,7 +121,7 @@
           :key="item.label"
           class="rounded-2xl border border-default p-4"
         >
-          <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+          <div class="fx-type-label">
             {{ item.label }}
           </div>
           <div
@@ -137,7 +137,7 @@
 
       <section class="grid gap-4 lg:grid-cols-2">
         <div class="rounded-2xl border border-default p-4 space-y-3">
-          <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+          <div class="fx-type-label">
             Creator
           </div>
 
@@ -160,7 +160,7 @@
 
         <div class="rounded-2xl border border-default p-4 space-y-3">
           <div class="flex items-center justify-between gap-3">
-            <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+            <div class="fx-type-label">
               Admin team
             </div>
 
@@ -217,7 +217,7 @@
       </section>
 
       <section v-if="showSocials" class="space-y-3">
-        <div class="text-xs font-medium uppercase tracking-[0.14em] text-dimmed">
+        <div class="fx-type-label">
           Links
         </div>
 

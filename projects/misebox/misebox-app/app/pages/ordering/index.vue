@@ -2,10 +2,10 @@
   <main class="min-h-screen bg-muted/30 py-10">
     <UContainer class="max-w-7xl space-y-8">
       <section>
-        <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+        <p class="fx-type-headline">
           Misebox
         </p>
-        <h1 class="mt-2 text-4xl font-black tracking-tight text-highlighted sm:text-5xl">
+        <h1 class="fx-type-page-title mt-2 text-4xl font-black tracking-tight sm:text-5xl">
           Ordering
         </h1>
         <p class="mb-0 mt-3 max-w-3xl text-base leading-7 text-muted">
@@ -15,7 +15,7 @@
       </section>
 
       <section class="grid gap-3">
-        <p class="m-0 text-sm font-bold uppercase tracking-[0.18em] text-muted">
+        <p class="fx-type-label m-0">
           Canonical KitchenOrder
         </p>
 
@@ -33,7 +33,7 @@
       </section>
 
       <section class="grid gap-3 border-y border-default py-5">
-        <p class="m-0 text-sm font-bold uppercase tracking-[0.18em] text-muted">
+        <p class="fx-type-label m-0">
           Intake decision
         </p>
 

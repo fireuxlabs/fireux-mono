@@ -11,13 +11,13 @@ Console and summary metrics:
 }
 
 .console-metric__value {
-	font-size: 1.875rem;
+	font-size: var(--text-3xl);
 	line-height: 1;
-	font-weight: 600;
+	font-weight: var(--font-weight-semibold);
 	color: var(--ui-text, currentColor);
 }
 
 .console-metric__label {
-	font-size: 0.875rem;
+	font-size: var(--text-sm);
 	color: var(--ui-text-muted, var(--ui-text));
 }

@@ -1,8 +1,8 @@
 <template>
   <section class="skills">
     <header>
-      <h2>Stacks we play nicely with</h2>
-      <p>Shared defaults that keep the landing shell useful before bespoke polish.</p>
+      <h2 class="fx-type-section-display">Stacks we play nicely with</h2>
+      <p class="fx-type-body">Shared defaults that keep the landing shell useful before bespoke polish.</p>
     </header>
 
     <ul class="skills__icons">
@@ -43,15 +43,6 @@ const resolvedSkills = computed(
   gap: calc(var(--spacing) * 6);
 }
 
-.skills header h2 {
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 700;
-}
-
-.skills header p {
-  color: var(--ui-text-muted);
-}
-
 .skills__icons {
   display: flex;
   flex-wrap: wrap;
@@ -70,6 +61,6 @@ const resolvedSkills = computed(
 
 .skills__icons li i,
 .skills__icons li svg {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
 }
 </style>

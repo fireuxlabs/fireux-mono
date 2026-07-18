@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -32,7 +33,9 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge
+              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+              variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -40,8 +43,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="posts"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="posts"
+      state="error"
+      surface="bare"
+    />
+
     <BlogCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -53,9 +70,18 @@
       </template>
     </BlogCollectionList>
 
-    <p v-else>
-      {{ query ? 'No posts match your search.' : 'No posts found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="posts"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No posts match your search' : 'No posts yet'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Once posts are published, they will display here.'
+      "
+    />
 
     <div>
       <DevJson
@@ -101,6 +127,7 @@ const props = withDefaults(
 
 const fetched = useBlogCollection()
 const collection = computed<BlogPost[]>(() => fetched.collection.value)
+const outcome = computed(() => fetched.outcome.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>

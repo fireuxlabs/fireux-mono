@@ -48,8 +48,8 @@ defineEmits<{
   align-items: center;
   margin: 0;
   color: var(--menu-secondary);
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-  font-weight: 900;
+  font-size: clamp(1.05rem, 1.6vw, var(--text-xl));
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.18em;
   line-height: 1.2;
   text-transform: uppercase;

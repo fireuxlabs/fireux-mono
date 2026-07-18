@@ -244,7 +244,7 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 88%, transparent);
   color: var(--menu-text, var(--ui-text));
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .delivery-coverage-map__error {

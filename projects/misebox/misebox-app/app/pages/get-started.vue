@@ -5,13 +5,13 @@
     >
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
-          <h1 class="text-4xl font-semibold text-highlighted">
+          <h1 class="fx-type-display-title">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="text-lg text-toned">
+          <p class="fx-type-description text-toned">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -26,7 +26,7 @@
         <div
           class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
         >
-          <p class="font-semibold uppercase tracking-[0.2em] text-xs mb-4">
+          <p class="fx-type-label mb-4 text-primary">
             {{ appMeta.getStarted.snapshotTitle }}
           </p>
           <ul class="space-y-3">
@@ -42,10 +42,10 @@
     <section>
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.getStarted.stepsHeading.eyebrow }}
           </p>
-          <h2 class="text-3xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.getStarted.stepsHeading.title }}
           </h2>
           <p class="text-toned">
@@ -58,13 +58,13 @@
             :key="step.title"
             class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
           >
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <p class="fx-type-label text-primary">
               {{ step.badge }}
             </p>
-            <h3 class="mt-3 text-xl font-semibold text-highlighted">
+            <h3 class="fx-type-card-title mt-3 text-xl">
               {{ step.title }}
             </h3>
-            <p class="mt-2 text-sm text-toned">
+            <p class="fx-type-caption mt-2 text-toned">
               {{ step.copy }}
             </p>
             <ul class="mt-4 space-y-2 text-sm text-muted">
@@ -90,9 +90,7 @@
               :key="faq.title"
               class="rounded-2xl border border-default bg-default/80 p-5"
             >
-              <dt
-                class="text-sm font-semibold uppercase tracking-[0.2em] text-primary"
-              >
+              <dt class="fx-type-label text-primary">
                 {{ faq.title }}
               </dt>
               <dd class="mt-2 text-base text-gray-700 dark:text-gray-200">
@@ -104,12 +102,10 @@
         <div
           class="rounded-2xl border border-gray-200/70 bg-white/90 p-6 text-sm text-gray-600 shadow-lg dark:text-gray-300"
         >
-          <p
-            class="text-xs font-semibold uppercase tracking-[0.3em] text-primary"
-          >
+          <p class="fx-type-label text-primary">
             {{ appMeta.getStarted.afterSetup.card.eyebrow }}
           </p>
-          <p class="mt-3 text-lg font-semibold text-highlighted">
+          <p class="fx-type-card-heading mt-3">
             {{ appMeta.getStarted.afterSetup.card.title }}
           </p>
           <ul class="mt-5 space-y-2">

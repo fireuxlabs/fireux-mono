@@ -9,7 +9,7 @@
       <UCard>
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="space-y-2">
-            <p class="text-sm uppercase tracking-[0.18em] text-dimmed">Category</p>
+            <p class="fx-type-headline text-dimmed">Category</p>
             <h2 class="text-2xl font-semibold">Find technical SEO help without guessing</h2>
             <p class="max-w-3xl text-sm leading-6 text-toned">
               These example providers show how Find My SEO can group specialists by the work buyers actually need:

@@ -261,7 +261,7 @@ function addOnPrice(price: number) {
 
 :deep(.menu-order-item-dialog__description) {
   color: var(--menu-muted);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 :deep(.menu-order-item-dialog__close) {
@@ -294,8 +294,8 @@ function addOnPrice(price: number) {
   margin-bottom: 0.35rem;
   color: var(--menu-title);
   font-size: 0.8rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
 }
 
@@ -356,7 +356,7 @@ function addOnPrice(price: number) {
   color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-item-dialog__add:disabled {

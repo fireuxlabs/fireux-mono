@@ -10,11 +10,24 @@
             <p>Select the Supplier console target you want to work on.</p>
           </div>
 
-          <UBadge variant="soft">{{ cards.length }}</UBadge>
+          <UBadge v-if="isSettled" variant="soft">{{ cards.length }}</UBadge>
         </div>
       </template>
 
-      <p v-if="pending" class="text-sm text-dimmed">Loading suppliers...</p>
+      <MoleculesStateCard
+        v-if="resolvedOutcome === 'pending'"
+        entity="supplier targets"
+        state="loading"
+        surface="bare"
+      />
+
+      <MoleculesStateCard
+        v-else-if="resolvedOutcome === 'error'"
+        entity="supplier targets"
+        state="error"
+        surface="bare"
+        description="Supplier targets could not be loaded. Please try again."
+      />
 
       <div v-else-if="cards.length" class="space-y-3">
         <SupplierCardsCell
@@ -28,15 +41,21 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No Supplier targets found.
-      </p>
+      <MoleculesStateCard
+        v-else-if="isSettled"
+        entity="supplier targets"
+        state="empty"
+        surface="bare"
+        title="No Supplier targets found"
+        description="Suppliers you can access will appear here."
+      />
     </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import {
   useSupplierInterface,
   type SupplierSurface,
@@ -47,6 +66,7 @@ const props = withDefaults(
     // Console target lists consume Supplier interface surfaces; storage completeness belongs in the Firestore stack.
     collection?: SupplierSurface[]
     pending?: boolean
+    outcome?: ConsoleTargetOutcome
   }>(),
   {
     collection: () => [],
@@ -71,6 +91,14 @@ const cards = computed(() =>
     .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
       Boolean(card)
     )
+)
+const resolvedOutcome = computed<ConsoleTargetOutcome>(() => {
+  if (props.outcome) return props.outcome
+  if (props.pending) return 'pending'
+  return cards.value.length ? 'ready' : 'empty'
+})
+const isSettled = computed(() =>
+  resolvedOutcome.value === 'ready' || resolvedOutcome.value === 'empty'
 )
 
 function selectSupplier(id: string) {

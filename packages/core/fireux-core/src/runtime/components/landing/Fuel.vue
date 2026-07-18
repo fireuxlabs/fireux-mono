@@ -1,8 +1,8 @@
 <template>
   <section class="fuel">
     <header>
-      <h2>{{ title }}</h2>
-      <p>{{ description }}</p>
+      <h2 class="fx-type-section-display">{{ title }}</h2>
+      <p class="fx-type-body">{{ description }}</p>
     </header>
 
     <div v-if="meters.length" class="fuel__grid">
@@ -69,15 +69,6 @@ const steps = [
   gap: calc(var(--spacing) * 2);
 }
 
-.fuel header h2 {
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 700;
-}
-
-.fuel header p {
-  color: var(--ui-text-muted);
-}
-
 .fuel__grid {
   display: grid;
   gap: calc(var(--spacing) * 4);
@@ -99,7 +90,7 @@ const steps = [
 }
 
 .fuel__card h3 {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin-bottom: calc(var(--spacing) * 2);
 }
 

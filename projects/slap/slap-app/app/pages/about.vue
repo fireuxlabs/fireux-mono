@@ -3,16 +3,16 @@
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.about.label }}
           </p>
-          <h1 class="text-4xl font-semibold text-highlighted">
+          <h1 class="fx-type-display-title">
             {{ appMeta.about.tagline }}
           </h1>
-          <p class="text-lg text-toned">
+          <p class="fx-type-description text-toned">
             {{ appMeta.about.description }}
           </p>
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption text-toned">
             {{ appMeta.about.supportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -26,7 +26,7 @@
         </div>
 
         <div class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em]">
+          <p class="fx-type-label mb-4 text-primary">
             Boundary
           </p>
           <ul class="space-y-3">
@@ -51,10 +51,10 @@
           class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
         >
           <UIcon :name="item.icon" class="text-2xl text-primary" />
-          <h2 class="mt-4 text-lg font-semibold text-highlighted">
+          <h2 class="fx-type-card-heading mt-4">
             {{ item.title }}
           </h2>
-          <p class="mt-2 text-sm text-toned">
+          <p class="fx-type-caption mt-2 text-toned">
             {{ item.description }}
           </p>
         </article>

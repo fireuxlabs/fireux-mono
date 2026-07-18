@@ -89,7 +89,6 @@
           :currency-code="basket.currencyCode.value"
           :lines="basket.lines.value"
           :total-label="basket.totalLabel.value"
-          @quantity="basket.setQuantity"
           @remove="basket.remove"
           @after-leave="finishBasketDialog"
         />

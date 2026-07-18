@@ -8,6 +8,7 @@ import {
   applyKitchenOrderServiceSequence,
   applyKitchenOrderServiceSequenceToResponse,
   nextKitchenOrderServiceSequence,
+  type KitchenOrderLinkedRecord,
 } from '../../kitchen/order/service-sequence.ts'
 
 const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000
@@ -29,6 +30,7 @@ type CommitMenuOrderIdempotentlyInput<
   payload: Record<string, unknown>
   response: TResponse
   reservationResponse?: TResponse
+  linkedRecord?: KitchenOrderLinkedRecord
 }
 
 const digest = (value: string) =>
@@ -231,6 +233,12 @@ export const commitMenuOrderIdempotently = async <
     }
 
     transaction.create(orderRef, numbered.payload)
+    if (input.linkedRecord) {
+      transaction.create(
+        db.doc(input.linkedRecord.path),
+        input.linkedRecord.payload
+      )
+    }
     if (reservationSnap.exists) {
       transaction.set(reservationRef, reservation)
     } else {

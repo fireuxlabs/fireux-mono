@@ -38,7 +38,7 @@
 
     <div class="space-y-4">
       <section class="space-y-1">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Description</div>
+        <div class="fx-type-label">Description</div>
         <div class="text-sm text-default">
           <span v-if="item.description">{{ item.description }}</span>
           <span v-else class="italic text-dimmed">missing</span>
@@ -47,7 +47,7 @@
 
       <section class="grid gap-3 text-sm sm:grid-cols-3">
         <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Ecosystem ID</div>
+          <div class="fx-type-label">Ecosystem ID</div>
           <div class="font-mono text-xs break-all text-default">
             <span v-if="item.id">{{ item.id }}</span>
             <span v-else class="italic text-dimmed">missing</span>
@@ -55,7 +55,7 @@
         </div>
 
         <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Slug</div>
+          <div class="fx-type-label">Slug</div>
           <div class="text-sm text-default">
             <span v-if="item.slug">{{ item.slug }}</span>
             <span v-else class="italic text-dimmed">missing</span>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Team</div>
+          <div class="fx-type-label">Team</div>
           <div class="text-sm text-default">
             <span v-if="item.team">{{ item.team }}</span>
             <span v-else class="italic text-dimmed">missing</span>
@@ -72,7 +72,7 @@
       </section>
 
       <section class="space-y-2">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Connected Apps</div>
+        <div class="fx-type-label">Connected Apps</div>
         <div v-if="item.appLabels.length" class="flex flex-wrap gap-2">
           <UBadge
             v-for="app in item.appLabels"

@@ -1,9 +1,11 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    :disabled="disabled"
     class="card card--cell kitchen-card-cell"
     :class="cardClass"
+    @activate="emit('action')"
   >
     <div class="card__media">
       <UAvatar
@@ -55,69 +57,10 @@
         <UIcon name="i-lucide-arrow-up-right" />
       </div>
     </div>
-  </NuxtLink>
-
-  <div
-    v-else
-    class="card card--cell kitchen-card-cell"
-    :class="cardClass"
-    @click="onClick"
-  >
-    <div class="card__media">
-      <UAvatar
-        :src="resolvedImageUrl || undefined"
-        :alt="name"
-        size="md"
-        icon="i-lucide-image"
-        class="kitchen-card-cell__avatar"
-        :class="avatarShadeClass"
-      />
-
-      <div class="card__content card__stack">
-        <div class="card__header">
-          <div class="min-w-0">
-            <div class="card__title">{{ name }}</div>
-
-            <div
-              v-if="showSubtitle && resolvedAddress"
-              class="card__subtitle inline-flex max-w-full items-center gap-1"
-            >
-              <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
-              <span class="truncate">{{ resolvedAddress }}</span>
-            </div>
-          </div>
-
-          <div
-            v-if="visibleBadges.length"
-            class="card__badges"
-          >
-            <UBadge
-              v-for="badge in visibleBadges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="shrink-0"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
-        </div>
-
-        <div v-if="showTagline && prop" class="card__tagline">
-          {{ prop }}
-        </div>
-      </div>
-
-      <div v-if="directory" class="kitchen-card-cell__arrow" aria-hidden="true">
-        <UIcon name="i-lucide-arrow-up-right" />
-      </div>
-    </div>
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { KitchenCard } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -172,25 +115,10 @@ const visibleBadges = computed(() =>
   props.showBadges === false ? [] : props.badges ?? []
 )
 const cardClass = computed(() => ({
-  'cursor-pointer': props.action || (props.link && props.to),
-  'cursor-not-allowed opacity-60': props.disabled,
+  'cursor-pointer': !props.disabled && (props.action || (props.link && props.to)),
   'kitchen-card-cell--selected': props.selected,
   'kitchen-card-cell--directory': props.directory,
 }))
-
-const onClick = (event?: MouseEvent) => {
-  if (props.disabled) return
-
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>
 
 <style scoped>
@@ -207,7 +135,7 @@ const onClick = (event?: MouseEvent) => {
     );
 }
 
-.kitchen-card-cell--directory:hover {
+.kitchen-card-cell--directory:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover {
   border-color: color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
   background:
     linear-gradient(
@@ -235,17 +163,17 @@ const onClick = (event?: MouseEvent) => {
 }
 
 .kitchen-card-cell--directory .card__title {
-  font-size: 1.05rem;
+  font-size: var(--text-lg);
   white-space: normal;
   overflow-wrap: anywhere;
-  line-height: 1.35;
+  line-height: var(--leading-snug);
 }
 
 .kitchen-card-cell--directory .card__subtitle,
 .kitchen-card-cell--directory .card__tagline {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   white-space: normal;
-  line-height: 1.45;
+  line-height: var(--leading-snug);
 }
 
 .kitchen-card-cell__arrow {
@@ -261,7 +189,7 @@ const onClick = (event?: MouseEvent) => {
     color 160ms ease, transform 160ms ease;
 }
 
-.kitchen-card-cell--directory:hover .kitchen-card-cell__arrow {
+.kitchen-card-cell--directory:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover .kitchen-card-cell__arrow {
   border-color: var(--ui-primary);
   background: var(--ui-primary);
   color: var(--ui-bg);
@@ -282,7 +210,7 @@ const onClick = (event?: MouseEvent) => {
     0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
-.kitchen-card-cell--selected:hover {
+.kitchen-card-cell--selected:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover {
   border-color: color-mix(in srgb, var(--ui-primary) 66%, var(--ui-border));
 }
 </style>

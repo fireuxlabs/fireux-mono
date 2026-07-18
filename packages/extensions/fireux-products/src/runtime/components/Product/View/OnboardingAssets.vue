@@ -45,13 +45,13 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 }
 
 .asset-label {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin-bottom: calc(var(--spacing) * 2);
 }
 
 .asset-meta {
   margin-top: calc(var(--spacing) * 2);
   color: #6b7280;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 </style>

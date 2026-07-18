@@ -179,7 +179,7 @@ function addOnPrice(price: number) {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
   font-size: 1.075rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -190,7 +190,7 @@ function addOnPrice(price: number) {
   gap: 0.3rem;
   color: var(--menu-primary);
   font-size: 0.92rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -221,7 +221,7 @@ function addOnPrice(price: number) {
   margin: 0 0 0.35rem;
   color: var(--menu-muted);
   font-size: 0.72rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -247,7 +247,7 @@ function addOnPrice(price: number) {
 
 .menu-browse-item__options li span:last-child {
   color: var(--menu-text);
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }

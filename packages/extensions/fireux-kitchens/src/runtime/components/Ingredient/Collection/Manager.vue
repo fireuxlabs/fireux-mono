@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
             <UButton
               v-if="showVariantToggle"
@@ -31,7 +32,9 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge
+              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+              variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -39,8 +42,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="ingredients"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="ingredients"
+      state="error"
+      surface="bare"
+    />
+
     <IngredientCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -52,11 +69,18 @@
       </template>
     </IngredientCollectionList>
 
-    <p v-else class="text-sm text-dimmed">
-      {{
-        query ? 'No ingredients match your search.' : 'No ingredients found.'
-      }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="ingredients"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No ingredients match your search' : 'No ingredients yet'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Once ingredients are added, they will display here.'
+      "
+    />
 
     <div>
       <DevJson
@@ -121,6 +145,7 @@ const {
 
 const fetched = useIngredientCollection()
 const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value ?? [])
+const outcome = computed(() => fetched.outcome.value)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
   baseRoute: computed(() => props.baseRoute),

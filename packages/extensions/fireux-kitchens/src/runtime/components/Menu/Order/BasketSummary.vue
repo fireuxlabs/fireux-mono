@@ -112,8 +112,8 @@ function reviewBasket(event: MouseEvent) {
 
 .menu-order-basket-summary__copy span {
   color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 750;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
 }
 
 .menu-order-basket-summary__total {

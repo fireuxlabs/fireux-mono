@@ -12,10 +12,10 @@
 
       <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
         <div class="mb-5">
-          <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+          <p class="fx-type-label">
             Guest funnel screens
           </p>
-          <h2 class="mt-1 text-2xl font-black tracking-tight text-highlighted">
+          <h2 class="fx-type-section-title mt-1 text-2xl font-black tracking-tight">
             Kiosk order
           </h2>
         </div>
@@ -83,7 +83,7 @@
 
         <section class="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
           <div class="space-y-3">
-            <h2 class="text-lg font-black text-highlighted">
+            <h2 class="fx-type-card-heading font-black">
               Kitchen ticket
             </h2>
 

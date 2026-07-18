@@ -221,7 +221,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__title span {
   color: var(--menu-muted);
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -230,7 +230,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__section-head h2 {
   overflow: hidden;
   color: var(--menu-title);
-  font-weight: 950;
+  font-weight: var(--font-weight-black);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -254,7 +254,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
   color: var(--menu-text);
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .staff-pos__mode {
@@ -331,7 +331,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__empty {
   margin: 0;
   color: var(--menu-muted);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 @media (max-width: 860px) {

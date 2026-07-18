@@ -171,17 +171,18 @@ const primitiveLabel = computed(() => {
 
 .object-node__key {
   color: var(--ui-text-highlighted);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .object-node__meta {
   color: var(--ui-text-muted);
+  /* Dense JSON-tree metadata is intentionally smaller than the xs text step. */
   font-size: 0.68rem;
 }
 
 code {
   overflow-wrap: anywhere;
   color: var(--ui-text-toned);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 </style>

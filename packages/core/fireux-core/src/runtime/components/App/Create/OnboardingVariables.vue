@@ -78,7 +78,7 @@
           >
             {{ proceedPending ? 'Initializing...' : 'Continue' }}
           </button>
-          <p v-if="proceedDisabled && !proceedPending" class="mt-2 text-xs text-[var(--ui-text-muted)]">
+          <p v-if="proceedDisabled && !proceedPending" class="mt-2 text-xs text-muted">
             Finish the required checks above to continue.
           </p>
         </div>
@@ -136,7 +136,7 @@
                 {{ asset.ok ? 'Ready' : 'Issue' }}
               </UBadge>
             </div>
-            <p class="text-sm text-[var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               <template v-if="asset.ok">
                 {{ asset.width }}×{{ asset.height }} detected.
               </template>
@@ -153,7 +153,7 @@
             />
           </div>
         </div>
-        <p class="text-sm text-[var(--ui-text-muted)]">
+        <p class="text-sm text-muted">
           Copy the exported app assets from
           <code>figma-export/apps/&lt;app-id&gt;/</code> into
           <code>/public/img/app</code> before onboarding. For temporary local

@@ -7,9 +7,13 @@
       :icon="doorway.icon"
       :color="doorway.context === 'generic' ? 'primary' : 'neutral'"
       :variant="doorway.context === 'generic' ? 'solid' : 'soft'"
-      size="md"
+      :size="display === 'icons' ? 'sm' : 'md'"
+      :aria-label="display === 'icons' ? doorway.label : undefined"
+      :title="display === 'icons' ? doorway.label : undefined"
     >
-      {{ doorway.label }}
+      <template v-if="display !== 'icons'">
+        {{ doorway.label }}
+      </template>
     </UButton>
   </nav>
 </template>
@@ -30,10 +34,14 @@ const props = withDefaults(defineProps<{
   menuId: string
   menuName?: string
   routeScope: MenuRouteScope
+  display?: 'buttons' | 'icons'
 }>(), {
   contexts: () => [],
   menuName: '',
+  display: 'buttons',
 })
+
+const display = computed(() => props.display)
 
 const doorways = computed(() => {
   const availableContexts = new Set(props.contexts)
@@ -70,6 +78,11 @@ const doorways = computed(() => {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.6rem;
+}
+
+.menu-doorways:has(a[aria-label]) {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 @media (max-width: 44rem) {

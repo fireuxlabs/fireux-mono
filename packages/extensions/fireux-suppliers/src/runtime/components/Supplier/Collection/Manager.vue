@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -33,7 +34,7 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">
+            <UBadge v-if="showCount && isSettled" variant="soft">
               {{ countLabel }}
             </UBadge>
           </div>
@@ -41,7 +42,20 @@
       </div>
     </template>
 
-    <p v-if="pending">Loading suppliers...</p>
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="suppliers"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="suppliers"
+      state="error"
+      surface="bare"
+      description="Suppliers could not be loaded. Please try again."
+    />
 
     <SupplierCollectionList
       v-else-if="cardsFiltered.length"
@@ -64,9 +78,16 @@
       </template>
     </SupplierCollectionList>
 
-    <p v-else>
-      {{ query ? 'No suppliers match your search.' : 'No suppliers found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="suppliers"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No matching suppliers' : 'No suppliers yet'"
+      :description="query
+        ? 'Try a different supplier name.'
+        : 'Suppliers will appear here when they are available.'"
+    />
 
     <div>
       <DevJson
@@ -118,7 +139,10 @@ const props = withDefaults(
 
 const fetched = useSupplierCollection()
 const rawCollection = computed(() => fetched.suppliers.value)
-const pending = computed(() => fetched.pending.value)
+const outcome = computed(() => fetched.outcome.value)
+const isSettled = computed(() =>
+  outcome.value === 'ready' || outcome.value === 'empty'
+)
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Suppliers'))
 const description = computed(() =>

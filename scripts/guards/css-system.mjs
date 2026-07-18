@@ -89,7 +89,7 @@ const CANONICAL_MENU_SPACING_PROPERTIES = new Map([
 const APPROVED_NON_LAYOUT_SPACING_PROPERTIES = new Map([
   [
     'packages/extensions/fireux-kitchens/src/runtime/components/Menu/Detail/Header.vue',
-    new Map([['--menu-header-chip-spacing', '0.1em']]),
+    new Map([['--menu-header-chip-spacing', 'var(--tracking-widest)']]),
   ],
 ])
 const DIRECT_SPACING_LITERAL_EXCLUDED_PREFIXES = [
@@ -161,6 +161,118 @@ const APPROVED_DIRECT_SPACING_VALUES = new Map([
     ]),
   ],
 ])
+const FONT_SIZE_DECLARATION_RE = /\bfont-size\s*:\s*([^;}\n]+)/g
+const FONT_WEIGHT_DECLARATION_RE = /\bfont-weight\s*:\s*([^;}\n]+)/g
+const LINE_HEIGHT_DECLARATION_RE = /\bline-height\s*:\s*([^;}\n]+)/g
+const LETTER_SPACING_DECLARATION_RE =
+  /\bletter-spacing\s*:\s*([^;}\n]+)/g
+const FONT_FAMILY_DECLARATION_RE = /\bfont-family\s*:\s*([^;}\n]+)/g
+const FONT_SHORTHAND_DECLARATION_RE = /(?<![A-Za-z0-9_-])font\s*:\s*([^;}\n]+)/g
+const FONT_FAMILY_CUSTOM_PROPERTY_RE =
+  /(--[A-Za-z0-9_-]*(?:font|typeface)[A-Za-z0-9_-]*)\s*:\s*([^;}\n]+)/g
+const TYPOGRAPHY_LENGTH_LITERAL_RE =
+  /(?<![A-Za-z0-9_.-])(-?(?:\d+(?:\.\d+)?|\.\d+))(rem|px)\b/g
+const ARBITRARY_FONT_SIZE_CLASS_RE =
+  /\btext-\[((?:-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|vw|vh|dvw|dvh))|(?:(?:calc|clamp|min|max)\([^\]]+\)))\]/g
+const ARBITRARY_LINE_HEIGHT_CLASS_RE = /\bleading-\[([^\]]+)\]/g
+const ARBITRARY_TRACKING_CLASS_RE = /\btracking-\[([^\]]+)\]/g
+const ARBITRARY_FONT_WEIGHT_CLASS_RE = /\bfont-\[(\d{3})\]/g
+const ARBITRARY_SEMANTIC_TEXT_COLOR_RE =
+  /\btext-\[(?:color:)?var\(--ui-text-(?:dimmed|muted|toned|highlighted)\)\]/g
+const INVALID_TYPOGRAPHY_VARIABLE_RE = /var\(\s*--leading-none\b/g
+const TAILWIND_FONT_SIZE_TOKENS = new Map([
+  [12, '--text-xs'],
+  [14, '--text-sm'],
+  [16, '--text-base'],
+  [18, '--text-lg'],
+  [20, '--text-xl'],
+  [24, '--text-2xl'],
+  [30, '--text-3xl'],
+  [36, '--text-4xl'],
+  [48, '--text-5xl'],
+  [60, '--text-6xl'],
+  [72, '--text-7xl'],
+  [96, '--text-8xl'],
+  [128, '--text-9xl'],
+])
+const TAILWIND_FONT_WEIGHT_TOKENS = new Map([
+  ['100', '--font-weight-thin'],
+  ['200', '--font-weight-extralight'],
+  ['300', '--font-weight-light'],
+  ['400', '--font-weight-normal'],
+  ['500', '--font-weight-medium'],
+  ['600', '--font-weight-semibold'],
+  ['700', '--font-weight-bold'],
+  ['800', '--font-weight-extrabold'],
+  ['900', '--font-weight-black'],
+])
+const TAILWIND_LINE_HEIGHT_TOKENS = new Map([
+  ['1.25', '--leading-tight'],
+  ['1.375', '--leading-snug'],
+  ['1.5', '--leading-normal'],
+  ['1.625', '--leading-relaxed'],
+  ['2', '--leading-loose'],
+])
+const TAILWIND_TRACKING_TOKENS = new Map([
+  ['-0.05em', '--tracking-tighter'],
+  ['-0.025em', '--tracking-tight'],
+  ['0em', '--tracking-normal'],
+  ['0.025em', '--tracking-wide'],
+  ['0.05em', '--tracking-wider'],
+  ['0.1em', '--tracking-widest'],
+])
+const OWNED_TYPOGRAPHY_DELTA_PATHS = new Set([
+  // Component-owned artwork, output geometry, or cohesive tenant display type.
+  'packages/core/fireux-core/src/runtime/components/Design/PaletteStrip.vue',
+  'packages/core/fireux-core/src/runtime/components/effects/LandingEffect.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/components/Menu/Json.vue',
+  'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
+  'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Hero.vue',
+  'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/RouteCard.vue',
+  'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Surfaces.vue',
+  'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Title.vue',
+  'projects/misebox/baeren-ringgenberg/app/components/Baeren/Nav.vue',
+  'projects/misebox/bangin-coffee/app/assets/styles/main.css',
+  'projects/misebox/bangin-coffee/app/pages/index.vue',
+  'projects/misebox/la-tap-berne/app/components/LaTapBerne/Copy.vue',
+  'projects/misebox/la-tap-berne/app/components/LaTapBerne/Hero.vue',
+  'projects/misebox/la-tap-berne/app/components/LaTapBerne/MiseboxLink.vue',
+  'projects/slap/slap-app/app/pages/index.vue',
+  'projects/slap/yellow-velo/app/pages/index.vue',
+])
+const TYPOGRAPHY_LITERAL_EXCLUDED_PREFIXES = [
+  // This harness intentionally runs without Tailwind or Nuxt UI.
+  'projects/fireux/no-fireux-embed-test/',
+]
+const APPROVED_ARBITRARY_TYPOGRAPHY_CLASSES = new Map([
+  [
+    'packages/core/fireux-core/src/runtime/components/App/ErrorPage.vue',
+    new Set(['tracking-[0.3em]', 'tracking-[0.32em]']),
+  ],
+  [
+    'packages/core/fireux-core/src/runtime/components/layouts/dev/Nav.vue',
+    new Set(['text-[10px]']),
+  ],
+  [
+    'packages/core/fireux-core/src/runtime/pages/dev/avatars.vue',
+    new Set(['text-[10px]', 'text-[11px]']),
+  ],
+  [
+    'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Url.vue',
+    new Set(['text-[clamp(0.45rem,4vw,1rem)]']),
+  ],
+])
+const LEGACY_TYPOGRAPHY_ROLE_OVERLAYS = [
+  {
+    pattern: /fx-type-section-title\s+text-3xl\s+font-semibold/g,
+    replacement: 'fx-type-section-title',
+  },
+  {
+    pattern: /fx-type-card-title\s+text-lg\b/g,
+    replacement: 'fx-type-card-heading',
+  },
+]
 const LEGACY_PAGE_SPACING_RECIPES = [
   /space-y-16\s+pb-20/g,
   /space-y-12\s+pb-16/g,
@@ -192,6 +304,14 @@ const LEGACY_ENTITY_CARD_RE = new RegExp(
   'g'
 )
 const LEGACY_INSET_PANEL_RE = /rounded\s+border\s+border-default\s+p-3/g
+const SHARED_DISCLOSURE_PATH =
+  'packages/core/fireux-core/src/runtime/components/molecules/DisclosurePanel.vue'
+const RAW_DISCLOSURE_RE = /<UCollapsible\b/g
+const INLINE_DISCLOSURE_TRIGGER_RE =
+  /group-data-\[state=open\]:rotate-180\s+transition-transform\s+duration-200/g
+const INLINE_CARD_BODY_STACK_RE = /body\s*:\s*['"]space-y-4['"]/g
+const LEGACY_DISABLED_SURFACE_RE =
+  /(?:opacity-60\s+cursor-not-allowed|cursor-not-allowed\s+opacity-60)/g
 const LEGACY_SEMANTIC_COLOR_PAIRS = [
   {
     pattern: /text-gray-900\s+dark:text-white/g,
@@ -242,10 +362,18 @@ export async function run(ctx) {
     spacingValues: [],
     spacingCustomProperties: [],
     arbitrarySpacingClasses: [],
+    typographyValues: [],
+    arbitraryTypographyClasses: [],
+    arbitrarySemanticTextColors: [],
+    legacyTypographyRoleOverlays: [],
     legacyPageSpacing: [],
     legacyListSpacing: [],
     legacyEntityCards: [],
     legacyInsetPanels: [],
+    rawDisclosures: [],
+    inlineDisclosureTriggers: [],
+    inlineCardBodyStacks: [],
+    legacyDisabledSurfaces: [],
     legacySemanticColors: [],
     legacyGenericSurfaces: [],
   }
@@ -329,6 +457,38 @@ function scan(dir, repoRoot, violations) {
       target: violations.arbitrarySpacingClasses,
     })
 
+    collectArbitraryTypographyClassViolations({
+      source,
+      relativePath,
+      target: violations.arbitraryTypographyClasses,
+    })
+
+    collectMatches({
+      source,
+      pattern: ARBITRARY_SEMANTIC_TEXT_COLOR_RE,
+      target: violations.arbitrarySemanticTextColors,
+      relativePath,
+      label: (match) => match[0],
+    })
+
+    collectMatches({
+      source,
+      pattern: INVALID_TYPOGRAPHY_VARIABLE_RE,
+      target: violations.typographyValues,
+      relativePath,
+      label: () => 'invalid --leading-none variable; use line-height: 1',
+    })
+
+    for (const overlay of LEGACY_TYPOGRAPHY_ROLE_OVERLAYS) {
+      collectMatches({
+        source,
+        pattern: overlay.pattern,
+        target: violations.legacyTypographyRoleOverlays,
+        relativePath,
+        label: () => `redundant role overlay -> ${overlay.replacement}`,
+      })
+    }
+
     for (const pattern of LEGACY_PAGE_SPACING_RECIPES) {
       collectMatches({
         source,
@@ -369,6 +529,12 @@ function scan(dir, repoRoot, violations) {
         relativePath,
         target: violations.radiusValues,
       })
+
+      collectTypographyValueViolations({
+        source,
+        relativePath,
+        target: violations.typographyValues,
+      })
     }
 
     collectMatches({
@@ -385,6 +551,39 @@ function scan(dir, repoRoot, violations) {
       target: violations.legacyInsetPanels,
       relativePath,
       label: () => 'legacy inline inset-panel recipe',
+    })
+
+    if (relativePath !== SHARED_DISCLOSURE_PATH) {
+      collectMatches({
+        source,
+        pattern: RAW_DISCLOSURE_RE,
+        target: violations.rawDisclosures,
+        relativePath,
+        label: () => 'raw UCollapsible outside MoleculesDisclosurePanel',
+      })
+      collectMatches({
+        source,
+        pattern: INLINE_DISCLOSURE_TRIGGER_RE,
+        target: violations.inlineDisclosureTriggers,
+        relativePath,
+        label: () => 'repeated disclosure-chevron state recipe',
+      })
+    }
+
+    collectMatches({
+      source,
+      pattern: INLINE_CARD_BODY_STACK_RE,
+      target: violations.inlineCardBodyStacks,
+      relativePath,
+      label: () => 'inline UCard body stack',
+    })
+
+    collectMatches({
+      source,
+      pattern: LEGACY_DISABLED_SURFACE_RE,
+      target: violations.legacyDisabledSurfaces,
+      relativePath,
+      label: () => 'visual-only disabled surface recipe',
     })
 
     for (const colorPair of LEGACY_SEMANTIC_COLOR_PAIRS) {
@@ -620,6 +819,200 @@ function collectArbitrarySpacingClassViolations({
   }
 }
 
+function collectTypographyValueViolations({ source, relativePath, target }) {
+  if (
+    OWNED_TYPOGRAPHY_DELTA_PATHS.has(relativePath) ||
+    TYPOGRAPHY_LITERAL_EXCLUDED_PREFIXES.some((prefix) =>
+      relativePath.startsWith(prefix)
+    )
+  ) {
+    return
+  }
+
+  FONT_SIZE_DECLARATION_RE.lastIndex = 0
+  let declarationMatch
+
+  while ((declarationMatch = FONT_SIZE_DECLARATION_RE.exec(source))) {
+    const value = declarationMatch[1].trim()
+    TYPOGRAPHY_LENGTH_LITERAL_RE.lastIndex = 0
+    let literalMatch
+
+    while ((literalMatch = TYPOGRAPHY_LENGTH_LITERAL_RE.exec(value))) {
+      const numericValue = Number(literalMatch[1])
+      const pixels = literalMatch[2] === 'rem' ? numericValue * 16 : numericValue
+      const token = TAILWIND_FONT_SIZE_TOKENS.get(pixels)
+      if (!token) continue
+
+      target.push({
+        path: relativePath,
+        line: lineNumberAt(source, declarationMatch.index),
+        label: `font-size: ${literalMatch[0]} -> var(${token})`,
+      })
+    }
+  }
+
+  collectTokenizedDeclarationViolations({
+    source,
+    relativePath,
+    target,
+    pattern: FONT_WEIGHT_DECLARATION_RE,
+    property: 'font-weight',
+    tokens: TAILWIND_FONT_WEIGHT_TOKENS,
+    findValue: true,
+  })
+  collectTokenizedDeclarationViolations({
+    source,
+    relativePath,
+    target,
+    pattern: LINE_HEIGHT_DECLARATION_RE,
+    property: 'line-height',
+    tokens: TAILWIND_LINE_HEIGHT_TOKENS,
+  })
+  collectTokenizedDeclarationViolations({
+    source,
+    relativePath,
+    target,
+    pattern: LETTER_SPACING_DECLARATION_RE,
+    property: 'letter-spacing',
+    tokens: TAILWIND_TRACKING_TOKENS,
+  })
+
+  FONT_FAMILY_DECLARATION_RE.lastIndex = 0
+  while ((declarationMatch = FONT_FAMILY_DECLARATION_RE.exec(source))) {
+    const value = declarationMatch[1].trim()
+    if (value.includes('var(--font-')) continue
+    if (
+      !/(?:^|,)\s*(?:ui-sans-serif|system-ui|ui-serif|ui-monospace|SFMono-Regular|monospace|serif)\b/i.test(
+        value
+      )
+    ) {
+      continue
+    }
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, declarationMatch.index),
+      label: `font-family: ${value} -> var(--font-sans|serif|mono)`,
+    })
+  }
+
+  FONT_SHORTHAND_DECLARATION_RE.lastIndex = 0
+  while ((declarationMatch = FONT_SHORTHAND_DECLARATION_RE.exec(source))) {
+    const value = declarationMatch[1].trim()
+    if (value === 'inherit' || value.includes('var(--font-')) continue
+    if (
+      !/(?:^|[\s,])(?:ui-sans-serif|system-ui|ui-serif|ui-monospace|SFMono-Regular|monospace|serif)\b/i.test(
+        value
+      )
+    ) {
+      continue
+    }
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, declarationMatch.index),
+      label: `font: ${value} -> Tailwind font-family/size/leading variables`,
+    })
+  }
+
+  FONT_FAMILY_CUSTOM_PROPERTY_RE.lastIndex = 0
+  while ((declarationMatch = FONT_FAMILY_CUSTOM_PROPERTY_RE.exec(source))) {
+    const property = declarationMatch[1]
+    const value = declarationMatch[2].trim()
+    if (value.includes('var(--font-') || value.includes('var(--menu-font')) {
+      continue
+    }
+    if (
+      !/(?:^|,)\s*(?:ui-sans-serif|system-ui|ui-serif|ui-monospace|SFMono-Regular|monospace|serif)\b/i.test(
+        value
+      )
+    ) {
+      continue
+    }
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, declarationMatch.index),
+      label: `${property}: ${value} -> Tailwind font-family variable`,
+    })
+  }
+}
+
+function collectTokenizedDeclarationViolations({
+  source,
+  relativePath,
+  target,
+  pattern,
+  property,
+  tokens,
+  findValue = false,
+}) {
+  pattern.lastIndex = 0
+  let match
+
+  while ((match = pattern.exec(source))) {
+    const value = match[1].trim()
+    if (value.includes('var(--font-weight-') || value.includes('var(--leading-')) {
+      continue
+    }
+
+    if (findValue) {
+      for (const [literal, token] of tokens) {
+        const literalPattern = new RegExp(`(?<![\\d.])${literal}(?![\\d.])`)
+        if (!literalPattern.test(value)) continue
+        target.push({
+          path: relativePath,
+          line: lineNumberAt(source, match.index),
+          label: `${property}: ${literal} -> var(${token})`,
+        })
+      }
+      continue
+    }
+
+    const token = tokens.get(normalizeCssValue(value))
+    if (!token) continue
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label: `${property}: ${value} -> var(${token})`,
+    })
+  }
+}
+
+function collectArbitraryTypographyClassViolations({
+  source,
+  relativePath,
+  target,
+}) {
+  if (
+    OWNED_TYPOGRAPHY_DELTA_PATHS.has(relativePath) ||
+    TYPOGRAPHY_LITERAL_EXCLUDED_PREFIXES.some((prefix) =>
+      relativePath.startsWith(prefix)
+    )
+  ) {
+    return
+  }
+
+  const approvedClasses = APPROVED_ARBITRARY_TYPOGRAPHY_CLASSES.get(relativePath)
+  for (const pattern of [
+    ARBITRARY_FONT_SIZE_CLASS_RE,
+    ARBITRARY_LINE_HEIGHT_CLASS_RE,
+    ARBITRARY_TRACKING_CLASS_RE,
+    ARBITRARY_FONT_WEIGHT_CLASS_RE,
+  ]) {
+    pattern.lastIndex = 0
+    let match
+    while ((match = pattern.exec(source))) {
+      if (approvedClasses?.has(match[0])) continue
+      target.push({
+        path: relativePath,
+        line: lineNumberAt(source, match.index),
+        label: match[0],
+      })
+    }
+  }
+}
+
 function isTailwindSpacingGridLiteral(rawValue, unit) {
   const value = Number(rawValue)
   if (!Number.isFinite(value) || value === 0) return false
@@ -720,6 +1113,26 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Ordinary typography values that must use Tailwind theme variables:',
+    violations.typographyValues
+  )
+  appendGroup(
+    lines,
+    'Unapproved arbitrary Tailwind typography classes:',
+    violations.arbitraryTypographyClasses
+  )
+  appendGroup(
+    lines,
+    'Arbitrary semantic text colors that have named Nuxt UI utilities:',
+    violations.arbitrarySemanticTextColors
+  )
+  appendGroup(
+    lines,
+    'Repeated typography role overlays that have a named shared variant:',
+    violations.legacyTypographyRoleOverlays
+  )
+  appendGroup(
+    lines,
     'Repeated page rhythm that must use `.fx-page-stack`:',
     violations.legacyPageSpacing
   )
@@ -737,6 +1150,26 @@ function formatViolations(violations) {
     lines,
     'Legacy inset-panel recipe repeated inline:',
     violations.legacyInsetPanels
+  )
+  appendGroup(
+    lines,
+    'Raw disclosures outside the shared disclosure contract:',
+    violations.rawDisclosures
+  )
+  appendGroup(
+    lines,
+    'Repeated disclosure trigger state recipes:',
+    violations.inlineDisclosureTriggers
+  )
+  appendGroup(
+    lines,
+    'Repeated inline UCard body stacks:',
+    violations.inlineCardBodyStacks
+  )
+  appendGroup(
+    lines,
+    'Visual-only disabled surfaces without an interaction contract:',
+    violations.legacyDisabledSurfaces
   )
   appendGroup(
     lines,
@@ -760,9 +1193,17 @@ function formatViolations(violations) {
     '- Use Tailwind `--spacing` as the single numeric spacing authority in authored CSS.',
     '- Keep ordinary template spacing on named Tailwind utilities; arbitrary spacing utilities require an explicit approved exception.',
     '- Menu may keep semantic spacing seams, but their defaults must derive from `--spacing`.',
+    '- Use Tailwind font, size, weight, line-height, and tracking variables as the numeric typography authority in authored CSS.',
+    '- Use core `.fx-type-*` roles for repeated semantic typography and named Tailwind type utilities for local composition.',
+    '- Use `fx-type-section-title` and `fx-type-card-heading` instead of repeating their guarded size/weight overlays.',
+    '- Arbitrary typography utilities are reserved for reviewed brand, artwork, print/output, debug, or optical deltas.',
+    '- Use Nuxt UI `text-dimmed`, `text-muted`, `text-toned`, and `text-highlighted` instead of arbitrary semantic text-color utilities.',
     '- Use `.fx-page-stack` and `.fx-list-stack` for the guarded repeated rhythm recipes.',
     '- Compose the shared `.fx-card--cell` recipe instead of repeating the audited class string.',
     '- Use `.fx-inset-panel` for the audited nested bordered-panel recipe.',
+    '- Use `MoleculesDisclosurePanel` instead of rebuilding UCollapsible trigger state in leaf components.',
+    '- Use a semantic shared card/body-stack component or class instead of repeating UCard `space-y-4` body overrides.',
+    '- Use `MoleculesActionSurface` for linked/action/static card roots; visual opacity does not disable navigation or clicks.',
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',
     '- Replace the guarded generic surface pairs with `border-default` and `bg-default/*`.',
     '- One-off Tailwind for local layout or pixel-perfect deltas remains allowed.'

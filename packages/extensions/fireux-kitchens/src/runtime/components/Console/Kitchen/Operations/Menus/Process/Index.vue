@@ -23,26 +23,25 @@
       >
         {{ sourceDescription }}
       </p>
-      <UCollapsible v-if="source" :default-open="true">
-        <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-          Process source
-        </UButton>
-        <template #content>
-          <div class="mt-3 space-y-3">
-            <ConsoleKitchenOperationsMenusProcessCost
-              :can-process="canProcess"
-              :pending-mode="pendingMode"
-              @select="processSource"
-            />
-            <p v-if="statusMessage" class="text-sm text-dimmed">
-              {{ statusMessage }}
-            </p>
-            <p v-if="displayError" class="text-sm text-error">
-              {{ displayError }}
-            </p>
-          </div>
-        </template>
-      </UCollapsible>
+      <MoleculesDisclosurePanel
+        v-if="source"
+        title="Process source"
+        :default-open="true"
+      >
+        <div class="mt-3 space-y-3">
+          <ConsoleKitchenOperationsMenusProcessCost
+            :can-process="canProcess"
+            :pending-mode="pendingMode"
+            @select="processSource"
+          />
+          <p v-if="statusMessage" class="text-sm text-dimmed">
+            {{ statusMessage }}
+          </p>
+          <p v-if="displayError" class="text-sm text-error">
+            {{ displayError }}
+          </p>
+        </div>
+      </MoleculesDisclosurePanel>
       <div v-if="hasDraft" class="space-y-4">
         <div v-if="showStats" class="grid gap-3 md:grid-cols-4">
           <UPageCard
@@ -53,82 +52,72 @@
             variant="soft"
           />
         </div>
-        <UCollapsible v-if="fileResults.length || writeMessage">
-          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-            Uploaded document
-          </UButton>
-          <template #content>
-            <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
-              <div v-if="fileResults.length" class="flex flex-wrap gap-2">
+        <MoleculesDisclosurePanel
+          v-if="fileResults.length || writeMessage"
+          title="Uploaded document"
+        >
+          <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
+            <div v-if="fileResults.length" class="flex flex-wrap gap-2">
+              <UBadge
+                v-for="file in fileResults"
+                :key="file.id"
+                :color="file.status === 'failed' ? 'error' : file.status === 'empty' ? 'neutral' : 'success'"
+                variant="soft"
+              >
+                {{ file.file_name }} · {{ file.status }}
+              </UBadge>
+            </div>
+            <p v-if="writeMessage" class="text-sm text-dimmed">
+              {{ writeMessage }}
+            </p>
+          </div>
+        </MoleculesDisclosurePanel>
+        <MoleculesDisclosurePanel
+          v-if="flags.length"
+          title="Review flags"
+          :default-open="true"
+        >
+          <ul class="mt-3 space-y-2">
+            <li
+              v-for="flag in flags"
+              :key="`${flag.code}-${flag.message}`"
+              class="rounded-lg border border-default p-3 text-sm"
+            >
+              <div class="flex flex-wrap items-center gap-2">
                 <UBadge
-                  v-for="file in fileResults"
-                  :key="file.id"
-                  :color="file.status === 'failed' ? 'error' : file.status === 'empty' ? 'neutral' : 'success'"
+                  :color="flag.level === 'error' ? 'error' : flag.level === 'warning' ? 'warning' : 'info'"
                   variant="soft"
                 >
-                  {{ file.file_name }} · {{ file.status }}
+                  {{ flag.code }}
                 </UBadge>
+                <span class="text-highlighted">{{ flag.message }}</span>
               </div>
-              <p v-if="writeMessage" class="text-sm text-dimmed">
-                {{ writeMessage }}
-              </p>
-            </div>
-          </template>
-        </UCollapsible>
-        <UCollapsible v-if="flags.length" :default-open="true">
-          <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-            Review flags
-          </UButton>
-          <template #content>
-            <ul class="mt-3 space-y-2">
-              <li
-                v-for="flag in flags"
-                :key="`${flag.code}-${flag.message}`"
-                class="rounded-lg border border-default p-3 text-sm"
-              >
-                <div class="flex flex-wrap items-center gap-2">
-                  <UBadge
-                    :color="flag.level === 'error' ? 'error' : flag.level === 'warning' ? 'warning' : 'info'"
-                    variant="soft"
-                  >
-                    {{ flag.code }}
-                  </UBadge>
-                  <span class="text-highlighted">{{ flag.message }}</span>
-                </div>
-              </li>
-            </ul>
-          </template>
-        </UCollapsible>
+            </li>
+          </ul>
+        </MoleculesDisclosurePanel>
         <div class="grid gap-4" :class="{ 'xl:grid-cols-2': currentSections.length }">
-          <UCollapsible v-if="currentSections.length">
-            <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-              Existing menu
-            </UButton>
-            <template #content>
-              <div class="mt-3 rounded-lg border border-default p-3">
-                <ConsoleKitchenOperationsMenusProcessSections
-                  :sections="currentSections"
-                  empty-label="No existing sections found."
-                />
-              </div>
-            </template>
-          </UCollapsible>
-          <UCollapsible :default-open="true">
-            <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-              Menu draft
-            </UButton>
-            <template #content>
-              <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
-                <p class="text-sm text-dimmed">
-                  The raw read has been cleaned into reviewable menu sections.
-                </p>
-                <ConsoleKitchenOperationsMenusProcessSections
-                  :sections="draftSections"
-                  empty-label="No draft sections returned."
-                />
-              </div>
-            </template>
-          </UCollapsible>
+          <MoleculesDisclosurePanel
+            v-if="currentSections.length"
+            title="Existing menu"
+          >
+            <div class="mt-3 rounded-lg border border-default p-3">
+              <ConsoleKitchenOperationsMenusProcessSections
+                :sections="currentSections"
+                empty-label="No existing sections found."
+              />
+            </div>
+          </MoleculesDisclosurePanel>
+          <MoleculesDisclosurePanel title="Menu draft" :default-open="true">
+            <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
+              <p class="text-sm text-dimmed">
+                The raw read has been cleaned into reviewable menu sections.
+              </p>
+              <ConsoleKitchenOperationsMenusProcessSections
+                :sections="draftSections"
+                empty-label="No draft sections returned."
+              />
+            </div>
+          </MoleculesDisclosurePanel>
         </div>
 
         <ConsoleKitchenOperationsMenusProcessConfirmation

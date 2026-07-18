@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-17
+// last_used: 2026-07-18
 // usage_note: run through pnpm guard; locks Menu route grammar and projections.
 
 import assert from 'node:assert/strict'

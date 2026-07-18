@@ -10,7 +10,7 @@
 
       <div class="min-w-0 flex-1 space-y-3">
         <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+          <div class="fx-type-label">
             Kitchen
           </div>
 

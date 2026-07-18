@@ -237,7 +237,7 @@ function useNextAsset() {
   border-radius: 9999px;
   color: var(--menu-secondary);
   font-size: 0.72rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   overflow-wrap: anywhere;
 }
 
@@ -250,8 +250,8 @@ function useNextAsset() {
   margin: 0.6rem 0 0;
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(2rem, 6vw, 3.75rem);
-  font-weight: 800;
+  font-size: clamp(2rem, 6vw, var(--text-6xl));
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1;
   overflow-wrap: anywhere;
@@ -262,7 +262,7 @@ function useNextAsset() {
   max-width: 36rem;
   margin: 0.65rem auto 0;
   color: var(--menu-muted);
-  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  font-size: clamp(0.9rem, 1.8vw, var(--text-base));
   line-height: 1.45;
   white-space: pre-line;
 }
@@ -277,13 +277,13 @@ function useNextAsset() {
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-muted);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-identity__currency strong {
   color: var(--menu-primary);
   font-size: 0.76rem;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-wider);
 }
 
 @media (max-width: 35rem) {

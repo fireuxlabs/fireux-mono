@@ -5,7 +5,7 @@
         <h2 class="text-2xl lg:text-3xl font-bold">Our Products</h2>
         <div v-if="$slots.action"><slot name="action" /></div>
       </div>
-      <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
+      <p class="mx-auto max-w-2xl text-muted">
         Ecosystem apps you can use, launch, and partner around.
       </p>
     </div>
@@ -39,7 +39,7 @@
           </div>
         </template>
 
-        <p class="text-sm text-[color:var(--ui-text-muted)]">
+        <p class="text-sm text-muted">
           {{ app.description }}
         </p>
 

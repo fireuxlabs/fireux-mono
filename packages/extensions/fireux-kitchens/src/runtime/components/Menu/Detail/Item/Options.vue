@@ -80,13 +80,13 @@ defineEmits<{
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-item__choice small {
   color: var(--menu-muted);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-item__choice--selected {

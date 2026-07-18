@@ -41,6 +41,7 @@ export type MenuOrderSelection = {
 
 export type MenuOrderCommand = MenuOrderSelection & {
   actorId: string
+  customerUid?: string
   paymentMethod?: KitchenOrderPaymentMethod
   requestedFor: string
   collection: MenuOrderingCollectionState | null
@@ -84,6 +85,7 @@ export function readMenuOrderSelection(
 
 export function prepareMenuOrderCommand(input: {
   actorId: string
+  customerUid?: string
   body: CreateMenuOrderBody | null
   currencyCode: string
   requestedItems: RequestedMenuOrderItem[]
@@ -113,6 +115,7 @@ export function prepareMenuOrderCommand(input: {
   return {
     ...input.selection,
     actorId: input.actorId,
+    ...(input.customerUid ? { customerUid: input.customerUid } : {}),
     paymentMethod,
     requestedFor,
     collection: destination.collection,
@@ -149,6 +152,7 @@ export function menuOrderIdempotencyRequest(
   return {
     channel: command.channel,
     ...(command.actorId !== 'menu' ? { actor_id: command.actorId } : {}),
+    ...(command.customerUid ? { customer_uid: command.customerUid } : {}),
     order_type: command.orderType,
     items: command.requestedItems.map((item) => ({
       item_id: item.itemId,

@@ -3,8 +3,8 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">Public Profile</h3>
-          <p class="text-xs text-dimmed">
+          <h3>Public Profile</h3>
+          <p>
             Edit the copy people see on public app surfaces.
           </p>
         </div>

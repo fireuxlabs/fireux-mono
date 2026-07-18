@@ -19,8 +19,6 @@
       </section>
 
       <aside class="receiving-order__decision">
-        <h3 class="receiving-order__heading">Kitchen decision</h3>
-
         <ConsoleKitchenOperationsOrdersReceivingCollection
           v-if="isCollectionOrder"
           :accepting="accepting"
@@ -237,14 +235,14 @@ function scheduleDistanceLabel(distanceMs: number, today: boolean) {
 }
 
 .receiving-order__decision {
-  border-left: 1px solid var(--ui-border);
+  border-left: 1px solid var(--ui-border-accented);
   padding-left: calc(var(--spacing) * 5);
 }
 
 .receiving-order__heading {
   color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.04em;
   margin: 0 0 calc(var(--spacing) * 3);
   text-transform: uppercase;
@@ -257,7 +255,7 @@ function scheduleDistanceLabel(distanceMs: number, today: boolean) {
 
   .receiving-order__decision {
     border-left: 0;
-    border-top: 1px solid var(--ui-border);
+    border-top: 1px solid var(--ui-border-accented);
     padding-left: 0;
     padding-top: calc(var(--spacing) * 4);
   }

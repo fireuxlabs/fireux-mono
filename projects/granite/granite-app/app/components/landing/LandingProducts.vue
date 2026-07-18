@@ -5,7 +5,7 @@
         <h2 class="text-3xl font-semibold">
           What the console covers.
         </h2>
-        <p class="text-[color:var(--ui-text-muted)]">
+        <p class="text-muted">
           Granite is built for branch-level oversight across multiple client portfolios.
         </p>
       </div>
@@ -17,7 +17,7 @@
               <UIcon :name="item.icon" />
               <p class="font-medium">{{ item.title }}</p>
             </div>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               {{ item.description }}
             </p>
             <div>

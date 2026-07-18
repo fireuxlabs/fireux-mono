@@ -1,32 +1,11 @@
 <template>
-  <UCollapsible :default-open="false">
-    <UButton
-      class="group"
-      color="neutral"
-      variant="soft"
-      block
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <span class="flex min-w-0 items-start gap-3 text-left">
-        <UIcon
-          name="i-lucide-truck"
-          class="mt-0.5 size-4 shrink-0 text-muted"
-        />
-        <span class="grid min-w-0">
-          <span class="truncate">Delivery</span>
-          <span class="truncate text-xs font-normal text-dimmed">
-            Zones, minimum orders, and delivery fees.
-          </span>
-        </span>
-      </span>
-    </UButton>
-
-    <template #content>
-      <UCard class="mt-4">
+  <MoleculesDisclosurePanel
+    title="Delivery"
+    description="Zones, minimum orders, and delivery fees."
+    icon="i-lucide-truck"
+    :default-open="false"
+  >
+    <UCard class="mt-4">
         <div class="space-y-4">
           <UPageCard
             v-if="!zones.length"
@@ -183,9 +162,8 @@
             </div>
           </div>
         </div>
-      </UCard>
-    </template>
-  </UCollapsible>
+    </UCard>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">
@@ -587,7 +565,7 @@ async function persistDeliveryZones(successTitle: string) {
 .delivery-zone-row__plus {
   display: none;
   color: var(--ui-text-dimmed);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   line-height: 2.35rem;
 }
 

@@ -110,7 +110,7 @@ async function copyRequest() {
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-text);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-copy {
@@ -126,7 +126,7 @@ async function copyRequest() {
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-kitchen-ping {

@@ -1,6 +1,6 @@
 Console spine map
-Updated: 2026-07-10
-Ref: 9bbc2bdf2
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -68,6 +68,11 @@ Index pattern:
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
 - Tenant apps can auto-select single configured targets.
 - Global apps usually source target IDs from user/app data.
+- Target adapters pass the collection `outcome` through `useConsoleIndex`.
+  Target presentation orders pending, error, cards, then settled empty; counts
+  are not authoritative while a read is unsettled.
+- Persisted selection is validated only against a successful target read.
+  Pending or failed target reads must not clear a saved selection.
 
 Operations:
 - Operations are child surfaces inside a selected console target.

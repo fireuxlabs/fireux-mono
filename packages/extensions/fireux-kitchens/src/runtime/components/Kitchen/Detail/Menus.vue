@@ -54,7 +54,7 @@
       </div>
 
       <div v-else class="kitchen-menus__grid">
-        <MenuPublicCard
+        <MenuCardsPreview
           v-for="menu in sortedMenus"
           :key="menu.id"
           :menu="menu"
@@ -142,7 +142,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   margin: 0 0 var(--spacing);
   color: var(--ui-text-muted);
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -150,9 +150,9 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 .kitchen-menus h2 {
   margin: 0;
   color: var(--ui-text-highlighted);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-size: clamp(var(--text-2xl), 3vw, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
 }
 
 .kitchen-menus__body {

@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{ body: 'space-y-4' }">
+  <MoleculesCreateCard>
     <template #header>
       <div class="space-y-1">
         <div class="text-sm font-semibold">{{ headerTitle }}</div>
@@ -15,7 +15,7 @@
       :data-dev-note-title="developerNoteTitle"
       class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
     >
-      <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+      <p class="fireux-dev-note__label mb-1">
         Developer Note
       </p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
@@ -48,7 +48,7 @@
       :cancel-to="cancelTo"
       @created="$emit('created', $event)"
     />
-  </UCard>
+  </MoleculesCreateCard>
 </template>
 
 <script setup lang="ts">

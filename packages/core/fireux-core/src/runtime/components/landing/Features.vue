@@ -1,8 +1,8 @@
 <template>
   <section class="features" :class="{ 'features--first': first }">
     <header>
-      <h2>{{ title }}</h2>
-      <p>{{ description }}</p>
+      <h2 class="fx-type-section-display">{{ title }}</h2>
+      <p class="fx-type-body">{{ description }}</p>
     </header>
 
     <ul class="features__list">
@@ -76,15 +76,6 @@ const resolvedFeatures = computed(() =>
   padding-top: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 16));
 }
 
-.features header h2 {
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 700;
-}
-
-.features header p {
-  color: var(--ui-text-muted);
-}
-
 .features__list {
   display: grid;
   gap: calc(var(--spacing) * 4);
@@ -117,11 +108,11 @@ const resolvedFeatures = computed(() =>
 }
 
 .features__title {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .features__copy {
   color: var(--ui-text-muted);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 }
 </style>

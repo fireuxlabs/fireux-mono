@@ -1,6 +1,6 @@
 Firestore entity spine map
-Updated: 2026-06-30
-Ref: 151c7ad49
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -46,6 +46,23 @@ Similarities:
 - Writes belong in `mutations`.
 - UI mapping belongs in `utils/view` when present.
 
+Read-state contract:
+- `useFirestoreRead` is the shared reactive read authority. Its collection and
+  document refs preserve normal `.value` access while also exposing `data`,
+  `pending`, `error`, `outcome`, `promise`, and `stop`.
+- An inactive path/query is `idle`; an active unresolved read is `pending`; a
+  failed read is `error`. Only a successful settled read may become `empty` or
+  `missing`; successful data is `ready`.
+- Reactive source changes reset stale rows. Exact-id batches expose the same
+  pending/error/outcome distinction and do not turn failures into empty arrays.
+- Collection-family composables derive their public outcome after normalization
+  and access filtering, then return `count`, `pending`, `error`, and `outcome`
+  alongside the collection.
+- Existence checks and other one-shot operations use `firestoreGetDoc`; do not
+  `await firestoreFetchDoc`, because the latter returns a live Ref.
+- Current source: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts`.
+- Current collection-state seam: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts`.
+
 Differences:
 - Some entities are root/public.
 - Some entities are scoped to a console or parent.
@@ -57,6 +74,9 @@ Do not:
 - Put console operation folders inside Firestore stacks.
 - Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
 - Create fake compatibility branches without an explicit user request.
+- Infer loading from `collection.value === undefined`; VueFire collections begin
+  as arrays, so use the shared `pending` ref.
+- Treat read errors as empty or missing records.
 
 Open questions:
 - Menu needs continued cleanup because root menus and kitchen menus currently overlap conceptually.

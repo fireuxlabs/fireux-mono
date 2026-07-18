@@ -1,19 +1,11 @@
 <!-- app/components/Blog/Create/Advanced.vue -->
 <template>
-  <UCollapsible>
-    <UButton
-      class="group"
-      label="Advanced Settings"
-      trailing-icon="i-lucide-chevron-down"
-      block
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    />
-
-    <template #content>
-      <div class="advanced-settings">
+  <MoleculesDisclosurePanel
+    title="Advanced Settings"
+    color="primary"
+    variant="solid"
+  >
+    <div class="advanced-settings">
         <!-- Meta Description -->
         <UFormField label="Meta Description">
           <UInput
@@ -66,9 +58,8 @@
             placeholder="e.g. Read More or Buy Now"
           />
         </UFormField>
-      </div>
-    </template>
-  </UCollapsible>
+    </div>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

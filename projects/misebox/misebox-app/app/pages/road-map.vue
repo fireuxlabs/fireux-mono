@@ -4,16 +4,16 @@
       <UContainer class="grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:items-end">
         <div class="max-w-3xl">
           <UBadge color="primary" variant="soft">Misebox road map</UBadge>
-          <h1 class="mt-6 text-5xl font-semibold tracking-tight text-highlighted sm:text-6xl">
+          <h1 class="fx-type-page-title mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
             Build from the menu inward.
           </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+          <p class="fx-type-description mt-6 max-w-2xl leading-8">
             Misebox grows from useful public kitchen tools into a connected operating system. The sequence matters: establish reliable kitchen data first, turn it into repeatable work, then connect the wider hospitality ecosystem.
           </p>
         </div>
         <div class="rounded-3xl border border-primary/20 bg-primary/10 p-6">
-          <p class="text-sm font-semibold text-highlighted">A direction, not a promise calendar</p>
-          <p class="mt-2 text-sm leading-6 text-muted">
+          <p class="fx-type-card-title text-sm">A direction, not a promise calendar</p>
+          <p class="fx-type-caption mt-2 leading-6">
             Priorities respond to real kitchen use, technical readiness, and partner feedback. Items may move as we learn; the product principles stay stable.
           </p>
         </div>
@@ -28,14 +28,14 @@
               <UBadge :color="phase.color" variant="soft">{{ phase.label }}</UBadge>
               <UIcon :name="phase.icon" class="size-5 text-dimmed" />
             </div>
-            <h2 class="mt-6 text-2xl font-semibold text-highlighted">{{ phase.title }}</h2>
-            <p class="mt-3 text-sm leading-6 text-muted">{{ phase.description }}</p>
+            <h2 class="fx-type-card-title mt-6 text-2xl">{{ phase.title }}</h2>
+            <p class="fx-type-caption mt-3 leading-6">{{ phase.description }}</p>
             <ul class="mt-7 space-y-4">
               <li v-for="item in phase.items" :key="item.title" class="flex gap-3">
                 <UIcon name="i-lucide-circle-check" class="mt-0.5 size-5 shrink-0 text-primary" />
                 <div>
-                  <p class="text-sm font-semibold text-highlighted">{{ item.title }}</p>
-                  <p class="mt-1 text-sm leading-5 text-muted">{{ item.copy }}</p>
+                  <p class="fx-type-card-title text-sm">{{ item.title }}</p>
+                  <p class="fx-type-caption mt-1 leading-5">{{ item.copy }}</p>
                 </div>
               </li>
             </ul>
@@ -47,8 +47,8 @@
     <section class="border-y border-default bg-muted/30 py-20">
       <UContainer class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Product compass</p>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted">What earns a place on the road map?</h2>
+          <p class="fx-type-headline">Product compass</p>
+          <h2 class="fx-type-section-title mt-4">What earns a place on the road map?</h2>
           <p class="mt-5 leading-7 text-muted">
             Misebox is intentionally broad in ambition and strict in implementation. A feature should strengthen the kitchen operating loop, remove duplicate work, or create a useful connection between participants.
           </p>
@@ -56,8 +56,8 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div v-for="rule in compass" :key="rule.title" class="rounded-3xl border border-default bg-default p-6">
             <UIcon :name="rule.icon" class="size-5 text-primary" />
-            <h3 class="mt-4 font-semibold text-highlighted">{{ rule.title }}</h3>
-            <p class="mt-2 text-sm leading-6 text-muted">{{ rule.copy }}</p>
+            <h3 class="fx-type-card-title mt-4">{{ rule.title }}</h3>
+            <p class="fx-type-caption mt-2 leading-6">{{ rule.copy }}</p>
           </div>
         </div>
       </UContainer>
@@ -66,8 +66,8 @@
     <section class="py-20">
       <UContainer class="rounded-3xl bg-gray-950 px-6 py-12 text-white sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-14 dark:bg-gray-900">
         <div class="max-w-2xl">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-300">Help shape Misebox</p>
-          <h2 class="mt-4 text-3xl font-semibold">The best road map starts in a real kitchen.</h2>
+          <p class="fx-type-headline text-primary-300">Help shape Misebox</p>
+          <h2 class="fx-type-section-title mt-4 text-white">The best road map starts in a real kitchen.</h2>
           <p class="mt-4 leading-7 text-gray-300">
             Start with the Misebox surfaces that are useful today, then help us identify the next operational gap worth solving.
           </p>

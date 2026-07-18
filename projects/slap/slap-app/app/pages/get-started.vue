@@ -3,13 +3,13 @@
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+          <p class="fx-type-headline">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
-          <h1 class="text-4xl font-semibold text-highlighted">
+          <h1 class="fx-type-display-title">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="text-lg text-toned">
+          <p class="fx-type-description text-toned">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -28,13 +28,13 @@
             :key="step.title"
             class="rounded-2xl border border-default bg-default/80 p-5 shadow-sm"
           >
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <p class="fx-type-label text-primary">
               {{ step.badge }}
             </p>
-            <h2 class="mt-2 text-lg font-semibold text-highlighted">
+            <h2 class="fx-type-card-heading mt-2">
               {{ step.title }}
             </h2>
-            <p class="mt-2 text-sm text-toned">
+            <p class="fx-type-caption mt-2 text-toned">
               {{ step.copy }}
             </p>
           </article>

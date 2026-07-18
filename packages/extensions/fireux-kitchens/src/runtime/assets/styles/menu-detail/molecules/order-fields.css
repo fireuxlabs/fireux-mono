@@ -39,7 +39,7 @@
   margin: 0;
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   line-height: 1.45;
 }
 
@@ -53,7 +53,7 @@
   gap: var(--menu-space-xs);
   color: var(--menu-muted);
   font-size: 0.78rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-selected-address {
@@ -77,7 +77,7 @@
 
 .menu-order-selected-address span {
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-address-options button {
@@ -95,7 +95,7 @@
 
 .menu-order-address-options span {
   font-size: 0.85rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
 }
 
 .menu-order-placeholder--good {
@@ -121,14 +121,14 @@
 
 .menu-order-dispatch__copy strong {
   color: var(--menu-text);
-  font-size: 1rem;
-  font-weight: 950;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-dispatch__copy span {
   color: var(--menu-muted);
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   line-height: 1.45;
 }
 
@@ -170,13 +170,13 @@
 
 .menu-order-choice strong {
   font-size: 0.98rem;
-  font-weight: 950;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-choice small {
   color: var(--menu-muted);
   font-size: 0.86rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
   line-height: 1.35;
 }
 
@@ -204,7 +204,7 @@
   color: var(--menu-text);
   font: inherit;
   font-size: 0.95rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-date-control {
@@ -230,7 +230,7 @@
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-text);
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-date-button {

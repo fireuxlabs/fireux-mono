@@ -1,10 +1,10 @@
 <template>
-  <component
-    :is="isLinkComponent ? 'NuxtLink' : 'button'"
-    v-bind="rootProps"
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    :disabled="disabled"
     class="pill"
-    :class="{ 'opacity-60 cursor-not-allowed': disabled }"
-    @click="!isLinkComponent && onClick($event)"
+    @activate="emit('action')"
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
@@ -28,11 +28,10 @@
         </div>
       </div>
     </div>
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { PortfolioCard } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
@@ -60,24 +59,5 @@ const props = withDefaults(defineProps<PillProps>(), {
   disabled: false,
 })
 
-const isLinkComponent = computed(() => Boolean(props.link && props.to))
 const badgeItems = computed(() => [...(props.badges ?? []), props.status].filter(Boolean))
-const rootProps = computed(() =>
-  isLinkComponent.value
-    ? { to: props.to }
-    : { type: 'button' as const }
-)
-
-const onClick = (event?: MouseEvent) => {
-  if (props.disabled) return
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

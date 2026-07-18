@@ -3,8 +3,8 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">Surfaces</h3>
-          <p class="text-xs text-dimmed">
+          <h3>Surfaces</h3>
+          <p>
             Card surfaces derived from the app model.
           </p>
         </div>

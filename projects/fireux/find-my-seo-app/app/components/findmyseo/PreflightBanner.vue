@@ -33,17 +33,17 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.45;
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
 }
 
 .findmyseo-preflight__inner strong {
   color: #fbbf24;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-widest);
 }
 
 .findmyseo-preflight__separator {
   color: #fbbf24;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 </style>

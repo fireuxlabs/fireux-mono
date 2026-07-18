@@ -123,12 +123,3 @@ const handleSignatureDishes = async (value: string[]) =>
     'Failed to update signature dishes'
   )
 </script>
-
-<style scoped>
-.profile-edit__section-header {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  font-weight: 600;
-}
-</style>

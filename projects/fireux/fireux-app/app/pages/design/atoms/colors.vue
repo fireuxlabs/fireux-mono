@@ -42,7 +42,7 @@ onMounted(() => {
           class="color-block"
           :style="{ backgroundColor: `var(${color.name})` }"
         />
-        <div class="color-header">{{ color.name }}</div>
+        <div class="color-header fx-type-caption font-semibold text-default">{{ color.name }}</div>
       </div>
     </div>
   </div>
@@ -77,8 +77,6 @@ onMounted(() => {
 
 /* ✅ Card Header */
 .color-header {
-  font-weight: 600;
-  font-size: 0.9rem;
   margin-top: calc(var(--spacing) * 2);
 }
 

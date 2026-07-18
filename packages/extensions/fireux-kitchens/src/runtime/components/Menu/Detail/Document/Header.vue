@@ -41,19 +41,19 @@ defineProps<{
 
 .kitchen-name {
   margin: 0 0 calc(var(--spacing) * 2);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-normal);
   color: var(--menu-secondary);
 }
 
 .menu-header h1 {
   margin: 0;
   font-family: var(--menu-title-font);
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+  font-size: clamp(2rem, 5vw, var(--text-5xl));
+  font-weight: var(--font-weight-bold);
   line-height: 1.15;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-normal);
   color: var(--menu-title);
 }
 

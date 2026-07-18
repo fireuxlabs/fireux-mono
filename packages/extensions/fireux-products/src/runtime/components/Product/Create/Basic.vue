@@ -31,7 +31,7 @@ const { product, isSlugTaken } = await useCreateProductState()
 }
 .slug-warning {
   color: var(--warning);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   margin-top: calc(var(--spacing) * -4);
   margin-bottom: calc(var(--spacing) * 2);
 }

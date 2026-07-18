@@ -1,5 +1,12 @@
 <template>
-  <UCard :class="cardClass">
+  <UCard
+    :class="cardClass"
+    :ui="cardUi"
+    :role="liveRole"
+    :aria-live="liveMode"
+    :aria-busy="showSpinner"
+    aria-atomic="true"
+  >
     <div v-if="isBanner" class="fx-state-banner" :class="bannerClass">
       <p class="fx-state-banner__title">
         <slot name="title">{{ resolvedTitle }}</slot>
@@ -17,8 +24,14 @@
         v-if="showSpinner"
         name="i-lucide-loader-2"
         class="fx-state-card__spinner"
+        aria-hidden="true"
       />
-      <UIcon v-else-if="icon" :name="icon" class="fx-state-card__icon" />
+      <UIcon
+        v-else-if="resolvedIcon"
+        :name="resolvedIcon"
+        class="fx-state-card__icon"
+        aria-hidden="true"
+      />
       <p class="fx-state-card__title">
         <slot name="title">{{ resolvedTitle }}</slot>
       </p>
@@ -39,6 +52,8 @@ const props = withDefaults(
   defineProps<{
     entity?: string
     kind?: 'document' | 'collection'
+    state?: 'loading' | 'empty' | 'missing' | 'error'
+    surface?: 'card' | 'bare'
     title?: string
     description?: string
     icon?: string | null
@@ -48,7 +63,9 @@ const props = withDefaults(
   }>(),
   {
     kind: 'collection',
-    icon: 'i-lucide-search-x',
+    state: undefined,
+    surface: 'card',
+    icon: undefined,
     title: '',
     description: '',
     loading: false,
@@ -62,9 +79,20 @@ const capitalize = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1)
 
 const isBanner = computed(() => props.layout === 'banner')
-const showSpinner = computed(() => props.loading)
+const resolvedState = computed(() => {
+  if (props.loading) return 'loading'
+  if (props.state) return props.state
+  return props.kind === 'document' ? 'missing' : 'empty'
+})
+const showSpinner = computed(() => resolvedState.value === 'loading')
 const hasDescriptionSlot = computed(() => Boolean(slots.description))
 const hasDefaultSlot = computed(() => Boolean(slots.default))
+const liveRole = computed(() =>
+  resolvedState.value === 'error' ? 'alert' : 'status'
+)
+const liveMode = computed(() =>
+  resolvedState.value === 'error' ? 'assertive' : 'polite'
+)
 
 const defaultEntity = computed(() => props.entity?.trim().toLowerCase() ?? '')
 
@@ -75,22 +103,31 @@ const loadingTitle = computed(() => {
 })
 
 const resolvedTitle = computed(() => {
-  if (showSpinner.value && !props.title) return loadingTitle.value
   if (props.title) return props.title
+  if (showSpinner.value) return loadingTitle.value
+
   const name = props.entity?.trim()
-  if (!name)
-    return props.kind === 'document' ? 'Item not found' : 'Nothing here yet'
+  if (!name) {
+    if (resolvedState.value === 'error') return 'Unable to load content'
+    if (resolvedState.value === 'missing') return 'Item not found'
+    return 'Nothing here yet'
+  }
+
   const pretty = capitalize(name)
-  return props.kind === 'document'
-    ? `${pretty} not found`
-    : `No ${name.toLowerCase()} yet`
+  if (resolvedState.value === 'error') return `Unable to load ${name.toLowerCase()}`
+  if (resolvedState.value === 'missing') return `${pretty} not found`
+  return `No ${name.toLowerCase()} yet`
 })
 
 const resolvedDescription = computed(() => {
   if (props.description) return props.description
-  return props.kind === 'document'
-    ? 'We could not load the requested record.'
-    : 'Once records are added, they will display here.'
+  if (resolvedState.value === 'error') {
+    return 'Something went wrong while loading this content.'
+  }
+  if (resolvedState.value === 'missing') {
+    return 'The requested record is not available.'
+  }
+  return 'Once records are added, they will display here.'
 })
 
 const loadingDescription = computed(() =>
@@ -98,6 +135,14 @@ const loadingDescription = computed(() =>
     ? 'Hang tight while we look that up.'
     : 'Fetching the latest entries…'
 )
+
+const resolvedIcon = computed(() => {
+  if (props.icon === null) return null
+  if (props.icon) return props.icon
+  if (resolvedState.value === 'error') return 'i-lucide-triangle-alert'
+  if (resolvedState.value === 'missing') return 'i-lucide-file-question'
+  return 'i-lucide-search-x'
+})
 
 const showDescription = computed(
   () =>
@@ -116,10 +161,20 @@ const showBannerDescription = computed(
 
 const shouldUppercase = computed(() => props.uppercase ?? isBanner.value)
 
-const cardClass = computed(() =>
-  isBanner.value
-    ? 'fx-state-card fx-state-card--banner'
-    : 'fx-state-card fx-state-card--standard'
+const cardClass = computed(() => [
+  'fx-state-card',
+  isBanner.value ? 'fx-state-card--banner' : 'fx-state-card--standard',
+  props.surface === 'bare' ? 'fx-state-card--bare' : '',
+  `fx-state-card--${resolvedState.value}`,
+])
+
+const cardUi = computed(() =>
+  props.surface === 'bare'
+    ? {
+        root: 'rounded-none overflow-visible bg-transparent ring-0 divide-y-0 shadow-none',
+        body: 'p-0 sm:p-0',
+      }
+    : undefined
 )
 
 const bannerClass = computed(() => ({
@@ -155,25 +210,33 @@ const bannerClass = computed(() => ({
 .fx-state-card__icon {
   height: 2.5rem;
   width: 2.5rem;
-  color: rgba(148, 163, 184, 0.8);
+  color: var(--ui-text-dimmed);
 }
 
 .fx-state-card__title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: rgba(15, 23, 42, 0.85);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--ui-text-highlighted);
 }
 
 .fx-state-card__description {
-  font-size: 0.8rem;
-  color: rgba(100, 116, 139, 0.9);
+  font-size: var(--text-xs);
+  color: var(--ui-text-muted);
+}
+
+.fx-state-card--bare.fx-state-card--standard {
+  padding: calc(var(--spacing) * 6) 0;
+}
+
+.fx-state-card--error .fx-state-card__icon {
+  color: var(--ui-error);
 }
 
 .fx-state-banner {
   padding: calc(var(--spacing) * 6);
   text-align: center;
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-widest);
 }
 
 .fx-state-banner--uppercase {
@@ -182,7 +245,7 @@ const bannerClass = computed(() => ({
 
 .fx-state-banner--loading {
   text-transform: none;
-  letter-spacing: normal;
+  letter-spacing: var(--tracking-normal);
   opacity: 0.7;
 }
 
@@ -192,8 +255,8 @@ const bannerClass = computed(() => ({
 
 .fx-state-banner__description {
   margin: calc(var(--spacing) * 2) 0 0;
-  font-size: 0.75rem;
-  letter-spacing: normal;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-normal);
   text-transform: none;
 }
 

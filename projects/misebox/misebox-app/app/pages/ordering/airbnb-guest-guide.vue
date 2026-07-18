@@ -11,10 +11,10 @@
       </UButton>
 
       <section class="space-y-3">
-        <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+        <p class="fx-type-headline">
           Guest guide funnel
         </p>
-        <h1 class="text-4xl font-black tracking-tight text-highlighted">
+        <h1 class="fx-type-page-title text-4xl font-black tracking-tight">
           Airbnb guest guide ordering
         </h1>
         <p class="text-muted">
@@ -23,19 +23,16 @@
         </p>
       </section>
 
-      <UCard :ui="{ body: 'space-y-4' }">
-        <h2 class="text-2xl font-black tracking-tight">
-          Screen stack
-        </h2>
-        <ol class="list-decimal fx-list-stack text-muted">
-          <li>Guest guide context</li>
-          <li>Local food recommendations</li>
-          <li>Meal deal or private chef choice</li>
-          <li>Address and stay details</li>
-          <li>Partner confirmation</li>
-          <li>Payment or enquiry confirmation</li>
-        </ol>
-      </UCard>
+      <OrderingScreenStack
+        :steps="[
+          'Guest guide context',
+          'Local food recommendations',
+          'Meal deal or private chef choice',
+          'Address and stay details',
+          'Partner confirmation',
+          'Payment or enquiry confirmation',
+        ]"
+      />
     </UContainer>
   </main>
 </template>

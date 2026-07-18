@@ -5,10 +5,10 @@
       <UContainer class="relative grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div class="max-w-3xl">
           <UBadge color="primary" variant="soft">About Misebox</UBadge>
-          <h1 class="mt-6 text-5xl font-semibold tracking-tight text-highlighted sm:text-6xl lg:text-7xl">
+          <h1 class="fx-type-page-title mt-6 text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
             A shared operating system for the people behind every service.
           </h1>
-          <p class="mt-7 max-w-2xl text-lg leading-8 text-muted sm:text-xl">
+          <p class="fx-type-description mt-7 max-w-2xl leading-8 sm:text-xl">
             Misebox turns menus, kitchen knowledge, daily preparation, people, and suppliers into one connected workspace. It helps hospitality teams spend less time reconstructing information and more time running a great service.
           </p>
           <div class="mt-9 flex flex-wrap gap-3">
@@ -22,8 +22,8 @@
         </div>
 
         <div class="rounded-3xl border border-default bg-default/80 p-6 shadow-xl shadow-primary/5 backdrop-blur sm:p-8">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">The idea</p>
-          <p class="mt-4 text-2xl font-semibold leading-tight text-highlighted">
+          <p class="fx-type-label text-primary">The idea</p>
+          <p class="fx-type-card-title mt-4 text-2xl leading-tight">
             The menu should not be the end product. It should be the front door to how a kitchen works.
           </p>
           <div class="mt-7 grid grid-cols-2 gap-3">
@@ -39,11 +39,11 @@
     <section class="py-20">
       <UContainer>
         <div class="mx-auto max-w-3xl text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Why Misebox exists</p>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+          <p class="fx-type-headline">Why Misebox exists</p>
+          <h2 class="fx-type-section-display mt-4">
             Kitchen knowledge is valuable. Too often, it is also fragmented.
           </h2>
-          <p class="mt-5 text-lg leading-8 text-muted">
+          <p class="fx-type-description mt-5 leading-8">
             A service depends on hundreds of details, but those details are commonly split between paper, PDFs, spreadsheets, chat threads, supplier messages, and the memories of experienced people.
           </p>
         </div>
@@ -53,8 +53,8 @@
             <div class="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
               <UIcon :name="problem.icon" class="size-5" />
             </div>
-            <h3 class="mt-5 text-lg font-semibold text-highlighted">{{ problem.title }}</h3>
-            <p class="mt-2 text-sm leading-6 text-muted">{{ problem.copy }}</p>
+            <h3 class="fx-type-card-heading mt-5">{{ problem.title }}</h3>
+            <p class="fx-type-caption mt-2 leading-6">{{ problem.copy }}</p>
           </article>
         </div>
       </UContainer>
@@ -64,8 +64,8 @@
       <UContainer>
         <div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">One connected loop</p>
-            <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+            <p class="fx-type-headline">One connected loop</p>
+            <h2 class="fx-type-section-display mt-4">
               From what you serve to how you deliver it.
             </h2>
             <p class="mt-5 leading-7 text-muted">
@@ -79,8 +79,8 @@
                 <span class="text-sm font-semibold text-primary">0{{ index + 1 }}</span>
                 <UIcon :name="step.icon" class="size-5 text-dimmed" />
               </div>
-              <h3 class="mt-8 text-lg font-semibold text-highlighted">{{ step.title }}</h3>
-              <p class="mt-2 text-sm leading-6 text-muted">{{ step.copy }}</p>
+              <h3 class="fx-type-card-heading mt-8">{{ step.title }}</h3>
+              <p class="fx-type-caption mt-2 leading-6">{{ step.copy }}</p>
             </li>
           </ol>
         </div>
@@ -90,16 +90,16 @@
     <section class="py-20">
       <UContainer>
         <div class="max-w-2xl">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Built around real roles</p>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+          <p class="fx-type-headline">Built around real roles</p>
+          <h2 class="fx-type-section-display mt-4">
             One system, different views of the same truth.
           </h2>
         </div>
         <div class="mt-10 grid gap-5 lg:grid-cols-3">
           <article v-for="audience in audiences" :key="audience.title" class="group rounded-3xl border border-default p-7 transition hover:border-primary/40 hover:bg-primary/5">
             <UIcon :name="audience.icon" class="size-7 text-primary" />
-            <h3 class="mt-6 text-xl font-semibold text-highlighted">{{ audience.title }}</h3>
-            <p class="mt-3 text-sm leading-6 text-muted">{{ audience.copy }}</p>
+            <h3 class="fx-type-card-title mt-6 text-xl">{{ audience.title }}</h3>
+            <p class="fx-type-caption mt-3 leading-6">{{ audience.copy }}</p>
             <UButton :to="audience.to" color="neutral" variant="link" class="mt-5 px-0" trailing-icon="i-lucide-arrow-right">
               {{ audience.action }}
             </UButton>
@@ -113,8 +113,8 @@
         <div class="rounded-3xl bg-gray-950 px-6 py-12 text-white sm:px-10 lg:px-14 dark:bg-gray-900">
           <div class="grid gap-12 lg:grid-cols-2">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-300">How we build</p>
-              <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <p class="fx-type-headline text-primary-300">How we build</p>
+              <h2 class="fx-type-section-display mt-4 text-white">
                 Useful on day one. Connected for what comes next.
               </h2>
               <p class="mt-5 leading-7 text-gray-300">
@@ -139,8 +139,8 @@
 
     <section class="pt-8">
       <UContainer class="text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary">The direction</p>
-        <h2 class="mx-auto mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+        <p class="fx-type-headline">The direction</p>
+        <h2 class="fx-type-section-display mx-auto mt-4 max-w-3xl">
           Better kitchen systems create calmer services, stronger teams, and more resilient hospitality businesses.
         </h2>
         <p class="mx-auto mt-5 max-w-2xl leading-7 text-muted">

@@ -44,8 +44,8 @@ defineProps<{
 
 .menu-browse-unavailable__status {
   color: var(--menu-muted);
-  font-size: 0.75rem;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -53,7 +53,7 @@ defineProps<{
 .menu-browse-unavailable h1 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  font-size: clamp(2.2rem, 8vw, var(--text-7xl));
   letter-spacing: -0.04em;
   line-height: 1;
 }

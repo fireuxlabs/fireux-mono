@@ -47,7 +47,7 @@ const sectionDomId = (id: string) =>
   border-radius: var(--menu-radius-control);
   color: var(--menu-primary);
   font-size: 0.78rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   text-decoration: none;
   white-space: nowrap;
 }

@@ -20,6 +20,7 @@ export type UseConsoleEntityRuntimeOptions<TTarget> = {
   storageFamily: ValueRef<ConsoleEntityCollectionFamily>
   targetItems?: ValueRef<(TTarget | null | undefined)[] | null | undefined>
   targetPending?: ValueRef<boolean | null | undefined>
+  targetError?: ValueRef<unknown>
   getId: (target: TTarget) => string
   appId?: ValueRef<string | null | undefined>
   mode?: ValueRef<ConsoleEntityRuntimeMode | null | undefined>
@@ -51,7 +52,11 @@ export function useConsoleEntityRuntime<TTarget>(
     clearSelection,
   } = useConsoleSelection<TTarget>(options.family, {
     targetItems: computed(() => unref(options.targetItems) ?? []),
-    targetPending: computed(() => Boolean(unref(options.targetPending))),
+    // A failed target read is not a settled authority list. Keep the persisted
+    // selection until a later successful read can validate it.
+    targetPending: computed(() =>
+      Boolean(unref(options.targetPending)) || Boolean(unref(options.targetError))
+    ),
     getId: options.getId,
   })
 

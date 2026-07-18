@@ -61,7 +61,7 @@
 .menu-section-nav__current small {
   color: var(--menu-muted);
   font-size: 0.62rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -70,7 +70,7 @@
   overflow: hidden;
   color: var(--menu-text);
   font-size: 0.88rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -81,7 +81,7 @@
   background: color-mix(in srgb, var(--menu-secondary) 9%, var(--menu-bg));
   color: var(--menu-secondary);
   font-size: 0.67rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -133,7 +133,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   text-align: left;
 }
 
@@ -157,7 +157,7 @@
   color: var(--menu-secondary);
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-wider);
 }
 
 .menu-section-nav__option > .iconify {

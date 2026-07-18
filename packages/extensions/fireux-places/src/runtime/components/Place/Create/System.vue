@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-4">
-    <UCard :ui="{ body: 'space-y-4' }">
+    <MoleculesCreateCard>
       <template #header>
         <div class="space-y-1">
           <div class="font-medium">Select a place</div>
@@ -23,7 +23,7 @@
         title="Canonical place"
         description="This flow confirms the shared place record. Public entities and consoles can layer on top of it later."
       />
-    </UCard>
+    </MoleculesCreateCard>
   </section>
 </template>
 

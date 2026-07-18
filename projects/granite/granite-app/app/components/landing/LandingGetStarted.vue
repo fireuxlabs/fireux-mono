@@ -5,7 +5,7 @@
         <h2 class="text-3xl font-semibold">
           Get started in minutes.
         </h2>
-        <p class="text-[color:var(--ui-text-muted)]">
+        <p class="text-muted">
           Create or select a portfolio, then run the console. Granite keeps the branch view
           clear and auditable - no hidden state, no magic defaults.
         </p>
@@ -18,7 +18,7 @@
               <UIcon name="i-lucide-building-2" />
               <p class="font-medium">1) Choose a portfolio</p>
             </div>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               Each portfolio represents one client with many properties.
             </p>
           </div>
@@ -30,7 +30,7 @@
               <UIcon name="i-lucide-shield-check" />
               <p class="font-medium">2) Review risk</p>
             </div>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               Track obligations, evidence, expiries, and exposure.
             </p>
           </div>
@@ -42,7 +42,7 @@
               <UIcon name="i-lucide-terminal" />
               <p class="font-medium">3) Run the console</p>
             </div>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
+            <p class="text-sm text-muted">
               Keep incidents, tasks, and finance signals under control.
             </p>
           </div>

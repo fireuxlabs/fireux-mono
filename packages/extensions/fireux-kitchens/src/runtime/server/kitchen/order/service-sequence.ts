@@ -12,6 +12,11 @@ export type KitchenOrderServiceSequence = {
   number: number
 }
 
+export type KitchenOrderLinkedRecord = {
+  path: string
+  payload: Record<string, unknown>
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 export const kitchenOrderServiceStatePath = (input: {
@@ -101,6 +106,7 @@ export async function commitKitchenOrderWithServiceSequence<
     orderPath: string
     payload: Record<string, unknown>
     response: TResponse
+    linkedRecord?: KitchenOrderLinkedRecord
   }
 ) {
   return db.runTransaction(async (transaction) => {
@@ -116,6 +122,12 @@ export async function commitKitchenOrderWithServiceSequence<
       sequence,
     })
     transaction.create(db.doc(input.orderPath), numbered.payload)
+    if (input.linkedRecord) {
+      transaction.create(
+        db.doc(input.linkedRecord.path),
+        input.linkedRecord.payload
+      )
+    }
 
     return numbered.response
   })

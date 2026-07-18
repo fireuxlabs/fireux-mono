@@ -13,7 +13,7 @@
         <div class="min-w-0 flex-1 space-y-3">
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 space-y-1">
-              <p class="text-xs font-medium uppercase tracking-[0.16em] text-toned">
+              <p class="fx-type-label">
                 {{ eyebrow }}
               </p>
 
@@ -50,7 +50,7 @@
               :key="item.label"
               class="rounded-xl bg-default/70 p-3 ring ring-default"
             >
-              <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
+              <div class="fx-type-label">
                 {{ item.label }}
               </div>
               <div class="mt-1 truncate text-sm text-toned">

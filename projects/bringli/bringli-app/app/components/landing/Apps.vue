@@ -4,7 +4,7 @@
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-1">
           <p class="text-sm font-semibold">Run Bringli operations from one console</p>
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p class="text-sm text-muted">
             Start with suppliers, then scale into full order and delivery orchestration.
           </p>
         </div>

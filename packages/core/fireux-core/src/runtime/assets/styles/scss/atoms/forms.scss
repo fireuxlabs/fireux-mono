@@ -1,6 +1,6 @@
 .form-text {
-	font-size: 0.875rem;
-	line-height: 1.5;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 }
 
 .form-text-muted {
@@ -8,8 +8,8 @@
 }
 
 .form-text-body {
-	font-size: 0.875rem;
-	line-height: 1.5;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 	color: var(--ui-text-muted);
 }
 
@@ -58,6 +58,6 @@
 	input,
 	textarea,
 	select {
-		font-size: 16px !important;
+		font-size: var(--text-base) !important;
 	}
 }

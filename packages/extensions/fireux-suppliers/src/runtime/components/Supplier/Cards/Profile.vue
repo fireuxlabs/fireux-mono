@@ -10,7 +10,7 @@
 
       <div class="min-w-0 flex-1 space-y-3">
         <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+          <div class="fx-type-label">
             Supplier
           </div>
           <h2 class="text-2xl font-semibold text-highlighted">
@@ -37,19 +37,19 @@
 
         <dl class="grid gap-3 text-sm sm:grid-cols-2">
           <div v-if="vm.organizationName" class="space-y-1">
-            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+            <dt class="fx-type-label">
               Organization
             </dt>
             <dd class="text-default">{{ vm.organizationName }}</dd>
           </div>
           <div v-if="vm.locationsLabel" class="space-y-1">
-            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+            <dt class="fx-type-label">
               Coverage
             </dt>
             <dd class="text-default">{{ vm.locationsLabel }}</dd>
           </div>
           <div v-if="vm.categoriesCsv" class="space-y-1">
-            <dt class="text-xs uppercase tracking-[0.16em] text-toned">
+            <dt class="fx-type-label">
               Categories
             </dt>
             <dd class="text-default">{{ vm.categoriesCsv }}</dd>

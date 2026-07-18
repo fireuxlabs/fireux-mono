@@ -125,7 +125,7 @@ watch(chromeHidden, (hidden: boolean) => {
   color: var(--brand-canvas, white);
   cursor: pointer;
   font-size: 0.62rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.18em;
   line-height: 1;
   text-decoration: none;
@@ -175,8 +175,8 @@ watch(chromeHidden, (hidden: boolean) => {
 
 .misebox-tenant-footer__callout-copy h2 {
   color: var(--ui-text-highlighted);
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.02em;
 }
 

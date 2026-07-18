@@ -57,6 +57,7 @@ export function usePropertyConsoleIndex(
     runtime,
     targets: properties.targets,
     pending: properties.pending,
+    outcome: properties.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectProperty(String(id ?? '').trim())
     },

@@ -53,6 +53,7 @@ export function useProjectConsoleIndex(
     runtime,
     targets: projects.targets,
     pending: projects.pending,
+    outcome: projects.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectProject(String(id ?? '').trim())
     },

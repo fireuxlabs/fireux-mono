@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model.ts'
+import type { DishItemKind } from '../../../models/kitchen/dish.model.ts'
 import { readKitchenMenuSections } from '../manifest/sections.ts'
 import { isMenuOrderingEnabled, readMenuOrderingConfig } from './config.ts'
 import type { MenuOrderContext } from './context.ts'
@@ -16,6 +17,7 @@ export type ResolvedMenuOrderItem = {
   id: string
   menu_id: string
   dish_id: string
+  item_kind: DishItemKind
   label: string
   quantity: number
   unit_price: number
@@ -123,6 +125,7 @@ export async function resolveMenuOrderItems(
         id: `item-${index + 1}`,
         menu_id: sourceMenuId,
         dish_id: item.dish_id,
+        item_kind: item.item_kind,
         label,
         quantity: requestedItem.quantity,
         unit_price: basePrice + addOnsTotal,

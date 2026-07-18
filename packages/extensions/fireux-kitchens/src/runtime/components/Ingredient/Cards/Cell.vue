@@ -27,7 +27,7 @@
             </div>
             <code
               v-if="showSlug && slug"
-              class="block truncate text-[11px] text-dimmed"
+              class="fx-type-code block truncate text-dimmed"
             >
               {{ slug }}
             </code>
@@ -103,7 +103,7 @@
             </div>
             <code
               v-if="showSlug && slug"
-              class="block truncate text-[11px] text-dimmed"
+              class="fx-type-code block truncate text-dimmed"
             >
               {{ slug }}
             </code>

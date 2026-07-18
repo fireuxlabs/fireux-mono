@@ -1,4 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { computed } from 'vue'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 
@@ -8,6 +9,13 @@ export function usePlaceCollection() {
 
   const collection = computed<Place[]>(() => source.value ?? [])
   const count = computed(() => collection.value.length)
+  const pending = computed(() => source.pending.value)
+  const error = computed(() => source.error.value)
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
+  })
   const byId = computed(() => {
     const map = new Map<string, Place>()
     for (const place of collection.value) {
@@ -16,5 +24,5 @@ export function usePlaceCollection() {
     return map
   })
 
-  return { collection, count, byId }
+  return { collection, count, byId, pending, error, outcome }
 }

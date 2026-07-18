@@ -155,7 +155,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   color: white;
   cursor: pointer;
   font: inherit;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   text-align: left;
 }
 
@@ -189,7 +189,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 .kiosk-browse__content-header h2 {
   color: white;
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-shadow: 0 0.35rem 1rem rgb(0 0 0 / 38%);
 }
 
@@ -199,7 +199,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   margin: 0;
   color: white;
   font-size: 2rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 @media (max-width: 1100px) and (max-height: 900px) {
@@ -277,7 +277,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   }
 
   .kiosk-browse__content-header h2 {
-    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    font-size: clamp(1.75rem, 6vw, var(--text-4xl));
   }
 
 }

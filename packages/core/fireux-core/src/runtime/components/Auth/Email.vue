@@ -107,7 +107,7 @@ const handleEmailAuth = async () => {
 }
 .hint {
   color: var(--ui-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   margin-top: calc(var(--spacing) * 2);
 }
 </style>

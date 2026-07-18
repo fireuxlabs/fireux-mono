@@ -16,6 +16,7 @@
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
 
             <UButton
@@ -32,7 +33,9 @@
               "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft"
+            <UBadge
+              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+              variant="soft"
               >{{ countLabel }}</UBadge
             >
           </div>
@@ -40,8 +43,22 @@
       </div>
     </template>
 
+    <MoleculesStateCard
+      v-if="outcome === 'pending'"
+      entity="products"
+      state="loading"
+      surface="bare"
+    />
+
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="products"
+      state="error"
+      surface="bare"
+    />
+
     <ProductCollectionList
-      v-if="cardsFiltered.length"
+      v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -53,9 +70,18 @@
       </template>
     </ProductCollectionList>
 
-    <p v-else>
-      {{ query ? 'No products match your search.' : 'No products found.' }}
-    </p>
+    <MoleculesStateCard
+      v-else
+      entity="products"
+      state="empty"
+      surface="bare"
+      :title="query ? 'No products match your search' : 'No products yet'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Once product records are added, they will display here.'
+      "
+    />
 
     <div>
       <DevJson
@@ -102,6 +128,7 @@ const props = withDefaults(
 
 const fetched = useProductCollection()
 const collection = computed<FirebaseProduct[]>(() => fetched.products.value ?? [])
+const outcome = computed(() => fetched.outcome.value)
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
 const description = computed(() =>

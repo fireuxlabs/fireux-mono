@@ -20,11 +20,11 @@ defineProps<{ iconTitle: { label: string; icon: string } }>()
 }
 
 .subheader-icon {
-  font-size: 1.2rem;
+  font-size: var(--text-xl);
 }
 
 .subheader-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
 }
 </style>

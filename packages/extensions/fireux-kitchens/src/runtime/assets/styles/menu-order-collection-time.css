@@ -89,8 +89,8 @@
   align-items: center;
   color: var(--menu-muted);
   font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
 }
 
@@ -117,7 +117,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.76rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
   white-space: nowrap;
 }
 
@@ -182,7 +182,7 @@
   color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .menu-order-collection-time__confirm:disabled {

@@ -1,14 +1,14 @@
 <template>
   <div class="developer-landing">
-    <h1>Developer Technologies & Skills</h1>
-    <p>
+    <h1 class="fx-type-page-title">Developer Technologies & Skills</h1>
+    <p class="fx-type-description">
       This project is powered by a focused set of core technologies, providing
       the foundation for all features and capabilities. Supporting these are a
       range of skills and tools that enable rapid development, maintainability,
       and a great user experience.
     </p>
-    <h2>Core Technologies</h2>
-    <ul class="skills-list">
+    <h2 class="fx-type-section-title text-2xl">Core Technologies</h2>
+    <ul class="fx-type-description skills-list text-default">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
         <NuxtLink to="/developer/technologies#nuxt-4">Nuxt 4</NuxtLink> – The
@@ -25,8 +25,8 @@
         payment processing and subscription management.
       </li>
     </ul>
-    <h2>Supporting Skills</h2>
-    <ul class="skills-list">
+    <h2 class="fx-type-section-title text-2xl">Supporting Skills</h2>
+    <ul class="fx-type-description skills-list text-default">
       <li>
         <Icon name="skill-icons:tailwindcss-dark" class="list-icon" />
         <NuxtLink to="/developer/skills#tailwind-css">Tailwind CSS</NuxtLink> –
@@ -66,7 +66,7 @@
         Server-side logic
       </li>
     </ul>
-    <p class="more-info">
+    <p class="fx-type-body more-info text-default">
       <NuxtLink to="/developer/technologies"
         >Learn more about the core technologies</NuxtLink
       >
@@ -74,7 +74,7 @@
       <NuxtLink to="/developer/skills">explore all supporting skills</NuxtLink>
       in detail.
     </p>
-    <p class="dev-link">
+    <p class="dev-link fx-type-caption">
       Need raw JSON payloads instead of documentation? Head to the
       <NuxtLink to="/dev">Dev Tools</NuxtLink> stack for clipboard-ready
       registry snapshots.
@@ -98,7 +98,6 @@
 }
 .skills-list li {
   margin-bottom: calc(var(--spacing) * 3);
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 2);
@@ -110,11 +109,9 @@
 }
 .more-info {
   margin-top: calc(var(--spacing) * 8);
-  font-size: 1.05rem;
 }
 .dev-link {
   margin-top: calc(var(--spacing) * 4);
-  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.75);
 }
 </style>

@@ -6,7 +6,7 @@ import type { Professional } from '../../../../../../models/profiles/Professiona
 
 // Professional profiles for UI use. Public user summaries live on the profile rows.
 export function useProfessionalFetch() {
-  const { globalProfiles, localProfiles } =
+  const { globalProfiles, localProfiles, pending, error, outcome } =
     useProfileCollection<Professional>(professionalConfig)
 
   const coreProfessionals = computed(() => globalProfiles.value ?? [])
@@ -14,16 +14,13 @@ export function useProfessionalFetch() {
   const { byId: coreProfessional } = useCollectionById(coreProfessionals)
   const { byId: appProfessional } = useCollectionById(appProfessionals)
 
-  const pending = computed(() =>
-    globalProfiles.value === undefined ||
-    Boolean(localProfiles && localProfiles.value === undefined)
-  )
-
   return {
     coreProfessionals,
     appProfessionals,
     coreProfessional,
     appProfessional,
     pending,
+    error,
+    outcome,
   }
 }

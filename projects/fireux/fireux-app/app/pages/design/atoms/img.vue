@@ -7,12 +7,12 @@ const { data: images, error } = await useFetch('/api/images', { server: false })
 
 <template>
   <div class="test-container">
-    <h1>📸 Image List</h1>
+    <h1 class="fx-type-page-title">📸 Image List</h1>
 
     <div v-if="images?.length" class="image-list">
       <div v-for="src in images" :key="src" class="image-item">
         <img :src="src" :alt="src" class="test-image" />
-        <span class="image-name">{{ src }}</span>
+        <span class="fx-type-caption image-name">{{ src }}</span>
       </div>
     </div>
 
@@ -45,7 +45,6 @@ const { data: images, error } = await useFetch('/api/images', { server: false })
   border-radius: var(--ui-radius);
 }
 .image-name {
-  font-size: 0.9rem;
   color: gray;
 }
 </style>

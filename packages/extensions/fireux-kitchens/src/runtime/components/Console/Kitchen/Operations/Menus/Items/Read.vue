@@ -63,19 +63,12 @@
             />
           </div>
 
-          <UCollapsible class="w-full">
-            <UButton
-              block
-              color="neutral"
-              variant="soft"
-              size="sm"
-              trailing-icon="i-lucide-chevron-down"
-            >
-              Edit item
-            </UButton>
-
-            <template #content>
-              <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
+          <MoleculesDisclosurePanel
+            class="w-full"
+            title="Edit item"
+            size="sm"
+          >
+            <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
                 <div class="grid gap-4 md:grid-cols-2">
                   <MoleculesFormsFirestoreSimpleField
                     label="Dish name"
@@ -117,9 +110,8 @@
                   :update-price-options="updatePriceOptionsFor(row)"
                   :update-add-ons="updateAddOnsFor(row)"
                 />
-              </div>
-            </template>
-          </UCollapsible>
+            </div>
+          </MoleculesDisclosurePanel>
         </article>
       </div>
 

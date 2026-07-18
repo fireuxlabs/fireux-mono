@@ -18,12 +18,14 @@
             <span v-if="card.readingTime" class="text-gray-500">
               · {{ card.readingTime }} min
             </span>
-            <span
+            <UBadge
               v-if="card.badge"
-              class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-gray-100 text-gray-700"
+              color="neutral"
+              size="xs"
+              variant="soft"
             >
               {{ card.badge }}
-            </span>
+            </UBadge>
           </div>
           <h3 class="text-lg font-semibold leading-tight">{{ card.title }}</h3>
           <p class="text-sm text-gray-500 line-clamp-3">{{ card.excerpt }}</p>

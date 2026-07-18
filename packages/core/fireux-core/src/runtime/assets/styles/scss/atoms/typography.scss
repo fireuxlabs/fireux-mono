@@ -1,0 +1,127 @@
+/*
+ * FireUX typography roles mirror the current Nuxt UI page vocabulary.
+ * Tailwind owns the numeric scale; these classes name repeated semantic use.
+ */
+
+@layer components {
+:where(.fx-type-headline) {
+	font-size: var(--text-sm);
+	line-height: var(--text-sm--line-height);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-primary);
+}
+
+:where(.fx-type-page-title) {
+	font-size: var(--text-3xl);
+	line-height: var(--text-3xl--line-height);
+	font-weight: var(--font-weight-bold);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-display-title) {
+	font-size: var(--text-4xl);
+	line-height: var(--text-4xl--line-height);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-section-title) {
+	font-size: var(--text-3xl);
+	line-height: var(--text-3xl--line-height);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-section-display) {
+	font-size: var(--text-3xl);
+	line-height: var(--text-3xl--line-height);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-card-title) {
+	font-size: var(--text-base);
+	line-height: var(--text-base--line-height);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-card-heading) {
+	font-size: var(--text-lg);
+	line-height: var(--text-lg--line-height);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-highlighted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-description) {
+	font-size: var(--text-lg);
+	line-height: var(--text-lg--line-height);
+	color: var(--ui-text-muted);
+	text-wrap: pretty;
+}
+
+:where(.fx-type-body) {
+	font-size: var(--text-base);
+	line-height: var(--text-base--line-height);
+	color: var(--ui-text-muted);
+}
+
+:where(.fx-type-caption) {
+	font-size: var(--text-sm);
+	line-height: var(--text-sm--line-height);
+	color: var(--ui-text-muted);
+}
+
+:where(.fx-type-label) {
+	font-size: var(--text-xs);
+	line-height: var(--text-xs--line-height);
+	font-weight: var(--font-weight-medium);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	color: var(--ui-text-muted);
+}
+
+:where(.fireux-dev-note__label) {
+	font-size: var(--text-xs);
+	line-height: var(--text-xs--line-height);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+}
+
+:where(.fx-type-code) {
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	line-height: var(--text-xs--line-height);
+}
+
+/* Existing edit/form section hooks own this repeated header molecule. */
+:where(.section__copy > h2, .section__copy > h3) {
+	font-size: var(--text-base);
+	line-height: var(--text-base--line-height);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-highlighted);
+}
+
+:where(.section__copy > p) {
+	font-size: var(--text-xs);
+	line-height: var(--text-xs--line-height);
+	color: var(--ui-text-dimmed);
+}
+
+@media (min-width: 640px) {
+	:where(.fx-type-page-title),
+	:where(.fx-type-section-display) {
+		font-size: var(--text-4xl);
+		line-height: var(--text-4xl--line-height);
+	}
+}
+}

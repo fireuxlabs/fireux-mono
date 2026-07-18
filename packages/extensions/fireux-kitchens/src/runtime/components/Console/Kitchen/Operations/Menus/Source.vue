@@ -41,22 +41,14 @@
           />
         </section>
 
-        <UCollapsible :default-open="false">
-          <UButton
-            block
-            color="neutral"
-            variant="soft"
-            trailing-icon="i-lucide-chevron-down"
-          >
-            Processing tools
-          </UButton>
-
-          <template #content>
-            <div class="mt-4">
-              <ConsoleKitchenOperationsMenusProcess />
-            </div>
-          </template>
-        </UCollapsible>
+        <MoleculesDisclosurePanel
+          title="Processing tools"
+          :default-open="false"
+        >
+          <div class="mt-4">
+            <ConsoleKitchenOperationsMenusProcess />
+          </div>
+        </MoleculesDisclosurePanel>
       </div>
     </UCard>
 

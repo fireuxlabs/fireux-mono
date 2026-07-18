@@ -32,8 +32,23 @@ export async function requireFirebaseBearerUser(
   event: H3Event,
   message = 'Sign in before continuing.'
 ) {
+  const user = await firebaseBearerUser(event)
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: message,
+    })
+  }
+
+  return user
+}
+
+export async function firebaseBearerUser(event: H3Event) {
+  const token = bearerTokenFromEvent(event)
+  if (!token) return null
+
   const decoded = await getAuth(getAdminApp()).verifyIdToken(
-    requireBearerToken(event, message)
+    token
   )
 
   return {

@@ -3,8 +3,8 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">Join Requests</h3>
-          <p class="text-xs text-dimmed">
+          <h3>Join Requests</h3>
+          <p>
             Admins can approve new members or clear pending invites.
           </p>
         </div>

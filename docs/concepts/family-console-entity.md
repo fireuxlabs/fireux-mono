@@ -1,6 +1,6 @@
 Console entity family map
-Updated: 2026-06-26
-Ref: 1fa0ab5dc
+Updated: 2026-07-18
+Ref: dd0401906
 Role: map, not canon
 
 Purpose:
@@ -28,6 +28,10 @@ Similar:
 - Has or can have console index.
 - Has selected target concept.
 - Uses shared console primitives where possible.
+- Target collections expose and propagate an explicit
+  `idle|pending|error|empty|ready` outcome.
+- A target read failure is not an empty authority list and cannot invalidate
+  the persisted selection.
 - Should have access/team surface.
 - Should keep index/overview/identity/team/operations separated.
 - Root-plus-app console entities can share level-one buckets:

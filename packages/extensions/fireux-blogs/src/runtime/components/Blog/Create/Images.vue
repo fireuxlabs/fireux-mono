@@ -160,14 +160,14 @@ defineExpose({
 }
 
 .card-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
 }
 
 .card-hint {
   color: var(--ui-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .image-card :deep(.picker-label) {
@@ -219,8 +219,8 @@ defineExpose({
 
 .upload-progress h4 {
   margin: 0 0 calc(var(--spacing) * 3) 0;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--ui-text-highlighted);
 }
 
@@ -246,7 +246,7 @@ defineExpose({
   border: 1px solid var(--color-red-200);
   border-radius: var(--ui-radius);
   color: var(--color-red-700);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   margin-bottom: calc(var(--spacing) * 2);
 }
 

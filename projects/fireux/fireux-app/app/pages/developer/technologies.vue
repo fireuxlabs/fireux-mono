@@ -1,12 +1,12 @@
 <template>
   <div class="technologies-page">
-    <h1>Technologies Used</h1>
-    <p>
+    <h1 class="fx-type-page-title">Technologies Used</h1>
+    <p class="fx-type-description">
       This project is built with a carefully selected set of modern technologies
       to deliver a robust, scalable, and maintainable application. Below are the
       core technologies currently in use.
     </p>
-    <ul class="tech-list">
+    <ul class="fx-type-description tech-list text-default">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
         <strong>Nuxt 4</strong>: The latest version of the Nuxt framework,
@@ -41,7 +41,6 @@
 }
 .tech-list li {
   margin-bottom: calc(var(--spacing) * 3);
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 2);

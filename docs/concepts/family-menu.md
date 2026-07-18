@@ -38,9 +38,16 @@ Current public menu doorways:
   Kitchen ownership is implied by app scope and deliberately absent from the
   URL.
 - The global `/menus` route follows the public-index family: page header, Menu
-  CTA, and the root Menu collection manager. Kitchen-directory and multi-menu
-  tenant indexes use a smaller scoped list. Generic global, kitchen-directory,
-  and tenant detail routes all use the same context-free MenuBrowse projection.
+  CTA, and the root Menu collection manager. Its view control cycles the Menu
+  card family through Preview, Cell, and Pill; Preview is the default and keeps
+  the available guest doorways permanently visible without disclosure state.
+  Cell keeps the same doorway truth as compact icon actions, while Pill is the
+  smallest direct Browse link. The root collection's pick rail filters the
+  already-hydrated page by current open state and guest-discoverable Delivery,
+  Collection, or Pre-order contexts; combined picks use intersection semantics.
+  Kitchen-directory and multi-menu tenant indexes use a smaller scoped list.
+  Generic global, kitchen-directory, and tenant detail routes all use the same
+  context-free MenuBrowse projection.
 - `.delivery`, `.collection`, and `.pre_order` are the guest-discoverable live
   context projections. Each uses the same resolved KitchenMenu manifest,
   Menu style, available-surface rail, catalogue, and transient basket through
@@ -75,9 +82,13 @@ Current public menu doorways:
   and no index decision downloads an unbounded collection. Client-only search
   stays hidden while another cursor page exists so it never pretends to search
   the complete catalogue; a future large-catalogue search must be server-owned.
-  The global index resolves each page's current root/app Kitchen display names
-  in one bounded batch so Menu cards remain identifiable without copying
-  Kitchen identity onto root Menu records or issuing per-Menu reads.
+  The global index resolves each page's current root/app Kitchen display name,
+  logo and identity image, referenced KitchenMenu guest-ordering contexts, and
+  effective inherited Kitchen operation hours in one bounded batch. Menu cards
+  prefer the logo, fall back to the identity image, and can therefore
+  expose accurate Browse, Delivery, Collection, and Pre-order doorways plus
+  current open state without copying Kitchen identity or operational policy
+  onto root Menu records and without issuing per-card requests.
 - `src/runtime/composables/fireux/menu/useMenu.ts` is the resolved public
   projection seam. It owns one collision-safe request key, the structured or
   document render decision, safe failure state, and the relative index, Menu,
@@ -212,8 +223,8 @@ Page composition note:
   Kitchen cards or customer choice rails; their visible management doorway
   belongs in the Kitchen console. Global, directory, and tenant Browse routes
   all derive their public option rail from this same shared policy.
-- Public Kitchen profiles and scoped Menu indexes render the same
-  `Menu/PublicCard.vue`, which delegates Browse and guest-discoverable ordering
+- Kitchen profiles and scoped Menu indexes render the same
+  `Menu/Cards/Preview.vue`, which delegates Browse and guest-discoverable ordering
   links to `Menu/Doorways.vue` and computes the same live service badge from
   either hydrated KitchenMenu data or the scoped index's public service-hours
   projection. The bounded index response exposes enabled public contexts and
@@ -256,8 +267,9 @@ Page composition note:
   renders selectable items, inline variant choices with the lowest valid price
   selected initially, a direct plus for the selected/base item, and an add-on
   dialog only when needed, plus an in-memory basket count and total. The
-  basket review lets customers inspect configured lines, adjust quantities,
-  and remove lines. Collection alone can continue to a package-owned,
+  basket review keeps each configured line's quantity read-only and offers one
+  remove action; adding the same configuration again increments it. Collection
+  alone can continue to a package-owned,
   page-local pickup-time selector backed by the resolved Collection order-type
   policy: immediate collection is offered only when enabled and open, while
   scheduled choices obey Collection hours, notice, interval, and horizon. The

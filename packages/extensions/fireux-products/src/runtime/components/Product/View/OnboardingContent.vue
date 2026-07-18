@@ -65,7 +65,7 @@
       </UFormField>
     </div>
     <div class="requirements-block">
-      <h3>What we need from you</h3>
+      <h3 class="fx-type-card-title">What we need from you</h3>
       <ul class="requirements">
         <li v-for="(req, index) in requirements" :key="index">
           {{ req }}
@@ -126,7 +126,7 @@ const {
 
 .requirements-block h3 {
   margin: calc(var(--spacing) * 5) 0 calc(var(--spacing) * 2);
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .requirements {

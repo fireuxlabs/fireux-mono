@@ -58,6 +58,7 @@ export function usePortfolioConsoleIndex(
     runtime,
     targets: portfolios.targets,
     pending: portfolios.pending,
+    outcome: portfolios.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectPortfolio(String(id ?? '').trim())
     },

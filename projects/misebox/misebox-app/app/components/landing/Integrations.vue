@@ -2,8 +2,8 @@
 <template>
   <section class="px-4">
     <div class="integrations-container">
-      <h2 class="section-title">Professional Kitchen Integrations</h2>
-      <p class="section-subtitle">
+      <h2 class="fx-type-section-title section-title">Professional Kitchen Integrations</h2>
+      <p class="fx-type-description section-subtitle">
         Connect with the systems your culinary operation depends on
       </p>
 
@@ -36,13 +36,10 @@ const integrations = [
 }
 
 .section-title {
-  font-size: 2rem;
-  font-weight: bold;
   margin-bottom: calc(var(--spacing) * 4);
 }
 
 .section-subtitle {
-  font-size: 1.125rem;
   margin-bottom: calc(var(--spacing) * 12);
   max-width: 600px;
   margin-left: auto;

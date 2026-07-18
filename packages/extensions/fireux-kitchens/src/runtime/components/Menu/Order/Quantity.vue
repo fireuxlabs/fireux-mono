@@ -54,7 +54,7 @@ function change(delta: number) {
   justify-content: space-between;
   gap: calc(var(--spacing) * 4);
   color: var(--menu-title);
-  font-weight: 850;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .menu-order-quantity__stepper {
@@ -86,7 +86,7 @@ function change(delta: number) {
 .menu-order-quantity__stepper output {
   color: var(--menu-text);
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-align: center;
 }
 </style>

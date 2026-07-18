@@ -37,7 +37,7 @@
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
             <div
-              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+              class="fx-type-label"
             >
               Compensation
             </div>
@@ -48,7 +48,7 @@
 
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
             <div
-              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+              class="fx-type-label"
             >
               Openings
             </div>
@@ -59,7 +59,7 @@
 
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
             <div
-              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+              class="fx-type-label"
             >
               Role type
             </div>
@@ -98,7 +98,7 @@
               class="rounded-xl border border-default bg-default p-3"
             >
               <div
-                class="text-[0.7rem] uppercase tracking-[0.14em] text-dimmed"
+                class="fx-type-label"
               >
                 {{ field.label }}
               </div>

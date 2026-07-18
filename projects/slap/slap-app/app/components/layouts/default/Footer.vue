@@ -50,8 +50,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 3.5) calc(var(--spacing) * 5);
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -61,7 +61,7 @@
 
 .slap-footer__copy {
   color: var(--ui-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 @media (min-width: 768px) {

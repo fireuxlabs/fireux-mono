@@ -233,13 +233,6 @@ function selectAddress(value: string) {
 </script>
 
 <style scoped>
-.profile-edit__section-header {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  font-weight: 600;
-}
-
 .customer-address-field {
   display: grid;
   gap: calc(var(--spacing) * 3);

@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold tracking-tight">
         Your neutral FireUX app starter
       </h1>
-      <p class="max-w-2xl text-[var(--ui-text-muted)]">
+      <p class="max-w-2xl text-muted">
         This template includes Products and Blogs on top of the FireUX core
         runtime so you can validate, extend, and ship quickly.
       </p>

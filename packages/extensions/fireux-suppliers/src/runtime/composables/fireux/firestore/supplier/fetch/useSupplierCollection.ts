@@ -8,6 +8,7 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
@@ -266,20 +267,35 @@ export function useSupplierCollection(
   const count = computed(() => suppliers.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return testSource.value === undefined
-    if (!hasOperatorFilter.value) return liveRootSource.value === undefined
+    if (sourceMode.value === 'test') return testSource.pending.value
+    if (!hasOperatorFilter.value) return liveRootSource.pending.value
     if (!filterOperatorId.value) return false
     return (
-      liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||
-      overlayOperatorSource.value === undefined ||
-      overlayTeamSource.value === undefined
+      overlayOperatorSource.pending.value ||
+      overlayTeamSource.pending.value
     )
+  })
+  const error = computed<unknown | undefined>(() => {
+    if (sourceMode.value === 'demo') return undefined
+    if (sourceMode.value === 'test') return testSource.error.value
+    if (!hasOperatorFilter.value) return liveRootSource.error.value
+    if (!filterOperatorId.value) return undefined
+    return overlayOperatorSource.error.value ??
+      overlayTeamSource.error.value ??
+      liveRootDocs.error.value
+  })
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    error,
+    pending,
   })
 
   return {
     suppliers,
     count,
     pending,
+    error,
+    outcome,
   }
 }

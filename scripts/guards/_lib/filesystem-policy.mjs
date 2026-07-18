@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-18
 // usage_note: shared filesystem policy for guard modules.
 // FILE: scripts/guards/_lib/filesystem-policy.mjs
 

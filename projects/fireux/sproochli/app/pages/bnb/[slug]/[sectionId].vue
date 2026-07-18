@@ -90,7 +90,7 @@
       <UBadge color="warning" variant="soft">
         Error 404
       </UBadge>
-      <h1 class="text-3xl font-semibold text-highlighted">
+      <h1 class="fx-type-page-title text-3xl font-semibold">
         BNB guide section not found
       </h1>
       <p class="text-muted">

@@ -2,7 +2,7 @@
   <div class="landing-index-section">
     <div class="mb-6 space-y-2 text-center">
       <h2 class="text-2xl lg:text-3xl font-bold">What FireUX Gives You</h2>
-      <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
+      <p class="mx-auto max-w-2xl text-muted">
         Build, launch, and run applications on one platform.
       </p>
     </div>
@@ -15,7 +15,7 @@
             <h3 class="font-semibold">{{ f.title }}</h3>
           </div>
         </template>
-        <p class="text-sm text-[color:var(--ui-text-muted)]">
+        <p class="text-sm text-muted">
           {{ f.description }}
         </p>
       </UCard>

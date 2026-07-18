@@ -8,25 +8,19 @@
       description="This draft would remove existing variants or add-ons. Reprocess or repair the draft before replacing the menu."
     />
 
-    <UCollapsible :default-open="true">
-      <UButton block color="neutral" variant="soft" trailing-icon="i-lucide-chevron-down">
-        Confirm dishes
-      </UButton>
-
-      <template #content>
-        <div class="mt-3">
-          <ConsoleKitchenOperationsMenusProcessConfirm
-            :source="source"
-            :result="result"
-            :app-id="appId"
-            :kitchen-id="kitchenId"
-            :menu-id="menuId"
-            :auth-token="authToken"
-            :blocked="blocked || hasDestructiveOptionLoss"
-          />
-        </div>
-      </template>
-    </UCollapsible>
+    <MoleculesDisclosurePanel title="Confirm dishes" :default-open="true">
+      <div class="mt-3">
+        <ConsoleKitchenOperationsMenusProcessConfirm
+          :source="source"
+          :result="result"
+          :app-id="appId"
+          :kitchen-id="kitchenId"
+          :menu-id="menuId"
+          :auth-token="authToken"
+          :blocked="blocked || hasDestructiveOptionLoss"
+        />
+      </div>
+    </MoleculesDisclosurePanel>
   </div>
 </template>
 

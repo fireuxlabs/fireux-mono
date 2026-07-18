@@ -4,11 +4,11 @@
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ appName }} Pricing</UBadge>
 
-        <h1 class="text-4xl font-semibold text-highlighted">
+        <h1 class="fx-type-page-title">
           Users
         </h1>
 
-        <p class="text-lg text-toned">
+        <p class="fx-type-description text-toned">
           Joining {{ appName }} is free.
         </p>
 
@@ -22,10 +22,10 @@
       <UContainer class="grid gap-6 lg:grid-cols-2">
         <UCard>
           <template #header>
-            <h2 class="text-lg font-semibold">Free access</h2>
+            <h2 class="fx-type-card-heading">Free access</h2>
           </template>
 
-          <ul class="space-y-2 text-sm text-toned">
+          <ul class="fx-type-caption space-y-2 text-toned">
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create an account</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create profiles</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Browse public pages</span></li>
@@ -35,10 +35,10 @@
 
         <UCard class="border-primary/30 bg-primary/5">
           <template #header>
-            <h2 class="text-lg font-semibold">Console seats</h2>
+            <h2 class="fx-type-card-heading">Console seats</h2>
           </template>
 
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption text-toned">
             A console seat is required only when a user manages private operational records.
           </p>
 

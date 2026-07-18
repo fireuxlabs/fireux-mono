@@ -2,16 +2,16 @@
 <template>
   <section class="px-4">
     <div class="tech-stack-container">
-      <h2 class="section-title">Powered By Industry-Leading Technology</h2>
-      <p class="section-subtitle">
+      <h2 class="fx-type-section-title section-title">Powered By Industry-Leading Technology</h2>
+      <p class="fx-type-description section-subtitle">
         Built with reliable, scalable technology stack for cleaning businesses
       </p>
 
       <div class="tech-grid">
         <div v-for="(tech, key) in techStack" :key="key" class="tech-item">
           <img :src="tech.logo" :alt="tech.name + ' Logo'" class="tech-logo" />
-          <h3 class="tech-name">{{ tech.name }}</h3>
-          <p class="tech-description">{{ tech.description }}</p>
+          <h3 class="fx-type-card-title tech-name text-xl">{{ tech.name }}</h3>
+          <p class="fx-type-body tech-description">{{ tech.description }}</p>
         </div>
       </div>
     </div>
@@ -53,13 +53,10 @@ const techStack = {
 }
 
 .section-title {
-  font-size: 2rem;
-  font-weight: bold;
   margin-bottom: calc(var(--spacing) * 4);
 }
 
 .section-subtitle {
-  font-size: 1.125rem;
   margin-bottom: calc(var(--spacing) * 12);
   max-width: 600px;
   margin-left: auto;
@@ -94,13 +91,10 @@ const techStack = {
 }
 
 .tech-name {
-  font-size: 1.25rem;
-  font-weight: 600;
   margin-bottom: calc(var(--spacing) * 2);
 }
 
 .tech-description {
-  line-height: 1.5;
   text-align: center;
 }
 </style>
