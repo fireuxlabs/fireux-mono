@@ -78,6 +78,9 @@ export function useKitchenConsoleOrders() {
   const incomingOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'incoming')
   )
+  const paymentOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'payment')
+  )
   const queueOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'queue')
   )
@@ -91,6 +94,9 @@ export function useKitchenConsoleOrders() {
     ordersAtStage(visibleOrders.value, 'unmapped')
   )
   const railCounts = computed(() => [
+    ...(paymentOrders.value.length
+      ? [{ label: 'Awaiting payment', count: paymentOrders.value.length }]
+      : []),
     { label: 'Incoming', count: incomingOrders.value.length },
     { label: 'Queue', count: queueOrders.value.length },
     { label: 'Pass', count: passOrders.value.length },
@@ -125,6 +131,7 @@ export function useKitchenConsoleOrders() {
       : [],
   })
   const debugOrders = computed(() => ({
+    payment: paymentOrders.value.map(debugOrder),
     incoming: incomingOrders.value.map(debugOrder),
     queue: queueOrders.value.map(debugOrder),
     pass: passOrders.value.map(debugOrder),
@@ -166,6 +173,7 @@ export function useKitchenConsoleOrders() {
       ordersCount: visibleOrders.value.length,
       rawOrdersCount: consoleOrders.value.length,
       incomingCount: incomingOrders.value.length,
+      paymentCount: paymentOrders.value.length,
       queueCount: queueOrders.value.length,
       passCount: passOrders.value.length,
       recentCount: recentOrders.value.length,
@@ -192,6 +200,7 @@ export function useKitchenConsoleOrders() {
     visibleOrders,
     ticketOrders,
     incomingOrders,
+    paymentOrders,
     queueOrders,
     passOrders,
     recentOrders,

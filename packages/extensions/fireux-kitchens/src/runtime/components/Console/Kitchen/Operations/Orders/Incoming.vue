@@ -10,30 +10,21 @@
 
   <ConsoleKitchenOperationsOrdersWorkspaceModal
     v-model:open="incomingOpen"
-    title="Incoming orders"
+    title="Orders to accept"
     :description="incomingDescription"
   >
-    <ConsoleKitchenOperationsOrdersRail
-      label="Incoming"
-      :count="incomingOrders.length"
-      empty-label="No orders waiting"
-      accent="primary"
-    >
-      <ConsoleKitchenOperationsOrdersReceiving
-        v-for="ticket in incomingOrders"
-        :key="ticket.id"
-        :accepting="acceptingOrderId === normalizeId(ticket.id)"
-          :estimate-minutes="estimateMinutes(ticket)"
-          :can-interact="canInteract(ticket)"
-          :now-ms="currentTimeMs"
-          :order="ticket"
-        :rejecting="rejectingOrderId === normalizeId(ticket.id)"
-        @accept="acceptIncomingOrder"
-        @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
-        @reject="rejectIncomingOrder"
-        @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
-      />
-    </ConsoleKitchenOperationsOrdersRail>
+    <ConsoleKitchenOperationsOrdersReceivingDesk
+      :orders="incomingOrders"
+      :accepting-order-id="acceptingOrderId"
+      :rejecting-order-id="rejectingOrderId"
+      :can-interact="canInteract"
+      :estimate-for="estimateMinutes"
+      :now-ms="currentTimeMs"
+      @accept="acceptIncomingOrder"
+      @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
+      @reject="rejectIncomingOrder"
+      @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
+    />
   </ConsoleKitchenOperationsOrdersWorkspaceModal>
 </template>
 
@@ -66,10 +57,9 @@ const {
 } = useKitchenOrdersWorkspace()
 const incomingDescription = computed(() =>
   incomingOrders.value.length === 1
-    ? '1 order is waiting for a decision.'
-    : `${incomingOrders.value.length} orders are waiting for a decision.`
+    ? '1 customer order needs a kitchen decision.'
+    : `${incomingOrders.value.length} customer orders need a kitchen decision.`
 )
-
 watch(
   () => incomingOrders.value.length,
   (count) => {

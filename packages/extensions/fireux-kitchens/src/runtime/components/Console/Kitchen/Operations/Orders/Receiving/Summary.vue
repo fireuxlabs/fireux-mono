@@ -9,27 +9,12 @@
     </span>
 
     <span class="receiving-summary__actions">
-      <UButton
-        v-if="acceptLabel"
-        size="sm"
-        color="primary"
-        :icon="acceptIcon"
-        :label="acceptLabel"
-        :disabled="!canAccept"
-        :loading="accepting"
-        @click="$emit('accept')"
-      />
+      <UBadge v-if="timingLabel" color="primary" variant="soft" size="sm">
+        {{ timingLabel }}
+      </UBadge>
       <UBadge color="neutral" variant="soft" size="sm">
         {{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }}
       </UBadge>
-      <UButton
-        size="sm"
-        color="neutral"
-        variant="soft"
-        :icon="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-        :label="open ? 'Close' : 'Review'"
-        @click="$emit('toggle')"
-      />
     </span>
   </header>
 </template>
@@ -38,20 +23,11 @@
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersReceivingSummary' })
 
 defineProps<{
-  acceptIcon?: string
-  acceptLabel?: string
-  accepting: boolean
-  canAccept: boolean
   icon: string
   itemCount: number
-  open: boolean
   orderLabel: string
+  timingLabel?: string
   title: string
-}>()
-
-defineEmits<{
-  accept: []
-  toggle: []
 }>()
 </script>
 

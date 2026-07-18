@@ -297,6 +297,12 @@ Public order funnel spine:
   identity remain fulfilment context rather than part of the sequence.
 - Initial status is resolved once from payment plus the shared intake policy:
   `pending_payment`, otherwise `pending_acceptance` or `accepted`.
+- The active Kitchen board separates payment holding from kitchen intake.
+  Unpaid orders do not appear in Incoming until payment resolves. Collection,
+  Delivery, and Pre-order require an operator acceptance decision; Dine-in,
+  Eat-in, Takeaway, and Room service enter Queue automatically. Delivery may
+  add dispatch work after kitchen production without becoming a second intake
+  lifecycle.
 - Clients submit option identity, not trusted option prices. Order creation
   resolves every selected variant and add-on again from the published
   Kitchen-owned MenuItem, charges the variant's absolute price plus add-on

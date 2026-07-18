@@ -95,7 +95,7 @@ export const KitchenOrderIntakePolicies = {
     default_channel: 'menu',
   },
   room_service: {
-    acceptance: 'operator',
+    acceptance: 'automatic',
     channels: ['room_service'],
     default_channel: 'room_service',
   },
@@ -171,6 +171,7 @@ export const KitchenOrderTransitionRules = {
 >
 
 export type KitchenOrderBoardStage =
+  | 'payment'
   | 'incoming'
   | 'queue'
   | 'pass'
@@ -304,9 +305,8 @@ export function deriveKitchenOrderBoardStage(order: {
 
   if (status === 'trashed') return 'trash'
   if (status === 'completed' || status === 'cancelled') return 'recent'
-  if (status === 'pending_payment' || status === 'pending_acceptance') {
-    return 'incoming'
-  }
+  if (status === 'pending_payment') return 'payment'
+  if (status === 'pending_acceptance') return 'incoming'
   if (status === 'ready') return 'pass'
   if (status === 'accepted') return 'queue'
   return 'unmapped'
