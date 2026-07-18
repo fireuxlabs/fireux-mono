@@ -53,12 +53,12 @@ withDefaults(defineProps<{
 .orders-rail__header {
   min-height: 1.75rem;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .orders-rail__identity {
   min-width: 0;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .orders-rail__title {
@@ -71,7 +71,7 @@ withDefaults(defineProps<{
 .orders-rail__content {
   display: grid;
   min-width: 0;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 </style>

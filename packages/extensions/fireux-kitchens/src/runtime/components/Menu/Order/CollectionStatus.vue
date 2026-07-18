@@ -109,7 +109,7 @@ const description = computed(() => {
 </script>
 
 <style scoped>
-.menu-order-collection-status { display: grid; max-width: 42rem; gap: 1.25rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 2.5rem); border: 1px solid color-mix(in srgb, var(--menu-primary) 30%, transparent); border-radius: var(--menu-radius); background: color-mix(in srgb, var(--menu-bg) 94%, var(--menu-primary)); color: var(--menu-text); text-align: center; }
+.menu-order-collection-status { display: grid; max-width: 42rem; gap: calc(var(--spacing) * 5); margin: 0 auto; padding: clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 10)); border: 1px solid color-mix(in srgb, var(--menu-primary) 30%, transparent); border-radius: var(--menu-radius); background: color-mix(in srgb, var(--menu-bg) 94%, var(--menu-primary)); color: var(--menu-text); text-align: center; }
 .menu-order-collection-status__icon { display: grid; width: 4rem; height: 4rem; place-items: center; justify-self: center; border-radius: 9999px; background: var(--menu-primary); color: var(--menu-primary-contrast); font-size: 1.75rem; }
 .menu-order-collection-status__copy { display: grid; gap: 0.35rem; }
 .menu-order-collection-status__copy p, .menu-order-collection-status__copy h2 { margin: 0; }
@@ -117,9 +117,9 @@ const description = computed(() => {
 .menu-order-collection-status__copy h2 { color: var(--menu-title); font-family: var(--menu-title-font); font-size: clamp(1.35rem, 5vw, 2rem); }
 .menu-order-collection-status__copy > p:last-child { color: var(--menu-muted); }
 .menu-order-collection-status dl { display: grid; gap: 0.6rem; margin: 0; text-align: left; }
-.menu-order-collection-status dl div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent); }
+.menu-order-collection-status dl div { display: flex; justify-content: space-between; gap: calc(var(--spacing) * 4); padding: 0.7rem 0; border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent); }
 .menu-order-collection-status dt { color: var(--menu-muted); }
 .menu-order-collection-status dd { margin: 0; color: var(--menu-title); font-weight: 850; text-align: right; }
 .menu-order-collection-status__error { margin: 0; color: var(--ui-error); font-size: 0.85rem; }
-.menu-order-collection-status__again { justify-self: center; padding: 0.65rem 1rem; border: 1px solid var(--menu-primary); border-radius: var(--menu-radius-control); background: transparent; color: var(--menu-primary); cursor: pointer; font: inherit; font-weight: 850; }
+.menu-order-collection-status__again { justify-self: center; padding: 0.65rem calc(var(--spacing) * 4); border: 1px solid var(--menu-primary); border-radius: var(--menu-radius-control); background: transparent; color: var(--menu-primary); cursor: pointer; font: inherit; font-weight: 850; }
 </style>

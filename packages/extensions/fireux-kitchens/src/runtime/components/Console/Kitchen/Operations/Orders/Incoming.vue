@@ -8,40 +8,40 @@
     @click="incomingOpen = true"
   />
 
-  <UModal
-    v-model="incomingOpen"
+  <ConsoleKitchenOperationsOrdersWorkspaceModal
+    v-model:open="incomingOpen"
     title="Incoming orders"
     :description="incomingDescription"
-    scrollable
   >
-    <template #body>
-      <ConsoleKitchenOperationsOrdersRail
-        label="Incoming"
-        :count="incomingOrders.length"
-        empty-label="No orders waiting"
-        accent="primary"
-      >
-        <ConsoleKitchenOperationsOrdersReceiving
-          v-for="ticket in incomingOrders"
-          :key="ticket.id"
-          :accepting="acceptingOrderId === normalizeId(ticket.id)"
+    <ConsoleKitchenOperationsOrdersRail
+      label="Incoming"
+      :count="incomingOrders.length"
+      empty-label="No orders waiting"
+      accent="primary"
+    >
+      <ConsoleKitchenOperationsOrdersReceiving
+        v-for="ticket in incomingOrders"
+        :key="ticket.id"
+        :accepting="acceptingOrderId === normalizeId(ticket.id)"
           :estimate-minutes="estimateMinutes(ticket)"
           :can-interact="canInteract(ticket)"
+          :now-ms="currentTimeMs"
           :order="ticket"
-          :rejecting="rejectingOrderId === normalizeId(ticket.id)"
-          @accept="acceptIncomingOrder"
-          @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
-          @reject="rejectIncomingOrder"
-          @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
-        />
-      </ConsoleKitchenOperationsOrdersRail>
-    </template>
-  </UModal>
+        :rejecting="rejectingOrderId === normalizeId(ticket.id)"
+        @accept="acceptIncomingOrder"
+        @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
+        @reject="rejectIncomingOrder"
+        @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
+      />
+    </ConsoleKitchenOperationsOrdersRail>
+  </ConsoleKitchenOperationsOrdersWorkspaceModal>
 </template>
 
 <script setup lang="ts">
 import {
   computed,
+  onBeforeUnmount,
+  onMounted,
   ref,
   watch,
 } from 'vue'
@@ -53,7 +53,9 @@ const defaultEstimateMinutes = 45
 const incomingOpen = ref(false)
 const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
+const currentTimeMs = ref(Date.now())
 const estimatesByOrderId = ref<Record<string, number>>({})
+let minuteClock: ReturnType<typeof setInterval> | undefined
 const {
   incomingOrders,
   canOperate,
@@ -74,6 +76,17 @@ watch(
     if (!count) incomingOpen.value = false
   }
 )
+
+onMounted(() => {
+  currentTimeMs.value = Date.now()
+  minuteClock = window.setInterval(() => {
+    currentTimeMs.value = Date.now()
+  }, 60_000)
+})
+
+onBeforeUnmount(() => {
+  if (minuteClock) window.clearInterval(minuteClock)
+})
 
 async function acceptIncomingOrder(
   payload: { id: string; estimatedMinutes: number | null }

@@ -54,7 +54,7 @@ defineEmits<{
 <style scoped>
 .menu-detail-content {
   display: grid;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 8));
   color: var(--menu-text);
   text-align: center;
   transition:
@@ -70,7 +70,7 @@ defineEmits<{
 
 .menu {
   display: grid;
-  gap: clamp(2rem, 4vw, 3rem);
+  gap: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 12));
 }
 
 .menu-state {

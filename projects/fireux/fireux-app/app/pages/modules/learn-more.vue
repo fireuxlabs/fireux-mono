@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">What modules are</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Modules are reusable building blocks that can be composed into apps.</li>
           <li>Each module ships focused capability instead of a full product shell.</li>
           <li>The module catalog helps teams assemble app surfaces with lower rebuild cost.</li>
@@ -24,7 +24,7 @@
           <h2 class="text-lg font-semibold">How to use modules</h2>
         </template>
 
-        <ol class="list-decimal space-y-2 pl-5 text-sm">
+        <ol class="list-decimal fx-list-stack text-sm">
           <li>Choose module capabilities from the current catalog.</li>
           <li>Attach modules to app surfaces and routes.</li>
           <li>Validate runtime wiring and deploy with guard + typecheck.</li>

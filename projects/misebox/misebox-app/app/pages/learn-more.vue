@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-12 pb-16">
+  <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Misebox Guide</UBadge>
@@ -35,7 +35,7 @@
             <template #header>
               <h3 class="text-base font-semibold">Customer pain</h3>
             </template>
-            <ul class="list-disc space-y-2 pl-5 text-sm text-muted">
+            <ul class="list-disc fx-list-stack text-sm text-muted">
               <li>Menus change faster than PDFs, staff notes, and translations can keep up.</li>
               <li>Recipes, prep lists, allergens, and supplier information live separately.</li>
               <li>Staff turnover turns kitchen knowledge into memory loss.</li>
@@ -46,7 +46,7 @@
             <template #header>
               <h3 class="text-base font-semibold">Misebox opportunity</h3>
             </template>
-            <ul class="list-disc space-y-2 pl-5 text-sm text-muted">
+            <ul class="list-disc fx-list-stack text-sm text-muted">
               <li>Public menus connect to dishes, recipes, ingredients, allergens, and prep.</li>
               <li>Kitchen profiles and jobs connect operations with hospitality hiring.</li>
               <li>Supplier and ingredient records support sourcing and menu operations.</li>
@@ -87,7 +87,7 @@
           <template #header>
             <h2 class="text-lg font-semibold">Core concepts</h2>
           </template>
-          <ul class="list-disc space-y-2 pl-5 text-sm">
+          <ul class="list-disc fx-list-stack text-sm">
             <li>Kitchen operations: menus, dishes, recipes, prep, and service readiness.</li>
             <li>Team operations: staffing flow and handover inside the kitchen workspace.</li>
             <li>Recruitment flow: connect kitchens with professionals through one ecosystem.</li>

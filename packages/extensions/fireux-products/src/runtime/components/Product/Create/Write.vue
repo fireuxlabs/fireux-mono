@@ -137,41 +137,39 @@ const productTypeOptions = computed(() =>
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: var(
-    --space-6
-  ); /* Increased from space-4 to space-6 for more breathing room */
+  gap: calc(var(--spacing) * 6); /* Increased from space-4 to space-6 for more breathing room */
 }
 
 .product-type-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-3);
+  gap: calc(var(--spacing) * 3);
 }
 
 .product-type-button {
   justify-content: flex-start;
-  padding: var(--space-4);
+  padding: calc(var(--spacing) * 4);
   height: auto;
   text-align: left;
 }
 
 .tooltip-content {
   max-width: 300px;
-  padding: var(--space-2);
+  padding: calc(var(--spacing) * 2);
 }
 
 .tooltip-section {
-  margin-bottom: var(--space-2);
+  margin-bottom: calc(var(--spacing) * 2);
   line-height: 1.4;
 }
 
 .tooltip-section strong {
   display: block;
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--spacing);
 }
 
 .image-section {
   max-width: 400px;
-  margin-top: var(--space-4);
+  margin-top: calc(var(--spacing) * 4);
 }
 </style>

@@ -5,7 +5,7 @@
     back-label="Go QR"
   >
     <section class="space-y-4">
-      <ol class="list-decimal space-y-2 pl-5 text-muted">
+      <ol class="list-decimal fx-list-stack text-muted">
         <li>Upload a public doc.</li>
         <li>Choose its public path.</li>
         <li>Create the QR page.</li>

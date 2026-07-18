@@ -32,18 +32,18 @@ const integrations = [
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  padding: 2rem 0;
+  padding: calc(var(--spacing) * 8) 0;
 }
 
 .section-title {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .section-subtitle {
   font-size: 1.125rem;
-  margin-bottom: 3rem;
+  margin-bottom: calc(var(--spacing) * 12);
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -53,8 +53,8 @@ const integrations = [
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 1rem;
+  gap: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 4);
 }
 
 .integration-icon {

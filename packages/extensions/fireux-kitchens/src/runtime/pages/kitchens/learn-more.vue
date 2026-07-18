@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">What kitchens are</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Kitchens are the runtime records used to manage service operations.</li>
           <li>They stay linked to place identity while carrying kitchen-specific operational state.</li>
           <li>The kitchen console is where menus, recipes, mise, orders, and team surfaces come together.</li>
@@ -24,7 +24,7 @@
           <h2 class="text-lg font-semibold">How to use kitchens</h2>
         </template>
 
-        <ol class="list-decimal space-y-2 pl-5 text-sm">
+        <ol class="list-decimal fx-list-stack text-sm">
           <li>Create or claim a kitchen record inside the active runtime.</li>
           <li>Use the kitchen console to move from overview into menus, ingredients, dishes, and service workflows.</li>
           <li>Keep public identity and private operational flow aligned through the same kitchen record.</li>

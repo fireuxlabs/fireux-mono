@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-12 pb-16">
+  <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Slap Guide</UBadge>

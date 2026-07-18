@@ -176,7 +176,7 @@ async function loadPdf() {
   min-height: 14rem;
   place-items: center;
   margin: 0;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   color: #475569;
   font-size: 0.9rem;
   font-weight: 700;
@@ -186,8 +186,8 @@ async function loadPdf() {
 .menu-document-pdf__pages {
   display: grid;
   min-width: 0;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3);
 }
 
 .menu-document-pdf__pages :deep(.menu-document-pdf__page) {

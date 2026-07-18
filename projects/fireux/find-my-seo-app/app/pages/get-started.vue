@@ -5,7 +5,7 @@
     back-label="Find My SEO"
   >
     <section class="space-y-4">
-      <ol class="list-decimal space-y-2 pl-5 text-muted">
+      <ol class="list-decimal fx-list-stack text-muted">
         <li>Browse public SEO professional profiles.</li>
         <li>Compare services, sectors, and proof.</li>
         <li>Create a provider profile when you are ready to be listed.</li>

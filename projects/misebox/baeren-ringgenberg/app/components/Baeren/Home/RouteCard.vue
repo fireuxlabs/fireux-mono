@@ -42,7 +42,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: start;
   gap: 0.8rem;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 1px solid var(--baeren-border);
   border-radius: calc(var(--ui-radius) * 4);
   background: rgb(var(--baeren-surface-rgb) / 92%);
@@ -142,7 +142,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
     min-height: 13rem;
     grid-template-columns: 1fr auto;
     align-content: start;
-    gap: 1rem;
+    gap: calc(var(--spacing) * 4);
     padding: 1.35rem;
     border-radius: calc(var(--ui-radius) * 6);
   }

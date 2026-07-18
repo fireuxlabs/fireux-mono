@@ -57,6 +57,6 @@ const previewProduct = computed(
 .preview-layout {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 </style>

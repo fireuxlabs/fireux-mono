@@ -188,14 +188,14 @@ function continueBasket(event: MouseEvent) {
 
 .menu-order-basket-dialog {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .menu-order-basket-dialog__line {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 1rem;
-  padding: 1rem;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: var(--menu-radius-control);
 }
@@ -279,7 +279,7 @@ function continueBasket(event: MouseEvent) {
   display: flex;
   width: 100%;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   color: var(--menu-muted);
   font-size: 0.9rem;
   font-weight: 800;
@@ -307,7 +307,7 @@ function continueBasket(event: MouseEvent) {
 .menu-order-basket-dialog__next button {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
   width: 100%;
   padding: 0.72rem 0.85rem;

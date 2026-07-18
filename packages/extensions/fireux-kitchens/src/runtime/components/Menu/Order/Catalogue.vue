@@ -115,7 +115,7 @@ function finishDialog() {
 }
 
 .menu-order-catalogue {
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   text-align: left;
 }
 

@@ -34,7 +34,7 @@ const skills = [
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .icon {

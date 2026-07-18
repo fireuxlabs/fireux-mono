@@ -63,7 +63,7 @@ const otherOptions = computed(() =>
 .menu-surface-switcher {
   position: relative;
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   width: min(100%, 40rem);
   margin: 0 auto;
   padding: 0.8rem;
@@ -83,7 +83,7 @@ const otherOptions = computed(() =>
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.7rem;
   align-items: center;
-  padding-inline-end: 4.5rem;
+  padding-inline-end: calc(var(--spacing) * 18);
 }
 
 .menu-surface-switcher__icon {
@@ -110,7 +110,7 @@ const otherOptions = computed(() =>
 .menu-surface-switcher__heading {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: center;
 }
 
@@ -132,9 +132,9 @@ const otherOptions = computed(() =>
   top: 0.8rem;
   right: 0.8rem;
   display: inline-flex;
-  gap: 0.25rem;
+  gap: var(--spacing);
   align-items: center;
-  padding: 0.38rem 0.5rem;
+  padding: 0.38rem calc(var(--spacing) * 2);
   border-radius: 9999px;
   color: var(--menu-primary);
   cursor: pointer;
@@ -163,8 +163,8 @@ const otherOptions = computed(() =>
 .menu-surface-switcher__change :deep(.menu-surface-rail) {
   justify-content: stretch;
   width: 100%;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
+  margin-top: calc(var(--spacing) * 3);
+  padding-top: calc(var(--spacing) * 3);
   border-top: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
   gap: 0.4rem;
 }

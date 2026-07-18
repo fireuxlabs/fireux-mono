@@ -251,7 +251,7 @@ const range = [
   min-height: 92svh;
   display: flex;
   align-items: center;
-  padding-block: 4rem;
+  padding-block: calc(var(--spacing) * 16);
 }
 
 .yv-hero__copy {
@@ -260,7 +260,7 @@ const range = [
 
 .yv-hero__copy > div:first-child {
   display: grid;
-  gap: 1.25rem;
+  gap: calc(var(--spacing) * 5);
 }
 
 .yv-badge {
@@ -293,7 +293,7 @@ const range = [
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
-  margin-top: 2rem;
+  margin-top: calc(var(--spacing) * 8);
 }
 
 .yv-button {
@@ -317,12 +317,12 @@ const range = [
   max-width: 42rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.8rem;
-  margin-top: 2rem;
+  margin-top: calc(var(--spacing) * 8);
 }
 
 .yv-stat {
   min-height: 6.5rem;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 3px solid #050504;
   border-radius: calc(var(--ui-radius) * 2);
   background: #f6f2e6;
@@ -346,14 +346,14 @@ const range = [
 
 .yv-sections {
   display: grid;
-  gap: 4rem;
-  padding-block: 4rem;
+  gap: calc(var(--spacing) * 16);
+  padding-block: calc(var(--spacing) * 16);
 }
 
 .yv-categories {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .yv-category-link {
@@ -384,7 +384,7 @@ const range = [
 
 .yv-card > div {
   display: grid;
-  gap: 2.25rem;
+  gap: calc(var(--spacing) * 9);
 }
 
 .yv-card__icon {
@@ -422,13 +422,13 @@ const range = [
 .yv-range {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
   align-items: start;
 }
 
 .yv-range__intro {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .yv-range h2 {
@@ -444,7 +444,7 @@ const range = [
 .yv-range__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .yv-range-item {
@@ -475,14 +475,14 @@ const range = [
 }
 
 .yv-drop {
-  padding: 1.5rem;
+  padding: calc(var(--spacing) * 6);
 }
 
 .yv-drop > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .yv-drop h2 {

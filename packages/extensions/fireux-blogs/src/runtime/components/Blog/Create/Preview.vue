@@ -139,7 +139,7 @@ const fallbackLogo = '/img/app/logo.png'
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  gap: calc(var(--spacing) * 3);
 }
 
 .label {
@@ -164,19 +164,19 @@ const fallbackLogo = '/img/app/logo.png'
   background: var(--ui-bg-elevated);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 1.5);
-  padding: var(--space-4);
+  padding: calc(var(--spacing) * 4);
   color: var(--ui-text);
 }
 
 .author-pill {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: calc(var(--spacing) * 2.5);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
   border-radius: 9999px;
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border);
-  margin-bottom: var(--space-3);
+  margin-bottom: calc(var(--spacing) * 3);
 }
 
 .avatar img {
@@ -216,7 +216,7 @@ const fallbackLogo = '/img/app/logo.png'
   width: 100%;
   height: auto;
   border-radius: var(--ui-radius);
-  margin: var(--space-3) 0;
+  margin: calc(var(--spacing) * 3) 0;
   object-fit: contain;
 }
 
@@ -237,24 +237,24 @@ const fallbackLogo = '/img/app/logo.png'
 
 .preview-content :deep(code) {
   background: var(--ui-bg-muted);
-  padding: 2px 4px;
+  padding: calc(var(--spacing) * 0.5) var(--spacing);
   border-radius: var(--ui-radius);
 }
 
 .brand-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
+  gap: calc(var(--spacing) * 3);
 }
 
 .brand-tile {
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 1.5);
-  padding: var(--space-3);
+  padding: calc(var(--spacing) * 3);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(var(--spacing) * 1.5);
   align-items: center;
 }
 

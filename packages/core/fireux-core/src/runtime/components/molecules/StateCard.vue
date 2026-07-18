@@ -134,7 +134,7 @@ const bannerClass = computed(() => ({
 }
 
 .fx-state-card--standard {
-  padding: 3rem 0;
+  padding: calc(var(--spacing) * 12) 0;
   text-align: center;
 }
 
@@ -142,7 +142,7 @@ const bannerClass = computed(() => ({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .fx-state-card__spinner {
@@ -170,7 +170,7 @@ const bannerClass = computed(() => ({
 }
 
 .fx-state-banner {
-  padding: 1.5rem;
+  padding: calc(var(--spacing) * 6);
   text-align: center;
   font-size: 0.875rem;
   letter-spacing: 0.08em;
@@ -191,7 +191,7 @@ const bannerClass = computed(() => ({
 }
 
 .fx-state-banner__description {
-  margin: 0.5rem 0 0;
+  margin: calc(var(--spacing) * 2) 0 0;
   font-size: 0.75rem;
   letter-spacing: normal;
   text-transform: none;

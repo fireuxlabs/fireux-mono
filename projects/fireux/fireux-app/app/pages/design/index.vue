@@ -42,29 +42,29 @@ const getPagePath = (section: string, page: string) =>
 .sidebar {
   width: 250px;
   background: var(--ui-bg-elevated);
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border-right: 1px solid var(--ui-border-muted);
   overflow-y: auto;
 }
 .sidebar h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 .sidebar h3 {
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   font-size: 1.1rem;
   display: flex;
   align-items: center;
 }
 .icon {
-  margin-right: 0.5rem;
+  margin-right: calc(var(--spacing) * 2);
 }
 ul {
   list-style: none;
-  padding-left: 1rem;
+  padding-left: calc(var(--spacing) * 4);
 }
 li {
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 li a {
   text-decoration: none;
@@ -76,7 +76,7 @@ li a:hover {
 }
 .content {
   flex-grow: 1;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   overflow-y: auto;
 }
 </style>

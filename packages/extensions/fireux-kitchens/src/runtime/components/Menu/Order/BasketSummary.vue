@@ -66,14 +66,14 @@ function reviewBasket(event: MouseEvent) {
 .menu-order-basket-summary {
   position: sticky;
   z-index: 20;
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) max-content auto;
   gap: 0.85rem;
   align-items: center;
   width: min(100%, 32rem);
   margin: 0 auto;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 40%, transparent);
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 92%, var(--menu-primary));

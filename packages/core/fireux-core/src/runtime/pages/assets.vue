@@ -134,7 +134,7 @@ useSeoMeta({
     linear-gradient(-45deg, transparent 75%, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 75%);
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
   background-size: 16px 16px;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 .asset-frame--square {

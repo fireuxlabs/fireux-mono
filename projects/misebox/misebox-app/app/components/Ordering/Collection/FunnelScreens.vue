@@ -231,7 +231,7 @@ function etaAt(minutes: number) {
 <style scoped>
 .collection-funnel-demo {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: 100%;
   min-height: 0;
   margin: 0;
@@ -242,7 +242,7 @@ function etaAt(minutes: number) {
 
 .collection-funnel-screen {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: start;
 }
 

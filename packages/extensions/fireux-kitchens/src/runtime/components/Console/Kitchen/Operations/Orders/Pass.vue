@@ -29,6 +29,6 @@ const {
 <style scoped>
 .orders-pass {
   display: flex;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 </style>

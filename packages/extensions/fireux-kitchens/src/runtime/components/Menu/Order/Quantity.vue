@@ -52,7 +52,7 @@ function change(delta: number) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   color: var(--menu-title);
   font-weight: 850;
 }

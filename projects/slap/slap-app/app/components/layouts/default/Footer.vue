@@ -25,15 +25,15 @@
 
 .slap-footer__inner {
   display: grid;
-  gap: 1.25rem;
-  padding-block: 2rem;
+  gap: calc(var(--spacing) * 5);
+  padding-block: calc(var(--spacing) * 8);
 }
 
 .slap-footer__brand {
   display: inline-flex;
   width: fit-content;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .slap-footer__logo {
@@ -49,7 +49,7 @@
 .slap-footer__nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.875rem 1.25rem;
+  gap: calc(var(--spacing) * 3.5) calc(var(--spacing) * 5);
   font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;

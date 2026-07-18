@@ -37,10 +37,10 @@ const resolvedSkills = computed(
 
 <style scoped>
 .skills {
-  padding: clamp(2rem, 6vw, 3rem) 0;
+  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 12)) 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .skills header h2 {
@@ -55,14 +55,14 @@ const resolvedSkills = computed(
 .skills__icons {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .skills__icons li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
   border-radius: 9999px;
   background: var(--ui-bg-muted);
   color: var(--ui-text);

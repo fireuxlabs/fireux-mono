@@ -127,7 +127,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 <style scoped>
 .kitchen-menus {
   display: grid;
-  gap: 1.25rem;
+  gap: calc(var(--spacing) * 5);
 }
 
 .kitchen-menus__header {
@@ -135,11 +135,11 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   flex-wrap: wrap;
   align-items: end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .kitchen-menus__eyebrow {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--spacing);
   color: var(--ui-text-muted);
   font-size: 0.7rem;
   font-weight: 800;
@@ -157,13 +157,13 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 
 .kitchen-menus__body {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .kitchen-menus__sessions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   padding: 0.85rem;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, transparent);
   border-radius: calc(var(--ui-radius) * 4);
@@ -173,7 +173,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 .kitchen-menus__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .kitchen-menus__state {

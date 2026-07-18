@@ -192,8 +192,8 @@ defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 .list-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
   border-radius: 9999px;
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border);

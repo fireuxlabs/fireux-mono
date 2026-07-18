@@ -434,14 +434,14 @@ defineExpose({
 <style scoped>
 .object-array {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .object-array__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .object-array__item-body {
@@ -449,7 +449,7 @@ defineExpose({
 }
 
 .object-array__item-body :deep(.pill) {
-  margin-top: 0.5rem;
+  margin-top: calc(var(--spacing) * 2);
   max-width: 100%;
 }
 
@@ -457,13 +457,13 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .object-array__item-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   min-width: 0;
 }
 
@@ -474,7 +474,7 @@ defineExpose({
 .object-array__item-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   flex-shrink: 0;
 }
 </style>

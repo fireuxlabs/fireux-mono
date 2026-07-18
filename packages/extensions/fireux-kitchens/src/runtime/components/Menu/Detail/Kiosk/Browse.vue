@@ -83,8 +83,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 <style scoped>
 .kiosk-browse {
   --kiosk-browse-columns: 10.5rem minmax(0, 1fr);
-  --kiosk-browse-gap: 2.5rem;
-  --kiosk-browse-padding: 24svh 2rem 2rem 0;
+  --kiosk-browse-gap: calc(var(--spacing) * 10);
+  --kiosk-browse-padding: 24svh calc(var(--spacing) * 8) calc(var(--spacing) * 8) 0;
   --kiosk-dish-columns: repeat(3, minmax(0, 1fr));
 
   position: relative;
@@ -112,7 +112,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  padding-left: 0.75rem;
+  padding-left: calc(var(--spacing) * 3);
   color: white;
 }
 
@@ -124,12 +124,12 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 .kiosk-browse__dishes,
 .kiosk-browse__dish-section {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .kiosk-browse__sections {
   gap: 0.55rem;
-  margin-top: 0.75rem;
+  margin-top: calc(var(--spacing) * 3);
 }
 
 .kiosk-browse__dishes {
@@ -177,13 +177,13 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 }
 
 .kiosk-browse__content {
-  padding: 1.5rem;
+  padding: calc(var(--spacing) * 6);
   background: transparent;
   color: white;
 }
 
 .kiosk-browse__content-header {
-  padding-bottom: 1rem;
+  padding-bottom: calc(var(--spacing) * 4);
 }
 
 .kiosk-browse__content-header h2 {
@@ -205,8 +205,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 @media (max-width: 1100px) and (max-height: 900px) {
   .kiosk-browse {
     --kiosk-browse-columns: 9.5rem minmax(0, 1fr);
-    --kiosk-browse-gap: 1.5rem;
-    --kiosk-browse-padding: 22svh 1.25rem 1.25rem 0;
+    --kiosk-browse-gap: calc(var(--spacing) * 6);
+    --kiosk-browse-padding: 22svh calc(var(--spacing) * 5) calc(var(--spacing) * 5) 0;
     --kiosk-dish-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
   }
 
@@ -218,8 +218,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 @media (max-width: 900px) {
   .kiosk-browse {
     --kiosk-browse-columns: 8.5rem minmax(0, 1fr);
-    --kiosk-browse-gap: 1rem;
-    --kiosk-browse-padding: 18svh 1rem 1rem 0;
+    --kiosk-browse-gap: calc(var(--spacing) * 4);
+    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4) calc(var(--spacing) * 4) 0;
     --kiosk-dish-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -231,21 +231,21 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 @media (max-width: 640px) {
   .kiosk-browse {
     --kiosk-browse-columns: 1fr;
-    --kiosk-browse-padding: 18svh 1rem 1rem;
+    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4) calc(var(--spacing) * 4);
     --kiosk-dish-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
 
     grid-template-rows: auto minmax(0, 1fr);
   }
 
   .kiosk-browse__menu {
-    gap: 0.5rem;
+    gap: calc(var(--spacing) * 2);
     padding-left: 0;
     overflow: visible;
   }
 
   .kiosk-browse__sections {
     display: flex;
-    gap: 0.5rem;
+    gap: calc(var(--spacing) * 2);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     padding-bottom: 0.2rem;
@@ -269,7 +269,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 
   .kiosk-browse__section {
     min-height: 2.55rem;
-    padding: 0.55rem 0.75rem 0.55rem 0.9rem;
+    padding: 0.55rem calc(var(--spacing) * 3) 0.55rem 0.9rem;
   }
 
   .kiosk-browse__content {

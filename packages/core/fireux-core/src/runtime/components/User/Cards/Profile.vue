@@ -192,7 +192,7 @@ function formatTimestampLabel(value: unknown): string {
 <style scoped>
 .profile__apps {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .profile__app-pill {

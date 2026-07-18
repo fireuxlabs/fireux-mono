@@ -63,7 +63,7 @@ withDefaults(defineProps<{
   min-height: min(34rem, 72vh);
   place-content: center;
   justify-items: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: min(100%, 38rem);
   margin: auto;
   text-align: center;
@@ -72,7 +72,7 @@ withDefaults(defineProps<{
 .menu-order-unavailable__message {
   display: grid;
   justify-items: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .menu-order-unavailable__message p,
@@ -108,8 +108,8 @@ withDefaults(defineProps<{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: calc(var(--spacing) * 3);
+  margin-top: calc(var(--spacing) * 2);
 }
 
 .menu-order-unavailable__action {
@@ -117,7 +117,7 @@ withDefaults(defineProps<{
   min-height: 2.75rem;
   align-items: center;
   justify-content: center;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 45%, transparent);
   border-radius: var(--menu-radius);
   color: var(--menu-primary);

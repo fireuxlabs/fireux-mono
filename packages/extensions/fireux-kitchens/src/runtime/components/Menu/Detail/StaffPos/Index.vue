@@ -205,9 +205,9 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__top {
   display: grid;
   grid-template-columns: minmax(12rem, 1fr) auto minmax(12rem, 18rem);
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem calc(var(--spacing) * 4);
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
   background: color-mix(in srgb, var(--menu-bg) 94%, var(--menu-text));
 }
@@ -243,7 +243,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__groups,
 .staff-pos__sections {
   display: flex;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .staff-pos__mode,
@@ -281,9 +281,9 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__rail {
   display: grid;
   align-content: start;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   min-height: 0;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   overflow: auto;
   border-right: 1px solid color-mix(in srgb, var(--menu-text) 10%, transparent);
   background: color-mix(in srgb, var(--menu-bg) 90%, var(--menu-text));
@@ -307,7 +307,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 
 .staff-pos__content {
   min-height: 0;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   overflow: auto;
   overscroll-behavior: contain;
 }
@@ -324,7 +324,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   align-items: start;
 }
 

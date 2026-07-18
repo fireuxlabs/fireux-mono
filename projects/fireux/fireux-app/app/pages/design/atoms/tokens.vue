@@ -115,14 +115,14 @@ const radiusTokens = [
 ]
 
 const spacingTokens = [
-  { name: '--space-1', value: 'var(--space-1)' },
-  { name: '--space-2', value: 'var(--space-2)' },
-  { name: '--space-3', value: 'var(--space-3)' },
-  { name: '--space-4', value: 'var(--space-4)' },
-  { name: '--space-6', value: 'var(--space-6)' },
-  { name: '--space-8', value: 'var(--space-8)' },
-  { name: '--space-12', value: 'var(--space-12)' },
-  { name: '--space-16', value: 'var(--space-16)' },
+  { name: 'spacing × 1', value: 'var(--spacing)' },
+  { name: 'spacing × 2', value: 'calc(var(--spacing) * 2)' },
+  { name: 'spacing × 3', value: 'calc(var(--spacing) * 3)' },
+  { name: 'spacing × 4', value: 'calc(var(--spacing) * 4)' },
+  { name: 'spacing × 6', value: 'calc(var(--spacing) * 6)' },
+  { name: 'spacing × 8', value: 'calc(var(--spacing) * 8)' },
+  { name: 'spacing × 12', value: 'calc(var(--spacing) * 12)' },
+  { name: 'spacing × 16', value: 'calc(var(--spacing) * 16)' },
 ]
 </script>
 
@@ -140,9 +140,9 @@ h2 {
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+  gap: calc(var(--spacing) * 4);
   text-align: center;
-  padding: var(--space-4);
+  padding: calc(var(--spacing) * 4);
 }
 .spacing-mobile {
   grid-template-columns: 1fr;
@@ -158,7 +158,7 @@ h2 {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: var(--space-2);
+  padding: calc(var(--spacing) * 2);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
   border-radius: calc(var(--ui-radius) * 1.5);

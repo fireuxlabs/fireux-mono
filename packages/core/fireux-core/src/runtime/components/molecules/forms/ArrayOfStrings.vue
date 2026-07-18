@@ -19,7 +19,7 @@
 
     <!-- Edit Mode -->
     <div v-else class="editing">
-      <div v-for="(_, index) in localValue" :key="index" class="input-group">
+      <div v-for="(_, index) in localValue" :key="index" class="form-array-input-row">
         <UInput
           v-model="localValue[index]"
           :placeholder="itemPlaceholder"
@@ -31,7 +31,7 @@
           @click="removeItem(index)"
         />
       </div>
-      <div class="input-group add-group">
+      <div class="form-array-input-row form-array-add-row">
         <UInput
           v-model="newItem"
           :placeholder="newItemPlaceholder"
@@ -120,16 +120,3 @@ function removeItem(index: number | string) {
   localValue.value.splice(Number(index), 1)
 }
 </script>
-
-<style scoped>
-.input-group {
-  margin-bottom: var(--space-1);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.add-group {
-  margin-top: var(--space-1);
-}
-</style>

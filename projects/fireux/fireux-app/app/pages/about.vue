@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-16 pb-20">
+  <div class="fx-page-stack fx-page-stack--comfortable">
     <section
       class="border-b border-default bg-default/70 py-16"
     >

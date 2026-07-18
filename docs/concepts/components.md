@@ -93,6 +93,18 @@ Working rules:
   radius. True circles and pills, explicitly approved percentage artwork, and
   owned domain seams are exceptions; Menu's owned radius seams derive from
   `--ui-radius` by default.
+- Tailwind's `--spacing` is the single numeric spacing authority. Templates
+  use named Tailwind spacing utilities for genuinely local composition;
+  authored CSS derives ordinary margin, padding, and gap values from
+  `--spacing` instead of declaring a second `--space-*` scale.
+- Repeated page, list, form, or layout rhythm belongs in a named shared class
+  or component. Current shared rhythm classes live in core
+  `assets/styles/scss/organisms/sections.scss`. Domain-owned semantic seams,
+  such as Menu spacing, may remain when their defaults derive from
+  `--spacing`.
+- Off-grid spacing is an explicit local delta for branded optical layout,
+  responsive/viewport geometry, safe areas, print, artwork, or accessibility;
+  it is not another general-purpose scale.
 - The CSS guard does not ban one-off Tailwind for local layout, pixel-specific
   non-system deltas, or intentional branded color.
 

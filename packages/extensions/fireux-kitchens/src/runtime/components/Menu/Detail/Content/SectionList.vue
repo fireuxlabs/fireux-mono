@@ -48,7 +48,7 @@ const sectionDomId = (id: string) =>
   .menu-sections {
     display: block;
     column-count: 2;
-    column-gap: clamp(var(--menu-space-lg), 4vw, 4rem);
+    column-gap: clamp(var(--menu-space-lg), 4vw, calc(var(--spacing) * 16));
   }
 }
 </style>

@@ -4,7 +4,7 @@ The host component owns layout; this molecule owns shared surface geometry.
 */
 :where(.fx-inset-panel) {
 	min-width: 0;
-	padding: 0.75rem;
+	padding: calc(var(--spacing) * 3);
 	border: 1px solid var(--ui-border);
 	border-radius: calc(var(--ui-radius) * 2);
 }

@@ -25,7 +25,7 @@ const handleSignOut = async () => {
 .auth-authenticated {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: 100%;
 }
 </style>

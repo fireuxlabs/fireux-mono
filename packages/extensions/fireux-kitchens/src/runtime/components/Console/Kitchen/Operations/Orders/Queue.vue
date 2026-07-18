@@ -36,6 +36,6 @@ const {
 .orders-queue {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 </style>

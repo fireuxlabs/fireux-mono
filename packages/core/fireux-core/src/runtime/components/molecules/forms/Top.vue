@@ -104,14 +104,14 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
 
 <style scoped>
 .base-form-field-top {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding-top: var(--spacing);
+  padding-bottom: var(--spacing);
 }
 .top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 .left {
   display: flex;
@@ -129,13 +129,13 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--spacing);
 }
 .editing-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-left: 0.5rem;
+  gap: var(--spacing);
+  margin-left: calc(var(--spacing) * 2);
   font-size: 0.75rem; /* text-xs */
   color: var(--ui-primary);
 }
@@ -146,10 +146,10 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
   background-color: var(--ui-primary);
 }
 .error-wrap {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
 }
 .disabled-wrap {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
 }
 .disabled-message {
   font-size: 0.75rem;

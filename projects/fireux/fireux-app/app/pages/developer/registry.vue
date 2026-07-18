@@ -66,9 +66,9 @@ definePageMeta({
 .registry-doc {
   max-width: 820px;
   margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
+  padding: calc(var(--spacing) * 12) calc(var(--spacing) * 6) calc(var(--spacing) * 16);
   display: grid;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
 }
 .eyebrow {
   text-transform: uppercase;
@@ -78,22 +78,22 @@ definePageMeta({
 }
 header h1 {
   font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 header p {
   max-width: 60ch;
 }
 .content {
   display: grid;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   font-size: 1rem;
   line-height: 1.7;
 }
 .content ul,
 .content ol {
-  margin-left: 1.25rem;
+  margin-left: calc(var(--spacing) * 5);
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 .content code {
   background: rgba(148, 163, 184, 0.15);

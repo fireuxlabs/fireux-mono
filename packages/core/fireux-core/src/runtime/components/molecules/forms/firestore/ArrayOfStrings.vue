@@ -19,7 +19,7 @@
 
     <!-- Edit Mode: list each item with an input and a remove icon; plus an extra input to add a new item -->
     <div v-else class="editing">
-      <div v-for="(item, index) in localValue" :key="index" class="input-group">
+      <div v-for="(item, index) in localValue" :key="index" class="form-array-input-row">
         <UInput
           v-model="localValue[index]"
           :placeholder="itemPlaceholder"
@@ -31,7 +31,7 @@
           @click="removeItem(index)"
         />
       </div>
-      <div class="input-group add-group">
+      <div class="form-array-input-row form-array-add-row">
         <UInput
           v-model="newItem"
           :placeholder="newItemPlaceholder"
@@ -125,16 +125,3 @@ async function deleteButtonClicked() {
   }
 }
 </script>
-
-<style lang="scss">
-.input-group {
-  margin-bottom: var(--space-1);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.add-group {
-  margin-top: var(--space-1);
-}
-</style>

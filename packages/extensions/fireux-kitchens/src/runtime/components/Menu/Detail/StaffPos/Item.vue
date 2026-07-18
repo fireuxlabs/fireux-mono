@@ -79,7 +79,7 @@ function addItem() {
 <style scoped>
 .staff-pos-item {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .staff-pos-item__button {
@@ -89,7 +89,7 @@ function addItem() {
   align-items: center;
   width: 100%;
   min-height: 5.25rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem calc(var(--spacing) * 3);
   border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--menu-bg) 92%, var(--menu-text));
@@ -140,7 +140,7 @@ function addItem() {
 
 .staff-pos-item__body {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--spacing);
   min-width: 0;
 }
 

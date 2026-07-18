@@ -128,7 +128,7 @@ useKitchenSeo(seoKitchen)
 <style scoped>
 .kitchen-detail {
   display: grid;
-  gap: clamp(2.25rem, 5vw, 4rem);
-  padding-bottom: clamp(2rem, 6vw, 5rem);
+  gap: clamp(calc(var(--spacing) * 9), 5vw, calc(var(--spacing) * 16));
+  padding-bottom: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
 }
 </style>

@@ -79,7 +79,7 @@ const bullets = computed(() => props.bullets || [])
 .hero {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 3vw, 1.75rem);
+  gap: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 7));
 }
 
 .hero__heading {
@@ -108,7 +108,7 @@ const bullets = computed(() => props.bullets || [])
 .hero__badges {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .hero__badges img {
@@ -119,12 +119,12 @@ const bullets = computed(() => props.bullets || [])
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .hero__bullets {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   color: var(--ui-text-muted);
   font-size: 0.95rem;
@@ -133,7 +133,7 @@ const bullets = computed(() => props.bullets || [])
 .hero__bullets li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .hero__bullets i,

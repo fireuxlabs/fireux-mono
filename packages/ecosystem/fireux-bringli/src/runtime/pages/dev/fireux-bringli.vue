@@ -73,7 +73,7 @@
                 </div>
               </template>
 
-              <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              <ul class="list-disc fx-list-stack text-sm text-gray-700 dark:text-gray-300">
                 <li>Drop extension should own supplier and local delivery-facing profile flows.</li>
                 <li>Places extension remains available for location and service-area workflows.</li>
                 <li>Firebase keys in ecosystem config are placeholders until project provisioning is completed.</li>

@@ -128,7 +128,7 @@ const handleSignatureDishes = async (value: string[]) =>
 .profile-edit__section-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   font-weight: 600;
 }
 </style>

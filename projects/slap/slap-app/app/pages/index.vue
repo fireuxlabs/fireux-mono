@@ -144,8 +144,8 @@ useSeoMeta({
 .slap-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  gap: calc(var(--spacing) * 3);
+  margin-top: calc(var(--spacing) * 8);
 }
 
 .slap-action {
@@ -202,7 +202,7 @@ useSeoMeta({
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
   align-items: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   padding: 3rem max(1rem, calc((100vw - 76rem) / 2));
   background: #0b0b0d;
   color: #f9f6ee;
@@ -258,7 +258,7 @@ useSeoMeta({
   .slap-pulse {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: 0.75rem;
+    gap: calc(var(--spacing) * 3);
   }
 
   .slap-pulse span {
@@ -285,7 +285,7 @@ useSeoMeta({
 
   .slap-pulse {
     min-height: 11rem;
-    padding-block: 2rem;
+    padding-block: calc(var(--spacing) * 8);
   }
 }
 </style>

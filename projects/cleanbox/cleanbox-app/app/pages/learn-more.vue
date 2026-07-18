@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-12 pb-16">
+  <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Cleanbox Guide</UBadge>
@@ -22,7 +22,7 @@
           <template #header>
             <h2 class="text-lg font-semibold">Core concepts</h2>
           </template>
-          <ul class="list-disc space-y-2 pl-5 text-sm">
+          <ul class="list-disc fx-list-stack text-sm">
             <li>Service locations are the operational anchor for planning and delivery.</li>
             <li>Job flow tracks assignment, execution, and completion evidence.</li>
             <li>Quality and reliability improve when operations run from one system.</li>

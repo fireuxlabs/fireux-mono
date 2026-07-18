@@ -111,7 +111,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
 <style scoped>
 .menu-qr-entry {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   min-width: 0;
   padding: 0.85rem;
   border: 1px solid var(--ui-border);
@@ -124,7 +124,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   place-items: center;
   width: min(100%, 12rem);
   aspect-ratio: 1;
-  padding: 0.5rem;
+  padding: calc(var(--spacing) * 2);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
   background: #ffffff;
@@ -145,6 +145,6 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   color: var(--ui-text-highlighted);
   font-size: 0.72rem;
   font-weight: 800;
-  padding: 0.25rem 0.45rem;
+  padding: var(--spacing) 0.45rem;
 }
 </style>

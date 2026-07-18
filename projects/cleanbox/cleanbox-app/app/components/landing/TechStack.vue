@@ -49,18 +49,18 @@ const techStack = {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  padding: 2rem 0;
+  padding: calc(var(--spacing) * 8) 0;
 }
 
 .section-title {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .section-subtitle {
   font-size: 1.125rem;
-  margin-bottom: 3rem;
+  margin-bottom: calc(var(--spacing) * 12);
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -69,15 +69,15 @@ const techStack = {
 .tech-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 1rem;
+  gap: calc(var(--spacing) * 8);
+  padding: calc(var(--spacing) * 4);
 }
 
 .tech-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   border-radius: calc(var(--ui-radius) * 3);
   transition: transform 0.2s ease;
 }
@@ -90,13 +90,13 @@ const techStack = {
   width: 64px;
   height: 64px;
   object-fit: contain;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .tech-name {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .tech-description {

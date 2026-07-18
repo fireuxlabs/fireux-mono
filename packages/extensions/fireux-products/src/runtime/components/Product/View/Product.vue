@@ -266,7 +266,7 @@ async function startCheckout() {
 
 .product-cell {
   display: flex;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: flex-start;
   text-align: left;
 }
@@ -302,33 +302,33 @@ async function startCheckout() {
 .cell-description {
   color: #6b7280;
   font-size: 0.9rem;
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
 }
 
 .cell-price {
-  margin-top: 0.5rem;
+  margin-top: calc(var(--spacing) * 2);
   font-weight: bold;
 }
 
 .purchase-buttons {
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   display: flex;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .product-page {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
 }
 
 .product-hero {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 1rem;
+  padding-bottom: calc(var(--spacing) * 4);
   border-bottom: 1px solid var(--ui-border);
 }
 
@@ -341,7 +341,7 @@ async function startCheckout() {
 
 .product-title {
   font-size: 2rem;
-  margin: 0.25rem 0 0.5rem;
+  margin: var(--spacing) 0 calc(var(--spacing) * 2);
 }
 
 .product-summary {
@@ -351,7 +351,7 @@ async function startCheckout() {
 
 .product-price {
   min-width: 14rem;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 1.5);
   background: var(--ui-bg-elevated);
@@ -368,11 +368,11 @@ async function startCheckout() {
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0.25rem 0;
+  margin: var(--spacing) 0;
 }
 
 .product-section h2 {
-  margin: 0 0 0.75rem;
+  margin: 0 0 calc(var(--spacing) * 3);
   font-size: 1.1rem;
 }
 

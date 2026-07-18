@@ -31,14 +31,14 @@ defineProps<{
 .menu-container {
   display: flex;
   flex-direction: column;
-  padding: var(--space-4);
+  padding: calc(var(--spacing) * 4);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
 }
 
 .menu-icon {

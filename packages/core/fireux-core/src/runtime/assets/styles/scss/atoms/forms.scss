@@ -15,16 +15,27 @@
 
 .form-stack-sm {
 	display: grid;
-	gap: 0.75rem;
+	gap: calc(var(--spacing) * 3);
+}
+
+.form-array-input-row {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing);
+	margin-bottom: var(--spacing);
+}
+
+.form-array-add-row {
+	margin-top: var(--spacing);
 }
 
 .form-item-heading {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin-bottom: 0.25rem;
+	gap: calc(var(--spacing) * 2);
+	margin-bottom: var(--spacing);
 	justify-content: space-between;
-	padding-right: 2.5rem;
+	padding-right: calc(var(--spacing) * 10);
 }
 
 .form-item-heading h3 {
@@ -34,10 +45,10 @@
 .form-item-actions {
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
+	gap: calc(var(--spacing) * 2);
 	position: absolute;
-	top: 0.25rem;
-	right: 0.25rem;
+	top: var(--spacing);
+	right: var(--spacing);
 	z-index: 2;
 }
 

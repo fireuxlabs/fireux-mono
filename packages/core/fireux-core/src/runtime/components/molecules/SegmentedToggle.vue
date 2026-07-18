@@ -45,7 +45,7 @@ defineEmits<{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .fx-segmented-toggle__label {
@@ -59,8 +59,8 @@ defineEmits<{
 .fx-segmented-toggle__group {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  gap: var(--spacing);
+  padding: var(--spacing);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg) 60%, transparent);

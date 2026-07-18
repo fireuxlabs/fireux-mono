@@ -85,7 +85,7 @@ onBeforeUnmount(() => {
 
 .baeren-home-surfaces__inner {
   display: grid;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
   width: min(100%, 80rem);
   margin-inline: auto;
 }
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 
 .baeren-home-surfaces__grid {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .baeren-home-surfaces__item {
@@ -183,26 +183,26 @@ onBeforeUnmount(() => {
 
 @media (min-width: 40rem) {
   .baeren-home-surfaces {
-    padding-inline: 1.5rem;
+    padding-inline: calc(var(--spacing) * 6);
   }
 
   .baeren-home-surfaces__grid {
-    gap: 1rem;
+    gap: calc(var(--spacing) * 4);
   }
 }
 
 @media (min-width: 64rem) {
   .baeren-home-surfaces {
-    padding-block: 7rem 12rem;
+    padding-block: calc(var(--spacing) * 28) calc(var(--spacing) * 48);
   }
 
   .baeren-home-surfaces__inner {
-    gap: 3.5rem;
+    gap: calc(var(--spacing) * 14);
   }
 
   .baeren-home-surfaces__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 1.25rem;
+    gap: calc(var(--spacing) * 5);
   }
 
   .baeren-home-surfaces__item {

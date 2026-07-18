@@ -83,6 +83,6 @@ const { blogPost } = useBlogDraftState()
   align-items: center;
 }
 .input-with-prefix .prefix {
-  margin-right: 0.5rem; /* adjust spacing as needed */
+  margin-right: calc(var(--spacing) * 2); /* adjust spacing as needed */
 }
 </style>

@@ -278,7 +278,7 @@ function addOnPrice(price: number) {
 
 .menu-order-item-dialog {
   display: grid;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .menu-order-item-dialog__group {
@@ -303,7 +303,7 @@ function addOnPrice(price: number) {
 .menu-order-item-dialog__single-option {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) max-content;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   align-items: center;
   padding: 0.85rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
@@ -348,8 +348,8 @@ function addOnPrice(price: number) {
   min-height: 3rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
   border: 1px solid var(--menu-primary);
   border-radius: var(--menu-radius-control);
   background: var(--menu-primary);

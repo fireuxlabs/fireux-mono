@@ -14,8 +14,8 @@ defineProps<{ iconTitle: { label: string; icon: string } }>()
   height: var(--header-height);
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
+  gap: calc(var(--spacing) * 2);
+  padding: 0 calc(var(--spacing) * 4);
   background-color: var(--ui-bg);
 }
 

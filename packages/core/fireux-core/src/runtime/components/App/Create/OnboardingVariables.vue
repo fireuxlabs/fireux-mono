@@ -370,6 +370,6 @@ const summaryBrand = computed(
   border-radius: var(--ui-radius);
   border: 1px solid var(--ui-border);
   background: var(--ui-bg);
-  padding: var(--space-2);
+  padding: calc(var(--spacing) * 2);
 }
 </style>

@@ -199,7 +199,7 @@ definePageMeta({
 .dev-image-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .dev-image-chip {
@@ -210,7 +210,7 @@ definePageMeta({
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 0.75rem;
+  padding: calc(var(--spacing) * 3);
 }
 
 .dev-image-chip img {

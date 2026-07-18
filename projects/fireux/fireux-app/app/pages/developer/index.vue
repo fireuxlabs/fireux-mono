@@ -90,18 +90,18 @@
 .developer-landing {
   max-width: 700px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
 }
 .skills-list {
-  margin-top: 1.5rem;
-  padding-left: 1.5rem;
+  margin-top: calc(var(--spacing) * 6);
+  padding-left: calc(var(--spacing) * 6);
 }
 .skills-list li {
-  margin-bottom: 0.75rem;
+  margin-bottom: calc(var(--spacing) * 3);
   font-size: 1.1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 .list-icon {
   width: 1.5em;
@@ -109,11 +109,11 @@
   vertical-align: middle;
 }
 .more-info {
-  margin-top: 2rem;
+  margin-top: calc(var(--spacing) * 8);
   font-size: 1.05rem;
 }
 .dev-link {
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.75);
 }

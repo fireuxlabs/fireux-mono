@@ -131,7 +131,7 @@ defineExpose({
 .images-system {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 @media (min-width: 640px) {
@@ -146,17 +146,17 @@ defineExpose({
   background: var(--ui-bg-elevated);
   border-radius: calc(var(--ui-radius) * 1.5);
   border: 1px solid var(--ui-border);
-  padding: var(--space-4);
+  padding: calc(var(--spacing) * 4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: calc(var(--spacing) * 3);
   flex: 1;
 }
 
 .card-header {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: calc(var(--spacing) * 0.5);
 }
 
 .card-title {
@@ -197,11 +197,11 @@ defineExpose({
 }
 
 .image-card :deep(.actions) {
-  margin-top: var(--space-2);
+  margin-top: calc(var(--spacing) * 2);
 }
 
 .image-card :deep(.file-info) {
-  margin-top: var(--space-1);
+  margin-top: var(--spacing);
 }
 
 .image-card :deep(.upload-controls) {
@@ -210,15 +210,15 @@ defineExpose({
 
 /* Upload Progress Styles */
 .upload-progress {
-  margin-top: var(--space-4);
-  padding: var(--space-4);
+  margin-top: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
   background: var(--ui-bg-elevated);
   border-radius: calc(var(--ui-radius) * 1.5);
   border: 1px solid var(--ui-border);
 }
 
 .upload-progress h4 {
-  margin: 0 0 var(--space-3) 0;
+  margin: 0 0 calc(var(--spacing) * 3) 0;
   font-size: 1rem;
   font-weight: 600;
   color: var(--ui-text-highlighted);
@@ -227,27 +227,27 @@ defineExpose({
 .uploading-spinner {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  gap: calc(var(--spacing) * 2);
+  margin-bottom: calc(var(--spacing) * 3);
 }
 
 .upload-errors {
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
+  margin-top: calc(var(--spacing) * 3);
+  padding-top: calc(var(--spacing) * 3);
   border-top: 1px solid var(--ui-border);
 }
 
 .error-item {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 2);
   background: var(--color-red-50);
   border: 1px solid var(--color-red-200);
   border-radius: var(--ui-radius);
   color: var(--color-red-700);
   font-size: 0.875rem;
-  margin-bottom: var(--space-2);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 /* Color mode spine: docs/concepts/color-mode.md */

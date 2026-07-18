@@ -156,7 +156,7 @@ const preOrderDepositNotice = computed(() =>
 <style scoped>
 .menu-header {
   display: grid;
-  gap: clamp(1rem, 2.4vw, 1.5rem);
+  gap: clamp(calc(var(--spacing) * 4), 2.4vw, calc(var(--spacing) * 6));
   justify-items: stretch;
   width: min(100%, 62rem);
   margin: 0 auto;
@@ -261,7 +261,7 @@ const preOrderDepositNotice = computed(() =>
 
 .menu-pre-order-notice__copy {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--spacing);
   min-width: 0;
   color: var(--menu-text);
   font-size: 0.88rem;

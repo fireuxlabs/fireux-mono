@@ -25,13 +25,13 @@ defineProps<{
 <style scoped>
 .menu-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: calc(var(--spacing) * 6);
 }
 
 .menu-language {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .kitchen-name,
@@ -40,7 +40,7 @@ defineProps<{
 }
 
 .kitchen-name {
-  margin: 0 0 0.5rem;
+  margin: 0 0 calc(var(--spacing) * 2);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0;
@@ -58,7 +58,7 @@ defineProps<{
 }
 
 .description {
-  margin: 0.75rem auto 0;
+  margin: calc(var(--spacing) * 3) auto 0;
   max-width: 42rem;
   line-height: 1.55;
   color: var(--menu-muted);

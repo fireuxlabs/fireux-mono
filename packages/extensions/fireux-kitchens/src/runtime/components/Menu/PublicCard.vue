@@ -79,10 +79,10 @@ const { menuServiceChip } = useMenuServiceComputed(serviceHours)
 .menu-public-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(1.25rem, 3vw, 2rem);
+  gap: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
   align-items: center;
   min-height: 10rem;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 7));
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 6);
   background:
@@ -109,7 +109,7 @@ const { menuServiceChip } = useMenuServiceComputed(serviceHours)
   display: flex;
   min-width: 0;
   align-items: flex-start;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .menu-public-card__icon {

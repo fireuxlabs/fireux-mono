@@ -53,14 +53,14 @@ onMounted(() => {
 .design {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 /* ✅ Grid Layout */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 /* ✅ Card-Style Container */
@@ -71,7 +71,7 @@ onMounted(() => {
   text-align: center;
   background: var(--ui-bg-elevated);
   border-radius: calc(var(--ui-radius) * 2);
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -79,7 +79,7 @@ onMounted(() => {
 .color-header {
   font-weight: 600;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  margin-top: calc(var(--spacing) * 2);
 }
 
 /* ✅ Color Block */

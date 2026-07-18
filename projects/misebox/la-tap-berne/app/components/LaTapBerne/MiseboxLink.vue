@@ -27,7 +27,7 @@ import { laTapBerneContent } from '../../config/content.config'
   flex-direction: column;
   align-items: center;
   justify-self: center;
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
   color: var(--latap-page-fg, var(--brand-canvas));
   font-size: 0.7rem;
   font-weight: 850;

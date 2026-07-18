@@ -57,10 +57,10 @@ const resolvedItems = computed(() =>
 
 <style scoped>
 .solutions {
-  padding: clamp(2rem, 6vw, 3rem) 0;
+  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 12)) 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
 }
 
 .solutions__title {
@@ -76,7 +76,7 @@ const resolvedItems = computed(() =>
 
 .solutions__grid {
   display: grid;
-  gap: clamp(1rem, 3vw, 1.75rem);
+  gap: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 7));
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
@@ -84,10 +84,10 @@ const resolvedItems = computed(() =>
   border-radius: calc(var(--ui-radius) * 3);
   border: 1px solid var(--ui-border-muted);
   background: var(--ui-bg);
-  padding: 1.25rem;
+  padding: calc(var(--spacing) * 5);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .solutions__icon {

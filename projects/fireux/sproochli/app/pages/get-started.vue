@@ -5,7 +5,7 @@
     back-label="Sproochli"
   >
     <section class="space-y-4">
-      <ol class="list-decimal space-y-2 pl-5 text-muted">
+      <ol class="list-decimal fx-list-stack text-muted">
         <li>Choose the public content you want visitors to scan.</li>
         <li>Publish a simple QR-ready page.</li>
         <li>Add translation when the content is ready for it.</li>

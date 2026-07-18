@@ -45,7 +45,7 @@ const items = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
+  gap: var(--spacing);
   border-radius: calc(var(--ui-radius) * 4);
   color: var(--baeren-nav-ink);
   font-size: 0.66rem;

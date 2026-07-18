@@ -62,7 +62,7 @@ const props = withDefaults(defineProps<{
 <style scoped>
 .menu-order-intro {
   display: grid;
-  gap: clamp(1.25rem, 4vw, 2rem);
+  gap: clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 8));
 }
 
 </style>

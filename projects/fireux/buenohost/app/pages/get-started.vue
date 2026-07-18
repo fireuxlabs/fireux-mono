@@ -5,7 +5,7 @@
     back-label="BuenoHost"
   >
     <section class="space-y-4">
-      <ol class="list-decimal space-y-2 pl-5 text-muted">
+      <ol class="list-decimal fx-list-stack text-muted">
         <li>Choose a property or stay experience.</li>
         <li>Add the information guests need before and during the stay.</li>
         <li>Share the public guide with a QR code.</li>

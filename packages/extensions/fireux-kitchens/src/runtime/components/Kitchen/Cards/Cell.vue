@@ -196,7 +196,7 @@ const onClick = (event?: MouseEvent) => {
 <style scoped>
 .kitchen-card-cell--directory {
   min-height: 9.5rem;
-  padding: 1.25rem;
+  padding: calc(var(--spacing) * 5);
   border-color: color-mix(in srgb, var(--ui-primary) 13%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 6);
   background:
@@ -222,7 +222,7 @@ const onClick = (event?: MouseEvent) => {
 .kitchen-card-cell--directory .card__media {
   align-items: flex-start;
   height: 100%;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .kitchen-card-cell--directory .kitchen-card-cell__avatar {

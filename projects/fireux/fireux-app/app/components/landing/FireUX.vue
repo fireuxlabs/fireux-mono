@@ -117,12 +117,12 @@ const filteredFeatures = computed(() => {
 
 <style scoped>
 .grid {
-  gap: var(--space-4);
+  gap: calc(var(--spacing) * 4);
 }
 .feature {
   display: flex;
-  gap: var(--space-6);
-  padding: var(--space-1);
+  gap: calc(var(--spacing) * 6);
+  padding: var(--spacing);
   text-align: left;
   width: 100%;
 }

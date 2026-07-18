@@ -6,8 +6,8 @@
 .menu-order-funnel {
   position: fixed;
   z-index: 30;
-  right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(calc(var(--spacing) * 4), env(safe-area-inset-right));
+  bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
   display: grid;
   justify-items: end;
   pointer-events: none;
@@ -37,7 +37,7 @@
   max-width: calc(100vw - 2rem);
   min-height: 4.2rem;
   align-items: center;
-  padding: 0.5rem 0.75rem 0.5rem 0.55rem;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3) calc(var(--spacing) * 2) 0.55rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);
   background: var(--menu-primary);
@@ -100,7 +100,7 @@
   gap: var(--menu-space-md);
   width: min(100%, 34rem);
   max-height: calc(100dvh - 2rem);
-  padding: clamp(var(--menu-space-md), 3vw, 1.25rem);
+  padding: clamp(var(--menu-space-md), 3vw, calc(var(--spacing) * 5));
   overflow: auto;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);

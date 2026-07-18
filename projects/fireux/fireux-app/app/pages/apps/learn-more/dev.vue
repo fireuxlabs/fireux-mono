@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">Canonical records</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Registry collection: <code>apps</code>.</li>
           <li>Directory shape: <code>{ id, name, ecosystem, role, src, text, href }</code>.</li>
           <li>Role controls global/tenant linking behavior for app directory cards.</li>

@@ -6,7 +6,7 @@
 
 <style scoped>
 .step-content {
-  margin-top: 1rem;
-  padding-bottom: 1.5rem;
+  margin-top: calc(var(--spacing) * 4);
+  padding-bottom: calc(var(--spacing) * 6);
 }
 </style>

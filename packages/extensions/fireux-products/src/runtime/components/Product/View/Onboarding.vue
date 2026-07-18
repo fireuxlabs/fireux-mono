@@ -84,10 +84,10 @@ const stepIsComplete = (value: string) => {
 .stepper-header {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .stepper-meta {
@@ -107,7 +107,7 @@ const stepIsComplete = (value: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   width: 100%;
 }
 

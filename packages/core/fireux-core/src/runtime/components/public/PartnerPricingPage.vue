@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-16 pb-20">
+  <div class="fx-page-stack fx-page-stack--comfortable">
     <section class="py-16">
       <UContainer class="space-y-6">
         <UBadge color="primary" variant="soft">{{ ecosystemName }} Pricing</UBadge>

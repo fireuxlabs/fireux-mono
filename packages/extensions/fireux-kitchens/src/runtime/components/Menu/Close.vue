@@ -66,13 +66,13 @@ withDefaults(defineProps<{
 }
 
 .menu-close--top-right {
-  top: calc(1rem + env(safe-area-inset-top));
-  right: calc(1rem + env(safe-area-inset-right));
+  top: calc(var(--spacing) * 4 + env(safe-area-inset-top));
+  right: calc(var(--spacing) * 4 + env(safe-area-inset-right));
 }
 
 .menu-close--bottom-left {
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-  left: calc(1rem + env(safe-area-inset-left));
+  bottom: calc(var(--spacing) * 4 + env(safe-area-inset-bottom));
+  left: calc(var(--spacing) * 4 + env(safe-area-inset-left));
 }
 
 .menu-close:hover {
@@ -91,13 +91,13 @@ withDefaults(defineProps<{
 
 @media (min-width: 40rem) {
   .menu-close--top-right {
-    top: calc(2rem + env(safe-area-inset-top));
-    right: calc(2rem + env(safe-area-inset-right));
+    top: calc(var(--spacing) * 8 + env(safe-area-inset-top));
+    right: calc(var(--spacing) * 8 + env(safe-area-inset-right));
   }
 
   .menu-close--bottom-left {
-    bottom: calc(2rem + env(safe-area-inset-bottom));
-    left: calc(2rem + env(safe-area-inset-left));
+    bottom: calc(var(--spacing) * 8 + env(safe-area-inset-bottom));
+    left: calc(var(--spacing) * 8 + env(safe-area-inset-left));
   }
 }
 </style>

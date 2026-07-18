@@ -62,7 +62,7 @@ async function copyJson() {
 pre {
   overflow: auto;
   margin: 0;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-bg-muted);

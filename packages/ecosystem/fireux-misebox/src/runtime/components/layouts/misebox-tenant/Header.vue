@@ -52,7 +52,7 @@ const tenantHeaderUi = {
 :global(.misebox-tenant-header__container) {
   height: auto;
   justify-content: center;
-  padding-block: 1.5rem;
+  padding-block: calc(var(--spacing) * 6);
 }
 
 :global(.misebox-tenant-header__brand) {

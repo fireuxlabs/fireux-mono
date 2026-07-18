@@ -41,7 +41,7 @@
 
 .menu-order-collection-time {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .menu-order-collection-time__asap {
@@ -122,7 +122,7 @@
 }
 
 .menu-order-collection-time__days button {
-  padding: 0.5rem 0.7rem;
+  padding: calc(var(--spacing) * 2) 0.7rem;
 }
 
 .menu-order-collection-time__days button[aria-pressed="true"] {
@@ -156,7 +156,7 @@
   display: flex;
   gap: 0.8rem;
   align-items: flex-start;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: var(--menu-radius-control);
   color: var(--menu-muted);
@@ -164,7 +164,7 @@
 
 .menu-order-collection-time__unavailable p,
 .menu-order-collection-time__empty {
-  margin: 0.25rem 0 0;
+  margin: var(--spacing) 0 0;
   color: var(--menu-muted);
   font-size: 0.85rem;
 }
@@ -173,9 +173,9 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
-  padding: 0.75rem 0.9rem;
+  padding: calc(var(--spacing) * 3) 0.9rem;
   border: 1px solid var(--menu-primary);
   border-radius: var(--menu-radius-control);
   background: var(--menu-primary);

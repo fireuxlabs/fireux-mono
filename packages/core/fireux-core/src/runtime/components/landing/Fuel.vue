@@ -57,16 +57,16 @@ const steps = [
 
 <style scoped>
 .fuel {
-  padding: clamp(2rem, 6vw, 3rem) 0;
+  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 12)) 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .fuel header {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .fuel header h2 {
@@ -80,27 +80,27 @@ const steps = [
 
 .fuel__grid {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .fuel__card {
   border-radius: calc(var(--ui-radius) * 3);
   border: 1px dashed var(--ui-border-muted);
-  padding: 1.25rem;
+  padding: calc(var(--spacing) * 5);
   background: var(--ui-bg-muted);
 }
 
 .fuel__meter-head {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: calc(var(--spacing) * 2);
+  margin-bottom: calc(var(--spacing) * 3);
 }
 
 .fuel__card h3 {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .fuel__card p {

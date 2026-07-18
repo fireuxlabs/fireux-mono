@@ -154,6 +154,7 @@ function printTicket() {
 <style scoped>
 .order-ticket-frame {
   --order-ticket-reading-color: var(--color-violet-500, #8b5cf6);
+  --order-ticket-selected-color: var(--color-amber-400, #fbbf24);
 
   position: relative;
   width: 100%;
@@ -205,14 +206,23 @@ function printTicket() {
 }
 
 .order-ticket--selected {
-  outline: 3px solid color-mix(in srgb, var(--ui-success) 45%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--order-ticket-selected-color) 12%,
+    var(--ui-bg)
+  );
+  outline: 3px solid color-mix(
+    in srgb,
+    var(--ui-success) 45%,
+    transparent
+  );
 }
 
 .order-ticket--interactive {
   cursor: pointer;
 }
 
-.order-ticket--interactive:not(.order-ticket--expanded):hover {
+.order-ticket--interactive:not(.order-ticket--expanded):not(.order-ticket--selected):hover {
   background: color-mix(in srgb, var(--ui-bg-muted) 40%, transparent);
 }
 

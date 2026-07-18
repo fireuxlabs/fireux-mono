@@ -45,7 +45,7 @@ function onFileChange(e: Event) {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-2);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 .avatar {
   width: 96px;
@@ -59,7 +59,7 @@ function onFileChange(e: Event) {
   place-items: center;
   cursor: pointer;
   background-color: var(--ui-bg-muted);
-  padding: 8px;
+  padding: calc(var(--spacing) * 2);
   border-radius: 9999px;
 }
 .file-input {

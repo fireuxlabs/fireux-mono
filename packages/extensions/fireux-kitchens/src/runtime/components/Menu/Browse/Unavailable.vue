@@ -31,7 +31,7 @@ defineProps<{
   min-height: min(34rem, 72vh);
   place-content: center;
   justify-items: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: min(100%, 38rem);
   margin: auto;
   text-align: center;

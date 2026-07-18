@@ -144,8 +144,8 @@ function addOnPrice(price: number) {
 .menu-browse-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-  padding: 1.25rem 0;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 5) 0;
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
 }
 
@@ -169,7 +169,7 @@ function addOnPrice(price: number) {
 .menu-browse-item__options li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: baseline;
 }
 
@@ -213,7 +213,7 @@ function addOnPrice(price: number) {
 }
 
 .menu-browse-item__options--add-ons:not(:first-child) {
-  padding-top: 0.75rem;
+  padding-top: calc(var(--spacing) * 3);
   border-top: 1px dashed color-mix(in srgb, var(--menu-text) 10%, transparent);
 }
 
@@ -270,7 +270,7 @@ function addOnPrice(price: number) {
 @media (max-width: 420px) {
   .menu-browse-item--with-image .menu-browse-item__heading {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.25rem;
+    gap: var(--spacing);
   }
 
   .menu-browse-item--with-image .menu-browse-item__price {

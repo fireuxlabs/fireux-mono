@@ -88,7 +88,7 @@ function addItem() {
 
   display: grid;
   grid-template-rows: auto minmax(0, 1.35fr) auto auto;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   aspect-ratio: 1;
   min-width: 0;
   color: white;
@@ -160,7 +160,7 @@ function addItem() {
   min-height: 3.15rem;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   padding: 0.55rem 0.65rem 0.55rem 0.8rem;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 62%, white);
   border-radius: calc(var(--ui-radius) * 3);

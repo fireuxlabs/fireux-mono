@@ -35,11 +35,11 @@ defineProps<{
 .order-ticket-line {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .order-ticket-line + .order-ticket-line {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
 }
 
 .order-ticket-line__content {

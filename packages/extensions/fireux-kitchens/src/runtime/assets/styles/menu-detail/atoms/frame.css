@@ -22,12 +22,12 @@
   --menu-title-font: var(--menu-font);
   --menu-radius: calc(var(--ui-radius) * 4);
   --menu-radius-control: calc(var(--ui-radius) * 2);
-  --menu-space-2xs: 0.25rem;
-  --menu-space-xs: 0.4rem;
-  --menu-space-sm: 0.75rem;
-  --menu-space-md: 1rem;
-  --menu-space-lg: 2rem;
-  --menu-section-nav-top: max(0.5rem, env(safe-area-inset-top));
+  --menu-space-2xs: var(--spacing);
+  --menu-space-xs: calc(var(--spacing) * 1.6);
+  --menu-space-sm: calc(var(--spacing) * 3);
+  --menu-space-md: calc(var(--spacing) * 4);
+  --menu-space-lg: calc(var(--spacing) * 8);
+  --menu-section-nav-top: max(calc(var(--spacing) * 2), env(safe-area-inset-top));
 
   display: grid;
   gap: clamp(var(--menu-space-md), 3vw, var(--menu-space-lg));
@@ -35,7 +35,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 12));
   background: var(--menu-bg);
   color: var(--menu-text);
   font-family: var(--menu-font);
@@ -79,12 +79,12 @@
 }
 
 .menu-catalogue-sections {
-  gap: clamp(3rem, 7vw, 5rem);
+  gap: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 20));
 }
 
 .menu-catalogue-section {
-  gap: 1rem;
-  scroll-margin-block-start: calc(var(--menu-section-nav-top) + 4.25rem);
+  gap: calc(var(--spacing) * 4);
+  scroll-margin-block-start: calc(var(--menu-section-nav-top) + calc(var(--spacing) * 17));
 }
 
 .menu-catalogue-section__heading {
@@ -118,11 +118,11 @@
   .menu-catalogue-sections {
     display: block;
     column-count: 2;
-    column-gap: clamp(var(--menu-space-lg), 4vw, 4rem);
+    column-gap: clamp(var(--menu-space-lg), 4vw, calc(var(--spacing) * 16));
   }
 
   .menu-catalogue-section {
     break-inside: avoid;
-    margin-bottom: clamp(3rem, 7vw, 5rem);
+    margin-bottom: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 20));
   }
 }

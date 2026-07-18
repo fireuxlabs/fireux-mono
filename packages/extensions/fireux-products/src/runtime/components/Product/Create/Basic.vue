@@ -27,12 +27,12 @@ const { product, isSlugTaken } = await useCreateProductState()
 .basic-fields {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 .slug-warning {
   color: var(--warning);
   font-size: 0.875rem;
-  margin-top: -1rem;
-  margin-bottom: 0.5rem;
+  margin-top: calc(var(--spacing) * -4);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 </style>

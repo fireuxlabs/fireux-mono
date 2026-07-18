@@ -30,7 +30,7 @@ withDefaults(defineProps<{
   position: relative;
   z-index: 1;
   display: grid;
-  gap: clamp(0.9rem, 2vw, 1.25rem);
+  gap: clamp(calc(var(--spacing) * 3.6), 2vw, calc(var(--spacing) * 5));
   width: min(42rem, calc(100% - 2rem));
   min-height: 100svh;
   align-content: center;

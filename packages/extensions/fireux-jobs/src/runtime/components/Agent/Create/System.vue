@@ -104,7 +104,7 @@ const handleCreate = async () => {
 .header {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .eyebrow {
@@ -128,7 +128,7 @@ const handleCreate = async () => {
 .body {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .benefits {
@@ -136,13 +136,13 @@ const handleCreate = async () => {
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .benefits li {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   font-size: 0.95rem;
   color: var(--ui-text-600, #475569);
 }
@@ -154,7 +154,7 @@ const handleCreate = async () => {
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: flex-start;
 }
 

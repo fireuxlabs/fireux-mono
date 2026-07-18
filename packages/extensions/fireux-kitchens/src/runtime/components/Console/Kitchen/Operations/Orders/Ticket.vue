@@ -5,7 +5,7 @@
     prominent
     :selected="selected"
     :show-customer-details="false"
-    :header-action-label="isPass && selected ? 'Return' : ''"
+    :header-action-label="isPass && selected ? 'Re-Que' : ''"
     :body-action-label="isPass
       ? selected
         ? 'Remove order from send selection'

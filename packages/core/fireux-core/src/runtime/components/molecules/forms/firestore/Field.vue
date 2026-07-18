@@ -180,8 +180,8 @@ const saveChanges = async () => {
 
 <style scoped>
 .display {
-  padding: var(--space-3) 0;
-  min-height: var(--space-10);
+  padding: calc(var(--spacing) * 3) 0;
+  min-height: calc(var(--spacing) * 10);
   display: flex;
   align-items: center;
 }
@@ -189,6 +189,6 @@ const saveChanges = async () => {
 .editing {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: calc(var(--spacing) * 3);
 }
 </style>

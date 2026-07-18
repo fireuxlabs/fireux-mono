@@ -41,7 +41,7 @@ defineProps<{
   min-height: 2.65rem;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   padding: 0.6rem 0.9rem;
   border: 1px solid color-mix(in srgb, var(--menu-primary) 36%, transparent);
   border-radius: var(--menu-radius-control);

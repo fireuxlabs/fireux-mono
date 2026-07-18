@@ -110,7 +110,7 @@ const isLoading = computed(() => Boolean(pending.value))
   flex-direction: column;
   align-items: center;
   gap: 0.15rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: calc(var(--spacing) * 3);
   text-align: center;
 }
 
@@ -131,7 +131,7 @@ const isLoading = computed(() => Boolean(pending.value))
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   width: 100%;
 }
 
@@ -141,7 +141,7 @@ const isLoading = computed(() => Boolean(pending.value))
 
 .footer-admins__loading {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .footer-admins__skeleton {

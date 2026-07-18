@@ -1,153 +1,84 @@
 <template>
-  <article class="grid w-full min-w-0 gap-3 rounded-md border border-primary/25 bg-default p-3">
-    <header class="flex items-start justify-between gap-3">
-      <div class="flex min-w-0 items-start gap-3">
-        <UIcon
-          v-if="incomingIcon"
-          :name="incomingIcon"
-          class="mt-0.5 size-5 shrink-0 text-primary"
-          aria-hidden="true"
-        />
-
-        <div class="min-w-0">
-          <h3 class="m-0 truncate text-sm font-bold text-highlighted">
-            {{ incomingTitle }}
-          </h3>
-          <p class="m-0 truncate text-xs text-dimmed">
-            {{ orderNumber }}
-          </p>
-        </div>
-      </div>
-
-      <UButton
-        size="xs"
-        color="neutral"
-        variant="soft"
-        :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
-        :aria-label="copied ? 'Order copied' : 'Copy order'"
-        @click="copyTicket"
+  <UCard
+    class="receiving-order"
+    :ui="{
+      body: reviewOpen
+        ? 'receiving-order__body'
+        : 'receiving-order__body--closed',
+    }"
+  >
+    <template #header>
+      <ConsoleKitchenOperationsOrdersReceivingSummary
+        :icon="incomingIcon"
+        :title="incomingTitle"
+        :order-label="orderNumber"
+        :item-count="lines.length"
+        :open="reviewOpen"
+        :accept-label="quickAcceptLabel"
+        :accept-icon="quickAcceptIcon"
+        :accepting="accepting"
+        :can-accept="canQuickAccept"
+        @accept="quickAccept"
+        @toggle="reviewOpen = !reviewOpen"
       />
-    </header>
+    </template>
 
-    <div class="grid gap-1 text-sm font-semibold text-highlighted">
-      <p
-        v-for="line in lines"
-        :key="line.id"
-        class="m-0"
-      >
-        {{ line.quantity }}x {{ line.label }}
-      </p>
+    <div v-if="reviewOpen" class="receiving-order__review">
+      <ConsoleKitchenOperationsOrdersReceivingItems :lines="lines" />
+
+      <template v-if="isTerminal">
+        <UBadge color="neutral" variant="soft">{{ terminalLabel }}</UBadge>
+        <p v-if="terminalNote" class="receiving-order__note">
+          {{ terminalNote }}
+        </p>
+      </template>
+
+      <div v-else-if="isPaymentPending" class="receiving-order__status">
+        <UBadge color="warning" variant="soft">Payment pending</UBadge>
+        <strong v-if="isCollectionOrder">{{ collectionTimingTimeLabel }}</strong>
+      </div>
+
+      <ConsoleKitchenOperationsOrdersReceivingCollection
+        v-else-if="isCollectionOrder"
+        :accepting="accepting"
+        :can-interact="canInteract"
+        :estimate-minutes="estimateMinutes"
+        :order="order"
+        :order-id="orderId"
+        @accept="$emit('accept', $event)"
+        @nudge-estimate="$emit('nudge-estimate', $event)"
+        @set-estimate="$emit('set-estimate', $event)"
+      />
+
+      <ConsoleKitchenOperationsOrdersReceivingPreOrder
+        v-else-if="isPreOrder"
+        :accepting="accepting"
+        :can-interact="canInteract"
+        :order="order"
+        :order-id="orderId"
+        @accept="$emit('accept', $event)"
+      />
+
+      <ConsoleKitchenOperationsOrdersReceivingEstimate
+        v-else
+        :accepting="accepting"
+        :can-interact="canInteract"
+        :minutes="estimateMinutes"
+        :order-id="orderId"
+        @accept="$emit('accept', $event)"
+        @nudge-estimate="$emit('nudge-estimate', $event)"
+        @set-estimate="$emit('set-estimate', $event)"
+      />
+
+      <ConsoleKitchenOperationsOrdersReceivingReject
+        v-if="!isPaymentPending && !isTerminal"
+        :order-id="orderId"
+        :rejecting="rejecting"
+        :can-interact="canInteract"
+        @reject="$emit('reject', $event)"
+      />
     </div>
-
-    <div
-      v-if="customerName || customerPhone"
-      class="grid gap-1 border-t border-default pt-3 text-sm"
-    >
-      <strong v-if="customerName" class="text-highlighted">{{ customerName }}</strong>
-      <a v-if="customerPhone" class="text-primary" :href="`tel:${customerPhone}`">
-        {{ customerPhone }}
-      </a>
-    </div>
-
-    <p
-      v-if="isTerminal"
-      class="m-0 text-sm font-semibold text-muted"
-    >
-      {{ terminalLabel }}
-    </p>
-
-    <p
-      v-if="isTerminal && terminalNote"
-      class="m-0 rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-highlighted"
-    >
-      {{ terminalNote }}
-    </p>
-
-    <section
-      v-else-if="isPaymentPending && isCollectionOrder"
-      class="grid gap-2 rounded-lg border border-default bg-muted/40 p-3"
-    >
-      <div class="flex items-center justify-between gap-3 text-sm">
-        <span class="font-semibold text-muted">
-          {{ collectionTimingLabel }}
-        </span>
-        <strong class="text-base font-black text-highlighted">
-          {{ collectionTimingTimeLabel }}
-        </strong>
-      </div>
-
-      <div class="flex items-center justify-between gap-3 text-sm">
-        <span class="font-semibold text-muted">
-          {{ acceptedTimingKindLabel }}
-        </span>
-        <strong class="text-base font-black text-highlighted">
-          {{ acceptedTimingLabel }}
-        </strong>
-      </div>
-
-      <p class="m-0 text-sm font-semibold text-muted">
-        Moves to a normal ticket once paid.
-      </p>
-    </section>
-
-    <section
-      v-else-if="isPaymentPending"
-      class="grid gap-2 rounded-lg border border-default bg-muted/40 p-3"
-    >
-      <div class="flex items-center justify-between gap-3 text-sm">
-        <span class="font-semibold text-muted">
-          Payment
-        </span>
-        <strong class="text-base font-black text-highlighted">
-          pending
-        </strong>
-      </div>
-
-      <p class="m-0 text-sm font-semibold text-muted">
-        Kitchen receives this order after payment.
-      </p>
-    </section>
-
-    <ConsoleKitchenOperationsOrdersReceivingCollection
-      v-else-if="isCollectionOrder"
-      :accepting="accepting"
-      :can-interact="canInteract"
-      :estimate-minutes="estimateMinutes"
-      :order="order"
-      :order-id="orderId"
-      @accept="$emit('accept', $event)"
-      @nudge-estimate="$emit('nudge-estimate', $event)"
-      @set-estimate="$emit('set-estimate', $event)"
-    />
-
-    <ConsoleKitchenOperationsOrdersReceivingPreOrder
-      v-else-if="isPreOrder"
-      :accepting="accepting"
-      :can-interact="canInteract"
-      :order="order"
-      :order-id="orderId"
-      @accept="$emit('accept', $event)"
-    />
-
-    <ConsoleKitchenOperationsOrdersReceivingEstimate
-      v-else
-      :accepting="accepting"
-      :can-interact="canInteract"
-      :minutes="estimateMinutes"
-      :order-id="orderId"
-      @accept="$emit('accept', $event)"
-      @nudge-estimate="$emit('nudge-estimate', $event)"
-      @set-estimate="$emit('set-estimate', $event)"
-    />
-
-    <ConsoleKitchenOperationsOrdersReceivingReject
-      v-if="!isPaymentPending && !isTerminal"
-      :order-id="orderId"
-      :rejecting="rejecting"
-      :can-interact="canInteract"
-      @reject="$emit('reject', $event)"
-    />
-  </article>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -163,6 +94,7 @@ const props = withDefaults(
     accepting?: boolean
     canInteract?: boolean
     estimateMinutes: number
+    nowMs: number
     order: KitchenOrder
     rejecting?: boolean
   }>(),
@@ -172,14 +104,14 @@ const props = withDefaults(
     rejecting: false,
   }
 )
-defineEmits<{
+const emit = defineEmits<{
   (event: 'accept', payload: { id: string; estimatedMinutes: number | null }): void
   (event: 'nudge-estimate', payload: { id: string; amount: number }): void
   (event: 'reject', payload: { id: string; note: string }): void
   (event: 'set-estimate', payload: { id: string; minutes: number }): void
 }>()
 
-const copied = ref(false)
+const reviewOpen = ref(false)
 const normalize = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -213,9 +145,6 @@ const orderType = computed(() => normalize(props.order.order_type))
 const orderStatus = computed(() => normalize(props.order.status))
 const collection = computed(() => record(orderRecord.value.collection))
 const roomService = computed(() => record(orderRecord.value.room_service))
-const customer = computed(() => record(orderRecord.value.customer))
-const customerName = computed(() => normalize(customer.value.name))
-const customerPhone = computed(() => normalize(customer.value.phone))
 const isTerminal = computed(() =>
   ['cancelled', 'completed'].includes(orderStatus.value)
 )
@@ -224,11 +153,14 @@ const isCollectionOrder = computed(() => orderType.value === 'collection')
 const isDeliveryOrder = computed(() => orderType.value === 'delivery')
 const isPreOrder = computed(() => orderType.value === 'pre_order')
 const isRoomService = computed(() => orderType.value === 'room_service')
-const requestedFor = computed(() => normalize(collection.value.requested_for))
+const requestedFor = computed(() =>
+  collection.value.requested_for || orderRecord.value.requested_for
+)
+const requestedForMs = computed(() => timestampMs(requestedFor.value))
 const isScheduledCollection = computed(() =>
   isCollectionOrder.value &&
     normalize(collection.value.mode) === 'scheduled' &&
-    Boolean(requestedFor.value)
+    Boolean(requestedForMs.value)
 )
 const incomingIcon = computed(() => {
   if (isDeliveryOrder.value) return 'i-lucide-bike'
@@ -239,17 +171,16 @@ const incomingIcon = computed(() => {
 })
 const incomingTitle = computed(() => {
   if (isTerminal.value) return 'Kitchen response'
-  if (isPaymentPending.value && isCollectionOrder.value) return 'Collection timing request'
-  if (isPaymentPending.value && isPreOrder.value) return 'Pre-order deposit'
-  if (isPaymentPending.value) return 'Awaiting customer payment'
-  if (isPreOrder.value) return 'Pre-order request'
+  if (isPaymentPending.value) return 'Payment pending'
+  if (isPreOrder.value) return 'Pre-order'
   if (isRoomService.value) {
     const room = normalize(roomService.value.room)
-    return room ? `Room service · ${room}` : 'Room service request'
+    return room ? `Room service · ${room}` : 'Room service'
   }
-  if (isScheduledCollection.value) return 'Confirm collection time'
-  if (isCollectionOrder.value) return 'Collection timing request'
-  return 'Set cooking time'
+  if (isScheduledCollection.value) return 'Scheduled collection'
+  if (isCollectionOrder.value) return 'Collection'
+  if (isDeliveryOrder.value) return 'Delivery'
+  return 'Order'
 })
 const acceptedTimingLabel = computed(() => {
   if (isScheduledCollection.value) return 'accepted'
@@ -259,9 +190,6 @@ const acceptedTimingLabel = computed(() => {
 
   return 'accepted'
 })
-const acceptedTimingKindLabel = computed(() =>
-  isScheduledCollection.value ? 'Pickup time' : 'Cooking time'
-)
 const etaMs = computed(() =>
   timestampMs(orderRecord.value.estimated_ready_at) ||
     (
@@ -270,16 +198,61 @@ const etaMs = computed(() =>
         : 0
     )
 )
-const requestedForMs = computed(() => timestampMs(requestedFor.value))
-const collectionTimingLabel = computed(() =>
-  isScheduledCollection.value ? 'Scheduled pickup' : 'Queue ETA'
-)
 const collectionTimingTimeLabel = computed(() => {
   const time = isScheduledCollection.value ? requestedForMs.value : etaMs.value
   if (time) return formatTime(time)
 
   return isScheduledCollection.value ? 'time needed' : acceptedTimingLabel.value
 })
+const scheduledCollectionLabel = computed(() => {
+  if (!isScheduledCollection.value || !requestedForMs.value) return ''
+
+  const requestedDate = new Date(requestedForMs.value)
+  const dayDifference = Math.round(
+    (startOfDay(requestedDate).getTime() -
+      startOfDay(new Date(props.nowMs)).getTime()) /
+      86_400_000
+  )
+  const time = formatTime(requestedForMs.value)
+  const relativeTime = scheduleDistanceLabel(
+    requestedForMs.value - props.nowMs,
+    dayDifference === 0
+  )
+
+  if (dayDifference === 0) return `Today ${time} · ${relativeTime}`
+  if (dayDifference === 1) return `Tomorrow ${time} · ${relativeTime}`
+
+  const date = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+  }).format(requestedDate)
+
+  return `${date} ${time} · ${relativeTime}`
+})
+const quickAcceptLabel = computed(() => {
+  if (!isCollectionOrder.value || isPaymentPending.value || isTerminal.value) {
+    return ''
+  }
+  if (isScheduledCollection.value) {
+    return `Accept · ${scheduledCollectionLabel.value.replace(' · ', ' | ')}`
+  }
+
+  return `Accept · ${Math.max(0, Math.round(props.estimateMinutes))} min`
+})
+const quickAcceptIcon = computed(() =>
+  isScheduledCollection.value
+    ? 'i-lucide-calendar-clock'
+    : 'i-lucide-clock-3'
+)
+const canQuickAccept = computed(() =>
+  Boolean(
+    props.canInteract &&
+      orderId.value &&
+      quickAcceptLabel.value &&
+      (!isScheduledCollection.value || requestedForMs.value)
+  )
+)
 const terminalLabel = computed(() =>
   orderStatus.value === 'cancelled'
     ? 'Order rejected.'
@@ -297,50 +270,53 @@ const lines = computed(() =>
       }))
     : []
 )
-const copyPayload = computed(() => {
-  const response = isScheduledCollection.value
-    ? { collection_timing: 'scheduled', accepted_requested_for: requestedFor.value }
-    : isPaymentPending.value
-      ? {
-          collection_timing: 'queue',
-          estimated_ready_minutes: props.estimateMinutes,
-          estimated_ready_at: etaMs.value ? new Date(etaMs.value).toISOString() : '',
-        }
-      : {
-          collection_timing: isCollectionOrder.value ? 'queue' : '',
-          estimated_ready_minutes: props.estimateMinutes,
-          estimated_ready_at: etaMs.value ? new Date(etaMs.value).toISOString() : '',
-        }
 
-  return {
-    surface: 'kitchen_console_orders_receiving',
-    action: incomingTitle.value,
-    copied_at: new Date().toISOString(),
-    order: {
-      id: orderId.value,
-      number: normalize(props.order.order_number),
-      type: orderType.value,
-      status: orderStatus.value,
-      collection: Object.keys(collection.value).length ? collection.value : null,
-      customer: customerName.value || customerPhone.value
-        ? { name: customerName.value, phone: customerPhone.value }
-        : null,
-      items: lines.value.map((line) => ({
-        quantity: line.quantity,
-        label: line.label,
-      })),
-    },
-    ...(Object.keys(response).length ? { response } : {}),
-  }
-})
+function startOfDay(value: Date) {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate())
+}
 
-async function copyTicket() {
-  if (!import.meta.client || !navigator.clipboard) return
+function scheduleDistanceLabel(distanceMs: number, today: boolean) {
+  const minutes = Math.round(distanceMs / 60_000)
+  if (!minutes) return 'now'
+  if (minutes < 0) return `${Math.abs(minutes)} min late`
+  if (today) return `in ${minutes} min`
 
-  await navigator.clipboard.writeText(JSON.stringify(copyPayload.value, null, 2))
-  copied.value = true
-  window.setTimeout(() => {
-    copied.value = false
-  }, 1400)
+  const hours = Math.round(minutes / 60)
+  if (hours < 48) return `in ${hours} hr`
+
+  return `in ${Math.round(hours / 24)} days`
+}
+
+function quickAccept() {
+  if (!canQuickAccept.value) return
+
+  emit('accept', {
+    id: orderId.value,
+    estimatedMinutes: isScheduledCollection.value
+      ? null
+      : props.estimateMinutes,
+  })
 }
 </script>
+
+<style scoped>
+:deep(.receiving-order__body--closed) {
+  display: none;
+}
+
+.receiving-order__review {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+}
+
+.receiving-order__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+
+.receiving-order__note {
+  margin: 0;
+}
+</style>

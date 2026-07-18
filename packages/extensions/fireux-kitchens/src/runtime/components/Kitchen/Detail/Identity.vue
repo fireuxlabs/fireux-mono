@@ -204,8 +204,8 @@ const hasSurface = computed(() =>
 
 .kitchen-identity__panel {
   display: grid;
-  gap: 1.5rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
+  gap: calc(var(--spacing) * 6);
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 6);
   background: var(--kitchen-panel-bg);
@@ -215,7 +215,7 @@ const hasSurface = computed(() =>
 .kitchen-identity--with-cover .kitchen-identity__panel {
   z-index: 1;
   width: calc(100% - clamp(1.5rem, 8vw, 7rem));
-  margin: clamp(-4.5rem, -7vw, -3rem) auto 0;
+  margin: clamp(calc(var(--spacing) * -18), -7vw, calc(var(--spacing) * -12)) auto 0;
   backdrop-filter: blur(18px);
 }
 
@@ -223,7 +223,7 @@ const hasSurface = computed(() =>
   display: flex;
   min-width: 0;
   align-items: flex-start;
-  gap: clamp(1rem, 2.5vw, 1.5rem);
+  gap: clamp(calc(var(--spacing) * 4), 2.5vw, calc(var(--spacing) * 6));
 }
 
 .kitchen-identity__logo {
@@ -238,7 +238,7 @@ const hasSurface = computed(() =>
 }
 
 .kitchen-identity__eyebrow {
-  margin: 0 0 0.5rem;
+  margin: 0 0 calc(var(--spacing) * 2);
   color: var(--ui-text-muted);
   font-size: 0.7rem;
   font-weight: 800;
@@ -259,7 +259,7 @@ const hasSurface = computed(() =>
 
 .kitchen-identity__subtitle {
   max-width: 55ch;
-  margin: 0.75rem 0 0;
+  margin: calc(var(--spacing) * 3) 0 0;
   color: var(--ui-text-toned);
   font-size: clamp(0.95rem, 1.5vw, 1.08rem);
   line-height: 1.55;
@@ -268,7 +268,7 @@ const hasSurface = computed(() =>
 .kitchen-identity__address {
   display: flex;
   max-width: 65ch;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: flex-start;
   margin: 0.85rem 0 0;
   color: var(--ui-text-muted);
@@ -291,9 +291,9 @@ const hasSurface = computed(() =>
 
 .kitchen-identity__gallery {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  padding-bottom: 0.25rem;
+  gap: calc(var(--spacing) * 3);
+  margin-top: calc(var(--spacing) * 4);
+  padding-bottom: var(--spacing);
   overflow-x: auto;
   scroll-snap-type: x proximity;
 }
@@ -325,7 +325,7 @@ const hasSurface = computed(() =>
 
   .kitchen-identity--with-cover .kitchen-identity__panel {
     width: calc(100% - 1rem);
-    margin-top: -2.25rem;
+    margin-top: calc(var(--spacing) * -9);
   }
 
   .kitchen-identity__lead {

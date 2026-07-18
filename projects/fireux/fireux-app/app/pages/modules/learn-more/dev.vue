@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">Canonical records</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Registry collection: <code>modules</code>.</li>
           <li>Module index route reads product records filtered by <code>product_type = module</code>.</li>
           <li>Module detail route is exposed as <code>/modules/[id]</code>.</li>

@@ -51,7 +51,7 @@ defineEmits<{
   min-width: 0;
   flex-wrap: nowrap;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   white-space: nowrap;
 }
 
@@ -61,7 +61,7 @@ defineEmits<{
 
 .order-ticket-footer__identity {
   min-width: 0;
-  gap: 0.375rem;
+  gap: calc(var(--spacing) * 1.5);
 }
 
 .order-ticket-footer__order-label {
@@ -73,6 +73,6 @@ defineEmits<{
 
 .order-ticket-footer__placed-time {
   flex: none;
-  gap: 0.25rem;
+  gap: var(--spacing);
 }
 </style>

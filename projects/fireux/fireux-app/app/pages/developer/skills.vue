@@ -82,19 +82,19 @@ const anchorId = (name: string) => name.toLowerCase().replace(/\W+/g, '-')
 .skills-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
 }
 .skills-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
 }
 .skill-section {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
+  padding-bottom: calc(var(--spacing) * 4);
 }
 .skill-icon {
   width: 48px;

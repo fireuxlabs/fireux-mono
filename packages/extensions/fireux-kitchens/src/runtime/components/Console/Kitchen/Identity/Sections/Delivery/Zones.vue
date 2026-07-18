@@ -292,7 +292,7 @@ function roundCoordinate(value: number) {
   inset: auto 1rem 1rem 1rem;
   z-index: 1;
   margin: 0;
-  padding: 0.6rem 0.75rem;
+  padding: 0.6rem calc(var(--spacing) * 3);
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
   color: var(--ui-text);

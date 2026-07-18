@@ -59,7 +59,7 @@ const stripeSrc = computed(() =>
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-6);
+  padding: calc(var(--spacing) * 6);
   background-color: var(--ui-bg);
   transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
   border-radius: calc(var(--ui-radius) * 3);

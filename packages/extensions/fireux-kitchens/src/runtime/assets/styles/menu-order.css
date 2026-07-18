@@ -12,8 +12,8 @@
 .menu-order__shell {
   display: grid;
   align-content: start;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
   width: min(100%, 68rem);
   margin: 0 auto;
-  padding-block-end: clamp(1rem, 4vw, 3rem);
+  padding-block-end: clamp(calc(var(--spacing) * 4), 4vw, calc(var(--spacing) * 12));
 }

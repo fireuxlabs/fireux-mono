@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-12 pb-16">
+  <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="space-y-4">
         <UBadge color="primary" variant="soft">Granite Guide</UBadge>
@@ -22,7 +22,7 @@
           <template #header>
             <h2 class="text-lg font-semibold">Core concepts</h2>
           </template>
-          <ul class="list-disc space-y-2 pl-5 text-sm">
+          <ul class="list-disc fx-list-stack text-sm">
             <li>Portfolios are the operational center for property strategy and control.</li>
             <li>Properties, compliance, documents, and incidents feed one management surface.</li>
             <li>Financial signals help teams prioritize risk and execution.</li>

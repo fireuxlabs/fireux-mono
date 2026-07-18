@@ -73,7 +73,7 @@
                 </div>
               </template>
 
-              <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              <ul class="list-disc fx-list-stack text-sm text-gray-700 dark:text-gray-300">
                 <li>Misebox ecosystem: Firebase binding, runtime identity, public assets, and shared tenant chrome.</li>
                 <li>Extension packages: reusable domain routes, models, composables, and UI.</li>
                 <li>Project apps: capability selection, target configuration, content, and branding.</li>

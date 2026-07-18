@@ -153,8 +153,8 @@ const {
   min-height: 3rem;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem 0;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4) 0;
 }
 
 .menu-detail__translation-state {

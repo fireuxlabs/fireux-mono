@@ -62,7 +62,7 @@ defineEmits<{
 
 <style scoped>
 .kiosk-start {
-  --kiosk-start-actions-gap: 1.25rem;
+  --kiosk-start-actions-gap: calc(var(--spacing) * 5);
   --kiosk-start-actions-offset: 0;
   --kiosk-start-actions-width: min(100%, 44rem);
   --kiosk-start-button-height: 7rem;
@@ -104,7 +104,7 @@ defineEmits<{
   justify-self: center;
   width: var(--kiosk-start-wordmark-width);
   max-height: 13rem;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
   object-fit: contain;
 }
 
@@ -133,7 +133,7 @@ defineEmits<{
     --kiosk-start-actions-width: min(100%, 34rem);
     --kiosk-start-button-height: 5.75rem;
 
-    padding: 16svh 1.25rem 2rem;
+    padding: 16svh calc(var(--spacing) * 5) calc(var(--spacing) * 8);
   }
 }
 

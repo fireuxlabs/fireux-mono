@@ -37,16 +37,16 @@ const { appName, isTenant } = useFireUXConfig()
 .auth-page {
   max-width: 520px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: calc(var(--spacing) * 6) calc(var(--spacing) * 4);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   flex: 1;
 }
 
 @media (min-width: 640px) {
   .auth-page {
-    padding: 3rem 1.5rem;
+    padding: calc(var(--spacing) * 12) calc(var(--spacing) * 6);
   }
 }
 
@@ -61,7 +61,7 @@ const { appName, isTenant } = useFireUXConfig()
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .tenant-brand__icon {

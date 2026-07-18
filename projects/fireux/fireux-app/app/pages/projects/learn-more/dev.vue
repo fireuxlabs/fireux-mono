@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">Canonical records</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Projects collection: <code>projects</code>.</li>
           <li>Runtime project model: <code>FireuxProjectModel</code>.</li>
           <li>Console scope: <code>/console/project/*</code>.</li>

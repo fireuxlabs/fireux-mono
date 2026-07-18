@@ -98,9 +98,9 @@ watch(chromeHidden, (hidden: boolean) => {
 <style scoped>
 .misebox-tenant-footer {
   position: absolute;
-  right: clamp(1rem, 3vw, 2rem);
-  bottom: clamp(1rem, 3vw, 2rem);
-  left: clamp(1rem, 3vw, 2rem);
+  right: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 8));
+  bottom: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 8));
+  left: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 8));
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -154,7 +154,7 @@ watch(chromeHidden, (hidden: boolean) => {
   bottom: 100%;
   left: 50%;
   z-index: 2;
-  margin-bottom: 0.75rem;
+  margin-bottom: calc(var(--spacing) * 3);
   pointer-events: auto;
   transform: translateX(-50%);
 }
@@ -197,8 +197,8 @@ watch(chromeHidden, (hidden: boolean) => {
 .misebox-tenant-footer__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding-top: 1rem;
+  gap: calc(var(--spacing) * 2);
+  padding-top: calc(var(--spacing) * 4);
 }
 
 .misebox-tenant-footer-pop-enter-active,

@@ -22,23 +22,23 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 
 <style scoped>
 .step-content {
-  margin-top: 1rem;
-  padding-bottom: 1.5rem;
+  margin-top: calc(var(--spacing) * 4);
+  padding-bottom: calc(var(--spacing) * 6);
 }
 
 .asset-help {
   color: #6b7280;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .assets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .asset-card {
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 1.5);
   background: var(--ui-bg);
@@ -46,11 +46,11 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 
 .asset-label {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .asset-meta {
-  margin-top: 0.5rem;
+  margin-top: calc(var(--spacing) * 2);
   color: #6b7280;
   font-size: 0.85rem;
 }

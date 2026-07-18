@@ -65,7 +65,7 @@ defineEmits<{
 @media (min-width: 920px) {
   .menu-section {
     break-inside: avoid;
-    margin-bottom: 2rem;
+    margin-bottom: calc(var(--spacing) * 8);
   }
 }
 </style>

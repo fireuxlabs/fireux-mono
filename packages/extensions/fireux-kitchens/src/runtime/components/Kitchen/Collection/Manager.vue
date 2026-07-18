@@ -218,14 +218,14 @@ onMounted(() => {
 <style scoped>
 .kitchen-directory {
   display: grid;
-  gap: clamp(1.75rem, 4vw, 3rem);
+  gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
 }
 
 .kitchen-directory__header {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 1.5rem 3rem;
+  gap: calc(var(--spacing) * 6) calc(var(--spacing) * 12);
   flex-wrap: wrap;
 }
 
@@ -252,7 +252,7 @@ onMounted(() => {
 }
 
 .kitchen-directory__title > p:last-child {
-  margin: 1rem 0 0;
+  margin: calc(var(--spacing) * 4) 0 0;
   color: var(--ui-text-muted);
   font-size: 1rem;
   line-height: 1.6;
@@ -261,7 +261,7 @@ onMounted(() => {
 .kitchen-directory__controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   min-height: 2.5rem;
 }
 
@@ -281,9 +281,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   min-height: 13rem;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   border: 1px dashed color-mix(in srgb, var(--ui-primary) 28%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--ui-primary) 3%, var(--ui-bg));
@@ -309,13 +309,13 @@ onMounted(() => {
 }
 
 .kitchen-directory__state p {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
   font-size: 0.875rem;
 }
 
 .kitchen-directory :deep(.collection-stack) {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 @media (max-width: 640px) {

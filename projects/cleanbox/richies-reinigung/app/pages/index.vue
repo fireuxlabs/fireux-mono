@@ -61,13 +61,13 @@ useSeoMeta({
 .brand-landing {
   position: relative;
   min-height: 100%;
-  padding: 4rem clamp(2rem, 6vw, 5rem);
+  padding: calc(var(--spacing) * 16) clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
 }
 
 .brand-card {
   width: min(640px, 100%);
   margin: 0 auto;
-  padding: clamp(2rem, 4vw, 3.5rem);
+  padding: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 14));
   border-radius: calc(var(--ui-radius) * 6);
   border: 1px solid rgba(148, 163, 184, 0.25);
   background: rgba(15, 23, 42, 0.7);
@@ -76,7 +76,7 @@ useSeoMeta({
   color: #e2e8f0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
 }
 
 .brand-avatar {
@@ -104,7 +104,7 @@ useSeoMeta({
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .btn {

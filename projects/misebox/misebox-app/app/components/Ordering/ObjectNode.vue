@@ -120,7 +120,7 @@ const primitiveLabel = computed(() => {
 }
 
 .object-node + .object-node {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
 }
 
 .object-node__branch > summary,
@@ -159,8 +159,8 @@ const primitiveLabel = computed(() => {
 
 .object-node__children {
   margin-top: 0.35rem;
-  margin-left: 1rem;
-  padding-left: 0.75rem;
+  margin-left: calc(var(--spacing) * 4);
+  padding-left: calc(var(--spacing) * 3);
   border-left: 1px solid var(--ui-border);
 }
 

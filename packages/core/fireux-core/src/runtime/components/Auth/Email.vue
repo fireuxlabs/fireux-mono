@@ -100,14 +100,14 @@ const handleEmailAuth = async () => {
 </script>
 <style scoped>
 .switch-container {
-  margin: var(--space-4) 0;
+  margin: calc(var(--spacing) * 4) 0;
 }
 .input-spacing {
-  margin-bottom: var(--space-3);
+  margin-bottom: calc(var(--spacing) * 3);
 }
 .hint {
   color: var(--ui-text-muted);
   font-size: 0.9rem;
-  margin-top: var(--space-2);
+  margin-top: calc(var(--spacing) * 2);
 }
 </style>

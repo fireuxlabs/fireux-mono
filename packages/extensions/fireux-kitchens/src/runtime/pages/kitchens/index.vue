@@ -59,10 +59,10 @@ useHead({ title: `${appName} | ${pageTitle}` })
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: clamp(1.5rem, 4vw, 4rem);
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 16));
   overflow: hidden;
   min-height: clamp(17rem, 38vw, 25rem);
-  padding: clamp(2rem, 6vw, 5rem);
+  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
   border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 6);
   background:
@@ -97,7 +97,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 .kitchens-index__eyebrow,
 .kitchens-index__operator-eyebrow {
-  margin: 0 0 0.75rem;
+  margin: 0 0 calc(var(--spacing) * 3);
   color: var(--ui-primary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -116,7 +116,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 .kitchens-index__hero-copy > p:last-child {
   max-width: 36rem;
-  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
+  margin: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8)) 0 0;
   color: var(--ui-text-muted);
   font-size: clamp(1rem, 2vw, 1.2rem);
   line-height: 1.65;
@@ -140,15 +140,15 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 .kitchens-index__body {
   display: grid;
-  gap: clamp(3.5rem, 8vw, 7rem);
-  padding-top: clamp(3rem, 7vw, 5.5rem);
-  padding-bottom: clamp(3rem, 7vw, 5.5rem);
+  gap: clamp(calc(var(--spacing) * 14), 8vw, calc(var(--spacing) * 28));
+  padding-top: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 22));
+  padding-bottom: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 22));
 }
 
 .kitchens-index__operator {
   display: grid;
-  gap: 0.75rem;
-  padding-top: clamp(2rem, 4vw, 3rem);
+  gap: calc(var(--spacing) * 3);
+  padding-top: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 12));
   border-top: 1px solid var(--ui-border);
 }
 

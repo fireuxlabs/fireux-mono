@@ -25,16 +25,6 @@
 	--fx-dev-note-border: var(--fx-debug-yellow-border);
 	--fx-dev-note-bg: var(--fx-debug-yellow-bg);
 
-	/* FireUX aliases derive from Tailwind's single spacing base. */
-	--space-1: var(--spacing);
-	--space-2: calc(var(--spacing) * 2);
-	--space-3: calc(var(--spacing) * 3);
-	--space-4: calc(var(--spacing) * 4);
-	--space-6: calc(var(--spacing) * 6);
-	--space-8: calc(var(--spacing) * 8);
-	--space-12: calc(var(--spacing) * 12);
-	--space-16: calc(var(--spacing) * 16);
-
 	/* Nuxt UI derives its rounded-* utilities from this single base. */
 	--ui-radius: 0.25rem; /* 4px */
 

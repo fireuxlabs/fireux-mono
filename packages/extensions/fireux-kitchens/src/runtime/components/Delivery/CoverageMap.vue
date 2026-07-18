@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .delivery-coverage-map {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .delivery-coverage-map__canvas {
@@ -239,7 +239,7 @@ onBeforeUnmount(() => {
   inset: auto 1rem 1rem 1rem;
   z-index: 1;
   margin: 0;
-  padding: 0.6rem 0.75rem;
+  padding: 0.6rem calc(var(--spacing) * 3);
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 88%, transparent);
   color: var(--menu-text, var(--ui-text));

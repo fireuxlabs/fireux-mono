@@ -27,7 +27,7 @@
         <h2 class="text-2xl font-black tracking-tight">
           Screen stack
         </h2>
-        <ol class="list-decimal space-y-2 pl-5 text-muted">
+        <ol class="list-decimal fx-list-stack text-muted">
           <li>Meal bundle or basket</li>
           <li>Diet and allergy check</li>
           <li>Schedule</li>

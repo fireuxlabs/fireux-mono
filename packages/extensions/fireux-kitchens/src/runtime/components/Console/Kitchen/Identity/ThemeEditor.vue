@@ -348,8 +348,8 @@ function isDefaultColor(key: ColorStyleKey) {
 
 .theme-color-row {
   display: grid;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3);
   border: 1px solid color-mix(in srgb, var(--ui-primary) 12%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-primary) 3%, transparent);

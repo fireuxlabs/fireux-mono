@@ -107,7 +107,7 @@ const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
   display: grid;
   flex: 1;
   align-content: start;
-  gap: 1.25rem;
+  gap: calc(var(--spacing) * 5);
   padding: 1.35rem 1rem calc(6.75rem + env(safe-area-inset-bottom));
 }
 

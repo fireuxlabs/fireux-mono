@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">Canonical records</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Live runtime path: <code>misebox/kitchens/&lt;kitchenId&gt;</code>.</li>
           <li>Writable test runtime path: <code>misebox-simulation/kitchens/&lt;kitchenId&gt;</code>.</li>
           <li>Local demo scenarios remain read-only code fixtures while the product shape is still moving.</li>

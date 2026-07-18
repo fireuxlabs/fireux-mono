@@ -113,13 +113,13 @@ const filteredFeatures = computed(() => {
 <style scoped>
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: calc(var(--spacing) * 8);
 }
 
 .section-header h2 {
   font-size: var(--text-3xl);
   font-weight: 700;
-  margin-bottom: var(--space-3);
+  margin-bottom: calc(var(--spacing) * 3);
 }
 
 .section-header p {
@@ -130,7 +130,7 @@ const filteredFeatures = computed(() => {
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-6);
+  gap: calc(var(--spacing) * 6);
 }
 
 @media (min-width: 768px) {
@@ -147,8 +147,8 @@ const filteredFeatures = computed(() => {
 
 .feature {
   display: flex;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
   text-align: left;
   border-radius: calc(var(--ui-radius) * 2);
   background: var(--color-gray-50);
@@ -163,7 +163,7 @@ const filteredFeatures = computed(() => {
   color: var(--color-primary-500);
   font-size: 2rem;
   flex-shrink: 0;
-  margin-top: var(--space-1);
+  margin-top: var(--spacing);
 }
 
 .feature-content {
@@ -173,7 +173,7 @@ const filteredFeatures = computed(() => {
 .feature-content h3 {
   font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: var(--space-2);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .feature-content p {

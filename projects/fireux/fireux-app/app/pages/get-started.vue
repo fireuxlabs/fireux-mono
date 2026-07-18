@@ -39,7 +39,7 @@
 
     <section class="space-y-3">
       <h2 class="text-xl font-semibold text-highlighted">What we need</h2>
-      <ul class="list-disc space-y-2 pl-5 text-muted">
+      <ul class="list-disc fx-list-stack text-muted">
         <li v-for="item in appMeta.getStarted.requirements" :key="item">
           {{ item }}
         </li>

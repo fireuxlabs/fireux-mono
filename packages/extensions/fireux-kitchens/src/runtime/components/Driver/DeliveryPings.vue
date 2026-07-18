@@ -416,7 +416,7 @@ function debugOrder(order: DriverOrder) {
   overflow: auto;
   max-height: 18rem;
   margin: 0;
-  padding: 0.75rem;
+  padding: calc(var(--spacing) * 3);
   border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg-elevated) 92%, var(--ui-text));
   color: var(--ui-text);

@@ -8,26 +8,23 @@
     @click="completeOpen = true"
   />
 
-  <UModal
-    v-model="completeOpen"
+  <ConsoleKitchenOperationsOrdersWorkspaceModal
+    v-model:open="completeOpen"
     title="Completed orders"
     :description="completeDescription"
-    scrollable
   >
-    <template #body>
-      <ConsoleKitchenOperationsOrdersRail
-        label="Completed"
-        :count="recentOrders.length"
-        empty-label="No completed orders yet"
-      >
-        <ConsoleKitchenOperationsOrdersCardsTicket
-          v-for="order in recentOrders"
-          :key="order.id"
-          :order="order"
-        />
-      </ConsoleKitchenOperationsOrdersRail>
-    </template>
-  </UModal>
+    <ConsoleKitchenOperationsOrdersRail
+      label="Completed"
+      :count="recentOrders.length"
+      empty-label="No completed orders yet"
+    >
+      <ConsoleKitchenOperationsOrdersCardsTicket
+        v-for="order in recentOrders"
+        :key="order.id"
+        :order="order"
+      />
+    </ConsoleKitchenOperationsOrdersRail>
+  </ConsoleKitchenOperationsOrdersWorkspaceModal>
 </template>
 
 <script setup lang="ts">

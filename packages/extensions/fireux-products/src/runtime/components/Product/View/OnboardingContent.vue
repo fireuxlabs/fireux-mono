@@ -110,22 +110,22 @@ const {
 
 <style scoped>
 .step-content {
-  margin-top: 1rem;
-  padding-bottom: 1.5rem;
+  margin-top: calc(var(--spacing) * 4);
+  padding-bottom: calc(var(--spacing) * 6);
 }
 
 .form-actions {
-  margin: 1rem 0;
+  margin: calc(var(--spacing) * 4) 0;
 }
 
 .content-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .requirements-block h3 {
-  margin: 1.25rem 0 0.5rem;
+  margin: calc(var(--spacing) * 5) 0 calc(var(--spacing) * 2);
   font-size: 1rem;
 }
 

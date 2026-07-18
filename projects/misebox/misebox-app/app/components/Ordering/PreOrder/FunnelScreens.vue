@@ -254,7 +254,7 @@ function updateKitchenOutcome(outcome: KitchenOutcome | null) {
 <style scoped>
 .pre-order-funnel-demo {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: 100%;
   min-height: 0;
   margin: 0;
@@ -265,7 +265,7 @@ function updateKitchenOutcome(outcome: KitchenOutcome | null) {
 
 .pre-order-funnel-screen {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: start;
 }
 

@@ -212,11 +212,11 @@ function fieldLabel(label: string, required: boolean) {
 :deep(.menu-order-checkout__header), :deep(.menu-order-checkout__footer) { border-color: color-mix(in srgb, var(--menu-text) 12%, transparent); }
 :deep(.menu-order-checkout__title) { color: var(--menu-title); font-family: var(--menu-title-font); }
 :deep(.menu-order-checkout__description), :deep(.menu-order-checkout__close) { color: var(--menu-muted); }
-.menu-order-checkout { display: grid; gap: 1rem; }
-.menu-order-checkout__summary { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 1rem; border-radius: var(--menu-radius-control); background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg)); }
+.menu-order-checkout { display: grid; gap: calc(var(--spacing) * 4); }
+.menu-order-checkout__summary { display: flex; justify-content: space-between; gap: calc(var(--spacing) * 4); padding: 0.8rem calc(var(--spacing) * 4); border-radius: var(--menu-radius-control); background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg)); }
 .menu-order-checkout__summary span { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--menu-muted); }
 .menu-order-checkout__summary strong { color: var(--menu-primary); }
 .menu-order-checkout__error { margin: 0; color: var(--ui-error); font-size: 0.9rem; font-weight: 700; }
-.menu-order-checkout__submit { display: inline-flex; width: 100%; justify-content: center; align-items: center; gap: 0.5rem; padding: 0.8rem 1rem; border: 0; border-radius: var(--menu-radius-control); background: var(--menu-primary); color: var(--menu-primary-contrast); cursor: pointer; font: inherit; font-weight: 900; }
+.menu-order-checkout__submit { display: inline-flex; width: 100%; justify-content: center; align-items: center; gap: calc(var(--spacing) * 2); padding: 0.8rem calc(var(--spacing) * 4); border: 0; border-radius: var(--menu-radius-control); background: var(--menu-primary); color: var(--menu-primary-contrast); cursor: pointer; font: inherit; font-weight: 900; }
 .menu-order-checkout__submit:disabled { cursor: not-allowed; opacity: 0.55; }
 </style>

@@ -191,26 +191,26 @@ const can = (action: 'undo' | 'redo') => {
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6); /* Increased from 1.5rem to match product system */
+  gap: calc(var(--spacing) * 6); /* Increased from 1.5rem to match product system */
 }
 
 .editor-shell {
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
-  padding: 0.75rem;
+  padding: calc(var(--spacing) * 3);
   background: var(--ui-bg-elevated);
 }
 
 .editor-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-bottom: 0.5rem;
+  gap: var(--spacing);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .tiptap-content {
   min-height: 220px;
-  padding: 0.5rem;
+  padding: calc(var(--spacing) * 2);
 }
 
 .tiptap-content :deep(.ProseMirror) {
@@ -225,6 +225,6 @@ const can = (action: 'undo' | 'redo') => {
   object-fit: contain;
   border-radius: var(--ui-radius);
   border: 1px solid var(--ui-border);
-  margin: 0.75rem 0;
+  margin: calc(var(--spacing) * 3) 0;
 }
 </style>

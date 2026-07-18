@@ -280,12 +280,12 @@ async function processImage(
 .picker {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .picker-label {
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--spacing);
   color: var(--ui-text-highlighted);
 }
 
@@ -308,13 +308,13 @@ async function processImage(
 
 .actions {
   display: flex;
-  gap: var(--space-2);
+  gap: calc(var(--spacing) * 2);
 }
 
 .file-info {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   color: var(--ui-text-muted);
   font-size: 0.875rem;
 }
@@ -340,15 +340,15 @@ async function processImage(
 
 .upload-controls {
   display: flex;
-  gap: var(--space-2);
+  gap: calc(var(--spacing) * 2);
   align-items: center;
 }
 
 .validation-message {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 2);
   background: var(--color-red-50);
   border: 1px solid var(--color-red-200);
   border-radius: var(--ui-radius);

@@ -6,7 +6,7 @@ Console and summary metrics:
 
 .console-metric {
 	display: grid;
-	gap: 0.25rem;
+	gap: var(--spacing);
 	min-width: 0;
 }
 

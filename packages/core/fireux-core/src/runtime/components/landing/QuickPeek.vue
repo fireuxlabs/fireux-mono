@@ -39,10 +39,10 @@ defineProps<{
   border-radius: calc(var(--ui-radius) * 3);
   border: 1px solid var(--ui-border-muted);
   background: var(--ui-bg);
-  padding: clamp(1.5rem, 4vw, 2rem);
+  padding: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 8));
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   box-shadow: var(--shadow-sm);
 }
 
@@ -60,12 +60,12 @@ defineProps<{
 .peek__items {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .peek__item {
   display: flex;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .peek__icon {

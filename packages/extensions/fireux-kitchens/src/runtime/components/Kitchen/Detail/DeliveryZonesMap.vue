@@ -125,12 +125,12 @@ function amount(value: number) {
 <style scoped>
 .delivery-zones-map {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .delivery-zones-map__key-mobile {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .delivery-zones-map__key-note {
@@ -145,7 +145,7 @@ function amount(value: number) {
 .delivery-zones-map__key-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.7rem;
+  gap: var(--spacing) 0.7rem;
   align-items: center;
   justify-content: space-between;
   padding: 0.46rem 0.6rem;
@@ -216,7 +216,7 @@ function amount(value: number) {
 
 .delivery-zones-map__key-zone {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: center;
   min-width: 0;
 }

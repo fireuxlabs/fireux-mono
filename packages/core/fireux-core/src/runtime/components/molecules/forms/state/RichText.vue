@@ -42,7 +42,7 @@ watch(localValue, (val: string) => {
 .richtext-input {
   width: 100%;
   min-height: 180px;
-  padding: 0.75rem;
+  padding: calc(var(--spacing) * 3);
   border: 1px solid #e5e7eb;
   border-radius: calc(var(--ui-radius) * 2);
   font: inherit;

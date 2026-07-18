@@ -22,6 +22,7 @@
         color="neutral"
         variant="soft"
         icon="i-lucide-undo-2"
+        class="order-ticket-header__return"
         :aria-label="returnLabel"
         @click.stop="$emit('return')"
       >
@@ -101,12 +102,12 @@ defineEmits<{
 
 .order-ticket-header {
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .order-ticket-header__identity {
   min-width: 0;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .order-ticket-header__label {
@@ -117,6 +118,23 @@ defineEmits<{
 
 .order-ticket-header__actions {
   flex: none;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
+}
+
+.order-ticket-header__return {
+  color: var(--order-ticket-reading-color);
+  background: color-mix(
+    in srgb,
+    var(--order-ticket-reading-color) 14%,
+    transparent
+  );
+}
+
+.order-ticket-header__return:hover {
+  background: color-mix(
+    in srgb,
+    var(--order-ticket-reading-color) 22%,
+    transparent
+  );
 }
 </style>

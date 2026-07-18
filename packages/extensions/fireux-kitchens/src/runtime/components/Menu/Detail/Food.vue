@@ -304,8 +304,8 @@ watch(kioskMode, (mode: KioskEntryMode | '') => {
 
 .menu-kiosk-screen__close {
   position: fixed;
-  top: clamp(1rem, 2.4svh, 2rem);
-  right: clamp(1rem, 2.4vw, 2rem);
+  top: clamp(calc(var(--spacing) * 4), 2.4svh, calc(var(--spacing) * 8));
+  right: clamp(calc(var(--spacing) * 4), 2.4vw, calc(var(--spacing) * 8));
   z-index: 4;
   display: grid;
   width: 4.5rem;

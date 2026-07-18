@@ -33,18 +33,18 @@
 .technologies-page {
   max-width: 700px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
 }
 .tech-list {
-  margin-top: 2rem;
-  padding-left: 1.5rem;
+  margin-top: calc(var(--spacing) * 8);
+  padding-left: calc(var(--spacing) * 6);
 }
 .tech-list li {
-  margin-bottom: 0.75rem;
+  margin-bottom: calc(var(--spacing) * 3);
   font-size: 1.1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 .list-icon {
   width: 1.5em;

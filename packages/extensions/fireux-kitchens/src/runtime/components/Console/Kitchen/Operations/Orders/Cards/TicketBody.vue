@@ -88,7 +88,7 @@ defineEmits<{
 }
 
 .order-ticket-body__customer {
-  margin-top: 0.75rem;
+  margin-top: calc(var(--spacing) * 3);
 }
 
 .order-ticket-body__customer-line {

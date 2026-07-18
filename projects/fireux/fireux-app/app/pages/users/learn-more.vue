@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">What a user means in FireUX</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>A user is the core identity record that moves across FireUX apps and ecosystems.</li>
           <li>Public profiles are discovered through handles, not internal ids.</li>
           <li>Private operational access is handled separately from the public profile surface.</li>
@@ -24,7 +24,7 @@
           <h2 class="text-lg font-semibold">Public profile flow</h2>
         </template>
 
-        <ol class="list-decimal space-y-2 pl-5 text-sm">
+        <ol class="list-decimal fx-list-stack text-sm">
           <li>Create or sign in to a FireUX account.</li>
           <li>Publish a handle and profile details that are safe for public discovery.</li>
           <li>Use the dashboard for account surfaces and the public users index for discovery.</li>

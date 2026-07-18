@@ -67,13 +67,13 @@ const resolvedFeatures = computed(() =>
 .features {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: clamp(2rem, 6vw, 3rem) 0;
+  gap: calc(var(--spacing) * 6);
+  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 12)) 0;
 }
 
 .features--first {
   border-top: 1px solid var(--ui-border-muted);
-  padding-top: clamp(3rem, 7vw, 4rem);
+  padding-top: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 16));
 }
 
 .features header h2 {
@@ -87,7 +87,7 @@ const resolvedFeatures = computed(() =>
 
 .features__list {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 @media (min-width: 768px) {
@@ -98,11 +98,11 @@ const resolvedFeatures = computed(() =>
 
 .features__list li {
   display: flex;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   align-items: flex-start;
   border: 1px solid var(--ui-border-muted);
   border-radius: calc(var(--ui-radius) * 3);
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   background: var(--ui-bg);
 }
 

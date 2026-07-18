@@ -128,13 +128,13 @@ const trackingTokens = [
 h2 {
   text-align: center;
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 4);
 }
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  padding: 1rem;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
 }
 @media (max-width: 640px) {
   .grid {
@@ -146,7 +146,7 @@ h2 {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   background: var(--ui-bg-elevated);
   border-radius: calc(var(--ui-radius) * 2);
   width: 100%;
@@ -154,7 +154,7 @@ h2 {
 .class-name {
   font-size: 0.75rem;
   color: gray;
-  margin-top: 0.5rem;
+  margin-top: calc(var(--spacing) * 2);
 }
 .text-xs {
   font-size: var(--text-xs);

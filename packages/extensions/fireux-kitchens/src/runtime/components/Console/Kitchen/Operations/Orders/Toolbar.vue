@@ -39,6 +39,6 @@ const { canSend, selectedOrders, send, sending } = pass
 .orders-toolbar__actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 </style>

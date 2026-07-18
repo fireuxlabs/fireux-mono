@@ -210,7 +210,7 @@ function useNextAsset() {
   justify-items: center;
   width: 100%;
   min-width: 0;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 7));
   border: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-secondary) 4%, var(--menu-bg));
@@ -298,7 +298,7 @@ function useNextAsset() {
   }
 
   .menu-identity__copy {
-    padding: 1.25rem 1rem;
+    padding: calc(var(--spacing) * 5) calc(var(--spacing) * 4);
   }
 }
 </style>

@@ -101,7 +101,7 @@ watch(displayUrl, () => {
 .menu-document {
   display: grid;
   width: 100%;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .menu-document__photo {
@@ -127,7 +127,7 @@ watch(displayUrl, () => {
   place-content: center;
   justify-items: center;
   margin: 0;
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);
   color: var(--menu-muted);

@@ -183,7 +183,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
   --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-title-font: var(--menu-font);
 
-  padding: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 12));
   border-radius: calc(var(--ui-radius) * 4);
   background: var(--menu-bg);
   color: var(--menu-text);
@@ -208,7 +208,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
 .menu-preview-surface {
   /* Console preview spine: keep the page layout compact, but preserve menu breathing room inside the preview itself. */
   display: grid;
-  gap: clamp(1.5rem, 4vw, 3rem);
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 12));
   color: var(--menu-text);
   text-align: center;
 }

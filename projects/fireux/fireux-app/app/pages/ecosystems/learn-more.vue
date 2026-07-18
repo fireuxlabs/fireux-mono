@@ -28,7 +28,7 @@
           <h2 class="text-lg font-semibold">Docs hierarchy</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li><strong>/ecosystems</strong>: browse active ecosystems.</li>
           <li><strong>/ecosystems/learn-more</strong>: create a new ecosystem and wire Firebase.</li>
           <li><strong>/apps</strong>: create global or tenant apps under an ecosystem.</li>
@@ -40,7 +40,7 @@
           <h2 class="text-lg font-semibold">1. Create Firebase project</h2>
         </template>
 
-        <ol class="list-decimal space-y-2 pl-5 text-sm">
+        <ol class="list-decimal fx-list-stack text-sm">
           <li>Create a new Firebase project and switch billing from Spark to Blaze.</li>
           <li>Enable Authentication, Firestore, and Storage.</li>
           <li>Create a Web app and save the Firebase web config values.</li>
@@ -65,7 +65,7 @@
           <h2 class="text-lg font-semibold">3. Place Firebase values correctly</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Put core Firebase fields in <code>ecosystem.config.ts</code>.</li>
           <li>Put <code>NUXT_FIREBASE_APP_ID</code> in the app <code>.env</code>.</li>
           <li>Put optional <code>NUXT_FIREBASE_MEASUREMENT_ID</code> in the app <code>.env</code>.</li>

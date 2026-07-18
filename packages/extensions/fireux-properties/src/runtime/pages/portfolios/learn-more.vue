@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">What portfolios are</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>Portfolios are the operational containers used to manage property work.</li>
           <li>A portfolio groups properties, clients, documents, finance, compliance, and tasks.</li>
           <li>The portfolio console is where operators move from overview into the working surfaces.</li>
@@ -24,7 +24,7 @@
           <h2 class="text-lg font-semibold">How to use portfolios</h2>
         </template>
 
-        <ol class="list-decimal space-y-2 pl-5 text-sm">
+        <ol class="list-decimal fx-list-stack text-sm">
           <li>Select a live or demo portfolio from the portfolio CTA.</li>
           <li>Open the portfolio console to work across properties, clients, incidents, and documents.</li>
           <li>Keep portfolio identity and operational state aligned through the same runtime record.</li>

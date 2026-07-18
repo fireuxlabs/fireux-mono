@@ -218,9 +218,9 @@ function formatPrice(price: number) {
 .menu-order-item__row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
-  padding: 1.25rem 0;
+  padding: calc(var(--spacing) * 5) 0;
 }
 
 .menu-order-item--with-image .menu-order-item__row {
@@ -243,7 +243,7 @@ function formatPrice(price: number) {
 
 .menu-order-item__heading {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--spacing);
 }
 
 .menu-order-item__heading > strong {
@@ -284,7 +284,7 @@ function formatPrice(price: number) {
   min-height: 1.85rem;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.28rem 0.5rem;
+  padding: 0.28rem calc(var(--spacing) * 2);
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 28%, transparent);
   border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-secondary) 6%, var(--menu-bg));

@@ -12,7 +12,7 @@
           <h2 class="text-lg font-semibold">What an app means in FireUX</h2>
         </template>
 
-        <ul class="list-disc space-y-2 pl-5 text-sm">
+        <ul class="list-disc fx-list-stack text-sm">
           <li>An app is the operational product teams use day-to-day.</li>
           <li>Apps run with shared FireUX identity, runtime, and console conventions.</li>
           <li>Apps can run in an existing ecosystem, hosted by FireUX, or self-hosted.</li>

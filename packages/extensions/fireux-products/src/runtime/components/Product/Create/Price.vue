@@ -159,15 +159,15 @@ const displayAmount = computed<number>({
 .price-entry {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4); /* Uses design system spacing */
+  gap: calc(var(--spacing) * 4); /* Uses design system spacing */
   background-color: var(--ui-bg-muted); /* Uses existing design system color */
-  padding: var(--space-6); /* Uses design system padding */
+  padding: calc(var(--spacing) * 6); /* Uses design system padding */
   border-radius: calc(var(--ui-radius) * 1.5); /* Uses design system border radius */
 }
 
 .input-row {
   display: flex;
-  gap: var(--space-1); /* Consistent spacing */
+  gap: var(--spacing); /* Consistent spacing */
   align-items: center;
 }
 

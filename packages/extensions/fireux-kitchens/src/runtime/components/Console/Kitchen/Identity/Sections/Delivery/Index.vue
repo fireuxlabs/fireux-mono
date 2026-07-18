@@ -565,7 +565,7 @@ async function persistDeliveryZones(successTitle: string) {
 .delivery-zone-panel__header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   justify-content: space-between;
 }
 
@@ -576,12 +576,12 @@ async function persistDeliveryZones(successTitle: string) {
 
 .delivery-zone-panel__actions {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--spacing);
 }
 
 .delivery-zone-row {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .delivery-zone-row__plus {

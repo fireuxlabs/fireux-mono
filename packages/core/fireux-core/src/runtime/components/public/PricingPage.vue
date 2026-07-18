@@ -1,6 +1,6 @@
 <template>
   <main class="min-h-screen bg-default text-default">
-    <div class="space-y-12 pb-16 sm:space-y-16 sm:pb-20">
+    <div class="fx-page-stack fx-page-stack--responsive">
       <section class="border-b border-default py-12 sm:py-16">
         <UContainer class="space-y-5">
           <UBadge color="primary" variant="soft">

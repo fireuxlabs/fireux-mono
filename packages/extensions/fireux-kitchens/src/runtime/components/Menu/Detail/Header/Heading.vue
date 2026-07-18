@@ -31,7 +31,7 @@ withDefaults(
 <style scoped>
 .menu-detail-heading {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   justify-items: center;
   text-align: center;
 }
