@@ -61,6 +61,9 @@ export type MenuUpdateInput = Partial<Omit<Menu, 'id' | 'created' | 'updated'>>
 export type {
   MenuChoice,
   MenuDeliveryZone,
+  MenuOrderAvailabilityPolicy,
+  MenuOrderContactField,
+  MenuOrderCustomerPolicy,
   MenuOrderDepositPolicy,
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
@@ -69,3 +72,5 @@ export type {
   MenuServiceHoursConfig,
   MenuServiceProfile,
 } from './kitchen-menu.model'
+
+export { MenuOrderContactFields } from './kitchen-menu.model'

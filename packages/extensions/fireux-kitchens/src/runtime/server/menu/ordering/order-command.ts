@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import type {
+  MenuOrderContactField,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
 } from '../../../models/kitchen/menu/menu.model.ts'
@@ -63,13 +64,21 @@ export function readMenuOrderSelection(
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const channel = readMenuOrderChannel(body?.channel, orderType)
+  const orderTypeConfig = ordering.order_types.find((type) =>
+    type.type === orderType
+  )
+  if (orderTypeConfig?.availability?.paused) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: orderTypeConfig.availability.message ||
+        'This ordering service is temporarily paused.',
+    })
+  }
 
   return {
     orderType,
     channel,
-    orderTypeConfig: ordering.order_types.find((type) =>
-      type.type === orderType
-    ),
+    orderTypeConfig,
   }
 }
 
@@ -86,6 +95,10 @@ export function prepareMenuOrderCommand(input: {
   })
   const requestedFor = text(input.body?.requested_for)
   const customer = readCustomer(input.body?.customer)
+  validateRequiredCustomerFields(
+    customer,
+    input.selection.orderTypeConfig?.customer?.required_fields || []
+  )
   const destination = readMenuOrderDestination(
     input.body,
     menuOrderTypeStrategy(input.selection.orderType)
@@ -108,6 +121,25 @@ export function prepareMenuOrderCommand(input: {
     roomService: destination.roomService,
     requestedItems: input.requestedItems,
   }
+}
+
+const customerFieldLabels: Record<MenuOrderContactField, string> = {
+  name: 'name',
+  phone: 'mobile number',
+  email: 'email address',
+}
+
+function validateRequiredCustomerFields(
+  customer: KitchenOrderCustomer,
+  requiredFields: MenuOrderContactField[]
+) {
+  const missing = requiredFields.filter((field) => !text(customer[field]))
+  if (!missing.length) return
+
+  throw createError({
+    statusCode: 400,
+    statusMessage: `Add your ${missing.map(field => customerFieldLabels[field]).join(', ')} before sending the order.`,
+  })
 }
 
 export function menuOrderIdempotencyRequest(

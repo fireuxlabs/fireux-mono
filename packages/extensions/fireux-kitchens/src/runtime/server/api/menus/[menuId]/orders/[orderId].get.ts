@@ -42,6 +42,19 @@ const fulfilmentMatch = (value: unknown) => {
 
   return { type, reference, handoff }
 }
+const collectionState = (value: unknown) => {
+  const source = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+  const mode = text(source.mode)
+  if (mode !== 'queue' && mode !== 'scheduled') return undefined
+
+  const requestedFor = timestampIso(source.requested_for)
+  return {
+    mode,
+    ...(requestedFor ? { requested_for: requestedFor } : {}),
+  }
+}
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -81,6 +94,7 @@ export default defineEventHandler(async (event) => {
     ? data.driver_responses as Record<string, { status?: unknown }>
     : {}
   const match = fulfilmentMatch(data.fulfilment_match)
+  const collection = collectionState(data.collection)
   const status = text(data.status)
   const orderType = text(data.order_type)
   if (!isKitchenOrderStatus(status) || !isKitchenOrderType(orderType)) {
@@ -96,6 +110,8 @@ export default defineEventHandler(async (event) => {
     status,
     order_type: orderType,
     ...(match ? { fulfilment_match: match } : {}),
+    ...(collection ? { collection } : {}),
+    ...(text(data.kitchen_note) ? { kitchen_note: text(data.kitchen_note) } : {}),
     estimated_ready_minutes: numberValue(data.estimated_ready_minutes),
     estimated_ready_at: timestampIso(data.estimated_ready_at),
     driver_watching_count: Object.values(driverResponses)

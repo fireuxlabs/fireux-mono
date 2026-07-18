@@ -17,6 +17,8 @@ const clean = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsoleMenuOrdering() {
   const menuState = useKitchenConsoleMenu()
   const toast = useToastify()
+  const orderTypePatchDrafts = new Map<KitchenOrderType, MenuOrderTypeConfig>()
+  let orderTypePatchQueue = Promise.resolve()
   const operationalMenu = computed(() =>
     menuState.menu.value as unknown as KitchenMenu | null
   )
@@ -148,6 +150,67 @@ export function useKitchenConsoleMenuOrdering() {
     })
   }
 
+  async function patchOrderTypeConfig(
+    type: KitchenOrderType,
+    patch: Partial<MenuOrderTypeConfig>
+  ) {
+    const current = orderTypePatchDrafts.get(type) ||
+      orderTypeConfigs.value.find(row => row.type === type)
+    if (!current) throw new Error(`${type} is not enabled for this menu.`)
+
+    const next = {
+      ...current,
+      ...patch,
+      type,
+      ...(patch.service_hours
+        ? {
+            service_hours: {
+              ...current.service_hours,
+              ...patch.service_hours,
+            },
+          }
+        : {}),
+      ...(patch.fulfilment
+        ? {
+            fulfilment: {
+              ...current.fulfilment,
+              ...patch.fulfilment,
+            },
+          }
+        : {}),
+      ...(patch.customer
+        ? {
+            customer: {
+              ...current.customer,
+              ...patch.customer,
+            },
+          }
+        : {}),
+      ...(patch.availability
+        ? {
+            availability: {
+              ...current.availability,
+              ...patch.availability,
+            },
+          }
+        : {}),
+    }
+    orderTypePatchDrafts.set(type, next)
+    orderTypePatchQueue = orderTypePatchQueue
+      .catch(() => undefined)
+      .then(async () => {
+        const latest = orderTypePatchDrafts.get(type)
+        if (!latest) return
+
+        await saveOrderTypeConfig(latest)
+        if (orderTypePatchDrafts.get(type) === latest) {
+          orderTypePatchDrafts.delete(type)
+        }
+      })
+
+    await orderTypePatchQueue
+  }
+
   async function saveMenuServiceHours(serviceHours: MenuServiceHoursConfig) {
     await updateOrdering({
       ...ordering.value,
@@ -164,6 +227,7 @@ export function useKitchenConsoleMenuOrdering() {
     ordering,
     orderingEnabled,
     orderTypeConfigs,
+    patchOrderTypeConfig,
     saveOrderTypeConfig,
     saveMenuServiceHours,
     setOrderType,

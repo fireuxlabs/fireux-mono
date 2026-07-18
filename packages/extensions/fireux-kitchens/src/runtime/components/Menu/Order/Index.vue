@@ -45,51 +45,55 @@
         :message="contextMessage"
         :show-currency="showCurrency"
         :surface-options="surfaceOptions"
-        :status-color="contextServiceChip.color"
+        :status-color="contextStatusColor"
         :status-label="contextStatusLabel"
         :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
-      <MenuOrderCatalogue
-        :key="basketScopeKey"
+      <MenuOrderPaused
+        v-if="menuContext === 'collection' && collectionPaused"
+        :browse-path="unavailableBrowsePath"
+        :message="collectionPauseMessage"
+      />
+
+      <MenuOrderCollectionFlow
+        v-else-if="menuContext === 'collection'"
+        :config="contextConfig"
         :currency-code="currencyCode"
-        :sections="menuSections"
-        @add="basket.add"
-      />
-
-      <MenuOrderBasketSummary
-        :currency-code="basket.currencyCode.value"
-        :quantity="basket.quantity.value"
-        :total="basket.total.value"
-        :total-label="basket.totalLabel.value"
-        @review="openBasket"
-      />
-
-      <MenuOrderBasketDialog
-        v-model:open="basketOpen"
-        :action-label="collectionActionLabel"
-        :currency-code="basket.currencyCode.value"
-        :lines="basket.lines.value"
-        :selection-label="collectionTime?.label"
-        :total-label="basket.totalLabel.value"
-        @quantity="basket.setQuantity"
-        @remove="basket.remove"
-        @continue="chooseCollectionTime"
-        @after-leave="finishBasketDialog"
-      />
-
-      <MenuOrderCollectionTimeDialog
-        v-if="menuContext === 'collection'"
-        v-model:open="collectionTimeOpen"
-        :asap-enabled="contextConfig?.asap_enabled"
         :hours="collectionHours"
-        :notice-hours="contextConfig?.notice_hours"
-        :schedule-horizon-days="contextConfig?.schedule_horizon_days"
-        :selection="collectionTime"
-        :slot-interval-minutes="contextConfig?.slot_interval_minutes"
-        @select="setCollectionTime"
-        @after-leave="finishCollectionTimeDialog"
+        :kitchen-slug="orderKitchenSlug"
+        :menu-id="menuId"
+        :order-path="orderPath"
+        :sections="menuSections"
+        :source-menu-id="sourceMenuId"
       />
+
+      <template v-else>
+        <MenuOrderCatalogue
+          :key="basketScopeKey"
+          :currency-code="currencyCode"
+          :sections="menuSections"
+          @add="basket.add"
+        />
+
+        <MenuOrderBasketSummary
+          :currency-code="basket.currencyCode.value"
+          :quantity="basket.quantity.value"
+          :total="basket.total.value"
+          :total-label="basket.totalLabel.value"
+          @review="openBasket"
+        />
+
+        <MenuOrderBasketDialog
+          v-model:open="basketOpen"
+          :currency-code="basket.currencyCode.value"
+          :lines="basket.lines.value"
+          :total-label="basket.totalLabel.value"
+          @quantity="basket.setQuantity"
+          @remove="basket.remove"
+          @after-leave="finishBasketDialog"
+        />
+      </template>
     </div>
   </article>
 </template>
@@ -101,7 +105,6 @@ import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
-import type { MenuOrderCollectionTimeSelection } from '../../../utils/menu-order-collection-time'
 import {
   menuRoutePath,
   rootMenuRouteScope,
@@ -192,7 +195,7 @@ const contextMessage = computed(() =>
   `This menu is available for ${contextProfile.value.label.toLowerCase()}.`
 )
 const collectionHours = computed(() =>
-  detailMenu.value?.behaviour.ordering.service_hours?.operation_hours
+  contextConfig.value?.service_hours?.operation_hours
 )
 const { menuServiceChip: contextServiceChip } = useMenuServiceComputed(
   collectionHours
@@ -200,10 +203,22 @@ const { menuServiceChip: contextServiceChip } = useMenuServiceComputed(
 const contextStatusLabel = computed(() => {
   if (menuContext.value !== 'collection') return ''
 
+  if (collectionPaused.value) return 'Collection paused'
+
   return contextServiceChip.value.known
     ? contextServiceChip.value.label
     : 'Collection hours unavailable'
 })
+const collectionPaused = computed(() =>
+  contextConfig.value?.availability?.paused === true
+)
+const collectionPauseMessage = computed(() =>
+  String(contextConfig.value?.availability?.message || '').trim() ||
+  'Collection is temporarily paused. Please try again later.'
+)
+const contextStatusColor = computed(() =>
+  collectionPaused.value ? 'error' as const : contextServiceChip.value.color
+)
 const surfaceOptions = computed(() => guestMenuSurfaceOptions({
   behaviour: detailMenu.value?.behaviour,
   menuId: menuId.value,
@@ -216,6 +231,11 @@ const contextOrderNoun = computed(() => menuContext.value === 'pre_order'
 )
 const resolvedSource = computed(() => detailMenu.value?.source || null)
 const sourceMenuId = computed(() => resolvedSource.value?.menuId || '')
+const orderKitchenSlug = computed(() =>
+  menuRouteScope.value.kind === 'directory'
+    ? menuRouteScope.value.kitchenSlug
+    : ''
+)
 const basketScopeKey = computed(() => JSON.stringify([
   orderPath.value,
   resolvedSource.value?.appId || '',
@@ -271,16 +291,6 @@ const basket = useMenuOrderBasket({
 })
 const basketOpen = ref(false)
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
-const collectionTimeOpen = ref(false)
-const collectionTime = ref<MenuOrderCollectionTimeSelection | null>(null)
-const openCollectionAfterBasket = ref(false)
-const collectionActionLabel = computed(() => {
-  if (menuContext.value !== 'collection') return ''
-
-  return collectionTime.value
-    ? 'Change collection time'
-    : 'Choose collection time'
-})
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
@@ -292,18 +302,15 @@ const {
 
 watch(
   () => basket.quantity.value,
-  quantity => {
+  (quantity: number) => {
     if (quantity) return
 
     basketOpen.value = false
-    collectionTimeOpen.value = false
-    collectionTime.value = null
   }
 )
 
 watch(basketScopeKey, () => {
-  collectionTimeOpen.value = false
-  collectionTime.value = null
+  basketOpen.value = false
 })
 
 function openBasket(trigger: HTMLButtonElement) {
@@ -313,24 +320,7 @@ function openBasket(trigger: HTMLButtonElement) {
   basketOpen.value = true
 }
 
-function chooseCollectionTime() {
-  if (menuContext.value !== 'collection' || !basket.quantity.value) return
-
-  openCollectionAfterBasket.value = true
-  basketOpen.value = false
-}
-
-function setCollectionTime(selection: MenuOrderCollectionTimeSelection) {
-  collectionTime.value = selection
-}
-
 function finishBasketDialog() {
-  if (openCollectionAfterBasket.value) {
-    openCollectionAfterBasket.value = false
-    collectionTimeOpen.value = true
-    return
-  }
-
   const trigger = basketTrigger.value
   basketTrigger.value = null
 
@@ -346,13 +336,6 @@ function finishBasketDialog() {
       )
       ?.focus()
   })
-}
-
-function finishCollectionTimeDialog() {
-  const trigger = basketTrigger.value
-  basketTrigger.value = null
-
-  void nextTick(() => trigger?.focus())
 }
 
 if (props.propagateResponseStatus) {

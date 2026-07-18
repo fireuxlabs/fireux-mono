@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-17
-Ref: 5b5efbf76
+Updated: 2026-07-18
+Ref: d4c4aec54
 Role: map, not canon
 
 Purpose:
@@ -260,11 +260,18 @@ Page composition note:
   and remove lines. Collection alone can continue to a package-owned,
   page-local pickup-time selector backed by the resolved Collection order-type
   policy: immediate collection is offered only when enabled and open, while
-  scheduled choices obey Collection hours, notice, interval, and horizon. It
-  has no submission,
-  customer-details, payment, or persistence path. Delivery address, pre-order
-  scheduling, customer details, submission, and payment remain later explicit
-  stages.
+  scheduled choices obey Collection hours, notice, interval, and horizon. The
+  first test pipeline offers name, mobile, and email fields with per-surface
+  required-field policy, shows configured Collection handoff instructions,
+  groups configured
+  settlement methods into Pay now or a surface-aware Pay later choice, posts through the canonical Menu Order endpoint,
+  and follows Kitchen acceptance, ready, rejection, and completion status on
+  the current page. Configured Pay now starts the existing secure online-card
+  checkout; the pipeline does not persist the customer session across refresh
+  or extend submission to Delivery or Pre-order. Collection can be paused
+  independently of its hours and enabled state: the themed public doorway
+  remains readable, ordering controls are replaced by its pause message, and
+  stale submissions are rejected server-side.
 - Console ordering configuration is layered beneath the Menu editor. The
   parent enables surfaces; focused policy belongs under
   `/console/kitchen/menus/<menuId>/ordering/<surface>`, beginning with
@@ -277,8 +284,13 @@ Page composition note:
 - The Kitchen Menu console is a small workspace rather than one long editor.
   `/console/kitchen/menus/<menuId>` owns overview and guest-facing identity;
   its Menu service-hours card chooses inherited Kitchen operation hours or a
-  custom Menu schedule without changing any surface policy. Collection timing
-  and payment-method policy remain on the focused Collection child route.
+  custom Menu schedule without changing any surface policy. Collection timing,
+  payment methods, handoff/contact requirements, and operational availability
+  remain on the focused Collection child route.
+  Those controls use the shared profile-editable molecule structure: each
+  field owns edit/save/cancel, optimistic display, validation, and errors while
+  the domain passes focused patch functions. Array-safe serialization remains
+  inside the ordering mutation composable rather than a page-wide draft.
   `content`, `ordering`, `publishing`, and `source` are explicit child routes
   sharing one package-owned workspace header. Existing section detail remains
   at the legacy child position until it can move atomically beneath `content`.
@@ -310,8 +322,14 @@ Component placement:
   owns public order
   catalogue resolution and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
   `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the
-  visible order seams. `composables/fireux/menu/order/useMenuOrderBasket.ts`
-  owns transient basket arithmetic and validated line correction only.
+  shared visible order seams. `CollectionFlow`, shared `CheckoutDialog`,
+  `CollectionStatus`, and the temporary `Paused` state own the small active
+  Collection pipeline.
+  `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket
+  arithmetic and validated line correction only, while
+  `useMenuCollectionOrder.ts` owns Collection submission, idempotency, online
+  checkout handoff, and status polling through server APIs. Shared payment
+  timing copy belongs to `utils/menu-order-payment.ts`, not to a surface dialog.
   `components/Menu/Json.vue` remains the temporary renderer for private or
   operational contexts that do not yet own a dedicated public projection.
 - Global, tenant-alias, and kitchen-directory detail routes branch on the parsed menu context:
@@ -320,9 +338,8 @@ Component placement:
   projection classifier also drives `middleware/menu-projection-layout.ts`, so
   the page branch and pre-render layout cannot drift.
 - The preserved ordering/funnel components remain disconnected reference
-  material. MenuOrder does not mount that chain: its first client state is a
-  local basket with no storage, request, customer, submission, or payment
-  behavior.
+  material. MenuOrder does not mount that chain. Its active Collection seam is
+  deliberately smaller and does not restore the preserved draft/session UI.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.

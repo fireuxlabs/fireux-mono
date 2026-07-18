@@ -1,4 +1,11 @@
-import { computed, getCurrentInstance, ref, watch } from 'vue'
+import {
+  computed,
+  getCurrentInstance,
+  ref,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue'
 import { normalizeSlug } from '../../../../utils/slug/normalizeSlug'
 
 export type ValidationResult = {
@@ -13,17 +20,17 @@ export type FormattingFn = ((value: string) => string) | null
 export type UpdateFn = (value: string) => unknown | Promise<unknown>
 
 type Options = {
-  label?: string
-  firebaseValue?: string | number | null
-  placeholder?: string
-  type?: string
-  maxlength?: number
-  rows?: number
-  id?: string
-  disabled?: boolean
-  disabledMessage?: string
-  validationFunction?: ValidationFn
-  formattingFunction?: FormattingFn
+  label?: MaybeRefOrGetter<string>
+  firebaseValue?: MaybeRefOrGetter<string | number | null | undefined>
+  placeholder?: MaybeRefOrGetter<string>
+  type?: MaybeRefOrGetter<string>
+  maxlength?: MaybeRefOrGetter<number>
+  rows?: MaybeRefOrGetter<number>
+  id?: MaybeRefOrGetter<string | undefined>
+  disabled?: MaybeRefOrGetter<boolean>
+  disabledMessage?: MaybeRefOrGetter<string>
+  validationFunction?: MaybeRefOrGetter<ValidationFn>
+  formattingFunction?: MaybeRefOrGetter<FormattingFn>
   updateFunction: UpdateFn
   emitUpdated?: (value: string) => void
 }
@@ -40,29 +47,33 @@ export function useEditableStringField(options: Options) {
   const saving = ref(false)
   const errorMessage = ref('')
 
-  const isTextarea = computed(() => options.type === 'textarea')
+  const isTextarea = computed(() => toValue(options.type) === 'textarea')
 
-  const disabled = computed(() => Boolean(options.disabled))
-  const disabledMessage = computed(() => (options.disabledMessage || '').trim())
+  const disabled = computed(() => Boolean(toValue(options.disabled)))
+  const disabledMessage = computed(() =>
+    (toValue(options.disabledMessage) || '').trim()
+  )
 
   const instance = getCurrentInstance()
   const instanceId = instance?.uid ?? 0
 
   const inputId = computed(() => {
-    if (options.id) return options.id
-    const labelSlug = options.label ? normalizeSlug(options.label) : 'field'
+    const id = toValue(options.id)
+    if (id) return id
+    const label = toValue(options.label)
+    const labelSlug = label ? normalizeSlug(label) : 'field'
     return `simple-field-${labelSlug}-${instanceId}`
   })
 
   const inputType = computed(() => {
     if (isTextarea.value) return 'text'
-    const type = options.type || 'text'
+    const type = toValue(options.type) || 'text'
     if (['email', 'tel', 'number', 'password', 'url'].includes(type)) return type
     return 'text'
   })
 
   watch(
-    () => options.firebaseValue,
+    () => toValue(options.firebaseValue),
     (next: string | number | null | undefined) => {
       if (!isEditing.value) {
         const nextValue = toStringValue(next)
@@ -76,25 +87,26 @@ export function useEditableStringField(options: Options) {
   const effectiveValue = computed(() =>
     optimisticValue.value !== null
       ? optimisticValue.value
-      : toStringValue(options.firebaseValue)
+      : toStringValue(toValue(options.firebaseValue))
   )
 
   const displayValue = computed(() => {
     const raw = effectiveValue.value.trim()
     if (raw.length) return raw
-    if (options.placeholder?.length) return options.placeholder
+    const placeholder = toValue(options.placeholder)
+    if (placeholder?.length) return placeholder
     return 'Not set'
   })
 
   function startEditing() {
     if (disabled.value) return
-    draft.value = toStringValue(options.firebaseValue)
+    draft.value = toStringValue(toValue(options.firebaseValue))
     isEditing.value = true
     errorMessage.value = ''
   }
 
   function cancel() {
-    draft.value = toStringValue(options.firebaseValue)
+    draft.value = toStringValue(toValue(options.firebaseValue))
     isEditing.value = false
     errorMessage.value = ''
   }
@@ -136,9 +148,10 @@ export function useEditableStringField(options: Options) {
     errorMessage.value = ''
     const trimmed = (draft.value || '').trim()
 
-    if (options.validationFunction) {
+    const validationFunction = toValue(options.validationFunction)
+    if (validationFunction) {
       try {
-        const result = options.validationFunction(trimmed)
+        const result = validationFunction(trimmed)
         if (!result?.isValid) {
           errorMessage.value = result?.message || 'Invalid value'
           return
@@ -149,8 +162,9 @@ export function useEditableStringField(options: Options) {
       }
     }
 
-    const valueToSave = options.formattingFunction
-      ? options.formattingFunction(trimmed)
+    const formattingFunction = toValue(options.formattingFunction)
+    const valueToSave = formattingFunction
+      ? formattingFunction(trimmed)
       : trimmed
 
     saving.value = true

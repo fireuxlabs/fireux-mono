@@ -20,15 +20,16 @@
       @input="setEstimate(($event.target as HTMLInputElement).value)"
     >
 
-    <div class="grid grid-cols-[auto_1fr_auto] gap-2">
+    <div class="grid grid-cols-[2.25rem_1fr_2.25rem] gap-2">
       <UButton
+        size="sm"
         color="neutral"
         variant="soft"
+        icon="i-lucide-minus"
         :disabled="!canInteract || !orderId"
+        aria-label="Reduce estimate by five minutes"
         @click="nudge(-5)"
-      >
-        -5
-      </UButton>
+      />
 
       <UButton
         color="primary"
@@ -41,13 +42,14 @@
       </UButton>
 
       <UButton
+        size="sm"
         color="neutral"
         variant="soft"
+        icon="i-lucide-plus"
         :disabled="!canInteract || !orderId"
+        aria-label="Increase estimate by five minutes"
         @click="nudge(5)"
-      >
-        +5
-      </UButton>
+      />
     </div>
   </section>
 </template>

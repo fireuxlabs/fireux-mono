@@ -51,6 +51,19 @@ export type MenuOrderFulfilmentPolicy = {
   delivery_zones?: MenuDeliveryZone[]
   payment_methods?: MenuPaymentMethod[]
   deposit?: MenuOrderDepositPolicy
+  handoff_instructions?: string
+}
+
+export const MenuOrderContactFields = ['name', 'phone', 'email'] as const
+export type MenuOrderContactField = typeof MenuOrderContactFields[number]
+
+export type MenuOrderCustomerPolicy = {
+  required_fields?: MenuOrderContactField[]
+}
+
+export type MenuOrderAvailabilityPolicy = {
+  paused?: boolean
+  message?: string
 }
 
 export type MenuOrderTypeConfig = {
@@ -62,6 +75,8 @@ export type MenuOrderTypeConfig = {
   slot_interval_minutes?: number
   schedule_horizon_days?: number
   fulfilment?: MenuOrderFulfilmentPolicy
+  customer?: MenuOrderCustomerPolicy
+  availability?: MenuOrderAvailabilityPolicy
 }
 
 export type MenuServiceHoursConfig = {

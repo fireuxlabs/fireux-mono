@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-18
 // usage_note: shared explicit Firebase Admin credential resolution for operational scripts.
 
 import path from 'node:path'

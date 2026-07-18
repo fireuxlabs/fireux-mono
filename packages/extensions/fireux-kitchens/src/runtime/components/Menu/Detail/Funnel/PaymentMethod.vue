@@ -26,8 +26,10 @@ const labels: Record<KitchenOrderPaymentMethod, string> = {
   cash: 'Cash',
   card_at_pickup: 'Card at pickup',
   card_to_driver: 'Card to driver',
+  room_charge: 'Charge to room',
   online_card: 'Online card',
   deposit: 'Online deposit',
+  pay_later: 'Pay later',
 }
 const methods = computed<KitchenOrderPaymentMethod[]>(() => {
   const configured = props.funnel.order.policy?.fulfilment?.payment_methods || []

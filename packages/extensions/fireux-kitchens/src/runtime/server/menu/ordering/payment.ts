@@ -45,10 +45,16 @@ export function resolveMenuOrderPaymentMethod(
 ): KitchenOrderPaymentMethod | undefined {
   const configuredPaymentMethods =
     input.orderTypeConfig?.fulfilment?.payment_methods || []
+  const hasDeferredPayment = configuredPaymentMethods.some(
+    method => method !== 'online_card'
+  )
   const allowedPaymentMethods: KitchenOrderPaymentMethod[] =
     input.orderTypeConfig?.fulfilment?.deposit
       ? ['deposit']
-      : configuredPaymentMethods
+      : [
+          ...configuredPaymentMethods,
+          ...(hasDeferredPayment ? ['pay_later' as const] : []),
+        ]
   const requestedPaymentMethod = normalizePaymentMethod(
     input.requestedPaymentMethod,
     allowedPaymentMethods

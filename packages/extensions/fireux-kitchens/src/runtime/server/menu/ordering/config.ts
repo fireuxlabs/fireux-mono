@@ -52,10 +52,12 @@ const mergeFulfilmentPolicy = (
     ? menuPolicy.payment_methods
     : kitchenPolicy?.payment_methods || []
   const deposit = menuPolicy?.deposit || kitchenPolicy?.deposit
+  const handoffInstructions = menuPolicy?.handoff_instructions
   const next: MenuOrderFulfilmentPolicy = {
     ...(deliveryZones.length ? { delivery_zones: deliveryZones } : {}),
     ...(paymentMethods.length ? { payment_methods: paymentMethods } : {}),
     ...(deposit ? { deposit } : {}),
+    ...(handoffInstructions ? { handoff_instructions: handoffInstructions } : {}),
   }
 
   return Object.keys(next).length ? next : undefined

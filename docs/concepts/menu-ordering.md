@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-07-17
-Ref: 5b5efbf76
+Updated: 2026-07-18
+Ref: d4c4aec54
 Role: map, not canon
 
 Purpose:
@@ -74,9 +74,12 @@ Current display rule:
   remove lines. Collection can then record a page-local queue or scheduled
   pickup choice from the resolved Collection order-type policy; missing hours
   fail closed, and scheduled choices share the server's hours and notice
-  validation utilities.
-  Customers still cannot submit an Order, enter customer details, or start
-  payment.
+  validation utilities. Slot cadence starts at each configured service-window
+  opening rather than at an unrelated midnight grid. Collection alone has a first test submission path:
+  optional name/mobile fields, configured Pay now or surface-aware Pay later choice, canonical Order
+  creation, and live acceptance/ready/completed status. The active pipeline
+  does not restore after refresh. Pay now uses the existing online-card checkout
+  only when that method is configured.
 - If ordering is absent or disabled, the same menu still renders as readable content.
 
 Current ordering shape:
@@ -107,9 +110,15 @@ Collection timing boundary:
   generic Menu hours and not to the public route.
 - The row owns its optional customer message, immediate-collection flag,
   minimum notice, slot interval, scheduling horizon, and inherited or custom
-  service hours. Its `fulfilment.payment_methods` chooses cash at pickup, card
-  at pickup, or future online card payment without activating checkout or
-  payment processing on the current public Collection catalogue.
+  service hours. Its fulfilment policy owns payment methods and customer-facing
+  handoff instructions; its customer policy chooses which of name, mobile, and
+  email are required. Public checkout groups configured payment methods into
+  surface-aware Pay now and Pay later choices and enforces required contact
+  fields on both client and server.
+- Temporary operational availability is distinct from configured hours and
+  surface enablement. A paused Collection surface remains a readable, themed
+  Menu doorway, replaces ordering controls with the configured pause message,
+  and fails closed at the canonical order endpoint for stale clients.
 - The Menu console keeps surface enablement at
   `/console/kitchen/menus/<menuId>/ordering` and keeps Menu service-hours
   defaults on `/console/kitchen/menus/<menuId>`. It edits Collection policy on the focused
@@ -117,14 +126,18 @@ Collection timing boundary:
   `/ordering/<surface>` namespace stays separate from Menu section ids and can
   grow one explicit surface editor at a time. Public suffixes such as
   `.collection` are projections and are never console ids.
-- Menu and Collection policy controls persist optimistically as they change,
-  using the same latest-value queue and visible save state as the Menu Theme
-  editor. Structured hours validate before persistence; there is no page-wide
-  save action.
+- Menu and Collection configuration follows the shared profile-editable
+  structure: reusable Firestore form molecules own read/edit/save/cancel,
+  optimistic display, validation, and field errors; domain components provide
+  current values and focused patch functions. Structured hours validate before
+  persistence. Because order types are stored as an array, rapid field patches
+  serialize inside the ordering mutation composable rather than through a
+  page-wide draft or save action.
 - The public Collection surface labels current availability as `Open now`,
-  `Not open`, or `Collection hours unavailable`. Pickup choices read only the
-  resolved Collection row after Menu inheritance. Missing effective hours fail
-  closed rather than silently jumping to a grandparent layer.
+  `Not open`, `Collection paused`, or `Collection hours unavailable`. Pickup
+  choices read only the resolved Collection row after Menu inheritance.
+  Missing effective hours fail closed rather than silently jumping to a
+  grandparent layer.
 
 Efficient matrix:
 - `type`: the customer order type.
@@ -167,7 +180,7 @@ Possible future timing policies:
 Possible future fulfilment policies:
 - `handoff`: table, bar, counter, pickup, curbside, locker, driver, buffet, or room.
 - `delivery_zones`: areas, postcodes, fees, minimum spend, and eta rules.
-- `payment_methods`: cash, card on pickup, card to driver, online card, deposit.
+- `payment_methods`: cash, card on pickup, card to driver, room charge, online card, deposit.
 - `deposit`: amount or percentage required before accepting an order.
 - `party_size`: minimum or maximum guest count for a mode.
 
@@ -236,9 +249,16 @@ Public order funnel spine:
   Collection-only timing boundary also remains transient, clears with the
   basket/source scope, offers queue collection only during current service,
   and derives future half-hour choices from published service windows and
-  `notice_hours`. It does not use the preserved funnel draft, storage, session,
-  fetch, or order-creation seams. Customer details, submission, payment, and
-  the canonical order endpoint remain later passes.
+  `notice_hours`. Collection then uses the separate active
+  `useMenuCollectionOrder` seam to submit the validated basket, minimal contact
+  details according to the resolved customer policy, pickup choice, and shared
+  payment-timing selection to the canonical endpoint. The resolved handoff
+  instructions remain visible through checkout and Collection status.
+  It polls the existing order-status endpoint until the Kitchen accepts,
+  rejects, marks ready, or completes the order. The test path does not reuse
+  the preserved funnel draft/storage/session chain, persist tracking across a
+  refresh; configured Pay now hands off to the existing secure checkout.
+  Delivery and Pre-order submission remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
 - Funnel composable naming should keep `useFunnel` as the shared root,

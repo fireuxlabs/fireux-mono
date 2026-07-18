@@ -1,163 +1,106 @@
 <template>
-  <div class="form-field">
-    <!-- Use the existing Top component with proper namespace -->
+  <div class="grid gap-2">
     <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
-      :has-data="firebaseValue !== null && firebaseValue !== undefined"
+      :has-data="false"
       :error-message="errorMessage"
       :disabled="disabled"
       :disabled-message="disabledMessage"
       @start-editing="startEditing"
-      @check="saveChanges"
-      @cancel="cancelEditing"
-      @delete="deleteValue"
+      @check="save"
+      @cancel="cancel"
     />
 
-    <!-- Display mode -->
-    <div v-if="!isEditing" class="display">
-      <span class="text-gray-700">{{ displayValue }}</span>
+    <div
+      v-if="!isEditing"
+      class="flex items-center justify-between gap-3 rounded-md border border-default bg-muted/30 px-3 py-2"
+    >
+      <span class="text-sm text-dimmed">{{ displayLabel }}</span>
+      <UBadge :color="effectiveValue ? 'success' : 'neutral'" variant="soft">
+        {{ effectiveValue ? trueLabel : falseLabel }}
+      </UBadge>
     </div>
 
-    <!-- Edit mode -->
-    <div v-else class="editing">
-      <div class="flex items-center space-x-2">
-        <UCheckbox
-          v-model="localValue"
-          :label="checkboxLabel"
-          class="flex-1"
-        />
-      </div>
+    <div v-else class="rounded-md border border-primary/25 bg-primary/5 p-3">
+      <USwitch
+        v-model="draft"
+        :label="checkboxLabel"
+        :disabled="saving"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-// Props
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  firebaseValue: {
-    type: Boolean,
-    default: null,
-  },
-  updateFunction: {
-    type: Function,
-    required: true,
-  },
-  checkboxLabel: {
-    type: String,
-    default: 'Enabled',
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  disabledMessage: {
-    type: String,
-    default: '',
-  },
-  validationFunction: {
-    type: Function,
-    default: null,
-  },
-  formattingFunction: {
-    type: Function,
-    default: null,
-  },
+type UpdateFn = (value: boolean) => unknown | Promise<unknown>
+
+const props = withDefaults(defineProps<{
+  checkboxLabel?: string
+  disabled?: boolean
+  disabledMessage?: string
+  displayLabel?: string
+  falseLabel?: string
+  firebaseValue?: boolean | null
+  label: string
+  trueLabel?: string
+  updateFunction: UpdateFn
+}>(), {
+  checkboxLabel: 'Enabled',
+  disabled: false,
+  disabledMessage: '',
+  displayLabel: 'Current setting',
+  falseLabel: 'No',
+  firebaseValue: false,
+  trueLabel: 'Yes',
 })
 
-// State
 const isEditing = ref(false)
-const localValue = ref(props.firebaseValue || false)
+const draft = ref(false)
+const optimisticValue = ref<boolean | null>(null)
+const saving = ref(false)
 const errorMessage = ref('')
-
-// Computed
-const displayValue = computed(() => {
-  if (props.firebaseValue === null || props.firebaseValue === undefined) {
-    return 'Not set'
-  }
-  return props.firebaseValue ? 'Yes' : 'No'
-})
-
-// Watch for prop changes
-watch(
-  () => props.firebaseValue,
-  (newValue: boolean | null) => {
-    if (!isEditing.value) {
-      localValue.value = newValue || false
-    }
-  }
+const effectiveValue = computed(() =>
+  optimisticValue.value === null
+    ? Boolean(props.firebaseValue)
+    : optimisticValue.value
 )
 
-// Methods
-const startEditing = () => {
+watch(() => props.firebaseValue, () => {
+  if (isEditing.value) return
+  optimisticValue.value = null
+  draft.value = Boolean(props.firebaseValue)
+}, { immediate: true })
+
+function startEditing() {
   if (props.disabled) return
-  localValue.value = props.firebaseValue || false
+  draft.value = effectiveValue.value
+  errorMessage.value = ''
   isEditing.value = true
-  errorMessage.value = ''
 }
 
-const cancelEditing = () => {
-  localValue.value = props.firebaseValue || false
+function cancel() {
+  draft.value = effectiveValue.value
+  errorMessage.value = ''
   isEditing.value = false
+}
+
+async function save() {
+  if (saving.value) return
+  saving.value = true
   errorMessage.value = ''
-}
-
-const deleteValue = async () => {
   try {
-    await props.updateFunction(null)
-    isEditing.value = false
-    errorMessage.value = ''
-  } catch (error) {
-    console.error('Error deleting checkbox value:', error)
-    errorMessage.value = 'Failed to delete value'
-  }
-}
-
-const saveChanges = async () => {
-  try {
-    errorMessage.value = ''
-
-    // Validate if validation function provided
-    if (props.validationFunction) {
-      const validationResult = props.validationFunction(localValue.value)
-      if (!validationResult.isValid) {
-        errorMessage.value = validationResult.message
-        return
-      }
-    }
-
-    // Format if formatting function provided
-    let valueToSave = localValue.value
-    if (props.formattingFunction) {
-      valueToSave = props.formattingFunction(localValue.value)
-    }
-
-    // Update in Firebase
-    await props.updateFunction(valueToSave)
+    await props.updateFunction(draft.value)
+    optimisticValue.value = draft.value
     isEditing.value = false
   } catch (error) {
-    console.error('Error saving checkbox value:', error)
-    errorMessage.value = 'Failed to save changes'
+    errorMessage.value = error instanceof Error
+      ? error.message
+      : 'Failed to save this setting.'
+  } finally {
+    saving.value = false
   }
 }
 </script>
-
-<style scoped>
-.form-field {
-  margin-bottom: 1rem;
-}
-
-.display {
-  padding: 0.5rem 0;
-}
-
-.editing {
-  margin-top: 0.5rem;
-}
-</style>

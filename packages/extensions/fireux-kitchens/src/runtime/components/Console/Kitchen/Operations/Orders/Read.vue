@@ -1,35 +1,30 @@
 <template>
-  <div class="grid gap-4">
-    <header class="flex flex-col gap-4 rounded-lg border border-default bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div class="grid min-w-36 gap-0.5">
-        <p class="m-0 text-xs font-extrabold uppercase text-muted">
-          Kitchen execution
-        </p>
-        <h1 class="m-0 text-2xl font-black leading-none text-highlighted">
-          {{ readOnly ? 'Demo board' : 'Live board' }}
+  <div class="grid gap-3" data-kitchen-orders-board>
+    <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-default pb-3">
+      <div class="flex min-w-0 items-center gap-2">
+        <h1 class="m-0 text-xl font-bold leading-none text-highlighted">
+          Orders
         </h1>
+        <UBadge :color="readOnly ? 'neutral' : 'success'" variant="soft" size="sm">
+          {{ readOnly ? 'Demo' : 'Live' }}
+        </UBadge>
       </div>
 
-      <div class="flex flex-1 flex-wrap gap-2 sm:justify-end">
-        <div
-          v-for="count in railCounts"
-          :key="count.label"
-          class="grid min-w-[5.5rem] flex-1 rounded-lg border border-default bg-default px-3 py-2 sm:flex-none"
-        >
-          <span class="text-xs font-bold text-muted">{{ count.label }}</span>
-          <strong class="text-xl font-black leading-none text-highlighted">{{ count.count }}</strong>
-        </div>
-      </div>
+      <p class="m-0 min-w-0 flex-1 text-xs text-dimmed">
+        {{ visibleOrders.length }} on board
+      </p>
 
       <UButton
-        size="sm"
+        v-if="visibleOrders.length"
+        size="xs"
         color="error"
-        :variant="clearConfirm ? 'solid' : 'soft'"
+        :variant="clearConfirm ? 'soft' : 'ghost'"
         :icon="clearConfirm ? 'i-lucide-trash-2' : 'i-lucide-trash'"
-        :disabled="readOnly || !canWrite || clearingOrders || transitioningCount || !visibleOrders.length"
+        :disabled="readOnly || !canWrite || clearingOrders || Boolean(transitioningCount)"
+        :aria-label="clearButtonLabel"
         @click="clearOrders"
       >
-        {{ clearButtonLabel }}
+        <span v-if="clearConfirm || clearingOrders">{{ clearButtonLabel }}</span>
       </UButton>
     </header>
 
@@ -42,163 +37,102 @@
       :description="transitionError"
     />
 
-    <p v-if="pending" class="m-0 text-sm font-semibold text-muted">
-      Loading orders...
-    </p>
+    <div
+      v-if="pending"
+      class="grid min-h-48 place-items-center rounded-lg border border-dashed border-default text-sm text-dimmed"
+      role="status"
+    >
+      Loading orders…
+    </div>
 
-    <div v-else class="grid gap-4">
-      <section class="grid gap-4 rounded-lg border border-primary/30 bg-elevated/80 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="m-0 text-sm font-extrabold text-highlighted">
-            Incoming
-          </h2>
-          <UBadge color="neutral" variant="soft">
-            {{ incomingOrders.length }}
-          </UBadge>
-        </div>
-
-        <div
-          v-if="incomingOrders.length"
-          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          <ConsoleKitchenOperationsOrdersReceiving
-            v-for="ticket in incomingOrders"
-            :key="ticket.id"
-            :accepting="acceptingOrderId === normalizeId(ticket.id)"
-            :estimate-minutes="estimateMinutes(ticket)"
-            :can-interact="canInteractWith(ticket)"
-            :order="ticket"
-            :rejecting="rejectingOrderId === normalizeId(ticket.id)"
-            @accept="acceptIncomingOrder"
-            @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
-            @reject="rejectIncomingOrder"
-            @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
-          />
-        </div>
-
-        <p v-else class="m-0 text-sm font-semibold text-muted">
-          No incoming orders waiting for acceptance.
-        </p>
-      </section>
-
-      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="m-0 text-sm font-extrabold text-highlighted">
-            Queue
-          </h2>
-          <UBadge color="neutral" variant="soft">
-            {{ queueOrders.length }}
-          </UBadge>
-        </div>
-
-        <div
-          v-if="queueOrders.length"
-          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          <ConsoleKitchenOperationsOrdersCardsTicket
-            v-for="ticket in queueOrders"
-            :key="ticket.id"
-            :order="ticket"
-            :interactive="canInteractWith(ticket)"
-            status-action-label="Ready"
-            status-action-aria-label="Mark order ready"
-            :status-action-pending="isOrderTransitioning(ticket.id)"
-            @touch-status="markOrderReady"
-          />
-        </div>
-
-        <p v-else class="m-0 text-sm font-semibold text-muted">
-          No queued orders.
-        </p>
-      </section>
-
-      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="m-0 text-sm font-extrabold text-highlighted">
-            Pass
-          </h2>
-          <UBadge color="neutral" variant="soft">
-            {{ passOrders.length }}
-          </UBadge>
-        </div>
-
-        <div
-          v-if="passOrders.length"
-          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          <ConsoleKitchenOperationsOrdersCardsTicket
-            v-for="ticket in passOrders"
-            :key="ticket.id"
-            :order="ticket"
-            :interactive="canInteractWith(ticket)"
-            header-action-label="Move order back to queue"
-            :status-action-label="sendLabel(ticket)"
-            :status-action-aria-label="sendAriaLabel(ticket)"
-            :status-action-pending="isOrderTransitioning(ticket.id)"
-            @touch-header="returnToQueue"
-            @touch-status="completeReadyOrder"
-          />
-        </div>
-
-        <p v-else class="m-0 text-sm font-semibold text-muted">
-          Nothing on the pass.
-        </p>
-      </section>
-
-      <section class="grid gap-4 rounded-lg border border-default bg-elevated/80 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="m-0 text-sm font-extrabold text-highlighted">
-            Recent
-          </h2>
-          <UBadge color="neutral" variant="soft">
-            {{ recentOrders.length }}
-          </UBadge>
-        </div>
-
-        <div
-          v-if="recentOrders.length"
-          class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          <ConsoleKitchenOperationsOrdersCardsTicket
-            v-for="ticket in recentOrders"
-            :key="ticket.id"
-            :order="ticket"
-          />
-        </div>
-
-        <p v-else class="m-0 text-sm font-semibold text-muted">
-          No recent orders yet.
-        </p>
-      </section>
-
-      <section
-        v-if="unmappedOrders.length"
-        class="grid gap-4 rounded-lg border border-warning/40 bg-warning/5 p-4"
+    <div v-else class="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <ConsoleKitchenOperationsOrdersRail
+        label="Incoming"
+        :count="incomingOrders.length"
+        empty-label="No orders waiting"
+        accent="primary"
       >
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <h2 class="m-0 text-sm font-extrabold text-highlighted">
-              Needs mapping
-            </h2>
-            <p class="m-0 text-xs font-semibold text-muted">
-              These orders have a status the board does not recognise.
-            </p>
-          </div>
-          <UBadge color="warning" variant="soft">
-            {{ unmappedOrders.length }}
-          </UBadge>
-        </div>
+        <ConsoleKitchenOperationsOrdersReceiving
+          v-for="ticket in incomingOrders"
+          :key="ticket.id"
+          :accepting="acceptingOrderId === normalizeId(ticket.id)"
+          :estimate-minutes="estimateMinutes(ticket)"
+          :can-interact="canInteractWith(ticket)"
+          :order="ticket"
+          :rejecting="rejectingOrderId === normalizeId(ticket.id)"
+          @accept="acceptIncomingOrder"
+          @nudge-estimate="nudgeEstimateMinutes($event.id, $event.amount)"
+          @reject="rejectIncomingOrder"
+          @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
+        />
+      </ConsoleKitchenOperationsOrdersRail>
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ConsoleKitchenOperationsOrdersRail
+        label="Queue"
+        :count="queueOrders.length"
+        empty-label="No orders in preparation"
+      >
+        <ConsoleKitchenOperationsOrdersCardsTicket
+          v-for="ticket in queueOrders"
+          :key="ticket.id"
+          :order="ticket"
+          :interactive="canInteractWith(ticket)"
+          status-action-label="Ready"
+          status-action-aria-label="Mark order ready"
+          :status-action-pending="isOrderTransitioning(ticket.id)"
+          @touch-status="markOrderReady"
+        />
+      </ConsoleKitchenOperationsOrdersRail>
+
+      <ConsoleKitchenOperationsOrdersRail
+        label="Pass"
+        :count="passOrders.length"
+        empty-label="Nothing waiting for handoff"
+        accent="success"
+      >
+        <ConsoleKitchenOperationsOrdersCardsTicket
+          v-for="ticket in passOrders"
+          :key="ticket.id"
+          :order="ticket"
+          :interactive="canInteractWith(ticket)"
+          header-action-label="Move order back to queue"
+          :status-action-label="sendLabel(ticket)"
+          :status-action-aria-label="sendAriaLabel(ticket)"
+          :status-action-pending="isOrderTransitioning(ticket.id)"
+          @touch-header="returnToQueue"
+          @touch-status="completeReadyOrder"
+        />
+      </ConsoleKitchenOperationsOrdersRail>
+
+      <ConsoleKitchenOperationsOrdersRail
+        label="Recent"
+        :count="recentOrders.length"
+        empty-label="No completed orders yet"
+      >
+        <ConsoleKitchenOperationsOrdersCardsTicket
+          v-for="ticket in recentOrders"
+          :key="ticket.id"
+          :order="ticket"
+        />
+      </ConsoleKitchenOperationsOrdersRail>
+
+      <ConsoleKitchenOperationsOrdersRail
+        v-if="unmappedOrders.length"
+        class="md:col-span-2 xl:col-span-4"
+        label="Needs mapping"
+        :count="unmappedOrders.length"
+        empty-label="No unmapped orders"
+        accent="warning"
+      >
+        <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           <ConsoleKitchenOperationsOrdersCardsTicket
             v-for="ticket in unmappedOrders"
             :key="ticket.id"
             :order="ticket"
           />
         </div>
-      </section>
+      </ConsoleKitchenOperationsOrdersRail>
     </div>
-
   </div>
 </template>
 
@@ -222,7 +156,6 @@ const {
   recentOrders,
   unmappedOrders,
   visibleOrders,
-  railCounts,
   pending,
   readOnly,
   canWrite,
@@ -241,8 +174,8 @@ const normalizeId = (value: unknown) => String(value ?? '').trim()
 const canOperate = computed(() => canWrite.value && !readOnly.value)
 const clearButtonLabel = computed(() => {
   if (clearingOrders.value) return 'Clearing...'
-  if (clearConfirm.value) return `Clear ${visibleOrders.value.length}`
-  return 'Trash'
+  if (clearConfirm.value) return `Trash ${visibleOrders.value.length} orders`
+  return 'Clear board'
 })
 
 function sendLabel(order: KitchenOrder) {

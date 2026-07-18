@@ -11,9 +11,7 @@
         variant="ghost"
         icon="i-lucide-x"
         aria-label="Close orders"
-      >
-        Close
-      </UButton>
+      />
     </header>
 
     <main class="kitchen-orders-layout__main">
@@ -67,8 +65,8 @@ const selectionBlocked = computed(() =>
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: 4rem;
-  padding: 0.75rem clamp(1rem, 2vw, 2rem);
+  min-height: 3.5rem;
+  padding: 0.5rem clamp(0.75rem, 2vw, 1.5rem);
   border-bottom: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-bg) 92%, transparent);
   backdrop-filter: blur(16px);
@@ -81,7 +79,7 @@ const selectionBlocked = computed(() =>
 }
 
 .kitchen-orders-layout__main {
-  padding: clamp(0.75rem, 1.6vw, 1.5rem);
+  padding: clamp(0.625rem, 1.4vw, 1.25rem);
 }
 
 .kitchen-orders-layout__empty {

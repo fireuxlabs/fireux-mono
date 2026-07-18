@@ -1,10 +1,11 @@
 <template>
-  <section class="grid gap-2 rounded-lg border border-error/20 bg-error/5 p-3">
+  <section class="grid gap-2 border-t border-default pt-3">
     <UButton
       v-if="!open"
       color="error"
-      variant="soft"
+      variant="ghost"
       block
+      size="sm"
       :disabled="!canInteract || !orderId"
       @click="open = true"
     >

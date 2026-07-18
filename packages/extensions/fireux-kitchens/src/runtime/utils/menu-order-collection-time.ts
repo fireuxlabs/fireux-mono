@@ -4,6 +4,7 @@ import {
   readWeekdayTimeOpenState,
   readWeekdayTimeSelectionState,
   readWeekdayTimeWindowsConfig,
+  weekdayTimeDays,
 } from './weekday-time'
 
 export type MenuOrderCollectionTimeSelection = {
@@ -60,6 +61,50 @@ const dayLabel = (dateText: string, offset: number) => {
 const timeText = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 
+const timeMinutes = (value: string) => {
+  const [hour, minute] = value.split(':').map(Number)
+
+  return hour * 60 + minute
+}
+
+const dateDay = (dateText: string) => {
+  const date = new Date(`${dateText}T00:00:00Z`)
+  const mondayIndex = (date.getUTCDay() + 6) % 7
+
+  return weekdayTimeDays[mondayIndex]
+}
+
+const configuredSlotMinutes = (
+  hours: WeekdayTimeWindowsConfig,
+  dateText: string,
+  interval: number
+) => {
+  const day = dateDay(dateText)
+  const previousDay = weekdayTimeDays[
+    (weekdayTimeDays.indexOf(day) + weekdayTimeDays.length - 1) %
+      weekdayTimeDays.length
+  ]
+  const slots = new Set<number>()
+
+  hours.windows.forEach((window) => {
+    const open = timeMinutes(window.open)
+    const close = timeMinutes(window.close)
+    if (open < close && window.days.includes(day)) {
+      for (let minute = open; minute < close; minute += interval) slots.add(minute)
+      return
+    }
+    if (open >= close && window.days.includes(day)) {
+      for (let minute = open; minute < 24 * 60; minute += interval) slots.add(minute)
+    }
+    if (open >= close && window.days.includes(previousDay)) {
+      const first = (interval - ((24 * 60 - open) % interval)) % interval
+      for (let minute = first; minute < close; minute += interval) slots.add(minute)
+    }
+  })
+
+  return [...slots].sort((left, right) => left - right)
+}
+
 export function menuOrderCollectionTimeOptions(input: {
   hours: WeekdayTimeWindowsConfig | undefined
   noticeHours?: number
@@ -98,11 +143,11 @@ export function menuOrderCollectionTimeOptions(input: {
     const date = addDays(today, offset)
     const slots: MenuOrderCollectionTimeSlot[] = []
 
-    for (
-      let minutes = 0;
-      minutes < 24 * 60;
-      minutes += slotIntervalMinutes
-    ) {
+    for (const minutes of configuredSlotMinutes(
+      hours,
+      date,
+      slotIntervalMinutes
+    )) {
       const time = timeText(minutes)
       const selection = readWeekdayTimeSelectionState(hours, date, time)
       if (!selection.available || !selection.requested_for) continue

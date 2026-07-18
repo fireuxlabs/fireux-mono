@@ -201,9 +201,11 @@ export type KitchenOrderPaymentStatus =
 export type KitchenOrderPaymentMethod =
   | 'online_card'
   | 'deposit'
+  | 'pay_later'
   | 'cash'
   | 'card_at_pickup'
   | 'card_to_driver'
+  | 'room_charge'
 
 export type KitchenOrderPayment = {
   required: boolean

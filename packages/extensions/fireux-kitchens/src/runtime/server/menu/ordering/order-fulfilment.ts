@@ -137,6 +137,12 @@ export async function resolveMenuOrderFulfilment(input: {
         ...(command.orderTypeConfig.schedule_horizon_days
           ? { schedule_horizon_days: command.orderTypeConfig.schedule_horizon_days }
           : {}),
+        ...(command.orderTypeConfig.customer
+          ? { customer: command.orderTypeConfig.customer }
+          : {}),
+        ...(command.orderTypeConfig.availability
+          ? { availability: command.orderTypeConfig.availability }
+          : {}),
         ...(command.orderTypeConfig.fulfilment
           ? { ...command.orderTypeConfig.fulfilment }
           : {}),

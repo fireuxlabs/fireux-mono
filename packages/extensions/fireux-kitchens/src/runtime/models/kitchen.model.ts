@@ -121,6 +121,7 @@ export type KitchenFulfilmentPaymentMethod =
   | 'cash'
   | 'card_at_pickup'
   | 'card_to_driver'
+  | 'room_charge'
   | 'online_card'
 
 export type KitchenFulfilmentConfig = {

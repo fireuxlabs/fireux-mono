@@ -52,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
     useEditableStringField,
     type FormattingFn,
@@ -109,20 +110,23 @@ const {
   save,
   saveOnEnter,
 } = useEditableStringField({
-  label: props.label,
-  firebaseValue: props.firebaseValue,
-  placeholder: props.placeholder,
-  type: props.type,
-  maxlength: props.maxlength,
-  rows: props.rows,
-  id: props.id,
-  disabled: props.disabled,
-  disabledMessage: props.disabledMessage,
-  validationFunction: props.validationFunction,
-  formattingFunction: props.formattingFunction,
+  label: () => props.label,
+  firebaseValue: () => props.firebaseValue,
+  placeholder: () => props.placeholder,
+  type: () => props.type,
+  maxlength: () => props.maxlength,
+  rows: () => props.rows,
+  id: () => props.id,
+  disabled: () => props.disabled,
+  disabledMessage: () => props.disabledMessage,
+  validationFunction: () => props.validationFunction,
+  formattingFunction: () => props.formattingFunction,
   updateFunction: props.updateFunction,
   emitUpdated: (value: string) => emit('updated', value),
 })
 
-const { label, placeholder, maxlength, rows } = props
+const label = computed(() => props.label)
+const placeholder = computed(() => props.placeholder)
+const maxlength = computed(() => props.maxlength)
+const rows = computed(() => props.rows)
 </script>

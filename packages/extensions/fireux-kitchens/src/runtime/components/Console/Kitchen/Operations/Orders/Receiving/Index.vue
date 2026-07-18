@@ -1,5 +1,5 @@
 <template>
-  <article class="grid max-w-[22rem] gap-4 rounded-lg border border-primary/20 bg-default p-4 shadow-sm">
+  <article class="grid w-full min-w-0 gap-3 rounded-md border border-primary/25 bg-default p-3">
     <header class="flex items-start justify-between gap-3">
       <div class="flex min-w-0 items-start gap-3">
         <UIcon
@@ -10,12 +10,12 @@
         />
 
         <div class="min-w-0">
-          <p class="m-0 text-xs font-extrabold uppercase text-muted">
-            Incoming
-          </p>
-          <h3 class="m-0 text-base font-black text-highlighted">
+          <h3 class="m-0 truncate text-sm font-bold text-highlighted">
             {{ incomingTitle }}
           </h3>
+          <p class="m-0 truncate text-xs text-dimmed">
+            {{ orderNumber }}
+          </p>
         </div>
       </div>
 
@@ -24,10 +24,9 @@
         color="neutral"
         variant="soft"
         :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+        :aria-label="copied ? 'Order copied' : 'Copy order'"
         @click="copyTicket"
-      >
-        {{ copied ? 'Copied' : 'Copy' }}
-      </UButton>
+      />
     </header>
 
     <div class="grid gap-1 text-sm font-semibold text-highlighted">
@@ -38,6 +37,16 @@
       >
         {{ line.quantity }}x {{ line.label }}
       </p>
+    </div>
+
+    <div
+      v-if="customerName || customerPhone"
+      class="grid gap-1 border-t border-default pt-3 text-sm"
+    >
+      <strong v-if="customerName" class="text-highlighted">{{ customerName }}</strong>
+      <a v-if="customerPhone" class="text-primary" :href="`tel:${customerPhone}`">
+        {{ customerPhone }}
+      </a>
     </div>
 
     <p
@@ -196,10 +205,17 @@ const formatTime = (value: number) =>
   }).format(new Date(value))
 const orderRecord = computed(() => props.order as Record<string, unknown>)
 const orderId = computed(() => normalize(props.order.id))
+const orderNumber = computed(() => {
+  const number = normalize(props.order.order_number)
+  return number ? `Order #${number}` : orderId.value || 'Order'
+})
 const orderType = computed(() => normalize(props.order.order_type))
 const orderStatus = computed(() => normalize(props.order.status))
 const collection = computed(() => record(orderRecord.value.collection))
 const roomService = computed(() => record(orderRecord.value.room_service))
+const customer = computed(() => record(orderRecord.value.customer))
+const customerName = computed(() => normalize(customer.value.name))
+const customerPhone = computed(() => normalize(customer.value.phone))
 const isTerminal = computed(() =>
   ['cancelled', 'completed'].includes(orderStatus.value)
 )
@@ -306,6 +322,9 @@ const copyPayload = computed(() => {
       type: orderType.value,
       status: orderStatus.value,
       collection: Object.keys(collection.value).length ? collection.value : null,
+      customer: customerName.value || customerPhone.value
+        ? { name: customerName.value, phone: customerPhone.value }
+        : null,
       items: lines.value.map((line) => ({
         quantity: line.quantity,
         label: line.label,

@@ -1,10 +1,10 @@
 <template>
   <div
-    class="w-[18rem] max-w-full shrink-0 self-start overflow-hidden rounded-lg border border-default bg-default shadow-sm"
+    class="w-full min-w-0 overflow-hidden rounded-md border border-default bg-default"
   >
     <div class="divide-y divide-default">
       <div
-        class="flex h-12 shrink-0 items-center justify-between gap-3 px-4 text-sm font-semibold text-highlighted"
+        class="flex min-h-10 items-center justify-between gap-2 px-3 text-sm font-semibold text-highlighted"
       >
         <span class="flex min-w-0 items-center gap-2">
           <UIcon :name="headerIcon" class="size-4 shrink-0" />
@@ -27,7 +27,7 @@
             v-if="canTouchHeader"
             size="xs"
             color="neutral"
-            variant="ghost"
+            variant="soft"
             icon="i-lucide-undo-2"
             :aria-label="headerActionLabel"
             @click.stop="touchHeader"
@@ -68,7 +68,7 @@
 
       <div
         :class="[
-          'space-y-1 p-4',
+          'space-y-1 p-3',
           canTouchBody && 'cursor-pointer hover:bg-muted/40',
         ]"
         :role="canTouchBody ? 'button' : undefined"
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <div class="flex h-12 shrink-0 items-center justify-between gap-2 px-4 text-xs font-medium text-dimmed">
+      <div class="flex min-h-10 items-center justify-between gap-2 px-3 text-xs font-medium text-dimmed">
         <span class="min-w-0 truncate">
           {{ orderLabel }}
         </span>
@@ -131,10 +131,9 @@
           variant="soft"
           :disabled="!orderId"
           :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+          :aria-label="copied ? 'Order copied' : 'Copy order'"
           @click.stop="copyTicket"
-        >
-          {{ copied ? 'Copied' : 'Copy' }}
-        </UButton>
+        />
       </div>
     </div>
   </div>

@@ -15,9 +15,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <UBadge v-if="saveState" color="neutral" variant="soft">
-            {{ saveState }}
-          </UBadge>
           <UBadge :color="collectionConfig ? 'success' : 'neutral'" variant="soft">
             {{ collectionConfig ? 'Enabled' : 'Disabled' }}
           </UBadge>
@@ -57,24 +54,38 @@
     </UCard>
 
     <ConsoleKitchenOperationsMenusOrderingCollectionTiming
-      v-else-if="editableCollectionConfig"
-      :config="editableCollectionConfig"
+      v-else-if="collectionConfig"
+      :config="collectionConfig"
       :disabled="!canWrite"
       :menu-hours="menuServiceHours"
-      @save="saveCollection"
+      :update-function="updateCollection"
     />
 
     <ConsoleKitchenOperationsMenusOrderingCollectionPaymentMethods
-      v-if="editableCollectionConfig"
-      :config="editableCollectionConfig"
+      v-if="collectionConfig"
+      :config="collectionConfig"
       :disabled="!canWrite"
-      @save="saveCollection"
+      :update-function="updateCollection"
+    />
+
+    <ConsoleKitchenOperationsMenusOrderingCollectionDetails
+      v-if="collectionConfig"
+      :config="collectionConfig"
+      :disabled="!canWrite"
+      :update-function="updateCollection"
+    />
+
+    <ConsoleKitchenOperationsMenusOrderingCollectionAvailability
+      v-if="collectionConfig"
+      :config="collectionConfig"
+      :disabled="!canWrite"
+      :update-function="updateCollection"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../../../../models/kitchen/menu/menu.model'
 import { useKitchenConsoleMenuOrdering } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenuOrdering'
 
@@ -83,24 +94,10 @@ const {
   collectionConfig,
   menuServiceHours,
   menu,
-  saveOrderTypeConfig,
+  patchOrderTypeConfig,
   setOrderType,
 } = useKitchenConsoleMenuOrdering()
 const enabling = ref(false)
-const saving = ref(false)
-const saveState = ref('')
-const editableCollectionConfig = ref<MenuOrderTypeConfig | null>(null)
-const pendingCollectionConfig = ref<MenuOrderTypeConfig | null>(null)
-
-watch(
-  collectionConfig,
-  (config: MenuOrderTypeConfig | null) => {
-    if (!saving.value || !editableCollectionConfig.value) {
-      editableCollectionConfig.value = config
-    }
-  },
-  { immediate: true, deep: true }
-)
 
 async function enableCollection() {
   if (enabling.value) return
@@ -112,29 +109,6 @@ async function enableCollection() {
   }
 }
 
-function saveCollection(config: MenuOrderTypeConfig) {
-  editableCollectionConfig.value = config
-  pendingCollectionConfig.value = config
-  saveState.value = 'Pending changes'
-  void flushCollectionSave()
-}
-
-async function flushCollectionSave() {
-  if (saving.value) return
-  saving.value = true
-  try {
-    while (pendingCollectionConfig.value) {
-      const config = pendingCollectionConfig.value
-      pendingCollectionConfig.value = null
-      saveState.value = 'Saving...'
-      await saveOrderTypeConfig(config)
-    }
-    saveState.value = 'Saved'
-  } catch {
-    saveState.value = 'Save failed'
-  } finally {
-    saving.value = false
-    if (pendingCollectionConfig.value) void flushCollectionSave()
-  }
-}
+const updateCollection = (patch: Partial<MenuOrderTypeConfig>) =>
+  patchOrderTypeConfig('collection', patch)
 </script>

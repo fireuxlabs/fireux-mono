@@ -1,11 +1,13 @@
 import type {
   MenuDeliveryZone,
+  MenuOrderContactField,
   MenuOrderDepositPolicy,
   MenuOrderFulfilmentPolicy,
   MenuOrderTypeConfig,
   MenuPaymentMethod,
   MenuServiceHoursConfig,
 } from '../models/kitchen/menu/menu.model'
+import { MenuOrderContactFields } from '../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import { readWeekdayTimeWindowsConfig } from './weekday-time'
 
@@ -23,6 +25,7 @@ const paymentMethods = [
   'cash',
   'card_at_pickup',
   'card_to_driver',
+  'room_charge',
   'online_card',
 ] as const satisfies readonly MenuPaymentMethod[]
 
@@ -77,6 +80,14 @@ const readPaymentMethods = (value: unknown): MenuPaymentMethod[] =>
       paymentMethods.includes(method)
     )
     .filter((method, index, source) => source.indexOf(method) === index)
+
+const readContactFields = (value: unknown): MenuOrderContactField[] =>
+  list(value)
+    .map((field) => text(field) as MenuOrderContactField)
+    .filter((field): field is MenuOrderContactField =>
+      MenuOrderContactFields.includes(field)
+    )
+    .filter((field, index, source) => source.indexOf(field) === index)
 
 const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
   const row = record(value)
@@ -134,11 +145,13 @@ export const readMenuOrderFulfilmentPolicy = (
     .filter((zone): zone is MenuDeliveryZone => Boolean(zone))
   const paymentMethods = readPaymentMethods(row.payment_methods)
   const deposit = readDeposit(row.deposit)
+  const handoffInstructions = text(row.handoff_instructions)
 
   const policy = compact({
     delivery_zones: deliveryZones,
     payment_methods: paymentMethods,
     deposit,
+    handoff_instructions: handoffInstructions,
   }) as MenuOrderFulfilmentPolicy
 
   return Object.keys(policy).length ? policy : undefined
@@ -177,6 +190,16 @@ export const readMenuOrderTypeConfig = (
   const slotInterval = Math.round(positiveNumber(row.slot_interval_minutes) || 0)
   const scheduleHorizon = Math.round(positiveNumber(row.schedule_horizon_days) || 0)
   const fulfilment = readMenuOrderFulfilmentPolicy(row.fulfilment)
+  const customerRow = record(row.customer)
+  const requiredFields = readContactFields(customerRow.required_fields)
+  const availabilityRow = record(row.availability)
+  const availabilityMessage = text(availabilityRow.message)
+  const availability = availabilityRow.paused === true || availabilityMessage
+    ? {
+        ...(availabilityRow.paused === true ? { paused: true } : {}),
+        ...(availabilityMessage ? { message: availabilityMessage } : {}),
+      }
+    : undefined
 
   if (!type) return null
 
@@ -195,6 +218,10 @@ export const readMenuOrderTypeConfig = (
       ? { schedule_horizon_days: scheduleHorizon }
       : {}),
     ...(fulfilment ? { fulfilment } : {}),
+    ...(requiredFields.length
+      ? { customer: { required_fields: requiredFields } }
+      : {}),
+    ...(availability ? { availability } : {}),
   }
 }
 
