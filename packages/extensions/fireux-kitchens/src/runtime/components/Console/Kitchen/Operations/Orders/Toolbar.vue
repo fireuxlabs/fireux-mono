@@ -22,18 +22,6 @@
         >
           Send
         </UButton>
-      <UButton
-        size="xs"
-        color="neutral"
-        :variant="endServiceConfirm ? 'soft' : 'ghost'"
-        icon="i-lucide-log-out"
-        :disabled="!canEndService"
-        :loading="endingService"
-        :aria-label="endServiceLabel"
-        @click="$emit('end-service')"
-      >
-        {{ endServiceLabel }}
-      </UButton>
     </div>
   </Teleport>
 </template>
@@ -46,15 +34,10 @@ defineProps<{
   selectedCount: number
   canSend: boolean
   sending: boolean
-  canEndService: boolean
-  endServiceConfirm: boolean
-  endingService: boolean
-  endServiceLabel: string
 }>()
 
 defineEmits<{
   send: []
-  'end-service': []
 }>()
 </script>
 

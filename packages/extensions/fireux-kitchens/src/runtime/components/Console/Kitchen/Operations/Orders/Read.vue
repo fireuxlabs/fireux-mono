@@ -5,21 +5,16 @@
       :selected-count="selectedPassOrders.length"
       :can-send="canSendSelectedPassOrders"
       :sending="sendingPassOrders"
-      :can-end-service="canEndService"
-      :end-service-confirm="endServiceConfirm"
-      :ending-service="servicePending"
-      :end-service-label="endServiceButtonLabel"
       @send="sendSelectedPassOrders"
-      @end-service="endCurrentService"
     />
 
     <UAlert
-      v-if="transitionError || serviceError"
+      v-if="transitionError"
       color="error"
       variant="soft"
       icon="i-lucide-circle-alert"
       title="Order action failed"
-      :description="transitionError || serviceError"
+      :description="transitionError"
     />
 
     <UCard
@@ -31,25 +26,13 @@
     </UCard>
 
     <div v-else class="orders-board__content">
-      <div
-        class="orders-board__pass"
-        data-order-rail="pass"
-      >
-        <ConsoleKitchenOperationsOrdersCardsTicket
-          v-for="ticket in passOrders"
-          :key="ticket.id"
-          :order="ticket"
-          :interactive="canInteractWith(ticket)"
-          prominent
-          :selected="isPassOrderSelected(ticket.id)"
-          :header-action-label="isPassOrderSelected(ticket.id) ? 'Return' : ''"
-          :body-action-label="isPassOrderSelected(ticket.id)
-            ? 'Remove order from send selection'
-            : 'Select order to send'"
-          @touch-header="returnPassOrder"
-          @touch-body="togglePassOrderSelection"
-        />
-      </div>
+      <ConsoleKitchenOperationsOrdersPass
+        :orders="passOrders"
+        :can-interact="canInteractWith"
+        :is-selected="isPassOrderSelected"
+        @return="returnPassOrder"
+        @toggle="togglePassOrderSelection"
+      />
 
       <div class="orders-board__lanes">
         <ConsoleKitchenOperationsOrdersRail
@@ -78,15 +61,14 @@
           :count="queueOrders.length"
           empty-label="No orders in preparation"
         >
-          <ConsoleKitchenOperationsOrdersCardsTicket
+          <ConsoleKitchenOperationsOrdersTicket
             v-for="ticket in queueOrders"
             :key="ticket.id"
             :order="ticket"
+            stage="queue"
             :interactive="canInteractWith(ticket)"
-            status-action-label="Ready"
-            status-action-aria-label="Mark order ready"
             :status-action-pending="isOrderTransitioning(ticket.id)"
-            @touch-status="markOrderReady"
+            @ready="markOrderReady"
           />
         </ConsoleKitchenOperationsOrdersRail>
 
@@ -128,7 +110,6 @@ import { useKitchenConsoleOrders } from '../../../../../composables/fireux/conso
 import { useKitchenOrderPassSelection } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderPassSelection'
 import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
 
-const endServiceConfirm = ref(false)
 const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
 const defaultEstimateMinutes = 45
@@ -143,16 +124,12 @@ const {
   readOnly,
   canWrite,
   transitionError,
-  serviceError,
-  servicePending,
-  transitioningCount,
   isOrderTransitioning: isOrderTransitioningFromConsole,
   acceptOrder,
   rejectOrder,
   returnOrderToQueue,
   markOrderReady: markOrderReadyFromConsole,
   completeOrder,
-  endService,
 } = useKitchenConsoleOrders()
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
@@ -169,20 +146,6 @@ const {
   orders: passOrders,
   isTransitioning: isOrderTransitioning,
   completeOrder,
-})
-const activeOrderCount = computed(() =>
-  incomingOrders.value.length + queueOrders.value.length + passOrders.value.length
-)
-const canEndService = computed(() =>
-  canOperate.value &&
-    activeOrderCount.value === 0 &&
-    !servicePending.value &&
-    !transitioningCount.value
-)
-const endServiceButtonLabel = computed(() => {
-  if (servicePending.value) return 'Ending service…'
-  if (endServiceConfirm.value) return 'Confirm end service'
-  return 'End service'
 })
 
 async function acceptIncomingOrder(
@@ -257,21 +220,6 @@ async function returnPassOrder(orderId: string) {
   await runOrderAction(() => returnOrderToQueue(resolvedOrderId))
 }
 
-async function endCurrentService() {
-  if (!canEndService.value) return
-  if (!endServiceConfirm.value) {
-    endServiceConfirm.value = true
-    return
-  }
-
-  try {
-    await endService()
-    endServiceConfirm.value = false
-  } catch {
-    // The service mutation exposes the display error.
-  }
-}
-
 function canInteractWith(order: KitchenOrder) {
   return canOperate.value && !isOrderTransitioning(order.id)
 }
@@ -317,21 +265,6 @@ async function runOrderAction(action: () => Promise<unknown> | unknown) {
   font-size: 0.875rem;
 }
 
-.orders-board__pass {
-  display: flex;
-  min-width: 0;
-  gap: 0.75rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.orders-board__pass > * {
-  flex: none;
-  width: min(20rem, 82vw);
-}
-
 .orders-board__unmapped {
   gap: 0.5rem;
 }
@@ -350,10 +283,6 @@ async function runOrderAction(action: () => Promise<unknown> | unknown) {
 
   .orders-board__unmapped {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .orders-board__pass > * {
-    width: 20rem;
   }
 }
 </style>

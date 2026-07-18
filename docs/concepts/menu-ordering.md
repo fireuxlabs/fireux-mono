@@ -282,6 +282,10 @@ Public order funnel spine:
   and idempotency reservation. Ending a service rotates the service ID and
   resets the next Order to 1; it must not overlap active Incoming, Queue, or Pass
   work.
+- Operator presentation follows the work state: Incoming owns its receiving
+  controls; Queue and Pass share one operational Kitchen Order ticket; Recent
+  is a completed-order archive and may expose richer inspection information
+  rather than reusing the active ticket.
 - Collection tickets may suffix the short reference with the customer's first
   name (`Order: 3-Sofia`). Other surfaces retain `Order: N`; table and room
   identity remain fulfilment context rather than part of the sequence.
