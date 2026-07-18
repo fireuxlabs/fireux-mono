@@ -57,7 +57,7 @@
           Use the repo-local scaffolder to generate package structure and baseline config.
         </p>
 
-        <pre class="mt-3 overflow-x-auto rounded border border-default bg-default p-3 text-xs"><code>pnpm create:ecosystem -- --name &lt;name&gt; --firebase-project &lt;firebase-project-id&gt;</code></pre>
+        <pre class="mt-3 overflow-x-auto rounded-sm border border-default bg-default p-3 text-xs"><code>pnpm create:ecosystem -- --name &lt;name&gt; --firebase-project &lt;firebase-project-id&gt;</code></pre>
       </UCard>
 
       <UCard>
@@ -89,7 +89,7 @@
           <h2 class="text-lg font-semibold">5. Validate</h2>
         </template>
 
-        <pre class="overflow-x-auto rounded border border-default bg-default p-3 text-xs"><code>pnpm guard
+        <pre class="overflow-x-auto rounded-sm border border-default bg-default p-3 text-xs"><code>pnpm guard
 pnpm typecheck:packages
 pnpm typecheck:apps</code></pre>
       </UCard>

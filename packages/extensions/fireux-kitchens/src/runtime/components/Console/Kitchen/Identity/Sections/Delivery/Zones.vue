@@ -277,7 +277,7 @@ function roundCoordinate(value: number) {
   min-height: 9rem;
   max-height: 11rem;
   border: 1px solid var(--ui-border);
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: var(--ui-bg-muted);
 }
 
@@ -293,7 +293,7 @@ function roundCoordinate(value: number) {
   z-index: 1;
   margin: 0;
   padding: 0.6rem 0.75rem;
-  border-radius: 0.85rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
   color: var(--ui-text);
   font-size: 0.8rem;

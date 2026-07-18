@@ -68,7 +68,7 @@ useSeoMeta({
   width: min(640px, 100%);
   margin: 0 auto;
   padding: clamp(2rem, 4vw, 3.5rem);
-  border-radius: 28px;
+  border-radius: calc(var(--ui-radius) * 6);
   border: 1px solid rgba(148, 163, 184, 0.25);
   background: rgba(15, 23, 42, 0.7);
   box-shadow: 0 30px 80px rgba(2, 6, 23, 0.7);
@@ -112,7 +112,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   padding: 0.85rem 1.8rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   font-weight: 600;
   border: 1px solid transparent;
   transition: all 0.2s ease;
@@ -141,10 +141,6 @@ useSeoMeta({
 }
 
 @media (max-width: 640px) {
-  .brand-card {
-    border-radius: 24px;
-  }
-
   .brand-wordmark {
     width: min(260px, 90vw);
   }

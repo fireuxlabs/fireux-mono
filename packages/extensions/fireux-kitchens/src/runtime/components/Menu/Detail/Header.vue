@@ -249,7 +249,7 @@ const preOrderDepositNotice = computed(() =>
   width: 100%;
   padding: 0.85rem;
   border: 1px solid color-mix(in srgb, var(--menu-primary) 22%, transparent);
-  border-radius: var(--menu-radius-card);
+  border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 86%, var(--menu-primary));
 }
 

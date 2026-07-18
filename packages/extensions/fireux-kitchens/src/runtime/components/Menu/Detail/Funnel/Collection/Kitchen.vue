@@ -140,7 +140,7 @@ async function copyRequest() {
   position: absolute;
   inset: -0.45rem;
   border: 1px solid currentcolor;
-  border-radius: 999px;
+  border-radius: 9999px;
   color: var(--menu-primary);
   content: "";
   opacity: 0;
@@ -151,7 +151,7 @@ async function copyRequest() {
   position: absolute;
   inset: -0.85rem;
   border: 1px solid currentcolor;
-  border-radius: 999px;
+  border-radius: 9999px;
   color: var(--menu-primary);
   content: "";
   opacity: 0;

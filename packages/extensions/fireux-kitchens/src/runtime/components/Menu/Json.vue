@@ -64,7 +64,7 @@ pre {
   margin: 0;
   padding: 1rem;
   border: 1px solid var(--ui-border);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-bg-muted);
   font: 0.8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   white-space: pre-wrap;

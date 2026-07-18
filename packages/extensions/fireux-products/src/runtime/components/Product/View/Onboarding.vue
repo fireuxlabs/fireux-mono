@@ -96,7 +96,7 @@ const stepIsComplete = (value: string) => {
 }
 
 .step-pill {
-  border-radius: 999px;
+  border-radius: 9999px;
   min-width: 2rem;
   justify-content: center;
   font-weight: 600;

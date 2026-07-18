@@ -46,7 +46,7 @@
   width: 2.4rem;
   height: 2.4rem;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-secondary) 12%, var(--menu-bg));
   color: var(--menu-secondary);
 }
@@ -77,7 +77,7 @@
 
 .menu-section-nav__count {
   padding: 0.25rem 0.45rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-secondary) 9%, var(--menu-bg));
   color: var(--menu-secondary);
   font-size: 0.67rem;

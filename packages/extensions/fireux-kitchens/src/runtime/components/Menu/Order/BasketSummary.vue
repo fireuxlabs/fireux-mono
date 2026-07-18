@@ -94,7 +94,7 @@ function reviewBasket(event: MouseEvent) {
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 15%, var(--menu-bg));
   color: var(--menu-primary);
 }

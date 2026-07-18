@@ -90,7 +90,7 @@ defineEmits<{
   min-height: var(--kiosk-start-button-height);
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
-  border-radius: 1.5rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--kiosk-secondary) 33%, transparent);
   color: white;
   cursor: pointer;

@@ -191,7 +191,7 @@ const hasSurface = computed(() =>
   height: clamp(15rem, 34vw, 26rem);
   overflow: hidden;
   border: 1px solid var(--ui-border);
-  border-radius: clamp(1.25rem, 3vw, 2rem);
+  border-radius: calc(var(--ui-radius) * 6);
   background: var(--ui-bg-elevated);
 }
 
@@ -207,7 +207,7 @@ const hasSurface = computed(() =>
   gap: 1.5rem;
   padding: clamp(1.25rem, 3vw, 2rem);
   border: 1px solid var(--ui-border);
-  border-radius: clamp(1.1rem, 2.5vw, 1.5rem);
+  border-radius: calc(var(--ui-radius) * 6);
   background: var(--kitchen-panel-bg);
   box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 12%);
 }
@@ -302,7 +302,7 @@ const hasSurface = computed(() =>
   flex: 0 0 auto;
   width: clamp(7rem, 18vw, 10rem);
   aspect-ratio: 4 / 3;
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   object-fit: cover;
   scroll-snap-align: start;
 }
@@ -321,7 +321,6 @@ const hasSurface = computed(() =>
 @media (max-width: 40rem) {
   .kitchen-identity__cover {
     height: 13rem;
-    border-radius: 1.25rem;
   }
 
   .kitchen-identity--with-cover .kitchen-identity__panel {

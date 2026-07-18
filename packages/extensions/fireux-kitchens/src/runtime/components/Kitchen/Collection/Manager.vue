@@ -285,7 +285,7 @@ onMounted(() => {
   min-height: 13rem;
   padding: 2rem;
   border: 1px dashed color-mix(in srgb, var(--ui-primary) 28%, var(--ui-border));
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--ui-primary) 3%, var(--ui-bg));
   color: var(--ui-text-muted);
   text-align: left;

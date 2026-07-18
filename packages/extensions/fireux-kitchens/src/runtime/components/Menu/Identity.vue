@@ -234,7 +234,7 @@ function useNextAsset() {
   margin: 0;
   padding: 0.3rem 0.55rem;
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 24%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   color: var(--menu-secondary);
   font-size: 0.72rem;
   font-weight: 850;
@@ -273,7 +273,7 @@ function useNextAsset() {
   align-items: center;
   margin-top: 0.85rem;
   padding: 0.3rem 0.55rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-muted);
   font-size: 0.72rem;

@@ -3,7 +3,7 @@ import {
   ref,
 } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
-import { kitchenOrderOperatorLabel } from '../../../../../../utils/kitchen-order-label'
+import { kitchenOrderTicketFooterLabel } from '../../../../../../utils/kitchen-order-label'
 
 export interface KitchenOrderTicketProps {
   bodyActionLabel?: string
@@ -19,6 +19,14 @@ export interface KitchenOrderTicketProps {
   trashMode?: boolean
 }
 
+export interface KitchenOrderTicketLine {
+  addOns: string[]
+  id: string
+  label: string
+  qty: number
+  variant: string
+}
+
 export type KitchenOrderTicketEmit = {
   (event: 'trash', id: string): void
   (event: 'touch-header', id: string): void
@@ -31,6 +39,7 @@ export function useKitchenOrderTicket(
   emit: KitchenOrderTicketEmit
 ) {
   const copied = ref(false)
+  const linesExpanded = ref(false)
   const orderRecord = computed(() => props.order as Record<string, unknown>)
   const fulfilmentMatch = computed(() =>
     record(orderRecord.value.fulfilment_match)
@@ -60,8 +69,7 @@ export function useKitchenOrderTicket(
   )
   const isScheduledCollection = computed(() =>
     orderType.value === 'collection' &&
-      collectionMode.value === 'scheduled' &&
-      Boolean(pickupMs.value)
+      collectionMode.value === 'scheduled'
   )
   const estimatedReadyMinutes = computed(() =>
     Number((props.order as any).estimated_ready_minutes || 0)
@@ -108,9 +116,11 @@ export function useKitchenOrderTicket(
   )
   const headerLabel = computed(() => {
     if (orderType.value === 'collection') {
-      if (isScheduledCollection.value) return `Scheduled pickup ${formatTime(pickupMs.value)}`
+      if (!isScheduledCollection.value) return 'Collection'
 
-      return 'Queue collection'
+      return pickupMs.value
+        ? `Collection: ${formatTime(pickupMs.value)}`
+        : 'Collection'
     }
 
     if (orderType.value === 'delivery') {
@@ -169,9 +179,12 @@ export function useKitchenOrderTicket(
     return orderStatus.value.replace(/[_-]+/g, ' ')
   })
   const orderLabel = computed(() => {
-    return kitchenOrderOperatorLabel(orderRecord.value)
+    return kitchenOrderTicketFooterLabel(orderRecord.value)
   })
-  const lines = computed(() =>
+  const placedTimeLabel = computed(() =>
+    placedMs.value ? formatTime(placedMs.value) : ''
+  )
+  const lines = computed<KitchenOrderTicketLine[]>(() =>
     Array.isArray(props.order.items)
       ? props.order.items.map((item) => ({
           id: normalizeString(item.id) || normalizeString(item.label),
@@ -186,6 +199,13 @@ export function useKitchenOrderTicket(
         }))
       : []
   )
+  const visibleLines = computed(() =>
+    linesExpanded.value ? lines.value : lines.value.slice(0, 5)
+  )
+  const hiddenLineCount = computed(() =>
+    Math.max(0, lines.value.length - 5)
+  )
+  const canToggleLines = computed(() => lines.value.length > 5)
   const customerLines = computed(() => {
     const customer = record(orderRecord.value.customer)
     const payment = record(orderRecord.value.payment)
@@ -240,6 +260,11 @@ export function useKitchenOrderTicket(
     emit('touch-status', orderId.value)
   }
 
+  function toggleLines() {
+    if (!canToggleLines.value) return
+    linesExpanded.value = !linesExpanded.value
+  }
+
   async function copyTicket() {
     if (!orderId.value || !import.meta.client || !navigator.clipboard) return
 
@@ -263,6 +288,7 @@ export function useKitchenOrderTicket(
 
   return {
     canShowStatusAction,
+    canToggleLines,
     canUseStatusAction,
     canTouchBody,
     canTouchHeader,
@@ -272,14 +298,19 @@ export function useKitchenOrderTicket(
     headerIcon,
     headerLabel,
     isWaitingForAcceptance,
+    hiddenLineCount,
     lines,
+    linesExpanded,
     orderId,
     orderLabel,
+    placedTimeLabel,
     statusLabel,
     touchBody,
     touchHeader,
     touchStatus,
+    toggleLines,
     trashOrder,
+    visibleLines,
   }
 }
 

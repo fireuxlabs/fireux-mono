@@ -44,7 +44,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
   gap: 0.8rem;
   padding: 1rem;
   border: 1px solid var(--baeren-border);
-  border-radius: 1.15rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: rgb(var(--baeren-surface-rgb) / 92%);
   color: var(--baeren-ink);
   box-shadow: 0 0.7rem 1.8rem rgb(var(--baeren-card-shadow-rgb) / 8%);
@@ -75,7 +75,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
   height: 2.65rem;
   place-items: center;
   border: 1px solid currentColor;
-  border-radius: 0.8rem;
+  border-radius: calc(var(--ui-radius) * 3);
   font-size: 1.2rem;
   opacity: 0.82;
 }
@@ -125,7 +125,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
 .baeren-home-route-card__facts > span {
   padding: 0.3rem 0.55rem;
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: 9999px;
   font-size: 0.72rem;
   font-weight: 850;
   opacity: 0.75;
@@ -144,7 +144,7 @@ const titleId = `baeren-home-route-${props.surface.key}`
     align-content: start;
     gap: 1rem;
     padding: 1.35rem;
-    border-radius: 1.5rem;
+    border-radius: calc(var(--ui-radius) * 6);
   }
 
   .baeren-home-route-card__icon {

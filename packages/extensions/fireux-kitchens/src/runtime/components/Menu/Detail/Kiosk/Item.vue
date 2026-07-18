@@ -163,7 +163,7 @@ function addItem() {
   gap: 0.75rem;
   padding: 0.55rem 0.65rem 0.55rem 0.8rem;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 62%, white);
-  border-radius: 0.7rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background:
     linear-gradient(
       135deg,
@@ -221,7 +221,7 @@ function addItem() {
   flex: 0 0 auto;
   padding: 0.34rem 0.48rem;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 44%, transparent);
-  border-radius: 0.45rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: color-mix(in srgb, var(--kiosk-primary) 20%, transparent);
   font-size: 1rem;
   line-height: 1;

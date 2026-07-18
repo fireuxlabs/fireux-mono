@@ -84,7 +84,7 @@ const { menuServiceChip } = useMenuServiceComputed(serviceHours)
   min-height: 10rem;
   padding: clamp(1.25rem, 3vw, 1.75rem);
   border: 1px solid var(--ui-border);
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background:
     radial-gradient(
       circle at 100% 0%,
@@ -118,7 +118,7 @@ const { menuServiceChip } = useMenuServiceComputed(serviceHours)
   width: 2.75rem;
   height: 2.75rem;
   place-items: center;
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--ui-primary) 14%, transparent);
   color: var(--ui-primary);
 }

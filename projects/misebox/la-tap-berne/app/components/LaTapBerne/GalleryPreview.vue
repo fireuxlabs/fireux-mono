@@ -31,7 +31,7 @@ withDefaults(defineProps<{
 .latap-gallery-preview img {
   display: block;
   width: 100%;
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   box-shadow: 0 1rem 3rem color-mix(in srgb, var(--brand-ink) 32%, transparent);
 }
 </style>

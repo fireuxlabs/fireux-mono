@@ -120,7 +120,7 @@ const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`
 :deep(.baeren-home__action) {
   min-height: 3rem;
   justify-content: center;
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 4);
   font-size: 0.88rem;
   font-weight: 850;
 }

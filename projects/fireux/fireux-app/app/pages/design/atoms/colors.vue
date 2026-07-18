@@ -70,7 +70,7 @@ onMounted(() => {
   align-items: center;
   text-align: center;
   background: var(--ui-bg-elevated);
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   padding: 1rem;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -86,7 +86,7 @@ onMounted(() => {
 .color-block {
   width: 100%;
   height: 100px;
-  border-radius: 6px;
+  border-radius: calc(var(--ui-radius) * 1.5);
   border: 1px solid var(--ui-border-muted);
 }
 </style>

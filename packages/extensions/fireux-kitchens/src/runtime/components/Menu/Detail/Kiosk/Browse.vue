@@ -148,7 +148,7 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   width: 100%;
   max-width: 9.75rem;
   border: 1px solid rgb(255 255 255 / 16%);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: rgb(0 0 0 / 38%);
   backdrop-filter: blur(16px);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);

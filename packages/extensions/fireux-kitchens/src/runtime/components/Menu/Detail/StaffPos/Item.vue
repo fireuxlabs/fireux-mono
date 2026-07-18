@@ -91,7 +91,7 @@ function addItem() {
   min-height: 5.25rem;
   padding: 0.65rem 0.75rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
-  border-radius: 0.65rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--menu-bg) 92%, var(--menu-text));
   color: var(--menu-text);
   cursor: pointer;

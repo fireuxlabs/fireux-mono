@@ -157,7 +157,7 @@ function addOnPrice(price: number) {
   display: block;
   width: 5rem;
   height: 5rem;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   object-fit: cover;
 }
 

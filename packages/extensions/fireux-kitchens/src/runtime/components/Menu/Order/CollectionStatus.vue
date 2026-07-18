@@ -110,7 +110,7 @@ const description = computed(() => {
 
 <style scoped>
 .menu-order-collection-status { display: grid; max-width: 42rem; gap: 1.25rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 2.5rem); border: 1px solid color-mix(in srgb, var(--menu-primary) 30%, transparent); border-radius: var(--menu-radius); background: color-mix(in srgb, var(--menu-bg) 94%, var(--menu-primary)); color: var(--menu-text); text-align: center; }
-.menu-order-collection-status__icon { display: grid; width: 4rem; height: 4rem; place-items: center; justify-self: center; border-radius: 999px; background: var(--menu-primary); color: var(--menu-primary-contrast); font-size: 1.75rem; }
+.menu-order-collection-status__icon { display: grid; width: 4rem; height: 4rem; place-items: center; justify-self: center; border-radius: 9999px; background: var(--menu-primary); color: var(--menu-primary-contrast); font-size: 1.75rem; }
 .menu-order-collection-status__copy { display: grid; gap: 0.35rem; }
 .menu-order-collection-status__copy p, .menu-order-collection-status__copy h2 { margin: 0; }
 .menu-order-collection-status__copy > p:first-child { color: var(--menu-primary); font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }

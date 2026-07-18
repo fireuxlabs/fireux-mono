@@ -126,7 +126,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   border: 1px solid var(--ui-border);
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   background:
     linear-gradient(45deg, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%, transparent 25%),
     linear-gradient(-45deg, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%, transparent 25%),

@@ -205,7 +205,7 @@ definePageMeta({
 .dev-image-chip {
   width: 80px;
   height: 80px;
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 4);
   display: flex;
   align-items: center;
   justify-content: center;

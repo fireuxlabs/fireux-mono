@@ -91,7 +91,7 @@ const otherOptions = computed(() =>
   width: 2.25rem;
   height: 2.25rem;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 16%, var(--menu-bg));
   color: var(--menu-primary);
 }
@@ -135,7 +135,7 @@ const otherOptions = computed(() =>
   gap: 0.25rem;
   align-items: center;
   padding: 0.38rem 0.5rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   color: var(--menu-primary);
   cursor: pointer;
   font-size: 0.72rem;

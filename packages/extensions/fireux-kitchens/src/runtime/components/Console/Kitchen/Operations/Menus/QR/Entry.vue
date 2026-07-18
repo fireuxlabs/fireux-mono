@@ -115,7 +115,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   min-width: 0;
   padding: 0.85rem;
   border: 1px solid var(--ui-border);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-bg);
 }
 
@@ -126,7 +126,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   aspect-ratio: 1;
   padding: 0.5rem;
   border: 1px solid var(--ui-border);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: #ffffff;
 }
 
@@ -140,7 +140,7 @@ function qrOptions(data: string): Partial<QRCodeStylingOptions> {
   width: fit-content;
   max-width: 100%;
   overflow-wrap: anywhere;
-  border-radius: 0.45rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-bg-muted);
   color: var(--ui-text-highlighted);
   font-size: 0.72rem;

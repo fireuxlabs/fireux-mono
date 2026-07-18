@@ -86,9 +86,15 @@ Working rules:
   primitive to its owning layer and keep the leaf component semantic.
 - `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine:
   current Nuxt UI variables, semantic text and surface utilities, `--ui-radius`
-  authority through `rounded-*` utilities or direct calculations in authored CSS,
-  and retirement of the audited entity-card and inset-panel recipes. It does
-  not ban one-off Tailwind or intentional branded color.
+  authority through `rounded-*` utilities or direct calculations in authored
+  CSS, and retirement of the audited entity-card and inset-panel recipes.
+- Ordinary rectangular UI uses the installed Nuxt UI `xs` through `3xl`
+  radius scale. Do not add a parallel radius step or an arbitrary numeric
+  radius. True circles and pills, explicitly approved percentage artwork, and
+  owned domain seams are exceptions; Menu's owned radius seams derive from
+  `--ui-radius` by default.
+- The CSS guard does not ban one-off Tailwind for local layout, pixel-specific
+  non-system deltas, or intentional branded color.
 
 Guard warnings:
 - No component `organisms` folders or `Organisms*` component names.

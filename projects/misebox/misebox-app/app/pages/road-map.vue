@@ -64,7 +64,7 @@
     </section>
 
     <section class="py-20">
-      <UContainer class="rounded-[2rem] bg-gray-950 px-6 py-12 text-white sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-14 dark:bg-gray-900">
+      <UContainer class="rounded-3xl bg-gray-950 px-6 py-12 text-white sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-14 dark:bg-gray-900">
         <div class="max-w-2xl">
           <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-300">Help shape Misebox</p>
           <h2 class="mt-4 text-3xl font-semibold">The best road map starts in a real kitchen.</h2>

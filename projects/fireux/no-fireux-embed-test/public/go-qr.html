@@ -32,7 +32,7 @@
       }
 
       code {
-        border-radius: 999px;
+        border-radius: 9999px;
         background: #eee3cf;
         padding: 0.15rem 0.45rem;
       }
@@ -41,7 +41,7 @@
         display: block;
         width: 100%;
         border: 0;
-        border-radius: 1rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 4);
       }
 
       section {
@@ -60,13 +60,13 @@
       }
 
       .embed-card {
-        border-radius: 1.25rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 6);
         background: #fffaf0;
         padding: 1rem;
       }
 
       .notice {
-        border-radius: 0.75rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
         background: #eee3cf;
         padding: 0.75rem 1rem;
       }
@@ -81,7 +81,7 @@
 
       .link-grid a {
         display: block;
-        border-radius: 0.75rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
         background: #fffaf0;
         padding: 0.75rem 1rem;
       }
@@ -98,7 +98,7 @@
       .source-preview pre {
         max-height: 26rem;
         overflow: auto;
-        border-radius: 0.75rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
         background: #1f1d1a;
         color: #f7efe0;
         padding: 1rem;

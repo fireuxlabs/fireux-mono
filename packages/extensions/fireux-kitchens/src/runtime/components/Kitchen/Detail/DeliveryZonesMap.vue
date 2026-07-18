@@ -150,7 +150,7 @@ function amount(value: number) {
   justify-content: space-between;
   padding: 0.46rem 0.6rem;
   border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 10%, transparent);
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 82%, transparent);
   color: var(--menu-text, var(--ui-text));
   font-weight: 900;
@@ -168,7 +168,7 @@ function amount(value: number) {
   display: none;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 10%, transparent);
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 82%, transparent);
   color: var(--menu-text, var(--ui-text));
 }
@@ -225,7 +225,7 @@ function amount(value: number) {
   flex: 0 0 auto;
   width: 0.9rem;
   height: 0.9rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(--zone-color);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--menu-text, var(--ui-text)) 16%, transparent);
 }

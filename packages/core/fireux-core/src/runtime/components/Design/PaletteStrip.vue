@@ -46,7 +46,7 @@ withDefaults(defineProps<{
   min-width: 0;
   padding: 0.55rem;
   border: 1px solid rgb(255 255 255 / 24%);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: rgb(42 14 7 / 62%);
   color: #f2e8d8;
   box-shadow: 0 18px 48px rgb(42 14 7 / 28%);
@@ -58,7 +58,7 @@ withDefaults(defineProps<{
   height: 2rem;
   flex: 0 0 auto;
   border: 1px solid rgb(255 255 255 / 36%);
-  border-radius: 999px;
+  border-radius: 9999px;
 }
 
 .design-palette-strip__copy {

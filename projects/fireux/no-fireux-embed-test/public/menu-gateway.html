@@ -38,14 +38,14 @@
 
       code {
         overflow-wrap: anywhere;
-        border-radius: 999px;
+        border-radius: 9999px;
         background: #eee3cf;
         padding: 0.15rem 0.45rem;
       }
 
       .gateway-card {
         border: 1px solid #d8ceb9;
-        border-radius: 1.25rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 6);
         background: #fffaf0;
         padding: clamp(1.25rem, 4vw, 2.5rem);
       }
@@ -74,7 +74,7 @@
 
       .preset {
         border: 1px solid #d8ceb9;
-        border-radius: 1rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 4);
         background: #f8eedb;
         padding: 1rem;
       }
@@ -88,7 +88,7 @@
       input {
         width: 100%;
         border: 1px solid #c9b895;
-        border-radius: 0.75rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
         background: #fffdf8;
         color: #1d1d1f;
         padding: 0.8rem 0.9rem;
@@ -98,7 +98,7 @@
       button {
         width: fit-content;
         border: 1px solid #c9b895;
-        border-radius: 999px;
+        border-radius: 9999px;
         background: #1d1d1f;
         color: #fffaf0;
         padding: 0.8rem 1rem;
@@ -120,7 +120,7 @@
       }
 
       .notice {
-        border-radius: 0.75rem;
+        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
         background: #eee3cf;
         padding: 0.75rem 1rem;
       }

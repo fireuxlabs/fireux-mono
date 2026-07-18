@@ -3,7 +3,7 @@
     <header class="border-b border-default bg-default">
       <UContainer class="flex items-center justify-between gap-4 py-4">
         <NuxtLink to="/" class="inline-flex items-center gap-3 text-sm font-semibold text-primary">
-          <img src="/img/app/logo.png" alt="" class="size-8 rounded" />
+          <img src="/img/app/logo.png" alt="" class="size-8 rounded-sm" />
           <span>Sproochli</span>
         </NuxtLink>
 

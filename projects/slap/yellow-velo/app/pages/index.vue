@@ -324,7 +324,7 @@ const range = [
   min-height: 6.5rem;
   padding: 1rem;
   border: 3px solid #050504;
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   background: #f6f2e6;
   box-shadow: 5px 5px 0 #050504;
 }
@@ -365,7 +365,7 @@ const range = [
 .yv-range-item,
 .yv-drop {
   border: 3px solid #050504;
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   background: #f6f2e6;
   box-shadow: 7px 7px 0 #050504;
 }

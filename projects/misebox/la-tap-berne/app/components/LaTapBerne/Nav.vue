@@ -39,7 +39,7 @@ const navItems = [
   width: 3.1rem;
   height: 3.1rem;
   padding: 0;
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   cursor: pointer;
   place-items: center;
   text-decoration: none;

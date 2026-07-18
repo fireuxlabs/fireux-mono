@@ -111,7 +111,7 @@ const resolvedFeatures = computed(() =>
   height: 2.5rem;
   display: grid;
   place-items: center;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: var(--color-primary-50);
   color: var(--color-primary-500);
 }

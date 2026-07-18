@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 16 / 8;
   max-height: 20rem;
   border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 14%, transparent);
-  border-radius: 1.15rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 90%, var(--menu-text, var(--ui-text)));
 }
 
@@ -240,7 +240,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   margin: 0;
   padding: 0.6rem 0.75rem;
-  border-radius: 0.85rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 88%, transparent);
   color: var(--menu-text, var(--ui-text));
   font-size: 0.8rem;

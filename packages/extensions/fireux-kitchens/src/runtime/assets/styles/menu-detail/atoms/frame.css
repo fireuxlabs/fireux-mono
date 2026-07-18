@@ -20,8 +20,8 @@
   --menu-accent: var(--menu-secondary);
   --menu-font: ui-sans-serif, system-ui, sans-serif;
   --menu-title-font: var(--menu-font);
-  --menu-radius: 1rem;
-  --menu-radius-control: 0.5rem;
+  --menu-radius: calc(var(--ui-radius) * 4);
+  --menu-radius-control: calc(var(--ui-radius) * 2);
   --menu-space-2xs: 0.25rem;
   --menu-space-xs: 0.4rem;
   --menu-space-sm: 0.75rem;
@@ -109,7 +109,7 @@
 }
 
 .menu-catalogue-section__heading:focus-visible {
-  border-radius: 0.2rem;
+  border-radius: var(--ui-radius);
   outline: 2px solid var(--menu-secondary);
   outline-offset: 0.35rem;
 }

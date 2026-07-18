@@ -196,7 +196,7 @@ const can = (action: 'undo' | 'redo') => {
 
 .editor-shell {
   border: 1px solid var(--ui-border);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   padding: 0.75rem;
   background: var(--ui-bg-elevated);
 }

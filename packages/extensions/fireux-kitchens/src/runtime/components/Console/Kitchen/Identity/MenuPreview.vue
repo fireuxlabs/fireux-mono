@@ -184,7 +184,7 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
   --menu-title-font: var(--menu-font);
 
   padding: clamp(1.5rem, 4vw, 3rem);
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: var(--menu-bg);
   color: var(--menu-text);
   font-family: var(--menu-font);

@@ -2,6 +2,7 @@ import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceipt,
 } from '../../../../../../../models/kitchen/menu/menu-ordering.model'
+import type { KitchenOrder } from '../../../../../../../models/kitchen/order.model'
 
 const escapeHtml = (value: unknown) =>
   String(value ?? '')
@@ -196,12 +197,77 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
 export function printKitchenOrderReceipt(order: CreatedMenuOrder | null) {
   if (!import.meta.client || !order?.receipt) return false
 
+  return printReceipt(order.receipt)
+}
+
+export function printKitchenOrderTicket(order: KitchenOrder) {
+  const subtotal = order.items.reduce(
+    (sum, item) => sum + Number(item.unit_price || 0) * Number(item.quantity || 0),
+    0
+  )
+  const total = Number(order.payment.amount_chf || subtotal)
+  const receipt: CreatedMenuOrderReceipt = {
+    id: order.id,
+    order_number: String(order.service_number || order.order_number || order.id),
+    order_type: order.order_type,
+    channel: order.channel || 'menu',
+    status: order.status,
+    created_at: timestampIso(order.created.at),
+    requested_for: timestampIso(order.requested_for),
+    currency: order.payment.currency_code || 'CHF',
+    subtotal_chf: subtotal,
+    total_chf: total,
+    payment: order.payment,
+    customer: order.customer,
+    fulfilment_match: order.fulfilment_match,
+    items: order.items.map((item) => {
+      const unitPrice = Number(item.unit_price || 0)
+
+      return {
+        id: item.id,
+        menu_id: item.menu_id,
+        label: item.label,
+        quantity: Number(item.quantity || 0),
+        unit_price_chf: unitPrice,
+        total_chf: unitPrice * Number(item.quantity || 0),
+        add_ons: item.add_ons,
+        variant_label: item.variant_label,
+      }
+    }),
+    kitchen: { id: order.kitchen_id },
+    menu: { id: order.menu_id },
+  }
+
+  return printReceipt(receipt)
+}
+
+function printReceipt(receipt: CreatedMenuOrderReceipt) {
+  if (!import.meta.client) return false
+
   const target = window.open('', '_blank', 'width=420,height=720')
   if (!target) return false
 
   target.document.open()
-  target.document.write(renderReceiptHtml(order.receipt))
+  target.document.write(renderReceiptHtml(receipt))
   target.document.close()
 
   return true
+}
+
+function timestampIso(value: unknown) {
+  if (typeof value === 'string') return value
+  if (!value || typeof value !== 'object') return ''
+
+  const timestamp = value as {
+    seconds?: number
+    _seconds?: number
+    toDate?: () => Date
+  }
+
+  if (typeof timestamp.toDate === 'function') {
+    return timestamp.toDate().toISOString()
+  }
+
+  const seconds = Number(timestamp.seconds ?? timestamp._seconds ?? 0)
+  return seconds ? new Date(seconds * 1000).toISOString() : ''
 }

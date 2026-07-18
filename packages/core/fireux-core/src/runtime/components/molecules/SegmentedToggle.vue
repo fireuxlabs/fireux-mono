@@ -62,7 +62,7 @@ defineEmits<{
   gap: 0.25rem;
   padding: 0.25rem;
   border: 1px solid var(--ui-border);
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-bg) 60%, transparent);
 }
 </style>

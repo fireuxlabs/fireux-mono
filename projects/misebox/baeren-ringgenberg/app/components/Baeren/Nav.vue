@@ -30,7 +30,7 @@ const items = [
   margin-inline: auto;
   padding: 0.4rem;
   border: 1px solid rgb(var(--baeren-nav-border-rgb) / 30%);
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: rgb(var(--baeren-nav-surface-rgb) / 97%);
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 44%),
@@ -46,7 +46,7 @@ const items = [
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 4);
   color: var(--baeren-nav-ink);
   font-size: 0.66rem;
   font-weight: 850;

@@ -98,7 +98,7 @@ header p {
 .content code {
   background: rgba(148, 163, 184, 0.15);
   padding: 0.1em 0.3em;
-  border-radius: 0.3em;
+  border-radius: var(--ui-radius);
   font-size: 0.95em;
 }
 </style>

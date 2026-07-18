@@ -156,7 +156,7 @@
         </div>
 
         <UCard>
-          <pre class="overflow-x-auto rounded bg-default p-4 text-xs leading-6">{{ relationshipMap }}</pre>
+          <pre class="overflow-x-auto rounded-sm bg-default p-4 text-xs leading-6">{{ relationshipMap }}</pre>
         </UCard>
 
         <div class="space-y-2 text-center">
@@ -177,7 +177,7 @@
               :title="sample.entity"
             >
               <template #body>
-                <pre class="overflow-x-auto rounded bg-default p-4 text-xs leading-6">{{ jsonOf(sample.example) }}</pre>
+                <pre class="overflow-x-auto rounded-sm bg-default p-4 text-xs leading-6">{{ jsonOf(sample.example) }}</pre>
               </template>
             </UAccordionItem>
           </UAccordion>

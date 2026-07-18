@@ -67,7 +67,7 @@ const { appName, isTenant } = useFireUXConfig()
 .tenant-brand__icon {
   height: 48px;
   width: 48px;
-  border-radius: 16px;
+  border-radius: calc(var(--ui-radius) * 4);
   object-fit: contain;
 }
 

@@ -258,7 +258,7 @@ function continueBasket(event: MouseEvent) {
 }
 
 .menu-order-basket-dialog__remove:focus-visible {
-  border-radius: 0.25rem;
+  border-radius: var(--ui-radius);
   outline: 2px solid var(--menu-primary);
   outline-offset: 0.25rem;
 }

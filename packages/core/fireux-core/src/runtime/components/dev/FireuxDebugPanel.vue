@@ -124,7 +124,7 @@ const copyDebug = async () => {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--fx-debug-yellow-border);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(--fx-debug-yellow-bg-strong);
   padding: 1px 7px;
   color: var(--fx-debug-ink);

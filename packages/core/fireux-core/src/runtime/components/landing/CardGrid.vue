@@ -95,7 +95,7 @@ const resolvedItems = computed(() =>
   height: 2.75rem;
   display: grid;
   place-items: center;
-  border-radius: 0.9rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: var(--color-primary-50);
   color: var(--color-primary-500);
 }

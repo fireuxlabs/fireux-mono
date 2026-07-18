@@ -63,7 +63,7 @@ const resolvedSkills = computed(
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(--ui-bg-muted);
   color: var(--ui-text);
 }

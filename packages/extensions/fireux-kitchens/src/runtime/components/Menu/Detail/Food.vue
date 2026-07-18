@@ -312,7 +312,7 @@ watch(kioskMode, (mode: KioskEntryMode | '') => {
   height: 4.5rem;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--kiosk-primary) 76%, white);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--kiosk-secondary) 36%, transparent);
   color: white;
   cursor: pointer;

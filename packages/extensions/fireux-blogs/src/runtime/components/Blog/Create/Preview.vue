@@ -132,7 +132,7 @@ const fallbackLogo = '/img/app/logo.png'
 .thumb img {
   max-width: 220px;
   width: 100%;
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   border: 1px solid #e5e7eb;
 }
 
@@ -173,7 +173,7 @@ const fallbackLogo = '/img/app/logo.png'
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border);
   margin-bottom: var(--space-3);
@@ -182,7 +182,7 @@ const fallbackLogo = '/img/app/logo.png'
 .avatar img {
   width: 32px;
   height: 32px;
-  border-radius: 999px;
+  border-radius: 9999px;
   object-fit: cover;
 }
 
@@ -238,7 +238,7 @@ const fallbackLogo = '/img/app/logo.png'
 .preview-content :deep(code) {
   background: var(--ui-bg-muted);
   padding: 2px 4px;
-  border-radius: 4px;
+  border-radius: var(--ui-radius);
 }
 
 .brand-grid {

@@ -1,158 +1,87 @@
 <template>
-  <UCard
-    class="order-ticket"
+  <div
+    ref="ticketFrame"
+    class="order-ticket-frame"
     :class="{
-      'order-ticket--prominent': prominent,
-      'order-ticket--selected': selected,
+      'order-ticket-frame--expanded': linesExpanded,
     }"
+    :style="linesExpanded && collapsedHeight
+      ? { height: `${collapsedHeight}px` }
+      : undefined"
   >
-    <template #header>
-      <div class="order-ticket__header">
-        <span class="order-ticket__identity">
-          <UIcon :name="headerIcon" />
-          <strong class="order-ticket__header-label">{{ headerLabel }}</strong>
-          <UBadge
-            v-if="isWaitingForAcceptance"
-            color="neutral"
-            variant="soft"
-            size="sm"
-            icon="i-lucide-loader-circle"
-            aria-label="Waiting for kitchen acceptance"
-          >
-            Waiting
-          </UBadge>
-        </span>
-        <span class="order-ticket__actions">
-          <UButton
-            v-if="canTouchHeader"
-            size="xs"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-undo-2"
-            :aria-label="headerActionLabel"
-            @click.stop="touchHeader"
-          >
-            <span v-if="prominent">{{ headerActionLabel }}</span>
-          </UButton>
-
-          <UButton
-            v-if="canShowStatusAction"
-            :size="prominent ? 'sm' : 'xs'"
-            :color="prominent ? 'success' : 'neutral'"
-            :variant="prominent ? 'solid' : 'ghost'"
-            :disabled="!canUseStatusAction || statusActionPending"
-            :loading="statusActionPending"
-            :aria-label="statusActionAriaLabel || statusActionLabel"
-            @click.stop="touchStatus"
-          >
-            {{ statusActionLabel }}
-          </UButton>
-
-          <UBadge
-            v-else-if="statusLabel && !prominent"
-            color="neutral"
-            variant="soft"
-            size="sm"
-          >
-            {{ statusLabel }}
-          </UBadge>
-
-          <UButton
-            v-if="trashMode"
-            size="xs"
-            color="error"
-            variant="ghost"
-            icon="i-lucide-trash-2"
-            :disabled="!interactive || !orderId"
-            aria-label="Move order to trash"
-            @click.stop="trashOrder"
-          />
-        </span>
-      </div>
-    </template>
-
-    <div
-      class="order-ticket__body"
-      :class="{ 'order-ticket__body--interactive': canTouchBody }"
+    <UCard
+      class="order-ticket"
+      :ui="{
+        body: 'order-ticket__content',
+        footer: 'order-ticket__footer-slot',
+      }"
+      :class="{
+        'order-ticket--expanded': linesExpanded,
+        'order-ticket--interactive': canTouchBody,
+        'order-ticket--prominent': prominent,
+        'order-ticket--selected': selected,
+      }"
       :role="canTouchBody ? 'button' : undefined"
       :tabindex="canTouchBody ? 0 : undefined"
       :aria-label="bodyActionLabel || undefined"
       :aria-pressed="canTouchBody ? selected : undefined"
       @click="touchBody"
-      @keydown.enter.prevent="touchBody"
-      @keydown.space.prevent="touchBody"
+      @keydown.enter.self.prevent="touchBody"
+      @keydown.space.self.prevent="touchBody"
     >
-      <div
-        v-for="line in lines"
-        :key="line.id"
-        class="order-ticket__line"
-      >
-        <UBadge color="primary" variant="soft" size="sm">
-          {{ line.qty }}×
-        </UBadge>
-        <span class="order-ticket__line-content">
-          {{ line.label }}
-          <small
-            v-if="line.variant && !line.label.includes(line.variant)"
-            class="order-ticket__option"
-          >
-            {{ line.variant }}
-          </small>
-          <small
-            v-if="line.addOns.length"
-            class="order-ticket__option"
-          >
-            + {{ line.addOns.join(', ') }}
-          </small>
-        </span>
-      </div>
-
-      <div v-if="!lines.length" class="order-ticket__empty">
-        No items in this order.
-      </div>
-
-      <div
-        v-if="customerLines.length && showCustomerDetails"
-        class="order-ticket__customer"
-      >
-        <USeparator />
-        <p
-          v-for="line in customerLines"
-          :key="line"
-          class="order-ticket__customer-line"
-        >
-          {{ line }}
-        </p>
-      </div>
-    </div>
-
-    <template #footer>
-      <div class="order-ticket__footer">
-        <span class="order-ticket__order-label">
-          {{ orderLabel }}
-        </span>
-
-        <UButton
-          v-if="!prominent"
-          type="button"
-          size="xs"
-          color="neutral"
-          variant="soft"
-          :disabled="!orderId"
-          :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
-          :aria-label="copied ? 'Order copied' : 'Copy order'"
-          @click.stop="copyTicket"
+      <template #header>
+        <ConsoleKitchenOperationsOrdersCardsTicketHeader
+          :icon="headerIcon"
+          :label="headerLabel"
+          :waiting="isWaitingForAcceptance"
+          :can-return="canTouchHeader"
+          :return-label="headerActionLabel"
+          :show-status-action="canShowStatusAction"
+          :can-use-status-action="canUseStatusAction"
+          :status-action-label="statusActionLabel"
+          :status-action-aria-label="statusActionAriaLabel"
+          :status-action-pending="statusActionPending"
+          :status-label="statusLabel"
+          :trash-mode="trashMode"
+          :can-trash="interactive && Boolean(orderId)"
+          :prominent="prominent"
+          @return="touchHeader"
+          @status="touchStatus"
+          @trash="trashOrder"
         />
-      </div>
-    </template>
-  </UCard>
+      </template>
+
+      <ConsoleKitchenOperationsOrdersCardsTicketBody
+        :lines="visibleLines"
+        :has-lines="Boolean(lines.length)"
+        :can-toggle-lines="canToggleLines"
+        :expanded="linesExpanded"
+        :hidden-line-count="hiddenLineCount"
+        :customer-lines="customerLines"
+        :show-customer-details="showCustomerDetails"
+        @toggle="toggleTicketExpansion"
+      />
+
+      <template #footer>
+        <ConsoleKitchenOperationsOrdersCardsTicketFooter
+          :expanded="linesExpanded"
+          :order-label="orderLabel"
+          :placed-time-label="placedTimeLabel"
+          :prominent="prominent"
+          @print="printTicket"
+        />
+      </template>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { nextTick, ref } from 'vue'
 import {
   useKitchenOrderTicket,
   type KitchenOrderTicketProps,
 } from '../../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderTicket'
+import { printKitchenOrderTicket } from '../../../../../../composables/fireux/console/kitchen/operations/Orders/utils/useKitchenOrderReceiptPrint'
 
 const props = withDefaults(
   defineProps<KitchenOrderTicketProps>(),
@@ -178,30 +107,97 @@ const emit = defineEmits<{
 
 const {
   canShowStatusAction,
+  canToggleLines,
   canUseStatusAction,
   canTouchBody,
   canTouchHeader,
-  copied,
-  copyTicket,
   customerLines,
   headerIcon,
   headerLabel,
+  hiddenLineCount,
   isWaitingForAcceptance,
   lines,
+  linesExpanded,
   orderId,
   orderLabel,
+  placedTimeLabel,
   statusLabel,
   touchBody,
   touchHeader,
   touchStatus,
+  toggleLines,
   trashOrder,
+  visibleLines,
 } = useKitchenOrderTicket(props, emit)
+
+const ticketFrame = ref<HTMLElement | null>(null)
+const collapsedHeight = ref(0)
+
+async function toggleTicketExpansion() {
+  if (!linesExpanded.value) {
+    collapsedHeight.value = ticketFrame.value?.offsetHeight || 0
+    toggleLines()
+    return
+  }
+
+  toggleLines()
+  await nextTick()
+  collapsedHeight.value = 0
+}
+
+function printTicket() {
+  if (!printKitchenOrderTicket(props.order) || !linesExpanded.value) return
+  void toggleTicketExpansion()
+}
 </script>
 
 <style scoped>
-.order-ticket {
+.order-ticket-frame {
+  --order-ticket-reading-color: var(--color-violet-500, #8b5cf6);
+
+  position: relative;
   width: 100%;
   min-width: 0;
+}
+
+.order-ticket-frame--expanded {
+  z-index: 20;
+}
+
+.order-ticket {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.order-ticket--expanded {
+  position: absolute;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  height: auto;
+  max-height: min(80vh, 48rem);
+  overflow-y: auto;
+  background: color-mix(
+    in srgb,
+    var(--order-ticket-reading-color) 12%,
+    var(--ui-bg)
+  );
+  outline: 2px solid color-mix(
+    in srgb,
+    var(--order-ticket-reading-color) 60%,
+    transparent
+  );
+}
+
+:deep(.order-ticket__content) {
+  flex: 1 1 auto;
+}
+
+:deep(.order-ticket__footer-slot) {
+  flex: none;
 }
 
 .order-ticket--prominent {
@@ -212,88 +208,12 @@ const {
   outline: 3px solid color-mix(in srgb, var(--ui-success) 45%, transparent);
 }
 
-.order-ticket__header,
-.order-ticket__identity,
-.order-ticket__actions,
-.order-ticket__footer {
-  display: flex;
-  align-items: center;
-}
-
-.order-ticket__header {
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.order-ticket__identity {
-  min-width: 0;
-  gap: 0.5rem;
-}
-
-.order-ticket__header-label,
-.order-ticket__order-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.order-ticket__actions {
-  flex: none;
-  gap: 0.5rem;
-}
-
-.order-ticket__empty,
-.order-ticket__customer {
-  color: var(--ui-text-dimmed);
-  font-size: 0.75rem;
-}
-
-.order-ticket__body--interactive {
+.order-ticket--interactive {
   cursor: pointer;
 }
 
-.order-ticket__body--interactive:hover {
+.order-ticket--interactive:not(.order-ticket--expanded):hover {
   background: color-mix(in srgb, var(--ui-bg-muted) 40%, transparent);
 }
 
-.order-ticket__line {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.order-ticket__line + .order-ticket__line {
-  margin-top: 0.25rem;
-}
-
-.order-ticket__line-content,
-.order-ticket__order-label {
-  min-width: 0;
-}
-
-.order-ticket__option {
-  display: block;
-  color: var(--ui-text-muted);
-}
-
-.order-ticket__empty {
-  font-style: italic;
-}
-
-.order-ticket__customer {
-  margin-top: 0.75rem;
-}
-
-.order-ticket__customer-line {
-  margin-bottom: 0;
-}
-
-.order-ticket__footer {
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.order-ticket--prominent .order-ticket__footer {
-  font-weight: 700;
-}
 </style>

@@ -110,7 +110,7 @@
 
     <section class="py-20">
       <UContainer>
-        <div class="rounded-[2rem] bg-gray-950 px-6 py-12 text-white sm:px-10 lg:px-14 dark:bg-gray-900">
+        <div class="rounded-3xl bg-gray-950 px-6 py-12 text-white sm:px-10 lg:px-14 dark:bg-gray-900">
           <div class="grid gap-12 lg:grid-cols-2">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-300">How we build</p>

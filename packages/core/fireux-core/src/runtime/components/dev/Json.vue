@@ -177,7 +177,7 @@ const onCopy = async () => {
 
 .jsonpanel-panel {
   border: 1px solid var(--fx-debug-yellow-border);
-  border-radius: 12px;
+  border-radius: calc(var(--ui-radius) * 3);
   background:
     linear-gradient(135deg, var(--fx-debug-yellow-bg), transparent 48%),
     var(--ui-bg);
@@ -195,7 +195,7 @@ const onCopy = async () => {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--fx-debug-yellow-border);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(--fx-debug-yellow-bg-strong);
   padding: 1px 7px;
   color: var(--fx-debug-ink);
@@ -232,7 +232,7 @@ const onCopy = async () => {
 .jsonpanel-object-preview {
   margin: 8px 0 12px;
   border: 1px solid var(--fx-debug-yellow-border);
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--fx-debug-yellow-bg);
 }
 
@@ -259,7 +259,7 @@ const onCopy = async () => {
 
 pre {
   border: 1px solid var(--fx-debug-yellow-border);
-  border-radius: 8px;
+  border-radius: calc(var(--ui-radius) * 2);
   background: var(--fx-debug-yellow-bg);
   padding: 10px;
   margin-top: 8px;

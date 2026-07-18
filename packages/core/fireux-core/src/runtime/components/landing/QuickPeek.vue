@@ -73,7 +73,7 @@ defineProps<{
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: var(--color-primary-50);
   color: var(--color-primary-500);
 }

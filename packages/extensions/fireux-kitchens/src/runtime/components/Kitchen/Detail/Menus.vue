@@ -166,7 +166,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   gap: 0.5rem;
   padding: 0.85rem;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, transparent);
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--ui-primary) 7%, transparent);
 }
 
@@ -183,7 +183,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   justify-content: center;
   gap: 0.6rem;
   border: 1px dashed var(--ui-border);
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 4);
   color: var(--ui-text-muted);
   font-size: 0.9rem;
 }

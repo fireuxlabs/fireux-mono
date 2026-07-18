@@ -79,7 +79,7 @@
                         <img
                           src="/img/app/logo.png"
                           alt=""
-                          class="size-full rounded object-contain"
+                          class="size-full rounded-sm object-contain"
                         >
                       </div>
                     </div>

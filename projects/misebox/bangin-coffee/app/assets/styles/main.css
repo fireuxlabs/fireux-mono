@@ -25,7 +25,7 @@
 .bangin-kicker {
   width: fit-content;
   border: 1px solid var(--bangin-border);
-  border-radius: 999px;
+  border-radius: 9999px;
   padding: 0.45rem 0.8rem;
   color: var(--bangin-gold);
   background: rgba(255, 247, 229, 0.08);
@@ -72,7 +72,7 @@
 .bangin-roast-card {
   position: relative;
   border: 1px solid var(--bangin-border);
-  border-radius: 2rem;
+  border-radius: calc(var(--ui-radius) * 6);
   padding: 1.25rem;
   background:
     linear-gradient(160deg, rgba(255, 247, 229, 0.14), rgba(255, 247, 229, 0.04)),
@@ -84,7 +84,7 @@
   position: absolute;
   inset: 1rem;
   border: 1px dashed rgba(242, 184, 75, 0.32);
-  border-radius: 1.45rem;
+  border-radius: calc(var(--ui-radius) * 4);
   content: '';
   pointer-events: none;
 }
@@ -93,7 +93,7 @@
   display: grid;
   place-items: center;
   min-height: 22rem;
-  border-radius: 1.45rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background:
     radial-gradient(circle, rgba(242, 184, 75, 0.34) 0 18%, transparent 19%),
     conic-gradient(from 220deg, #17110d, #5b341c, #f2b84b, #2b190f, #17110d);
@@ -124,7 +124,7 @@
 
 .bangin-card {
   border: 1px solid var(--bangin-border);
-  border-radius: 1.35rem;
+  border-radius: calc(var(--ui-radius) * 6);
   padding: 1.15rem;
   color: var(--bangin-ink);
   background: var(--bangin-card);

@@ -20,6 +20,26 @@ export function kitchenOrderOperatorLabel(order: Record<string, unknown>) {
   const orderLabel = `Order: ${number}`
   if (text(order.order_type) !== 'collection') return orderLabel
 
-  const customerName = text(record(order.customer).name).split(/\s+/u)[0]
+  const customerName = kitchenOrderCollectionCustomerName(order)
   return customerName ? `${orderLabel}-${customerName}` : orderLabel
+}
+
+export function kitchenOrderTicketFooterLabel(
+  order: Record<string, unknown>,
+  placedTime = ''
+) {
+  const number = kitchenOrderServiceNumber(order)
+  const customerName = text(order.order_type) === 'collection'
+    ? kitchenOrderCollectionCustomerName(order)
+    : ''
+
+  return [
+    number ? `Order ${number}` : 'Order',
+    customerName,
+    text(placedTime),
+  ].filter(Boolean).join(' - ')
+}
+
+function kitchenOrderCollectionCustomerName(order: Record<string, unknown>) {
+  return text(record(order.customer).name).split(/\s+/u)[0]
 }

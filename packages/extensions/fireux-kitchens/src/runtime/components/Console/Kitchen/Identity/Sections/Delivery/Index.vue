@@ -538,7 +538,7 @@ async function persistDeliveryZones(successTitle: string) {
   gap: 0.9rem;
   padding: 0.8rem;
   border: 1px solid var(--ui-border);
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background:
     linear-gradient(
       90deg,

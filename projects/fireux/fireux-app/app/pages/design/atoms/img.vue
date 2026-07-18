@@ -42,7 +42,7 @@ const { data: images, error } = await useFetch('/api/images', { server: false })
 .test-image {
   width: 100px;
   height: auto;
-  border-radius: 4px;
+  border-radius: var(--ui-radius);
 }
 .image-name {
   font-size: 0.9rem;

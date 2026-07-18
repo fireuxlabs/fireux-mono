@@ -35,7 +35,7 @@ withDefaults(defineProps<{
     --menu-close-border,
     color-mix(in srgb, var(--menu-primary, currentColor) 42%, transparent)
   );
-  border-radius: 999px;
+  border-radius: 9999px;
   background: var(
     --menu-close-bg,
     color-mix(

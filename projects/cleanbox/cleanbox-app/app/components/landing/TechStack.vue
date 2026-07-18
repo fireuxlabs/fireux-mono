@@ -78,7 +78,7 @@ const techStack = {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: calc(var(--ui-radius) * 3);
   transition: transform 0.2s ease;
 }
 

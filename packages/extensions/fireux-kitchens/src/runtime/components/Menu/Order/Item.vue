@@ -231,7 +231,7 @@ function formatPrice(price: number) {
   display: block;
   width: 5rem;
   height: 5rem;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   object-fit: cover;
 }
 
@@ -286,7 +286,7 @@ function formatPrice(price: number) {
   gap: 0.3rem;
   padding: 0.28rem 0.5rem;
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 28%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-secondary) 6%, var(--menu-bg));
   color: var(--menu-muted);
   cursor: pointer;
@@ -326,7 +326,7 @@ function formatPrice(price: number) {
   height: 2.75rem;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--menu-primary) 42%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
   color: var(--menu-primary);
   cursor: pointer;

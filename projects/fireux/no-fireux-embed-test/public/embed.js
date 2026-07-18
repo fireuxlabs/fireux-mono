@@ -428,8 +428,8 @@ function injectMiseboxMenuPopupStyles() {
   style.textContent = [
     '.misebox-menu-popup-open { overflow: hidden; }',
     '.misebox-menu-popup { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: rgba(18, 16, 12, 0.72); padding: 1rem; }',
-    '.misebox-menu-popup__panel { box-sizing: border-box; width: min(52rem, 100%); max-height: min(46rem, 92svh); overflow: auto; border-radius: 1.25rem; background: #fffaf0; color: #1d1d1f; padding: clamp(1.25rem, 4vw, 2.5rem); box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.34); }',
-    '.misebox-menu-popup__close { float: right; border: 1px solid #d6c39d; border-radius: 999px; background: #f4ead8; color: #1d1d1f; padding: 0.55rem 0.85rem; cursor: pointer; }',
+    '.misebox-menu-popup__panel { box-sizing: border-box; width: min(52rem, 100%); max-height: min(46rem, 92svh); overflow: auto; border-radius: calc(var(--ui-radius, 0.25rem) * 6); background: #fffaf0; color: #1d1d1f; padding: clamp(1.25rem, 4vw, 2.5rem); box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.34); }',
+    '.misebox-menu-popup__close { float: right; border: 1px solid #d6c39d; border-radius: 9999px; background: #f4ead8; color: #1d1d1f; padding: 0.55rem 0.85rem; cursor: pointer; }',
     '.misebox-menu-popup__header { margin-bottom: 2rem; text-align: center; }',
     '.misebox-menu-popup__header p { margin: 0.35rem auto; max-width: 36rem; color: #625847; }',
     '.misebox-menu-popup__header h2 { margin: 0; font-size: clamp(2.25rem, 7vw, 4.75rem); letter-spacing: -0.07em; line-height: 0.9; }',
@@ -442,7 +442,7 @@ function injectMiseboxMenuPopupStyles() {
     '.misebox-menu-popup__item p { margin-top: 0.25rem; color: #625847; line-height: 1.45; }',
     '.misebox-menu-popup__item strong { white-space: nowrap; }',
     '.misebox-menu-popup__options { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.55rem 0 0; padding: 0; list-style: none; }',
-    '.misebox-menu-popup__options li { border-radius: 999px; background: #f4ead8; padding: 0.25rem 0.5rem; color: #625847; font-size: 0.88rem; }',
+    '.misebox-menu-popup__options li { border-radius: 9999px; background: #f4ead8; padding: 0.25rem 0.5rem; color: #625847; font-size: 0.88rem; }',
     '.misebox-menu-popup__options span { color: #1d1d1f; font-weight: 700; }',
     '.misebox-menu-popup__state { color: #625847; }'
   ].join('\n')

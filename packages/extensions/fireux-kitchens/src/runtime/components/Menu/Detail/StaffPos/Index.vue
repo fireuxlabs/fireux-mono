@@ -249,7 +249,7 @@ watch(orderChoices, (choices: MenuChoiceOption[]) => {
 .staff-pos__mode,
 .staff-pos__nav {
   border: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
-  border-radius: 0.55rem;
+  border-radius: calc(var(--ui-radius) * 2);
   background: color-mix(in srgb, var(--menu-bg) 86%, transparent);
   color: var(--menu-text);
   cursor: pointer;

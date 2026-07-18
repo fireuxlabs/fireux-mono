@@ -198,7 +198,7 @@ const onClick = (event?: MouseEvent) => {
   min-height: 9.5rem;
   padding: 1.25rem;
   border-color: color-mix(in srgb, var(--ui-primary) 13%, var(--ui-border));
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background:
     linear-gradient(
       145deg,
@@ -255,7 +255,7 @@ const onClick = (event?: MouseEvent) => {
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--ui-border);
-  border-radius: 999px;
+  border-radius: 9999px;
   color: var(--ui-text-muted);
   transition: border-color 160ms ease, background-color 160ms ease,
     color 160ms ease, transform 160ms ease;

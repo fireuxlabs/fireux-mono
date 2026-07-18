@@ -69,7 +69,7 @@
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 14%, var(--menu-bg));
   color: var(--menu-primary);
 }
@@ -111,7 +111,7 @@
 .menu-order-collection-time__days button,
 .menu-order-collection-time__slots button {
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: transparent;
   color: var(--menu-muted);
   cursor: pointer;

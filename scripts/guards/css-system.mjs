@@ -40,6 +40,32 @@ const DERIVED_RADIUS_DECLARATION_RE =
   /--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)\s*:/g
 const DERIVED_RADIUS_REFERENCE_RE =
   /var\(\s*--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)\b/g
+const BORDER_RADIUS_DECLARATION_RE = /\bborder-radius\s*:\s*([^;}\n]+)/g
+const RADIUS_CUSTOM_PROPERTY_RE =
+  /(--[A-Za-z0-9_-]*radius[A-Za-z0-9_-]*)\s*:\s*([^;}\n]+)/g
+const RADIUS_CUSTOM_PROPERTY_REFERENCE_RE =
+  /var\(\s*(--[A-Za-z0-9_-]*radius[A-Za-z0-9_-]*)\b/g
+const ARBITRARY_RADIUS_CLASS_RE =
+  /\brounded(?:-[trblxyse]{1,2})?-\[([^\]]+)\]/g
+const OUT_OF_SCALE_RADIUS_CLASS_RE =
+  /\brounded(?:-[trblxyse]{1,2})?-(?:4xl|5xl|6xl|7xl|8xl|9xl)\b/g
+const CANONICAL_UI_RADIUS_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/tokens.scss'
+const ALLOWED_RADIUS_CUSTOM_PROPERTIES = new Set([
+  '--ui-radius',
+  '--menu-radius',
+  '--menu-radius-control',
+])
+const APPROVED_ARBITRARY_RADIUS_CLASSES = new Map([
+  [
+    'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Url.vue',
+    new Set(['22%']),
+  ],
+  [
+    'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
+    new Set(['22%']),
+  ],
+])
 const LEGACY_ENTITY_CARD_RECIPE = [
   'flex',
   'w-full',
@@ -105,6 +131,10 @@ export async function run(ctx) {
     obsoleteVariables: [],
     radiusDeclarations: [],
     radiusReferences: [],
+    radiusValues: [],
+    radiusCustomProperties: [],
+    arbitraryRadiusClasses: [],
+    outOfScaleRadiusClasses: [],
     legacyEntityCards: [],
     legacyInsetPanels: [],
     legacySemanticColors: [],
@@ -158,6 +188,26 @@ function scan(dir, repoRoot, violations) {
       label: (match) => match[0],
     })
 
+    collectRadiusCustomPropertyViolations({
+      source,
+      relativePath,
+      target: violations.radiusCustomProperties,
+    })
+
+    collectArbitraryRadiusClassViolations({
+      source,
+      relativePath,
+      target: violations.arbitraryRadiusClasses,
+    })
+
+    collectMatches({
+      source,
+      pattern: OUT_OF_SCALE_RADIUS_CLASS_RE,
+      target: violations.outOfScaleRadiusClasses,
+      relativePath,
+      label: (match) => match[0],
+    })
+
     if (STYLE_EXTENSIONS.has(extension)) {
       collectMatches({
         source,
@@ -165,6 +215,12 @@ function scan(dir, repoRoot, violations) {
         target: violations.radiusDeclarations,
         relativePath,
         label: (match) => match[0].replace(/\s*:$/, ''),
+      })
+
+      collectBorderRadiusViolations({
+        source,
+        relativePath,
+        target: violations.radiusValues,
       })
     }
 
@@ -219,6 +275,122 @@ function collectMatches({ source, pattern, target, relativePath, label }) {
   }
 }
 
+function collectBorderRadiusViolations({ source, relativePath, target }) {
+  BORDER_RADIUS_DECLARATION_RE.lastIndex = 0
+  let match
+
+  while ((match = BORDER_RADIUS_DECLARATION_RE.exec(source))) {
+    const value = match[1].trim()
+    if (isAllowedBorderRadiusValue(value)) continue
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label: value,
+    })
+  }
+}
+
+function collectRadiusCustomPropertyViolations({
+  source,
+  relativePath,
+  target,
+}) {
+  RADIUS_CUSTOM_PROPERTY_RE.lastIndex = 0
+  let match
+
+  while ((match = RADIUS_CUSTOM_PROPERTY_RE.exec(source))) {
+    const property = match[1]
+    const value = match[2].trim()
+
+    if (isDerivedRadiusProperty(property)) continue
+
+    const isCanonicalUiRadius =
+      property === '--ui-radius' &&
+      relativePath === CANONICAL_UI_RADIUS_PATH &&
+      value === '0.25rem'
+    const isOwnedDerivedRadius =
+      property !== '--ui-radius' &&
+      ALLOWED_RADIUS_CUSTOM_PROPERTIES.has(property) &&
+      isCanonicalRadiusValue(value)
+
+    if (isCanonicalUiRadius || isOwnedDerivedRadius) continue
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label: `${property}: ${value}`,
+    })
+  }
+
+  RADIUS_CUSTOM_PROPERTY_REFERENCE_RE.lastIndex = 0
+
+  while ((match = RADIUS_CUSTOM_PROPERTY_REFERENCE_RE.exec(source))) {
+    const property = match[1]
+    if (
+      isDerivedRadiusProperty(property) ||
+      ALLOWED_RADIUS_CUSTOM_PROPERTIES.has(property)
+    ) {
+      continue
+    }
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label: `unowned reference ${property}`,
+    })
+  }
+}
+
+function collectArbitraryRadiusClassViolations({
+  source,
+  relativePath,
+  target,
+}) {
+  ARBITRARY_RADIUS_CLASS_RE.lastIndex = 0
+  let match
+
+  while ((match = ARBITRARY_RADIUS_CLASS_RE.exec(source))) {
+    const value = match[1].trim()
+    const approvedValues = APPROVED_ARBITRARY_RADIUS_CLASSES.get(relativePath)
+    if (approvedValues?.has(value)) continue
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label: match[0],
+    })
+  }
+}
+
+function isAllowedBorderRadiusValue(value) {
+  const normalized = value.replace(/\s+/g, '')
+
+  return (
+    isCanonicalRadiusValue(value) ||
+    normalized === '0' ||
+    normalized === '50%' ||
+    normalized === '9999px' ||
+    normalized === 'inherit' ||
+    normalized === 'initial' ||
+    normalized === 'unset' ||
+    /^var\(--(?:menu-radius|menu-radius-control)\)$/.test(normalized)
+  )
+}
+
+function isCanonicalRadiusValue(value) {
+  const normalized = value.replace(/\s+/g, '')
+
+  return (
+    /^var\(--ui-radius(?:,0\.25rem)?\)$/.test(normalized) ||
+    /^calc\(var\(--ui-radius(?:,0\.25rem)?\)\*(?:0\.5|1\.5|2|3|4|6)\)$/.test(normalized)
+  )
+}
+
+function isDerivedRadiusProperty(property) {
+  return /^--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)$/.test(property)
+}
+
 function hasViolations(violations) {
   return Object.values(violations).some((entries) => entries.length > 0)
 }
@@ -240,6 +412,26 @@ function formatViolations(violations) {
     lines,
     'Non-runtime radius variables referenced:',
     violations.radiusReferences
+  )
+  appendGroup(
+    lines,
+    'Border radii outside the Nuxt UI scale or approved full/circle shapes:',
+    violations.radiusValues
+  )
+  appendGroup(
+    lines,
+    'Unowned or invalid radius custom properties:',
+    violations.radiusCustomProperties
+  )
+  appendGroup(
+    lines,
+    'Unapproved arbitrary Tailwind radius classes:',
+    violations.arbitraryRadiusClasses
+  )
+  appendGroup(
+    lines,
+    'Tailwind radius classes outside the adopted Nuxt UI scale:',
+    violations.outOfScaleRadiusClasses
   )
   appendGroup(
     lines,
@@ -267,6 +459,9 @@ function formatViolations(violations) {
     '[guard] Fix:',
     '- Use current Nuxt UI semantic variables (`--ui-text*`, `--ui-border*`, `--ui-bg*`).',
     '- Set `--ui-radius` as the radius authority; use `rounded-*` utilities in templates and calculate from `--ui-radius` in authored CSS.',
+    '- Ordinary radii use only the xs-through-3xl Nuxt UI scale; reserve `50%` or `9999px` for real circles and pills.',
+    '- Radius custom properties are explicit owned seams. Menu defaults must derive from `--ui-radius`.',
+    '- Arbitrary radius utilities are reserved for approved percentage-based artwork.',
     '- Compose the shared `.fx-card--cell` recipe instead of repeating the audited class string.',
     '- Use `.fx-inset-panel` for the audited nested bordered-panel recipe.',
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',

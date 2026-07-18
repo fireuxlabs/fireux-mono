@@ -115,7 +115,7 @@ watch(displayUrl, () => {
   max-width: 100%;
   max-height: min(56rem, 72vh);
   max-height: min(56rem, 72dvh);
-  border-radius: 0.875rem;
+  border-radius: calc(var(--ui-radius) * 4);
   object-fit: contain;
   box-shadow: 0 1.25rem 3rem rgb(15 23 42 / 0.18);
 }

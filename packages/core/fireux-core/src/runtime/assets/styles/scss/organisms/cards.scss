@@ -440,7 +440,7 @@
 
 :where(.fx-card__panel) {
 	border: 1px solid var(--ui-border);
-	border-radius: 0.5rem;
+	border-radius: calc(var(--ui-radius) * 2);
 	padding: 0.75rem;
 	font-size: 0.75rem;
 	color: var(--ui-text-muted, var(--ui-text));
@@ -516,7 +516,7 @@
 :where(.fx-card__cover) {
 	position: relative;
 	overflow: hidden;
-	border-radius: 0.75rem;
+	border-radius: calc(var(--ui-radius) * 3);
 }
 
 :where(.fx-card__cover-image) {
@@ -636,7 +636,7 @@
 :where(.fx-card__gallery-image) {
 	height: 5rem;
 	width: 100%;
-	border-radius: 0.5rem;
+	border-radius: calc(var(--ui-radius) * 2);
 	object-fit: cover;
 	display: block;
 }

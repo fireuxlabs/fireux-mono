@@ -148,7 +148,7 @@ h2 {
   text-align: center;
   padding: 1rem;
   background: var(--ui-bg-elevated);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
   width: 100%;
 }
 .class-name {

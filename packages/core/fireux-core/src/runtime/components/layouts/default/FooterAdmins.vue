@@ -146,7 +146,7 @@ const isLoading = computed(() => Boolean(pending.value))
 
 .footer-admins__skeleton {
   height: 3.5rem;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
 }
 
 .footer-admins__empty {

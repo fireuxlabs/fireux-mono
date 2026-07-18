@@ -351,7 +351,7 @@ function isDefaultColor(key: ColorStyleKey) {
   gap: 0.75rem;
   padding: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 12%, var(--ui-border));
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: color-mix(in srgb, var(--ui-primary) 3%, transparent);
 }
 </style>

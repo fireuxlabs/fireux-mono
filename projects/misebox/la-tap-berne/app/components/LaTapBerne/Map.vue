@@ -31,7 +31,7 @@ withDefaults(defineProps<{
   aspect-ratio: 16 / 10;
   margin: 0.25rem auto 0;
   border: 1px solid color-mix(in srgb, var(--brand-canvas) 38%, transparent);
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   box-shadow: 0 1rem 3rem color-mix(in srgb, var(--brand-ink) 32%, transparent);
 }
 

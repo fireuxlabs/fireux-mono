@@ -26,7 +26,7 @@ withDefaults(defineProps<{
 
 <style scoped>
 .menu-order-paused { display: grid; width: min(100%, 42rem); justify-items: center; gap: 1rem; margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem); border: 1px solid color-mix(in srgb, var(--menu-primary) 25%, transparent); border-radius: var(--menu-radius); background: color-mix(in srgb, var(--menu-bg) 94%, var(--menu-primary)); color: var(--menu-text); text-align: center; }
-.menu-order-paused__icon { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 999px; background: color-mix(in srgb, var(--menu-primary) 14%, var(--menu-bg)); color: var(--menu-primary); font-size: 1.5rem; }
+.menu-order-paused__icon { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 9999px; background: color-mix(in srgb, var(--menu-primary) 14%, var(--menu-bg)); color: var(--menu-primary); font-size: 1.5rem; }
 .menu-order-paused div { display: grid; gap: 0.45rem; }
 .menu-order-paused p, .menu-order-paused h2 { margin: 0; }
 .menu-order-paused div > p:first-child { color: var(--menu-primary); font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }

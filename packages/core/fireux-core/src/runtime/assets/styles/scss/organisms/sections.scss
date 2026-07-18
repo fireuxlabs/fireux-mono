@@ -215,7 +215,7 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 	gap: 1.5rem;
 	padding: clamp(1.35rem, 3vw, 2.25rem);
 	border: 1px solid color-mix(in srgb, var(--ui-border) 85%, transparent);
-	border-radius: 1.75rem;
+	border-radius: calc(var(--ui-radius) * 6);
 	background:
 		linear-gradient(
 			145deg,
@@ -303,7 +303,7 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 .fireux-page-hero__visual {
 	position: relative;
 	min-height: 13rem;
-	border-radius: 1.5rem;
+	border-radius: calc(var(--ui-radius) * 6);
 	overflow: hidden;
 	border: 1px solid color-mix(in srgb, var(--ui-border) 85%, transparent);
 	background:
@@ -338,7 +338,7 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 	gap: 0.9rem;
 	padding: 1rem;
 	border: 1px solid color-mix(in srgb, var(--ui-border) 85%, transparent);
-	border-radius: 1.25rem;
+	border-radius: calc(var(--ui-radius) * 4);
 	background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
 }
 
@@ -359,7 +359,7 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 	display: grid;
 	gap: 0.2rem;
 	padding: 0.85rem 0.95rem;
-	border-radius: 1rem;
+	border-radius: calc(var(--ui-radius) * 4);
 	background: color-mix(in srgb, var(--ui-bg-muted) 92%, transparent);
 	border: 1px solid color-mix(in srgb, var(--ui-border) 85%, transparent);
 }
@@ -378,7 +378,7 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 .fireux-page-surface {
 	padding: clamp(1rem, 2vw, 1.25rem);
 	border: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
-	border-radius: 1.4rem;
+	border-radius: calc(var(--ui-radius) * 6);
 	background: color-mix(in srgb, var(--ui-bg) 92%, transparent);
 	box-shadow: 0 24px 56px -48px
 		color-mix(in srgb, var(--ui-bg-inverted) 16%, transparent);

@@ -54,10 +54,6 @@ useHead({ title: `${appName} | ${pageTitle}` })
 </script>
 
 <style scoped>
-.kitchens-index {
-  --kitchens-index-radius: clamp(1.4rem, 3vw, 2.25rem);
-}
-
 .kitchens-index__hero {
   position: relative;
   display: grid;
@@ -68,7 +64,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
   min-height: clamp(17rem, 38vw, 25rem);
   padding: clamp(2rem, 6vw, 5rem);
   border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
-  border-radius: var(--kitchens-index-radius);
+  border-radius: calc(var(--ui-radius) * 6);
   background:
     radial-gradient(
       circle at 85% 18%,
@@ -89,7 +85,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
   width: 22rem;
   height: 22rem;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 15%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   content: '';
 }
 
@@ -134,7 +130,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
   height: clamp(4.5rem, 11vw, 7rem);
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 22%, var(--ui-border));
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--ui-bg) 80%, transparent);
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
   color: var(--ui-primary);

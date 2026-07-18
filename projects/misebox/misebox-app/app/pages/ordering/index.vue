@@ -105,7 +105,7 @@
 
           <code
             v-if="surface.publicPath"
-            class="w-fit break-all rounded bg-muted px-2 py-1 text-xs font-bold text-muted"
+            class="w-fit break-all rounded-sm bg-muted px-2 py-1 text-xs font-bold text-muted"
           >
             {{ surface.publicPath }}
           </code>
@@ -138,7 +138,7 @@
 
                 <code
                   v-if="mode.publicPath"
-                  class="break-all rounded bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
+                  class="break-all rounded-sm bg-muted px-1.5 py-0.5 text-xs font-bold text-muted"
                 >
                   {{ mode.publicPath }}
                 </code>
