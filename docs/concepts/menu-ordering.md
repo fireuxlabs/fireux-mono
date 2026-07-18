@@ -286,6 +286,12 @@ Public order funnel spine:
   controls; Queue and Pass share one operational Kitchen Order ticket; Recent
   is a completed-order archive and may expose richer inspection information
   rather than reusing the active ticket.
+- The Kitchen Orders console does not expose a generic Create/Edit surface.
+  Customer funnels and authenticated Staff POS channels create Orders;
+  kitchen controls issue named lifecycle commands such as Accept, Reject,
+  Ready, Return, and Send. If a later Order field earns direct editing, use the
+  shared profile-editable structure for an atomic, permissioned, auditable
+  field update rather than treating the whole Order as a free-form document.
 - Collection tickets may suffix the short reference with the customer's first
   name (`Order: 3-Sofia`). Other surfaces retain `Order: N`; table and room
   identity remain fulfilment context rather than part of the sequence.

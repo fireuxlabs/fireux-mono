@@ -1,54 +1,34 @@
 <template>
   <div class="orders-pass" data-order-rail="pass">
     <ConsoleKitchenOperationsOrdersTicket
-      v-for="ticket in orders"
+      v-for="ticket in passOrders"
       :key="ticket.id"
       :order="ticket"
       stage="pass"
       :interactive="canInteract(ticket)"
-      :selected="isSelected(ticket.id)"
-      @return="$emit('return', $event)"
-      @toggle="$emit('toggle', $event)"
+      :selected="pass.isSelected(ticket.id)"
+      @return="returnPassOrder"
+      @toggle="pass.toggle"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
+import { useKitchenOrdersWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrdersWorkspace'
 
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersPass' })
 
-defineProps<{
-  orders: KitchenOrder[]
-  canInteract: (order: KitchenOrder) => boolean
-  isSelected: (orderId: unknown) => boolean
-}>()
-
-defineEmits<{
-  return: [id: string]
-  toggle: [id: string]
-}>()
+const {
+  passOrders,
+  pass,
+  canInteract,
+  returnPassOrder,
+} = useKitchenOrdersWorkspace()
 </script>
 
 <style scoped>
 .orders-pass {
   display: flex;
-  min-width: 0;
-  gap: 0.75rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.orders-pass > * {
-  flex: none;
-  width: min(20rem, 82vw);
-}
-
-@media (min-width: 1280px) {
-  .orders-pass > * {
-    width: 20rem;
-  }
+  gap: 0.5rem;
 }
 </style>

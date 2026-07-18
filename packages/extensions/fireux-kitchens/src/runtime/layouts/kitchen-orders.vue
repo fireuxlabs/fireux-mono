@@ -1,5 +1,8 @@
 <template>
-  <UDashboardPanel id="kitchen-orders">
+  <UDashboardPanel
+    id="kitchen-orders"
+    :ui="{ body: 'kitchen-orders-layout__body' }"
+  >
     <template #header>
       <UDashboardNavbar title="Orders" :toggle="false">
         <template #leading>
@@ -58,6 +61,10 @@ const selectionBlocked = computed(() =>
 </script>
 
 <style scoped>
+:deep(.kitchen-orders-layout__body) {
+  padding-top: 0;
+}
+
 .kitchen-orders-layout__empty {
   display: grid;
   min-height: 55vh;

@@ -1,44 +1,37 @@
 <template>
   <Teleport to="#kitchen-orders-actions">
     <div class="orders-toolbar__actions">
-        <UBadge color="success" variant="soft" size="sm">
-          Pass {{ passCount }}
-        </UBadge>
-        <UBadge
-          v-if="selectedCount"
-          color="success"
-          variant="subtle"
-          size="sm"
-        >
-          {{ selectedCount }} selected
-        </UBadge>
-        <UButton
-          size="sm"
-          color="success"
-          icon="i-lucide-send"
-          :disabled="!canSend"
-          :loading="sending"
-          @click="$emit('send')"
-        >
-          Send
-        </UButton>
+      <UBadge color="success" variant="soft" size="sm">
+        Pass {{ passOrders.length }}
+      </UBadge>
+      <UBadge
+        v-if="pass.selectedOrders.value.length"
+        color="success"
+        variant="subtle"
+        size="sm"
+      >
+        {{ pass.selectedOrders.value.length }} selected
+      </UBadge>
+      <UButton
+        size="sm"
+        color="success"
+        icon="i-lucide-send"
+        :disabled="!pass.canSend.value"
+        :loading="pass.sending.value"
+        @click="pass.send"
+      >
+        Send
+      </UButton>
     </div>
   </Teleport>
 </template>
 
 <script setup lang="ts">
+import { useKitchenOrdersWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrdersWorkspace'
+
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersToolbar' })
 
-defineProps<{
-  passCount: number
-  selectedCount: number
-  canSend: boolean
-  sending: boolean
-}>()
-
-defineEmits<{
-  send: []
-}>()
+const { passOrders, pass } = useKitchenOrdersWorkspace()
 </script>
 
 <style scoped>

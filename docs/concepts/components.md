@@ -56,6 +56,13 @@ Console bucket rule:
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
 - `Sundries` quarantines parked or underdeveloped console surfaces so they do not pretend to be confirmed operations.
 - Operation folders should default to an entry component, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
+- `Read` answers what exists. `Write` owns deliberate creation or editing when
+  the operation genuinely supports those actions; safe atomic edits should
+  compose the shared profile-editable/form molecules rather than inventing a
+  page-wide draft and Save system.
+- A live workflow may replace generic `Read`/`Write` wrappers with named
+  operator stages when its writes are lifecycle commands rather than entity
+  editing. Keep those commands explicit, scoped, and separate from CRUD.
 - Use `Index.vue` only when the folder itself is intentionally the auto-imported component.
 - `Create` belongs to root/public entity creation by default. In scoped operations, prefer `Write` unless a real UI workflow is named creation.
 - Workflow subfolders under operations should be named after visible operator concepts, not technical storage buckets.
