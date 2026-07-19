@@ -6,11 +6,8 @@ import type {
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
 import { configureRuntime } from './config/module/runtime-config'
-import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
-import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
@@ -60,11 +57,8 @@ export default defineNuxtModule<ModuleOptions>({
         configureRuntime(nuxt, 'properties', {
           enabled: options.enabled !== false,
         }),
-      plugins: configurePlugins,
       composables: configureComposables,
       components: configureComponents,
-      layouts: configureLayouts,
-      models: configureModels,
       pages: configurePages,
       server: configureServer,
     })

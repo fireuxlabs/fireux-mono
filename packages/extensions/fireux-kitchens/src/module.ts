@@ -10,7 +10,6 @@ import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
-import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 import { configureServer } from './config/module/server-config'
@@ -84,7 +83,6 @@ export default defineNuxtModule<ModuleOptions>({
       composables: configureComposables,
       components: configureComponents,
       layouts: configureLayouts,
-      models: configureModels,
       pages: configurePages,
       assets: configureAssets,
       server: configureServer,

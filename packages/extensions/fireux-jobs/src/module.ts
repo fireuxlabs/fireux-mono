@@ -7,7 +7,6 @@ import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -66,7 +65,6 @@ export default defineNuxtModule<ModuleOptions>({
           enabled: true,
           workplaces,
         }),
-      plugins: configurePlugins,
       composables: configureComposables,
       components: configureComponents,
       layouts: configureLayouts,

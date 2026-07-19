@@ -1,6 +1,6 @@
 Runtime package spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-07-19
+Ref: dda2e1753
 Role: map, not canon
 
 Purpose:
@@ -30,7 +30,8 @@ Common shape:
 
 Module registration:
 - Core helper: `fireux-core/config/module/module-wiring`.
-- Common package hooks: `configureRuntime`, `configurePlugins`, `configureComposables`, `configureComponents`, `configureLayouts`, `configureModels`, `configurePages`, `configureServer`.
+- Common package hooks: `configureRuntime`, `configurePlugins`, `configureComposables`, `configureComponents`, `configureLayouts`, `configurePages`, `configureAssets`, `configureServer`.
+- Keep only hooks that perform real Nuxt registration. Models, types, info helpers, and utilities are explicit-import surfaces and do not have registration hooks.
 - Do not add a runtime surface without checking module registration.
 
 Similarities:

@@ -16,7 +16,6 @@ export interface FireuxModuleSteps {
   composables?: FireuxResolverStep
   components?: FireuxResolverStep
   layouts?: FireuxResolverOptionalNuxtStep
-  models?: FireuxResolverStep
   pages?: FireuxResolverNuxtStep
   assets?: FireuxResolverNuxtStep
   server?: FireuxResolverOptionalNuxtStep
@@ -32,7 +31,6 @@ export function configureFireuxModule(
   steps.composables?.(resolver)
   steps.components?.(resolver)
   steps.layouts?.(resolver, nuxt)
-  steps.models?.(resolver)
   steps.pages?.(resolver, nuxt)
   steps.assets?.(resolver, nuxt)
   steps.server?.(resolver, nuxt)
