@@ -95,14 +95,15 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import {
   useAppInterface,
   type AppViewSource,
-  type AppCard,
 } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import type { AppDirectoryController } from '../../../models/core/supporting/directory'
 
 const props = withDefaults(
@@ -165,22 +166,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<AppCard.Card[]>(() =>
-  visibleItems.value
-    .map((app) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(app)
-        const cell = makeCell(app)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      return makePill(app)
-    })
-    .filter((card): card is AppCard.Card =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

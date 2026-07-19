@@ -1,6 +1,6 @@
 Firestore entity spine map
 Updated: 2026-07-19
-Ref: 258a4f8f3
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -81,6 +81,15 @@ Differences:
 - Some entities are both, but that must be explicit in the model and route behavior.
 - Model placement and Firestore composable placement are related but not identical.
 - Root/both profile models can live on the root model spine while current Firestore composables remain grouped under `firestore/profiles/<Profile>` until that stack is deliberately realigned.
+- Project/Ecosystem/App hierarchy uses root documents plus child-owned relation
+  ids, not nested storage: `Ecosystem.project_id`, `App.project_id`, and optional
+  `App.ecosystem_id`.
+- Public directory DTOs are support projections outside Firestore entity stacks;
+  they do not create another storage scope or another entity.
+- Private Project control-plane reads do not expose a client Firestore
+  collection binding; the FireUX admin server boundary owns that read.
+- Deployed Firestore rules must independently deny unauthorized direct Project
+  reads; this repository does not currently carry or test that remote ruleset.
 
 Do not:
 - Put console operation folders inside Firestore stacks.

@@ -1,6 +1,6 @@
 Console spine map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -55,10 +55,11 @@ Allowed domain buckets:
 - `sundries`
 
 Component bucket shape:
-- Every `components/Console/X` family should carry `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries` as peer directories.
+- Console families carry only the peer buckets their real lifecycle needs.
+  `Team` is not mandatory; Project deliberately has none today.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
 - Do not mix `Console/X/Overview.vue` with `Console/X/Overview/*`; use `Console/X/Overview/Index.vue`.
-- `Team` sits beside `Operations` because access/team management is shared by console families.
+- `Team` sits beside `Operations` only when the entity has a real collaboration lifecycle.
 - `Operations` is for selected-target work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
 
@@ -90,7 +91,7 @@ Operations:
 
 Similarities:
 - All console entities need target selection or a selected target.
-- All console entities should expose access/team concepts.
+- Console entities expose access/team only when that lifecycle is real.
 - All console indexes should stay thin.
 
 Differences:

@@ -1,0 +1,92 @@
+import { useRuntimeConfig } from '#imports'
+import {
+  createError,
+  defineEventHandler,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model'
+import {
+  ProjectStorage,
+  type ProjectStatus,
+} from 'fireux-core/runtime/models/system/project.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getFirestoreDb } from '../../../utils/firebase-admin'
+
+const PROJECT_STATUSES = new Set<ProjectStatus>([
+  'draft',
+  'active',
+  'paused',
+  'archived',
+])
+
+const text = (value: unknown) => String(value ?? '').trim()
+const strings = (value: unknown) =>
+  Array.isArray(value) ? value.map(text).filter(Boolean) : []
+
+export default defineEventHandler(async (event: H3Event) => {
+  const { uid } = await requireFirebaseBearerUser(event)
+  const runtime = useRuntimeConfig()
+  const appId = text(runtime.public?.fireux?.id)
+  if (!appId) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'The FireUX App identity is not configured.',
+    })
+  }
+
+  const db = await getFirestoreDb()
+  const appRef = db.collection(AppStorage.collection).doc(appId)
+  const [appSnapshot, membershipSnapshot] = await Promise.all([
+    appRef.get(),
+    appRef.collection(UserAppStorage.collection).doc(uid).get(),
+  ])
+  const app = (appSnapshot.data() || {}) as Record<string, unknown>
+  const membership = (membershipSnapshot.data() || {}) as Record<string, unknown>
+  const isAdmin =
+    strings(app.admin_ids).includes(uid) || text(membership.role) === 'admin'
+
+  if (!appSnapshot.exists || !isAdmin) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App admin access is required.',
+    })
+  }
+
+  const requestedSource = text(getQuery(event).source)
+  if (requestedSource === 'test' && !import.meta.dev) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Test Project data is unavailable in production.',
+    })
+  }
+  const collection =
+    requestedSource === 'test' ? 'test-projects' : ProjectStorage.collection
+  const snapshot = await db.collection(collection).get()
+  const items = snapshot.docs
+    .map((document) => {
+      const source = (document.data() || {}) as Record<string, unknown>
+      const rawStatus = text(source.status) as ProjectStatus
+      return {
+        id: document.id,
+        name: text(source.name),
+        slug: text(source.slug),
+        description: text(source.description),
+        image_url: text(source.image_url),
+        status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'draft',
+      }
+    })
+    .sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id))
+
+  setResponseHeaders(event, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'private, no-store',
+  })
+
+  return {
+    ok: true as const,
+    items,
+  }
+})

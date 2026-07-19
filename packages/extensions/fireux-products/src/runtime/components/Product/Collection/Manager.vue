@@ -100,6 +100,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
@@ -165,22 +167,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((product) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(product)
-        const cell = makeCell(product)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      return makePill(product)
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

@@ -2,11 +2,10 @@
   <main class="registry-doc">
     <header>
       <p class="eyebrow fx-type-headline">Developer Docs</p>
-      <h1 class="fx-type-page-title">Registry JSON Access</h1>
+      <h1 class="fx-type-page-title">Directory Projection Access</h1>
       <p class="fx-type-description">
-        Narrative overview of how we expose registry payloads. This page keeps
-        the human-readable context in the Developer stack, while the raw JSON
-        remains in the Dev Tools area.
+        FireUX exposes an allowlisted public App and Ecosystem directory. The
+        old mixed Firestore registry API is retired.
       </p>
     </header>
 
@@ -15,9 +14,8 @@
       <p>
         Use the dedicated Dev Tool at
         <NuxtLink to="/dev/registry">/dev/registry</NuxtLink> to copy the
-        combined <code>modules</code>, <code>apps</code>, and
-        <code>ecosystems</code> payload. It calls the
-        <code>/api/registry</code> endpoint and exposes the response as a
+        combined <code>apps</code> and <code>ecosystems</code> projection. It calls
+        <code>/api/public/directory</code> and exposes the response as a
         formatted JSON block with a copy helper.
       </p>
 
@@ -34,11 +32,11 @@
       <h2 class="fx-type-card-title">Workflow reminder</h2>
       <ol>
         <li>
-          Sync each package&apos;s <code>registry.json</code> via
-          <code>pnpm registry:register</code>.
+          Treat package <code>registry.json</code> files as package metadata,
+          not App or Ecosystem entity truth.
         </li>
         <li>Visit <code>/dev/registry</code> and copy the payload.</li>
-        <li>Use that JSON for seed scripts, consoles, or parity checks.</li>
+        <li>Use that JSON for public projection and parity checks only.</li>
       </ol>
     </section>
   </main>
@@ -46,15 +44,15 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: 'FireUX Registry Docs',
+  title: 'FireUX Directory Docs',
   description:
-    'Documentation for accessing and copying registry payloads across apps, modules, and ecosystems.',
+    'Documentation for inspecting the allowlisted App and Ecosystem directory projection.',
 })
 
 definePageMeta({
   nav: {
     key: 'developer-registry-docs',
-    label: 'Registry Docs',
+    label: 'Directory Docs',
     icon: 'i-lucide-book-open-check',
     desktop: false,
     mobile: false,

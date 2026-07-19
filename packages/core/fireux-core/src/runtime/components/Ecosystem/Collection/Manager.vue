@@ -84,7 +84,7 @@
     <div>
       <DevJson
         title="Ecosystems (JSON)"
-        context="collection manager · ecosystems · raw collection"
+        context="collection manager · ecosystems · directory projection"
         :data="devJsonData"
         :default-open="false"
         @opened="loadDevJson"
@@ -95,9 +95,11 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
@@ -131,7 +133,7 @@ const props = withDefaults(
 const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
   props.controller.ecosystems.value.map((entry) => ({
     ...entry,
-    href: entry.canonical_url,
+    href: entry.detail_url,
     appCount: entry.app_count,
   }))
 )
@@ -171,22 +173,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((row) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(row)
-        const cell = makeCell(row)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      return makePill(row)
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(

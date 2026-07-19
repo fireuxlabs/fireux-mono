@@ -20,11 +20,15 @@ export type AppDirectoryEntry = {
   tagline: string
   description: string
   short_bio: string
-  canonical_url: string
+  detail_url: string
   derived: Pick<AppDerived, 'user_count'>
   media: Pick<
     AppMedia,
-    'logo_url' | 'thumbnail_url' | 'wordmark_light_url' | 'wordmark_dark_url'
+    | 'logo_url'
+    | 'thumbnail_url'
+    | 'wordmark_light_url'
+    | 'wordmark_dark_url'
+    | 'cover_url'
   >
 }
 
@@ -36,7 +40,7 @@ export type EcosystemDirectoryEntry = {
   description: string
   image_url: string
   website_url: string
-  canonical_url: string
+  detail_url: string
   app_count: number
 }
 

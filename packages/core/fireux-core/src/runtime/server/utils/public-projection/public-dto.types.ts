@@ -42,7 +42,6 @@ export type PublicAppDto = {
   app_name: string
   app_short_name: string
   role: AppRole | ''
-  ecosystem: string
   tagline: string
   description: string
   short_bio: string

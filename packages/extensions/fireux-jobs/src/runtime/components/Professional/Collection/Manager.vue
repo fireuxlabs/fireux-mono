@@ -101,6 +101,8 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
@@ -179,24 +181,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((entry) => {
-      const user = (entry as any)?.user ?? null
-
-      if (variant.value === 'cell') {
-        const base = makeCard(entry as Professional, user)
-        const cell = makeCell(entry as Professional, user)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      return makePill(entry as Professional, user)
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard: (entry) => makeCard(entry as Professional, (entry as any)?.user ?? null),
+  makePill: (entry) => makePill(entry as Professional, (entry as any)?.user ?? null),
+  makeCell: (entry) => makeCell(entry as Professional, (entry as any)?.user ?? null),
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

@@ -74,7 +74,6 @@ export async function publishAppUserJoinedEvent(
       throw new Error('The authenticated user is not a member of this app.')
     }
 
-    const app = appSnapshot.data() as Record<string, unknown>
     const membership = membershipSnapshot.data() as UserApp
     const membershipCreatedAt = membership?.created?.at
     eventId = appUserJoinedEventId(
@@ -87,9 +86,7 @@ export async function publishAppUserJoinedEvent(
     const eventSnapshot = await transaction.get(eventRef)
     if (eventSnapshot.exists) return false
 
-    const ecosystemId = String(
-      app.ecosystem_id || input.ecosystemId || ''
-    ).trim()
+    const ecosystemId = String(input.ecosystemId || '').trim()
 
     transaction.create(eventRef, {
       id: eventId,

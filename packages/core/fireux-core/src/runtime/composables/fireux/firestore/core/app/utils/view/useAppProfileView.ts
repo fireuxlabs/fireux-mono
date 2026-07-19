@@ -1,10 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { useAppUserCollection } from '../../../user/fetch/useAppUserCollection'
-import { useUserFetch } from '../../../user/fetch/useUserFetch'
-import {
-  useUserInterface,
-  type UserCard,
-} from '../../../user/utils/view/useUserInterface'
+import type { UserCard } from '../../../user/utils/view/useUserInterface'
 import {
   useAppInterface,
   type AppCard,
@@ -39,7 +34,6 @@ export function useAppProfileView(
   appRef: Ref<AppViewSource | null | undefined>
 ) {
   const { profile: toProfile } = useAppInterface(appRef)
-  const appId = computed(() => safeString(appRef.value?.id) || null)
   const creatorId = computed(
     () => safeString(appRef.value?.created?.by) || null
   )
@@ -52,12 +46,8 @@ export function useAppProfileView(
     )
   })
 
-  const { user: creatorUser } = useUserFetch(creatorId)
-  const { users: appUsers } = useAppUserCollection(appId)
-  const { pill: userToCard } = useUserInterface()
-
   const card = computed(() => toProfile(appRef.value))
-  const creatorCard = computed(() => userToCard(creatorUser.value))
+  const creatorCard = computed<UserCard.Card | null>(() => null)
   const createdAtText = computed(
     () =>
       formatFirestoreTimestamp(appRef.value?.created?.at, {
@@ -67,21 +57,13 @@ export function useAppProfileView(
   )
 
   const adminAvatarItems = computed<AppProfileAdminAvatarItem[]>(() => {
-    return adminIds.value.slice(0, 3).map((id) => {
-      const adminUser =
-        appUsers.value.find((entry) => entry.id === id)?.coreUser ?? null
-      const card = adminUser ? userToCard(adminUser) : null
-      const displayName = safeString(card?.displayName)
-      const handle = safeString(card?.handle)
-
-      return {
-        id,
-        to: card?.to ?? '',
-        avatarUrl: card?.avatarUrl ?? '',
-        alt: displayName || handle || id,
-        tooltip: displayName || handle || id,
-      }
-    })
+    return adminIds.value.slice(0, 3).map((id) => ({
+      id,
+      to: '',
+      avatarUrl: '',
+      alt: id,
+      tooltip: id,
+    }))
   })
 
   const model = computed<AppProfileViewModel | null>(() => {
@@ -92,7 +74,9 @@ export function useAppProfileView(
       description: safeString(appRef.value?.description),
       appId: safeString(appRef.value?.id) || card.value.id,
       role: safeString(appRef.value?.role) || card.value.role,
-      ecosystem: safeString(appRef.value?.ecosystem) || card.value.ecosystem,
+      ecosystem:
+        safeString(appRef.value?.ecosystem_id || appRef.value?.ecosystem) ||
+        card.value.ecosystem,
       creatorId: creatorId.value ?? '',
       creatorCard: creatorCard.value,
       adminCount: adminIds.value.length,

@@ -19,7 +19,8 @@ export function buildEcosystemJsonLd(
     name,
     description: excerpt(ecosystem?.description),
     image: clean(ecosystem?.image_url) || undefined,
-    sameAs: clean(ecosystem?.source_url) || undefined,
+    sameAs:
+      clean(ecosystem?.website_url || (ecosystem as any)?.source_url) || undefined,
   }
 }
 

@@ -1,13 +1,15 @@
+import { useAsyncData } from '#imports'
 import { computed, isRef, type Ref } from 'vue'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
-import { ProjectStorage } from '../../../../../../models/system/project.model'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useAuth } from '../../../../firebase/useAuth'
 
-const PROJECT_COLLECTION_PATH = ProjectStorage.collection
-const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
+type ProjectControlResponse = {
+  ok: true
+  items: ProjectSurface[]
+}
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
@@ -25,17 +27,11 @@ type UseProjectCollectionOptions = {
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
   const { surface } = useProjectInterface()
+  const { currentUser, hasAuthState } = useAuth()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
-  })
-  const collectionPath = computed(() => {
-    if (sourceMode.value === 'demo') return ''
-    return sourceMode.value === 'test'
-      ? TEST_PROJECT_COLLECTION_PATH
-      : PROJECT_COLLECTION_PATH
   })
   const resolvedFilter = computed<ProjectCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
@@ -50,10 +46,43 @@ export function useProjectCollection(
           .filter(Boolean)
       )
   )
-  const rootSource = firestoreFetchCollection<ProjectSurface>(collectionPath)
+  const requestKey = computed(
+    () =>
+      `project-control-${sourceMode.value}-${currentUser.value?.uid || 'anonymous'}`
+  )
+  const {
+    data,
+    pending: requestPending,
+    error: requestError,
+    refresh,
+  } = useAsyncData<ProjectControlResponse>(
+    requestKey,
+    async () => {
+      if (sourceMode.value === 'demo' || import.meta.server) {
+        return { ok: true, items: [] }
+      }
+
+      const user = currentUser.value
+      if (!user) return { ok: true, items: [] }
+
+      const token = await user.getIdToken()
+      return $fetch<ProjectControlResponse>('/api/internal/control/projects', {
+        query: { source: sourceMode.value },
+        headers: { authorization: `Bearer ${token}` },
+      })
+    },
+    {
+      server: false,
+      lazy: false,
+      watch: [currentUser, hasAuthState, sourceMode],
+    }
+  )
+  const rootSource = computed<ProjectSurface[]>(() =>
+    currentUser.value ? data.value?.items ?? [] : []
+  )
 
   const projects = computed<ProjectSurface[]>(() =>
-    (rootSource.value ?? []).reduce<ProjectSurface[]>((acc, project) => {
+    rootSource.value.reduce<ProjectSurface[]>((acc, project) => {
       const id = String(project?.id || '').trim()
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
@@ -71,10 +100,12 @@ export function useProjectCollection(
   )
   const count = computed(() => projects.value.length)
   const pending = computed(() =>
-    sourceMode.value === 'demo' ? false : rootSource.pending.value
+    sourceMode.value === 'demo'
+      ? false
+      : !hasAuthState.value || requestPending.value
   )
   const error = computed<unknown | undefined>(() =>
-    sourceMode.value === 'demo' ? undefined : rootSource.error.value
+    sourceMode.value === 'demo' ? undefined : requestError.value ?? undefined
   )
   const { outcome } = useFirestoreCollectionState({
     count,
@@ -88,5 +119,6 @@ export function useProjectCollection(
     pending,
     error,
     outcome,
+    refresh,
   }
 }

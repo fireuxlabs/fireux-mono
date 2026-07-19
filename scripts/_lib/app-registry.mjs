@@ -499,7 +499,6 @@ export const APP_REGISTRY = {
       ...consoleRoutes(['project']),
       '/console/project/identity',
       '/console/project/overview',
-      '/console/project/team',
       '/console/project/apps',
       '/console/project/ecosystem',
     ],

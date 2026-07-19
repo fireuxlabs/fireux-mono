@@ -26,9 +26,6 @@
           <UBadge v-if="item.status" variant="soft" color="neutral" size="xs">
             {{ item.status }}
           </UBadge>
-          <UBadge v-if="item.team" variant="soft" color="neutral" size="xs">
-            {{ item.team }}
-          </UBadge>
           <UBadge variant="soft" color="neutral" size="xs">
             {{ item.appCount }} app{{ item.appCount === 1 ? '' : 's' }}
           </UBadge>
@@ -45,7 +42,7 @@
         </div>
       </section>
 
-      <section class="grid gap-3 text-sm sm:grid-cols-3">
+      <section class="grid gap-3 text-sm sm:grid-cols-2">
         <div class="space-y-1">
           <div class="fx-type-label">Ecosystem ID</div>
           <div class="font-mono text-xs break-all text-default">
@@ -63,29 +60,20 @@
         </div>
 
         <div class="space-y-1">
-          <div class="fx-type-label">Team</div>
+          <div class="fx-type-label">Website</div>
           <div class="text-sm text-default">
-            <span v-if="item.team">{{ item.team }}</span>
+            <UButton
+              v-if="item.websiteUrl"
+              :to="item.websiteUrl"
+              target="_blank"
+              size="xs"
+              variant="link"
+              class="p-0"
+            >
+              Open website
+            </UButton>
             <span v-else class="italic text-dimmed">missing</span>
           </div>
-        </div>
-      </section>
-
-      <section class="space-y-2">
-        <div class="fx-type-label">Connected Apps</div>
-        <div v-if="item.appLabels.length" class="flex flex-wrap gap-2">
-          <UBadge
-            v-for="app in item.appLabels"
-            :key="app"
-            color="neutral"
-            variant="soft"
-            size="xs"
-          >
-            {{ app }}
-          </UBadge>
-        </div>
-        <div v-else class="text-sm italic text-dimmed">
-          No apps listed yet.
         </div>
       </section>
     </div>
@@ -101,10 +89,9 @@ type EcosystemProfileItem = {
   name?: string
   description?: string
   status?: string
-  team?: string
   appCount?: number
-  appLabels?: string[]
   imageUrl?: string
+  websiteUrl?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -116,10 +103,9 @@ const props = withDefaults(defineProps<{
     name: '',
     description: '',
     status: '',
-    team: '',
     appCount: 0,
-    appLabels: [],
     imageUrl: '',
+    websiteUrl: '',
   }),
 })
 
@@ -129,10 +115,9 @@ const item = computed(() => ({
   name: props.item?.name || '',
   description: props.item?.description || '',
   status: props.item?.status || '',
-  team: props.item?.team || '',
   appCount: props.item?.appCount || 0,
-  appLabels: props.item?.appLabels || [],
   imageUrl: props.item?.imageUrl || '',
+  websiteUrl: props.item?.websiteUrl || '',
 }))
 
 const avatarText = computed(() => item.value.name || item.value.id || 'E')

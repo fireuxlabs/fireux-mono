@@ -1,6 +1,6 @@
 Public index family map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -41,6 +41,9 @@ Lasagne rule:
 - Shared primitives may live inside domain components.
 - Shared public-index presentation lives in `fireux-core`; domain managers keep
   fetching, cards, routes, actions, and copy in their owning package.
+- App and Ecosystem are authority-sensitive exceptions: the page passes a
+  named owner/platform controller to shared presentation. The manager never
+  accepts a raw collection or chooses authority implicitly.
 - Avoid generic config blobs in the page.
 
 Differences:

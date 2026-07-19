@@ -48,10 +48,6 @@ function appSlugFromId(appId: string): string {
   return normalizeSlug(appId.replace(/-app$/i, ''))
 }
 
-function ecosystemIdFromSlug(slug: string): string {
-  return slug.startsWith('fireux-') ? slug : `fireux-${slug}`
-}
-
 function labelize(input: string): string {
   return asString(input)
     .split(/[-_]+/)
@@ -96,19 +92,15 @@ export default defineEventHandler(async (event: H3Event) => {
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
     normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
-  const ecosystemSlug = normalizeSlug(cfg.ecosystem)
-  const appSlug = appSlugFromId(cfg.appId)
-  const runtimeProjectId = asString(
-    (runtime.public?.firebaseEcosystem as Record<string, any> | undefined)?.firebase
-      ?.projectId
-  )
+  const ecosystemSlug = normalizeSlug(cfg.ecosystemId)
+  const appSlug = normalizeSlug(appData.slug) || appSlugFromId(cfg.appId)
   const logoUrl =
     toAbsoluteUrl(media.logo_url, siteOrigin) ||
     toAbsoluteUrl(brandAssets.logo, siteOrigin)
   const thumbnailUrl =
     toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
     toAbsoluteUrl(brandAssets.thumbnail, siteOrigin)
-  const ecosystemName =
+  const ecosystemName = ecosystemSlug &&
     cfg.isGlobal && appSlug === ecosystemSlug
       ? cfg.appName
       : labelize(ecosystemSlug) || cfg.ecosystem
@@ -129,22 +121,22 @@ export default defineEventHandler(async (event: H3Event) => {
 
   return {
     ok: true,
-    ecosystem: {
-      id: ecosystemIdFromSlug(ecosystemSlug),
-      slug: ecosystemSlug,
-      name: ecosystemName,
-    },
+    ecosystem: ecosystemSlug
+      ? {
+          id: ecosystemSlug,
+          slug: ecosystemSlug,
+          name: ecosystemName,
+        }
+      : null,
     app: {
       id: cfg.appId,
-      project_id: asString(appData.project_id) || runtimeProjectId,
-      ecosystem_id: asString(appData.ecosystem_id) || ecosystemSlug,
+      project_id: cfg.projectId,
+      ecosystem_id: cfg.ecosystemId || '',
       slug: appSlug,
       status: normalizeStatus(appData.status),
-      team: asString(appData.team),
       app_name: asString(appData.app_name) || cfg.appName,
       app_short_name: asString(appData.app_short_name) || cfg.appShortName || cfg.appName,
       role: asString(appData.role),
-      ecosystem: asString(appData.ecosystem) || ecosystemSlug,
       tagline: asString(appData.tagline),
       description: asString(appData.description),
       short_bio: asString(appData.short_bio),

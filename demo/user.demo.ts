@@ -362,6 +362,15 @@ const demoUserSeedList = [
   },
 ]
 
-export const demoUserList: User[] = demoUserSeedList
+export const demoUserList: User[] = demoUserSeedList.map((seed) => ({
+  id: seed.id,
+  display_name: seed.display_name,
+  handle: seed.handle,
+  avatar: seed.avatar,
+  app_ids: [...seed.userOf],
+  profiles: [...seed.profiles],
+  created: seed.created,
+  updated: seed.updated,
+}))
 
 export const demoUser = demoUserList[0]

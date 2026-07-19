@@ -58,7 +58,7 @@ Route identity to-confirm:
   kitchen menus are still being reconciled.
 - Supplier: should likely use slug for public company-style identity, but confirm
   against existing data and console needs.
-- Project: currently slug-shaped in public detail; confirm app/ecosystem
-  enrichment before widening.
+- Project has no public detail route; it remains a private FireUX control-plane
+  entity.
 - Portfolio and Property: private-light/public-light identity needs confirmation
   before moving from id to slug or both.

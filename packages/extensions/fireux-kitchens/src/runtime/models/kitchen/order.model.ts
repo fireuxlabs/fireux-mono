@@ -106,6 +106,7 @@ export const KitchenOrderIntakePolicies = {
 export const KitchenOrderStatuses = [
   'pending_payment',
   'pending_acceptance',
+  'changes_requested',
   'accepted',
   'ready',
   'completed',
@@ -153,7 +154,7 @@ export const KitchenOrderTransitionRules = {
   },
   reject: {
     from: 'pending_acceptance',
-    to: 'cancelled',
+    to: 'changes_requested',
   },
   mark_ready: {
     from: 'accepted',
@@ -308,7 +309,11 @@ export function deriveKitchenOrderBoardStage(order: {
   const status = String(order.status ?? '').trim()
 
   if (status === 'trashed') return 'trash'
-  if (status === 'completed' || status === 'cancelled') return 'recent'
+  if (
+    status === 'completed' ||
+    status === 'cancelled' ||
+    status === 'changes_requested'
+  ) return 'recent'
   if (status === 'pending_payment') return 'payment'
   if (status === 'pending_acceptance') return 'incoming'
   if (status === 'ready') return 'pass'

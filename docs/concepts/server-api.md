@@ -1,6 +1,6 @@
 Server API spine map
 Updated: 2026-07-19
-Ref: a6fb7062d
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -49,6 +49,19 @@ Boundary rule:
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.
+- `/api/public/apps` is the owning Ecosystem App projection. FireUX
+  `/api/public/directory` is the shared platform App/Ecosystem projection used
+  by landing and index surfaces.
+- FireUX `/api/internal/control/projects` verifies the Firebase bearer token and
+  current FireUX App-admin membership before returning allowlisted private
+  Project control-plane rows.
+- Directory responses are explicit allowlists. Failed source reads remain HTTP
+  errors and never masquerade as empty directories.
+- `GET/POST /api/registry` are retired. The mixed registry database is neither
+  entity authority nor directory authority; future publication is idempotent,
+  event-driven, and pipeline-only.
+- The removed `/api/fireux-console` contract used Firebase project ids and
+  singular Project links as entity identity; do not recreate it.
 
 Working notes:
 - Use endpoint files with clear HTTP suffixes where present, e.g. `.get.ts`, `.post.ts`, `.options.ts`.

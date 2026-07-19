@@ -1,6 +1,6 @@
 App config spine map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-07-19
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -27,12 +27,18 @@ App pattern:
 - Export `withFireuxNuxtConfig(fireuxConfig, appOverrides)`.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
+- `ecosystem` is the package/Firebase binding key, not an entity relationship.
+- `projectId` names the canonical FireUX Project entity.
+- Optional `ecosystemId` names the canonical Ecosystem entity. Direct Project
+  Apps omit it even when they use the `fireux` infrastructure binding.
 - `modules` lists explicit extension capabilities. The app package declares
   those workspace dependencies directly; ecosystem packages do not bundle
   domain extensions on the app's behalf.
 
 Important fields:
 - `ecosystem`
+- `projectId`
+- `ecosystemId`, optional
 - `id`
 - `name`
 - `shortName`

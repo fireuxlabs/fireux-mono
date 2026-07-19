@@ -135,7 +135,7 @@
         </div>
       </section>
 
-      <section class="grid gap-4 lg:grid-cols-2">
+      <section v-if="showPeople" class="grid gap-4 lg:grid-cols-2">
         <div class="rounded-2xl border border-default p-4 space-y-3">
           <div class="fx-type-label">
             Creator
@@ -263,6 +263,7 @@ const props = withDefaults(
     showDescription?: boolean
     showDetails?: boolean
     showSocials?: boolean
+    showPeople?: boolean
   }>(),
   {
     showSubtitle: true,
@@ -272,6 +273,7 @@ const props = withDefaults(
     showDescription: true,
     showDetails: true,
     showSocials: true,
+    showPeople: true,
   }
 )
 
@@ -285,6 +287,7 @@ const showWordmark = computed(() => props.showWordmark)
 const showDescription = computed(() => props.showDescription)
 const showDetails = computed(() => props.showDetails)
 const showSocials = computed(() => props.showSocials)
+const showPeople = computed(() => props.showPeople)
 
 const { toItems } = useSocialLinks()
 const socialItems = computed(() =>

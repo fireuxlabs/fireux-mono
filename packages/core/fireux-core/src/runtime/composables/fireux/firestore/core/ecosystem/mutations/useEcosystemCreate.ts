@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteField,
   doc,
   getDoc,
   serverTimestamp,
@@ -72,7 +73,7 @@ export function useEcosystemCreate() {
       patch.id = ref.id
     }
 
-    if (!normalizeString(data.project_id)) {
+    if (normalizeString(data.project_id) !== projectId) {
       patch.project_id = projectId
     }
 
@@ -92,8 +93,13 @@ export function useEcosystemCreate() {
       patch.image_url = imageUrl
     }
 
-    if (!normalizeString(data.website_url) && sourceUrl) {
-      patch.website_url = sourceUrl
+    const websiteUrl = sourceUrl || normalizeString(data.source_url)
+    if (!normalizeString(data.website_url) && websiteUrl) {
+      patch.website_url = websiteUrl
+    }
+
+    for (const legacyField of ['apps', 'team', 'source_url']) {
+      if (legacyField in data) patch[legacyField] = deleteField()
     }
 
     if (!normalizeString(data.status)) {

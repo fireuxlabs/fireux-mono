@@ -14,7 +14,7 @@ import type { Agent } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.mode
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'id' | 'handle' | 'email'>>
+  Partial<Pick<User, 'id' | 'handle'>>
 
 type AgentTarget = Agent & { user?: UserLike | null }
 

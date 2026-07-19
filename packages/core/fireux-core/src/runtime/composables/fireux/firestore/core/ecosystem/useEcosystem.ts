@@ -11,9 +11,7 @@ export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
 /**
  * FireUX stack family: Core/system root context.
  * Entity: Ecosystem.
- * Canon:
- * - docs/fireux-canon.md
- * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Entity map: docs/concepts/entities.md
  *
  * This is the canonical root Ecosystem seam. Without an explicit id it resolves
  * FireUXConfig.ecosystemId; for arbitrary ids, pass the id directly. Apps

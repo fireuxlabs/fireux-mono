@@ -39,7 +39,7 @@
           Dev details
         </UButton>
         <UButton to="/developer/registry" color="neutral" variant="soft" icon="i-lucide-database">
-          Registry docs
+          Directory boundary docs
         </UButton>
         <UButton to="/get-started" color="neutral" variant="ghost" icon="i-lucide-rocket">
           Get started

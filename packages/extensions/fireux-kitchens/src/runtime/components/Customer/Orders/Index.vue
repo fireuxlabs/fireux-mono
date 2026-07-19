@@ -145,6 +145,7 @@ const {
 const statusLabels: Record<KitchenOrderStatus, string> = {
   pending_payment: 'Payment needed',
   pending_acceptance: 'Waiting for kitchen',
+  changes_requested: 'Kitchen requested a change',
   accepted: 'Kitchen accepted',
   ready: 'Ready',
   completed: 'Completed',
@@ -160,6 +161,7 @@ function statusLabel(status: KitchenOrderStatus, type: KitchenOrderType) {
 function statusColor(status: KitchenOrderStatus) {
   if (status === 'ready' || status === 'completed') return 'success' as const
   if (status === 'cancelled' || status === 'trashed') return 'error' as const
+  if (status === 'changes_requested') return 'warning' as const
   if (status === 'pending_payment') return 'warning' as const
   return 'primary' as const
 }

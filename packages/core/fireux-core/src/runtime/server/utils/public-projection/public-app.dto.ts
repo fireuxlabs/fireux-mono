@@ -115,7 +115,6 @@ export function projectPublicApp(
     app_name: asTrimmedString(source.app_name),
     app_short_name: asTrimmedString(source.app_short_name),
     role: asAppRole(source.role),
-    ecosystem: asTrimmedString(source.ecosystem),
     tagline: asTrimmedString(source.tagline),
     description: asTrimmedString(source.description),
     short_bio: asTrimmedString(source.short_bio),
@@ -158,7 +157,7 @@ export function toAppDirectoryEntry(app: PublicAppDto): AppDirectoryEntry {
     tagline: app.tagline,
     description: app.description,
     short_bio: app.short_bio,
-    canonical_url: `/apps/${encodeURIComponent(slug)}`,
+    detail_url: `/apps/${encodeURIComponent(slug)}`,
     derived: {
       user_count: app.derived.user_count,
     },
@@ -167,6 +166,7 @@ export function toAppDirectoryEntry(app: PublicAppDto): AppDirectoryEntry {
       thumbnail_url: app.media.thumbnail_url,
       wordmark_light_url: app.media.wordmark_light_url,
       wordmark_dark_url: app.media.wordmark_dark_url,
+      cover_url: app.media.cover_url,
     },
   }
 }

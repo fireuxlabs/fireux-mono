@@ -13,9 +13,9 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Registry collection: <code>apps</code>.</li>
-          <li>Directory shape: <code>{ id, name, ecosystem, role, src, text, href }</code>.</li>
-          <li>Role controls global/tenant linking behavior for app directory cards.</li>
+          <li>Canonical records live in the owning Project/Ecosystem database.</li>
+          <li>FireUX reads an allowlisted <code>AppDirectoryEntry</code> projection.</li>
+          <li><code>project_id</code> and <code>ecosystem_id</code> express relationships; role does not infer them.</li>
         </ul>
       </UCard>
 
@@ -26,12 +26,12 @@
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/registry</p>
-            <p class="text-dimmed">Read registry app rows for operational audits.</p>
+            <p class="font-mono">GET /api/public/directory</p>
+            <p class="text-dimmed">Read the shared FireUX App and Ecosystem directory projections.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">POST /api/registry</p>
-            <p class="text-dimmed">Create/update app rows with type <code>app</code>.</p>
+            <p class="font-mono">GET/POST /api/registry · retired</p>
+            <p class="text-dimmed">Direct writes are rejected; publication belongs to the projection pipeline.</p>
           </div>
         </div>
       </UCard>

@@ -46,7 +46,6 @@ type MemberRow = {
   id: string
   role: 'admin' | 'user'
   display_name: string
-  email: string | null
 }
 
 defineProps<{

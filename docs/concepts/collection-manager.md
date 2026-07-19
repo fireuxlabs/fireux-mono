@@ -1,6 +1,6 @@
 Collection manager map
 Updated: 2026-07-19
-Ref: a6fb7062d
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -43,9 +43,6 @@ Root index manager classes:
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
 Root Simple Collection Manager members:
-- `App`.
-- `Ecosystem`.
-- `Project`.
 - `Menu`.
 - `Place`.
 - `Blog`.
@@ -61,6 +58,9 @@ Root Synced Snapshot Collection Manager members:
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
 Root Projected Collection Manager members:
+- `App` receives one named controller: owning Ecosystem projection or FireUX
+  platform directory projection.
+- `Ecosystem` receives the FireUX platform directory controller.
 - `User` uses a public users API so raw identity/private user fields do not become public browse data.
 
 Snapshot ownership rule:
@@ -72,7 +72,8 @@ Snapshot ownership rule:
 
 Source contract:
 - `XCollectionManager` belongs to `/xs` root/public browse surfaces.
-- Consumers mount `XCollectionManager` directly with no source params.
+- Boring self-owned managers mount directly. Authority-sensitive App and
+  Ecosystem pages pass one named controller, never a raw collection prop.
 - The manager fetches its own public/root collection and should not hydrate internally.
 - A route-policy controller is a narrow accepted delta when the route must use
   the same bounded request to choose an HTTP outcome before rendering. The
@@ -98,7 +99,11 @@ Data-state contract:
   show a non-fatal pagination error without replacing the existing list.
 
 Card handoff contract:
+<!-- Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: record the shared two-variant card seam. -->
 - `XCollectionManager` maps records through `useXInterface()`.
+- Two-variant managers delegate pill/cell selection, cell-overlay merging, and
+  invalid-card removal to `useCollectionVariantCards`; data authority, search,
+  copy, filters, actions, list components, and rendering remain domain-owned.
 - `XCollectionManager` computes `linkEnabled = computed(() => props.link !== false)`.
 - `XCollectionManager` passes cards into `XCardsPill` and `XCardsCell` with `v-bind="card"` plus `:link="linkEnabled"`.
 - `XCardsPill` and `XCardsCell` receive direct card fields, not a wrapped `card` prop.
@@ -123,7 +128,8 @@ Debug contract:
 - Do not mix stored/public surface fields with `useXInterface()` card output in one flat JSON array.
 
 Current source-mode snapshot:
-- Root index manager today: `App`, `Ecosystem`, `User`, `Project`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Customer`, `Driver`, `Agent`, `Professional`.
+- Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Customer`, `Driver`, `Agent`, `Professional`.
+- Project is a private FireUX console target, not a public collection manager.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
@@ -139,7 +145,8 @@ Working rule:
 - Root/public collection rows are self-contained for list/card display.
 - Source truth changes must be propagated by an explicit sync seam, currently `scripts/sync-self-contained-collection-rows.mjs`.
 - Hydration belongs on detail or named scoped/secure surfaces, not default collection managers.
-- Public API projection is reserved for privacy/security or server-only work, not as the default collection-manager source.
+- Public API projection is used when privacy, authority, publication, or
+  server-only work makes a raw collection the wrong public source.
 - The Vue manager should avoid manual per-row document reads.
 
 Guard-backed lock:
@@ -151,9 +158,6 @@ Root Simple Collection Managers
 
 | Manager | Snapshot source | Direction | Current note |
 | --- | --- | --- | --- |
-| `App` | None in manager | Self | Root index manager fetches apps. |
-| `Ecosystem` | None in manager | Self | Root index manager fetches ecosystems. |
-| `Project` | None in manager | Self/filter | Root index manager fetches projects and can apply a root `operator_ids` filter. |
 | `Menu` | Route-owned `/api/menus` controller | Self | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
 | `Blog` | None in manager | Self | Root index manager fetches blog posts. |
 | `Place` | None in manager | Self | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere. |
@@ -167,6 +171,8 @@ Root Projected Collection Managers
 
 | Manager | Projection source | Direction | Current note |
 | --- | --- | --- | --- |
+| `App` | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller. |
+| `Ecosystem` | FireUX `/api/public/directory` | Platform projection | App counts derive from active App projections, never `ecosystem.apps[]`. |
 | `User` | `/api/public/users` | Server projection | Public users index gets safe user DTOs, then maps them through `useUserInterface()`. |
 
 Root Synced Snapshot Collection Managers

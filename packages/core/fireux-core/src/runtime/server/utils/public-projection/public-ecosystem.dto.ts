@@ -39,7 +39,7 @@ export function projectEcosystemDirectoryEntry(
     // Narrow legacy adapter: old canonical rows used source_url.
     website_url:
       asTrimmedString(source.website_url) || asTrimmedString(source.source_url),
-    canonical_url: `/ecosystems/${encodeURIComponent(slug)}`,
+    detail_url: `/ecosystems/${encodeURIComponent(slug)}`,
     app_count: Math.max(0, Math.trunc(Number(options.appCount) || 0)),
   }
 }

@@ -68,6 +68,13 @@ const baseServerHandlers = [
     handler:
       './runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post',
   },
+  // 2026-07-19 15:28 CEST: Register the customer-owned response on the same canonical Menu Order route family; do not fork a customer Order API.
+  {
+    route: '/api/menus/:menuId/orders/:orderId/customer-response',
+    method: 'post',
+    handler:
+      './runtime/server/api/menus/[menuId]/orders/[orderId]/customer-response.post',
+  },
   {
     route: '/api/menus/payments/stripe-webhook',
     method: 'post',

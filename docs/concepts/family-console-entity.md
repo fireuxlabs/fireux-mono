@@ -1,6 +1,6 @@
 Console entity family map
 Updated: 2026-07-19
-Ref: a6fb7062d
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -49,9 +49,12 @@ Different:
 - Project is the root-only exception. It relates to root App and Ecosystem
   entities rather than owning an app-scoped Project record or kitchen-style
   inventory operations.
-- Project keeps explicit root operator authority for the current console. It
-  does not infer access from App or domain teams, and has no Project team
-  lifecycle today.
+- Project is a read-only FireUX control-plane console today. Every retained
+  route requires current FireUX App admin, and collection reads pass through
+  `/api/internal/control/projects`; there is no `project_ids`, root operator
+  list, Project team page, or client Project mutation scaffold.
+- Apps and Ecosystems displayed under Project point inward with `project_id`;
+  Project stores no singular inverse links.
 
 Shared component naming:
 - `ConsoleXIndex`

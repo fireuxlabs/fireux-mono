@@ -14,7 +14,7 @@
 
     <div v-else class="receiving-reject__form">
       <header class="receiving-reject__header">
-        <strong>Reject order</strong>
+        <strong>Send back to customer</strong>
         <UButton
           color="neutral"
           variant="ghost"
@@ -29,7 +29,7 @@
       <UTextarea
         v-model="note"
         :rows="3"
-        placeholder="Tell the guest why this order cannot be accepted."
+        placeholder="Tell the customer what needs to change."
         :disabled="!canInteract"
       />
 
@@ -38,7 +38,7 @@
           color="error"
           block
           icon="i-lucide-send"
-          label="Send rejection"
+          label="Send back"
           :disabled="!canReject"
           :loading="rejecting"
           @click="reject"

@@ -19,10 +19,10 @@ export type EcosystemSurface = {
   slug?: string
   description?: string
   image_url?: string
+  website_url?: string
+  /** Narrow legacy read adapter; canonical field is website_url. */
   source_url?: string
   status?: EcosystemStatus | string
-  team?: string
-  apps?: string[] | number | unknown[]
   created?: Ecosystem['created']
   updated?: Ecosystem['updated']
 }
@@ -60,32 +60,20 @@ export function useEcosystemInterface() {
     name: string
     description: string
     status: string
-    team: string
     appCount: number
     imageUrl: string
+    websiteUrl: string
   }
 
-  type EcosystemProfile = EcosystemPreview & {
-    appLabels: string[]
-  }
+  type EcosystemProfile = EcosystemPreview
 
   const resolveAppCount = (
     target?: EcosystemInterfaceInput | null | undefined
   ): number => {
     if (!target) return 0
 
-    if (Array.isArray(target.apps)) return target.apps.length
     if (Number.isFinite(Number(target.appCount))) return Number(target.appCount)
-    if (Number.isFinite(Number(target.apps))) return Number(target.apps)
     return 0
-  }
-
-  const resolveAppLabels = (
-    target?: EcosystemInterfaceInput | null | undefined
-  ): string[] => {
-    if (!Array.isArray(target?.apps)) return []
-
-    return target!.apps.map((entry) => safeString(entry)).filter(Boolean)
   }
 
   function surface<T extends object = Partial<EcosystemSurface>>(
@@ -115,13 +103,7 @@ export function useEcosystemInterface() {
 
     if (!resolvedId || !(key || name)) return null
 
-    const apps = Array.isArray(target.apps)
-      ? target.apps.length
-      : Number.isFinite(Number(target.appCount))
-        ? Number(target.appCount)
-        : Number.isFinite(Number(target.apps))
-          ? Number(target.apps)
-          : 0
+    const apps = resolveAppCount(target)
 
     return {
       id: resolvedId,
@@ -131,12 +113,7 @@ export function useEcosystemInterface() {
       avatarText: safeString(target.text) || name || key,
       title: name || key || 'Untitled ecosystem',
       subtitle: slug || key || '',
-      meta: [
-        safeString(target.team) ? `team: ${safeString(target.team)}` : '',
-        `apps: ${apps}`,
-      ]
-        .filter(Boolean)
-        .join(' · '),
+      meta: `${apps} app${apps === 1 ? '' : 's'}`,
       badges: [
         labelize(safeString(target.status)),
         `${apps} app${apps === 1 ? '' : 's'}`,
@@ -170,9 +147,9 @@ export function useEcosystemInterface() {
       name: safeString(target.name || base.title),
       description: safeString(target.description),
       status: safeString(target.status),
-      team: safeString(target.team),
       appCount: resolveAppCount(target),
       imageUrl: base.imageUrl,
+      websiteUrl: safeString(target.website_url || target.source_url),
     }
   }
 
@@ -182,10 +159,7 @@ export function useEcosystemInterface() {
     const base = preview(target)
     if (!base || !target) return null
 
-    return {
-      ...base,
-      appLabels: resolveAppLabels(target),
-    }
+    return base
   }
 
   return {

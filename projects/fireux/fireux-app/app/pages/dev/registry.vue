@@ -1,8 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Dev · Registry Snapshot"
-      description="Copy modules, apps, and ecosystems directly from the Firestore registry collections."
+      title="Dev · Directory Snapshot"
+      description="Inspect the allowlisted public App and Ecosystem directory projection."
     />
 
     <UPageBody class="pagebody">
@@ -13,12 +13,12 @@
               <p
                 class="text-xs font-semibold uppercase tracking-wide text-muted"
               >
-                Registry utilities
+                Directory utilities
               </p>
               <h2
                 class="text-lg font-semibold text-gray-900 dark:text-gray-100"
               >
-                Copy JSON from Firestore
+                Copy projected JSON
               </h2>
             </div>
             <div class="flex flex-wrap items-center gap-2">
@@ -45,14 +45,14 @@
         </template>
 
         <p class="text-sm text-muted">
-          Uses the <code>/api/registry</code> endpoint that powers scripts like
-          <code>pnpm registry:backfill</code>. Need documentation instead of
-          payloads? Visit
+          Uses <code>/api/public/directory</code>. The legacy Firestore registry
+          API is retired because it mixed package metadata with entity copies.
+          For the authority notes, visit
           <NuxtLink
             class="text-primary-500 hover:underline"
             to="/developer/registry"
           >
-            Developer · Registry Docs
+            Developer · Directory Docs
           </NuxtLink>
           for the narrative workflow.
         </p>
@@ -62,7 +62,7 @@
           class="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200"
         >
           <p class="font-semibold text-red-100">
-            Unable to load registry data.
+            Unable to load directory data.
           </p>
           <p v-text="errorMessage"></p>
         </div>
@@ -75,22 +75,18 @@
             class="text-lg text-primary-500"
             aria-hidden="true"
           />
-          <span>Loading registry snapshot…</span>
+          <span>Loading directory snapshot…</span>
         </div>
         <DevJsonPanel
           v-else-if="snapshot"
           class="mt-4"
-          title="Registry JSON"
-          context="dev registry"
+          title="Directory JSON"
+          context="public directory projection"
           :data="snapshot"
           :default-open="true"
         />
         <p v-else class="mt-4 text-sm text-muted">
-          No registry data available. Run
-          <code>pnpm registry:backfill</code>
-          or
-          <code>pnpm registry:register</code>
-          to seed Firestore.
+          No public directory entries are available.
         </p>
 
         <template #footer>
@@ -113,22 +109,20 @@
 import { useFetch } from 'nuxt/app'
 import { computed, ref, watch } from 'vue'
 
-type RegistryResponse = {
+type DirectoryResponse = {
   ok: boolean
   generatedAt: string | null
-  modules: unknown[]
   apps: unknown[]
   ecosystems: unknown[]
 }
 
-const { data, pending, error, refresh } = await useFetch<RegistryResponse>(
-  '/api/registry',
+const { data, pending, error, refresh } = await useFetch<DirectoryResponse>(
+  '/api/public/directory',
   {
   server: true,
   default: () => ({
     ok: false,
     generatedAt: null,
-    modules: [],
     apps: [],
     ecosystems: [],
   }),
@@ -189,17 +183,17 @@ async function copyJson() {
 }
 
 useSeoMeta({
-  title: 'FireUX Registry Snapshot',
+  title: 'FireUX Directory Snapshot',
   description:
-    'Copy every registry document (apps, modules, ecosystems) as JSON.',
+    'Inspect the allowlisted FireUX App and Ecosystem directory projection.',
 })
 
 definePageMeta({
   layout: 'dev',
-  title: 'Dev · Registry',
+  title: 'Dev · Directory',
   nav: {
     key: 'dev-fireux-registry',
-    label: 'Registry Snapshot',
+    label: 'Directory Snapshot',
     icon: 'i-lucide-database',
     desktop: true,
     group: 'core',

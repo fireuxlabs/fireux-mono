@@ -86,6 +86,8 @@
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
@@ -149,17 +151,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((entry) =>
-      variant.value === 'cell'
-        ? makeCell(entry as Driver & { user?: any })
-        : makePill(entry as Driver & { user?: any })
-    )
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

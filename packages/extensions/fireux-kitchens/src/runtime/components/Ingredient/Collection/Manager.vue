@@ -100,6 +100,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed } from 'vue'
 import { useIngredientCollection } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 import {
@@ -140,10 +142,16 @@ const props = withDefaults(
 )
 
 const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
+  interface: makeIngredientCard,
+  pill: makeIngredientPill,
+  cell: makeIngredientCell,
 } = useIngredientInterface()
+const makeCard = (ingredient: IngredientInterfaceItem) =>
+  withIngredientRoute(makeIngredientCard(ingredient))
+const makePill = (ingredient: IngredientInterfaceItem) =>
+  withIngredientRoute(makeIngredientPill(ingredient))
+const makeCell = (ingredient: IngredientInterfaceItem) =>
+  withIngredientRoute(makeIngredientCell(ingredient))
 
 const fetched = useIngredientCollection()
 const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value ?? [])
@@ -189,27 +197,17 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (ingredient: IngredientInterfaceItem) =>
-      withIngredientRoute(makeCard(ingredient)),
+    makeCard,
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((ingredient) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(ingredient)
-        const cell = makeCell(ingredient)
-        if (!base || !cell) return null
-        return withIngredientRoute({ ...base, ...cell })
-      }
-
-      return withIngredientRoute(makePill(ingredient))
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

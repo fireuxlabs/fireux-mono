@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Modules: Learn More (Dev)"
-      description="Technical reference for module records, runtime usage, and registry endpoints."
+      description="Technical reference for module records and runtime usage."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -13,7 +13,7 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Registry collection: <code>modules</code>.</li>
+          <li>Package metadata: tracked package <code>registry.json</code> files.</li>
           <li>Module index route reads product records filtered by <code>product_type = module</code>.</li>
           <li>Module detail route is exposed as <code>/modules/[id]</code>.</li>
         </ul>
@@ -21,17 +21,13 @@
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Primary endpoints</h2>
+          <h2 class="text-lg font-semibold">Authority boundary</h2>
         </template>
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/registry</p>
-            <p class="text-dimmed">Read module registry rows for compatibility checks.</p>
-          </div>
-          <div class="fx-inset-panel">
-            <p class="font-mono">POST /api/registry</p>
-            <p class="text-dimmed">Create/update module rows with type <code>module</code>.</p>
+            <p class="font-mono">GET/POST /api/registry · retired</p>
+            <p class="text-dimmed">Module package metadata is not App/Ecosystem directory truth.</p>
           </div>
         </div>
       </UCard>
@@ -53,6 +49,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Modules: Learn More (Dev) · FireUX',
-  description: 'Technical reference for FireUX module records, routes, and integration endpoints.',
+  description: 'Technical reference for FireUX module records and routes.',
 })
 </script>

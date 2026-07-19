@@ -55,7 +55,11 @@ export type AppSurfaceParts<TApp extends object = Partial<App>> = {
   app?: TApp | null | undefined
 }
 
-export type AppViewSource = Partial<App>
+export type AppViewSource = Partial<App> & {
+  detail_url?: string
+  /** Narrow legacy read adapter. Canonical identity is ecosystem_id. */
+  ecosystem?: string
+}
 
 function safeMedia(app: AppViewSource) {
   return (
@@ -124,10 +128,13 @@ export function useAppInterface(
     })
     const derived = safeDerived(app)
     const id = safeString(app.id).trim()
+    const ecosystemId = safeString(app.ecosystem_id || app.ecosystem)
 
     return {
       id,
-      to: id ? `/${AppStorage.collection}/${encodeURIComponent(id)}` : '',
+      to:
+        safeString(app.detail_url) ||
+        (id ? `/${AppStorage.collection}/${encodeURIComponent(id)}` : ''),
 
       imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
@@ -135,10 +142,10 @@ export function useAppInterface(
       thumbnailUrl: safeString(media.thumbnailUrl),
 
       title: safeString(app.app_name),
-      subtitle: safeString(app.tagline) || safeString(app.ecosystem),
+      subtitle: safeString(app.tagline) || ecosystemId,
       displayName: safeString(app.app_name),
-      ecosystem: safeString(app.ecosystem),
-      badges: [app.role, app.ecosystem]
+      ecosystem: ecosystemId,
+      badges: [app.role, ecosystemId]
         .map((value) => safeString(value))
         .filter(Boolean),
 

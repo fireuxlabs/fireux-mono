@@ -11,11 +11,6 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 }
 
-function resolveRuntimeProjectId(): string {
-  const runtime = useRuntimeConfig()
-  return normalizeString(runtime.public?.firebaseEcosystem?.firebase?.projectId)
-}
-
 function resolveRuntimeDatabaseId(): string {
   const runtime = useRuntimeConfig()
   return normalizeString(runtime.public?.firebaseEcosystem?.firebase?.databaseId)
@@ -60,7 +55,6 @@ export function buildAppEnsureCreateInput(fireux: FireuxConfig): AppCreateInput 
     app_name: fireux.appName,
     app_short_name: fireux.appShortName,
     role: fireux.role,
-    ecosystem: fireux.ecosystemId,
     social_links: {
       website: fireux.siteUrl,
     },
@@ -82,20 +76,17 @@ export function buildAppEnsureRepairPatch(
 ) {
   const patch: Record<string, unknown> = {}
   const brandAssets = useAssets()
-  const runtimeProjectId = resolveRuntimeProjectId()
   const projectId = normalizeString(fireux.projectId)
   const ecosystemId = normalizeString(fireux.ecosystemId)
   const databaseId = resolveRuntimeDatabaseId()
 
   const ensureStringFields: Record<string, string> = {
     id: fireux.appId,
-    ...(ecosystemId ? { ecosystem_id: ecosystemId } : {}),
     slug: fireux.appId,
     status: 'active',
     app_name: fireux.appName,
     app_short_name: fireux.appShortName,
     role: fireux.role,
-    ...(ecosystemId ? { ecosystem: ecosystemId } : {}),
   }
 
   for (const [key, value] of Object.entries(ensureStringFields)) {
@@ -104,9 +95,20 @@ export function buildAppEnsureRepairPatch(
     }
   }
 
-  const existingProjectId = normalizeString(existing.project_id)
-  if (projectId && (!existingProjectId || existingProjectId === runtimeProjectId)) {
+  if (projectId && normalizeString(existing.project_id) !== projectId) {
     patch.project_id = projectId
+  }
+
+  if (ecosystemId) {
+    if (normalizeString(existing.ecosystem_id) !== ecosystemId) {
+      patch.ecosystem_id = ecosystemId
+    }
+  } else if ('ecosystem_id' in existing) {
+    patch.ecosystem_id = deleteField()
+  }
+
+  for (const legacyField of ['ecosystem', 'team']) {
+    if (legacyField in existing) patch[legacyField] = deleteField()
   }
 
   if (databaseId && !normalizeString(existing.database_id)) {
@@ -145,7 +147,6 @@ export function buildAppEnsureRepairPatch(
   }
 
   for (const key of [
-    'team',
     'tagline',
     'description',
     'short_bio',

@@ -36,11 +36,13 @@ type UseMenuOrderTrackingSessionOptions = {
 export type MenuOrderTrackingSession<
   TStatus extends MenuOrderTrackingStatus = MenuOrderTrackingStatus,
 > = {
+  acknowledge: () => void
   clear: () => void
   fulfilmentLabel: Ref<string>
   paymentLabel: Ref<string>
   resetMemory: () => void
   restore: () => boolean
+  isAcknowledged: (orderId: unknown) => boolean
   save: () => void
   sentOrder: Ref<CreatedMenuOrder | null>
   status: Ref<TStatus | null>
@@ -56,6 +58,7 @@ type StoredMenuOrderTrackingSession = {
 }
 
 const storagePrefix = 'fireux:menu-order-tracking:'
+const acknowledgementPrefix = 'fireux:menu-order-acknowledged:'
 const channels = new Set<KitchenOrderChannel>([
   'menu',
   'table_qr',
@@ -135,6 +138,28 @@ export function useMenuOrderTrackingSession<
     resetMemory()
   }
 
+  function acknowledge() {
+    const orderId = text(sentOrder.value?.id)
+    if (import.meta.client && orderId) {
+      window.localStorage.setItem(
+        `${acknowledgementPrefix}${encodeURIComponent(orderId)}`,
+        new Date().toISOString()
+      )
+    }
+    clear()
+  }
+
+  function isAcknowledged(orderId: unknown) {
+    const id = text(orderId)
+    return Boolean(
+      import.meta.client &&
+      id &&
+      window.localStorage.getItem(
+        `${acknowledgementPrefix}${encodeURIComponent(id)}`
+      )
+    )
+  }
+
   function resetMemory() {
     sentOrder.value = null
     status.value = null
@@ -143,11 +168,13 @@ export function useMenuOrderTrackingSession<
   }
 
   return {
+    acknowledge,
     clear,
     fulfilmentLabel,
     paymentLabel,
     resetMemory,
     restore,
+    isAcknowledged,
     save,
     sentOrder,
     status,

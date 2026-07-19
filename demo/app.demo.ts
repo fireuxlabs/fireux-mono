@@ -43,7 +43,8 @@ export const demoAppList: App[] = [
     app_name: 'Rank Lens',
     app_short_name: 'Rank Lens',
     role: 'global',
-    ecosystem: 'northstar',
+    project_id: 'northstar',
+    ecosystem_id: 'northstar',
     tagline: 'Search visibility planning and audit workflows.',
     description:
       'Northstar Works SEO system for audits, keyword planning, opportunity mapping, and search visibility reviews.',
@@ -86,7 +87,8 @@ export const demoAppList: App[] = [
     app_name: 'Line Pass',
     app_short_name: 'Line Pass',
     role: 'global',
-    ecosystem: 'harbor',
+    project_id: 'harbor',
+    ecosystem_id: 'harbor',
     tagline: 'Kitchen execution, prep cadence, and service flow.',
     description:
       'Harbor Grid operations app for kitchen stations, prep runs, service rhythm, and shift visibility.',
@@ -120,7 +122,8 @@ export const demoAppList: App[] = [
     app_name: 'Site Ledger',
     app_short_name: 'Site Ledger',
     role: 'global',
-    ecosystem: 'cedar',
+    project_id: 'cedar',
+    ecosystem_id: 'cedar',
     tagline: 'Property records, site oversight, and asset operations.',
     description:
       'Cedar Loop property operations app for portfolio records, site context, and asset visibility.',

@@ -47,7 +47,7 @@
         state="empty"
         surface="bare"
         title="No Project targets found"
-        description="Projects you can access will appear here."
+        description="FireUX control-plane Projects will appear here."
       />
     </UCard>
   </section>

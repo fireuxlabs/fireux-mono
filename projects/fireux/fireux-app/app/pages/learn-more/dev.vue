@@ -28,16 +28,12 @@
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/internal/landing/directory</p>
+            <p class="font-mono">GET /api/public/directory</p>
             <p class="text-dimmed">Aggregated ecosystem + app rows used by public directory surfaces.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/registry</p>
-            <p class="text-dimmed">Reads registry collections: modules, apps, ecosystems.</p>
-          </div>
-          <div class="fx-inset-panel">
-            <p class="font-mono">POST /api/registry</p>
-            <p class="text-dimmed">Writes registry records (module, app, ecosystem) for controlled setup flows.</p>
+            <p class="font-mono">GET/POST /api/registry · retired</p>
+            <p class="text-dimmed">The mixed registry database is no longer an entity authority or public API.</p>
           </div>
           <div class="fx-inset-panel">
             <p class="font-mono">GET /api/docs-manifest</p>

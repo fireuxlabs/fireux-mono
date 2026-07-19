@@ -5,7 +5,7 @@ import type { FireuxStamped } from './meta.model'
 import type { UserNotification } from './supporting/user'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Entity map: docs/concepts/entities.md
  *
  * Family: Identity
  * Storage: public identity, private account, and app membership records

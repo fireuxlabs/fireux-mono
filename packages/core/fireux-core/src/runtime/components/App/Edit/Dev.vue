@@ -91,11 +91,7 @@
                   <span class="font-mono">status</span>
                 </li>
                 <li>
-                  <span class="font-mono">team</span>,
                   <span class="font-mono">role</span>,
-                  <span class="font-mono">ecosystem</span>
-                </li>
-                <li>
                   <span class="font-mono">app_name</span>,
                   <span class="font-mono">app_short_name</span>
                 </li>

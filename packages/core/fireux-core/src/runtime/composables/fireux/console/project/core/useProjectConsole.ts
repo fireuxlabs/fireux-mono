@@ -27,7 +27,7 @@ type UseProjectConsoleOptions = {
  * /console/project selected runtime.
  * Access is gated by the current FireUX App admin role at the route boundary.
  * Project has no separate membership or operator model today.
- * Project console can manage related App and Ecosystem surfaces without redefining their stored identity.
+ * Project console can inspect related App and Ecosystem surfaces without redefining their stored identity.
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
  */

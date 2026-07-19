@@ -79,15 +79,11 @@ export const AppModel = {
   database_id: '',
   slug: '',
   status: 'active' as AppStatus,
-  /** @deprecated Ambiguous legacy display metadata; not part of public projection canon. */
-  team: '',
 
   // Identity + brand
   app_name: '',
   app_short_name: '',
   role: '' as AppRole,
-  /** @deprecated Use ecosystem_id for identity; this legacy field is display-only. */
-  ecosystem: '',
 
   tagline: '',
   description: '',
@@ -134,7 +130,10 @@ export const AppModel = {
   },
 } as const
 
-export type AppModel = WidenLiteral<typeof AppModel>
+type AppModelShape = WidenLiteral<typeof AppModel>
+export type AppModel = Omit<AppModelShape, 'ecosystem_id'> & {
+  ecosystem_id?: string
+}
 export type App = AppModel
 
 /**
@@ -186,9 +185,7 @@ export const AppFieldGroups = {
     'ecosystem_id',
     'slug',
     'status',
-    'team',
     'role',
-    'ecosystem',
     'app_name',
     'app_short_name',
   ],
@@ -214,6 +211,5 @@ export type AppControlField =
 export type AppSystemField =
   typeof AppFieldGroups.system[number]
 
-export type AppCreateInput = Omit<App, 'created' | 'updated' | 'ecosystem_id'> &
-  Partial<Pick<App, 'ecosystem_id'>>
+export type AppCreateInput = Omit<App, 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

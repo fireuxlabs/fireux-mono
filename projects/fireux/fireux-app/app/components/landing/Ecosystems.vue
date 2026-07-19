@@ -18,8 +18,8 @@
         :text="ecosystem.name"
       >
         <a
-          v-if="ecosystem.canonical_url"
-          :href="ecosystem.canonical_url"
+          v-if="ecosystem.detail_url"
+          :href="ecosystem.detail_url"
           :aria-label="`Open ${ecosystem.name}`"
           class="inline-flex items-center gap-2 rounded-xl border border-default bg-default/70 px-3 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >

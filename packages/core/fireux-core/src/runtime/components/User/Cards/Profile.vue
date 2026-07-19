@@ -38,18 +38,19 @@
         </div>
       </section>
 
-      <section v-if="showMeta && (appCards.length || appsLabel)" class="profile__section">
+      <section v-if="showMeta && (appIds.length || appsLabel)" class="profile__section">
         <div class="profile__label">Apps</div>
         <div class="profile__value">
-          <div v-if="appCards.length" class="profile__apps">
-            <AppCardsPill
-              v-for="appCard in appCards"
-              :key="appCard.id"
-              v-bind="appCard"
-              :link="Boolean(appCard.to)"
-              :show-badges="false"
-              class="profile__app-pill"
-            />
+          <div v-if="appIds.length" class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="appId in appIds"
+              :key="appId"
+              color="neutral"
+              variant="soft"
+              size="xs"
+            >
+              {{ appId }}
+            </UBadge>
           </div>
           <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
@@ -101,8 +102,6 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 
-import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { formatFirestoreTimestamp } from '../../../utils/formatTimestamp'
 
 type Props = {
@@ -152,9 +151,6 @@ const props = withDefaults(defineProps<Props>(), {
   showDetails: true,
 })
 
-const { apps } = useAppCollection()
-const { pill: appToPill } = useAppInterface()
-
 const profileSummary = computed(() =>
   String(props.bioOverride || props.summary || props.bio || '').trim()
 )
@@ -164,16 +160,6 @@ const appIds = computed(() => {
   return Array.from(
     new Set(rawIds.map((id) => String(id || '').trim()).filter(Boolean))
   )
-})
-
-const appCards = computed(() => {
-  if (!appIds.value.length) return []
-
-  const ids = new Set(appIds.value)
-  return (apps.value ?? [])
-    .filter((app) => ids.has(String(app.id || '').trim()))
-    .map((app) => appToPill(app as any))
-    .filter((card): card is NonNullable<typeof card> => Boolean(card))
 })
 
 const createdAtLabel = computed(() => formatTimestampLabel(props.user?.created?.at))
@@ -188,14 +174,3 @@ function formatTimestampLabel(value: unknown): string {
   )
 }
 </script>
-
-<style scoped>
-.profile__apps {
-  display: grid;
-  gap: calc(var(--spacing) * 2);
-}
-
-.profile__app-pill {
-  max-width: 22rem;
-}
-</style>

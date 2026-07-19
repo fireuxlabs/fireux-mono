@@ -42,6 +42,7 @@
             </strong>
 
             <button
+              v-if="removable"
               type="button"
               class="menu-order-basket-dialog__remove"
               data-menu-action="remove-basket-line"
@@ -93,14 +94,18 @@ import { computed } from 'vue'
 import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuOrderBasketLine } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 
-const props = defineProps<{
-  actionLabel?: string
-  currencyCode: string
-  lines: MenuOrderBasketLine[]
-  open: boolean
-  selectionLabel?: string
-  totalLabel: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    actionLabel?: string
+    currencyCode: string
+    lines: MenuOrderBasketLine[]
+    open: boolean
+    removable?: boolean
+    selectionLabel?: string
+    totalLabel: string
+  }>(),
+  { removable: true }
+)
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void

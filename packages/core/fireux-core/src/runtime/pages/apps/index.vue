@@ -5,7 +5,10 @@
       <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
       <AppCTA :controller="appsController" />
       <AppCollectionMine :controller="appsController" />
-      <AppCollectionManager :controller="appsController" />
+      <AppCollectionManager
+        :controller="appsController"
+        title="Ecosystem directory"
+      />
     </UPageBody>
   </UPage>
 </template>

@@ -106,6 +106,16 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     lineSequence = 0
   }
 
+  function replace(nextLines: MenuOrderBasketLine[]) {
+    lines.value = nextLines.map((line, index) => ({
+      ...line,
+      id: line.id || `${line.configurationKey}:${index + 1}`,
+      addOns: [...line.addOns],
+      variant: line.variant ? { ...line.variant } : null,
+    }))
+    lineSequence = lines.value.length
+  }
+
   function remove(lineId: string) {
     const id = canonicalText(lineId)
     if (!id) return false
@@ -218,6 +228,7 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     totalLabel,
     add,
     clear,
+    replace,
     remove,
   }
 }

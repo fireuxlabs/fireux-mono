@@ -83,14 +83,21 @@ Current display rule:
   minimal browser tracking session restores the safe Order reference, current
   status, and fulfilment/payment labels across refresh and equivalent root or
   Kitchen-scoped routes. It is keyed by canonical app, Kitchen, Menu, and order
-  type; it does not persist customer/contact input or basket contents. Pay now
-  uses the existing online-card checkout only when that method is configured.
+  type. When that local tracker is absent, a signed-in guest evaluates the newest
+  matching Order through the bounded canonical customer-order projection and
+  restores it only while it is unresolved; older anomalous test or service
+  records never leapfrog that newest result. The
+  browser storage is not the lifecycle authority. The session does
+  not persist customer/contact input or basket contents. Pay now uses the
+  existing online-card checkout only when that method is configured.
 - A signed-in guest order atomically creates a lightweight link at
   `customers/{userId}/orders/{orderId}` beside the Kitchen order. The link
   records only immutable source identity; the Kitchen order remains the sole
   lifecycle authority. The customer dashboard reads a bounded link page and
   resolves its Kitchen orders and deduplicated public Kitchen identities with
-  bounded batch reads. Ready, completed, and cancelled orders therefore remain
+  bounded batch reads. That customer-owned projection includes the canonical
+  Order-line snapshots needed to reconstruct amendment review without making a
+  browser basket authoritative. Ready, completed, and cancelled orders therefore remain
   visible with current Kitchen branding, without a second mutable order-status
   copy, per-card Kitchen reads, or a cross-Kitchen collection-group scan.
   While mounted and visible, the dashboard silently reconciles that bounded
@@ -276,14 +283,18 @@ Public order funnel spine:
   payment-timing selection to the canonical endpoint. The resolved handoff
   instructions remain visible through checkout and Collection status.
   It polls the existing order-status endpoint until the Kitchen accepts,
-  rejects, marks ready, or completes the order. All surface funnels must reuse
+  requests a customer change, marks ready, or completes the order. All surface funnels must reuse
   the canonical Menu/Order session boundary rather than create parallel draft
   or tracking storage. Its
   `useMenuOrderTrackingSession` stores only safe post-submit tracking state and
   keeps the ordering catalogue blocked while that submitted Order is unresolved.
-  A Kitchen rejection remains visible after navigation or refresh until the
-  guest explicitly acknowledges it; only then may the session clear and expose
-  a new basket. Configured Pay now hands off to the existing secure checkout.
+  A Kitchen send-back moves the same Order to `changes_requested` and remains
+  visible after navigation or refresh. It never cancels on the customer's
+  behalf: the customer sees a personal greeting and must either cancel, which
+  clears the active funnel, or amend. Amendment restores the submitted items
+  into basket review from the canonical Order projection before another time is
+  validated against the same Collection policy and that Order returns to
+  `pending_acceptance`. Configured Pay now hands off to the existing secure checkout.
   Delivery and Pre-order submission remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.
@@ -313,7 +324,7 @@ Public order funnel spine:
   rather than reusing the active ticket.
 - The Kitchen Orders console does not expose a generic Create/Edit surface.
   Customer funnels and authenticated Staff POS channels create Orders;
-  kitchen controls issue named lifecycle commands such as Accept, Reject,
+  kitchen controls issue named lifecycle commands such as Accept, Send back,
   Ready, Return, and Send. If a later Order field earns direct editing, use the
   shared profile-editable structure for an atomic, permissioned, auditable
   field update rather than treating the whole Order as a free-form document.

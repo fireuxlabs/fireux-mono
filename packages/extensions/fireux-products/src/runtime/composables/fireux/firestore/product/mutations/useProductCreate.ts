@@ -229,7 +229,9 @@ export function useProductCreate() {
       }
 
       const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
-      const sourceEcosystemId = normalizeString(payload.source_ecosystem_id || fireux.ecosystem)
+      const sourceEcosystemId = normalizeString(
+        payload.source_ecosystem_id || fireux.ecosystemId
+      )
       const ownerType = normalizeString(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem'))
       const ownerId = normalizeString(
         payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)

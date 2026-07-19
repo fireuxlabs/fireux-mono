@@ -20,8 +20,8 @@
         :text="app.app_name"
       >
         <a
-          v-if="app.canonical_url"
-          :href="app.canonical_url"
+          v-if="app.detail_url"
+          :href="app.detail_url"
           :aria-label="`Open ${app.app_name}`"
           class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >

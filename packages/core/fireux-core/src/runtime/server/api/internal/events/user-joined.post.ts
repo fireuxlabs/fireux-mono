@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const runtime = useRuntimeConfig()
   const appId = String(runtime.public?.fireux?.id || '').trim()
-  const ecosystemId = String(runtime.public?.fireux?.ecosystem || '').trim()
+  const ecosystemId = String(runtime.public?.fireux?.ecosystemId || '').trim()
 
   if (!appId) {
     throw createError({

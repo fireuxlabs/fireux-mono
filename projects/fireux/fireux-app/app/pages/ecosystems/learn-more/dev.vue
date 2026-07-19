@@ -13,9 +13,9 @@
         </template>
 
         <p class="text-sm text-dimmed">
-          Ecosystem documents are read from
-          <code>db.collections.ecosystems</code> and normalized for cards:
-          <code>{ key, name, team, apps, src, text, href }</code>.
+          Canonical Ecosystem documents are projected into an allowlisted
+          directory shape:
+          <code>{ id, slug, status, name, description, image_url, website_url, app_count }</code>.
         </p>
       </UCard>
 
@@ -26,22 +26,17 @@
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">Firestore collection: ecosystems</p>
+            <p class="font-mono">GET /api/public/directory</p>
             <p class="text-dimmed">
-              Primary source for <code>/ecosystems</code> entity index.
+              Shared platform projection for the landing page and
+              <code>/ecosystems</code>.
             </p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/registry</p>
+            <p class="font-mono">GET/POST /api/registry · retired</p>
             <p class="text-dimmed">
-              Reads registry docs (modules, apps, ecosystems) for audit/debug
-              flows.
-            </p>
-          </div>
-          <div class="fx-inset-panel">
-            <p class="font-mono">POST /api/registry</p>
-            <p class="text-dimmed">
-              Creates/updates ecosystem registry rows in controlled setup flows.
+              The mixed registry database is not an entity or directory
+              authority. Publication belongs to the projection pipeline.
             </p>
           </div>
         </div>

@@ -24,7 +24,7 @@ export function useCreateProductState() {
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
     id: '',
     source_app_id: tenantId,
-    source_ecosystem_id: useFireUXConfig().ecosystem,
+    source_ecosystem_id: useFireUXConfig().ecosystemId || '',
     owner_type: 'app',
     owner_id: tenantId,
     visibility: 'app',
@@ -45,7 +45,7 @@ export function useCreateProductState() {
     product.value = {
       id: '',
       source_app_id: tenantId,
-      source_ecosystem_id: useFireUXConfig().ecosystem,
+      source_ecosystem_id: useFireUXConfig().ecosystemId || '',
       owner_type: 'app',
       owner_id: tenantId,
       visibility: 'app',

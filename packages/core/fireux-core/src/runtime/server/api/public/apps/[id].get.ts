@@ -6,6 +6,7 @@ import {
   type H3Event,
 } from 'h3'
 import { AppStorage } from '../../../../models/core/app.model'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../utils/ids/path'
 import { projectPublicApp } from '../../../utils/public-projection/public-app.dto'
@@ -37,15 +38,20 @@ export default defineEventHandler(async (event: H3Event) => {
     ? ((doc.data() || {}) as Record<string, unknown>)
     : null
   const isPublic = asTrimmedString(raw?.status) === 'active'
+  const config = useFireUXConfig()
+  const ecosystemId = asTrimmedString(config.ecosystemId)
+  const belongsToOwner = ecosystemId
+    ? asTrimmedString(raw?.ecosystem_id) === ecosystemId
+    : doc?.id === config.appId
 
-  if (!raw || !isPublic) {
+  if (!raw || !isPublic || !belongsToOwner) {
     throw createError({
       statusCode: 404,
       statusMessage: 'App not found',
     })
   }
 
-  const app = projectPublicApp(raw, { id: doc.id })
+  const app = projectPublicApp(raw, { id: doc!.id })
   if (!app) {
     throw createError({
       statusCode: 404,

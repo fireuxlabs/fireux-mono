@@ -55,13 +55,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/FeaturedSlugsSelection.vue'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import {
   useAppInterface,
   type AppCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
 
-const { apps } = useAppCollection()
+const { apps } = usePlatformAppDirectory()
 const { cell: appCell } = useAppInterface()
 const clean = (value: unknown) => String(value ?? '').trim()
 

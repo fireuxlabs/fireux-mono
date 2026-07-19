@@ -277,13 +277,19 @@ Page composition note:
   required-field policy, shows configured Collection handoff instructions,
   groups configured
   settlement methods into Pay now or a surface-aware Pay later choice, posts through the canonical Menu Order endpoint,
-  and follows Kitchen acceptance, ready, rejection, and completion status on
+  and follows Kitchen acceptance, customer change requests, ready, and completion status on
   the current page. Configured Pay now starts the existing secure online-card
   checkout. The pipeline does not persist customer/contact input or basket
   contents, but its safe post-submit Order reference, display labels, and
   latest status restore across refresh and equivalent root/Kitchen routes. It
-  blocks a second basket while that Order is unresolved; a rejected Order must
-  be explicitly acknowledged before the tracking session clears. It does not
+  falls back to the bounded canonical customer-order projection for a signed-in
+  guest when the local tracker is absent, so browser storage never becomes the
+  lifecycle authority. It
+  blocks a second basket while that Order is unresolved. A Kitchen send-back
+  keeps the same Order alive in `changes_requested`; only the customer may
+  cancel it and clear the active funnel, or amend it through a canonical
+  Order-backed basket review before choosing another valid Collection time and
+  returning the same Order to Kitchen acceptance. It does not
   yet extend submission to Delivery or Pre-order. Collection can be paused
   independently of its hours and enabled state: the themed public doorway
   remains readable, ordering controls are replaced by its pause message, and

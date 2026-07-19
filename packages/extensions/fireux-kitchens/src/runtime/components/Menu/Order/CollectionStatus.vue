@@ -38,6 +38,32 @@
       {{ statusError }} We’ll keep trying.
     </p>
 
+    <p v-if="responseError" class="menu-order-collection-status__error">
+      {{ responseError }}
+    </p>
+
+    <div
+      v-if="changesRequested"
+      class="menu-order-collection-status__actions"
+    >
+      <button
+        type="button"
+        class="menu-order-collection-status__again"
+        :disabled="responding"
+        @click="$emit('cancel')"
+      >
+        Cancel order
+      </button>
+      <button
+        type="button"
+        class="menu-order-collection-status__primary"
+        :disabled="responding"
+        @click="$emit('amend')"
+      >
+        Amend order
+      </button>
+    </div>
+
     <button
       v-if="terminal"
       type="button"
@@ -56,17 +82,25 @@ import type { MenuCollectionOrderStatus } from '../../../composables/fireux/menu
 
 const props = defineProps<{
   collectionLabel: string
+  customerName?: string
   handoffInstructions?: string
   order: CreatedMenuOrder
   paymentLabel: string
   status: MenuCollectionOrderStatus | null
   statusError?: string
+  responseError?: string
+  responding?: boolean
 }>()
-defineEmits<{ (event: 'reset'): void }>()
+defineEmits<{
+  (event: 'cancel'): void
+  (event: 'amend'): void
+  (event: 'reset'): void
+}>()
 
 const currentStatus = computed(() => props.status?.status || props.order.status)
 const orderId = computed(() => props.order.id)
 const orderNumber = computed(() => props.status?.order_number || props.order.order_number)
+const changesRequested = computed(() => currentStatus.value === 'changes_requested')
 const terminal = computed(() => ['completed', 'cancelled', 'trashed'].includes(currentStatus.value))
 const terminalActionLabel = computed(() =>
   ['cancelled', 'trashed'].includes(currentStatus.value)
@@ -78,6 +112,7 @@ const kitchenNote = computed(() => String(props.status?.kitchen_note || '').trim
 const statusIcon = computed(() => {
   if (currentStatus.value === 'ready') return 'i-lucide-check-check'
   if (currentStatus.value === 'accepted') return 'i-lucide-chef-hat'
+  if (changesRequested.value) return 'i-lucide-calendar-clock'
   if (currentStatus.value === 'completed') return 'i-lucide-circle-check-big'
   if (['cancelled', 'trashed'].includes(currentStatus.value)) return 'i-lucide-circle-x'
   return 'i-lucide-clock-3'
@@ -85,6 +120,9 @@ const statusIcon = computed(() => {
 const eyebrow = computed(() => {
   if (currentStatus.value === 'ready') return 'Ready to collect'
   if (currentStatus.value === 'accepted') return 'Kitchen accepted'
+  if (changesRequested.value) {
+    return props.customerName ? `Hello ${props.customerName}` : 'Hello'
+  }
   if (currentStatus.value === 'completed') return 'Collected'
   if (['cancelled', 'trashed'].includes(currentStatus.value)) return 'Kitchen response'
   return 'Sent to Kitchen'
@@ -96,6 +134,9 @@ const title = computed(() => {
       ? `Ready in about ${estimateMinutes.value} minutes`
       : 'Your collection time is confirmed'
   }
+  if (changesRequested.value) {
+    return kitchenNote.value || 'The Kitchen has requested a change'
+  }
   if (currentStatus.value === 'completed') return 'Thank you'
   if (['cancelled', 'trashed'].includes(currentStatus.value)) return 'The Kitchen could not accept this order'
   return 'Waiting for the Kitchen to accept'
@@ -105,6 +146,9 @@ const description = computed(() => {
     return props.handoffInstructions || 'Please head to the collection point.'
   }
   if (currentStatus.value === 'accepted') return props.collectionLabel
+  if (changesRequested.value) {
+    return 'Amend the order or cancel it.'
+  }
   if (currentStatus.value === 'completed') return 'This collection order is complete.'
   if (['cancelled', 'trashed'].includes(currentStatus.value)) {
     return kitchenNote.value || 'Please contact the Kitchen or try again.'
@@ -127,4 +171,7 @@ const description = computed(() => {
 .menu-order-collection-status dd { margin: 0; color: var(--menu-title); font-weight: var(--font-weight-extrabold); text-align: right; }
 .menu-order-collection-status__error { margin: 0; color: var(--ui-error); font-size: 0.85rem; }
 .menu-order-collection-status__again { justify-self: center; padding: 0.65rem calc(var(--spacing) * 4); border: 1px solid var(--menu-primary); border-radius: var(--menu-radius-control); background: transparent; color: var(--menu-primary); cursor: pointer; font: inherit; font-weight: var(--font-weight-extrabold); }
+.menu-order-collection-status__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--spacing) * 3); }
+.menu-order-collection-status__primary { padding: 0.65rem calc(var(--spacing) * 4); border: 1px solid var(--menu-primary); border-radius: var(--menu-radius-control); background: var(--menu-primary); color: var(--menu-primary-contrast); cursor: pointer; font: inherit; font-weight: var(--font-weight-extrabold); }
+.menu-order-collection-status__actions button:disabled { cursor: wait; opacity: 0.6; }
 </style>

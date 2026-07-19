@@ -32,6 +32,7 @@ import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
+import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
@@ -59,6 +60,7 @@ const guards = [
   { key: 'extensions', run: runExtensions },
   { key: 'kitchen-menu-size', run: runKitchenMenuSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
+  { key: 'entity-authority', run: runEntityAuthority },
   { key: 'projects', run: runProjects },
 ]
 

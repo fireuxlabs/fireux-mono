@@ -61,6 +61,7 @@
         :config="contextConfig"
         :currency-code="currencyCode"
         :hours="collectionHours"
+        :kitchen-id="resolvedSource?.kitchenId || ''"
         :kitchen-slug="orderKitchenSlug"
         :menu-id="menuId"
         :scope-key="basketScopeKey"

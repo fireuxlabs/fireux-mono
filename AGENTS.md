@@ -185,6 +185,8 @@ Apps use:
 Important app config fields visible in code:
 
 - `ecosystem`
+- `projectId`
+- `ecosystemId`, optional
 - `id`
 - `name`
 - `shortName`
@@ -195,6 +197,11 @@ Important app config fields visible in code:
 - `domains`
 - `profiles`
 - `navHiddenKeys`
+
+`ecosystem` selects the ecosystem package/Firebase binding. It is not an entity
+relationship. `projectId` names the canonical FireUX Project entity;
+`ecosystemId` names the canonical Ecosystem entity and is omitted for direct
+Project Apps.
 
 `useFireUXConfig` is the runtime app identity/mode accessor. Do not duplicate app mode logic locally.
 

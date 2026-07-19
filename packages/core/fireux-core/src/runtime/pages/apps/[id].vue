@@ -18,7 +18,7 @@
       <UPageCard
         v-else-if="missing"
         title="App not found"
-        description="No app record exists for this id."
+        description="No published app exists for this id or slug."
         variant="subtle"
       >
         <UButton to="/apps" variant="soft" class="w-fit">
@@ -51,7 +51,7 @@ definePageMeta({
   layout: 'default',
   tenant: 'global',
   title: 'App',
-  description: 'Canonical app record.',
+  description: 'Published app profile from the owning ecosystem.',
   name: 'AppDetailPage',
 })
 
@@ -71,8 +71,7 @@ const { data, pending, error } = await useAsyncData(
 )
 
 const app = computed<PublicAppDto | null>(() => {
-  const item = data.value?.item
-  return item?.id === appId.value ? item : null
+  return data.value?.item ?? null
 })
 const statusCode = computed(() =>
   Number(
@@ -102,7 +101,7 @@ const pageTitle = computed(() => app.value?.app_name || appId.value || 'App')
 const pageDescription = computed(
   () =>
     app.value?.description ||
-    'Canonical app record, media, admins, and public profile.'
+    'Published app profile from the owning ecosystem.'
 )
 
 useHead({

@@ -4,7 +4,7 @@
       <div class="space-y-1">
         <h2 class="text-2xl font-semibold text-highlighted">Featured ecosystems</h2>
         <p class="text-sm text-muted">
-          Public ecosystem identities with their main app links.
+          Published ecosystem directory entries and their public websites.
         </p>
       </div>
 
@@ -54,9 +54,6 @@
             <UBadge color="neutral" variant="soft" size="xs">
               {{ ecosystem.appCount }} app{{ ecosystem.appCount === 1 ? '' : 's' }}
             </UBadge>
-            <UBadge v-if="ecosystem.team" color="neutral" variant="soft" size="xs">
-              {{ ecosystem.team }}
-            </UBadge>
           </div>
         </div>
 
@@ -102,10 +99,8 @@ const props = withDefaults(defineProps<{
 })
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const countApps = (apps: unknown, appCount?: number) => {
-  if (Array.isArray(apps)) return apps.length
+const countApps = (appCount?: number) => {
   if (Number.isFinite(Number(appCount))) return Number(appCount)
-  if (Number.isFinite(Number(apps))) return Number(apps)
   return 0
 }
 
@@ -128,9 +123,8 @@ const featured = computed(() =>
         name: clean(entry.name) || id,
         description: clean(entry.description),
         imageUrl: clean(entry.image_url || entry.src),
-        sourceUrl: clean(entry.source_url || entry.href),
-        team: clean(entry.team),
-        appCount: countApps(entry.apps, entry.appCount),
+        sourceUrl: clean(entry.website_url || entry.source_url),
+        appCount: countApps(entry.appCount),
         to: slug ? `/ecosystems/${encodeURIComponent(slug)}` : '',
       }
     })

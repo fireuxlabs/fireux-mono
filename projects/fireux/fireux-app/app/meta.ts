@@ -108,8 +108,8 @@ const sourceMeta = {
         description: 'Console entry follows one consistent runtime-driven pattern across apps.',
       },
       {
-        title: 'Registry',
-        description: 'App and module registry records keep ownership and wiring transparent.',
+        title: 'Directory + Package Metadata',
+        description: 'Public entity projections and tracked package manifests have separate authority.',
       },
       {
         title: 'Public Surfaces',
@@ -136,9 +136,9 @@ const sourceMeta = {
           entities: ['App', 'User'],
         },
         {
-          name: 'Registry surfaces',
-          summary: 'Ecosystem and module index records for platform discoverability and governance.',
-          entities: ['Ecosystem registry doc', 'Module registry doc'],
+          name: 'Directory and package metadata surfaces',
+          summary: 'Public entity projections stay separate from source-controlled package manifests.',
+          entities: ['App directory entry', 'Ecosystem directory entry', 'Module package manifest'],
         },
         {
           name: 'Catalog surfaces',
@@ -153,28 +153,28 @@ const sourceMeta = {
       ],
       entities: [
         {
-          name: 'App',
-          purpose: 'Canonical app identity and metadata for platform routing and discovery.',
-          keyFields: ['id', 'app_name', 'ecosystem', 'role', 'modules'],
-          linksTo: ['User', 'Ecosystem registry doc', 'Module registry doc'],
+          name: 'App directory entry',
+          purpose: 'Safe directory projection of canonical owning App identity.',
+          keyFields: ['id', 'app_name', 'ecosystem_id', 'slug', 'status'],
+          linksTo: ['User', 'Ecosystem directory entry'],
         },
         {
           name: 'User',
-          purpose: 'Cross-app member identity with memberships and profile flags.',
-          keyFields: ['id', 'display_name', 'handle', 'userOf', 'adminOf'],
+          purpose: 'Public root identity with app and profile relationship indexes.',
+          keyFields: ['id', 'display_name', 'handle', 'app_ids', 'profiles'],
           linksTo: ['App', 'StitchProvider', 'StitchRequest'],
         },
         {
           name: 'Ecosystem directory entry',
           purpose: 'Safe public projection of an owning Ecosystem record.',
           keyFields: ['id', 'name', 'slug', 'status', 'app_count'],
-          linksTo: ['App', 'Module registry doc'],
+          linksTo: ['App directory entry'],
         },
         {
-          name: 'Module registry doc',
-          purpose: 'Registry index describing module ownership and availability.',
-          keyFields: ['id', 'name', 'team', 'status'],
-          linksTo: ['App', 'Ecosystem registry doc'],
+          name: 'Module package manifest',
+          purpose: 'Source-controlled package metadata; not an entity or public directory row.',
+          keyFields: ['type', 'id', 'name', 'team'],
+          linksTo: [],
         },
         {
           name: 'StitchProvider',
@@ -250,8 +250,8 @@ Project (FireUX control plane)
 
 Ecosystem
   <- App.ecosystem_id
-Module registry doc
-  -> App
+Module package manifest
+  -> package/runtime wiring only
 
 User
   -> App (membership/admin)
@@ -263,7 +263,7 @@ StitchRequest
     seo: {
       title: 'About FireUX',
       description:
-        'How FireUX organizes apps, modules, registry records, and service surfaces from one platform core.',
+        'How FireUX separates entity directories, package metadata, and service surfaces in one platform core.',
     },
   },
   getStarted: {
@@ -297,7 +297,7 @@ StitchRequest
   roadmap: {
     title: 'FireUX Road Map',
     summary:
-      'FireUX is evolving from platform baseline into deeper cross-ecosystem operations, registry governance, and service marketplaces.',
+      'FireUX is evolving from platform baseline into deeper cross-ecosystem operations, directory publication, and service marketplaces.',
   },
 } as const
 

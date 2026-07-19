@@ -153,10 +153,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     await updateApp({ app_short_name: text(name, 40) })
   }
 
-  async function updateEcosystem(ecosystem: string) {
-    await updateApp({ ecosystem: text(ecosystem, 60) })
-  }
-
   async function updateInstagram(url: string | null) {
     const sanitized = sanitizeInstagram(url)
     await updateApp({
@@ -320,7 +316,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     updateLongBio,
     updateAppName,
     updateAppShortName,
-    updateEcosystem,
     updateInstagram,
     updateSocialLinks,
     updateAvatarUrl,

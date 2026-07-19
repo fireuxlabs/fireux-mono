@@ -97,11 +97,13 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useFetch } from '#imports'
 import { computed } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import {
   UserModel,
   type User,
@@ -253,22 +255,13 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     initialVariant: props.initialVariant,
   })
 
-const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
-  visibleItems.value
-    .map((user) => {
-      if (variant.value === 'cell') {
-        const base = makeCard(user)
-        const cell = makeCell(user)
-        if (!base || !cell) return null
-        return { ...base, ...cell }
-      }
-
-      return makePill(user)
-    })
-    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
-      Boolean(card)
-    )
-)
+const { cards: cardsFiltered } = useCollectionVariantCards({
+  items: visibleItems,
+  variant,
+  makeCard,
+  makePill,
+  makeCell,
+})
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

@@ -13,6 +13,23 @@ export const CustomerOrderLinkStorage = {
   idParam: 'orderId',
 } as const
 
+export type CustomerOrderItemSummary = {
+  id: string
+  menu_id: string
+  name: string
+  quantity: number
+  unit_price: number
+  variant?: {
+    id: string
+    label: string
+  }
+  add_ons: Array<{
+    id: string
+    label: string
+    price: number
+  }>
+}
+
 export type CustomerOrderSummary = {
   id: string
   order_number: string
@@ -23,6 +40,7 @@ export type CustomerOrderSummary = {
   estimated_ready_at: string
   kitchen_note?: string
   item_count: number
+  items: CustomerOrderItemSummary[]
   kitchen: {
     id: string
     name: string

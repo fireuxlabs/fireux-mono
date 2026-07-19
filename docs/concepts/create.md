@@ -111,8 +111,8 @@ Notes:
   target more than once.
 - Existing target IDs are normal for place-backed or app-backed entities.
 - Generated IDs are normal for user-created targets without a natural ID.
-- Project is root-only. `useProjectCreate` creates `projects/{projectId}`
-  directly and does not use `useConsoleCreate` or create an App-scoped Project.
+- Project is a private FireUX control-plane root. It has no client create seam;
+  creation belongs in a future authenticated control-plane transaction.
 
 Server transaction create:
 Use a `server/api/**.post.ts` endpoint when create is a transaction that belongs

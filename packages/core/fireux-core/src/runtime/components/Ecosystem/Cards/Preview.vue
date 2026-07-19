@@ -37,7 +37,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 text-xs text-dimmed">
-          <span v-if="item.team">team: {{ item.team }}</span>
           <span v-if="item.id" class="font-mono break-all">{{ item.id }}</span>
         </div>
       </div>
@@ -54,7 +53,6 @@ type EcosystemPreviewItem = {
   name?: string
   description?: string
   status?: string
-  team?: string
   appCount?: number
   imageUrl?: string
 }
@@ -68,7 +66,6 @@ const props = withDefaults(defineProps<{
     name: '',
     description: '',
     status: '',
-    team: '',
     appCount: 0,
     imageUrl: '',
   }),
@@ -80,7 +77,6 @@ const item = computed(() => ({
   name: props.item?.name || '',
   description: props.item?.description || '',
   status: props.item?.status || '',
-  team: props.item?.team || '',
   appCount: props.item?.appCount || 0,
   imageUrl: props.item?.imageUrl || '',
 }))

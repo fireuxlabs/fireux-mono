@@ -1,6 +1,6 @@
 Entities map
 Updated: 2026-07-19
-Ref: a6fb7062d
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -27,14 +27,20 @@ Working language:
 - Entity-ness is discussed while a concept is being designed; do not set a new thing in stone just because it has a file, route, or collection.
 
 Top hierarchy:
-- Project, Ecosystem, and App are root entities related by ids; hierarchy does
-  not require nested Firestore storage.
+- Project, Ecosystem, and App are root entities related by child-owned ids;
+  hierarchy does not require nested Firestore storage.
+- `Ecosystem.project_id` points to Project. `App.project_id` points to Project.
+  `App.ecosystem_id` is present only for an Ecosystem App. Project and Ecosystem
+  store no inverse child-id arrays.
 - The current App is the root `apps/{appId}` entity selected by
   `FireUXConfig.appId`, not a separate App kind or storage scope.
-- A direct Project App and an App related through the Project's Ecosystem are
+- A direct Project App and an App related through an Ecosystem are
   ordinary root App entities too.
-- Project access is Project-owned. It is never collected from App, Kitchen, or
-  another entity's team.
+- Project is private FireUX control-plane truth. Its collection is read through
+  an authenticated FireUX App-admin server boundary; there is no Project
+  membership/team model.
+- `FireUXConfig.ecosystem` selects infrastructure/package binding;
+  `projectId` and optional `ecosystemId` express entity relationships.
 
 Kinds:
 - `entity`: domain thing FireUX tracks as a first-class concept over time.
@@ -57,7 +63,7 @@ Entity-ness checkpoint:
 - Can it start as a `record` or `shape` until the lifecycle proves it needs promotion?
 
 Storage scopes:
-- `root`: standalone/root public or system entity.
+- `root`: standalone/root public, system, or control-plane entity.
 - `scoped`: lives under a parent entity/app.
 - `both`: has root identity plus scoped/app-operational state.
 - `none`: no stored entity shape.
@@ -85,9 +91,6 @@ Root index classes:
 - Scoped Surface: parent-scoped route or console surface that should not use root collection-manager ceremony.
 
 Root Simple Index members:
-- App.
-- Ecosystem.
-- Project, for public browse and root operator filtering.
 - Menu.
 - Place.
 - Blog.
@@ -101,6 +104,10 @@ Root Synced Snapshot Index members:
 - Chef, Customer, Driver, Agent, and Professional carry public User summary snapshots; User knows its attached profiles.
 
 Root Projected Index members:
+- App public browse consumes an allowlisted `AppDirectoryEntry`. Owning
+  Ecosystem Apps use `/api/public/apps`; FireUX uses the platform directory.
+- Ecosystem public browse exists only as FireUX `EcosystemDirectoryEntry`
+  projections; canonical Ecosystem truth remains in the owning database.
 - User is public identity at `/users/{userId}`. The public users API still owns
   browse DTO shape and canonical handle routes; it must never read the sibling
   private account record.
@@ -127,15 +134,22 @@ App event records:
 - Notification, email, push, audit, and ecosystem consumers subscribe to App
   events and own their own delivery/read state.
 
+Directory projection records:
+- `AppDirectoryEntry` and `EcosystemDirectoryEntry` are copied public transport
+  records, not entities, storage scopes, or competing canonical truth.
+- Directory fields are allowlisted. Access, moderation, build metadata,
+  inverse relationships, and Project control data stay out.
+- FireUX currently reads existing central rows through this projection seam;
+  an idempotent publication pipeline remains the only acceptable future writer.
+
 Scoped/Overlay Access members:
 - Supplier root browse is simple; operator-filtered access may join app-scoped supplier overlays.
 - Portfolio root browse is simple; operator-filtered access may join app-scoped portfolio overlays.
 - Property root browse is simple; scoped overlay shape is explicit.
 
-Root index entity examples:
+Root entity/index examples:
 - App: `/apps`.
 - Ecosystem: `/ecosystems`.
-- Project: `/projects`.
 - User: `/users`.
 - Kitchen: `/kitchens`.
 - Menu: `/menus`, currently to-confirm because it bridges quick uploads and kitchen-owned menus.
@@ -153,6 +167,10 @@ Root index entity examples:
 - Professional: `/professionals`, profile-root index.
 - Product: `/products`.
 
+Private control-plane root examples:
+- Project: no public route; `/console/project` is FireUX-admin-only and
+  currently read-only.
+
 Scoped-only examples:
 - Dish: kitchen-scoped today.
 - Station: kitchen-scoped today.
@@ -165,7 +183,7 @@ Scoped-only examples:
 First confirmed markers:
 - App: entity, root, core/system.
 - Ecosystem: entity, root, system.
-- Project: entity, root, console-entity.
+- Project: entity, private control-plane root, console-entity.
 - Kitchen: entity, both, console-entity.
 - Supplier: entity, both, console-entity.
 - Portfolio: entity, both, console-entity.

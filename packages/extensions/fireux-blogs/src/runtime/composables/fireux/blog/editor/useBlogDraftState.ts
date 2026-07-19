@@ -92,7 +92,7 @@ export function useBlogDraftState() {
       type: 'article',
       product_id: '',
       source_app_id: tenantId,
-      source_ecosystem_id: useFireUXConfig().ecosystem,
+      source_ecosystem_id: useFireUXConfig().ecosystemId || '',
       owner_type: 'app',
       owner_id: tenantId,
       visibility: 'app',
@@ -103,7 +103,7 @@ export function useBlogDraftState() {
   }
 
   function getBlogPostPayload(): BlogPostCreateInput {
-    const ecosystemId = useFireUXConfig().ecosystem
+    const ecosystemId = useFireUXConfig().ecosystemId || ''
     return {
       ...blogPost.value,
       source_app_id: tenantId,

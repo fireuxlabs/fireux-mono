@@ -104,7 +104,7 @@ export default defineEventHandler(async (event) => {
   const orderStatus = text(order.status).toLowerCase()
   const paymentStatus = text(payment.status).toLowerCase()
   if (
-    ['cancelled', 'completed', 'trashed'].includes(orderStatus) ||
+    ['changes_requested', 'cancelled', 'completed', 'trashed'].includes(orderStatus) ||
     paymentStatus === 'refunded'
   ) {
     throw createError({

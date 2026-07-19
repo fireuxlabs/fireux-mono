@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // last_used: 2026-07-19
-// usage_note: aligned console entity migration with root-only Project storage.
+// usage_note: retired legacy App, Ecosystem, and public User shape recipes; no migration was run.
 /*
   Firestore migration runner (generic)
 
@@ -41,6 +41,11 @@ const recipe = typeof args.recipe === 'string' ? args.recipe : null
 const databaseId = typeof args.database === 'string' ? args.database.trim() : ''
 const payloadArg = typeof args.payload === 'string' ? args.payload : null
 const payloadFile = typeof args.payloadFile === 'string' ? args.payloadFile : null
+const retiredRecipes = new Set([
+  'apps-canonical-shape',
+  'ecosystem-project-id-fix',
+  'users-canonical-shape',
+])
 
 if (help) {
   console.log(`\nFirestore migration runner\n`)
@@ -57,8 +62,6 @@ if (help) {
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
-  console.log('  - apps-canonical-shape')
-  console.log('  - ecosystem-project-id-fix')
   console.log('  - app-users-canonical-shape')
   console.log('  - app-user-mirrors-rebuild')
   console.log('  - profile-app-overlays-backfill')
@@ -66,7 +69,6 @@ if (help) {
   console.log('  - console-entity-operators')
   console.log('  - console-targets-rebuild')
   console.log('  - kitchen-storage-normalize')
-  console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
   console.log('  - ingredients-canonical-shape')
   console.log('  - ingredients-normalize-id-shape')
@@ -85,6 +87,13 @@ if (!projectId) {
 
 if (!recipe) {
   console.error('Missing --recipe. Use --recipe app-media-flatten (or run with --help).')
+  process.exit(1)
+}
+
+if (retiredRecipes.has(recipe)) {
+  console.error(
+    `[migrate] Recipe "${recipe}" is retired because it encodes obsolete entity authority.`
+  )
   process.exit(1)
 }
 
@@ -3322,8 +3331,6 @@ const recipes = {
   'app-social-links-normalize': runAppSocialLinksNormalize,
   'apps-delete-root': runAppsDeleteRoot,
   'apps-content-cleanup': runAppsContentCleanup,
-  'apps-canonical-shape': runAppsCanonicalShape,
-  'ecosystem-project-id-fix': runEcosystemProjectIdFix,
   'app-users-canonical-shape': runAppUsersCanonicalShape,
   'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
   'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
@@ -3332,7 +3339,6 @@ const recipes = {
   'console-targets-rebuild': runConsoleTargetsRebuild,
   'kitchen-storage-normalize': runKitchenStorageNormalize,
   'users-delete-root': runUsersDeleteRoot,
-  'users-canonical-shape': runUsersCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,
   'places-normalize-image-shade': runPlacesNormalizeImageShade,
   'places-migrate-image-url': runPlacesMigrateImageUrl,

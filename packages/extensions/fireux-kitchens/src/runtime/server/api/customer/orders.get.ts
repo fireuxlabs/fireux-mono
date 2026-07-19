@@ -131,6 +131,35 @@ function customerOrderSummary(
     ? payment.status as KitchenOrderPaymentStatus
     : 'not_required'
   const collectionMode = collection.mode === 'scheduled' ? 'scheduled' : 'queue'
+  // 2026-07-19 15:40 CEST: Project the owning customer's canonical Order lines so a Kitchen send-back can restore review state without browser basket persistence.
+  const items = array(order.items).flatMap((value, index) => {
+    const item = record(value)
+    const name = orderItemName(item)
+    const quantity = Math.max(1, number(item.quantity))
+    const unitPrice = number(item.unit_price)
+    if (!name || !unitPrice) return []
+
+    const variantId = text(item.variant_id)
+    const variantLabel = text(item.variant_label)
+    return [{
+      id: text(item.id) || `item-${index + 1}`,
+      menu_id: text(item.menu_id),
+      name,
+      quantity,
+      unit_price: unitPrice,
+      ...(variantId || variantLabel
+        ? { variant: { id: variantId || variantLabel, label: variantLabel || variantId } }
+        : {}),
+      add_ons: array(item.add_ons).flatMap((value) => {
+        const addOn = record(value)
+        const id = text(addOn.id)
+        const label = text(addOn.label)
+        const price = number(addOn.price)
+
+        return id && label ? [{ id, label, price }] : []
+      }),
+    }]
+  })
 
   return {
     id,
@@ -143,10 +172,11 @@ function customerOrderSummary(
     ...(text(order.kitchen_note)
       ? { kitchen_note: text(order.kitchen_note) }
       : {}),
-    item_count: array(order.items).reduce(
-      (total, item) => total + Math.max(1, number(record(item).quantity)),
+    item_count: items.reduce(
+      (total, item) => total + item.quantity,
       0
     ),
+    items,
     kitchen: {
       id: text(link.kitchen_id),
       name: kitchen?.name || text(link.kitchen_name) || 'Kitchen',
@@ -179,6 +209,16 @@ function customerOrderSummary(
       status: paymentStatus,
     },
   }
+}
+
+function orderItemName(item: Record<string, unknown>) {
+  const label = text(item.label)
+  const variantLabel = text(item.variant_label)
+  const suffix = variantLabel ? ` · ${variantLabel}` : ''
+
+  return suffix && label.endsWith(suffix)
+    ? label.slice(0, -suffix.length).trim()
+    : label
 }
 
 type CustomerKitchenHydration = {
