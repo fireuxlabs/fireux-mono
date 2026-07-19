@@ -87,6 +87,8 @@
         context="collection manager · agents"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -133,7 +135,7 @@ const collection = computed<AgentEntry[]>(() =>
     ...(fetched.coreAgents.value ?? []),
   ] as AgentEntry[]
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))
 const description = computed(() =>
   String(props.description || 'Browse agents available to this runtime.')

@@ -91,6 +91,8 @@
         context="collection manager · professionals"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -140,7 +142,7 @@ const collection = computed<ProfessionalEntry[]>(() =>
     ...(fetched.coreProfessionals.value ?? []),
   ] as ProfessionalEntry[]
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))
 const description = computed(() =>
   String(props.description || 'Browse professionals available to this runtime.')

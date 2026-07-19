@@ -89,6 +89,8 @@
         :data="devJsonData"
         :default-open="devJsonDefaultOpen"
         :hide-when-empty="devJsonHideWhenEmpty"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -162,7 +164,11 @@ const sourceDevJsonCollection = computed(() =>
     ? (props.devJsonData as IngredientInterfaceItem[])
     : collection.value
 )
-const { devJsonData: augmentedDevJsonData } = useDevCollectionJson(
+const {
+  devJsonData: augmentedDevJsonData,
+  loadDevJson,
+  unloadDevJson,
+} = useDevCollectionJson(
   sourceDevJsonCollection
 )
 const linkEnabled = computed(() => props.link !== false)

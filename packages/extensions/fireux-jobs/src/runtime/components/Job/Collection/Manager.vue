@@ -86,6 +86,8 @@
         context="collection manager · jobs"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -128,7 +130,7 @@ const outcome = computed(() => fetched.outcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
 const description = computed(() =>
   String(props.description || 'Browse job records available to this runtime.')

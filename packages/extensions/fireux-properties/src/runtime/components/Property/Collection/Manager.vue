@@ -94,6 +94,8 @@
         :context="devJsonContext"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -151,7 +153,7 @@ const outcome = computed(() => fetched.outcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData } = useDevCollectionJson(rawCollection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Properties'))
 const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>

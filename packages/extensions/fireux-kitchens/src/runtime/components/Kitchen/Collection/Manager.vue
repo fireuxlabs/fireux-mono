@@ -92,6 +92,8 @@
         :context="devJsonContext"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </section>
@@ -146,7 +148,7 @@ const outcome = computed(() => fetched.outcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData } = useDevCollectionJson(collectionSurface)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collectionSurface)
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
   String(

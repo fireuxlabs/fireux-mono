@@ -1,9 +1,6 @@
 <template>
   <div v-if="shouldRender" class="fireux-dev-json">
-    <div
-      v-if="!panelVisible"
-      class="jsonpanel-launcher"
-    >
+    <div v-if="!panelVisible" class="jsonpanel-launcher">
       <UButton
         icon="i-heroicons-code-bracket-square"
         size="xs"
@@ -34,7 +31,9 @@
             {{ copyLabel }}
           </UButton>
           <UButton
-            :icon="expanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+            :icon="
+              expanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
+            "
             size="sm"
             variant="ghost"
             @click="expanded = !expanded"
@@ -50,10 +49,7 @@
         </div>
       </div>
       <div v-if="expanded">
-        <div
-          v-if="showObjectPreview"
-          class="jsonpanel-object-preview"
-        >
+        <div v-if="showObjectPreview" class="jsonpanel-object-preview">
           <div
             v-for="entry in objectPreviewEntries"
             :key="entry.key"
@@ -71,7 +67,7 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 import { useDevDebugData } from '../../composables/dev/useDevDebugData'
 
@@ -97,6 +93,10 @@ const props = withDefaults(defineProps<JsonPanelProps>(), {
   defaultOpen: false,
   hideWhenEmpty: true,
 })
+const emit = defineEmits<{
+  opened: []
+  closed: []
+}>()
 
 const route = useRoute()
 const routeDebug = computed(() => ({
@@ -109,8 +109,7 @@ const routeLabel = computed(() => route.path || 'route unavailable')
 const startsOpen = computed(() => props.open ?? props.defaultOpen)
 const structuredData = computed(() => {
   const hasStructuredData =
-    props.objects !== undefined ||
-    props.derived !== undefined
+    props.objects !== undefined || props.derived !== undefined
 
   if (!hasStructuredData) return props.data
 
@@ -123,6 +122,17 @@ const structuredData = computed(() => {
 })
 const expanded = ref(startsOpen.value)
 const panelVisible = ref(startsOpen.value)
+watch(
+  panelVisible,
+  (visible: boolean) => {
+    if (visible) {
+      emit('opened')
+    } else {
+      emit('closed')
+    }
+  },
+  { immediate: true }
+)
 const {
   isEmpty,
   dataKindLabel,
@@ -135,7 +145,9 @@ const {
 })
 
 const isDev = import.meta.dev
-const shouldRender = computed(() => isDev && (!props.hideWhenEmpty || !isEmpty.value))
+const shouldRender = computed(
+  () => isDev && (!props.hideWhenEmpty || !isEmpty.value)
+)
 const lastCopyResult = ref<'idle' | 'copied' | 'failed'>('idle')
 const { copyText, copying } = useDevClipboard()
 const copyLabel = computed(() => {

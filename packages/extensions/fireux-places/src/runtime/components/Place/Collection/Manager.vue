@@ -115,6 +115,8 @@
         context="collection manager · places"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -158,7 +160,7 @@ const props = withDefaults(
 const fetched = usePlaceCollection()
 const collection = computed(() => fetched.collection.value)
 const outcome = computed(() => fetched.outcome.value)
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(() =>
   String(props.description || 'Browse place records available to this runtime.')

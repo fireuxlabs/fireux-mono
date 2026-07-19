@@ -89,6 +89,8 @@
         context="collection manager · companies"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -128,7 +130,7 @@ const props = withDefaults(
 const fetched = useCompanyCollection<CompanyHydrated>()
 const collection = computed<CompanyHydrated[]>(() => fetched.collection.value ?? [])
 const outcome = computed(() => fetched.outcome.value)
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>
   String(props.description || 'Browse company records built on claimed places.')

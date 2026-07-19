@@ -1,4 +1,11 @@
-import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import {
+  computed,
+  onScopeDispose,
+  ref,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue'
 
 type DevCollectionDocMeta = {
   collectionPath: string
@@ -8,18 +15,26 @@ type DevCollectionDocMeta = {
 type DevSubcollectionSnapshot = {
   path: string
   count: number
+  truncated: boolean
   ids: string[]
   items: Record<string, unknown>[]
+}
+
+type DevCollectionDocSnapshot = {
+  subcollections: Record<string, DevSubcollectionSnapshot>
+  subcollectionsTruncated: boolean
 }
 
 type DevCollectionSnapshotResponse = {
   docs: Array<{
     id: string
     subcollections: Record<string, DevSubcollectionSnapshot>
+    subcollectionsTruncated: boolean
   }>
 }
 
 const DEV_META_KEY = '__fireuxDevMeta'
+const MAX_DEV_COLLECTION_DOCS = 20
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -69,7 +84,13 @@ export function useDevCollectionJson<T extends object>(
   itemsRef: MaybeRefOrGetter<T[]>,
   collectionPathRef?: MaybeRefOrGetter<string | null | undefined>
 ) {
-  const subcollectionsById = ref(new Map<string, Record<string, DevSubcollectionSnapshot>>())
+  const snapshotsById = ref(new Map<string, DevCollectionDocSnapshot>())
+  const enabled = ref(false)
+  const refreshToken = ref(0)
+  const devJsonLoading = ref(false)
+  const devJsonError = ref<unknown>(null)
+  let requestId = 0
+  let activeController: AbortController | null = null
 
   const items = computed(() => {
     const value = toValue(itemsRef)
@@ -90,9 +111,15 @@ export function useDevCollectionJson<T extends object>(
   })
 
   const docIds = computed(() =>
-    items.value
-      .map((item) => String((item as Record<string, unknown>)?.id || '').trim())
-      .filter(Boolean)
+    [
+      ...new Set(
+        items.value
+          .map((item) =>
+            String((item as Record<string, unknown>)?.id || '').trim()
+          )
+          .filter(Boolean)
+      ),
+    ].slice(0, MAX_DEV_COLLECTION_DOCS)
   )
 
   const fetchKey = computed(() =>
@@ -101,37 +128,85 @@ export function useDevCollectionJson<T extends object>(
       : ''
   )
 
+  const loadDevJson = () => {
+    enabled.value = true
+    refreshToken.value += 1
+  }
+
+  const unloadDevJson = () => {
+    enabled.value = false
+    requestId += 1
+    activeController?.abort()
+    activeController = null
+    devJsonLoading.value = false
+    devJsonError.value = null
+    snapshotsById.value = new Map()
+  }
+
+  onScopeDispose(unloadDevJson)
+
   watch(
-    fetchKey,
-    async (nextKey: string) => {
+    [enabled, fetchKey, refreshToken],
+    async ([isEnabled, nextKey]: [boolean, string, number]) => {
       if (!import.meta.dev || import.meta.server) return
+      if (!isEnabled) return
+
+      const currentRequestId = ++requestId
 
       if (!nextKey) {
-        subcollectionsById.value = new Map()
+        activeController?.abort()
+        activeController = null
+        snapshotsById.value = new Map()
+        devJsonError.value = null
+        devJsonLoading.value = false
         return
       }
 
-      try {
-        const payload = await $fetch<DevCollectionSnapshotResponse>('/api/dev/collection-snapshot', {
-          method: 'POST',
-          body: {
-            collectionPath: resolvedCollectionPath.value,
-            docIds: docIds.value,
-          },
-        })
+      devJsonLoading.value = true
+      devJsonError.value = null
+      activeController?.abort()
+      const controller = new AbortController()
+      activeController = controller
 
-        const nextMap = new Map<string, Record<string, DevSubcollectionSnapshot>>()
+      try {
+        const payload = await $fetch<DevCollectionSnapshotResponse>(
+          '/api/dev/collection-snapshot',
+          {
+            method: 'POST',
+            body: {
+              collectionPath: resolvedCollectionPath.value,
+              docIds: docIds.value,
+            },
+            signal: controller.signal,
+          }
+        )
+        if (currentRequestId !== requestId) return
+
+        const nextMap = new Map<string, DevCollectionDocSnapshot>()
         for (const entry of payload.docs ?? []) {
           const id = String(entry?.id || '').trim()
           if (!id) continue
-          nextMap.set(id, entry.subcollections || {})
+          nextMap.set(id, {
+            subcollections: entry.subcollections || {},
+            subcollectionsTruncated: entry.subcollectionsTruncated === true,
+          })
         }
-        subcollectionsById.value = nextMap
+        snapshotsById.value = nextMap
       } catch (error) {
+        if (currentRequestId !== requestId) return
         if (import.meta.dev) {
-          console.warn('[useDevCollectionJson] failed to load subcollections', error)
+          console.warn(
+            '[useDevCollectionJson] failed to load subcollections',
+            error
+          )
         }
-        subcollectionsById.value = new Map()
+        devJsonError.value = error
+        snapshotsById.value = new Map()
+      } finally {
+        if (currentRequestId === requestId) {
+          devJsonLoading.value = false
+          activeController = null
+        }
       }
     },
     { immediate: true }
@@ -142,18 +217,25 @@ export function useDevCollectionJson<T extends object>(
       const id = String((item as Record<string, unknown>)?.id || '').trim()
       if (!id) return item
 
-      const subcollections = subcollectionsById.value.get(id)
-      if (!subcollections || !Object.keys(subcollections).length) return item
+      const snapshot = snapshotsById.value.get(id)
+      if (!snapshot || !Object.keys(snapshot.subcollections).length) return item
 
       return {
         ...item,
-        subcollections,
+        subcollections: snapshot.subcollections,
+        ...(snapshot.subcollectionsTruncated
+          ? { subcollectionsTruncated: true }
+          : {}),
       }
     })
   )
 
   return {
     devJsonData,
+    devJsonError,
+    devJsonLoading,
+    loadDevJson,
     resolvedCollectionPath,
+    unloadDevJson,
   }
 }

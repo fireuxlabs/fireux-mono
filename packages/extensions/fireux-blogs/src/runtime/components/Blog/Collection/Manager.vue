@@ -89,6 +89,8 @@
         :context="devJsonContext"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -128,7 +130,7 @@ const props = withDefaults(
 const fetched = useBlogCollection()
 const collection = computed<BlogPost[]>(() => fetched.collection.value)
 const outcome = computed(() => fetched.outcome.value)
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>
   String(props.description || 'Browse published blog posts for this runtime.')

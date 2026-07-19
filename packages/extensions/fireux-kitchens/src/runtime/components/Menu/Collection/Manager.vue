@@ -122,6 +122,8 @@
       :objects="devObjects"
       :derived="devDerived"
       :default-open="false"
+      @opened="loadDevJson"
+      @closed="unloadDevJson"
     />
   </section>
 </template>
@@ -180,7 +182,7 @@ const pickedCollection = computed<PublicMenuIndexItem[]>(() =>
     menuMatchesCollectionPicks(menu, selectedPicks.value, serviceNow.value)
   )
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15

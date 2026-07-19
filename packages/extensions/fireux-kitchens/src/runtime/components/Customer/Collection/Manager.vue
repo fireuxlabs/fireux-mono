@@ -79,6 +79,8 @@
       context="collection manager · customers"
       :data="devJsonData"
       :default-open="false"
+      @opened="loadDevJson"
+      @closed="unloadDevJson"
     />
   </UCard>
 </template>
@@ -122,7 +124,7 @@ const collection = computed<CustomerEntry[]>(() =>
     ...(fetched.coreCustomers.value ?? []),
   ] as CustomerEntry[]
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Customers'))
 const description = computed(() =>
   String(props.description || 'Browse customer profiles available to this runtime.')

@@ -87,6 +87,8 @@
         context="collection manager · chefs"
         :data="devJsonData"
         :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
       />
     </div>
   </UCard>
@@ -133,7 +135,7 @@ const collection = computed<ChefEntry[]>(() =>
     ...(fetched.coreChefs.value ?? []),
   ] as ChefEntry[]
 )
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))
 const description = computed(() =>
   String(props.description || 'Browse chefs available to this runtime.')

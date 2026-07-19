@@ -77,6 +77,8 @@
       context="collection manager · drivers"
       :data="devJsonData"
       :default-open="false"
+      @opened="loadDevJson"
+      @closed="unloadDevJson"
     />
   </UCard>
 </template>
@@ -115,7 +117,7 @@ const props = withDefaults(
 const fetched = useDriverFetch()
 const { outcome } = fetched
 const collection = computed<DriverEntry[]>(() => fetched.drivers.value)
-const { devJsonData } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Drivers'))
 const description = computed(() =>
   String(props.description || 'Browse driver profiles available to this runtime.')
