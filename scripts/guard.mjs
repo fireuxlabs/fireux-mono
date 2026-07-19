@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-18
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-19
+// usage_note: validates the authored repository spine after repo-efficiency passes.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint

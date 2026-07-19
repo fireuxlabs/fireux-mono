@@ -34,10 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRoute } from '#imports'
+import { useHead } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import {
   useProjectInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
@@ -49,11 +50,11 @@ definePageMeta({
   name: 'ProjectDetailPage',
 })
 
-const route = useRoute()
 const { appName } = useFireUXConfig()
 const { profile } = useProjectInterface()
 
-const routeKey = computed<string | null>(() => String(route.params.slug || '').trim() || null)
+const routeSlug = useRouteParam('slug')
+const routeKey = computed<string | null>(() => routeSlug.value || null)
 const { project, pending } = useProjectFetch(routeKey)
 
 const profileCard = computed(() => profile(project.value))

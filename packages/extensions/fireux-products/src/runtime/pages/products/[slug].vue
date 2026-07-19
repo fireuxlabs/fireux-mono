@@ -13,11 +13,12 @@
 
 <script setup lang="ts">
 import { useAsyncData, useRoute } from '#imports'
+import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductSeo } from '../../composables/fireux/firestore/product/utils/useProductSeo'
 import type { FirebaseProduct } from '../../models/product.model'
 
 const route = useRoute()
-const slug = String(route.params.slug || '').trim()
+const slug = readRouteParam(route.params.slug)
 
 const { data: product } = await useAsyncData(
   `product-${slug}`,

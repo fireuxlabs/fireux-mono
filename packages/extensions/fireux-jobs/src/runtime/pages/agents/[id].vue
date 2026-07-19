@@ -60,7 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
@@ -75,11 +76,8 @@ definePageMeta({
   visibility: { profiles: ['agent'] },
 })
 
-const route = useRoute()
-const agentId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  return String(raw ?? '').trim() || null
-})
+const routeAgentId = useRouteParam('id')
+const agentId = computed(() => routeAgentId.value || null)
 
 const { profile, pending } = useProfileFetch<Agent>(agentId, agentConfig)
 const agentProfile = computed(() => profile.coreProfile.value ?? null)

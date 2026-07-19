@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
@@ -8,12 +8,8 @@ import { useMenuSectionMutations } from '../../../../firestore/menu/mutations/us
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleMenu() {
-  const route = useRoute()
   const state = useKitchenConsoleMenus()
-  const menuId = computed(() => {
-    const raw = route.params.menuId
-    return clean(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const menuId = useRouteParam('menuId')
   const menu = computed<Menu | null>(
     () => state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
   )

@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
+import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 type TextToolConfig = {
   copy: {
@@ -31,7 +32,7 @@ type TextToolConfig = {
 
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
-const id = String(route.params.id ?? '').trim()
+const id = readRouteParam(route.params.id)
 const toolConfig = id
   ? await $fetch<{ config: TextToolConfig }>(
     `/api/tools/text/${encodeURIComponent(id)}`

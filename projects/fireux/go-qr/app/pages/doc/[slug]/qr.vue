@@ -59,6 +59,7 @@
 import { createError, useRuntimeConfig } from 'nuxt/app'
 import { computed, onMounted, ref } from 'vue'
 import { toDataURL } from 'qrcode'
+import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 type PublicGoQrRecord = {
   slug: string
@@ -70,7 +71,7 @@ type PublicGoQrRecord = {
 
 const route = useRoute()
 const runtime = useRuntimeConfig()
-const slug = String(route.params.slug || '').trim()
+const slug = readRouteParam(route.params.slug)
 const qrDataUrl = ref('')
 
 definePageMeta({

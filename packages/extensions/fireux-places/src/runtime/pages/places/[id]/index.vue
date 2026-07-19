@@ -3,8 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
-import { computed } from 'vue'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 definePageMeta({
   layout: 'default',
@@ -13,11 +12,5 @@ definePageMeta({
   head: { title: 'Place' },
 })
 
-const route = useRoute()
-const routeLocator = computed(() => {
-  const raw = route.params.id
-  return Array.isArray(raw)
-    ? String(raw[0] ?? '').trim()
-    : String(raw ?? '').trim()
-})
+const routeLocator = useRouteParam('id')
 </script>

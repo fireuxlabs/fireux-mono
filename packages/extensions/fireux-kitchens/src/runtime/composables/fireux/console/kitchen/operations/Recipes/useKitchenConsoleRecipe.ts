@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Recipe } from '../../../../../../models/kitchen/recipe.model'
 import { useKitchenConsoleRecipes } from './useKitchenConsoleRecipes'
@@ -6,7 +6,6 @@ import { useKitchenConsoleRecipes } from './useKitchenConsoleRecipes'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleRecipe() {
-  const route = useRoute()
   const {
     selectedKitchen,
     kitchenId,
@@ -20,10 +19,7 @@ export function useKitchenConsoleRecipe() {
     getDishUsageForRecipe,
   } = useKitchenConsoleRecipes()
 
-  const recipeId = computed(() => {
-    const raw = route.params.recipeId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const recipeId = useRouteParam('recipeId')
 
   const recipe = computed<Recipe | null>(
     () =>

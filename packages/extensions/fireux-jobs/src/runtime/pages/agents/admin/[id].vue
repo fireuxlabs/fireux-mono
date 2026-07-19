@@ -66,9 +66,9 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AppAgent, Agent } from '../../../models/profiles/Agent/Agent.model'
 
@@ -79,14 +79,8 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const route = useRoute()
-
-const userId = computed(() => {
-  const raw = Array.isArray(route.params.id)
-    ? route.params.id[0]
-    : route.params.id
-  return String(raw ?? '').trim() || null
-})
+const routeUserId = useRouteParam('id')
+const userId = computed(() => routeUserId.value || null)
 
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<Agent, AppAgent>(

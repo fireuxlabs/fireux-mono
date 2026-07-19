@@ -46,10 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useRoute } from '#imports'
+import { computed } from '#imports'
 import { useEcosystemCollection } from '../../composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 import { useEcosystemSeo } from '../../composables/fireux/firestore/core/ecosystem/utils/useEcosystemSeo'
 import { useEcosystemInterface } from '../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({
   layout: 'default',
@@ -58,8 +59,7 @@ definePageMeta({
   name: 'EcosystemDetailPage',
 })
 
-const route = useRoute()
-const routeSlug = computed(() => String(route.params.slug || '').trim())
+const routeSlug = useRouteParam('slug')
 const { ecosystems, outcome } = useEcosystemCollection()
 const { profile: makeProfile } = useEcosystemInterface()
 

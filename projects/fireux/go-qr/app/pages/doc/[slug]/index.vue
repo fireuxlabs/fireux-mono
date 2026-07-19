@@ -57,6 +57,7 @@
 <script setup lang="ts">
 import { createError } from 'nuxt/app'
 import { computed } from 'vue'
+import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 type PublicGoQrRecord = {
   slug: string
@@ -67,7 +68,7 @@ type PublicGoQrRecord = {
 }
 
 const route = useRoute()
-const slug = String(route.params.slug || '').trim()
+const slug = readRouteParam(route.params.slug)
 
 definePageMeta({
   index: false,

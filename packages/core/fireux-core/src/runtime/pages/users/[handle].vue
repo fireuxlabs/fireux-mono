@@ -52,20 +52,15 @@ import {
   useSeoMeta,
 } from '#imports'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useRouteParam } from '../../composables/shared/useRouteParam'
 
-const route = useRoute()
 const runtime = useRuntimeConfig()
 const { appName } = useFireUXConfig()
 
-const handle = computed(() => {
-  const raw = Array.isArray(route.params.handle)
-    ? route.params.handle[0]
-    : route.params.handle
-  return String(raw ?? '').trim().toLowerCase()
-})
+const routeHandle = useRouteParam('handle')
+const handle = computed(() => routeHandle.value.toLowerCase())
 
 type PublicUserDto = {
   id: string

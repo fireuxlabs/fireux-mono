@@ -85,11 +85,12 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
@@ -105,13 +106,8 @@ definePageMeta({
   visibility: { profiles: ['professional'] },
 })
 
-const route = useRoute()
-const professionalId = computed(() => {
-  const raw = Array.isArray(route.params.id)
-    ? route.params.id[0]
-    : route.params.id
-  return String(raw ?? '').trim() || null
-})
+const routeProfessionalId = useRouteParam('id')
+const professionalId = computed(() => routeProfessionalId.value || null)
 
 const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
   professionalId,

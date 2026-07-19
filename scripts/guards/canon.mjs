@@ -1,6 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-18
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-19
+// usage_note: enforces current repo-wide spine rules, including route-param normalization.
 // FILE: scripts/guards/canon.mjs
 // FireUX Canon Guard
 //
@@ -150,6 +150,8 @@ const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
 const COLLECTION_MANAGER_PROP_RE = /\bcollection\??\s*:/g
+const MANUAL_ROUTE_PARAM_TRIM_RE =
+  /String\s*\(\s*route\.params(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])[\s\S]{0,120}?\)\s*\.trim\s*\(/g
 
 function isDirectory(p) {
   try {
@@ -868,6 +870,13 @@ export async function run(ctx) {
       )
     }
 
+    for (const hit of findAllMatches(raw, MANUAL_ROUTE_PARAM_TRIM_RE)) {
+      const { line } = lineInfo(raw, hit.index)
+      violations.push(
+        `- Manual route-param trimming in ${toRepoRelative(repoRoot, file)}:${line}; use useRouteParam() for reactive reads or readRouteParam() for setup-time reads`
+      )
+    }
+
     if (!isDevOrMigrationRuntimeFile(repoRoot, file)) {
       for (const smell of forbiddenRuntimeSmells) {
         for (const hit of findAllMatches(raw, smell.re)) {
@@ -898,6 +907,7 @@ export async function run(ctx) {
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
       '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
+      '- Use useRouteParam() or readRouteParam() instead of repeating String(route.params.*).trim()',
     ]
 
     throw new Error(lines.join('\n'))

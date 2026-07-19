@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Dish } from '../../../../../../models/kitchen/dish.model'
 import {
@@ -33,13 +33,9 @@ export type MenuSectionItemRow = {
 }
 
 export function useKitchenConsoleMenuSection() {
-  const route = useRoute()
   const menuState = useKitchenConsoleMenu()
   const dishState = useKitchenConsoleDishes()
-  const sectionId = computed(() => {
-    const raw = route.params.sectionId
-    return clean(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const sectionId = useRouteParam('sectionId')
   const section = computed<MenuSection | null>(
     () =>
       menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??

@@ -136,22 +136,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import type {
   MenuSourceUploadKind,
   MenuSourceUploadStatus,
 } from '../../../../../../models/kitchen/menu/menu-source-upload.model'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 
-const route = useRoute()
 const { menuSources, menuSourcesPending, debug: menusDebug } =
   useKitchenConsoleMenus()
 
 const text = (value: unknown) => String(value ?? '').trim()
-const uploadId = computed(() => {
-  const raw = route.params.uploadId
-  return text(Array.isArray(raw) ? raw[0] : raw)
-})
+const uploadId = useRouteParam('uploadId')
 const source = computed(
   () => menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
 )

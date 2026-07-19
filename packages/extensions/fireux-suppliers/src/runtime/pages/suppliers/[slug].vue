@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useSupplierFetch } from '../../composables/fireux/firestore/supplier/fetch/useSupplierFetch'
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
@@ -53,11 +53,7 @@ definePageMeta({
   name: 'SupplierDetailPage',
 })
 
-const route = useRoute()
-const routeKey = computed(() => {
-  const raw = route.params.slug
-  return Array.isArray(raw) ? String(raw[0] || '').trim() : String(raw || '').trim()
-})
+const routeKey = useRouteParam('slug')
 
 const { supplier: supplierRecord, pending } = useSupplierFetch(routeKey, {
   key: 'slug',

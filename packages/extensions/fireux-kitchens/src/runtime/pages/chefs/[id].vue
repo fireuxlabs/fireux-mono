@@ -69,11 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useChefSeo } from '../../composables/fireux/firestore/profiles/Chef/utils/useChefSeo'
@@ -84,12 +85,8 @@ definePageMeta({
   visibility: { profiles: ['chef'] },
 })
 
-const route = useRoute()
-const docId = computed(() => {
-  const raw = route.params.id
-  const value = Array.isArray(raw) ? raw[0] : raw
-  return String(value ?? '').trim() || null
-})
+const routeId = useRouteParam('id')
+const docId = computed(() => routeId.value || null)
 
 const { user, coreUser, appUser } = useUser()
 const userRefs = useUserFetch(docId)

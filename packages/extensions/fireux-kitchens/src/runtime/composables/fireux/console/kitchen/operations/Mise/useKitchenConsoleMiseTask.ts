@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen/mise.model'
 import { useKitchenConsoleMise } from './useKitchenConsoleMise'
@@ -6,7 +6,6 @@ import { useKitchenConsoleMise } from './useKitchenConsoleMise'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleMiseTask() {
-  const route = useRoute()
   const {
     selectedKitchen,
     kitchenId,
@@ -18,10 +17,7 @@ export function useKitchenConsoleMiseTask() {
     pending,
   } = useKitchenConsoleMise()
 
-  const miseId = computed(() => {
-    const raw = route.params.miseId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const miseId = useRouteParam('miseId')
 
   const task = computed<KitchenMiseTask | null>(
     () =>

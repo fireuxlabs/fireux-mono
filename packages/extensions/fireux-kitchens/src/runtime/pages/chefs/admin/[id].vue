@@ -66,9 +66,9 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { AppChef, Chef } from '../../../models/chef.model'
 
@@ -79,14 +79,8 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const route = useRoute()
-
-const userId = computed(() => {
-  const raw = Array.isArray(route.params.id)
-    ? route.params.id[0]
-    : route.params.id
-  return String(raw ?? '').trim() || null
-})
+const routeUserId = useRouteParam('id')
+const userId = computed(() => routeUserId.value || null)
 
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<Chef, AppChef>(

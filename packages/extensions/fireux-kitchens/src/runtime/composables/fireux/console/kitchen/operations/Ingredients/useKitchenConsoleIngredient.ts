@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { IngredientInterfaceItem } from '../../../../firestore/ingredient/utils/view/useIngredientInterface'
 import { useKitchenConsoleIngredients } from './useKitchenConsoleIngredients'
@@ -6,7 +6,6 @@ import { useKitchenConsoleIngredients } from './useKitchenConsoleIngredients'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleIngredient() {
-  const route = useRoute()
   const {
     selectedKitchen,
     kitchenId,
@@ -18,10 +17,7 @@ export function useKitchenConsoleIngredient() {
     pending,
   } = useKitchenConsoleIngredients()
 
-  const ingredientId = computed(() => {
-    const raw = route.params.ingredientId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const ingredientId = useRouteParam('ingredientId')
 
   const ingredient = computed<IngredientInterfaceItem | null>(
     () =>

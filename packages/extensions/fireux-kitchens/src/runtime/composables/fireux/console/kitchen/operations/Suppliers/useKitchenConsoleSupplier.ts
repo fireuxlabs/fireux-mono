@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useKitchenConsoleSuppliers } from './useKitchenConsoleSuppliers'
 
@@ -8,7 +8,6 @@ type KitchenSupplierSurface = Record<string, unknown> & {
 }
 
 export function useKitchenConsoleSupplier() {
-  const route = useRoute()
   const {
     selectedKitchen,
     kitchenId,
@@ -20,10 +19,7 @@ export function useKitchenConsoleSupplier() {
     pending,
   } = useKitchenConsoleSuppliers()
 
-  const supplierId = computed(() => {
-    const raw = route.params.supplierId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const supplierId = useRouteParam('supplierId')
 
   const supplier = computed<KitchenSupplierSurface | null>(
     () =>

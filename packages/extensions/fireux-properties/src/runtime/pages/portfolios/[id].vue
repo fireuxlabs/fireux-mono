@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
 import { computed } from 'vue'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioSeo } from '../../composables/fireux/firestore/portfolio/utils/usePortfolioSeo'
 import { usePortfolioInterface } from '../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
@@ -47,8 +47,7 @@ definePageMeta({
   name: 'PortfolioDetailPage',
 })
 
-const route = useRoute()
-const routeKey = computed(() => String(route.params.id || '').trim())
+const routeKey = useRouteParam('id')
 const { portfolio, pending } = usePortfolioFetch(routeKey)
 const { profile } = usePortfolioInterface()
 const profileCard = computed(() => profile(portfolio.value))

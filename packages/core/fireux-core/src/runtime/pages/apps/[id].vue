@@ -29,9 +29,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useHead, useRoute } from '#imports'
+import { computed, useHead } from '#imports'
 import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
+import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({
   layout: 'default',
@@ -41,8 +42,7 @@ definePageMeta({
   name: 'AppDetailPage',
 })
 
-const route = useRoute()
-const appId = computed(() => String(route.params.id || '').trim())
+const appId = useRouteParam('id')
 const { app, pending } = useAppFetch(appId)
 const { model: appProfileModel } = useAppProfileView(app)
 

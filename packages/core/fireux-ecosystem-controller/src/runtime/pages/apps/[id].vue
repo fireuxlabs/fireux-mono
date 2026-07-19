@@ -99,17 +99,14 @@ import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/firest
 import { useAppUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const appId = computed(() => {
-  const raw = Array.isArray(route.params.id)
-    ? route.params.id[0]
-    : route.params.id
-  return String(raw ?? '').trim() || null
-})
+const routeAppId = useRouteParam('id')
+const appId = computed(() => routeAppId.value || null)
 
 const { app: currentApp } = useAppFetch(appId)
 const { model: appProfileModel } = useAppProfileView(currentApp)

@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
 import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
 import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
@@ -149,8 +149,7 @@ definePageMeta({
   },
 })
 
-const route = useRoute()
-const slug = computed(() => String(route.params.id || '').trim())
+const slug = useRouteParam('id')
 
 const { products } = useProductCollection()
 const { preview: toCard } = useProductInterface()

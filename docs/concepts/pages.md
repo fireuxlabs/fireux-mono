@@ -1,6 +1,6 @@
 Pages spine map
-Updated: 2026-06-17
-Ref: dece0dcde
+Updated: 2026-07-19
+Ref: 46630efb5
 Role: map, not canon
 
 Purpose:
@@ -27,6 +27,12 @@ Current convention:
 - Page should not become a heavy script that calculates many tiny display props.
 - Use `useRouteParam('<key>')` for normalized route params instead of repeating
   `String(route.params.x || '').trim()`.
+- Use `readRouteParam(route.params.<key>)` for a setup-time snapshot that does
+  not need a reactive computed. Both seams select the first array value and
+  normalize it to a trimmed string.
+- Do not migrate deliberately untrimmed public identifiers or route-projection
+  grammar as mechanical cleanup. Review their 404, canonical, redirect, and
+  sitemap effects as an explicit route/SEO decision first.
 
 Common route families:
 - Public index: `/xs`.

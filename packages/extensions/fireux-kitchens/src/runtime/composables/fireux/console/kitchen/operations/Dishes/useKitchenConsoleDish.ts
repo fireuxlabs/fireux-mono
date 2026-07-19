@@ -1,11 +1,10 @@
-import { useRoute } from '#imports'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleDish() {
-  const route = useRoute()
   const {
     selectedKitchen,
     kitchenId,
@@ -19,10 +18,7 @@ export function useKitchenConsoleDish() {
     getMenuUsageForDish,
   } = useKitchenConsoleDishes()
 
-  const dishId = computed(() => {
-    const raw = route.params.dishId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
-  })
+  const dishId = useRouteParam('dishId')
 
   const dish = computed(
     () =>
