@@ -24,7 +24,7 @@
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex flex-col gap-1">
                     <h2 class="text-base font-semibold">Images</h2>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-muted">
                       Preview common assets (core/ecosystem/app) in the running
                       runtime.
                     </p>
@@ -41,7 +41,7 @@
 
               <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div class="space-y-2">
-                  <p class="text-xs font-medium text-gray-500">Ecosystem</p>
+                  <p class="text-xs font-medium text-muted">Ecosystem</p>
                   <div class="flex items-center gap-3">
                     <img
                       class="h-10 w-10 rounded-lg border"
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="space-y-2">
-                  <p class="text-xs font-medium text-gray-500">App</p>
+                  <p class="text-xs font-medium text-muted">App</p>
                   <div class="flex items-center gap-3">
                     <img
                       class="h-10 w-10 rounded-lg border"
@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="space-y-2">
-                  <p class="text-xs font-medium text-gray-500">Core</p>
+                  <p class="text-xs font-medium text-muted">Core</p>
                   <div class="flex items-center gap-3">
                     <img
                       class="h-10 w-10 rounded-lg border"
@@ -81,7 +81,7 @@
                       alt="FireUX logo"
                     />
                     <img
-                      class="h-10 w-10 rounded-lg border bg-slate-900 p-1"
+                      class="h-10 w-10 rounded-lg border bg-inverted p-1"
                       src="/img/core/auth/sign-in-light.svg"
                       alt="Auth illustration"
                     />
@@ -108,26 +108,26 @@
               <template #header>
                 <div class="flex flex-col gap-1">
                   <h2 class="text-base font-semibold">Runtime snapshot</h2>
-                  <p class="text-sm text-gray-500">
+                  <p class="text-sm text-muted">
                     Live FireUX config for the active Cleanbox runtime.
                   </p>
                 </div>
               </template>
               <dl class="grid gap-4 sm:grid-cols-2 text-sm">
                 <div>
-                  <dt class="text-gray-500">Ecosystem</dt>
+                  <dt class="text-muted">Ecosystem</dt>
                   <dd class="font-medium">{{ cfg.ecosystem }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500">Role</dt>
+                  <dt class="text-muted">Role</dt>
                   <dd class="font-medium capitalize">{{ cfg.role }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500">App ID</dt>
+                  <dt class="text-muted">App ID</dt>
                   <dd class="font-mono">{{ cfg.appId || 'not set' }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500">Modules</dt>
+                  <dt class="text-muted">Modules</dt>
                   <dd class="font-mono">
                     {{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}
                   </dd>

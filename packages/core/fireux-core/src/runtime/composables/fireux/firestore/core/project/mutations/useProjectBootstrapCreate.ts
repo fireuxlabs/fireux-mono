@@ -4,7 +4,6 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { normalizeFireuxAppScopeState } from '../../../../../../models/core/meta.model'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 
 export function useProjectBootstrapCreate() {
@@ -23,7 +22,7 @@ export function useProjectBootstrapCreate() {
 
     if (!firebaseProjectId || !projectId) return
 
-    const ref = doc(db, ProjectStorage.rootCollection, projectId)
+    const ref = doc(db, ProjectStorage.collection, projectId)
     const snap = await getDoc(ref)
 
     const mainAppId = String(fireux.appId || '').trim()
@@ -34,8 +33,6 @@ export function useProjectBootstrapCreate() {
     if (!snap.exists()) {
       await setDoc(ref, {
         id: projectId,
-        app_scope_state: 'parent_app',
-        app_scope_app_id: mainAppId,
         name,
         slug: projectId,
         description: '',
@@ -50,8 +47,6 @@ export function useProjectBootstrapCreate() {
         firebase_project_id: firebaseProjectId,
         owner_user_id: '',
         operator_ids: [],
-        team_ids: [],
-        join_requests: [],
         created: {
           at: serverTimestamp(),
           by: mainAppId,
@@ -67,26 +62,6 @@ export function useProjectBootstrapCreate() {
 
     const data = snap.data() || {}
     const patch: Record<string, unknown> = {}
-    const storedScopeState = normalizeFireuxAppScopeState(data.app_scope_state)
-    const storedScopeAppId = String(data.app_scope_app_id || '').trim()
-    const belongsToAnotherApp =
-      (storedScopeState === 'parent_app' || storedScopeState === 'tenant_app') &&
-      Boolean(storedScopeAppId) &&
-      storedScopeAppId !== mainAppId
-
-    if (belongsToAnotherApp) {
-      throw new Error(
-        `[project-bootstrap] Project "${projectId}" belongs to app "${storedScopeAppId}". Transfer its app-scoped records before assigning it to parent app "${mainAppId}".`
-      )
-    }
-
-    if (String(data.app_scope_state || '').trim() !== 'parent_app') {
-      patch.app_scope_state = 'parent_app'
-    }
-
-    if (String(data.app_scope_app_id || '').trim() !== mainAppId) {
-      patch.app_scope_app_id = mainAppId
-    }
 
     if (!String(data.id || '').trim()) {
       patch.id = projectId
@@ -102,10 +77,6 @@ export function useProjectBootstrapCreate() {
 
     if (!String(data.firebase_project_id || '').trim()) {
       patch.firebase_project_id = firebaseProjectId
-    }
-
-    if (!Array.isArray(data.join_requests)) {
-      patch.join_requests = []
     }
 
     if (!data.created || typeof data.created !== 'object') {

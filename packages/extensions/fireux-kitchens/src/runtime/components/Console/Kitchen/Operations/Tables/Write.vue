@@ -102,7 +102,7 @@ const saveTableCount = async () => {
     toast.add({
       title: 'Failed to update table count',
       description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
     throw error

@@ -16,7 +16,7 @@ import {
 import { moduleName } from './modules'
 import {
   configureAppModules,
-  configureConsolePanelDefaults,
+  configureDashboardPanelDefaults,
   configureCoreCss,
   configureIconServerBundle,
   configureNitroBaseline,
@@ -54,7 +54,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   configureNuxtRuntimeDefaults(nuxt)
   configureAppModules(nuxt, app, appDatabaseRuntimeModule)
   configureIconServerBundle(nuxt)
-  configureConsolePanelDefaults(nuxt)
+  configureDashboardPanelDefaults(nuxt)
   configureCoreCss(nuxt)
 
   const envDomain = reqEnv('APP_DOMAIN')

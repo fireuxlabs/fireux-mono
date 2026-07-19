@@ -13,7 +13,7 @@
             <h1 class="text-base font-semibold">Forms Sandbox</h1>
           </div>
         </template>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           Safe playground backed by Firestore collection <span class="font-mono">test</span>.
           Each form writes to a dedicated doc id (e.g. <span class="font-mono">singlefield</span>).
         </p>
@@ -23,7 +23,7 @@
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">ImagePicker</h2>
-            <span class="text-xs text-gray-500 font-mono">test/avatarpicker</span>
+            <span class="font-mono text-xs text-muted">test/avatarpicker</span>
           </div>
         </template>
 
@@ -34,14 +34,14 @@
           :update-function="updateAvatar"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ avatarDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ avatarDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">SimpleField</h2>
-            <span class="text-xs text-gray-500 font-mono">test/singlefield</span>
+            <span class="font-mono text-xs text-muted">test/singlefield</span>
           </div>
         </template>
 
@@ -52,14 +52,14 @@
           :update-function="updateSingle"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ singleDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ singleDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">Field</h2>
-            <span class="text-xs text-gray-500 font-mono">test/field</span>
+            <span class="font-mono text-xs text-muted">test/field</span>
           </div>
         </template>
 
@@ -98,14 +98,14 @@
           />
         </div>
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ fieldDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ fieldDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">Checkbox</h2>
-            <span class="text-xs text-gray-500 font-mono">test/checkbox</span>
+            <span class="font-mono text-xs text-muted">test/checkbox</span>
           </div>
         </template>
 
@@ -116,14 +116,14 @@
           :update-function="updateCheckbox"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ checkboxDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ checkboxDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">Select</h2>
-            <span class="text-xs text-gray-500 font-mono">test/select</span>
+            <span class="font-mono text-xs text-muted">test/select</span>
           </div>
         </template>
 
@@ -135,14 +135,14 @@
           :update-function="updateSelect"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ selectDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ selectDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">ArrayOfStrings (Firestore)</h2>
-            <span class="text-xs text-gray-500 font-mono">test/arrayofstrings</span>
+            <span class="font-mono text-xs text-muted">test/arrayofstrings</span>
           </div>
         </template>
 
@@ -154,14 +154,14 @@
           :update-function="updateArrayOfStrings"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ arrayOfStringsDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ arrayOfStringsDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">MultiField</h2>
-            <span class="text-xs text-gray-500 font-mono">test/multifield</span>
+            <span class="font-mono text-xs text-muted">test/multifield</span>
           </div>
         </template>
 
@@ -174,13 +174,13 @@
           :commas="true"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ multiFieldDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ multiFieldDoc }}</pre>
       </UCard>
 
       <div class="space-y-4">
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-base font-semibold">ObjectArray</h2>
-          <span class="text-xs text-gray-500 font-mono">test/objectarray</span>
+          <span class="font-mono text-xs text-muted">test/objectarray</span>
         </div>
 
         <MoleculesFormsFirestoreObjectArray
@@ -191,7 +191,7 @@
           <template #display="slotProps">
             <div class="p-4 border border-dashed rounded">
               <div class="text-sm font-medium">{{ slotProps.item?.name || 'Untitled' }}</div>
-              <div class="text-xs text-gray-500">{{ slotProps.item?.url || 'No URL' }}</div>
+              <div class="text-xs text-muted">{{ slotProps.item?.url || 'No URL' }}</div>
               <div class="mt-3 flex gap-2">
                 <UButton
                   size="xs"
@@ -215,7 +215,7 @@
           </template>
 
           <template #edit="slotProps">
-            <div class="p-4 border border-dashed border-primary-300 rounded bg-primary-50">
+            <div class="rounded border border-dashed border-primary/30 bg-primary/10 p-4">
               <div class="grid gap-2">
                 <UInput v-model="slotProps.item.name" placeholder="Name" />
                 <UInput v-model="slotProps.item.url" placeholder="https://..." />
@@ -244,14 +244,14 @@
           </template>
         </MoleculesFormsFirestoreObjectArray>
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ objectArrayDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ objectArrayDoc }}</pre>
       </div>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">SocialLinks</h2>
-            <span class="text-xs text-gray-500 font-mono">test/sociallinks</span>
+            <span class="font-mono text-xs text-muted">test/sociallinks</span>
           </div>
         </template>
 
@@ -260,14 +260,14 @@
           :update-function="updateSocialLinks"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ socialLinksDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ socialLinksDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">ListActions</h2>
-            <span class="text-xs text-gray-500 font-mono">test/listactions</span>
+            <span class="font-mono text-xs text-muted">test/listactions</span>
           </div>
         </template>
 
@@ -280,14 +280,14 @@
           empty-text="Nothing to review."
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ listActionsDoc }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ listActionsDoc }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">ArrayOfStrings (State)</h2>
-            <span class="text-xs text-gray-500 font-mono">local state</span>
+            <span class="font-mono text-xs text-muted">local state</span>
           </div>
         </template>
 
@@ -298,27 +298,27 @@
           new-item-placeholder="Add tag"
         />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ stateArrayOfStrings }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ stateArrayOfStrings }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">RichText (State)</h2>
-            <span class="text-xs text-gray-500 font-mono">local state</span>
+            <span class="font-mono text-xs text-muted">local state</span>
           </div>
         </template>
 
         <MoleculesFormsStateRichText v-model="stateRichText" />
 
-        <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ stateRichText }}</pre>
+        <pre class="overflow-x-auto rounded-lg border border-default bg-muted p-3 text-xs">{{ stateRichText }}</pre>
       </UCard>
 
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold">ImagePicker (State)</h2>
-            <span class="text-xs text-gray-500 font-mono">localStorage</span>
+            <span class="font-mono text-xs text-muted">localStorage</span>
           </div>
         </template>
 

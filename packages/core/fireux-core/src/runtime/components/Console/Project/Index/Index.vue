@@ -1,5 +1,5 @@
 <template>
-  <section class="console-surface space-y-4">
+  <section class="console-surface console-surface--compact">
     <ConsoleProjectIndexSelected
       :project="selection.project"
       :project-id="selection.projectId"

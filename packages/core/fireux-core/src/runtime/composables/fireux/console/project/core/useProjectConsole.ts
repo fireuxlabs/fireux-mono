@@ -61,7 +61,7 @@ export function useProjectConsole(
   })
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
-    storageFamily: ProjectStorage.rootCollection,
+    storageFamily: ProjectStorage.collection,
     targetItems: targetProjects,
     targetPending: targetsPending,
     targetError: targetsError,

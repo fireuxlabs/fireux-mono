@@ -28,7 +28,7 @@
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
-                <p class="text-xs uppercase tracking-wide text-gray-400">
+                <p class="text-xs uppercase tracking-wide text-dimmed">
                   {{ job.source_app_id || 'App unknown' }}
                 </p>
               </div>

@@ -4,7 +4,7 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Job card surfaces</p>
+        <p class="text-sm font-semibold text-highlighted">Job card surfaces</p>
         <p class="text-xs text-muted">Pill, preview, cell, and profile variants with a real-looking payload.</p>
       </div>
     </template>

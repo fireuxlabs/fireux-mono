@@ -8,7 +8,7 @@
         </div>
 
         <div
-          class="collection-manager__controls flex flex-1 items-center gap-2"
+          class="collection-manager__controls"
         >
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <UInput

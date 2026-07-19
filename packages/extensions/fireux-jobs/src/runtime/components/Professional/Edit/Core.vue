@@ -46,7 +46,7 @@
                 :initials="imageInitials"
                 :update-function="handleImageUpload"
               />
-              <p v-if="imageUploading" class="text-xs text-gray-500">
+              <p v-if="imageUploading" class="text-xs text-muted">
                 Uploading image…
               </p>
             </div>
@@ -175,7 +175,7 @@ const wrap = async (fn: () => Promise<void>, failTitle: string) => {
     toast.add({
       title: failTitle,
       description,
-      color: 'amber',
+      color: 'warning',
     })
     throw error
   }
@@ -209,7 +209,7 @@ const handleImageUpload = async (file: File) => {
     toast.add({
       title: 'Failed to update image',
       description,
-      color: 'amber',
+      color: 'warning',
     })
     throw error
   } finally {

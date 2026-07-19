@@ -11,7 +11,7 @@ type UseProjectFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = ProjectStorage.rootCollection
+const DEFAULT_COLLECTION_PATH = ProjectStorage.collection
 
 function normalizeProject(
   entry: ProjectFetchDoc | null | undefined

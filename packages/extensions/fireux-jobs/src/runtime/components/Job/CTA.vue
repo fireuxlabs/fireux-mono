@@ -27,7 +27,7 @@
           <!-- DEV sanity output -->
           <pre
             v-if="showCheck"
-            class="text-xs text-slate-500 whitespace-pre-wrap"
+            class="whitespace-pre-wrap text-xs text-muted"
           >{{ JSON.stringify(check, null, 2) }}</pre>
         </div>
       </template>

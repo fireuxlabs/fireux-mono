@@ -111,7 +111,7 @@ const handleCreate = async () => {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: var(--tracking-widest);
-  color: var(--ui-text-400, #94a3b8);
+  color: var(--ui-text-dimmed);
   margin: 0;
 }
 
@@ -122,7 +122,7 @@ const handleCreate = async () => {
 
 .lede {
   margin: 0;
-  color: var(--ui-text-500, #64748b);
+  color: var(--ui-text-muted);
 }
 
 .body {
@@ -144,11 +144,11 @@ const handleCreate = async () => {
   align-items: center;
   gap: calc(var(--spacing) * 3);
   font-size: var(--text-sm);
-  color: var(--ui-text-600, #475569);
+  color: var(--ui-text-toned);
 }
 
 .benefits li :deep(svg) {
-  color: var(--ui-primary-500, #2563eb);
+  color: var(--ui-primary);
 }
 
 .actions {
@@ -164,7 +164,7 @@ const handleCreate = async () => {
 
 .error {
   margin: 0;
-  color: #dc2626;
+  color: var(--ui-error);
   font-size: var(--text-sm);
 }
 </style>

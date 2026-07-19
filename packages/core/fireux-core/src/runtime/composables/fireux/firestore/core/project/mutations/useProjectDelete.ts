@@ -10,7 +10,7 @@ export function useProjectDelete() {
     const id = clean(projectId)
     if (!id) throw new Error('Project id is required')
 
-    await deleteDocument(ProjectStorage.rootCollection, id)
+    await deleteDocument(ProjectStorage.collection, id)
   }
 
   return {

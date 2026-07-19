@@ -37,7 +37,7 @@
           Cancel
         </UButton>
       </div>
-      <p v-if="errorMessage" class="text-sm text-red-600">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="text-sm text-error">{{ errorMessage }}</p>
     </div>
   </div>
 </template>

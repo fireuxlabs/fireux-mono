@@ -66,7 +66,7 @@
           </div>
           <EditorContent :editor="editor" class="tiptap-content" />
         </div>
-        <div v-else class="text-sm text-gray-500">Loading editor…</div>
+        <div v-else class="text-sm text-muted">Loading editor…</div>
       </ClientOnly>
     </div>
 

@@ -1,6 +1,6 @@
 Composables spine map
-Updated: 2026-07-18
-Ref: 1fabff8be
+Updated: 2026-07-19
+Ref: 258a4f8f3
 Role: map, not canon
 
 Purpose:
@@ -52,8 +52,11 @@ Reactive ownership:
 - A composable that exposes a live collection or document read constructs that
   binding once during setup and passes reactive source inputs into it.
 - Static fetch factories are setup-time conveniences only. Do not invoke them
-  from `computed`, `watch`, templates, or render-time helpers; that creates
-  subscriptions without a stable owner.
+  from `computed`, templates, or render-time helpers; that creates subscriptions
+  without a stable owner.
+- A reconciliation watcher may own a dynamic keyed cache only when it reuses
+  surviving bindings, stops removed bindings, disposes the complete cache with
+  its scope, and keeps derived/computed mapping constructor-free.
 
 Avoid:
 - `facade`

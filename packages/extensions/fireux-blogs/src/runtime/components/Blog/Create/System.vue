@@ -39,7 +39,7 @@ async function handleCreate() {
         title: 'Published',
         description: 'Blog post published successfully',
         icon: 'i-heroicons-check-circle',
-        color: 'green',
+        color: 'success',
       })
     }
 
@@ -52,7 +52,7 @@ async function handleCreate() {
         title: 'Publish failed',
         description: error?.message || 'Unknown error',
         icon: 'i-heroicons-x-circle',
-        color: 'red',
+        color: 'error',
       })
     }
   } finally {

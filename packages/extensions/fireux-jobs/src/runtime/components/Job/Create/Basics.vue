@@ -3,11 +3,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           {{ props.stepLabel }} · {{ props.title }}
         </p>
         <h2 class="text-lg font-semibold">{{ props.title }}</h2>
-        <p v-if="props.subtitle" class="text-sm text-gray-500">
+        <p v-if="props.subtitle" class="text-sm text-muted">
           {{ props.subtitle }}
         </p>
       </div>

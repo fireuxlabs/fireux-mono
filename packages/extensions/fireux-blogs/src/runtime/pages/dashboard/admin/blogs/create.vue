@@ -11,7 +11,7 @@
           <UPageBody class="pagebody">
             <UAlert
               v-if="!canPublishBlog"
-              color="amber"
+              color="warning"
               title="Admins only"
               description="Only admins can publish blog posts for this runtime."
             />
@@ -74,7 +74,7 @@ async function handleCreate() {
         title: 'Published',
         description: 'Blog post published successfully',
         icon: 'i-heroicons-check-circle',
-        color: 'green',
+        color: 'success',
       })
     }
 
@@ -86,7 +86,7 @@ async function handleCreate() {
         title: 'Publish failed',
         description: error?.message || 'Unknown error',
         icon: 'i-heroicons-x-circle',
-        color: 'red',
+        color: 'error',
       })
     }
   } finally {

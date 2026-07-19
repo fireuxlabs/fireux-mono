@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+  <div class="flex flex-wrap items-center gap-2 text-xs text-toned">
     <span class="font-medium">Drift:</span>
 
     <UButton

@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/User/Edit/Core.vue -->
 <template>
   <section class="space-y-2">
-    <p class="text-xs font-semibold uppercase tracking-wide text-slate-600">
+    <p class="text-xs font-semibold uppercase tracking-wide text-toned">
       Core Properties
     </p>
 
@@ -9,7 +9,7 @@
       <div v-if="user" class="space-y-6">
         <UCard v-if="canManageAppMembership">
           <div class="flex items-center justify-between gap-3">
-            <div class="text-xs text-gray-600 space-y-1">
+            <div class="space-y-1 text-xs text-toned">
               <p>appUser.role: {{ appUserRole }}</p>
               <p>core adminOf: {{ user?.adminOf?.join(', ') || 'none' }}</p>
             </div>
@@ -31,7 +31,7 @@
               :initials="avatarInitials"
               :update-function="handleAvatarUpload"
             />
-            <p v-if="avatarUploading" class="text-xs text-gray-500">
+            <p v-if="avatarUploading" class="text-xs text-muted">
               Uploading avatar…
             </p>
           </div>

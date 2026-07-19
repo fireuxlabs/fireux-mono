@@ -118,7 +118,7 @@ const updateIdentityField = async (
     toast.add({
       title: failTitle,
       description,
-      color: 'amber',
+      color: 'warning',
       icon: 'i-heroicons-exclamation-triangle',
     })
     throw error

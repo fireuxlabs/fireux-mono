@@ -6,9 +6,9 @@
       <UCard v-if="agentCard">
         <template #header>
           <div class="space-y-1">
-            <p class="text-sm text-gray-500">Creator</p>
+            <p class="text-sm text-muted">Creator</p>
             <h2 class="text-lg font-semibold">Current agent</h2>
-            <p class="text-sm text-gray-500">This job will be stamped to this agent.</p>
+            <p class="text-sm text-muted">This job will be stamped to this agent.</p>
           </div>
         </template>
 

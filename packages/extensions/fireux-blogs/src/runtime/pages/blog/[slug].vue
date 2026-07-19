@@ -11,7 +11,7 @@
 
       <div v-else class="space-y-2">
         <h1 class="text-xl font-semibold">404 – Blog post not found</h1>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           The requested article could not be loaded.
         </p>
       </div>

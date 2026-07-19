@@ -108,7 +108,7 @@ const addRecipe = async () => {
       toast.add({
         title: 'Recipe created with translation gaps',
         description: `Failed languages: ${result.failedLanguages.join(', ')}`,
-        color: 'amber',
+        color: 'warning',
         icon: 'i-heroicons-exclamation-triangle',
       })
     } else {

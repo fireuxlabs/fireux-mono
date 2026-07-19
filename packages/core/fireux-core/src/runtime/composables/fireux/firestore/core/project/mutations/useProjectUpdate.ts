@@ -14,7 +14,7 @@ export function useProjectUpdate() {
     const id = clean(projectId)
     if (!id) throw new Error('Project id is required')
 
-    await updateDocument<Project>(ProjectStorage.rootCollection, id, patch)
+    await updateDocument<Project>(ProjectStorage.collection, id, patch)
   }
 
   return {

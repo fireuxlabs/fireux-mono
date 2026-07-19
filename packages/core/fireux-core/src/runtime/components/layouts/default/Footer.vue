@@ -61,7 +61,7 @@
             <a
               v-if="contactEmail"
               :href="`mailto:${contactEmail}`"
-              class="text-xs text-[color:var(--ui-primary)] hover:underline"
+              class="text-xs text-primary hover:underline"
             >
               {{ contactEmail }}
             </a>

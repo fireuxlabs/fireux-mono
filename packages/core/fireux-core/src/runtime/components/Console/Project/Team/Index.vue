@@ -1,9 +1,9 @@
 <template>
-  <section class="console-surface space-y-4">
+  <section class="console-surface console-surface--compact">
     <ConsoleTeamPanel
       entity-label="Project"
       :target-id="projectId"
-      :team-ids="teamIds"
+      :team-ids="[]"
       :operator-ids="operatorIds"
       :access-ids="accessIds"
       :read-only="readOnly"
@@ -11,7 +11,7 @@
     />
 
     <DevFireuxDebugPanel
-      title="Project team"
+      title="Project access"
       scope="console"
       :data="debug"
     />
@@ -21,6 +21,6 @@
 <script setup lang="ts">
 import { useProjectConsoleTeam } from '../../../../composables/fireux/console/project/team/useProjectConsoleTeam'
 
-const { projectId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
+const { projectId, operatorIds, accessIds, readOnly, canWrite, debug } =
   useProjectConsoleTeam()
 </script>

@@ -7,7 +7,7 @@
     @activate="emit('action')"
   >
     <div
-      class="fx-card--cell flex w-full items-start gap-3"
+      class="fx-card--cell"
     >
       <UAvatar
         :src="props.imageUrl || undefined"

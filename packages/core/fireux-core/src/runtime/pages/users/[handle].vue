@@ -30,7 +30,7 @@
       />
       <UAlert
         v-else-if="missing"
-        color="amber"
+        color="warning"
         title="User not found"
         description="This handle does not exist or is not public."
       />

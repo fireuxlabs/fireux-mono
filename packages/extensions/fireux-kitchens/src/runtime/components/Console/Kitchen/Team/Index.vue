@@ -1,5 +1,5 @@
 <template>
-  <section class="console-surface space-y-6">
+  <section class="console-surface">
     <ConsoleTeamPanel
       entity-label="Kitchen"
       :target-id="kitchenId"

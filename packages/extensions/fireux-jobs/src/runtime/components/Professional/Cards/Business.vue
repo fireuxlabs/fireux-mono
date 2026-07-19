@@ -10,7 +10,7 @@
 
     <div class="flex items-start gap-5">
       <div
-        class="flex-none overflow-hidden rounded-full bg-gray-100"
+        class="flex-none overflow-hidden rounded-full bg-muted"
         style="width: 72px; height: 72px;"
       >
         <img
@@ -54,7 +54,7 @@
           alt="Professional profile QR code"
           class="h-44 w-44"
         />
-        <div v-else class="h-44 w-44 animate-pulse rounded-xl bg-gray-100" />
+        <div v-else class="h-44 w-44 animate-pulse rounded-xl bg-muted" />
       </div>
     </div>
   </UCard>

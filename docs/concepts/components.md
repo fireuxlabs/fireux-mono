@@ -1,6 +1,6 @@
 Components spine map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: 258a4f8f3
 Role: map, not canon
 
 Purpose:
@@ -119,6 +119,10 @@ Working rules:
   CSS, Tailwind-owned ordinary typography and spacing values, and retirement
   of the audited entity-card, inset-panel, raw disclosure, repeated card-stack,
   and visual-only disabled recipes.
+- Package-owned templates use Nuxt UI semantic color utilities rather than raw
+  Tailwind palette utilities. Intentional brand, artwork, overlay, print, and
+  output colors remain owned deltas and should use a named local seam when they
+  need to differ from ordinary UI semantics.
 - Ordinary rectangular UI uses the installed Nuxt UI `xs` through `3xl`
   radius scale. Do not add a parallel radius step or an arbitrary numeric
   radius. True circles and pills, explicitly approved percentage artwork, and

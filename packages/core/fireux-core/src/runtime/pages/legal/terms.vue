@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <p class="text-sm text-gray-500">Last updated: November 29, 2025</p>
+      <p class="text-sm text-muted">Last updated: November 29, 2025</p>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">1. Agreement to Terms</h2>

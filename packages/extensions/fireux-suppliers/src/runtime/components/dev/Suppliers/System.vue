@@ -171,7 +171,7 @@
         <div
           v-for="row in filteredSupplierIngredientRows"
           :key="row.key"
-          class="rounded-lg border border-gray-200 p-3 text-sm dark:border-gray-800"
+          class="rounded-lg border border-default p-3 text-sm"
         >
           <div class="font-mono text-xs text-muted">
             {{ row.ingredientId }}

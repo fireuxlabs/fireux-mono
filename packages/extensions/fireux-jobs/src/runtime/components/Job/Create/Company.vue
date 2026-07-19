@@ -3,11 +3,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-gray-500">Step 2 · Company</p>
+        <p class="text-sm text-muted">Step 2 · Company</p>
         <h2 class="text-lg font-semibold">
           {{ chosenPlaceCard ? 'Selected company' : 'Choose a company' }}
         </h2>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           Type a company name. We create the company record if it doesn’t exist.
         </p>
       </div>

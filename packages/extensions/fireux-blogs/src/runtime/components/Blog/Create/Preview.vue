@@ -133,7 +133,7 @@ const fallbackLogo = '/img/app/logo.png'
   max-width: 220px;
   width: 100%;
   border-radius: calc(var(--ui-radius) * 2);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--ui-border);
 }
 
 .footer-grid {
@@ -146,7 +146,7 @@ const fallbackLogo = '/img/app/logo.png'
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
-  color: #6b7280;
+  color: var(--ui-text-muted);
 }
 
 .subdued {
@@ -155,7 +155,7 @@ const fallbackLogo = '/img/app/logo.png'
 }
 
 .warning {
-  color: #b91c1c;
+  color: var(--ui-error);
   font-style: normal;
   font-size: var(--text-sm);
 }

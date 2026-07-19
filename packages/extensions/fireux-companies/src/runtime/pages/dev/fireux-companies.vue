@@ -57,7 +57,7 @@
             <UCard>
               <template #header>
                 <div class="space-y-3">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <p class="text-sm font-semibold text-highlighted">
                     Companies collection
                   </p>
                   <p class="text-xs text-muted">

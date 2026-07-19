@@ -10,7 +10,7 @@ Plugin surfaces:
 	border: 1px solid var(--ui-border, currentColor);
 	border-radius: calc(var(--ui-radius) * 2);
 	background: var(--ui-bg, transparent);
-	box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--ui-bg-inverted) 8%, transparent);
 	padding: calc(var(--spacing) * 4);
 }
 

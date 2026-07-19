@@ -1,5 +1,5 @@
 import { useNuxtApp } from '#imports'
-import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed, isRef, onScopeDispose, shallowRef, watch, type Ref } from 'vue'
 import {
   AppUserStorage,
   UserStorage,
@@ -8,7 +8,11 @@ import {
 } from '../../../../../../models/core/user.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
+import {
+  useFirestoreRead,
+  type FirestoreReadRef,
+} from '../../../operations/useFirestoreRead'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
 
 type EnrichedUser = {
@@ -46,45 +50,62 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     return String(value ?? runtimeAppId ?? '').trim()
   })
 
-  const membershipsRef = shallowRef(null) as ShallowRef<Ref<AppUser[] | undefined> | null>
-
-  watch(
-    resolvedAppId,
-    (nextAppId: string) => {
-      membershipsRef.value = nextAppId
-        ? appRead.firestoreFetchCollection<AppUser>(
-            `${AppStorage.collection}/${nextAppId}/${AppUserStorage.collection}`
-          )
-        : null
-    },
-    { immediate: true }
+  const membershipPath = computed(() =>
+    resolvedAppId.value
+      ? `${AppStorage.collection}/${resolvedAppId.value}/${AppUserStorage.collection}`
+      : ''
+  )
+  const membershipSource = appRead.firestoreFetchCollection<AppUser>(
+    membershipPath
   )
 
-  const memberships = computed<AppUser[]>(() => membershipsRef.value?.value ?? [])
-  const pending = computed(
-    () => Boolean(resolvedAppId.value) && membershipsRef.value?.value === undefined
+  const memberships = computed<AppUser[]>(() => membershipSource.value ?? [])
+  const membershipIds = computed(() =>
+    Array.from(
+      new Set(
+        memberships.value
+          .map((member) => String(member?.id ?? '').trim())
+          .filter(Boolean)
+      )
+    )
   )
 
-  const userCache = new Map<string, Ref<User | undefined>>()
+  const userCache = shallowRef(new Map<string, FirestoreReadRef<User>>())
 
-  const ensureCoreUser = (id?: string | null) => {
-    if (!id) return undefined
-    if (!userCache.has(id)) {
-      const ref = nuxtApp.runWithContext(() =>
-        identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
-      ) as Ref<User | undefined>
-      userCache.set(id, ref)
+  const stopUserRead = (source: FirestoreReadRef<User>) => {
+    source.stop(() => undefined)
+  }
+
+  const reconcileUserCache = (ids: string[]) => {
+    const current = userCache.value
+    const next = new Map<string, FirestoreReadRef<User>>()
+    const activeIds = new Set(ids)
+
+    for (const [id, source] of current) {
+      if (!activeIds.has(id)) stopUserRead(source)
     }
-    return userCache.get(id)
+
+    for (const id of ids) {
+      const existing = current.get(id)
+      const source = existing ?? nuxtApp.runWithContext(() =>
+        identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
+      )
+      next.set(id, source)
+    }
+
+    userCache.value = next
   }
 
   watch(
-    () => memberships.value.map((member) => member?.id).filter(Boolean),
-    (ids: string[]) => {
-      ids.forEach((id: string) => ensureCoreUser(id))
-    },
-    { immediate: true }
+    membershipIds,
+    reconcileUserCache,
+    { immediate: true, flush: 'sync' }
   )
+
+  onScopeDispose(() => {
+    for (const source of userCache.value.values()) stopUserRead(source)
+    userCache.value.clear()
+  })
 
   const fulfilled = computed<EnrichedUser[]>(() => {
     const entries = memberships.value
@@ -95,7 +116,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
       const memberId = String(member?.id ?? '').trim()
       if (!memberId) continue
 
-      const record = ensureCoreUser(memberId)?.value
+      const record = userCache.value.get(memberId)?.value
       if (!record) continue
       const recordId = String((record as any).id ?? memberId).trim() || memberId
 
@@ -117,6 +138,27 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
   })
 
   const count = computed(() => fulfilled.value.length)
+  const pending = computed(() => {
+    if (membershipSource.pending.value) return true
+    return membershipIds.value.some((id) => {
+      const source = userCache.value.get(id)
+      return !source || source.pending.value
+    })
+  })
+  const error = computed<unknown | undefined>(() => {
+    if (membershipSource.error.value) return membershipSource.error.value
+    for (const id of membershipIds.value) {
+      const failure = userCache.value.get(id)?.error.value
+      if (failure) return failure
+    }
+    return undefined
+  })
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(resolvedAppId.value)),
+    count,
+    error,
+    pending,
+  })
 
   return {
     appId: resolvedAppId,
@@ -124,6 +166,8 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     users: fulfilled,
     fulfilled,
     pending,
+    error,
+    outcome,
     count,
   }
 }

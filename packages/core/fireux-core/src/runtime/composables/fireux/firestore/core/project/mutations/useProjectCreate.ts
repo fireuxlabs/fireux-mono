@@ -1,7 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-  AppProject,
   Project,
   ProjectCreateInput,
   ProjectStatus,
@@ -11,12 +10,6 @@ import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
-import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-  ConsoleRootCreateResult,
-} from '../../../system/console/mutations/useConsoleCreate'
-import { useConsoleCreate } from '../../../system/console/mutations/useConsoleCreate'
 import { defineFireuxCreatePlan } from '../../../operations/createStrategy'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
@@ -44,9 +37,9 @@ export type ProjectCreateOptions = {
   test?: boolean
 }
 
-export type ProjectCreateModeOptions = {
-  mode?: ConsoleCreateMode
-  existingRootId?: string | null
+export type ProjectCreateResult = {
+  id: string
+  created: boolean
 }
 
 export const ProjectCreatePlan = defineFireuxCreatePlan({
@@ -56,18 +49,17 @@ export const ProjectCreatePlan = defineFireuxCreatePlan({
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { createConsole } = useConsoleCreate()
   const collectionPath =
     options.test === true
       ? 'test-projects'
-      : normalizeString(options.collectionPath || ProjectStorage.rootCollection) ||
-        ProjectStorage.rootCollection
+      : normalizeString(options.collectionPath || ProjectStorage.collection) ||
+        ProjectStorage.collection
   const isTestProjectCollection =
     options.test === true || collectionPath === 'test-projects'
 
   async function createTestProject(
     input: ProjectTestCreateInput = {}
-  ): Promise<ConsoleRootCreateResult> {
+  ): Promise<ProjectCreateResult> {
     const user = await useRequireUser()
     const id = normalizeString(input.id) || normalizeString(user.uid)
     const userLabel =
@@ -111,12 +103,10 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
   }
 
   async function createProjectRoot(
-    input: ProjectCreateInput,
-    createOptions: ProjectCreateModeOptions = {}
-  ): Promise<ConsoleRootCreateResult> {
+    input: ProjectCreateInput
+  ): Promise<ProjectCreateResult> {
     const user = await useRequireUser()
-    const requestedRootId = normalizeString(createOptions.existingRootId || input?.id)
-    const id = requestedRootId
+    const id = normalizeString(input?.id)
     const requestedName = normalizeString(input?.name)
     const defaultTestName = isTestProjectCollection
       ? `${resolveTestUserLabel(user.displayName, user.uid)} Test Project`
@@ -186,8 +176,6 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     }
 
     const payload: Partial<Omit<Project, 'id' | 'created' | 'updated'>> = {
-      app_scope_state: 'root_only',
-      app_scope_app_id: '',
       name,
       slug,
       status,
@@ -199,7 +187,6 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       firebase_project_id: firebaseProjectId,
       owner_user_id: user.uid,
       operator_ids: [user.uid],
-      team_ids: [user.uid],
     }
 
     if (description) {
@@ -221,46 +208,11 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     return { id, created: true }
   }
 
-  async function runProjectConsoleCreate(
-    input: ProjectCreateInput,
-    createOptions: ProjectCreateModeOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleCreateResult> {
-    const user = await useRequireUser()
-    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
-      return createProjectRoot(input, createOptions)
-    }
-
-    return createConsole<AppProject>({
-      type: 'project',
-      mode: createOptions.mode ?? defaultMode,
-      createRoot,
-      createOverlay: async () =>
-        ({
-          operator_ids: [user.uid],
-          team_ids: [user.uid],
-        }) as AppProject,
-    })
-  }
-
   async function createProject(
-    input: ProjectCreateInput,
-    createOptions: ProjectCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
-    const root = await createProjectRoot(input, createOptions)
-    return {
-      id: root.id,
-      createdRoot: root.created,
-      createdOverlay: false,
-    }
+    input: ProjectCreateInput
+  ): Promise<ProjectCreateResult> {
+    return createProjectRoot(input)
   }
 
-  async function createProjectConsole(
-    input: ProjectCreateInput,
-    createOptions: ProjectCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
-    return runProjectConsoleCreate(input, createOptions, 'console')
-  }
-
-  return { createPlan: ProjectCreatePlan, createProject, createProjectConsole, createTestProject }
+  return { createPlan: ProjectCreatePlan, createProject, createTestProject }
 }

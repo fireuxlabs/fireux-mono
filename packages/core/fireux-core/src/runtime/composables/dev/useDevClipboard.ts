@@ -124,7 +124,7 @@ export function useDevClipboard() {
         title: options.error ?? 'Nothing to copy',
         description: options.label,
         icon: 'i-lucide-alert-circle',
-        color: 'yellow',
+        color: 'warning',
       })
       return false
     }
@@ -144,14 +144,14 @@ export function useDevClipboard() {
         title: options.success ?? 'Copied to clipboard',
         description: options.label,
         icon: 'i-lucide-clipboard-check',
-        color: 'green',
+        color: 'success',
       })
     } else {
       toast?.add({
         title: options.error ?? 'Copy failed',
         description: 'Unable to access the clipboard',
         icon: 'i-lucide-x-circle',
-        color: 'red',
+        color: 'error',
       })
     }
 

@@ -77,11 +77,11 @@ export function configureIconServerBundle(nuxt: NuxtConfig) {
   }
 }
 
-export function configureConsolePanelDefaults(nuxt: NuxtConfig) {
+export function configureDashboardPanelDefaults(nuxt: NuxtConfig) {
   const appConfig = (((nuxt as any).appConfig ||= {}) as Record<string, any>)
   const uiConfig = ((appConfig.ui ||= {}) as Record<string, any>)
-  const consolePanel = ((uiConfig.consolePanel ||= {}) as Record<string, any>)
-  const slots = ((consolePanel.slots ||= {}) as Record<string, any>)
+  const dashboardPanel = ((uiConfig.dashboardPanel ||= {}) as Record<string, any>)
+  const slots = ((dashboardPanel.slots ||= {}) as Record<string, any>)
   slots.body ||= 'px-2 sm:px-4'
 }
 

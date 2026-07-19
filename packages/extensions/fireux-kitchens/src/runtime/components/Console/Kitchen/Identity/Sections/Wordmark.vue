@@ -128,7 +128,7 @@ const handleWordmarkFileChange = async (event: Event) => {
     toast.add({
       title: 'Failed to update wordmark',
       description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
   }

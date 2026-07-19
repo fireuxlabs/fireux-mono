@@ -91,7 +91,7 @@ const stepIsComplete = (value: string) => {
 }
 
 .stepper-meta {
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-size: var(--text-sm);
 }
 

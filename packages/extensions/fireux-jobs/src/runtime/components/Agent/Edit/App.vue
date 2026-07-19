@@ -3,13 +3,13 @@
     <div v-if="agent" class="space-y-6">
       <UCard>
         <div class="space-y-2">
-          <h3 class="text-base font-semibold text-gray-900">
+          <h3 class="text-base font-semibold text-highlighted">
             App-level Agent Settings
           </h3>
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-muted">
             There are currently no app-specific fields for the agent profile.
           </p>
-          <p class="text-xs text-gray-400">
+          <p class="text-xs text-dimmed">
             This section is reserved for tenant-specific overrides when they are needed.
           </p>
         </div>

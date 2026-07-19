@@ -24,16 +24,15 @@
           <code>projects/&lt;id&gt;</code>.
         </li>
         <li>
-          When an app context exists, the shared console create seam also creates
-          <code>apps/&lt;appId&gt;/projects/&lt;id&gt;</code>.
+          The current App is creation context only; Project has no app-scoped
+          storage record.
         </li>
         <li>
-          Route mode changes the entry and return flow, not the root/app write rule.
+          Route mode changes the entry and return flow, not Project storage.
         </li>
         <li>
-          Adds the current user to project
-          <code>team_ids</code>
-          data when records are created.
+          Project access stays on the root Project and is never inferred from an
+          App, Kitchen, or another entity team.
         </li>
         <li>
           Success routes to
@@ -82,7 +81,7 @@ const headerTitle = computed(() =>
 )
 const headerDescription = computed(() =>
   isConsoleMode.value
-    ? 'We’ll create the project console for this app and create the public project only if it is missing.'
+    ? 'We’ll create only the root Project record when Project creation is enabled.'
     : 'We’ll create the public project record from endpoint metadata when project ingest is rebuilt.'
 )
 const successTo = computed(() => {

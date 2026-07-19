@@ -15,7 +15,7 @@
 
             <UAlert
               v-else-if="!canManageProducts"
-              color="amber"
+              color="warning"
               title="Admins only"
               description="Only admins can publish products for this runtime."
             />
@@ -137,7 +137,7 @@ async function handleCreate() {
             failed.length > 0
               ? 'i-heroicons-exclamation-triangle'
               : 'i-heroicons-check-circle',
-          color: failed.length > 0 ? 'amber' : 'green',
+          color: failed.length > 0 ? 'warning' : 'success',
         })
       }
 
@@ -163,7 +163,7 @@ async function handleCreate() {
           title: 'Create failed',
           description: result.error || 'Unknown error',
           icon: 'i-heroicons-x-circle',
-          color: 'red',
+          color: 'error',
         })
       return
     }
@@ -173,7 +173,7 @@ async function handleCreate() {
         title: 'Product created',
         description: result.id ? `Created: ${result.id}` : 'Product created',
         icon: 'i-heroicons-check-circle',
-        color: 'green',
+        color: 'success',
       })
     await router.push('/dashboard/admin/products')
   } finally {

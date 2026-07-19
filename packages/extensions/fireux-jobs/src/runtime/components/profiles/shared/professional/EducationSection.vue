@@ -1,9 +1,9 @@
 <template>
   <section class="space-y-4">
     <header
-      class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-gray-100"
+      class="flex items-center gap-2 text-base font-semibold text-highlighted"
     >
-      <UIcon name="i-heroicons-academic-cap" class="h-5 w-5 text-gray-400" />
+      <UIcon name="i-heroicons-academic-cap" class="h-5 w-5 text-dimmed" />
       <h2>Education</h2>
     </header>
 
@@ -11,7 +11,7 @@
       <article
         v-for="item in items"
         :key="item.id"
-        class="rounded-xl border border-gray-100 p-4 shadow-sm dark:border-gray-800"
+        class="rounded-xl border border-default p-4 shadow-sm"
       >
         <div class="flex items-start gap-3">
           <img
@@ -24,7 +24,7 @@
           <div class="flex-1 space-y-2">
             <div class="space-y-1">
               <h3
-                class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                class="text-lg font-semibold text-highlighted"
               >
                 {{ item.degree || item.institution }}
               </h3>

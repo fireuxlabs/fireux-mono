@@ -13,7 +13,7 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <p class="text-sm font-semibold text-highlighted">
               Kitchens collection
             </p>
             <p class="text-xs text-muted">
@@ -50,7 +50,7 @@
     <UCard>
       <template #header>
         <div class="space-y-3">
-          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <p class="text-sm font-semibold text-highlighted">
             Kitchen storage inspector
           </p>
           <p class="text-xs text-muted">
@@ -80,18 +80,18 @@
           </UBadge>
         </div>
 
-        <div v-if="migrationSignals.rootOnlyCollections.length" class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+        <div v-if="migrationSignals.rootOnlyCollections.length" class="rounded-lg border border-warning bg-warning/10 p-3 text-xs text-warning">
           Root-only child data detected:
           {{ migrationSignals.rootOnlyCollections.join(', ') }}.
           This is likely migration work for the selected kitchen.
         </div>
 
-        <div v-if="migrationSignals.overlayOnlyCollections.length" class="rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-900">
+        <div v-if="migrationSignals.overlayOnlyCollections.length" class="rounded-lg border border-info bg-info/10 p-3 text-xs text-info">
           Overlay-only child data detected:
           {{ migrationSignals.overlayOnlyCollections.join(', ') }}.
         </div>
 
-        <div v-if="!selectedKitchenApp && selectedKitchenId" class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900">
+        <div v-if="!selectedKitchenApp && selectedKitchenId" class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error">
           No app overlay found at
           <code>{{ overlayKitchenCollectionPath }}/{{ selectedKitchenId }}</code>.
         </div>

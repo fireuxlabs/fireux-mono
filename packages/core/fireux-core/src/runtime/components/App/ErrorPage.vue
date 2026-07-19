@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+  <main class="min-h-screen overflow-hidden bg-default text-default">
     <div
       class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.18),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_36%)]"
     />
@@ -59,7 +59,7 @@
           </div>
         </section>
 
-        <UCard class="border-primary/20 bg-white/90 shadow-xl shadow-primary/5 backdrop-blur dark:bg-gray-900/75">
+        <UCard class="border-primary/20 bg-default/90 shadow-xl shadow-primary/5 backdrop-blur">
           <div class="space-y-5">
             <div class="space-y-2">
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
@@ -138,7 +138,7 @@
             </p>
           </div>
 
-          <pre class="max-h-[28rem] overflow-auto rounded-2xl bg-gray-950 px-4 py-4 text-xs text-gray-100">{{ resolvedError.message }}</pre>
+          <pre class="max-h-[28rem] overflow-auto rounded-2xl bg-inverted px-4 py-4 text-xs text-inverted">{{ resolvedError.message }}</pre>
         </div>
       </section>
     </UContainer>

@@ -13,10 +13,10 @@
       <!-- section consumer -->
       <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
-      <div v-if="successId" class="text-sm text-green-600">
+      <div v-if="successId" class="text-sm text-success">
         Company created: {{ successId }}
       </div>
-      <div v-else-if="existingId" class="space-y-2 text-sm text-amber-600">
+      <div v-else-if="existingId" class="space-y-2 text-sm text-warning">
         <div>Company already exists: {{ existingId }}</div>
         <UButton
           size="xs"
@@ -27,7 +27,7 @@
           Inspect company
         </UButton>
       </div>
-      <div v-if="error" class="text-sm text-red-600">
+      <div v-if="error" class="text-sm text-error">
         {{ error }}
       </div>
     </MoleculesCreateCard>

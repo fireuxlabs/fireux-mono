@@ -57,7 +57,7 @@
         <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
         <li>
           <strong>Stock:</strong>
-          <span :style="{ color: product?.stock == null ? 'red' : 'inherit' }">{{
+          <span :class="{ 'text-error': product?.stock == null }">{{
             product?.stock ?? '!'
           }}</span>
         </li>
@@ -69,9 +69,8 @@
         <li>
           <strong>Default Price:</strong>
           <span
-            :style="{
-              color:
-                product?.default_price?.unit_amount == null ? 'red' : 'inherit',
+            :class="{
+              'text-error': product?.default_price?.unit_amount == null,
             }"
             >{{ product?.default_price?.unit_amount ?? '!' }}</span
           >
@@ -168,7 +167,7 @@ function priceLabel(product?: Partial<FirebaseProduct>): string {
 const notify = (
   title: string,
   description: string,
-  color: 'green' | 'amber' | 'red' = 'amber'
+  color: 'success' | 'warning' | 'error' = 'warning'
 ) => {
   if (toast) {
     toast.add({
@@ -176,9 +175,9 @@ const notify = (
       description,
       color,
       icon:
-        color === 'green'
+        color === 'success'
           ? 'i-heroicons-check-circle'
-          : color === 'red'
+          : color === 'error'
             ? 'i-heroicons-x-circle'
             : 'i-heroicons-exclamation-triangle',
     })
@@ -214,7 +213,7 @@ async function startCheckout() {
   const priceId = resolveCheckoutPriceId(product)
 
   if (!appId || !productId || !slug) {
-    notify('Checkout unavailable', 'Product data is incomplete for checkout.', 'red')
+    notify('Checkout unavailable', 'Product data is incomplete for checkout.', 'error')
     return
   }
 
@@ -222,7 +221,7 @@ async function startCheckout() {
     notify(
       'Checkout unavailable',
       'No live Stripe price found for this product yet.',
-      'amber'
+      'warning'
     )
     return
   }
@@ -251,7 +250,7 @@ async function startCheckout() {
     window.location.href = checkoutUrl
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to start checkout'
-    notify('Checkout failed', message, 'red')
+    notify('Checkout failed', message, 'error')
   } finally {
     isBuying.value = false
   }
@@ -260,7 +259,7 @@ async function startCheckout() {
 
 <style scoped>
 .missing {
-  color: red;
+  color: var(--ui-error);
   font-weight: var(--font-weight-bold);
 }
 
@@ -300,7 +299,7 @@ async function startCheckout() {
 }
 
 .cell-description {
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-size: var(--text-sm);
   margin-top: var(--spacing);
 }
@@ -336,7 +335,7 @@ async function startCheckout() {
   text-transform: uppercase;
   letter-spacing: var(--tracking-widest);
   font-size: var(--text-xs);
-  color: #6b7280;
+  color: var(--ui-text-muted);
 }
 
 .product-title {
@@ -346,7 +345,7 @@ async function startCheckout() {
 
 .product-summary {
   max-width: 36rem;
-  color: #4b5563;
+  color: var(--ui-text-toned);
 }
 
 .product-price {
@@ -361,7 +360,7 @@ async function startCheckout() {
 .price-label {
   display: block;
   font-size: var(--text-xs);
-  color: #6b7280;
+  color: var(--ui-text-muted);
 }
 
 .price-value {

@@ -58,7 +58,7 @@
           <div
             v-for="envVar in requiredVars"
             :key="envVar.key"
-            class="flex items-center justify-between rounded-lg border border-[var(--ui-border)] px-3 py-2"
+            class="flex items-center justify-between rounded-lg border border-default px-3 py-2"
           >
             <span class="font-mono text-sm">{{ envVar.key }}</span>
             <UBadge
@@ -69,10 +69,10 @@
             </UBadge>
           </div>
         </div>
-        <div v-if="showProceed" class="mt-4 border-t border-[var(--ui-border)] pt-4">
+        <div v-if="showProceed" class="mt-4 border-t border-default pt-4">
           <button
             type="button"
-            class="inline-flex min-h-10 w-full items-center justify-center rounded-md bg-gray-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+            class="inline-flex min-h-10 w-full items-center justify-center rounded-md bg-inverted px-4 py-2 text-sm font-semibold text-inverted shadow-sm transition hover:bg-inverted/90 disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="proceedDisabled"
             @click="emit('proceed')"
           >
@@ -97,7 +97,7 @@
           <div
             v-for="envVar in optionalClientVars"
             :key="envVar.key"
-            class="flex items-center justify-between rounded-lg border border-[var(--ui-border)] px-3 py-2"
+            class="flex items-center justify-between rounded-lg border border-default px-3 py-2"
           >
             <span class="font-mono text-sm">{{ envVar.key }}</span>
             <UBadge
@@ -123,7 +123,7 @@
           <div
             v-for="asset in brandAssets"
             :key="asset.name"
-            class="space-y-2 rounded-lg border border-[var(--ui-border)] p-4"
+            class="space-y-2 rounded-lg border border-default p-4"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">

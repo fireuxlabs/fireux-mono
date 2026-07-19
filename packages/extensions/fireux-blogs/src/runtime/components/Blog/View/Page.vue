@@ -1,14 +1,14 @@
 <template>
   <article class="space-y-4">
     <header class="space-y-2">
-      <p class="text-sm text-gray-500">{{ authorLine }}</p>
+      <p class="text-sm text-muted">{{ authorLine }}</p>
       <h1 class="text-2xl font-semibold leading-tight">{{ post.title }}</h1>
-      <p class="text-sm text-gray-600" v-if="post.metaDescription">
+      <p class="text-sm text-toned" v-if="post.metaDescription">
         {{ post.metaDescription }}
       </p>
     </header>
 
-    <div v-if="post.featuredImage" class="rounded-lg overflow-hidden bg-gray-100">
+    <div v-if="post.featuredImage" class="rounded-lg overflow-hidden bg-muted">
       <img
         :src="post.featuredImage"
         :alt="post.title"

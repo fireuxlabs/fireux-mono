@@ -14,14 +14,14 @@
 
     <!-- Display Mode -->
     <div v-if="!isEditing" class="display">
-      <span v-if="Object.keys(localValue).length" class="text-gray-700">
+      <span v-if="Object.keys(localValue).length" class="text-toned">
         <span v-if="commas" v-for="(value, key) in localValue" :key="key">
           {{ value
           }}<span v-if="key !== Object.keys(localValue).slice(-1)[0]">, </span>
         </span>
         <span v-else>{{ joinedValue }}</span>
       </span>
-      <span v-else class="text-gray-700">{{ placeholder || 'Not set' }}</span>
+      <span v-else class="text-toned">{{ placeholder || 'Not set' }}</span>
     </div>
 
     <!-- Edit Mode -->

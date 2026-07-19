@@ -301,6 +301,6 @@ function roundCoordinate(value: number) {
 }
 
 .delivery-zone-map-editor__error {
-  color: #b42318;
+  color: var(--ui-error);
 }
 </style>

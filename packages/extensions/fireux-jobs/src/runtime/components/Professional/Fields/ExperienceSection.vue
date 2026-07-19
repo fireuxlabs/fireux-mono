@@ -166,9 +166,11 @@
 </template>
 
 <script setup lang="ts">
+import { useNuxtApp } from '#imports'
 import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import type { FirestoreReadRef } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
@@ -180,7 +182,7 @@ import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/fir
 import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
 import { PlaceStorage, type Place, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import { computed, ref, shallowRef, watch, type Ref } from 'vue'
+import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
@@ -230,7 +232,8 @@ const normalizePlaceId = (placeId?: string | null) => {
 }
 
 const { firestoreFetchDoc } = useFirestoreManager()
-const placeDocRefs = shallowRef(new Map<string, Ref<Place | undefined>>())
+const nuxtApp = useNuxtApp()
+const placeDocRefs = shallowRef(new Map<string, FirestoreReadRef<Place>>())
 
 const placeIds = computed(() => {
   const ids = new Set<string>()
@@ -245,16 +248,33 @@ if (import.meta.client) {
   watch(
     placeIds,
     (ids: string[]) => {
-      const next = new Map<string, Ref<Place | undefined>>()
+      const current = placeDocRefs.value
+      const activeIds = new Set(ids)
+      const next = new Map<string, FirestoreReadRef<Place>>()
+
+      for (const [id, source] of current) {
+        if (!activeIds.has(id)) source.stop(() => undefined)
+      }
+
       for (const id of ids) {
-        const existing = placeDocRefs.value.get(id)
-        next.set(id, existing ?? firestoreFetchDoc<Place>(PlaceStorage.collection, id))
+        const existing = current.get(id)
+        const source = existing ?? nuxtApp.runWithContext(() =>
+          firestoreFetchDoc<Place>(PlaceStorage.collection, id)
+        )
+        next.set(id, source)
       }
       placeDocRefs.value = next
     },
-    { immediate: true }
+    { immediate: true, flush: 'sync' }
   )
 }
+
+onScopeDispose(() => {
+  for (const source of placeDocRefs.value.values()) {
+    source.stop(() => undefined)
+  }
+  placeDocRefs.value.clear()
+})
 
 const toPlaceBase = mapPlaceToBasePlace()
 const { pill: toPlaceCard } = usePlaceInterface()

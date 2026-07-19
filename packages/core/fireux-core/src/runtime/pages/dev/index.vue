@@ -103,7 +103,7 @@
           <span class="font-medium">primaryColor</span>
           <div class="flex items-center gap-2">
             <div
-              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
+              class="h-5 w-5 rounded border border-default"
             />
             <span class="text-muted">{{
               cfg.primaryColor
@@ -118,7 +118,7 @@
           <span class="font-medium">neutralColor</span>
           <div class="flex items-center gap-2">
             <div
-              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
+              class="h-5 w-5 rounded border border-default"
             />
             <span class="text-muted">{{
               cfg.neutralColor
@@ -133,7 +133,7 @@
           <span class="font-medium">secondaryColor</span>
           <div class="flex items-center gap-2">
             <div
-              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
+              class="h-5 w-5 rounded border border-default"
             />
             <span class="text-muted">
               {{ cfg.secondaryColor }}

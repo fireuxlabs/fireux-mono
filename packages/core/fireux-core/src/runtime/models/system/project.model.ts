@@ -1,14 +1,7 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../core/entity.model'
-import type {
-  FireuxAppOverlay,
-  FireuxStamped,
-} from '../core/meta.model'
-import {
-  FireuxAppOverlayModel,
-  FireuxAppScope,
-  FireuxConsoleAccessModel,
-} from '../core/meta.model'
+import type { FireuxStamped } from '../core/meta.model'
+import { FireuxConsoleAccessModel } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -22,34 +15,34 @@ type WidenLiteral<T> =
   : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Entity map: docs/concepts/entities.md
  *
  * Family: Console-backed system root entity
- * Storage: root canonical record plus app-scoped record
+ * Storage: root canonical record
  * Root path: /projects/<projectId>
- * App path: /apps/<appId>/projects/<projectId>
  * Management surface: /console/project in fireux-app
  *
  * Decision note:
- * - Project follows the shared root-plus-app canon used by Kitchen, Portfolio, and Supplier.
- * - Canonical Project identity, membership, and authority live on the root Project record.
- * - Public project creation should create the root project record.
- * - App-scoped project creation should ensure the app-scoped project record and may create root first when missing.
+ * - Project is root-only. App, Ecosystem, and the active runtime App reference
+ *   the same root Project entity.
+ * - Canonical Project identity, relationships, and operator authority live on
+ *   the root Project record.
+ * - Project access is not inferred from App, Kitchen, or another entity's team.
+ * - Project creation creates only the root Project record.
  * - `owner_user_id` is a canonical root ownership hint, not a replacement for any app-level authority system.
  * - `operator_ids` is canonical root Project console authority.
  * - The Project console may manage related App and Ecosystem surfaces, but those surfaces edit each entity's own stored truth.
  * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
- * - Public page depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
- * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
+ * - Public page depth can vary by family; Project may stay relatively thin
+ *   publicly while remaining a normal root entity.
+ * - If Project later grows operational child records, discuss their ownership before adding a scoped Project representation.
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
- * - If this decision changes, update the models README first, then this file.
+ * - If this decision changes, update the entity map and this source together.
  */
 export const ProjectStorage = {
-  shape: 'both',
-  root: 'projects/{projectId}',
-  overlay: 'apps/{appId}/projects/{projectId}',
-  rootCollection: 'projects',
-  overlayCollection: 'projects',
+  shape: 'public/root',
+  path: 'projects/{projectId}',
+  collection: 'projects',
   idParam: 'projectId',
 } as const
 
@@ -57,24 +50,14 @@ export const ProjectEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Project',
   family: ['system', 'console-entity'],
-  storage: 'both',
+  storage: 'root',
   status: 'confirmed',
   console: true,
-  root: ProjectStorage.root,
-  scoped: ProjectStorage.overlay,
+  root: ProjectStorage.path,
 })
-
-export const AppProjectStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/projects/{projectId}',
-  collection: 'projects',
-  parent: 'app',
-  idParam: 'projectId',
-} as const
 
 export const ProjectModel = {
   id: '',
-  ...FireuxAppScope,
   ...FireuxConsoleAccessModel,
 
   // Public-facing identity
@@ -95,8 +78,6 @@ export const ProjectModel = {
 
   // Canonical root ownership hint
   owner_user_id: '',
-  team_ids: [] as string[],
-
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -109,12 +90,6 @@ export const ProjectModel = {
 } as const
 
 export type Project = WidenLiteral<typeof ProjectModel>
-
-export const AppProjectModel = {
-  ...FireuxAppOverlayModel,
-} as const
-
-export type AppProject = FireuxAppOverlay
 
 export type ProjectCreateInput = Pick<
   Project,
@@ -137,7 +112,6 @@ export type ProjectCreateInput = Pick<
       | 'status'
       | 'owner_user_id'
       | 'operator_ids'
-      | 'team_ids'
     >
   >
 

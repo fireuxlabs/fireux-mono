@@ -48,10 +48,10 @@
                   <div
                     class="flex flex-wrap items-center justify-between gap-3"
                   >
-                    <span class="text-sm font-semibold text-gray-100">
+                    <span class="text-sm font-semibold text-highlighted">
                       {{ entry.item.role || 'Role' }}
                     </span>
-                    <span class="ml-auto text-xs text-gray-300">
+                    <span class="ml-auto text-xs text-muted">
                       {{ formatExperienceDates(entry.item) }}
                     </span>
                   </div>
@@ -61,7 +61,7 @@
                       v-bind="entry.placeCard"
                       :show-badges="false"
                     />
-                    <div v-else class="text-xs text-gray-500">
+                    <div v-else class="text-xs text-muted">
                       Location unavailable
                     </div>
                   </div>
@@ -79,7 +79,7 @@
                     <UBadge size="xs" variant="soft" color="neutral">
                       {{ entry.item.role }}
                     </UBadge>
-                    <span class="text-xs text-gray-500">{{
+                    <span class="text-xs text-muted">{{
                       formatExperienceDates(entry.item)
                     }}</span>
                   </div>

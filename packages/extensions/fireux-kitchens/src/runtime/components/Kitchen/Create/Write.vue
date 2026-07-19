@@ -41,7 +41,7 @@
     </div>
 
     <div v-if="successResult" class="space-y-3">
-      <div class="text-sm text-green-600">
+      <div class="text-sm text-success">
         {{ successMessage }}
       </div>
       <div class="text-xs text-muted">
@@ -70,7 +70,7 @@
         </UButton>
       </div>
     </div>
-    <div v-else-if="existingId" class="space-y-2 text-sm text-amber-600">
+    <div v-else-if="existingId" class="space-y-2 text-sm text-warning">
       <div>This public kitchen already exists.</div>
       <div class="text-xs text-muted">Location ID: {{ existingId }}</div>
       <UButton
@@ -82,7 +82,7 @@
         Edit kitchen
       </UButton>
     </div>
-    <div v-if="error" class="text-sm text-red-600">
+    <div v-if="error" class="text-sm text-error">
       {{ error }}
     </div>
   </div>

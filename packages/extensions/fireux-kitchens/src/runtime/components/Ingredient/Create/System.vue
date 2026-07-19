@@ -17,7 +17,7 @@
           :initials="imageInitials"
           :update-function="handleImageUpload"
         />
-        <p v-if="imageUploading" class="text-xs text-gray-500">
+        <p v-if="imageUploading" class="text-xs text-muted">
           Uploading image...
         </p>
       </div>

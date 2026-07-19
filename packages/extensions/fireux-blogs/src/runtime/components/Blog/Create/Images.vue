@@ -242,18 +242,12 @@ defineExpose({
   align-items: center;
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 2);
-  background: var(--color-red-50);
-  border: 1px solid var(--color-red-200);
+  background: color-mix(in srgb, var(--ui-error) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ui-error) 25%, transparent);
   border-radius: var(--ui-radius);
-  color: var(--color-red-700);
+  color: var(--ui-error);
   font-size: var(--text-sm);
   margin-bottom: calc(var(--spacing) * 2);
 }
 
-/* Color mode spine: docs/concepts/color-mode.md */
-:global(:root.dark) .error-item {
-  background: var(--color-red-950);
-  border-color: var(--color-red-800);
-  color: var(--color-red-300);
-}
 </style>

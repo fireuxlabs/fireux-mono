@@ -29,7 +29,7 @@
           <div v-if="driftPending" class="text-sm text-dimmed">Checking…</div>
 
           <div v-else>
-            <div v-if="!driftTotal" class="text-sm text-emerald-600">
+            <div v-if="!driftTotal" class="text-sm text-success">
               No binding issues detected.
             </div>
 

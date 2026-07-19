@@ -149,7 +149,7 @@ async function saveDriver(driver: DriverEntry) {
     toast.add({
       title: 'Failed to save driver',
       description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'amber',
+      color: 'error',
       icon: 'i-lucide-triangle-alert',
     })
   } finally {

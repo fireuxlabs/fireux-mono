@@ -153,6 +153,6 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
 }
 .disabled-message {
   font-size: var(--text-xs);
-  color: var(--ui-text-muted, rgb(107 114 128));
+  color: var(--ui-text-muted);
 }
 </style>

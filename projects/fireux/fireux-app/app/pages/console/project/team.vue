@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-project-team">
     <template #header>
-      <LayoutsConsoleNavbar title="Project Team" />
+      <LayoutsConsoleNavbar title="Project Access" />
     </template>
 
     <template #body>
@@ -17,7 +17,7 @@ definePageMeta({
   layout: 'console',
   nav: {
     key: 'console-project-team',
-    label: 'Team',
+    label: 'Access',
     icon: 'i-lucide-users',
     position: 'top',
     requiresSelection: true,

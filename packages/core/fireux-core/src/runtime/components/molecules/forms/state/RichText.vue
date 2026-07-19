@@ -43,15 +43,17 @@ watch(localValue, (val: string) => {
   width: 100%;
   min-height: 180px;
   padding: calc(var(--spacing) * 3);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-bg);
+  color: var(--ui-text);
   font: inherit;
   line-height: var(--leading-normal);
   resize: vertical;
 }
 
 .richtext-input:focus {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
 }
 

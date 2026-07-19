@@ -11,17 +11,16 @@ import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 
-const PROJECT_COLLECTION_PATH = ProjectStorage.rootCollection
+const PROJECT_COLLECTION_PATH = ProjectStorage.collection
 const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
   ids?: ProjectCollectionFilterValue[] | null | undefined
   operatorId?: ProjectCollectionFilterValue
-  teamId?: ProjectCollectionFilterValue
 }
 export type ProjectCollectionSource = ConsoleSource
 type UseProjectCollectionOptions = {
@@ -54,11 +53,10 @@ export function useProjectCollection(
   })
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
   const filterOperatorId = computed(() =>
-    String(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId ?? '').trim()
+    String(resolvedFilter.value?.operatorId ?? '').trim()
   )
   const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId')
   )
   const filterIdSet = computed(
     () =>
@@ -78,32 +76,15 @@ export function useProjectCollection(
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<ProjectSurface>
   })
-  const teamQuery = computed<Query<ProjectSurface> | null>(() => {
-    if (!collectionPath.value) return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    return fsq(
-      collection(db, collectionPath.value),
-      where('team_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<ProjectSurface>
-  })
   const operatorSource = firestoreQuery<ProjectSurface>(
     operatorQuery,
     undefined,
     collectionPath
   )
-  const teamSource = firestoreQuery<ProjectSurface>(
-    teamQuery,
-    undefined,
-    collectionPath
-  )
-  const operatorTeamSource = computed<ProjectSurface[]>(() => {
+  const operatorItems = computed<ProjectSurface[]>(() => {
     const byId = new Map<string, ProjectSurface>()
 
-    for (const project of [
-      ...(operatorSource.value ?? []),
-      ...(teamSource.value ?? []),
-    ]) {
+    for (const project of operatorSource.value ?? []) {
       const id = String(project?.id || '').trim()
       if (id) byId.set(id, { ...project, id })
     }
@@ -115,7 +96,7 @@ export function useProjectCollection(
   )
   const collectionItems = computed<ProjectSurface[]>(() => {
     if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorTeamSource.value
+      return operatorItems.value
     }
     return firestoreSource.value?.value ?? []
   })
@@ -127,7 +108,7 @@ export function useProjectCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(project, filterOperatorId.value)) return acc
+        if (!targetHasOperator(project, filterOperatorId.value)) return acc
       }
 
       const item = surface({
@@ -145,7 +126,7 @@ export function useProjectCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorSource.pending.value || teamSource.pending.value
+      return operatorSource.pending.value
     }
     if (hasOperatorFilter.value) return false
     return rootSource.pending.value
@@ -153,7 +134,7 @@ export function useProjectCollection(
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
     if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorSource.error.value ?? teamSource.error.value
+      return operatorSource.error.value
     }
     if (hasOperatorFilter.value) return undefined
     return rootSource.error.value

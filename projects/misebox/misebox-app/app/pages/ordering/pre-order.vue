@@ -52,7 +52,6 @@ import {
   computed,
   reactive,
 } from 'vue'
-import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {

@@ -5,7 +5,7 @@
   class="block w-full"
 >
     <div
-      class="fx-card--cell flex w-full items-start gap-3"
+      class="fx-card--cell"
     >
       <UAvatar :src="imageUrl || undefined" :alt="title" size="md" class="shrink-0" />
 
@@ -45,7 +45,7 @@
   @click="onClick"
 >
     <div
-      class="fx-card--cell flex w-full items-start gap-3"
+      class="fx-card--cell"
     >
       <UAvatar :src="imageUrl || undefined" :alt="title" size="md" class="shrink-0" />
 

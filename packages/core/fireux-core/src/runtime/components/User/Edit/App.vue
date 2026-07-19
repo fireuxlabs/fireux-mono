@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/User/Edit/App.vue -->
 <template>
   <section class="space-y-2">
-    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+    <p class="text-xs font-semibold uppercase tracking-wide text-toned">
       App Properties
     </p>
 
@@ -12,7 +12,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <h3 class="text-base font-semibold">App Membership</h3>
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-muted">
                   App-specific access and entitlement derived from the current app context.
                 </p>
               </div>
@@ -31,7 +31,7 @@
               >
                 {{ isAppPremium ? 'Premium' : 'Standard' }}
               </UBadge>
-              <span class="text-sm text-gray-500">
+              <span class="text-sm text-muted">
                 Access granted within this app
               </span>
             </div>
@@ -40,7 +40,7 @@
               v-if="canManageAppMembership"
               class="flex items-center justify-between gap-3"
             >
-              <div class="text-xs text-gray-600 space-y-1">
+              <div class="space-y-1 text-xs text-toned">
                 <p>appUser.role: {{ appUserRole }}</p>
                 <p>appUser.is_premium: {{ String(isAppPremium) }}</p>
                 <p>
@@ -59,7 +59,7 @@
               v-if="canManageAppMembership"
               class="flex items-center justify-between gap-3"
             >
-              <div class="text-xs text-gray-600 space-y-1">
+              <div class="space-y-1 text-xs text-toned">
                 <p>Premium users can own multiple live console targets.</p>
               </div>
               <USwitch
@@ -70,7 +70,7 @@
               />
             </div>
 
-            <div class="text-sm text-gray-600">
+            <div class="text-sm text-toned">
               <p>
                 App overlay updates are managed by tenant administrators.
                 Contact an admin to adjust your role.
@@ -81,12 +81,12 @@
               </p>
             </div>
           </div>
-          <div v-else class="text-sm text-gray-500">
+          <div v-else class="text-sm text-muted">
             <p>No tenant overlay detected for this user.</p>
           </div>
 
           <div
-            class="flex flex-wrap items-center gap-3 text-sm text-emerald-900"
+            class="flex flex-wrap items-center gap-3 text-sm text-success"
           >
             <span>
               Premium capability is now a real app-user field.

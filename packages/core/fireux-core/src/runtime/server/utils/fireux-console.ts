@@ -97,7 +97,7 @@ function requireString(value: unknown, label: string): string {
 
 async function readProjectControl(projectId: string): Promise<FireuxConsoleProjectControl> {
   const db = getRuntimeFirestore()
-  const snapshot = await db.collection(ProjectStorage.rootCollection).doc(projectId).get()
+  const snapshot = await db.collection(ProjectStorage.collection).doc(projectId).get()
 
   if (!snapshot.exists) {
     throw createError({

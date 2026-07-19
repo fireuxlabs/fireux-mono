@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Dev · Projects"
-      description="Project model, root collection, and app-overlay diagnostics."
+      description="Project root model and current App relationship diagnostics."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -37,7 +37,8 @@
               Project storage inspector
             </p>
             <p class="text-xs text-muted">
-              Inspect one project across root and app overlay. Project does not yet define a child-family matrix like kitchen or portfolio.
+              Inspect one root Project. The current App may reference it, but
+              Project has no app-scoped representation.
             </p>
             <USelect
               v-model="selectedProjectId"
@@ -56,26 +57,18 @@
               root doc: {{ selectedRootProject ? 'yes' : 'no' }}
             </UBadge>
             <UBadge variant="soft">
-              app overlay: {{ selectedProjectApp ? 'yes' : 'no' }}
+              storage: root only
             </UBadge>
             <UBadge variant="soft">
               child families: none defined
             </UBadge>
           </div>
 
-          <div
-            v-if="!selectedProjectApp && selectedProjectId"
-            class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900"
-          >
-            No app overlay found at
-            <code>{{ overlayProjectCollectionPath }}/{{ selectedProjectId }}</code>.
-          </div>
-
           <UAlert
             color="neutral"
             variant="soft"
             title="Project remains a system-console special case"
-            description="This inspector focuses on the root project plus app overlay. Child families should only be added here when project canon defines them explicitly."
+            description="This inspector reads the root Project only. Child families should only be added when Project ownership requires them explicitly."
           />
 
           <DevJson
@@ -95,9 +88,8 @@
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
-import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import type { AppProject, Project } from 'fireux-core/runtime/models/system/project.model'
+import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
 
 definePageMeta({
@@ -120,11 +112,6 @@ const { selectedId } = useProjectConsoleSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())
 
 const { projects } = useProjectCollection()
-const overlayProjectCollectionPath = computed(() =>
-  resolvedAppId.value ? `apps/${resolvedAppId.value}/projects` : ''
-)
-const projectAppsState = useDevStorageCollection<AppProject>(overlayProjectCollectionPath)
-const projectApps = computed(() => projectAppsState.items.value)
 
 const rootProjectById = computed(() => {
   const map = new Map<string, Project>()
@@ -136,25 +123,14 @@ const rootProjectById = computed(() => {
   return map
 })
 
-const projectAppById = computed(() => {
-  const map = new Map<string, AppProject>()
-  for (const project of projectApps.value) {
-    const id = String(project?.id || '').trim()
-    if (!id) continue
-    map.set(id, project)
-  }
-  return map
-})
-
 const selectedProjectId = ref('')
 
 const projectOptions = computed<{ label: string, value: string }[]>(() =>
   (projects.value ?? []).map((project) => {
     const id = String(project?.id || '').trim()
     const labelBase = String(project?.name || id).trim() || id
-    const overlayStatus = projectAppById.value.has(id) ? 'console' : 'root only'
     return {
-      label: `${labelBase} · ${overlayStatus}`,
+      label: `${labelBase} · root`,
       value: id,
     }
   })
@@ -177,24 +153,17 @@ watch(
 )
 
 const selectedRootProject = computed(() => rootProjectById.value.get(selectedProjectId.value) ?? null)
-const selectedProjectApp = computed(() => projectAppById.value.get(selectedProjectId.value) ?? null)
 
 const projectStorageJson = computed(() => ({
-  appId: resolvedAppId.value || null,
+  currentAppId: resolvedAppId.value || null,
   selectedId: selectedId.value || null,
   selectedProjectId: selectedProjectId.value || null,
+  storage: 'root',
   paths: {
     rootProjectCollection: 'projects',
-    overlayProjectCollection: overlayProjectCollectionPath.value || null,
     selectedRootProjectDoc: selectedProjectId.value ? `projects/${selectedProjectId.value}` : null,
-    selectedOverlayProjectDoc:
-      selectedProjectId.value && overlayProjectCollectionPath.value
-        ? `${overlayProjectCollectionPath.value}/${selectedProjectId.value}`
-        : null,
   },
   rootProject: selectedRootProject.value,
-  appProject: selectedProjectApp.value,
-  overlayMissing: !selectedProjectApp.value,
   childCollections: [],
 }))
 </script>

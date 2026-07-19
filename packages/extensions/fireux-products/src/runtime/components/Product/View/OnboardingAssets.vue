@@ -27,7 +27,7 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 }
 
 .asset-help {
-  color: #6b7280;
+  color: var(--ui-text-muted);
   margin-bottom: calc(var(--spacing) * 4);
 }
 
@@ -51,7 +51,7 @@ const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 
 .asset-meta {
   margin-top: calc(var(--spacing) * 2);
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-size: var(--text-sm);
 }
 </style>

@@ -179,7 +179,7 @@ const updateKitchenField = async (
     toast.add({
       title: failTitle,
       description,
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
     throw error

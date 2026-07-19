@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="space-y-3">
-          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <p class="text-sm font-semibold text-highlighted">
             Binding check (app ↔ users)
           </p>
           <p class="text-xs text-muted">
@@ -35,7 +35,7 @@
       </div>
 
       <div v-else>
-        <div v-if="!bindingTotal" class="text-sm text-emerald-600">
+        <div v-if="!bindingTotal" class="text-sm text-success">
           No binding issues detected.
         </div>
 

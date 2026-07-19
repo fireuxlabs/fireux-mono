@@ -28,7 +28,6 @@ export type ConsoleEntityType =
   | 'portfolio'
   | 'property'
   | 'supplier'
-  | 'project'
 export type ConsoleCreateMode = 'public' | 'console'
 
 export type ConsoleCreateResult = {
@@ -58,7 +57,6 @@ const consoleCollectionByType: Record<ConsoleEntityType, string> = {
   portfolio: 'portfolios',
   property: 'properties',
   supplier: 'suppliers',
-  project: 'projects',
 }
 
 const normalizeId = (value: unknown) => String(value || '').trim()

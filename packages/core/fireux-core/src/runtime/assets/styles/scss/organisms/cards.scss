@@ -321,7 +321,6 @@
 /* pill styles moved to shared component */
 
 :where(.card.card--cell, .fx-card--cell) {
-	display: block;
 	border-radius: calc(var(--ui-radius) * 2);
 	padding: calc(var(--spacing) * 3);
 	border: 1px solid var(--ui-border);
@@ -330,13 +329,24 @@
 		transform 160ms ease;
 }
 
+:where(.card.card--cell) {
+	display: block;
+}
+
+:where(.fx-card--cell) {
+	display: flex;
+	width: 100%;
+	align-items: flex-start;
+	gap: calc(var(--spacing) * 3);
+}
+
 :where(
 	.card.card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover,
 	.fx-card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover
 ) {
 	background: var(--ui-bg-muted);
 	border-color: var(--ui-border);
-	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+	box-shadow: 0 6px 16px color-mix(in srgb, var(--ui-bg-inverted) 8%, transparent);
 	transform: none;
 }
 

@@ -141,7 +141,7 @@ function onSelect(e: Event) {
         title: 'Invalid file',
         description: 'Please select an image file',
         icon: 'i-heroicons-exclamation-triangle',
-        color: 'amber',
+        color: 'warning',
       })
     input.value = ''
     return
@@ -176,7 +176,7 @@ function onSelect(e: Event) {
           title: 'Processing failed',
           description: 'Please try a different image file',
           icon: 'i-heroicons-x-circle',
-          color: 'red',
+          color: 'error',
         })
     })
 
@@ -333,7 +333,7 @@ async function processImage(
 }
 
 .validation-error {
-  color: var(--color-red-400);
+  color: var(--ui-error);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-medium);
 }
@@ -349,17 +349,10 @@ async function processImage(
   align-items: center;
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 2);
-  background: var(--color-red-50);
-  border: 1px solid var(--color-red-200);
+  background: color-mix(in srgb, var(--ui-error) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ui-error) 30%, transparent);
   border-radius: var(--ui-radius);
-  color: var(--color-red-700);
+  color: var(--ui-error);
   font-size: var(--text-sm);
-}
-
-/* Color mode spine: docs/concepts/color-mode.md */
-:global(:root.dark) .validation-message {
-  background: var(--color-red-950);
-  border-color: var(--color-red-800);
-  color: var(--color-red-300);
 }
 </style>

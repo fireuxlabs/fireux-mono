@@ -248,6 +248,6 @@ onBeforeUnmount(() => {
 }
 
 .delivery-coverage-map__error {
-  color: #b42318;
+  color: var(--ui-error);
 }
 </style>

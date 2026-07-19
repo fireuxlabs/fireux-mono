@@ -131,6 +131,6 @@ const {
 
 .requirements {
   padding-left: 1.2rem;
-  color: #374151;
+  color: var(--ui-text-toned);
 }
 </style>

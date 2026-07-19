@@ -21,7 +21,7 @@
       <!-- Display mode -->
       <div v-if="!isEditing" class="display">
         <div
-          class="w-full rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg-muted)] px-3 py-2 text-sm text-default"
+          class="w-full rounded-md border border-default bg-muted px-3 py-2 text-sm text-default"
         >
           <span class="break-words">{{ displayValue }}</span>
         </div>

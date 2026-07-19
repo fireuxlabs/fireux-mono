@@ -1,5 +1,5 @@
 <template>
-  <section class="console-surface space-y-4">
+  <section class="console-surface console-surface--compact">
     <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <ConsolePortfolioOperationsPropertiesRead />
 

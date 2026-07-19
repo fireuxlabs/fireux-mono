@@ -53,8 +53,8 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-gray-600">Current status</p>
-                    <p class="text-sm font-semibold text-gray-900">
+                    <p class="text-sm text-toned">Current status</p>
+                    <p class="text-sm font-semibold text-highlighted">
                       {{ job?.status || 'open' }}
                     </p>
                   </div>
@@ -86,14 +86,14 @@
                   v-if="job?.workplace_type === 'kitchen'"
                   :id="job.workplace_id"
                 />
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-muted">
                   Workplace ID: {{ job?.workplace_id }}
                 </p>
-                <p v-if="job?.workplace_label" class="text-xs text-gray-500">
+                <p v-if="job?.workplace_label" class="text-xs text-muted">
                   {{ job.workplace_label }}
                 </p>
               </div>
-              <p v-else class="text-sm text-gray-600">No workplace linked.</p>
+              <p v-else class="text-sm text-toned">No workplace linked.</p>
             </UCard>
 
             <UCard>
@@ -106,11 +106,11 @@
                   v-bind="companyCard"
                   :link="Boolean(companyCard.to)"
                 />
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-muted">
                   Company ID: {{ job?.company_id }}
                 </p>
               </div>
-              <p v-else class="text-sm text-gray-600">No company linked.</p>
+              <p v-else class="text-sm text-toned">No company linked.</p>
             </UCard>
           </div>
         </div>
@@ -174,7 +174,7 @@ const jobSubtitle = computed(() =>
   job.value?.status ? `Status: ${job.value.status}` : 'Job pipeline entry'
 )
 const statusColor = computed(() =>
-  job.value?.status === 'open' ? 'emerald' : 'neutral'
+  job.value?.status === 'open' ? 'success' : 'neutral'
 )
 
 const statusOptions = [

@@ -7,15 +7,6 @@
         </h1>
         <p>Current and previous kitchen orders.</p>
       </div>
-
-      <UButton
-        icon="i-lucide-refresh-cw"
-        label="Refresh"
-        color="neutral"
-        variant="ghost"
-        :loading="pending"
-        @click="refresh"
-      />
     </header>
 
     <UAlert
@@ -24,7 +15,6 @@
       variant="soft"
       title="Orders could not be loaded"
       :description="error"
-      :actions="[{ label: 'Try again', onClick: refresh }]"
     />
 
     <div v-else-if="pending" class="customer-orders__loading">
@@ -135,7 +125,6 @@ const {
   loadingMore,
   orders,
   pending,
-  refresh,
 } = useCustomerOrders()
 
 const statusLabels: Record<KitchenOrderStatus, string> = {

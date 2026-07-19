@@ -8,7 +8,7 @@
     <UPageBody class="pagebody">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Companies exists</h2>
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-toned">
           Companies are records bound to canonical Places. This keeps location data
           consistent while allowing company-specific metadata (name, website)
           to live in its own document.
@@ -17,17 +17,17 @@
 
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Core capabilities today</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
+        <ul class="space-y-2 text-sm text-toned">
           <li>
-            <strong class="font-medium text-gray-900">Place-bound records</strong>
+            <strong class="font-medium text-highlighted">Place-bound records</strong>
             &nbsp;— create a company from a confirmed place.
           </li>
           <li>
-            <strong class="font-medium text-gray-900">Tenant-friendly</strong>
+            <strong class="font-medium text-highlighted">Tenant-friendly</strong>
             &nbsp;— consistent company documents across tenants.
           </li>
           <li>
-            <strong class="font-medium text-gray-900">Editable metadata</strong>
+            <strong class="font-medium text-highlighted">Editable metadata</strong>
             &nbsp;— update the company name and website as needed.
           </li>
         </ul>

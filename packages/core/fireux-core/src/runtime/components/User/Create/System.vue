@@ -3,7 +3,7 @@
     <div class="space-y-4 py-4">
       <div class="space-y-1">
         <h2 class="text-base font-semibold">{{ title }}</h2>
-        <p class="text-sm text-gray-500">{{ description }}</p>
+        <p class="text-sm text-muted">{{ description }}</p>
       </div>
 
       <div class="flex">
@@ -32,7 +32,7 @@
         </UButton>
       </div>
 
-      <p v-if="error" class="text-sm text-red-600">
+      <p v-if="error" class="text-sm text-error">
         {{ error }}
       </p>
     </div>

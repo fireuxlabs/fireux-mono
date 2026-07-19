@@ -10,8 +10,8 @@
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Preview</p>
-          <h3 class="text-base font-semibold text-gray-900">
+          <p class="text-xs uppercase tracking-wide text-dimmed">Preview</p>
+          <h3 class="text-base font-semibold text-highlighted">
             {{ title }}
           </h3>
 
@@ -29,7 +29,7 @@
         </div>
 
         <div v-if="agentCard" class="min-w-[220px]">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Posted by</p>
+          <p class="text-xs uppercase tracking-wide text-dimmed">Posted by</p>
           <AgentCardsPill
             v-bind="agentCard"
             :badges="agentCard?.badges ?? []"
@@ -41,33 +41,33 @@
       </div>
     </template>
 
-    <div class="space-y-4 text-sm text-gray-600">
-      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+    <div class="space-y-4 text-sm text-toned">
+      <div class="rounded-lg border border-default bg-muted/60 p-4">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-gray-400">
+            <p class="text-xs uppercase tracking-wide text-dimmed">
               Workplace
             </p>
             <KitchenPill
               v-if="workplaceType === 'kitchen' && workplaceId"
               :id="workplaceId"
             />
-            <p v-else-if="workplaceLabel" class="text-sm text-gray-700">
+            <p v-else-if="workplaceLabel" class="text-sm text-default">
               {{ workplaceLabel }}
             </p>
-            <p v-else class="text-sm text-gray-700">Not selected</p>
+            <p v-else class="text-sm text-default">Not selected</p>
           </div>
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
+            <p class="text-xs uppercase tracking-wide text-dimmed">Company</p>
             <CompanyPill v-if="companyId" :id="companyId" />
-            <p v-else class="text-sm text-gray-700">Not set</p>
+            <p v-else class="text-sm text-default">Not set</p>
           </div>
         </div>
       </div>
 
-      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400">Description</p>
-        <p class="whitespace-pre-line text-sm text-gray-700">
+      <div class="rounded-lg border border-default bg-muted/60 p-4">
+        <p class="text-xs uppercase tracking-wide text-dimmed">Description</p>
+        <p class="whitespace-pre-line text-sm text-default">
           {{ description || 'No description yet.' }}
         </p>
       </div>

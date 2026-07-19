@@ -47,7 +47,6 @@ import {
   reactive,
   watchEffect,
 } from 'vue'
-import 'fireux-kitchens/runtime/assets/styles/menu-detail.css'
 import { useCollectionFunnel } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollectionFunnel'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'

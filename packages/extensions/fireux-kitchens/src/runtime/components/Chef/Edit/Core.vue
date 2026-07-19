@@ -97,7 +97,7 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
     toast.add({
       title: failTitle,
       description,
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
     throw error

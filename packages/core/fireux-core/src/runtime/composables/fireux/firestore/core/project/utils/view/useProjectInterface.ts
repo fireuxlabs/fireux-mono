@@ -2,14 +2,13 @@ import type {
   Project,
   ProjectStatus,
   ProjectType,
-  AppProject,
 } from '../../../../../../../models/system/project.model'
 import { ProjectStorage } from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const resolveProjectPath = (target: { slug?: string }) => {
   const slug = safeString(target.slug)
-  return slug ? `/${ProjectStorage.rootCollection}/${slug}` : ''
+  return slug ? `/${ProjectStorage.collection}/${slug}` : ''
 }
 const labelize = (value: string) =>
   safeString(value)
@@ -21,8 +20,6 @@ const labelize = (value: string) =>
 export type ProjectSurface = {
   id?: string
   key?: string
-  app_scope_state?: Project['app_scope_state']
-  app_scope_app_id?: Project['app_scope_app_id']
   name?: string
   slug?: string
   description?: string
@@ -37,13 +34,11 @@ export type ProjectSurface = {
   firebase_project_id?: string
   owner_user_id?: string
   operator_ids?: string[]
-  team_ids?: string[]
   created?: Project['created']
   updated?: Project['updated']
 }
 export type ProjectSurfaceParts<TProject extends object = Partial<Project>> = {
   project?: TProject | null | undefined
-  overlay?: Partial<AppProject> | Record<string, unknown> | null | undefined
 }
 
 export type ProjectInterfaceCard = {
@@ -69,15 +64,23 @@ export function useProjectInterface() {
     const source = parts.project ?? null
     if (!source) return null
 
-    const merged = {
+    const project = {
       ...source,
-      ...(parts.overlay ?? {}),
-    } as TProject & ProjectSurface
-    const id = safeString(merged.id)
+    } as TProject & ProjectSurface & Record<string, unknown>
+
+    // Ignore legacy root-plus-app access fields. Project is root-only and its
+    // current authority is the explicit root operator list.
+    delete project.app_scope
+    delete project.app_scope_state
+    delete project.app_scope_app_id
+    delete project.team_ids
+    delete project.join_requests
+
+    const id = safeString(project.id)
     if (!id) return null
 
     return {
-      ...merged,
+      ...project,
       id,
     }
   }

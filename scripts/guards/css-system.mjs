@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-19
 // usage_note: enforces the shared Nuxt UI and FireUX CSS spine.
 // FILE: scripts/guards/css-system.mjs
 
@@ -35,7 +35,10 @@ const AUTHORED_TEXT_EXTENSIONS = new Set([
 ])
 
 const OBSOLETE_VARIABLE_RE =
-  /--(?:text-primary|text-secondary|ui-border-subtle|ui-surface)(?![A-Za-z0-9_-])/g
+  /--(?:text-primary|text-secondary|ui-border-subtle|ui-surface|ui-text-(?:400|500|600)|ui-primary-500)(?![A-Za-z0-9_-])/g
+const NUXT_BASELINE_PATH =
+  'packages/core/fireux-core/src/config/app/nuxt-baseline.ts'
+const DEAD_NUXT_UI_CONSOLE_PANEL_RE = /\bconsolePanel\b/g
 const DERIVED_RADIUS_DECLARATION_RE =
   /--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)\s*:/g
 const DERIVED_RADIUS_REFERENCE_RE =
@@ -178,7 +181,11 @@ const ARBITRARY_LINE_HEIGHT_CLASS_RE = /\bleading-\[([^\]]+)\]/g
 const ARBITRARY_TRACKING_CLASS_RE = /\btracking-\[([^\]]+)\]/g
 const ARBITRARY_FONT_WEIGHT_CLASS_RE = /\bfont-\[(\d{3})\]/g
 const ARBITRARY_SEMANTIC_TEXT_COLOR_RE =
-  /\btext-\[(?:color:)?var\(--ui-text-(?:dimmed|muted|toned|highlighted)\)\]/g
+  /\btext-\[(?:color:)?var\(--ui-(?:text-(?:dimmed|muted|toned|highlighted)|primary)\)\]/g
+const PACKAGE_RAW_PALETTE_UTILITY_RE =
+  /\b(?:text|bg|border|ring|outline|divide|placeholder)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-[0-9]{2,3}(?:\/[0-9]{1,3})?\b/g
+const PACKAGE_RAW_COMPONENT_COLOR_RE =
+  /\bcolor\s*(?:=|:)\s*(["'])(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|stone)\1/g
 const INVALID_TYPOGRAPHY_VARIABLE_RE = /var\(\s*--leading-none\b/g
 const TAILWIND_FONT_SIZE_TOKENS = new Map([
   [12, '--text-xs'],
@@ -312,6 +319,10 @@ const INLINE_DISCLOSURE_TRIGGER_RE =
 const INLINE_CARD_BODY_STACK_RE = /body\s*:\s*['"]space-y-4['"]/g
 const LEGACY_DISABLED_SURFACE_RE =
   /(?:opacity-60\s+cursor-not-allowed|cursor-not-allowed\s+opacity-60)/g
+const STATIC_CLASS_ATTRIBUTE_RE =
+  /(?<![:@A-Za-z0-9_-])class\s*=\s*(["'])([\s\S]*?)\1/g
+const DIRECT_MENU_DETAIL_CSS_IMPORT_RE =
+  /\bimport\s*(?:\(\s*)?["']fireux-kitchens\/runtime\/assets\/styles\/menu-detail\.css["']\s*\)?/g
 const LEGACY_SEMANTIC_COLOR_PAIRS = [
   {
     pattern: /text-gray-900\s+dark:text-white/g,
@@ -353,6 +364,7 @@ export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const violations = {
     obsoleteVariables: [],
+    deadNuxtUiConfigKeys: [],
     radiusDeclarations: [],
     radiusReferences: [],
     radiusValues: [],
@@ -365,6 +377,8 @@ export async function run(ctx) {
     typographyValues: [],
     arbitraryTypographyClasses: [],
     arbitrarySemanticTextColors: [],
+    packageRawPaletteUtilities: [],
+    packageRawComponentColors: [],
     legacyTypographyRoleOverlays: [],
     legacyPageSpacing: [],
     legacyListSpacing: [],
@@ -374,6 +388,10 @@ export async function run(ctx) {
     inlineDisclosureTriggers: [],
     inlineCardBodyStacks: [],
     legacyDisabledSurfaces: [],
+    compoundConsoleSurfaceSpacing: [],
+    redundantEntityCardLayout: [],
+    redundantCollectionManagerControls: [],
+    directMenuDetailCssImports: [],
     legacySemanticColors: [],
     legacyGenericSurfaces: [],
   }
@@ -416,6 +434,33 @@ function scan(dir, repoRoot, violations) {
       relativePath,
       label: (match) => match[0],
     })
+
+    if (relativePath.startsWith('packages/')) {
+      collectMatches({
+        source,
+        pattern: PACKAGE_RAW_PALETTE_UTILITY_RE,
+        target: violations.packageRawPaletteUtilities,
+        relativePath,
+        label: (match) => match[0],
+      })
+      collectMatches({
+        source,
+        pattern: PACKAGE_RAW_COMPONENT_COLOR_RE,
+        target: violations.packageRawComponentColors,
+        relativePath,
+        label: (match) => match[0],
+      })
+    }
+
+    if (relativePath === NUXT_BASELINE_PATH) {
+      collectMatches({
+        source,
+        pattern: DEAD_NUXT_UI_CONSOLE_PANEL_RE,
+        target: violations.deadNuxtUiConfigKeys,
+        relativePath,
+        label: () => 'consolePanel -> dashboardPanel',
+      })
+    }
 
     collectMatches({
       source,
@@ -586,6 +631,54 @@ function scan(dir, repoRoot, violations) {
       label: () => 'visual-only disabled surface recipe',
     })
 
+    if (extension === '.vue' || extension === '.html') {
+      collectStaticClassAttributeViolations({
+        source,
+        relativePath,
+        target: violations.compoundConsoleSurfaceSpacing,
+        predicate: (classNames) =>
+          classNames.includes('console-surface') &&
+          classNames.some((className) => /(?:^|:)space-y-/.test(className)),
+        label: 'console-surface combined with space-y-*',
+      })
+      collectStaticClassAttributeViolations({
+        source,
+        relativePath,
+        target: violations.redundantEntityCardLayout,
+        predicate: (classNames) =>
+          [
+            'fx-card--cell',
+            'flex',
+            'w-full',
+            'items-start',
+            'gap-3',
+          ].every((className) => classNames.includes(className)),
+        label: 'fx-card--cell repeats its root layout recipe',
+      })
+      collectStaticClassAttributeViolations({
+        source,
+        relativePath,
+        target: violations.redundantCollectionManagerControls,
+        predicate: (classNames) =>
+          [
+            'collection-manager__controls',
+            'flex',
+            'flex-1',
+            'items-center',
+            'gap-2',
+          ].every((className) => classNames.includes(className)),
+        label: 'collection-manager__controls repeats its shared recipe',
+      })
+    }
+
+    collectMatches({
+      source,
+      pattern: DIRECT_MENU_DETAIL_CSS_IMPORT_RE,
+      target: violations.directMenuDetailCssImports,
+      relativePath,
+      label: () => 'leaf import of module-registered menu-detail.css',
+    })
+
     for (const colorPair of LEGACY_SEMANTIC_COLOR_PAIRS) {
       collectMatches({
         source,
@@ -617,6 +710,28 @@ function collectMatches({ source, pattern, target, relativePath, label }) {
       path: relativePath,
       line: lineNumberAt(source, match.index),
       label: label(match),
+    })
+  }
+}
+
+function collectStaticClassAttributeViolations({
+  source,
+  relativePath,
+  target,
+  predicate,
+  label,
+}) {
+  STATIC_CLASS_ATTRIBUTE_RE.lastIndex = 0
+  let match
+
+  while ((match = STATIC_CLASS_ATTRIBUTE_RE.exec(source))) {
+    const classNames = match[2].trim().split(/\s+/).filter(Boolean)
+    if (!predicate(classNames)) continue
+
+    target.push({
+      path: relativePath,
+      line: lineNumberAt(source, match.index),
+      label,
     })
   }
 }
@@ -1068,6 +1183,11 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Dead Nuxt UI app-config keys:',
+    violations.deadNuxtUiConfigKeys
+  )
+  appendGroup(
+    lines,
     'Nuxt UI-derived radius variables redeclared:',
     violations.radiusDeclarations
   )
@@ -1128,6 +1248,16 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Package-owned UI using raw Tailwind palette utilities:',
+    violations.packageRawPaletteUtilities
+  )
+  appendGroup(
+    lines,
+    'Package-owned Nuxt UI components or toasts using raw palette colors:',
+    violations.packageRawComponentColors
+  )
+  appendGroup(
+    lines,
     'Repeated typography role overlays that have a named shared variant:',
     violations.legacyTypographyRoleOverlays
   )
@@ -1173,6 +1303,26 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Console surfaces with compounded vertical spacing:',
+    violations.compoundConsoleSurfaceSpacing
+  )
+  appendGroup(
+    lines,
+    'Entity cards repeating layout already owned by `.fx-card--cell`:',
+    violations.redundantEntityCardLayout
+  )
+  appendGroup(
+    lines,
+    'Collection manager controls repeating their shared layout:',
+    violations.redundantCollectionManagerControls
+  )
+  appendGroup(
+    lines,
+    'Leaf imports of module-registered Menu detail CSS:',
+    violations.directMenuDetailCssImports
+  )
+  appendGroup(
+    lines,
     'Legacy hard-coded semantic text color pairs:',
     violations.legacySemanticColors
   )
@@ -1186,6 +1336,7 @@ function formatViolations(violations) {
     '',
     '[guard] Fix:',
     '- Use current Nuxt UI semantic variables (`--ui-text*`, `--ui-border*`, `--ui-bg*`).',
+    '- Configure Nuxt UI dashboard panels through `dashboardPanel`; `consolePanel` is not a live app-config key.',
     '- Set `--ui-radius` as the radius authority; use `rounded-*` utilities in templates and calculate from `--ui-radius` in authored CSS.',
     '- Ordinary radii use only the xs-through-3xl Nuxt UI scale; reserve `50%` or `9999px` for real circles and pills.',
     '- Radius custom properties are explicit owned seams. Menu defaults must derive from `--ui-radius`.',
@@ -1198,14 +1349,18 @@ function formatViolations(violations) {
     '- Use `fx-type-section-title` and `fx-type-card-heading` instead of repeating their guarded size/weight overlays.',
     '- Arbitrary typography utilities are reserved for reviewed brand, artwork, print/output, debug, or optical deltas.',
     '- Use Nuxt UI `text-dimmed`, `text-muted`, `text-toned`, and `text-highlighted` instead of arbitrary semantic text-color utilities.',
+    '- Package-owned ordinary UI must use Nuxt UI semantic text, border, surface, and status utilities; intentional brand or artwork colors need an owned named seam rather than a raw Tailwind palette utility.',
     '- Use `.fx-page-stack` and `.fx-list-stack` for the guarded repeated rhythm recipes.',
+    '- Let `.console-surface` own its vertical rhythm instead of combining it with `space-y-*`.',
     '- Compose the shared `.fx-card--cell` recipe instead of repeating the audited class string.',
+    '- Let `.collection-manager__controls` own its shared flex, alignment, and gap recipe.',
     '- Use `.fx-inset-panel` for the audited nested bordered-panel recipe.',
     '- Use `MoleculesDisclosurePanel` instead of rebuilding UCollapsible trigger state in leaf components.',
     '- Use a semantic shared card/body-stack component or class instead of repeating UCard `space-y-4` body overrides.',
     '- Use `MoleculesActionSurface` for linked/action/static card roots; visual opacity does not disable navigation or clicks.',
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',
     '- Replace the guarded generic surface pairs with `border-default` and `bg-default/*`.',
+    '- Register Menu detail CSS once through the kitchens module; do not import it from leaf pages or components.',
     '- One-off Tailwind for local layout or pixel-perfect deltas remains allowed.'
   )
 

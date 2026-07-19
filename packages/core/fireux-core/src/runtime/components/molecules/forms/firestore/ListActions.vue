@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <div v-if="!items?.length" class="text-sm text-gray-500">
+    <div v-if="!items?.length" class="text-sm text-muted">
       {{ emptyText }}
     </div>
   </div>

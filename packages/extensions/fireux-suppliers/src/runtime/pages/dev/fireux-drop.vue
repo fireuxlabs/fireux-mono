@@ -41,7 +41,7 @@
             <UCard>
               <template #header>
                 <div class="space-y-3">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <p class="text-sm font-semibold text-highlighted">
                     Suppliers collection
                   </p>
                   <p class="text-xs text-muted">
@@ -111,7 +111,7 @@
 
             <div
               v-if="!selectedAppSupplier && selectedSupplierId"
-              class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900"
+              class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error"
             >
               No app overlay found at
               <code>{{ overlaySupplierCollectionPath }}/{{ selectedSupplierId }}</code>.

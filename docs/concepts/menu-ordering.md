@@ -90,6 +90,8 @@ Current display rule:
   bounded batch reads. Ready, completed, and cancelled orders therefore remain
   visible with current Kitchen branding, without a second mutable order-status
   copy, per-card Kitchen reads, or a cross-Kitchen collection-group scan.
+  While mounted and visible, the dashboard silently reconciles that bounded
+  projection in the background; customers do not operate a manual refresh.
   Anonymous orders are not silently
   claimed later; any future claim flow needs its own explicit identity proof.
 - If ordering is absent or disabled, the same menu still renders as readable content.

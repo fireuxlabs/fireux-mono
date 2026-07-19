@@ -3,11 +3,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-gray-500">Step 1 · Location</p>
+        <p class="text-sm text-muted">Step 1 · Location</p>
         <h2 class="text-lg font-semibold">
           {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
         </h2>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           Type a location name. We store the workplace reference on the job.
         </p>
       </div>

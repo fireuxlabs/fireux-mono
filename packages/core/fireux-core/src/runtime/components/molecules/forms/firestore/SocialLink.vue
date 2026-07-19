@@ -30,7 +30,7 @@
         class="flex w-full overflow-hidden rounded-md fx-field-surface"
       >
         <div
-          class="shrink-0 border-r border-[var(--ui-border)] bg-transparent px-3 py-2 text-sm text-muted"
+          class="shrink-0 border-r border-default bg-transparent px-3 py-2 text-sm text-muted"
         >
           {{ leading }}
         </div>

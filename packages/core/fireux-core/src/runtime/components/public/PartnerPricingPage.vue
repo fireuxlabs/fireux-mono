@@ -30,16 +30,16 @@
           </p>
 
           <div class="mt-6 grid grid-cols-3 gap-4 text-sm">
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Setup</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Setup</p>
               <p class="text-lg font-semibold">$300</p>
             </div>
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Maintenance</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Maintenance</p>
               <p class="text-lg font-semibold">$25/mo</p>
             </div>
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Seat share</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Seat share</p>
               <p class="text-lg font-semibold">$2.50/mo</p>
             </div>
           </div>
@@ -55,16 +55,16 @@
           </p>
 
           <div class="mt-6 grid grid-cols-3 gap-4 text-sm">
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Setup</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Setup</p>
               <p class="text-lg font-semibold">$600</p>
             </div>
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Maintenance</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Maintenance</p>
               <p class="text-lg font-semibold">$50/mo</p>
             </div>
-            <div class="rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-              <p class="text-xs uppercase text-gray-500">Console seat</p>
+            <div class="rounded-lg border border-default p-3">
+              <p class="text-xs uppercase text-muted">Console seat</p>
               <p class="text-lg font-semibold">$5/mo</p>
             </div>
           </div>
@@ -72,7 +72,7 @@
       </UContainer>
     </section>
 
-    <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
+    <section class="bg-muted/80 py-16">
       <UContainer class="grid gap-6 lg:grid-cols-2">
         <UCard>
           <template #header>

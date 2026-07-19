@@ -69,7 +69,7 @@ async function handleCreate() {
     toast.add({
       title: 'Missing name',
       description: 'Product name is required',
-      color: 'amber',
+      color: 'warning',
     })
     return
   }
@@ -85,7 +85,7 @@ async function handleCreate() {
       toast.add({
         title: 'Create failed',
         description: String(response.error || 'Unknown error'),
-        color: 'red',
+        color: 'error',
       })
       return
     }
@@ -93,14 +93,14 @@ async function handleCreate() {
     toast.add({
       title: 'Created',
       description: 'Product created successfully',
-      color: 'green',
+      color: 'success',
     })
     clearDraftState()
   } catch (error: any) {
     toast.add({
       title: 'Create failed',
       description: String(error?.message || 'Unknown error'),
-      color: 'red',
+      color: 'error',
     })
   } finally {
     isCreating.value = false

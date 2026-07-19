@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type {
   CustomerOrderPage,
@@ -8,23 +8,27 @@ import type {
 export function useCustomerOrders() {
   const { currentUser } = useAuth()
   let mounted = false
+  let refreshTimer: ReturnType<typeof setTimeout> | undefined
   const orders = ref<CustomerOrderSummary[]>([])
   const pending = ref(false)
+  const refreshing = ref(false)
   const loadingMore = ref(false)
   const error = ref('')
   const nextCursor = ref<string | null>(null)
 
   const hasMore = computed(() => Boolean(nextCursor.value))
 
-  async function load(options: { append?: boolean } = {}) {
+  async function load(options: { append?: boolean, background?: boolean } = {}) {
     const user = currentUser.value
-    if (!user || pending.value || loadingMore.value) return
+    if (!user || pending.value || refreshing.value || loadingMore.value) return
+    const requestUid = user.uid
 
     const append = Boolean(options.append)
+    const background = Boolean(options.background)
     if (append && !nextCursor.value) return
-    const state = append ? loadingMore : pending
+    const state = append ? loadingMore : background ? refreshing : pending
     state.value = true
-    error.value = ''
+    if (!background) error.value = ''
 
     try {
       const token = await user.getIdToken()
@@ -34,22 +38,50 @@ export function useCustomerOrders() {
       const page = await $fetch<CustomerOrderPage>(`/api/customer/orders${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (currentUser.value?.uid !== requestUid) return
 
       const pageItems = Array.isArray(page?.items) ? page.items : []
-      orders.value = append ? [...orders.value, ...pageItems] : pageItems
-      nextCursor.value = typeof page?.nextCursor === 'string'
-        ? page.nextCursor
-        : null
+      if (append) {
+        orders.value = [...orders.value, ...pageItems]
+      } else if (background) {
+        const freshIds = new Set(pageItems.map(order => order.id))
+        orders.value = [
+          ...pageItems,
+          ...orders.value.filter(order => !freshIds.has(order.id)),
+        ]
+      } else {
+        orders.value = pageItems
+      }
+      if (!background) {
+        nextCursor.value = typeof page?.nextCursor === 'string'
+          ? page.nextCursor
+          : null
+      }
+      error.value = ''
     } catch (caught) {
-      error.value = requestError(caught)
+      if (!background || !orders.value.length) {
+        error.value = requestError(caught)
+      }
     } finally {
       state.value = false
     }
   }
 
-  function refresh() {
-    nextCursor.value = null
-    return load()
+  function scheduleRefresh(delay = 10_000) {
+    stopRefresh()
+    if (!import.meta.client || !mounted || !currentUser.value) return
+
+    refreshTimer = setTimeout(async () => {
+      if (document.visibilityState === 'visible') {
+        await load({ background: true })
+      }
+      scheduleRefresh()
+    }, delay)
+  }
+
+  function stopRefresh() {
+    if (refreshTimer) clearTimeout(refreshTimer)
+    refreshTimer = undefined
   }
 
   watch(
@@ -58,14 +90,22 @@ export function useCustomerOrders() {
       orders.value = []
       nextCursor.value = null
       error.value = ''
-      if (mounted && user) void load()
+      stopRefresh()
+      if (mounted && user) {
+        void load()
+        scheduleRefresh()
+      }
     }
   )
 
   onMounted(() => {
     mounted = true
-    if (currentUser.value) void load()
+    if (currentUser.value) {
+      void load()
+      scheduleRefresh()
+    }
   })
+  onBeforeUnmount(stopRefresh)
 
   return {
     error,
@@ -74,7 +114,6 @@ export function useCustomerOrders() {
     loadingMore,
     orders,
     pending,
-    refresh,
   }
 }
 

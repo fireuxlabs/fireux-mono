@@ -8,7 +8,7 @@
     <!-- 2) PIN -->
     <template v-else-if="!isUnlocked">
       <div class="flex min-h-[30vh] flex-col items-center justify-center gap-4">
-        <p class="text-sm text-gray-500">🔒 Enter the developer PIN to continue.</p>
+        <p class="text-sm text-muted">🔒 Enter the developer PIN to continue.</p>
         <UPinInput
           v-model="pin"
           :length="pinLength"
@@ -16,7 +16,7 @@
           placeholder="○"
           @complete="checkPin"
         />
-        <p v-if="pinError" class="text-xs text-red-500">{{ pinError }}</p>
+        <p v-if="pinError" class="text-xs text-error">{{ pinError }}</p>
       </div>
     </template>
 
@@ -55,14 +55,14 @@
           </UButton>
           <p
             v-if="!env?.isValid && !canProceed"
-            class="mt-2 text-xs text-gray-500"
+            class="mt-2 text-xs text-muted"
           >
             Fix required environment variables to enable this action.
           </p>
-          <p v-else-if="bypassWarning" class="mt-2 text-xs text-amber-500">
+          <p v-else-if="bypassWarning" class="mt-2 text-xs text-warning">
             Continuing in dev mode without required environment variables.
           </p>
-          <p v-if="proceedError" class="mt-2 text-xs text-red-500">
+          <p v-if="proceedError" class="mt-2 text-xs text-error">
             {{ proceedError }}
           </p>
         </div>

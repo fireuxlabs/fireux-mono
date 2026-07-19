@@ -159,7 +159,7 @@ const wrap = async (
     toast.add({
       title: failTitle,
       description,
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
     throw error
@@ -200,7 +200,7 @@ async function saveInlineField(
     toast.add({
       title: `Failed to save ${label}`,
       description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'amber',
+      color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
   } finally {

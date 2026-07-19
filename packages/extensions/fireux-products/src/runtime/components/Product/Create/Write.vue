@@ -25,7 +25,7 @@
             </template>
             <UIcon
               name="i-lucide-help-circle"
-              class="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help"
+              class="w-4 h-4 text-dimmed hover:text-toned cursor-help"
             />
           </UTooltip>
         </div>

@@ -37,7 +37,7 @@
         </UFormField>
 
         <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-500">Update the title or lane.</span>
+          <span class="text-sm text-muted">Update the title or lane.</span>
           <div class="flex items-center gap-2">
             <UButton
               variant="ghost"

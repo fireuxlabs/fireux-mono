@@ -8,7 +8,7 @@
     <UPageBody class="pagebody">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Places exists</h2>
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-toned">
           Places is a shared, canonical location layer. A Place represents a real-world
           location (often backed by a Google Place ID) that other records (companies,
           kitchens, etc.) can attach to.
@@ -17,17 +17,17 @@
 
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Core capabilities today</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
+        <ul class="space-y-2 text-sm text-toned">
           <li>
-            <strong class="font-medium text-gray-900">Google-backed search</strong>
+            <strong class="font-medium text-highlighted">Google-backed search</strong>
             &nbsp;— confirm a place once, then reuse it everywhere.
           </li>
           <li>
-            <strong class="font-medium text-gray-900">Canonical IDs</strong>
+            <strong class="font-medium text-highlighted">Canonical IDs</strong>
             &nbsp;— place documents are keyed by a stable ID.
           </li>
           <li>
-            <strong class="font-medium text-gray-900">Record-friendly</strong>
+            <strong class="font-medium text-highlighted">Record-friendly</strong>
             &nbsp;— other domains can bind to a place without duplicating location data.
           </li>
         </ul>
