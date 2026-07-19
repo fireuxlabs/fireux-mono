@@ -5,6 +5,8 @@ import kitchenConfig from './app/config/kitchen.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
+  projectId: 'misebox',
+  ecosystemId: 'misebox',
   id: 'la-tap-berne',
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',

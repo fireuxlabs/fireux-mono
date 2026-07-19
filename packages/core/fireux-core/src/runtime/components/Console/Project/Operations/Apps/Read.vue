@@ -2,7 +2,7 @@
   <UCard v-if="pending || cards.length">
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <h2 class="text-base font-semibold text-highlighted">My apps</h2>
+        <h2 class="text-base font-semibold text-highlighted">Project apps</h2>
         <UBadge color="neutral" variant="soft">{{ cards.length }}</UBadge>
       </div>
     </template>

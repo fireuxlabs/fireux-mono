@@ -5,6 +5,7 @@ import { goQrNuxtOverrides } from './app/config/provider.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
+  projectId: 'fireux',
   id: 'go-qr',
   name: 'Go QR',
   shortName: 'Go QR',

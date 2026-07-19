@@ -11,8 +11,8 @@ const sourceMeta = {
     heroPrimaryLine:
       'FireUX is the <strong>console architecture</strong> for builders and operators. A low-code ecosystem for <strong>responsive</strong>, <strong>scalable</strong>, and <strong>data-driven</strong> applications built upon <strong>Nuxt 4</strong> and <strong>Firebase</strong>.',
     primaryCtaLabel: 'Get started',
-    secondaryCtaLabel: 'Browse projects',
-    secondaryCtaTo: '/projects',
+    secondaryCtaLabel: 'Browse apps',
+    secondaryCtaTo: '/apps',
     consoleBridgeLine:
       'The operating system for building and running domain applications from one shared, <strong>extensible core</strong>.',
     heroBullets: [
@@ -165,9 +165,9 @@ const sourceMeta = {
           linksTo: ['App', 'StitchProvider', 'StitchRequest'],
         },
         {
-          name: 'Ecosystem registry doc',
-          purpose: 'Registry index describing ecosystems and app memberships.',
-          keyFields: ['id', 'name', 'team', 'apps[]'],
+          name: 'Ecosystem directory entry',
+          purpose: 'Safe public projection of an owning Ecosystem record.',
+          keyFields: ['id', 'name', 'slug', 'status', 'app_count'],
           linksTo: ['App', 'Module registry doc'],
         },
         {
@@ -201,12 +201,13 @@ const sourceMeta = {
           },
         },
         {
-          entity: 'Ecosystem registry doc',
+          entity: 'Ecosystem directory entry',
           example: {
             id: 'granite',
             name: 'Granite',
-            team: 'fireux',
-            apps: ['granite-app'],
+            slug: 'granite',
+            status: 'active',
+            app_count: 1,
           },
         },
         {
@@ -236,7 +237,6 @@ const sourceMeta = {
         { label: 'Apps', path: '/apps', kind: 'public' },
         { label: 'Modules', path: '/modules', kind: 'public' },
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
-        { label: 'Projects', path: '/projects', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
         { label: 'Project Console', path: '/console/project', kind: 'console' },
         { label: 'Project Ecosystem', path: '/console/project/ecosystem', kind: 'console' },
@@ -244,8 +244,12 @@ const sourceMeta = {
       ],
     },
     relationshipMap: `
-Ecosystem registry doc
-  -> App
+Project (FireUX control plane)
+  <- Ecosystem.project_id
+  <- App.project_id
+
+Ecosystem
+  <- App.ecosystem_id
 Module registry doc
   -> App
 

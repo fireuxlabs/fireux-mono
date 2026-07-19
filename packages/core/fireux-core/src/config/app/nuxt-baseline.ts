@@ -64,7 +64,6 @@ export function configureAppModules(
     ...(appDatabaseRuntimeModule ? [appDatabaseRuntimeModule] : []),
     'fireux-nuxtfire',
     'fireux-core',
-    ...(app.role === 'global' ? ['fireux-ecosystem-controller'] : []),
     '@vite-pwa/nuxt',
     ...withDefaultAppModules(app.modules),
   ] as NonNullable<NuxtConfig['modules']>

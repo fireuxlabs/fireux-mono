@@ -90,6 +90,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       ...(siteUrl ? { siteUrl } : {}),
       role: app.role,
       ecosystem: app.ecosystem,
+      projectId: app.projectId,
+      ...(app.ecosystemId ? { ecosystemId: app.ecosystemId } : {}),
       modules: moduleNames,
       consoles: app.consoles || [],
       consoleConfig: app.consoleConfig || {},

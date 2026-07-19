@@ -1,6 +1,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import { AppStorage, type App } from '../../../../../../../models/core/app.model'
+import {
+  AppStorage,
+  type App,
+} from '../../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 import { resolveAppMediaForView } from '../appMedia'
@@ -52,7 +55,9 @@ export type AppSurfaceParts<TApp extends object = Partial<App>> = {
   app?: TApp | null | undefined
 }
 
-function safeMedia(app: App) {
+export type AppViewSource = Partial<App>
+
+function safeMedia(app: AppViewSource) {
   return (
     app.media ?? {
       thumbnail_url: '',
@@ -64,11 +69,11 @@ function safeMedia(app: App) {
   )
 }
 
-function safeDerived(app: App) {
+function safeDerived(app: AppViewSource) {
   return app.derived ?? { user_count: 0 }
 }
 
-function makeAvatarText(app: App): string {
+function makeAvatarText(app: AppViewSource): string {
   const source = safeString(app.app_short_name || app.app_name || app.id)
   if (!source) return ''
 
@@ -80,7 +85,9 @@ function makeAvatarText(app: App): string {
     .join('')
 }
 
-export function useAppInterface(appRef?: Ref<App | null | undefined>) {
+export function useAppInterface(
+  appRef?: Ref<AppViewSource | null | undefined>
+) {
   const resolvedMode = useResolvedColorMode()
   type AppPill = AppCard.Card
   type AppCell = AppCard.Card
@@ -102,7 +109,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     } as TApp & App
   }
 
-  function resolveWordmarkUrl(app: App): string {
+  function resolveWordmarkUrl(app: AppViewSource): string {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
@@ -111,7 +118,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       : media.wordmarkLightUrl
   }
 
-  function map(app: App): AppCard.Card {
+  function map(app: AppViewSource): AppCard.Card {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
@@ -161,7 +168,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   function buildInterface(
-    target?: App | null | undefined
+    target?: AppViewSource | null | undefined
   ): AppCard.Card | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null
@@ -171,19 +178,23 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   const toInterface = buildInterface
 
-  function pill(target?: App | null | undefined): AppPill | null {
+  function pill(target?: AppViewSource | null | undefined): AppPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: App | null | undefined): AppCell | null {
+  function cell(target?: AppViewSource | null | undefined): AppCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: App | null | undefined): AppPreview | null {
+  function preview(
+    target?: AppViewSource | null | undefined
+  ): AppPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: App | null | undefined): AppProfile | null {
+  function profile(
+    target?: AppViewSource | null | undefined
+  ): AppProfile | null {
     return buildInterface(target)
   }
 

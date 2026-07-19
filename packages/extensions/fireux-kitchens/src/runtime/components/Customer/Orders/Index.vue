@@ -84,6 +84,11 @@
           </div>
         </dl>
 
+        <p v-if="order.kitchen_note" class="customer-orders__kitchen-note">
+          <UIcon name="i-lucide-message-square-warning" aria-hidden="true" />
+          <span>{{ order.kitchen_note }}</span>
+        </p>
+
         <template #footer>
           <UButton
             :to="order.menu.path"
@@ -104,6 +109,15 @@
         @click="loadMore"
       />
     </div>
+
+    <!-- 2026-07-19 14:57 CEST: Keep this dev projection while concurrent Order-stack work audits missing customer links and rejected-order history. -->
+    <DevJson
+      title="Customer orders (JSON)"
+      context="customer dashboard · customer order projection"
+      :objects="{ orders }"
+      :derived="debug"
+      :hide-when-empty="false"
+    />
   </section>
 </template>
 
@@ -119,6 +133,7 @@ import type {
 import { menuOrderPaymentLabel } from '../../../utils/menu-order-payment'
 
 const {
+  debug,
   error,
   hasMore,
   loadMore,
@@ -254,5 +269,13 @@ function formatDate(value?: string) {
 
 .customer-orders__facts dd {
   margin: calc(var(--spacing) * 0.5) 0 0;
+}
+
+.customer-orders__kitchen-note {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 2);
+  margin: calc(var(--spacing) * 4) 0 0;
+  color: var(--ui-error);
 }
 </style>

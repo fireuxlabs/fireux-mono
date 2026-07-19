@@ -44,7 +44,7 @@
       class="menu-order-collection-status__again"
       @click="$emit('reset')"
     >
-      Start another order
+      {{ terminalActionLabel }}
     </button>
   </section>
 </template>
@@ -68,6 +68,11 @@ const currentStatus = computed(() => props.status?.status || props.order.status)
 const orderId = computed(() => props.order.id)
 const orderNumber = computed(() => props.status?.order_number || props.order.order_number)
 const terminal = computed(() => ['completed', 'cancelled', 'trashed'].includes(currentStatus.value))
+const terminalActionLabel = computed(() =>
+  ['cancelled', 'trashed'].includes(currentStatus.value)
+    ? 'Acknowledge'
+    : 'Start another order'
+)
 const estimateMinutes = computed(() => Math.max(0, Number(props.status?.estimated_ready_minutes || 0)))
 const kitchenNote = computed(() => String(props.status?.kitchen_note || '').trim())
 const statusIcon = computed(() => {

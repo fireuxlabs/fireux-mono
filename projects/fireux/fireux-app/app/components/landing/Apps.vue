@@ -16,34 +16,34 @@
     <div v-else class="flex flex-wrap justify-center gap-2">
       <UTooltip
         v-for="app in displayedApps"
-        :key="app.key || app.id"
-        :text="app.name"
+        :key="app.id"
+        :text="app.app_name"
       >
         <a
-          v-if="app.href"
-          :href="app.href"
-          :aria-label="`Open ${app.name}`"
+          v-if="app.canonical_url"
+          :href="app.canonical_url"
+          :aria-label="`Open ${app.app_name}`"
           class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
-            :src="app.src"
-            :alt="app.name"
-            :text="app.text"
+            :src="app.media.logo_url || app.media.thumbnail_url"
+            :alt="app.app_name"
+            :text="app.app_short_name"
             size="xs"
           />
-          <span>{{ app.name }}</span>
+          <span>{{ app.app_name }}</span>
         </a>
         <span
           v-else
           class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm"
         >
           <UAvatar
-            :src="app.src"
-            :alt="app.name"
-            :text="app.text"
+            :src="app.media.logo_url || app.media.thumbnail_url"
+            :alt="app.app_name"
+            :text="app.app_short_name"
             size="xs"
           />
-          <span>{{ app.name }}</span>
+          <span>{{ app.app_name }}</span>
         </span>
       </UTooltip>
     </div>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLandingDirectory } from '../../composables/useLandingDirectory'
+import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
 
-const { appsPending, displayedApps } = useLandingDirectory()
+const { pending: appsPending, apps: displayedApps } = usePlatformAppDirectory()
 </script>

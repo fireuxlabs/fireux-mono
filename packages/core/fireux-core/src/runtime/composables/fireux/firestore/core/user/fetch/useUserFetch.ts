@@ -33,9 +33,8 @@ function normalizeConsoleTargets(value: unknown): UserAppConsoleTargets {
     ...UserAppConsoleTargetsModel,
   }
 
-  for (const [key, targetIds] of Object.entries(raw)) {
-    if (!key.endsWith('_ids')) continue
-    targets[key] = asStringArray(targetIds)
+  for (const key of Object.keys(UserAppConsoleTargetsModel)) {
+    targets[key] = asStringArray(raw[key])
   }
 
   return targets as UserAppConsoleTargets

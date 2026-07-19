@@ -98,14 +98,15 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
-import { useEcosystemCollection } from '../../../composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
 } from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import type { EcosystemDirectoryController } from '../../../models/core/supporting/directory'
 
 const props = withDefaults(
   defineProps<{
+    controller: EcosystemDirectoryController
     title?: string
     description?: string
     link?: boolean
@@ -127,9 +128,14 @@ const props = withDefaults(
   }
 )
 
-const fetched = useEcosystemCollection()
-const rawCollection = computed<EcosystemInterfaceInput[]>(() => fetched.ecosystems.value)
-const outcome = computed(() => fetched.outcome.value)
+const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
+  props.controller.ecosystems.value.map((entry) => ({
+    ...entry,
+    href: entry.canonical_url,
+    appCount: entry.app_count,
+  }))
+)
+const outcome = computed(() => props.controller.outcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )

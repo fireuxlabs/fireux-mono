@@ -1,10 +1,8 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../core/entity.model'
 import type { FireuxStamped } from '../core/meta.model'
-import { FireuxConsoleAccessModel } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
-export type ProjectType = 'standalone_app' | 'ecosystem_app'
 
 type WidenLiteral<T> =
   T extends string ? string
@@ -17,31 +15,24 @@ type WidenLiteral<T> =
 /**
  * Entity map: docs/concepts/entities.md
  *
- * Family: Console-backed system root entity
- * Storage: root canonical record
+ * Family: FireUX control-plane root entity
+ * Storage: private control-plane record
  * Root path: /projects/<projectId>
  * Management surface: /console/project in fireux-app
  *
  * Decision note:
- * - Project is root-only. App, Ecosystem, and the active runtime App reference
- *   the same root Project entity.
- * - Canonical Project identity, relationships, and operator authority live on
- *   the root Project record.
- * - Project access is not inferred from App, Kitchen, or another entity's team.
- * - Project creation creates only the root Project record.
- * - `owner_user_id` is a canonical root ownership hint, not a replacement for any app-level authority system.
- * - `operator_ids` is canonical root Project console authority.
+ * - Project is canonical only in the FireUX control plane. It is not a public
+ *   directory entity and is not bootstrapped into every ecosystem database.
+ * - App and Ecosystem records point to their parent with `project_id`.
+ * - Project does not store inverse `app_id`, `ecosystem_id`, or access lists.
+ * - Project access currently follows FireUX App administration. A dedicated
+ *   Project membership model should be introduced only when that lifecycle is real.
  * - The Project console may manage related App and Ecosystem surfaces, but those surfaces edit each entity's own stored truth.
  * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
- * - Public page depth can vary by family; Project may stay relatively thin
- *   publicly while remaining a normal root entity.
- * - Project-owned child records, if needed, do not create a second Project
- *   representation.
- * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the entity map and this source together.
  */
 export const ProjectStorage = {
-  shape: 'public/root',
+  shape: 'private/control-plane-root',
   path: 'projects/{projectId}',
   collection: 'projects',
   idParam: 'projectId',
@@ -59,28 +50,13 @@ export const ProjectEntity = defineFireuxEntity({
 
 export const ProjectModel = {
   id: '',
-  ...FireuxConsoleAccessModel,
 
-  // Public-facing identity
+  // Control-plane identity
   name: '',
   slug: '',
   description: '',
   image_url: '',
   status: 'active' as ProjectStatus,
-
-  // System/runtime identity
-  source_url: '',
-  primary_project: false,
-  project_type: 'standalone_app' as ProjectType,
-  console_endpoint_url: '',
-  firebase_project_id: '',
-
-  // Root-entity relationships
-  app_id: '',
-  ecosystem_id: '',
-
-  // Canonical root ownership hint
-  owner_user_id: '',
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -94,28 +70,5 @@ export const ProjectModel = {
 
 export type Project = WidenLiteral<typeof ProjectModel>
 
-export type ProjectCreateInput = Pick<
-  Project,
-  | 'id'
-  | 'name'
-  | 'slug'
-  | 'project_type'
-  | 'source_url'
-  | 'console_endpoint_url'
-  | 'app_id'
-  | 'ecosystem_id'
-  | 'firebase_project_id'
-> &
-  Partial<
-    Pick<
-      Project,
-      | 'description'
-      | 'image_url'
-      | 'primary_project'
-      | 'status'
-      | 'owner_user_id'
-      | 'operator_ids'
-    >
-  >
-
-export type ProjectUpdateInput = Partial<Omit<Project, 'id' | 'created' | 'updated'>>
+export type ProjectCreateInput = Pick<Project, 'id' | 'name' | 'slug'> &
+  Partial<Pick<Project, 'description' | 'image_url' | 'status'>>

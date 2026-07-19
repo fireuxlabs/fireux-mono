@@ -9,7 +9,7 @@
 
       <div class="space-y-3">
         <p class="console-card-header__description">
-          Selected project and its linked ecosystem.
+          Selected project and its related ecosystems.
         </p>
 
         <div class="console-summary-grid">
@@ -18,8 +18,8 @@
             <span class="console-summary-value">{{ selectedProjectName }}</span>
           </div>
           <div class="console-summary-field">
-            Ecosystem ID:
-            <span class="console-summary-value">{{ ecosystemIdLabel }}</span>
+            Ecosystems:
+            <span class="console-summary-value">{{ ecosystemCards.length }}</span>
           </div>
         </div>
       </div>
@@ -31,28 +31,26 @@
       </p>
     </UCard>
 
-    <UCard v-else-if="ecosystemCard">
+    <UCard v-else-if="ecosystemCards.length">
       <template #header>
         <div class="console-card-header">
-          <div class="console-card-header__title">Project Ecosystem</div>
+          <div class="console-card-header__title">Project Ecosystems</div>
         </div>
       </template>
 
-      <EcosystemCardsCell
-        v-bind="ecosystemCard"
-        :link="false"
-      />
-    </UCard>
-
-    <UCard v-else-if="!ecosystemId">
-      <p class="console-card-header__description">
-        This selected project does not expose an ecosystem id yet.
-      </p>
+      <div class="space-y-3">
+        <EcosystemCardsCell
+          v-for="card in ecosystemCards"
+          :key="card.id"
+          v-bind="card"
+          :link="false"
+        />
+      </div>
     </UCard>
 
     <UCard v-else>
       <p class="console-card-header__description">
-        No ecosystem record was found for this project.
+        No ecosystem records point to this project.
       </p>
     </UCard>
 
@@ -75,8 +73,7 @@ import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/co
 // Operation entry spine: docs/concepts/console.md
 const {
   selectedProject,
-  ecosystemId,
-  ecosystem,
+  ecosystems,
   pending,
   debug,
 } = useProjectConsoleEcosystem()
@@ -84,24 +81,19 @@ const {
 const selectedProjectName = computed(() =>
   String(selectedProject.value?.name || '').trim() || 'Untitled'
 )
-const ecosystemIdLabel = computed(() =>
-  String(ecosystemId.value || '').trim() || 'Unset'
-)
-
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
-  const value = ecosystem.value
-  if (!value) return []
-
-  return [
-    {
+  return ecosystems.value.map((value) => ({
       ...value,
       href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
       src: value.image_url,
       text: value.name,
       key: value.slug,
-    },
-  ]
+    }))
 })
 const { cell } = useEcosystemInterface()
-const ecosystemCard = computed(() => cell(ecosystemCollection.value[0]))
+const ecosystemCards = computed(() =>
+  ecosystemCollection.value
+    .map((entry) => cell(entry))
+    .filter((card): card is NonNullable<ReturnType<typeof cell>> => Boolean(card))
+)
 </script>

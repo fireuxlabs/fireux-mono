@@ -1,17 +1,9 @@
-import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { ProjectStorage } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 
 const PROJECT_COLLECTION_PATH = ProjectStorage.collection
@@ -20,7 +12,6 @@ const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
   ids?: ProjectCollectionFilterValue[] | null | undefined
-  operatorId?: ProjectCollectionFilterValue
 }
 export type ProjectCollectionSource = ConsoleSource
 type UseProjectCollectionOptions = {
@@ -34,8 +25,7 @@ type UseProjectCollectionOptions = {
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ) {
-  const db = useFirestore()
-  const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead()
   const { surface } = useProjectInterface()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -52,12 +42,6 @@ export function useProjectCollection(
     return options.filter ?? undefined
   })
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    String(resolvedFilter.value?.operatorId ?? '').trim()
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId')
-  )
   const filterIdSet = computed(
     () =>
       new Set(
@@ -67,49 +51,12 @@ export function useProjectCollection(
       )
   )
   const rootSource = firestoreFetchCollection<ProjectSurface>(collectionPath)
-  const operatorQuery = computed<Query<ProjectSurface> | null>(() => {
-    if (!collectionPath.value) return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    return fsq(
-      collection(db, collectionPath.value),
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<ProjectSurface>
-  })
-  const operatorSource = firestoreQuery<ProjectSurface>(
-    operatorQuery,
-    undefined,
-    collectionPath
-  )
-  const operatorItems = computed<ProjectSurface[]>(() => {
-    const byId = new Map<string, ProjectSurface>()
-
-    for (const project of operatorSource.value ?? []) {
-      const id = String(project?.id || '').trim()
-      if (id) byId.set(id, { ...project, id })
-    }
-
-    return [...byId.values()]
-  })
-  const firestoreSource = computed(() =>
-    !hasOperatorFilter.value || !filterOperatorId.value ? rootSource : null
-  )
-  const collectionItems = computed<ProjectSurface[]>(() => {
-    if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorItems.value
-    }
-    return firestoreSource.value?.value ?? []
-  })
 
   const projects = computed<ProjectSurface[]>(() =>
-    collectionItems.value.reduce<ProjectSurface[]>((acc, project) => {
+    (rootSource.value ?? []).reduce<ProjectSurface[]>((acc, project) => {
       const id = String(project?.id || '').trim()
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
-      if (hasOperatorFilter.value) {
-        if (!filterOperatorId.value) return acc
-        if (!targetHasOperator(project, filterOperatorId.value)) return acc
-      }
 
       const item = surface({
         project: {
@@ -123,22 +70,12 @@ export function useProjectCollection(
     }, [])
   )
   const count = computed(() => projects.value.length)
-  const pending = computed(() => {
-    if (sourceMode.value === 'demo') return false
-    if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorSource.pending.value
-    }
-    if (hasOperatorFilter.value) return false
-    return rootSource.pending.value
-  })
-  const error = computed<unknown | undefined>(() => {
-    if (sourceMode.value === 'demo') return undefined
-    if (hasOperatorFilter.value && filterOperatorId.value) {
-      return operatorSource.error.value
-    }
-    if (hasOperatorFilter.value) return undefined
-    return rootSource.error.value
-  })
+  const pending = computed(() =>
+    sourceMode.value === 'demo' ? false : rootSource.pending.value
+  )
+  const error = computed<unknown | undefined>(() =>
+    sourceMode.value === 'demo' ? undefined : rootSource.error.value
+  )
   const { outcome } = useFirestoreCollectionState({
     count,
     error,

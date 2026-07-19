@@ -26,17 +26,23 @@ type WidenLiteral<T> =
  * - Ecosystem is a dependent public/system entity with its own root facade.
  * - An ecosystem cannot exist without a parent project, so `project_id` is required canon.
  * - A project may exist without an ecosystem.
- * - The root ecosystem record is the public-facing ecosystem identity used by FireUX public surfaces.
+ * - The owning ecosystem database holds canonical truth. FireUX platform
+ *   surfaces consume a safe directory projection, never a second Ecosystem.
  * - Apps associated with an Ecosystem remain ordinary root App entities.
+ * - Apps point to Ecosystem with `App.ecosystem_id`; Ecosystem stores no inverse
+ *   App id array.
  * - Keep this model focused on root ecosystem identity and relationships.
  * - If this decision changes, update the entity map and this source together.
  */
-export const EcosystemStorage = {
+export const EcosystemCanonicalStorage = {
   shape: 'public/root',
   path: 'ecosystems/{ecosystemId}',
   collection: 'ecosystems',
   idParam: 'ecosystemId',
 } as const
+
+/** @deprecated Prefer the authority-explicit EcosystemCanonicalStorage name. */
+export const EcosystemStorage = EcosystemCanonicalStorage
 
 export const EcosystemEntity = defineFireuxEntity({
   kind: 'entity',
@@ -52,16 +58,14 @@ export const EcosystemModel = {
 
   // Root-entity relationships
   project_id: '',
-  apps: [] as string[],
 
   // Public identity
   name: '',
   slug: '',
   description: '',
   image_url: '',
-  source_url: '',
+  website_url: '',
   status: 'active' as EcosystemStatus,
-  team: '',
 
   created: {
     at: {} as FirebaseTimestamp,

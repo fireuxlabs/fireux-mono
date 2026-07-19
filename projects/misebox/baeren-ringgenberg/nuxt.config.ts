@@ -5,6 +5,8 @@ import kitchenConfig from './app/config/kitchen.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
+  projectId: 'misebox',
+  ecosystemId: 'misebox',
   id: 'baeren-ringgenberg',
   name: 'Hotel Bären Ringgenberg',
   shortName: 'Bären Ringgenberg',

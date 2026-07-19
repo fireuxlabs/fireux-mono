@@ -49,7 +49,6 @@ export const UserAppConsoleTargetFields = {
   supplier: 'supplier_ids',
   property: 'property_ids',
   portfolio: 'portfolio_ids',
-  project: 'project_ids',
   blank: 'blank_ids',
 } as const
 
@@ -64,7 +63,6 @@ export const UserAppConsoleTargetsModel = {
   supplier_ids: [] as string[],
   property_ids: [] as string[],
   portfolio_ids: [] as string[],
-  project_ids: [] as string[],
   blank_ids: [] as string[],
 } satisfies Record<UserAppConsoleTargetField, string[]>
 
@@ -72,9 +70,7 @@ export function resolveUserAppConsoleTargetField(family: unknown): string {
   const key = String(family ?? '').trim().toLowerCase()
   if (!key) return ''
 
-  return (
-    (UserAppConsoleTargetFields as Record<string, string>)[key] || `${key}_ids`
-  )
+  return (UserAppConsoleTargetFields as Record<string, string>)[key] || ''
 }
 
 export const UserNotificationStorage = {

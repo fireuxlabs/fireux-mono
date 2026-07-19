@@ -3,6 +3,8 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
   ecosystem: 'slap',
+  projectId: 'slap',
+  ecosystemId: 'slap',
   id: 'slap-app',
   name: 'Slap',
   shortName: 'Slap',

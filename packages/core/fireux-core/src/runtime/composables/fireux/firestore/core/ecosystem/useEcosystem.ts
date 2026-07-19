@@ -16,7 +16,8 @@ export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
  * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
  * This is the canonical root Ecosystem seam. Without an explicit id it resolves
- * FireUXConfig.ecosystem; for arbitrary ids, pass the id directly.
+ * FireUXConfig.ecosystemId; for arbitrary ids, pass the id directly. Apps
+ * without an Ecosystem relationship resolve no implicit Ecosystem.
  * Ecosystem may map to Firebase infrastructure, but Firebase is not its identity truth.
  */
 export function useEcosystem(id?: string | Ref<string>) {
@@ -24,7 +25,7 @@ export function useEcosystem(id?: string | Ref<string>) {
 
   const ecosystemId = computed(() => {
     if (id === undefined) {
-      return String(fireux.ecosystem || '').trim()
+      return String(fireux.ecosystemId || '').trim()
     }
 
     return isRef(id) ? String(id.value || '').trim() : String(id || '').trim()

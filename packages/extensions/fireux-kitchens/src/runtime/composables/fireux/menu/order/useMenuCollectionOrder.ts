@@ -1,6 +1,7 @@
 import {
   computed,
   onBeforeUnmount,
+  onMounted,
   ref,
   toValue,
   watch,
@@ -15,19 +16,13 @@ import {
   type MenuOrderCheckoutInput,
 } from '../../../../utils/menu-order-payment'
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
+import {
+  useMenuOrderTrackingSession,
+  type MenuOrderTrackingStatus,
+} from './useMenuOrderTrackingSession'
 
-export type MenuCollectionOrderStatus = {
-  id: string
-  order_number: string
-  status: KitchenOrderStatus
+export type MenuCollectionOrderStatus = MenuOrderTrackingStatus & {
   order_type: 'collection'
-  estimated_ready_minutes: number
-  estimated_ready_at: string
-  kitchen_note?: string
-  collection?: {
-    mode: 'queue' | 'scheduled'
-    requested_for?: string
-  }
 }
 
 type UseMenuCollectionOrderOptions = {
@@ -51,14 +46,20 @@ const terminalStatuses = new Set<KitchenOrderStatus>([
 
 export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
   const { currentUser } = useAuth()
-  const sentOrder = ref<CreatedMenuOrder | null>(null)
-  const status = ref<MenuCollectionOrderStatus | null>(null)
+  const tracking = useMenuOrderTrackingSession<MenuCollectionOrderStatus>({
+    orderType: 'collection',
+    scopeKey: options.scopeKey,
+  })
+  const {
+    fulfilmentLabel: collectionLabel,
+    paymentLabel,
+    sentOrder,
+    status,
+  } = tracking
   const pending = ref(false)
   const statusPending = ref(false)
   const error = ref('')
   const statusError = ref('')
-  const collectionLabel = ref('')
-  const paymentLabel = ref('')
   let statusTimer: ReturnType<typeof setTimeout> | undefined
   let requestKey = ''
   let requestSignature = ''
@@ -117,14 +118,14 @@ export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
       if (created.order_type !== 'collection') {
         throw new Error('The Kitchen returned an invalid Collection order.')
       }
-      if (created.payment?.required && created.payment.status !== 'paid') {
-        await startCheckout(created.id)
-      }
-
       sentOrder.value = created
       collectionLabel.value = input.selection.label
       paymentLabel.value = menuOrderPaymentLabel('collection', input.paymentMethod)
       status.value = createdStatus(created)
+      tracking.save()
+      if (created.payment?.required && created.payment.status !== 'paid') {
+        await startCheckout(created.id)
+      }
       scheduleStatusRefresh(0)
       return created
     } catch (caught) {
@@ -160,6 +161,7 @@ export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
         throw new Error('The Kitchen returned an invalid Collection order.')
       }
       status.value = next
+      tracking.save()
       return next
     } catch (caught) {
       statusError.value = requestError(caught, 'Order status could not be checked.')
@@ -187,20 +189,30 @@ export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
 
   function reset() {
     stopStatusRefresh()
-    sentOrder.value = null
-    status.value = null
+    tracking.clear()
+    resetTransientState()
+  }
+
+  function resetTransientState() {
     error.value = ''
     statusError.value = ''
-    collectionLabel.value = ''
-    paymentLabel.value = ''
     requestKey = ''
     requestSignature = ''
   }
 
   watch(
     () => text(toValue(options.scopeKey)),
-    () => reset()
+    () => {
+      stopStatusRefresh()
+      resetTransientState()
+      tracking.restore()
+      scheduleStatusRefresh(0)
+    }
   )
+  onMounted(() => {
+    tracking.restore()
+    scheduleStatusRefresh(0)
+  })
   onBeforeUnmount(stopStatusRefresh)
 
   return {

@@ -15,8 +15,26 @@ export function useCustomerOrders() {
   const loadingMore = ref(false)
   const error = ref('')
   const nextCursor = ref<string | null>(null)
+  const sourceDebug = ref<CustomerOrderPage['debug']>()
+  const lastLoadedAt = ref('')
 
   const hasMore = computed(() => Boolean(nextCursor.value))
+  const debug = computed(() => ({
+    source: {
+      endpoint: '/api/customer/orders',
+      customer_uid: currentUser.value?.uid || '',
+      last_loaded_at: lastLoadedAt.value,
+    },
+    state: {
+      pending: pending.value,
+      refreshing: refreshing.value,
+      loading_more: loadingMore.value,
+      order_count: orders.value.length,
+      has_more: hasMore.value,
+      error: error.value,
+    },
+    projection: sourceDebug.value,
+  }))
 
   async function load(options: { append?: boolean, background?: boolean } = {}) {
     const user = currentUser.value
@@ -41,6 +59,8 @@ export function useCustomerOrders() {
       if (currentUser.value?.uid !== requestUid) return
 
       const pageItems = Array.isArray(page?.items) ? page.items : []
+      sourceDebug.value = page?.debug
+      lastLoadedAt.value = new Date().toISOString()
       if (append) {
         orders.value = [...orders.value, ...pageItems]
       } else if (background) {
@@ -90,6 +110,8 @@ export function useCustomerOrders() {
       orders.value = []
       nextCursor.value = null
       error.value = ''
+      sourceDebug.value = undefined
+      lastLoadedAt.value = ''
       stopRefresh()
       if (mounted && user) {
         void load()
@@ -108,6 +130,7 @@ export function useCustomerOrders() {
   onBeforeUnmount(stopRefresh)
 
   return {
+    debug,
     error,
     hasMore,
     loadMore: () => load({ append: true }),

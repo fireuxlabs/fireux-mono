@@ -99,14 +99,15 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { computed } from 'vue'
 import {
   useAppInterface,
+  type AppViewSource,
   type AppCard,
 } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
-import type { AppModel } from '../../../models/core/app.model'
+import type { AppDirectoryController } from '../../../models/core/supporting/directory'
 
 const props = withDefaults(
   defineProps<{
+    controller: AppDirectoryController
     title?: string
     description?: string
     link?: boolean
@@ -128,9 +129,8 @@ const props = withDefaults(
   }
 )
 
-const fetched = useAppCollection()
-const collection = computed<AppModel[]>(() => fetched.apps.value as AppModel[])
-const outcome = computed(() => fetched.outcome.value)
+const collection = computed<AppViewSource[]>(() => props.controller.apps.value)
+const outcome = computed(() => props.controller.outcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
@@ -159,7 +159,7 @@ const {
   cell: makeCell,
 } = useAppInterface()
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<AppModel, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<AppViewSource, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (app) => makeCard(app),
     initialVariant: props.initialVariant,
@@ -187,5 +187,7 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const devJsonContext = 'collection manager · apps · root: apps'
+const devJsonContext = computed(
+  () => `collection manager · apps · source: ${props.controller.source}`
+)
 </script>

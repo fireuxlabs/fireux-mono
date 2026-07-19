@@ -21,7 +21,12 @@ export type RuntimeApp = {
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
   role: RuntimeAppRole
+  /** Ecosystem package/Firebase binding key. */
   ecosystem: string
+  /** Canonical FireUX Project entity id. */
+  projectId: string
+  /** Canonical Ecosystem entity id when the App belongs to one. */
+  ecosystemId?: string
   modules: readonly string[]
   consoles: readonly string[]
   consoleConfig?: Record<

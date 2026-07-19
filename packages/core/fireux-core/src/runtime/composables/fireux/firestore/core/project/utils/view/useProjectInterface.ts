@@ -1,15 +1,9 @@
 import type {
   Project,
   ProjectStatus,
-  ProjectType,
 } from '../../../../../../../models/system/project.model'
-import { ProjectStorage } from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-const resolveProjectPath = (target: { slug?: string }) => {
-  const slug = safeString(target.slug)
-  return slug ? `/${ProjectStorage.collection}/${slug}` : ''
-}
 const labelize = (value: string) =>
   safeString(value)
     .split(/[-_]+/)
@@ -25,15 +19,6 @@ export type ProjectSurface = {
   description?: string
   image_url?: string
   status?: ProjectStatus | string
-  source_url?: string
-  primary_project?: boolean
-  project_type?: ProjectType | string
-  console_endpoint_url?: string
-  app_id?: string
-  ecosystem_id?: string
-  firebase_project_id?: string
-  owner_user_id?: string
-  operator_ids?: string[]
   created?: Project['created']
   updated?: Project['updated']
 }
@@ -64,25 +49,20 @@ export function useProjectInterface() {
     const source = parts.project ?? null
     if (!source) return null
 
-    const project = {
-      ...source,
-    } as TProject & ProjectSurface & Record<string, unknown>
-
-    // Ignore legacy root-plus-app access fields. Project is root-only and its
-    // current authority is the explicit root operator list.
-    delete project.app_scope
-    delete project.app_scope_state
-    delete project.app_scope_app_id
-    delete project.team_ids
-    delete project.join_requests
-
-    const id = safeString(project.id)
+    const raw = source as TProject & ProjectSurface
+    const id = safeString(raw.id)
     if (!id) return null
 
     return {
-      ...project,
       id,
-    }
+      name: safeString(raw.name),
+      slug: safeString(raw.slug),
+      description: safeString(raw.description),
+      image_url: safeString(raw.image_url),
+      status: safeString(raw.status),
+      created: raw.created,
+      updated: raw.updated,
+    } as TProject & ProjectSurface
   }
 
   function buildInterface(
@@ -94,19 +74,18 @@ export function useProjectInterface() {
     const name = safeString(target.name)
     const status = safeString(target.status)
     const description = safeString(target.description)
-    const projectType = safeString(target.project_type)
     const imageUrl = safeString(target.image_url)
 
     if (!id) return null
 
     return {
       id,
-      to: resolveProjectPath({ slug: target.slug }),
+      to: '',
       imageUrl,
       title: name,
       subtitle: description,
       meta: description,
-      badges: [labelize(status), labelize(projectType)].filter(Boolean),
+      badges: [labelize(status)].filter(Boolean),
     }
   }
 

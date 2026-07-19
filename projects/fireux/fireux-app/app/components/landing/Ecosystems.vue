@@ -14,19 +14,19 @@
     <div v-else class="flex flex-wrap justify-center gap-2">
       <UTooltip
         v-for="ecosystem in displayedEcosystems"
-        :key="ecosystem.key || ecosystem.id"
+        :key="ecosystem.id"
         :text="ecosystem.name"
       >
         <a
-          v-if="ecosystem.href"
-          :href="ecosystem.href"
+          v-if="ecosystem.canonical_url"
+          :href="ecosystem.canonical_url"
           :aria-label="`Open ${ecosystem.name}`"
           class="inline-flex items-center gap-2 rounded-xl border border-default bg-default/70 px-3 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
-            :src="ecosystem.src"
+            :src="ecosystem.image_url"
             :alt="ecosystem.name"
-            :text="ecosystem.text"
+            :text="ecosystem.name"
             size="xs"
             class="rounded-lg"
           />
@@ -37,9 +37,9 @@
           class="inline-flex items-center gap-2 rounded-xl border border-default bg-default/70 px-3 py-2 text-sm font-medium shadow-sm"
         >
           <UAvatar
-            :src="ecosystem.src"
+            :src="ecosystem.image_url"
             :alt="ecosystem.name"
-            :text="ecosystem.text"
+            :text="ecosystem.name"
             size="xs"
             class="rounded-lg"
           />
@@ -51,7 +51,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLandingDirectory } from '../../composables/useLandingDirectory'
+import { usePlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
-const { appsPending, displayedEcosystems } = useLandingDirectory()
+const { pending: appsPending, ecosystems: displayedEcosystems } =
+  usePlatformEcosystemDirectory()
 </script>

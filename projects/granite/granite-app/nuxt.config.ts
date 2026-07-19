@@ -5,6 +5,8 @@ import { graniteNuxtOverrides } from './app/config/vite.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'granite',
+  projectId: 'granite',
+  ecosystemId: 'granite',
   id: 'granite-app',
   name: 'Granite',
   shortName: 'Granite',

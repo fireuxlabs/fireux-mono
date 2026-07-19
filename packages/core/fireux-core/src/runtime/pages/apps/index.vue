@@ -3,9 +3,9 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
       <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
-      <AppCTA />
-      <AppCollectionMine />
-      <AppCollectionManager />
+      <AppCTA :controller="appsController" />
+      <AppCollectionMine :controller="appsController" />
+      <AppCollectionManager :controller="appsController" />
     </UPageBody>
   </UPage>
 </template>
@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
 
 definePageMeta({
   nav: {
@@ -32,6 +33,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
+const appsController = useEcosystemAppCollection()
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find apps in this ecosystem, or start your app.'

@@ -2,6 +2,20 @@ import type { FireuxAppConfig } from './types'
 import { moduleName } from './modules'
 
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
+  if (!String(app.projectId || '').trim()) {
+    throw new Error('[fireux] app.projectId must name the canonical FireUX Project entity.')
+  }
+
+  if ('ecosystemId' in app && !String(app.ecosystemId || '').trim()) {
+    throw new Error('[fireux] app.ecosystemId must be omitted or name a canonical Ecosystem entity.')
+  }
+
+  if (app.ecosystemId && app.ecosystemId !== app.ecosystem) {
+    throw new Error(
+      '[fireux] app.ecosystemId must match the owning ecosystem binding. Omit it for a direct Project App.'
+    )
+  }
+
   if (app.role === 'standalone' && app.ecosystem !== 'fireux') {
     throw new Error(
       '[fireux] role "standalone" is currently only supported inside the "fireux" ecosystem.'

@@ -1,11 +1,10 @@
-import { computed, isRef } from 'vue'
+import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useProjectCollection,
   type ProjectCollectionFilter,
@@ -24,9 +23,10 @@ type UseProjectConsoleOptions = {
  * FireUX stack family: Console-backed root entity.
  * Entity: Project.
  *
- * This file adapts root Project authority sources into the private /console/project selected runtime.
- * Project stored truth lives at projects/{projectId}; operator ids on that root
- * record are console authority.
+ * This file adapts FireUX control-plane Project records into the private
+ * /console/project selected runtime.
+ * Access is gated by the current FireUX App admin role at the route boundary.
+ * Project has no separate membership or operator model today.
  * Project console can manage related App and Ecosystem surfaces without redefining their stored identity.
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
@@ -35,23 +35,6 @@ export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {
   const consoleRoot = useConsole('project')
-  const { uid } = useAuth()
-  const userId = computed(() => normalizeString(uid.value))
-  const targetFilter = computed<ProjectCollectionFilter>(() => {
-    const explicitFilter = isRef(options.filter)
-      ? options.filter.value ?? {}
-      : options.filter ?? {}
-
-    if (
-      consoleRoot.source.value !== 'live' ||
-      Array.isArray(explicitFilter.ids)
-    ) return explicitFilter
-
-    return {
-      ...explicitFilter,
-      operatorId: userId.value,
-    }
-  })
   const {
     projects: targetProjects,
     pending: targetsPending,
@@ -59,7 +42,7 @@ export function useProjectConsole(
     outcome: targetsOutcome,
   } = useProjectCollection({
     source: consoleRoot.source,
-    filter: targetFilter,
+    filter: options.filter,
   })
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
@@ -69,7 +52,7 @@ export function useProjectConsole(
     targetError: targetsError,
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
-    userId,
+    readOnly: true,
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(
     () => entity.selection.selectedTarget.value

@@ -83,15 +83,11 @@ const props = defineProps<{
   hours?: WeekdayTimeWindowsConfig
   kitchenSlug?: string
   menuId: string
-  orderPath: string
+  scopeKey: string
   sections: MenuManifestSection[]
   sourceMenuId: string
 }>()
-const scopeKey = computed(() => JSON.stringify([
-  props.orderPath,
-  props.kitchenSlug || '',
-  props.sourceMenuId,
-]))
+const scopeKey = computed(() => props.scopeKey)
 const basket = useMenuOrderBasket({
   currencyCode: computed(() => props.currencyCode),
   scopeKey,

@@ -3,6 +3,8 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
   ecosystem: 'cleanbox',
+  projectId: 'cleanbox',
+  ecosystemId: 'cleanbox',
   id: 'richies-reinigung',
   name: 'Richies',
   shortName: 'Richies',

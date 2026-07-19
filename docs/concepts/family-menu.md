@@ -1,6 +1,6 @@
 Menu family map
-Updated: 2026-07-18
-Ref: f4ddbda21
+Updated: 2026-07-19
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -279,8 +279,12 @@ Page composition note:
   settlement methods into Pay now or a surface-aware Pay later choice, posts through the canonical Menu Order endpoint,
   and follows Kitchen acceptance, ready, rejection, and completion status on
   the current page. Configured Pay now starts the existing secure online-card
-  checkout; the pipeline does not persist the customer session across refresh
-  or extend submission to Delivery or Pre-order. Collection can be paused
+  checkout. The pipeline does not persist customer/contact input or basket
+  contents, but its safe post-submit Order reference, display labels, and
+  latest status restore across refresh and equivalent root/Kitchen routes. It
+  blocks a second basket while that Order is unresolved; a rejected Order must
+  be explicitly acknowledged before the tracking session clears. It does not
+  yet extend submission to Delivery or Pre-order. Collection can be paused
   independently of its hours and enabled state: the themed public doorway
   remains readable, ordering controls are replaced by its pause message, and
   stale submissions are rejected server-side.
@@ -340,7 +344,9 @@ Component placement:
   `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket
   arithmetic and validated line correction only, while
   `useMenuCollectionOrder.ts` owns Collection submission, idempotency, online
-  checkout handoff, and status polling through server APIs. Shared payment
+  checkout handoff, and status polling through server APIs;
+  `useMenuOrderTrackingSession.ts` owns the minimal surface-neutral
+  post-submit browser tracking record. Shared payment
   timing copy belongs to `utils/menu-order-payment.ts`, not to a surface dialog.
   `components/Menu/Json.vue` remains the temporary renderer for private or
   operational contexts that do not yet own a dedicated public projection.
@@ -349,9 +355,12 @@ Component placement:
   project MenuOrder; other suffixes preserve the context query for MenuJson. The shared route
   projection classifier also drives `middleware/menu-projection-layout.ts`, so
   the page branch and pre-render layout cannot drift.
-- The preserved ordering/funnel components remain disconnected reference
-  material. MenuOrder does not mount that chain. Its active Collection seam is
-  deliberately smaller and does not restore the preserved draft/session UI.
+- `MenuOrder` is the single target public ordering component family. The
+  unshipped `Menu/Detail/Funnel`, `kitchen/order/funnel`, and app-local
+  `/ordering/*` development chain still has direct consumers; it is an
+  alternate implementation to migrate and delete atomically, not a legacy or
+  compatibility system. New ordering work belongs in `MenuOrder` and its
+  canonical session seams.
 - Kitchen-scoped console menu work lives under `components/Console/Kitchen/Operations/Menus`.
 - Console editing, upload, AI processing, publishing, sections, and items should not move into root `components/Menu` unless they become public/shared renderer primitives.
 - Inside the scoped menu operation, let the operator UI define the first buckets. `/console/kitchen/menus` starts with `Creation`, because upload, URL import, source queue, and source detail are one creation journey.

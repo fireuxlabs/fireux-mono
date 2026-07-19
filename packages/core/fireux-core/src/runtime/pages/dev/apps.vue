@@ -47,7 +47,7 @@
         </template>
       </UCard>
 
-      <AppCollectionManager />
+      <AppCollectionManager :controller="publicAppsController" />
     </UPageBody>
   </UPage>
 </template>
@@ -59,6 +59,7 @@ import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
 import { AppModel as AppModelRuntime } from '../../models/core/app.model'
 
 definePageMeta({
@@ -77,6 +78,7 @@ definePageMeta({
 })
 
 const appModelRuntime = AppModelRuntime
+const publicAppsController = useEcosystemAppCollection()
 
 const { apps } = useAppCollection()
 const { app: activeApp } = useApp()

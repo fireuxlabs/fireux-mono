@@ -27,8 +27,13 @@
 import { computed } from 'vue'
 import { useMyApps } from '../../../composables/fireux/firestore/core/app/utils/useMyApps'
 import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppDirectoryController } from '../../../models/core/supporting/directory'
 
-const { myApps } = useMyApps()
+const props = defineProps<{
+  controller: AppDirectoryController
+}>()
+
+const { myApps } = useMyApps(props.controller.apps)
 const { cell: appToCell } = useAppInterface()
 
 const appCards = computed(() =>

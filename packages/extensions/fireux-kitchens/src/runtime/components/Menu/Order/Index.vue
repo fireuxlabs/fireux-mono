@@ -63,7 +63,7 @@
         :hours="collectionHours"
         :kitchen-slug="orderKitchenSlug"
         :menu-id="menuId"
-        :order-path="orderPath"
+        :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
       />
@@ -236,10 +236,10 @@ const orderKitchenSlug = computed(() =>
     : ''
 )
 const basketScopeKey = computed(() => JSON.stringify([
-  orderPath.value,
   resolvedSource.value?.appId || '',
   resolvedSource.value?.kitchenId || '',
   sourceMenuId.value,
+  menuContext.value,
 ]))
 const unavailableFailure = computed(() => failure.value || {
   statusCode: 404,

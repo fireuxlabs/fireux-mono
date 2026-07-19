@@ -11,14 +11,15 @@ export { useUserFetch } from './fetch/useUserFetch'
 export { useUserInterface } from './utils/view/useUserInterface'
 
 /**
- * FireUX stack family: Active identity + app overlay.
+ * FireUX stack family: Active identity + app membership.
  * Entity: User.
  * Canon:
  * - docs/fireux-canon.md
  * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
  * This seam resolves the active authenticated user, not an arbitrary root User.
- * User is public identity; UserPrivate is account data; UserApp carries app capability state.
+ * User is public identity; UserPrivate is account data; UserApp is the current
+ * app's membership, authorization, notification, and settings record.
  * For arbitrary uid reads, call useUserFetch(uid) directly.
  */
 export function useUser() {

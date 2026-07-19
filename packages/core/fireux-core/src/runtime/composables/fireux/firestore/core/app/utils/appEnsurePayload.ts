@@ -52,15 +52,15 @@ export function buildAppEnsureCreateInput(fireux: FireuxConfig): AppCreateInput 
   const brandAssets = useAssets()
   const payload = pruneEmptyBootstrapValue({
     id: fireux.appId,
-    project_id: normalizeString(fireux.ecosystem),
-    ecosystem_id: fireux.ecosystem,
+    project_id: fireux.projectId,
+    ecosystem_id: fireux.ecosystemId,
     database_id: resolveRuntimeDatabaseId(),
     slug: fireux.appId,
     status: 'active',
     app_name: fireux.appName,
     app_short_name: fireux.appShortName,
     role: fireux.role,
-    ecosystem: fireux.ecosystem,
+    ecosystem: fireux.ecosystemId,
     social_links: {
       website: fireux.siteUrl,
     },
@@ -83,18 +83,19 @@ export function buildAppEnsureRepairPatch(
   const patch: Record<string, unknown> = {}
   const brandAssets = useAssets()
   const runtimeProjectId = resolveRuntimeProjectId()
-  const projectId = normalizeString(fireux.ecosystem)
+  const projectId = normalizeString(fireux.projectId)
+  const ecosystemId = normalizeString(fireux.ecosystemId)
   const databaseId = resolveRuntimeDatabaseId()
 
   const ensureStringFields: Record<string, string> = {
     id: fireux.appId,
-    ecosystem_id: fireux.ecosystem,
+    ...(ecosystemId ? { ecosystem_id: ecosystemId } : {}),
     slug: fireux.appId,
     status: 'active',
     app_name: fireux.appName,
     app_short_name: fireux.appShortName,
     role: fireux.role,
-    ecosystem: fireux.ecosystem,
+    ...(ecosystemId ? { ecosystem: ecosystemId } : {}),
   }
 
   for (const [key, value] of Object.entries(ensureStringFields)) {

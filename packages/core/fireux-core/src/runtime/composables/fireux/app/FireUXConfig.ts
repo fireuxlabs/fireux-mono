@@ -7,6 +7,8 @@ export interface FireUXConfig {
   role: FireUXRole
 
   ecosystem: string
+  projectId: string
+  ecosystemId?: string
   appId: string
   appName: string
   appShortName: string
@@ -101,6 +103,8 @@ function buildConfig(): Readonly<FireUXConfig> {
     role,
 
     ecosystem,
+    projectId: reqString(fireux, 'projectId'),
+    ecosystemId: optString(fireux, 'ecosystemId'),
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
@@ -154,6 +158,8 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       !!cached &&
       cached.appId === cfg.appId &&
       cached.ecosystem === cfg.ecosystem &&
+      cached.projectId === cfg.projectId &&
+      cached.ecosystemId === cfg.ecosystemId &&
       cached.role === cfg.role
 
     if (isCacheValid) return cached

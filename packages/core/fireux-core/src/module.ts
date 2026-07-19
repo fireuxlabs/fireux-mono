@@ -65,6 +65,14 @@ export default defineNuxtModule({
       handler: resolver.resolve('./runtime/server/api/public/users/[handle].get'),
     })
     addServerHandler({
+      route: '/api/public/apps',
+      handler: resolver.resolve('./runtime/server/api/public/apps.get'),
+    })
+    addServerHandler({
+      route: '/api/public/apps/:id',
+      handler: resolver.resolve('./runtime/server/api/public/apps/[id].get'),
+    })
+    addServerHandler({
       route: '/api/internal/events/user-joined',
       method: 'post',
       handler: resolver.resolve(

@@ -85,6 +85,23 @@ export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
     nextCursor: page.size === PAGE_SIZE
       ? page.docs.at(-1)?.id || null
       : null,
+    ...(import.meta.dev
+      ? {
+          debug: {
+            customer_uid: uid,
+            link_count: page.size,
+            candidate_count: candidates.length,
+            resolved_order_count: orderSnaps.filter(snapshot => snapshot.exists).length,
+            visible_order_count: items.length,
+            omitted_count: page.size - items.length,
+            statuses: items.map(item => ({
+              id: item.id,
+              status: item.status,
+              order_type: item.order_type,
+            })),
+          },
+        }
+      : {}),
   }
 })
 
@@ -123,6 +140,9 @@ function customerOrderSummary(
     created_at: iso(order.created_at) || iso(record(order.created).at),
     estimated_ready_minutes: number(order.estimated_ready_minutes),
     estimated_ready_at: iso(order.estimated_ready_at),
+    ...(text(order.kitchen_note)
+      ? { kitchen_note: text(order.kitchen_note) }
+      : {}),
     item_count: array(order.items).reduce(
       (total, item) => total + Math.max(1, number(record(item).quantity)),
       0

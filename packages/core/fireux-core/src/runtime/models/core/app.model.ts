@@ -30,18 +30,25 @@ import type {
  * - Dashboard and control surfaces edit the same root App record.
  * - `fireux/app` is for app shell, context, orchestration, and config helpers; App entity data belongs in the Firestore App stack.
  * - A runtime surface may manage App, but that does not justify a second stored app-scoped record yet.
+ * - Canonical App truth lives in its owning database. FireUX platform discovery
+ *   consumes an allowlisted directory projection, never a second App entity.
+ * - `project_id` is required. `ecosystem_id` is present only when the App belongs
+ *   to an Ecosystem; direct Project Apps leave it absent.
  * - If real scoped App state appears later, update the entity map and this
  *   source together.
  */
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-export const AppStorage = {
+export const AppCanonicalStorage = {
   shape: 'public/root',
   path: 'apps/{appId}',
   collection: 'apps',
   idParam: 'appId',
 } as const
+
+/** @deprecated Prefer the authority-explicit AppCanonicalStorage name. */
+export const AppStorage = AppCanonicalStorage
 
 export const AppEntity = defineFireuxEntity({
   kind: 'entity',
@@ -72,12 +79,14 @@ export const AppModel = {
   database_id: '',
   slug: '',
   status: 'active' as AppStatus,
+  /** @deprecated Ambiguous legacy display metadata; not part of public projection canon. */
   team: '',
 
   // Identity + brand
   app_name: '',
   app_short_name: '',
   role: '' as AppRole,
+  /** @deprecated Use ecosystem_id for identity; this legacy field is display-only. */
   ecosystem: '',
 
   tagline: '',
@@ -205,5 +214,6 @@ export type AppControlField =
 export type AppSystemField =
   typeof AppFieldGroups.system[number]
 
-export type AppCreateInput = Omit<App, 'created' | 'updated'>
+export type AppCreateInput = Omit<App, 'created' | 'updated' | 'ecosystem_id'> &
+  Partial<Pick<App, 'ecosystem_id'>>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

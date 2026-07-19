@@ -1,6 +1,5 @@
-import { computed, unref, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectConsole } from '../core/useProjectConsole'
 
@@ -11,19 +10,13 @@ type UseProjectConsoleIndexOptions = {
 export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
-  const consoleTargets = useConsoleTargets({ family: 'project' })
-  const targetFilter = computed<ProjectCollectionFilter>(() => {
-    const explicit = options.filter ? unref(options.filter) ?? {} : {}
-
-    return consoleTargets.filter(explicit)
-  })
   const {
     projects,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = useProjectConsole({
-    filter: targetFilter,
+    filter: options.filter,
   })
   const selection = computed(() => ({
     project: consoleSelection.project.value,
@@ -41,14 +34,17 @@ export function useProjectConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedProject: consoleSelection.project.value,
     targetCount: projects.count.value,
-    source: consoleTargets.debug.value,
+    authority: 'fireux-app-admin',
+    source: consoleRuntime.source.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.projectId.value),
     autoSelectTargetId: computed(() =>
-      consoleTargets.singleTargetId.value
+      projects.targets.value.length === 1
+        ? String(projects.targets.value[0]?.id || '').trim()
+        : ''
     ),
     runtime,
     targets: projects.targets,

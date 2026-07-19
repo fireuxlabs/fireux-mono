@@ -27,5 +27,6 @@ definePageMeta({
     layouts: ['console'],
   },
   requiresAuth: true,
+  roles: ['admin'],
 })
 </script>

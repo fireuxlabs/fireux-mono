@@ -1,6 +1,6 @@
 Menu ordering map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: 565ebd668
 Role: map, not canon
 
 Purpose:
@@ -79,9 +79,12 @@ Current display rule:
   opening rather than at an unrelated midnight grid. Collection alone has the
   first active submission path:
   optional name/mobile fields, configured Pay now or surface-aware Pay later choice, canonical Order
-  creation, and live acceptance/ready/completed status. The active pipeline
-  does not restore after refresh. Pay now uses the existing online-card checkout
-  only when that method is configured.
+  creation, and live acceptance/ready/completed status. After submission, a
+  minimal browser tracking session restores the safe Order reference, current
+  status, and fulfilment/payment labels across refresh and equivalent root or
+  Kitchen-scoped routes. It is keyed by canonical app, Kitchen, Menu, and order
+  type; it does not persist customer/contact input or basket contents. Pay now
+  uses the existing online-card checkout only when that method is configured.
 - A signed-in guest order atomically creates a lightweight link at
   `customers/{userId}/orders/{orderId}` beside the Kitchen order. The link
   records only immutable source identity; the Kitchen order remains the sole
@@ -253,10 +256,13 @@ Public order funnel spine:
   profile. This is a themed 404 doorway, not a second Collection funnel or a
   shortcut to one of the Kitchen's Menus.
 - Private and operational suffixes without a dedicated surface still render
-  `Menu/Json`. No public route mounts the preserved legacy funnel chain.
-- The preserved `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, and
-  `composables/fireux/kitchen/order/funnel/shared/useFunnel` chain is therefore
-  disconnected implementation material, not the active public owner.
+  `Menu/Json`.
+- `MenuOrder` is the single target public ordering spine. The unshipped
+  `Menu/Detail/Food`, `Menu/Detail/Funnel/Index`, app-local `/ordering/*`, and
+  `composables/fireux/kitchen/order/funnel/*` implementation still has direct
+  development consumers, but it is not a second product family or compatibility
+  boundary. Migrate useful surface steps into `MenuOrder`, switch those
+  consumers, and delete the alternate chain atomically before release.
 - `MenuOrder` owns a transient basket seam that merges identical configurations,
   counts quantities, calculates variant absolute prices plus incremental
   add-ons, and supports review-time line removal without a second quantity
@@ -270,9 +276,14 @@ Public order funnel spine:
   payment-timing selection to the canonical endpoint. The resolved handoff
   instructions remain visible through checkout and Collection status.
   It polls the existing order-status endpoint until the Kitchen accepts,
-  rejects, marks ready, or completes the order. The active path does not reuse
-  the preserved funnel draft/storage/session chain or persist tracking across
-  a refresh; configured Pay now hands off to the existing secure checkout.
+  rejects, marks ready, or completes the order. All surface funnels must reuse
+  the canonical Menu/Order session boundary rather than create parallel draft
+  or tracking storage. Its
+  `useMenuOrderTrackingSession` stores only safe post-submit tracking state and
+  keeps the ordering catalogue blocked while that submitted Order is unresolved.
+  A Kitchen rejection remains visible after navigation or refresh until the
+  guest explicitly acknowledges it; only then may the session clear and expose
+  a new basket. Configured Pay now hands off to the existing secure checkout.
   Delivery and Pre-order submission remain later passes.
 - `funnel/shared`: shared steps/seams such as basket, allergen notice,
   customer autofill, and late notes.

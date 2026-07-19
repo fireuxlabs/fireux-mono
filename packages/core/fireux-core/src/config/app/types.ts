@@ -4,7 +4,12 @@ import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 export type FireuxAppConfig = {
+  /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
   ecosystem: string
+  /** Canonical FireUX Project entity id. */
+  projectId: string
+  /** Canonical Ecosystem entity id when this App belongs to one. */
+  ecosystemId?: string
   id: string
   name: string
   shortName: string

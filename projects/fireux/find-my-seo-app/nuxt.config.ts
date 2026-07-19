@@ -5,6 +5,7 @@ import { findMySeoNuxtOverrides } from './app/config/pages.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
+  projectId: 'fireux',
   id: 'find-my-seo-app',
   name: 'Find My SEO',
   shortName: 'FindMySEO',

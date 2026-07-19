@@ -31,8 +31,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMyApps } from '../../composables/fireux/firestore/core/app/utils/useMyApps'
+import type { AppDirectoryController } from '../../models/core/supporting/directory'
 
-const { hasApps } = useMyApps()
+const props = defineProps<{
+  controller: AppDirectoryController
+}>()
+
+const { hasApps } = useMyApps(props.controller.apps)
 
 const title = computed(() => (hasApps.value ? 'My apps' : 'Apps'))
 const description = computed(() =>

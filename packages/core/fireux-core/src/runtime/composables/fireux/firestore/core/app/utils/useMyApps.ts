@@ -1,11 +1,11 @@
-import { computed } from 'vue'
+import { computed, unref, type MaybeRef } from 'vue'
 import { useUser } from '../../user/useUser'
-import { useAppCollection } from '../fetch/useAppCollection'
-import type { AppModel } from '../../../../../../models/core/app.model'
+import type { AppViewSource } from './view/useAppInterface'
 
-export function useMyApps() {
+export function useMyApps(
+  apps: MaybeRef<AppViewSource[] | null | undefined>
+) {
   const { coreUser } = useUser()
-  const { apps } = useAppCollection()
 
   const appIds = computed(() =>
     Array.from(
@@ -23,11 +23,11 @@ export function useMyApps() {
       )
     )
   )
-  const myApps = computed<AppModel[]>(() => {
+  const myApps = computed<AppViewSource[]>(() => {
     if (!appIds.value.length) return []
 
     const ids = new Set(appIds.value)
-    return (apps.value as AppModel[]).filter((app) =>
+    return (unref(apps) ?? []).filter((app) =>
       ids.has(String(app.id ?? '').trim())
     )
   })

@@ -28,8 +28,6 @@
         :model="projectModelRuntime"
       />
 
-      <ProjectCollectionManager />
-
       <UCard>
         <template #header>
           <div class="space-y-3">
@@ -38,7 +36,7 @@
             </p>
             <p class="text-xs text-muted">
               Inspect one root Project. The current App may reference it, but
-              Project has no app-scoped representation.
+              Project has no public or app-scoped representation.
             </p>
             <USelect
               v-model="selectedProjectId"
@@ -68,7 +66,7 @@
             color="neutral"
             variant="soft"
             title="Project remains a system-console special case"
-            description="This inspector reads the root Project only. Child families should only be added when Project ownership requires them explicitly."
+            description="This inspector reads the FireUX control-plane Project only. Apps and Ecosystems point to it through project_id."
           />
 
           <DevJson
@@ -95,6 +93,8 @@ import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/
 definePageMeta({
   layout: 'dev',
   title: 'Dev · Projects',
+  requiresAuth: true,
+  roles: ['admin'],
   nav: {
     key: 'dev-projects',
     label: 'Projects',

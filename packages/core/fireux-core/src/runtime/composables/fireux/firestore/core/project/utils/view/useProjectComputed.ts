@@ -33,13 +33,6 @@ export function useProjectComputed(
   const displayImageUrl = computed(() =>
     String(project?.value?.image_url || '').trim()
   )
-  const hasAppLink = computed(() =>
-    Boolean(String(project?.value?.app_id || '').trim())
-  )
-  const hasEcosystemLink = computed(() =>
-    Boolean(String(project?.value?.ecosystem_id || '').trim())
-  )
-
   return {
     hasProject,
     hasMissingName,
@@ -51,7 +44,5 @@ export function useProjectComputed(
     displayStatus,
     displayName,
     displayImageUrl,
-    hasAppLink,
-    hasEcosystemLink,
   }
 }

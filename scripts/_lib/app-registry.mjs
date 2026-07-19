@@ -1,7 +1,14 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-19
 // usage_note: canonical app routes and HTTP smoke contracts.
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
+const appDetailContract = (route, appId) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  includes: ['data-app-projection="detail"', `data-app-id="${appId}"`],
+  excludes: ['App not found', 'App unavailable', 'Loading app…'],
+})
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
 const MENU_ORDER_MARKER = 'data-menu-projection="order"'
@@ -18,9 +25,7 @@ const menuIndexContract = (route, options = {}) => ({
     MENU_INDEX_MARKER,
     ...(options.kind ? [`data-menu-index-kind="${options.kind}"`] : []),
     ...(options.featuredPath
-      ? [
-          `data-menu-path="${options.featuredPath}"`,
-        ]
+      ? [`data-menu-path="${options.featuredPath}"`]
       : []),
   ],
   excludes: [
@@ -31,9 +36,7 @@ const menuIndexContract = (route, options = {}) => ({
     'data-menu-qr-path=',
     'data-menu-action="qr"',
     'View QR code',
-    ...(options.featuredPath
-      ? [`href="${options.featuredPath}/qr"`]
-      : []),
+    ...(options.featuredPath ? [`href="${options.featuredPath}/qr"`] : []),
   ],
 })
 
@@ -68,10 +71,7 @@ const invalidMenuIndexCursorContract = (route) => ({
   route,
   status: 400,
   contentType: 'application/json',
-  includes: [
-    '"statusCode": 400',
-    '"statusMessage": "Menu cursor is invalid."',
-  ],
+  includes: ['"statusCode": 400', '"statusMessage": "Menu cursor is invalid."'],
 })
 
 const missingMenuIndexContract = (route) => ({
@@ -202,15 +202,15 @@ const missingMenuBrowseContract = (route, excludes = [], options = {}) => {
 }
 
 const menuQrContract = (route, targetPath, options = {}) => {
-  const indexPath = options.indexPath ??
-    targetPath.slice(0, targetPath.lastIndexOf('/'))
+  const indexPath =
+    options.indexPath ?? targetPath.slice(0, targetPath.lastIndexOf('/'))
   const contextualId = targetPath.slice(targetPath.lastIndexOf('/') + 1)
   const context = options.context || 'generic'
-  const menuId = options.menuId || (
-    context !== 'generic' && contextualId.endsWith(`.${context}`)
+  const menuId =
+    options.menuId ||
+    (context !== 'generic' && contextualId.endsWith(`.${context}`)
       ? contextualId.slice(0, -(context.length + 1))
-      : contextualId
-  )
+      : contextualId)
   const renderKind = options.renderKind || 'structured'
 
   return {
@@ -273,9 +273,10 @@ const menuOrderContract = (route, options = {}) => {
   const menuId = contextualId.endsWith(contextSuffix)
     ? contextualId.slice(0, -contextSuffix.length)
     : contextualId
-  const contextLabel = context === 'pre_order'
-    ? 'Pre-order'
-    : `${context[0].toUpperCase()}${context.slice(1)}`
+  const contextLabel =
+    context === 'pre_order'
+      ? 'Pre-order'
+      : `${context[0].toUpperCase()}${context.slice(1)}`
   const exitKind = options.exitKind || 'back'
   const exitPath = options.exitPath || indexPath
 
@@ -387,16 +388,17 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       '/orders',
       'Error 404',
       ...(options.noRecovery
-        ? [
-            'data-menu-action="browse"',
-            'data-menu-action="kitchen"',
-          ]
+        ? ['data-menu-action="browse"', 'data-menu-action="kitchen"']
         : []),
     ],
   }
 }
 
-const kitchenCollectionRecoveryContract = (route, kitchenPath, kitchenName) => ({
+const kitchenCollectionRecoveryContract = (
+  route,
+  kitchenPath,
+  kitchenName
+) => ({
   route,
   status: 404,
   contentType: 'text/html',
@@ -526,6 +528,7 @@ export const APP_REGISTRY = {
       '/console/supplier',
     ],
     httpContracts: [
+      appDetailContract('/apps/la-tap-berne', 'la-tap-berne'),
       menuIndexContract('/menus', { kind: 'collection' }),
       menuIndexApiContract('/api/menus?limit=2', 'root', {
         kitchenName: true,
@@ -625,10 +628,11 @@ export const APP_REGISTRY = {
         'Resource id',
         '@grpc',
       ]),
-      missingMenuBrowseContract(
-        '/menus/__fireux%0Aroute_contract_invalid__',
-        ['INVALID_ARGUMENT', 'Resource id', '@grpc']
-      ),
+      missingMenuBrowseContract('/menus/__fireux%0Aroute_contract_invalid__', [
+        'INVALID_ARGUMENT',
+        'Resource id',
+        '@grpc',
+      ]),
       missingMenuQrContract('/menus/fireux-route-contract-missing/qr'),
       missingMenuQrContract('/menus/__fireux_route_contract_invalid__/qr', [
         'INVALID_ARGUMENT',
@@ -876,7 +880,14 @@ export const APP_REGISTRY = {
     workspace: './projects/slap/slap-app',
     port: 3009,
     consoles: [],
-    smokeRoutes: ['/', '/about', '/get-started', '/products', '/blog', '/console'],
+    smokeRoutes: [
+      '/',
+      '/about',
+      '/get-started',
+      '/products',
+      '/blog',
+      '/console',
+    ],
     launchOrder: 11,
   },
   'la-tap-berne': {
@@ -932,21 +943,23 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/baeren-ringgenberg',
     port: 3017,
     consoles: ['kitchen'],
-    smokeRoutes: ['/', '/hotel', '/menu', '/events', '/about', '/jobs', '/location'],
+    smokeRoutes: [
+      '/',
+      '/hotel',
+      '/menu',
+      '/events',
+      '/about',
+      '/jobs',
+      '/location',
+    ],
     httpContracts: [
-      tenantMenuIndexRedirectContract(
-        '/menus',
-        '/pizza-snacks-drinks'
-      ),
+      tenantMenuIndexRedirectContract('/menus', '/pizza-snacks-drinks'),
       menuIndexApiContract('/api/menus?limit=24', 'tenant', {
         menuId: 'pizza-snacks-drinks',
       }),
       tenantMenuBrowseContract('/pizza-snacks-drinks'),
       tenantMenuOrderContract('/pizza-snacks-drinks.collection'),
-      tenantMenuQrContract(
-        '/pizza-snacks-drinks/qr',
-        '/pizza-snacks-drinks'
-      ),
+      tenantMenuQrContract('/pizza-snacks-drinks/qr', '/pizza-snacks-drinks'),
       tenantMenuQrContract(
         '/pizza-snacks-drinks.collection/qr',
         '/pizza-snacks-drinks.collection',
@@ -979,10 +992,7 @@ export const APP_REGISTRY = {
         { context: 'delivery' }
       ),
       tenantMissingMenuBrowseContract('/main'),
-      tenantUnavailableMenuOrderContract(
-        '/main.collection',
-        'Menu not found'
-      ),
+      tenantUnavailableMenuOrderContract('/main.collection', 'Menu not found'),
       missingMenuQrContract('/main/qr'),
       missingMenuIndexContract('/kitchens/baeren-ringgenberg/menus'),
       tenantMissingMenuBrowseContract(
@@ -1013,7 +1023,25 @@ export const APP_REGISTRY = {
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'fireux-blank', 'slap', 'yellow-velo', 'granite', 'la-tap-berne', 'bangin-coffee', 'baeren-ringgenberg'],
+  full: [
+    'fireux',
+    'misebox',
+    'cleanbox',
+    'richies',
+    'tenant',
+    'bringli',
+    'find-my-seo',
+    'sproochli',
+    'buenohost',
+    'go-qr',
+    'fireux-blank',
+    'slap',
+    'yellow-velo',
+    'granite',
+    'la-tap-berne',
+    'bangin-coffee',
+    'baeren-ringgenberg',
+  ],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)
@@ -1022,7 +1050,9 @@ export function getAppRegistryEntry(key) {
   const app = APP_REGISTRY[key]
 
   if (!app) {
-    throw new Error(`[app-registry] Unknown app "${key}". Expected one of: ${APP_KEYS.join(', ')}`)
+    throw new Error(
+      `[app-registry] Unknown app "${key}". Expected one of: ${APP_KEYS.join(', ')}`
+    )
   }
 
   const smokeRoutes = app.smokeRoutes?.length
@@ -1047,7 +1077,9 @@ export function getAppGroupKeys(group) {
   const keys = APP_GROUPS[group]
 
   if (!keys) {
-    throw new Error(`[app-registry] Unknown app group "${group}". Expected one of: ${Object.keys(APP_GROUPS).join(', ')}`)
+    throw new Error(
+      `[app-registry] Unknown app group "${group}". Expected one of: ${Object.keys(APP_GROUPS).join(', ')}`
+    )
   }
 
   return [...keys]

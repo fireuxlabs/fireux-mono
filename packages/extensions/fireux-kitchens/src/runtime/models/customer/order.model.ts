@@ -3,7 +3,7 @@ import type {
   KitchenOrderPaymentStatus,
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../kitchen/order.model'
+} from '../kitchen/order.model'
 
 export const CustomerOrderLinkStorage = {
   shape: 'child',
@@ -21,6 +21,7 @@ export type CustomerOrderSummary = {
   created_at: string
   estimated_ready_minutes: number
   estimated_ready_at: string
+  kitchen_note?: string
   item_count: number
   kitchen: {
     id: string
@@ -48,4 +49,17 @@ export type CustomerOrderSummary = {
 export type CustomerOrderPage = {
   items: CustomerOrderSummary[]
   nextCursor: string | null
+  debug?: {
+    customer_uid: string
+    link_count: number
+    candidate_count: number
+    resolved_order_count: number
+    visible_order_count: number
+    omitted_count: number
+    statuses: Array<{
+      id: string
+      status: KitchenOrderStatus
+      order_type: KitchenOrderType
+    }>
+  }
 }

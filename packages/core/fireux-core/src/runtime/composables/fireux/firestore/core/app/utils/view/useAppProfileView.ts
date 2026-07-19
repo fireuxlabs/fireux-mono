@@ -1,12 +1,15 @@
 import { computed, type Ref } from 'vue'
-import type { App } from '../../../../../../../models/core/app.model'
 import { useAppUserCollection } from '../../../user/fetch/useAppUserCollection'
 import { useUserFetch } from '../../../user/fetch/useUserFetch'
 import {
   useUserInterface,
   type UserCard,
 } from '../../../user/utils/view/useUserInterface'
-import { useAppInterface, type AppCard } from './useAppInterface'
+import {
+  useAppInterface,
+  type AppCard,
+  type AppViewSource,
+} from './useAppInterface'
 import { formatFirestoreTimestamp } from '../../../../../../../utils/formatTimestamp'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
@@ -32,7 +35,9 @@ export type AppProfileViewModel = {
   createdAtText: string
 }
 
-export function useAppProfileView(appRef: Ref<App | null | undefined>) {
+export function useAppProfileView(
+  appRef: Ref<AppViewSource | null | undefined>
+) {
   const { profile: toProfile } = useAppInterface(appRef)
   const appId = computed(() => safeString(appRef.value?.id) || null)
   const creatorId = computed(

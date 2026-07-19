@@ -4,6 +4,8 @@ import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
+  projectId: 'misebox',
+  ecosystemId: 'misebox',
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',

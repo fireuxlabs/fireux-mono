@@ -1,5 +1,4 @@
 import {
-  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -12,7 +11,6 @@ import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import type { Firestore } from 'firebase/firestore'
 import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useRuntimeConfig } from '#imports'
 
 function normalizeString(value: unknown) {
   return String(value || '').trim()
@@ -25,21 +23,17 @@ async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) 
 
 export function useEcosystemCreate() {
   const fireux = useFireUXConfig()
-  const runtime = useRuntimeConfig()
   const db = useFirestore()
 
   async function createEcosystem() {
     if (fireux.role !== 'global') return
     const brandAssets = useAssets()
 
-    const runtimeProjectId = normalizeString(
-      runtime.public?.firebaseEcosystem?.firebase?.projectId
-    )
-
     const mainAppId = normalizeString(fireux.appId)
-    const ecosystemId = normalizeSlug(fireux.ecosystem)
+    const projectId = normalizeSlug(fireux.projectId)
+    const ecosystemId = normalizeSlug(fireux.ecosystemId)
 
-    if (!runtimeProjectId || !mainAppId || !ecosystemId) return
+    if (!projectId || !mainAppId || !ecosystemId) return
 
     const ref = await resolveFirestoreEcosystemRef(db, ecosystemId)
     const snap = await getDoc(ref)
@@ -51,15 +45,13 @@ export function useEcosystemCreate() {
     if (!snap.exists()) {
       await setDoc(ref, {
         id: ref.id,
-        project_id: ecosystemId,
+        project_id: projectId,
         name,
         slug: ecosystemId,
         description: '',
         image_url: imageUrl,
-        source_url: sourceUrl,
-        team: '',
+        website_url: sourceUrl,
         status: 'active',
-        apps: [mainAppId],
         created: {
           at: serverTimestamp(),
           by: mainAppId,
@@ -80,11 +72,8 @@ export function useEcosystemCreate() {
       patch.id = ref.id
     }
 
-    if (
-      !normalizeString(data.project_id) ||
-      normalizeString(data.project_id) === runtimeProjectId
-    ) {
-      patch.project_id = ecosystemId
+    if (!normalizeString(data.project_id)) {
+      patch.project_id = projectId
     }
 
     if (!normalizeString(data.name)) {
@@ -103,24 +92,12 @@ export function useEcosystemCreate() {
       patch.image_url = imageUrl
     }
 
-    if (!normalizeString(data.source_url) && sourceUrl) {
-      patch.source_url = sourceUrl
-    }
-
-    if (typeof data.team !== 'string') {
-      patch.team = ''
+    if (!normalizeString(data.website_url) && sourceUrl) {
+      patch.website_url = sourceUrl
     }
 
     if (!normalizeString(data.status)) {
       patch.status = 'active'
-    }
-
-    const currentApps = Array.isArray(data.apps)
-      ? data.apps.map((entry) => normalizeString(entry)).filter(Boolean)
-      : []
-
-    if (!currentApps.includes(mainAppId)) {
-      patch.apps = arrayUnion(mainAppId)
     }
 
     if (!data.created || typeof data.created !== 'object') {

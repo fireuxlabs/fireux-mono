@@ -1,19 +1,26 @@
 <template>
   <UPage>
     <UPageHeader
-      title="FireUX ecosystems"
-      description="Explore the public ecosystem layer built on FireUX."
+      title="Ecosystems"
+      description="Explore published Ecosystem projections across the FireUX platform."
     />
 
     <UPageBody>
       <EcosystemCTA />
 
-      <EcosystemCollectionManager />
+      <EcosystemCollectionManager
+        :controller="ecosystemsController"
+        description="Published Ecosystem projections from their owning databases."
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { usePlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
+
+const ecosystemsController = usePlatformEcosystemDirectory()
+
 definePageMeta({
   tag: 'ecosystems',
   nav: {
