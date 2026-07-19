@@ -8,27 +8,35 @@ import type { UserNotification } from './supporting/user'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Identity
- * Storage: root canonical record plus app overlay record
- * Root path: /users/<userId>
+ * Storage: public identity, private account, and app membership records
+ * Public path: /users/<userId>
+ * Private path: /users/<userId>/private/account
  * App path: /apps/<appId>/users/<userId>
  *
  * Decision note:
- * - User identity is global first; the root user is the default truth.
- * - AppUser is an overlay for app membership, capability, notifications, and presentation state.
- * - Identity overlays do not use FireuxAppScope because they are not root-plus-app operational targets.
- * - If the identity overlay rule changes later, update the models README first, then this file.
+ * - User is public global identity. Its handle is its canonical route slug.
+ * - UserPrivate contains private account data and signup agreement evidence.
+ * - UserApp contains app membership, capability, notifications, and presentation state.
+ * - UserApp is not a public profile overlay and does not use FireuxAppScope.
  */
 
 export const UserStorage = {
-  shape: 'both',
-  root: 'users/{userId}',
-  overlay: 'apps/{appId}/users/{userId}',
+  shape: 'root',
+  path: 'users/{userId}',
   rootCollection: 'users',
-  overlayCollection: 'users',
   idParam: 'userId',
 } as const
 
-export const AppUserStorage = {
+export const UserPrivateStorage = {
+  shape: 'scoped',
+  path: 'users/{userId}/private/account',
+  collection: 'private',
+  document: 'account',
+  parent: 'user',
+  idParam: 'userId',
+} as const
+
+export const UserAppStorage = {
   shape: 'scoped',
   path: 'apps/{appId}/users/{userId}',
   collection: 'users',
@@ -36,7 +44,7 @@ export const AppUserStorage = {
   idParam: 'userId',
 } as const
 
-export const AppUserConsoleTargetFields = {
+export const UserAppConsoleTargetFields = {
   kitchen: 'kitchen_ids',
   supplier: 'supplier_ids',
   property: 'property_ids',
@@ -45,27 +53,27 @@ export const AppUserConsoleTargetFields = {
   blank: 'blank_ids',
 } as const
 
-export type AppUserConsoleTargetField =
-  (typeof AppUserConsoleTargetFields)[keyof typeof AppUserConsoleTargetFields]
+export type UserAppConsoleTargetField =
+  (typeof UserAppConsoleTargetFields)[keyof typeof UserAppConsoleTargetFields]
 
-export type AppUserConsoleTargets = Record<AppUserConsoleTargetField, string[]> &
+export type UserAppConsoleTargets = Record<UserAppConsoleTargetField, string[]> &
   Record<string, string[]>
 
-export const AppUserConsoleTargetsModel = {
+export const UserAppConsoleTargetsModel = {
   kitchen_ids: [] as string[],
   supplier_ids: [] as string[],
   property_ids: [] as string[],
   portfolio_ids: [] as string[],
   project_ids: [] as string[],
   blank_ids: [] as string[],
-} satisfies Record<AppUserConsoleTargetField, string[]>
+} satisfies Record<UserAppConsoleTargetField, string[]>
 
-export function resolveAppUserConsoleTargetField(family: unknown): string {
+export function resolveUserAppConsoleTargetField(family: unknown): string {
   const key = String(family ?? '').trim().toLowerCase()
   if (!key) return ''
 
   return (
-    (AppUserConsoleTargetFields as Record<string, string>)[key] || `${key}_ids`
+    (UserAppConsoleTargetFields as Record<string, string>)[key] || `${key}_ids`
   )
 }
 
@@ -83,13 +91,8 @@ export const UserModel = {
   display_name: '',
   avatar: '',
   handle: '',
-  email: '',
-  bio: '',
+  app_ids: [] as string[],
   profiles: [] as string[],
-  projects: [] as string[],
-  userOf: [] as string[],
-  adminOf: [] as string[],
-  notifications: [] as UserNotification[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -106,27 +109,55 @@ export interface User {
   display_name: string
   avatar: string
   handle: string
-  email: string
-  bio: string
+  app_ids: string[]
   profiles: string[]
-  projects: string[]
-  userOf: string[]
-  adminOf: string[]
-  notifications: UserNotification[]
   created: typeof UserModel.created
   updated: typeof UserModel.updated
 }
 
 /**
- * App-specific user overlay.
+ * Private account data. This record must never be served by public user APIs.
  */
-export const AppUserModel = {
+export const UserPrivateModel = {
+  id: '',
+
+  email: '',
+  terms: {
+    version: '',
+    accepted_at: {} as FirebaseTimestamp,
+  },
+
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export interface UserPrivate {
+  id: string
+  email: string
+  terms: {
+    version: string
+    accepted_at: FirebaseTimestamp
+  }
+  created: typeof UserPrivateModel.created
+  updated: typeof UserPrivateModel.updated
+}
+
+/**
+ * App-specific membership and capability record.
+ */
+export const UserAppModel = {
   id: '',
 
   role: 'user' as 'user' | 'admin',
   is_premium: false,
   console_enabled: false,
-  console_targets: AppUserConsoleTargetsModel as AppUserConsoleTargets,
+  console_targets: UserAppConsoleTargetsModel as UserAppConsoleTargets,
   notifications: [] as UserNotification[],
 
   created: {
@@ -140,16 +171,22 @@ export const AppUserModel = {
   },
 } as const
 
-export interface AppUser {
+export interface UserApp {
   id: string
   role: 'user' | 'admin'
   is_premium: boolean
   console_enabled: boolean
-  console_targets: AppUserConsoleTargets
+  console_targets: UserAppConsoleTargets
   notifications: UserNotification[]
-  created: typeof AppUserModel.created
-  updated: typeof AppUserModel.updated
+  created: typeof UserAppModel.created
+  updated: typeof UserAppModel.updated
 }
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>
 export type UserUpdateInput = Partial<Omit<User, 'id' | 'created' | 'updated'>>
+export type UserPrivateCreateInput = Omit<UserPrivate, 'id' | 'created' | 'updated'>
+export type UserPrivateUpdateInput = Partial<
+  Omit<UserPrivate, 'id' | 'created' | 'updated'>
+>
+export type UserAppCreateInput = Omit<UserApp, 'id' | 'created' | 'updated'>
+export type UserAppUpdateInput = Partial<Omit<UserApp, 'id' | 'created' | 'updated'>>

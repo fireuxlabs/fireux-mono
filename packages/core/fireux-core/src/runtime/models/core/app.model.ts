@@ -13,7 +13,7 @@ import type {
 } from './supporting/app'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Entity map: docs/concepts/entities.md
  *
  * Family: System root entity + active runtime singleton
  * Storage: root canonical model
@@ -23,10 +23,15 @@ import type {
  *
  * Decision note:
  * - App is stored once as canonical system truth.
+ * - The current runtime App, a direct Project App, and an Ecosystem App are the
+ *   same root App entity in different relationship contexts.
+ * - `FireUXConfig.appId` selects the current root App; it does not create a
+ *   separate current-App model or storage scope.
  * - Dashboard and control surfaces edit the same root App record.
  * - `fireux/app` is for app shell, context, orchestration, and config helpers; App entity data belongs in the Firestore App stack.
  * - A runtime surface may manage App, but that does not justify a second stored app-scoped record yet.
- * - If real scoped stored state appears later, update the models README first, then this file.
+ * - If real scoped App state appears later, update the entity map and this
+ *   source together.
  */
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
@@ -61,7 +66,7 @@ type WidenLiteral<T> =
 export const AppModel = {
   id: '',
 
-  // Registry + hierarchy
+  // Registry + root-entity relationships
   project_id: '',
   ecosystem_id: '',
   database_id: '',

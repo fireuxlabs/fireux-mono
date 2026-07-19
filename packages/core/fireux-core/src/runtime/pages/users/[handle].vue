@@ -26,17 +26,17 @@
         v-else-if="fetchFailed"
         color="warning"
         title="Profile unavailable"
-        description="This public profile could not be loaded right now."
+        description="This profile could not be loaded right now."
       />
       <UAlert
         v-else-if="missing"
         color="warning"
         title="User not found"
-        description="This handle does not exist or is not public."
+        description="This user does not exist."
       />
       <DevJson
-        :title="'Public User DTO'"
-        context="User public page · users/[handle] · endpoint-first SSR"
+        :title="'User DTO'"
+        context="User page · users/[handle] · endpoint-first SSR"
         :data="devJsonData"
         :default-open="false"
       />
@@ -72,7 +72,7 @@ type PublicUserDto = {
   handle: string
   displayName: string
   avatar?: string
-  bio?: string
+  apps?: string[]
   profiles?: string[]
   title: string
   description: string
@@ -115,7 +115,7 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
   const displayName =
     String(user.display_name || '').trim() ||
     `@${userHandle}`
-  const bio = String(user.bio || '').trim()
+  const apps = Array.isArray(user.app_ids) ? user.app_ids : []
   const profiles = Array.isArray(user.profiles) ? user.profiles : []
   const avatar = String(user.avatar || '').trim()
 
@@ -126,10 +126,10 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
     handle: userHandle,
     displayName,
     avatar,
-    bio,
+    apps,
     profiles,
     title: displayName,
-    description: bio || `Public profile for ${displayName}.`,
+    description: `Profile for ${displayName}.`,
     path: `/users/${encodeURIComponent(userHandle)}`,
     image: avatar || undefined,
     updatedAt: '',
@@ -161,13 +161,13 @@ const userCard = computed(() => {
     secondaryAvatarUrl: '',
     displayName: String(value.displayName || value.title || '').trim(),
     title: String(value.title || profiles[0] || '').trim(),
-    summary: String(value.description || value.bio || '').trim(),
+    summary: String(value.description || '').trim(),
     handle: value.handle ? `@${value.handle}` : '',
     badges: profiles,
     contactEmail: '',
     contactPhone: '',
     websiteUrl: '',
-    bio: String(value.bio || value.description || '').trim(),
+    bio: String(value.description || '').trim(),
     profiles,
     appsLabel: '',
   }
@@ -191,8 +191,8 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   displayProfile.value?.description ||
   (displayName.value
-    ? `Public profile for ${displayName.value}.`
-    : 'Public user profile.')
+    ? `Profile for ${displayName.value}.`
+    : 'User profile.')
 )
 
 const headTitle = computed(() =>

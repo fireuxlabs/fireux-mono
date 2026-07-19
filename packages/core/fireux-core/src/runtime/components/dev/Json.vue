@@ -164,6 +164,11 @@ const onCopy = async () => {
 </script>
 
 <style scoped>
+.fireux-dev-json {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .jsonpanel-launcher {
   display: flex;
   justify-content: flex-end;
@@ -176,6 +181,9 @@ const onCopy = async () => {
 }
 
 .jsonpanel-panel {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   border: 1px solid var(--fx-debug-yellow-border);
   border-radius: calc(var(--ui-radius) * 3);
   background:
@@ -186,9 +194,15 @@ const onCopy = async () => {
 
 .jsonpanel-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
   margin-bottom: 8px;
+}
+
+.jsonpanel-header > :first-child {
+  min-width: 0;
 }
 
 .jsonpanel-eyebrow {
@@ -226,6 +240,8 @@ const onCopy = async () => {
 
 .jsonpanel-actions {
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -238,7 +254,7 @@ const onCopy = async () => {
 
 .jsonpanel-object-row {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
   gap: 10px;
   padding: 6px 10px;
 }
@@ -253,16 +269,29 @@ const onCopy = async () => {
 }
 
 .jsonpanel-object-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: var(--text-xs);
   color: var(--ui-text-muted);
 }
 
 pre {
+  max-width: 100%;
+  overflow-x: auto;
   border: 1px solid var(--fx-debug-yellow-border);
   border-radius: calc(var(--ui-radius) * 2);
   background: var(--fx-debug-yellow-bg);
   padding: 10px;
   margin-top: 8px;
   color: var(--ui-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .jsonpanel-object-row {
+    grid-template-columns: 1fr;
+    gap: calc(var(--spacing) * 0.5);
+  }
 }
 </style>

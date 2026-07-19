@@ -14,7 +14,7 @@ import {
 import { AppStorage } from '../../../../../../../models/core/app.model'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import {
-    AppUserStorage,
+    UserAppStorage,
     UserNotificationStorage,
     UserStorage,
 } from '../../../../../../../models/core/user.model'
@@ -65,7 +65,7 @@ export function useAppUserUpdate(user: UserRefs) {
       const role = makeAdmin ? 'admin' : 'user'
 
       await appUpdate.updateDocument(
-        `${AppStorage.collection}/${appId}/${AppUserStorage.collection}`,
+        `${AppStorage.collection}/${appId}/${UserAppStorage.collection}`,
         uid,
         { role }
       )
@@ -77,16 +77,13 @@ export function useAppUserUpdate(user: UserRefs) {
       })
 
       await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
-        userOf: arrayUnion(appId) as unknown as string[],
-        adminOf: makeAdmin
-          ? (arrayUnion(appId) as unknown as string[])
-          : (arrayRemove(appId) as unknown as string[]),
+        app_ids: arrayUnion(appId) as unknown as string[],
       })
     },
     setPremium: async (isPremium) => {
       const { uid, appId } = requireContext()
       await appUpdate.updateDocument(
-        `${AppStorage.collection}/${appId}/${AppUserStorage.collection}`,
+        `${AppStorage.collection}/${appId}/${UserAppStorage.collection}`,
         uid,
         { is_premium: Boolean(isPremium) }
       )
@@ -94,11 +91,11 @@ export function useAppUserUpdate(user: UserRefs) {
     leave: async () => {
       const { uid, appId } = requireContext()
 
-      const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
+      const appUserRef = doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid)
       const appUserSnap = await getDoc(appUserRef)
       const existed = appUserSnap.exists()
 
-      await deleteDocument(`${AppStorage.collection}/${appId}/${AppUserStorage.collection}`, uid)
+      await deleteDocument(`${AppStorage.collection}/${appId}/${UserAppStorage.collection}`, uid)
 
       await appUpdate.updateDocument(AppStorage.collection, appId, {
         admin_ids: arrayRemove(uid) as unknown as string[],
@@ -106,8 +103,7 @@ export function useAppUserUpdate(user: UserRefs) {
       })
 
       await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
-        userOf: arrayRemove(appId) as unknown as string[],
-        adminOf: arrayRemove(appId) as unknown as string[],
+        app_ids: arrayRemove(appId) as unknown as string[],
       })
     },
   }

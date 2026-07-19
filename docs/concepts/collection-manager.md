@@ -1,6 +1,6 @@
 Collection manager map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: a6fb7062d
 Role: map, not canon
 
 Purpose:
@@ -106,8 +106,9 @@ Card handoff contract:
 
 Visual convergence status:
 - The public Kitchen directory established the warmer, clearer root-manager
-  hierarchy now shared with Menu through core `CollectionDirectoryHeader` and
-  `CollectionDirectoryState`.
+  hierarchy now shared with Menu and User through core
+  `CollectionDirectoryHeader`, `CollectionDirectoryState`, and the small
+  `collection-directory*` layout contract.
 - Root/global discovery pages may share core `PublicIndexSurface`; this is page
   presentation only and does not move domain collection ownership into core.
 - Domain card content, actions, data source, and genuine scoped behavior remain
@@ -152,7 +153,7 @@ Root Simple Collection Managers
 | --- | --- | --- | --- |
 | `App` | None in manager | Self | Root index manager fetches apps. |
 | `Ecosystem` | None in manager | Self | Root index manager fetches ecosystems. |
-| `Project` | None in manager | Self/filter | Root index manager fetches projects and can apply operator/team filters. |
+| `Project` | None in manager | Self/filter | Root index manager fetches projects and can apply a root `operator_ids` filter. |
 | `Menu` | Route-owned `/api/menus` controller | Self | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
 | `Blog` | None in manager | Self | Root index manager fetches blog posts. |
 | `Place` | None in manager | Self | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere. |

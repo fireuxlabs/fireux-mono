@@ -2,7 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
+import { UserAppStorage, UserStorage } from '../../../../models/core/user.model'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
@@ -76,7 +76,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const memberships = await appDb
       .collection(AppStorage.collection)
       .doc(cfg.appId)
-      .collection(AppUserStorage.collection)
+      .collection(UserAppStorage.collection)
       .where('role', '==', 'admin')
       .limit(limit)
       .get()

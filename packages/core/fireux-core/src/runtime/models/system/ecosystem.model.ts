@@ -13,12 +13,11 @@ type WidenLiteral<T> =
   : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Entity map: docs/concepts/entities.md
  *
  * Family: System-level product/app grouping
- * Storage: root canonical record; app-scoped private state is future unless implemented
+ * Storage: root canonical record
  * Root path: /ecosystems/<ecosystemId>
- * Future app path: /apps/<appId>/ecosystems/<ecosystemId>
  *
  * Decision note:
  * - Ecosystem is a FireUX system-level managed entity/context, not a Firebase project mirror.
@@ -28,10 +27,9 @@ type WidenLiteral<T> =
  * - An ecosystem cannot exist without a parent project, so `project_id` is required canon.
  * - A project may exist without an ecosystem.
  * - The root ecosystem record is the public-facing ecosystem identity used by FireUX public surfaces.
- * - The app-scoped ecosystem record is a future/private state shape until runtime code implements it.
- * - Keep this model versatile for repo use: public identity/media fields live at root, while app/runtime
- *   specifics can later live in the app-scoped record or downstream scoped children.
- * - If this decision changes, update the models README first, then this file.
+ * - Apps associated with an Ecosystem remain ordinary root App entities.
+ * - Keep this model focused on root ecosystem identity and relationships.
+ * - If this decision changes, update the entity map and this source together.
  */
 export const EcosystemStorage = {
   shape: 'public/root',
@@ -52,7 +50,11 @@ export const EcosystemEntity = defineFireuxEntity({
 export const EcosystemModel = {
   id: '',
 
+  // Root-entity relationships
   project_id: '',
+  apps: [] as string[],
+
+  // Public identity
   name: '',
   slug: '',
   description: '',
@@ -60,7 +62,6 @@ export const EcosystemModel = {
   source_url: '',
   status: 'active' as EcosystemStatus,
   team: '',
-  apps: [] as string[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -74,31 +75,6 @@ export const EcosystemModel = {
 } as const
 
 export type Ecosystem = WidenLiteral<typeof EcosystemModel>
-
-/**
- * Future app-specific ecosystem private state record.
- *
- * This model documents the possible app-scoped shape only. Current canonical
- * Ecosystem truth remains the root /ecosystems/<ecosystemId> record unless a
- * runtime implementation introduces this record explicitly.
- */
-export const AppEcosystemModel = {
-  id: '',
-
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
-} as const
-
-export type AppEcosystem = {
-  [K in keyof typeof AppEcosystemModel]: (typeof AppEcosystemModel)[K]
-}
 
 export type EcosystemCreateInput = Omit<Ecosystem, 'id' | 'created' | 'updated'>
 export type EcosystemUpdateInput = Partial<

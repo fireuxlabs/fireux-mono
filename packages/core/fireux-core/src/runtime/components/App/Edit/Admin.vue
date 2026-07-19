@@ -145,7 +145,6 @@ const teamRows = computed(() => {
         id,
         role: appUser?.role === 'admin' ? 'admin' : 'user',
         display_name: hydrated?.display_name ?? id,
-        email: hydrated?.email ?? null,
       }
     })
     .filter(
@@ -153,7 +152,6 @@ const teamRows = computed(() => {
         id: string
         role: 'admin' | 'user'
         display_name: string
-        email: string | null
       } => Boolean(row)
     )
 })
@@ -205,10 +203,10 @@ const cardForUser = (target?: User | null | undefined): UserCard.Card => {
     ...fallbackUserCard({ id, displayName, handle }),
     avatarUrl: target?.avatar ?? '',
     title: Array.isArray(target?.profiles) ? target.profiles[0] ?? '' : '',
-    summary: target?.bio ?? '',
-    bio: target?.bio ?? '',
+    summary: '',
+    bio: '',
     profiles: target?.profiles ?? [],
-    appsLabel: target?.userOf?.length ? `${target.userOf.length} apps` : '',
+    appsLabel: target?.app_ids?.length ? `${target.app_ids.length} apps` : '',
   }
 }
 
@@ -216,7 +214,6 @@ const adminPillFor = (row: {
   id: string
   role: 'admin' | 'user'
   display_name: string
-  email: string | null
 }) => {
   const hydrated = hydratedUsers.value.find((u) => u.id === row.id)
   if (hydrated?.coreUser) return cardForUser(hydrated.coreUser)

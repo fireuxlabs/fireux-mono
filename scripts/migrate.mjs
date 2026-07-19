@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-19
+// usage_note: aligned console entity migration with root-only Project storage.
 /*
   Firestore migration runner (generic)
 
@@ -2683,7 +2683,7 @@ async function runConsoleEntityTeams() {
     app: targetAppId || '(all)',
   })
 
-  const families = ['projects', 'kitchens', 'suppliers', 'portfolios', 'properties']
+  const families = ['kitchens', 'suppliers', 'portfolios', 'properties']
   const appDocs = targetAppId
     ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
     : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
@@ -2803,6 +2803,18 @@ async function runConsoleEntityTeams() {
       needs = true
     }
 
+    for (const field of [
+      'team_ids',
+      'join_requests',
+      'app_scope',
+      'app_scope_state',
+      'app_scope_app_id',
+    ]) {
+      if (!Object.prototype.hasOwnProperty.call(data, field)) continue
+      patch[field] = FieldValue.delete()
+      needs = true
+    }
+
     if (!needs) {
       skippedDocs += 1
       continue
@@ -2851,7 +2863,6 @@ async function runConsoleTargetsRebuild() {
     suppliers: 'supplier_ids',
     properties: 'property_ids',
     portfolios: 'portfolio_ids',
-    projects: 'project_ids',
   }
   const appDocs = targetAppId
     ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)

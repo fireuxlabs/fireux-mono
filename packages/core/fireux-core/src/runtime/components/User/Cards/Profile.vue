@@ -118,7 +118,7 @@ type Props = {
 
   user?: {
     id?: string
-    userOf?: string[]
+    app_ids?: string[]
     created?: {
       at?: unknown
     } | null
@@ -160,7 +160,7 @@ const profileSummary = computed(() =>
 )
 
 const appIds = computed(() => {
-  const rawIds = Array.isArray(props.user?.userOf) ? props.user.userOf : []
+  const rawIds = Array.isArray(props.user?.app_ids) ? props.user.app_ids : []
   return Array.from(
     new Set(rawIds.map((id) => String(id || '').trim()).filter(Boolean))
   )

@@ -7,13 +7,13 @@ import {
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import type {
-    AppUserConsoleTargets,
-    AppUser,
+    UserAppConsoleTargets,
+    UserApp,
     User,
 } from '../../../../../../models/core/user.model'
 import {
-  AppUserConsoleTargetsModel,
-  AppUserStorage,
+  UserAppConsoleTargetsModel,
+  UserAppStorage,
   UserStorage,
 } from '../../../../../../models/core/user.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
@@ -24,13 +24,13 @@ function asStringArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === 'string' && v.length > 0)
 }
 
-function normalizeConsoleTargets(value: unknown): AppUserConsoleTargets {
+function normalizeConsoleTargets(value: unknown): UserAppConsoleTargets {
   const raw =
     value && typeof value === 'object' && !Array.isArray(value)
       ? value as Record<string, unknown>
       : {}
   const targets: Record<string, string[]> = {
-    ...AppUserConsoleTargetsModel,
+    ...UserAppConsoleTargetsModel,
   }
 
   for (const [key, targetIds] of Object.entries(raw)) {
@@ -38,7 +38,7 @@ function normalizeConsoleTargets(value: unknown): AppUserConsoleTargets {
     targets[key] = asStringArray(targetIds)
   }
 
-  return targets as AppUserConsoleTargets
+  return targets as UserAppConsoleTargets
 }
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
@@ -49,16 +49,12 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     display_name: (raw as any).display_name ?? raw.id ?? fallbackId,
     avatar: (raw as any).avatar ?? '',
     handle: (raw as any).handle ?? '',
-    email: (raw as any).email ?? '',
-    bio: (raw as any).bio ?? '',
+    app_ids: asStringArray(anyRaw.app_ids),
     profiles: asStringArray(anyRaw.profiles),
-    projects: asStringArray(anyRaw.projects),
-    userOf: asStringArray(anyRaw.userOf),
-    adminOf: asStringArray(anyRaw.adminOf),
   }
 }
 
-function normalizeAppUser(raw: AppUser, fallbackId: string): AppUser {
+function normalizeUserApp(raw: UserApp, fallbackId: string): UserApp {
   const anyRaw = raw as any
   return {
     ...raw,
@@ -113,7 +109,7 @@ export function useUserFetch(
   // Avoid VueFire SSR warnings by only binding Firestore sources on the client.
   if (import.meta.server) {
     const coreUser = computed<User | null | undefined>(() => null)
-    const appUser = computed<AppUser | null | undefined>(() => null)
+    const appUser = computed<UserApp | null | undefined>(() => null)
     const user = computed<User | null>(() => null)
     const pending = computed(() => false)
     return { user, coreUser, appUser, pending }
@@ -127,7 +123,7 @@ export function useUserFetch(
   )
 
   /**
-   * Canon: AppUser membership overlay
+   * Canon: UserApp membership record
    * - Path: `apps/{appId}/users/{uid}`
     * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
     *   permissions, and onboarding state.
@@ -136,14 +132,14 @@ export function useUserFetch(
    */
   const appDoc = computed(() =>
     uid.value && appId
-      ? (doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid.value) as any)
+      ? (doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid.value) as any)
       : null
   )
 
   const coreState = useDocument<User | undefined>(coreDoc as any, {
     ssrKey: 'user-fetch-core',
   } as any)
-  const appState = useDocument<AppUser | undefined>(appDoc as any, {
+  const appState = useDocument<UserApp | undefined>(appDoc as any, {
     ssrKey: 'user-fetch-app',
   } as any)
   const coreUserRef = coreState.data
@@ -153,7 +149,7 @@ export function useUserFetch(
   guardDocumentPromise(coreState as any, `${UserStorage.rootCollection}/${uid.value ?? ''}`)
   guardDocumentPromise(
     appState as any,
-    `${AppStorage.collection}/${appId}/${AppUserStorage.collection}/${uid.value ?? ''}`
+    `${AppStorage.collection}/${appId}/${UserAppStorage.collection}/${uid.value ?? ''}`
   )
 
   const coreUser = computed<User | null | undefined>(() => {
@@ -166,12 +162,12 @@ export function useUserFetch(
     return normalizeCoreUser(raw as User, fallbackId)
   })
 
-  const appUser = computed<AppUser | null | undefined>(() => {
+  const appUser = computed<UserApp | null | undefined>(() => {
     if (!appDoc.value) return null
     if (appPending.value) return undefined
     const raw = appUserRef.value
     if (!raw) return null
-    return normalizeAppUser(raw as AppUser, uid.value ?? '')
+    return normalizeUserApp(raw as UserApp, uid.value ?? '')
   })
 
   const user = computed<User | null>(() => coreUser.value ?? null)

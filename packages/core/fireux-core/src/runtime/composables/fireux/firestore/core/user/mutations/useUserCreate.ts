@@ -2,7 +2,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { AppStorage } from '../../../../../../models/core/app.model'
-import { AppUserStorage } from '../../../../../../models/core/user.model'
+import { UserAppStorage } from '../../../../../../models/core/user.model'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   createCoreUserDocument,
@@ -33,9 +33,48 @@ function toPublicDisplayNameSeed(
 }
 
 export function useUserCreate() {
+  async function ensureAppUserJoinedEvent(
+    auth: Awaited<ReturnType<typeof requireUid>>['auth']
+  ): Promise<{ created: boolean; ready: boolean }> {
+    const token = await auth.getIdToken()
+    let lastError: unknown = null
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const response = await fetch('/api/internal/events/user-joined', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`Event endpoint returned ${response.status}`)
+        }
+
+        const payload = await response.json() as {
+          event?: { created?: boolean }
+        }
+        return {
+          created: payload.event?.created === true,
+          ready: true,
+        }
+      } catch (error) {
+        lastError = error
+      }
+    }
+
+    console.warn('[useUserCreate] app user event is not ready', {
+      error: lastError,
+    })
+    return { created: false, ready: false }
+  }
+
   async function createUser(): Promise<{
     createdCore: boolean
     createdApp: boolean
+    createdAppEvent: boolean
+    appEventReady: boolean
     id: string
   }> {
     const { uid, auth } = await requireUid()
@@ -48,7 +87,6 @@ export function useUserCreate() {
         uid,
         auth.isAnonymous
       ),
-      email: auth.email ?? '',
       avatar: auth.photoURL ?? '',
     })
 
@@ -56,16 +94,18 @@ export function useUserCreate() {
     // Only create app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
     let shouldCreateMembership = true
+    let membershipExists = false
     let appExists = false
     try {
       const db = useFirestore()
       const [appUserSnap, appSnap] = await Promise.all([
-        getDoc(doc(db, AppStorage.collection, appId, AppUserStorage.collection, uid)),
+        getDoc(doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)),
         getDoc(doc(db, AppStorage.collection, appId)),
       ])
       appExists = appSnap.exists()
 
       if (appUserSnap.exists()) {
+        membershipExists = true
         shouldCreateMembership = false
       }
 
@@ -79,20 +119,14 @@ export function useUserCreate() {
         }
       }
 
-      const coreAdminOf = Array.isArray((core.snapshot?.data() as any)?.adminOf)
-        ? ((core.snapshot?.data() as any)?.adminOf as Array<unknown>)
-            .map((id) => String(id ?? '').trim())
-            .filter(Boolean)
-        : []
       const appAdminIds = Array.isArray((appSnap.data() as any)?.admin_ids)
         ? ((appSnap.data() as any)?.admin_ids as Array<unknown>)
             .map((id) => String(id ?? '').trim())
             .filter(Boolean)
         : []
 
-      // If we do need to create the overlay, preserve admin role only when
-      // existing admin mirrors already say this user is an admin.
-      const isMirroredAdmin = coreAdminOf.includes(appId) || appAdminIds.includes(uid)
+      // App authorization is app-scoped; the public User carries no admin mirror.
+      const isMirroredAdmin = appAdminIds.includes(uid)
 
       if (appExists && isMirroredAdmin) {
         membershipRole = 'admin'
@@ -112,7 +146,17 @@ export function useUserCreate() {
       ? await createUserAppMembership(appId, uid, membershipRole)
       : { created: false }
 
-    return { createdCore: core.created, createdApp: membership.created, id: uid }
+    const event = appExists && (membershipExists || membership.created)
+      ? await ensureAppUserJoinedEvent(auth)
+      : { created: false, ready: false }
+
+    return {
+      createdCore: core.created,
+      createdApp: membership.created,
+      createdAppEvent: event.created,
+      appEventReady: event.ready,
+      id: uid,
+    }
   }
 
   return { createUser }

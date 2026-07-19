@@ -6,7 +6,7 @@ import { useUserUpdate } from './mutations/useUserUpdate'
 import { useUserComputed } from './utils/view/useUserComputed'
 import { useUserInterface } from './utils/view/useUserInterface'
 
-export type { AppUser, User } from '../../../../../models/core/user.model'
+export type { User, UserApp, UserPrivate } from '../../../../../models/core/user.model'
 export { useUserFetch } from './fetch/useUserFetch'
 export { useUserInterface } from './utils/view/useUserInterface'
 
@@ -18,7 +18,7 @@ export { useUserInterface } from './utils/view/useUserInterface'
  * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
  * This seam resolves the active authenticated user, not an arbitrary root User.
- * Root User is shared identity; AppUser carries app-specific role/capability state.
+ * User is public identity; UserPrivate is account data; UserApp carries app capability state.
  * For arbitrary uid reads, call useUserFetch(uid) directly.
  */
 export function useUser() {

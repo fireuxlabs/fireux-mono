@@ -1,15 +1,13 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-
-    <UPageBody>
-      <!-- Public index family: use the public user projection, not raw identity docs. -->
-      <UserCollectionManager
-        title="People"
-        description="Public profiles and collaborators in this Misebox network."
-      />
-    </UPageBody>
-  </UPage>
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-users-round"
+  >
+    <!-- Public index family: use the public user projection, not raw identity docs. -->
+    <UserCollectionManager />
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
@@ -36,9 +34,8 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
 
-const pageTitle = 'People'
-const pageDescription =
-  'Browse public profiles on Misebox.'
+const pageTitle = 'Users'
+const pageDescription = `Discover users and the profiles connected across ${appName}.`
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

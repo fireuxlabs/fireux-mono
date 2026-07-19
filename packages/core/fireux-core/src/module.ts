@@ -64,6 +64,13 @@ export default defineNuxtModule({
       route: '/api/public/users/:handle',
       handler: resolver.resolve('./runtime/server/api/public/users/[handle].get'),
     })
+    addServerHandler({
+      route: '/api/internal/events/user-joined',
+      method: 'post',
+      handler: resolver.resolve(
+        './runtime/server/api/internal/events/user-joined.post'
+      ),
+    })
 
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
       ctx?.addEntity?.({

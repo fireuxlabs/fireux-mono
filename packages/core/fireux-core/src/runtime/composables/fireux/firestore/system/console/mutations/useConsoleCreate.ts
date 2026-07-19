@@ -16,8 +16,8 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  AppUserStorage,
-  resolveAppUserConsoleTargetField,
+  UserAppStorage,
+  resolveUserAppConsoleTargetField,
 } from 'fireux-core/runtime/models/core/user.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
@@ -96,7 +96,7 @@ export function useConsoleCreate() {
       db,
       AppStorage.collection,
       currentAppId,
-      AppUserStorage.collection,
+      UserAppStorage.collection,
       currentUid
     )
     const appUserSnap = await getDoc(appUserRef)
@@ -248,11 +248,11 @@ export function useConsoleCreate() {
         db,
         AppStorage.collection,
         currentAppId,
-        AppUserStorage.collection,
+        UserAppStorage.collection,
         currentUid
       )
       const appUserSnap = await getDoc(appUserRef)
-      const targetField = resolveAppUserConsoleTargetField(options.type)
+      const targetField = resolveUserAppConsoleTargetField(options.type)
       await setDoc(
         appUserRef,
         {

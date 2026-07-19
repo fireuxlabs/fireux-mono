@@ -1,6 +1,6 @@
 import { computed } from '#imports'
 import type {
-  AppUser,
+  UserApp,
   User,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
@@ -28,7 +28,7 @@ const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const coreUser = user.coreUser as { value: User | null | undefined }
-  const appUser = user.appUser as { value: AppUser | null | undefined }
+  const appUser = user.appUser as { value: UserApp | null | undefined }
 
   const { uid, isAuthenticated, currentUser: authUserRef } = useAuth()
   const { appId } = useFireUXConfig()

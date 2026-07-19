@@ -1,60 +1,58 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
+  <section class="collection-directory user-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
-        >
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="
+            variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'
+          "
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
+        <span v-if="showCount && isSettled" class="collection-directory__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UBadge v-if="showCount && isSettled" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="people"
-      state="loading"
-      surface="bare"
+      title="Loading users"
+      description="Finding users…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="people"
-      state="error"
-      surface="bare"
-      description="Public profiles are not available right now."
+      title="Users unavailable"
+      description="Users are not available right now."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     />
 
     <UserCollectionList
@@ -78,15 +76,13 @@
       </template>
     </UserCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="people"
-      state="empty"
-      surface="bare"
-      :title="query ? 'No people match your search' : 'No people yet'"
+      icon="i-lucide-users-round"
+      :title="query ? 'No matching users' : 'No users yet'"
       :description="query
         ? 'Try a different search term.'
-        : 'Public profiles will appear here once they are available.'"
+        : 'Users will appear here once they are available.'"
     />
 
     <div>
@@ -97,7 +93,7 @@
         :default-open="false"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -116,7 +112,7 @@ type PublicUserDto = {
   handle: string
   displayName: string
   avatar: string
-  bio: string
+  apps: string[]
   profiles: string[]
   path: string
   isPublic: boolean
@@ -144,10 +140,10 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    title: 'People',
-    description: 'Browse public profiles available to this runtime.',
+    title: 'Users',
+    description: 'Open a user profile to see where someone contributes.',
     link: true,
-    searchPlaceholder: 'Search people…',
+    searchPlaceholder: 'Search users…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
@@ -156,8 +152,8 @@ const props = withDefaults(
   }
 )
 
-// Public index family: this manager uses the server projection so raw identity
-// fields such as email/admin arrays never become public browse data.
+// Public index family: the server projection owns the browse DTO and prevents
+// private sibling records from entering the public surface.
 const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
   key: 'public-users-index',
   query: { limit: 200 },
@@ -170,13 +166,9 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
   const handle = String(user.handle || '').trim().toLowerCase()
   if (!handle) return null
 
-  const visibility = String((user as any).visibility || '').trim().toLowerCase()
-  if (visibility === 'private') return null
-
   const displayName =
     String(user.display_name || '').trim() ||
     `@${handle}`
-  const bio = String(user.bio || '').trim()
   const avatar = String(user.avatar || '').trim()
 
   return {
@@ -184,7 +176,7 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
     handle,
     displayName,
     avatar,
-    bio,
+    apps: Array.isArray(user.app_ids) ? user.app_ids : [],
     profiles: Array.isArray(user.profiles) ? user.profiles : [],
     path: `/users/${encodeURIComponent(handle)}`,
     isPublic: true,
@@ -220,22 +212,17 @@ const collection = computed<User[]>(() =>
     display_name: user.displayName,
     avatar: user.avatar,
     handle: user.handle,
-    email: '',
-    bio: user.bio,
+    app_ids: Array.isArray(user.apps) ? user.apps : [],
     profiles: Array.isArray(user.profiles) ? user.profiles : [],
-    projects: [],
-    userOf: [],
-    adminOf: [],
-    notifications: [],
   }))
 )
-const title = computed(() => String(props.title || 'People'))
+const title = computed(() => String(props.title || 'Users'))
 const description = computed(() =>
-  String(props.description || 'Browse public profiles available to this runtime.')
+  String(props.description || 'Open a user profile to see where someone contributes.')
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search people…')
+  String(props.searchPlaceholder || 'Search users…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -285,8 +272,8 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}`
+    ? `${visibleCount.value} of ${totalCount.value} users`
+    : `${totalCount.value} user${totalCount.value === 1 ? '' : 's'}`
 )
 const devJsonContext = 'collection manager · users · public projection'
 const devJsonData = computed(() => ({

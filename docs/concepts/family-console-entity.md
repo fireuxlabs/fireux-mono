@@ -1,6 +1,6 @@
 Console entity family map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-19
+Ref: a6fb7062d
 Role: map, not canon
 
 Purpose:
@@ -32,8 +32,10 @@ Similar:
   `idle|pending|error|empty|ready` outcome.
 - A target read failure is not an empty authority list and cannot invalidate
   the persisted selection.
-- Should have access/team surface.
-- Should keep index/overview/identity/team/operations separated.
+- May have an access/team surface when the entity has a current collaboration
+  lifecycle.
+- Should keep index/overview/identity/operations separated; add team only when
+  that lifecycle is real.
 - Root-plus-app console entities can share level-one buckets:
   `app_scope`, `visibility`, `identity`, then domain-owned operation config.
 - Core owns shared bucket model names in `fireux-core`; domain packages own their operation namespaces and readers until reuse is proven.
@@ -44,14 +46,19 @@ Different:
 - Supplier has item, catalogue, ingredient operations.
 - Portfolio is public-light/private-heavy and relates to documents, tasks, compliance.
 - Property currently has lower priority and may lag.
-- Project relates to App and Ecosystem rather than kitchen-style inventory operations.
+- Project is the root-only exception. It relates to root App and Ecosystem
+  entities rather than owning an app-scoped Project record or kitchen-style
+  inventory operations.
+- Project keeps explicit root operator authority for the current console. It
+  does not infer access from App or domain teams, and has no Project team
+  lifecycle today.
 
 Shared component naming:
 - `ConsoleXIndex`
 - `ConsoleXIndexSelected`
 - `ConsoleXIndexTargets`
 - `ConsoleXOverview`
-- `ConsoleXTeam`
+- `ConsoleXTeam`, only for families with a real team lifecycle
 
 Open questions:
 - Exact operation child matrix still needs cleanup.

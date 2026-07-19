@@ -5,11 +5,14 @@ import {
 import type { Ref } from 'vue'
 import {
   UserStorage,
-  type AppUser,
+  type UserApp,
   type User,
 } from '../../../../../../../models/core/user.model'
+import {
+  USER_ECOSYSTEM_AVATAR_SRC,
+  resolveUserAvatarSource,
+} from '../../../../../../../models/core/supporting/user-avatar'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
-import { useAuth } from '../../../../../firebase/useAuth'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
 export namespace UserCard {
@@ -45,10 +48,10 @@ export namespace UserCard {
 
 export type UserSurfaceParts<TUser extends object = Partial<User>> = {
   user?: TUser | null | undefined
-  overlay?: Partial<AppUser> | Record<string, unknown> | null | undefined
+  overlay?: Partial<UserApp> | Record<string, unknown> | null | undefined
 }
 
-export const USER_AVATAR_FALLBACK_SRC = ''
+export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPill = UserCard.Card
@@ -56,7 +59,6 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPreview = UserCard.Card
   type UserProfile = UserCard.Card
 
-  const { uid, currentUser: authUser } = useAuth()
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
   function surface<TUser extends object = Partial<User>>(
@@ -79,19 +81,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   }
 
   function resolveAvatarUrl(user: User): string {
-    const storedAvatar = safeString(user.avatar).trim()
-    if (storedAvatar) return getProxiedAvatarUrl(storedAvatar)
-
-    const currentUid = safeString(uid.value).trim()
-    const targetUid = safeString(user.id).trim()
-    if (!currentUid || !targetUid || currentUid !== targetUid) {
-      return ''
-    }
-
-    return (
-      getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim()) ||
-      ''
-    )
+    return getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar))
   }
 
   function map(user: User): UserCard.Card {
@@ -99,12 +89,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     const handle = normalizeUserHandle(safeString(user.handle))
     const handleLabel = handle ? `@${handle}` : ''
     const displayName = safeString(user.display_name).trim() || handleLabel || id
-    const bio = safeString(user.bio).trim()
-    const summary =
-      bio && bio.toLowerCase() !== displayName.toLowerCase()
-        ? bio
-        : ''
-    const appCount = safeArray(user.userOf).length
+    const appCount = safeArray(user.app_ids).length
     const profiles = safeArray<string>(user.profiles)
 
     return {
@@ -119,7 +104,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       displayName,
       title: profiles[0] || '',
       subtitle: displayName !== handleLabel ? handleLabel : '',
-      summary,
+      summary: '',
 
       handle: handleLabel,
       badges: profiles,
@@ -128,7 +113,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       contactPhone: '',
       websiteUrl: '',
 
-      bio: summary,
+      bio: '',
       profiles,
       appsLabel: appCount ? `${appCount} app${appCount === 1 ? '' : 's'}` : '',
     }

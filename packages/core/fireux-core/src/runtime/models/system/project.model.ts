@@ -35,7 +35,8 @@ type WidenLiteral<T> =
  * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
  * - Public page depth can vary by family; Project may stay relatively thin
  *   publicly while remaining a normal root entity.
- * - If Project later grows operational child records, discuss their ownership before adding a scoped Project representation.
+ * - Project-owned child records, if needed, do not create a second Project
+ *   representation.
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the entity map and this source together.
  */
@@ -72,9 +73,11 @@ export const ProjectModel = {
   primary_project: false,
   project_type: 'standalone_app' as ProjectType,
   console_endpoint_url: '',
+  firebase_project_id: '',
+
+  // Root-entity relationships
   app_id: '',
   ecosystem_id: '',
-  firebase_project_id: '',
 
   // Canonical root ownership hint
   owner_user_id: '',

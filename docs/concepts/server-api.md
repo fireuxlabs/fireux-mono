@@ -1,6 +1,6 @@
 Server API spine map
-Updated: 2026-07-05
-Ref: b57b4f38f
+Updated: 2026-07-19
+Ref: a6fb7062d
 Role: map, not canon
 
 Purpose:
@@ -46,6 +46,9 @@ Server spine:
 Boundary rule:
 - Provider tools provide tool behavior.
 - Consumer apps store their own consumer data unless the provider is dogfooding its own tool.
+- Shared identity writes may publish authenticated, idempotent App events
+  through core server endpoints. Event facts do not choose notification
+  recipients or delivery channels; those belong to subscribing consumers.
 
 Working notes:
 - Use endpoint files with clear HTTP suffixes where present, e.g. `.get.ts`, `.post.ts`, `.options.ts`.

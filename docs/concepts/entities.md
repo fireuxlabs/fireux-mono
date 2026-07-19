@@ -1,6 +1,6 @@
 Entities map
-Updated: 2026-06-30
-Ref: f882d8a82
+Updated: 2026-07-19
+Ref: a6fb7062d
 Role: map, not canon
 
 Purpose:
@@ -25,6 +25,16 @@ Working language:
 - Firestore is one storage/access family for an entity.
 - A thing can have a model or an id without being a FireUX entity.
 - Entity-ness is discussed while a concept is being designed; do not set a new thing in stone just because it has a file, route, or collection.
+
+Top hierarchy:
+- Project, Ecosystem, and App are root entities related by ids; hierarchy does
+  not require nested Firestore storage.
+- The current App is the root `apps/{appId}` entity selected by
+  `FireUXConfig.appId`, not a separate App kind or storage scope.
+- A direct Project App and an App related through the Project's Ecosystem are
+  ordinary root App entities too.
+- Project access is Project-owned. It is never collected from App, Kitchen, or
+  another entity's team.
 
 Kinds:
 - `entity`: domain thing FireUX tracks as a first-class concept over time.
@@ -77,7 +87,7 @@ Root index classes:
 Root Simple Index members:
 - App.
 - Ecosystem.
-- Project, for public browse. Operator/team filtering is scoped/overlay access.
+- Project, for public browse and root operator filtering.
 - Menu.
 - Place.
 - Blog.
@@ -91,13 +101,36 @@ Root Synced Snapshot Index members:
 - Chef, Customer, Driver, Agent, and Professional carry public User summary snapshots; User knows its attached profiles.
 
 Root Projected Index members:
-- User uses a public users API so raw identity/private user fields do not become public browse data.
+- User is public identity at `/users/{userId}`. The public users API still owns
+  browse DTO shape and canonical handle routes; it must never read the sibling
+  private account record.
+
+User identity records:
+- `User` is the public global entity: handle-slug identity, public presentation,
+  `app_ids`, and attached profile ids.
+- `User.avatar` stores an explicit user image when one exists; otherwise it uses
+  `/img/ecosystem/avatar.png`. Core/FireUX placeholder art is never public User
+  identity.
+- `UserPrivate` is the user-owned private account record at
+  `/users/{userId}/private/account`; it contains email and versioned terms
+  acceptance evidence.
+- `UserApp` is the app-owned membership record at
+  `/apps/{appId}/users/{userId}`; app role, entitlement, console access, and
+  app notifications belong here.
+- App authorization is never mirrored onto public `User`.
+
+App event records:
+- `AppEvent` is an append-only support record under
+  `/apps/{appId}/events/{eventId}`; it is not a standalone entity.
+- User membership materializes `app.user.joined` as an app-owned fact. The
+  event targets the App, not a hard-coded admin or delivery channel.
+- Notification, email, push, audit, and ecosystem consumers subscribe to App
+  events and own their own delivery/read state.
 
 Scoped/Overlay Access members:
 - Supplier root browse is simple; operator-filtered access may join app-scoped supplier overlays.
 - Portfolio root browse is simple; operator-filtered access may join app-scoped portfolio overlays.
 - Property root browse is simple; scoped overlay shape is explicit.
-- Project root browse is simple; operator/team filters query access fields.
 
 Root index entity examples:
 - App: `/apps`.
@@ -132,7 +165,7 @@ Scoped-only examples:
 First confirmed markers:
 - App: entity, root, core/system.
 - Ecosystem: entity, root, system.
-- Project: entity, both, console-entity.
+- Project: entity, root, console-entity.
 - Kitchen: entity, both, console-entity.
 - Supplier: entity, both, console-entity.
 - Portfolio: entity, both, console-entity.

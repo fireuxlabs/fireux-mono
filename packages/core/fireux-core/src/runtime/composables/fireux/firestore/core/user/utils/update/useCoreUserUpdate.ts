@@ -60,7 +60,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   })
   const appUpdate = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
-  const { DisplayName, AvatarUrl, Bio, Handle } = useUserFormattingAndValidation()
+  const { DisplayName, AvatarUrl, Handle } = useUserFormattingAndValidation()
   const { claimHandle } = useUserHandleClaim()
   const identityDb = useFirestore(identityDatabaseId)
   const appDb = useFirestore()
@@ -111,7 +111,7 @@ export function useCoreUserUpdate(user: UserRefs) {
 
   const appIdsForProfileOverlays = () => {
     const ids = new Set<string>()
-    for (const appId of core.value?.userOf ?? []) {
+    for (const appId of core.value?.app_ids ?? []) {
       const normalized = String(appId || '').trim()
       if (normalized) ids.add(normalized)
     }
@@ -203,10 +203,6 @@ export function useCoreUserUpdate(user: UserRefs) {
       await updateCorePublicIdentity({ avatar: url })
       return url
     },
-    setBio: async (bio: string) => {
-      const formatted = formatAndValidate(Bio, bio ?? '', 'Invalid bio')
-      await updateCore({ bio: formatted || '' })
-    },
     setHandle: async (handle: string) => {
       const normalized = formatAndValidate(Handle, handle ?? '', 'Invalid handle')
       const uid = requireCoreId()
@@ -261,34 +257,9 @@ export function useCoreUserUpdate(user: UserRefs) {
     },
   }
 
-  const membership = {
-    joinApp: async (appId: string, role: 'admin' | 'user' = 'user') => {
-      const normalized = String(appId ?? '').trim()
-      if (!normalized) return
-
-      await updateCore({
-        userOf: arrayUnion(normalized) as unknown as string[],
-        adminOf:
-          role === 'admin'
-            ? (arrayUnion(normalized) as unknown as string[])
-            : (arrayRemove(normalized) as unknown as string[]),
-      })
-    },
-    leaveApp: async (appId: string) => {
-      const normalized = String(appId ?? '').trim()
-      if (!normalized) return
-
-      await updateCore({
-        userOf: arrayRemove(normalized) as unknown as string[],
-        adminOf: arrayRemove(normalized) as unknown as string[],
-      })
-    },
-  }
-
   return {
     profile,
     tags,
     notifications,
-    membership,
   }
 }

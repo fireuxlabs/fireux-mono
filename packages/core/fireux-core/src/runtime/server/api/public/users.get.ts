@@ -30,41 +30,21 @@ function normalizeHandle(value: unknown): string {
   return asTrimmedString(value).toLowerCase()
 }
 
-function userIsPublic(data: Record<string, unknown>, handle: string): boolean {
-  const explicitPublic = data.isPublic
-  if (typeof explicitPublic === 'boolean') return explicitPublic
-
-  const explicitVisibility = asTrimmedString(data.visibility).toLowerCase()
-  if (explicitVisibility === 'public') return true
-  if (explicitVisibility === 'private') return false
-
-  const explicitFlag = data.public
-  if (typeof explicitFlag === 'boolean') return explicitFlag
-
-  return Boolean(handle)
-}
-
 function mapUserDocToDto(
-  doc: FirebaseFirestore.QueryDocumentSnapshot,
-  options: { fallbackHandle?: string; fallbackPublic?: boolean } = {}
+  doc: FirebaseFirestore.QueryDocumentSnapshot
 ): PublicUserDto | null {
   const data = (doc.data() || {}) as Record<string, unknown>
-  const handle = normalizeHandle(data.handle || options.fallbackHandle || '')
+  const handle = normalizeHandle(data.handle)
   if (!handle) return null
 
   const displayName =
     asTrimmedString(data.display_name) ||
     asTrimmedString(data.displayName) ||
     `@${handle}`
-  const bio = asTrimmedString(data.bio)
   const avatar = asTrimmedString(data.avatar)
-  const isPublic =
-    typeof options.fallbackPublic === 'boolean'
-      ? options.fallbackPublic
-      : userIsPublic(data, handle)
 
   const title = displayName
-  const description = resolvePublicDescription(bio, `Public profile for ${displayName}.`)
+  const description = resolvePublicDescription('', `Public profile for ${displayName}.`)
   const path = buildPublicPath('/users', handle)
   const updatedAt = toIsoUpdatedAt(
     data.updatedAt || (data.updated as any)?.at || data.updated_at || data.createdAt
@@ -75,14 +55,14 @@ function mapUserDocToDto(
     handle,
     displayName,
     avatar,
-    bio,
+    apps: asStringArray(data.app_ids),
     profiles: asStringArray(data.profiles),
     title,
     description,
     path,
     image: avatar || undefined,
     updatedAt,
-    isPublic,
+    isPublic: true,
   }
 }
 
@@ -96,7 +76,7 @@ async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
   const out: PublicUserDto[] = []
   for (const doc of snap.docs) {
     const dto = mapUserDocToDto(doc)
-    if (!dto?.isPublic) continue
+    if (!dto) continue
     out.push(dto)
   }
 

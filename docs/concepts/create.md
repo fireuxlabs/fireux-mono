@@ -1,6 +1,6 @@
 Create spine map
-Updated: 2026-06-18
-Ref: 9da1b5534
+Updated: 2026-07-19
+Ref: a6fb7062d
 Role: map, not canon
 
 Purpose:
@@ -99,7 +99,6 @@ Current examples:
 - `useKitchenCreate`
 - `useSupplierCreate`
 - `usePortfolioCreate`
-- `useProjectCreate`
 
 Typical shape:
 - Public or console create page mounts `XCreateSystem`.
@@ -112,6 +111,8 @@ Notes:
   target more than once.
 - Existing target IDs are normal for place-backed or app-backed entities.
 - Generated IDs are normal for user-created targets without a natural ID.
+- Project is root-only. `useProjectCreate` creates `projects/{projectId}`
+  directly and does not use `useConsoleCreate` or create an App-scoped Project.
 
 Server transaction create:
 Use a `server/api/**.post.ts` endpoint when create is a transaction that belongs

@@ -10,8 +10,7 @@
         <UCard v-if="canManageAppMembership">
           <div class="flex items-center justify-between gap-3">
             <div class="space-y-1 text-xs text-toned">
-              <p>appUser.role: {{ appUserRole }}</p>
-              <p>core adminOf: {{ user?.adminOf?.join(', ') || 'none' }}</p>
+              <p>userApp.role: {{ appUserRole }}</p>
             </div>
             <USwitch
               :model-value="isAppAdmin"
@@ -51,18 +50,6 @@
 
         <UCard>
           <MoleculesFormsFirestoreSimpleField
-            label="Email"
-            type="email"
-            :firebase-value="user.email"
-            placeholder="user@example.com"
-            :update-function="handleUpdateEmail"
-            :validation-function="Email.validate"
-            :formatting-function="Email.format"
-          />
-        </UCard>
-
-        <UCard>
-          <MoleculesFormsFirestoreSimpleField
             label="Handle"
             :firebase-value="user.handle"
             placeholder="your-handle"
@@ -72,19 +59,6 @@
           />
         </UCard>
 
-        <UCard>
-          <MoleculesFormsFirestoreSimpleField
-            label="Bio"
-            type="textarea"
-            :rows="4"
-            :maxlength="280"
-            :firebase-value="user.bio"
-            placeholder="A short bio about yourself..."
-            :update-function="handleUpdateBio"
-            :validation-function="Bio.validate"
-            :formatting-function="Bio.format"
-          />
-        </UCard>
       </div>
 
       <MoleculesStateCard v-else entity="profile" kind="document" loading />
@@ -147,7 +121,6 @@ const handleToggleAdmin = async (nextValue: boolean) => {
     await setAppUserAdmin(props.user.id, nextValue)
     console.log('2) app-user-role-updated')
     console.log('3) app-admin-ids-updated', appAdmins.value)
-    console.log('4) core-user-adminOf-updated', userApi.coreUser.value?.adminOf)
     toast.success(nextValue ? 'Granted admin' : 'Removed admin')
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -173,7 +146,7 @@ const avatarInitials = computed(() => {
     .join('')
 })
 
-const { DisplayName, Handle, Email, Bio } = useUserFormattingAndValidation()
+const { DisplayName, Handle } = useUserFormattingAndValidation()
 
 type Msg = { success: string; failure: string }
 const withToast =
@@ -194,19 +167,9 @@ const handleUpdateDisplayName = withToast(coreProfile.rename, {
   failure: 'Failed to update display name',
 })
 
-const handleUpdateEmail = async () => {
-  toast.warn('Email updates are not available yet')
-  throw new Error('updateEmail not available')
-}
-
 const handleUpdateHandle = withToast(coreProfile.setHandle, {
   success: 'Handle updated',
   failure: 'Failed to update handle',
-})
-
-const handleUpdateBio = withToast(coreProfile.setBio, {
-  success: 'Bio updated',
-  failure: 'Failed to update bio',
 })
 
 const avatarUploading = ref(false)

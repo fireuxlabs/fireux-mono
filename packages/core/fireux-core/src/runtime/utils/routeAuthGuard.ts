@@ -2,7 +2,7 @@ import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
 import { AppStorage } from '../models/core/app.model'
-import { AppUserStorage } from '../models/core/user.model'
+import { UserAppStorage } from '../models/core/user.model'
 
 type AuthGuardState = {
   uid: string | null
@@ -94,7 +94,7 @@ export async function resolveClientAppAdmin(
     const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
 
     const appUserSnap = await getDoc(
-      doc(db, AppStorage.collection, appId, AppUserStorage.collection, uid)
+      doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
     )
     if (!appUserSnap.exists()) return false
 
@@ -121,7 +121,7 @@ export async function resolveClientAppMember(
     const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
 
     const appUserSnap = await getDoc(
-      doc(db, AppStorage.collection, appId, AppUserStorage.collection, uid)
+      doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
     )
 
     return appUserSnap.exists()

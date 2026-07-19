@@ -1,7 +1,7 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../firebase/useAuth'
 import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
-import { resolveAppUserConsoleTargetField } from '../../../../models/core/user.model'
+import { resolveUserAppConsoleTargetField } from '../../../../models/core/user.model'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
 import {
   normalizeConsoleFamily,
@@ -26,7 +26,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const mode: ConsoleAppMode = consoleRoot.mode
   const configTargetIds = uniqueStrings(consoleRoot.targetIds())
   const configDevTargetIds = uniqueStrings(consoleRoot.devTargetIds())
-  const appUserTargetField = resolveAppUserConsoleTargetField(family)
+  const appUserTargetField = resolveUserAppConsoleTargetField(family)
   const appUserTargetIds = computed(() =>
     uniqueStrings(
       appUserTargetField

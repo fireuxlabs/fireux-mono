@@ -11,11 +11,8 @@ export function useMyApps() {
     Array.from(
       new Set(
         [
-          ...(Array.isArray(coreUser.value?.userOf)
-            ? coreUser.value.userOf
-            : []),
-          ...(Array.isArray(coreUser.value?.adminOf)
-            ? coreUser.value.adminOf
+          ...(Array.isArray(coreUser.value?.app_ids)
+            ? coreUser.value.app_ids
             : []),
           ...(Array.isArray((coreUser.value as any)?.apps)
             ? (coreUser.value as any).apps

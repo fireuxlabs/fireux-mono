@@ -180,9 +180,6 @@ const authUidInAppAdminIds = computed(() =>
 )
 const adminSource = computed(() => {
   if (appUser.value?.role === 'admin') return 'app user role'
-  if (appId.value && coreUser.value?.adminOf?.includes(appId.value)) {
-    return 'core adminOf mirror'
-  }
   if (authUidInAppAdminIds.value) return 'app admin_ids mirror'
   return 'none'
 })
@@ -202,8 +199,7 @@ const adminDebug = computed(() => ({
   coreUser: {
     path: authUid.value ? `users/${authUid.value}` : null,
     id: coreUser.value?.id ?? null,
-    adminOf: coreUser.value?.adminOf ?? [],
-    userOf: coreUser.value?.userOf ?? [],
+    app_ids: coreUser.value?.app_ids ?? [],
     profiles: coreUser.value?.profiles ?? [],
     avatar: coreUser.value?.avatar ?? null,
   },

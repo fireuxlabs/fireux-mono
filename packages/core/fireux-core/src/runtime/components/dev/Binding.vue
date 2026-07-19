@@ -47,17 +47,10 @@
             </div>
           </div>
 
-          <div v-if="binding.missingUserOf.length">
-            <div class="text-sm font-medium">Core users missing userOf mirror</div>
+          <div v-if="binding.missingAppIds.length">
+            <div class="text-sm font-medium">Public users missing app id</div>
             <div class="text-xs text-muted">
-              {{ binding.missingUserOf.join(', ') }}
-            </div>
-          </div>
-
-          <div v-if="binding.missingAdminOf.length">
-            <div class="text-sm font-medium">Admin app users missing adminOf mirror</div>
-            <div class="text-xs text-muted">
-              {{ binding.missingAdminOf.join(', ') }}
+              {{ binding.missingAppIds.join(', ') }}
             </div>
           </div>
 
@@ -90,9 +83,9 @@ import {
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { AppStorage, type AppModel } from '../../models/core/app.model'
 import {
-  AppUserStorage,
+  UserAppStorage,
   UserStorage,
-  type AppUser,
+  type UserApp,
   type User,
 } from '../../models/core/user.model'
 
@@ -124,8 +117,7 @@ const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 const bindingPending = ref(false)
 const binding = ref({
   missingCore: [] as string[],
-  missingUserOf: [] as string[],
-  missingAdminOf: [] as string[],
+  missingAppIds: [] as string[],
   adminMissingAppUser: [] as string[],
   adminRoleMismatch: [] as string[],
 })
@@ -160,15 +152,14 @@ const loadBinding = async () => {
   bindingPending.value = true
 
   const missingCore: string[] = []
-  const missingUserOf: string[] = []
-  const missingAdminOf: string[] = []
+  const missingAppIds: string[] = []
   const adminMissingAppUser: string[] = []
   const adminRoleMismatch: string[] = []
 
   bindingAppUsersCount.value = 0
   bindingAdminIdsCount.value = 0
 
-  const appUsersByApp = new Map<string, AppUser[]>()
+  const appUsersByApp = new Map<string, UserApp[]>()
   const userIds = new Set<string>()
 
   for (const app of targets) {
@@ -177,10 +168,10 @@ const loadBinding = async () => {
     bindingAdminIdsCount.value += adminIds.length
 
     const snap = await getDocs(
-      collection(appDb, AppStorage.collection, appId, AppUserStorage.collection)
+      collection(appDb, AppStorage.collection, appId, UserAppStorage.collection)
     )
     const users = snap.docs.map((docSnap) => ({
-      ...(docSnap.data() as AppUser),
+      ...(docSnap.data() as UserApp),
       id: docSnap.id,
     }))
 
@@ -214,16 +205,9 @@ const loadBinding = async () => {
         continue
       }
 
-      const userOf = Array.isArray(coreUser.userOf) ? coreUser.userOf : []
-      if (!userOf.includes(appId)) {
-        missingUserOf.push(prefixId(appId, appUser.id))
-      }
-
-      if (appUser.role === 'admin') {
-        const adminOf = Array.isArray(coreUser.adminOf) ? coreUser.adminOf : []
-        if (!adminOf.includes(appId)) {
-          missingAdminOf.push(prefixId(appId, appUser.id))
-        }
+      const appIds = Array.isArray(coreUser.app_ids) ? coreUser.app_ids : []
+      if (!appIds.includes(appId)) {
+        missingAppIds.push(prefixId(appId, appUser.id))
       }
     }
 
@@ -241,8 +225,7 @@ const loadBinding = async () => {
 
   binding.value = {
     missingCore,
-    missingUserOf,
-    missingAdminOf,
+    missingAppIds,
     adminMissingAppUser,
     adminRoleMismatch,
   }
@@ -259,8 +242,7 @@ watch(
 const bindingTotal = computed(
   () =>
     binding.value.missingCore.length +
-    binding.value.missingUserOf.length +
-    binding.value.missingAdminOf.length +
+    binding.value.missingAppIds.length +
     binding.value.adminMissingAppUser.length +
     binding.value.adminRoleMismatch.length
 )

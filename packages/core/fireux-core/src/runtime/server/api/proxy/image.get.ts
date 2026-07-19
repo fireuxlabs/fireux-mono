@@ -11,6 +11,40 @@ import { isIP } from 'node:net'
 const MAX_REDIRECTS = 5
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 
+function matchesBytes(
+  bytes: Uint8Array,
+  signature: readonly number[],
+  offset = 0
+): boolean {
+  return signature.every((value, index) => bytes[offset + index] === value)
+}
+
+function detectRasterImageContentType(bytes: Uint8Array): string {
+  if (matchesBytes(bytes, [0xff, 0xd8, 0xff])) return 'image/jpeg'
+
+  if (
+    matchesBytes(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+  ) {
+    return 'image/png'
+  }
+
+  if (
+    matchesBytes(bytes, [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) ||
+    matchesBytes(bytes, [0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
+  ) {
+    return 'image/gif'
+  }
+
+  if (
+    matchesBytes(bytes, [0x52, 0x49, 0x46, 0x46]) &&
+    matchesBytes(bytes, [0x57, 0x45, 0x42, 0x50], 8)
+  ) {
+    return 'image/webp'
+  }
+
+  return ''
+}
+
 function normalizeHostname(hostname: string): string {
   return hostname.toLowerCase().replace(/^\[|\]$/g, '')
 }
@@ -137,13 +171,7 @@ export default defineEventHandler(async (event: H3Event) => {
       })
     }
 
-    const contentType = response.headers.get('content-type') || ''
-    if (!contentType.toLowerCase().startsWith('image/')) {
-      throw createError({
-        statusCode: 415,
-        statusMessage: 'Image proxy target did not return an image',
-      })
-    }
+    const upstreamContentType = response.headers.get('content-type') || ''
 
     const contentLength =
       response.headers.get('content-length') || ''
@@ -166,12 +194,27 @@ export default defineEventHandler(async (event: H3Event) => {
       })
     }
 
+    const detectedContentType = detectRasterImageContentType(
+      new Uint8Array(imageBuffer)
+    )
+    const contentType = upstreamContentType.toLowerCase().startsWith('image/')
+      ? upstreamContentType
+      : detectedContentType
+
+    if (!contentType) {
+      throw createError({
+        statusCode: 415,
+        statusMessage: 'Image proxy target did not return an image',
+      })
+    }
+
     // Dev-time observability
     if (process.env.NODE_ENV !== 'production') {
       console.log('[proxy/image] upstream', {
         url: finalUrl,
         status: response.status,
         ok: response.ok,
+        upstreamContentType,
         contentType,
         contentLength: contentLength || `${imageBuffer.byteLength}`,
         ms: Date.now() - t0,

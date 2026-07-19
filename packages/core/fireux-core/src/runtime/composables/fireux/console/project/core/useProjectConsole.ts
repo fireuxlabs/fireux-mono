@@ -25,9 +25,11 @@ type UseProjectConsoleOptions = {
  * Entity: Project.
  *
  * This file adapts root Project authority sources into the private /console/project selected runtime.
- * Project stored truth lives at projects/{projectId}; operator/team ids on that root record are console authority.
+ * Project stored truth lives at projects/{projectId}; operator ids on that root
+ * record are console authority.
  * Project console can manage related App and Ecosystem surfaces without redefining their stored identity.
- * It should not redefine generic Project collection reads, app-local project ownership, or related entity identities.
+ * It should not redefine generic Project collection reads, introduce scoped
+ * Project ownership, or redefine related entity identities.
  */
 export function useProjectConsole(
   options: UseProjectConsoleOptions = {}

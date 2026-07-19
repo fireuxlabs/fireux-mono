@@ -1,5 +1,5 @@
 <template>
-  <section class="menu-directory">
+  <section class="collection-directory menu-directory">
     <CollectionDirectoryHeader
       :title="props.title"
       :description="props.description"
@@ -10,7 +10,7 @@
           v-model="query"
           :placeholder="props.searchPlaceholder"
           aria-label="Search menus"
-          class="menu-directory__search"
+          class="collection-directory__search"
           icon="i-lucide-search"
         />
 
@@ -27,7 +27,7 @@
 
         <span
           v-if="props.showCount && isSettled"
-          class="menu-directory__count"
+          class="collection-directory__count"
         >
           {{ countLabel }}
         </span>
@@ -269,23 +269,6 @@ const devDerived = computed(() => ({
 </script>
 
 <style scoped>
-.menu-directory {
-  display: grid;
-  gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
-}
-
-.menu-directory__search {
-  width: min(calc(var(--spacing) * 72), 65vw);
-}
-
-.menu-directory__count {
-  color: var(--ui-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-semibold);
-  min-width: max-content;
-  padding-left: var(--spacing);
-}
-
 .menu-directory__more {
   display: flex;
   justify-content: center;
@@ -303,9 +286,4 @@ const devDerived = computed(() => ({
   );
 }
 
-@media (max-width: 40rem) {
-  .menu-directory__count {
-    margin-left: auto;
-  }
-}
 </style>

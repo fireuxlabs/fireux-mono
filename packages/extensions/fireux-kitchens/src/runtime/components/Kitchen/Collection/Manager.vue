@@ -1,5 +1,5 @@
 <template>
-  <section class="kitchen-directory">
+  <section class="collection-directory kitchen-directory">
     <CollectionDirectoryHeader :title="title" :description="description">
       <template #controls>
         <UInput
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="kitchen-directory__search"
+          class="collection-directory__search"
         />
 
         <UButton
@@ -27,7 +27,7 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="kitchen-directory__count">
+        <span v-if="showCount && isSettled" class="collection-directory__count">
           {{ countLabel }}
         </span>
       </template>
@@ -217,34 +217,3 @@ const countLabel = computed(() =>
     : `${totalCount.value} kitchen${totalCount.value === 1 ? '' : 's'}`
 )
 </script>
-
-<style scoped>
-.kitchen-directory {
-  display: grid;
-  gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
-}
-
-.kitchen-directory__search {
-  width: min(18rem, 65vw);
-}
-
-.kitchen-directory__count {
-  min-width: max-content;
-  padding-left: 0.35rem;
-  color: var(--ui-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-semibold);
-}
-
-.kitchen-directory :deep(.collection-stack) {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: calc(var(--spacing) * 4);
-}
-
-@media (max-width: 640px) {
-  .kitchen-directory__count {
-    margin-left: auto;
-    align-self: center;
-  }
-}
-</style>

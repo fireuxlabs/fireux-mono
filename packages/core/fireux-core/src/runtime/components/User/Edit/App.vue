@@ -41,11 +41,8 @@
               class="flex items-center justify-between gap-3"
             >
               <div class="space-y-1 text-xs text-toned">
-                <p>appUser.role: {{ appUserRole }}</p>
-                <p>appUser.is_premium: {{ String(isAppPremium) }}</p>
-                <p>
-                  core adminOf: {{ props.user?.adminOf?.join(', ') || 'none' }}
-                </p>
+                <p>userApp.role: {{ appUserRole }}</p>
+                <p>userApp.is_premium: {{ String(isAppPremium) }}</p>
               </div>
               <USwitch
                 :model-value="isAppAdmin"
@@ -141,7 +138,6 @@ const handleToggleAdmin = async (nextValue: boolean) => {
     await setAppUserAdmin(props.user.id, nextValue)
     console.log('2) app-user-role-updated')
     console.log('3) app-admin-ids-updated', appAdmins.value)
-    console.log('4) core-user-adminOf-updated', props.user.adminOf)
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'
     console.error('Admin toggle failed:', msg)

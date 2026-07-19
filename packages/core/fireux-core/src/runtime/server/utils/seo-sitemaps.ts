@@ -231,6 +231,9 @@ function isCanonicalDocPublic(
   data: Record<string, unknown>,
   slug: string
 ): boolean {
+  // Root User is public by definition; its handle is its canonical slug.
+  if (entity.entityKey === 'users') return Boolean(slug)
+
   if (entity.publicField) {
     const explicit = data[entity.publicField]
     return explicit === entity.publicValue
@@ -243,8 +246,6 @@ function isCanonicalDocPublic(
   if (visibility === 'public') return true
   if (visibility === 'private') return false
 
-  // Users migration canon: handle presence is enough to publish a stable route.
-  if (entity.entityKey === 'users') return Boolean(slug)
   return false
 }
 

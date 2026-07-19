@@ -16,23 +16,26 @@ import {
 
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type {
-  AppUser,
+  UserApp,
   User,
 } from '../../../../../../models/core/user.model'
 import {
-  AppUserConsoleTargetsModel,
-  AppUserStorage,
+  UserAppConsoleTargetsModel,
+  UserAppStorage,
   UserStorage,
 } from '../../../../../../models/core/user.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
+import {
+  isLegacyUserAvatarPlaceholder,
+  resolveUserAvatarSource,
+} from '../../../../../../models/core/supporting/user-avatar'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 
 export type CreateCoreOptions = {
   displayName?: string
-  email?: string
   avatar?: string | null
   ecosystemName?: string
 }
@@ -53,9 +56,7 @@ function normalizePublicDisplayNameSeed(value: string): string {
 }
 
 function resolveCoreUserAvatar(avatar?: string | null): string {
-  const explicit = typeof avatar === 'string' ? avatar.trim() : ''
-  if (explicit) return explicit
-  return ''
+  return resolveUserAvatarSource(avatar)
 }
 
 export async function createCoreUserDocument(
@@ -81,19 +82,16 @@ export async function createCoreUserDocument(
         ? data.handle.trim()
         : makeHandle(existingName, uid)
     const existingAvatar = (data as any)?.avatar
-    if (typeof existingAvatar !== 'string' || !existingAvatar.trim()) {
+    if (isLegacyUserAvatarPlaceholder(existingAvatar)) {
+      patch.avatar = resolveUserAvatarSource('')
+    } else if (typeof existingAvatar !== 'string' || !existingAvatar.trim()) {
       patch.avatar = resolveCoreUserAvatar(options.avatar)
     }
     if (typeof (data as any)?.handle !== 'string' || !(data as any)?.handle?.trim()) {
       patch.handle = resolvedHandle
     }
-    if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
-    if (typeof (data as any)?.bio !== 'string') patch.bio = ''
+    if (!Array.isArray((data as any)?.app_ids)) patch.app_ids = []
     if (!Array.isArray((data as any)?.profiles)) patch.profiles = []
-    if (!Array.isArray((data as any)?.projects)) patch.projects = []
-    if (!Array.isArray((data as any)?.userOf)) patch.userOf = []
-    if (!Array.isArray((data as any)?.adminOf)) patch.adminOf = []
-    if (!Array.isArray((data as any)?.notifications)) patch.notifications = []
     if (!((data as any)?.created && (data as any)?.created.at)) {
       (patch as any)['created.at'] = (data as any)?.created_at ?? serverTimestamp()
     }
@@ -117,7 +115,6 @@ export async function createCoreUserDocument(
   if (!displayName) {
     throw new Error('[createCoreUserDocument] Missing displayName')
   }
-  const email = options.email ?? ''
   const resolvedAvatar = resolveCoreUserAvatar(options.avatar)
   // Core user create is responsible for the core document, but should not
   // create membership side effects (like notifications) by default.
@@ -126,13 +123,8 @@ export async function createCoreUserDocument(
     display_name: displayName,
     avatar: resolvedAvatar,
     handle,
-    email,
-    bio: '',
+    app_ids: [],
     profiles: [],
-    projects: [],
-    userOf: [],
-    adminOf: [],
-    notifications: [],
   }
 
   const { setDocument } = useFirestoreCreate({
@@ -154,7 +146,7 @@ export async function createUserAppMembership(
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
+  const appUserRef = doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid)
   const appRef = doc(appDb, AppStorage.collection, appId)
   const userRef = doc(identityDb, UserStorage.rootCollection, uid)
 
@@ -185,7 +177,7 @@ export async function createUserAppMembership(
 
   // 1) Canonical membership overlay
   if (appUserSnap.exists()) {
-    const current = appUserSnap.data() as AppUser | undefined
+    const current = appUserSnap.data() as UserApp | undefined
     const patch: Record<string, unknown> = {}
 
     if (current?.role !== membershipRole) {
@@ -203,12 +195,12 @@ export async function createUserAppMembership(
       !Array.isArray((current as any).console_targets)
         ? (current as any).console_targets
         : {}
-    const needsConsoleTargets = Object.keys(AppUserConsoleTargetsModel).some(
+    const needsConsoleTargets = Object.keys(UserAppConsoleTargetsModel).some(
       (field) => !Array.isArray(currentTargets[field])
     )
     if (needsConsoleTargets) {
       patch.console_targets = {
-        ...AppUserConsoleTargetsModel,
+        ...UserAppConsoleTargetsModel,
         ...currentTargets,
       }
     }
@@ -229,7 +221,7 @@ export async function createUserAppMembership(
         role: membershipRole,
         is_premium: false,
         console_enabled: membershipRole === 'admin',
-        console_targets: AppUserConsoleTargetsModel,
+        console_targets: UserAppConsoleTargetsModel,
         notifications: [],
         created: {
           at: serverTimestamp(),
@@ -263,16 +255,13 @@ export async function createUserAppMembership(
   }
 
   // Keep all admin mirrors in sync with the app-scoped role.
-  // Canon: AppUser.role (apps/{appId}/users/{uid})
-  // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
+  // Canon: UserApp.role (apps/{appId}/users/{uid})
+  // Public relationship index: users/{uid}.app_ids[]
   batch.update(appRef, appPatch as any)
 
   // 3) Core user mirrors (ecosystem identity database)
   const membershipUpdates: any = {
-    userOf: arrayUnion(appId) as unknown as string[],
-    adminOf: (membershipRole === 'admin'
-      ? arrayUnion(appId)
-      : arrayRemove(appId)) as unknown as string[],
+    app_ids: arrayUnion(appId) as unknown as string[],
     updated: {
       at: serverTimestamp(),
       by: actor.uid,
@@ -294,7 +283,7 @@ export async function removeUserAppMembership(
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUserRef = doc(appDb, AppStorage.collection, appId, AppUserStorage.collection, uid)
+  const appUserRef = doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid)
   const appRef = doc(appDb, AppStorage.collection, appId)
   const userRef = doc(identityDb, UserStorage.rootCollection, uid)
 
@@ -328,8 +317,7 @@ export async function removeUserAppMembership(
   await batch.commit()
   if (userSnap.exists()) {
     await updateDoc(userRef, {
-      userOf: arrayRemove(appId) as unknown as string[],
-      adminOf: arrayRemove(appId) as unknown as string[],
+      app_ids: arrayRemove(appId) as unknown as string[],
       updated: {
         at: serverTimestamp(),
         by: actor.uid,

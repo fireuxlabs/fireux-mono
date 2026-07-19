@@ -1,9 +1,9 @@
 import { useNuxtApp } from '#imports'
 import { computed, isRef, onScopeDispose, shallowRef, watch, type Ref } from 'vue'
 import {
-  AppUserStorage,
+  UserAppStorage,
   UserStorage,
-  type AppUser,
+  type UserApp,
   type User,
 } from '../../../../../../models/core/user.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
@@ -20,9 +20,8 @@ type EnrichedUser = {
   display_name: string
   avatar: string
   handle?: string
-  email?: string
   profiles?: string[]
-  appUser?: AppUser | null
+  appUser?: UserApp | null
   coreUser?: User | null
 }
 
@@ -52,14 +51,14 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
 
   const membershipPath = computed(() =>
     resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${AppUserStorage.collection}`
+      ? `${AppStorage.collection}/${resolvedAppId.value}/${UserAppStorage.collection}`
       : ''
   )
-  const membershipSource = appRead.firestoreFetchCollection<AppUser>(
+  const membershipSource = appRead.firestoreFetchCollection<UserApp>(
     membershipPath
   )
 
-  const memberships = computed<AppUser[]>(() => membershipSource.value ?? [])
+  const memberships = computed<UserApp[]>(() => membershipSource.value ?? [])
   const membershipIds = computed(() =>
     Array.from(
       new Set(
@@ -127,7 +126,6 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
         display_name: record.display_name ?? recordId,
         avatar: record.avatar ?? '',
         handle: record.handle,
-        email: record.email,
         profiles: [...(record.profiles ?? [])],
         appUser: member,
         coreUser,

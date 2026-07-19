@@ -12,7 +12,7 @@ export type PublicUserDto = PublicSeoDto & {
   handle: string
   displayName: string
   avatar: string
-  bio: string
+  apps: string[]
   profiles: string[]
 }
 

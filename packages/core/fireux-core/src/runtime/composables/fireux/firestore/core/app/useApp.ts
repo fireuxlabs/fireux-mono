@@ -11,14 +11,13 @@ export type { App } from '../../../../../models/core/app.model'
 /**
  * FireUX stack family: System root entity + active runtime singleton.
  * Entity: App.
- * Canon:
- * - docs/fireux-canon.md
- * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
- * App stored truth lives at apps/{appId}. This file manages the active runtime app from FireUXConfig.appId.
+ * App stored truth lives at apps/{appId}. This file selects the current root
+ * App through FireUXConfig.appId.
  * Project/App console surfaces may manage App through a facade; they do not create a separate App identity.
  * `fireux/app` remains app shell/context/orchestration space, not App entity storage.
- * For arbitrary app ids, use useAppFetch(appId).
+ * Direct Project Apps and Ecosystem Apps use the same root entity type. For any
+ * App other than the current one, use useAppFetch(appId).
  */
 export function useApp() {
   const { appId } = useFireUXConfig()

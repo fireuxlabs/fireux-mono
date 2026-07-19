@@ -41,17 +41,10 @@
                 </div>
               </div>
 
-              <div v-if="drift.missingUserOf.length">
-                <div class="text-sm font-medium">Core users missing userOf mirror</div>
+              <div v-if="drift.missingAppIds.length">
+                <div class="text-sm font-medium">Public users missing app id</div>
                 <div class="text-xs text-dimmed">
-                  {{ drift.missingUserOf.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="drift.missingAdminOf.length">
-                <div class="text-sm font-medium">Admin app users missing adminOf mirror</div>
-                <div class="text-xs text-dimmed">
-                  {{ drift.missingAdminOf.join(', ') }}
+                  {{ drift.missingAppIds.join(', ') }}
                 </div>
               </div>
 
@@ -245,13 +238,12 @@ const adminIds = computed(() => {
 const drift = computed(() => {
   const appId = driftAppId.value
   const missingCore: string[] = []
-  const missingUserOf: string[] = []
-  const missingAdminOf: string[] = []
+  const missingAppIds: string[] = []
   const adminMissingAppUser: string[] = []
   const adminRoleMismatch: string[] = []
 
   if (!appId) {
-    return { missingCore, missingUserOf, missingAdminOf, adminMissingAppUser, adminRoleMismatch }
+    return { missingCore, missingAppIds, adminMissingAppUser, adminRoleMismatch }
   }
 
   const appUserById = new Map((appUsers.value ?? []).map((u) => [u.id, u]))
@@ -262,17 +254,9 @@ const drift = computed(() => {
       continue
     }
 
-    const userOf = Array.isArray(coreUser.userOf) ? coreUser.userOf : []
-    if (!userOf.includes(appId)) {
-      missingUserOf.push(id)
-    }
-
-    const appUser = appUserById.get(id)
-    if (appUser?.role === 'admin') {
-      const adminOf = Array.isArray(coreUser.adminOf) ? coreUser.adminOf : []
-      if (!adminOf.includes(appId)) {
-        missingAdminOf.push(id)
-      }
+    const appIds = Array.isArray(coreUser.app_ids) ? coreUser.app_ids : []
+    if (!appIds.includes(appId)) {
+      missingAppIds.push(id)
     }
   }
 
@@ -287,14 +271,13 @@ const drift = computed(() => {
     }
   }
 
-  return { missingCore, missingUserOf, missingAdminOf, adminMissingAppUser, adminRoleMismatch }
+  return { missingCore, missingAppIds, adminMissingAppUser, adminRoleMismatch }
 })
 
 const driftTotal = computed(
   () =>
     drift.value.missingCore.length +
-    drift.value.missingUserOf.length +
-    drift.value.missingAdminOf.length +
+    drift.value.missingAppIds.length +
     drift.value.adminMissingAppUser.length +
     drift.value.adminRoleMismatch.length
 )
