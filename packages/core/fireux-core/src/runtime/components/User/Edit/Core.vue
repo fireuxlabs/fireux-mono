@@ -7,21 +7,6 @@
 
     <ClientOnly>
       <div v-if="user" class="space-y-6">
-        <UCard v-if="canManageAppMembership">
-          <div class="flex items-center justify-between gap-3">
-            <div class="space-y-1 text-xs text-toned">
-              <p>userApp.role: {{ appUserRole }}</p>
-            </div>
-            <USwitch
-              :model-value="isAppAdmin"
-              :loading="togglingAdmin"
-              :disabled="isOnlyAdmin && isAppAdmin"
-              label="Admin"
-              @update:model-value="handleToggleAdmin"
-            />
-          </div>
-        </UCard>
-
         <UCard>
           <div class="flex flex-col items-center gap-2">
             <MoleculesFormsFirestoreImagePicker
@@ -70,7 +55,6 @@
 import { computed, ref } from 'vue'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserFormattingAndValidation } from '../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import type { User } from '../../../models/core/user.model'
@@ -85,51 +69,6 @@ const userApi = useUser()
 const resolvedRefs = (props.userRefs ?? (userApi as unknown as UserRefs))
 const userUpdate = useUserUpdate(resolvedRefs, 'UserEditCore')
 const coreProfile = userUpdate.core.profile
-const { app, setAppUserAdmin } = useApp()
-
-const appAdmins = computed(() =>
-  Array.isArray(app.value?.admin_ids)
-    ? app.value?.admin_ids.filter(
-        (id: unknown): id is string => typeof id === 'string' && id.length > 0
-      )
-    : []
-)
-
-const resolvedAppUser = computed(() =>
-  props.userRefs?.appUser?.value ?? userApi.appUser?.value ?? null
-)
-const appUserRole = computed(() => resolvedAppUser.value?.role ?? 'user')
-const isAppAdmin = computed(() => appUserRole.value === 'admin')
-const canManageAppMembership = computed(() => userApi.isAdmin.value === true)
-const isOnlyAdmin = computed(
-  () => isAppAdmin.value && appAdmins.value.length <= 1
-)
-const togglingAdmin = ref(false)
-
-const handleToggleAdmin = async (nextValue: boolean) => {
-  if (!props.user?.id) return
-  if (!canManageAppMembership.value) {
-    toast.error('Only admins can update admin status')
-    return
-  }
-  togglingAdmin.value = true
-  try {
-    console.log('1) toggle-start', {
-      makeAdmin: nextValue,
-      userId: props.user.id,
-    })
-    await setAppUserAdmin(props.user.id, nextValue)
-    console.log('2) app-user-role-updated')
-    console.log('3) app-admin-ids-updated', appAdmins.value)
-    toast.success(nextValue ? 'Granted admin' : 'Removed admin')
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Admin update failed: ${msg}`)
-    throw error
-  } finally {
-    togglingAdmin.value = false
-  }
-}
 
 const user = computed(() => props.user)
 const { useProxiedAvatar } = useAvatarProxy()

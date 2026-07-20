@@ -3,7 +3,9 @@
 Purpose: operating instructions for AI agents working in `fireux-mono`.
 See: `docs/concepts/fireux-mono.md`
 
-Effective: 2026-06-17
+Effective: 2026-07-20
+<!-- Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2–4 of 4: record portable root, tooling split, and demo ownership. -->
+<!-- Concurrent edit — 2026-07-19 17:07 CEST — Directory Authority Cutover: record resolved App and Ecosystem database authority. -->
 
 ## Current Documentation State
 
@@ -109,7 +111,15 @@ Do not scan the whole repo by default. Scan broadly only when the user asks for 
 
 Root shape is controlled by `scripts/guards/root.mjs`.
 
-- Allowed authored root dirs include `.github`, `.vscode`, `docs`, `figma-export`, `packages`, `projects`, `scripts`, `templates`, `tools`, `types`, `temp`, `mirror`, and `demo`; known generated directories are tolerated locally but must remain untracked.
+- Allowed authored root dirs include `.github`, `.vscode`, `docs`, `packages`,
+  `projects`, `scripts`, `templates`, `tools`, `types`, and `mirror`; known
+  generated and local-only directories are tolerated but must remain untracked.
+- `pnpm-workspace.yaml` is the sole workspace-package glob authority;
+  `package.json#workspaces` is forbidden duplication.
+- `figma-export` is an optional ignored machine-local directory or symlink. It
+  must never be tracked or point another clone at one developer's filesystem.
+- Root `demo/` is forbidden. Reusable fixtures belong to their owning package
+  under `src/runtime/demo`; app-specific fixtures belong under `app/demo`.
 - Allowed root files include `AGENTS.md`, `README.md`, package manager files, TypeScript config, lint config, and deploy ignore files.
 - `mirror/README.md` is guard-required in the old shape, though docs are currently culled.
 
@@ -147,6 +157,7 @@ Project app shape is controlled by `scripts/guards/projects.mjs`.
 Generated-artifact containment is controlled by `scripts/guards/generated-artifacts.mjs`.
 
 - Guards enforce authored source shape separately from disposable local output.
+- Root `temp/` and `figma-export` are local-only and must remain untracked.
 - Known build, cache, coverage, Firebase CLI, and TypeScript build artifacts may exist while development tools are running.
 - Those artifacts must remain ignored and untracked; the generated-artifacts guard checks the Git index.
 - Use `pnpm pre-guard-clean` when an intentionally artifact-free filesystem is needed. Do not require it merely to validate authored source shape.
@@ -187,6 +198,7 @@ Important app config fields visible in code:
 - `ecosystem`
 - `projectId`
 - `ecosystemId`, optional
+- `databaseId`, optional
 - `id`
 - `name`
 - `shortName`
@@ -202,6 +214,11 @@ Important app config fields visible in code:
 relationship. `projectId` names the canonical FireUX Project entity;
 `ecosystemId` names the canonical Ecosystem entity and is omitted for direct
 Project Apps.
+
+`databaseId` optionally selects the App runtime database. The canonical App
+record follows that resolved database; without an override it uses the
+Ecosystem binding database. Canonical Ecosystem identity remains in the binding
+database and must not follow an app-specific override.
 
 `useFireUXConfig` is the runtime app identity/mode accessor. Do not duplicate app mode logic locally.
 
@@ -293,6 +310,31 @@ Domain components commonly use:
 
 Prefer named domain components plus shared composables/functions over one generic shell that hides domain meaning.
 
+## Shared Seam Boundaries
+
+FireUX uses named domain layers with small shared mechanics. Similar pages,
+collection managers, and console families should remain independently named so
+their domain delta can grow without unpicking a generic shell.
+
+- Share repeated state transitions, filtering, mapping mechanics, and small
+  presentation primitives; keep data authority, copy, actions, routes, and
+  domain rendering in the named domain layer.
+- `useCollectionSearch` owns collection filtering and variant state.
+  `useCollectionVariantCards` owns pill/cell mapping mechanics. Do not merge
+  these into a collection-manager shell or make either composable own fetching.
+- A collection manager using `useDevCollectionJson` must load its snapshot on
+  `DevJson` open and unload it on close. `scripts/guards/canon.mjs` enforces the
+  lifecycle so a closed debug panel performs no snapshot work.
+- Every `useConsoleIndex` adapter must pass its source collection `outcome`.
+  Outcome is the sole loading/error/ready/empty authority; card count and a
+  separate pending fallback must not infer source state.
+- Named `ConsoleXIndexTargets` wrappers may share `ConsoleTargetCollection` for
+  state presentation. They retain domain mapping, selection, copy, actions,
+  and multi-source composition; an idle source renders no chooser.
+
+See `docs/concepts/collection-manager.md` and `docs/concepts/console.md` for the
+current maps and source links.
+
 ## Public, Console, and Firestore Buckets
 
 Use these mental buckets:
@@ -345,6 +387,50 @@ update that date in the script header.
 Use `pnpm audit:scripts` to list scripts whose `last_used` date is older than
 six weeks. Do not delete stale scripts automatically; review whether they are
 still part of the active command surface first.
+
+Root ESLint treats authored `.mjs` and `.cjs` tooling as first-class source.
+Generated output and local scratch lanes are excluded; moving authored tooling
+into `temp/` to evade checks is not allowed.
+
+`scripts/_lib/app-registry.mjs` owns app identity, routes, and smoke-contract
+assignments. Pure HTTP contract builders belong in
+`scripts/_lib/app-smoke-contracts.mjs`; do not mix them back into registry data.
+
+## Concurrent Edit Stamps
+
+Timestamped `Concurrent edit` comments are short-lived coordination markers for
+multiple active tasks sharing the same worktree. They identify who touched an
+authored file, when, and for what narrow scope so another task can avoid
+silently overwriting concurrent work. They are not canon, TODOs, ownership
+locks, implementation rationale, or evidence that the named task is complete.
+
+When concurrent tasks are confirmed in the same worktree, add one syntax-safe
+stamp to every authored file you materially edit:
+
+```text
+Concurrent edit — YYYY-MM-DD HH:mm TZ — <task or pass>: <narrow scope>.
+```
+
+Stamp rules:
+
+- Use the actual local wall-clock time and include the timezone abbreviation.
+- Name the task or pass and the edited seam; do not write a vague `updated`
+  comment.
+- Use the file's native comment form: `//` in TypeScript/JavaScript or Vue
+  script, `<!-- -->` in Markdown or Vue template, and `/* */` in CSS.
+- Keep one active stamp per task per file. Update your own stamp when continuing
+  the same work; never rewrite or remove another active task's stamp.
+- Preserve surrounding changes from other tasks. A stamp warns about a
+  collision; it does not make an overlapping edit safe by itself.
+- Do not stamp generated output, lockfiles, snapshots, build artifacts, or
+  machine-owned files. Do not corrupt JSON, CSV, or another comment-hostile
+  format to add a stamp; report that path in the handoff instead.
+- A concurrent checkpoint may commit stamps while work is active. Do not infer
+  completion from the commit, and do not block a safe checkpoint merely because
+  stamps are present.
+- Remove or consolidate stamps only during an explicit reconciliation/cleanup
+  after the overlapping tasks have completed. Git history remains the durable
+  provenance after that cleanup.
 
 ## Communication
 

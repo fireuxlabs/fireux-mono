@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <template>
   <section class="space-y-10">
     <DevProductDemo v-model:selected-id="selectedProductId" />
@@ -46,7 +47,7 @@ import {
   FirebaseProduct as ProductModelRuntime,
   type FirebaseProduct,
 } from '../../../models/product.model'
-import { demoProductList } from '../../../../../../../../demo/product.demo'
+import { demoProductList } from '../../../demo/product'
 
 defineOptions({ name: 'DevProductSystem' })
 

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
 <template>
   <UPage>
     <UPageHeader
@@ -35,7 +36,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { demoSeoProviderList } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoProviderList } from '../../demo/findMySeo'
 
 const technicalProviders = computed(() =>
   demoSeoProviderList.filter((provider) =>

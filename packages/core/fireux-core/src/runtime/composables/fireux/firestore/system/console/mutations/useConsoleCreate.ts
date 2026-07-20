@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: attach console targets through the server-owned UserApp capability transaction.
 import {
   arrayUnion,
   collection,
@@ -15,13 +16,11 @@ import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/models/core/meta.model'
-import {
-  UserAppStorage,
-  resolveUserAppConsoleTargetField,
-} from 'fireux-core/runtime/models/core/user.model'
+import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
+import { mutateAppMembership } from '../../../core/user/utils/appMembershipMutation'
 
 export type ConsoleEntityType =
   | 'kitchen'
@@ -244,45 +243,12 @@ export function useConsoleCreate() {
         { merge: true }
       )
 
-      const appUserRef = doc(
-        db,
-        AppStorage.collection,
-        currentAppId,
-        UserAppStorage.collection,
-        currentUid
-      )
-      const appUserSnap = await getDoc(appUserRef)
-      const targetField = resolveUserAppConsoleTargetField(options.type)
-      await setDoc(
-        appUserRef,
-        {
-          ...(!appUserSnap.exists()
-            ? {
-                role: 'user',
-                is_premium: false,
-                notifications: [],
-                created: {
-                  at: serverTimestamp(),
-                  by: currentUid,
-                  app_id: currentAppId,
-                },
-              }
-            : {}),
-          console_enabled: true,
-          ...(targetField
-            ? {
-                console_targets: {
-                  [targetField]: arrayUnion(resolvedOverlayId),
-                },
-              }
-            : {}),
-          updated: {
-            at: serverTimestamp(),
-            by: currentUid,
-          },
-        },
-        { merge: true }
-      )
+      await mutateAppMembership({
+        action: 'set-console-target',
+        family: options.type,
+        targetId: resolvedOverlayId,
+        enabled: true,
+      })
     }
 
     const rootRef = doc(db, collectionName, id)

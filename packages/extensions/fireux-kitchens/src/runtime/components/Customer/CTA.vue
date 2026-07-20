@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: render the current app-private Customer record. -->
 <template>
   <section data-entity-cta-family="profile-managed" class="space-y-4">
     <div v-if="hasProfile && profileCard" class="space-y-4">
@@ -36,14 +37,14 @@ import { useCustomerInterface } from '../../composables/fireux/firestore/profile
 
 const { appName } = useFireUXConfig()
 const { currentUser } = useUser()
-const { coreProfile, createCustomerProfile } = useCustomer()
+const { appProfile, createCustomerProfile } = useCustomer()
 const { cell } = useCustomerInterface()
 const creating = ref(false)
 
 const profileCard = computed(() =>
   cell(
-    coreProfile.value
-      ? { ...coreProfile.value, user: currentUser.value ?? null }
+    appProfile.value
+      ? { ...appProfile.value, user: currentUser.value ?? null }
       : null
   )
 )

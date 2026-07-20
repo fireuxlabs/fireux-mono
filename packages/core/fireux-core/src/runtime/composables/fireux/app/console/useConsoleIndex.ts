@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: require one authoritative target outcome.
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 
@@ -18,8 +19,7 @@ type UseConsoleIndexOptions<
   TRuntime extends Record<string, unknown>,
 > = {
   targets?: ValueRef<(TTarget | null | undefined)[] | null | undefined>
-  pending?: ValueRef<boolean | null | undefined>
-  outcome?: ValueRef<ConsoleTargetOutcome | null | undefined>
+  outcome: ValueRef<ConsoleTargetOutcome>
   showTargets?: ValueRef<boolean | null | undefined>
   selection?: ValueRef<TSelection>
   selectedId?: ValueRef<string | null | undefined>
@@ -49,23 +49,13 @@ export function useConsoleIndex<
   const runtime = computed<TRuntime>(
     () => unref(options.runtime) ?? ({} as TRuntime)
   )
-  const targetsPending = computed(() =>
-    options.pending ? Boolean(unref(options.pending)) : false
+  const targetOutcome = computed<ConsoleTargetOutcome>(() =>
+    unref(options.outcome)
   )
-  const targetOutcome = computed<ConsoleTargetOutcome>(() => {
-    const explicitOutcome = options.outcome
-      ? unref(options.outcome)
-      : undefined
-
-    if (explicitOutcome) return explicitOutcome
-    if (targetsPending.value) return 'pending'
-    return targetItems.value.length ? 'ready' : 'empty'
-  })
   const sections = computed(() => ({
     targets: {
       show: options.showTargets ? Boolean(unref(options.showTargets)) : true,
       collection: targetItems.value,
-      pending: targetsPending.value,
       outcome: targetOutcome.value,
     },
   }))

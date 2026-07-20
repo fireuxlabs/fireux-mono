@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
+// Concurrent edit — 2026-07-20 13:08 CEST — Security spine: make self-join explicit and keep admin authority only in UserApp roles.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from './entity.model'
@@ -114,8 +115,7 @@ export const AppModel = {
   } as AppRepoMetadata,
 
   // Governance
-  join_requests: [] as string[],
-  admin_ids: [] as string[],
+  self_join_enabled: false,
   moderation_state: '',
   ban_reasons: [] as string[],
 
@@ -160,8 +160,6 @@ export const AppFieldGroups = {
     'short_bio',
     'long_bio',
     'social_links',
-    'join_requests',
-    'admin_ids',
   ],
 
   /**
@@ -188,6 +186,7 @@ export const AppFieldGroups = {
     'role',
     'app_name',
     'app_short_name',
+    'self_join_enabled',
   ],
 
   /**

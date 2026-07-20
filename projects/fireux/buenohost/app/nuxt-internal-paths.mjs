@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 11:47 CEST — Root Efficiency Pass 1 of 4: remove constant path fallback.
 const readEnv = (key) => {
   const value = process.env[key]
   if (typeof value !== 'string') return undefined
@@ -6,7 +7,9 @@ const readEnv = (key) => {
 }
 
 const ensureLeadingSlash = (value) =>
-  String(value || '').startsWith('/') ? String(value || '') : `/${String(value || '')}`
+  String(value || '').startsWith('/')
+    ? String(value || '')
+    : `/${String(value || '')}`
 
 const trimDuplicateSlashes = (value) =>
   String(value || '').replace(/\/{2,}/g, '/')
@@ -19,7 +22,9 @@ const normalizeBasePath = (value, fallback = '/') => {
   if (!raw) return fallback
   if (/^https?:\/\//i.test(raw)) return trimTrailingSlash(raw)
 
-  const normalized = trimTrailingSlash(trimDuplicateSlashes(ensureLeadingSlash(raw)))
+  const normalized = trimTrailingSlash(
+    trimDuplicateSlashes(ensureLeadingSlash(raw))
+  )
   return normalized || fallback
 }
 
@@ -38,7 +43,8 @@ const joinPath = (base, ...parts) => {
       .filter(Boolean)
       .join('/')
 
-    url.pathname = url.pathname.replace(/\/+$/, '') + (suffix ? `/${suffix}` : '')
+    url.pathname =
+      url.pathname.replace(/\/+$/, '') + (suffix ? `/${suffix}` : '')
     return url.toString()
   }
 
@@ -48,7 +54,7 @@ const joinPath = (base, ...parts) => {
     .filter(Boolean)
     .join('/')
 
-  return suffix ? `${basePart || ''}/${suffix}` || '/' : base || '/'
+  return suffix ? `${basePart}/${suffix}` : base || '/'
 }
 
 /**

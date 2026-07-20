@@ -2,6 +2,8 @@ import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: expose the shared Menu notification policy types.
+
 /** Root Menu identity and public publication record. */
 export const MenuStorage = {
   shape: 'root',
@@ -66,8 +68,10 @@ export type {
   MenuOrderCustomerPolicy,
   MenuOrderDepositPolicy,
   MenuOrderFulfilmentPolicy,
+  MenuOrderNotificationPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
+  MenuOrderWhatsAppNotificationPolicy,
   MenuPaymentMethod,
   MenuServiceHoursConfig,
   MenuServiceProfile,

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use Blank outcome as target-state authority.
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
@@ -45,7 +46,7 @@ export function useBlankConsoleIndex() {
     ),
     runtime,
     targets: blanks.targets,
-    pending: blanks.pending,
+    outcome: blanks.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectBlank(String(id ?? '').trim())
     },

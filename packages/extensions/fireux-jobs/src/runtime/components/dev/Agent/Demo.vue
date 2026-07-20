@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep demo Agent and User fixtures as separate surfaces.
 defineOptions({ name: 'DevAgentDemo' })
 
 import { computed, ref } from 'vue'
@@ -35,7 +36,8 @@ import {
   type AgentCard,
 } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 
-type DemoAgent = Agent & {
+type DemoAgentSurface = {
+  agent: Agent
   user: {
     id: string
     display_name: string
@@ -45,14 +47,16 @@ type DemoAgent = Agent & {
   }
 }
 
-const demoAgents: DemoAgent[] = [
+const demoAgents: DemoAgentSurface[] = [
   {
-    ...AgentModel,
-    id: 'agent-demo-mila',
-    title: 'Hospitality placements',
-    summary: 'Matchmaking kitchens with talent across Europe.',
-    agent_placement_types: ['Alpine', 'Executive'],
-    agent_contact_email: 'mila@example.test',
+    agent: {
+      ...AgentModel,
+      id: 'agent-demo-mila',
+      title: 'Hospitality placements',
+      summary: 'Matchmaking kitchens with talent across Europe.',
+      agent_placement_types: ['Alpine', 'Executive'],
+      agent_contact_email: 'mila@example.test',
+    },
     user: {
       id: 'agent-demo-mila',
       display_name: 'Mila Harbor',
@@ -62,12 +66,14 @@ const demoAgents: DemoAgent[] = [
     },
   },
   {
-    ...AgentModel,
-    id: 'agent-demo-sofia',
-    title: 'Private chef placements',
-    summary: 'Pairs premium kitchens with executive-level talent.',
-    agent_placement_types: ['Private', 'Seasonal'],
-    agent_contact_email: 'sofia@example.test',
+    agent: {
+      ...AgentModel,
+      id: 'agent-demo-sofia',
+      title: 'Private chef placements',
+      summary: 'Pairs premium kitchens with executive-level talent.',
+      agent_placement_types: ['Private', 'Seasonal'],
+      agent_contact_email: 'sofia@example.test',
+    },
     user: {
       id: 'agent-demo-sofia',
       display_name: 'Sofia Keller',
@@ -81,9 +87,15 @@ const demoAgents: DemoAgent[] = [
 const { pill, cell, preview } = useAgentInterface()
 const isAgentCard = (card: AgentCard.Card | null): card is AgentCard.Card =>
   Boolean(card)
-const pillList = computed(() => demoAgents.map((agent) => pill(agent)).filter(isAgentCard))
-const cellList = computed(() => demoAgents.map((agent) => cell(agent)).filter(isAgentCard))
-const previewList = computed(() => demoAgents.map((agent) => preview(agent)).filter(isAgentCard))
+const pillList = computed(() =>
+  demoAgents.map(({ agent, user }) => pill(agent, user)).filter(isAgentCard)
+)
+const cellList = computed(() =>
+  demoAgents.map(({ agent, user }) => cell(agent, user)).filter(isAgentCard)
+)
+const previewList = computed(() =>
+  demoAgents.map(({ agent, user }) => preview(agent, user)).filter(isAgentCard)
+)
 
 const selectedIndex = ref(0)
 

@@ -1,0 +1,12 @@
+{
+  "firestore": [
+    {
+      "database": "directory-outbox",
+      "rules": "server-only.rules"
+    },
+    {
+      "database": "platform-directory",
+      "rules": "server-only.rules"
+    }
+  ]
+}

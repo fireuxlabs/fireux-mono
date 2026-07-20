@@ -78,6 +78,10 @@
             <dt>When</dt>
             <dd>{{ orderTimeLabel(order) }}</dd>
           </div>
+          <div v-if="order.delivery?.address">
+            <dt>Delivery</dt>
+            <dd>{{ order.delivery.address }}</dd>
+          </div>
           <div v-if="order.payment?.method">
             <dt>Payment</dt>
             <dd>{{ paymentLabel(order) }}</dd>
@@ -122,6 +126,8 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: project requested timing and readiness through My orders.
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: present asynchronous Kitchen confirmation in My orders.
 import { useCustomerOrders } from '../../../composables/fireux/customer/useCustomerOrders'
 import type {
   CustomerOrderSummary,
@@ -154,7 +160,12 @@ const statusLabels: Record<KitchenOrderStatus, string> = {
 }
 
 function statusLabel(status: KitchenOrderStatus, type: KitchenOrderType) {
+  if (status === 'pending_acceptance' && type === 'pre_order') {
+    return 'Waiting for confirmation'
+  }
   if (status === 'ready' && type === 'collection') return 'Ready to collect'
+  if (status === 'ready' && type === 'delivery') return 'Ready for delivery'
+  if (status === 'ready' && type === 'pre_order') return 'Pre-order ready'
   return statusLabels[status]
 }
 
@@ -185,7 +196,10 @@ function orderTypeLabel(type: KitchenOrderType) {
 
 function orderTimeLabel(order: CustomerOrderSummary) {
   if (order.collection?.mode === 'queue') return 'As soon as possible'
-  const requested = formatDate(order.collection?.requested_for)
+  const requested = formatDate(
+    order.collection?.requested_for || order.requested_for
+  )
+  if (order.order_type === 'delivery' && !requested) return 'As soon as possible'
   return requested || formatDate(order.created_at) || 'Time unavailable'
 }
 

@@ -5,7 +5,7 @@ import type {
 } from '../../../models/core/supporting/app'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 import type { AppDirectoryEntry } from '../../../models/core/supporting/directory'
-import { asStringArray, asTrimmedString } from './public-dto.helpers'
+import { asTrimmedString } from './public-dto.helpers'
 import type { PublicAppDto } from './public-dto.types'
 
 const APP_STATUSES = new Set<AppStatus>([
@@ -130,7 +130,6 @@ export function projectPublicApp(
       wordmark_dark_url: asTrimmedString(media.wordmark_dark_url),
       cover_url: asTrimmedString(media.cover_url),
     },
-    admin_ids: asStringArray(source.admin_ids),
     ...(createdAt
       ? {
           created: {

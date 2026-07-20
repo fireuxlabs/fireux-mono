@@ -1,80 +1,62 @@
-import {
-    collection,
-    doc,
-    limit as fslimit,
-    query as fsq,
-    getDocs,
-    runTransaction,
-    serverTimestamp,
-    where,
-} from 'firebase/firestore'
-import {
-    readRuntimeIdentityFirestoreDatabaseId,
-    useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { UserStorage } from '../../../../../../models/core/user.model'
+// Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: use the trusted reservation boundary instead of client writes.
+
+import type {
+  UserHandleReservationInput,
+  UserHandleReservationResult,
+} from '../../../../../../models/core/supporting/user-handle-reservation'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 
-type ClaimHandleResult = {
-  uid: string
-  handle: string
-  changed: boolean
+function responseMessage(payload: unknown, fallback: string) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return fallback
+  }
+  const record = payload as Record<string, unknown>
+  for (const key of ['statusMessage', 'message', 'statusText']) {
+    const value = record[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return fallback
 }
 
 export function useUserHandleClaim() {
-  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
-
   const claimHandle = async (
     uid: string,
-    desiredHandle: string
-  ): Promise<ClaimHandleResult> => {
+    desiredHandle: string,
+    create?: UserHandleReservationInput['create']
+  ): Promise<UserHandleReservationResult> => {
     const normalizedUid = String(uid || '').trim()
     if (!normalizedUid) throw new Error('Missing uid')
 
     const validation = validateUserHandleForPublicRoute(desiredHandle)
     if (!validation.isValid) throw new Error(validation.message || 'Invalid handle')
-    const nextHandle = validation.handle
 
-    const duplicateQuery = fsq(
-      collection(db, UserStorage.rootCollection),
-      where('handle', '==', nextHandle),
-      fslimit(2)
-    )
-    const duplicateSnap = await getDocs(duplicateQuery)
-    const conflict = duplicateSnap.docs.find(
-      (row) => String(row.id || '').trim() !== normalizedUid
-    )
-    if (conflict) {
-      throw new Error('This handle is already in use.')
+    const user = await useRequireUser()
+    if (user.uid !== normalizedUid) {
+      throw new Error('A handle can only be claimed for the signed-in user.')
     }
 
-    const result = await runTransaction(db, async (transaction) => {
-      const userRef = doc(db, UserStorage.rootCollection, normalizedUid)
-      const userSnap = await transaction.get(userRef)
-
-      if (!userSnap.exists()) {
-        throw new Error(`User not found for uid: ${normalizedUid}`)
-      }
-
-      const userData = (userSnap.data() || {}) as Record<string, unknown>
-      const currentHandle = String(userData.handle || '').trim().toLowerCase()
-      if (currentHandle === nextHandle) {
-        return { uid: normalizedUid, handle: nextHandle, changed: false }
-      }
-
-      const now = serverTimestamp()
-      transaction.update(userRef, {
-        handle: nextHandle,
-        updated: {
-          at: now,
-          by: normalizedUid,
-        },
-      })
-
-      return { uid: normalizedUid, handle: nextHandle, changed: true }
+    const token = await user.getIdToken()
+    const body: UserHandleReservationInput = {
+      handle: validation.handle,
+      ...(create ? { create } : {}),
+    }
+    const response = await fetch('/api/internal/user/handle', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(body),
     })
+    const payload = await response.json().catch(() => null)
+    if (!response.ok) {
+      throw new Error(
+        responseMessage(payload, `Handle reservation failed (${response.status}).`)
+      )
+    }
 
-    return result
+    return payload as UserHandleReservationResult
   }
 
   return { claimHandle }

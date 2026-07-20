@@ -1,12 +1,13 @@
-import { arrayRemove, arrayUnion, deleteField } from 'firebase/firestore'
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: route App-admin membership and entitlement changes through the trusted server transaction.
+
+import { deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { AppStorage, type App } from '../../../../../../models/core/app.model'
-import { UserAppStorage, UserStorage } from '../../../../../../models/core/user.model'
 import type { AppSocialLinks } from '../../../../../../models/core/supporting/app'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
+import { mutateAppMembership } from '../../user/utils/appMembershipMutation'
 import {
   appImageRequirement,
   appImageFirestoreField,
@@ -19,9 +20,6 @@ import {
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
   const { updateDocument } = useFirestoreUpdate()
-  const identityUpdate = useFirestoreUpdate({
-    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-  })
   const { uploadImage, getDownloadUrlForPath } = useImageStorage()
 
   const ensureAppId = () => {
@@ -32,60 +30,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   const updateApp = (data: Partial<App> | Record<string, any>) =>
     updateDocument<any>(AppStorage.collection, ensureAppId(), data as any)
-
-  const updateUserMembership = async (
-    uid: string,
-    _membershipRole: 'admin' | 'user'
-  ) => {
-    const appId = ensureAppId()
-    const userId = String(uid ?? '').trim()
-    if (!userId) throw new Error('[useAppUpdate] Missing uid')
-
-    await identityUpdate.updateDocument(UserStorage.rootCollection, userId, {
-      app_ids: arrayUnion(appId) as unknown as string[],
-    })
-  }
-
-  const updateAppMembership = async (
-    uid: string,
-    membershipRole: 'admin' | 'user'
-  ) => {
-    const userId = String(uid ?? '').trim()
-    if (!userId) throw new Error('[useAppUpdate] Missing uid')
-
-    await updateApp({
-      admin_ids:
-        membershipRole === 'admin'
-          ? (arrayUnion(userId) as unknown as App['admin_ids'])
-          : (arrayRemove(userId) as unknown as App['admin_ids']),
-    })
-  }
-
-  const updateAppUserRole = async (
-    uid: string,
-    membershipRole: 'admin' | 'user'
-  ) => {
-    const appId = ensureAppId()
-    const userId = String(uid ?? '').trim()
-    if (!userId) throw new Error('[useAppUpdate] Missing uid')
-
-    await updateDocument(`${AppStorage.collection}/${appId}/${UserAppStorage.collection}`, userId, {
-      role: membershipRole,
-    })
-  }
-
-  const updateAppUserPremium = async (
-    uid: string,
-    isPremium: boolean
-  ) => {
-    const appId = ensureAppId()
-    const userId = String(uid ?? '').trim()
-    if (!userId) throw new Error('[useAppUpdate] Missing uid')
-
-    await updateDocument(`${AppStorage.collection}/${appId}/${UserAppStorage.collection}`, userId, {
-      is_premium: Boolean(isPremium),
-    })
-  }
 
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
@@ -286,27 +230,28 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
    * - If approve=true, ensures membership doc and user link are created
    */
   async function handleJoinRequests(uid: string, approve: boolean) {
-    await updateApp({
-      // Firestore FieldValue cast is safe; updateDocument forwards as-is.
-      join_requests: arrayRemove(uid) as unknown as App['join_requests'],
+    await mutateAppMembership({
+      action: 'review-join',
+      userId: uid,
+      approve,
     })
-
-    if (approve) {
-      await updateAppUserRole(uid, 'user')
-      await updateUserMembership(uid, 'user')
-      await updateAppMembership(uid, 'user')
-    }
   }
 
   async function setAppUserAdmin(uid: string, makeAdmin: boolean) {
     const membershipRole = makeAdmin ? 'admin' : 'user'
-    await updateAppUserRole(uid, membershipRole)
-    await updateUserMembership(uid, membershipRole)
-    await updateAppMembership(uid, membershipRole)
+    await mutateAppMembership({
+      action: 'set-role',
+      userId: uid,
+      role: membershipRole,
+    })
   }
 
   async function setAppUserPremium(uid: string, isPremium: boolean) {
-    await updateAppUserPremium(uid, isPremium)
+    await mutateAppMembership({
+      action: 'set-premium',
+      userId: uid,
+      isPremium: Boolean(isPremium),
+    })
   }
 
   return {
@@ -329,7 +274,11 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     setAppUserPremium,
     membership: {
       setAdmin: (uid: string, makeAdmin: boolean) =>
-        updateAppMembership(uid, makeAdmin ? 'admin' : 'user'),
+        mutateAppMembership({
+          action: 'set-role',
+          userId: uid,
+          role: makeAdmin ? 'admin' : 'user',
+        }),
     },
   }
 }

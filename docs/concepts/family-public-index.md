@@ -2,6 +2,7 @@ Public index family map
 Updated: 2026-07-19
 Ref: 565ebd668
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: require server-projected User joins for profile indexes. -->
 
 Purpose:
 Map public index pages such as `/kitchens`, `/suppliers`, `/menus`, and similar browse surfaces.
@@ -30,6 +31,9 @@ Known pattern:
   `UPageBody` composition when the global discovery hero would be misleading.
 - Root collection managers use core `CollectionDirectoryHeader` and
   `CollectionDirectoryState` for shared hierarchy and loading/empty treatment.
+- Profile indexes for Chef, Driver, Agent, and Professional consume bounded
+  public projections that join canonical User identity by profile uid. They do
+  not list raw profile or User collections from the client.
 - one domain CTA or intro component when useful, named `XCTA`
 - one collection manager or equivalent list component
 - dev debug only when actively needed

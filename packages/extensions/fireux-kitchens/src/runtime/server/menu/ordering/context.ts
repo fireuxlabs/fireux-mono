@@ -1,9 +1,10 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry Kitchen fulfilment capability into canonical Menu order context.
 import { createError } from 'h3'
 import {
   currentPublicMenuAppId,
   resolvePublicMenuTarget,
 } from '../ownership/public-target.ts'
-import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
+import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   directoryMenuRouteScope,
@@ -23,7 +24,7 @@ export type MenuOrderContext = {
   routeMenuId: string
   routeScope: MenuRouteScope
   menuData: Record<string, unknown>
-  fulfilment?: MenuOrderFulfilmentPolicy
+  fulfilment?: KitchenFulfilmentConfig
   operationHours?: WeekdayTimeWindowsConfig
 }
 

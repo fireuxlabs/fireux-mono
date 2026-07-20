@@ -93,15 +93,15 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useUserHydration } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollection'
 import {
   useUserInterface,
   type UserCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenChildCollection } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
@@ -124,7 +124,6 @@ const currentAppId = computed(() => clean(appId))
 const kitchenId = computed(() => clean(props.kitchen?.id))
 const claimedBy = computed(() => clean(props.kitchen?.claimed_by))
 const ownerFetch = useUserFetch(claimedBy)
-const { users } = useUserCollection()
 const { pill } = useUserInterface()
 const ownerCard = computed(() => pill(ownerFetch.user.value))
 const operatorAppId = computed(() => clean(props.kitchen?.app_scope_app_id))
@@ -143,6 +142,7 @@ const operatorSource = computed(() =>
 const operatorIds = computed(() =>
   uniqueStrings(operatorSource.value.operator_ids)
 )
+const { userById: operatorUserById } = useUserHydration(operatorIds)
 const { items: teamMembers } = useKitchenChildCollection<KitchenTeamMember>(
   KitchenTeamMemberStorage.collection,
   kitchenId,
@@ -152,8 +152,7 @@ const { items: teamMembers } = useKitchenChildCollection<KitchenTeamMember>(
 )
 const operatorCards = computed<UserCard.Card[]>(() =>
   operatorIds.value
-    .map((id) => users.value.find((user: User) => clean(user.id) === id) ?? null)
-    .map((user) => pill(user))
+    .map((id) => pill(operatorUserById(id)))
     .filter((card): card is UserCard.Card => Boolean(card))
 )
 const visibleTeamMembers = computed(() =>

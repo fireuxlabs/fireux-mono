@@ -8,15 +8,14 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import type {
-  Professional,
-  ProfessionalUserSummary,
-} from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from '../../config/professionalConfig'
 
-type UserLike = ProfessionalUserSummary
-type ProfessionalTarget = Professional & { user?: UserLike | null }
+type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
+  Partial<Pick<User, 'id'>>
+type ProfessionalTarget = Professional
 
 export namespace ProfessionalCard {
   export type Card = {
@@ -67,7 +66,7 @@ export function useProfessionalInterface(
     const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
 
-    const user = target?.user ?? userOverride ?? userRef?.value ?? null
+    const user = userOverride ?? userRef?.value ?? null
     const id =
       safeString((p as any).id).trim() ||
       safeString((p as any).owner_uid).trim() ||
@@ -138,3 +137,4 @@ export function useProfessionalInterface(
     profile,
   }
 }
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Professional storage.

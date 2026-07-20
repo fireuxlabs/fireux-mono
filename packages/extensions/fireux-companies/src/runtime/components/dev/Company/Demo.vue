@@ -67,7 +67,8 @@ import type { CompanyCard } from '../../../composables/fireux/firestore/company/
 
 const { pill, cell, preview, profile } = useCompanyInterface()
 
-// Dev component canon: keep demo records local so app typecheck never imports root demo fixtures.
+// Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: retire the root demo ownership note.
+// Dev component contract: keep demo records local to their owning package.
 const demoCompanyList: CompanyHydrated[] = [
   {
     id: 'company-demo-harbor',

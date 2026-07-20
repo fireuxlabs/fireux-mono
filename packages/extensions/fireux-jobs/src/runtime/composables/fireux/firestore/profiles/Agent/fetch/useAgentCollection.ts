@@ -1,15 +1,11 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
-import { agentConfig } from '../config/agentConfig'
-import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep the legacy alias on the safe Agent fetch.
+import { useAgentFetch } from './useAgentFetch'
 
 export function useAgentCollection() {
-  const {
-    globalProfiles,
-    localProfiles,
-  } = useProfileCollection<Agent>(agentConfig)
+  const { coreAgents, appAgents } = useAgentFetch()
 
   return {
-    coreAgents: globalProfiles,
-    appAgents: localProfiles,
+    coreAgents,
+    appAgents,
   }
 }

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
 <template>
   <UCard class="h-full">
     <div class="space-y-4">
@@ -90,8 +91,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DemoSeoProvider } from '../../../../../../demo/find-my-seo.demo'
-import { demoSeoProviderLabel } from '../../../../../../demo/find-my-seo.demo'
+import type { DemoSeoProvider } from '../../demo/findMySeo'
+import { demoSeoProviderLabel } from '../../demo/findMySeo'
 
 const props = defineProps<{
   provider: DemoSeoProvider

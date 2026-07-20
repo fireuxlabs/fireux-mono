@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: model Kitchen-owned payment applicability and fulfilment capability.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
   FireuxAppScope as FireuxAppScopeShape,
@@ -14,6 +15,7 @@ import {
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { KitchenOrderType } from './kitchen/order.model'
 import type { WeekdayTimeWindowsConfig } from './shared/weekday-time.model'
 
 type WidenLiteral<T> =
@@ -124,9 +126,17 @@ export type KitchenFulfilmentPaymentMethod =
   | 'room_charge'
   | 'online_card'
 
+export type KitchenPaymentRequirement = 'verified_room'
+
+export type KitchenFulfilmentPaymentPolicy = {
+  method: KitchenFulfilmentPaymentMethod
+  order_types: KitchenOrderType[]
+  requirements?: KitchenPaymentRequirement[]
+}
+
 export type KitchenFulfilmentConfig = {
   delivery_zones: KitchenDeliveryZone[]
-  payment_methods: KitchenFulfilmentPaymentMethod[]
+  payment_methods: KitchenFulfilmentPaymentPolicy[]
 }
 
 export const KitchenEntity = defineFireuxEntity({

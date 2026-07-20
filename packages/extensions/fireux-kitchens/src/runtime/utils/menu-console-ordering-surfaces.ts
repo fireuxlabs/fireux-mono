@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: expose focused Pre-order configuration.
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 
 export type MenuOrderTypeChoice = {
@@ -5,7 +6,6 @@ export type MenuOrderTypeChoice = {
   label: string
   description: string
   route?: string
-  settingsPath?: string
 }
 
 export type MenuOrderSurfaceOption = {
@@ -13,14 +13,18 @@ export type MenuOrderSurfaceOption = {
   label: string
   description: string
   route?: string
+  settingsPath?: string
   choices: MenuOrderTypeChoice[]
 }
 
+// 2026-07-19 16:05 CEST: This registry describes real configurable doorways. Public UI groupings such as Home options must not become configuration ownership layers.
 export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
   {
-    key: 'home-options',
-    label: 'Home options',
-    description: 'Delivery and Collection are separate customer doorways.',
+    key: 'delivery',
+    label: 'Delivery',
+    description: 'Deliver the order to a customer address.',
+    route: '/menus/{menuId}.delivery',
+    settingsPath: 'delivery',
     choices: [
       {
         type: 'delivery',
@@ -28,12 +32,20 @@ export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
         description: 'Deliver the order to a customer address.',
         route: '/menus/{menuId}.delivery',
       },
+    ],
+  },
+  {
+    key: 'collection',
+    label: 'Collection',
+    description: 'Prepare the order for customer collection.',
+    route: '/menus/{menuId}.collection',
+    settingsPath: 'collection',
+    choices: [
       {
         type: 'collection',
         label: 'Collection',
         description: 'Prepare the order for customer collection.',
         route: '/menus/{menuId}.collection',
-        settingsPath: 'collection',
       },
     ],
   },
@@ -56,6 +68,7 @@ export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
     label: 'Kiosk',
     description: 'A shared terminal with eat-here and takeaway preparation flags.',
     route: '/menus/{menuId}.kiosk',
+    settingsPath: 'kiosk',
     choices: [
       {
         type: 'eat_in',
@@ -74,6 +87,7 @@ export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
     label: 'Pre-order',
     description: 'A timing-first request confirmed by the Kitchen.',
     route: '/menus/{menuId}.pre_order',
+    settingsPath: 'pre-order',
     choices: [
       {
         type: 'pre_order',

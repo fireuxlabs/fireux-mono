@@ -1,6 +1,8 @@
 Collection manager map
-Updated: 2026-07-19
-Ref: 565ebd668
+<!-- Concurrent edit — 2026-07-20 14:18 CEST — User identity boundary: profile collections join canonical Users instead of storing identity snapshots. -->
+<!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: move identity joins behind bounded domain APIs. -->
+Updated: 2026-07-20
+Ref: f7d3704ef
 Role: map, not canon
 
 Purpose:
@@ -54,7 +56,6 @@ Root Synced Snapshot Collection Manager members:
 - `Kitchen` carries public Place snapshot fields copied onto the Kitchen row.
 - `Company` carries public Place snapshot fields copied onto the Company row.
 - `Job` carries public workplace snapshot fields copied onto the Job row.
-- `Chef`, `Customer`, `Driver`, `Agent`, and `Professional` carry public User summary snapshots copied onto the profile row; profile collection fetches do not hydrate users.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
 Root Projected Collection Manager members:
@@ -62,12 +63,17 @@ Root Projected Collection Manager members:
   platform directory projection.
 - `Ecosystem` receives the FireUX platform directory controller.
 - `User` uses a public users API so raw identity/private user fields do not become public browse data.
+- `Chef`, `Driver`, `Agent`, and `Professional` use domain-owned public APIs
+  that join their allowlisted profile fields to canonical User identity by uid.
+- `Customer` is app-private and is not a root public collection-manager member.
 
 Snapshot ownership rule:
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
 - Domain parents may cascade into their domain children. Workplace/job sync belongs to the jobs domain.
-- `User` may cascade safe public identity into attached profile rows because profiles are part of the identity family.
-- User profile snapshots are maintained by `useCoreUserUpdate`, `useProfileCreate`, and the backfill/sync script.
+- `User` is the only stored public identity. Profile writes and sync scripts must not copy it into root or app profile rows.
+- Public profile collection presentation receives the profile and canonical User
+  as separate DTO members from a server-side uid join. Exact detail reads remain
+  separate until those pages complete their endpoint-first cutover.
 - Collection managers consume the row/projection they receive; they do not make per-row hydration calls.
 
 Source contract:
@@ -99,10 +105,11 @@ Data-state contract:
   show a non-fatal pagination error without replacing the existing list.
 
 Card handoff contract:
-<!-- Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: record the shared two-variant card seam. -->
+<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: close the shared card and deferred-debug contracts. -->
 - `XCollectionManager` maps records through `useXInterface()`.
 - Two-variant managers delegate pill/cell selection, cell-overlay merging, and
-  invalid-card removal to `useCollectionVariantCards`; data authority, search,
+  invalid-card removal to `useCollectionVariantCards`. A full cell factory may
+  explicitly replace rather than overlay the base card; data authority, search,
   copy, filters, actions, list components, and rendering remain domain-owned.
 - `XCollectionManager` computes `linkEnabled = computed(() => props.link !== false)`.
 - `XCollectionManager` passes cards into `XCardsPill` and `XCardsCell` with `v-bind="card"` plus `:link="linkEnabled"`.
@@ -126,9 +133,11 @@ Debug contract:
 - `objects` means fetched/API collection rows as the manager receives them.
 - `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
 - Do not mix stored/public surface fields with `useXInterface()` card output in one flat JSON array.
+- A manager using `useDevCollectionJson` loads its snapshot only when `DevJson`
+  opens and unloads it when the panel closes; closed debug panels do no work.
 
 Current source-mode snapshot:
-- Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Customer`, `Driver`, `Agent`, `Professional`.
+- Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
 - Project is a private FireUX console target, not a public collection manager.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
@@ -142,7 +151,8 @@ Hydration directions:
 Working rule:
 - Root/public entity collection managers fetch a default public/root collection.
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
-- Root/public collection rows are self-contained for list/card display.
+- Root/public collection managers consume self-contained rows or bounded server
+  projections; they do not batch-load linked identities in the browser.
 - Source truth changes must be propagated by an explicit sync seam, currently `scripts/sync-self-contained-collection-rows.mjs`.
 - Hydration belongs on detail or named scoped/secure surfaces, not default collection managers.
 - Public API projection is used when privacy, authority, publication, or
@@ -151,6 +161,8 @@ Working rule:
 
 Guard-backed lock:
 - `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
+- The same guard requires the open/load and close/unload lifecycle whenever a
+  collection manager uses `useDevCollectionJson`.
 - Do not add exceptions just to make a local feature pass.
 - If a scoped page wants a passed collection, stop and name the missing scoped surface.
 
@@ -174,6 +186,10 @@ Root Projected Collection Managers
 | `App` | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller. |
 | `Ecosystem` | FireUX `/api/public/directory` | Platform projection | App counts derive from active App projections, never `ecosystem.apps[]`. |
 | `User` | `/api/public/users` | Server projection | Public users index gets safe user DTOs, then maps them through `useUserInterface()`. |
+| `Chef` | `/api/public/chefs` | Server profile/User join | Kitchen-owned allowlist joins canonical User by matching uid. |
+| `Driver` | `/api/public/drivers` | Server profile/User join | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state. |
+| `Agent` | `/api/public/agents` | Server profile/User join | Jobs-owned allowlist includes deliberate public business contacts only. |
+| `Professional` | `/api/public/professionals` | Server profile/User join | Jobs-owned allowlist keeps resume data explicit and bounded. |
 
 Root Synced Snapshot Collection Managers
 
@@ -182,11 +198,6 @@ Root Synced Snapshot Collection Managers
 | `Kitchen` | Place by `place_id` or same id | Up | Public Place card fields are copied onto root Kitchen rows. |
 | `Company` | Place by same id | Up | Public Place card fields are copied onto root Company rows. |
 | `Job` | Kitchen/workplace by `workplace_id` | Side/up | Public workplace card fields are copied onto root Job rows. |
-| `Chef` | User by profile id | Side | Public User summary is copied onto profile rows. |
-| `Customer` | User by profile id | Side | Public User summary is copied onto profile rows. |
-| `Driver` | User by profile id | Side | Public User summary is copied onto profile rows. |
-| `Agent` | User by profile id | Side | Public User summary is copied onto profile rows. |
-| `Professional` | User by profile id | Side | Public User summary is copied onto profile rows. |
 
 Scoped/provided collection surfaces
 

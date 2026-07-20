@@ -1,7 +1,32 @@
+# Concurrent edit — 2026-07-20 11:54 CEST — Root Efficiency Pass 1 of 4: bound formatting to authored source.
+
+# Dependencies and generated build/cache output
 node_modules
+**/node_modules
 .DS_Store
 dist
+**/dist
+build
+**/build
 output
+.nitro
+**/.nitro
+.nuxt
+**/.nuxt
+.nyc_output
+**/.nyc_output
+.output
+**/.output
+.pnpm-store
+**/.pnpm-store
+.data
+**/.data
+.firebase
+**/.firebase
+.cache
+**/.cache
+*.tsbuildinfo
+**/*.tsbuildinfo
 *.log
 *.lock
 *.tmp
@@ -9,4 +34,11 @@ output
 .idea
 .vscode
 coverage
+**/coverage
 *.local
+
+# Disposable and machine-local lanes
+temp
+mirror/files
+mirror/mirror.txt
+figma-export

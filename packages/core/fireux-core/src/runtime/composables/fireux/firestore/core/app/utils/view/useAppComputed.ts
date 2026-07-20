@@ -15,24 +15,9 @@ export function useAppComputed(
     return app.value !== undefined
   })
 
-  const adminIds = computed(() => {
-    const raw = Array.isArray(app.value?.admin_ids)
-      ? (app.value?.admin_ids as Array<string | null | undefined>)
-      : []
-
-    return Array.from(
-      new Set(
-        raw
-          .map((id) => (typeof id === 'string' ? id.trim() : ''))
-          .filter((id) => id.length > 0)
-      )
-    )
-  })
-
   const isInitialized = computed(() => {
     if (!isResolved.value) return false
-    if (!hasAppDoc.value) return false
-    return adminIds.value.length > 0
+    return hasAppDoc.value
   })
 
   return {

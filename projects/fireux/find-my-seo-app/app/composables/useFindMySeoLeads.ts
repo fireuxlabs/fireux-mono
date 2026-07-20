@@ -1,5 +1,6 @@
-import type { DemoSeoLeadDraft, DemoSeoLeadInquiry, DemoSeoLeadStatus, DemoSeoProvider } from '../../../../../demo/find-my-seo.demo'
-import { buildDemoSeoLeadId, demoFindMySeoOperatorInboxEmail, demoSeoLeadInbox } from '../../../../../demo/find-my-seo.demo'
+// Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture.
+import type { DemoSeoLeadDraft, DemoSeoLeadInquiry, DemoSeoLeadStatus, DemoSeoProvider } from '../demo/findMySeo'
+import { buildDemoSeoLeadId, demoFindMySeoOperatorInboxEmail, demoSeoLeadInbox } from '../demo/findMySeo'
 import { useState } from '#imports'
 
 const cloneLead = (lead: DemoSeoLeadInquiry): DemoSeoLeadInquiry => ({ ...lead })

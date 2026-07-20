@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 import { computed, type Ref } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
@@ -48,7 +49,6 @@ export function useProjectConsoleIndex(
     ),
     runtime,
     targets: projects.targets,
-    pending: projects.pending,
     outcome: projects.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectProject(String(id ?? '').trim())

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: carry Blank target outcome.
 import { computed } from 'vue'
 import {
   useConsole,
@@ -18,6 +19,7 @@ export function useBlankConsole() {
   const consoleRoot = useConsole('blank')
   const {
     blanks: blankRecords,
+    outcome,
     pending,
     appCollectionPath,
   } =
@@ -51,6 +53,7 @@ export function useBlankConsole() {
     targets: targetBlanks,
     count: computed(() => targetBlanks.value.length),
     pending,
+    outcome,
     hasTargets,
   }
   const selection = {

@@ -38,7 +38,6 @@
   "include": ["./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
   "exclude": [
     "node_modules",
-    "../../../demo/**",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
   ]
 }

@@ -34,6 +34,9 @@ import { requireKitchenOperator } from '../../../kitchen/operator-access.ts'
 import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
 import { text } from '../../../menu/ordering/order-request.ts'
 import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/order/service-sequence.ts'
+import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
+
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: dispatch the atomically snapshotted alert after Order commit.
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -105,7 +108,10 @@ export default defineEventHandler(async (event) => {
       key: idempotencyKey,
       request: idempotencyRequest,
     })
-    if (replay) return replay
+    if (replay) {
+      await dispatchOrderWhatsApp(db, context, replay)
+      return replay
+    }
   }
 
   const pricing = await resolveMenuOrderItems(db, {
@@ -148,10 +154,11 @@ export default defineEventHandler(async (event) => {
       linkedRecord: assembled.customerOrderLink,
     })
 
+    await dispatchOrderWhatsApp(db, context, committed.response)
     return committed.response
   }
 
-  return commitKitchenOrderWithServiceSequence(db, {
+  const committed = await commitKitchenOrderWithServiceSequence(db, {
     appId: context.appId,
     kitchenId: context.kitchenId,
     orderPath: assembled.path,
@@ -159,4 +166,20 @@ export default defineEventHandler(async (event) => {
     response: assembled.response,
     linkedRecord: assembled.customerOrderLink,
   })
+  await dispatchOrderWhatsApp(db, context, committed)
+  return committed
 })
+
+async function dispatchOrderWhatsApp(
+  db: ReturnType<typeof getRuntimeFirestore>,
+  context: Awaited<ReturnType<typeof readMenuOrderContext>>,
+  response: Record<string, unknown>
+) {
+  if (text(response.order_type) !== 'pre_order') return
+
+  await dispatchPreOrderWhatsApp(db, {
+    appId: context.appId,
+    kitchenId: context.kitchenId,
+    orderId: text(response.id),
+  })
+}

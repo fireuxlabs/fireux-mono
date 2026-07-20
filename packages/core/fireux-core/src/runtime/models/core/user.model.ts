@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
+// Concurrent edit — 2026-07-20 12:58 CEST — User privacy pass: keep notifications owner-only and membership records governance-only.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
-import type { UserNotification } from './supporting/user'
 
 /**
  * Entity map: docs/concepts/entities.md
@@ -16,7 +16,8 @@ import type { UserNotification } from './supporting/user'
  * Decision note:
  * - User is public global identity. Its handle is its canonical route slug.
  * - UserPrivate contains private account data and signup agreement evidence.
- * - UserApp contains app membership, capability, notifications, and presentation state.
+ * - UserApp contains app membership, capability, and presentation state.
+ * - Notifications remain in the owner-only User notification subcollection.
  * - UserApp is not a public profile overlay and does not use FireuxAppScope.
  */
 
@@ -118,9 +119,15 @@ export const UserPrivateModel = {
   id: '',
 
   email: '',
+  preferences: {
+    language: 'en',
+    theme: 'system' as 'system' | 'light' | 'dark',
+    email_security_alerts: true,
+    share_usage_analytics: false,
+  },
   terms: {
     version: '',
-    accepted_at: {} as FirebaseTimestamp,
+    accepted_at: null as FirebaseTimestamp | null,
   },
 
   created: {
@@ -136,9 +143,15 @@ export const UserPrivateModel = {
 export interface UserPrivate {
   id: string
   email: string
+  preferences: {
+    language: string
+    theme: 'system' | 'light' | 'dark'
+    email_security_alerts: boolean
+    share_usage_analytics: boolean
+  }
   terms: {
     version: string
-    accepted_at: FirebaseTimestamp
+    accepted_at: FirebaseTimestamp | null
   }
   created: typeof UserPrivateModel.created
   updated: typeof UserPrivateModel.updated
@@ -153,8 +166,8 @@ export const UserAppModel = {
   role: 'user' as 'user' | 'admin',
   is_premium: false,
   console_enabled: false,
+  profiles: [] as string[],
   console_targets: UserAppConsoleTargetsModel as UserAppConsoleTargets,
-  notifications: [] as UserNotification[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -172,8 +185,8 @@ export interface UserApp {
   role: 'user' | 'admin'
   is_premium: boolean
   console_enabled: boolean
+  profiles: string[]
   console_targets: UserAppConsoleTargets
-  notifications: UserNotification[]
   created: typeof UserAppModel.created
   updated: typeof UserAppModel.updated
 }

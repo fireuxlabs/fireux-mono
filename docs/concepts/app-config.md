@@ -1,4 +1,5 @@
 App config spine map
+<!-- Concurrent edit — 2026-07-19 17:06 CEST — Directory Authority Cutover: clarify App versus Ecosystem database authority. -->
 Updated: 2026-07-19
 Ref: 565ebd668
 Role: map, not canon
@@ -31,6 +32,10 @@ App pattern:
 - `projectId` names the canonical FireUX Project entity.
 - Optional `ecosystemId` names the canonical Ecosystem entity. Direct Project
   Apps omit it even when they use the `fireux` infrastructure binding.
+- Optional `databaseId` selects the App runtime database. The canonical App
+  record lives there; without an override it lives in the Ecosystem binding
+  database. The canonical Ecosystem record always stays in the binding's
+  identity database and must be read through an explicit identity seam.
 - `modules` lists explicit extension capabilities. The app package declares
   those workspace dependencies directly; ecosystem packages do not bundle
   domain extensions on the app's behalf.
@@ -39,6 +44,7 @@ Important fields:
 - `ecosystem`
 - `projectId`
 - `ecosystemId`, optional
+- `databaseId`, optional
 - `id`
 - `name`
 - `shortName`

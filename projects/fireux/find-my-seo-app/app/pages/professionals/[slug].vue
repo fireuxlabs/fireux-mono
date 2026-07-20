@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
 <template>
   <UPage v-if="provider">
     <UPageHeader :title="provider.displayName" :description="provider.headline">
@@ -224,8 +225,8 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import type { DemoSeoLeadDraft } from '../../../../../../demo/find-my-seo.demo'
-import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../../../../../demo/find-my-seo.demo'
+import type { DemoSeoLeadDraft } from '../../demo/findMySeo'
+import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../demo/findMySeo'
 import { useFindMySeoLeads } from '../../composables/useFindMySeoLeads'
 
 const route = useRoute()

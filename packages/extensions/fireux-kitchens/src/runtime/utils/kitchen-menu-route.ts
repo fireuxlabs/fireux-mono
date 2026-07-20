@@ -3,6 +3,8 @@ import {
   type MenuRouteContext,
 } from '../models/kitchen/menu/menu-context.model.ts'
 
+// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: promote the shared Kiosk doorway to the canonical order projection.
+
 export type MenuRouteScope =
   | { kind: 'root' }
   | { kind: 'tenant' }
@@ -76,6 +78,7 @@ export function menuRouteProjection(
   if (
     context === 'delivery' ||
     context === 'collection' ||
+    context === 'kiosk' ||
     context === 'pre_order'
   ) return 'order'
 

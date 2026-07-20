@@ -1,10 +1,14 @@
 // @fireux-script
-// last_used: 2026-07-18
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-20
+// usage_note: enforces the portable root and sole pnpm workspace authority.
+// Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2 and 4 of 4: lock portable root and demo ownership.
 // FILE: scripts/guards/root.mjs
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
+import {
+  GENERATED_DIRECTORY_NAMES,
+  LOCAL_ONLY_ROOT_PATHS,
+} from './_lib/filesystem-policy.mjs'
 
 const ALLOWED_ROOT_DIRS = new Set([
   // VCS / tooling
@@ -12,9 +16,8 @@ const ALLOWED_ROOT_DIRS = new Set([
   '.github',
   '.vscode',
 
-  // Documentation & external assets
+  // Documentation
   'docs',
-  'figma-export', // external design-system export (explicitly allowed)
 
   // Core repo structure
   'packages',
@@ -23,14 +26,13 @@ const ALLOWED_ROOT_DIRS = new Set([
   'templates',
   'tools',
   'types',
-  'temp',
 
   // Mirror (tracked README + list file; symlink outputs are gitignored)
   'mirror',
 
   // Local-only (ignored, but tolerated)
   ...GENERATED_DIRECTORY_NAMES,
-  'demo',
+  ...LOCAL_ONLY_ROOT_PATHS,
 ])
 
 const ALLOWED_ROOT_FILES = new Set([
@@ -53,7 +55,6 @@ const ALLOWED_ROOT_FILES = new Set([
 
   // Linting
   'eslint.config.js',
-
 ])
 
 const ALLOWED_ROOT_DOTFILES = new Set([
@@ -91,12 +92,15 @@ export async function run(ctx) {
   for (const e of entries) {
     const name = e.name
     if (name === '.DS_Store') continue
+    const isAllowedDirectory =
+      isDirentDirectory(repoRoot, e) ||
+      (name === 'figma-export' && e.isSymbolicLink())
 
     // dotfiles (FILES only)
-    if (!isDirentDirectory(repoRoot, e) && ALLOWED_ROOT_DOTFILES.has(name)) continue
+    if (!isAllowedDirectory && ALLOWED_ROOT_DOTFILES.has(name)) continue
 
-    // directories (including symlink-to-dir)
-    if (isDirentDirectory(repoRoot, e) && ALLOWED_ROOT_DIRS.has(name)) continue
+    // directories (including the optional local Figma symlink)
+    if (isAllowedDirectory && ALLOWED_ROOT_DIRS.has(name)) continue
 
     // files
     if (e.isFile() && ALLOWED_ROOT_FILES.has(name)) continue
@@ -124,6 +128,20 @@ export async function run(ctx) {
         '',
         '[guard] Fix:',
         '- Restore mirror/README.md (tracked) and re-run.',
+      ].join('\n')
+    )
+  }
+
+  const rootPackagePath = path.join(repoRoot, 'package.json')
+  const rootPackage = JSON.parse(readFileSync(rootPackagePath, 'utf8'))
+  if (Object.prototype.hasOwnProperty.call(rootPackage, 'workspaces')) {
+    throw new Error(
+      [
+        '[guard] ❌ Duplicate workspace authority detected in package.json',
+        '',
+        '[guard] Fix:',
+        '- Keep workspace package globs only in pnpm-workspace.yaml.',
+        '- Remove package.json#workspaces and re-run.',
       ].join('\n')
     )
   }

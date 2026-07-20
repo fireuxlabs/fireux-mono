@@ -1,65 +1,37 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: hydrate canonical User identity for Driver rows.
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: replace raw Driver/User collection reads with the bounded API.
+import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { computed } from 'vue'
-import { driverConfig } from '../config/driverConfig'
-import type { Driver } from '../../../../../../models/driver.model'
+import {
+  DriverStorage,
+  type Driver,
+} from '../../../../../../models/driver.model'
 
-type DriverEntry = Driver & { user?: unknown }
-
-// Profile collection spine: sibling is profiles/Customer/fetch/useCustomerFetch.ts.
+// Public Driver directory source. App-scoped operational rows never enter this read.
 export function useDriverFetch() {
-  const { globalProfiles, localProfiles, pending, error, outcome } =
-    useProfileCollection<Driver>(driverConfig)
-
-  const coreDrivers = computed(() => globalProfiles.value ?? [])
-  const appDrivers = computed(() => localProfiles?.value ?? [])
-  const drivers = computed<DriverEntry[]>(() =>
-    mergeDrivers(
-      coreDrivers.value as DriverEntry[],
-      appDrivers.value as DriverEntry[]
-    )
-  )
-  const { byId: coreDriver } = useCollectionById(coreDrivers)
-  const { byId: appDriver } = useCollectionById(appDrivers)
+  const {
+    profiles: drivers,
+    profileUsers,
+    usersById,
+    userById,
+    pending,
+    error,
+    outcome,
+  } = usePublicProfileCollection<Driver>({
+    collection: DriverStorage.rootCollection,
+  })
+  const { byId: driver } = useCollectionById(drivers)
 
   return {
     drivers,
-    coreDrivers,
-    appDrivers,
-    coreDriver,
-    appDriver,
+    coreDrivers: drivers,
+    coreDriver: driver,
+    profileUsers,
+    usersById,
+    userById,
     pending,
     error,
     outcome,
   }
-}
-
-function mergeDrivers(
-  coreDrivers: DriverEntry[],
-  appDrivers: DriverEntry[]
-): DriverEntry[] {
-  const byId = new Map<string, DriverEntry>()
-
-  for (const driver of coreDrivers) {
-    const id = driverId(driver)
-    if (id) byId.set(id, driver)
-  }
-
-  for (const driver of appDrivers) {
-    const id = driverId(driver)
-    if (!id) continue
-
-    const existing = byId.get(id)
-    byId.set(id, {
-      ...driver,
-      ...existing,
-      user: existing?.user ?? driver.user,
-    } as DriverEntry)
-  }
-
-  return [...byId.values()]
-}
-
-function driverId(driver: DriverEntry): string {
-  return String((driver as any).id || (driver as any).user?.id || '').trim()
 }

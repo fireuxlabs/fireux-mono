@@ -1,4 +1,7 @@
 // FILE: packages/core/fireux-core/src/module.ts
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: register the authenticated runtime App membership endpoint.
+// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserPrivate provisioning.
+// Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
@@ -77,6 +80,27 @@ export default defineNuxtModule({
       method: 'post',
       handler: resolver.resolve(
         './runtime/server/api/internal/events/user-joined.post'
+      ),
+    })
+    addServerHandler({
+      route: '/api/internal/app/membership',
+      method: 'post',
+      handler: resolver.resolve(
+        './runtime/server/api/internal/app/membership.post'
+      ),
+    })
+    addServerHandler({
+      route: '/api/internal/user/account',
+      method: 'post',
+      handler: resolver.resolve(
+        './runtime/server/api/internal/user/account.post'
+      ),
+    })
+    addServerHandler({
+      route: '/api/internal/user/handle',
+      method: 'post',
+      handler: resolver.resolve(
+        './runtime/server/api/internal/user/handle.post'
       ),
     })
 

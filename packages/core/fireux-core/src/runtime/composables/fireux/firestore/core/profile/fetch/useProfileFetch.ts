@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: skip root reads for app-private profiles.
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -13,6 +14,7 @@ import type {
   AppProfileBase,
   ProfileBase,
   ProfileConfig,
+  ProfileRecord,
 } from '../../../../../../models/core/profile.model'
 
 /**
@@ -21,16 +23,16 @@ import type {
  * - Returns refs directly (no computed merge)
  */
 export type ProfileRefs<
-  TCore extends ProfileBase = ProfileBase,
-  TApp extends AppProfileBase = AppProfileBase,
+  TCore extends ProfileRecord = ProfileBase,
+  TApp extends ProfileRecord = AppProfileBase,
 > = {
   coreProfile: Ref<TCore | undefined | null>
   appProfile: Ref<Partial<TApp> | undefined | null>
 }
 
 export function useProfileFetch<
-  TCore extends ProfileBase = ProfileBase,
-  TApp extends AppProfileBase = AppProfileBase,
+  TCore extends ProfileRecord = ProfileBase,
+  TApp extends ProfileRecord = AppProfileBase,
 >(
   id: string | null | undefined | Ref<string | null | undefined>,
   config: ProfileConfig
@@ -42,7 +44,9 @@ export function useProfileFetch<
   const uid = computed(() => (isRef(id) ? id.value : id))
 
   const coreDoc = computed(() =>
-    uid.value ? (doc(identityDb, config.collectionName, uid.value) as any) : null
+    uid.value && config.storage !== 'app-only'
+      ? (doc(identityDb, config.collectionName, uid.value) as any)
+      : null
   )
 
   /**

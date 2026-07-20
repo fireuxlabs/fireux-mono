@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: expose canonical Delivery address and timing in customer projection.
 import { defineEventHandler, getQuery } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
@@ -123,6 +124,9 @@ function customerOrderSummary(
   if (order.status === 'trashed') return null
 
   const collection = record(order.collection)
+  const customer = record(order.customer)
+  const fulfilmentMatch = record(order.fulfilment_match)
+  const deliveryZone = record(fulfilmentMatch.zone)
   const payment = record(order.payment)
   const method = paymentMethods.has(payment.method as KitchenOrderPaymentMethod)
     ? payment.method as KitchenOrderPaymentMethod
@@ -166,6 +170,9 @@ function customerOrderSummary(
     order_number: text(order.order_number) || String(number(order.service_number)),
     status: order.status,
     order_type: order.order_type,
+    ...(iso(order.requested_for)
+      ? { requested_for: iso(order.requested_for) }
+      : {}),
     created_at: iso(order.created_at) || iso(record(order.created).at),
     estimated_ready_minutes: number(order.estimated_ready_minutes),
     estimated_ready_at: iso(order.estimated_ready_at),
@@ -200,6 +207,19 @@ function customerOrderSummary(
             mode: collectionMode,
             ...(iso(collection.requested_for)
               ? { requested_for: iso(collection.requested_for) }
+              : {}),
+          },
+        }
+      : {}),
+    ...(order.order_type === 'delivery' && text(customer.address)
+      ? {
+          delivery: {
+            address: text(customer.address),
+            ...(text(deliveryZone.label)
+              ? { zone_label: text(deliveryZone.label) }
+              : {}),
+            ...(number(fulfilmentMatch.fee_chf) > 0
+              ? { fee_chf: number(fulfilmentMatch.fee_chf) }
               : {}),
           },
         }

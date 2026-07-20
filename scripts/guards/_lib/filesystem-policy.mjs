@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-18
-// usage_note: shared filesystem policy for guard modules.
+// last_used: 2026-07-20
+// usage_note: shared filesystem and local-only path policy for guard modules.
+// Concurrent edit — 2026-07-20 11:40 CEST — Root Efficiency Pass 2 of 4: keep machine-local root lanes untracked.
 // FILE: scripts/guards/_lib/filesystem-policy.mjs
 
 export const COMMON_PACKAGE_REQUIRED_L1 = Object.freeze([
@@ -31,6 +32,8 @@ export const GENERATED_FILE_NAMES = Object.freeze([
   'firebase-debug.log',
 ])
 
+export const LOCAL_ONLY_ROOT_PATHS = Object.freeze(['figma-export', 'temp'])
+
 export const LOCAL_GENERATED_NOISE_NAMES = Object.freeze([
   ...GENERATED_DIRECTORY_NAMES,
   ...GENERATED_FILE_NAMES,
@@ -42,6 +45,9 @@ export function isGeneratedArtifactPath(file) {
   const fileName = segments.at(-1) ?? ''
 
   return (
+    LOCAL_ONLY_ROOT_PATHS.some(
+      (rootPath) => file === rootPath || file.startsWith(`${rootPath}/`)
+    ) ||
     segments.some((segment) => GENERATED_DIRECTORY_NAMES.includes(segment)) ||
     GENERATED_FILE_NAMES.includes(fileName) ||
     fileName.endsWith('.tsbuildinfo')
@@ -67,7 +73,11 @@ export function inspectLevelOne(entries, options) {
     forbidden: entries.filter((entry) => forbiddenSet.has(entry)),
     unexpected: entries.filter((entry) => {
       if (forbiddenSet.has(entry)) return false
-      if (requiredSet.has(entry) || allowedSet.has(entry) || noiseSet.has(entry)) {
+      if (
+        requiredSet.has(entry) ||
+        allowedSet.has(entry) ||
+        noiseSet.has(entry)
+      ) {
         return false
       }
       return !isAllowed(entry)

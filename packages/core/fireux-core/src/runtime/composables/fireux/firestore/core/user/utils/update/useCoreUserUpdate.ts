@@ -1,22 +1,20 @@
+// Concurrent edit — 2026-07-20 13:18 CEST — User identity pass: sync only public profiles; app-private records no longer duplicate User identity.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the only public identity write target.
 import {
   addDoc,
   arrayRemove,
   arrayUnion,
   collection,
-  doc,
-  getDoc,
 } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from '../../../../../../../models/core/app.model'
 import type { User } from '../../../../../../../models/core/user.model'
 import {
   UserNotificationStorage,
   UserStorage,
 } from '../../../../../../../models/core/user.model'
-import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
@@ -29,7 +27,10 @@ function avatarFileExtension(source: File | Blob): string {
   const name =
     typeof File !== 'undefined' && source instanceof File ? source.name : ''
   const fromName = name.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase()
-  if (fromName) return fromName
+  if (fromName === 'jpg' || fromName === 'jpeg') return 'jpg'
+  if (fromName === 'png' || fromName === 'webp' || fromName === 'gif') {
+    return fromName
+  }
 
   const mime = source.type.toLowerCase()
   if (mime === 'image/jpeg') return 'jpg'
@@ -39,31 +40,15 @@ function avatarFileExtension(source: File | Blob): string {
   return 'jpg'
 }
 
-const PROFILE_COLLECTION_BY_ID: Record<string, string> = {
-  agent: 'agents',
-  agents: 'agents',
-  chef: 'chefs',
-  chefs: 'chefs',
-  customer: 'customers',
-  customers: 'customers',
-  driver: 'drivers',
-  drivers: 'drivers',
-  professional: 'professionals',
-  professionals: 'professionals',
-}
-
 export function useCoreUserUpdate(user: UserRefs) {
-  const cfg = useFireUXConfig()
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const identityUpdate = useFirestoreUpdate({
     databaseId: identityDatabaseId,
   })
-  const appUpdate = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
   const { DisplayName, AvatarUrl, Handle } = useUserFormattingAndValidation()
   const { claimHandle } = useUserHandleClaim()
   const identityDb = useFirestore(identityDatabaseId)
-  const appDb = useFirestore()
 
   const core = user.coreUser as { value: User | undefined }
 
@@ -80,87 +65,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       data as Partial<User>
     )
 
-  const publicUserSnapshot = (overrides: Partial<User> = {}) => {
-    const id = requireCoreId()
-    const source = {
-      ...(core.value ?? {}),
-      ...overrides,
-      id,
-    }
-
-    return {
-      id,
-      display_name: String(source.display_name || '').trim(),
-      avatar: String(source.avatar || '').trim(),
-      handle: String(source.handle || '').trim(),
-    }
-  }
-
-  const profileCollections = (profiles?: unknown) => {
-    const source = Array.isArray(profiles) ? profiles : core.value?.profiles ?? []
-    const collections = new Set<string>()
-
-    for (const profile of source) {
-      const collectionName =
-        PROFILE_COLLECTION_BY_ID[String(profile ?? '').trim().toLowerCase()]
-      if (collectionName) collections.add(collectionName)
-    }
-
-    return [...collections]
-  }
-
-  const appIdsForProfileOverlays = () => {
-    const ids = new Set<string>()
-    for (const appId of core.value?.app_ids ?? []) {
-      const normalized = String(appId || '').trim()
-      if (normalized) ids.add(normalized)
-    }
-    if (cfg.appId) ids.add(cfg.appId)
-    return [...ids]
-  }
-
-  const updateProfileSnapshotIfPresent = async (
-    collectionPath: string,
-    id: string,
-    data: { user: ReturnType<typeof publicUserSnapshot> },
-    scope: 'identity' | 'app'
-  ) => {
-    const db = scope === 'identity' ? identityDb : appDb
-    const exists = (await getDoc(doc(db, collectionPath, id))).exists()
-    if (!exists) return
-
-    const updater = scope === 'identity' ? identityUpdate : appUpdate
-    await updater.updateDocument(collectionPath, id, data as any)
-  }
-
-  const syncAttachedProfileUserSnapshots = async (
-    overrides: Partial<User> & { profiles?: string[] } = {}
-  ) => {
-    const id = requireCoreId()
-    const collections = profileCollections(overrides.profiles)
-    if (!collections.length) return
-
-    const data = { user: publicUserSnapshot(overrides) }
-    const appIds = appIdsForProfileOverlays()
-
-    for (const collectionName of collections) {
-      await updateProfileSnapshotIfPresent(collectionName, id, data, 'identity')
-
-      for (const appId of appIds) {
-        await updateProfileSnapshotIfPresent(
-          `${AppStorage.collection}/${appId}/${collectionName}`,
-          id,
-          data,
-          'app'
-        )
-      }
-    }
-  }
-
-  const updateCorePublicIdentity = async (data: Partial<User>) => {
-    await updateCore(data)
-    await syncAttachedProfileUserSnapshots(data)
-  }
+  const updateCorePublicIdentity = (data: Partial<User>) => updateCore(data)
 
   const formatAndValidate = <T>(
     formatter: {
@@ -207,8 +112,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       const normalized = formatAndValidate(Handle, handle ?? '', 'Invalid handle')
       const uid = requireCoreId()
       if (!normalized) throw new Error('Handle cannot be empty.')
-      const result = await claimHandle(uid, normalized)
-      await syncAttachedProfileUserSnapshots({ handle: result.handle })
+      await claimHandle(uid, normalized)
     },
   }
 
@@ -221,11 +125,9 @@ export function useCoreUserUpdate(user: UserRefs) {
     add: async (tagId: string) => {
       const normalized = normalizeTagId(tagId)
       if (!normalized) return
-      const profiles = [...new Set([...(core.value?.profiles ?? []), normalized])]
       await updateCore({
         profiles: arrayUnion(normalized) as unknown as string[],
       })
-      await syncAttachedProfileUserSnapshots({ profiles })
     },
     remove: async (tagId: string) => {
       const normalized = normalizeTagId(tagId)

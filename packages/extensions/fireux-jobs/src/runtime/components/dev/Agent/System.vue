@@ -67,9 +67,9 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Agent rows and join canonical User for previews.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useAgentCollection } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentCollection'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import { AgentModel as AgentModelRuntime } from '../../../models/profiles/Agent/Agent.model'
@@ -78,14 +78,10 @@ defineOptions({ name: 'DevAgentSystem' })
 
 const agentModelRuntime = AgentModelRuntime
 
-useAgentFetch()
-const { coreAgents: rawCoreAgents, appAgents: rawAppAgents } = useAgentCollection()
+const { coreAgents: rawCoreAgents, userById } = useAgentFetch()
 const { pill: makeAgentCard } = useAgentInterface()
 
-const agentsCollection = computed(() => [
-  ...(rawAppAgents?.value ?? []),
-  ...(rawCoreAgents.value ?? []),
-])
+const agentsCollection = computed(() => rawCoreAgents.value ?? [])
 
 const {
   driftKind: agentsDriftKind,
@@ -99,15 +95,11 @@ const {
 } = useDevDriftFilter({
   collection: agentsCollection,
   runtimeModel: agentModelRuntime,
-  prepareForDrift: (entry) => {
-    const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
-    return rest
-  },
 })
 
 const filteredAgentsDriftPayload = buildAgentsDriftPayload({
   map: ({ doc, id, drift }) => {
-    const card = makeAgentCard(doc as any)
+    const card = makeAgentCard(doc as any, userById(String(id || '')))
     return {
       id,
       displayName: card?.displayName ?? id,
@@ -126,7 +118,7 @@ const agentsDriftCopyPayload = buildAgentsCopyPayload({
 const agentPreviewCards = computed(() => {
   const out: Array<NonNullable<ReturnType<typeof makeAgentCard>>> = []
   for (const item of filteredAgents.value ?? []) {
-    const card = makeAgentCard(item as any)
+    const card = makeAgentCard(item as any, userById((item as any)?.id))
     if (!card) continue
     out.push(card)
   }
@@ -139,7 +131,7 @@ const agentProfileCards = computed(() => {
     profile: unknown
   }> = []
   for (const item of filteredAgents.value ?? []) {
-    const card = makeAgentCard(item as any)
+    const card = makeAgentCard(item as any, userById((item as any)?.id))
     if (!card) continue
     out.push({ card, profile: item })
   }

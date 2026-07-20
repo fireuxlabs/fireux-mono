@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: opt current-user console targeting into app membership reads only.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../firebase/useAuth'
 import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
@@ -22,7 +23,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const family = normalizeConsoleFamily(options.family)
   const consoleRoot = useConsole(options.family)
   const { uid } = useAuth()
-  const { appUser, pending: userPending } = useUserFetch(uid)
+  const { appUser, pending: userPending } = useUserFetch(uid, { app: true })
   const mode: ConsoleAppMode = consoleRoot.mode
   const configTargetIds = uniqueStrings(consoleRoot.targetIds())
   const configDevTargetIds = uniqueStrings(consoleRoot.devTargetIds())

@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/dashboard/admin/products/create.vue -->
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <template>
   <UDashboardPanel id="dashboard-admin-products-create">
     <template #header>
@@ -100,9 +101,7 @@ async function handleCreate() {
     if (isDev && isBlankPayload && hasNoPrices) {
       let demoList: any[] = []
       try {
-        const mod = await import(
-          '../../../../../../../../../demo/product.demo'
-        )
+        const mod = await import('../../../../demo/product')
         demoList = Array.isArray(mod?.demoProductList)
           ? mod.demoProductList
           : []

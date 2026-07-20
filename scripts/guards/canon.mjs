@@ -1,6 +1,7 @@
 // @fireux-script
 // last_used: 2026-07-19
 // usage_note: enforces current repo-wide spine rules, including route-param normalization.
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: guard deferred dev collection lifecycle.
 // FILE: scripts/guards/canon.mjs
 // FireUX Canon Guard
 //
@@ -149,7 +150,9 @@ const KNOWN_ENTITY_AUTHORING_RUNTIME_SLICES_BY_ENTITY = new Map([
 const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
-const COLLECTION_MANAGER_PROP_RE = /\bcollection\??\s*:/g
+const COLLECTION_MANAGER_PROP_RE = /\bcollection\??\s*:/
+const DEV_COLLECTION_JSON_OPEN_RE = /@opened\s*=\s*["']loadDevJson["']/
+const DEV_COLLECTION_JSON_CLOSE_RE = /@closed\s*=\s*["']unloadDevJson["']/
 const MANUAL_ROUTE_PARAM_TRIM_RE =
   /String\s*\(\s*route\.params(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])[\s\S]{0,120}?\)\s*\.trim\s*\(/g
 
@@ -433,12 +436,27 @@ function checkCollectionManagerContract(repoRoot) {
         continue
       }
 
-      if (!COLLECTION_MANAGER_PROP_RE.test(raw)) continue
-      COLLECTION_MANAGER_PROP_RE.lastIndex = 0
+      if (COLLECTION_MANAGER_PROP_RE.test(raw)) {
+        violations.push(
+          `- Collection manager must fetch its own public/root collection, not accept a collection prop: ${normalized}`
+        )
+      }
 
-      violations.push(
-        `- Collection manager must fetch its own public/root collection, not accept a collection prop: ${normalized}`
-      )
+      if (!raw.includes('useDevCollectionJson')) continue
+
+      const missingLifecycle = []
+      if (!DEV_COLLECTION_JSON_OPEN_RE.test(raw)) {
+        missingLifecycle.push('@opened="loadDevJson"')
+      }
+      if (!DEV_COLLECTION_JSON_CLOSE_RE.test(raw)) {
+        missingLifecycle.push('@closed="unloadDevJson"')
+      }
+
+      if (missingLifecycle.length) {
+        violations.push(
+          `- Collection manager dev JSON must load on open and unload on close (missing ${missingLifecycle.join(' and ')}): ${normalized}`
+        )
+      }
     }
   }
 
@@ -907,6 +925,7 @@ export async function run(ctx) {
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
       '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
+      '- Collection manager dev JSON must load on DevJson open and unload on close so closed panels do no work',
       '- Use useRouteParam() or readRouteParam() instead of repeating String(route.params.*).trim()',
     ]
 

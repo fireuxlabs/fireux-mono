@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -63,7 +64,7 @@
 defineOptions({ name: 'DevProductDemo' })
 
 import { computed } from 'vue';
-import { demoProductSurfaceList } from '../../../../../../../../demo/product.demo';
+import { demoProductSurfaceList } from '../../../demo/product';
 
 const productSurfaces = demoProductSurfaceList
 

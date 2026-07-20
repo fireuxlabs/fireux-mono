@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: serialize nested notification policy patches with ordering edits.
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import type {
@@ -46,6 +47,12 @@ export function useKitchenConsoleMenuOrdering() {
   const collectionConfig = computed(() =>
     orderTypeConfigs.value.find(type => type.type === 'collection') || null
   )
+  const deliveryConfig = computed(() =>
+    orderTypeConfigs.value.find(type => type.type === 'delivery') || null
+  )
+  const preOrderConfig = computed(() =>
+    orderTypeConfigs.value.find(type => type.type === 'pre_order') || null
+  )
   const kitchenOperationHours = computed(() =>
     readKitchenOperationHours(
       menuState.selectedKitchen.value as Record<string, unknown> | null
@@ -67,7 +74,17 @@ export function useKitchenConsoleMenuOrdering() {
       inherit_menu_service_hours: true,
     }
     if (type === 'pre_order') {
-      return { type, notice_hours: 24, service_hours: inheritedServiceHours }
+      return {
+        type,
+        notice_hours: 24,
+        asap_enabled: false,
+        slot_interval_minutes: 30,
+        schedule_horizon_days: 30,
+        service_hours: inheritedServiceHours,
+        customer: {
+          required_fields: ['name', 'email'],
+        },
+      }
     }
     if (type === 'collection') {
       return {
@@ -77,6 +94,19 @@ export function useKitchenConsoleMenuOrdering() {
         slot_interval_minutes: 30,
         schedule_horizon_days: 7,
         service_hours: inheritedServiceHours,
+      }
+    }
+    if (type === 'delivery') {
+      return {
+        type,
+        notice_hours: 0.75,
+        asap_enabled: true,
+        slot_interval_minutes: 30,
+        schedule_horizon_days: 7,
+        service_hours: inheritedServiceHours,
+        customer: {
+          required_fields: ['name', 'phone'],
+        },
       }
     }
 
@@ -194,6 +224,22 @@ export function useKitchenConsoleMenuOrdering() {
             },
           }
         : {}),
+      ...(patch.notifications
+        ? {
+            notifications: {
+              ...current.notifications,
+              ...patch.notifications,
+              ...(patch.notifications.whatsapp
+                ? {
+                    whatsapp: {
+                      ...current.notifications?.whatsapp,
+                      ...patch.notifications.whatsapp,
+                    },
+                  }
+                : {}),
+            },
+          }
+        : {}),
     }
     orderTypePatchDrafts.set(type, next)
     orderTypePatchQueue = orderTypePatchQueue
@@ -221,12 +267,14 @@ export function useKitchenConsoleMenuOrdering() {
   return {
     ...menuState,
     collectionConfig,
+    deliveryConfig,
     hasOrderType,
     kitchenOperationHours,
     menuServiceHours,
     ordering,
     orderingEnabled,
     orderTypeConfigs,
+    preOrderConfig,
     patchOrderTypeConfig,
     saveOrderTypeConfig,
     saveMenuServiceHours,

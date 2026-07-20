@@ -30,6 +30,8 @@ import {
   type MenuPayloadSourceKind,
 } from './types.ts'
 
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: keep operational alert recipients out of public Menu manifests.
+
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -111,9 +113,16 @@ const contextOrderTypeConfigs = (
 ) => {
   const profile = menuContextProfile(contextValue)
 
-  return ordering.order_types.filter((type) =>
-    profile.visibleOrderTypes.includes(type.type)
-  )
+  return ordering.order_types
+    .filter((type) => profile.visibleOrderTypes.includes(type.type))
+    .map(publicOrderTypeConfig)
+}
+
+const publicOrderTypeConfig = (config: MenuOrderTypeConfig) => {
+  const result = { ...config }
+  delete result.notifications
+
+  return result
 }
 
 const contextChoices = (

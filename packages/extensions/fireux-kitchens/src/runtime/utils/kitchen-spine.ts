@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 import {
   normalizeFireuxAppScopeState,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
@@ -5,9 +6,16 @@ import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/mone
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type {
   KitchenFulfilmentConfig,
+  KitchenFulfilmentPaymentMethod,
+  KitchenFulfilmentPaymentPolicy,
   KitchenImageShade,
+  KitchenPaymentRequirement,
 } from '../models/kitchen.model'
-import { readMenuOrderFulfilmentPolicy } from './menu-ordering-policy'
+import type { KitchenOrderType } from '../models/kitchen/order.model'
+import {
+  kitchenOrderTypes,
+  readDeliveryZones,
+} from './menu-ordering-policy'
 import { readWeekdayTimeWindowsConfig } from './weekday-time'
 
 type KitchenSpineRecord = Record<string, unknown> | null | undefined
@@ -29,6 +37,76 @@ const stringArray = (value: unknown) =>
     : []
 const hasKeys = (value: Record<string, unknown>) =>
   Boolean(Object.keys(value).length)
+
+const kitchenPaymentMethods = [
+  'cash',
+  'card_at_pickup',
+  'card_to_driver',
+  'room_charge',
+  'online_card',
+] as const satisfies readonly KitchenFulfilmentPaymentMethod[]
+
+const kitchenPaymentRequirements = [
+  'verified_room',
+] as const satisfies readonly KitchenPaymentRequirement[]
+
+export const KitchenPaymentMethodDefaultOrderTypes = {
+  cash: ['collection', 'delivery', 'dine_in', 'eat_in', 'takeaway', 'pre_order'],
+  card_at_pickup: ['collection', 'eat_in', 'takeaway', 'pre_order'],
+  card_to_driver: ['delivery'],
+  room_charge: ['room_service'],
+  online_card: [
+    'collection',
+    'delivery',
+    'dine_in',
+    'eat_in',
+    'takeaway',
+    'pre_order',
+    'room_service',
+  ],
+} as const satisfies Record<KitchenFulfilmentPaymentMethod, readonly KitchenOrderType[]>
+
+const readKitchenPaymentMethod = (value: unknown) => {
+  const method = text(value) as KitchenFulfilmentPaymentMethod
+
+  return kitchenPaymentMethods.includes(method) ? method : null
+}
+
+const readKitchenPaymentPolicy = (
+  value: unknown
+): KitchenFulfilmentPaymentPolicy | null => {
+  // 2026-07-19 16:35 CEST — Normalize current flat Kitchen data while the
+  // console rewrites it into the Kitchen-owned applicability policy.
+  const flatMethod = readKitchenPaymentMethod(value)
+  const row = record(value)
+  const method = flatMethod || readKitchenPaymentMethod(row.method)
+  if (!method) return null
+
+  const configuredTypes = stringArray(row.order_types)
+    .filter((type): type is KitchenOrderType =>
+      kitchenOrderTypes.includes(type as KitchenOrderType)
+    )
+  const orderTypes = configuredTypes.length
+    ? configuredTypes
+    : [...KitchenPaymentMethodDefaultOrderTypes[method]]
+  const requirements = stringArray(row.requirements)
+    .filter((requirement): requirement is KitchenPaymentRequirement =>
+      kitchenPaymentRequirements.includes(requirement as KitchenPaymentRequirement)
+    )
+
+  return {
+    method,
+    order_types: [...new Set(orderTypes)],
+    ...(requirements.length ? { requirements: [...new Set(requirements)] } : {}),
+  }
+}
+
+export const kitchenPaymentMethodsForOrderType = (
+  fulfilment: KitchenFulfilmentConfig | null | undefined,
+  orderType: KitchenOrderType
+) => (fulfilment?.payment_methods || [])
+  .filter(policy => policy.order_types.includes(orderType))
+  .map(policy => policy.method)
 const imageShade = (value: unknown): KitchenImageShade => {
   const shade = text(value).toLowerCase()
   return shade === 'light' || shade === 'dark' || shade === 'none'
@@ -230,11 +308,19 @@ export const readKitchenFulfilmentConfig = (
   value: KitchenSpineRecord
 ): KitchenFulfilmentConfig => {
   const source = record(value)
-  const policy = readMenuOrderFulfilmentPolicy(source.fulfilment)
+  const fulfilment = record(source.fulfilment)
+  const paymentPolicies = Array.isArray(fulfilment.payment_methods)
+    ? fulfilment.payment_methods
+      .map(readKitchenPaymentPolicy)
+      .filter((policy): policy is KitchenFulfilmentPaymentPolicy => Boolean(policy))
+      .filter((policy, index, policies) =>
+        policies.findIndex(candidate => candidate.method === policy.method) === index
+      )
+    : []
 
   return {
-    delivery_zones: policy?.delivery_zones || [],
-    payment_methods: policy?.payment_methods || [],
+    delivery_zones: readDeliveryZones(fulfilment.delivery_zones),
+    payment_methods: paymentPolicies,
   }
 }
 

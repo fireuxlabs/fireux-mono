@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: carry dine-in party size through shared checkout and label settlement accurately.
 import type { MenuPaymentMethod } from '../models/kitchen/menu/menu.model'
 import type {
   KitchenOrderPaymentMethod,
@@ -20,6 +21,7 @@ export type MenuOrderCheckoutInput = {
   name: string
   phone: string
   email: string
+  partySize?: number
   paymentMethod: MenuOrderPaymentSelection
 }
 
@@ -49,8 +51,8 @@ const laterCopy: Record<KitchenOrderType, Pick<MenuOrderPaymentOption, 'label' |
     description: 'Settle when the order is handed over.',
   },
   pre_order: {
-    label: 'Pay later',
-    description: 'Settle when the pre-order is fulfilled.',
+    label: 'Pay at the table',
+    description: 'Settle during table service.',
   },
 }
 

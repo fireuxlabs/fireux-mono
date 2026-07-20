@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
 <template>
   <UPage>
     <UPageHeader
@@ -22,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { demoSeoCaseStudyList, demoSeoProviderList } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoCaseStudyList, demoSeoProviderList } from '../../demo/findMySeo'
 
 const ownerName = (providerId: string) =>
   demoSeoProviderList.find((provider) => provider.id === providerId)?.displayName ?? 'SEO provider'

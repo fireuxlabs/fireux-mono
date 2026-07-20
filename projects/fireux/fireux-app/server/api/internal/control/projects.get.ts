@@ -23,9 +23,6 @@ const PROJECT_STATUSES = new Set<ProjectStatus>([
 ])
 
 const text = (value: unknown) => String(value ?? '').trim()
-const strings = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
-
 export default defineEventHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const runtime = useRuntimeConfig()
@@ -43,10 +40,8 @@ export default defineEventHandler(async (event: H3Event) => {
     appRef.get(),
     appRef.collection(UserAppStorage.collection).doc(uid).get(),
   ])
-  const app = (appSnapshot.data() || {}) as Record<string, unknown>
   const membership = (membershipSnapshot.data() || {}) as Record<string, unknown>
-  const isAdmin =
-    strings(app.admin_ids).includes(uid) || text(membership.role) === 'admin'
+  const isAdmin = text(membership.role) === 'admin'
 
   if (!appSnapshot.exists || !isAdmin) {
     throw createError({

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: allow counter ordering to omit unused customer fields. -->
 <template>
   <div
     class="menu-order-checkout__host"
@@ -26,11 +27,11 @@
             color="neutral"
             variant="soft"
             icon="i-lucide-map-pin"
-            title="Collection point"
+            :title="handoffTitle || `${orderTypeLabel} details`"
             :description="handoffInstructions"
           />
 
-          <UFormField :label="fieldLabel('Name', nameRequired)" :required="nameRequired">
+          <UFormField v-if="showContactFields" :label="fieldLabel('Name', nameRequired)" :required="nameRequired">
             <UInput
               v-model="name"
               autocomplete="name"
@@ -40,7 +41,7 @@
             />
           </UFormField>
 
-          <UFormField :label="fieldLabel('Mobile number', phoneRequired)" :required="phoneRequired">
+          <UFormField v-if="showContactFields" :label="fieldLabel('Mobile number', phoneRequired)" :required="phoneRequired">
             <UInput
               v-model="phone"
               autocomplete="tel"
@@ -51,7 +52,7 @@
             />
           </UFormField>
 
-          <UFormField :label="fieldLabel('Email address', emailRequired)" :required="emailRequired">
+          <UFormField v-if="showContactFields" :label="fieldLabel('Email address', emailRequired)" :required="emailRequired">
             <UInput
               v-model="email"
               autocomplete="email"
@@ -59,6 +60,23 @@
               :maxlength="254"
               placeholder="you@example.com"
               type="email"
+            />
+          </UFormField>
+
+          <UFormField
+            v-if="showPartySize"
+            :label="fieldLabel('Guests', partySizeRequired)"
+            :required="partySizeRequired"
+          >
+            <UInput
+              v-model="partySize"
+              :disabled="pending"
+              inputmode="numeric"
+              :max="500"
+              :min="1"
+              placeholder="Number of guests"
+              :step="1"
+              type="number"
             />
           </UFormField>
 
@@ -105,6 +123,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: collect the party size for advance table orders through shared checkout.
 import { computed, ref, watch } from 'vue'
 import type {
   MenuOrderContactField,
@@ -117,17 +136,25 @@ import {
   type MenuOrderPaymentSelection,
 } from '../../../utils/menu-order-payment'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   error?: string
   handoffInstructions?: string
+  handoffTitle?: string
   open: boolean
   orderType: KitchenOrderType
   paymentMethods: MenuPaymentMethod[]
   pending?: boolean
+  partySizeRequired?: boolean
   requiredContactFields?: MenuOrderContactField[]
+  showContactFields?: boolean
+  showPartySize?: boolean
   selectionLabel: string
   totalLabel: string
-}>()
+}>(), {
+  partySizeRequired: false,
+  showContactFields: true,
+  showPartySize: false,
+})
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
   (event: 'submit', input: MenuOrderCheckoutInput): void
@@ -145,6 +172,7 @@ const modalUi = {
 const name = ref('')
 const phone = ref('')
 const email = ref('')
+const partySize = ref('')
 const paymentMethod = ref<MenuOrderPaymentSelection | undefined>()
 const validationError = ref('')
 const openModel = computed({
@@ -155,6 +183,11 @@ const paymentOptions = computed(() => menuOrderPaymentOptions({
   orderType: props.orderType,
   paymentMethods: props.paymentMethods,
 }))
+const orderTypeLabel = computed(() => props.orderType
+  .split('_')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ')
+)
 const requiredContactFields = computed(() => new Set(props.requiredContactFields || []))
 const nameRequired = computed(() => requiredContactFields.value.has('name'))
 const phoneRequired = computed(() => requiredContactFields.value.has('phone'))
@@ -178,10 +211,15 @@ function submit() {
   const customerName = name.value.trim()
   const customerPhone = phone.value.trim()
   const customerEmail = email.value.trim()
+  const parsedPartySize = Number(partySize.value)
+  const validPartySize = Number.isSafeInteger(parsedPartySize) &&
+    parsedPartySize >= 1 &&
+    parsedPartySize <= 500
   const missing = [
     nameRequired.value && !customerName ? 'name' : '',
     phoneRequired.value && !customerPhone ? 'mobile number' : '',
     emailRequired.value && !customerEmail ? 'email address' : '',
+    props.partySizeRequired && !validPartySize ? 'number of guests' : '',
   ].filter(Boolean)
   if (missing.length) {
     validationError.value = `Add your ${missing.join(', ')} before sending the order.`
@@ -196,6 +234,9 @@ function submit() {
     name: customerName,
     phone: customerPhone,
     email: customerEmail,
+    ...(props.showPartySize && validPartySize
+      ? { partySize: parsedPartySize }
+      : {}),
     paymentMethod: paymentMethod.value,
   })
 }

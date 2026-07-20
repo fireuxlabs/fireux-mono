@@ -71,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Professional rows and join canonical User for previews.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
@@ -87,13 +88,10 @@ const professionalModelRuntime = {
   experience_month_format: 'enum:short',
 }
 
-const { coreProfessionals, appProfessionals } = useProfessionalFetch()
+const { coreProfessionals, userById } = useProfessionalFetch()
 const { pill: makeProfessionalCard } = useProfessionalInterface()
 
-const professionalsCollection = computed(() => [
-  ...(appProfessionals?.value ?? []),
-  ...(coreProfessionals.value ?? []),
-])
+const professionalsCollection = computed(() => coreProfessionals.value ?? [])
 
 const {
   driftKind: professionalsDriftKind,
@@ -108,9 +106,8 @@ const {
   collection: professionalsCollection,
   runtimeModel: professionalModelRuntime,
   prepareForDrift: (entry) => {
-    const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
     return {
-      ...rest,
+      ...((entry as Record<string, unknown>) ?? {}),
       experience_month_format: resolveExperienceMonthFormat(entry),
     }
   },
@@ -155,13 +152,12 @@ const resolveExperienceMonthFormat = (entry: unknown) => {
 
 const filteredProfessionalsDriftPayload = buildProfessionalsDriftPayload({
   map: ({ doc, id, drift }) => {
-    const userDisplayName = (doc as any)?.user?.display_name
-    const userHandle = (doc as any)?.user?.handle
+    const user = userById(String(id || ''))
     return {
       id,
       displayName:
-        userDisplayName ??
-        userHandle ??
+        user?.display_name ??
+        user?.handle ??
         (doc as any)?.display_name ??
         (doc as any)?.handle ??
         id ??
@@ -182,7 +178,7 @@ const professionalsDriftCopyPayload = buildProfessionalsCopyPayload({
 const professionalPreviewCards = computed(() => {
   const out: Array<NonNullable<ReturnType<typeof makeProfessionalCard>>> = []
   for (const item of filteredProfessionals.value ?? []) {
-    const card = makeProfessionalCard(item as any)
+    const card = makeProfessionalCard(item as any, userById((item as any)?.id))
     if (!card) continue
     out.push(card)
   }
@@ -196,7 +192,7 @@ const professionalProfileEntries = computed(() => {
   }> = []
   for (const item of filteredProfessionals.value ?? []) {
     const profile = item as Professional
-    const card = makeProfessionalCard(profile)
+    const card = makeProfessionalCard(profile, userById(profile.id))
     if (!card) continue
     out.push({ card, profile })
   }

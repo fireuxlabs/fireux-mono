@@ -99,12 +99,13 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Chef rows with canonical User joins.
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { Chef } from '../../../models/chef.model'
 
-type ChefEntry = Partial<Chef> & { id: string, user?: unknown }
+type ChefEntry = Partial<Chef> & { id: string }
 
 const props = withDefaults(
   defineProps<{
@@ -132,10 +133,7 @@ const props = withDefaults(
 const fetched = useChefFetch()
 const { outcome } = fetched
 const collection = computed<ChefEntry[]>(() =>
-  [
-    ...(fetched.appChefs.value ?? []),
-    ...(fetched.coreChefs.value ?? []),
-  ] as ChefEntry[]
+  (fetched.coreChefs.value ?? []) as ChefEntry[]
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))
@@ -164,11 +162,11 @@ const {
   cell: makeChefCell,
 } = useChefInterface()
 const makeCard = (entry: ChefEntry) =>
-  makeChefCard(entry as Chef, (entry as any)?.user ?? null)
+  makeChefCard(entry as Chef, fetched.userById(entry.id))
 const makePill = (entry: ChefEntry) =>
-  makeChefPill(entry as Chef, (entry as any)?.user ?? null)
+  makeChefPill(entry as Chef, fetched.userById(entry.id))
 const makeCell = (entry: ChefEntry) =>
-  makeChefCell(entry as Chef, (entry as any)?.user ?? null)
+  makeChefCell(entry as Chef, fetched.userById(entry.id))
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<ChefEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,

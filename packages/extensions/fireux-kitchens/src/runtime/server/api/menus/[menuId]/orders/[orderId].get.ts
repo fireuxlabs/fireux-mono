@@ -8,9 +8,16 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
 import {
+  readMenuOrderCustomerAccess,
+  requireMenuOrderCustomerAccess,
+} from '../../../../menu/ordering/order-capability.ts'
+import {
   isKitchenOrderStatus,
   isKitchenOrderType,
 } from '../../../../../models/kitchen/order.model.ts'
+import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../utils/menu-order-capability.ts'
+
+// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: make status private to the customer UID or opaque same-device capability.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {
@@ -59,6 +66,7 @@ const collectionState = (value: unknown) => {
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['GET', 'OPTIONS'],
+    headers: ['authorization', MENU_ORDER_CAPABILITY_HEADER],
   })
 
   const menuId = text(getRouterParam(event, 'menuId'))
@@ -72,6 +80,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
+  const access = await readMenuOrderCustomerAccess(event)
   const snap = await getRuntimeFirestore()
     .collection(`apps/${context.appId}/kitchens/${context.kitchenId}/orders`)
     .doc(orderId)
@@ -90,6 +99,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Order not found.',
     })
   }
+  requireMenuOrderCustomerAccess(access, data)
   const driverResponses = data.driver_responses && typeof data.driver_responses === 'object'
     ? data.driver_responses as Record<string, { status?: unknown }>
     : {}

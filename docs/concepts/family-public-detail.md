@@ -2,6 +2,7 @@ Public detail family map
 Updated: 2026-07-19
 Ref: 565ebd668
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join canonical User identity by profile uid. -->
 
 Purpose:
 Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
@@ -28,6 +29,8 @@ Emerging shared order:
 Similar:
 
 - Resolves one public object or public projection.
+- Profile details keep the root profile domain-only and resolve canonical User
+  presentation separately by the same uid.
 - Uses an endpoint-first public projection for the initial SSR render. A
   client-only Firestore binding may enrich an already-rendered public object,
   but it must not be the authority for initial content or missing/error state.

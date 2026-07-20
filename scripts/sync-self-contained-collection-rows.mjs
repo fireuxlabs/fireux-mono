@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
-// usage_note: sync denormalized list/card snapshots so collection rows are self-contained.
+// last_used: 2026-07-20
+// usage_note: sync approved domain list/card snapshots; User identity is always joined from canonical users/{uid}.
+// Concurrent edit — 2026-07-20 14:14 CEST — User identity boundary: stop materializing User identity in root or app profile rows.
 
 import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
@@ -69,14 +70,6 @@ const compactObject = (value) =>
     })
   )
 
-const userSnapshot = (user, id) =>
-  compactObject({
-    id,
-    display_name: text(user.display_name),
-    avatar: text(user.avatar),
-    handle: text(user.handle),
-  })
-
 const kitchenPlaceCardSnapshot = (place) =>
   compactObject({
     name: text(place.name),
@@ -140,25 +133,7 @@ async function collectionById(name) {
   return map
 }
 
-async function listAppProfileDocs(collectionName) {
-  const appsSnap = await db.collection('apps').get()
-  const docs = []
-
-  for (const appDoc of appsSnap.docs) {
-    const profilesSnap = await appDoc.ref.collection(collectionName).get()
-    for (const profileDoc of profilesSnap.docs) {
-      docs.push({
-        ref: profileDoc.ref,
-        data: { id: profileDoc.id, ...profileDoc.data() },
-      })
-    }
-  }
-
-  return docs
-}
-
 const places = await collectionById('places')
-const users = await collectionById('users')
 const kitchens = await collectionById('kitchens')
 const patches = []
 
@@ -335,44 +310,10 @@ async function syncMenus() {
   }
 }
 
-async function syncProfileCollection(collectionName) {
-  const rootSnap = await db.collection(collectionName).get()
-  const docs = [
-    ...rootSnap.docs.map((doc) => ({
-      ref: doc.ref,
-      data: { id: doc.id, ...doc.data() },
-    })),
-    ...(await listAppProfileDocs(collectionName)),
-  ]
-
-  for (const { ref, data } of docs) {
-    const user = users.get(ref.id)
-    if (!user) continue
-
-    await queuePatch(
-      ref,
-      data,
-      {
-        user: userSnapshot(user, ref.id),
-      },
-      `${collectionName} public user summary snapshot`
-    )
-  }
-}
-
 await syncKitchens()
 await syncCompanies()
 await syncJobs()
 await syncMenus()
-for (const profileCollection of [
-  'chefs',
-  'customers',
-  'drivers',
-  'agents',
-  'professionals',
-]) {
-  await syncProfileCollection(profileCollection)
-}
 
 const reasonCounts = patches.reduce((counts, patch) => {
   counts[patch.reason] = (counts[patch.reason] || 0) + 1

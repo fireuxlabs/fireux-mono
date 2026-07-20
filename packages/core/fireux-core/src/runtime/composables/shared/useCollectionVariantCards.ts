@@ -11,17 +11,31 @@ type CardFactory<TRaw, TCard extends object> = (
   item: TRaw
 ) => TCard | null | undefined
 
-export type UseCollectionVariantCardsOptions<
+type CollectionVariantCardOptionsBase<
   TRaw,
   TCard extends object,
-  TCell extends object,
 > = {
   items: CollectionItems<TRaw>
   variant: CollectionVariant
   makeCard: CardFactory<TRaw, TCard>
   makePill: CardFactory<TRaw, TCard>
-  makeCell: CardFactory<TRaw, TCell>
 }
+
+export type UseCollectionVariantCardsOptions<
+  TRaw,
+  TCard extends object,
+  TCell extends object,
+> = CollectionVariantCardOptionsBase<TRaw, TCard> &
+  (
+    | {
+        makeCell: CardFactory<TRaw, TCell>
+        cellMode?: 'overlay'
+      }
+    | {
+        makeCell: CardFactory<TRaw, TCard>
+        cellMode: 'replace'
+      }
+  )
 
 /**
  * Resolve the repeated two-variant card handoff used by named collection
@@ -36,6 +50,10 @@ export function useCollectionVariantCards<
     (options.items.value ?? [])
       .map((item) => {
         if (options.variant.value === 'cell') {
+          if (options.cellMode === 'replace') {
+            return options.makeCell(item) ?? null
+          }
+
           const base = options.makeCard(item)
           const cell = options.makeCell(item)
           if (!base || !cell) return null

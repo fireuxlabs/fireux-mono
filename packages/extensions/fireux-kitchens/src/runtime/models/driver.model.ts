@@ -1,7 +1,9 @@
 // Profile family canon: docs/concepts/entities.md
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: expose a server-owned Driver kitchen authorization index beside operational links.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Driver storage domain-only and join canonical User by uid.
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type DriverKitchenLink = {
@@ -20,8 +22,9 @@ export type DriverCoverage = {
 /**
  * Family: Identity/profile capability.
  * Sibling: customer.model.ts
- * Delta: Driver marks a human who can accept delivery work; fleet, car, and
- * tender state belongs to kitchen fulfilment/order layers, not this profile.
+ * Delta: Driver marks a human who can accept delivery work. Public capability
+ * lives at the root; current-App contact, tender preferences, and kitchen
+ * relationships live only in the app-scoped operational record.
  */
 export const DriverStorage = {
   shape: 'both',
@@ -46,12 +49,6 @@ export const DriverModel = {
   subtitle: '' as string,
   tagline: '' as string,
   tags: [] as string[],
-
-  driver_name: '' as string,
-  driver_phone: '' as string,
-  accepts_weak_pings: true as boolean,
-  accepts_delivery_tenders: true as boolean,
-  kitchen_links: [] as DriverKitchenLink[],
   coverage: {
     radius_m: 1500,
   } as DriverCoverage,
@@ -72,25 +69,22 @@ export type Driver = {
 
 export const AppDriverModel = {
   id: '' as string,
-  driver_name: '' as string,
   driver_phone: '' as string,
   accepts_weak_pings: true as boolean,
   accepts_delivery_tenders: true as boolean,
+  // Server-owned authorization index derived from kitchen_links.
+  active_kitchen_ids: [] as string[],
   kitchen_links: [] as DriverKitchenLink[],
   ...AppProfileStamps,
 } as const
 
-export type AppDriver = AppProfileBase &
-  Partial<
-    Pick<
-      Driver,
-      | 'driver_name'
-      | 'driver_phone'
-      | 'accepts_weak_pings'
-      | 'accepts_delivery_tenders'
-      | 'kitchen_links'
-    >
-  >
+export type AppDriver = AppProfileBase & {
+  driver_phone: string
+  accepts_weak_pings: boolean
+  accepts_delivery_tenders: boolean
+  active_kitchen_ids: string[]
+  kitchen_links: DriverKitchenLink[]
+}
 
 export type DriverCreateInput = Omit<Driver, 'id' | 'created' | 'updated'>
 export type DriverUpdateInput = Partial<

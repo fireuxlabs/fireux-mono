@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -6,7 +7,7 @@
           Pricing plans
         </p>
         <p class="text-xs text-muted">
-          Demo plans rendered from `demo/product.demo.ts` using Nuxt UI PricingPlan(s).
+          Demo plans rendered from the Products fixture using Nuxt UI PricingPlan(s).
         </p>
       </div>
     </template>
@@ -19,7 +20,7 @@
 defineOptions({ name: 'DevProductPricingPlans' })
 
 import { computed } from 'vue'
-import { demoProductList } from '../../../../../../../../demo/product.demo'
+import { demoProductList } from '../../../demo/product'
 import type { FirebaseProduct, Price } from '../../../models/product.model'
 
 const props = defineProps<{

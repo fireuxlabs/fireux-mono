@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 14:17 CEST — Bearer security: reject revoked or disabled Firebase sessions on trusted server routes.
 import { createError, getHeader, type H3Event } from 'h3'
 import { getAuth } from 'firebase-admin/auth'
 import { getAdminApp } from '../getAdmin.ts'
@@ -32,7 +33,7 @@ export async function requireFirebaseBearerUser(
   event: H3Event,
   message = 'Sign in before continuing.'
 ) {
-  const user = await firebaseBearerUser(event)
+  const user = await firebaseBearerUser(event).catch(() => null)
   if (!user) {
     throw createError({
       statusCode: 401,
@@ -47,9 +48,8 @@ export async function firebaseBearerUser(event: H3Event) {
   const token = bearerTokenFromEvent(event)
   if (!token) return null
 
-  const decoded = await getAuth(getAdminApp()).verifyIdToken(
-    token
-  )
+  const decoded = await getAuth(getAdminApp()).verifyIdToken(token, true)
+  if (decoded.firebase?.sign_in_provider === 'anonymous') return null
 
   return {
     uid: requirePathSegment(decoded.uid, 'User id'),

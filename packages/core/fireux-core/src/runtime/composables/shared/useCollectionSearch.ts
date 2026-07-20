@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: remove obsolete card projection.
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 
 export type CollectionVariant = 'pill' | 'cell' | 'preview'
@@ -76,12 +77,6 @@ export const useCollectionSearch = <
 
   const visibleCount = computed(() => visibleItems.value.length)
 
-  const cards = computed<TCard[]>(() =>
-    visibleItems.value
-      .map((item) => options.makeCard(item))
-      .filter((card): card is TCard => Boolean(card))
-  )
-
   return {
     query,
     variant,
@@ -89,6 +84,5 @@ export const useCollectionSearch = <
     normalizedItems,
     visibleItems,
     visibleCount,
-    cards,
   }
 }

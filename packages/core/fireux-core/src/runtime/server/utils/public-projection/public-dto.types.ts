@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: transport domain fields beside canonical User identity.
 import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppDerived,
@@ -25,14 +26,33 @@ export type PublicUserDto = PublicSeoDto & {
   profiles: string[]
 }
 
+export type PublicProfileUserDto = {
+  id: string
+  display_name: string
+  avatar: string
+  handle: string
+}
+
+/**
+ * Public profile transport keeps canonical User identity beside, never inside,
+ * the domain profile record. The profile payload is field-allowlisted by kind.
+ */
+export type PublicProfileDto<
+  TProfile extends Record<string, unknown> = Record<string, unknown>,
+> = {
+  id: string
+  kind: 'agent' | 'chef' | 'driver' | 'professional'
+  profile: TProfile
+  user: PublicProfileUserDto
+}
+
 /**
  * Explicit allowlist for public App transport.
  *
  * App storage also contains build, moderation, and join-request fields. Those
  * fields must never reach a public response through object spreading.
- * `admin_ids` and the creator stamp are intentional public relationships used
- * by the public App profile. Project ownership and ambiguous legacy team data
- * remain private control-plane concerns.
+ * App membership and role identities remain private UserApp concerns. Project
+ * ownership and ambiguous legacy team data remain private control-plane data.
  */
 export type PublicAppDto = {
   id: string
@@ -49,7 +69,6 @@ export type PublicAppDto = {
   social_links: AppSocialLinks
   derived: AppDerived
   media: AppMedia
-  admin_ids: string[]
   created?: FireuxCreatedStamp
 }
 

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: consume the shared customer autofill seam after its move.
 import {
   computed,
   ref,
@@ -9,7 +10,7 @@ import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
 } from '../../../../customer/useCustomerDeliveryAddressAutocomplete'
-import { useCustomer } from '../shared/utils/useCustomer'
+import { useCustomerAutofill } from '../../../../customer/useCustomerAutofill'
 import type { MenuDeliveryZone } from '../../../../../../models/kitchen/menu/menu.model'
 import type {
   MenuOrderingDeliveryState,
@@ -58,7 +59,7 @@ export function useDeliveryFunnel(
   const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
-  const { customer: autofillCustomer } = useCustomer()
+  const { customer: autofillCustomer } = useCustomerAutofill()
   const zones = computed(() =>
     toValue(order).policy?.fulfilment?.delivery_zones || []
   )

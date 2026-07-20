@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: self-create only an unprivileged runtime App membership.
+
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -92,7 +94,6 @@ export function useUserCreate() {
 
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
-    let membershipRole: 'admin' | 'user' = 'user'
     let shouldCreateMembership = true
     let membershipExists = false
     let appExists = false
@@ -119,19 +120,6 @@ export function useUserCreate() {
         }
       }
 
-      const appAdminIds = Array.isArray((appSnap.data() as any)?.admin_ids)
-        ? ((appSnap.data() as any)?.admin_ids as Array<unknown>)
-            .map((id) => String(id ?? '').trim())
-            .filter(Boolean)
-        : []
-
-      // App authorization is app-scoped; the public User carries no admin mirror.
-      const isMirroredAdmin = appAdminIds.includes(uid)
-
-      if (appExists && isMirroredAdmin) {
-        membershipRole = 'admin'
-        shouldCreateMembership = true
-      }
     } catch (error) {
       if (import.meta.dev) {
         console.warn('[useUserCreate] failed to inspect existing membership role', {
@@ -143,7 +131,7 @@ export function useUserCreate() {
     }
 
     const membership = shouldCreateMembership
-      ? await createUserAppMembership(appId, uid, membershipRole)
+      ? await createUserAppMembership(appId, uid, 'user')
       : { created: false }
 
     const event = appExists && (membershipExists || membership.created)

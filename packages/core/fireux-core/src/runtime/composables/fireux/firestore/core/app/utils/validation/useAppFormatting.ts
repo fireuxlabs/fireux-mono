@@ -10,11 +10,6 @@ export function formatAppDescription(value: string): string {
   return value.trim()
 }
 
-/** Formats admin IDs array for storage */
-export function formatAdminIds(adminIds: string[]): string[] {
-  return adminIds.map((id) => id.trim()).filter((id) => id.length > 0)
-}
-
 /** Formats a single URL for storage */
 export function formatUrl(url: string): string {
   const trimmed = url.trim()
@@ -53,8 +48,6 @@ export function formatAppField(field: string, value: any): any {
   switch (field) {
     case 'description':
       return formatAppDescription(value)
-    case 'admin_ids':
-      return formatAdminIds(value)
     case 'social_links':
       return formatSocialLinks(value)
     default:

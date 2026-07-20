@@ -64,8 +64,8 @@
           <div class="space-y-4">
             <ChefCardsProfile
               v-for="entry in filteredCollection"
-              :key="`chef-profile-${String((entry as any)?.user?.id ?? (entry as any)?.id ?? '')}`"
-              :card="makeChefCard(entry as any, (entry as any)?.user ?? null)!"
+              :key="`chef-profile-${String((entry as any)?.id ?? '')}`"
+              :card="makeChefCard(entry as any, userById((entry as any)?.id))!"
               :profile="entry as any"
             />
           </div>
@@ -76,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Chef rows and join canonical User for previews.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
@@ -86,13 +87,10 @@ defineOptions({ name: 'DevChefSystem' })
 
 const chefCoreModelRuntime = ChefModelRuntime
 
-const { coreChefs, appChefs, pending } = useChefFetch()
+const { coreChefs, userById, pending } = useChefFetch()
 const { pill: makeChefCard } = useChefInterface()
 
-const collection = computed(() => [
-  ...(appChefs?.value ?? []),
-  ...(coreChefs.value ?? []),
-])
+const collection = computed(() => coreChefs.value ?? [])
 
 
 const {
@@ -108,18 +106,14 @@ const {
   collection,
   runtimeModel: chefCoreModelRuntime,
   driftMode: 'extras-only',
-  prepareForDrift: (entry) => {
-    const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
-    return rest
-  },
 })
 
 const filteredDriftPayload = buildDriftPayload({
   map: ({ doc, id, drift }) => ({
     id,
     displayName:
-      (doc as any)?.user?.display_name ??
-      (doc as any)?.user?.handle ??
+      userById(String(id || ''))?.display_name ??
+      userById(String(id || ''))?.handle ??
       id,
     chefHeadline: (doc as any)?.title ?? '',
     drift,
@@ -156,7 +150,7 @@ const chefPreviewCards = computed(() => {
 
   for (const item of filteredCollection.value ?? []) {
     const profile = item as any
-    const card = makeChefCard(profile, profile?.user ?? null)
+    const card = makeChefCard(profile, userById(profile.id))
     if (!card) continue
     out.push({ card, profile })
   }

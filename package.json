@@ -3,15 +3,6 @@
   "private": true,
   "type": "module",
   "version": "1.0.0",
-  "workspaces": [
-    "packages/core/*",
-    "packages/extensions/*",
-    "packages/ecosystem/*",
-    "packages/ecosystem/*/apps/*",
-    "projects/*/*",
-    "tools/*",
-    "test-*"
-  ],
   "scripts": {
     "dev:fireux": "node scripts/dev-app-with-smoke.mjs --app fireux",
     "dev:misebox": "node scripts/dev-app-with-smoke.mjs --app misebox",

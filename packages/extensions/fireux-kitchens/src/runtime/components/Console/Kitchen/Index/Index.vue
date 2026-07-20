@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen dual-source outcome contract. -->
 <template>
   <section class="console-surface console-surface--compact">
     <ConsoleKitchenIndexSelected
@@ -9,8 +10,8 @@
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
       :demo-collection="sections.demoTargets.collection"
-      :pending="sections.targets.pending"
-      :demo-pending="sections.demoTargets.pending"
+      :outcome="sections.targets.outcome"
+      :demo-outcome="sections.demoTargets.outcome"
       :selected-id="selection.kitchenId"
       :selected-source="selection.kitchenSource"
       @select="actions.selectTarget"

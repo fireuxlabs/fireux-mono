@@ -1,56 +1,28 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Supplier target wrapper. -->
 <template>
-  <section class="space-y-2">
-    <pre>ConsoleSupplierIndexTargets</pre>
+  <ConsoleTargetCollection
+    :outcome="props.outcome"
+    :count="cards.length"
+    entity="supplier targets"
+    error-description="Supplier targets could not be loaded. Please try again."
+    empty-title="No Supplier targets found"
+    empty-description="Suppliers you can access will appear here."
+  >
+    <template #header>
+      <h2>Choose Supplier</h2>
+      <p>Select the Supplier console target you want to work on.</p>
+    </template>
 
-    <UCard>
-      <template #header>
-        <div class="collection-manager__header">
-          <div class="collection-manager__title">
-            <h2>Choose Supplier</h2>
-            <p>Select the Supplier console target you want to work on.</p>
-          </div>
-
-          <UBadge v-if="isSettled" variant="soft">{{ cards.length }}</UBadge>
-        </div>
-      </template>
-
-      <MoleculesStateCard
-        v-if="resolvedOutcome === 'pending'"
-        entity="supplier targets"
-        state="loading"
-        surface="bare"
-      />
-
-      <MoleculesStateCard
-        v-else-if="resolvedOutcome === 'error'"
-        entity="supplier targets"
-        state="error"
-        surface="bare"
-        description="Supplier targets could not be loaded. Please try again."
-      />
-
-      <div v-else-if="cards.length" class="space-y-3">
-        <SupplierCardsCell
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="false"
-          action
-          :show-badges="false"
-          @action="selectSupplier(card.id)"
-        />
-      </div>
-
-      <MoleculesStateCard
-        v-else-if="isSettled"
-        entity="supplier targets"
-        state="empty"
-        surface="bare"
-        title="No Supplier targets found"
-        description="Suppliers you can access will appear here."
-      />
-    </UCard>
-  </section>
+    <SupplierCardsCell
+      v-for="card in cards"
+      :key="card.id"
+      v-bind="card"
+      :link="false"
+      action
+      :show-badges="false"
+      @action="selectSupplier(card.id)"
+    />
+  </ConsoleTargetCollection>
 </template>
 
 <script setup lang="ts">
@@ -65,12 +37,10 @@ const props = withDefaults(
   defineProps<{
     // Console target lists consume Supplier interface surfaces; storage completeness belongs in the Firestore stack.
     collection?: SupplierSurface[]
-    pending?: boolean
-    outcome?: ConsoleTargetOutcome
+    outcome: ConsoleTargetOutcome
   }>(),
   {
     collection: () => [],
-    pending: false,
   }
 )
 
@@ -92,15 +62,6 @@ const cards = computed(() =>
       Boolean(card)
     )
 )
-const resolvedOutcome = computed<ConsoleTargetOutcome>(() => {
-  if (props.outcome) return props.outcome
-  if (props.pending) return 'pending'
-  return cards.value.length ? 'ready' : 'empty'
-})
-const isSettled = computed(() =>
-  resolvedOutcome.value === 'ready' || resolvedOutcome.value === 'empty'
-)
-
 function selectSupplier(id: string) {
   const supplierId = String(id ?? '').trim()
   if (!consoleIdSet.value.has(supplierId)) return

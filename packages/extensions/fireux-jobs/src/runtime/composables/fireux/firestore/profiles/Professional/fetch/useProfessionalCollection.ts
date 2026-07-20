@@ -1,17 +1,13 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/fetch/useProfessionalCollection.ts
 
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
-import { professionalConfig } from '../config/professionalConfig'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep the legacy alias on the safe Professional fetch.
+import { useProfessionalFetch } from './useProfessionalFetch'
 
 export function useProfessionalCollection() {
-  const {
-    globalProfiles,
-    localProfiles,
-  } = useProfileCollection<Professional>(professionalConfig)
+  const { coreProfessionals, appProfessionals } = useProfessionalFetch()
 
   return {
-    coreProfessionals: globalProfiles,
-    appProfessionals: localProfiles,
+    coreProfessionals,
+    appProfessionals,
   }
 }

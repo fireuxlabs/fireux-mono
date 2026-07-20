@@ -111,7 +111,7 @@ import ProfessionalCardsCell from '../Cards/Cell.vue'
 import ProfessionalCardsPill from '../Cards/Pill.vue'
 import ProfessionalCollectionList from './List.vue'
 
-type ProfessionalEntry = Partial<Professional> & { id: string, user?: unknown }
+type ProfessionalEntry = Partial<Professional> & { id: string }
 
 const props = withDefaults(
   defineProps<{
@@ -139,10 +139,7 @@ const props = withDefaults(
 const fetched = useProfessionalFetch()
 const { outcome } = fetched
 const collection = computed<ProfessionalEntry[]>(() =>
-  [
-    ...(fetched.appProfessionals.value ?? []),
-    ...(fetched.coreProfessionals.value ?? []),
-  ] as ProfessionalEntry[]
+  (fetched.coreProfessionals.value ?? []) as ProfessionalEntry[]
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))
@@ -177,16 +174,16 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
   >({
     items: collection,
     makeCard: (entry) =>
-      makeCard(entry as Professional, (entry as any)?.user ?? null),
+      makeCard(entry as Professional, fetched.userById(entry.id)),
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard: (entry) => makeCard(entry as Professional, (entry as any)?.user ?? null),
-  makePill: (entry) => makePill(entry as Professional, (entry as any)?.user ?? null),
-  makeCell: (entry) => makeCell(entry as Professional, (entry as any)?.user ?? null),
+  makeCard: (entry) => makeCard(entry as Professional, fetched.userById(entry.id)),
+  makePill: (entry) => makePill(entry as Professional, fetched.userById(entry.id)),
+  makeCell: (entry) => makeCell(entry as Professional, fetched.userById(entry.id)),
 })
 
 const countLabel = computed(() =>
@@ -195,3 +192,4 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 </script>
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Professional rows with canonical User joins.

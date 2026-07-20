@@ -31,16 +31,6 @@
           </template>
 
           <div class="grid gap-3">
-            <UFormField label="Driver name">
-              <UInput
-                :model-value="draft(driver).driver_name"
-                placeholder="Driver name"
-                @update:model-value="draft(driver).driver_name = String($event ?? '')"
-                @blur="saveDriver(driver)"
-                @keydown.enter.prevent="saveDriver(driver)"
-              />
-            </UFormField>
-
             <UFormField label="Coverage radius">
               <div class="flex items-center gap-2">
                 <UInput
@@ -78,20 +68,21 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: display Driver identity from canonical User by uid.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { reactive, ref, watchEffect } from 'vue'
 import { useDriverFetch } from '../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverUpdate } from '../../composables/fireux/firestore/profiles/Driver/mutations/useDriverUpdate'
 import type { Driver } from '../../models/driver.model'
 
-type DriverEntry = Driver & { user?: any }
+type DriverEntry = Driver
 type DriverDraft = {
-  driver_name: string
   coverage_radius_m: string
 }
 
-const { drivers } = useDriverFetch()
-const { commitUpdate } = useDriverUpdate()
+const { drivers, userById } = useDriverFetch()
+const { updateCoreProfile } = useDriverUpdate()
 const toast = useToastify()
 const drafts = reactive<Record<string, DriverDraft>>({})
 const savingId = ref('')
@@ -112,8 +103,7 @@ function draft(driver: DriverEntry): DriverDraft {
 
 function makeDraft(driver: DriverEntry): DriverDraft {
   return {
-    driver_name: text(driver.driver_name || driver.user?.display_name),
-    coverage_radius_m: numberText((driver as any).coverage?.radius_m) || '1500',
+    coverage_radius_m: numberText(driver.coverage?.radius_m) || '1500',
   }
 }
 
@@ -123,23 +113,19 @@ async function saveDriver(driver: DriverEntry) {
 
   const next = draft(driver)
   const current = makeDraft(driver)
-  if (
-    next.driver_name.trim() === current.driver_name.trim() &&
-    next.coverage_radius_m.trim() === current.coverage_radius_m.trim()
-  ) {
+  if (next.coverage_radius_m.trim() === current.coverage_radius_m.trim()) {
     return
   }
 
   savingId.value = id
   const patch = {
-    driver_name: next.driver_name.trim(),
     coverage: {
       radius_m: nonNegativeNumber(next.coverage_radius_m),
     },
   }
 
   try {
-    await commitUpdate(patch, { id, scope: 'core' })
+    await updateCoreProfile(patch, { id })
     toast.add({
       title: 'Driver saved',
       description: `${displayName(driver)} has been updated.`,
@@ -159,20 +145,19 @@ async function saveDriver(driver: DriverEntry) {
 
 function displayName(driver: DriverEntry): string {
   return (
-    text(draft(driver).driver_name) ||
-    text(driver.user?.display_name) ||
-    text(driver.driver_name) ||
+    text(userById(driver.id)?.display_name) ||
+    text(driver.title) ||
     driverId(driver)
   )
 }
 
 function driverHandle(driver: DriverEntry): string {
-  const handle = text(driver.user?.handle)
+  const handle = text(userById(driver.id)?.handle)
   return handle ? `@${handle}` : ''
 }
 
 function driverId(driver: DriverEntry): string {
-  return text(driver.id || driver.user?.id)
+  return text(driver.id)
 }
 
 function coverageZones(driver: DriverEntry) {

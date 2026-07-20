@@ -1,6 +1,9 @@
-import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model'
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry resolved Kitchen fulfilment into public payload construction.
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
-import type { KitchenImageShade } from '../../../models/kitchen.model'
+import type {
+  KitchenFulfilmentConfig,
+  KitchenImageShade,
+} from '../../../models/kitchen.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 
@@ -23,7 +26,7 @@ export type MenuPayloadScope = {
   choices?: unknown[]
   sections?: unknown[]
   sourceMenu?: Record<string, unknown>
-  fulfilment?: MenuOrderFulfilmentPolicy
+  fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
 

@@ -1,8 +1,10 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Professional storage domain-only.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
     CertificationItem,
@@ -84,14 +86,6 @@ export const ProfessionalModel = {
 
 export type Professional = {
   [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
-}
-
-export type ProfessionalUserSummary = {
-  id: string
-  display_name: string
-  avatar?: string
-  handle?: string
-  email?: string
 }
 
 export const AppProfessionalModel = {

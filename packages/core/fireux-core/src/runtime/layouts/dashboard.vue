@@ -94,12 +94,21 @@ useAuthRedirect()
 const routeProfileId = computed(
   () => (route.meta as { nav?: { profileId?: string } }).nav?.profileId ?? null
 )
+const routeNavKey = computed(
+  () => (route.meta as { nav?: { key?: string } }).nav?.key ?? ''
+)
 
 watch(
-  routeProfileId,
-  (value: string | null) => {
+  [routeProfileId, routeNavKey],
+  ([value, key]: [string | null, string]) => {
     if (value && activeProfileState.value !== value) {
       activeProfileState.value = value
+    } else if (
+      !value &&
+      (key === 'dashboard-home' || key === 'dashboard-user-profile') &&
+      activeProfileState.value !== null
+    ) {
+      activeProfileState.value = null
     }
   },
   { immediate: true }

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: explicit Blank collection outcome.
 import {
   arrayUnion,
   collection,
@@ -11,6 +12,7 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -100,20 +102,31 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       }
     })
   })
-  const pending = computed(
-    () => {
-      if (source.value !== 'live') return false
-
-      return (
-        appBlanks.value === undefined ||
-        rootBlanks.pending.value
-      )
-    }
+  const active = computed(() => source.value === 'live')
+  const count = computed(() => blanks.value.length)
+  const pending = computed(() =>
+    active.value
+      ? appBlanks.pending.value || rootBlanks.pending.value
+      : false
   )
+  const error = computed<unknown | undefined>(() =>
+    active.value
+      ? appBlanks.error.value ?? rootBlanks.error.value
+      : undefined
+  )
+  const { outcome } = useFirestoreCollectionState({
+    active,
+    count,
+    error,
+    pending,
+  })
 
   return {
     blanks,
+    count,
     pending,
+    error,
+    outcome,
     rootCollectionPath,
     appCollectionPath,
   }

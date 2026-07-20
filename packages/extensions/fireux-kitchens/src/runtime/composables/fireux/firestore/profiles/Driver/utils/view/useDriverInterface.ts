@@ -1,10 +1,10 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Driver storage.
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   resolveProfileBadges,
   resolveProfileDisplayName,
-  resolveProfileImage,
   resolveProfileSummary,
-  resolveSecondaryAvatarUrl,
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
@@ -12,7 +12,7 @@ import type { Driver } from 'fireux-kitchens/runtime/models/driver.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>
-type DriverTarget = Driver & { user?: UserLike | null }
+type DriverTarget = Driver
 
 export namespace DriverCard {
   export type Card = {
@@ -52,26 +52,13 @@ export function useDriverInterface() {
       safeString(u?.id).trim() ||
       safeString((p as Driver & { id?: string }).id).trim()
     const handle = safeString(u?.handle).trim()
-    const profileImage = resolveProfileImage([
-      (p as Driver & { image?: string }).image,
-      (p as any).avatar,
-    ])
     const userAvatar = resolveUserAvatar(u)
-    const avatarUrl = profileImage || userAvatar
-    const relationBadge = driverKitchenRelationLabel(
-      (p as Driver).kitchen_links
-    )
+    const avatarUrl = userAvatar
     const badges = resolveProfileBadges([
-      [
-        ...((p as Driver & { tags?: string[] }).tags || []),
-        relationBadge,
-      ].filter(Boolean),
+      (p as Driver & { tags?: string[] }).tags || [],
     ])
-    const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)
     const displayName = resolveProfileDisplayName([
-      (p as Driver).driver_name,
       u?.display_name,
-      safeString((p as any).display_name).trim(),
       safeString((p as Driver & { title?: string }).title).trim(),
       handle ? `@${handle}` : '',
       id,
@@ -82,7 +69,6 @@ export function useDriverInterface() {
       to: '',
       imageUrl: avatarUrl,
       avatarUrl,
-      secondaryAvatarUrl,
       displayName,
       title: handle ? `@${handle}` : safeString((p as Driver).title).trim(),
       subtitle: safeString((p as Driver).subtitle),
@@ -95,21 +81,30 @@ export function useDriverInterface() {
     }
   }
 
-  function buildInterface(target?: DriverTarget | null): DriverCard.Card | null {
+  function buildInterface(
+    target?: DriverTarget | null,
+    userOverride?: UserLike | null
+  ): DriverCard.Card | null {
     if (!target) return null
 
-    const mapped = map(target, target.user ?? null)
+    const mapped = map(target, userOverride)
     return mapped.id && mapped.displayName ? mapped : null
   }
 
   const toInterface = buildInterface
 
-  function pill(target?: DriverTarget | null): DriverPill | null {
-    return buildInterface(target)
+  function pill(
+    target?: DriverTarget | null,
+    userOverride?: UserLike | null
+  ): DriverPill | null {
+    return buildInterface(target, userOverride)
   }
 
-  function cell(target?: DriverTarget | null): DriverCell | null {
-    return buildInterface(target)
+  function cell(
+    target?: DriverTarget | null,
+    userOverride?: UserLike | null
+  ): DriverCell | null {
+    return buildInterface(target, userOverride)
   }
 
   return {
@@ -117,14 +112,4 @@ export function useDriverInterface() {
     pill,
     cell,
   }
-}
-
-function driverKitchenRelationLabel(
-  links: Driver['kitchen_links'] | undefined
-) {
-  const active = (links || []).find((link) => link.active)
-  if (!active) return ''
-  if (active.relation === 'exclusive') return 'house driver'
-  if (active.relation === 'preferred') return 'preferred driver'
-  return 'available driver'
 }

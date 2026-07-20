@@ -7,7 +7,7 @@
             Binding check (app ↔ users)
           </p>
           <p class="text-xs text-muted">
-            Compares app users against ecosystem identity mirrors and admin lists.
+            Compares App memberships against ecosystem identity mirrors.
             Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
           </p>
         </div>
@@ -27,7 +27,7 @@
       <div class="text-xs text-muted">
         <span class="font-mono">scope</span>: {{ scopeLabel }} ·
         <span class="font-mono">app users</span>: {{ bindingAppUsersCount }} ·
-        <span class="font-mono">admin_ids</span>: {{ bindingAdminIdsCount }}
+        <span class="font-mono">admins</span>: {{ bindingAdminIdsCount }}
       </div>
 
       <div v-if="isPending" class="text-xs text-muted">
@@ -54,19 +54,6 @@
             </div>
           </div>
 
-          <div v-if="binding.adminMissingAppUser.length">
-            <div class="text-sm font-medium">Admin ids missing app user doc</div>
-            <div class="text-xs text-muted">
-              {{ binding.adminMissingAppUser.join(', ') }}
-            </div>
-          </div>
-
-          <div v-if="binding.adminRoleMismatch.length">
-            <div class="text-sm font-medium">Admin ids not marked admin in app users</div>
-            <div class="text-xs text-muted">
-              {{ binding.adminRoleMismatch.join(', ') }}
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -118,8 +105,6 @@ const bindingPending = ref(false)
 const binding = ref({
   missingCore: [] as string[],
   missingAppIds: [] as string[],
-  adminMissingAppUser: [] as string[],
-  adminRoleMismatch: [] as string[],
 })
 
 const bindingAppUsersCount = ref(0)
@@ -153,9 +138,6 @@ const loadBinding = async () => {
 
   const missingCore: string[] = []
   const missingAppIds: string[] = []
-  const adminMissingAppUser: string[] = []
-  const adminRoleMismatch: string[] = []
-
   bindingAppUsersCount.value = 0
   bindingAdminIdsCount.value = 0
 
@@ -164,9 +146,6 @@ const loadBinding = async () => {
 
   for (const app of targets) {
     const appId = app.id
-    const adminIds = Array.isArray(app.admin_ids) ? app.admin_ids : []
-    bindingAdminIdsCount.value += adminIds.length
-
     const snap = await getDocs(
       collection(appDb, AppStorage.collection, appId, UserAppStorage.collection)
     )
@@ -177,6 +156,7 @@ const loadBinding = async () => {
 
     appUsersByApp.set(appId, users)
     bindingAppUsersCount.value += users.length
+    bindingAdminIdsCount.value += users.filter((user) => user.role === 'admin').length
     users.forEach((u) => userIds.add(u.id))
   }
 
@@ -195,8 +175,6 @@ const loadBinding = async () => {
   for (const app of targets) {
     const appId = app.id
     const appUsers = appUsersByApp.get(appId) ?? []
-    const adminIds = Array.isArray(app.admin_ids) ? app.admin_ids : []
-    const appUserById = new Map(appUsers.map((u) => [u.id, u]))
 
     for (const appUser of appUsers) {
       const coreUser = coreUsers.get(appUser.id) ?? null
@@ -210,24 +188,11 @@ const loadBinding = async () => {
         missingAppIds.push(prefixId(appId, appUser.id))
       }
     }
-
-    for (const id of adminIds) {
-      const appUser = appUserById.get(id)
-      if (!appUser) {
-        adminMissingAppUser.push(prefixId(appId, id))
-        continue
-      }
-      if (appUser.role !== 'admin') {
-        adminRoleMismatch.push(prefixId(appId, id))
-      }
-    }
   }
 
   binding.value = {
     missingCore,
     missingAppIds,
-    adminMissingAppUser,
-    adminRoleMismatch,
   }
 
   bindingPending.value = false
@@ -242,9 +207,7 @@ watch(
 const bindingTotal = computed(
   () =>
     binding.value.missingCore.length +
-    binding.value.missingAppIds.length +
-    binding.value.adminMissingAppUser.length +
-    binding.value.adminRoleMismatch.length
+    binding.value.missingAppIds.length
 )
 
 const isPending = computed(() => bindingPending.value)

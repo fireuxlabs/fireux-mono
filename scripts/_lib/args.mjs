@@ -1,6 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-18
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-20
+// usage_note: shared CLI parsing, including the directory reconciliation audit.
+// Concurrent edit — 2026-07-19 16:53 CEST — Directory Authority Cutover: record reconciliation CLI usage.
+// Concurrent edit — 2026-07-20 11:26 CEST — Directory Live Provisioning Pass: record reconciliation and remediation CLI use.
 // FILE: scripts/_lib/args.mjs
 
 /**

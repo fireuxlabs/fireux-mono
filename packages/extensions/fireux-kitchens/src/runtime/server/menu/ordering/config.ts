@@ -1,8 +1,10 @@
+// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: resolve Delivery zones and payments strictly from Kitchen capability.
 import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
 } from '../../../models/kitchen/menu/menu.model.ts'
+import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   readMenuOrderTypeConfig,
@@ -12,6 +14,7 @@ import {
   resolveMenuServiceHours,
   resolveMenuSurfaceServiceHours,
 } from '../../../utils/menu-service-hours.ts'
+import { kitchenPaymentMethodsForOrderType } from '../../../utils/kitchen-spine.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -39,19 +42,17 @@ const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
 const mergeFulfilmentPolicy = (
   orderType: MenuOrderTypeConfig['type'],
   menuPolicy: MenuOrderFulfilmentPolicy | undefined,
-  kitchenPolicy: MenuOrderFulfilmentPolicy | undefined
+  kitchenPolicy: KitchenFulfilmentConfig | undefined
 ): MenuOrderFulfilmentPolicy | undefined => {
   if (!menuPolicy && !kitchenPolicy) return undefined
 
   const deliveryZones = menuOrderTypeStrategy(orderType).resolvesDelivery
-    ? menuPolicy?.delivery_zones?.length
-      ? menuPolicy.delivery_zones
-      : kitchenPolicy?.delivery_zones || []
+    ? kitchenPolicy?.delivery_zones || []
     : []
-  const paymentMethods = menuPolicy?.payment_methods?.length
-    ? menuPolicy.payment_methods
-    : kitchenPolicy?.payment_methods || []
-  const deposit = menuPolicy?.deposit || kitchenPolicy?.deposit
+  // 2026-07-19 16:35 CEST — Payment capability and order-type applicability
+  // are Kitchen truth. A Menu surface consumes the eligible projection only.
+  const paymentMethods = kitchenPaymentMethodsForOrderType(kitchenPolicy, orderType)
+  const deposit = menuPolicy?.deposit
   const handoffInstructions = menuPolicy?.handoff_instructions
   const next: MenuOrderFulfilmentPolicy = {
     ...(deliveryZones.length ? { delivery_zones: deliveryZones } : {}),
@@ -65,7 +66,7 @@ const mergeFulfilmentPolicy = (
 
 const withKitchenFulfilment = (
   type: MenuOrderTypeConfig,
-  kitchenFulfilment?: MenuOrderFulfilmentPolicy,
+  kitchenFulfilment?: KitchenFulfilmentConfig,
   menuOperationHours?: WeekdayTimeWindowsConfig,
   kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderTypeConfig => {
@@ -90,7 +91,7 @@ const withKitchenFulfilment = (
 // Menu ordering spine: docs/concepts/family-menu.md. Menus are readable by default; order_types are the order creation policy.
 export function readMenuOrderingConfig(
   data: Record<string, unknown>,
-  kitchenFulfilment?: MenuOrderFulfilmentPolicy,
+  kitchenFulfilment?: KitchenFulfilmentConfig,
   kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderingConfig {
   const ordering = record(data.ordering)

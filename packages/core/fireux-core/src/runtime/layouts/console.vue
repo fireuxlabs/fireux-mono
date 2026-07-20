@@ -124,6 +124,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: share the notification slideover owner across console and dashboard.
 import { useRoute } from '#imports'
 import { computed, ref, watch } from 'vue'
 import {
@@ -134,13 +135,14 @@ import {
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
 import { useConsole } from '../composables/fireux/app/console/useConsole'
 import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
+import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
 defineOptions({ name: 'console' })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const open = ref(false)
-const isNotificationsSlideoverOpen = ref(false)
+const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const consoleNav = useConsoleNav()
 const consoleRoot = useConsole()
 const topNav = computed(() =>

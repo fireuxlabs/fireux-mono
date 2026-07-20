@@ -1,15 +1,20 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen dual-source target presentation. -->
 <template>
   <section class="space-y-4">
-    <p v-if="showLoading" class="text-sm text-dimmed">
-      Loading kitchens...
-    </p>
+    <MoleculesStateCard
+      v-if="!isMounted"
+      entity="kitchen targets"
+      state="loading"
+      surface="bare"
+    />
 
-    <template v-else-if="targetCount">
+    <template v-else>
       <ConsoleKitchenIndexTargetSection
         title="Your kitchens"
         description="Live kitchens linked to your current user profile."
         source="live"
         :collection="collection"
+        :outcome="outcome"
         :selected-id="selectedId"
         :selected-source="selectedSource"
         @select="selectKitchen"
@@ -20,20 +25,18 @@
         description="Explore with our read-only kitchens."
         source="demo"
         :collection="demoCollection"
+        :outcome="demoOutcome"
         :selected-id="selectedId"
         :selected-source="selectedSource"
         @select="selectKitchen"
       />
     </template>
-
-    <p v-else-if="isMounted" class="text-sm text-dimmed">
-      No Kitchen targets found.
-    </p>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { KitchenFetchSource } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -41,16 +44,14 @@ const props = withDefaults(
   defineProps<{
     collection?: KitchenSurface[]
     demoCollection?: KitchenSurface[]
-    pending?: boolean
-    demoPending?: boolean
+    outcome: ConsoleTargetOutcome
+    demoOutcome: ConsoleTargetOutcome
     selectedId?: string
     selectedSource?: KitchenFetchSource
   }>(),
   {
     collection: () => [],
     demoCollection: () => [],
-    pending: false,
-    demoPending: false,
     selectedId: '',
     selectedSource: 'live',
   }
@@ -73,16 +74,6 @@ const demoIds = computed(() =>
     .filter(Boolean)
 )
 const demoIdSet = computed(() => new Set(demoIds.value))
-const targetCount = computed(() =>
-  props.collection.length + props.demoCollection.length
-)
-const sourcePending = computed(() =>
-  props.pending || props.demoPending
-)
-const showLoading = computed(() =>
-  !isMounted.value || (sourcePending.value && targetCount.value === 0)
-)
-
 onMounted(() => {
   isMounted.value = true
 })

@@ -13,6 +13,9 @@ import {
   type KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
 import type { CreatedMenuOrder } from '../../../../models/kitchen/menu/menu-ordering.model'
+import { readMenuOrderCapabilityToken } from '../../../../utils/menu-order-capability'
+
+// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: retain the opaque same-device token in canonical local tracking only.
 
 export type MenuOrderTrackingStatus = {
   id: string
@@ -229,8 +232,10 @@ function safeCreatedOrder(
   }
 
   const collection = safeCollection(order.collection)
+  const capabilityToken = readMenuOrderCapabilityToken(order.capability_token)
   return {
     id,
+    ...(capabilityToken ? { capability_token: capabilityToken } : {}),
     order_number: orderNumber,
     status,
     order_type: orderType,

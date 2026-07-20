@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: add surface-owned Kitchen alert policy without provider credentials.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -49,6 +50,7 @@ export type MenuOrderDepositPolicy = {
 
 export type MenuOrderFulfilmentPolicy = {
   delivery_zones?: MenuDeliveryZone[]
+  /** Server-resolved Kitchen projection; never authored by a Menu surface. */
   payment_methods?: MenuPaymentMethod[]
   deposit?: MenuOrderDepositPolicy
   handoff_instructions?: string
@@ -66,6 +68,16 @@ export type MenuOrderAvailabilityPolicy = {
   message?: string
 }
 
+export type MenuOrderWhatsAppNotificationPolicy = {
+  enabled?: boolean
+  /** E.164 recipient for the Kitchen alert. Provider credentials remain server environment. */
+  recipient_phone?: string
+}
+
+export type MenuOrderNotificationPolicy = {
+  whatsapp?: MenuOrderWhatsAppNotificationPolicy
+}
+
 export type MenuOrderTypeConfig = {
   type: KitchenOrderType
   notice_hours?: number
@@ -77,6 +89,7 @@ export type MenuOrderTypeConfig = {
   fulfilment?: MenuOrderFulfilmentPolicy
   customer?: MenuOrderCustomerPolicy
   availability?: MenuOrderAvailabilityPolicy
+  notifications?: MenuOrderNotificationPolicy
 }
 
 export type MenuServiceHoursConfig = {

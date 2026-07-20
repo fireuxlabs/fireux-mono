@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: make the developer PIN cosmetic and bootstrap admin only after server UID authorization.
+
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
@@ -5,7 +7,7 @@ import { useToastify } from '../ui/useToastify'
 import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useAppCreate } from '../../firestore/core/app/mutations/useAppCreate'
-import { createUserAppMembership } from '../../firestore/core/user/utils/createHelpers'
+import { bootstrapUserAppAdmin } from '../../firestore/core/user/utils/createHelpers'
 import type { EnvCheckResponse } from './env-check.types'
 import { useAppEnvCheck } from './useAppEnvCheck'
 
@@ -110,13 +112,14 @@ export function useAppOnboarding(): AppOnboardingState {
       const created = await createApp()
       console.log('[proceed] createApp result', created)
 
-      // Self-heal existing apps stuck in "not initialized" when admin mirrors are empty.
-      // After PIN, the current signed-in user becomes an admin for onboarding.
+      // The PIN unlocks the UI only. The server verifies the authenticated uid
+      // against the configured developer and refuses bootstrap once another
+      // canonical App admin exists.
       const currentUid = String(uid.value ?? coreUser.value?.id ?? '').trim()
       if (!currentUid || !appId) {
         throw new Error('Authenticated user is not ready yet. Please try again.')
       }
-      await createUserAppMembership(appId, currentUid, 'admin')
+      await bootstrapUserAppAdmin(appId, currentUid)
 
       const syncResult = await syncAppMedia(created.id)
       await refreshEnv()

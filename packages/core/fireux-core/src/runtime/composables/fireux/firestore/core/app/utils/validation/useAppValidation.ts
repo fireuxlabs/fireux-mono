@@ -8,20 +8,6 @@ export function validateAppDescription(value: string): string | null {
   return null
 }
 
-/** Validates admin IDs array */
-export function validateAdminIds(adminIds: string[]): string | null {
-  if (!Array.isArray(adminIds)) return 'Admin IDs must be an array'
-  if (adminIds.length === 0) return 'At least one admin is required'
-
-  for (const id of adminIds) {
-    if (typeof id !== 'string' || !id.trim())
-      return 'All admin IDs must be non-empty strings'
-    if (id.length !== 28)
-      return 'Invalid admin ID format (must be 28 characters)'
-  }
-  return null
-}
-
 /** Validates a single URL */
 export function validateUrl(url: string, platform: string): string | null {
   if (!url || !url.trim()) return null
@@ -70,8 +56,6 @@ export function validateAppField(field: string, value: any): string | null {
   switch (field) {
     case 'description':
       return validateAppDescription(value)
-    case 'admin_ids':
-      return validateAdminIds(value)
     case 'social_links':
       return validateSocialLinks(value)
     default:

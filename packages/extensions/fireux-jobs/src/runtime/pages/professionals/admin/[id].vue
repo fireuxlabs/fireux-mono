@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: pass canonical User separately from Professional storage.
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
@@ -106,7 +107,7 @@ const { computed: professionalComputed } = useProfessionalComputed(
   pending
 )
 
-const { profile: makeCard } = useProfessionalInterface(profile)
+const { profile: makeCard } = useProfessionalInterface(profile, userRefs.user)
 
 const isProfileLoading = computed(
   () => pending.value || coreProfile.value === undefined
@@ -115,13 +116,7 @@ const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
 const professionalCard = computed(() => {
   if (!resolvedCoreProfile.value) return null
-  const resolved = userRefs.user.value
-    ? ({
-        ...resolvedCoreProfile.value,
-        user: userRefs.user.value,
-      } as Professional & { user: typeof userRefs.user.value })
-    : resolvedCoreProfile.value
-  return makeCard(resolved)
+  return makeCard(resolvedCoreProfile.value, userRefs.user.value)
 })
 const { model: professionalProfileView } = useProfessionalProfileView(
   resolvedCoreProfile,

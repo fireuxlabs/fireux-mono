@@ -1,29 +1,93 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
+// Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: preserve explicit current legal acceptance across redirect auth.
 import { useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
-    createUserWithEmailAndPassword,
-    getAuth,
-    getRedirectResult,
-    GoogleAuthProvider,
-    onAuthStateChanged,
-    signInAnonymously,
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    signInWithRedirect,
-    signOut,
-    type Auth,
-    type User,
+  createUserWithEmailAndPassword,
+  getAuth,
+  getRedirectResult,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  signOut,
+  type Auth,
+  type User,
 } from 'firebase/auth'
 import { computed, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/core/supporting/user-account-provisioning'
 import { useUserCreate } from '../firestore/core/user/mutations/useUserCreate'
+import { provisionSignedInUserAccount } from './userAccountProvisioning'
 
 let googleSignInInFlight: Promise<User | null> | null = null
 let googleRedirectResultInFlight: Promise<User | null> | null = null
 let authStateUnsubscribe: (() => void) | null = null
 let bindRetryTimer: ReturnType<typeof setTimeout> | null = null
+let pendingAccountConsentVersion: string | null = null
+
+const ACCOUNT_CONSENT_STORAGE_KEY = 'fireux_pending_account_consent'
+const ACCOUNT_CONSENT_MAX_AGE_MS = 60 * 60 * 1000
+
+function rememberPendingAccountConsent(termsVersion: string) {
+  if (termsVersion !== FIREUX_ACCOUNT_TERMS_VERSION) {
+    throw new Error(
+      'Accept the current Terms of Service and acknowledge the Privacy Policy.'
+    )
+  }
+  pendingAccountConsentVersion = termsVersion
+  if (!import.meta.client) return
+  try {
+    sessionStorage.setItem(
+      ACCOUNT_CONSENT_STORAGE_KEY,
+      JSON.stringify({ termsVersion, createdAt: Date.now() })
+    )
+  } catch {
+    // Popup auth can still use the in-memory value when storage is unavailable.
+  }
+}
+
+function readPendingAccountConsent() {
+  if (pendingAccountConsentVersion === FIREUX_ACCOUNT_TERMS_VERSION) {
+    return pendingAccountConsentVersion
+  }
+  if (!import.meta.client) return null
+  try {
+    const raw = sessionStorage.getItem(ACCOUNT_CONSENT_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    const createdAt = Number(parsed.createdAt)
+    if (
+      parsed.termsVersion !== FIREUX_ACCOUNT_TERMS_VERSION ||
+      !Number.isFinite(createdAt) ||
+      createdAt > Date.now() ||
+      Date.now() - createdAt > ACCOUNT_CONSENT_MAX_AGE_MS
+    ) {
+      try {
+        sessionStorage.removeItem(ACCOUNT_CONSENT_STORAGE_KEY)
+      } catch {}
+      return null
+    }
+    pendingAccountConsentVersion = FIREUX_ACCOUNT_TERMS_VERSION
+    return pendingAccountConsentVersion
+  } catch {
+    try {
+      sessionStorage.removeItem(ACCOUNT_CONSENT_STORAGE_KEY)
+    } catch {}
+    return null
+  }
+}
+
+function clearPendingAccountConsent() {
+  pendingAccountConsentVersion = null
+  if (import.meta.client) {
+    try {
+      sessionStorage.removeItem(ACCOUNT_CONSENT_STORAGE_KEY)
+    } catch {}
+  }
+}
 
 export type AuthUser = {
   uid?: string | null
@@ -63,6 +127,10 @@ export function useAuth() {
   const isReady = useState('fireux_auth_ready', () => false)
   const hasAuthState = useState('fireux_auth_has_auth_state', () => false)
   const lastBindError = useState<unknown>('fireux_auth_bind_error', () => null)
+  const lastAccountProvisionError = useState<unknown>(
+    'fireux_auth_account_provision_error',
+    () => null
+  )
 
   const armAuthStateResolution = () => {
     if (!import.meta.client) return
@@ -89,6 +157,14 @@ export function useAuth() {
         authStateUnsubscribe = null
       }
     )
+  }
+
+  const retryAccountProvisioning = async () => {
+    const nextUid = currentUser.value?.uid ?? null
+    if (!nextUid) return false
+    lastCreatedUid.value = null
+    await createOnce(nextUid)
+    return lastCreatedUid.value === nextUid
   }
 
   const scheduleBindRetry = () => {
@@ -172,6 +248,7 @@ export function useAuth() {
   const createOnce = async (nextUid: string | null) => {
     if (!import.meta.client) return
     if (!nextUid) return
+    if (currentUser.value?.isAnonymous) return
     if (!isReady.value) return
     if (creating.value && createInFlight) {
       await createInFlight
@@ -181,9 +258,20 @@ export function useAuth() {
     if (!userCreate) return
 
     creating.value = true
+    lastAccountProvisionError.value = null
     createInFlight = (async () => {
-      await userCreate.createUser()
-      lastCreatedUid.value = nextUid
+      try {
+        const signedInUser = currentUser.value
+        if (!signedInUser || signedInUser.uid !== nextUid) return
+        const termsVersion = readPendingAccountConsent() ?? undefined
+        await provisionSignedInUserAccount(signedInUser, termsVersion)
+        if (termsVersion) clearPendingAccountConsent()
+        await userCreate.createUser()
+        lastCreatedUid.value = nextUid
+      } catch (error) {
+        lastAccountProvisionError.value = error
+        throw error
+      }
     })()
 
     try {
@@ -194,17 +282,24 @@ export function useAuth() {
     }
   }
 
-  const ensureSignedInUser = async (user: User | null) => {
+  const ensureSignedInUser = async (
+    user: User | null,
+    termsVersion?: string
+  ) => {
     if (!user?.uid) return user
+    if (termsVersion) rememberPendingAccountConsent(termsVersion)
     currentUser.value = user
+    if (user.isAnonymous) return user
     await createOnce(user.uid)
     return user
   }
 
   if (import.meta.client) {
-    watch(uid, (nextUid: string | null) => void createOnce(nextUid), {
-      immediate: true,
-    })
+    watch(
+      uid,
+      (nextUid: string | null) => void createOnce(nextUid).catch(() => {}),
+      { immediate: true }
+    )
   }
 
   async function resolveGoogleRedirectResult() {
@@ -219,13 +314,23 @@ export function useAuth() {
       return googleRedirectResultInFlight
     }
 
-    googleRedirectResultInFlight = getRedirectResult(authInstance)
-      .then((result) => {
-        return ensureSignedInUser(result?.user ?? authInstance.currentUser ?? null)
-      })
-      .catch(() => {
+    googleRedirectResultInFlight = (async () => {
+      let result
+      try {
+        result = await getRedirectResult(authInstance)
+      } catch {
+        clearPendingAccountConsent()
         return authInstance.currentUser ?? null
-      })
+      }
+
+      if (!result?.user) {
+        return ensureSignedInUser(authInstance.currentUser ?? null)
+      }
+      return ensureSignedInUser(
+        result.user,
+        readPendingAccountConsent() ?? undefined
+      )
+    })()
 
     try {
       return await googleRedirectResultInFlight
@@ -237,13 +342,15 @@ export function useAuth() {
   // ─────────────────────────────────────────────
   // Auth actions (no-op safely until ready)
   // ─────────────────────────────────────────────
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (termsVersion: string) => {
+    rememberPendingAccountConsent(termsVersion)
     if (googleSignInInFlight) {
       return googleSignInInFlight
     }
 
     const run = async () => {
       if (!auth.value) {
+        clearPendingAccountConsent()
         return null
       }
 
@@ -254,13 +361,14 @@ export function useAuth() {
         try {
           await signInWithRedirect(auth.value, provider)
         } catch {
+          clearPendingAccountConsent()
         }
         return null
       }
 
+      let result
       try {
-        const result = await signInWithPopup(auth.value, provider)
-        return await ensureSignedInUser(result?.user ?? null)
+        result = await signInWithPopup(auth.value, provider)
       } catch (e) {
         const code =
           typeof e === 'object' && e !== null && 'code' in e
@@ -273,10 +381,16 @@ export function useAuth() {
         ) {
           try {
             await signInWithRedirect(auth.value, provider)
-          } catch {}
+          } catch {
+            clearPendingAccountConsent()
+          }
+          return null
         }
+        clearPendingAccountConsent()
         return null
       }
+
+      return await ensureSignedInUser(result.user, termsVersion)
     }
 
     googleSignInInFlight = run()
@@ -289,24 +403,30 @@ export function useAuth() {
 
   const signInWithEmailPassword = async (email: string, password: string) => {
     if (!auth.value) return null
+    clearPendingAccountConsent()
     const result = await signInWithEmailAndPassword(auth.value, email, password).catch(
       () => null
     )
     return await ensureSignedInUser(result?.user ?? null)
   }
 
-  const signUpWithEmailPassword = async (email: string, password: string) => {
+  const signUpWithEmailPassword = async (
+    email: string,
+    password: string,
+    termsVersion: string
+  ) => {
     if (!auth.value) return null
-    const result = await createUserWithEmailAndPassword(auth.value, email, password).catch(
-      () => null
-    )
-    return await ensureSignedInUser(result?.user ?? null)
-  }
-
-  const signInAnonymous = async () => {
-    if (!auth.value) return null
-    const result = await signInAnonymously(auth.value).catch(() => null)
-    return result?.user ?? null
+    rememberPendingAccountConsent(termsVersion)
+    const result = await createUserWithEmailAndPassword(
+      auth.value,
+      email,
+      password
+    ).catch(() => null)
+    if (!result?.user) {
+      clearPendingAccountConsent()
+      return null
+    }
+    return await ensureSignedInUser(result.user, termsVersion)
   }
 
   const signOutUser = async (redirectTo: string = '/') => {
@@ -319,6 +439,8 @@ export function useAuth() {
     lastCreatedUid.value = null
     creating.value = false
     currentUser.value = null
+    clearPendingAccountConsent()
+    lastAccountProvisionError.value = null
 
     if (!authInstance) {
       await router?.replace(redirectTo).catch(() => {})
@@ -355,11 +477,12 @@ export function useAuth() {
     isReady,
     hasAuthState,
     lastBindError,
+    lastAccountProvisionError,
 
     signInWithGoogle,
-    signInAnonymous,
     signInWithEmailPassword,
     signUpWithEmailPassword,
+    retryAccountProvisioning,
     signOutUser,
   }
 }

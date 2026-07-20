@@ -15,7 +15,7 @@ import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id'>>
-type ChefTarget = Chef & { user?: UserLike | null }
+type ChefTarget = Chef
 
 export namespace ChefCard {
   export type Card = {
@@ -107,10 +107,7 @@ export function useChefInterface(
     const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
 
-    const mapped = map(
-      p,
-      target?.user ?? userOverride ?? userRef?.value ?? null
-    )
+    const mapped = map(p, userOverride ?? userRef?.value ?? null)
     return mapped.id && mapped.displayName ? mapped : null
   }
 
@@ -152,3 +149,4 @@ export function useChefInterface(
     profile,
   }
 }
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Chef storage.

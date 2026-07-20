@@ -1,5 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: distinguish public profiles from app-private records.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: support atomic domain-owned root profile seeds.
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
 
@@ -11,7 +13,8 @@ import type { FireuxStamped } from './meta.model'
  * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, and similar identity profile collections
  *
  * Decision note:
- * - Profile roots are the default identity truth.
+ * - User is the only public identity truth; profile roots contain only their
+ *   domain presentation/capability fields and use the matching uid.
  * - App profile records are overlays for app-specific presentation or capability state.
  * - Identity profile overlays do not use FireuxAppScope because they are not root-plus-app operational targets.
  * - This file defines the shared base shapes so individual profile files stay aligned.
@@ -99,6 +102,11 @@ export type ProfileBase = FireuxStamped & {
   tags: string[]
 }
 
+/** Smallest shared contract for root profiles and app-private profile records. */
+export type ProfileRecord = {
+  id: string
+}
+
 /**
  * App profile overlay base shape
  * Example path: /apps/<appId>/<collection>/<uid>
@@ -106,9 +114,7 @@ export type ProfileBase = FireuxStamped & {
  * Delta-only by design.
  * Keep it minimal until you truly need overlay fields.
  */
-export type AppProfileBase = FireuxStamped & {
-  id: string
-}
+export type AppProfileBase = FireuxStamped & ProfileRecord
 
 /**
  * Config describing how a profile collection behaves.
@@ -131,4 +137,13 @@ export interface ProfileConfig {
 
   /** Icon to reuse across nav/dropdown contexts */
   navIcon: string
+
+  /** Public profiles own a root record; app-private profiles exist only under the current App. */
+  storage?: 'root-and-app' | 'app-only'
+
+  /** Domain-owned fields that must be present atomically on the root record. */
+  rootCreateData?: Record<string, unknown>
+
+  /** Domain-owned fields that must be present atomically on the app record. */
+  appCreateData?: Record<string, unknown>
 }

@@ -87,13 +87,14 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
-// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: adapt profile entries to shared card mechanics.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render Driver rows with canonical User joins.
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
 import type { Driver } from '../../../models/driver.model'
 
-type DriverEntry = Driver & { user?: unknown }
+type DriverEntry = Driver
 
 const props = withDefaults(
   defineProps<{
@@ -144,19 +145,29 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useDriverInterface()
+type DriverInterfaceTarget = NonNullable<Parameters<typeof makeCard>[0]>
+const asDriverInterfaceTarget = (entry: DriverEntry) =>
+  entry as DriverInterfaceTarget
+const makeEntryCard = (entry: DriverEntry) =>
+  makeCard(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
+const makeEntryPill = (entry: DriverEntry) =>
+  makePill(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
+const makeEntryCell = (entry: DriverEntry) =>
+  makeCell(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<DriverEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) => makeCard(entry as Driver & { user?: any }),
+    makeCard: makeEntryCard,
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard,
-  makePill,
-  makeCell,
+  makeCard: makeEntryCard,
+  makePill: makeEntryPill,
+  makeCell: makeEntryCell,
+  cellMode: 'replace',
 })
 
 const countLabel = computed(() =>

@@ -1,13 +1,17 @@
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: snapshot a pending Kitchen alert atomically with its Order.
+// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: hash the customer capability on Order and return the raw token only from creation.
 import { FieldValue } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
 import { menuRoutePath } from '../../../utils/kitchen-menu-route.ts'
+import { normalizeMenuOrderWhatsAppPhone } from '../../../utils/menu-order-whatsapp.ts'
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import type { ResolvedMenuOrderItem } from './order-items.ts'
 import type { ResolvedMenuOrderFulfilment } from './order-fulfilment.ts'
 import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
+import { createMenuOrderCapability } from './order-capability.ts'
 import {
   numberValue,
   orderId,
@@ -15,6 +19,8 @@ import {
 } from './order-request.ts'
 
 export type MenuOrderRecordIdentity = {
+  capabilityHash: string
+  capabilityToken: string
   id: string
   number: string
   receiptCreatedAt: string
@@ -22,7 +28,11 @@ export type MenuOrderRecordIdentity = {
 }
 
 export function createMenuOrderRecordIdentity(): MenuOrderRecordIdentity {
+  const capability = createMenuOrderCapability()
+
   return {
+    capabilityHash: capability.hash,
+    capabilityToken: capability.token,
     id: orderId(),
     number: orderNumber(),
     receiptCreatedAt: new Date().toISOString(),
@@ -85,6 +95,12 @@ export function assembleMenuOrderRecord(input: {
     strategy,
     identity
   )
+  const whatsappRecipient = command.orderType === 'pre_order' &&
+    command.orderTypeConfig?.notifications?.whatsapp?.enabled === true
+    ? normalizeMenuOrderWhatsAppPhone(
+        command.orderTypeConfig.notifications.whatsapp.recipient_phone
+      )
+    : ''
   const path =
     `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
   const receiptItems = input.items.map((item) => ({
@@ -106,6 +122,9 @@ export function assembleMenuOrderRecord(input: {
     order_number: identity.number,
     status: fulfilment.status,
     order_type: command.orderType,
+    ...(command.channel !== 'staff_pos'
+      ? { customer_capability_hash: identity.capabilityHash }
+      : {}),
     ...(command.customerUid ? { customer_uid: command.customerUid } : {}),
     ...(strategy.recordsRequestedFor && command.requestedFor
       ? { requested_for: command.requestedFor }
@@ -129,6 +148,19 @@ export function assembleMenuOrderRecord(input: {
     channel: command.channel,
     items: input.items,
     payment: fulfilment.payment,
+    ...(whatsappRecipient
+      ? {
+          notifications: {
+            whatsapp: {
+              recipient_phone: whatsappRecipient,
+              state: 'pending',
+              attempts: 0,
+              created_at: identity.timestamp,
+              updated_at: identity.timestamp,
+            },
+          },
+        }
+      : {}),
     created: {
       at: identity.timestamp,
       by: command.actorId,
@@ -153,6 +185,11 @@ export function assembleMenuOrderRecord(input: {
           menu_path: menuRoutePath({
             scope: context.routeScope,
             menuId: context.routeMenuId,
+            context: command.orderType === 'delivery' ||
+              command.orderType === 'collection' ||
+              command.orderType === 'pre_order'
+              ? command.orderType
+              : 'generic',
           }),
           created_at: identity.timestamp,
         },
@@ -160,6 +197,9 @@ export function assembleMenuOrderRecord(input: {
     : undefined
   const response = {
     id: identity.id,
+    ...(command.channel !== 'staff_pos'
+      ? { capability_token: identity.capabilityToken }
+      : {}),
     path,
     order_number: identity.number,
     status: fulfilment.status,

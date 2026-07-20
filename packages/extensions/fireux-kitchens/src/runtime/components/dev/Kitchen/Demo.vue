@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Kitchens-owned Kitchen fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -61,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { demoKitchenHydratedList } from '../../../../../../../../demo/kitchen.demo';
+import { demoKitchenHydratedList } from '../../../demo/kitchen';
 import {
   useKitchenInterface,
   type KitchenSurface,

@@ -1,15 +1,11 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
-import { chefConfig } from '../config/chefConfig'
-import type { Chef } from '../../../../../../models/chef.model'
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep the legacy alias on the safe Chef fetch.
+import { useChefFetch } from './useChefFetch'
 
 export function useChefCollection() {
-  const {
-    globalProfiles,
-    localProfiles,
-  } = useProfileCollection<Chef>(chefConfig)
+  const { coreChefs, appChefs } = useChefFetch()
 
   return {
-    coreChefs: globalProfiles,
-    appChefs: localProfiles,
+    coreChefs,
+    appChefs,
   }
 }

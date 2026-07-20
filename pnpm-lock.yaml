@@ -142,6 +142,12 @@ importers:
       firebase-admin:
         specifier: ^12.7.0
         version: 12.7.0
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@12.7.0)
+      google-auth-library:
+        specifier: ^9.15.1
+        version: 9.15.1
       h3:
         specifier: ^1.15.4
         version: 1.15.4
@@ -15242,8 +15248,7 @@ snapshots:
       bindings: 1.5.0
       prebuild-install: 7.1.3
 
-  bignumber.js@9.3.1:
-    optional: true
+  bignumber.js@9.3.1: {}
 
   binary-extensions@2.3.0: {}
 
@@ -16835,7 +16840,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    optional: true
 
   gcp-metadata@6.1.1:
     dependencies:
@@ -16845,7 +16849,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    optional: true
 
   gensync@1.0.0-beta.2: {}
 
@@ -17003,7 +17006,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    optional: true
 
   google-gax@4.6.1:
     dependencies:
@@ -17024,8 +17026,7 @@ snapshots:
       - supports-color
     optional: true
 
-  google-logging-utils@0.0.2:
-    optional: true
+  google-logging-utils@0.0.2: {}
 
   gopd@1.2.0: {}
 
@@ -17038,7 +17039,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    optional: true
 
   gzip-size@7.0.0:
     dependencies:
@@ -17596,7 +17596,6 @@ snapshots:
   json-bigint@1.0.0:
     dependencies:
       bignumber.js: 9.3.1
-    optional: true
 
   json-buffer@3.0.1: {}
 
@@ -17663,7 +17662,6 @@ snapshots:
       buffer-equal-constant-time: 1.0.1
       ecdsa-sig-formatter: 1.0.11
       safe-buffer: 5.2.1
-    optional: true
 
   jwks-rsa@3.2.0:
     dependencies:
@@ -17685,7 +17683,6 @@ snapshots:
     dependencies:
       jwa: 2.0.1
       safe-buffer: 5.2.1
-    optional: true
 
   keyv@4.5.4:
     dependencies:
@@ -21054,8 +21051,7 @@ snapshots:
   uuid@8.3.2:
     optional: true
 
-  uuid@9.0.1:
-    optional: true
+  uuid@9.0.1: {}
 
   vary@1.1.2: {}
 

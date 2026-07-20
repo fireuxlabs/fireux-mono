@@ -1,5 +1,9 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make live and demo outcomes authoritative.
 import { computed } from 'vue'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import {
+  useConsoleIndex,
+  type ConsoleTargetOutcome,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import {
   useKitchenCollection,
@@ -26,6 +30,9 @@ export function useKitchenConsoleIndex() {
   const demoKitchens = computed(() => demoCollection.kitchens.value)
   const targetPending = computed(() =>
     Boolean(consoleTargets.pending.value || targetCollection.pending.value)
+  )
+  const targetOutcome = computed<ConsoleTargetOutcome>(() =>
+    targetPending.value ? 'pending' : targetCollection.outcome.value
   )
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
@@ -70,7 +77,7 @@ export function useKitchenConsoleIndex() {
     autoSelectTargetId,
     runtime,
     targets: targetKitchens,
-    pending: targetPending,
+    outcome: targetOutcome,
     showTargets: computed(() => !isTenantSingleTarget.value),
     selectTarget: (id: string) => {
       consoleActions.selectKitchen(String(id ?? '').trim(), 'live')
@@ -83,7 +90,7 @@ export function useKitchenConsoleIndex() {
     demoTargets: {
       show: !isTenantSingleTarget.value,
       collection: demoKitchens.value,
-      pending: demoCollection.pending.value,
+      outcome: demoCollection.outcome.value,
     },
   }))
   const actions = {

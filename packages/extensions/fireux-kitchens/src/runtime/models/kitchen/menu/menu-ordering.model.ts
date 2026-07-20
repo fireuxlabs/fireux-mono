@@ -12,6 +12,8 @@ import type {
   KitchenOrderType,
 } from '../order.model'
 
+// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: carry the one-time customer capability only in canonical creation/tracking responses.
+
 export type CreatedMenuOrderReceiptLine = {
   id: string
   menu_id?: string
@@ -56,6 +58,7 @@ export type CreatedMenuOrderReceipt = {
 
 export type CreatedMenuOrder = {
   id: string
+  capability_token?: string
   path?: string
   order_number: string
   status: KitchenOrderStatus

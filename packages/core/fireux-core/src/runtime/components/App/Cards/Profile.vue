@@ -135,7 +135,7 @@
         </div>
       </section>
 
-      <section v-if="showPeople" class="grid gap-4 lg:grid-cols-2">
+      <section v-if="showPeople" class="grid gap-4">
         <div class="rounded-2xl border border-default p-4 space-y-3">
           <div class="fx-type-label">
             Creator
@@ -158,62 +158,6 @@
           </div>
         </div>
 
-        <div class="rounded-2xl border border-default p-4 space-y-3">
-          <div class="flex items-center justify-between gap-3">
-            <div class="fx-type-label">
-              Admin team
-            </div>
-
-            <NuxtLink
-              v-if="model.adminCount"
-              :to="adminUsersLink"
-              class="text-sm text-primary hover:underline"
-            >
-              View all
-            </NuxtLink>
-          </div>
-
-          <div
-            v-if="model.adminAvatarItems.length"
-            class="flex items-center gap-3"
-          >
-            <UAvatarGroup :max="4" size="sm">
-              <UTooltip
-                v-for="item in model.adminAvatarItems"
-                :key="item.id"
-                :text="item.tooltip"
-              >
-                <template v-if="item.to">
-                  <ULink
-                    :to="item.to"
-                    raw
-                    class="rounded-full"
-                  >
-                    <UAvatar
-                      :src="item.avatarUrl || undefined"
-                      :alt="item.alt"
-                    />
-                  </ULink>
-                </template>
-
-                <template v-else>
-                  <UAvatar
-                    :src="item.avatarUrl || undefined"
-                    :alt="item.alt"
-                  />
-                </template>
-              </UTooltip>
-            </UAvatarGroup>
-
-            <div class="text-sm text-dimmed">
-              {{ adminCountLabel }}
-            </div>
-          </div>
-
-          <div v-else class="text-sm italic text-dimmed">
-            No admins recorded.
-          </div>
-        </div>
       </section>
 
       <section v-if="showSocials" class="space-y-3">
@@ -309,21 +253,5 @@ const detailCards = computed(() => [
     value: model.value.createdAtText || 'missing',
     mono: false,
   },
-  {
-    label: 'Admins',
-    value: String(model.value.adminCount || 0),
-    mono: false,
-  },
 ])
-
-const adminCountLabel = computed(() => {
-  const count = model.value.adminCount || model.value.adminAvatarItems.length
-  return `${count} admin${count === 1 ? '' : 's'}`
-})
-
-const adminUsersLink = computed(() => ({
-  path: `/apps/${card.value.id}`,
-  hash: '#users',
-  query: { filter: 'admins' },
-}))
 </script>

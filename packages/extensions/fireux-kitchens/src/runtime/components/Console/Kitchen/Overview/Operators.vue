@@ -32,13 +32,13 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
-import { useUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useUserHydration } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollection'
 import {
   useUserInterface,
   type UserCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
 
 const props = defineProps<{
   operatorIds?: string[]
@@ -48,12 +48,11 @@ const normalize = (value: unknown) => String(value ?? '').trim()
 const operatorIds = computed(() =>
   Array.from(new Set((props.operatorIds ?? []).map(normalize).filter(Boolean)))
 )
-const { users, pending } = useUserCollection()
+const { userById, pending } = useUserHydration(operatorIds)
 const { pill } = useUserInterface()
 const operatorCards = computed<UserCard.Card[]>(() =>
   operatorIds.value
-    .map((id) => users.value.find((user: User) => normalize(user.id) === id) ?? null)
-    .map((user: User | null) => pill(user))
+    .map((id) => pill(userById(id)))
     .filter((card): card is UserCard.Card => Boolean(card))
 )
 const description = computed(() =>

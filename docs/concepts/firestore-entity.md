@@ -1,4 +1,8 @@
 Firestore entity spine map
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: record the app-only profile storage delta. -->
+<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: bind domain-only root profiles to canonical User by uid. -->
+<!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: record the shared delta-only overlay and membership mirror. -->
+<!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep raw profile lists behind domain APIs. -->
 Updated: 2026-07-19
 Ref: 565ebd668
 Role: map, not canon
@@ -79,6 +83,15 @@ Differences:
 - Some entities are root/public.
 - Some entities are scoped to a console or parent.
 - Some entities are both, but that must be explicit in the model and route behavior.
+- An app-private profile record uses only the app-scoped path, records its id on
+  `UserApp.profiles`, and must not acquire a root collection or public index.
+- Every root profile record is domain-only and uses its document id as the
+  canonical `/users/{uid}` join key. Public presentation hydrates or projects
+  that User; root profile documents never embed a User summary.
+- Every app profile record is a delta-only overlay: it does not duplicate
+  public User identity, and successful create/repair records the profile id on
+  `UserApp.profiles`. Root-backed profiles separately retain their public root
+  record and `User.profiles` id.
 - Model placement and Firestore composable placement are related but not identical.
 - Root/both profile models can live on the root model spine while current Firestore composables remain grouped under `firestore/profiles/<Profile>` until that stack is deliberately realigned.
 - Project/Ecosystem/App hierarchy uses root documents plus child-owned relation
@@ -86,6 +99,9 @@ Differences:
   `App.ecosystem_id`.
 - Public directory DTOs are support projections outside Firestore entity stacks;
   they do not create another storage scope or another entity.
+- Root profile directories use bounded domain-owned projections that join the
+  profile document to canonical User by uid; raw profile collection listeners
+  are reserved for neither public browse nor identity hydration.
 - Private Project control-plane reads do not expose a client Firestore
   collection binding; the FireUX admin server boundary owns that read.
 - Deployed Firestore rules must independently deny unauthorized direct Project

@@ -1,7 +1,6 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw console debug label. -->
 <template>
   <section class="space-y-2">
-    <pre>ConsoleBlankIndexSelected</pre>
-
     <UPageCard
       v-if="blankId"
       :title="selectedTitle"

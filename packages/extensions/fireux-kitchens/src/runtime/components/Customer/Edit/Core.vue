@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: edit Customer details in app scope only. -->
 <template>
   <ClientOnly>
     <div v-if="customer" class="space-y-6">
@@ -101,7 +102,7 @@ import { useCustomer } from '../../../composables/fireux/firestore/profiles/Cust
 import { useCustomerDeliveryAddressAutocomplete } from '../../../composables/fireux/customer/useCustomerDeliveryAddressAutocomplete'
 
 const {
-  coreProfile,
+  appProfile,
   updateCustomerName,
   updateCustomerPhone,
   updateAllergyNote,
@@ -119,7 +120,7 @@ const {
   error: addressSuggestionsError,
 } = useCustomerDeliveryAddressAutocomplete(addressDraft)
 
-const customer = computed(() => coreProfile.value ?? null)
+const customer = computed(() => appProfile.value ?? null)
 const customerPrivate = computed(() => customer.value?.private ?? null)
 const customerName = computed(() => customerPrivate.value?.name ?? '')
 const customerPhone = computed(() => customerPrivate.value?.phone ?? '')

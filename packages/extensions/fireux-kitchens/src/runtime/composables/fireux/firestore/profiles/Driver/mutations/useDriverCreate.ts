@@ -1,4 +1,5 @@
 // Profile family canon: docs/concepts/entities.md
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: initialize the server-owned Driver kitchen authorization index empty.
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
 import { driverConfig } from '../config/driverConfig'

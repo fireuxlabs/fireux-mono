@@ -6,17 +6,13 @@
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCTA />
 
-      <DriverDeliveryPings />
-
-      <!-- Driver follows the normal profile stack; Manage is a temporary dispatch workbench over those profiles. -->
-      <DriverManage />
-
       <DriverCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 

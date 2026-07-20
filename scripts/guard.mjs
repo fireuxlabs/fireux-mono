@@ -2,6 +2,7 @@
 // @fireux-script
 // last_used: 2026-07-19
 // usage_note: validates the authored repository spine after repo-efficiency passes.
+// Concurrent edit — 2026-07-19 17:54 CEST — Directory Publication Scaffold: register reconciliation and dormant pipeline guards.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -33,6 +34,8 @@ import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
+import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
+import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
@@ -61,6 +64,8 @@ const guards = [
   { key: 'kitchen-menu-size', run: runKitchenMenuSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'entity-authority', run: runEntityAuthority },
+  { key: 'directory-reconciliation', run: runDirectoryReconciliation },
+  { key: 'directory-publication', run: runDirectoryPublication },
   { key: 'projects', run: runProjects },
 ]
 

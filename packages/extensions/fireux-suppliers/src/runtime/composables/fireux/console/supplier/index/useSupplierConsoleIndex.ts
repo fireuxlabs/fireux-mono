@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 import { computed, unref, type Ref } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
@@ -54,7 +55,6 @@ export function useSupplierConsoleIndex(
     ),
     runtime,
     targets: suppliers.targets,
-    pending: suppliers.pending,
     outcome: suppliers.outcome,
     selectTarget: (id: string) => {
       consoleActions.selectSupplier(String(id ?? '').trim())

@@ -51,16 +51,17 @@
       />
 
       <MenuOrderPaused
-        v-if="menuContext === 'collection' && collectionPaused"
+        v-if="surfacePaused"
         :browse-path="unavailableBrowsePath"
-        :message="collectionPauseMessage"
+        :message="surfacePauseMessage"
+        :surface-label="contextProfile.label"
       />
 
       <MenuOrderCollectionFlow
         v-else-if="menuContext === 'collection'"
         :config="contextConfig"
         :currency-code="currencyCode"
-        :hours="collectionHours"
+        :hours="surfaceHours"
         :kitchen-id="resolvedSource?.kitchenId || ''"
         :kitchen-slug="orderKitchenSlug"
         :menu-id="menuId"
@@ -69,40 +70,54 @@
         :source-menu-id="sourceMenuId"
       />
 
-      <template v-else>
-        <MenuOrderCatalogue
-          :key="basketScopeKey"
-          :currency-code="currencyCode"
-          :sections="menuSections"
-          @add="basket.add"
-        />
+      <MenuOrderDeliveryFlow
+        v-else-if="menuContext === 'delivery'"
+        :config="contextConfig"
+        :currency-code="currencyCode"
+        :hours="surfaceHours"
+        :kitchen-id="resolvedSource?.kitchenId || ''"
+        :kitchen-slug="orderKitchenSlug"
+        :menu-id="menuId"
+        :scope-key="basketScopeKey"
+        :sections="menuSections"
+        :source-menu-id="sourceMenuId"
+      />
 
-        <MenuOrderBasketSummary
-          :currency-code="basket.currencyCode.value"
-          :quantity="basket.quantity.value"
-          :total="basket.total.value"
-          :total-label="basket.totalLabel.value"
-          @review="openBasket"
-        />
+      <MenuOrderPreOrderFlow
+        v-else-if="menuContext === 'pre_order'"
+        :config="contextConfig"
+        :currency-code="currencyCode"
+        :hours="surfaceHours"
+        :kitchen-id="resolvedSource?.kitchenId || ''"
+        :kitchen-slug="orderKitchenSlug"
+        :menu-id="menuId"
+        :scope-key="basketScopeKey"
+        :sections="menuSections"
+        :source-menu-id="sourceMenuId"
+      />
 
-        <MenuOrderBasketDialog
-          v-model:open="basketOpen"
-          :currency-code="basket.currencyCode.value"
-          :lines="basket.lines.value"
-          :total-label="basket.totalLabel.value"
-          @remove="basket.remove"
-          @after-leave="finishBasketDialog"
-        />
-      </template>
+      <MenuOrderKioskFlow
+        v-else-if="menuContext === 'kiosk'"
+        :configs="contextConfigs"
+        :currency-code="currencyCode"
+        :kitchen-id="resolvedSource?.kitchenId || ''"
+        :kitchen-slug="orderKitchenSlug"
+        :menu-id="menuId"
+        :scope-key="basketScopeKey"
+        :sections="menuSections"
+        :source-menu-id="sourceMenuId"
+      />
+
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: route the private terminal doorway through the shared order lifecycle.
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: separate always-open request intake from future dining-slot availability.
+import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
-import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 import {
@@ -118,7 +133,7 @@ import {
 
 const props = withDefaults(defineProps<{
   menuId: string
-  menuContext: 'delivery' | 'collection' | 'pre_order'
+  menuContext: 'delivery' | 'collection' | 'pre_order' | 'kiosk'
   menuRouteScope?: MenuRouteScope
   pageCanvas?: boolean
   propagateResponseStatus?: boolean
@@ -149,10 +164,18 @@ const orderPath = computed(() => menuRoutePath({
   menuId: menuId.value,
   context: menuContext.value,
 }))
+const contextConfigs = computed(() => {
+  const visibleTypes = new Set(contextProfile.value.visibleOrderTypes)
+
+  return detailMenu.value?.behaviour.ordering.order_types.filter(
+    ({ type }) => visibleTypes.has(type)
+  ) || []
+})
 const contextConfig = computed(() =>
-  detailMenu.value?.behaviour.ordering.order_types.find(
-    ({ type }) => type === menuContext.value
-  ) || null
+  contextConfigs.value.find(({ type }) => type === menuContext.value) ||
+  contextConfigs.value.find(({ availability }) => availability?.paused !== true) ||
+  contextConfigs.value[0] ||
+  null
 )
 const orderAvailable = computed(() => {
   const behaviour = detailMenu.value?.behaviour
@@ -192,39 +215,47 @@ const kitchenWordmarkImageUrl = computed(() =>
 )
 const contextMessage = computed(() =>
   String(contextConfig.value?.message || '').trim() ||
-  `This menu is available for ${contextProfile.value.label.toLowerCase()}.`
+  (menuContext.value === 'pre_order'
+    ? 'Order ahead for a larger table, choose when you would like to dine, and the Kitchen will confirm your request.'
+    : `This menu is available for ${contextProfile.value.label.toLowerCase()}.`)
 )
-const collectionHours = computed(() =>
+const surfaceHours = computed(() =>
   contextConfig.value?.service_hours?.operation_hours
 )
 const { menuServiceChip: contextServiceChip } = useMenuServiceComputed(
-  collectionHours
+  surfaceHours
 )
 const contextStatusLabel = computed(() => {
-  if (menuContext.value !== 'collection') return ''
-
-  if (collectionPaused.value) return 'Collection paused'
+  if (surfacePaused.value) return `${contextProfile.value.label} paused`
+  if (menuContext.value === 'pre_order') return 'Pre-order requests open'
 
   return contextServiceChip.value.known
     ? contextServiceChip.value.label
-    : 'Collection hours unavailable'
+    : `${contextProfile.value.label} hours unavailable`
 })
-const collectionPaused = computed(() =>
+const surfacePaused = computed(() =>
   contextConfig.value?.availability?.paused === true
 )
-const collectionPauseMessage = computed(() =>
+const surfacePauseMessage = computed(() =>
   String(contextConfig.value?.availability?.message || '').trim() ||
-  'Collection is temporarily paused. Please try again later.'
+  `${contextProfile.value.label} is temporarily paused. Please try again later.`
 )
 const contextStatusColor = computed(() =>
-  collectionPaused.value ? 'error' as const : contextServiceChip.value.color
+  surfacePaused.value
+    ? 'error' as const
+    : menuContext.value === 'pre_order'
+      ? 'success' as const
+      : contextServiceChip.value.color
 )
-const surfaceOptions = computed(() => guestMenuSurfaceOptions({
-  behaviour: detailMenu.value?.behaviour,
-  menuId: menuId.value,
-  routeScope: menuRouteScope.value,
-  activeContext: menuContext.value,
-}))
+const surfaceOptions = computed(() => menuContext.value === 'kiosk'
+  ? []
+  : guestMenuSurfaceOptions({
+      behaviour: detailMenu.value?.behaviour,
+      menuId: menuId.value,
+      routeScope: menuRouteScope.value,
+      activeContext: menuContext.value,
+    })
+)
 const contextOrderNoun = computed(() => menuContext.value === 'pre_order'
   ? 'pre-orders'
   : `${contextProfile.value.label.toLowerCase()} orders`
@@ -284,13 +315,6 @@ const surfacePageStyle = computed(() =>
 const surfaceColorMode = computed(() =>
   orderAvailable.value ? null : 'light' as const
 )
-const basket = useMenuOrderBasket({
-  currencyCode,
-  scopeKey: basketScopeKey,
-  sourceMenuId,
-})
-const basketOpen = ref(false)
-const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const {
   className: themeClassName,
   styleVars: themeStyleVars,
@@ -299,44 +323,6 @@ const {
   colorMode: surfaceColorMode,
   pageCanvas: computed(() => props.pageCanvas),
 })
-
-watch(
-  () => basket.quantity.value,
-  (quantity: number) => {
-    if (quantity) return
-
-    basketOpen.value = false
-  }
-)
-
-watch(basketScopeKey, () => {
-  basketOpen.value = false
-})
-
-function openBasket(trigger: HTMLButtonElement) {
-  if (!basket.quantity.value) return
-
-  basketTrigger.value = trigger
-  basketOpen.value = true
-}
-
-function finishBasketDialog() {
-  const trigger = basketTrigger.value
-  basketTrigger.value = null
-
-  void nextTick(() => {
-    if (basket.quantity.value && trigger) {
-      trigger.focus()
-      return
-    }
-
-    document
-      .querySelector<HTMLButtonElement>(
-        ':is([data-menu-action="add-item"], [data-menu-action="configure-item"]):not(:disabled)'
-      )
-      ?.focus()
-  })
-}
 
 if (props.propagateResponseStatus) {
   await ready

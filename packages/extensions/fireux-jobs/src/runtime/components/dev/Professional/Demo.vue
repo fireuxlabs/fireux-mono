@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Jobs-owned Professional fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -33,7 +34,7 @@ import {
   demoProfessionalCellList,
   demoProfessionalPillList,
   demoProfessionalPreviewList,
-} from '../../../../../../../../demo/professional.demo'
+} from '../../../demo/professional'
 
 const pillList = demoProfessionalPillList
 const cellList = demoProfessionalCellList

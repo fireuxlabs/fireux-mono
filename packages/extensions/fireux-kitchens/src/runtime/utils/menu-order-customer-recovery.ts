@@ -1,0 +1,96 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: isolate shared customer recovery projections and request helpers.
+import type { CustomerOrderSummary } from '../models/customer/order.model'
+import type { KitchenOrderStatus } from '../models/kitchen/order.model'
+import type { KitchenOrderType } from '../models/kitchen/order.model'
+import type { CreatedMenuOrder } from '../models/kitchen/menu/menu-ordering.model'
+import type { MenuOrderTrackingStatus } from '../composables/fireux/menu/order/useMenuOrderTrackingSession'
+import type { MenuOrderBasketLine } from '../composables/fireux/menu/order/useMenuOrderBasket'
+
+export function recoveredMenuOrderBasketLines(
+  order: CustomerOrderSummary
+): MenuOrderBasketLine[] {
+  return order.items.map((item, index) => {
+    const addOns = item.add_ons.map(addOn => ({ ...addOn, priceLabel: '' }))
+    const addOnTotal = addOns.reduce((sum, addOn) => sum + addOn.price, 0)
+    const variant = item.variant
+      ? {
+          ...item.variant,
+          price: Math.max(0, item.unit_price - addOnTotal),
+          priceLabel: '',
+        }
+      : null
+    const configurationKey = JSON.stringify([
+      item.menu_id,
+      item.id,
+      variant?.id || 'base',
+      ...addOns.map(addOn => addOn.id),
+    ])
+
+    return {
+      id: `${configurationKey}:${index + 1}`,
+      configurationKey,
+      itemId: item.id,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.unit_price,
+      variant,
+      addOns,
+    }
+  })
+}
+
+export function menuOrderWaitingFor(status: KitchenOrderStatus | undefined) {
+  if (status === 'pending_acceptance' || status === 'accepted') return 'kitchen'
+  if (
+    status === 'changes_requested' ||
+    status === 'pending_payment' ||
+    status === 'ready' ||
+    status === 'cancelled' ||
+    status === 'completed'
+  ) return 'customer'
+
+  return ''
+}
+
+export function customerOrderRequestError(caught: unknown, fallback: string) {
+  if (caught && typeof caught === 'object') {
+    const source = caught as {
+      data?: { statusMessage?: unknown }
+      message?: unknown
+      statusMessage?: unknown
+    }
+
+    return text(source.data?.statusMessage) ||
+      text(source.statusMessage) ||
+      text(source.message) ||
+      fallback
+  }
+
+  return fallback
+}
+
+export function createMenuOrderRequestKey(orderType: KitchenOrderType) {
+  if (import.meta.client && typeof crypto.randomUUID === 'function') {
+    return `${orderType}-${crypto.randomUUID()}`
+  }
+  return `${orderType}-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+export function createdMenuOrderTrackingStatus(
+  order: CreatedMenuOrder
+): MenuOrderTrackingStatus {
+  return {
+    id: order.id,
+    order_number: order.order_number,
+    status: order.status,
+    order_type: order.order_type,
+    estimated_ready_minutes: 0,
+    estimated_ready_at: '',
+    ...(order.collection ? { collection: order.collection } : {}),
+  }
+}
+
+export const isTerminalMenuOrderStatus = (status: KitchenOrderStatus) =>
+  status === 'completed' || status === 'cancelled' || status === 'trashed'
+
+const text = (value: unknown) => String(value ?? '').trim()

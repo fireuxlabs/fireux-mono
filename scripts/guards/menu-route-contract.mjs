@@ -1,6 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-19
 // usage_note: run through pnpm guard; locks Menu route grammar and projections.
+
+// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: lock the canonical Kiosk order projection.
 
 import assert from 'node:assert/strict'
 import { existsSync, readdirSync } from 'node:fs'
@@ -36,7 +38,7 @@ const EXPECTED_PROJECTIONS = {
   delivery: 'order',
   collection: 'order',
   table: 'diagnostic',
-  kiosk: 'diagnostic',
+  kiosk: 'order',
   staff_pos: 'diagnostic',
   dine_in: 'diagnostic',
   pre_order: 'order',

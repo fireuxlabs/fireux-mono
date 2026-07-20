@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the core-owned App fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -70,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { demoAppList } from '../../../../../../../../demo/app.demo'
+import { demoAppList } from '../../../demo/app'
 import { useAppProfileView } from '../../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { AppModel } from '../../../models/core/app.model'

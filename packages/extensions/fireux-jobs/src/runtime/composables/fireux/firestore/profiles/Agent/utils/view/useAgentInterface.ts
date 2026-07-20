@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Agent storage.
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
   resolveProfileBadges,
@@ -16,7 +18,7 @@ import type { Ref } from 'vue'
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle'>>
 
-type AgentTarget = Agent & { user?: UserLike | null }
+type AgentTarget = Agent
 
 export namespace AgentCard {
   export type Card = {
@@ -41,7 +43,7 @@ export namespace AgentCard {
 
     handle: string
 
-    // IMPORTANT: only render contactEmail on authorized UI surfaces.
+    // Public business contacts intended for Agent directory and profile surfaces.
     contactEmail: string
     contactPhone: string
     websiteUrl: string
@@ -68,12 +70,6 @@ export function useAgentInterface(
     if (!currentUid || !targetUid || currentUid !== targetUid) return ''
 
     return safeString(authUser.value?.photoURL).trim()
-  }
-
-  const resolveUser = (target?: AgentTarget | null) => {
-    if (target && 'user' in target && target.user)
-      return target.user as UserLike
-    return userRef?.value ?? null
   }
 
   function map(p: Agent, u?: UserLike | null): AgentCard.Card {
@@ -118,35 +114,44 @@ export function useAgentInterface(
   }
 
   function buildInterface(
-    target?: AgentTarget | null | undefined
+    target?: AgentTarget | null | undefined,
+    userOverride?: UserLike | null
   ): AgentCard.Card | null {
     const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
-    const u = resolveUser(target as AgentTarget | null)
+    const u = userOverride ?? userRef?.value ?? null
     const mapped = map(p, u)
     return mapped.id ? mapped : null
   }
 
   const toInterface = buildInterface
 
-  function pill(target?: AgentTarget | null | undefined): AgentPill | null {
-    return buildInterface(target)
+  function pill(
+    target?: AgentTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): AgentPill | null {
+    return buildInterface(target, userOverride)
   }
 
-  function cell(target?: AgentTarget | null | undefined): AgentCell | null {
-    return buildInterface(target)
+  function cell(
+    target?: AgentTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): AgentCell | null {
+    return buildInterface(target, userOverride)
   }
 
   function preview(
-    target?: AgentTarget | null | undefined
+    target?: AgentTarget | null | undefined,
+    userOverride?: UserLike | null
   ): AgentPreview | null {
-    return buildInterface(target)
+    return buildInterface(target, userOverride)
   }
 
   function profile(
-    target?: AgentTarget | null | undefined
+    target?: AgentTarget | null | undefined,
+    userOverride?: UserLike | null
   ): AgentProfile | null {
-    return buildInterface(target)
+    return buildInterface(target, userOverride)
   }
 
   return {

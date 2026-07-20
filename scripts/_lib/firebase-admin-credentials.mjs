@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-19
+// last_used: 2026-07-20
 // usage_note: shared explicit Firebase Admin credential resolution for operational scripts.
+// Concurrent edit — 2026-07-20 11:26 CEST — Directory Live Provisioning Pass: record live reconciliation credential use.
 
 import path from 'node:path'
 import process from 'node:process'

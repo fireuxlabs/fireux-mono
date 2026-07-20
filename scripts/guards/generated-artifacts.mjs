@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-20
 // usage_note: guard entrypoint; checks the Git index, not disposable local output.
+// Concurrent edit — 2026-07-20 11:51 CEST — Root Efficiency Pass 2 of 4: verify local-only root lanes remain untracked.
 // FILE: scripts/guards/generated-artifacts.mjs
 
 import { spawnSync } from 'node:child_process'

@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-20 13:12 CEST — Driver security: register trusted access and minimal dispatch endpoints.
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: register bounded Chef and Driver routes.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -6,6 +8,41 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 const baseServerHandlers = [
+  {
+    route: '/api/public/chefs',
+    method: 'get',
+    handler: './runtime/server/api/public/chefs.get',
+  },
+  {
+    route: '/api/public/chefs/:id',
+    method: 'get',
+    handler: './runtime/server/api/public/chefs/[id].get',
+  },
+  {
+    route: '/api/public/drivers',
+    method: 'get',
+    handler: './runtime/server/api/public/drivers.get',
+  },
+  {
+    route: '/api/public/drivers/:id',
+    method: 'get',
+    handler: './runtime/server/api/public/drivers/[id].get',
+  },
+  {
+    route: '/api/internal/kitchen/driver-access',
+    method: 'post',
+    handler: './runtime/server/api/internal/kitchen/driver-access.post',
+  },
+  {
+    route: '/api/internal/driver/dispatches',
+    method: 'get',
+    handler: './runtime/server/api/internal/driver/dispatches.get',
+  },
+  {
+    route: '/api/internal/driver/dispatch-watch',
+    method: 'post',
+    handler: './runtime/server/api/internal/driver/dispatch-watch.post',
+  },
   {
     route: '/api/customer/orders',
     method: 'get',

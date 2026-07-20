@@ -1,0 +1,39 @@
+// Concurrent edit — 2026-07-19 22:11 CEST — Directory Firestore Rules Topology: deny client access to server-only databases.
+// Concurrent edit — 2026-07-19 22:12 CEST — Directory Publication Rules Pass: name every machine-owned record family and retain a deny-all fallback.
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function serverOnly() {
+      return false;
+    }
+
+    match /directory-publication-outbox/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /directory-app-projections/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /directory-ecosystem-projections/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /directory-publication-receipts/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /directory-curation/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /directory-sources/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
+    match /{document=**} {
+      allow read, write: if serverOnly();
+    }
+  }
+}

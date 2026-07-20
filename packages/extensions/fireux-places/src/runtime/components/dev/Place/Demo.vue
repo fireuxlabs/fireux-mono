@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Places-owned Place fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -61,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { demoPlaceDocDataList, demoPlaceGoogleData } from '../../../../../../../../demo/place.demo'
+import { demoPlaceDocDataList, demoPlaceGoogleData } from '../../../demo/place'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../../models/place.model'
 import { PlaceModel as PlaceModelRuntime } from '../../../models/place.model'

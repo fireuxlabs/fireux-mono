@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: compose Kitchen-owned payment and Delivery configuration. -->
 <template>
   <ClientOnly>
     <div v-if="kitchen" class="space-y-6">
@@ -30,6 +31,13 @@
         />
 
         <ConsoleKitchenIdentitySectionsOperationHours
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :collection-path="rootCollection"
+          :can-write="canWrite"
+        />
+
+        <ConsoleKitchenIdentitySectionsPayments
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
           :collection-path="rootCollection"

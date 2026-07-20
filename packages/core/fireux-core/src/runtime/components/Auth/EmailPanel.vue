@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/EmailPanel.vue -->
+<!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: show explicit Terms acceptance, Privacy acknowledgement, and legal version. -->
 <template>
   <div class="w-full space-y-3">
     <p class="font-medium">Sign in or create an account.</p>
@@ -6,7 +7,7 @@
     <UAuthForm
       class="w-full"
       :fields="fields"
-      :submit="{ label: submitLabel }"
+      :submit="{ label: submitLabel, disabled: signupConsentRequired }"
       :loading="formLoading"
       @submit="handleEmailSubmit"
     >
@@ -18,6 +19,23 @@
             :disabled="formLoading"
           />
 
+          <div v-if="isSignUp" class="flex items-start gap-2">
+            <UCheckbox
+              v-model="signupConsentAcknowledged"
+              :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for account creation`"
+              :disabled="formLoading"
+            />
+            <p class="text-sm text-muted">
+              I accept the
+              <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
+              and acknowledge the
+              <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
+              <span class="block">
+                Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
+              </span>
+            </p>
+          </div>
+
           <UAlert
             v-if="error"
             color="error"
@@ -28,12 +46,6 @@
           <p v-if="error?.hint" class="text-sm text-muted">
             {{ error.hint }}
           </p>
-          <p class="text-sm text-muted">
-            By signing in, you agree to our
-            <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
-            and
-            <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
-          </p>
         </div>
       </template>
     </UAuthForm>
@@ -43,6 +55,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/core/supporting/user-account-provisioning'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
@@ -59,6 +72,7 @@ const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
 const isSignUp = ref(false)
 const formLoading = ref(false)
 const error = ref<AuthError>(null)
+const signupConsentAcknowledged = ref(false)
 
 const submitLabel = computed(() =>
   isSignUp.value ? 'Create account' : 'Continue'
@@ -74,6 +88,9 @@ const passwordAutocomplete = computed(() =>
 )
 const emailModeLabel = computed(() =>
   isSignUp.value ? 'Creating a new account' : 'Using an existing account'
+)
+const signupConsentRequired = computed(
+  () => isSignUp.value && !signupConsentAcknowledged.value
 )
 const fields = computed(() => [
   {
@@ -128,6 +145,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
 
   const email = String(event?.data?.email ?? '').trim()
   const password = String(event?.data?.password ?? '')
+  const mode: AuthMode = isSignUp.value ? 'sign-up' : 'sign-in'
 
   if (!email || !password) {
     error.value = {
@@ -136,21 +154,42 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
     }
     return
   }
+  if (mode === 'sign-up' && !signupConsentAcknowledged.value) {
+    error.value = {
+      title: 'Acceptance required',
+      description:
+        'Accept the Terms of Service and acknowledge the Privacy Policy before creating an account.',
+    }
+    return
+  }
 
   error.value = null
   formLoading.value = true
 
-  const mode: AuthMode = isSignUp.value ? 'sign-up' : 'sign-in'
-
-  const result =
-    mode === 'sign-up'
-      ? await signUpWithEmailPassword(email, password)
-      : await signInWithEmailPassword(email, password)
-
-  formLoading.value = false
+  let result = null
+  try {
+    result =
+      mode === 'sign-up'
+        ? await signUpWithEmailPassword(
+            email,
+            password,
+            FIREUX_ACCOUNT_TERMS_VERSION
+          )
+        : await signInWithEmailPassword(email, password)
+  } catch (accountError) {
+    error.value = {
+      title: 'Account setup incomplete',
+      description:
+        accountError instanceof Error && accountError.message.trim()
+          ? accountError.message
+          : 'Your signed-in account could not be prepared.',
+    }
+  } finally {
+    formLoading.value = false
+  }
 
   if (result?.uid) return
-
+  if (error.value) return
   setEmailError(mode)
 }
 </script>

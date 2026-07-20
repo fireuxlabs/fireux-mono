@@ -1,27 +1,18 @@
-import {
-    addDoc,
-    arrayRemove,
-    arrayUnion,
-    collection,
-    doc,
-    getDoc,
-    increment,
-} from 'firebase/firestore'
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: remove browser-owned App role, premium, and membership mirror writes.
+
+import { addDoc, collection } from 'firebase/firestore'
 import {
     readRuntimeIdentityFirestoreDatabaseId,
     useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from '../../../../../../../models/core/app.model'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import {
-    UserAppStorage,
     UserNotificationStorage,
     UserStorage,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
-import { useFirestoreDelete } from '../../../../operations/useFirestoreDelete'
-import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
+import { mutateAppMembership } from '../appMembershipMutation'
 import { createUserNotification } from '../createHelpers'
 
 type AppMembershipActions = {
@@ -43,11 +34,7 @@ type AppNotificationActions = {
 export function useAppUserUpdate(user: UserRefs) {
   const cfg = useFireUXConfig()
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
-  const appDb = useFirestore()
   const identityDb = useFirestore(identityDatabaseId)
-  const appUpdate = useFirestoreUpdate()
-  const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
-  const { deleteDocument } = useFirestoreDelete()
 
   const requireContext = () => {
     const uid = user.coreUser?.value?.id ?? user.user?.value?.id
@@ -61,49 +48,27 @@ export function useAppUserUpdate(user: UserRefs) {
 
   const membership: AppMembershipActions = {
     setAdmin: async (makeAdmin) => {
-      const { uid, appId } = requireContext()
+      const { uid } = requireContext()
       const role = makeAdmin ? 'admin' : 'user'
-
-      await appUpdate.updateDocument(
-        `${AppStorage.collection}/${appId}/${UserAppStorage.collection}`,
-        uid,
-        { role }
-      )
-
-      await appUpdate.updateDocument(AppStorage.collection, appId, {
-        admin_ids: makeAdmin
-          ? (arrayUnion(uid) as unknown as string[])
-          : (arrayRemove(uid) as unknown as string[]),
-      })
-
-      await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
-        app_ids: arrayUnion(appId) as unknown as string[],
+      await mutateAppMembership({
+        action: 'set-role',
+        userId: uid,
+        role,
       })
     },
     setPremium: async (isPremium) => {
-      const { uid, appId } = requireContext()
-      await appUpdate.updateDocument(
-        `${AppStorage.collection}/${appId}/${UserAppStorage.collection}`,
-        uid,
-        { is_premium: Boolean(isPremium) }
-      )
+      const { uid } = requireContext()
+      await mutateAppMembership({
+        action: 'set-premium',
+        userId: uid,
+        isPremium: Boolean(isPremium),
+      })
     },
     leave: async () => {
-      const { uid, appId } = requireContext()
-
-      const appUserRef = doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid)
-      const appUserSnap = await getDoc(appUserRef)
-      const existed = appUserSnap.exists()
-
-      await deleteDocument(`${AppStorage.collection}/${appId}/${UserAppStorage.collection}`, uid)
-
-      await appUpdate.updateDocument(AppStorage.collection, appId, {
-        admin_ids: arrayRemove(uid) as unknown as string[],
-        ...(existed ? { 'derived.user_count': increment(-1) } : {}),
-      })
-
-      await identityUpdate.updateDocument(UserStorage.rootCollection, uid, {
-        app_ids: arrayRemove(appId) as unknown as string[],
+      const { uid } = requireContext()
+      await mutateAppMembership({
+        action: 'remove-member',
+        userId: uid,
       })
     },
   }

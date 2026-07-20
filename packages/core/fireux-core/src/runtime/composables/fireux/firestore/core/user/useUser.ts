@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: opt the active user into private and app-scoped reads explicitly.
+// Concurrent edit — 2026-07-20 13:40 CEST — User boundary pass: describe UserApp as governance/capability state, not another private-content bucket.
 import { useAuth } from '../../../firebase/useAuth'
 import { useUserFetch } from './fetch/useUserFetch'
 import { useUserCreate } from './mutations/useUserCreate'
@@ -19,12 +21,12 @@ export { useUserInterface } from './utils/view/useUserInterface'
  *
  * This seam resolves the active authenticated user, not an arbitrary root User.
  * User is public identity; UserPrivate is account data; UserApp is the current
- * app's membership, authorization, notification, and settings record.
+ * app's membership, authorization, and capability record.
  * For arbitrary uid reads, call useUserFetch(uid) directly.
  */
 export function useUser() {
   const { uid } = useAuth()
-  const refs = useUserFetch(uid)
+  const refs = useUserFetch(uid, { app: true, private: true })
   const { user, coreUser, appUser, pending } = refs
 
   return {

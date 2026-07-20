@@ -1,7 +1,8 @@
 Console spine map
 Updated: 2026-07-19
-Ref: 565ebd668
+Ref: f7d3704ef
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: lock authoritative console target outcomes. -->
 
 Purpose:
 Map the shared console system and domain adapters.
@@ -21,6 +22,7 @@ Shared core:
 - `useConsole`
 - `useConsoleTargets`
 - `useConsoleIndex`
+- `ConsoleTargetCollection`
 - `useConsoleOverview`
 - `useConsoleSelection`
 - `useConsoleTeam`
@@ -69,9 +71,15 @@ Index pattern:
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
 - Tenant apps can auto-select single configured targets.
 - Global apps usually source target IDs from user/app data.
-- Target adapters pass the collection `outcome` through `useConsoleIndex`.
-  Target presentation orders pending, error, cards, then settled empty; counts
-  are not authoritative while a read is unsettled.
+- Target adapters must pass the collection `outcome` through `useConsoleIndex`;
+  it is the sole target-state authority, with no count or pending fallback.
+  Named `ConsoleXIndexTargets` wrappers require that outcome and use
+  `ConsoleTargetCollection` for pending, error, cards, then settled empty;
+  counts are not authoritative while a read is unsettled.
+- An `idle` source renders no target chooser; idle is neither loading nor empty.
+- Domain wrappers retain entity-to-card mapping, selection validation, copy,
+  card components, and actions. A multi-source family such as Kitchen composes
+  one shared target presenter per source rather than flattening source state.
 - Persisted selection is validated only against a successful target read.
   Pending or failed target reads must not clear a saved selection.
 

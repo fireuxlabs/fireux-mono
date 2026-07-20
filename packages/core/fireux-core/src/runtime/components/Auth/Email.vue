@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: show explicit Terms acceptance, Privacy acknowledgement, and legal version. -->
 <template>
   <div class="email-auth">
     <UForm :state="state" class="form" @submit="handleEmailAuth">
@@ -15,7 +16,26 @@
           :label="isSignUp ? 'Signing Up' : 'Signing In'"
         />
       </div>
-      <UButton type="submit" block>
+      <div v-if="isCreatingAccount" class="consent-row">
+        <UCheckbox
+          v-model="signupConsentAcknowledged"
+          :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for account creation`"
+        />
+        <p class="hint">
+          I accept the
+          <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
+          and acknowledge the
+          <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
+          <span class="consent-version">
+            Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
+          </span>
+        </p>
+      </div>
+      <UButton
+        type="submit"
+        block
+        :disabled="isCreatingAccount && !signupConsentAcknowledged"
+      >
         {{ submitLabel }}
       </UButton>
       <UAlert
@@ -41,6 +61,7 @@ import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/core/supporting/user-account-provisioning'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
@@ -52,6 +73,7 @@ const props = defineProps({
 })
 
 const isSignUp = ref(props.mode === 'sign-up')
+const signupConsentAcknowledged = ref(false)
 const state = reactive({
   email: '',
   password: '',
@@ -61,6 +83,9 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const errorHint = ref('')
 const signupLink = computed(() => centralSignupUrl || '')
+const isCreatingAccount = computed(
+  () => props.mode === 'sign-up' || (props.mode === 'auto' && isSignUp.value)
+)
 
 const submitLabel = computed(() =>
   props.mode === 'sign-in' || (props.mode === 'auto' && !isSignUp.value)
@@ -73,13 +98,30 @@ const handleEmailAuth = async () => {
   errorMessage.value = ''
   errorHint.value = ''
 
-  const doSignUp =
-    props.mode === 'sign-up' || (props.mode === 'auto' && isSignUp.value)
-  const authMethod = doSignUp
-    ? signUpWithEmailPassword
-    : signInWithEmailPassword
-
-  const user = await authMethod(state.email, state.password)
+  const doSignUp = isCreatingAccount.value
+  if (doSignUp && !signupConsentAcknowledged.value) {
+    errorTitle.value = 'Acceptance required'
+    errorMessage.value =
+      'Accept the Terms of Service and acknowledge the Privacy Policy before creating an account.'
+    return
+  }
+  let user = null
+  try {
+    user = doSignUp
+      ? await signUpWithEmailPassword(
+          state.email,
+          state.password,
+          FIREUX_ACCOUNT_TERMS_VERSION
+        )
+      : await signInWithEmailPassword(state.email, state.password)
+  } catch (error) {
+    errorTitle.value = 'Account setup incomplete'
+    errorMessage.value =
+      error instanceof Error && error.message.trim()
+        ? error.message
+        : 'Your signed-in account could not be prepared.'
+    return
+  }
 
   if (user?.uid) {
     console.log('[handleEmailAuth] ✅ Got UID:', user.uid)
@@ -109,5 +151,14 @@ const handleEmailAuth = async () => {
   color: var(--ui-text-muted);
   font-size: var(--text-sm);
   margin-top: calc(var(--spacing) * 2);
+}
+.consent-row {
+  align-items: flex-start;
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  margin: calc(var(--spacing) * 3) 0;
+}
+.consent-version {
+  display: block;
 }
 </style>

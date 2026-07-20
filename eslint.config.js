@@ -4,6 +4,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+// Concurrent edit — 2026-07-20 11:54 CEST — Root Efficiency Pass 1 of 4: cover authored Node scripts and bound generated scans.
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const baseRestrictedImportPatterns = [
@@ -94,13 +96,35 @@ export default [
   {
     ignores: [
       'node_modules/**',
+      '**/node_modules/**',
       'dist/**',
       '**/dist/**',
       'build/**',
+      '**/build/**',
+      '.nitro/**',
+      '**/.nitro/**',
       '.nuxt/**',
+      '**/.nuxt/**',
+      '.nyc_output/**',
+      '**/.nyc_output/**',
       '.output/**',
       '**/.output/**',
+      '.pnpm-store/**',
+      '**/.pnpm-store/**',
+      '.data/**',
+      '**/.data/**',
+      '.firebase/**',
+      '**/.firebase/**',
+      '.cache/**',
+      '**/.cache/**',
       'coverage/**',
+      '**/coverage/**',
+      '**/*.tsbuildinfo',
+      'temp/**',
+      'mirror/files/**',
+      'mirror/mirror.txt',
+      'figma-export',
+      'figma-export/**',
     ],
   },
   // Disallow auto-importing models via addImportsDir in config files
@@ -158,6 +182,29 @@ export default [
       'no-restricted-imports': makeNoRestrictedImportsRule(),
     },
   },
+  // Authored Node scripts use ESLint's native module/commonjs parsing and a
+  // high-signal correctness baseline. Tooling may intentionally inspect
+  // package source directly, so runtime import-boundary rules do not apply.
+  {
+    files: ['**/*.{mjs,cjs}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+    },
+    rules: {
+      'no-console': 'off',
+      'no-debugger': 'warn',
+      'no-constant-binary-expression': 'error',
+      'no-dupe-else-if': 'error',
+      'no-duplicate-case': 'error',
+      'no-import-assign': 'error',
+      'no-unreachable': 'error',
+      'no-unsafe-finally': 'error',
+      'no-unsafe-negation': 'error',
+      'no-unsafe-optional-chaining': 'error',
+      'use-isnan': 'error',
+      'valid-typeof': 'error',
+    },
+  },
 
   // Ban self-imports inside each workspace package (prevents drift back to "from '<pkg>/*'" internally)
   ...getPackages().map(({ name, dir }) => ({
@@ -175,7 +222,10 @@ export default [
     ignores: [`${dir}/**`],
     rules: {
       'no-restricted-imports': makeNoRestrictedImportsRule({
-        patterns: [...baseRestrictedImportPatterns, ...makeInternalAliasBanPatterns(`#${name}`)],
+        patterns: [
+          ...baseRestrictedImportPatterns,
+          ...makeInternalAliasBanPatterns(`#${name}`),
+        ],
       }),
     },
   })),

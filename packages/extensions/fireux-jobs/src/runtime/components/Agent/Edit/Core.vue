@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup. -->
 <template>
   <ClientOnly>
     <div v-if="agent" class="space-y-6">
@@ -65,7 +66,7 @@
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Contact Email"
+            label="Public Business Email"
             :firebase-value="contactEmail"
             placeholder="Ex: daniel@misebox.app"
             :maxlength="120"
@@ -73,7 +74,7 @@
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Contact Phone"
+            label="Public Business Phone"
             :firebase-value="contactPhone"
             placeholder="Optional"
             :maxlength="60"
@@ -81,7 +82,7 @@
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Website"
+            label="Public Business Website"
             :firebase-value="websiteUrl"
             placeholder="Ex: https://misebox.app"
             :maxlength="200"

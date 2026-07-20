@@ -17,6 +17,9 @@ import {
   allowUnsignedStripeWebhook,
   getMenuStripe,
 } from '../../../menu/ordering/stripe.ts'
+import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
+
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: release the pending alert only after verified Pay-now completion.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const safeSegment = (value: string) =>
@@ -177,6 +180,14 @@ export default defineEventHandler(async (event: H3Event) => {
     },
     { merge: true }
   )
+
+  if (orderType === 'pre_order' && !terminalStatus) {
+    await dispatchPreOrderWhatsApp(db, {
+      appId: metadata.appId,
+      kitchenId: metadata.kitchenId,
+      orderId: metadata.orderId,
+    })
+  }
 
   return { received: true }
 })

@@ -1,7 +1,8 @@
 Order processing and kitchen fulfilment spine
-Updated: 2026-07-15
-Ref: 624c7b638
+Updated: 2026-07-20
+Ref: f7d3704ef
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-20 15:22 CEST — Advance-table Pre-order pass: align intake and send-back transitions with the shared Order model. -->
 
 Purpose:
 Map the boundary between public menu ordering, kitchen-owned order records, and fulfilment rules so the next order patches do not spread business truth across unrelated surfaces.
@@ -53,8 +54,10 @@ Creation flow:
 Intake contract:
 - `KitchenOrderIntakePolicies` is the exhaustive order-type matrix for allowed channels, default channel, and automatic versus operator acceptance.
 - Payment is the first gate. An unpaid required payment produces `pending_payment`.
-- After payment, dine-in, eat-in, and takeaway produce `accepted` and derive Queue.
-- After payment, collection, delivery, pre-order, and room service produce `pending_acceptance` and require Accept or Reject.
+- After payment, dine-in, eat-in, takeaway, and room service produce `accepted`
+  and derive Queue.
+- After payment, collection, delivery, and pre-order produce
+  `pending_acceptance` and require Accept or Send back.
 - Payment resume state is limited to `accepted` or `pending_acceptance`; it cannot skip forward to Ready/Completed or restore a terminal order.
 - Public ordering maps and kitchen ticket examples consume the same shared intake policy instead of restating status strings.
 
@@ -68,6 +71,9 @@ Working vocabulary:
 Current V1 order states:
 - `pending_payment`: payment must finish before the order can continue.
 - `pending_acceptance`: the kitchen must accept or reject the request.
+- `changes_requested`: the Kitchen sent the same Order back for the customer's
+  amend-or-cancel decision; the board derives Recent while the customer funnel
+  remains blocked by that unresolved response.
 - `accepted`: the kitchen owns the order; the board derives Queue.
 - `ready`: preparation is complete; the board derives Pass.
 - `completed`: handoff is complete; the board derives Recent.
@@ -76,7 +82,7 @@ Current V1 order states:
 
 Current V1 operator transitions:
 - `accept`: `pending_acceptance` to `accepted`.
-- `reject`: `pending_acceptance` to `cancelled` with a reason.
+- `reject`: `pending_acceptance` to `changes_requested` with a reason.
 - `mark_ready`: `accepted` to `ready`.
 - `return_to_queue`: `ready` to `accepted`.
 - `complete`: `ready` to `completed`.

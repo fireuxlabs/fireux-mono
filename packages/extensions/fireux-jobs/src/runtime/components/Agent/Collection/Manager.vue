@@ -98,13 +98,14 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Agent rows with canonical User joins.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../../models/profiles/Agent/Agent.model'
 
-type AgentEntry = Partial<Agent> & { id: string, user?: unknown }
+type AgentEntry = Partial<Agent> & { id: string }
 
 const props = withDefaults(
   defineProps<{
@@ -132,10 +133,7 @@ const props = withDefaults(
 const fetched = useAgentFetch()
 const { outcome } = fetched
 const collection = computed<AgentEntry[]>(() =>
-  [
-    ...(fetched.appAgents.value ?? []),
-    ...(fetched.coreAgents.value ?? []),
-  ] as AgentEntry[]
+  (fetched.coreAgents.value ?? []) as AgentEntry[]
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))
@@ -166,16 +164,16 @@ const {
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<AgentEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) => makeCard(entry as any),
+    makeCard: (entry) => makeCard(entry as Agent, fetched.userById(entry.id)),
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard: (entry) => makeCard(entry as any),
-  makePill: (entry) => makePill(entry as any),
-  makeCell: (entry) => makeCell(entry as any),
+  makeCard: (entry) => makeCard(entry as Agent, fetched.userById(entry.id)),
+  makePill: (entry) => makePill(entry as Agent, fetched.userById(entry.id)),
+  makeCell: (entry) => makeCell(entry as Agent, fetched.userById(entry.id)),
 })
 
 const countLabel = computed(() =>

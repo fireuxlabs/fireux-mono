@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: resolve public and app-private profile membership.
 import { computed } from '#imports'
 import type {
   UserApp,
@@ -72,8 +73,10 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     const key = (profileType ?? '').trim()
     if (!key) return false
 
-    const profiles = coreUser.value?.profiles
-    if (!Array.isArray(profiles)) return false
+    const profiles = [
+      ...(coreUser.value?.profiles ?? []),
+      ...(appUser.value?.profiles ?? []),
+    ]
 
     return profiles.includes(key)
   }

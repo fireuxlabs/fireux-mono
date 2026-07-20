@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Portfolio target outcome contract. -->
 <template>
   <section class="console-surface console-surface--compact">
     <ConsolePortfolioIndexSelected
@@ -9,7 +10,6 @@
     <ConsolePortfolioIndexTargets
       v-if="sections.targets.show"
       :collection="sections.targets.collection"
-      :pending="sections.targets.pending"
       :outcome="sections.targets.outcome"
       @select="actions.selectTarget"
     />

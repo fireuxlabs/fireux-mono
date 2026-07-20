@@ -1,8 +1,8 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/chef.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

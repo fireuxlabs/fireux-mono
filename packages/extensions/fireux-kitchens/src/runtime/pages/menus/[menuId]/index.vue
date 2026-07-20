@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: preserve Kiosk as an order context instead of collapsing it to Collection.
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -48,7 +49,7 @@ const isOrder = computed(() => projection.value === 'order')
 const orderContext = computed(() => {
   const context = menuTarget.value.context
 
-  return context === 'delivery' || context === 'pre_order'
+  return context === 'delivery' || context === 'pre_order' || context === 'kiosk'
     ? context
     : 'collection'
 })

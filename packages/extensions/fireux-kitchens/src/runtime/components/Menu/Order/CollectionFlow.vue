@@ -1,10 +1,12 @@
 <template>
-  <MenuOrderCollectionStatus
+  <MenuOrderStatus
     v-if="order.sentOrder.value"
-    :collection-label="order.collectionLabel.value"
     :customer-name="order.customerName.value"
-    :handoff-instructions="handoffInstructions"
+    :destination-instructions="handoffInstructions"
+    :fulfilment-label="order.collectionLabel.value"
+    fulfilment-term="Collection"
     :order="order.sentOrder.value"
+    order-type="collection"
     :payment-label="order.paymentLabel.value"
     :status="order.status.value"
     :status-error="order.statusError.value"
@@ -50,7 +52,6 @@
     :action-label="basketActionLabel"
     :currency-code="basket.currencyCode.value"
     :lines="basket.lines.value"
-    :removable="!amendingOrder"
     :selection-label="collectionTime?.label"
     :total-label="basket.totalLabel.value"
     @remove="basket.remove"
@@ -58,14 +59,17 @@
     @after-leave="finishBasketDialog"
   />
 
-  <MenuOrderCollectionTimeDialog
+  <MenuOrderTimeDialog
     v-model:open="collectionTimeOpen"
     :asap-enabled="config?.asap_enabled"
+    asap-description="Join the Kitchen’s collection queue."
     :hours="hours"
     :notice-hours="config?.notice_hours"
     :schedule-horizon-days="config?.schedule_horizon_days"
     :selection="collectionTime"
     :slot-interval-minutes="config?.slot_interval_minutes"
+    surface-label="Collection"
+    time-label="Pickup"
     @select="setCollectionTime"
     @after-leave="finishCollectionTimeDialog"
   />
@@ -84,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: consume the shared ordering-time contract.
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
@@ -92,7 +97,7 @@ import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMe
 import {
   useMenuCollectionOrder,
 } from '../../../composables/fireux/menu/order/useMenuCollectionOrder'
-import type { MenuOrderCollectionTimeSelection } from '../../../utils/menu-order-collection-time'
+import type { MenuOrderTimeSelection } from '../../../utils/menu-order-time'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 
 const props = defineProps<{
@@ -122,11 +127,10 @@ const order = useMenuCollectionOrder({
 const basketOpen = ref(false)
 const collectionTimeOpen = ref(false)
 const checkoutOpen = ref(false)
-const collectionTime = ref<MenuOrderCollectionTimeSelection | null>(null)
+const collectionTime = ref<MenuOrderTimeSelection | null>(null)
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const afterBasket = ref<'time' | 'checkout' | ''>('')
 const openCheckoutAfterTime = ref(false)
-const amendingOrder = ref(false)
 const paymentMethods = computed(() =>
   props.config?.fulfilment?.payment_methods || []
 )
@@ -137,11 +141,7 @@ const requiredContactFields = computed(() =>
   props.config?.customer?.required_fields || []
 )
 const basketActionLabel = computed(() =>
-  amendingOrder.value
-    ? 'Choose another time'
-    : collectionTime.value
-      ? 'Review and send'
-      : 'Choose collection time'
+  collectionTime.value ? 'Review and send' : 'Choose collection time'
 )
 
 // 2026-07-19 15:40 CEST: Amendment review rehydrates from the customer-owned Order projection; the transient basket remains presentation, not lifecycle authority.
@@ -164,7 +164,6 @@ watch(
   }
 )
 watch(scopeKey, () => {
-  amendingOrder.value = false
   basketOpen.value = false
   collectionTimeOpen.value = false
   checkoutOpen.value = false
@@ -179,27 +178,12 @@ function openBasket(trigger: HTMLButtonElement) {
 
 function continueFromBasket() {
   if (!basket.quantity.value) return
-  afterBasket.value = amendingOrder.value
-    ? 'time'
-    : collectionTime.value
-      ? 'checkout'
-      : 'time'
+  afterBasket.value = collectionTime.value ? 'checkout' : 'time'
   basketOpen.value = false
 }
 
-async function setCollectionTime(selection: MenuOrderCollectionTimeSelection) {
+async function setCollectionTime(selection: MenuOrderTimeSelection) {
   collectionTime.value = selection
-  if (amendingOrder.value) {
-    const response = await order.respondToChanges({
-      action: 'reschedule',
-      selection,
-    })
-    if (response) {
-      amendingOrder.value = false
-      collectionTimeOpen.value = false
-    }
-    return
-  }
   openCheckoutAfterTime.value = true
 }
 
@@ -243,7 +227,6 @@ async function submitOrder(input: MenuOrderCheckoutInput) {
 
 function resetOrder() {
   order.reset()
-  amendingOrder.value = false
   basketOpen.value = false
   collectionTimeOpen.value = false
   checkoutOpen.value = false
@@ -251,8 +234,11 @@ function resetOrder() {
   basket.clear()
 }
 
-function amendOrder() {
-  amendingOrder.value = true
+async function amendOrder() {
+  const response = await order.respondToChanges({ action: 'amend' })
+  if (!response) return
+
+  collectionTime.value = null
   basketOpen.value = true
 }
 
@@ -260,7 +246,6 @@ async function cancelOrder() {
   const response = await order.respondToChanges({ action: 'cancel' })
   if (!response) return
 
-  amendingOrder.value = false
   basketOpen.value = false
   collectionTimeOpen.value = false
   checkoutOpen.value = false

@@ -1,6 +1,8 @@
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: add bounded canonical User hydration by profile uid.
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
 import { UserStorage, type User } from '../../../../../../models/core/user.model'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
   useCollection,
@@ -65,5 +67,36 @@ export function useUserCollection() {
     count,
     pending,
     error,
+  }
+}
+
+/**
+ * Hydrates canonical User identity for domain rows whose document ids are UIDs.
+ * Uses exact document reads so a profile collection never expands into a full
+ * User collection scan.
+ */
+export function useUserHydration(
+  ids: Ref<(string | null | undefined)[]>
+) {
+  const databaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const { firestoreLoadDocsByIds } = useFirestoreRead({ databaseId })
+  const binding = firestoreLoadDocsByIds<User>({
+    collectionPath: UserStorage.rootCollection,
+    ids,
+  })
+  const users = computed(() => binding.docs.value ?? [])
+  const usersById = computed(() =>
+    new Map(users.value.map((user) => [user.id, user]))
+  )
+  const userById = (id: string | null | undefined) =>
+    id ? usersById.value.get(id) : undefined
+
+  return {
+    users,
+    usersById,
+    userById,
+    pending: binding.pending,
+    error: binding.error,
+    outcome: binding.outcome,
   }
 }

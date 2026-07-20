@@ -89,7 +89,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
-// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: adapt profile entries to shared card mechanics.
 import { computed } from 'vue'
 import { useCustomerFetch } from '../../../composables/fireux/firestore/profiles/Customer/fetch/useCustomerFetch'
 import { useCustomerInterface } from '../../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
@@ -151,19 +151,29 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useCustomerInterface()
+type CustomerInterfaceTarget = NonNullable<Parameters<typeof makeCard>[0]>
+const asCustomerInterfaceTarget = (entry: CustomerEntry) =>
+  entry as CustomerInterfaceTarget
+const makeEntryCard = (entry: CustomerEntry) =>
+  makeCard(asCustomerInterfaceTarget(entry))
+const makeEntryPill = (entry: CustomerEntry) =>
+  makePill(asCustomerInterfaceTarget(entry))
+const makeEntryCell = (entry: CustomerEntry) =>
+  makeCell(asCustomerInterfaceTarget(entry))
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<CustomerEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) => makeCard(entry as Customer & { user?: any }),
+    makeCard: makeEntryCard,
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard,
-  makePill,
-  makeCell,
+  makeCard: makeEntryCard,
+  makePill: makeEntryPill,
+  makeCell: makeEntryCell,
+  cellMode: 'replace',
 })
 
 const countLabel = computed(() =>

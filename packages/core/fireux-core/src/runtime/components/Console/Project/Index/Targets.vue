@@ -1,56 +1,28 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Project target wrapper. -->
 <template>
-  <section class="space-y-2">
-    <pre>ConsoleProjectIndexTargets</pre>
+  <ConsoleTargetCollection
+    :outcome="props.outcome"
+    :count="cards.length"
+    entity="project targets"
+    error-description="Project targets could not be loaded. Please try again."
+    empty-title="No Project targets found"
+    empty-description="FireUX control-plane Projects will appear here."
+  >
+    <template #header>
+      <h2>Choose Project</h2>
+      <p>Select the Project console target you want to work on.</p>
+    </template>
 
-    <UCard>
-      <template #header>
-        <div class="collection-manager__header">
-          <div class="collection-manager__title">
-            <h2>Choose Project</h2>
-            <p>Select the Project console target you want to work on.</p>
-          </div>
-
-          <UBadge v-if="isSettled" variant="soft">{{ cards.length }}</UBadge>
-        </div>
-      </template>
-
-      <MoleculesStateCard
-        v-if="resolvedOutcome === 'pending'"
-        entity="project targets"
-        state="loading"
-        surface="bare"
-      />
-
-      <MoleculesStateCard
-        v-else-if="resolvedOutcome === 'error'"
-        entity="project targets"
-        state="error"
-        surface="bare"
-        description="Project targets could not be loaded. Please try again."
-      />
-
-      <div v-else-if="cards.length" class="space-y-3">
-        <ProjectCardsCell
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="false"
-          action
-          :show-badges="false"
-          @action="selectProject(card.id)"
-        />
-      </div>
-
-      <MoleculesStateCard
-        v-else-if="isSettled"
-        entity="project targets"
-        state="empty"
-        surface="bare"
-        title="No Project targets found"
-        description="FireUX control-plane Projects will appear here."
-      />
-    </UCard>
-  </section>
+    <ProjectCardsCell
+      v-for="card in cards"
+      :key="card.id"
+      v-bind="card"
+      :link="false"
+      action
+      :show-badges="false"
+      @action="selectProject(card.id)"
+    />
+  </ConsoleTargetCollection>
 </template>
 
 <script setup lang="ts">
@@ -62,12 +34,10 @@ import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/fire
 const props = withDefaults(
   defineProps<{
     collection?: ProjectSurface[]
-    pending?: boolean
-    outcome?: ConsoleTargetOutcome
+    outcome: ConsoleTargetOutcome
   }>(),
   {
     collection: () => [],
-    pending: false,
   }
 )
 
@@ -89,15 +59,6 @@ const cards = computed(() =>
       Boolean(card)
     )
 )
-const resolvedOutcome = computed<ConsoleTargetOutcome>(() => {
-  if (props.outcome) return props.outcome
-  if (props.pending) return 'pending'
-  return cards.value.length ? 'ready' : 'empty'
-})
-const isSettled = computed(() =>
-  resolvedOutcome.value === 'ready' || resolvedOutcome.value === 'empty'
-)
-
 function selectProject(id: string) {
   const projectId = String(id ?? '').trim()
   if (!consoleIdSet.value.has(projectId)) return

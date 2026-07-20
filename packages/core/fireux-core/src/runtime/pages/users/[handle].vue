@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[handle].vue -->
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: distinguish missing User detail from read failure. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
@@ -46,6 +47,7 @@
 
 <script setup lang="ts">
 import {
+  setResponseStatus,
   useAsyncData,
   useHead,
   useRuntimeConfig,
@@ -169,10 +171,30 @@ const userCard = computed(() => {
 })
 
 const statusCode = computed(() =>
-  Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
+  Number(
+    (error.value as any)?.statusCode ||
+      (error.value as any)?.status ||
+      (error.value as any)?.response?.status ||
+      0
+  )
 )
-const missing = computed(() => statusCode.value === 404 || (!pending.value && !profile.value))
-const fetchFailed = computed(() => statusCode.value >= 500)
+const missing = computed(
+  () =>
+    statusCode.value === 404 ||
+    (!pending.value && !error.value && !profile.value)
+)
+const fetchFailed = computed(
+  () => Boolean(error.value) && statusCode.value !== 404
+)
+
+if (import.meta.server) {
+  if (missing.value) {
+    setResponseStatus(404)
+  } else if (fetchFailed.value) {
+    setResponseStatus(statusCode.value >= 500 ? statusCode.value : 503)
+  }
+}
+
 const isSelf = computed(() =>
   Boolean(handle.value && sessionUser.value?.handle === handle.value)
 )

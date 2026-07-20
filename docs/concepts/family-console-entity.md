@@ -1,7 +1,8 @@
 Console entity family map
 Updated: 2026-07-19
-Ref: 565ebd668
+Ref: f7d3704ef
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-19 16:55 CEST — Repo Efficiency Pass 5 of 6: console target family seam. -->
 
 Purpose:
 Map similarities and differences across console-capable entities.
@@ -30,6 +31,8 @@ Similar:
 - Uses shared console primitives where possible.
 - Target collections expose and propagate an explicit
   `idle|pending|error|empty|ready` outcome.
+- Named target wrappers share `ConsoleTargetCollection` presentation while
+  retaining domain card mapping, selection validation, copy, and actions.
 - A target read failure is not an empty authority list and cannot invalidate
   the persisted selection.
 - May have an access/team surface when the entity has a current collaboration
@@ -43,6 +46,8 @@ Similar:
 Different:
 - Blank is the minimal mirror and should stay thin.
 - Kitchen has menu, dish, recipe, ingredient, mise, order, station, supplier operations.
+- Kitchen keeps live and demo target outcomes separate and composes one shared
+  target presenter per source.
 - Supplier has item, catalogue, ingredient operations.
 - Portfolio is public-light/private-heavy and relates to documents, tasks, compliance.
 - Property currently has lower priority and may lag.

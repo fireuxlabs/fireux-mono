@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: require party size for advance table orders at the server boundary.
 import { createError } from 'h3'
 import type {
   MenuOrderContactField,
@@ -101,6 +102,7 @@ export function prepareMenuOrderCommand(input: {
     customer,
     input.selection.orderTypeConfig?.customer?.required_fields || []
   )
+  validateOrderTypeCustomer(input.selection.orderType, customer)
   const destination = readMenuOrderDestination(
     input.body,
     menuOrderTypeStrategy(input.selection.orderType)
@@ -143,6 +145,21 @@ function validateRequiredCustomerFields(
     statusCode: 400,
     statusMessage: `Add your ${missing.map(field => customerFieldLabels[field]).join(', ')} before sending the order.`,
   })
+}
+
+function validateOrderTypeCustomer(
+  orderType: KitchenOrderType,
+  customer: KitchenOrderCustomer
+) {
+  if (orderType !== 'pre_order') return
+
+  const partySize = Number(customer.party_size)
+  if (!Number.isSafeInteger(partySize) || partySize < 1 || partySize > 500) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Add the number of guests for this pre-order.',
+    })
+  }
 }
 
 export function menuOrderIdempotencyRequest(

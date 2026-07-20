@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Kitchens-owned Chef fixture. -->
 <template>
   <UCard>
     <template #header>
@@ -47,7 +48,7 @@
 
     <UCard v-else variant="subtle">
       <p class="text-sm text-dimmed">
-        No chef samples available yet. Add entries to `demo/chef.demo.ts`.
+        No chef samples available yet. Add entries to the Kitchens Chef fixture.
       </p>
     </UCard>
   </UCard>
@@ -55,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { demoChefSurfaceList } from '../../../../../../../../demo/chef.demo'
+import { demoChefSurfaceList } from '../../../demo/chef'
 import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { Chef } from '../../../models/chef.model'

@@ -1,14 +1,16 @@
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: bind browser profile mutations to the authenticated User id.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: strip embedded User snapshots from all profile patches.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { ProfileRecord } from 'fireux-core/runtime/models/core/profile.model'
 
 type Scope = 'core' | 'app'
 
-export function useProfileUpdateBase<TCore extends ProfileBase>(
+export function useProfileUpdateBase<TCore extends ProfileRecord>(
   collectionName: string,
   profile?: ProfileRefs<TCore> | null
 ) {
@@ -24,7 +26,7 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
     payload: Partial<T>
   ) => {
     const entries = Object.entries(payload).filter(
-      ([, value]) => value !== undefined
+      ([key, value]) => key !== 'user' && value !== undefined
     )
     return Object.fromEntries(entries) as Partial<T>
   }
@@ -45,19 +47,21 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
 
   const resolveUid = async (explicit?: string | null): Promise<string> => {
     const trimmed = explicit?.trim()
-    if (trimmed) return trimmed
-
     const fromRefs =
       profile?.coreProfile?.value?.id ?? profile?.appProfile?.value?.id ?? null
-    if (fromRefs?.trim()) return fromRefs.trim()
-
     const user = await useRequireUser()
     if (!user?.uid) {
       throw new Error(
         `[useProfileUpdateBase] Unable to resolve id for collection "${collectionName}"`
       )
     }
-    return user.uid
+    const resolved = trimmed || fromRefs?.trim() || user.uid
+    if (resolved !== user.uid) {
+      throw new Error(
+        `[useProfileUpdateBase] Client updates to ${collectionName} must target the signed-in user.`
+      )
+    }
+    return resolved
   }
 
   const updateCoreProfile = async (

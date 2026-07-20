@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: render the current app-private Customer record. -->
 <template>
   <section class="console-profile__section">
     <div class="console-profile__pills">
@@ -13,7 +14,7 @@
     </UPageCard>
 
     <UPageCard
-      v-else-if="!resolvedCoreProfile"
+      v-else-if="!resolvedProfile"
       title="Customer profile not available"
       description="Create your customer profile to make ordering faster."
       variant="subtle"
@@ -47,18 +48,18 @@ import { useCustomer } from '../../composables/fireux/firestore/profiles/Custome
 import { useCustomerInterface } from '../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
 
 const { coreUser } = useUser()
-const { coreProfile, createCustomerProfile } = useCustomer()
+const { appProfile, createCustomerProfile, pending } = useCustomer()
 const { cell: customerCardFromProfile } = useCustomerInterface()
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
-const isProfileLoading = computed(() => coreProfile.value === undefined)
-const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const isProfileLoading = computed(() => pending.value)
+const resolvedProfile = computed(() => appProfile.value ?? null)
 const customerCard = computed(() =>
-  resolvedCoreProfile.value
+  resolvedProfile.value
     ? customerCardFromProfile({
-        ...resolvedCoreProfile.value,
+        ...resolvedProfile.value,
         user: coreUser.value ?? null,
       })
     : null

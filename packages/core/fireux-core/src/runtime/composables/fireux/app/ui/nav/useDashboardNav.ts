@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: include app-private profile ids in dashboard navigation.
 import type { NavItem, NavPosition } from '../../nav.types'
 import { computed } from 'vue'
 import { useUser } from '../../../firestore/core/user/useUser'
@@ -23,7 +24,7 @@ const canShowDashboardItem = (
 
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
-  const { isAdmin, user } = useUser()
+  const { appUser, isAdmin, user } = useUser()
   const { isDeveloper } = useDeveloperAccess()
   const { hasConsoleEntry } = useConsoleEntryCta()
 
@@ -58,7 +59,10 @@ export const useDashboardNav = () => {
   const activeProfileIds = computed(
     () =>
       new Set(
-        (user.value?.profiles ?? []).filter(
+        [
+          ...(user.value?.profiles ?? []),
+          ...(appUser.value?.profiles ?? []),
+        ].filter(
           (profileId): profileId is string =>
             typeof profileId === 'string' && profileId.length > 0
         )

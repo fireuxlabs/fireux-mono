@@ -1,16 +1,23 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
+// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: replace raw Chef/User collection reads with the bounded API.
+import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
-import { chefConfig } from '../config/chefConfig'
 import type { Chef } from '../../../../../../models/chef.model'
 
-// Chef profiles for UI use. Public user summaries live on the profile rows.
+// Chef profiles for UI use. Public identity joins canonical User by profile uid.
 export function useChefFetch() {
-  const { globalProfiles, localProfiles, pending, error, outcome } =
-    useProfileCollection<Chef>(chefConfig)
+  const {
+    profiles,
+    profileUsers,
+    usersById,
+    userById,
+    pending,
+    error,
+    outcome,
+  } = usePublicProfileCollection<Chef>({ collection: 'chefs' })
 
-  const coreChefs = computed(() => globalProfiles.value ?? [])
-  const appChefs = computed(() => localProfiles?.value ?? [])
+  const coreChefs = profiles
+  const appChefs = computed<Chef[]>(() => [])
   const { byId: coreChef } = useCollectionById(coreChefs)
   const { byId: appChef } = useCollectionById(appChefs)
 
@@ -19,8 +26,12 @@ export function useChefFetch() {
     appChefs,
     coreChef,
     appChef,
+    profileUsers,
+    usersById,
+    userById,
     pending,
     error,
     outcome,
   }
 }
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: expose canonical User hydration for Chef rows.

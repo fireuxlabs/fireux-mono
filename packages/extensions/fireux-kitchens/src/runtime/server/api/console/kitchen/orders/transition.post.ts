@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: notify signed-in customers after accepted Order commits.
 import {
   createError,
   defineEventHandler,
@@ -13,6 +14,7 @@ import {
 } from '../../../../../models/kitchen/order.model.ts'
 import { requireKitchenOperator } from '../../../../../server/kitchen/operator-access.ts'
 import { buildKitchenOrderTransitionPatch } from '../../../../../server/kitchen/order/transition.ts'
+import { publishAcceptedOrderCustomerNotification } from '../../../../../server/kitchen/order/customer-notification.ts'
 
 type TransitionKitchenOrderBody = {
   app_id?: string
@@ -39,7 +41,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenOperator(event, { appId, kitchenId })
   const db = getRuntimeFirestore()
   const orderRef = db.doc(`apps/${appId}/kitchens/${kitchenId}/orders/${orderId}`)
-  const order = await db.runTransaction(async (transaction) => {
+  const outcome = await db.runTransaction(async (transaction) => {
     const snap = await transaction.get(orderRef)
     if (!snap.exists) {
       throw createError({
@@ -69,8 +71,35 @@ export default defineEventHandler(async (event: H3Event) => {
     return {
       id: orderId,
       status: patch.status || current.status,
+      customerUid: String(current.customer_uid ?? '').trim(),
+      orderNumber: String(current.order_number ?? '').trim(),
     }
   })
 
-  return { ok: true, order }
+  if (transition === 'accept' && outcome.customerUid) {
+    try {
+      await publishAcceptedOrderCustomerNotification({
+        appId,
+        kitchenId,
+        orderId,
+        orderNumber: outcome.orderNumber,
+        customerUid: outcome.customerUid,
+      })
+    } catch (error) {
+      console.error('[Kitchen order] customer acceptance notification failed', {
+        appId,
+        kitchenId,
+        orderId,
+        error,
+      })
+    }
+  }
+
+  return {
+    ok: true,
+    order: {
+      id: outcome.id,
+      status: outcome.status,
+    },
+  }
 })

@@ -1,5 +1,5 @@
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: make Customer an app-private ordering record.
 // Profile family canon: docs/concepts/entities.md
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -10,21 +10,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Delta: Customer is private ordering identity, not a public profile surface.
  */
 export const CustomerStorage = {
-  shape: 'both',
-  root: 'customers/{userId}',
-  overlay: 'apps/{appId}/customers/{userId}',
-  rootCollection: 'customers',
-  overlayCollection: 'customers',
-  idParam: 'userId',
-} as const
-
-export const AppCustomerStorage = {
   shape: 'scoped',
   path: 'apps/{appId}/customers/{userId}',
   collection: 'customers',
   parent: 'app',
   idParam: 'userId',
 } as const
+
+export const AppCustomerStorage = CustomerStorage
 
 export type CustomerSavedAddress = {
   id: string
@@ -65,37 +58,19 @@ export const CustomerPrivateModel = {
 
 export const CustomerModel = {
   id: '' as string,
-  title: '' as string,
-  subtitle: '' as string,
-  tagline: '' as string,
-  tags: [] as string[],
-
-  // Personal ordering data is intentionally behind `private` so generic
-  // profile cards/pills cannot accidentally render address or contact details.
-  private: { ...CustomerPrivateModel } as CustomerPrivate,
-
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
-} as const
-
-export type Customer = {
-  [K in keyof typeof CustomerModel]: (typeof CustomerModel)[K]
-}
-
-export const AppCustomerModel = {
-  id: '' as string,
+  // This whole record is app-private; the nested shape keeps ordering fields
+  // out of generic identity/card projections.
   private: { ...CustomerPrivateModel } as CustomerPrivate,
   ...AppProfileStamps,
 } as const
 
-export type AppCustomer = AppProfileBase &
-  Partial<Pick<Customer, 'private'>>
+export type Customer = AppProfileBase & {
+  private: CustomerPrivate
+}
+
+export const AppCustomerModel = CustomerModel
+
+export type AppCustomer = Customer
 
 export type CustomerCreateInput = Omit<Customer, 'id' | 'created' | 'updated'>
 export type CustomerUpdateInput = Partial<

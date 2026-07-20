@@ -8,8 +8,8 @@
     }"
   >
     <UButton
-      :label="collapsed ? undefined : selected?.label || 'Profiles'"
-      :icon="selected?.icon || 'i-lucide-users'"
+      :label="collapsed ? undefined : selected?.label || 'Your profile'"
+      :icon="selected?.icon || 'i-lucide-user'"
       :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
       variant="ghost"
@@ -22,15 +22,6 @@
     />
   </UDropdownMenu>
 
-  <div v-else class="px-2 py-2">
-    <div class="flex min-h-11 items-center px-1">
-      <AppBrandWordmark
-        size="card"
-        alt="FireUX"
-        class="opacity-70"
-      />
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -39,18 +30,32 @@ import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/fireux/app/ui/nav/useDashboardNav'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const { activeProfileEntries } = useDashboardNav()
+const { currentUser, pill: userToPill } = useUser()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',
   () => null
 )
 
-const menu = computed(() => activeProfileEntries.value)
+const rootUserEntry = computed<MenuItem>(() => {
+  const user = userToPill(currentUser.value)
+  return {
+    label: user?.displayName || 'Your profile',
+    icon: 'i-lucide-user',
+    to: '/dashboard/user-profile',
+  }
+})
+
+const menu = computed<MenuItem[]>(() => [
+  rootUserEntry.value,
+  ...activeProfileEntries.value,
+])
 
 type MenuItem = { label: string; icon?: string; to: string; profileId?: string }
 const selected = ref<MenuItem | null>(null)
@@ -74,10 +79,10 @@ const syncWithProfileState = () => {
     }
   }
 
-  const fallback = menu.value[0]
+  const fallback = rootUserEntry.value
   selected.value = fallback
-  if (fallback?.profileId && activeProfileState.value !== fallback.profileId) {
-    activeProfileState.value = fallback.profileId
+  if (activeProfileState.value !== null) {
+    activeProfileState.value = null
   }
 }
 

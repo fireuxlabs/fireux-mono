@@ -1,55 +1,27 @@
+<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Property target wrapper. -->
 <template>
-  <section class="space-y-2">
-    <pre>ConsolePropertyIndexTargets</pre>
+  <ConsoleTargetCollection
+    :outcome="props.outcome"
+    :count="cards.length"
+    entity="property targets"
+    error-description="Property targets could not be loaded. Please try again."
+    empty-title="No Property targets found"
+    empty-description="Properties you can access will appear here."
+  >
+    <template #header>
+      <h2>Choose Property</h2>
+      <p>Select the Property console target you want to work on.</p>
+    </template>
 
-    <UCard>
-      <template #header>
-        <div class="collection-manager__header">
-          <div class="collection-manager__title">
-            <h2>Choose Property</h2>
-            <p>Select the Property console target you want to work on.</p>
-          </div>
-
-          <UBadge v-if="isSettled" variant="soft">{{ cards.length }}</UBadge>
-        </div>
-      </template>
-
-      <MoleculesStateCard
-        v-if="resolvedOutcome === 'pending'"
-        entity="property targets"
-        state="loading"
-        surface="bare"
-      />
-
-      <MoleculesStateCard
-        v-else-if="resolvedOutcome === 'error'"
-        entity="property targets"
-        state="error"
-        surface="bare"
-        description="Property targets could not be loaded. Please try again."
-      />
-
-      <div v-else-if="cards.length" class="space-y-3">
-        <PropertyCardsCell
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="false"
-          action
-          @action="selectProperty(card.id)"
-        />
-      </div>
-
-      <MoleculesStateCard
-        v-else-if="isSettled"
-        entity="property targets"
-        state="empty"
-        surface="bare"
-        title="No Property targets found"
-        description="Properties you can access will appear here."
-      />
-    </UCard>
-  </section>
+    <PropertyCardsCell
+      v-for="card in cards"
+      :key="card.id"
+      v-bind="card"
+      :link="false"
+      action
+      @action="selectProperty(card.id)"
+    />
+  </ConsoleTargetCollection>
 </template>
 
 <script setup lang="ts">
@@ -61,12 +33,10 @@ import { usePropertyInterface } from '../../../../composables/fireux/firestore/p
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
-    pending?: boolean
-    outcome?: ConsoleTargetOutcome
+    outcome: ConsoleTargetOutcome
   }>(),
   {
     collection: () => [],
-    pending: false,
   }
 )
 
@@ -88,15 +58,6 @@ const cards = computed(() =>
       Boolean(card)
     )
 )
-const resolvedOutcome = computed<ConsoleTargetOutcome>(() => {
-  if (props.outcome) return props.outcome
-  if (props.pending) return 'pending'
-  return cards.value.length ? 'ready' : 'empty'
-})
-const isSettled = computed(() =>
-  resolvedOutcome.value === 'ready' || resolvedOutcome.value === 'empty'
-)
-
 function selectProperty(id: string) {
   const propertyId = String(id ?? '').trim()
   if (!consoleIdSet.value.has(propertyId)) return

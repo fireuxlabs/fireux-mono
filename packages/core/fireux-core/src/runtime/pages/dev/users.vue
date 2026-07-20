@@ -94,14 +94,16 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+// Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: inspect the bounded public User projection.
+import { definePageMeta, useFetch } from '#imports'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import type { PublicUserDto } from '../../server/utils/public-projection/public-dto.types'
+import type { User } from '../../models/core/user.model'
 import { UserModel } from '../../models/core/user.model'
 
 definePageMeta({
@@ -119,7 +121,23 @@ definePageMeta({
   description: 'Developer view for Users (collection-first).',
 })
 
-const { users, error: usersError } = useUserCollection()
+const publicUsers = useFetch<{ items: PublicUserDto[]; users?: PublicUserDto[] }>(
+  '/api/public/users',
+  { key: 'dev-public-users', query: { limit: 200 } }
+)
+const users = computed<User[]>(() => {
+  const payload = publicUsers.data.value
+  const items = Array.isArray(payload?.users) ? payload.users : payload?.items ?? []
+  return items.map((user) => ({
+    id: user.id,
+    display_name: user.displayName,
+    avatar: user.avatar,
+    handle: user.handle,
+    app_ids: user.apps,
+    profiles: user.profiles,
+  } as User))
+})
+const usersError = publicUsers.error
 
 const { role } = useFireUXConfig()
 const userModelRuntime = UserModel
@@ -139,7 +157,7 @@ const usersErrorMessage = computed(() => {
   const error = usersError.value as { code?: string; message?: string } | undefined
   if (!error) return ''
   if (error.code === 'permission-denied') {
-    return 'This runtime cannot list the ecosystem identity /users collection with the current Firestore rules. Use a more scoped developer view or check the identity database rules.'
+    return 'This runtime cannot load the bounded public User projection.'
   }
   return error.message || 'Unable to read the root /users collection.'
 })

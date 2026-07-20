@@ -1,7 +1,10 @@
 Menu family map
-Updated: 2026-07-19
-Ref: 565ebd668
+Updated: 2026-07-20
+Ref: f7d3704ef
 Role: map, not canon
+<!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
+<!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
+<!-- Concurrent edit — 2026-07-20 15:22 CEST — Advance-table Pre-order pass: map always-open intake, asynchronous confirmation, and customer recovery. -->
 
 Purpose:
 Map the strong Menu/KitchenMenu family without conflating root identity with
@@ -268,37 +271,48 @@ Page composition note:
   selected initially, a direct plus for the selected/base item, and an add-on
   dialog only when needed, plus an in-memory basket count and total. The
   basket review keeps each configured line's quantity read-only and offers one
-  remove action; adding the same configuration again increments it. Collection
-  alone can continue to a package-owned,
-  page-local pickup-time selector backed by the resolved Collection order-type
-  policy: immediate collection is offered only when enabled and open, while
-  scheduled choices obey Collection hours, notice, interval, and horizon. The
-  first active pipeline offers name, mobile, and email fields with per-surface
-  required-field policy, shows configured Collection handoff instructions,
-  groups configured
-  settlement methods into Pay now or a surface-aware Pay later choice, posts through the canonical Menu Order endpoint,
-  and follows Kitchen acceptance, customer change requests, ready, and completion status on
-  the current page. Configured Pay now starts the existing secure online-card
-  checkout. The pipeline does not persist customer/contact input or basket
-  contents, but its safe post-submit Order reference, display labels, and
-  latest status restore across refresh and equivalent root/Kitchen routes. It
+  remove action; adding the same configuration again increments it. Collection,
+  Delivery, and Pre-order continue through the same package-owned, page-local
+  timing selector backed by the selected order-type policy. Immediate service
+  is offered only when enabled and open, while scheduled choices obey that
+  surface's hours, notice, interval, and horizon. Delivery first verifies its
+  address against Kitchen-owned zones and applies the resolved minimum and fee.
+  Pre-order means advance dine-in for a larger table: request intake stays open
+  whenever the surface is enabled and unpaused, while the mandatory future
+  dining time still obeys its resolved service hours and timing policy. Its
+  checkout also requires party size. Scheduled delivery remains Delivery and
+  scheduled pickup remains Collection; neither becomes Pre-order. All three
+  active pipelines offer name, mobile, and email fields with per-surface
+  required-field policy, show
+  configured handoff instructions, and group
+  configured settlement methods into Pay now or a surface-aware Pay later
+  choice. They post through the canonical Menu Order endpoint and follow
+  Kitchen acceptance, customer change requests, ready, and completion status
+  on the current page. Configured Pay now starts the existing secure online-card
+  checkout. The pipelines do not persist customer/contact input or basket
+  contents, but their safe post-submit Order reference, display labels, and
+  latest status restore across refresh and equivalent root/Kitchen routes. An
+  anonymous Order uses an unguessable same-device capability for its customer
+  status and response commands; a signed-in Order continues to use account
+  ownership. Each
   falls back to the bounded canonical customer-order projection for a signed-in
   guest when the local tracker is absent, so browser storage never becomes the
-  lifecycle authority. It
-  blocks a second basket while that Order is unresolved. A Kitchen send-back
+  lifecycle authority. Each blocks a second basket while that Order is
+  unresolved. A Kitchen send-back
   keeps the same Order alive in `changes_requested`; only the customer may
-  cancel it and clear the active funnel, or amend it through a canonical
-  Order-backed basket review before choosing another valid Collection time and
-  returning the same Order to Kitchen acceptance. It does not
-  yet extend submission to Delivery or Pre-order. Collection can be paused
-  independently of its hours and enabled state: the themed public doorway
+  cancel it and clear the active funnel, or amend it. The first amendment seam
+  deliberately closes that returned Order, restores its canonical item
+  snapshots into the normal basket, and creates a fresh Order only when the
+  customer completes the ordinary funnel again. Collection, Delivery, and
+  Pre-order can each be paused independently of their hours and enabled state:
+  the themed public doorway
   remains readable, ordering controls are replaced by its pause message, and
   stale submissions are rejected server-side.
 - Console ordering configuration is layered beneath the Menu editor. The
   parent enables surfaces; focused policy belongs under
-  `/console/kitchen/menus/<menuId>/ordering/<surface>`, beginning with
-  `collection`. This namespace must not collide with the existing Menu section
-  route.
+  `/console/kitchen/menus/<menuId>/ordering/<surface>`, currently including
+  `collection`, `delivery`, `pre-order`, and `kiosk`. This namespace must not collide with
+  the existing Menu section route.
 - Time defaults follow the same layers as ownership: Place business hours seed
   a new Kitchen's operation hours, a new Menu inherits Kitchen operation
   hours, and a newly enabled ordering surface inherits that Menu's service
@@ -306,9 +320,21 @@ Page composition note:
 - The Kitchen Menu console is a small workspace rather than one long editor.
   `/console/kitchen/menus/<menuId>` owns overview and guest-facing identity;
   its Menu service-hours card chooses inherited Kitchen operation hours or a
-  custom Menu schedule without changing any surface policy. Collection timing,
-  payment methods, handoff/contact requirements, and operational availability
-  remain on the focused Collection child route.
+  custom Menu schedule without changing any surface policy. Collection,
+  Delivery, and Pre-order timing, handoff/contact requirements, and operational
+  availability remain on their focused child routes. Delivery zones, accepted payment
+  methods, and payment applicability are configured once on Kitchen identity;
+  Menu surfaces receive the compatible server-resolved projection and cannot
+  override those capabilities.
+  The focused Pre-order route may additionally configure one Kitchen WhatsApp
+  alert recipient. The recipient remains private operational policy, while the
+  package-owned Order server snapshots and dispatches the alert after the
+  canonical commit (or after verified Pay-now completion); provider credentials
+  remain deployment environment. The approved message links to the global
+  `/console/kitchen/orders/pre-orders` operator doorway, where authenticated
+  Kitchen operators confirm or send back pending Pre-orders. A signed-in
+  customer receives the existing User notification when the Kitchen confirms,
+  while My orders remains the canonical account projection.
   Those controls use the shared profile-editable molecule structure: each
   field owns edit/save/cancel, optimistic display, validation, and errors while
   the domain passes focused patch functions. Array-safe serialization remains
@@ -344,20 +370,23 @@ Component placement:
   owns public order
   catalogue resolution and orchestration; its `Intro`, `Unavailable`, `Catalogue`, `Item`,
   `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the
-  shared visible order seams. `CollectionFlow`, shared `CheckoutDialog`,
-  `CollectionStatus`, and the temporary `Paused` state own the small active
-  Collection pipeline.
+  shared visible order seams. `CollectionFlow`, `DeliveryFlow`, `PreOrderFlow`,
+  and the two-stage `KioskFlow` compose the shared `TimeDialog`, `CheckoutDialog`, `Status`,
+  and temporary `Paused` states with only their surface-specific inputs.
   `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket
   arithmetic and validated line correction only, while
-  `useMenuCollectionOrder.ts` owns Collection submission, idempotency, online
-  checkout handoff, and status polling through server APIs;
+  `useMenuOrderLifecycle.ts` owns shared submission, idempotency, online
+  checkout handoff, status polling, and customer recovery through server APIs;
+  `useMenuCollectionOrder.ts`, `useMenuDeliveryOrder.ts`,
+  `useMenuPreOrder.ts`, and `useMenuKioskOrder.ts` supply only their surface request and fulfilment-label
+  deltas;
   `useMenuOrderTrackingSession.ts` owns the minimal surface-neutral
   post-submit browser tracking record. Shared payment
   timing copy belongs to `utils/menu-order-payment.ts`, not to a surface dialog.
   `components/Menu/Json.vue` remains the temporary renderer for private or
   operational contexts that do not yet own a dedicated public projection.
 - Global, tenant-alias, and kitchen-directory detail routes branch on the parsed menu context:
-  generic routes project MenuBrowse; Delivery, Collection, and Pre-order
+  generic routes project MenuBrowse; Delivery, Collection, Pre-order, and Kiosk
   project MenuOrder; other suffixes preserve the context query for MenuJson. The shared route
   projection classifier also drives `middleware/menu-projection-layout.ts`, so
   the page branch and pre-render layout cannot drift.

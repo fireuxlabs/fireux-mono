@@ -1,7 +1,17 @@
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: read private App join requests from their admin-scoped collection.
+
+import { collection } from 'firebase/firestore'
 import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 
 import type { App } from '../../../../../../models/core/app.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
+import {
+  AppJoinRequestStorage,
+  type AppJoinRequest,
+} from '../../../../../../models/core/supporting/app-membership'
 import type { User } from '../../../../../../models/core/user.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useCollection, useFirestore } from '../../../vuefire'
 import type { UserCard } from '../../user/utils/view/useUserInterface'
 
 type JoinRequestItem = {
@@ -26,21 +36,26 @@ type Options = {
 }
 
 /**
- * Maps `app.join_requests` to pill-friendly list items and exposes approve/reject helpers.
+ * Maps the admin-scoped join-request collection to pill-friendly list items.
  */
-export function useAppJoinRequests({
-  app,
-  handleJoinRequests,
-  fetchedUser,
-  card,
-}: Options): {
+export function useAppJoinRequests(options: Options): {
   items: ComputedRef<JoinRequestItem[]>
   approve: (uid: string) => Promise<unknown>
   reject: (uid: string) => Promise<unknown>
 } {
+  const { handleJoinRequests, fetchedUser, card } = options
   const cache = new Map<string, UserRef>()
   const hidden = new Set<string>()
   const itemsRef = ref<JoinRequestItem[]>([])
+  const { appId } = useFireUXConfig()
+  const db = useFirestore()
+  const requestCollection = collection(
+    db,
+    AppStorage.collection,
+    appId,
+    AppJoinRequestStorage.collection
+  )
+  const requests = useCollection<AppJoinRequest>(requestCollection)
 
   const resolveUserRef = (uid: string): UserRef => {
     let ref = cache.get(uid)
@@ -77,7 +92,7 @@ export function useAppJoinRequests({
   }
 
   watchEffect(() => {
-    const source = app.value?.join_requests
+    const source = requests.data.value
     if (!Array.isArray(source) || source.length === 0) {
       cache.clear()
       hidden.clear()
@@ -85,7 +100,9 @@ export function useAppJoinRequests({
       return
     }
 
-    const ids = toUniqueIds(source)
+    const ids = toUniqueIds(
+      source.map((request) => request.user_id || request.id)
+    )
     const mapped = ids
       .filter((uid) => !hidden.has(uid))
       .map((uid) => buildItem(uid))

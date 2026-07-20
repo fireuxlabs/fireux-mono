@@ -4,12 +4,14 @@ import type {
   MenuOrderDepositPolicy,
   MenuOrderFulfilmentPolicy,
   MenuOrderTypeConfig,
-  MenuPaymentMethod,
   MenuServiceHoursConfig,
 } from '../models/kitchen/menu/menu.model'
 import { MenuOrderContactFields } from '../models/kitchen/menu/menu.model'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import { readWeekdayTimeWindowsConfig } from './weekday-time'
+import { readMenuOrderWhatsAppNotificationPolicy } from './menu-order-whatsapp'
+
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: retain only a valid configured alert recipient.
 
 export const kitchenOrderTypes = [
   'dine_in',
@@ -20,14 +22,6 @@ export const kitchenOrderTypes = [
   'pre_order',
   'room_service',
 ] as const satisfies readonly KitchenOrderType[]
-
-const paymentMethods = [
-  'cash',
-  'card_at_pickup',
-  'card_to_driver',
-  'room_charge',
-  'online_card',
-] as const satisfies readonly MenuPaymentMethod[]
 
 const depositTypes = [
   'fixed',
@@ -73,14 +67,6 @@ export const readKitchenOrderType = (value: unknown): KitchenOrderType | null =>
 
 export const readNoticeHours = (value: unknown) => positiveNumber(value)
 
-const readPaymentMethods = (value: unknown): MenuPaymentMethod[] =>
-  list(value)
-    .map((method) => text(method) as MenuPaymentMethod)
-    .filter((method): method is MenuPaymentMethod =>
-      paymentMethods.includes(method)
-    )
-    .filter((method, index, source) => source.indexOf(method) === index)
-
 const readContactFields = (value: unknown): MenuOrderContactField[] =>
   list(value)
     .map((field) => text(field) as MenuOrderContactField)
@@ -122,6 +108,12 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
   }) as MenuDeliveryZone
 }
 
+// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: keep Delivery-zone parsing shared while ownership remains Kitchen-only.
+export const readDeliveryZones = (value: unknown): MenuDeliveryZone[] =>
+  list(value)
+    .map(readDeliveryZone)
+    .filter((zone): zone is MenuDeliveryZone => Boolean(zone))
+
 const readDeposit = (value: unknown): MenuOrderDepositPolicy | undefined => {
   const row = record(value)
   const type = text(row.type) as MenuOrderDepositPolicy['type']
@@ -140,16 +132,10 @@ export const readMenuOrderFulfilmentPolicy = (
   value: unknown
 ): MenuOrderFulfilmentPolicy | undefined => {
   const row = record(value)
-  const deliveryZones = list(row.delivery_zones)
-    .map(readDeliveryZone)
-    .filter((zone): zone is MenuDeliveryZone => Boolean(zone))
-  const paymentMethods = readPaymentMethods(row.payment_methods)
   const deposit = readDeposit(row.deposit)
   const handoffInstructions = text(row.handoff_instructions)
 
   const policy = compact({
-    delivery_zones: deliveryZones,
-    payment_methods: paymentMethods,
     deposit,
     handoff_instructions: handoffInstructions,
   }) as MenuOrderFulfilmentPolicy
@@ -200,6 +186,10 @@ export const readMenuOrderTypeConfig = (
         ...(availabilityMessage ? { message: availabilityMessage } : {}),
       }
     : undefined
+  const notificationRow = record(row.notifications)
+  const whatsappNotification = type === 'pre_order'
+    ? readMenuOrderWhatsAppNotificationPolicy(notificationRow.whatsapp)
+    : undefined
 
   if (!type) return null
 
@@ -222,6 +212,9 @@ export const readMenuOrderTypeConfig = (
       ? { customer: { required_fields: requiredFields } }
       : {}),
     ...(availability ? { availability } : {}),
+    ...(whatsappNotification
+      ? { notifications: { whatsapp: whatsappNotification } }
+      : {}),
   }
 }
 

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: project requested time and verified Delivery details to customers.
 import type {
   KitchenOrderPaymentMethod,
   KitchenOrderPaymentStatus,
@@ -35,6 +36,7 @@ export type CustomerOrderSummary = {
   order_number: string
   status: KitchenOrderStatus
   order_type: KitchenOrderType
+  requested_for?: string
   created_at: string
   estimated_ready_minutes: number
   estimated_ready_at: string
@@ -57,6 +59,11 @@ export type CustomerOrderSummary = {
   collection?: {
     mode: 'queue' | 'scheduled'
     requested_for?: string
+  }
+  delivery?: {
+    address: string
+    zone_label?: string
+    fee_chf?: number
   }
   payment?: {
     method?: KitchenOrderPaymentMethod

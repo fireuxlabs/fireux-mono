@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: present surface-neutral pause recovery. -->
 <template>
   <section class="menu-order-paused" role="status">
     <span class="menu-order-paused__icon" aria-hidden="true">
@@ -5,7 +6,7 @@
     </span>
     <div>
       <p>Temporarily unavailable</p>
-      <h2>Collection is paused</h2>
+      <h2>{{ surfaceLabel }} is paused</h2>
       <p>{{ message }}</p>
     </div>
     <NuxtLink v-if="browsePath" :to="browsePath">
@@ -18,9 +19,11 @@
 withDefaults(defineProps<{
   browsePath?: string
   message?: string
+  surfaceLabel?: string
 }>(), {
   browsePath: '',
-  message: 'Collection is temporarily paused. Please try again later.',
+  message: 'Ordering is temporarily paused. Please try again later.',
+  surfaceLabel: 'Ordering',
 })
 </script>
 

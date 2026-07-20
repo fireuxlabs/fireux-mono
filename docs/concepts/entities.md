@@ -1,32 +1,46 @@
 Entities map
-Updated: 2026-07-19
-Ref: 565ebd668
+
+<!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map dormant publication support records and enablement gate. -->
+<!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map isolated support databases and deterministic blocker decisions. -->
+<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: separate public profiles from app-private Customer and Driver operations. -->
+<!-- Concurrent edit — 2026-07-20 12:27 CEST — Directory Live Pass: record provisioned support databases and verified one-time remediation. -->
+<!-- Concurrent edit — 2026-07-20 13:12 CEST — Driver authority: map server-owned Kitchen grants and non-PII dispatch beacons. -->
+<!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: map delta-only app records and independent public/app profile indexes. -->
+<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the sole public identity joined by profile uid. -->
+
+Updated: 2026-07-20
+Ref: f7d3704ef
 Role: map, not canon
 
 Purpose:
 Map the FireUX meaning of entity markers.
 
 Vertical links:
+
 - Parent: fireux.md
 - Child: firestore-entity.md
 - Child: family-console-entity.md
 - Child: family-menu.md
 
 Horizontal links:
+
 - console.md
 - app-config.md
 - pages.md
 
 Type source:
+
 - `packages/core/fireux-core/src/runtime/models/core/entity.model.ts`
 
 Working language:
+
 - FireUX defines entities.
 - Firestore is one storage/access family for an entity.
 - A thing can have a model or an id without being a FireUX entity.
 - Entity-ness is discussed while a concept is being designed; do not set a new thing in stone just because it has a file, route, or collection.
 
 Top hierarchy:
+
 - Project, Ecosystem, and App are root entities related by child-owned ids;
   hierarchy does not require nested Firestore storage.
 - `Ecosystem.project_id` points to Project. `App.project_id` points to Project.
@@ -43,6 +57,7 @@ Top hierarchy:
   `projectId` and optional `ecosystemId` express entity relationships.
 
 Kinds:
+
 - `entity`: domain thing FireUX tracks as a first-class concept over time.
 - `record`: stored support record owned by an entity.
 - `shape`: embedded or transport shape.
@@ -50,11 +65,13 @@ Kinds:
 - `bucket`: organizational folder, not domain truth.
 
 Thinking aid:
+
 - Entity is class-like: identity matters over time, fields can change, references point to the same thing, and lifecycle/authority/public surfaces may belong to it.
 - Shape or record is struct-like: value/context matters more than independent identity, and it is usually replaced, copied, or deleted with its parent.
 - This is only an analogy. Do not import class inheritance thinking into the model system.
 
 Entity-ness checkpoint:
+
 - What is the concept called in plain human language?
 - Does it still mean something if its parent is deleted?
 - Does it need its own lifecycle, permissions, public route, console surface, or collection stack?
@@ -63,6 +80,7 @@ Entity-ness checkpoint:
 - Can it start as a `record` or `shape` until the lifecycle proves it needs promotion?
 
 Storage scopes:
+
 - `root`: standalone/root public, system, or control-plane entity.
 - `scoped`: lives under a parent entity/app.
 - `both`: has root identity plus scoped/app-operational state.
@@ -70,19 +88,23 @@ Storage scopes:
 - `to-confirm`: not settled yet.
 
 Model placement spine:
+
 - Root or root-plus-overlay identity models live on the root model spine as `models/<entity>.model.ts` when the root identity is the primary concept.
 - Kitchen-scoped operational models live under `models/kitchen/<operation>.model.ts`.
 - Menu-owned support records live under `models/kitchen/menu/<record>.model.ts` while Menu remains a kitchen operation with a public doorway.
-- Root/public capability profiles such as Chef, Customer, and Driver use root model files even if their Firestore composables stay grouped under `firestore/profiles` for now.
+- Root/public capability profiles such as Chef and Driver use root model files even if their Firestore composables stay grouped under `firestore/profiles` for now.
+- Customer is an app-scoped private ordering record. Its root model placement is organizational only; it has no root profile document or public index.
 - Parent-local wrappers such as KitchenIngredient and KitchenSupplierIngredient live under the parent model folder, not beside the root Ingredient model.
 
 Route/index families:
+
 - Root index entity: has or deserves a public/root index route like `/<entities>`.
 - Scoped entity/record: only makes sense under a parent route or console context.
 - A root index entity may still have scoped operational records, but its public index should start from the root/public collection doorway.
 - A scoped entity/record should not be forced into root index ceremony just to reuse a collection manager.
 
 Root index classes:
+
 - Root Simple Index: root/public index entity whose index can render its own collection without linked document hydration.
 - Root Synced Snapshot Index: root/public index entity whose rows carry copied public card/list fields from a source entity.
 - Root Projected Index: root/public index entity whose raw root rows are too sensitive or broad, so a safe server projection powers browse UI.
@@ -91,6 +113,7 @@ Root index classes:
 - Scoped Surface: parent-scoped route or console surface that should not use root collection-manager ceremony.
 
 Root Simple Index members:
+
 - Menu.
 - Place.
 - Blog.
@@ -98,12 +121,13 @@ Root Simple Index members:
 - Ingredient.
 
 Root Synced Snapshot Index members:
+
 - Kitchen carries public Place snapshot fields; Place stays ignorant of Kitchens.
 - Company carries public Place snapshot fields; Place stays ignorant of Companies.
 - Job carries public workplace snapshot fields; the jobs/workplace domain owns the cascade.
-- Chef, Customer, Driver, Agent, and Professional carry public User summary snapshots; User knows its attached profiles.
 
 Root Projected Index members:
+
 - App public browse consumes an allowlisted `AppDirectoryEntry`. Owning
   Ecosystem Apps use `/api/public/apps`; FireUX uses the platform directory.
 - Ecosystem public browse exists only as FireUX `EcosystemDirectoryEntry`
@@ -111,22 +135,50 @@ Root Projected Index members:
 - User is public identity at `/users/{userId}`. The public users API still owns
   browse DTO shape and canonical handle routes; it must never read the sibling
   private account record.
+- Chef, Driver, Agent, and Professional root documents are domain-only profiles
+  keyed by canonical User uid. Their public projections join the schema-valid
+  `/users/{userId}` identity; profile documents never copy display name,
+  avatar, handle, or another embedded `user` snapshot.
+- App profile overlays are delta-only and never copy public User identity.
+  Every app-backed profile id belongs to `UserApp.profiles`; root-backed
+  profile ids additionally belong to public `User.profiles`.
 
 User identity records:
+
 - `User` is the public global entity: handle-slug identity, public presentation,
   `app_ids`, and attached profile ids.
 - `User.avatar` stores an explicit user image when one exists; otherwise it uses
   `/img/ecosystem/avatar.png`. Core/FireUX placeholder art is never public User
   identity.
 - `UserPrivate` is the user-owned private account record at
-  `/users/{userId}/private/account`; it contains email and versioned terms
-  acceptance evidence.
+  `/users/{userId}/private/account`; it contains email, private preferences,
+  and versioned terms acceptance evidence.
 - `UserApp` is the app-owned membership record at
   `/apps/{appId}/users/{userId}`; app role, entitlement, console access, and
-  app notifications belong here.
+  app notifications belong here. Every profile with an App overlay records its
+  id here, whether or not that profile also has a public root record.
 - App authorization is never mirrored onto public `User`.
 
+Profile privacy boundaries:
+
+- Customer exists only at `/apps/{appId}/customers/{userId}`. Ordering name,
+  phone, allergy notes, saved addresses, and order history are app-private.
+- Customer-owned order link records may remain at
+  `/customers/{userId}/orders/{orderId}` as server-only support records; that
+  parent path does not restore a root Customer profile.
+- Driver root records contain public capability/presentation fields. Driver
+  phone, tender preferences, and kitchen links exist only in the app overlay.
+- `AppDriver.kitchen_links` and its derived `active_kitchen_ids` authorization
+  index are server-owned. Runtime App admins or current Kitchen operators may
+  grant/revoke links only for App members with an AppDriver record. Drivers see
+  open work through minimal server-projected dispatch beacons; full Kitchen
+  Orders remain operator-only until a separate assigned-driver detail contract
+  is deliberately introduced.
+- Agent contact email, phone, and website are deliberately public business
+  contacts when the Agent profile is public.
+
 App event records:
+
 - `AppEvent` is an append-only support record under
   `/apps/{appId}/events/{eventId}`; it is not a standalone entity.
 - User membership materializes `app.user.joined` as an app-owned fact. The
@@ -135,19 +187,68 @@ App event records:
   events and own their own delivery/read state.
 
 Directory projection records:
+
 - `AppDirectoryEntry` and `EcosystemDirectoryEntry` are copied public transport
   records, not entities, storage scopes, or competing canonical truth.
 - Directory fields are allowlisted. Access, moderation, build metadata,
   inverse relationships, and Project control data stay out.
-- FireUX currently reads existing central rows through this projection seam;
-  an idempotent publication pipeline remains the only acceptable future writer.
+- An App is canonical in its resolved runtime database: explicit app
+  `databaseId`, otherwise its Ecosystem binding database. An Ecosystem is
+  canonical in the owning Ecosystem identity database, never an app override.
+- FireUX still reads existing central App/Ecosystem rows as legacy projection
+  input. Those rows are not authority. A default-off receiver, dormant owner
+  trigger/outbox factory, and guarded tools prove the intended boundary without
+  switching live reads or activating publication.
+- The locked one-time remediation has repaired five App relationships across
+  nine physical documents and created two missing App plus four missing
+  Ecosystem owner roots. Independent reconciliation now reports zero
+  `MISSING_OWNER` and zero `RELATION_DRIFT`; the `niederhorn` and `qrdoc`
+  exclusions remain untouched. Remaining public/directory drift belongs to a
+  later publication cutover, not canonical owner repair.
+- Canonical entity databases hold no delivery state. Six Standard,
+  delete-protected support databases are live: FireUX `directory-outbox` and
+  `platform-directory`, plus `directory-outbox` for Bringli, Cleanbox, Granite,
+  and Misebox. Their client rules deny all access. Slap `directory-outbox`
+  remains uncreated because the Slap project has no billing; do not imply that
+  the seven-database topology is complete.
+- Each ready project has a dedicated publisher identity and a conditional
+  database-only custom role with get/create/update but no list/delete; FireUX
+  also has the isolated receiver identity for `platform-directory`. Slap
+  publisher identity and source authorization remain pending. No publisher or
+  receiver is deployed or enabled.
+- One publisher service account may cover several canonical database scopes.
+  Its source authorization id digests the OIDC subject and exact source tuple,
+  so one source cannot borrow another source's allowlist.
+- Publication uses versioned owner `upsert` and `retire` records. Only active
+  payloads can be public; retirement persists a payload-free tombstone so a
+  stale replay cannot resurrect a listing. A strictly newer active revision may
+  republish it.
+- Projection rows, retirement tombstones, publication receipts, source
+  authorizations, and FireUX curation are support records, not entities.
+  FireUX-owned `launch_order` stays separate from owner-published data;
+  Ecosystem `app_count` derives centrally from active App projections.
+- Contract source: `models/core/supporting/directory-publication.ts`. Receiver,
+  reducer, transaction, and dormant owner seams:
+  `server/utils/directory-publication/*`. Read-only tools:
+  `scripts/reconcile-platform-directory.mjs` and
+  `scripts/plan-platform-directory-backfill.mjs`. The planner still has no
+  mutation mode. `scripts/remediate-platform-directory.mjs` is the separate,
+  hash-locked one-time executor: it applied 15 conditional writes in ten
+  journaled database batches with a private preimage backup and no document
+  deletion. Publisher scope and rule deployment inputs live under
+  `scripts/_lib/directory-publication-targets.mjs` and
+  `scripts/firebase/directory-publication`. Guards:
+  `scripts/guards/directory-reconciliation.mjs` and
+  `scripts/guards/directory-publication.mjs`.
 
 Scoped/Overlay Access members:
+
 - Supplier root browse is simple; operator-filtered access may join app-scoped supplier overlays.
 - Portfolio root browse is simple; operator-filtered access may join app-scoped portfolio overlays.
 - Property root browse is simple; scoped overlay shape is explicit.
 
 Root entity/index examples:
+
 - App: `/apps`.
 - Ecosystem: `/ecosystems`.
 - User: `/users`.
@@ -168,10 +269,12 @@ Root entity/index examples:
 - Product: `/products`.
 
 Private control-plane root examples:
+
 - Project: no public route; `/console/project` is FireUX-admin-only and
   currently read-only.
 
 Scoped-only examples:
+
 - Dish: kitchen-scoped today.
 - Station: kitchen-scoped today.
 - Order: kitchen-scoped today.
@@ -181,6 +284,7 @@ Scoped-only examples:
 - MenuSourceUpload: support record under Kitchen.
 
 First confirmed markers:
+
 - App: entity, root, core/system.
 - Ecosystem: entity, root, system.
 - Project: entity, private control-plane root, console-entity.
@@ -189,9 +293,11 @@ First confirmed markers:
 - Portfolio: entity, both, console-entity.
 
 First confirmed bridge marker:
+
 - Menu: entity, storage both/bridge in behavior, because public menu doorways manifest kitchen-owned scoped menus.
 
 Confirmed support records:
+
 - MenuSection: record under Menu.
 - MenuItem: record under MenuSection.
 - MenuSourceUpload: record under Kitchen.
@@ -199,15 +305,18 @@ Confirmed support records:
 - KitchenSupplierIngredient: kitchen-local supplier ingredient wrapper.
 
 Confirmed means:
+
 - Confirmed for the current implementation.
 - Not eternal.
 - If the product concept changes, discuss the entity-ness again before moving files or adding ceremony.
 
 To-confirm examples:
+
 - Recipe, Kitchen-scoped today; may grow public/root later only after a fresh entity/index decision.
 - Product, likely root plus supplier/kitchen wrappers.
 
 Not entity by default:
+
 - Kitchen team join request.
 - Document link.
 
@@ -217,6 +326,7 @@ Promote it to entity only when it needs its own identity, route, collection stac
 console/public surface, or cross-parent lifecycle.
 
 Default process:
+
 - New concept starts as `to-confirm`.
 - Discuss entity-ness before creating a full model/composable/page/console family.
 - Prefer the smallest useful shape first.

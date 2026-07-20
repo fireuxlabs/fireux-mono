@@ -15,6 +15,10 @@ import {
   type KitchenOrderType,
 } from '../../../../../../models/kitchen/order.model.ts'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
+import {
+  readMenuOrderCustomerAccess,
+  requireMenuOrderCustomerAccess,
+} from '../../../../../menu/ordering/order-capability.ts'
 import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
 import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
 import {
@@ -23,6 +27,9 @@ import {
 import {
   menuRoutePath,
 } from '../../../../../../utils/kitchen-menu-route.ts'
+import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
+
+// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -61,6 +68,7 @@ const baseUrlFromEvent = (event: H3Event) => {
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['POST', 'OPTIONS'],
+    headers: ['authorization', MENU_ORDER_CAPABILITY_HEADER],
   })
 
   const menuId = text(getRouterParam(event, 'menuId'))
@@ -75,6 +83,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
+  const access = await readMenuOrderCustomerAccess(event)
   const currencyCode = text(context.currencyCode)
   if (!currencyCode) {
     throw createError({
@@ -99,6 +108,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Order not found.',
     })
   }
+  requireMenuOrderCustomerAccess(access, order)
   const orderType = text(order.order_type) as KitchenOrderType
   const payment = resolveCheckoutPayment(order)
   const orderStatus = text(order.status).toLowerCase()
@@ -181,7 +191,7 @@ export default defineEventHandler(async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/customers?order=${encodeURIComponent(orderId)}&payment=success`,
+      success_url: `${baseUrl}/dashboard/customer/profile?order=${encodeURIComponent(orderId)}&payment=success`,
       cancel_url: `${baseUrl}${menuPath}?order=${encodeURIComponent(orderId)}&payment=cancelled`,
       metadata: {
         appId: context.appId,
@@ -265,3 +275,4 @@ function resumeStatusForOrder(
 
   return statusAfterPayment(text(order.order_type) as KitchenOrderType)
 }
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: return paid customers to the authenticated Customer dashboard.

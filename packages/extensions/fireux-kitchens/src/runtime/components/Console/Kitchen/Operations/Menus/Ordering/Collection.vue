@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: consume shared timing, details, and availability editors. -->
 <template>
   <section class="console-surface">
     <ConsoleKitchenOperationsMenusWorkspaceHeader current-label="Collection" />
@@ -53,32 +54,33 @@
       </div>
     </UCard>
 
-    <ConsoleKitchenOperationsMenusOrderingCollectionTiming
+    <ConsoleKitchenOperationsMenusOrderingTiming
       v-else-if="collectionConfig"
       :config="collectionConfig"
+      customer-message-placeholder="Collect from the counter during pickup hours."
       :disabled="!canWrite"
       :menu-hours="menuServiceHours"
+      surface-label="Collection"
+      time-label="Pickup"
       :update-function="updateCollection"
     />
 
-    <ConsoleKitchenOperationsMenusOrderingCollectionPaymentMethods
+    <ConsoleKitchenOperationsMenusOrderingDetails
       v-if="collectionConfig"
       :config="collectionConfig"
+      description="Tell customers where to collect and which contact details the Kitchen needs."
       :disabled="!canWrite"
+      handoff-label="Collection point"
+      handoff-placeholder="Collect from the restaurant counter beside reception."
+      surface-label="Collection"
       :update-function="updateCollection"
     />
 
-    <ConsoleKitchenOperationsMenusOrderingCollectionDetails
+    <ConsoleKitchenOperationsMenusOrderingAvailability
       v-if="collectionConfig"
       :config="collectionConfig"
       :disabled="!canWrite"
-      :update-function="updateCollection"
-    />
-
-    <ConsoleKitchenOperationsMenusOrderingCollectionAvailability
-      v-if="collectionConfig"
-      :config="collectionConfig"
-      :disabled="!canWrite"
+      surface-label="Collection"
       :update-function="updateCollection"
     />
   </section>

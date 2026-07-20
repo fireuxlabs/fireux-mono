@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import {
@@ -9,8 +10,10 @@ import {
   readKitchenMenuStyle,
   readKitchenCurrencyCode,
 } from '../../../utils/kitchen-spine'
-import type { MenuOrderFulfilmentPolicy } from '../../../models/kitchen/menu/menu.model.ts'
-import type { KitchenImageShade } from '../../../models/kitchen.model.ts'
+import type {
+  KitchenFulfilmentConfig,
+  KitchenImageShade,
+} from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
@@ -31,7 +34,7 @@ export type MenuKitchenScope = {
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
   page_style?: Record<string, unknown>
-  fulfilment?: MenuOrderFulfilmentPolicy
+  fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
 }
 

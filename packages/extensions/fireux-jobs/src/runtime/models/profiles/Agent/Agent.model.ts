@@ -1,8 +1,9 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
+// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -43,12 +44,14 @@ export const AgentModel = {
   agent_image: '' as string,
   agent_placement_types: [] as string[],
   agent_coverage_areas: [] as string[],
+  // Public business contacts shown on Agent directory and profile surfaces.
   agent_contact_email: '' as string,
   agent_contact_phone: '' as string,
   agent_website_url: '' as string,
   subtitle: '' as string,
   tagline: '' as string,
   tags: [] as string[],
+  // Legacy public business-contact aliases retained for existing records.
   contact_email: '' as string,
   contact_phone: '' as string,
   website_url: '' as string,

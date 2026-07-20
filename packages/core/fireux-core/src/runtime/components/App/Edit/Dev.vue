@@ -12,7 +12,7 @@
             <div class="section__copy">
               <h3>Binding check (app ↔ users)</h3>
               <p>
-                Compares app users against ecosystem identity mirrors and admin lists.
+                Compares App memberships against ecosystem identity mirrors.
                 Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
               </p>
             </div>
@@ -23,7 +23,7 @@
           <div class="text-xs text-dimmed">
             <span class="font-mono">appId</span>: {{ driftAppId || 'unknown' }} ·
             <span class="font-mono">app users</span>: {{ appUsersCount }} ·
-            <span class="font-mono">admin_ids</span>: {{ adminIdsCount }}
+            <span class="font-mono">admins</span>: {{ adminIdsCount }}
           </div>
 
           <div v-if="driftPending" class="text-sm text-dimmed">Checking…</div>
@@ -48,19 +48,6 @@
                 </div>
               </div>
 
-              <div v-if="drift.adminMissingAppUser.length">
-                <div class="text-sm font-medium">Admin ids missing app user doc</div>
-                <div class="text-xs text-dimmed">
-                  {{ drift.adminMissingAppUser.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="drift.adminRoleMismatch.length">
-                <div class="text-sm font-medium">Admin ids not marked admin in app users</div>
-                <div class="text-xs text-dimmed">
-                  {{ drift.adminRoleMismatch.join(', ') }}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -125,9 +112,7 @@
                   <span class="font-mono">long_bio</span>
                 </li>
                 <li>
-                  <span class="font-mono">social_links</span>,
-                  <span class="font-mono">join_requests</span>,
-                  <span class="font-mono">admin_ids</span>
+                  <span class="font-mono">social_links</span>
                 </li>
               </ul>
             </div>
@@ -226,23 +211,19 @@ watch(
 )
 
 const adminIds = computed(() => {
-  const raw = app.value?.admin_ids
-  if (!Array.isArray(raw)) return []
-  return raw.filter((id): id is string => typeof id === 'string' && id.length > 0)
+  return (appUsers.value ?? [])
+    .filter((membership) => membership.role === 'admin')
+    .map((membership) => membership.id)
 })
 
 const drift = computed(() => {
   const appId = driftAppId.value
   const missingCore: string[] = []
   const missingAppIds: string[] = []
-  const adminMissingAppUser: string[] = []
-  const adminRoleMismatch: string[] = []
 
   if (!appId) {
-    return { missingCore, missingAppIds, adminMissingAppUser, adminRoleMismatch }
+    return { missingCore, missingAppIds }
   }
-
-  const appUserById = new Map((appUsers.value ?? []).map((u) => [u.id, u]))
 
   for (const [id, coreUser] of coreUsers.value.entries()) {
     if (!coreUser) {
@@ -256,26 +237,13 @@ const drift = computed(() => {
     }
   }
 
-  for (const id of adminIds.value) {
-    const appUser = appUserById.get(id)
-    if (!appUser) {
-      adminMissingAppUser.push(id)
-      continue
-    }
-    if (appUser.role !== 'admin') {
-      adminRoleMismatch.push(id)
-    }
-  }
-
-  return { missingCore, missingAppIds, adminMissingAppUser, adminRoleMismatch }
+  return { missingCore, missingAppIds }
 })
 
 const driftTotal = computed(
   () =>
     drift.value.missingCore.length +
-    drift.value.missingAppIds.length +
-    drift.value.adminMissingAppUser.length +
-    drift.value.adminRoleMismatch.length
+    drift.value.missingAppIds.length
 )
 
 const appUsersCount = computed(() => appUserIds.value.length)

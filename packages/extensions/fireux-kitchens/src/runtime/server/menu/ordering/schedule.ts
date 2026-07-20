@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: validate mandatory and optional requested-time strategies.
+// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: fail closed when a mandatory future fulfilment schedule has no effective hours.
 import { createError } from 'h3'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model.ts'
 import type { MenuOrderingCollectionState } from '../../../models/kitchen/menu/menu-ordering.model.ts'
@@ -24,7 +26,10 @@ export function validateMenuOrderSchedule(input: {
   requestedFor: string
 }) {
   const strategy = menuOrderTypeStrategy(input.orderType)
-  const scheduledFor = strategy.schedule === 'requested_for'
+  const scheduledFor = (
+    strategy.schedule === 'requested_for' ||
+    strategy.schedule === 'optional_requested_for'
+  )
     ? input.requestedFor
     : strategy.schedule === 'collection' &&
         input.collection?.mode === 'scheduled'
@@ -33,11 +38,19 @@ export function validateMenuOrderSchedule(input: {
   if (strategy.schedule === 'requested_for' && !scheduledFor) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Choose when you would like to eat.',
+      statusMessage: 'Choose a requested date and time.',
     })
   }
 
-  if (scheduledFor && input.hours?.windows.length) {
+  const hasHours = Boolean(input.hours?.windows.length)
+  if (strategy.schedule === 'requested_for' && !hasHours) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Requested dining times are unavailable for this menu.',
+    })
+  }
+
+  if (scheduledFor && hasHours) {
     const selected = requestedForParts(scheduledFor)
     const selection = readWeekdayTimeSelectionState(
       input.hours,
@@ -50,7 +63,7 @@ export function validateMenuOrderSchedule(input: {
         statusMessage: 'Choose a time during serving hours.',
       })
     }
-  } else if (!scheduledFor && input.hours?.windows.length) {
+  } else if (!scheduledFor && hasHours) {
     const openState = readWeekdayTimeOpenState(input.hours)
     if (openState.known && !openState.open) {
       throw createError({

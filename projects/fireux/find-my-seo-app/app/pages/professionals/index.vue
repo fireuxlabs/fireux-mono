@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
 <template>
   <UPage>
     <UPageHeader
@@ -48,7 +49,7 @@ import {
   type ProfessionalCard,
 } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { appMeta } from '../../meta'
-import { demoSeoProfessionalCollection } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoProfessionalCollection } from '../../demo/findMySeo'
 
 const { cell: professionalCell } = useProfessionalInterface()
 

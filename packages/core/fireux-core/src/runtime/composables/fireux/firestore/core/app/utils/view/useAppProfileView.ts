@@ -9,14 +9,6 @@ import { formatFirestoreTimestamp } from '../../../../../../../utils/formatTimes
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 
-export type AppProfileAdminAvatarItem = {
-  id: string
-  to: string
-  avatarUrl: string
-  alt: string
-  tooltip: string
-}
-
 export type AppProfileViewModel = {
   card: AppCard.Card
   description: string
@@ -25,8 +17,6 @@ export type AppProfileViewModel = {
   ecosystem: string
   creatorId: string
   creatorCard: UserCard.Card | null
-  adminCount: number
-  adminAvatarItems: AppProfileAdminAvatarItem[]
   createdAtText: string
 }
 
@@ -37,15 +27,6 @@ export function useAppProfileView(
   const creatorId = computed(
     () => safeString(appRef.value?.created?.by) || null
   )
-  const adminIds = computed(() => {
-    const raw = appRef.value?.admin_ids
-    if (!Array.isArray(raw)) return []
-    return raw.filter(
-      (value): value is string =>
-        typeof value === 'string' && Boolean(value.trim())
-    )
-  })
-
   const card = computed(() => toProfile(appRef.value))
   const creatorCard = computed<UserCard.Card | null>(() => null)
   const createdAtText = computed(
@@ -55,16 +36,6 @@ export function useAppProfileView(
         format: { dateStyle: 'medium' },
       }) ?? ''
   )
-
-  const adminAvatarItems = computed<AppProfileAdminAvatarItem[]>(() => {
-    return adminIds.value.slice(0, 3).map((id) => ({
-      id,
-      to: '',
-      avatarUrl: '',
-      alt: id,
-      tooltip: id,
-    }))
-  })
 
   const model = computed<AppProfileViewModel | null>(() => {
     if (!card.value) return null
@@ -79,8 +50,6 @@ export function useAppProfileView(
         card.value.ecosystem,
       creatorId: creatorId.value ?? '',
       creatorCard: creatorCard.value,
-      adminCount: adminIds.value.length,
-      adminAvatarItems: adminAvatarItems.value,
       createdAtText: createdAtText.value,
     }
   })
@@ -89,6 +58,5 @@ export function useAppProfileView(
     model,
     card,
     creatorCard,
-    adminAvatarItems,
   }
 }
